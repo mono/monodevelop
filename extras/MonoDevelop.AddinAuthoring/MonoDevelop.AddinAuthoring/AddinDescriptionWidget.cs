@@ -2,6 +2,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Projects;
 using Mono.Addins;
 using Mono.Addins.Description;
 using Gtk;
@@ -60,7 +61,7 @@ namespace MonoDevelop.AddinAuthoring
 			notebook.ShowBorder = false;
 			
 			if (desc.LocalId.Length == 0) {
-				defaultId = System.IO.Path.GetFileNameWithoutExtension (data.Project.GetOutputFileName (data.Project.DefaultConfigurationId));
+				defaultId = System.IO.Path.GetFileNameWithoutExtension (data.Project.GetOutputFileName (ConfigurationSelector.Default));
 				entryIdentifier.Text = defaultId;
 			}
 			else

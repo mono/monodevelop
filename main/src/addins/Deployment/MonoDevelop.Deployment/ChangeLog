@@ -1,3 +1,20 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment/IDeployable.cs:
+	* MonoDevelop.Deployment/DeployService.cs:
+	* MonoDevelop.Deployment/PackageBuilder.cs:
+	* MonoDevelop.Deployment/InstallResolver.cs:
+	* MonoDevelop.Deployment/PackagingProject.cs:
+	* MonoDevelop.Deployment.Gui/DeployOperations.cs:
+	* MonoDevelop.Deployment/DeployServiceExtension.cs:
+	* MonoDevelop.Deployment.Gui/DeployFileListWidget.cs:
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs:
+	* MonoDevelop.Deployment.Targets/BinariesZipPackageBuilder.cs:
+	  Introduced the ConfigurationSelector class to all methods
+	  that previously took a configuration name as string. This
+	  eliminates the ambiguity between solution configuration
+	  names and project configuration names.
+
 2009-11-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Use

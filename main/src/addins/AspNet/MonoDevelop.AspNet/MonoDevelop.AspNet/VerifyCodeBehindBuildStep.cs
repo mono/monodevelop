@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNet
 	public class VerifyCodeBehindBuildStep : ProjectServiceExtension
 	{
 		
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem project, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem project, ConfigurationSelector configuration)
 		{
 			AspNetAppProject aspProject = project as AspNetAppProject;
 			

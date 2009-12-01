@@ -211,7 +211,7 @@ namespace MonoDevelop.ValaBinding
 		/// <summary>
 		/// Ths pkg-config package is for internal MonoDevelop use only, it is not deployed.
 		/// </summary>
-		public void WriteMDPkgPackage (string configuration)
+		public void WriteMDPkgPackage (ConfigurationSelector configuration)
 		{
 			string pkgfile = Path.Combine (BaseDirectory, Name + ".md.pc");
 			
@@ -242,7 +242,7 @@ namespace MonoDevelop.ValaBinding
 		/// This is the pkg-config package that gets deployed.
 		/// <returns>The pkg-config package's filename</returns>
 		/// </summary>
-		private string WriteDeployablePkgPackage (string configuration)
+		private string WriteDeployablePkgPackage (ConfigurationSelector configuration)
 		{
 			// FIXME: This should probably be grabed from somewhere.
 			string prefix = "/usr/local";
@@ -270,7 +270,7 @@ namespace MonoDevelop.ValaBinding
 			return pkgfile;
 		}
 		
-		protected override BuildResult DoBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			ValaProjectConfiguration pc = (ValaProjectConfiguration)GetConfiguration(configuration);
 			pc.SourceDirectory = BaseDirectory;
@@ -290,7 +290,7 @@ namespace MonoDevelop.ValaBinding
 			return cmd;
 		}
 
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector solutionConfiguration)
 		{
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(solutionConfiguration);
 			ExecutionCommand cmd = CreateExecutionCommand (conf);
@@ -300,10 +300,9 @@ namespace MonoDevelop.ValaBinding
 		
 		protected override void DoExecute (IProgressMonitor monitor,
 										   ExecutionContext context,
-		                                   string solutionConfiguration,
-		                                   string itemConfiguration)
+		                                   ConfigurationSelector configuration)
 		{
-			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(itemConfiguration);
+			ValaProjectConfiguration conf = (ValaProjectConfiguration) GetConfiguration (configuration);
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			
@@ -343,7 +342,7 @@ namespace MonoDevelop.ValaBinding
 			}
 		}
 		
-		protected override FilePath OnGetOutputFileName (string configuration)
+		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)GetConfiguration(configuration);
 			return conf.OutputDirectory.Combine (conf.CompiledOutputName);
@@ -445,7 +444,7 @@ namespace MonoDevelop.ValaBinding
 			if (!package.IsProject){ ProjectInformationManager.Instance.Get (this).AddPackage (package.Name); }
 		}
 
-		public DeployFileCollection GetDeployFiles (string configuration)
+		public DeployFileCollection GetDeployFiles (ConfigurationSelector configuration)
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
 			
@@ -514,8 +513,8 @@ namespace MonoDevelop.ValaBinding
 				string ldpath = string.Empty;
 				string packagePath = Path.GetDirectoryName(package.File);
 				
-				foreach (string pc in GetConfigurations ()) {
-					ValaProjectConfiguration valapc = GetConfiguration (pc) as ValaProjectConfiguration;
+				foreach (ItemConfiguration pc in Configurations) {
+					ValaProjectConfiguration valapc = pc as ValaProjectConfiguration;
 					if (null == valapc){ continue; }
 
 					ValaCompilationParameters vcp = (ValaCompilationParameters)valapc.CompilationParameters;

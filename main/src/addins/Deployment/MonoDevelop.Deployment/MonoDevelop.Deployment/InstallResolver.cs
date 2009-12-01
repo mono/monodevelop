@@ -40,7 +40,7 @@ namespace MonoDevelop.Deployment
 	{
 		string appName;
 		
-		public void Install (IProgressMonitor monitor, SolutionItem entry, string appName, string prefix, string configuration)
+		public void Install (IProgressMonitor monitor, SolutionItem entry, string appName, string prefix, ConfigurationSelector configuration)
 		{
 			this.appName = appName;
 			
@@ -49,7 +49,7 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		void InstallEntry (IProgressMonitor monitor, DeployContext ctx, SolutionItem entry, string configuration)
+		void InstallEntry (IProgressMonitor monitor, DeployContext ctx, SolutionItem entry, ConfigurationSelector configuration)
 		{
 			foreach (DeployFile df in DeployService.GetDeployFiles (ctx, new SolutionItem[] { entry }, configuration)) {
 				string targetPath = df.ResolvedTargetFile;

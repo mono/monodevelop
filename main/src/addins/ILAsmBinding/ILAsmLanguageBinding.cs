@@ -54,9 +54,9 @@ namespace ILAsmBinding
 			return string.Compare (Path.GetExtension (fileName), ".il", true) == 0;
 		}
 		
-		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
 		{
-			return ILAsmCompilerManager.Compile (projectItems, configuration, monitor);
+			return ILAsmCompilerManager.Compile (projectItems, configuration, configSelector, monitor);
 		}
 		
 		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)

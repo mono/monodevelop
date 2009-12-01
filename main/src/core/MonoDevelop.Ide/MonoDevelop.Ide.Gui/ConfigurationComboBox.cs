@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Gui
 			foreach (string conf in IdeApp.Workspace.GetConfigurations ()) {
 				DropDownBox.ComboItem item = new DropDownBox.ComboItem (conf, conf);
 				configs.Add (item);
-				if (conf == IdeApp.Workspace.ActiveConfiguration)
+				if (conf == IdeApp.Workspace.ActiveConfigurationId)
 					configs.CurrentItem = item.Item;
 			}
 			
@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Gui
 			Combo.ShowAll ();
 			
 			if (configs.CurrentItem == null && configs.Count > 0)
-				IdeApp.Workspace.ActiveConfiguration = (string) configs [0].Item;
+				IdeApp.Workspace.ActiveConfigurationId = (string) configs [0].Item;
 			
 			if (runtimes.CurrentItem == null && runtimes.Count > 0)
 				IdeApp.Workspace.ActiveRuntime = Runtime.SystemAssemblyService.CurrentRuntime;
@@ -167,8 +167,8 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			foreach (DropDownBox.ComboItem item in configs) {
-				if (item.Label == IdeApp.Workspace.ActiveConfiguration) {
-					configs.CurrentItem = IdeApp.Workspace.ActiveConfiguration;
+				if (item.Label == IdeApp.Workspace.ActiveConfigurationId) {
+					configs.CurrentItem = IdeApp.Workspace.ActiveConfigurationId;
 					UpdateLabel ();
 					return;
 				}
@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Configuration not found. Set one that is known.
 			if (configs.Count > 0)
-				IdeApp.Workspace.ActiveConfiguration = configs [0].Label;
+				IdeApp.Workspace.ActiveConfigurationId = configs [0].Label;
 		}
 		
 		void OnActiveRuntimeChanged (object sender, EventArgs e)
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui
 			if (IdeApp.Workspace.IsOpen) {
 				updating = true;
 				if (args.ItemSet == configs) {
-					IdeApp.Workspace.ActiveConfiguration = (string) args.Item;
+					IdeApp.Workspace.ActiveConfigurationId = (string) args.Item;
 				} else if (args.ItemSet == runtimes) {
 					if (args.Item is TargetRuntime)
 						IdeApp.Workspace.ActiveRuntime = (TargetRuntime) args.Item;

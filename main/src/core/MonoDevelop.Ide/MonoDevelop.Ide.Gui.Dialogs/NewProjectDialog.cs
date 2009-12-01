@@ -429,12 +429,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			// Guess a good default platform for the project
 			
 			if (parentFolder != null && parentFolder.ParentSolution != null) {
-				ItemConfiguration conf = parentFolder.ParentSolution.Configurations [IdeApp.Workspace.ActiveConfiguration];
+				ItemConfiguration conf = parentFolder.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				if (conf != null)
 					cinfo.DefaultPlatform = conf.Platform;
 				else {
 					string curName, curPlatform;
-					ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfiguration, out curName, out curPlatform);
+					ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out curName, out curPlatform);
 					foreach (ItemConfiguration ic in parentFolder.ParentSolution.Configurations) {
 						if (ic.Platform == curPlatform) {
 							cinfo.DefaultPlatform = curPlatform;

@@ -263,7 +263,7 @@ namespace MonoDevelop.Projects
 		public void SetNeedsBuilding (bool value)
 		{
 			foreach (string conf in GetConfigurations ())
-				SetNeedsBuilding (value, conf);
+				SetNeedsBuilding (value, new ItemConfigurationSelector (conf));
 		}
 
 		public FilePath GetAbsoluteChildPath (FilePath relPath)
@@ -316,43 +316,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public SolutionItemConfiguration GetConfiguration (string id)
+		public virtual SolutionItemConfiguration GetConfiguration (ConfigurationSelector configuration)
 		{
-			if (id == ProjectService.DefaultConfiguration)
-				return DefaultConfiguration;
-			foreach (SolutionItemConfiguration conf in configurations)
-				if (conf.Id == id) return conf;
-			return null;
+			return (SolutionItemConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
 		}
 
-		public SolutionItemConfiguration GetActiveConfiguration (string solutionConfiguration)
-		{
-			if (ParentSolution != null) {
-				SolutionConfiguration config = ParentSolution.Configurations [solutionConfiguration];
-				if (config != null) {
-					string mc = config.GetMappedConfiguration (this);
-					if (mc != null)
-						solutionConfiguration = mc;
-				}
-			}
-			foreach (SolutionItemConfiguration conf in configurations)
-				if (conf.Id == solutionConfiguration) return conf;
-			return DefaultConfiguration;
-		}
-		
-		public string GetActiveConfigurationId (string solutionConfiguration)
-		{
-			if (ParentSolution != null) {
-				SolutionConfiguration config = ParentSolution.Configurations [solutionConfiguration];
-				if (config != null) {
-					string mc = config.GetMappedConfiguration (this);
-					if (mc != null)
-						return mc;
-				}
-			}
-			return ProjectService.DefaultConfiguration;
-		}
-		
 		ItemConfiguration IConfigurationTarget.DefaultConfiguration {
 			get { return DefaultConfiguration; }
 			set { DefaultConfiguration = (SolutionItemConfiguration) value; }
@@ -382,7 +350,7 @@ namespace MonoDevelop.Projects
 					return null;
 			}
 			set {
-				DefaultConfiguration = GetConfiguration (value);
+				DefaultConfiguration = GetConfiguration (new ItemConfigurationSelector (value));
 			}
 		}
 		

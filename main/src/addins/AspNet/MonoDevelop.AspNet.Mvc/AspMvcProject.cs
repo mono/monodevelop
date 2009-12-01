@@ -113,7 +113,7 @@ namespace MonoDevelop.AspNet.Mvc
 			return files;
 		}
 		
-		protected override void PopulateSupportFileList (MonoDevelop.Projects.FileCopySet list, string solutionConfiguration)
+		protected override void PopulateSupportFileList (MonoDevelop.Projects.FileCopySet list, ConfigurationSelector solutionConfiguration)
 		{
 			base.PopulateSupportFileList (list, solutionConfiguration);
 			

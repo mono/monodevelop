@@ -1,3 +1,16 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/MdsTests.cs:
+	* MonoDevelop.Projects/MSBuildTests.cs:
+	* MonoDevelop.Projects/SolutionTests.cs:
+	* MonoDevelop.Projects/LocalCopyTests.cs:
+	* MonoDevelop.Projects/WorkspaceTests.cs:
+	* MonoDevelop.Projects/TestProjectsChecks.cs: Introduced the
+	  ConfigurationSelector class to all methods that previously
+	  took a configuration name as string. This eliminates the
+	  ambiguity between solution configuration names and project
+	  configuration names.
+
 2009-11-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:

@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			icon = Context.GetIcon (iconName);
 			
-			SolutionConfiguration conf = p.ParentSolution.Configurations [IdeApp.Workspace.ActiveConfiguration];
+			SolutionConfiguration conf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			if (conf == null || !conf.BuildEnabledForItem (p)) {
 				Gdk.Pixbuf ticon = Context.GetComposedIcon (icon, "project-no-build");
 				if (ticon == null)
@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				ITreeBuilder tb = Context.GetTreeBuilder (p);
 				if (tb != null) {
 					tb.Update ();
-					SolutionConfiguration conf = p.ParentSolution.Configurations [IdeApp.Workspace.ActiveConfiguration];
+					SolutionConfiguration conf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 					if (conf == null || !conf.BuildEnabledForItem (p))
 						tb.Expanded = false;
 				}

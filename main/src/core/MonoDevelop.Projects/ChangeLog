@@ -1,3 +1,44 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/Workspace.cs:
+	* MonoDevelop.Projects/BuildTool.cs:
+	* MonoDevelop.Projects/IBuildTarget.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/CustomCommand.cs:
+	* MonoDevelop.Projects/SolutionFolder.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/ProjectReference.cs:
+	* MonoDevelop.Projects/ItemConfiguration.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs:
+	* MonoDevelop.Projects/UnknownSolutionItem.cs:
+	* MonoDevelop.Projects/SolutionConfiguration.cs:
+	* MonoDevelop.Projects/ConfigurationSelector.cs:
+	* MonoDevelop.Projects/IDotNetLanguageBinding.cs:
+	* MonoDevelop.Projects/CustomCommandExtension.cs:
+	* MonoDevelop.Projects/ProjectServiceExtension.cs:
+	* MonoDevelop.Projects/CustomCommandCollection.cs:
+	* MonoDevelop.Projects/SolutionItemConfiguration.cs:
+	* MonoDevelop.Projects/ItemConfigurationSelector.cs:
+	* MonoDevelop.Projects/DefaultConfigurationSelector.cs:
+	* MonoDevelop.Projects/SolutionConfigurationSelector.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs:
+	* MonoDevelop.Projects.Extensions/SolutionItemHandler.cs:
+	* MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Introduced the ConfigurationSelector class to all methods
+	  that previously took a configuration name as string. This
+	  eliminates the ambiguity between solution configuration
+	  names and project configuration names.
+
 2009-12-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 559249

@@ -34,6 +34,7 @@ using MonoDevelop.Core.Gui.ProgressMonitoring;
 using MonoDevelop.Deployment;
 using MonoDevelop.Deployment.Gui;
 using MonoDevelop.AspNet;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Deployment
 {
@@ -44,12 +45,12 @@ namespace MonoDevelop.AspNet.Deployment
 		{
 		}
 		
-		static public void Deploy (AspNetAppProject project, WebDeployTarget target, string configuration)
+		static public void Deploy (AspNetAppProject project, WebDeployTarget target, ConfigurationSelector configuration)
 		{
 			Deploy (project, new WebDeployTarget[] { target }, configuration);
 		}
 		
-		static public void Deploy (AspNetAppProject project, ICollection<WebDeployTarget> targets, string configuration)
+		static public void Deploy (AspNetAppProject project, ICollection<WebDeployTarget> targets, ConfigurationSelector configuration)
 		{
 			//project needs to be built before it can be deployed
 			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Build (project);

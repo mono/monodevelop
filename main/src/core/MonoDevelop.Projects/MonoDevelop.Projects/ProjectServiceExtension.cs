@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects
 			return Next.LoadWorkspaceItem (monitor, fileName);
 		}
 		
-		public virtual BuildResult RunTarget (IProgressMonitor monitor, IBuildTarget item, string target, string configuration)
+		public virtual BuildResult RunTarget (IProgressMonitor monitor, IBuildTarget item, string target, ConfigurationSelector configuration)
 		{
 			if (target == ProjectService.BuildTarget)
 				return Build (monitor, item, configuration);
@@ -98,7 +98,7 @@ namespace MonoDevelop.Projects
 				return Next.RunTarget (monitor, item, target, configuration);
 		}
 		
-		protected virtual void Clean (IProgressMonitor monitor, IBuildTarget item, string configuration)
+		protected virtual void Clean (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
 				Clean (monitor, (SolutionEntityItem) item, configuration);
@@ -108,17 +108,17 @@ namespace MonoDevelop.Projects
 				Next.RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
 		}
 		
-		protected virtual void Clean (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected virtual void Clean (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			Next.RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
 		}
 		
-		protected virtual void Clean (IProgressMonitor monitor, Solution item, string configuration)
+		protected virtual void Clean (IProgressMonitor monitor, Solution item, ConfigurationSelector configuration)
 		{
 			Next.RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
 		}
 		
-		protected virtual void Clean (IProgressMonitor monitor, WorkspaceItem item, string configuration)
+		protected virtual void Clean (IProgressMonitor monitor, WorkspaceItem item, ConfigurationSelector configuration)
 		{
 			if (item is Solution)
 				Clean (monitor, (Solution) item, configuration);
@@ -126,7 +126,7 @@ namespace MonoDevelop.Projects
 				Next.RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
 		}
 		
-		protected virtual BuildResult Build (IProgressMonitor monitor, IBuildTarget item, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
 				return Build (monitor, (SolutionEntityItem) item, configuration);
@@ -135,24 +135,24 @@ namespace MonoDevelop.Projects
 			return Next.RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
 		}
 		
-		protected virtual BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			return Next.RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
 		}
 		
-		protected virtual BuildResult Build (IProgressMonitor monitor, WorkspaceItem item, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, WorkspaceItem item, ConfigurationSelector configuration)
 		{
 			if (item is Solution)
 				return Build (monitor, (Solution) item, configuration);
 			return Next.RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
 		}
 		
-		protected virtual BuildResult Build (IProgressMonitor monitor, Solution solution, string configuration)
+		protected virtual BuildResult Build (IProgressMonitor monitor, Solution solution, ConfigurationSelector configuration)
 		{
 			return Next.RunTarget (monitor, solution, ProjectService.BuildTarget, configuration);
 		}
 		
-		public virtual void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, string configuration)
+		public virtual void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
 				Execute (monitor, (SolutionEntityItem)item, context, configuration);
@@ -162,17 +162,17 @@ namespace MonoDevelop.Projects
 				Next.Execute (monitor, item, context, configuration);
 		}
 		
-		protected virtual void Execute (IProgressMonitor monitor, SolutionEntityItem item, ExecutionContext context, string configuration)
+		protected virtual void Execute (IProgressMonitor monitor, SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Next.Execute (monitor, (IBuildTarget) item, context, configuration);
 		}
 		
-		protected virtual void Execute (IProgressMonitor monitor, Solution solution, ExecutionContext context, string configuration)
+		protected virtual void Execute (IProgressMonitor monitor, Solution solution, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Next.Execute (monitor, (IBuildTarget) solution, context, configuration);
 		}
 		
-		protected virtual void Execute (IProgressMonitor monitor, WorkspaceItem item, ExecutionContext context, string configuration)
+		protected virtual void Execute (IProgressMonitor monitor, WorkspaceItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is Solution)
 				Execute (monitor, (Solution) item, context, configuration);
@@ -180,7 +180,7 @@ namespace MonoDevelop.Projects
 				Next.Execute (monitor, (IBuildTarget) item, context, configuration);
 		}
 		
-		public virtual bool CanExecute (IBuildTarget item, ExecutionContext context, string configuration)
+		public virtual bool CanExecute (IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
 				return CanExecute ((SolutionEntityItem)item, context, configuration);
@@ -190,17 +190,17 @@ namespace MonoDevelop.Projects
 				return Next.CanExecute (item, context, configuration);
 		}
 		
-		protected virtual bool CanExecute (SolutionEntityItem item, ExecutionContext context, string configuration)
+		protected virtual bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return Next.CanExecute ((IBuildTarget) item, context, configuration);
 		}
 		
-		protected virtual bool CanExecute (Solution solution, ExecutionContext context, string configuration)
+		protected virtual bool CanExecute (Solution solution, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return Next.CanExecute ((IBuildTarget) solution, context, configuration);
 		}
 		
-		protected virtual bool CanExecute (WorkspaceItem item, ExecutionContext context, string configuration)
+		protected virtual bool CanExecute (WorkspaceItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is Solution)
 				return CanExecute ((Solution) item, context, configuration);
@@ -208,7 +208,7 @@ namespace MonoDevelop.Projects
 				return Next.CanExecute ((IBuildTarget) item, context, configuration);
 		}
 		
-		public virtual bool GetNeedsBuilding (IBuildTarget item, string configuration)
+		public virtual bool GetNeedsBuilding (IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
 				return GetNeedsBuilding ((SolutionEntityItem) item, configuration);
@@ -217,24 +217,24 @@ namespace MonoDevelop.Projects
 			return Next.GetNeedsBuilding (item, configuration);
 		}
 		
-		protected virtual bool GetNeedsBuilding (SolutionEntityItem item, string configuration)
+		protected virtual bool GetNeedsBuilding (SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			return Next.GetNeedsBuilding ((IBuildTarget) item, configuration);
 		}
 		
-		protected virtual bool GetNeedsBuilding (Solution item, string configuration)
+		protected virtual bool GetNeedsBuilding (Solution item, ConfigurationSelector configuration)
 		{
 			return Next.GetNeedsBuilding ((IBuildTarget) item, configuration);
 		}
 		
-		protected virtual bool GetNeedsBuilding (WorkspaceItem item, string configuration)
+		protected virtual bool GetNeedsBuilding (WorkspaceItem item, ConfigurationSelector configuration)
 		{
 			if (item is Solution)
 				return GetNeedsBuilding ((Solution) item, configuration);
 			return Next.GetNeedsBuilding ((IBuildTarget) item, configuration);
 		}
 		
-		public virtual void SetNeedsBuilding (IBuildTarget item, bool val, string configuration)
+		public virtual void SetNeedsBuilding (IBuildTarget item, bool val, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
 				SetNeedsBuilding ((SolutionEntityItem) item, val, configuration);
@@ -244,17 +244,17 @@ namespace MonoDevelop.Projects
 				Next.SetNeedsBuilding (item, val, configuration);
 		}
 		
-		protected virtual void SetNeedsBuilding (SolutionEntityItem item, bool val, string configuration)
+		protected virtual void SetNeedsBuilding (SolutionEntityItem item, bool val, ConfigurationSelector configuration)
 		{
 			Next.SetNeedsBuilding ((IBuildTarget) item, val, configuration);
 		}
 		
-		protected virtual void SetNeedsBuilding (Solution item, bool val, string configuration)
+		protected virtual void SetNeedsBuilding (Solution item, bool val, ConfigurationSelector configuration)
 		{
 			Next.SetNeedsBuilding ((IBuildTarget) item, val, configuration);
 		}
 		
-		protected virtual void SetNeedsBuilding (WorkspaceItem item, bool val, string configuration)
+		protected virtual void SetNeedsBuilding (WorkspaceItem item, bool val, ConfigurationSelector configuration)
 		{
 			if (item is Solution)
 				SetNeedsBuilding ((Solution) item, val, configuration);
@@ -284,5 +284,6 @@ namespace MonoDevelop.Projects
 	{
 		public ProjectItemCollection Items { get; internal set; }
 		public DotNetProjectConfiguration Configuration { get; internal set; }
+		public ConfigurationSelector ConfigurationSelector { get; internal set; }
 	}
 }

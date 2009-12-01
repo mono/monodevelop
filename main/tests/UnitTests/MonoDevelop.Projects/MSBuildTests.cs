@@ -141,7 +141,7 @@ namespace MonoDevelop.Projects
 
 			// Debug config
 			
-			DotNetProjectConfiguration conf = p.GetConfiguration ("Debug") as DotNetProjectConfiguration;
+			DotNetProjectConfiguration conf = p.Configurations ["Debug"] as DotNetProjectConfiguration;
 			Assert.IsNotNull (conf);
 			Assert.AreEqual ("Debug", conf.Name);
 			Assert.AreEqual (string.Empty, conf.Platform);
@@ -154,7 +154,7 @@ namespace MonoDevelop.Projects
 
 			// Release config
 			
-			conf = p.GetConfiguration ("Release") as DotNetProjectConfiguration;
+			conf = p.Configurations ["Release"] as DotNetProjectConfiguration;
 			Assert.IsNotNull (conf);
 			Assert.AreEqual ("Release", conf.Name);
 			Assert.AreEqual (string.Empty, conf.Platform);

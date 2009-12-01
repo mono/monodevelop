@@ -1,3 +1,12 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ILAsmLanguageBinding.cs:
+	* ILAsmCompilerManager.cs: Introduced the
+	  ConfigurationSelector class to all methods that previously
+	  took a configuration name as string. This eliminates the
+	  ambiguity between solution configuration names and project
+	  configuration names.
+
 2009-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ILAsmCompilerManager.cs: Minor fix in error parsing.

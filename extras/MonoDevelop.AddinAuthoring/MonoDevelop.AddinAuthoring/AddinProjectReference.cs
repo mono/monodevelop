@@ -51,7 +51,7 @@ namespace MonoDevelop.AddinAuthoring
 		{
 		}
 		
-		public override string[] GetReferencedFileNames (string configuration)
+		public override string[] GetReferencedFileNames (ConfigurationSelector configuration)
 		{
 			if (OwnerProject != null) {
 				AddinData data = AddinData.GetAddinData ((DotNetProject)OwnerProject);

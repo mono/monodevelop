@@ -50,14 +50,14 @@ namespace MonoDevelop.CSharp
 			sb.AppendLine ();
 		}
 
-		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
 		{
 			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters)configuration.CompilationParameters ?? new CSharpCompilerParameters ();
 			CSharpProjectParameters projectParameters = (CSharpProjectParameters)configuration.ProjectParameters ?? new CSharpProjectParameters ();
 			
 			string outputName       = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
-
+			
 			TargetRuntime runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
 			DotNetProject project = configuration.ParentItem as DotNetProject;
 			if (project != null)
@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
 				if (lib.ReferenceType == ReferenceType.Project && !(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject))
 					continue;
-				foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
+				foreach (string fileName in lib.GetReferencedFileNames (configSelector)) {
 					switch (lib.ReferenceType) {
 					case ReferenceType.Gac:
 						SystemPackage pkg = lib.Package;

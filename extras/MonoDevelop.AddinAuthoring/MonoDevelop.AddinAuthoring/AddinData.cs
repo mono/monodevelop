@@ -74,7 +74,7 @@ namespace MonoDevelop.AddinAuthoring
 			watcher.Filter = Path.GetFileName (AddinManifestFileName);
 			watcher.Changed += OnDescFileChanged;
 			watcher.EnableRaisingEvents = true;
-			lastOutputPath = Path.GetDirectoryName (Project.GetOutputFileName (Project.DefaultConfigurationId));
+			lastOutputPath = Path.GetDirectoryName (Project.GetOutputFileName (ConfigurationSelector.Default));
 			
 			if (!string.IsNullOrEmpty (ApplicationName)) {
 				project.ParentSolution.GetAddinData ().ApplicationName = ApplicationName;
@@ -210,8 +210,8 @@ namespace MonoDevelop.AddinAuthoring
 		public AddinDescription CompiledAddinManifest {
 			get {
 				if (compiledManifest == null) {
-					if (File.Exists (project.GetOutputFileName (project.DefaultConfigurationId))) {
-						compiledManifest = registry.GetAddinDescription (new ConsoleProgressStatus (false), project.GetOutputFileName (project.DefaultConfigurationId));
+					if (File.Exists (project.GetOutputFileName (ConfigurationSelector.Default))) {
+						compiledManifest = registry.GetAddinDescription (new ConsoleProgressStatus (false), project.GetOutputFileName (ConfigurationSelector.Default));
 					}
 				}
 				return compiledManifest;
@@ -249,7 +249,7 @@ namespace MonoDevelop.AddinAuthoring
 		internal void CheckOutputPath ()
 		{
 			if (CachedAddinManifest.IsRoot) {
-				string outDir = Path.GetDirectoryName (Project.GetOutputFileName (Project.DefaultConfigurationId));
+				string outDir = Path.GetDirectoryName (Project.GetOutputFileName (ConfigurationSelector.Default));
 				if (lastOutputPath != outDir) {
 					registry = null;
 					NotifyChanged (true);

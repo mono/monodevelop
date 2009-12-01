@@ -65,10 +65,10 @@ namespace MonoDevelop.VBNetBinding
 			return Path.GetExtension(fileName) == ".vb";
 		}
 		
-		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
 		{
 			Debug.Assert(compilerServices != null);
-			return compilerServices.Compile (items, configuration, monitor);
+			return compilerServices.Compile (items, configuration, configSelector, monitor);
 		}
 		
 		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)

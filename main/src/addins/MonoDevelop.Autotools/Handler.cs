@@ -136,7 +136,7 @@ namespace MonoDevelop.Autotools
 					solution = entry.ParentSolution;
 				}
 				
-				solution.Build (monitor, defaultConfig);
+				solution.Build (monitor, (SolutionConfigurationSelector) defaultConfig);
 			
 				if (monitor.IsCancelRequested || !monitor.AsyncOperation.Success)
 					return false;

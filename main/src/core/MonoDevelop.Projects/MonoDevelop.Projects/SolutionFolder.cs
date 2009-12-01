@@ -183,14 +183,14 @@ namespace MonoDevelop.Projects
 		}
 
 		
-		protected internal override bool OnGetNeedsBuilding (string configuration)
+		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			foreach (SolutionItem item in Items)
 				if (item.NeedsBuilding (configuration)) return true;
 			return false;
 		}
 		
-		protected internal override void OnSetNeedsBuilding (bool value, string configuration)
+		protected internal override void OnSetNeedsBuilding (bool value, ConfigurationSelector configuration)
 		{
 			// Ignore
 		}
@@ -367,7 +367,7 @@ namespace MonoDevelop.Projects
 			entry.Modified -= NotifyItemModified;
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 		}
 		
@@ -391,7 +391,7 @@ namespace MonoDevelop.Projects
 			return list.AsReadOnly ();
 		}
 		
-		public ReadOnlyCollection<T> GetAllItemsWithTopologicalSort<T> (string configuration) where T: SolutionItem
+		public ReadOnlyCollection<T> GetAllItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			List<T> list = new List<T> ();
 			GetAllItems<T> (list, this);
@@ -407,7 +407,7 @@ namespace MonoDevelop.Projects
 		
 		// The projects are returned in the order
 		// they should be compiled, acording to their references.
-		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (string configuration)
+		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (ConfigurationSelector configuration)
 		{
 			List<Project> list = new List<Project> ();
 			GetAllItems<Project> (list, this);
@@ -426,7 +426,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (string configuration, bool topologicalSort, bool includeExternalReferences)
+		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration, bool topologicalSort, bool includeExternalReferences)
 		{
 			List<SolutionItem> list = new List<SolutionItem> ();
 			GetAllBuildableEntries (list, configuration, includeExternalReferences);
@@ -436,16 +436,16 @@ namespace MonoDevelop.Projects
 				return list.AsReadOnly ();
 		}
 		
-		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (string configuration)
+		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration)
 		{
 			return GetAllBuildableEntries (configuration, false, false);
 		}
 		
-		void GetAllBuildableEntries (List<SolutionItem> list, string configuration, bool includeExternalReferences)
+		void GetAllBuildableEntries (List<SolutionItem> list, ConfigurationSelector configuration, bool includeExternalReferences)
 		{
 			if (ParentSolution == null)
 				return;
-			SolutionConfiguration conf = ParentSolution.Configurations [configuration];
+			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
 			if (conf == null)
 				return;
 
@@ -457,7 +457,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, string configuration, bool includeExternalReferences)
+		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration, bool includeExternalReferences)
 		{
 			if (list.Contains (item))
 				return;
@@ -513,11 +513,11 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		protected internal override void OnClean (IProgressMonitor monitor, string configuration)
+		protected internal override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			if (ParentSolution == null)
 				return;
-			SolutionConfiguration conf = ParentSolution.Configurations [configuration];
+			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
 			if (conf == null)
 				return;
 
@@ -528,14 +528,14 @@ namespace MonoDevelop.Projects
 					SolutionEntityItem si = (SolutionEntityItem) item;
 					SolutionConfigurationEntry ce = conf.GetEntryForItem (si);
 					if (ce.Build)
-						si.Clean (monitor, ce.ItemConfiguration);
+						si.Clean (monitor, ce.ItemConfigurationSelector);
 				} else {
 					item.Clean (monitor, configuration);
 				}
 			}
 		}
 		
-		protected internal override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected internal override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			ReadOnlyCollection<SolutionItem> allProjects;
 				
@@ -574,13 +574,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override DateTime OnGetLastBuildTime (string solutionConfiguration)
+		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			// Return the min value, since that the last time all items in the
 			// folder were built
 			DateTime tim = DateTime.MaxValue;
 			foreach (SolutionItem it in Items) {
-				DateTime t = it.GetLastBuildTime (solutionConfiguration);
+				DateTime t = it.GetLastBuildTime (configuration);
 				if (t < tim)
 					tim = t;
 			}
@@ -862,7 +862,7 @@ namespace MonoDevelop.Projects
 			get { return folder.Name; }
 		}
 		
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			throw new NotImplementedException ();
 		}

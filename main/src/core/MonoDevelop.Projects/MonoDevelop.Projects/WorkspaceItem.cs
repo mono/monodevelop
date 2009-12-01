@@ -229,30 +229,60 @@ namespace MonoDevelop.Projects
 		
 		public BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
 		{
+			return RunTarget (monitor, target, (SolutionConfigurationSelector) configuration);
+		}
+		
+		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
 			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, configuration);
 		}
 		
 		public void Clean (IProgressMonitor monitor, string configuration)
+		{
+			Clean (monitor, (SolutionConfigurationSelector) configuration);
+		}
+		
+		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
 		}
 		
 		public BuildResult Build (IProgressMonitor monitor, string configuration)
 		{
+			return InternalBuild (monitor, (SolutionConfigurationSelector) configuration);
+		}
+		
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector configuration)
+		{
 			return InternalBuild (monitor, configuration);
 		}
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		{
+			Execute (monitor, context, (SolutionConfigurationSelector) configuration);
+		}
+		
+		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, configuration);
 		}
 		
 		public bool CanExecute (ExecutionContext context, string configuration)
 		{
+			return CanExecute (context, (SolutionConfigurationSelector) configuration);
+		}
+		
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
 			return Services.ProjectService.ExtensionChain.CanExecute (this, context, configuration);
 		}
 		
 		public bool NeedsBuilding (string configuration)
+		{
+			return NeedsBuilding ((SolutionConfigurationSelector) configuration);
+		}
+		
+		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, configuration);
 		}
@@ -260,10 +290,15 @@ namespace MonoDevelop.Projects
 		public void SetNeedsBuilding (bool value)
 		{
 			foreach (string conf in GetConfigurations ())
-				SetNeedsBuilding (value, conf);
+				SetNeedsBuilding (value, new SolutionConfigurationSelector (conf));
 		}
 		
 		public void SetNeedsBuilding (bool needsBuilding, string configuration)
+		{
+			SetNeedsBuilding (needsBuilding, (SolutionConfigurationSelector) configuration);
+		}
+		
+		public void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration)
 		{
 			Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, needsBuilding, configuration);
 		}
@@ -284,7 +319,7 @@ namespace MonoDevelop.Projects
 				FileName = format.GetValidFileName (this, FileName);
 		}
 		
-		internal virtual BuildResult InternalBuild (IProgressMonitor monitor, string configuration)
+		internal virtual BuildResult InternalBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.BuildTarget, configuration);
 		}
@@ -332,7 +367,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual BuildResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
+		internal protected virtual BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (target == ProjectService.BuildTarget)
 				return OnBuild (monitor, configuration);
@@ -343,30 +378,30 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		protected virtual void OnClean (IProgressMonitor monitor, string configuration)
+		protected virtual void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 		}
 		
-		protected virtual BuildResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected virtual BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return null;
 		}
 		
-		internal protected virtual void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		internal protected virtual void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 		}
 		
-		internal protected virtual bool OnGetCanExecute (ExecutionContext context, string configuration)
+		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return true;
 		}
 		
-		internal protected virtual bool OnGetNeedsBuilding (string configuration)
+		internal protected virtual bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return false;
 		}
 		
-		internal protected virtual void OnSetNeedsBuilding (bool val, string configuration)
+		internal protected virtual void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
 		{
 		}
 		

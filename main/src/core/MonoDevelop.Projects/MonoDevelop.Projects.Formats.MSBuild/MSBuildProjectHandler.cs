@@ -112,7 +112,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		
-		public override BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false)) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
@@ -128,18 +128,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						fx = Services.ProjectService.DefaultTargetFramework;
 					}
 					
-					string conf, plat;
-					int i = configuration.IndexOf ('|');
-					if (i != -1) {
-						conf = configuration.Substring (0, i);
-						plat = configuration.Substring (i+1);
-					} else {
-						conf = configuration;
-						plat = null;
-					}
+					SolutionItemConfiguration configObject = item.GetConfiguration (configuration);
 				
 					LogWriter logWriter = new LogWriter (monitor.Log);
-					MSBuildResult[] results = ProjectBuilder.RunTarget (item.FileName, target, conf, plat, runtime.GetMSBuildBinPath (fx), logWriter);
+					MSBuildResult[] results = ProjectBuilder.RunTarget (item.FileName, target, configObject.Name, configObject.Platform, runtime.GetMSBuildBinPath (fx), logWriter);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					BuildResult br = new BuildResult ();

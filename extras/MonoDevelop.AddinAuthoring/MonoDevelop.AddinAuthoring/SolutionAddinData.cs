@@ -47,7 +47,7 @@ namespace MonoDevelop.AddinAuthoring
 		}
 		
 		FilePath TempRegistryPath {
-			get { return solution.BaseDirectory.Combine (".temp-addin-registry").Combine (IdeApp.Workspace.ActiveConfiguration); }
+			get { return solution.BaseDirectory.Combine (".temp-addin-registry").Combine (IdeApp.Workspace.ActiveConfigurationId); }
 		}
 		
 		public string ApplicationName {

@@ -258,13 +258,13 @@ namespace MonoDevelop.Projects
 			return newDir;
 		}
 
-		protected internal override BuildResult OnBuild (IProgressMonitor monitor, string solutionConfiguration)
+		protected internal override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// create output directory, if not exists
-			ProjectConfiguration conf = GetActiveConfiguration (solutionConfiguration) as ProjectConfiguration;
+			ProjectConfiguration conf = GetConfiguration (configuration) as ProjectConfiguration;
 			if (conf == null) {
 				BuildResult cres = new BuildResult ();
-				cres.AddError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", solutionConfiguration, Name));
+				cres.AddError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration.ToString (), Name));
 				return cres;
 			}
 			string outputDir = conf.OutputDirectory;
@@ -278,12 +278,12 @@ namespace MonoDevelop.Projects
 			}
 
 			//copy references and files marked to "CopyToOutputDirectory"
-			CopySupportFiles (monitor, solutionConfiguration);
+			CopySupportFiles (monitor, configuration);
 
 			StringParserService.Properties["Project"] = Name;
 
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
-			BuildResult res = DoBuild (monitor, conf.Id);
+			BuildResult res = DoBuild (monitor, configuration);
 
 			isDirty = false;
 
@@ -297,11 +297,11 @@ namespace MonoDevelop.Projects
 			return res;
 		}
 
-		public void CopySupportFiles (IProgressMonitor monitor, string solutionConfiguration)
+		public void CopySupportFiles (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ProjectConfiguration config = (ProjectConfiguration)GetActiveConfiguration (solutionConfiguration);
+			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 
-			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
+			foreach (FileCopySet.Item item in GetSupportFileList (configuration)) {
 				string dest = Path.GetFullPath (Path.Combine (config.OutputDirectory, item.Target));
 				string src = Path.GetFullPath (item.Src);
 
@@ -326,11 +326,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public void DeleteSupportFiles (IProgressMonitor monitor, string solutionConfiguration)
+		public void DeleteSupportFiles (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ProjectConfiguration config = (ProjectConfiguration)GetActiveConfiguration (solutionConfiguration);
+			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 
-			foreach (FileCopySet.Item item in GetSupportFileList (solutionConfiguration)) {
+			foreach (FileCopySet.Item item in GetSupportFileList (configuration)) {
 				string dest = Path.Combine (config.OutputDirectory, item.Target);
 
 				// Ignore files which were not copied
@@ -347,14 +347,14 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public FileCopySet GetSupportFileList (string solutionConfiguration)
+		public FileCopySet GetSupportFileList (ConfigurationSelector configuration)
 		{
 			FileCopySet list = new FileCopySet ();
-			PopulateSupportFileList (list, solutionConfiguration);
+			PopulateSupportFileList (list, configuration);
 			return list;
 		}
 
-		protected virtual void PopulateSupportFileList (FileCopySet list, string solutionConfiguration)
+		protected virtual void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
@@ -364,39 +364,39 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected virtual BuildResult DoBuild (IProgressMonitor monitor, string itemConfiguration)
+		protected virtual BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			BuildResult res = ItemHandler.RunTarget (monitor, "Build", itemConfiguration);
+			BuildResult res = ItemHandler.RunTarget (monitor, "Build", configuration);
 			return res ?? new BuildResult ();
 		}
 
-		protected internal override void OnClean (IProgressMonitor monitor, string solutionConfiguration)
+		protected internal override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			SetDirty ();
-			ProjectConfiguration config = GetActiveConfiguration (solutionConfiguration) as ProjectConfiguration;
+			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
-				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", solutionConfiguration, Name), null);
+				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", config.Id, Name), null);
 				return;
 			}
 
 			// Delete the generated assembly
-			string file = GetOutputFileName (solutionConfiguration);
+			string file = GetOutputFileName (configuration);
 			if (file != null) {
 				if (File.Exists (file))
 					FileService.DeleteFile (file);
 			}
 
-			DeleteSupportFiles (monitor, solutionConfiguration);
+			DeleteSupportFiles (monitor, configuration);
 
-			DoClean (monitor, config.Id);
+			DoClean (monitor, config.Selector);
 		}
 
-		protected virtual void DoClean (IProgressMonitor monitor, string itemConfiguration)
+		protected virtual void DoClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ItemHandler.RunTarget (monitor, "Clean", itemConfiguration);
+			ItemHandler.RunTarget (monitor, "Clean", configuration);
 		}
 
-		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, string configuration)
+		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
 		{
 			if (referenced.Contains (item))
 				return;
@@ -408,41 +408,35 @@ namespace MonoDevelop.Projects
 				GetBuildableReferencedItems (referenced, ritem, configuration);
 		}
 
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			ProjectConfiguration config = GetActiveConfiguration (solutionConfiguration) as ProjectConfiguration;
+			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
-				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", solutionConfiguration, Name), null);
+				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration, Name), null);
 				return;
 			}
-			DoExecute (monitor, context, solutionConfiguration, config.Id);
+			DoExecute (monitor, context, configuration);
 		}
 
-		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context,
-		                                  string solutionConfiguration, string itemConfiguration)
+		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 		}
 
-		public FilePath GetOutputFileName (string solutionConfiguration)
-		{
-			return OnGetOutputFileName (GetActiveConfigurationId (solutionConfiguration));
-		}
-
-		protected virtual FilePath OnGetOutputFileName (string itemConfiguration)
+		public virtual FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
 			return FilePath.Null;
 		}
 
-		protected internal override bool OnGetNeedsBuilding (string solutionConfiguration)
+		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			if (!isDirty) {
-				if (CheckNeedsBuild (solutionConfiguration))
+				if (CheckNeedsBuild (configuration))
 					SetDirty ();
 			}
 			return isDirty;
 		}
 
-		protected internal override void OnSetNeedsBuilding (bool value, string solutionConfiguration)
+		protected internal override void OnSetNeedsBuilding (bool value, ConfigurationSelector configuration)
 		{
 			isDirty = value;
 		}
@@ -453,9 +447,9 @@ namespace MonoDevelop.Projects
 				isDirty = true;
 		}
 
-		protected virtual bool CheckNeedsBuild (string solutionConfiguration)
+		protected virtual bool CheckNeedsBuild (ConfigurationSelector configuration)
 		{
-			DateTime tim = GetLastBuildTime (solutionConfiguration);
+			DateTime tim = GetLastBuildTime (configuration);
 			if (tim == DateTime.MinValue)
 				return true;
 
@@ -470,8 +464,8 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			foreach (SolutionItem pref in GetReferencedItems (solutionConfiguration)) {
-				if (pref.GetLastBuildTime (solutionConfiguration) > tim || pref.NeedsBuilding (solutionConfiguration))
+			foreach (SolutionItem pref in GetReferencedItems (configuration)) {
+				if (pref.GetLastBuildTime (configuration) > tim || pref.NeedsBuilding (configuration))
 					return true;
 			}
 
@@ -485,10 +479,9 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
-		protected internal override DateTime OnGetLastBuildTime (string solutionConfiguration)
+		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
-			string conf = GetActiveConfigurationId (solutionConfiguration);
-			string file = OnGetOutputFileName (conf);
+			string file = GetOutputFileName (configuration);
 			if (file == null)
 				return DateTime.MinValue;
 
@@ -692,12 +685,12 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		internal protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
+		internal protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;
 		}
 		
-		internal protected override BuildResult OnBuild (IProgressMonitor monitor, string solutionConfiguration)
+		internal protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			BuildResult res = new BuildResult ();
 			res.AddError ("Unknown project type");

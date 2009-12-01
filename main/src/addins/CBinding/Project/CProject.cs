@@ -192,7 +192,7 @@ namespace CBinding
 			}
 		}
 		
-		public override IEnumerable<SolutionItem> GetReferencedItems (string configuration)
+		public override IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
 		{
 			List<string> project_names = new List<string> ();
 			
@@ -217,11 +217,11 @@ namespace CBinding
 		/// <summary>
 		/// Ths pkg-config package is for internal MonoDevelop use only, it is not deployed.
 		/// </summary>
-		public void WriteMDPkgPackage (string configuration)
+		public void WriteMDPkgPackage (ConfigurationSelector configuration)
 		{
 			string pkgfile = Path.Combine (BaseDirectory, Name + ".md.pc");
 			
-			CProjectConfiguration config = (CProjectConfiguration)GetActiveConfiguration (configuration);
+			CProjectConfiguration config = (CProjectConfiguration)GetConfiguration (configuration);
 			
 			List<string> headerDirectories = new List<string> ();
 			
@@ -288,9 +288,9 @@ namespace CBinding
 			return pkgfile;
 		}
 		
-		protected override BuildResult DoBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			CProjectConfiguration pc = (CProjectConfiguration) GetActiveConfiguration (configuration);
+			CProjectConfiguration pc = (CProjectConfiguration) GetConfiguration (configuration);
 			pc.SourceDirectory = BaseDirectory;
 			
 			return compiler_manager.Compile (this,
@@ -309,17 +309,16 @@ namespace CBinding
 			return cmd;
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector solutionConfiguration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (solutionConfiguration);
 			ExecutionCommand cmd = CreateExecutionCommand (conf);
 			return (target == CBinding.CompileTarget.Bin) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
-		                                   string solutionConfiguration, string itemConfiguration)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			var conf = (CProjectConfiguration) GetConfiguration (solutionConfiguration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			bool pause = conf.PauseConsoleOutput;
 			IConsole console;
 			
@@ -358,9 +357,9 @@ namespace CBinding
 			}
 		}
 		
-		protected override FilePath OnGetOutputFileName (string configuration)
+		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
-			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (configuration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			return conf.OutputDirectory.Combine (conf.CompiledOutputName);
 		}
 		
@@ -461,11 +460,11 @@ namespace CBinding
 			PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
 		}
 
-		public DeployFileCollection GetDeployFiles (string solutionConfiguration)
+		public DeployFileCollection GetDeployFiles (ConfigurationSelector configuration)
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
 			
-			CProjectConfiguration conf = (CProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			CompileTarget target = conf.CompileTarget;
 			
 			// Headers and resources
@@ -479,7 +478,7 @@ namespace CBinding
 			}
 			
 			// Output
-			string output = GetOutputFileName (solutionConfiguration);		
+			string output = GetOutputFileName (configuration);		
 			if (!string.IsNullOrEmpty (output)) {
 				string targetDirectory = string.Empty;
 				

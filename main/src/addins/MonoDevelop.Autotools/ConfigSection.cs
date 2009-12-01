@@ -30,6 +30,7 @@ using System.Text;
 using System.Collections.Generic;
 
 using MonoDevelop.Deployment;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Autotools {
 
@@ -45,6 +46,11 @@ namespace MonoDevelop.Autotools {
 		public string Name {
 			get { return name; }
 		}
+		
+		public ConfigurationSelector Selector {
+			get;
+			private set;
+		}
 
 		public Dictionary<string, DeployFile> DeployFileVars {
 			get {
@@ -57,6 +63,7 @@ namespace MonoDevelop.Autotools {
 		public ConfigSection (string name)
 		{
 			this.name = name;
+			Selector = (SolutionConfigurationSelector) name;
 		}
 	}
 

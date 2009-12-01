@@ -93,7 +93,7 @@ namespace PyBinding
 			return config;
 		}
 		
-		protected override BuildResult DoBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			BuildResult         result;
 			PythonConfiguration config;
@@ -115,7 +115,7 @@ namespace PyBinding
 			return result;
 		}
 
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector solutionConfiguration)
 		{
 			PythonConfiguration config = (PythonConfiguration) GetConfiguration (solutionConfiguration);
 			return config.Runtime != null && context.ExecutionHandler.CanExecute (new PythonExecutionCommand (config));
@@ -124,13 +124,12 @@ namespace PyBinding
 		
 		protected override void DoExecute (IProgressMonitor monitor,
 		                                   ExecutionContext context,
-		                                   string           solutionConfiguration,
-		                                   string           itemConfiguration)
+		                                   ConfigurationSelector configuration)
 		{
 			PythonConfiguration config;
 			IConsole console;
 			
-			config = (PythonConfiguration) GetConfiguration (itemConfiguration);
+			config = (PythonConfiguration) GetConfiguration (configuration);
 			
 			// Make sure we have a module to execute
 			if (config.Runtime == null || String.IsNullOrEmpty (config.Module)) {

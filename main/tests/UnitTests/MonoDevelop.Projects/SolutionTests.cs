@@ -348,19 +348,21 @@ namespace MonoDevelop.Projects
 			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("library2");
 			Assert.IsNotNull (lib2);
 			
-			Assert.IsTrue (p.NeedsBuilding ("Debug"));
-			Assert.IsTrue (lib1.NeedsBuilding ("Debug"));
-			Assert.IsTrue (lib2.NeedsBuilding ("Debug"));
+			SolutionConfigurationSelector config = (SolutionConfigurationSelector) "Debug";
+			
+			Assert.IsTrue (p.NeedsBuilding (config));
+			Assert.IsTrue (lib1.NeedsBuilding (config));
+			Assert.IsTrue (lib2.NeedsBuilding (config));
 			
 			// Build the project and the references
 			
-			BuildResult res = p.Build (Util.GetMonitor (), "Debug", true);
+			BuildResult res = p.Build (Util.GetMonitor (), config, true);
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (3, res.BuildCount);
-			Assert.IsFalse (p.NeedsBuilding ("Debug"));
-			Assert.IsFalse (lib1.NeedsBuilding ("Debug"));
-			Assert.IsFalse (lib2.NeedsBuilding ("Debug"));
+			Assert.IsFalse (p.NeedsBuilding (config));
+			Assert.IsFalse (lib1.NeedsBuilding (config));
+			Assert.IsFalse (lib2.NeedsBuilding (config));
 			
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe.mdb")));
@@ -374,17 +376,17 @@ namespace MonoDevelop.Projects
 			p.SetNeedsBuilding (true);
 			lib1.SetNeedsBuilding (true);
 			lib2.SetNeedsBuilding (true);
-			Assert.IsTrue (p.NeedsBuilding ("Debug"));
-			Assert.IsTrue (lib1.NeedsBuilding ("Debug"));
-			Assert.IsTrue (lib2.NeedsBuilding ("Debug"));
+			Assert.IsTrue (p.NeedsBuilding (config));
+			Assert.IsTrue (lib1.NeedsBuilding (config));
+			Assert.IsTrue (lib2.NeedsBuilding (config));
 			
-			res = p.Build (Util.GetMonitor (), "Debug", false);
+			res = p.Build (Util.GetMonitor (), config, false);
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
-			Assert.IsTrue (p.NeedsBuilding ("Debug"));   // True because references require building
-			Assert.IsTrue (lib1.NeedsBuilding ("Debug"));
-			Assert.IsTrue (lib2.NeedsBuilding ("Debug"));
+			Assert.IsTrue (p.NeedsBuilding (config));   // True because references require building
+			Assert.IsTrue (lib1.NeedsBuilding (config));
+			Assert.IsTrue (lib2.NeedsBuilding (config));
 		}
 		
 		[Test()]
@@ -458,7 +460,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the solution folder
 			
-			res = folder.Build (Util.GetMonitor (), "Debug");
+			res = folder.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
@@ -472,7 +474,7 @@ namespace MonoDevelop.Projects
 			
 			// Clean the solution folder
 			
-			folder.Clean (Util.GetMonitor (), "Debug");
+			folder.Clean (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
 		}
@@ -570,9 +572,10 @@ namespace MonoDevelop.Projects
 			CheckProjectBuildClean (lib4, "Release");
 		}
 		
-		void CheckSolutionBuildClean (Solution sol, string config)
+		void CheckSolutionBuildClean (Solution sol, string configuration)
 		{
-			string tag = "CheckSolutionBuildClean config=" + config;
+			SolutionConfigurationSelector config = (SolutionConfigurationSelector) configuration;
+			string tag = "CheckSolutionBuildClean config=" + configuration;
 			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("Lib1");
 			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("Lib2");
 			DotNetProject lib3 = (DotNetProject) sol.FindProjectByName ("Lib3");
@@ -600,9 +603,10 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (File.Exists (lib4.GetOutputFileName (config)), tag);
 		}
 		
-		void CheckProjectReferencesBuildClean (Solution sol, string config)
+		void CheckProjectReferencesBuildClean (Solution sol, string configuration)
 		{
-			string tag = "CheckProjectReferencesBuildClean config=" + config;
+			SolutionConfigurationSelector config = (SolutionConfigurationSelector) configuration;
+			string tag = "CheckProjectReferencesBuildClean config=" + configuration;
 			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("Lib1");
 			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("Lib2");
 			DotNetProject lib3 = (DotNetProject) sol.FindProjectByName ("Lib3");
@@ -625,9 +629,10 @@ namespace MonoDevelop.Projects
 			sol.Clean (Util.GetMonitor (), config);
 		}
 		
-		void CheckProjectBuildClean (DotNetProject lib, string config)
+		void CheckProjectBuildClean (DotNetProject lib, string configuration)
 		{
-			string tag = "CheckProjectBuildClean lib=" + lib.Name + " config=" + config;
+			SolutionConfigurationSelector config = (SolutionConfigurationSelector) configuration;
+			string tag = "CheckProjectBuildClean lib=" + lib.Name + " config=" + configuration;
 			
 			Assert.IsFalse (File.Exists (lib.GetOutputFileName (config)), tag);
 			
@@ -643,7 +648,7 @@ namespace MonoDevelop.Projects
 		
 		string GetConfigFolderName (DotNetProject lib, string conf)
 		{
-			return Path.GetFileName (Path.GetDirectoryName (lib.GetOutputFileName (conf)));
+			return Path.GetFileName (Path.GetDirectoryName (lib.GetOutputFileName ((SolutionConfigurationSelector)conf)));
 		}
 	}
 }

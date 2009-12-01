@@ -18,7 +18,7 @@ namespace MonoDevelop.Autotools
 			for (int i = 0; i < solution.Configurations.Count; i ++) {
 				SolutionConfiguration cc = (SolutionConfiguration) solution.Configurations [i];
 				comboConfigs.AppendText (cc.Id);
-				if (cc.Id == IdeApp.Workspace.ActiveConfiguration)
+				if (cc.Id == IdeApp.Workspace.ActiveConfigurationId)
 					comboConfigs.Active = i;
 			}
 		}

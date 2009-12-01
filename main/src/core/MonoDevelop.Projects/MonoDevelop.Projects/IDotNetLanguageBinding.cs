@@ -41,7 +41,7 @@ namespace MonoDevelop.Projects
 		ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions);
 		ProjectParameters CreateProjectParameters (XmlElement projectOptions);
 
-		BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, IProgressMonitor monitor);
+		BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor);
 
 		ClrVersion[] GetSupportedClrVersions ();
 

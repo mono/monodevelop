@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			get { return (DotNetProject) Item; }
 		}
 		
-		protected override BuildResult OnClean (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			DotNetProject project = Project;
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 		}
 
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			DotNetProject project = Project;
 			
@@ -186,6 +186,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 			buildData.Configuration = (DotNetProjectConfiguration) conf.Clone ();
 			buildData.Configuration.SetParentItem (project);
+			buildData.ConfigurationSelector = configuration;
 
 			return ProjectExtensionUtil.Compile (monitor, project, buildData, delegate {
 				ProjectItemCollection items = buildData.Items;
@@ -197,7 +198,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				CopySupportAssemblies (supportAssemblies, configuration);
 	
 				try {
-					res = project.LanguageBinding.Compile (items, buildData.Configuration, monitor);
+					res = project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
 					if (refres != null) {
 						refres.Append (res);
 						return refres;
@@ -271,7 +272,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return null;
 		}
 		
-		void CopySupportAssemblies (List<string> files, string configuration)
+		void CopySupportAssemblies (List<string> files, ConfigurationSelector configuration)
 		{
 			foreach (ProjectReference projectReference in Project.References) {
 				if (projectReference.ReferenceType == ReferenceType.Project) {
@@ -290,7 +291,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 		}
 		
-		void CopySupportAssemblies (DotNetProject prj, string targetDir, List<string> files, string configuration)
+		void CopySupportAssemblies (DotNetProject prj, string targetDir, List<string> files, ConfigurationSelector configuration)
 		{
 			foreach (ProjectReference pref in prj.References) {
 				if (pref.ReferenceType == ReferenceType.Gac)

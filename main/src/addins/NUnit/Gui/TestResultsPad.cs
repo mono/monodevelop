@@ -316,7 +316,7 @@ namespace MonoDevelop.NUnit
 			cancel = false;
 			Running = true;
 			
-			configuration = IdeApp.Workspace.ActiveConfiguration;
+			configuration = IdeApp.Workspace.ActiveConfigurationId;
 			
 			AddStartMessage ();
 		}

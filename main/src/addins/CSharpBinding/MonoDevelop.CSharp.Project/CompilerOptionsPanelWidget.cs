@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Project
 		{
 			this.Build();
 			this.project = project;
-			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) project.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			DotNetProjectConfiguration configuration = (DotNetProjectConfiguration) project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			CSharpProjectParameters projectParameters = (CSharpProjectParameters) configuration.ProjectParameters;
 			

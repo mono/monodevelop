@@ -49,8 +49,12 @@
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Microsoft.Build.Utilities" />
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -334,6 +338,10 @@
     <Compile Include="MonoDevelop.Projects\DotNetAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MergeToProjectAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectParameters.cs" />
+    <Compile Include="MonoDevelop.Projects\ItemConfigurationSelector.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionConfigurationSelector.cs" />
+    <Compile Include="MonoDevelop.Projects\DefaultConfigurationSelector.cs" />
+    <Compile Include="MonoDevelop.Projects\ConfigurationSelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

@@ -216,11 +216,13 @@ FILES =  \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
 	MonoDevelop.Projects/ConfigurationEventHandler.cs \
 	MonoDevelop.Projects/ConfigurationParameters.cs \
+	MonoDevelop.Projects/ConfigurationSelector.cs \
 	MonoDevelop.Projects/CustomCommand.cs \
 	MonoDevelop.Projects/CustomCommandCollection.cs \
 	MonoDevelop.Projects/CustomCommandExtension.cs \
 	MonoDevelop.Projects/CustomCommandType.cs \
 	MonoDevelop.Projects/CyclicDependencyException.cs \
+	MonoDevelop.Projects/DefaultConfigurationSelector.cs \
 	MonoDevelop.Projects/DotNetAssemblyProject.cs \
 	MonoDevelop.Projects/DotNetProject.cs \
 	MonoDevelop.Projects/DotNetProjectBinding.cs \
@@ -243,6 +245,7 @@ FILES =  \
 	MonoDevelop.Projects/ItemCollection.cs \
 	MonoDevelop.Projects/ItemConfiguration.cs \
 	MonoDevelop.Projects/ItemConfigurationCollection.cs \
+	MonoDevelop.Projects/ItemConfigurationSelector.cs \
 	MonoDevelop.Projects/IWorkspaceObject.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
 	MonoDevelop.Projects/Project.cs \
@@ -266,6 +269,7 @@ FILES =  \
 	MonoDevelop.Projects/Solution.cs \
 	MonoDevelop.Projects/SolutionConfiguration.cs \
 	MonoDevelop.Projects/SolutionConfigurationCollection.cs \
+	MonoDevelop.Projects/SolutionConfigurationSelector.cs \
 	MonoDevelop.Projects/SolutionEntityItem.cs \
 	MonoDevelop.Projects/SolutionEventArgs.cs \
 	MonoDevelop.Projects/SolutionFolder.cs \

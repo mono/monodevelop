@@ -484,25 +484,25 @@ namespace MonoDevelop.Projects
 		[ItemProperty]
 		public string SomeValue;
 		
-		protected override void OnClean (IProgressMonitor monitor, string configuration)
+		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 		}
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return null;
 		}
 		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 		}
 		
-		protected override bool OnGetNeedsBuilding (string configuration)
+		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return false;
 		}
 		
-		protected override void OnSetNeedsBuilding (bool val, string configuration)
+		protected override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
 		{
 		}
 		

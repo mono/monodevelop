@@ -57,7 +57,7 @@ namespace JavaBinding
 			return result.ToString ();
 		}
 		
-		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configurationSelector, IProgressMonitor monitor)
 		{
 			JavaCompilerParameters parameters = (configuration.CompilationParameters as JavaCompilerParameters) ?? new JavaCompilerParameters ();
 			string outdir   = configuration.OutputDirectory;
@@ -76,8 +76,8 @@ namespace JavaBinding
 			}
 
 			StringBuilder classpath = new StringBuilder (parameters.ClassPath);
-			AppendClasspath (classpath, GenerateReferenceStubs (monitor, configuration, parameters, projectItems));
-			AppendClasspath (classpath, GenerateReferenceStub (monitor, configuration, new ProjectReference(ReferenceType.Gac, "mscorlib")));
+			AppendClasspath (classpath, GenerateReferenceStubs (monitor, configurationSelector, configuration, parameters, projectItems));
+			AppendClasspath (classpath, GenerateReferenceStub (monitor, configurationSelector, configuration, new ProjectReference(ReferenceType.Gac, "mscorlib")));
 			
 			StringBuilder args = new StringBuilder ();
 			args.Append (options.ToString ());
@@ -123,19 +123,19 @@ namespace JavaBinding
 			path.Append (jar);
 		}
 		
-		static string GenerateReferenceStubs (IProgressMonitor monitor, DotNetProjectConfiguration configuration, JavaCompilerParameters compilerparameters, ProjectItemCollection projectItems)
+		static string GenerateReferenceStubs (IProgressMonitor monitor, ConfigurationSelector configurationSelector, DotNetProjectConfiguration configuration, JavaCompilerParameters compilerparameters, ProjectItemCollection projectItems)
 		{
 			StringBuilder result = new StringBuilder ();
 			foreach (ProjectReference reference in projectItems.GetAll<ProjectReference> ()) {
-				AppendClasspath (result, GenerateReferenceStub (monitor, configuration, reference));
+				AppendClasspath (result, GenerateReferenceStub (monitor, configurationSelector, configuration, reference));
 			}
 			return result.ToString ();
 		}
 		
-		static string GenerateReferenceStub (IProgressMonitor monitor,DotNetProjectConfiguration configuration, ProjectReference reference)
+		static string GenerateReferenceStub (IProgressMonitor monitor, ConfigurationSelector configurationSelector, DotNetProjectConfiguration configuration, ProjectReference reference)
 		{
 			StringBuilder result = new StringBuilder ();
-			foreach (string fileName in reference.GetReferencedFileNames (configuration.Id)) {
+			foreach (string fileName in reference.GetReferencedFileNames (configurationSelector)) {
 				string name = Path.GetFileNameWithoutExtension (Path.GetFileName (fileName));
 				string outputName = Path.Combine (configuration.OutputDirectory, name + ".jar");
 				if (!System.IO.File.Exists (outputName)) {
@@ -194,12 +194,12 @@ namespace JavaBinding
 			args.Append (" -srcpath:"); args.Append (configuration.ParentItem.BaseDirectory);
 			
 			foreach (ProjectReference lib in projectItems.GetAll<ProjectReference> ()) {
-				foreach (string fileName in lib.GetReferencedFileNames (configuration.Id)) {
+				foreach (string fileName in lib.GetReferencedFileNames (configuration.Selector)) {
 					args.Append (" -r:"); args.Append (fileName);
 				}
 			}
 			
-			foreach (string fileName in new ProjectReference(ReferenceType.Gac, "mscorlib").GetReferencedFileNames (configuration.Id)) {
+			foreach (string fileName in new ProjectReference(ReferenceType.Gac, "mscorlib").GetReferencedFileNames (configuration.Selector)) {
 				args.Append (" -r:"); args.Append (fileName);
 			}
 			

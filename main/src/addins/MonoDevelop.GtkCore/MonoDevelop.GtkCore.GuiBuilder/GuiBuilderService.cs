@@ -358,7 +358,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		
-		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, string configuration)
+		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
 		{
 			if (generating || !GtkDesignInfo.HasDesignedObjects (project))
 				return null;

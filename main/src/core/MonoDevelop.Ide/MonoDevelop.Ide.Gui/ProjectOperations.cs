@@ -497,7 +497,7 @@ namespace MonoDevelop.Ide.Gui
 				SolutionEntityItem selectedProject = (SolutionEntityItem) entry;
 				
 				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject);
-				SolutionItemConfiguration conf = selectedProject.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				SolutionItemConfiguration conf = selectedProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				optionsDialog.CurrentConfig = conf != null ? conf.Name : null;
 				try {
 					if (panelId != null)
@@ -521,7 +521,7 @@ namespace MonoDevelop.Ide.Gui
 				Solution solution = (Solution) entry;
 				
 				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, solution);
-				optionsDialog.CurrentConfig = IdeApp.Workspace.ActiveConfiguration;
+				optionsDialog.CurrentConfig = IdeApp.Workspace.ActiveConfigurationId;
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);

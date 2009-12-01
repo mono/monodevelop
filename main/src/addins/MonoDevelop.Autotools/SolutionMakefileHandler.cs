@@ -236,12 +236,9 @@ namespace MonoDevelop.Autotools
 						if (!config.BuildEnabledForItem (entry))
 							continue;
 						
-						string mappedConf = config.GetMappedConfiguration (entry);
-						if (mappedConf == null)
-							continue;
 						references = new Set<SolutionItem> ();
 						provides = new Set<SolutionItem>();
-						references.Union (entry.GetReferencedItems (mappedConf));
+						references.Union (entry.GetReferencedItems (config.Selector));
 						provides.Add (entry);
 					}
 					else if (item is SolutionFolder) {
@@ -312,11 +309,8 @@ namespace MonoDevelop.Autotools
 					SolutionEntityItem entry = (SolutionEntityItem) item;
 					if (!config.BuildEnabledForItem (entry))
 						continue;
-					string mappedConf = config.GetMappedConfiguration (entry);
-					if (mappedConf == null)
-						continue;
 					projects.Add (entry);
-					references.Union (entry.GetReferencedItems (mappedConf));
+					references.Union (entry.GetReferencedItems (config.Selector));
 				}
 				else if (item is SolutionFolder) 
 				{

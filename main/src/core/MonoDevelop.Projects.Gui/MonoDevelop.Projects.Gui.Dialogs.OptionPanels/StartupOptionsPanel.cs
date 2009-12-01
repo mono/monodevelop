@@ -53,8 +53,8 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 				foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
 					bool matched = false;
 					foreach (IExecutionMode mode in mset.ExecutionModes) {
-						foreach (string sc in sol.GetConfigurations ()) {
-							if (it.CanExecute (new ExecutionContext (mode, null), sc)) {
+						foreach (SolutionConfiguration sc in sol.Configurations) {
+							if (it.CanExecute (new ExecutionContext (mode, null), sc.Selector)) {
 								startupItems.Add (it);
 								matched = true;
 								break;

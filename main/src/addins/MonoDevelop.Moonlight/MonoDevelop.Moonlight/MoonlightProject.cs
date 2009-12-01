@@ -131,7 +131,7 @@ namespace MonoDevelop.Moonlight
 			get { return true; }
 		}
 		
-		ExecutionCommand CreateExecutionCommand (string solutionConfig, MoonlightProjectConfiguration configuration)
+		ExecutionCommand CreateExecutionCommand (ConfigurationSelector solutionConfig, MoonlightProjectConfiguration configuration)
 		{
 			string url = GetUrl (configuration);
 			if (url != null) {
@@ -165,18 +165,17 @@ namespace MonoDevelop.Moonlight
 			return url;
 		}
 		
-		protected override bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector solutionConfiguration)
 		{
-			var conf = (MoonlightProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
+			var conf = (MoonlightProjectConfiguration) GetConfiguration (solutionConfiguration);
 			return context.ExecutionHandler.CanExecute (CreateExecutionCommand (solutionConfiguration, conf));
 		}
 		
 		// do this directly instead of relying on the commands handler
 		// to stop MD from opening an output pad
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
-		                                   string solutionConfiguration, string itemConfiguration)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			var conf = (MoonlightProjectConfiguration) GetConfiguration (itemConfiguration);
+			var conf = (MoonlightProjectConfiguration) GetConfiguration (configuration);
 			
 			IConsole console = null;
 			
@@ -188,7 +187,7 @@ namespace MonoDevelop.Moonlight
 					: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput);
 			}
 			
-			var cmd = CreateExecutionCommand (solutionConfiguration, conf);
+			var cmd = CreateExecutionCommand (configuration, conf);
 			using (var opMon = new AggregatedOperationMonitor (monitor)) {
 				var ex = context.ExecutionHandler.Execute (cmd, console);
 				opMon.AddOperation (ex);

@@ -12,7 +12,7 @@ namespace MonoDevelop.AddinAuthoring
 {
 	public class AddinProjectExtension: ProjectServiceExtension
 	{
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			BuildResult res = base.Build (monitor, entry, configuration);
 			if (res.ErrorCount > 0 || !(entry is DotNetProject))
@@ -31,7 +31,7 @@ namespace MonoDevelop.AddinAuthoring
 			
 			string addinFile;
 			if (file.BuildAction == BuildAction.EmbeddedResource)
-				addinFile = project.GetOutputFileName (project.DefaultConfigurationId);
+				addinFile = project.GetOutputFileName (ConfigurationSelector.Default);
 			else
 				addinFile = file.FilePath;
 			
@@ -113,7 +113,7 @@ namespace MonoDevelop.AddinAuthoring
 			return pcmd;
 		}
 		
-		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, string configuration)
+		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			ExecutionCommand cmd = CreateCommand (item);
 			if (cmd != null && context.ExecutionHandler.CanExecute (cmd))
@@ -121,7 +121,7 @@ namespace MonoDevelop.AddinAuthoring
 			return base.CanExecute (item, context, configuration);
 		}
 
-		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem item, ExecutionContext context, string configuration)
+		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			ExecutionCommand cmd = CreateCommand (item);
 			if (cmd != null && context.ExecutionHandler.CanExecute (cmd)) {

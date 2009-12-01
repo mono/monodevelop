@@ -121,7 +121,7 @@ namespace MonoDevelop.Deployment
 			if (comboConfigs.Active == -1)
 				return;
 
-			files = builder.GetDeployFiles (context, comboConfigs.ActiveText);
+			files = builder.GetDeployFiles (context, (SolutionConfigurationSelector) comboConfigs.ActiveText);
 			
 			foreach (DeployFile file in files) {
 				string desc = GetDirectoryName (file.TargetDirectoryID);

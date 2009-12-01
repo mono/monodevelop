@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects
 		{
 			SolutionConfiguration conf = new SolutionConfiguration (name);
 			foreach (SolutionEntityItem item in Items) {
-				if (createConfigForItems && item.GetConfiguration (name) == null) {
+				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (name)) == null) {
 					SolutionItemConfiguration newc = item.CreateConfiguration (name);
 					if (item.DefaultConfiguration != null)
 						newc.CopyFrom (item.DefaultConfiguration);
@@ -242,6 +242,11 @@ namespace MonoDevelop.Projects
 			foreach (SolutionConfiguration conf in Configurations)
 				configs.Add (conf.Id);
 			return configs.AsReadOnly ();
+		}
+		
+		public virtual SolutionConfiguration GetConfiguration (ConfigurationSelector configuration)
+		{
+			return (SolutionConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
 		}
 		
 		public SolutionItem GetSolutionItem (string itemId)
@@ -267,12 +272,12 @@ namespace MonoDevelop.Projects
 			return RootFolder.GetAllItems<T> ();
 		}
 		
-		public ReadOnlyCollection<T> GetAllSolutionItemsWithTopologicalSort<T> (string configuration) where T: SolutionItem
+		public ReadOnlyCollection<T> GetAllSolutionItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			return RootFolder.GetAllItemsWithTopologicalSort<T> (configuration);
 		}
 		
-		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (string configuration)
+		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (ConfigurationSelector configuration)
 		{
 			return RootFolder.GetAllProjectsWithTopologicalSort (configuration);
 		}
@@ -356,6 +361,14 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public ConfigurationSelector DefaultConfigurationSelector {
+			get {
+				if (defaultConfiguration == null && configurations.Count > 0)
+					DefaultConfigurationId = configurations [0].Id;
+				return new SolutionConfigurationSelector (DefaultConfigurationId);
+			}
+		}
+
 		IItemConfigurationCollection IConfigurationTarget.Configurations {
 			get {
 				return Configurations;
@@ -409,14 +422,14 @@ namespace MonoDevelop.Projects
 			}
 		}	 
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return RootFolder.Build (monitor, configuration);
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor, string configuration)
+		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			SolutionConfiguration config = Configurations [configuration];
+			SolutionConfiguration config = GetConfiguration (configuration);
 			if (config == null)
 				return;
 			
@@ -428,7 +441,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override bool OnGetCanExecute(ExecutionContext context, string configuration)
+		protected internal override bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (SingleStartup) {
 				if (StartupItem == null)
@@ -443,7 +456,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (SingleStartup) {
 				if (StartupItem == null) {
@@ -484,12 +497,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected internal override bool OnGetNeedsBuilding (string configuration)
+		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return RootFolder.NeedsBuilding (configuration);
 		}
 		
-		protected internal override void OnSetNeedsBuilding (bool val, string configuration)
+		protected internal override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
 		{
 			RootFolder.SetNeedsBuilding (val, configuration);
 		}
@@ -516,8 +529,6 @@ namespace MonoDevelop.Projects
 			}
 			return files;
 		}
-
-
 		
 #region Notifications from children
 		

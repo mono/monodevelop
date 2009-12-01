@@ -44,7 +44,7 @@ namespace MonoDevelop.ValaBinding
 {
 	public class ValaProjectServiceExtension : ProjectServiceExtension
 	{
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			ValaProject project = entry as ValaProject;
 			
@@ -63,7 +63,7 @@ namespace MonoDevelop.ValaBinding
 			return base.Build (monitor, entry, configuration);
 		}
 		
-		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			base.Clean (monitor, entry, configuration);
 			

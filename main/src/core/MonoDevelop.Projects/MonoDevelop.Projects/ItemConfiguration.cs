@@ -144,5 +144,9 @@ namespace MonoDevelop.Projects
 				return properties;
 			}
 		}
+		
+		public virtual ConfigurationSelector Selector {
+			get { return new SolutionConfigurationSelector (Id); }
+		}
 	}
 }

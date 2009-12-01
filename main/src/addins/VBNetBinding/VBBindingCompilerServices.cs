@@ -191,7 +191,7 @@ namespace MonoDevelop.VBNetBinding {
 			return sb.ToString();
 		}
 		
-		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
 		{
 			VBCompilerParameters compilerparameters = (VBCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null)
@@ -209,7 +209,7 @@ namespace MonoDevelop.VBNetBinding {
 
 			// Write references
 			foreach (ProjectReference lib in items.GetAll<ProjectReference> ()) {
-				foreach (string fileName in lib.GetReferencedFileNames(configuration.Id)) {
+				foreach (string fileName in lib.GetReferencedFileNames (configSelector)) {
 					writer.Write ("\"-r:");
 					writer.Write (fileName);
 					writer.WriteLine ("\"");

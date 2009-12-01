@@ -179,7 +179,7 @@ namespace MonoDevelop.CodeAnalysis {
 		/// </summary>
 		static IEnumerable<IViolation> RunAnalyzers (DotNetProject project, double work)
 		{
-			string dll = project.GetOutputFileName (project.DefaultConfiguration.Name);
+			string dll = project.GetOutputFileName (ConfigurationSelector.Default);
 			if (!File.Exists (dll))
 				yield break;
 			
