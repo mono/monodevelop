@@ -1,5 +1,13 @@
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* BooBinding.sln:
+	* BooBinding.booproj: Update.
+
+	* BooBinding.addin.xml: Move the boo options panel to the
+	  build section.
+
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Gui/ShellTextView.boo:
 	* BooLanguageBinding.boo:
 	* BooBindingCompilerServices.boo: Introduced the
