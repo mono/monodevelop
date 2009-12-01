@@ -44,10 +44,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public Project Project;
 		internal int ReferenceCount;
 		internal string Uri;
-
+		
 		public static readonly ProjectDom Empty = new EmptyProjectDom ();
 
-		public ReadOnlyCollection<ProjectDom> References {
+		public virtual ReadOnlyCollection<ProjectDom> References {
 			get {
 				if (references == null)
 					UpdateReferences ();
@@ -67,7 +67,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public IEnumerable<string> ResolvePossibleNamespaces (IReturnType returnType)
+		public virtual IEnumerable<string> ResolvePossibleNamespaces (IReturnType returnType)
 		{
 			foreach (string ns in InternalResolvePossibleNamespaces (returnType)) {
 				yield return ns;
@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		// updating is automatically done in the background. However, in some
 		// cases an up-to-date database is required to do some operation,
 		// and this method will ensure that everything is up-to-date.
-		public void ForceUpdate ()
+		public virtual void ForceUpdate ()
 		{
 			//HACK: stetic depends on the old, broken behaviour, so this overload of ForceUpdate uses
 			//the old behaviour
@@ -116,7 +116,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			ForceUpdateBROKEN ();
 		}
 		
-		public void ForceUpdate (bool updateReferences)
+		public virtual void ForceUpdate (bool updateReferences)
 		{
 			if (updateReferences) {
 				HashSet<ProjectDom> visited = new HashSet<ProjectDom> ();
@@ -145,7 +145,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public IEnumerable<IType> GetInheritanceTree (IType type)
+		public virtual IEnumerable<IType> GetInheritanceTree (IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException ("type");
@@ -180,7 +180,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		public IType ResolveType (IType type)
+		public virtual IType ResolveType (IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException ("type");
@@ -373,7 +373,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public List<IMember> GetNamespaceContents (string subNamespace, bool includeReferences, bool caseSensitive)
+		public virtual List<IMember> GetNamespaceContents (string subNamespace, bool includeReferences, bool caseSensitive)
 		{
 			return GetNamespaceContents (new string[] { subNamespace }, includeReferences, caseSensitive);
 		}
@@ -425,12 +425,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public IEnumerable<IType> GetSubclasses (IType type, bool searchDeep)
 		{
 			return GetSubclasses (type, searchDeep, null);
-			
 		}
 		
 		protected abstract IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces);
 		
-		public IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
+		public virtual IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
 			foreach (IType subType in InternalGetSubclasses (type, searchDeep, null)) {
 				yield return subType;
@@ -487,7 +486,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return t;
 		}
 		
-		public IType GetType (IReturnType returnType)
+		public virtual IType GetType (IReturnType returnType)
 		{
 			if (returnType == null)
 				return null;
@@ -737,7 +736,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
+		public virtual IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
 		{
 			if (genericArguments == null || type == null || type is InstantiatedType)
 				return type;
@@ -755,7 +754,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public IType CreateInstantiatedParameterType (IType outerType, TypeParameter tp)
+		public virtual IType CreateInstantiatedParameterType (IType outerType, TypeParameter tp)
 		{
 			return new InstantiatedParameterType (this, outerType, tp);
 		}

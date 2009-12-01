@@ -342,6 +342,7 @@
     <Compile Include="MonoDevelop.Projects\SolutionConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Projects\DefaultConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationSelector.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
