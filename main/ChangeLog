@@ -1,3 +1,8 @@
+2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* theme-icons/Makefile.am: dist all Mac icns files.
+	* theme-icons/Mac/monodevelop.sln.icns: Added sln icons.
+
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Main.sln:
