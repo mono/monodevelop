@@ -223,13 +223,13 @@ namespace MonoDevelop.IPhone
 		
 		#region Execution
 		
-		protected override ExecutionCommand CreateExecutionCommand (string solutionConfiguration,
+		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
 		                                                            DotNetProjectConfiguration configuration)
 		{
 			var conf = (IPhoneProjectConfiguration) configuration;
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
 			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode && conf.MtouchDebug) {
-				UserAssemblyPaths = GetUserAssemblyPaths (solutionConfiguration)
+				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}
 		

@@ -51,7 +51,7 @@ namespace MonoDevelop.IPhone
 			var proj = GetActiveExecutableIPhoneProject ();
 			info.Visible = proj != null;
 			if (info.Visible && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
-					var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+					var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 					info.Enabled = conf != null && conf.Platform == IPhoneProject.PLAT_IPHONE;
 				} else {
 				info.Enabled = false;
@@ -66,7 +66,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			var proj = GetActiveExecutableIPhoneProject ();
-			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			
 			if (!IdeApp.Preferences.BuildBeforeExecuting) {
 				IPhoneUtility.Upload (proj.TargetRuntime, proj.TargetFramework, conf.AppDirectory);
@@ -102,7 +102,7 @@ namespace MonoDevelop.IPhone
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
 			info.Visible = proj != null;
 			if (info.Visible) {
-				var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				info.Enabled = conf != null && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
 			}
 		}
@@ -116,7 +116,7 @@ namespace MonoDevelop.IPhone
 			
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
 			var slnConf = IdeApp.Workspace.ActiveConfiguration;
-			var conf = (IPhoneProjectConfiguration)proj.GetActiveConfiguration (slnConf);
+			var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (slnConf);
 			
 			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
 				if (!op.Success)
@@ -125,7 +125,7 @@ namespace MonoDevelop.IPhone
 			};
 		}
 		
-		void GenerateXCodeProject (IPhoneProject proj, IPhoneProjectConfiguration conf, string slnConf)
+		void GenerateXCodeProject (IPhoneProject proj, IPhoneProjectConfiguration conf, ConfigurationSelector slnConf)
 		{
 			string mtouchPath = IPhoneUtility.GetMtouchPath (proj.TargetRuntime, proj.TargetFramework);
 			

@@ -47,7 +47,7 @@ namespace MonoDevelop.IPhone
 		{
 		}
 		
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			IPhoneProject proj = item as IPhoneProject;
 			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
@@ -286,7 +286,7 @@ namespace MonoDevelop.IPhone
 			};
 		}
 		
-		protected override bool GetNeedsBuilding (SolutionEntityItem item, string configuration)
+		protected override bool GetNeedsBuilding (SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			if (base.GetNeedsBuilding (item, configuration))
 				return true;
@@ -332,7 +332,7 @@ namespace MonoDevelop.IPhone
 			return fp.NeedsBuilding ();
 		}
 		
-		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			base.Clean (monitor, item, configuration);
 			IPhoneProject proj = item as IPhoneProject;
@@ -373,7 +373,7 @@ namespace MonoDevelop.IPhone
 			}
 			monitor.EndTask ();
 			
-			if (base.GetNeedsBuilding (item, cfg.Id)) {
+			if (base.GetNeedsBuilding (item, buildData.ConfigurationSelector)) {
 				result = base.Compile (monitor, item, buildData).Append (result);
 				if (result.ErrorCount > 0)
 					return result;
