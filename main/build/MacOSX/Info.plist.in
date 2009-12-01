@@ -19,6 +19,20 @@
 			<true/>
 		</dict>
 		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>monodevelop.sln.icns</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>mdw</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>MonoDevelop Workspace</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>cs</string>
