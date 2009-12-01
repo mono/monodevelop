@@ -1,3 +1,14 @@
+2009-12-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj:
+	* MonoDevelop.AspNet.addin.xml:
+	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs:
+	* MonoDevelop.AspNet.Parser.Dom/ExpressionNode.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs: Worked
+	  on ASP.NET code completion.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs:

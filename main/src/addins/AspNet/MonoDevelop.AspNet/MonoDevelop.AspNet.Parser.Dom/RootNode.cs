@@ -126,7 +126,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 			case TagType.CodeRenderExpression:
 			case TagType.DataBinding:
 				try {
-					AddtoCurrent (location, new ExpressionNode (location, tagId));
+					AddtoCurrent (location, new ExpressionNode (location, tagId, tagtype == TagType.CodeRenderExpression));
 				} catch (ParseException ex) {
 					errors.Add (ex);
 				}

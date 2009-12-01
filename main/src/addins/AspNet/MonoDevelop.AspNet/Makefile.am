@@ -2,7 +2,6 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.AspNet
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.AspNet.dll
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
@@ -57,6 +56,7 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
 	MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs \
+	MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanel.cs \
 	MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs \
 	MonoDevelop.AspNet.MD1Serialization/MD1AspNetCustomDataItem.cs \

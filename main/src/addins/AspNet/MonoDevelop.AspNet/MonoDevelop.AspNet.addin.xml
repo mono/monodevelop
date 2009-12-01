@@ -36,6 +36,10 @@
 	<ExtensionPoint path = "/MonoDevelop/Html/DocTypes">
 		<ExtensionNode name = "DocType" type = "MonoDevelop.Html.DocTypeExtensionNode" />
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Asp/CompletionBuilders">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id       = "WebForm-Empty"

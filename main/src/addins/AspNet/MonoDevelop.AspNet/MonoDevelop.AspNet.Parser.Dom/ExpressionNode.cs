@@ -38,10 +38,17 @@ namespace MonoDevelop.AspNet.Parser.Dom
 	public class ExpressionNode : Node
 	{
 		string expression;
-		public ExpressionNode (ILocation location, string expression)
+		
+		public bool IsExpression {
+			get;
+			set;
+		}
+		
+		public ExpressionNode (ILocation location, string expression, bool isExpression)
 			: base (location)
 		{
 			this.expression = expression;
+			this.IsExpression = isExpression;
 		}
 		
 		public string Expression {

@@ -90,11 +90,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\CSharpBinding\CSharpBinding.csproj">
-      <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
-      <Name>CSharpBinding</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
@@ -318,6 +313,7 @@
     <Compile Include="MonoDevelop.AspNet\AspNetSyntaxMode.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetMSBuildImportProvider.cs" />
     <Compile Include="MonoDevelop.Html\PathCompletion.cs" />
+    <Compile Include="MonoDevelop.AspNet.Gui\ILanguageCompletionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
