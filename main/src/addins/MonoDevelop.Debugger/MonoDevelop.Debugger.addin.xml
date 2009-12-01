@@ -120,7 +120,7 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.AddTracepoint"
 				_label = "Add Tracepoint"
 				defaultHandler = "MonoDevelop.Debugger.AddTracepointHandler"
-				shortcut = "Shift|F9" />
+				shortcut = "Control|Shift|F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint"
 				_label = "Enable/Disable Breakpoint"
 				defaultHandler = "MonoDevelop.Debugger.EnableDisableBreakpointHandler"
