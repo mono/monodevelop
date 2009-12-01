@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public BuildResultStates ShowOutputPadDuringBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadDuringBuild", BuildResultStates.Always); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadDuringBuild", BuildResultStates.Never); }
 			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
 		}
 
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public BuildResultStates ShowOutputPadAfterBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadAfterBuild", BuildResultStates.Always); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadAfterBuild", BuildResultStates.Never); }
 			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
 		}
 
