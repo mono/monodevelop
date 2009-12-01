@@ -522,7 +522,6 @@ namespace MonoDevelop.CSharp.Resolver
 			internal ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 			{
 				if (expressions.Contains (lambdaExpression)) {
-					Console.WriteLine ("LOOP!!!");
 					return null;
 				}
 				expressions.Add (lambdaExpression);
@@ -859,7 +858,7 @@ namespace MonoDevelop.CSharp.Resolver
 				int endPos = editor.GetPositionFromLineColumn (endLine, editor.GetLineLength (endLine));
 				if (endPos < 0)
 					endPos = editor.TextLength;
-				text = editor.GetText (editor.GetPositionFromLineColumn (startLine, 0), endPos);
+				text = editor.GetText (editor.GetPositionFromLineColumn (startLine, 1), endPos);
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 				doc.Text = File.ReadAllText (fileName) ?? "";

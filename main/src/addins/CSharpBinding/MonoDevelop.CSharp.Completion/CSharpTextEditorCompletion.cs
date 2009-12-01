@@ -57,6 +57,11 @@ namespace MonoDevelop.CSharp.Completion
 		ProjectDom dom;
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		
+		public ProjectDom Dom {
+			get { return this.dom; }
+			set { this.dom = value; }
+		}
+		
 		public CSharpTextEditorCompletion ()
 		{
 		}

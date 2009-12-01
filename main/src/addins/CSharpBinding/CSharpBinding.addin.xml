@@ -16,6 +16,7 @@
 		<Addin id="Ide" version="2.2"/>
 		<Addin id="SourceEditor2" version="2.2"/>
 		<Addin id="Refactoring" version="2.2"/>
+		<Addin id="AspNet" version="2.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -153,6 +154,10 @@
 
 	<Extension path = "/MonoDevelop/Refactoring/ASTProvider">
 		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
+		<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />
 	</Extension>
 	
 	<Module>

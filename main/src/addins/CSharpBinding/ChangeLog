@@ -1,3 +1,13 @@
+2009-12-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Completion/AspLanguageBuilder.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Worked on ASP.NET completion.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp/CSharpLanguageBinding.cs:
