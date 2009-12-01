@@ -11,6 +11,9 @@ SUBDIRS = \
 	VersionControl \
 	MonoDevelop.Autotools \
 	MonoDevelop.Gettext \
+	MonoDevelop.XmlEditor \
+	TextTemplating \
+	AspNet \
 	CSharpBinding \
 	ILAsmBinding \
 	NUnit \
@@ -20,9 +23,6 @@ SUBDIRS = \
 	WelcomePage \
 	MonoDevelop.GtkCore \
 	ChangeLogAddIn \
-	MonoDevelop.XmlEditor \
-	TextTemplating \
-	AspNet \
 	MonoDevelop.WebReferences \
 	MonoDevelop.RegexToolkit \
 	CBinding \
