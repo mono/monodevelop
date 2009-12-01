@@ -1,3 +1,7 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/Widget.cs: Fix check for top level window.
+
 2009-11-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
