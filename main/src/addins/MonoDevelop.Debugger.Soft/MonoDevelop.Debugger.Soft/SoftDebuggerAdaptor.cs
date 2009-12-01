@@ -59,10 +59,12 @@ namespace MonoDevelop.Debugger.Soft
 			else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
 				ObjectMirror ob = (ObjectMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
-				StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
-				return res.Value;
+				if (method.DeclaringType.FullName != "System.Object") {
+					StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
+					return res.Value;
+				}
 			}
-			return GetValueTypeName (ctx, obj);
+			return GetDisplayTypeName (GetValueTypeName (ctx, obj));
 		}
 
 
@@ -703,6 +705,8 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override bool WaitForCompleted (int timeout)
 		{
+			if (handle == null)
+				return true;
 			int res = ST.WaitHandle.WaitAny (new ST.WaitHandle[] { handle.AsyncWaitHandle, shutdownEvent }, timeout); 
 			if (res == 0) {
 				EndInvoke ();

@@ -297,7 +297,14 @@ namespace MonoDevelop.Projects.Dom
 			if (returnType == null || returnType.FullName == "System.Void")
 				return;
 			if (returnType.ArrayDimensions > 0) {
-				AddType (dom, result, dom.GetArrayType (returnType), callingMember, showStatic);
+				DomReturnType elementType = new DomReturnType (returnType.FullName);
+				elementType.ArrayDimensions = returnType.ArrayDimensions - 1;
+				for (int i = 0; i < elementType.ArrayDimensions; i++) {
+					elementType.SetDimension (i, returnType.ArrayDimensions - 1);
+				}
+				elementType.PointerNestingLevel = returnType.PointerNestingLevel;
+				
+				AddType (dom, result, dom.GetArrayType (elementType), callingMember, showStatic);
 				return;
 			}
 			IType type = dom.GetType (returnType);

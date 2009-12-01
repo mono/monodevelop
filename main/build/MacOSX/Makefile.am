@@ -31,7 +31,7 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	cp ../../COPYING $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop/COPYING.LGPL2.1
 	
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
-	cp ../../theme-icons/Mac/monodevelop.icns $(MAC_APP_DIR)/Contents/Resources
+	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
 	cp monodevelop $(MACOS)/monodevelop
 	cp mdtool $(MACOS)/mdtool
 	

@@ -202,7 +202,7 @@ namespace Mono.TextTemplating
 		
 		public void LogError (string message, Location location)
 		{
-			LogError (message, Location.Empty, false);
+			LogError (message, location, false);
 		}
 		
 		public void LogWarning (string message, Location location)

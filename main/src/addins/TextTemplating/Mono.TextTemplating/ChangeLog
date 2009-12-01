@@ -1,3 +1,12 @@
+2009-11-27  Olivier Dagenais  <olivier.dagenais@gmail.com>
+	* Mono.TextTemplating/ParsedTemplate.cs: Fixed a bug where the
+	  location of an error was being ignored.
+
+2009-11-27  Olivier Dagenais  <olivier.dagenais@gmail.com>
+
+	* Mono.TextTemplating/TemplatingEngine.cs: Mark the generated
+	  type as partial.
+
 2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/ParsedTemplate.cs: Don't check if
