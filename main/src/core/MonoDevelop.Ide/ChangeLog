@@ -1,3 +1,13 @@
+2009-12-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/HiddenWorkbenchWindow.cs:
+	* MonoDevelop.Ide.Gui/HiddenTextEditorViewContent.cs: Added
+	  hidden text editor view content infrastructure, to support
+	  fast non gui implementation of these interfaces for testing
+	  & 'code behind').
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/IdePreferences.cs: By default, don't

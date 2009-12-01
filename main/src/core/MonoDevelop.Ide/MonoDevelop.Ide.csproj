@@ -572,6 +572,8 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISupportsProjectReload.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildMessagePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\HiddenWorkbenchWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\HiddenTextEditorViewContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

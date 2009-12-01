@@ -291,6 +291,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/HelpOperations.cs \
+	MonoDevelop.Ide.Gui/HiddenTextEditorViewContent.cs \
+	MonoDevelop.Ide.Gui/HiddenWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/IAttachableViewContent.cs \
 	MonoDevelop.Ide.Gui/IBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/Ide.cs \
