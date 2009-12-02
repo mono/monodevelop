@@ -529,7 +529,7 @@ namespace Mono.TextEditor
 				margin.OptionsChanged ();
 			}
 			SetAdjustments (Allocation);
-			this.QueueDraw ();
+			this.Repaint ();
 		}
 		
 		void SetWidgetBgFromStyle ()

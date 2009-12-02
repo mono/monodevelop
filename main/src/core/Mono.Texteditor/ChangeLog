@@ -1,5 +1,13 @@
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Do a Repaint instead of
+	  QueueDraw in OptionsChanged. We're no longer always setting
+	  the style, so the widget doesn't get invalidated
+	  accidentally any more, so we have to force it to make sure
+	  it's all updated.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Highlighting/DefaultStyle.cs: Don't attach
 	  to a widget, because that leaked easily. Instead, override
 	  the new UpdateFromGtkStyleMethod.
