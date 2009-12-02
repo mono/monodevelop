@@ -1,3 +1,12 @@
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Only update
+	  individual properties on property service events, instead of
+	  wholesale refreshing them all on any (unrelated) property
+	  service event. Prevents firing lots of change events that
+	  could cause lots of unnecessary work and slowdowns
+	  elsewhere.
+
 2009-11-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
