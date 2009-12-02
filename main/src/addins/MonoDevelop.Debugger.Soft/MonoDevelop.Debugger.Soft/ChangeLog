@@ -1,3 +1,11 @@
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Properly handle properties with
+	  private accessors.
+
+	* PropertyValueReference.cs: Set the ReadOnly flag if the
+	  property is read-only.
+
 2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PropertyValueReference.cs: Allow getting and setting

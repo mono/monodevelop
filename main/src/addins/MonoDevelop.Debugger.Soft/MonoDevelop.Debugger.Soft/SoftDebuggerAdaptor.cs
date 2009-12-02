@@ -59,7 +59,7 @@ namespace MonoDevelop.Debugger.Soft
 			else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
 				ObjectMirror ob = (ObjectMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
-				if (method.DeclaringType.FullName != "System.Object") {
+				if (method != null && method.DeclaringType.FullName != "System.Object") {
 					StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
 					return res.Value;
 				}
@@ -168,7 +168,7 @@ namespace MonoDevelop.Debugger.Soft
 			TypeMirror type = GetValueType (ctx, target) as TypeMirror;
 			while (type != null) {
 				foreach (PropertyInfoMirror prop in type.GetProperties ()) {
-					MethodMirror met = prop.GetGetMethod ();
+					MethodMirror met = prop.GetGetMethod (true);
 					if (met != null && !met.IsStatic && met.GetParameters ().Length > 0)
 						return new PropertyValueReference (ctx, prop, target, null, new Value[] { (Value) index});
 				}
@@ -228,7 +228,7 @@ namespace MonoDevelop.Debugger.Soft
 					yield return new FieldValueReference (ctx, field, co, type);
 				}
 				foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
-					MethodMirror met = prop.GetGetMethod ();
+					MethodMirror met = prop.GetGetMethod (true);
 					if (met == null || met.GetParameters ().Length != 0)
 						continue;
 					if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))

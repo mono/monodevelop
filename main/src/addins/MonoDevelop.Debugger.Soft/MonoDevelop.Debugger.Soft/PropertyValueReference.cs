@@ -37,6 +37,7 @@ namespace MonoDevelop.Debugger.Soft
 		object obj;
 		TypeMirror declaringType;
 		Value[] indexerArgs;
+		ObjectValueFlags flags;
 		
 		public PropertyValueReference (EvaluationContext ctx, PropertyInfoMirror property, object obj, TypeMirror declaringType, Value[] indexerArgs): base (ctx)
 		{
@@ -44,11 +45,14 @@ namespace MonoDevelop.Debugger.Soft
 			this.obj = obj;
 			this.declaringType = declaringType;
 			this.indexerArgs = indexerArgs;
+			flags = ObjectValueFlags.Property;
+			if (property.GetSetMethod (true) == null)
+				flags |= ObjectValueFlags.ReadOnly;
 		}
 		
 		public override ObjectValueFlags Flags {
 			get {
-				return ObjectValueFlags.Property;
+				return flags;
 			}
 		}
 
@@ -80,7 +84,10 @@ namespace MonoDevelop.Debugger.Soft
 				Value[] args = new Value [indexerArgs != null ? indexerArgs.Length + 1 : 1];
 				indexerArgs.CopyTo (args, 0);
 				args [args.Length - 1] = (Value) value;
-				ctx.RuntimeInvoke (property.GetSetMethod (true), obj ?? declaringType, args);
+				MethodMirror setter = property.GetSetMethod (true);
+				if (setter == null)
+					throw new EvaluatorException ("Property is read-only");
+				ctx.RuntimeInvoke (setter, obj ?? declaringType, args);
 			}
 		}
 		
