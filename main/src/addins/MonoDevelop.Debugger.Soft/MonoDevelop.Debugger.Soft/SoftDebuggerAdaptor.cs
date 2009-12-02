@@ -241,6 +241,8 @@ namespace MonoDevelop.Debugger.Soft
 						continue;
 					yield return new PropertyValueReference (ctx, prop, co, type, null);
 				}
+				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
+					break;
 				type = type.BaseType;
 			}
 		}
@@ -341,6 +343,14 @@ namespace MonoDevelop.Debugger.Soft
 				return ((EnumMirror)val).Type;
 			throw new NotSupportedException ();
 		}
+		
+		public override object GetBaseType (EvaluationContext ctx, object type)
+		{
+			if (type is TypeMirror)
+				return ((TypeMirror)type).BaseType;
+			else
+				return null;
+		}
 
 		public override bool HasMethod (EvaluationContext gctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)
 		{
@@ -401,7 +411,13 @@ namespace MonoDevelop.Debugger.Soft
 				}
 			}
 			foreach (FieldInfoMirror fi in t.GetFields ()) {
-				DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (fi.GetCustomAttributes (true));
+				CustomAttributeDataMirror[] attrs = fi.GetCustomAttributes (true);
+				DebuggerBrowsableAttribute att = GetAttribute <DebuggerBrowsableAttribute> (attrs);
+				if (att == null) {
+					var cga = GetAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute> (attrs);
+					if (cga != null)
+						att = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
+				}
 				if (att != null) {
 					if (td.MemberData == null)
 						td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();

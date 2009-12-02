@@ -36,17 +36,31 @@ namespace MonoDevelop.Debugger.Soft
 		FieldInfoMirror field;
 		object obj;
 		TypeMirror declaringType;
+		ObjectValueFlags flags;
 		
 		public FieldValueReference (EvaluationContext ctx, FieldInfoMirror field, object obj, TypeMirror declaringType): base (ctx)
 		{
 			this.field = field;
 			this.obj = obj;
 			this.declaringType = declaringType;
+			flags = ObjectValueFlags.Field;
+			if (field.IsStatic)
+				flags |= ObjectValueFlags.Global;
+			if (field.IsPublic)
+				flags |= ObjectValueFlags.Public;
+			else if (field.IsPrivate)
+				flags |= ObjectValueFlags.Private;
+			else if (field.IsFamily)
+				flags |= ObjectValueFlags.Protected;
+			else if (field.IsFamilyAndAssembly)
+				flags |= ObjectValueFlags.Internal;
+			else if (field.IsFamilyOrAssembly)
+				flags |= ObjectValueFlags.InternalProtected;
 		}
 		
 		public override ObjectValueFlags Flags {
 			get {
-				return ObjectValueFlags.Field;
+				return flags;
 			}
 		}
 
@@ -59,6 +73,12 @@ namespace MonoDevelop.Debugger.Soft
 		public override object Type {
 			get {
 				return field.FieldType;
+			}
+		}
+		
+		public override object DeclaringType {
+			get {
+				return field.DeclaringType;
 			}
 		}
 

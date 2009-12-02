@@ -48,6 +48,19 @@ namespace MonoDevelop.Debugger.Soft
 			flags = ObjectValueFlags.Property;
 			if (property.GetSetMethod (true) == null)
 				flags |= ObjectValueFlags.ReadOnly;
+			MethodMirror getter = property.GetGetMethod (true);
+			if (getter.IsStatic)
+				flags |= ObjectValueFlags.Global;
+			if (getter.IsPublic)
+				flags |= ObjectValueFlags.Public;
+			else if (getter.IsPrivate)
+				flags |= ObjectValueFlags.Private;
+			else if (getter.IsFamily)
+				flags |= ObjectValueFlags.Protected;
+			else if (getter.IsFamilyAndAssembly)
+				flags |= ObjectValueFlags.Internal;
+			else if (getter.IsFamilyOrAssembly)
+				flags |= ObjectValueFlags.InternalProtected;
 		}
 		
 		public override ObjectValueFlags Flags {
@@ -69,6 +82,12 @@ namespace MonoDevelop.Debugger.Soft
 		public override object Type {
 			get {
 				return property.PropertyType;
+			}
+		}
+		
+		public override object DeclaringType {
+			get {
+				return property.DeclaringType;
 			}
 		}
 

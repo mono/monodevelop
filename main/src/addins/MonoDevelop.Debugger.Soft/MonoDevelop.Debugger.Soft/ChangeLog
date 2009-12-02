@@ -1,5 +1,14 @@
 2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerAdaptor.cs: Implement GetBaseType. Hide members
+	  that have the CompilerGenerated attribute.
+
+	* FieldValueReference.cs:
+	* PropertyValueReference.cs: Implement DeclaringType. Set the
+	  correct flags for fields and properties.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Properly handle properties with
 	  private accessors.
 
