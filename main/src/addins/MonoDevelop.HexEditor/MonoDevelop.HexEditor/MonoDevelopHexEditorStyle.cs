@@ -53,7 +53,7 @@ namespace MonoDevelop.HexEditor
 		
 		void SetStyle ()
 		{
-			colorStyle = SyntaxModeService.GetColorStyle (hexEditor, PropertyService.Get ("ColorScheme", "Default"));
+			colorStyle = SyntaxModeService.GetColorStyle (hexEditor.Style, PropertyService.Get ("ColorScheme", "Default"));
 		}
 		
 		public override Color HexOffset {

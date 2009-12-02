@@ -1,3 +1,8 @@
+2009-12-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.HexEditor/MonoDevelopHexEditorStyle.cs: Fixed
+	  build.
+
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Use correct cairo lib.
