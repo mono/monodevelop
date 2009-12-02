@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core.Gui.Dialogs;
+using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
@@ -49,15 +50,20 @@ namespace MonoDevelop.Debugger
 	public partial class DebuggerOptionsPanelWidget : Gtk.Bin
 	{
 		Gtk.ListStore engineStore;
+		DebuggerSessionOptions options;
 		
 		public DebuggerOptionsPanelWidget ()
 		{
 			this.Build ();
-			projectCodeOnly.Active = DebuggingService.ProjectAssembliesOnly;
-			checkAllowEval.Active = DebuggingService.AllowTargetInvoke;
-			checkToString.Active = DebuggingService.AllowToStringCalls;
+			options = DebuggingService.GetUserOptions ();
+			projectCodeOnly.Active = options.ProjectAssembliesOnly;
+			checkAllowEval.Active = options.EvaluationOptions.AllowTargetInvoke;
+			checkToString.Active = options.EvaluationOptions.AllowToStringCalls;
+			checkShowBaseGroup.Active = !options.EvaluationOptions.FlattenHierarchy;
+			checkGroupPrivate.Active = options.EvaluationOptions.GroupPrivateMembers;
+			checkGroupStatic.Active = options.EvaluationOptions.GroupStaticMembers;
 			checkToString.Sensitive = checkAllowEval.Active;
-			spinTimeout.Value = DebuggingService.EvaluationTimeout;
+			spinTimeout.Value = options.EvaluationOptions.EvaluationTimeout;
 			
 			// Debugger priorities
 			engineStore = new Gtk.ListStore (typeof(string), typeof(string));
@@ -78,11 +84,19 @@ namespace MonoDevelop.Debugger
 		
 		public void Store ()
 		{
-			DebuggingService.ProjectAssembliesOnly = projectCodeOnly.Active;
-			DebuggingService.AllowTargetInvoke = checkAllowEval.Active;
-			DebuggingService.AllowToStringCalls = checkToString.Active;
+			EvaluationOptions ops = options.EvaluationOptions;
+			ops.AllowTargetInvoke = checkAllowEval.Active;
+			ops.AllowToStringCalls = checkToString.Active;
+			ops.FlattenHierarchy = !checkShowBaseGroup.Active;
+			ops.GroupPrivateMembers = checkGroupPrivate.Active;
+			ops.GroupStaticMembers = checkGroupStatic.Active;
 			int t = (int) spinTimeout.Value;
-			DebuggingService.EvaluationTimeout = t;
+			ops.EvaluationTimeout = t;
+			
+			options.ProjectAssembliesOnly = projectCodeOnly.Active;
+			options.EvaluationOptions = ops;
+			
+			DebuggingService.SetUserOptions (options);
 			
 			Gtk.TreeIter it;
 			List<string> prios = new List<string> ();

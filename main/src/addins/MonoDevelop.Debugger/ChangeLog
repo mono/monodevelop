@@ -1,3 +1,16 @@
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs:
+	  Added new grouping options to the options panel.
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Moved all options
+	  properties to a single object.
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Show the new
+	  static member icons.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.addin.xml: Fix shortcut conflict.
