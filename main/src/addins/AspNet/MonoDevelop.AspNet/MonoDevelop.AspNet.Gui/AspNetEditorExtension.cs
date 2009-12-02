@@ -82,18 +82,22 @@ namespace MonoDevelop.AspNet.Gui
 		/// </summary>
 		class DomWrapper : ProjectDomDecorator
 		{
-			ParsedDocument doc;
+			ParsedDocument doc, localDoc;
 			
-			public DomWrapper (ProjectDom decorated, ParsedDocument doc) : base (decorated)
+			public DomWrapper (ProjectDom decorated, ParsedDocument doc, ParsedDocument localDoc) : base (decorated)
 			{
 				this.doc = doc;
+				this.localDoc = localDoc;
 				
 			}
 			
 			MonoDevelop.Projects.Dom.IType CheckType (MonoDevelop.Projects.Dom.IType type)
 			{
-				if (type.IsPartial && doc.CompilationUnit.Types[0].FullName == type.FullName)
-					return CompoundType.Merge (type, doc.CompilationUnit.Types[0]);
+				if (type.IsPartial && doc.CompilationUnit.Types[0].FullName == type.FullName) {
+					IType result = CompoundType.Merge (type, doc.CompilationUnit.Types[0]);
+					result = CompoundType.Merge (type, localDoc.CompilationUnit.Types[0]);
+					return result;
+				}
 				return type;
 			}
 			
@@ -119,6 +123,10 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			}
 		}
+		
+		ILanguageCompletionBuilder documentBuilder;
+		MonoDevelop.Ide.Gui.Document hiddenDocument;
+		LocalDocumentInfo localDocumentInfo;
 		
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
@@ -167,24 +175,41 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//simple completion for ASP.NET expressions
-			ILanguageCompletionBuilder documentBuilder = LanguageCompletionBuilderService.GetBuilder (AspCU.PageInfo.Language);
+			documentBuilder = LanguageCompletionBuilderService.GetBuilder (AspCU.PageInfo.Language);
 			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null) {
+				bool isExpression = false;
+				int start = Document.TextEditor.CursorPosition - Tracker.Engine.CurrentStateLength;
 				
-				documentBuilder.Build (AspCU, Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn);
+				if (Document.TextEditor.GetCharAt (start) == '=') {
+					isExpression = true;
+					start++;
+				}
+				string sourceText = Document.TextEditor.GetText (start, Document.TextEditor.CursorPosition);
+
+				MonoDevelop.AspNet.Parser.Internal.Location loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
+				int line, col;
+ 				Document.TextEditor.GetLineColumnFromPosition (start, out line, out col);
+				loc.EndLine = loc.BeginLine = line;
+				loc.EndColumn = loc.BeginColumn = col;
+				
+				DocumentInfo documentInfo = documentBuilder.BuildDocument (AspCU);
+				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, loc, sourceText, isExpression);
 				
 				MonoDevelop.Ide.Gui.HiddenTextEditorViewContent viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
 				viewContent.Project = Document.Project;
-				viewContent.ContentName = Document.FileName;
-				viewContent.Text = documentBuilder.Text;
-				viewContent.CursorPosition = documentBuilder.CursorPosition;
+				viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
+				
+				viewContent.Text = localDocumentInfo.LocalDocument;
+				
+				viewContent.CursorPosition = viewContent.Text.Length;
 				
 				MonoDevelop.Ide.Gui.HiddenWorkbenchWindow workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 				workbenchWindow.ViewContent = viewContent;
-				MonoDevelop.Ide.Gui.Document hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
+				hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
 				
-				hiddenDocument.ParsedDocument = documentBuilder.Parse (viewContent.ContentName, viewContent.Text);
+				hiddenDocument.ParsedDocument = localDocumentInfo.ParsedLocalDocument;
 				
-				return documentBuilder.HandleCompletion (hiddenDocument, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), hiddenDocument.ParsedDocument), currentChar, ref triggerWordLength);
+				return documentBuilder.HandleCompletion (hiddenDocument, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), documentInfo.ParsedDocument, localDocumentInfo.ParsedLocalDocument), currentChar, ref triggerWordLength);
 			}
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
@@ -192,24 +217,9 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			ILanguageCompletionBuilder documentBuilder = LanguageCompletionBuilderService.GetBuilder (AspCU.PageInfo.Language);
-			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null) {
-				documentBuilder.Build (AspCU, Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn);
-				
-				MonoDevelop.Ide.Gui.HiddenTextEditorViewContent viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
-				viewContent.Project = Document.Project;
-				viewContent.ContentName = Document.FileName;
-				viewContent.Text = documentBuilder.Text;
-				viewContent.CursorPosition = documentBuilder.CursorPosition;
-				
-				MonoDevelop.Ide.Gui.HiddenWorkbenchWindow workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
-				workbenchWindow.ViewContent = viewContent;
-				MonoDevelop.Ide.Gui.Document hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
-				
-				hiddenDocument.ParsedDocument = documentBuilder.Parse (viewContent.ContentName, viewContent.Text);
-				
-				return documentBuilder.HandleParameterCompletion (hiddenDocument, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), hiddenDocument.ParsedDocument), completionChar);
-			}
+			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null)
+				return documentBuilder.HandleParameterCompletion (hiddenDocument, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), hiddenDocument.ParsedDocument, localDocumentInfo.ParsedLocalDocument), completionChar);
+			
 			return base.HandleParameterCompletion (completionContext, completionChar);
 		}
 		

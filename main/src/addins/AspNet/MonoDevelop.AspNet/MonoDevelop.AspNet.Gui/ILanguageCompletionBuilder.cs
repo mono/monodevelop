@@ -45,35 +45,47 @@ using System.Text;
 
 namespace MonoDevelop.AspNet.Gui
 {
-	public interface ILanguageCompletionBuilder 
-	{
-		string Text {
+	public class LocalDocumentInfo {
+		public string LocalDocument {
 			get;
+			set;
 		}
 		
-		int CursorPosition {
+		public ParsedDocument ParsedLocalDocument {
 			get;
+			set;
 		}
-		
-		int CursorLine {
-			get;
-		}
-		
-		int CursorColumn {
-			get;
-		}
-		
-		bool SupportsLanguage (string language);
-		
-		void Build (AspNetParsedDocument aspDocument, int line, int column);
-		
-		ParsedDocument Parse (string fileName, string text);
-		
-		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char currentChar, ref int triggerWordLength);
-		
-		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char completionChar);
 	}
 	
+	public class DocumentInfo {
+		public MonoDevelop.AspNet.Parser.AspNetParsedDocument AspNetParsedDocument {
+			get;
+			set;
+		}
+		
+		public ParsedDocument ParsedDocument {
+			get;
+			set;
+		}
+		
+		List<KeyValuePair<ILocation, string>> expressions = new List<KeyValuePair<ILocation, string>> ();
+		public List<KeyValuePair<ILocation, string>> Expressions {
+			get {
+				return expressions;
+			}
+		}
+	}
+	
+	public interface ILanguageCompletionBuilder 
+	{
+		bool SupportsLanguage (string language);
+		
+		DocumentInfo BuildDocument (AspNetParsedDocument aspDocument);
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, ILocation location, string expressionText, bool isExpression);
+		
+		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char currentChar, ref int triggerWordLength);
+		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char completionChar);
+	}
 	
 	public static class LanguageCompletionBuilderService
 	{
