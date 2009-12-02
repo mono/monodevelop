@@ -67,6 +67,8 @@ namespace Mono.TextEditor
 		Gdk.EventKey lastIMEvent;
 		bool imContextActive;
 		
+		string currentStyleName;
+		
 	//	string currentModeStatus;
 		
 		// Tooltip fields
@@ -512,15 +514,11 @@ namespace Mono.TextEditor
 		{
 			if (!this.IsRealized)
 				return;
-			this.textEditorData.ColorStyle = Options.GetColorStyle (this);
 			
-			// This is a hack around a problem with repainting the drag widget.
-			// When this is not set a white square is drawn when the drag widget is moved
-			// when the bg color is differs from the color style bg color (e.g. oblivion style)
-			if (this.textEditorData.ColorStyle != null) {
-				styleSet = true; //prevent double call to OptionsChanged from OnStyleSet
-				this.ModifyBg (StateType.Normal, this.textEditorData.ColorStyle.Default.BackgroundColor);
-				styleSet = false;
+			if (currentStyleName != Options.ColorScheme) {
+				currentStyleName = Options.ColorScheme;
+				this.textEditorData.ColorStyle = Options.GetColorStyle (this);
+				SetWidgetBgFromStyle ();
 			}
 			
 			iconMargin.IsVisible   = Options.ShowIconMargin;
@@ -533,15 +531,25 @@ namespace Mono.TextEditor
 			SetAdjustments (Allocation);
 			this.QueueDraw ();
 		}
-		bool styleSet = false;
+		
+		void SetWidgetBgFromStyle ()
+		{
+			// This is a hack around a problem with repainting the drag widget.
+			// When this is not set a white square is drawn when the drag widget is moved
+			// when the bg color is differs from the color style bg color (e.g. oblivion style)
+			if (this.textEditorData.ColorStyle != null) {
+				settingWidgetBg = true; //prevent infinite recusion
+				this.ModifyBg (StateType.Normal, this.textEditorData.ColorStyle.Default.BackgroundColor);
+				settingWidgetBg = false;
+			}
+		}
+		
+		bool settingWidgetBg = false;
 		protected override void OnStyleSet (Gtk.Style previous_style)
 		{
-			if (!styleSet) {
-				styleSet = true;
-				OptionsChanged (this, EventArgs.Empty);
-				styleSet = false;
-			}
 			base.OnStyleSet (previous_style);
+			if (!settingWidgetBg)
+				SetWidgetBgFromStyle ();
 		}
  
 		protected override void OnDestroyed ()

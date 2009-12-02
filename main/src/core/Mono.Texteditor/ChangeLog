@@ -1,5 +1,16 @@
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: On an options change event,
+	  only update the style object if the style ID changed. Fixes
+	  excessive creation of default style objects that attached
+	  themselves to the widget's style event and leaked badly.
+	  There's still a leak when it actually changes, but no longer
+	  when every/any MD pref changes. Also avoid refreshing all
+	  the options on a GTK style change; just update the widget
+	  bg.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextEditorOptions.cs: Only emit change
 	  events when values actually change - make change events
 	  consistent for all properties. Only emit a single change
