@@ -63,9 +63,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Mono.Cairo, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -224,6 +222,7 @@
     <Compile Include="MonoDevelop.Components\FolderListSelector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Components.FolderListSelector.cs" />
     <Compile Include="MonoDevelop.Components\InfoBar.cs" />
+    <Compile Include="MonoDevelop.Components\GtkUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

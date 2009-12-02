@@ -106,7 +106,7 @@ namespace MonoDevelop.Components
 				if (nudgeHorizontal) {
 					int screenW = Screen.Width;
 					if (allocation.Width <= screenW && x + allocation.Width >= screenW - edgeGap)
-						x = (screenW - allocation.Height - edgeGap);
+						x = (screenW - allocation.Width - edgeGap);
 					if (x <= 0)
 						x = 0;
 				}

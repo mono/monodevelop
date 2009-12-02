@@ -129,6 +129,7 @@ FILES =  \
 	MonoDevelop.Components/FolderEntry.cs \
 	MonoDevelop.Components/FolderListSelector.cs \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
+	MonoDevelop.Components/GtkUtil.cs \
 	MonoDevelop.Components/IconView.cs \
 	MonoDevelop.Components/InfoBar.cs \
 	MonoDevelop.Components/InvisibleFrame.cs \

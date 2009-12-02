@@ -1,3 +1,13 @@
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components/GtkUtil.cs: Implemented support for
+	  automatic overflow tooltips.
+
+	* MonoDevelop.Components/TooltipWindow.cs: Fix typo when
+	  handling NudgeHorizontal option.
+
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Use the correct Mono.Cairo reference.
