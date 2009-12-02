@@ -918,6 +918,11 @@ namespace MonoDevelop.Debugger.Soft
 			return frame.Method == null || string.IsNullOrEmpty (frame.FileName)
 				|| (assemblyFilters != null && !assemblyFilters.Contains (frame.Method.DeclaringType.Assembly));
 		}
+		
+		public bool IsExternalCode (TypeMirror type)
+		{
+			return assemblyFilters != null && !assemblyFilters.Contains (type.Assembly);
+		}
 	}
 	
 	class BreakInfo

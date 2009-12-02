@@ -1,5 +1,10 @@
 2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerAdaptor.cs:
+	* SoftDebuggerSession.cs: Implemented IsExternalType.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Implement GetBaseType. Hide members
 	  that have the CompilerGenerated attribute.
 

@@ -363,6 +363,17 @@ namespace MonoDevelop.Debugger.Soft
 			MethodMirror met = OverloadResolve (ctx, methodName, (TypeMirror) targetType, types, (flags & BindingFlags.Instance) != 0, (flags & BindingFlags.Static) != 0, false);
 			return met != null;
 		}
+		
+		public override bool IsExternalType (EvaluationContext gctx, object type)
+		{
+			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
+			TypeMirror tm = type as TypeMirror;
+			if (tm != null)
+				return ctx.Session.IsExternalCode (tm);
+			else
+				return true;
+		}
+
 
 		public override bool IsArray (EvaluationContext ctx, object val)
 		{
