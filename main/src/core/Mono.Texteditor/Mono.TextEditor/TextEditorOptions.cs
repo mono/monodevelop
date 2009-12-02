@@ -41,6 +41,9 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		bool overrideDocumentEolMarker = false;
+		string defaultEolMarker = Environment.NewLine;
+		
 		int indentationSize = 4;
 		int  tabSize = 4;
 		bool tabsToSpaces = false;
@@ -74,26 +77,32 @@ namespace Mono.TextEditor
 				return zoom;
 					}
 			set {
-				zoom = value;
-				DisposeFont ();
-				OnChanged (EventArgs.Empty);
+				if (zoom != value) {
+					zoom = value;
+					DisposeFont ();
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
+		
 		public bool CanZoomIn {
 			get {
 				return zoom < 8.0;
 			}
 		}
+		
 		public bool CanZoomOut {
 			get {
 				return zoom > 0.7;
 			}
 		}
+		
 		public bool CanResetZoom {
 			get {
 				return zoom != 1.0;
 			}
 		}
+		
 		public void ZoomIn ()
 		{
 			zoom *= 1.1;
@@ -116,25 +125,40 @@ namespace Mono.TextEditor
 				return this.tabsToSpaces ? new string (' ', this.TabSize) : "\t";
 			}
 		}
+		
 		public virtual bool OverrideDocumentEolMarker {
-			get;
-			set;
+			get {
+				return overrideDocumentEolMarker;
+			}
+			set {
+				if (overrideDocumentEolMarker != value) {
+					overrideDocumentEolMarker = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
 		}
+		
 		public virtual string DefaultEolMarker {
-			get;
-			set;
+			get {
+				return defaultEolMarker;
+			}
+			set {
+				if (defaultEolMarker != value) {
+					defaultEolMarker = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
 		}
-		public TextEditorOptions ()
-		{
-			OverrideDocumentEolMarker = false;
-			DefaultEolMarker = Environment.NewLine;
-		}
+		
 		public virtual IWordFindStrategy WordFindStrategy {
 			get {
 				return wordFindStrategy;
 			}
 			set {
-				wordFindStrategy = value;
+				if (wordFindStrategy != value) {
+					wordFindStrategy = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -143,7 +167,10 @@ namespace Mono.TextEditor
 				return allowTabsAfterNonTabs;
 			}
 			set {
-				allowTabsAfterNonTabs = value;
+				if (allowTabsAfterNonTabs != value) {
+					allowTabsAfterNonTabs = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -164,7 +191,10 @@ namespace Mono.TextEditor
 				return removeTrailingWhitespaces;
 			}
 			set {
-				removeTrailingWhitespaces = value;
+				if (removeTrailingWhitespaces != value) {
+					removeTrailingWhitespaces = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -173,8 +203,10 @@ namespace Mono.TextEditor
 				return tabsToSpaces;
 			}
 			set {
-				tabsToSpaces = value;
-				OnChanged (EventArgs.Empty);
+				if (tabsToSpaces != value) {
+					tabsToSpaces = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -183,8 +215,10 @@ namespace Mono.TextEditor
 				return indentationSize;
 			}
 			set {
-				indentationSize = value;
-				OnChanged (EventArgs.Empty);
+				if (indentationSize != value) {
+					indentationSize = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -193,8 +227,10 @@ namespace Mono.TextEditor
 				return tabSize;
 			}
 			set {
-				tabSize = value;
-				OnChanged (EventArgs.Empty);
+				if (tabSize != value) {
+					tabSize = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -203,8 +239,10 @@ namespace Mono.TextEditor
 				return showIconMargin;
 			}
 			set {
-				showIconMargin = value;
-				OnChanged (EventArgs.Empty);
+				if (showIconMargin != value) {
+					showIconMargin = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -213,8 +251,10 @@ namespace Mono.TextEditor
 				return showLineNumberMargin;
 			}
 			set {
-				showLineNumberMargin = value;
-				OnChanged (EventArgs.Empty);
+				if (showLineNumberMargin != value) {
+					showLineNumberMargin = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -223,8 +263,10 @@ namespace Mono.TextEditor
 				return showFoldMargin;
 			}
 			set {
-				showFoldMargin = value;
-				OnChanged (EventArgs.Empty);
+				if (showFoldMargin != value) {
+					showFoldMargin = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -233,8 +275,10 @@ namespace Mono.TextEditor
 				return showInvalidLines;
 			}
 			set {
-				showInvalidLines = value;
-				OnChanged (EventArgs.Empty);
+				if (showInvalidLines != value) {
+					showInvalidLines = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -243,8 +287,10 @@ namespace Mono.TextEditor
 				return showTabs;
 			}
 			set {
-				showTabs = value;
-				OnChanged (EventArgs.Empty);
+				if (showTabs != value) {
+					showTabs = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -253,8 +299,10 @@ namespace Mono.TextEditor
 				return showEolMarkers;
 			}
 			set {
-				showEolMarkers = value;
-				OnChanged (EventArgs.Empty);
+				if (showEolMarkers != value) {
+					showEolMarkers = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -263,8 +311,10 @@ namespace Mono.TextEditor
 				return highlightCaretLine;
 			}
 			set {
-				highlightCaretLine = value;
-				OnChanged (EventArgs.Empty);
+				if (highlightCaretLine != value) {
+					highlightCaretLine = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -273,8 +323,10 @@ namespace Mono.TextEditor
 				return showSpaces;
 			}
 			set {
-				showSpaces = value;
-				OnChanged (EventArgs.Empty);
+				if (showSpaces != value) {
+					showSpaces = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -283,8 +335,10 @@ namespace Mono.TextEditor
 				return rulerColumn;
 			}
 			set {
-				rulerColumn = value;
-				OnChanged (EventArgs.Empty);
+				if (rulerColumn != value) {
+					rulerColumn = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -293,8 +347,10 @@ namespace Mono.TextEditor
 				return showRuler;
 			}
 			set {
-				showRuler = value;
-				OnChanged (EventArgs.Empty);
+				if (showRuler != value) {
+					showRuler = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -303,8 +359,10 @@ namespace Mono.TextEditor
 				return autoIndent;
 			}
 			set {
-				autoIndent = value;
-				OnChanged (EventArgs.Empty);
+				if (autoIndent != value) {
+					autoIndent = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -364,8 +422,10 @@ namespace Mono.TextEditor
 				return colorStyle;
 			}
 			set {
-				colorStyle = value;
-				OnChanged (EventArgs.Empty);
+				if (colorStyle != value) {
+					colorStyle = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 		
@@ -382,40 +442,43 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual Style GetColorStyle (Gtk.Widget widget)
+		public virtual Style GetColorStyle (Gtk.Style widgetStyle)
 		{
-			return SyntaxModeService.GetColorStyle (widget, ColorScheme);
+			return SyntaxModeService.GetColorStyle (widgetStyle, ColorScheme);
 		}
 		
 		public virtual void CopyFrom (TextEditorOptions other)
 		{
-			Zoom = other.Zoom;
-			HighlightMatchingBracket = other.HighlightMatchingBracket;
-			TabsToSpaces = other.TabsToSpaces;
-			IndentationSize = other.IndentationSize;
-			TabSize = other.TabSize;
-			ShowIconMargin = other.ShowIconMargin;
-			ShowLineNumberMargin = other.ShowLineNumberMargin;
-			ShowFoldMargin = other.ShowFoldMargin;
-			ShowInvalidLines = other.ShowInvalidLines;
-			ShowTabs = other.ShowTabs;
-			ShowEolMarkers = other.ShowEolMarkers;
-			HighlightCaretLine = other.HighlightCaretLine;
-			ShowSpaces = other.ShowSpaces;
-			RulerColumn = other.RulerColumn;
-			ShowRuler = other.ShowRuler;
-			AutoIndent = other.AutoIndent;
-			FontName = other.FontName;
-			EnableSyntaxHighlighting = other.EnableSyntaxHighlighting;
-			ColorScheme = other.ColorScheme;
-			OverrideDocumentEolMarker = other.OverrideDocumentEolMarker;
-			DefaultEolMarker = other.DefaultEolMarker;
-			EnableAnimations = other.EnableAnimations;
+			zoom = other.zoom;
+			highlightMatchingBracket = other.highlightMatchingBracket;
+			tabsToSpaces = other.tabsToSpaces;
+			indentationSize = other.indentationSize;
+			tabSize = other.tabSize;
+			showIconMargin = other.showIconMargin;
+			showLineNumberMargin = other.showLineNumberMargin;
+			showFoldMargin = other.showFoldMargin;
+			showInvalidLines = other.showInvalidLines;
+			showTabs = other.showTabs;
+			showEolMarkers = other.showEolMarkers;
+			highlightCaretLine = other.highlightCaretLine;
+			showSpaces = other.showSpaces;
+			rulerColumn = other.rulerColumn;
+			showRuler = other.showRuler;
+			autoIndent = other.autoIndent;
+			fontName = other.fontName;
+			enableSyntaxHighlighting = other.enableSyntaxHighlighting;
+			colorStyle = other.colorStyle;
+			overrideDocumentEolMarker = other.overrideDocumentEolMarker;
+			defaultEolMarker = other.defaultEolMarker;
+			enableAnimations = other.enableAnimations;
+			DisposeFont ();
+			OnChanged (EventArgs.Empty);
 		}
 		
 		public virtual void Dispose ()
 		{
 		}
+		
 		protected void OnChanged (EventArgs args)
 		{
 			if (Changed != null)

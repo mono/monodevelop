@@ -137,9 +137,15 @@ namespace MonoDevelop.Core
 		{
 			object old = Get<object> (key);
 			if (val == null) {
+				//avoid emitting the event if not necessary
+				if (old == null)
+					return;
 				if (properties.ContainsKey (key)) 
 					properties.Remove (key);
 			} else {
+				//avoid emitting the event if not necessary
+				if (val.Equals (old))
+					return;
 				properties[key] = val;
 				if (!val.GetType ().IsClass ||(val is string)) {
 					if (defaultValues.ContainsKey (key)) {

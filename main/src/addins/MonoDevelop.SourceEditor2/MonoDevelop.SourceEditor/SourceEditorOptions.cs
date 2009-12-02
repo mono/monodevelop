@@ -94,14 +94,14 @@ namespace MonoDevelop.SourceEditor
 		
 		DefaultSourceEditorOptions (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
 		{
-			GetPreferences (this, EventArgs.Empty);
+			LoadAllPrefs ();
 			UpdateStylePolicy (currentPolicy);
-			PropertyService.PropertyChanged += GetPreferences;
+			PropertyService.PropertyChanged += UpdatePreferences;
 		}
 		
 		public override void Dispose()
 		{
-			PropertyService.PropertyChanged -= GetPreferences;
+			PropertyService.PropertyChanged -= UpdatePreferences;
 		}
 		
 		void UpdateStylePolicy (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
@@ -113,7 +113,103 @@ namespace MonoDevelop.SourceEditor
 			base.RemoveTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
 		}
 		
-		void GetPreferences (object sender, EventArgs args)
+		// Need to be picky about only updating individual properties when they change.
+		// The old approach called LoadAllPrefs on any prefs event, which sometimes caused 
+		// massive change event storms.
+		void UpdatePreferences (object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.Key) {
+			case "TabIsReindent": 
+				this.TabIsReindent = (bool) args.NewValue;
+				break;
+			case "EnableSemanticHighlighting":
+				this.EnableSemanticHighlighting = (bool) args.NewValue;
+				break;
+			case "AutoInsertMatchingBracket":
+				this.AutoInsertMatchingBracket = (bool) args.NewValue;
+				break;
+			case "EnableCodeCompletion":
+				this.EnableCodeCompletion = (bool) args.NewValue;
+				break;
+			case "EnableParameterInsight":
+				this.EnableParameterInsight = (bool) args.NewValue;
+				break;
+			case "EnableQuickFinder":
+				this.EnableQuickFinder = (bool) args.NewValue;
+				break;
+			case "UnderlineErrors":
+				this.UnderlineErrors = (bool) args.NewValue;
+				break;
+			case "IndentStyle":
+				this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle) args.NewValue;
+				break;
+			case "EditorFontType":
+				this.EditorFontType = (MonoDevelop.SourceEditor.EditorFontType) args.NewValue;
+				break;
+			case "ShowLineNumberMargin":
+				base.ShowLineNumberMargin = (bool) args.NewValue;
+				break;
+			case "ShowFoldMargin":
+				base.ShowFoldMargin = (bool) args.NewValue;
+				break;
+			case "ShowInvalidLines":
+				base.ShowInvalidLines = (bool) args.NewValue;
+				break;
+			case "ShowTabs":
+				base.ShowTabs = (bool) args.NewValue;
+				break;
+			case "ShowEolMarkers":
+				base.ShowEolMarkers = (bool) args.NewValue;
+				break;
+			case "HighlightCaretLine":
+				base.HighlightCaretLine = (bool) args.NewValue;
+				break;
+			case "ShowSpaces":
+				base.ShowSpaces = (bool) args.NewValue;
+				break;
+			case "EnableSyntaxHighlighting":
+				base.EnableSyntaxHighlighting = (bool) args.NewValue;
+				break;
+			case "HighlightMatchingBracket":
+				base.HighlightMatchingBracket = (bool) args.NewValue;
+				break;
+			case "ShowRuler":
+				base.ShowRuler = (bool) args.NewValue;
+				break;
+			case "FontName":
+				base.FontName = (string) args.NewValue;
+				break;
+			case "ColorScheme":
+				base.ColorScheme = (string) args.NewValue;
+				break;
+			case "DefaultRegionsFolding":
+				this.DefaultRegionsFolding = (bool) args.NewValue;
+				break;
+			case "DefaultCommentFolding":
+				this.DefaultCommentFolding = (bool) args.NewValue;
+				break;
+			case "UseViModes":
+				this.UseViModes = (bool) args.NewValue;
+				break;
+			case "OnTheFlyFormatting":
+				this.OnTheFlyFormatting = (bool) args.NewValue;
+				break;
+			case "EnableAutoCodeCompletion":
+				this.EnableAutoCodeCompletion = (bool) args.NewValue;
+				break;
+			case "CompleteWithSpaceOrPunctuation":
+				this.CompleteWithSpaceOrPunctuation = (bool) args.NewValue;
+				break;
+			case "ControlLeftRightMode":
+				this.ControlLeftRightMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), (string) args.NewValue);
+				break;
+			case "EnableAnimations":
+				base.EnableAnimations =  (bool) args.NewValue;
+				break;
+			}
+		}
+		
+		void LoadAllPrefs ()
 		{
 			this.tabIsReindent = PropertyService.Get ("TabIsReindent", false);
 			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", false);
@@ -379,6 +475,7 @@ namespace MonoDevelop.SourceEditor
 					controlLeftRightMode = value;
 					PropertyService.Set ("ControlLeftRightMode", value.ToString ());
 					SetWordFindStrategy ();
+					OnChanged (EventArgs.Empty);
 				}
 			}
 		}
@@ -417,8 +514,10 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool AllowTabsAfterNonTabs {
 			set {
-				PropertyService.Set ("AllowTabsAfterNonTabs", value);
-				base.AllowTabsAfterNonTabs = value;
+				if (value != AllowTabsAfterNonTabs) {
+					PropertyService.Set ("AllowTabsAfterNonTabs", value);
+					base.AllowTabsAfterNonTabs = value;
+				}
 			}
 		}
 				

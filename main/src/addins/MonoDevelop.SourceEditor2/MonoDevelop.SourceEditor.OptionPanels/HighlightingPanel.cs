@@ -93,7 +93,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) 
 				styleName = (string)this.styleStore.GetValue (selectedIter, 1);
-			Mono.TextEditor.Highlighting.Style style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (this, styleName);
+			var style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (this.Style, styleName);
 			UrlXmlProvider provider = Mono.TextEditor.Highlighting.SyntaxModeService.GetProvider (style) as UrlXmlProvider;
 			if (provider != null) {
 				if (provider.Url.StartsWith (SourceEditorDisplayBinding.SyntaxModePath)) {
