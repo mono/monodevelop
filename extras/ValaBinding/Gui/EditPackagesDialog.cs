@@ -204,7 +204,7 @@ namespace MonoDevelop.ValaBinding
 					ValaProject proj = c as ValaProject;
 					ValaProjectConfiguration conf = proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as ValaProjectConfiguration;
 					if (conf.CompileTarget != CompileTarget.Bin) {
-						proj.WriteMDPkgPackage (conf.Id);
+						proj.WriteMDPkgPackage (conf.Selector);
 						package = new ProjectPackage (proj);
 						packages.Add (package);
 					}
