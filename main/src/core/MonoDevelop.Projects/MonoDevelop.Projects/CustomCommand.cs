@@ -96,12 +96,12 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 		
-		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, string configuration)
+		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			Execute (monitor, entry, null, configuration);
 		}
 		
-		public bool CanExecute (ExecutionContext context, string configuration)
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			string exe = command;
 			int i = exe.IndexOf (' ');
@@ -112,7 +112,7 @@ namespace MonoDevelop.Projects
 			return context == null || context.ExecutionHandler.CanExecute (cmd);
 		}
 		
-		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, string configuration)
+		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			string [,] customtags = null;
 			

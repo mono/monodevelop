@@ -156,7 +156,7 @@ namespace CBinding.ProjectPad
 				if (((ProjectPackageCollection)CurrentNode.DataItem).Project.Equals (project))
 					return false;
 				
-				CProjectConfiguration config = (CProjectConfiguration)project.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				CProjectConfiguration config = (CProjectConfiguration)project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				
 				if (config.CompileTarget != CBinding.CompileTarget.Bin)
 					return true;

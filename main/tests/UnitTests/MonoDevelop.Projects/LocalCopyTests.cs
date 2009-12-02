@@ -151,7 +151,7 @@ namespace MonoDevelop.Projects
 		
 		static void AssertOutputFiles (Project project, string configuration, string[] expectedFiles)
 		{
-			string directory = Path.GetDirectoryName (project.GetOutputFileName (configuration));
+			string directory = Path.GetDirectoryName (project.GetOutputFileName ((SolutionConfigurationSelector)configuration));
 			Assert.IsFalse (string.IsNullOrEmpty (directory), "Project '{0} has no output directory", project);
 			List<string> files = new List<string> (Directory.GetFiles (directory, "*", SearchOption.AllDirectories));
 			

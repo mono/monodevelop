@@ -261,7 +261,7 @@ namespace MonoDevelop.Projects
 		/// Returns the file name to an assembly, regardless of what 
 		/// type the assembly is.
 		/// </summary>
-		string GetReferencedFileName (string configuration)
+		string GetReferencedFileName (ConfigurationSelector configuration)
 		{
 			switch (ReferenceType) {
 				case ReferenceType.Assembly:
@@ -285,7 +285,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual string[] GetReferencedFileNames (string configuration)
+		public virtual string[] GetReferencedFileNames (ConfigurationSelector configuration)
 		{
 			string s = GetReferencedFileName (configuration);
 	/*		if (referenceType == ReferenceType.Gac) {

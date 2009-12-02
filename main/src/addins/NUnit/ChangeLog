@@ -1,3 +1,13 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestResultsPad.cs:
+	* Project/NUnitAssemblyGroupProject.cs:
+	* Services/NUnitProjectServiceExtension.cs: Introduced the
+	  ConfigurationSelector class to all methods that previously
+	  took a configuration name as string. This eliminates the
+	  ambiguity between solution configuration names and project
+	  configuration names.
+
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Use correct cairo lib.

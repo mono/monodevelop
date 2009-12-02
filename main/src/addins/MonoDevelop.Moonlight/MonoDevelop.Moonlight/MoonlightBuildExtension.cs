@@ -190,7 +190,7 @@ namespace MonoDevelop.Moonlight
 			return exitCode;
 		}
 		
-		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
@@ -237,7 +237,7 @@ namespace MonoDevelop.Moonlight
 			}
 		}
 		
-		protected override bool GetNeedsBuilding (SolutionEntityItem item, string configuration)
+		protected override bool GetNeedsBuilding (SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
@@ -299,7 +299,7 @@ namespace MonoDevelop.Moonlight
 			return false;
 		}		
 		
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			MoonlightProject proj = item as MoonlightProject;
 			DotNetProjectConfiguration conf = null;
@@ -326,7 +326,7 @@ namespace MonoDevelop.Moonlight
 			return result;
 		}
 
-		BuildResult GenerateManifest (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, string slnConf)
+		BuildResult GenerateManifest (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, ConfigurationSelector slnConf)
 		{
 			const string depNS = "http://schemas.microsoft.com/client/2007/deployment";
 			
@@ -458,7 +458,7 @@ namespace MonoDevelop.Moonlight
 			return Path.Combine (conf.OutputDirectory, xapName);
 		}
 		
-		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, string slnConf)
+		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, ConfigurationSelector slnConf)
 		{
 			string xapName = GetXapName (proj, conf);
 			

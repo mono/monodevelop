@@ -212,27 +212,27 @@ namespace MonoDevelop.Projects
 				((IDisposable)userProperties).Dispose ();
 		}
 		
-		public virtual IEnumerable<SolutionItem> GetReferencedItems (string solutionConfiguration)
+		public virtual IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
 		{
 			return new SolutionItem [0];
 		}
 		
-		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, string solutionConfiguration)
+		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, solutionConfiguration);
+			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, configuration);
 		}
 		
-		public void Clean (IProgressMonitor monitor, string solutionConfiguration)
+		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			RunTarget (monitor, ProjectService.CleanTarget, solutionConfiguration);
+			RunTarget (monitor, ProjectService.CleanTarget, configuration);
 		}
 		
-		public BuildResult Build (IProgressMonitor monitor, string solutionConfiguration)
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return Build (monitor, solutionConfiguration, false);
+			return Build (monitor, configuration, false);
 		}
 		
-		public BuildResult Build (IProgressMonitor monitor, string solutionConfiguration, bool buildReferences)
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
 		{
 			if (!buildReferences) {
 				if (!NeedsBuilding (solutionConfiguration))
@@ -240,7 +240,8 @@ namespace MonoDevelop.Projects
 					
 				try {
 					SolutionEntityItem it = this as SolutionEntityItem;
-					string confName = it != null ? it.GetActiveConfigurationId (solutionConfiguration) : solutionConfiguration;
+					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
+					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 					
 					// This will end calling OnBuild ()
@@ -281,7 +282,7 @@ namespace MonoDevelop.Projects
 			return cres;
 		}
 		
-		internal bool ContainsReferences (HashSet<SolutionItem> items, string conf)
+		internal bool ContainsReferences (HashSet<SolutionItem> items, ConfigurationSelector conf)
 		{
 			foreach (SolutionItem it in GetReferencedItems (conf))
 				if (items.Contains (it))
@@ -289,41 +290,41 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public DateTime GetLastBuildTime (string itemConfiguration)
+		public DateTime GetLastBuildTime (ConfigurationSelector configuration)
 		{
-			return OnGetLastBuildTime (itemConfiguration);
+			return OnGetLastBuildTime (configuration);
 		}
 		
-		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, string solutionConfiguration)
+		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
 		{
 			if (!visited.Add(item))
 				return;
 			
-			if (item.NeedsBuilding (solutionConfiguration))
+			if (item.NeedsBuilding (configuration))
 				referenced.Add (item);
 
-			foreach (SolutionItem ritem in item.GetReferencedItems (solutionConfiguration))
-				GetBuildableReferencedItems (visited, referenced, ritem, solutionConfiguration);
+			foreach (SolutionItem ritem in item.GetReferencedItems (configuration))
+				GetBuildableReferencedItems (visited, referenced, ritem, configuration);
 		}
 		
-		public void Execute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration)
+		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, solutionConfiguration);
+			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, configuration);
 		}
 		
-		public bool CanExecute (ExecutionContext context, string solutionConfiguration)
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.CanExecute (this, context, solutionConfiguration);
+			return Services.ProjectService.ExtensionChain.CanExecute (this, context, configuration);
 		}
 		
-		public bool NeedsBuilding (string solutionConfiguration)
+		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, solutionConfiguration);
+			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, configuration);
 		}
 		
-		public void SetNeedsBuilding (bool value, string solutionConfiguration)
+		public void SetNeedsBuilding (bool value, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, value, solutionConfiguration);
+			Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, value, configuration);
 		}
 		
 		public virtual bool NeedsReload {
@@ -337,7 +338,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public static ReadOnlyCollection<T> TopologicalSort<T> (IEnumerable<T> items, string solutionConfiguration) where T: SolutionItem
+		public static ReadOnlyCollection<T> TopologicalSort<T> (IEnumerable<T> items, ConfigurationSelector configuration) where T: SolutionItem
 		{
 			IList<T> allItems;
 			allItems = items as IList<T>;
@@ -349,12 +350,12 @@ namespace MonoDevelop.Projects
 			bool[] triedToInsert = new bool[allItems.Count];
 			for (int i = 0; i < allItems.Count; ++i) {
 				if (!inserted[i])
-					Insert<T> (i, allItems, sortedEntries, inserted, triedToInsert, solutionConfiguration);
+					Insert<T> (i, allItems, sortedEntries, inserted, triedToInsert, configuration);
 			}
 			return sortedEntries.AsReadOnly ();
 		}
 		
-		static void Insert<T> (int index, IList<T> allItems, List<T> sortedItems, bool[] inserted, bool[] triedToInsert, string solutionConfiguration) where T: SolutionItem
+		static void Insert<T> (int index, IList<T> allItems, List<T> sortedItems, bool[] inserted, bool[] triedToInsert, ConfigurationSelector solutionConfiguration) where T: SolutionItem
 		{
 			if (triedToInsert[index]) {
 				throw new CyclicDependencyException ();
@@ -427,18 +428,18 @@ namespace MonoDevelop.Projects
 		}
 		
 		
-		internal protected abstract void OnClean (IProgressMonitor monitor, string solutionConfiguration);
-		internal protected abstract BuildResult OnBuild (IProgressMonitor monitor, string solutionConfiguration);
-		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, string solutionConfiguration);
-		internal protected abstract bool OnGetNeedsBuilding (string solutionConfiguration);
-		internal protected abstract void OnSetNeedsBuilding (bool val, string solutionConfiguration);
+		internal protected abstract void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration);
+		internal protected abstract BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration);
+		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
+		internal protected abstract bool OnGetNeedsBuilding (ConfigurationSelector configuration);
+		internal protected abstract void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration);
 		
-		internal protected virtual DateTime OnGetLastBuildTime (string solutionConfiguration)
+		internal protected virtual DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			return DateTime.MinValue;
 		}
 		
-		internal protected virtual bool OnGetCanExecute (ExecutionContext context, string solutionConfiguration)
+		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;
 		}

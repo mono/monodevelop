@@ -499,7 +499,7 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workspace.IsOpen) {
 				foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
 					var i = info.Add (conf, conf);
-					if (conf == IdeApp.Workspace.ActiveConfiguration)
+					if (conf == IdeApp.Workspace.ActiveConfigurationId)
 						i.Checked  = true;
 				}
 			}
@@ -507,7 +507,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run (object dataItem)
 		{
-			IdeApp.Workspace.ActiveConfiguration = (string) dataItem;
+			IdeApp.Workspace.ActiveConfigurationId = (string) dataItem;
 		}
 	}
 	

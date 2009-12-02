@@ -1,3 +1,16 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs:
+	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	  Introduced the ConfigurationSelector class to all methods
+	  that previously took a configuration name as string. This
+	  eliminates the ambiguity between solution configuration
+	  names and project configuration names.
+
 2009-11-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Improve

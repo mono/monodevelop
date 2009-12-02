@@ -10,7 +10,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GtkProjectServiceExtension: ProjectServiceExtension
 	{
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			if (!IdeApp.IsInitialized)
 				return base.Build (monitor, entry, configuration);
@@ -46,7 +46,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class Generator
 	{
-		public void Run (IProgressMonitor monitor, DotNetProject project, string configuration)
+		public void Run (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
 		{
 			lock (this) {
 				try {

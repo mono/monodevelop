@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				{
 					var project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentSelectedProject;
 					if (project != null) {
-						CSharpCompilerParameters cparams = ((DotNetProjectConfiguration)project.GetActiveConfiguration (project.ParentSolution.DefaultConfigurationId)).CompilationParameters as CSharpCompilerParameters;
+						CSharpCompilerParameters cparams = ((DotNetProjectConfiguration)project.GetConfiguration (project.ParentSolution.DefaultConfigurationSelector)).CompilationParameters as CSharpCompilerParameters;
 						if (cparams != null) {
 							string[] syms = cparams.DefineSymbols.Split (';', ',');
 							foreach (string s in syms) {

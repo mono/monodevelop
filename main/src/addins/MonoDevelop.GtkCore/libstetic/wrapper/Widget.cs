@@ -825,7 +825,7 @@ namespace Stetic.Wrapper {
 		
 		public bool InWindow {
 			get {
-				return this.GetTopLevel ().Wrapped is Gtk.Window;
+				return this.GetTopLevel ().Wrapped is TopLevelWindow;
 			}
 		}
 		

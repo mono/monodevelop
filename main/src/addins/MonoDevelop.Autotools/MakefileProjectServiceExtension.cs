@@ -139,13 +139,13 @@ namespace MonoDevelop.Autotools
 
 
 		//TODO
-		protected override bool GetNeedsBuilding (SolutionEntityItem entry, string configuration)
+		protected override bool GetNeedsBuilding (SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			return base.GetNeedsBuilding (entry, configuration);
 		}
 
 		//FIXME: Check whether autogen.sh is required or not
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			Project project = entry as Project;
 			if (project == null)
@@ -329,7 +329,7 @@ namespace MonoDevelop.Autotools
 				return null;
 		}
 
-		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			Project proj = entry as Project;
 			if (proj == null) {
@@ -373,7 +373,7 @@ namespace MonoDevelop.Autotools
 			monitor.ReportSuccess ( GettextCatalog.GetString ( "Project successfully cleaned"));
 		}
 
-		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, string configuration)
+		protected override bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Project project = item as Project;
 			if (project != null) {
@@ -385,7 +385,7 @@ namespace MonoDevelop.Autotools
 		}
 
 
-		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, string configuration)
+		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Project project = entry as Project;
 			if (project == null) {

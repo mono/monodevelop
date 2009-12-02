@@ -138,7 +138,7 @@ namespace MonoDevelop.Projects
 		}
 
 		
-		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, string configuration)
+		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			BuildResult result = null;
 			monitor.BeginTask (null, Items.Count);
@@ -160,12 +160,12 @@ namespace MonoDevelop.Projects
 			return result;
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, string configuration)
+		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			throw new NotImplementedException ();
 		}
 		
-		protected internal override bool OnGetNeedsBuilding (string configuration)
+		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			foreach (WorkspaceItem it in Items) {
 				if (it.NeedsBuilding (configuration))
@@ -174,7 +174,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		protected internal override void OnSetNeedsBuilding (bool val, string configuration)
+		protected internal override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
 		{
 			foreach (WorkspaceItem it in Items)
 				it.SetNeedsBuilding (val, configuration);

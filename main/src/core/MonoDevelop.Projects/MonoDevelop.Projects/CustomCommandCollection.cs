@@ -48,12 +48,12 @@ namespace MonoDevelop.Projects
 				Add (cmd.Clone ());
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, SolutionEntityItem entry, CustomCommandType type, string configuration)
+		public void ExecuteCommand (IProgressMonitor monitor, SolutionEntityItem entry, CustomCommandType type, ConfigurationSelector configuration)
 		{
 			ExecuteCommand (monitor, entry, type, null, configuration);
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, SolutionEntityItem entry, CustomCommandType type, ExecutionContext context, string configuration)
+		public void ExecuteCommand (IProgressMonitor monitor, SolutionEntityItem entry, CustomCommandType type, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			foreach (CustomCommand cmd in this) {
 				if (cmd.Type == type)
@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public bool CanExecute (CustomCommandType type, ExecutionContext context, string configuration)
+		public bool CanExecute (CustomCommandType type, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			foreach (CustomCommand cmd in this) {
 				if (cmd.Type == type) {

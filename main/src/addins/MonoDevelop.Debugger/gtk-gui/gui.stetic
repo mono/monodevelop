@@ -461,6 +461,7 @@
                   <widget class="Gtk.Button" id="buttonEval">
                     <property name="MemberName" />
                     <property name="CanDefault">True</property>
+                    <property name="HasDefault">True</property>
                     <property name="CanFocus">True</property>
                     <property name="Type">TextOnly</property>
                     <property name="Label" translatable="yes">Evaluate</property>

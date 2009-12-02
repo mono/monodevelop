@@ -35,7 +35,7 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitProjectServiceExtension: ProjectServiceExtension
 	{
-		public override void Execute (MonoDevelop.Core.IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, string configuration)
+		public override void Execute (MonoDevelop.Core.IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (base.CanExecute (item, context, configuration)) {
 				// It is executable by default
@@ -58,7 +58,7 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public override bool CanExecute (IBuildTarget item, ExecutionContext context, string configuration)
+		public override bool CanExecute (IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			

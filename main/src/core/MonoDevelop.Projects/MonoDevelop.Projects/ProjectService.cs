@@ -64,7 +64,6 @@ namespace MonoDevelop.Projects
 		
 		public const string BuildTarget = "Build";
 		public const string CleanTarget = "Clean";
-		public const string DefaultConfiguration = null;
 		
 		const string ProjectFileFormatsExtensionPath = "/MonoDevelop/ProjectModel/ProjectFileFormats";
 		const string FileFormatsExtensionPath = "/MonoDevelop/ProjectModel/FileFormats";
@@ -617,11 +616,11 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.InternalReadWorkspaceItem (fileName, monitor);
 		}
 		
-		protected override void Clean (IProgressMonitor monitor, IBuildTarget item, string configuration)
+		protected override void Clean (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration config = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
+				SolutionItemConfiguration config = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
 					config.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Clean, configuration);
 					return;
@@ -637,12 +636,12 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 
-		protected override BuildResult Build (IProgressMonitor monitor, IBuildTarget item, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			BuildResult res;
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration conf = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
+				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
 					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Build, configuration);
 					res = new BuildResult ();
@@ -663,11 +662,11 @@ namespace MonoDevelop.Projects
 			return res;
 		}
 		
-		public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, string configuration)
+		public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
-				SolutionItemConfiguration conf = entry.GetActiveConfiguration (configuration) as SolutionItemConfiguration;
+				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute)) {
 					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.Execute, context, configuration);
 					return;
@@ -683,7 +682,7 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 		
-		public override bool CanExecute (IBuildTarget item, ExecutionContext context, string configuration)
+		public override bool CanExecute (IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem) {
 				SolutionEntityItem entry = (SolutionEntityItem) item;
@@ -701,7 +700,7 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 		
-		public override bool GetNeedsBuilding (IBuildTarget item, string configuration)
+		public override bool GetNeedsBuilding (IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionItem) {
 				SolutionItem entry = (SolutionItem) item;
@@ -730,7 +729,7 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 		
-		public override void SetNeedsBuilding (IBuildTarget item, bool val, string configuration)
+		public override void SetNeedsBuilding (IBuildTarget item, bool val, ConfigurationSelector configuration)
 		{
 			if (item is SolutionItem) {
 				SolutionItem entry = (SolutionItem) item;

@@ -1,3 +1,8 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Added
+	  several missing type and null checks.
+
 2009-11-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Prettify

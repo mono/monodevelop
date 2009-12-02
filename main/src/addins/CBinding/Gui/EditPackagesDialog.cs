@@ -196,9 +196,9 @@ namespace CBinding
 			foreach (SolutionItem c in project.ParentFolder.Items) {
 				if (null != c && c is CProject) {
 					CProject cproj = (CProject)c;
-					CProjectConfiguration conf = (CProjectConfiguration)cproj.GetActiveConfiguration (IdeApp.Workspace.ActiveConfiguration);
+					CProjectConfiguration conf = (CProjectConfiguration)cproj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 					if (conf.CompileTarget != CBinding.CompileTarget.Bin) {
-						cproj.WriteMDPkgPackage (conf.Id);
+						cproj.WriteMDPkgPackage (conf.Selector);
 						package = new Package (cproj);
 						packages.Add (package);
 					}

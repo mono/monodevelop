@@ -17,7 +17,7 @@ namespace MonoDevelop.Deployment
 				return builder.Build (monitor);
 		}
 		
-		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, string configuration)
+		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, ConfigurationSelector configuration)
 		{
 			if (entry is SolutionFolder)
 				return GetCombineDeployFiles (ctx, (SolutionFolder) entry, configuration);
@@ -29,7 +29,7 @@ namespace MonoDevelop.Deployment
 				return new DeployFileCollection ();
 		}
 		
-		public virtual DeployFileCollection GetCombineDeployFiles (DeployContext ctx, SolutionFolder combine, string configuration)
+		public virtual DeployFileCollection GetCombineDeployFiles (DeployContext ctx, SolutionFolder combine, ConfigurationSelector configuration)
 		{
 			if (Next != null)
 				return Next.GetDeployFiles (ctx, combine, configuration);
@@ -37,7 +37,7 @@ namespace MonoDevelop.Deployment
 				return new DeployFileCollection ();
 		}
 		
-		public virtual DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, string configuration)
+		public virtual DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, ConfigurationSelector configuration)
 		{
 			if (Next != null)
 				return Next.GetDeployFiles (ctx, project, configuration);

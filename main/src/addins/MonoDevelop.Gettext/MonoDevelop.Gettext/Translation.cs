@@ -78,13 +78,13 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		public string GetOutFile (string configuration)
+		public string GetOutFile (ConfigurationSelector configuration)
 		{
 			string moDirectory = Path.Combine (Path.Combine (parentProject.GetOutputDirectory (configuration), isoCode), "LC_MESSAGES");
 			return Path.Combine (moDirectory, parentProject.PackageName + ".mo");
 		}
 		
-		public BuildResult Build (IProgressMonitor monitor, string configuration)
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			BuildResult results = new BuildResult ("", 0, 0);
 			
@@ -113,7 +113,7 @@ namespace MonoDevelop.Gettext
 			return results;
 		}
 		
-		public bool NeedsBuilding (string configuration)
+		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			if (!File.Exists (PoFile))
 				return false;

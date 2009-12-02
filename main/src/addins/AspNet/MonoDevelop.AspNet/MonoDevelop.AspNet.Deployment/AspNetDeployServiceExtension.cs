@@ -40,9 +40,9 @@ namespace MonoDevelop.AspNet.Deployment
 	{
 		
 		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, 
-		                                                            string solutionConfiguration)
+		                                                            ConfigurationSelector configuration)
 		{
-			DeployFileCollection files = base.GetProjectDeployFiles (ctx, project, solutionConfiguration);
+			DeployFileCollection files = base.GetProjectDeployFiles (ctx, project, configuration);
 			
 			AspNetAppProject aspProj = project as AspNetAppProject;
 			

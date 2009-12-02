@@ -1,3 +1,12 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs:
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Introduced
+	  the ConfigurationSelector class to all methods that
+	  previously took a configuration name as string. This
+	  eliminates the ambiguity between solution configuration
+	  names and project configuration names.
+
 2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightProject.cs: Track API. Set

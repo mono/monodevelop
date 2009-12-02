@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}*/
 		
-		public string ActiveConfiguration {
+		public string ActiveConfigurationId {
 			get {
 				return activeConfiguration;
 			}
@@ -130,6 +130,10 @@ namespace MonoDevelop.Ide.Gui
 						ActiveConfigurationChanged (this, EventArgs.Empty);
 				}
 			}
+		}
+		
+		public ConfigurationSelector ActiveConfiguration {
+			get { return new SolutionConfigurationSelector (activeConfiguration); }
 		}
 		
 		public TargetRuntime ActiveRuntime {
@@ -326,7 +330,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		bool IBuildTarget.CanExecute (ExecutionContext context, string configuration)
+		bool IBuildTarget.CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
 				return IdeApp.ProjectOperations.CurrentSelectedSolution.CanExecute (context, configuration);
@@ -349,7 +353,7 @@ namespace MonoDevelop.Ide.Gui
 			monitor.EndTask ();
 		}
 		
-		BuildResult IBuildTarget.RunTarget (IProgressMonitor monitor, string target, string configuration)
+		BuildResult IBuildTarget.RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			BuildResult result = null;
 			foreach (WorkspaceItem it in Items) {
@@ -363,7 +367,7 @@ namespace MonoDevelop.Ide.Gui
 			return result;
 		}
 
-		public void Execute (MonoDevelop.Core.IProgressMonitor monitor, ExecutionContext context, string configuration)
+		public void Execute (MonoDevelop.Core.IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (sol == null) {
@@ -382,7 +386,7 @@ namespace MonoDevelop.Ide.Gui
 			return NeedsBuilding (IdeApp.Workspace.ActiveConfiguration) || IsDirtyFileInCombine;
 		}
 
-		public bool NeedsBuilding (string configuration)
+		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			foreach (WorkspaceItem it in Items) {
 				if (it.NeedsBuilding (configuration))
@@ -391,7 +395,7 @@ namespace MonoDevelop.Ide.Gui
 			return false;
 		}
 
-		public void SetNeedsBuilding (bool needsBuilding, string configuration)
+		public void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration)
 		{
 			foreach (WorkspaceItem it in Items)
 				it.SetNeedsBuilding (needsBuilding, configuration);
@@ -713,7 +717,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				WorkspaceUserData data = props.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
-					ActiveConfiguration = data.ActiveConfiguration;
+					ActiveConfigurationId = data.ActiveConfiguration;
 					if (string.IsNullOrEmpty (data.ActiveRuntime))
 						UseDefaultRuntime = true;
 					else {
@@ -796,7 +800,7 @@ namespace MonoDevelop.Ide.Gui
 			// Local configuration info
 			
 			WorkspaceUserData data = new WorkspaceUserData ();
-			data.ActiveConfiguration = ActiveConfiguration;
+			data.ActiveConfiguration = ActiveConfigurationId;
 			data.ActiveRuntime = UseDefaultRuntime ? null : ActiveRuntime.Id;
 			props.SetValue ("MonoDevelop.Ide.Workspace", data);
 			

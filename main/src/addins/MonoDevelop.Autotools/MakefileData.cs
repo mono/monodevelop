@@ -739,7 +739,7 @@ namespace MonoDevelop.Autotools
 					List<ProjectReference> toRemove = new List<ProjectReference> ();
 					foreach (ProjectReference pref in dotnetProject.References) {
 						if (pref.ReferenceType == ReferenceType.Gac) {
-							string [] files = pref.GetReferencedFileNames (ProjectService.DefaultConfiguration);
+							string [] files = pref.GetReferencedFileNames (ConfigurationSelector.Default);
 							if (files == null)
 								continue;
 
@@ -1164,9 +1164,8 @@ namespace MonoDevelop.Autotools
 		public static void ResolveProjectReferences (SolutionFolder folder, IProgressMonitor monitor)
 		{
 			Dictionary<string, DotNetProject> projects = new Dictionary<string, DotNetProject> ();
-			string defConfig = ProjectService.DefaultConfiguration;
 			foreach (DotNetProject p in folder.GetAllItems<DotNetProject> ()) {
-				string filename = p.GetOutputFileName (defConfig);
+				string filename = p.GetOutputFileName (ConfigurationSelector.Default);
 				// Can be null for Generic projects
 				if (!String.IsNullOrEmpty (filename))
 					projects [filename] = p;
@@ -1187,7 +1186,7 @@ namespace MonoDevelop.Autotools
 							pr.ReferenceType != ReferenceType.Project)
 							continue;
 						
-						string [] files = pr.GetReferencedFileNames (defConfig);
+						string [] files = pr.GetReferencedFileNames (ConfigurationSelector.Default);
 						if (files.Length > 0)
 							asmProjectRefs [files [0]] = pr;
 					}
@@ -1510,7 +1509,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			if (pkg == null)
-				return AsmRefToString (pr.GetReferencedFileNames (ProjectService.DefaultConfiguration) [0], refVar, false);
+				return AsmRefToString (pr.GetReferencedFileNames (ConfigurationSelector.Default) [0], refVar, false);
 
 			// Reference is from a package
 
@@ -1572,7 +1571,7 @@ namespace MonoDevelop.Autotools
 
 		string ProjectRefToString (ProjectReference pr, MakefileVar refVar)
 		{
-			string [] tmp = pr.GetReferencedFileNames (ProjectService.DefaultConfiguration);
+			string [] tmp = pr.GetReferencedFileNames (ConfigurationSelector.Default);
 			if (tmp == null || tmp.Length == 0)
 				//Reference not found, ignoring
 				return null;

@@ -197,7 +197,7 @@ namespace MonoDevelop.AspNet
 		#region build/prebuild/execute
 		
 		
-		protected override BuildResult DoBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			//if no files are set to compile, then some compilers will error out
 			//though this is valid with ASP.NET apps, so we just avoid calling the compiler in this case
@@ -216,7 +216,7 @@ namespace MonoDevelop.AspNet
 				return new BuildResult ();
 		}
 		
-		ExecutionCommand CreateExecutionCommand (string solutionConfiguration, AspNetAppProjectConfiguration configuration)
+		ExecutionCommand CreateExecutionCommand (ConfigurationSelector config, AspNetAppProjectConfiguration configuration)
 		{
 			return new AspNetExecutionCommand () {
 				ClrVersion = configuration.ClrVersion,
@@ -225,24 +225,23 @@ namespace MonoDevelop.AspNet
 				BaseDirectory = BaseDirectory,
 				TargetRuntime = TargetRuntime,
 				TargetFramework = TargetFramework,
-				UserAssemblyPaths = this.GetUserAssemblyPaths (solutionConfiguration),
+				UserAssemblyPaths = this.GetUserAssemblyPaths (config),
 			};
 		}
 		
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, string solutionConfiguration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector config)
 		{
-			var configuration = (AspNetAppProjectConfiguration) GetActiveConfiguration (solutionConfiguration);
-			var cmd = CreateExecutionCommand (solutionConfiguration, configuration);
+			var configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
+			var cmd = CreateExecutionCommand (config, configuration);
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
 		
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
-		                                   string solutionConfiguration, string itemConfiguration)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector config)
 		{
 			//check XSP is available
 			
-			var configuration = (AspNetAppProjectConfiguration) GetConfiguration (itemConfiguration);
-			var cmd = CreateExecutionCommand (solutionConfiguration, configuration);
+			var configuration = (AspNetAppProjectConfiguration) GetConfiguration (config);
+			var cmd = CreateExecutionCommand (config, configuration);
 			
 			IConsole console = null;
 			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);

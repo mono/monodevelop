@@ -230,7 +230,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				yield return "Project:" + (referencedProject != null ? referencedProject.FileName : (FilePath) "null");
 			} else {
 				string runtimeId = ((DotNetProject)project).TargetRuntime.Id;
-				foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
+				foreach (string s in pr.GetReferencedFileNames (ConfigurationSelector.Default))
 					yield return "Assembly:" + runtimeId + ":" + Path.GetFullPath (s);
 			}
 		}

@@ -8,7 +8,7 @@ namespace MonoDevelop.Deployment
 {
 	class DefaultDeployServiceExtension: DeployServiceExtension
 	{
-		public override DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, string configuration)
+		public override DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, ConfigurationSelector configuration)
 		{
 			if (entry is IDeployable)
 				return new DeployFileCollection (((IDeployable)entry).GetDeployFiles (configuration));
@@ -16,13 +16,13 @@ namespace MonoDevelop.Deployment
 			return base.GetDeployFiles (ctx, entry, configuration);
 		}
 		
-		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, string solutionConfiguration)
+		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, ConfigurationSelector configuration)
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
-			base.GetProjectDeployFiles (ctx, project, solutionConfiguration);
+			base.GetProjectDeployFiles (ctx, project, configuration);
 			// Add the compiled output file
 			
-			string outputFile = project.GetOutputFileName (solutionConfiguration);
+			string outputFile = project.GetOutputFileName (configuration);
 			if (!string.IsNullOrEmpty (outputFile))
 				deployFiles.Add (new DeployFile (project, outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
 			
@@ -46,13 +46,13 @@ namespace MonoDevelop.Deployment
 				}
 			}
 			
-			foreach (FileCopySet.Item item in project.GetSupportFileList (solutionConfiguration)) {
+			foreach (FileCopySet.Item item in project.GetSupportFileList (configuration)) {
 				 deployFiles.Add (new DeployFile (project, item.Src, item.Target, TargetDirectory.ProgramFiles));
 			}
 			
 			DotNetProject netProject = project as DotNetProject;
 			if (netProject != null) {
-				DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetActiveConfiguration (solutionConfiguration);
+				DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
 				if (conf.DebugMode) {
 					string mdbFile = netProject.TargetRuntime.GetAssemblyDebugInfoFile (conf.CompiledOutputName);
 					deployFiles.Add (new DeployFile (project, mdbFile, Path.GetFileName (mdbFile), TargetDirectory.ProgramFiles));

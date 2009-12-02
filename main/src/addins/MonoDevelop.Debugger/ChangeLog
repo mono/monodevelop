@@ -1,3 +1,12 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml: Fix shortcut conflict.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:
+	  Evaluate expression when pressing enter in the expression
+	  evaluator dialog.
+
 2009-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Remove FIXME that

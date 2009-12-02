@@ -225,7 +225,7 @@ namespace MonoDevelop.Gettext
 			return new TranslationProjectConfiguration (name);
 		}
 		
-		internal string GetOutputDirectory (string configuration)
+		internal string GetOutputDirectory (ConfigurationSelector configuration)
 		{
 			if (this.ParentSolution.StartupItem == null) 
 				return BaseDirectory;
@@ -334,7 +334,7 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, string configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			BuildResult results = new BuildResult ("", 1, 0);
 			string outputDirectory = GetOutputDirectory (configuration);
@@ -350,7 +350,7 @@ namespace MonoDevelop.Gettext
 			return results;
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor, string configuration)
+		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			isDirty = true;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
@@ -364,12 +364,12 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		protected override void OnExecute (IProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, string configuration)
+		protected override void OnExecute (IProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
 		}
 		
 #region Deployment
-		public DeployFileCollection GetDeployFiles (string configuration)
+		public DeployFileCollection GetDeployFiles (ConfigurationSelector configuration)
 		{
 			DeployFileCollection result = new DeployFileCollection ();
 			foreach (Translation translation in this.Translations) {
@@ -389,7 +389,7 @@ namespace MonoDevelop.Gettext
 		}
 #endregion
 		
-		protected override bool OnGetNeedsBuilding (string configuration)
+		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			if (isDirty)
 				return true;
@@ -400,7 +400,7 @@ namespace MonoDevelop.Gettext
 			return false;
 		}
 		
-		protected override void OnSetNeedsBuilding (bool val, string configuration)
+		protected override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
 		{
 			isDirty = val;
 		}

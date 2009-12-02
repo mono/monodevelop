@@ -94,7 +94,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.targetFormat = targetFormat;
 		}
 
-		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			throw new NotSupportedException ();
 		}

@@ -95,7 +95,7 @@ namespace MonoDevelop.Deployment
 			return (PackageBuilder[]) AddinManager.GetExtensionObjects ("/MonoDevelop/DeployService/PackageBuilders", typeof(PackageBuilder), false);
 		}
 		
-		public static void Install (IProgressMonitor monitor, SolutionItem entry, string prefix, string appName, string configuration)
+		public static void Install (IProgressMonitor monitor, SolutionItem entry, string prefix, string appName, ConfigurationSelector configuration)
 		{
 			InstallResolver res = new InstallResolver ();
 			res.Install (monitor, entry, appName, prefix, configuration);
@@ -162,7 +162,7 @@ namespace MonoDevelop.Deployment
 			return extensionChain.BuildPackage (mon, builder);
 		}
 		
-		public static DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem[] entries, string configuration)
+		public static DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem[] entries, ConfigurationSelector configuration)
 		{
 			DeployFileCollection col = new DeployFileCollection ();
 			foreach (SolutionItem e in entries) {
@@ -171,7 +171,7 @@ namespace MonoDevelop.Deployment
 			return col;
 		}
 		
-		public static DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, string configuration)
+		public static DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, ConfigurationSelector configuration)
 		{
 			ArrayList todel = new ArrayList ();
 			

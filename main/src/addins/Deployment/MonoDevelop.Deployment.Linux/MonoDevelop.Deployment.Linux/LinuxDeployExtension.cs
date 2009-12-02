@@ -9,7 +9,7 @@ namespace MonoDevelop.Deployment.Linux
 {
 	internal class LinuxDeployExtension: DeployServiceExtension
 	{
-		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, string config)
+		public override DeployFileCollection GetProjectDeployFiles (DeployContext ctx, Project project, ConfigurationSelector config)
 		{
 			DeployFileCollection col = base.GetProjectDeployFiles (ctx, project, config);
 			

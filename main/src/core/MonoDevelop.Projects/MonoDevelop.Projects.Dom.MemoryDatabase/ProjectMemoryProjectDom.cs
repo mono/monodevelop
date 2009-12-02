@@ -207,7 +207,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 				Project referencedProject = Project.ParentSolution.FindProjectByName (pr.Reference);
 				yield return "Project:" + (referencedProject != null ? referencedProject.FileName : new FilePath ("null"));
 			} else {
-				foreach (string s in pr.GetReferencedFileNames (ProjectService.DefaultConfiguration))
+				foreach (string s in pr.GetReferencedFileNames (ConfigurationSelector.Default))
 					yield return "Assembly:" + Path.GetFullPath (s);
 			}
 		}

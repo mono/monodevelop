@@ -431,7 +431,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
+		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (!TargetRuntime.IsInstalled (TargetFramework)) {
 				BuildResult res = new BuildResult ();
@@ -441,22 +441,22 @@ namespace MonoDevelop.Projects
 			return base.RunTarget (monitor, target, configuration);
 		}
 
-		protected override void PopulateSupportFileList (FileCopySet list, string solutionConfiguration)
+		protected override void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
-			PopulateSupportFileList (list, solutionConfiguration, 0);
+			PopulateSupportFileList (list, configuration, 0);
 		}
 
-		void PopulateSupportFileList (FileCopySet list, string solutionConfiguration, int referenceDistance)
+		void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration, int referenceDistance)
 		{
 			if (referenceDistance < 2)
-				base.PopulateSupportFileList (list, solutionConfiguration);
+				base.PopulateSupportFileList (list, configuration);
 
 			//rename the app.config file
 			FileCopySet.Item appConfig = list.Remove ("app.config");
 			if (appConfig == null)
 				appConfig = list.Remove ("App.config");
 			if (appConfig != null) {
-				string output = Path.GetFileName (GetOutputFileName (solutionConfiguration));
+				string output = Path.GetFileName (GetOutputFileName (configuration));
 				list.Add (appConfig.Src, appConfig.CopyOnlyIfNewer, output + ".config");
 			}
 			
@@ -473,7 +473,7 @@ namespace MonoDevelop.Projects
 						continue;
 					}
 
-					string refOutput = p.GetOutputFileName (solutionConfiguration);
+					string refOutput = p.GetOutputFileName (configuration);
 					if (string.IsNullOrEmpty (refOutput)) {
 						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' has an empty output filename", p.Name, this.Name);
 						continue;
@@ -483,9 +483,9 @@ namespace MonoDevelop.Projects
 
 					//VS COMPAT: recursively copy references's "local copy" files
 					//but only copy the "copy to output" files from the immediate references
-					p.PopulateSupportFileList (list, solutionConfiguration, referenceDistance + 1);
+					p.PopulateSupportFileList (list, configuration, referenceDistance + 1);
 
-					DotNetProjectConfiguration refConfig = p.GetActiveConfiguration (solutionConfiguration) as DotNetProjectConfiguration;
+					DotNetProjectConfiguration refConfig = p.GetConfiguration (configuration) as DotNetProjectConfiguration;
 
 					if (refConfig != null && refConfig.DebugMode) {
 						string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (refOutput);
@@ -507,7 +507,7 @@ namespace MonoDevelop.Projects
 					}
 				}
 				else if (projectReference.ReferenceType == ReferenceType.Custom) {
-					foreach (string refFile in projectReference.GetReferencedFileNames (solutionConfiguration))
+					foreach (string refFile in projectReference.GetReferencedFileNames (configuration))
 						list.Add (refFile);
 				}
 			}
@@ -558,7 +558,7 @@ namespace MonoDevelop.Projects
 			return newReferenceInformation;
 		}
 
-		public override IEnumerable<SolutionItem> GetReferencedItems (string configuration)
+		public override IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
 		{
 			List<SolutionItem> items = new List<SolutionItem> ();
 			if (ParentSolution == null)
@@ -574,7 +574,7 @@ namespace MonoDevelop.Projects
 			return items;
 		}
 
-		public virtual IEnumerable<string> GetReferencedAssemblies (string configuration)
+		public virtual IEnumerable<string> GetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			foreach (ProjectReference pref in References) {
 				foreach (string asm in pref.GetReferencedFileNames (configuration))
@@ -620,7 +620,7 @@ namespace MonoDevelop.Projects
 		}
 
 
-		protected override FilePath OnGetOutputFileName (string configuration)
+		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration)GetConfiguration (configuration);
 			if (conf != null)
@@ -629,9 +629,9 @@ namespace MonoDevelop.Projects
 				return null;
 		}
 
-		protected override bool CheckNeedsBuild (string solutionConfiguration)
+		protected override bool CheckNeedsBuild (ConfigurationSelector configuration)
 		{
-			if (base.CheckNeedsBuild (solutionConfiguration))
+			if (base.CheckNeedsBuild (configuration))
 				return true;
 
 			foreach (ProjectFile file in Files) {
@@ -643,39 +643,39 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public IList<string> GetUserAssemblyPaths (string solutionConfiguration)
+		public IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
 		{
 			var list = new List<string> ();
-			CollectUserAssemblyPaths (list, new HashSet<string> (), solutionConfiguration);
+			CollectUserAssemblyPaths (list, new HashSet<string> (), configuration);
 			return list;			
 		}
 
-		void CollectUserAssemblyPaths (List<string> paths, HashSet<string> examinedProjects, string solutionConfiguration)
+		void CollectUserAssemblyPaths (List<string> paths, HashSet<string> examinedProjects, ConfigurationSelector configuration)
 		{
-			paths.Add (this.GetOutputFileName (solutionConfiguration));
+			paths.Add (this.GetOutputFileName (configuration));
 			foreach (var pref in References) {
 				if (pref.ReferenceType == ReferenceType.Project && examinedProjects.Add (pref.Reference)) {
 					var p = ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
 					if (p != null)
-						p.CollectUserAssemblyPaths (paths, examinedProjects, solutionConfiguration);
+						p.CollectUserAssemblyPaths (paths, examinedProjects, configuration);
 				}
 			}
 		}
 
-		protected virtual ExecutionCommand CreateExecutionCommand (string solutionConfiguration, DotNetProjectConfiguration configuration)
+		protected virtual ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 		{
 			DotNetExecutionCommand cmd = new DotNetExecutionCommand (configuration.CompiledOutputName);
 			cmd.Arguments = configuration.CommandLineParameters;
 			cmd.WorkingDirectory = Path.GetDirectoryName (configuration.CompiledOutputName);
 			cmd.EnvironmentVariables = new Dictionary<string, string> (configuration.EnvironmentVariables);
 			cmd.TargetRuntime = TargetRuntime;
-			cmd.UserAssemblyPaths = GetUserAssemblyPaths (solutionConfiguration);
+			cmd.UserAssemblyPaths = GetUserAssemblyPaths (configSel);
 			return cmd;
 		}
 
-		protected internal override bool OnGetCanExecute (ExecutionContext context, string configuration)
+		protected internal override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			DotNetProjectConfiguration config = (DotNetProjectConfiguration)GetActiveConfiguration (configuration);
+			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			if (config == null)
 				return false;
 			ExecutionCommand cmd = CreateExecutionCommand (configuration, config);
@@ -947,10 +947,9 @@ namespace MonoDevelop.Projects
 			CheckReferenceChange (e.FileName);
 		}
 
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context,
-		                                   string solutionConfiguration, string itemConfiguration)
+		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (itemConfiguration) as DotNetProjectConfiguration;
+			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
 
 			IConsole console = dotNetProjectConfig.ExternalConsole
@@ -961,7 +960,7 @@ namespace MonoDevelop.Projects
 
 			try {
 				try {
-					ExecutionCommand executionCommand = CreateExecutionCommand (solutionConfiguration, dotNetProjectConfig);
+					ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig);
 
 					if (!context.ExecutionHandler.CanExecute (executionCommand)) {
 						monitor.ReportError (GettextCatalog.GetString ("Can not execute \"{0}\". The selected execution mode is not supported for .NET projects.", dotNetProjectConfig.CompiledOutputName), null);

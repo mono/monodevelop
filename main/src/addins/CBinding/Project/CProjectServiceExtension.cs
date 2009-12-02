@@ -43,21 +43,21 @@ namespace CBinding
 {
 	public class CProjectServiceExtension : ProjectServiceExtension
 	{
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			CProject project = entry as CProject;
 			
 			if (project == null)
 				return base.Build (monitor, entry, configuration);
 			
-			CProjectConfiguration conf = (CProjectConfiguration) project.GetActiveConfiguration (configuration);
+			CProjectConfiguration conf = (CProjectConfiguration) project.GetConfiguration (configuration);
 			if (conf.CompileTarget != CompileTarget.Bin)
 				project.WriteMDPkgPackage (configuration);
 			
 			return base.Build (monitor, entry, configuration);
 		}
 		
-		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, string configuration)
+		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			base.Clean (monitor, entry, configuration);
 			

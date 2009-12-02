@@ -1,3 +1,14 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:
+	* MonoDevelop.AspNet.Deployment/WebDeployService.cs:
+	* MonoDevelop.AspNet.Deployment/AspNetDeployServiceExtension.cs:
+	  Introduced the ConfigurationSelector class to all methods
+	  that previously took a configuration name as string. This
+	  eliminates the ambiguity between solution configuration
+	  names and project configuration names.
+
 2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Track API. Set

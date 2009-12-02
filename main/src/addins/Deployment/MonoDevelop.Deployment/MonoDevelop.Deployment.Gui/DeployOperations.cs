@@ -9,7 +9,7 @@ namespace MonoDevelop.Deployment.Gui
 {
 	public static class DeployOperations
 	{
-		public static void Install (SolutionItem entry, string configuration)
+		public static void Install (SolutionItem entry, ConfigurationSelector configuration)
 		{
 			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ()) {
 				InstallDialog dlg = new InstallDialog (entry);

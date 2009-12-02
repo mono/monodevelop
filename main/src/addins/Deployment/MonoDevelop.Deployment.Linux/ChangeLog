@@ -1,3 +1,16 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs:
+	  Track api changes.
+
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:
+	  Introduced the ConfigurationSelector class to all methods
+	  that previously took a configuration name as string. This
+	  eliminates the ambiguity between solution configuration
+	  names and project configuration names.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

@@ -59,6 +59,10 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
+		public override ConfigurationSelector Selector {
+			get { return new SolutionConfigurationSelector (Id); }
+		}
+		
 		public Solution ParentSolution {
 			get { return parentSolution; }
 			internal set { parentSolution = value; }
@@ -211,6 +215,10 @@ namespace MonoDevelop.Projects
 				if (parentConfig != null && parentConfig.ParentSolution != null)
 					parentConfig.ParentSolution.UpdateDefaultConfigurations ();
 			}
+		}
+		
+		public ConfigurationSelector ItemConfigurationSelector {
+			get { return new ItemConfigurationSelector (ItemConfiguration); }
 		}
 		
 		public bool Build {

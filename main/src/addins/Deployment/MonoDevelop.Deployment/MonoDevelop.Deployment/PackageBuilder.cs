@@ -297,7 +297,7 @@ namespace MonoDevelop.Deployment
 				return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), reference);
 		}
 		
-		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, string configuration)
+		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, ConfigurationSelector configuration)
 		{
 			return DeployService.GetDeployFiles (ctx, GetAllEntries (), configuration);
 		}

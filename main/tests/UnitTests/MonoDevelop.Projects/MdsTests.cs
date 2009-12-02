@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects
 			TestProjectsChecks.CheckBasicMdConsoleProject (sol);
 			string projectFile = ((Project)sol.Items [0]).FileName;
 			
-			BuildResult cr = item.Build (Util.GetMonitor (), "Debug");
+			BuildResult cr = item.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);
 			Assert.AreEqual (0, cr.WarningCount);
@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 			
 			Solution sol = (Solution) item;
 			
-			BuildResult cr = item.Build (Util.GetMonitor (), "Debug");
+			BuildResult cr = item.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);
 			Assert.AreEqual (0, cr.WarningCount);

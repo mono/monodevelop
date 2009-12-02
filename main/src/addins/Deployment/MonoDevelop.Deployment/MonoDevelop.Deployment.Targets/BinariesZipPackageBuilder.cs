@@ -67,8 +67,9 @@ namespace MonoDevelop.Deployment.Targets
 			string tmpFolder = null;
 			
 			try {
-				if (RootSolutionItem.NeedsBuilding (configuration)) {
-					BuildResult res = RootSolutionItem.Build (monitor, configuration);
+				SolutionConfigurationSelector conf = (SolutionConfigurationSelector) configuration;
+				if (RootSolutionItem.NeedsBuilding (conf)) {
+					BuildResult res = RootSolutionItem.Build (monitor, conf);
 					if (res.ErrorCount > 0) {
 						foreach (BuildError e in res.Errors)
 							monitor.ReportError (e.ToString (), null);
@@ -84,7 +85,7 @@ namespace MonoDevelop.Deployment.Targets
 				string folder = FileService.GetFullPath (Path.Combine (tmpFolder, tf));
 				
 				// Export the binary files
-				DeployFileCollection deployFiles = GetDeployFiles (ctx, configuration);
+				DeployFileCollection deployFiles = GetDeployFiles (ctx, conf);
 				foreach (DeployFile file in deployFiles) {
 					string tfile = Path.Combine (folder, file.ResolvedTargetFile);
 					string tdir = FileService.GetFullPath (Path.GetDirectoryName (tfile));

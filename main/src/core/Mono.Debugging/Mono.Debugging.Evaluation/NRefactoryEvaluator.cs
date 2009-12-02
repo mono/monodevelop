@@ -379,13 +379,19 @@ namespace Mono.Debugging.Evaluation
 			
 			switch (oper) {
 				case BinaryOperatorType.LogicalAnd: {
-					if (!(bool)left.ObjectValue)
-						return left;
+					object val = left.ObjectValue;
+					if (!(val is bool))
+						throw CreateParseError ("Left operand of logical And must be a boolean");
+					if (!(bool)val)
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, false);
 					return rightExp.AcceptVisitor (this, data);
 				}
 				case BinaryOperatorType.LogicalOr: {
-					if ((bool)left.ObjectValue)
-						return left;
+					object val = left.ObjectValue;
+					if (!(val is bool))
+						throw CreateParseError ("Left operand of logical Or must be a boolean");
+					if ((bool)val)
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, true);
 					return rightExp.AcceptVisitor (this, data);
 				}
 			}
@@ -396,21 +402,25 @@ namespace Mono.Debugging.Evaluation
 
 			if (oper == BinaryOperatorType.Add || oper == BinaryOperatorType.Concat) {
 				if (val1 is string || val2 is string) {
-					if (!(val1 is string))
+					if (!(val1 is string) && val1 != null)
 						val1 = left.CallToString ();
-					if (!(val2 is string))
+					if (!(val2 is string) && val2 != null)
 						val2 = right.CallToString ();
 					return LiteralValueReference.CreateObjectLiteral (ctx, name, (string) val1 + (string) val2);
 				}
 			}
 			
-			if ((oper == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && !(val2 is bool))
+			if ((oper == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && (val2 is bool))
 				return LiteralValueReference.CreateObjectLiteral (ctx, name, (bool)val1 ^ (bool)val2);
 			
 			switch (oper) {
 				case BinaryOperatorType.Equality:
+					if (val1 == null || val2 == null)
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
 					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1.Equals (val2));
 				case BinaryOperatorType.InEquality:
+					if (val1 == null || val2 == null)
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
 					return LiteralValueReference.CreateObjectLiteral (ctx, name, !val1.Equals (val2));
 				case BinaryOperatorType.ReferenceEquality:
 					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
@@ -420,8 +430,18 @@ namespace Mono.Debugging.Evaluation
 					throw CreateParseError ("Invalid binary operator.");
 			}
 			
-			long v1 = Convert.ToInt64 (left.ObjectValue);
-			long v2 = Convert.ToInt64 (right.ObjectValue);
+			if (val1 == null || val2 == null || (val1 is bool) || (val2 is bool))
+				throw CreateParseError ("Invalid operands in binary operator");
+			
+			long v1, v2;
+			
+			try {
+				v1 = Convert.ToInt64 (val1);
+				v2 = Convert.ToInt64 (val2);
+			} catch {
+				throw CreateParseError ("Invalid operands in binary operator");
+			}
+			
 			object res;
 			
 			switch (oper) {

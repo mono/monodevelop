@@ -54,5 +54,9 @@ namespace MonoDevelop.Projects
 		{
 			parentItem = item;
 		}
+		
+		public override ConfigurationSelector Selector {
+			get { return new ItemConfigurationSelector (Id); }
+		}
 	}
 }

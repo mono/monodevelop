@@ -47,7 +47,7 @@ namespace ILAsmBinding
 			sb.Append ("\" ");
 		}
 		
-		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
 		{
 //			ILAsmCompilerParameters compilerParameters = (ILAsmCompilerParameters)configuration.CompilationParameters ?? new ILAsmCompilerParameters ();
 			string outputName       = configuration.CompiledOutputName;
