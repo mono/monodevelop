@@ -50,7 +50,7 @@
 		<DataType class = "BooBinding.BooCompilerParameters" />
 	</Extension>
 	
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
     <Condition id="ActiveLanguage" value = "Boo">
       <Section id = "BooCodeGenerationPanel"
                    _label = "Code Generation"

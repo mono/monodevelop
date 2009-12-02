@@ -55,9 +55,9 @@ public class BooLanguageBinding(IDotNetLanguageBinding):
 		Debug.Assert(compilerServices is not null)
 		return compilerServices.CanCompile(fileName)
 	
-	public def Compile (projectItems as ProjectItemCollection , configuration as DotNetProjectConfiguration , monitor as IProgressMonitor ) as BuildResult:
+	public def Compile (projectItems as ProjectItemCollection , configuration as DotNetProjectConfiguration , configurationSelector as ConfigurationSelector, monitor as IProgressMonitor ) as BuildResult:
 		Debug.Assert(compilerServices is not null)
-		return compilerServices.Compile (projectItems, configuration, monitor)
+		return compilerServices.Compile (projectItems, configuration, configurationSelector, monitor)
 	
 	public def CreateCompilationParameters (projectOptions as XmlElement) as ConfigurationParameters:
 		parameters = BooCompilerParameters ()

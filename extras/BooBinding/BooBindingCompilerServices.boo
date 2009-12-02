@@ -44,7 +44,7 @@ public class BooBindingCompilerServices:
 	public def CanCompile (fileName as string):
 		return Path.GetExtension (fileName).ToUpper () == ".BOO"
 	
-	def Compile (projectItems as ProjectItemCollection, configuration as DotNetProjectConfiguration, monitor as IProgressMonitor) as BuildResult:
+	def Compile (projectItems as ProjectItemCollection, configuration as DotNetProjectConfiguration, configurationSelector as ConfigurationSelector, monitor as IProgressMonitor) as BuildResult:
 		compilerparameters = cast (BooCompilerParameters, configuration.CompilationParameters)
 		if compilerparameters is null:
 			compilerparameters = BooCompilerParameters ()
@@ -57,7 +57,7 @@ public class BooBindingCompilerServices:
 			compilerTarget = "library"
 		elif configuration.CompileTarget == CompileTarget.WinExe:
 			compilerTarget = "winexe"
-			
+		
 		parameters as StringBuilder = StringBuilder (
 			"-o:${configuration.CompiledOutputName} -t:${compilerTarget}")
 		
@@ -89,7 +89,7 @@ public class BooBindingCompilerServices:
 		
 		#we add the different references
 		for lib as ProjectReference in projectItems.GetAllReferences ():
-			for fileName as string in lib.GetReferencedFileNames (configuration.Id):
+			for fileName as string in lib.GetReferencedFileNames (configurationSelector):
 				parameters.Append (" -reference:${fileName} ")
 				
 		for finfo as ProjectFile in projectItems.GetAllFiles ():
@@ -125,7 +125,7 @@ public class BooBindingCompilerServices:
 			
 			operationMonitor = AggregatedOperationMonitor (monitor)
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Starting Boo compilation"))
-			monitor.Log.WriteLine (GettextCatalog.GetString ("booc ${parameters}"))
+			monitor.Log.WriteLine ("booc ${parameters}")
 			
 			#we create a new process that will be used to execute the command line of the compiler
 			wrapper =  MonoDevelop.Core.Runtime.ProcessService.StartProcess ("booc",parameters ,

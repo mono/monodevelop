@@ -150,7 +150,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 	def getProjectAssemblies():
 		_assemblies = []
 		if (_proj is not null):
-			assembly = _proj.GetOutputFileName(ProjectService.DefaultConfiguration)
+			assembly = _proj.GetOutputFileName(ConfigurationSelector.Default)
 			if not assembly.IsNull:
 				_assemblies.Add(assembly)
 		else:
@@ -158,7 +158,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 			for entry as Project in projects:
 				if entry is null:
 					continue
-				assembly = entry.GetOutputFileName(ProjectService.DefaultConfiguration)
+				assembly = entry.GetOutputFileName(ConfigurationSelector.Default)
 				if not assembly.IsNull:
 					_assemblies.Add(assembly)
 
