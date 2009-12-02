@@ -85,9 +85,11 @@
 		<StockIcon stockid = "md-empty-file-icon" resource = "Icons.32x32.EmptyFileIcon" />
 		<StockIcon stockid = "md-enum" resource = "element-enumeration-16.png" />
 		<StockIcon stockid = "md-event" resource = "element-event-16.png" />
+		<StockIcon stockid = "md-static-event" icon = "res:element-event-16.png|res:static-16.png" size="Menu"/>
 		<StockIcon stockid = "md-execution-marker" resource = "ExecutionMarker.png" />
 		<StockIcon stockid = "md-extensionmethod" resource = "element-extensionmethod-16.png" />
 		<StockIcon stockid = "md-field" resource = "element-field-16.png" />
+		<StockIcon stockid = "md-static-field" icon = "res:element-field-16.png|res:static-16.png" size="Menu" />
 		<StockIcon stockid = "md-find-in-files" resource = "Icons.16x16.FindInFiles" />
 		<StockIcon stockid = "md-find-next-icon" resource = "Icons.16x16.FindNextIcon" />
 		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen.png"  size = "Menu" />
@@ -101,14 +103,19 @@
 		<StockIcon stockid = "md-internal-delegate" icon = "res:element-delegate-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-enum" icon = "res:element-enumeration-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-event" icon = "res:element-event-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-event" icon = "res:element-event-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-internal-16.png" />
 		<StockIcon stockid = "md-internal-field" icon = "res:element-field-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-field" icon = "res:element-field-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-interface" icon = "res:element-interface-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-method" icon = "res:element-method-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-method" icon = "res:element-method-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-property" icon = "res:element-property-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-property" icon = "res:element-property-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-internal-struct" icon = "res:element-structure-16.png|res:visibility-internal-16.png" size="Menu" />
 		<StockIcon stockid = "md-literal" resource = "element-literal-16.png" />
 		<StockIcon stockid = "md-method" resource = "element-method-16.png" />
+		<StockIcon stockid = "md-static-method" icon = "res:element-method-16.png|res:static-16.png" size="Menu" />
 		<StockIcon stockid = "md-newmethod" resource = "element-method-new-16.png" />
 		<StockIcon stockid = "md-misc-files" resource = "Icons.16x16.MiscFiles" />
 		<StockIcon stockid = "md-name-space" resource = "element-namespace-16.png" />
@@ -123,24 +130,32 @@
 		<StockIcon stockid = "md-private-class" icon = "res:element-class-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-delegate" icon = "res:element-delegate-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-enum" icon = "res:element-enumeration-16.png|res:visibility-private-16.png" size="Menu" />
-		<StockIcon stockid = "md-private-event" icon = "res:element-event-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-event" icon = "res:element-event-16.png|res:static-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-private-16.png" />
 		<StockIcon stockid = "md-private-field" icon = "res:element-field-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-field" icon = "res:element-field-16.png|res:visibility-private-16.png|res:static-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-interface" icon = "res:element-interface-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-method" icon = "res:element-method-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-method" icon = "res:element-method-16.png|res:static-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-property" icon = "res:element-property-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-property" icon = "res:element-property-16.png|res:static-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-private-struct" icon = "res:element-structure-16.png|res:visibility-private-16.png" size="Menu" />
 		<StockIcon stockid = "md-properties-icon" resource = "Icons.16x16.PropertiesIcon" />
 		<StockIcon stockid = "md-property" resource = "element-property-16.png" />
+		<StockIcon stockid = "md-static-property" icon = "res:element-property-16.png|res:static-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-class" icon = "res:element-class-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-delegate" icon = "res:element-delegate-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-enum" icon = "res:element-enumeration-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-event" icon = "res:element-event-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-event" icon = "res:element-event-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-protected-16.png" />
 		<StockIcon stockid = "md-protected-field" icon = "res:element-field-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-field" icon = "res:element-field-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-interface" icon = "res:element-interface-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-method" icon = "res:element-method-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-method" icon = "res:element-method-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-property" icon = "res:element-property-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-property" icon = "res:element-property-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-protected-struct" icon = "res:element-structure-16.png|res:visibility-protected-16.png" size="Menu" />
 		<StockIcon stockid = "md-reference" resource = "project-reference-16.png" />
 		<StockIcon stockid = "md-reference-package" resource = "project-reference-package-16.png" />
