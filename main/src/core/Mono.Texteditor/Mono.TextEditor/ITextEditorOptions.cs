@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 		string ColorScheme { get; set;  }
 		string DefaultEolMarker { get; set; }
 		
-		Style GetColorStyle (Gtk.Widget widget);
+		Style GetColorStyle (Gtk.Style widgetStyle);
 		
 		event EventHandler Changed;
 	}

@@ -192,9 +192,9 @@ namespace MonoDevelop.SourceEditor
 			set { throw new NotSupportedException (); }
 		}
 
-		public Mono.TextEditor.Highlighting.Style GetColorStyle (Gtk.Widget widget)
+		public Mono.TextEditor.Highlighting.Style GetColorStyle (Gtk.Style widgetStyle)
 		{
-			return DefaultSourceEditorOptions.Instance.GetColorStyle (widget);
+			return DefaultSourceEditorOptions.Instance.GetColorStyle (widgetStyle);
 		}
 
 		public bool HighlightCaretLine {

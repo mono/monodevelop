@@ -117,34 +117,14 @@ namespace Mono.TextEditor.Highlighting
 //				return foldToggleMarker;
 //			}
 //		}
-		Widget widget;
 		
-		public DefaultStyle (Widget widget)
+		public DefaultStyle (Gtk.Style widgetStyle)
 		{
 			this.PopulateDefaults ();
-			this.widget = widget;
-			if (widget != null) {
-				this.widget.StyleSet += WidgethandleStyleSet;
-				this.widget.Destroyed += WidgethandleDestroyed;
-				WidgethandleStyleSet (null, null);
-			} else {
-				SetStyle (Gtk.Widget.DefaultStyle);
-			}
+			UpdateFromGtkStyle (widgetStyle ?? Gtk.Widget.DefaultStyle);
 		}
-
-		void WidgethandleDestroyed (object sender, EventArgs e)
-		{
-			Widget widget = (Widget)sender;
-			widget.StyleSet -= WidgethandleStyleSet;
-			widget.Destroyed -= WidgethandleDestroyed;
-		}
-
-		void WidgethandleStyleSet (object o, StyleSetArgs args)
-		{
-			SetStyle (widget.Style);
-		}
-
-		void SetStyle (Gtk.Style style)
+		
+		public override void UpdateFromGtkStyle (Gtk.Style style)
 		{
 			this.selectionStyle = new ChunkStyle (style.Text (StateType.Selected), style.Base (StateType.Selected));
 			this.defaultStyle = new ChunkStyle (style.Text (StateType.Normal), style.Base (StateType.Normal));

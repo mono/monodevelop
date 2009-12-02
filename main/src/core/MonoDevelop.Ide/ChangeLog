@@ -1,3 +1,10 @@
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Don't
+	  create a syntax style every time we render a row. Instead,
+	  save one, and make sure it's updated when the GTK style
+	  chnages. Fixes leak and perf issues.
+
 2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Use the new

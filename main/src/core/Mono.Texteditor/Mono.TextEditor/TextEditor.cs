@@ -517,7 +517,7 @@ namespace Mono.TextEditor
 			
 			if (currentStyleName != Options.ColorScheme) {
 				currentStyleName = Options.ColorScheme;
-				this.textEditorData.ColorStyle = Options.GetColorStyle (this);
+				this.textEditorData.ColorStyle = Options.GetColorStyle (this.Style);
 				SetWidgetBgFromStyle ();
 			}
 			
@@ -548,8 +548,10 @@ namespace Mono.TextEditor
 		protected override void OnStyleSet (Gtk.Style previous_style)
 		{
 			base.OnStyleSet (previous_style);
-			if (!settingWidgetBg)
+			if (!settingWidgetBg && textEditorData.ColorStyle != null) {
+				textEditorData.ColorStyle.UpdateFromGtkStyle (this.Style);
 				SetWidgetBgFromStyle ();
+			}
 		}
  
 		protected override void OnDestroyed ()

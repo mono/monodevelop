@@ -1,5 +1,24 @@
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Highlighting/DefaultStyle.cs: Don't attach
+	  to a widget, because that leaked easily. Instead, override
+	  the new UpdateFromGtkStyleMethod.
+
+	* Mono.TextEditor.Highlighting/Style.cs: New
+	  UpdateFromGtkStyleMethod from styles that want to derive
+	  their colours from the current widget's GTK style.
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Only use
+	  the style, not the whole widget.
+
+	* Mono.TextEditor/TextEditorOptions.cs:
+	* Mono.TextEditor/ITextEditorOptions.cs: Track API.
+
+	* Mono.TextEditor/TextEditor.cs: Track API, and update the
+	  syntax style when the GTK style changes.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: On an options change event,
 	  only update the style object if the style ID changed. Fixes
 	  excessive creation of default style objects that attached

@@ -51,6 +51,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int SearchResultColumn = 0;
 		const int DidReadColumn      = 1;
 		
+		Mono.TextEditor.Highlighting.Style highlightStyle;
+		
 		public string BasePath {
 			get;
 			set;
@@ -135,7 +137,20 @@ namespace MonoDevelop.Ide.FindInFiles
 			store.SetSortColumnId (3, SortType.Ascending);
 			ShowAll ();
 			
+			
 			scrolledwindowLogView.Hide ();
+		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			highlightStyle = SyntaxModeService.GetColorStyle (this.Style, PropertyService.Get ("ColorScheme", "Default"));
+		}
+		
+		protected override void OnStyleSet (Gtk.Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			highlightStyle.UpdateFromGtkStyle (Style);
 		}
 
 		void ButtonPinClicked (object sender, EventArgs e)
@@ -355,11 +370,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			Mono.TextEditor.Highlighting.Style style = SyntaxModeService.GetColorStyle (this, PropertyService.Get ("ColorScheme", "Default"));
 			
 			string markup;
 			if (doc.SyntaxMode != null) {
-				markup = doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), style, line.Offset, line.EditableLength, true, !isSelected, false);
+				markup = doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset, line.EditableLength, true, !isSelected, false);
 			} else {
 				markup = GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
 			}
@@ -375,12 +389,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					} else {
 						markup = markup.Insert (pos2, "</span>");
 					}
-					Gdk.Color searchColor = style.SearchTextBg;
+					Gdk.Color searchColor = highlightStyle.SearchTextBg;
 					double b1 = HslColor.Brightness (searchColor);
-					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), style.Default.Color));
+					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);
 					if (delta < 0.1) {
-						HslColor color1 = style.SearchTextBg;
+						HslColor color1 = highlightStyle.SearchTextBg;
 						if (color1.L + 0.5 > 1.0) {
 							color1.L -= 0.5;
 						} else {

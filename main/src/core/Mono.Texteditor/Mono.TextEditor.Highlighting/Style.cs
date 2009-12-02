@@ -627,5 +627,9 @@ namespace Mono.TextEditor.Highlighting
 			result.GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
 			return result;
 		}
+		
+		public virtual void UpdateFromGtkStyle (Gtk.Style style)
+		{
+		}
 	}
 }
