@@ -60,6 +60,11 @@ namespace Mono.Debugging.Evaluation
 		public abstract string Name { get; }
 		public abstract object Type { get; }
 		public abstract ObjectValueFlags Flags { get; }
+		
+		// For class members, the type declaring the member (null otherwise)
+		public virtual object DeclaringType {
+			get { return null; }
+		}
 
 		public EvaluationContext Context
 		{

@@ -1,3 +1,21 @@
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/ObjectValueFlags.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Client/EvaluationOptions.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/TypeValueReference.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/BaseTypeViewSource.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Added
+	  new evaluation options. Grouping non-public and static
+	  members is now optional. Added option for grouping members
+	  from base classes in a base group. When disabled, show the
+	  base class next to the member name when there are several
+	  members with the same name.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Added

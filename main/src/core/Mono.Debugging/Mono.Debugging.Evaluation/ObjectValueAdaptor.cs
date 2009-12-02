@@ -73,6 +73,11 @@ namespace Mono.Debugging.Evaluation
 			return GetDisplayTypeName (typeName.Replace ('+','.'), 0, typeName.Length);
 		}
 		
+		public string GetDisplayTypeName (EvaluationContext ctx, object type)
+		{
+			return GetDisplayTypeName (GetTypeName (ctx, type));
+		}
+		
 		string GetDisplayTypeName (string typeName, int idx, int end)
 		{
 			int i = typeName.IndexOf ('[', idx, end - idx);
@@ -191,6 +196,16 @@ namespace Mono.Debugging.Evaluation
 		public abstract object GetValueType (EvaluationContext ctx, object val);
 		public abstract string GetTypeName (EvaluationContext ctx, object val);
 		public abstract object[] GetTypeArgs (EvaluationContext ctx, object type);
+		public abstract object GetBaseType (EvaluationContext ctx, object type);
+		
+		public object GetBaseType (EvaluationContext ctx, object type, bool includeObjectClass)
+		{
+			object bt = GetBaseType (ctx, type);
+			if (!includeObjectClass && bt != null && GetTypeName (ctx, bt) == "System.Object")
+				return null;
+			else
+				return bt;
+		}
 
 		public virtual bool IsClassInstance (EvaluationContext ctx, object val)
 		{
@@ -272,10 +287,10 @@ namespace Mono.Debugging.Evaluation
 
 		public ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, object obj, int firstItemIndex, int count)
 		{
-			return GetObjectValueChildren (ctx, obj, firstItemIndex, count, true);
+			return GetObjectValueChildren (ctx, GetValueType (ctx, obj), obj, firstItemIndex, count, true);
 		}
 
-		public virtual ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, object obj, int firstItemIndex, int count, bool dereferenceProxy)
+		public virtual ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, object type, object obj, int firstItemIndex, int count, bool dereferenceProxy)
 		{
 			if (IsArray (ctx, obj)) {
 				ArrayElementGroup agroup = new ArrayElementGroup (ctx, CreateArrayAdaptor (ctx, obj));
@@ -286,21 +301,37 @@ namespace Mono.Debugging.Evaluation
 				return new ObjectValue[0];
 
 			// If there is a proxy, it has to show the members of the proxy
-			object proxy = dereferenceProxy ? GetProxyObject (ctx, obj) : obj;
+			object proxy = obj;
+			if (dereferenceProxy) {
+				proxy = GetProxyObject (ctx, obj);
+				if (proxy != obj)
+					type = GetValueType (ctx, proxy);
+			}
 
-			TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, proxy));
+			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
 			bool showRawView = tdata.IsProxyType && dereferenceProxy && ctx.Options.AllowDebuggerProxy;
 
 			List<ObjectValue> values = new List<ObjectValue> ();
-			BindingFlags access = BindingFlags.Public | BindingFlags.Instance;
+			BindingFlags flattenFlag = ctx.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
+			BindingFlags nonNonPublicFlag = ctx.Options.GroupPrivateMembers ? (BindingFlags)0 : BindingFlags.NonPublic;
+			BindingFlags staticFlag = ctx.Options.GroupStaticMembers ? (BindingFlags)0 : BindingFlags.Static;
+			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
 			
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
 			List<ValueReference> list = new List<ValueReference> ();
-			list.AddRange (GetMembersSorted (ctx, GetValueType (ctx, proxy), proxy, access));
+			list.AddRange (GetMembersSorted (ctx, type, proxy, access));
 
+			var names = new ObjectValueNameTracker (ctx);
+			object tdataType = type;
+			
 			foreach (ValueReference val in list) {
 				try {
+					object decType = val.DeclaringType;
+					if (decType != null && decType != tdataType) {
+						tdataType = decType;
+						tdata = GetTypeDisplayData (ctx, decType);
+					}
 					DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
 					if (state == DebuggerBrowsableState.Never)
 						continue;
@@ -313,7 +344,9 @@ namespace Mono.Debugging.Evaluation
 						}
 					}
 					else {
-						values.Add (val.CreateObjectValue (true));
+						ObjectValue oval = val.CreateObjectValue (true);
+						names.FixName (val, oval);
+						values.Add (oval);
 					}
 
 				}
@@ -336,12 +369,18 @@ namespace Mono.Debugging.Evaluation
 					values.AddRange (agroup.GetChildren ());
 				}
 				else {
-					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)) {
-						access = BindingFlags.Static | BindingFlags.Public;
-						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, access));
+					if (ctx.Options.GroupStaticMembers && HasMembers (ctx, type, proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | flattenFlag)) {
+						access = BindingFlags.Static | BindingFlags.Public | flattenFlag | nonNonPublicFlag;
+						values.Add (FilteredMembersSource.CreateStaticsNode (ctx, type, proxy, access));
 					}
-					if (HasMembers (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic))
-						values.Add (FilteredMembersSource.CreateNode (ctx, GetValueType (ctx, proxy), proxy, BindingFlags.Instance | BindingFlags.NonPublic));
+					if (ctx.Options.GroupPrivateMembers && ctx.Options.GroupPrivateMembers && HasMembers (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag))
+						values.Add (FilteredMembersSource.CreateNonPublicsNode (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag));
+					
+					if (!ctx.Options.FlattenHierarchy) {
+						object baseType = GetBaseType (ctx, type, false);
+						if (baseType != null)
+							values.Insert (0, BaseTypeViewSource.CreateBaseTypeView (ctx, baseType, proxy));
+					}
 				}
 			}
 			return values.ToArray ();
@@ -533,6 +572,10 @@ namespace Mono.Debugging.Evaluation
 			return GetMembers (ctx, t, co, bindingFlags).Any ();
 		}
 		
+		/// <summary>
+		/// Returns all members of a type. The following binding flags have to be honored:
+		/// BindingFlags.Static, BindingFlags.Instance, BindingFlags.Public, BindingFlags.NonPublic, BindingFlags.DeclareOnly
+		/// </summary>
 		public abstract IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags);
 
 		public virtual IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
@@ -763,6 +806,33 @@ namespace Mono.Debugging.Evaluation
 				return state;
 			else
 				return DebuggerBrowsableState.Collapsed;
+		}
+	}
+	
+	class ObjectValueNameTracker
+	{
+		Dictionary<string,KeyValuePair<ObjectValue, ValueReference>> names = new Dictionary<string,KeyValuePair<ObjectValue, ValueReference>> ();
+		EvaluationContext ctx;
+		
+		public ObjectValueNameTracker (EvaluationContext ctx)
+		{
+			this.ctx = ctx;
+		}
+		
+		public void FixName (ValueReference val, ObjectValue oval)
+		{
+			KeyValuePair<ObjectValue, ValueReference> other;
+			if (names.TryGetValue (oval.Name, out other)) {
+				object tn = val.DeclaringType;
+				if (tn != null)
+					oval.Name += " (" + ctx.Adapter.GetDisplayTypeName (ctx, tn) + ")";
+				if (!other.Key.Name.EndsWith (")")) {
+					tn = other.Value.DeclaringType;
+					if (tn != null)
+						other.Key.Name += " (" + ctx.Adapter.GetDisplayTypeName (ctx, tn) + ")";
+				}
+			} else
+				names [oval.Name] = new KeyValuePair<ObjectValue, ValueReference> (oval, val);
 		}
 	}
 }

@@ -23,28 +23,36 @@ namespace Mono.Debugging.Evaluation
 			this.bindingFlags = bindingFlags;
 		}
 
-		public static ObjectValue CreateNode (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags)
+		public static ObjectValue CreateNonPublicsNode (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags)
+		{
+			return CreateNode (ctx, type, obj, bindingFlags, "Non-public members");
+		}
+		
+		public static ObjectValue CreateStaticsNode (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags)
+		{
+			return CreateNode (ctx, type, obj, bindingFlags, "Static members");
+		}
+		
+		static ObjectValue CreateNode (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags, string label)
 		{
 			FilteredMembersSource src = new FilteredMembersSource (ctx, type, obj, bindingFlags);
 			src.Connect ();
-			string label;
-			if ((bindingFlags & BindingFlags.Static) == 0)
-				label = "Non-public members";
-			else
-				label = "Static members";
-			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 		}
 
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
+			var names = new ObjectValueNameTracker (ctx);
 			List<ObjectValue> list = new List<ObjectValue> ();
 			foreach (ValueReference val in ctx.Adapter.GetMembersSorted (ctx, type, obj, bindingFlags)) {
-				list.Add (val.CreateObjectValue ());
+				ObjectValue oval = val.CreateObjectValue ();
+				names.FixName (val, oval);
+				list.Add (oval);
 			}
 			if ((bindingFlags & BindingFlags.NonPublic) == 0) {
 				BindingFlags newFlags = bindingFlags | BindingFlags.NonPublic;
 				newFlags &= ~BindingFlags.Public;
-				list.Add (CreateNode (ctx, type, obj, newFlags));
+				list.Add (CreateNonPublicsNode (ctx, type, obj, newFlags));
 			}
 			return list.ToArray ();
 		}

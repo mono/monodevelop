@@ -49,6 +49,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/AsyncEvaluationTracker.cs \
 	Mono.Debugging.Evaluation/AsyncOperationManager.cs \
 	Mono.Debugging.Evaluation/BaseBacktrace.cs \
+	Mono.Debugging.Evaluation/BaseTypeViewSource.cs \
 	Mono.Debugging.Evaluation/EvaluationContext.cs \
 	Mono.Debugging.Evaluation/ExpressionEvaluator.cs \
 	Mono.Debugging.Evaluation/FilteredMembersSource.cs \

@@ -50,12 +50,13 @@ namespace Mono.Debugging.Client
 		Literal = 1 << 14,
 		Type = 1 << 15,
 		Namespace = 1 << 16,
-		OriginMask = 0x0001ff00,
+		Group = 1 << 17,
+		OriginMask = 0x0003ff00,
 		
-		Global = 1 << 17,	// For fields, it means static
-		ReadOnly = 1 << 18,
-		NoRefresh = 1 << 19, // When set, this value can't be refreshed
-		EvaluatingGroup = 1 << 20, // When set, this value represents a set of values being evaluated
+		Global = 1 << 18,	// For fields, it means static
+		ReadOnly = 1 << 19,
+		NoRefresh = 1 << 20, // When set, this value can't be refreshed
+		EvaluatingGroup = 1 << 21, // When set, this value represents a set of values being evaluated
 		                           // When evaluation ends, the value is updated, and the children are the
 		                           // values represented by this group
 		
