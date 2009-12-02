@@ -150,7 +150,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnStyleSet (Gtk.Style previous_style)
 		{
 			base.OnStyleSet (previous_style);
-			highlightStyle.UpdateFromGtkStyle (Style);
+			if (highlightStyle != null)
+				highlightStyle.UpdateFromGtkStyle (Style);
 		}
 
 		void ButtonPinClicked (object sender, EventArgs e)
