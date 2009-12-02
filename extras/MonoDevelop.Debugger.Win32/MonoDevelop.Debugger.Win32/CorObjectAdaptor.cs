@@ -108,6 +108,11 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			return GetRealObject (ctx, val).ExactType;
 		}
+		
+		public override object GetBaseType (EvaluationContext ctx, object type)
+		{
+			return ((CorType) type).Base;
+		}
 
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
@@ -437,6 +442,8 @@ namespace MonoDevelop.Debugger.Win32
 					if (mi != null && mi.GetParameters ().Length == 0)
 						yield return new PropertyReference (ctx, prop, val, t);
 				}
+				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
+					break;
 				t = t.Base;
 			}
 		}

@@ -70,6 +70,12 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 		
+		public override object DeclaringType {
+			get {
+				return declaringType;
+			}
+		}
+		
 		public override object Value {
 			get {
 				if (cachedValue != null && cachedValue.IsValid)
