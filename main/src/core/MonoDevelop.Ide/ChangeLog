@@ -1,3 +1,11 @@
+2009-12-02  David Makovský  <yakeen@sannyas-on.net>
+
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	  updating generated file
+
+	* gtk-gui/gui.stetic: make button "View Conflicts"
+	  translatable
+
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Fix NRE.
