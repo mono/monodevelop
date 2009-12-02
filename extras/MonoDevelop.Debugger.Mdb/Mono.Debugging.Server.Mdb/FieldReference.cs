@@ -53,6 +53,12 @@ namespace DebuggerServer
 			}
 		}
 		
+		public override object DeclaringType {
+			get {
+				return type;
+			}
+		}
+		
 		public override object Value {
 			get {
 				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
@@ -78,6 +84,7 @@ namespace DebuggerServer
 			get {
 				ObjectValueFlags flags = ObjectValueFlags.Field | ObjectUtil.GetAccessibility (field.Accessibility);
 				if (field.HasConstValue) flags |= ObjectValueFlags.ReadOnly;
+				if (field.IsStatic) flags |= ObjectValueFlags.Global;
 				return flags;
 			}
 		}
