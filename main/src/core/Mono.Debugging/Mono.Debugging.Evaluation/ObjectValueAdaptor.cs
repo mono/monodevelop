@@ -212,6 +212,11 @@ namespace Mono.Debugging.Evaluation
 			return IsClass (GetValueType (ctx, val));
 		}
 		
+		public virtual bool IsExternalType (EvaluationContext ctx, object type)
+		{
+			return false;
+		}
+		
 		public object GetType (EvaluationContext ctx, string name)
 		{
 			return GetType (ctx, name, null);
@@ -310,10 +315,11 @@ namespace Mono.Debugging.Evaluation
 
 			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
 			bool showRawView = tdata.IsProxyType && dereferenceProxy && ctx.Options.AllowDebuggerProxy;
+			bool groupPrivateMembers = ctx.Options.GroupPrivateMembers && (ctx.Options.GroupUserPrivateMembers || IsExternalType (ctx, type));
 
 			List<ObjectValue> values = new List<ObjectValue> ();
 			BindingFlags flattenFlag = ctx.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
-			BindingFlags nonNonPublicFlag = ctx.Options.GroupPrivateMembers ? (BindingFlags)0 : BindingFlags.NonPublic;
+			BindingFlags nonNonPublicFlag = groupPrivateMembers ? (BindingFlags)0 : BindingFlags.NonPublic;
 			BindingFlags staticFlag = ctx.Options.GroupStaticMembers ? (BindingFlags)0 : BindingFlags.Static;
 			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
 			
@@ -373,7 +379,7 @@ namespace Mono.Debugging.Evaluation
 						access = BindingFlags.Static | BindingFlags.Public | flattenFlag | nonNonPublicFlag;
 						values.Add (FilteredMembersSource.CreateStaticsNode (ctx, type, proxy, access));
 					}
-					if (ctx.Options.GroupPrivateMembers && ctx.Options.GroupPrivateMembers && HasMembers (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag))
+					if (groupPrivateMembers && HasMembers (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag))
 						values.Add (FilteredMembersSource.CreateNonPublicsNode (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag));
 					
 					if (!ctx.Options.FlattenHierarchy) {

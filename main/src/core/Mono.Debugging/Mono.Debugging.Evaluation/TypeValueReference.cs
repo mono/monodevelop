@@ -116,7 +116,8 @@ namespace Mono.Debugging.Evaluation
 				List<ObjectValue> list = new List<ObjectValue> ();
 				BindingFlags flattenFlag = Context.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
 				BindingFlags flags = BindingFlags.Static | BindingFlags.Public | flattenFlag;
-				if (!Context.Options.GroupPrivateMembers)
+				bool groupPrivateMembers = Context.Options.GroupPrivateMembers && (Context.Options.GroupUserPrivateMembers || Context.Adapter.IsExternalType (Context, type));
+				if (!groupPrivateMembers)
 					flags |= BindingFlags.NonPublic;
 				
 				ObjectValueNameTracker names = new ObjectValueNameTracker (Context);
@@ -149,7 +150,7 @@ namespace Mono.Debugging.Evaluation
 				
 				list.AddRange (nestedTypes);
 				
-				if (Context.Options.GroupPrivateMembers)
+				if (groupPrivateMembers)
 					list.Add (FilteredMembersSource.CreateNonPublicsNode (Context, type, null, BindingFlags.NonPublic | BindingFlags.Static | flattenFlag));
 				
 				if (!Context.Options.FlattenHierarchy) {

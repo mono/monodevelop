@@ -1,5 +1,12 @@
 2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/EvaluationOptions.cs:
+	* Mono.Debugging.Evaluation/TypeValueReference.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: By default,
+	  don't group private members for user classes.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* Mono.Debugging.csproj:
 	* Mono.Debugging.Client/ObjectValueFlags.cs:

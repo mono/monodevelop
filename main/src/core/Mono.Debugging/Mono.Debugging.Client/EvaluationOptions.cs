@@ -45,6 +45,7 @@ namespace Mono.Debugging.Client
 				ops.FlattenHierarchy = true;
 				ops.GroupPrivateMembers = true;
 				ops.GroupStaticMembers = true;
+				ops.GroupUserPrivateMembers = false;
 				return ops;
 			}
 		}
@@ -74,6 +75,8 @@ namespace Mono.Debugging.Client
 		public bool FlattenHierarchy { get; set; }
 		
 		public bool GroupPrivateMembers { get; set; }
+		
+		public bool GroupUserPrivateMembers { get; set; }
 		
 		public bool GroupStaticMembers { get; set; }
 	}
