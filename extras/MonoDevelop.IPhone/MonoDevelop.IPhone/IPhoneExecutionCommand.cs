@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
+using System.Collections.Generic;
 
 namespace MonoDevelop.IPhone
 {
@@ -50,6 +51,7 @@ namespace MonoDevelop.IPhone
 		public bool Simulator { get; private set; }
 		public TargetRuntime Runtime { get; private set; }
 		public TargetFramework Framework { get; private set; }
+		public IList<string> UserAssemblyPaths { get; set; }
 		
 		public override string CommandString {
 			get { return "[iphone]"; }

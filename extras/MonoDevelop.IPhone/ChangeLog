@@ -1,3 +1,13 @@
+2009-11-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.sln:
+	* MonoDevelop.Debugger.Soft.IPhone: Move the IPhone soft
+	  debugger addin to the IPhone sln.
+
+2009-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile: make the "clean" target work without mdtool.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure: Bump MD version.

@@ -1,3 +1,24 @@
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IPhoneProject.cs:
+	* IPhoneCommands.cs:
+	* IPhoneBuildExtension.cs: Track api changes.
+
+2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneOptionsPanel.cs: Make project file entries
+	  editable. Fixes "Bug 559191 - Cannot have blank startup
+	  xib".
+
+	* gtk-gui/gui.stetic: Flush.
+
+2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Track API. Set UserAssemblyPaths.
+
+	* IPhoneExecutionCommand.cs: New property for
+	  UserAssemblyPaths.
+
 2009-11-05  Carlo Kok  <ck@remobjects.com>
 
 	* CodeBehindGenerator.cs: fixed support for Partial Methods in 
