@@ -1,3 +1,10 @@
+2009-12-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Completion/AspLanguageBuilder.cs: Worked
+	  on ASP.NET support.
+
 2009-12-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: fixed

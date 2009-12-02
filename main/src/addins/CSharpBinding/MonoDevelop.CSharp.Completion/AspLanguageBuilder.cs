@@ -32,6 +32,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -41,66 +42,92 @@ namespace MonoDevelop.CSharp.Completion
 		StringBuilder pageRenderer = new StringBuilder ();
 		bool hasNamespace = false;
 		
-		public string Text {
-			get {
-				return document.ToString ();
-			}
-		}
-		
-		public int CursorPosition {
-			get;
-			private set;
-		}
-		
-		public int CursorLine {
-			get;
-			private set;
-		}
-		
-		public int CursorColumn {
-			get;
-			private set;
-		}
 		public bool SupportsLanguage (string language)
 		{
 			return language == "C#";
 		}
-		int line, column;
 		
-		public ParsedDocument Parse (string fileName, string text)
+		ParsedDocument Parse (string fileName, string text)
 		{
 			return new MonoDevelop.CSharp.Parser.NRefactoryParser ().Parse (null, fileName, text);
 		}
 		
+		public LocalDocumentInfo BuildLocalDocument (DocumentInfo documentInfo, ILocation location, string expressionText, bool isExpression)
+		{
+			StringBuilder result = new StringBuilder ();
+			string typeName = "Generated";
+			if (documentInfo.AspNetParsedDocument.PageInfo != null && !string.IsNullOrEmpty (documentInfo.AspNetParsedDocument.PageInfo.InheritedClass))
+				typeName = documentInfo.AspNetParsedDocument.PageInfo.InheritedClass;
+			
+			int idx = typeName.LastIndexOf ('.');
+			if (idx > 0) {
+				result.Append ("namespace ");
+				result.Append (typeName.Substring (0, idx));
+				result.AppendLine (" {");
+				typeName = typeName.Substring (idx + 1);
+				hasNamespace = true;
+			}
+			
+			result.Append ("partial class ");
+			result.AppendLine (typeName);
+			result.AppendLine ("{");
+		
+			if (isExpression) {
+				result.AppendLine ("void Generated ()");
+				result.AppendLine ("{");
+				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
+				foreach (KeyValuePair<ILocation, string> expressions in documentInfo.Expressions) {
+					if (expressions.Key.BeginLine > location.BeginLine || expressions.Key.BeginLine == location.BeginLine && expressions.Key.BeginColumn > location.BeginColumn - 5) 
+						continue;
+					//Console.WriteLine ("take xprt:" + expressions.Key.BeginLine  +"/" +expressions.Key.BeginColumn);
+					result.Append (expressions.Value);
+				}
+			}
+			result.Append (expressionText);
+			Console.WriteLine ("----");
+			Console.WriteLine (result);
+			return new LocalDocumentInfo () {
+				LocalDocument = result.ToString (),
+				ParsedLocalDocument = Parse (documentInfo.AspNetParsedDocument.FileName + ".local.cs", result.ToString ())
+			};
+		
+		}
+		
+		
 		public ICompletionDataList HandleCompletion (Document document, ProjectDom currentDom, char currentChar, ref int triggerWordLength)
 		{
-			CodeCompletionContext completionContext = new CodeCompletionContext ();
-			completionContext.TriggerOffset     = CursorPosition;
-			completionContext.TriggerLine       = CursorLine;
-			completionContext.TriggerLineOffset = CursorColumn;
-			
-			using (CSharpTextEditorCompletion completion = new CSharpTextEditorCompletion (document)) {
-				completion.Dom = currentDom;
-				return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
-			}
-		}
-		public IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char completionChar)
-		{
-			CodeCompletionContext completionContext = new CodeCompletionContext ();
-			completionContext.TriggerOffset     = CursorPosition;
-			completionContext.TriggerLine       = CursorLine;
-			completionContext.TriggerLineOffset = CursorColumn;
-			
-			using (CSharpTextEditorCompletion completion = new CSharpTextEditorCompletion (document)) {
-				completion.Dom = currentDom;
-				return completion.HandleParameterCompletion (completionContext, completionChar);
+			CodeCompletionContext codeCompletionContext;
+			using (CSharpTextEditorCompletion completion = CreateCompletion (document, currentDom, out codeCompletionContext)) {
+				return completion.HandleCodeCompletion (codeCompletionContext, currentChar, ref triggerWordLength);
 			}
 		}
 		
-		public void Build (MonoDevelop.AspNet.Parser.AspNetParsedDocument aspDocument, int line, int column)
+		public IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char completionChar)
 		{
-			this.line = line;
-			this.column = column;
+			CodeCompletionContext codeCompletionContext;
+			using (CSharpTextEditorCompletion completion = CreateCompletion (document, currentDom, out codeCompletionContext)) {
+				return completion.HandleParameterCompletion (codeCompletionContext, completionChar);
+			}
+		}
+
+		CSharpTextEditorCompletion CreateCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, out CodeCompletionContext codeCompletionContext)
+		{
+			codeCompletionContext = new CodeCompletionContext ();
+			codeCompletionContext.TriggerOffset = document.TextEditor.TextLength;
+			int line, column;
+			document.TextEditor.GetLineColumnFromPosition (codeCompletionContext.TriggerOffset, out line, out column);
+			codeCompletionContext.TriggerLine       = line;
+			codeCompletionContext.TriggerLineOffset = column - 1;
+			
+			CSharpTextEditorCompletion completion = new CSharpTextEditorCompletion (document);
+			
+			completion.Dom = currentDom;
+			return completion;
+		}
+		DocumentInfo documentInfo;
+		public DocumentInfo BuildDocument (MonoDevelop.AspNet.Parser.AspNetParsedDocument aspDocument)
+		{
+			documentInfo = new DocumentInfo ();
 			string typeName = "Generated";
 			if (aspDocument.PageInfo != null && !string.IsNullOrEmpty (aspDocument.PageInfo.InheritedClass))
 				typeName = aspDocument.PageInfo.InheritedClass;
@@ -120,19 +147,21 @@ namespace MonoDevelop.CSharp.Completion
 			
 			aspDocument.Document.RootNode.AcceptVisit (this);
 			Finish ();
+			documentInfo.AspNetParsedDocument = aspDocument;
+			documentInfo.ParsedDocument = Parse (aspDocument.FileName, document.ToString ());
+			return documentInfo;
 		}
 		
 		void Finish ()
 		{
 			document.Append ("void Render () {");
-			int expressionStart = document.Length;
 			document.Append (pageRenderer.ToString ());
 			document.Append ("}");
 			
 			document.Append ("}");
 			if (hasNamespace)
 				document.Append ("}");
-			
+			/*
 			CursorPosition = buildCursorPosition;
 			if (buildCursorIsExpression)
 			    CursorPosition += expressionStart;
@@ -161,43 +190,18 @@ namespace MonoDevelop.CSharp.Completion
 					CursorColumn = curColumn;
 					break;
 				}
-			}
+			}*/
 		}
-		
-		bool buildCursorIsExpression = false;
-		int buildCursorPosition = 0;
 		
 		public override void Visit (ExpressionNode node)
 		{
 			string text = node.Expression;
-			StringBuilder sb = node.IsExpression ? pageRenderer : document;
-			if (node.ContainsPosition (this.line, this.column) == 0) {
-				buildCursorPosition = sb.Length + text.Length;
-				buildCursorIsExpression = node.IsExpression;
-				
-				int curLine = node.Location.BeginLine;
-				int curColumn = node.Location.BeginColumn + 
-					(node.IsExpression ? 3 : 2); // tag len : <% or <%= 
-				
-				for (int i = 0; i < text.Length; i++) {
-					switch (text[i]) {
-					case '\n':
-						if (i + 1 < text.Length && text[i + 1] == '\r')
-							i++;
-						goto case '\r';
-					case '\r':
-						if (this.line == curLine && this.column > curColumn)
-							buildCursorPosition = sb.Length + i;
-						curLine++;
-						curColumn = 1;
-						break;
-					default:
-						curColumn++;
-						break;
-					}
-					if (this.line == curLine && this.column == curColumn)
-						buildCursorPosition = sb.Length + i;
-				}
+			StringBuilder sb;
+			if (node.IsExpression) {
+				documentInfo.Expressions.Add (new KeyValuePair<ILocation, string> (node.Location ,text));
+				sb = pageRenderer;
+			} else {
+				sb = document;
 			}
 			sb.AppendLine (text);
 		}

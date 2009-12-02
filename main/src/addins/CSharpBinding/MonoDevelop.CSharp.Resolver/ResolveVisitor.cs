@@ -411,6 +411,7 @@ namespace MonoDevelop.CSharp.Resolver
 				return CreateResult (DomReturnType.Void);
 				
 			ThisResolveResult result = new ThisResolveResult ();
+			
 			result.CallingType   = resolver.CallingType;
 			result.CallingMember = resolver.CallingMember;
 			result.UnresolvedType = result.ResolvedType  = DomReturnType.GetSharedReturnType (new DomReturnType (resolver.CallingType));

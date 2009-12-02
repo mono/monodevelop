@@ -142,8 +142,7 @@ namespace MonoDevelop.CSharp.Resolver
 			foreach (IMember member in type.Members) {
 				if (!(member is IMethod || member is IProperty || member is IEvent || member is IField))
 					continue;
-//				Console.WriteLine (member.Location.Line  + " --- " + location.Line);
-				if (member.Location.Line == location.Line || member.BodyRegion.Contains (location)) {
+				if (member.Location.Line == location.Line || member.BodyRegion.Start <= location && (location < member.BodyRegion.End || member.BodyRegion.End.IsEmpty)) {
 					return member;
 				}
 			}
@@ -185,6 +184,7 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 		}
+		
 		bool setupLookupTableVisitor = false;
 		int lookupVariableLine = 0;
 		internal void SetupParsedCompilationUnit (ICSharpCode.NRefactory.Ast.CompilationUnit unit)
@@ -848,6 +848,7 @@ namespace MonoDevelop.CSharp.Resolver
 			int endLine   = member.Location.Line;
 			if (!member.BodyRegion.IsEmpty) 
 				endLine = member.BodyRegion.End.Line + 1;
+			
 			string text;
 			result.Append ("class " + member.DeclaringType.Name + " {");
 			if (editor != null) {
@@ -858,7 +859,8 @@ namespace MonoDevelop.CSharp.Resolver
 				int endPos = editor.GetPositionFromLineColumn (endLine, editor.GetLineLength (endLine));
 				if (endPos < 0)
 					endPos = editor.TextLength;
-				text = editor.GetText (editor.GetPositionFromLineColumn (startLine, 0), endPos);
+				int startPos = Math.Max (0, editor.GetPositionFromLineColumn (startLine, 0));
+				text = editor.GetText (startPos, endPos);
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 				doc.Text = File.ReadAllText (fileName) ?? "";
