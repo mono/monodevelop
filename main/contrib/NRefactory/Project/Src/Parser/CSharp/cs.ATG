@@ -1304,7 +1304,7 @@ Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
 	SYNC "}"
 	    (.
 	       stmt = blockStmt;
-	       blockStmt.EndLocation = t.EndLocation;
+	       blockStmt.EndLocation = t.Kind != Tokens.CloseCurlyBrace ? Location.Empty : t.EndLocation;
 	       compilationUnit.BlockEnd();
 	    .)
 .
