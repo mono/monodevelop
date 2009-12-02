@@ -1,3 +1,8 @@
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs: Use the new
+	  automatic overflow tooltips.
+
 2009-12-01  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

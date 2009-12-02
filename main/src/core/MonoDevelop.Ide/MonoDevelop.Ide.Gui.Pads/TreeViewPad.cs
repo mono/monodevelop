@@ -72,6 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public TreeViewPad ()
 		{
 			treeView.Tree.CursorChanged += new EventHandler (OnSelectionChanged);
+			treeView.Tree.EnableAutoTooltips ();
 		}
 		
 		protected virtual void OnSelectionChanged (object sender, EventArgs args)
