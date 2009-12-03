@@ -1,5 +1,11 @@
 2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs:
+	  Don't crash MD if one of the Completed event handlers throws
+	  an exception in an async dispatch.
+
+2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Gui/DesktopApplication.cs: Add some sanity
 	  checks for DesktopApplication.
 
