@@ -113,8 +113,11 @@ namespace MonoDevelop.Debugger.Soft
 				try {
 					callback (ar);
 				} catch (Exception ex) {
-					MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Soft debugger error: " + ex.Message);
-					LoggingService.LogError ("Unhandled error launching soft debugger", ex);
+					//only show the exception if we didn't cause it by cancelling & closing the socket
+					if (!(connectionHandle == null && ex is SocketException)) {
+						MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Soft debugger error: " + ex.Message);
+						LoggingService.LogError ("Unhandled error launching soft debugger", ex);
+					}
 					EndSession ();
 				}
 			};
