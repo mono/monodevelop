@@ -423,7 +423,7 @@ namespace DebuggerServer
 			return obj.GetType ().GetProperty (name).GetValue (obj, null);
 		}
 
-		public override IEnumerable<ValueReference> GetMembers (EvaluationContext gctx, object tt, object ob, BindingFlags bindingFlags)
+		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext gctx, object tt, object ob, BindingFlags bindingFlags)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext)gctx;
 			TargetStructObject co = ctx.GetRealObject (ob) as TargetStructObject; // It can be a TargetObjectObject
