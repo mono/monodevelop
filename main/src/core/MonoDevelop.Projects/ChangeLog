@@ -1,3 +1,8 @@
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Name
+	  the parser thread.
+
 2009-12-01  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

@@ -787,6 +787,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (!threadRunning) {
 					threadRunning = true;
 					Thread t = new Thread(new ThreadStart(ParserUpdateThread));
+					t.Name = "Background parser";
 					t.IsBackground  = true;
 					t.Start();
 				}
