@@ -1,3 +1,9 @@
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* RemoteSoftDebuggerSession.cs: If we get an exception while
+	  connecting, kill the session, or it doesn't exit and the
+	  thread pads start throwing NREs on a null vm.
+
 2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerSession.cs: Run CancelAsyncOperations in a

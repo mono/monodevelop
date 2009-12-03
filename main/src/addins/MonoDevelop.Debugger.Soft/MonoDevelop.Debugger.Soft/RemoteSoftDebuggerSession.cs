@@ -60,7 +60,12 @@ namespace MonoDevelop.Debugger.Soft
 			IPEndPoint dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
 			IPEndPoint conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
 			
-			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, HandleCallbackErrors (ListenCallback)));
+			try {
+				OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, HandleCallbackErrors (ListenCallback)));
+			} catch {
+				EndSession ();
+				throw;
+			}
 			ShowListenDialog (dsi);
 		}
 		
