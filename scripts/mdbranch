@@ -2,9 +2,9 @@
 version=1.9
 prefix=/usr/local
 profile=dist
-trunkRoot=svn+ssh://mono-cvs.ximian.com/source/trunk/monodevelop
-branchesRoot=svn+ssh://mono-cvs.ximian.com/source/branches/monodevelop
-tagsRoot=svn+ssh://mono-cvs.ximian.com/source/tags/monodevelop
+trunkRoot=svn+ssh://$USER@mono-cvs.ximian.com/source/trunk/monodevelop
+branchesRoot=svn+ssh://$USER@mono-cvs.ximian.com/source/branches/monodevelop
+tagsRoot=svn+ssh://$USER@mono-cvs.ximian.com/source/tags/monodevelop
 srcVersion=
 
 sourceRoot=$trunkRoot
