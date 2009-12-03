@@ -33,7 +33,7 @@ using DC = Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public abstract class ValueReference: RemoteFrameObject, IObjectValueSource
+	public abstract class ValueReference: RemoteFrameObject, IObjectValueSource, IObjectSource
 	{
 		EvaluationContext ctx;
 		EvaluationOptions originalOptions;
@@ -171,7 +171,7 @@ namespace Mono.Debugging.Evaluation
 		{
 			return GetChildren (path, index, count);
 		}
-
+		
 		public virtual string CallToString ( )
 		{
 			return ctx.Adapter.CallToString (ctx, Value);
@@ -180,7 +180,7 @@ namespace Mono.Debugging.Evaluation
 		public virtual ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			try {
-				return ctx.Adapter.GetObjectValueChildren (GetChildrenContext (), Value, index, count);
+				return ctx.Adapter.GetObjectValueChildren (GetChildrenContext (), this, Value, index, count);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				return new ObjectValue [] { Mono.Debugging.Client.ObjectValue.CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly) };
@@ -192,12 +192,14 @@ namespace Mono.Debugging.Evaluation
 			try {
 				object val = Value;
 				if (ctx.Adapter.IsClassInstance (Context, val))
-					return ctx.Adapter.GetMembersSorted (GetChildrenContext (), ctx.Adapter.GetValueType (Context, val), val);
+					return ctx.Adapter.GetMembersSorted (GetChildrenContext (), this, ctx.Adapter.GetValueType (Context, val), val);
 			} catch {
 				// Ignore
 			}
-			return new ValueReference[0];
+			return new ValueReference [0];
 		}
+		
+		public IObjectSource ParentSource { get; internal set; }
 
 		EvaluationContext GetChildrenContext ( )
 		{
@@ -238,7 +240,7 @@ namespace Mono.Debugging.Evaluation
 			}
 			
 			if (ctx.Adapter.IsClassInstance (Context, obj)) {
-				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (), obj, name);
+				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (), this, obj, name);
 				return val;
 			}
 					

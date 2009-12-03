@@ -35,23 +35,25 @@ namespace Mono.Debugging.Evaluation
 	{
 		object obj;
 		EvaluationContext ctx;
+		IObjectSource objectSource;
 
-		public RawViewSource (EvaluationContext ctx, object obj)
+		public RawViewSource (EvaluationContext ctx, IObjectSource objectSource, object obj)
 		{
 			this.ctx = ctx;
 			this.obj = obj;
+			this.objectSource = objectSource;
 		}
 
-		public static ObjectValue CreateRawView (EvaluationContext ctx, object obj)
+		public static ObjectValue CreateRawView (EvaluationContext ctx, IObjectSource objectSource, object obj)
 		{
-			RawViewSource src = new RawViewSource (ctx, obj);
+			RawViewSource src = new RawViewSource (ctx, objectSource, obj);
 			src.Connect ();
 			return ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 		}
 		
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
-			return ctx.Adapter.GetObjectValueChildren (ctx, ctx.Adapter.GetValueType (ctx, obj), obj, index, count, false);
+			return ctx.Adapter.GetObjectValueChildren (ctx, objectSource, ctx.Adapter.GetValueType (ctx, obj), obj, index, count, false);
 		}
 		
 		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)

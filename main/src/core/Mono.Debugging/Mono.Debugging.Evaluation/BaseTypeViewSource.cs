@@ -35,17 +35,19 @@ namespace Mono.Debugging.Evaluation
 		EvaluationContext ctx;
 		object type;
 		object obj;
+		IObjectSource objectSource;
 		
-		public BaseTypeViewSource (EvaluationContext ctx, object type, object obj)
+		public BaseTypeViewSource (EvaluationContext ctx, IObjectSource objectSource, object type, object obj)
 		{
 			this.ctx = ctx;
 			this.type = type;
 			this.obj = obj;
+			this.objectSource = objectSource;
 		}
 		
-		public static ObjectValue CreateBaseTypeView (EvaluationContext ctx, object type, object obj)
+		public static ObjectValue CreateBaseTypeView (EvaluationContext ctx, IObjectSource objectSource, object type, object obj)
 		{
-			BaseTypeViewSource src = new BaseTypeViewSource (ctx, type, obj);
+			BaseTypeViewSource src = new BaseTypeViewSource (ctx, objectSource, type, obj);
 			src.Connect ();
 			string tname = ctx.Adapter.GetDisplayTypeName (ctx, type);
 			return ObjectValue.CreateObject (src, new ObjectPath ("base"), tname, "{" + tname + "}", ObjectValueFlags.Type|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
@@ -54,7 +56,7 @@ namespace Mono.Debugging.Evaluation
 		#region IObjectValueSource implementation
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
-			return ctx.Adapter.GetObjectValueChildren (ctx, type, obj, index, count, false);
+			return ctx.Adapter.GetObjectValueChildren (ctx, objectSource, type, obj, index, count, false);
 		}
 		
 		

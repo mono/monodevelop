@@ -1,3 +1,21 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Evaluation/IObjectSource.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/BaseTypeViewSource.cs:
+	* Mono.Debugging.Evaluation/TypeValueReference.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Created
+	  the IObjectSource interface, which can be used to keep track
+	  of the origin of an object. ValueReference objects now have
+	  a reference to the IObjectSource that generated them. This
+	  source can be used to update back struct instances.
+
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugging.Evaluation/TimedEvaluator.cs: Name threads to

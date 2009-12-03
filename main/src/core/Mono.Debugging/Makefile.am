@@ -54,6 +54,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/ExpressionEvaluator.cs \
 	Mono.Debugging.Evaluation/FilteredMembersSource.cs \
 	Mono.Debugging.Evaluation/ICollectionAdaptor.cs \
+	Mono.Debugging.Evaluation/IObjectSource.cs \
 	Mono.Debugging.Evaluation/LiteralValueReference.cs \
 	Mono.Debugging.Evaluation/NamespaceValueReference.cs \
 	Mono.Debugging.Evaluation/NRefactoryEvaluator.cs \
