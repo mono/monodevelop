@@ -56,8 +56,6 @@ namespace MonoDevelop.Debugger.Soft
 				flags |= ObjectValueFlags.Internal;
 			else if (field.IsFamilyOrAssembly)
 				flags |= ObjectValueFlags.InternalProtected;
-			if (field.DeclaringType.IsValueType)
-				flags |= ObjectValueFlags.ReadOnly; // Setting field values on structs is not currently supported by sdb
 		}
 		
 		public override ObjectValueFlags Flags {
@@ -90,14 +88,39 @@ namespace MonoDevelop.Debugger.Soft
 					return declaringType.GetValue (field);
 				else if (obj is ObjectMirror)
 					return ((ObjectMirror)obj).GetValue (field);
-				else
-					return ((StructMirror)obj) [field.Name];
+				else {
+					StructMirror sm = (StructMirror)obj;
+					int idx = 0;
+					foreach (FieldInfoMirror f in sm.Type.GetFields ()) {
+						if (f.IsStatic) continue;
+						if (f == field)
+							break;
+						idx++;
+					}
+					return sm.Fields [idx];
+				}
 			}
 			set {
 				if (obj == null)
 					declaringType.SetValue (field, (Value)value);
 				else if (obj is ObjectMirror)
 					((ObjectMirror)obj).SetValue (field, (Value)value);
+				else if (obj is StructMirror) {
+					StructMirror sm = (StructMirror)obj;
+					int idx = 0;
+					foreach (FieldInfoMirror f in sm.Type.GetFields ()) {
+						if (f.IsStatic) continue;
+						if (f == field)
+							break;
+						idx++;
+					}
+					if (idx != -1) {
+						sm.Fields [idx] = (Value)value;
+						// Structs are handled by-value in the debugger, so the source of the object has to be updated
+						if (ParentSource != null && obj != null)
+							ParentSource.Value = obj;
+					}
+				}
 				else
 					throw new NotSupportedException ();
 			}

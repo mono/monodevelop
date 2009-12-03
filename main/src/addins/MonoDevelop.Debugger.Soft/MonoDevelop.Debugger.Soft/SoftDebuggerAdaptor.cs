@@ -203,7 +203,7 @@ namespace MonoDevelop.Debugger.Soft
 			}
 		}
 
-		public override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
+		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
 			TypeMirror type = (TypeMirror) t;
 			while (type != null) {
@@ -218,7 +218,7 @@ namespace MonoDevelop.Debugger.Soft
 			return null;
 		}
 
-		public override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags)
+		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags)
 		{
 			TypeMirror type = t as TypeMirror;
 			while (type != null) {

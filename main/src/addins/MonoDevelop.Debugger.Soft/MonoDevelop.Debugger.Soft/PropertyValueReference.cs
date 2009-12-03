@@ -62,7 +62,7 @@ namespace MonoDevelop.Debugger.Soft
 			else if (getter.IsFamilyOrAssembly)
 				flags |= ObjectValueFlags.InternalProtected;
 			if (property.DeclaringType.IsValueType)
-				flags |= ObjectValueFlags.ReadOnly; // Setting property values on structs is not currently supported by sdb
+				flags |= ObjectValueFlags.ReadOnly; // Setting property values on structs is not supported by sdb
 		}
 		
 		public override ObjectValueFlags Flags {

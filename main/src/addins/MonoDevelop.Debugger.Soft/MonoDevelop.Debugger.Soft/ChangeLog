@@ -1,3 +1,10 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* FieldValueReference.cs:
+	* SoftDebuggerAdaptor.cs:
+	* PropertyValueReference.cs: Allow modifying field values on
+	  structs. Track api changes.
+
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugger.Soft.dll: Updated, fixes debugger keeping 
