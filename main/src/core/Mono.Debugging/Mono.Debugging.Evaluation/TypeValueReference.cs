@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Mono.Debugging.Client;
+using System.Diagnostics;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -97,7 +98,7 @@ namespace Mono.Debugging.Evaluation
 
 		public override ValueReference GetChild (string name)
 		{
-			foreach (ValueReference val in Context.Adapter.GetMembers (Context, type, null)) {
+			foreach (ValueReference val in Context.Adapter.GetMembers (Context, this, type, null)) {
 				if (val.Name == name)
 					return val;
 			}
@@ -113,8 +114,32 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				List<ObjectValue> list = new List<ObjectValue> ();
-				foreach (ValueReference val in Context.Adapter.GetMembersSorted (Context, type, null, BindingFlags.Public | BindingFlags.Static))
-					list.Add (val.CreateObjectValue ());
+				BindingFlags flattenFlag = Context.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
+				BindingFlags flags = BindingFlags.Static | BindingFlags.Public | flattenFlag;
+				bool groupPrivateMembers = Context.Options.GroupPrivateMembers && (Context.Options.GroupUserPrivateMembers || Context.Adapter.IsExternalType (Context, type));
+				if (!groupPrivateMembers)
+					flags |= BindingFlags.NonPublic;
+				
+				ObjectValueNameTracker names = new ObjectValueNameTracker (Context);
+				
+				TypeDisplayData tdata = Context.Adapter.GetTypeDisplayData (Context, type);
+				object tdataType = type;
+				
+				foreach (ValueReference val in Context.Adapter.GetMembersSorted (Context, this, type, null, flags)) {
+					object decType = val.DeclaringType;
+					if (decType != null && decType != tdataType) {
+						tdataType = decType;
+						tdata = Context.Adapter.GetTypeDisplayData (Context, decType);
+					}
+					DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
+					if (state == DebuggerBrowsableState.Never)
+						continue;
+
+					ObjectValue oval = val.CreateObjectValue ();
+					names.FixName (val, oval);
+					list.Add (oval);
+				}
+				
 				List<ObjectValue> nestedTypes = new List<ObjectValue> ();
 				foreach (object t in Context.Adapter.GetNestedTypes (Context, type))
 					nestedTypes.Add (new TypeValueReference (Context, t).CreateObjectValue ());
@@ -122,11 +147,25 @@ namespace Mono.Debugging.Evaluation
 				nestedTypes.Sort (delegate (ObjectValue v1, ObjectValue v2) {
 					return v1.Name.CompareTo (v2.Name);
 				});
+				
 				list.AddRange (nestedTypes);
 				
-				list.Add (FilteredMembersSource.CreateNode (Context, type, null, BindingFlags.NonPublic | BindingFlags.Static));
+				if (groupPrivateMembers)
+					list.Add (FilteredMembersSource.CreateNonPublicsNode (Context, this, type, null, BindingFlags.NonPublic | BindingFlags.Static | flattenFlag));
+				
+				if (!Context.Options.FlattenHierarchy) {
+					object baseType = Context.Adapter.GetBaseType (Context, type, false);
+					if (baseType != null) {
+						TypeValueReference baseRef = new TypeValueReference (Context, baseType);
+						ObjectValue baseVal = baseRef.CreateObjectValue (false);
+						baseVal.Name = "base";
+						list.Insert (0, baseVal);
+					}
+				}
+				
 				return list.ToArray ();
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				Console.WriteLine (ex);
 				Context.WriteDebuggerOutput (ex.Message);
 				return new ObjectValue [0];
@@ -137,7 +176,7 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				List<ValueReference> list = new List<ValueReference> ();
-				list.AddRange (Context.Adapter.GetMembersSorted (Context, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static));
+				list.AddRange (Context.Adapter.GetMembersSorted (Context, this, type, null, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static));
 				
 				List<ValueReference> nestedTypes = new List<ValueReference> ();
 				foreach (object t in Context.Adapter.GetNestedTypes (Context, type))

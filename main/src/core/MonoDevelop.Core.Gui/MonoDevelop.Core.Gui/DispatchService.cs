@@ -57,6 +57,7 @@ namespace MonoDevelop.Core.Gui
 			arrBackgroundQueue = new ArrayList ();
 			arrGuiQueue = new ArrayList ();
 			thrBackground = new Thread (new ThreadStart (backgroundDispatcher));
+			thrBackground.Name = "Background dispatcher";
 			thrBackground.IsBackground = true;
 			thrBackground.Priority = ThreadPriority.Lowest;
 			thrBackground.Start ();
@@ -167,6 +168,7 @@ namespace MonoDevelop.Core.Gui
 		{
 			GenericMessageContainer smc = new GenericMessageContainer (cb, false);
 			Thread t = new Thread (new ThreadStart (smc.Run));
+			t.Name = "Message dispatcher";
 			t.IsBackground = true;
 			t.Start ();
 		}
@@ -175,6 +177,7 @@ namespace MonoDevelop.Core.Gui
 		{
 			StatefulMessageContainer smc = new StatefulMessageContainer (cb, state, false);
 			Thread t = new Thread (new ThreadStart (smc.Run));
+			t.Name = "Message dispatcher";
 			t.IsBackground = true;
 			t.Start ();
 		}

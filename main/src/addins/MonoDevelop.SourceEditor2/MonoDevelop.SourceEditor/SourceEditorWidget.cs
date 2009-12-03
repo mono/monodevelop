@@ -309,7 +309,7 @@ namespace MonoDevelop.SourceEditor
 							                                       region.Region, type);
 							
 							//and, if necessary, set its fold state
-							if (marker != null && setFolded) {
+							if (marker != null && setFolded && widget.firstUpdate) {
 								// only fold on document open, later added folds are NOT folded by default.
 								marker.IsFolded = folded;
 							}
@@ -318,6 +318,7 @@ namespace MonoDevelop.SourceEditor
 							
 						}
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments, runInThread);
+						widget.firstUpdate = false;
 					}
 					widget.UpdateAutocorTimer ();
 					widget.PopulateClassCombo (runInThread);
@@ -329,6 +330,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		readonly object syncObject = new object();
+		bool firstUpdate = true;
 		ParseInformationUpdaterWorkerThread parseInformationUpdaterWorkerThread = null;
 		
 		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)

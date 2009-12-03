@@ -1,3 +1,83 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* FieldValueReference.cs:
+	* SoftDebuggerAdaptor.cs:
+	* PropertyValueReference.cs: Allow modifying field values on
+	  structs. Track api changes.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugger.Soft.dll: Updated, fixes debugger keeping 
+	  socket open after cancellation.
+	* Mono.Debugger.Soft.dll.mdb:
+	* Makefile.am: Include the debugger mdb file.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Name threads to make debugging
+	  easier.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Avoid NREs disposing session that
+	  never connected.
+
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* FieldValueReference.cs:
+	* PropertyValueReference.cs: Don't allow setting field or
+	  property values on structs. It is not supported for now.
+
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Properly handle boxed primitive
+	  values.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* RemoteSoftDebuggerSession.cs: Revert the previous change, as
+	  it's no longer necessary after making the base
+	  DebuggerSession terminate the session if Run throws.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* RemoteSoftDebuggerSession.cs: If we get an exception while
+	  connecting, kill the session, or it doesn't exit and the
+	  thread pads start throwing NREs on a null vm.
+
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Run CancelAsyncOperations in a
+	  background thread, since it can block and cause a deadlock
+	  with the main session lock. Fixes bug #558273.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Don't show the socket exception
+	  that's caused by cancelling the session.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs:
+	* SoftDebuggerSession.cs: Implemented IsExternalType.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Implement GetBaseType. Hide members
+	  that have the CompilerGenerated attribute.
+
+	* FieldValueReference.cs:
+	* PropertyValueReference.cs: Implement DeclaringType. Set the
+	  correct flags for fields and properties.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Properly handle properties with
+	  private accessors.
+
+	* PropertyValueReference.cs: Set the ReadOnly flag if the
+	  property is read-only.
+
 2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PropertyValueReference.cs: Allow getting and setting

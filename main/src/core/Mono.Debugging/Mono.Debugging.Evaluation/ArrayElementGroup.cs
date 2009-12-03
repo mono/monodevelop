@@ -101,7 +101,7 @@ namespace Mono.Debugging.Evaluation
 				// Looking for children of an array element
 				int[] idx = StringToIndices (path [1]);
 				object obj = array.GetElement (idx);
-				return ctx.Adapter.GetObjectValueChildren (ctx, obj, firstItemIndex, count);
+				return ctx.Adapter.GetObjectValueChildren (ctx, new ArrayObjectSource (array, path[1]), obj, firstItemIndex, count);
 			}
 			
 			int lowerBound;
@@ -232,7 +232,7 @@ namespace Mono.Debugging.Evaluation
 			return sb.ToString ();
 		}
 		
-		int[] StringToIndices (string str)
+		internal static int[] StringToIndices (string str)
 		{
 			string[] sidx = str.Split (',');
 			int[] idx = new int [sidx.Length];
@@ -300,6 +300,27 @@ namespace Mono.Debugging.Evaluation
 					val.Name = cctx.Adapter.EvaluateDisplayString (cctx, elem, tdata.NameDisplayString);
 			}
 			return val;
+		}
+	}
+	
+	class ArrayObjectSource: IObjectSource
+	{
+		ICollectionAdaptor source;
+		string path;
+		
+		public ArrayObjectSource (ICollectionAdaptor source, string path)
+		{
+			this.source = source;
+			this.path = path;
+		}
+		
+		public object Value {
+			get {
+				return source.GetElement (ArrayElementGroup.StringToIndices (path));
+			}
+			set {
+				source.SetElement (ArrayElementGroup.StringToIndices (path), value);
+			}
 		}
 	}
 }

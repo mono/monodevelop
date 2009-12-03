@@ -113,8 +113,11 @@ namespace MonoDevelop.Debugger.Soft
 				try {
 					callback (ar);
 				} catch (Exception ex) {
-					MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Soft debugger error: " + ex.Message);
-					LoggingService.LogError ("Unhandled error launching soft debugger", ex);
+					//only show the exception if we didn't cause it by cancelling & closing the socket
+					if (!(connectionHandle == null && ex is SocketException)) {
+						MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Soft debugger error: " + ex.Message);
+						LoggingService.LogError ("Unhandled error launching soft debugger", ex);
+					}
 					EndSession ();
 				}
 			};
@@ -182,6 +185,7 @@ namespace MonoDevelop.Debugger.Soft
 			HandleEvent (vm.GetNextEvent ());
 			
 			eventHandler = new Thread (EventHandler);
+			eventHandler.Name = "SDB event handler";
 			eventHandler.Start ();
 		}
 		
@@ -201,6 +205,7 @@ namespace MonoDevelop.Debugger.Soft
 			t = new Thread (delegate () {
 				ReadOutput (reader, error);
 			});
+			t.Name = error? "SDB error reader" : "SDB output reader";
 			t.IsBackground = true;
 			t.Start ();
 
@@ -255,18 +260,20 @@ namespace MonoDevelop.Debugger.Soft
 			base.Dispose ();
 			if (!exited) {
 				EndLaunch ();
-				ThreadPool.QueueUserWorkItem (delegate {
-					try {
-						vm.Exit (0);
-					} catch (Exception ex) {
-						Console.WriteLine (ex);
-					}
-					try {
-						vm.Dispose ();
-					} catch (Exception ex) {
-						Console.WriteLine (ex);
-					}
-				});
+				if (vm != null) {
+					ThreadPool.QueueUserWorkItem (delegate {
+						try {
+							vm.Exit (0);
+						} catch (Exception ex) {
+							Console.WriteLine (ex);
+						}
+						try {
+							vm.Dispose ();
+						} catch (Exception ex) {
+							Console.WriteLine (ex);
+						}
+					});
+				}
 				exited = true;
 			}
 			Adaptor.Dispose ();
@@ -279,10 +286,12 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnContinue ()
 		{
-			Adaptor.CancelAsyncOperations ();
-			OnResumed ();
-			vm.Resume ();
-			DequeueEventsForFirstThread ();
+			ThreadPool.QueueUserWorkItem (delegate {
+				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
+				OnResumed ();
+				vm.Resume ();
+				DequeueEventsForFirstThread ();
+			});
 		}
 
 		protected override void OnDetach ()
@@ -300,16 +309,18 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnFinish ()
 		{
-			Adaptor.CancelAsyncOperations ();
-			var req = vm.CreateStepRequest (current_thread);
-			req.Depth = StepDepth.Out;
-			req.Size = StepSize.Line;
-			if (assemblyFilters != null && assemblyFilters.Count > 0)
-				req.AssemblyFilter = assemblyFilters;
-			req.Enabled = true;
-			OnResumed ();
-			vm.Resume ();
-			DequeueEventsForFirstThread ();
+			ThreadPool.QueueUserWorkItem (delegate {
+				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
+				var req = vm.CreateStepRequest (current_thread);
+				req.Depth = StepDepth.Out;
+				req.Size = StepSize.Line;
+				if (assemblyFilters != null && assemblyFilters.Count > 0)
+					req.AssemblyFilter = assemblyFilters;
+				req.Enabled = true;
+				OnResumed ();
+				vm.Resume ();
+				DequeueEventsForFirstThread ();
+			});
 		}
 
 		protected override ProcessInfo[] OnGetProcesses ()
@@ -470,17 +481,19 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnNextLine ()
 		{
-			Adaptor.CancelAsyncOperations ();
-			var req = vm.CreateStepRequest (current_thread);
-			req.Depth = StepDepth.Over;
-			req.Size = StepSize.Line;
-			if (assemblyFilters != null && assemblyFilters.Count > 0)
-				req.AssemblyFilter = assemblyFilters;
-			req.Enabled = true;
-			currentStepRequest = req;
-			OnResumed ();
-			vm.Resume ();
-			DequeueEventsForFirstThread ();
+			ThreadPool.QueueUserWorkItem (delegate {
+				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
+				var req = vm.CreateStepRequest (current_thread);
+				req.Depth = StepDepth.Over;
+				req.Size = StepSize.Line;
+				if (assemblyFilters != null && assemblyFilters.Count > 0)
+					req.AssemblyFilter = assemblyFilters;
+				req.Enabled = true;
+				currentStepRequest = req;
+				OnResumed ();
+				vm.Resume ();
+				DequeueEventsForFirstThread ();
+			});
 		}
 
 		void EventHandler ()
@@ -855,17 +868,19 @@ namespace MonoDevelop.Debugger.Soft
 
 		protected override void OnStepLine ()
 		{
-			Adaptor.CancelAsyncOperations ();
-			var req = vm.CreateStepRequest (current_thread);
-			req.Depth = StepDepth.Into;
-			req.Size = StepSize.Line;
-			if (assemblyFilters != null && assemblyFilters.Count > 0)
-				req.AssemblyFilter = assemblyFilters;
-			req.Enabled = true;
-			currentStepRequest = req;
-			OnResumed ();
-			vm.Resume ();
-			DequeueEventsForFirstThread ();
+			ThreadPool.QueueUserWorkItem (delegate {
+				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
+				var req = vm.CreateStepRequest (current_thread);
+				req.Depth = StepDepth.Into;
+				req.Size = StepSize.Line;
+				if (assemblyFilters != null && assemblyFilters.Count > 0)
+					req.AssemblyFilter = assemblyFilters;
+				req.Enabled = true;
+				currentStepRequest = req;
+				OnResumed ();
+				vm.Resume ();
+				DequeueEventsForFirstThread ();
+			});
 		}
 
 		protected override void OnStop ()
@@ -917,6 +932,11 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			return frame.Method == null || string.IsNullOrEmpty (frame.FileName)
 				|| (assemblyFilters != null && !assemblyFilters.Contains (frame.Method.DeclaringType.Assembly));
+		}
+		
+		public bool IsExternalCode (TypeMirror type)
+		{
+			return assemblyFilters != null && !assemblyFilters.Contains (type.Assembly);
 		}
 	}
 	

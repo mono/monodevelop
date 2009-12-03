@@ -36,17 +36,31 @@ namespace MonoDevelop.Debugger.Soft
 		FieldInfoMirror field;
 		object obj;
 		TypeMirror declaringType;
+		ObjectValueFlags flags;
 		
 		public FieldValueReference (EvaluationContext ctx, FieldInfoMirror field, object obj, TypeMirror declaringType): base (ctx)
 		{
 			this.field = field;
 			this.obj = obj;
 			this.declaringType = declaringType;
+			flags = ObjectValueFlags.Field;
+			if (field.IsStatic)
+				flags |= ObjectValueFlags.Global;
+			if (field.IsPublic)
+				flags |= ObjectValueFlags.Public;
+			else if (field.IsPrivate)
+				flags |= ObjectValueFlags.Private;
+			else if (field.IsFamily)
+				flags |= ObjectValueFlags.Protected;
+			else if (field.IsFamilyAndAssembly)
+				flags |= ObjectValueFlags.Internal;
+			else if (field.IsFamilyOrAssembly)
+				flags |= ObjectValueFlags.InternalProtected;
 		}
 		
 		public override ObjectValueFlags Flags {
 			get {
-				return ObjectValueFlags.Field;
+				return flags;
 			}
 		}
 
@@ -61,6 +75,12 @@ namespace MonoDevelop.Debugger.Soft
 				return field.FieldType;
 			}
 		}
+		
+		public override object DeclaringType {
+			get {
+				return field.DeclaringType;
+			}
+		}
 
 		public override object Value {
 			get {
@@ -68,14 +88,39 @@ namespace MonoDevelop.Debugger.Soft
 					return declaringType.GetValue (field);
 				else if (obj is ObjectMirror)
 					return ((ObjectMirror)obj).GetValue (field);
-				else
-					return ((StructMirror)obj) [field.Name];
+				else {
+					StructMirror sm = (StructMirror)obj;
+					int idx = 0;
+					foreach (FieldInfoMirror f in sm.Type.GetFields ()) {
+						if (f.IsStatic) continue;
+						if (f == field)
+							break;
+						idx++;
+					}
+					return sm.Fields [idx];
+				}
 			}
 			set {
 				if (obj == null)
 					declaringType.SetValue (field, (Value)value);
 				else if (obj is ObjectMirror)
 					((ObjectMirror)obj).SetValue (field, (Value)value);
+				else if (obj is StructMirror) {
+					StructMirror sm = (StructMirror)obj;
+					int idx = 0;
+					foreach (FieldInfoMirror f in sm.Type.GetFields ()) {
+						if (f.IsStatic) continue;
+						if (f == field)
+							break;
+						idx++;
+					}
+					if (idx != -1) {
+						sm.Fields [idx] = (Value)value;
+						// Structs are handled by-value in the debugger, so the source of the object has to be updated
+						if (ParentSource != null && obj != null)
+							ParentSource.Value = obj;
+					}
+				}
 				else
 					throw new NotSupportedException ();
 			}

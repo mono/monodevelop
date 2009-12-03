@@ -243,6 +243,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				ThreadStart start = new ThreadStart (SearchThread);
 				searchThread = new Thread (start);
 				searchThread.IsBackground = true;
+				searchThread.Name = "Goto symbol search";
 				searchThread.Priority = ThreadPriority.Lowest;
 				searchThread.Start ();
 			}

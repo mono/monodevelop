@@ -291,7 +291,7 @@ namespace Mono.TextEditor.Highlighting
 		static void StartUpdateThread ()
 		{
 			updateThread = new Thread (ProcessQueue);
-			updateThread.Name = "Syntax update";
+			updateThread.Name = "Syntax highlighting";
 			updateThread.IsBackground = true;
 			updateThread.Start();
 		}

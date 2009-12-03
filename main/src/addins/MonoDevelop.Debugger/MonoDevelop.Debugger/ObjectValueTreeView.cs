@@ -513,23 +513,26 @@ namespace MonoDevelop.Debugger
 				return "md-literal";
 			
 			string source;
+			string stic = (flags & ObjectValueFlags.Global) != 0 ? "static-" : string.Empty;
+			
 			switch (flags & ObjectValueFlags.OriginMask) {
 				case ObjectValueFlags.Property: source = "property"; break;
-				case ObjectValueFlags.Type: source = "class"; break;
+				case ObjectValueFlags.Type: source = "class"; stic = string.Empty; break;
 				case ObjectValueFlags.Literal: return "md-literal";
 				case ObjectValueFlags.Namespace: return "md-name-space";
+				case ObjectValueFlags.Group: return "md-open-resource-folder";
 				default: source = "field"; break;
 			}
 			string access;
 			switch (flags & ObjectValueFlags.AccessMask) {
-				case ObjectValueFlags.Private: access = "-private-"; break;
-				case ObjectValueFlags.Internal: access = "-internal-"; break;
+				case ObjectValueFlags.Private: access = "private-"; break;
+				case ObjectValueFlags.Internal: access = "internal-"; break;
 				case ObjectValueFlags.InternalProtected:
-				case ObjectValueFlags.Protected: access = "-protected-"; break;
-				default: access = "-"; break;
+				case ObjectValueFlags.Protected: access = "protected-"; break;
+				default: access = string.Empty; break;
 			}
 			
-			return "md" + access + source;
+			return "md-" + access + stic + source;
 		}
 		
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)

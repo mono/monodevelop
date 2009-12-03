@@ -170,9 +170,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			DispatchService.GuiDispatch (list.Clear);
 			
 			ThreadStart start = new ThreadStart (SearchThread);
-			searchThread = new Thread (start);
-			searchThread.IsBackground = true;
-			searchThread.Priority = ThreadPriority.Lowest;
+			searchThread = new Thread (start) {
+				Name = "Class pad search",
+				IsBackground = true,
+				Priority = ThreadPriority.Lowest,
+			};
 			searchThread.Start ();
 		}
 		

@@ -128,6 +128,7 @@ public class MonoDevelopProcessHost
 				Thread.Sleep (1000);
 			}
 		});
+		t.Name = "Parent process watcher";
 		t.IsBackground = true;
 		t.Start ();
 	}

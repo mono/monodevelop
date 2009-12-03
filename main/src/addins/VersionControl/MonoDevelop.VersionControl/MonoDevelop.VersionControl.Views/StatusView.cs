@@ -928,6 +928,7 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				}
 			);
+			t.Name = "VCS diff loader";
 			t.IsBackground = true;
 			t.Start ();
 		}

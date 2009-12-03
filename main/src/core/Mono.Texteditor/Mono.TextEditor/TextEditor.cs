@@ -369,12 +369,12 @@ namespace Mono.TextEditor
 		Selection oldSelection = null;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
-/*			ClipboardActions.ClearPrimary ();
 			if (IsSomethingSelected) {
+				ClipboardActions.ClearPrimary ();
 				ISegment selectionRange = MainSelection.GetSelectionRange (textEditorData);
 				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length)
 					ClipboardActions.CopyToPrimary (this.textEditorData);
-			}*/
+			}
 			// Handle redraw
 			Selection selection = Selection.Clone (MainSelection);
 			int startLine    = selection != null ? selection.Anchor.Line : -1;

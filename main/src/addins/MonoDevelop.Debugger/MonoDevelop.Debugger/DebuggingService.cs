@@ -107,26 +107,6 @@ namespace MonoDevelop.Debugger
 			get { return breakpoints; }
 		}
 		
-		public static bool AllowTargetInvoke {
-			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", true); }
-			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", value); }
-		}
-		
-		public static bool AllowToStringCalls {
-			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", true); }
-			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", value); }
-		}
-		
-		public static int EvaluationTimeout {
-			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500); }
-			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", value); }
-		}
-		
-		public static bool ProjectAssembliesOnly {
-			get { return PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", true); }
-			set { PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", value); }
-		}
-		
 		public static string[] EnginePriority {
 			get {
 				string s = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
@@ -317,17 +297,31 @@ namespace MonoDevelop.Debugger
 			return monitor.AsyncOperation;
 		}
 		
-		static DebuggerSessionOptions GetUserOptions ()
+		public static DebuggerSessionOptions GetUserOptions ()
 		{
 			EvaluationOptions eops = EvaluationOptions.DefaultOptions;
-			eops.AllowTargetInvoke = AllowTargetInvoke;
-			eops.AllowToStringCalls = AllowToStringCalls;
-			eops.EvaluationTimeout = EvaluationTimeout;
-			eops.MemberEvaluationTimeout = EvaluationTimeout * 2;
+			eops.AllowTargetInvoke = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", true);
+			eops.AllowToStringCalls = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", true);
+			eops.EvaluationTimeout = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", 2500);
+			eops.FlattenHierarchy = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.FlattenHierarchy", false);
+			eops.GroupPrivateMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", true);
+			eops.GroupStaticMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", true);
+			eops.MemberEvaluationTimeout = eops.EvaluationTimeout * 2;
 			return new DebuggerSessionOptions () {
-				ProjectAssembliesOnly = DebuggingService.ProjectAssembliesOnly,
+				ProjectAssembliesOnly = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", true),
 				EvaluationOptions = eops,
 			};
+		}
+		
+		public static void SetUserOptions (DebuggerSessionOptions options)
+		{
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", options.ProjectAssembliesOnly);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowTargetInvoke", options.EvaluationOptions.AllowTargetInvoke);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.AllowToStringCalls", options.EvaluationOptions.AllowToStringCalls);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EvaluationTimeout", options.EvaluationOptions.EvaluationTimeout);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.FlattenHierarchy", options.EvaluationOptions.FlattenHierarchy);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", options.EvaluationOptions.GroupPrivateMembers);
+			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", options.EvaluationOptions.GroupStaticMembers);
 		}
 		
 		public static void ShowDisassembly ()

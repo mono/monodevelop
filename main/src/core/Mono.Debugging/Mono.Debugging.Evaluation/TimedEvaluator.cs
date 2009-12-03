@@ -92,6 +92,7 @@ namespace Mono.Debugging.Evaluation
 					if (runningThreads < maxThreads) {
 						runningThreads++;
 						Thread tr = new Thread (Runner);
+						tr.Name = "Debugger evaluator";
 						tr.IsBackground = true;
 						tr.Start ();
 					} else {

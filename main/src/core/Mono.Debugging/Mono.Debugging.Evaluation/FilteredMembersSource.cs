@@ -14,37 +14,47 @@ namespace Mono.Debugging.Evaluation
 		object type;
 		EvaluationContext ctx;
 		BindingFlags bindingFlags;
+		IObjectSource objectSource;
 
-		public FilteredMembersSource (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags)
+		public FilteredMembersSource (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, BindingFlags bindingFlags)
 		{
 			this.ctx = ctx;
 			this.obj = obj;
 			this.type = type;
 			this.bindingFlags = bindingFlags;
+			this.objectSource = objectSource;
 		}
 
-		public static ObjectValue CreateNode (EvaluationContext ctx, object type, object obj, BindingFlags bindingFlags)
+		public static ObjectValue CreateNonPublicsNode (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, BindingFlags bindingFlags)
 		{
-			FilteredMembersSource src = new FilteredMembersSource (ctx, type, obj, bindingFlags);
+			return CreateNode (ctx, objectSource, type, obj, bindingFlags, "Non-public members");
+		}
+		
+		public static ObjectValue CreateStaticsNode (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, BindingFlags bindingFlags)
+		{
+			return CreateNode (ctx, objectSource, type, obj, bindingFlags, "Static members");
+		}
+		
+		static ObjectValue CreateNode (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, BindingFlags bindingFlags, string label)
+		{
+			FilteredMembersSource src = new FilteredMembersSource (ctx, objectSource, type, obj, bindingFlags);
 			src.Connect ();
-			string label;
-			if ((bindingFlags & BindingFlags.Static) == 0)
-				label = "Non-public members";
-			else
-				label = "Static members";
-			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 		}
 
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
+			var names = new ObjectValueNameTracker (ctx);
 			List<ObjectValue> list = new List<ObjectValue> ();
-			foreach (ValueReference val in ctx.Adapter.GetMembersSorted (ctx, type, obj, bindingFlags)) {
-				list.Add (val.CreateObjectValue ());
+			foreach (ValueReference val in ctx.Adapter.GetMembersSorted (ctx, objectSource, type, obj, bindingFlags)) {
+				ObjectValue oval = val.CreateObjectValue ();
+				names.FixName (val, oval);
+				list.Add (oval);
 			}
 			if ((bindingFlags & BindingFlags.NonPublic) == 0) {
 				BindingFlags newFlags = bindingFlags | BindingFlags.NonPublic;
 				newFlags &= ~BindingFlags.Public;
-				list.Add (CreateNode (ctx, type, obj, newFlags));
+				list.Add (CreateNonPublicsNode (ctx, objectSource, type, obj, newFlags));
 			}
 			return list.ToArray ();
 		}

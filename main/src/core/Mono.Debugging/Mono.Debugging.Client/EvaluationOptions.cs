@@ -42,6 +42,10 @@ namespace Mono.Debugging.Client
 				ops.AllowTargetInvoke = true;
 				ops.AllowMethodEvaluation = true;
 				ops.AllowToStringCalls = true;
+				ops.FlattenHierarchy = true;
+				ops.GroupPrivateMembers = true;
+				ops.GroupStaticMembers = true;
+				ops.GroupUserPrivateMembers = false;
 				return ops;
 			}
 		}
@@ -67,5 +71,13 @@ namespace Mono.Debugging.Client
 		public bool AllowDebuggerProxy {
 			get { return AllowTargetInvoke; }
 		}
+		
+		public bool FlattenHierarchy { get; set; }
+		
+		public bool GroupPrivateMembers { get; set; }
+		
+		public bool GroupUserPrivateMembers { get; set; }
+		
+		public bool GroupStaticMembers { get; set; }
 	}
 }

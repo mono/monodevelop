@@ -23,6 +23,12 @@ namespace MonoDevelop.Debugger {
         
         private Gtk.CheckButton checkToString;
         
+        private Gtk.CheckButton checkShowBaseGroup;
+        
+        private Gtk.CheckButton checkGroupPrivate;
+        
+        private Gtk.CheckButton checkGroupStatic;
+        
         private Gtk.Table tableEval;
         
         private Gtk.Label label60;
@@ -103,6 +109,42 @@ namespace MonoDevelop.Debugger {
             w3.Expand = false;
             w3.Fill = false;
             // Container child vbox3.Gtk.Box+BoxChild
+            this.checkShowBaseGroup = new Gtk.CheckButton();
+            this.checkShowBaseGroup.CanFocus = true;
+            this.checkShowBaseGroup.Name = "checkShowBaseGroup";
+            this.checkShowBaseGroup.Label = Mono.Unix.Catalog.GetString("Shown inherited class members in a base class group");
+            this.checkShowBaseGroup.DrawIndicator = true;
+            this.checkShowBaseGroup.UseUnderline = true;
+            this.vbox3.Add(this.checkShowBaseGroup);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.vbox3[this.checkShowBaseGroup]));
+            w4.Position = 3;
+            w4.Expand = false;
+            w4.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.checkGroupPrivate = new Gtk.CheckButton();
+            this.checkGroupPrivate.CanFocus = true;
+            this.checkGroupPrivate.Name = "checkGroupPrivate";
+            this.checkGroupPrivate.Label = Mono.Unix.Catalog.GetString("Group non-public members");
+            this.checkGroupPrivate.DrawIndicator = true;
+            this.checkGroupPrivate.UseUnderline = true;
+            this.vbox3.Add(this.checkGroupPrivate);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.vbox3[this.checkGroupPrivate]));
+            w5.Position = 4;
+            w5.Expand = false;
+            w5.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
+            this.checkGroupStatic = new Gtk.CheckButton();
+            this.checkGroupStatic.CanFocus = true;
+            this.checkGroupStatic.Name = "checkGroupStatic";
+            this.checkGroupStatic.Label = Mono.Unix.Catalog.GetString("Group static members");
+            this.checkGroupStatic.DrawIndicator = true;
+            this.checkGroupStatic.UseUnderline = true;
+            this.vbox3.Add(this.checkGroupStatic);
+            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.checkGroupStatic]));
+            w6.Position = 5;
+            w6.Expand = false;
+            w6.Fill = false;
+            // Container child vbox3.Gtk.Box+BoxChild
             this.tableEval = new Gtk.Table(((uint)(1)), ((uint)(3)), false);
             this.tableEval.Name = "tableEval";
             this.tableEval.RowSpacing = ((uint)(6));
@@ -113,9 +155,9 @@ namespace MonoDevelop.Debugger {
             this.label60.Xalign = 0F;
             this.label60.LabelProp = Mono.Unix.Catalog.GetString("Evaluation Timeout:");
             this.tableEval.Add(this.label60);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.tableEval[this.label60]));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w7 = ((Gtk.Table.TableChild)(this.tableEval[this.label60]));
+            w7.XOptions = ((Gtk.AttachOptions)(4));
+            w7.YOptions = ((Gtk.AttachOptions)(4));
             // Container child tableEval.Gtk.Table+TableChild
             this.spinTimeout = new Gtk.SpinButton(0, 1000000, 100);
             this.spinTimeout.CanFocus = true;
@@ -124,16 +166,16 @@ namespace MonoDevelop.Debugger {
             this.spinTimeout.ClimbRate = 100;
             this.spinTimeout.Numeric = true;
             this.tableEval.Add(this.spinTimeout);
-            Gtk.Table.TableChild w5 = ((Gtk.Table.TableChild)(this.tableEval[this.spinTimeout]));
-            w5.LeftAttach = ((uint)(1));
-            w5.RightAttach = ((uint)(2));
-            w5.XOptions = ((Gtk.AttachOptions)(4));
-            w5.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w8 = ((Gtk.Table.TableChild)(this.tableEval[this.spinTimeout]));
+            w8.LeftAttach = ((uint)(1));
+            w8.RightAttach = ((uint)(2));
+            w8.XOptions = ((Gtk.AttachOptions)(4));
+            w8.YOptions = ((Gtk.AttachOptions)(4));
             this.vbox3.Add(this.tableEval);
-            Gtk.Box.BoxChild w6 = ((Gtk.Box.BoxChild)(this.vbox3[this.tableEval]));
-            w6.Position = 3;
-            w6.Expand = false;
-            w6.Fill = false;
+            Gtk.Box.BoxChild w9 = ((Gtk.Box.BoxChild)(this.vbox3[this.tableEval]));
+            w9.Position = 6;
+            w9.Expand = false;
+            w9.Fill = false;
             this.notebook1.Add(this.vbox3);
             // Notebook tab
             this.label4 = new Gtk.Label();
@@ -154,10 +196,10 @@ namespace MonoDevelop.Debugger {
             this.label2.LabelProp = Mono.Unix.Catalog.GetString("This priority list will be used by MonoDevelop when selecting the engine to be used for debugging an application.");
             this.label2.Wrap = true;
             this.vbox2.Add(this.label2);
-            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.vbox2[this.label2]));
-            w8.Position = 0;
-            w8.Expand = false;
-            w8.Fill = false;
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox2[this.label2]));
+            w11.Position = 0;
+            w11.Expand = false;
+            w11.Fill = false;
             // Container child vbox2.Gtk.Box+BoxChild
             this.hbox1 = new Gtk.HBox();
             this.hbox1.Name = "hbox1";
@@ -173,8 +215,8 @@ namespace MonoDevelop.Debugger {
             this.engineList.HeadersVisible = false;
             this.GtkScrolledWindow.Add(this.engineList);
             this.hbox1.Add(this.GtkScrolledWindow);
-            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow]));
-            w10.Position = 0;
+            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow]));
+            w13.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
             this.vbox4 = new Gtk.VBox();
             this.vbox4.Name = "vbox4";
@@ -187,10 +229,10 @@ namespace MonoDevelop.Debugger {
             this.buttonUp.UseUnderline = true;
             this.buttonUp.Label = "gtk-go-up";
             this.vbox4.Add(this.buttonUp);
-            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.vbox4[this.buttonUp]));
-            w11.Position = 0;
-            w11.Expand = false;
-            w11.Fill = false;
+            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox4[this.buttonUp]));
+            w14.Position = 0;
+            w14.Expand = false;
+            w14.Fill = false;
             // Container child vbox4.Gtk.Box+BoxChild
             this.buttonDown = new Gtk.Button();
             this.buttonDown.CanFocus = true;
@@ -199,21 +241,21 @@ namespace MonoDevelop.Debugger {
             this.buttonDown.UseUnderline = true;
             this.buttonDown.Label = "gtk-go-down";
             this.vbox4.Add(this.buttonDown);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.vbox4[this.buttonDown]));
-            w12.Position = 1;
-            w12.Expand = false;
-            w12.Fill = false;
-            this.hbox1.Add(this.vbox4);
-            Gtk.Box.BoxChild w13 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox4]));
-            w13.Position = 1;
-            w13.Expand = false;
-            w13.Fill = false;
-            this.vbox2.Add(this.hbox1);
-            Gtk.Box.BoxChild w14 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-            w14.Position = 1;
-            this.notebook1.Add(this.vbox2);
-            Gtk.Notebook.NotebookChild w15 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox2]));
+            Gtk.Box.BoxChild w15 = ((Gtk.Box.BoxChild)(this.vbox4[this.buttonDown]));
             w15.Position = 1;
+            w15.Expand = false;
+            w15.Fill = false;
+            this.hbox1.Add(this.vbox4);
+            Gtk.Box.BoxChild w16 = ((Gtk.Box.BoxChild)(this.hbox1[this.vbox4]));
+            w16.Position = 1;
+            w16.Expand = false;
+            w16.Fill = false;
+            this.vbox2.Add(this.hbox1);
+            Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+            w17.Position = 1;
+            this.notebook1.Add(this.vbox2);
+            Gtk.Notebook.NotebookChild w18 = ((Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox2]));
+            w18.Position = 1;
             // Notebook tab
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";

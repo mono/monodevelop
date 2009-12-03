@@ -73,6 +73,7 @@ namespace MonoDevelop.AspNet.Deployment
 			threadParams.Monitor = monitor;
 			
 			Thread deployThread = new Thread (new ParameterizedThreadStart (DoDeploy));
+			deployThread.Name = "Web deploy";
 			deployThread.Start (threadParams);
 		}
 		

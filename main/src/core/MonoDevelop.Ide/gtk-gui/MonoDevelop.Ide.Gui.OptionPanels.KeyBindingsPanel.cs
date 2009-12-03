@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels {
             this.conflicButton.Name = "conflicButton";
             this.conflicButton.UseUnderline = true;
             this.conflicButton.UseMarkup = false;
-            this.conflicButton.Label = "View Conflicts";
+            this.conflicButton.Label = Mono.Unix.Catalog.GetString("View Conflicts");
             this.warningBox.Add(this.conflicButton);
             Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.warningBox[this.conflicButton]));
             w12.Position = 2;

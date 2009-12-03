@@ -245,6 +245,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				LoadRepoInfo (parent, repoIter, citer);
 			});
 			
+			t.Name = "VCS repository loader";
 			t.IsBackground = true;
 			t.Start ();
 		}

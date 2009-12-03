@@ -37,6 +37,7 @@ namespace MonoDevelop.Debugger.Soft
 		object obj;
 		TypeMirror declaringType;
 		Value[] indexerArgs;
+		ObjectValueFlags flags;
 		
 		public PropertyValueReference (EvaluationContext ctx, PropertyInfoMirror property, object obj, TypeMirror declaringType, Value[] indexerArgs): base (ctx)
 		{
@@ -44,11 +45,29 @@ namespace MonoDevelop.Debugger.Soft
 			this.obj = obj;
 			this.declaringType = declaringType;
 			this.indexerArgs = indexerArgs;
+			flags = ObjectValueFlags.Property;
+			if (property.GetSetMethod (true) == null)
+				flags |= ObjectValueFlags.ReadOnly;
+			MethodMirror getter = property.GetGetMethod (true);
+			if (getter.IsStatic)
+				flags |= ObjectValueFlags.Global;
+			if (getter.IsPublic)
+				flags |= ObjectValueFlags.Public;
+			else if (getter.IsPrivate)
+				flags |= ObjectValueFlags.Private;
+			else if (getter.IsFamily)
+				flags |= ObjectValueFlags.Protected;
+			else if (getter.IsFamilyAndAssembly)
+				flags |= ObjectValueFlags.Internal;
+			else if (getter.IsFamilyOrAssembly)
+				flags |= ObjectValueFlags.InternalProtected;
+			if (property.DeclaringType.IsValueType)
+				flags |= ObjectValueFlags.ReadOnly; // Setting property values on structs is not supported by sdb
 		}
 		
 		public override ObjectValueFlags Flags {
 			get {
-				return ObjectValueFlags.Property;
+				return flags;
 			}
 		}
 
@@ -67,6 +86,12 @@ namespace MonoDevelop.Debugger.Soft
 				return property.PropertyType;
 			}
 		}
+		
+		public override object DeclaringType {
+			get {
+				return property.DeclaringType;
+			}
+		}
 
 		public override object Value {
 			get {
@@ -78,9 +103,13 @@ namespace MonoDevelop.Debugger.Soft
 				Context.AssertTargetInvokeAllowed ();
 				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
 				Value[] args = new Value [indexerArgs != null ? indexerArgs.Length + 1 : 1];
-				indexerArgs.CopyTo (args, 0);
+				if (indexerArgs != null)
+					indexerArgs.CopyTo (args, 0);
 				args [args.Length - 1] = (Value) value;
-				ctx.RuntimeInvoke (property.GetSetMethod (true), obj ?? declaringType, args);
+				MethodMirror setter = property.GetSetMethod (true);
+				if (setter == null)
+					throw new EvaluatorException ("Property is read-only");
+				ctx.RuntimeInvoke (setter, obj ?? declaringType, args);
 			}
 		}
 		

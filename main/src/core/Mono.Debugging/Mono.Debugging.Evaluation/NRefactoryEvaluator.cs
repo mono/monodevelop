@@ -291,7 +291,7 @@ namespace Mono.Debugging.Evaluation
 			ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
 			object thistype = ctx.Adapter.GetEnclosingType (ctx);
 
-			var = ctx.Adapter.GetMember (ctx, thistype, thisobj != null ? thisobj.Value : null, name);
+			var = ctx.Adapter.GetMember (ctx, thisobj, thistype, thisobj != null ? thisobj.Value : null, name);
 			if (var != null)
 				return var;
 

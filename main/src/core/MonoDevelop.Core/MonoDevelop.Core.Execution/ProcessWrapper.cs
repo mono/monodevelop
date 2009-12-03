@@ -26,11 +26,13 @@ namespace MonoDevelop.Core.Execution
 			base.Start ();
 			
 			captureOutputThread = new Thread (new ThreadStart(CaptureOutput));
+			captureOutputThread.Name = "Process output reader";
 			captureOutputThread.IsBackground = true;
 			captureOutputThread.Start ();
 			
 			if (ErrorStreamChanged != null) {
 				captureErrorThread = new Thread (new ThreadStart(CaptureError));
+				captureErrorThread.Name = "Process error reader";
 				captureErrorThread.IsBackground = true;
 				captureErrorThread.Start ();
 			} else {
