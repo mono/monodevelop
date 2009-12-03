@@ -83,7 +83,7 @@ namespace MonoDevelop.Platform
 		}
 		
 		public override DesktopApplication [] GetAllApplications (string mimetype) {
-			return new DesktopApplication [] {new DesktopApplication ()};
+			return new DesktopApplication [0];
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)

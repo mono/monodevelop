@@ -1,3 +1,10 @@
+2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* WindowsPlatform.cs: Don't return an invalid application from
+	  GetAllApplications. Fixes "Bug 552403 - Right clicking Open
+	  With -> List of programs to open with on a file results in
+	  an exception".
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
