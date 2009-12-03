@@ -56,6 +56,8 @@ namespace MonoDevelop.Debugger.Soft
 				flags |= ObjectValueFlags.Internal;
 			else if (field.IsFamilyOrAssembly)
 				flags |= ObjectValueFlags.InternalProtected;
+			if (field.DeclaringType.IsValueType)
+				flags |= ObjectValueFlags.ReadOnly; // Setting field values on structs is not currently supported by sdb
 		}
 		
 		public override ObjectValueFlags Flags {

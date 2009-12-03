@@ -61,6 +61,8 @@ namespace MonoDevelop.Debugger.Soft
 				flags |= ObjectValueFlags.Internal;
 			else if (getter.IsFamilyOrAssembly)
 				flags |= ObjectValueFlags.InternalProtected;
+			if (property.DeclaringType.IsValueType)
+				flags |= ObjectValueFlags.ReadOnly; // Setting property values on structs is not currently supported by sdb
 		}
 		
 		public override ObjectValueFlags Flags {
@@ -101,7 +103,8 @@ namespace MonoDevelop.Debugger.Soft
 				Context.AssertTargetInvokeAllowed ();
 				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
 				Value[] args = new Value [indexerArgs != null ? indexerArgs.Length + 1 : 1];
-				indexerArgs.CopyTo (args, 0);
+				if (indexerArgs != null)
+					indexerArgs.CopyTo (args, 0);
 				args [args.Length - 1] = (Value) value;
 				MethodMirror setter = property.GetSetMethod (true);
 				if (setter == null)

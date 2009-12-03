@@ -1,5 +1,11 @@
 2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* FieldValueReference.cs:
+	* PropertyValueReference.cs: Don't allow setting field or
+	  property values on structs. It is not supported for now.
+
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerAdaptor.cs: Properly handle boxed primitive
 	  values.
 
