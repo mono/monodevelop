@@ -1,3 +1,8 @@
+2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated.
+
 2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* FieldValueReference.cs:
