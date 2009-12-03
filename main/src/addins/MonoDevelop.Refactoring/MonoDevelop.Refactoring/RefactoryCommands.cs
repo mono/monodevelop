@@ -659,6 +659,7 @@ namespace MonoDevelop.Refactoring
 		{
 			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			Thread t = new Thread (new ThreadStart (FindReferencesThread));
+			t.Name = "Find references";
 			t.IsBackground = true;
 			t.Start ();
 		}
@@ -740,6 +741,7 @@ namespace MonoDevelop.Refactoring
 		{
 			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			Thread t = new Thread (new ThreadStart (FindDerivedThread));
+			t.Name = "Find subclasses";
 			t.IsBackground = true;
 			t.Start ();
 		}

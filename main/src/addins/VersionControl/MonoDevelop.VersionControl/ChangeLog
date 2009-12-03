@@ -1,3 +1,10 @@
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl/Task.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:
+	  Name threads to make debugging easier.
+
 2009-11-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Track API

@@ -65,8 +65,10 @@ namespace MonoDevelop.Core.Assemblies
 		internal void StartInitialization ()
 		{
 			// Initialize the service in a background thread.
-			Thread t = new Thread (new ThreadStart (BackgroundInitialize));
-			t.IsBackground = true;
+			Thread t = new Thread (new ThreadStart (BackgroundInitialize)) {
+				Name = "Assembly service initialization",
+				IsBackground = true,
+			};
 			t.Start ();
 		}
 		

@@ -1,5 +1,10 @@
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Gui/DispatchService.cs: Name threads to
+	  make debugging easier.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Gui/DispatchService.cs: Name the dispatcher
 	  thread.
 

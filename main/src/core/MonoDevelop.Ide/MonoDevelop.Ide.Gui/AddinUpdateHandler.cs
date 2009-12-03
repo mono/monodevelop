@@ -84,6 +84,7 @@ namespace MonoDevelop.Ide.Gui
 				UpdateMonitor = new AggregatedProgressMonitor (mon);
 
 				Thread t = new Thread (new ThreadStart (UpdateAddins));
+				t.Name = "Addin updater";
 				t.Start ();
 			} else {
 				updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();

@@ -110,6 +110,7 @@ namespace MonoDevelop.SourceEditor
 			autoSaveThreadRunning = true;
 			if (autoSaveThread == null) {
 				autoSaveThread = new Thread (AutoSaveThread);
+				autoSaveThread.Name = "Autosave";
 				autoSaveThread.IsBackground = true;
 				autoSaveThread.Start ();
 			}

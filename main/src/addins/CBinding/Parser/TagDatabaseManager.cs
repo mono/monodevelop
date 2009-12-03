@@ -350,6 +350,7 @@ namespace CBinding.Parser
 			
 			if (parsingThread == null || !parsingThread.IsAlive) {
 				parsingThread = new Thread (ParsingThread);
+				parsingThread.Name = "Tag database parser";
 				parsingThread.IsBackground = true;
 				parsingThread.Priority = ThreadPriority.Lowest;
 				parsingThread.Start();

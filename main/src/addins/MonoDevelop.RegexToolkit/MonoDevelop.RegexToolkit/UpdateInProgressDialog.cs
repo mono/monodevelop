@@ -68,7 +68,8 @@ namespace MonoDevelop.RegexToolkit
 					this.label.Text = doneMessage;
 				});
 			});
-			
+			t.Name = "Regex library updater";
+
 			this.buttonCancel.Clicked += delegate {
 				if (!done) {
 					t.Abort ();

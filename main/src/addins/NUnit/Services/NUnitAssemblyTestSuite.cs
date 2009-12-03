@@ -244,6 +244,7 @@ namespace MonoDevelop.NUnit
 			lock (loadQueue) {
 				if (!loaderRunning) {
 					Thread t = new Thread (new ThreadStart (RunAsyncLoadTest));
+					t.Name = "NUnit test loader";
 					t.IsBackground = true;
 					t.Start ();
 					loaderRunning = true;

@@ -110,7 +110,7 @@ namespace MonoDevelop.WebReferences
 		/// <param name="referenceName">A string containing the file name for the proxy file.</param>
 		public string CreateProxyFile(string basePath, string proxyNamespace, string referenceName)
 		{
-			// Setup the proxy namespacec and compile unit
+			// Setup the proxy namespace and compile unit
 			ICodeGenerator codeGen = Provider.CreateGenerator();
 			CodeNamespace codeNamespace = new CodeNamespace(proxyNamespace);
 			CodeConstructor urlConstructor = new CodeConstructor ();

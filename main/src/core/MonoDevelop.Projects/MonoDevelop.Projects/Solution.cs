@@ -487,6 +487,7 @@ namespace MonoDevelop.Projects
 							LoggingService.LogError ("Project execution failed", ex);
 						}
 					});
+					t.Name = "Project execution";
 					t.IsBackground = true;
 					t.Start ();
 				}

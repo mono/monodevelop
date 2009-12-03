@@ -287,6 +287,7 @@ namespace MonoDevelop.NUnit
 		public void Start ()
 		{
 			runThread = new Thread (new ThreadStart (RunTests));
+			runThread.Name = "NUnit test runner";
 			runThread.IsBackground = true;
 			runThread.Start ();
 		}

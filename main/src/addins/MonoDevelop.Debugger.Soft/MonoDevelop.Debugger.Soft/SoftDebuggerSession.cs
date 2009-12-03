@@ -185,6 +185,7 @@ namespace MonoDevelop.Debugger.Soft
 			HandleEvent (vm.GetNextEvent ());
 			
 			eventHandler = new Thread (EventHandler);
+			eventHandler.Name = "SDB event handler";
 			eventHandler.Start ();
 		}
 		
@@ -204,6 +205,7 @@ namespace MonoDevelop.Debugger.Soft
 			t = new Thread (delegate () {
 				ReadOutput (reader, error);
 			});
+			t.Name = error? "SDB error reader" : "SDB output reader";
 			t.IsBackground = true;
 			t.Start ();
 

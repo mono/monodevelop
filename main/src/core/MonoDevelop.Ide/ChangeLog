@@ -1,3 +1,10 @@
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	  Name threads to make debugging easier.
+
 2009-12-02  David Makovský  <yakeen@sannyas-on.net>
 
 	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:

@@ -38,7 +38,10 @@ namespace MonoDevelop.VersionControl
 		
 		public void Start() {
 			tracker.BeginTask(GetDescription(), 0);
-			new Thread(new ThreadStart(BackgroundWorker)).Start();
+			new Thread(new ThreadStart(BackgroundWorker)) {
+				Name = "VCS background tasks",
+				IsBackground = true,
+			}.Start();
 		}
 		
 		void BackgroundWorker() {
