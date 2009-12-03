@@ -1,3 +1,8 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Properly handle boxed primitive
+	  values.
+
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* RemoteSoftDebuggerSession.cs: Revert the previous change, as

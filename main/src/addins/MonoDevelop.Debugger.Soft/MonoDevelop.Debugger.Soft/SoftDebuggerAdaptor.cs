@@ -54,6 +54,12 @@ namespace MonoDevelop.Debugger.Soft
 			}
 			else if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value.ToString ();
+			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
+				// Boxed primitive
+				StructMirror sm = (StructMirror) obj;
+				if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
+					return ((PrimitiveValue)sm.Fields[0]).Value.ToString ();
+			}
 			else if (obj == null)
 				return string.Empty;
 			else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
@@ -383,7 +389,7 @@ namespace MonoDevelop.Debugger.Soft
 		public override bool IsClass (object type)
 		{
 			TypeMirror t = type as TypeMirror;
-			return t != null && (t.IsClass || t.IsValueType);
+			return t != null && (t.IsClass || t.IsValueType) && !t.IsPrimitive;
 		}
 
 		public override bool IsNull (EvaluationContext ctx, object val)
@@ -393,7 +399,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		public override bool IsPrimitive (EvaluationContext ctx, object val)
 		{
-			return val is PrimitiveValue || val is StringMirror;
+			return val is PrimitiveValue || val is StringMirror || ((val is StructMirror) && ((StructMirror)val).Type.IsPrimitive);
 		}
 
 		public override bool IsEnum (EvaluationContext ctx, object val)
@@ -648,8 +654,13 @@ namespace MonoDevelop.Debugger.Soft
 			else if (obj is PrimitiveValue) {
 				return ((PrimitiveValue)obj).Value;
 			}
-			else
-				return base.TargetObjectToObject (gctx, obj);
+			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
+				// Boxed primitive
+				StructMirror sm = (StructMirror) obj;
+				if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
+					return ((PrimitiveValue)sm.Fields[0]).Value;
+			}
+			return base.TargetObjectToObject (gctx, obj);
 		}
 	}
 
