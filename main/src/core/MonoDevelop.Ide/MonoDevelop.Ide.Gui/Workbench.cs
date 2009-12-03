@@ -306,7 +306,7 @@ namespace MonoDevelop.Ide.Gui
 				list.Add (new FileViewer (bin));
 
 			foreach (DesktopApplication app in DesktopService.GetAllApplications (mimeType))
-				if (app.Command != "monodevelop")
+				if (app.IsValid && app.Command != "monodevelop")
 					list.Add (new FileViewer (app));
 				
 			return list.ToArray ();

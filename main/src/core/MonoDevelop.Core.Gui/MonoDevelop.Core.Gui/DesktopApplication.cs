@@ -58,6 +58,9 @@ namespace MonoDevelop.Core.Gui
 		
 		public void Launch (params string[] files)
 		{
+			if (!IsValid)
+				throw new InvalidOperationException ("DesktopApplication is invalid");
+			
 			// TODO: implement all other cases
 			if (command.IndexOf ("%f") != -1) {
 				foreach (string s in files) {
@@ -76,6 +79,12 @@ namespace MonoDevelop.Core.Gui
 				foreach (string s in files) {
 					Process.Start (command + " \"" + s + "\"");
 				}
+			}
+		}
+		
+		public bool IsValid {
+			get {
+				return !string.IsNullOrEmpty (command) && !string.IsNullOrEmpty (displayName); 
 			}
 		}
 	}

@@ -1,3 +1,15 @@
+2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Check that apache mime DB exists before
+	  trying to read it.
+
+2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Don't return an invalid application from
+	  GetAllApplications. Fixes "Bug 552403 - Right clicking Open
+	  With -> List of programs to open with on a file results in
+	  an exception".
+
 2009-11-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.addin.xml: Fix author.

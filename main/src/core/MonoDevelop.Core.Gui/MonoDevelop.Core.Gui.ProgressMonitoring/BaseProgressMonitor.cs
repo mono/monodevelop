@@ -159,7 +159,13 @@ namespace MonoDevelop.Core.Gui.ProgressMonitoring
 				if (c.waitEvent != null)
 					c.waitEvent.Set ();
 			}
-			OnCompleted ();
+			try {
+				OnCompleted ();
+			} catch (Exception ex) {
+				string msg = "Unhandled exception in monitor cancel event handler";
+				LoggingService.LogError (msg, ex);
+				MessageService.ShowException (ex, msg);
+			}
 		}
 		
 		[FreeDispatch]

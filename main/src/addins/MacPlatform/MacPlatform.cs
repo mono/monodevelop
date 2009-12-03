@@ -83,7 +83,7 @@ namespace MonoDevelop.Platform
 		}
 		
 		public override DesktopApplication [] GetAllApplications (string mimetype) {
-			return new DesktopApplication [] {new DesktopApplication ()};
+			return new DesktopApplication [0];
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
@@ -112,6 +112,11 @@ namespace MonoDevelop.Platform
 		private static void LoadMimeMap ()
 		{
 			// All recent Macs should have this file; if not we'll just die silently
+			if (!File.Exists ("/etc/apache2/mime.types")) {
+				MonoDevelop.Core.LoggingService.LogError ("Apache mime database is missing");
+				return;
+			}
+			
 			try {
 				StreamReader reader = new StreamReader (File.OpenRead ("/etc/apache2/mime.types"));
 				Regex mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
