@@ -1,5 +1,9 @@
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Fix the NeedsUploading check.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs: When executing a device configuration,
 	  upload the app.
 
