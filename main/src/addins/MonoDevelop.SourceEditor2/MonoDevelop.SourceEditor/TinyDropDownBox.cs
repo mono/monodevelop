@@ -229,8 +229,11 @@ namespace MonoDevelop.SourceEditor
 				
 				int arrowHeight = height / 2; 
 				int arrowWidth = arrowHeight;
+				int arrowXPos = this.Allocation.Width - arrowWidth;
+				if (DrawRightBorder)
+					arrowXPos -= 2;
 				
-				DrawGradientBackground (g, new Gdk.Rectangle (0, 0, Allocation.Width - arrowWidth, Allocation.Height));
+				DrawGradientBackground (g, new Gdk.Rectangle (0, 0, arrowXPos - leftSpacing , Allocation.Height));
 				
 				int xPos = leftSpacing;
 				if (Pixbuf != null) {
@@ -242,10 +245,7 @@ namespace MonoDevelop.SourceEditor
 				
 				
 				
-				int arrowXPos = this.Allocation.Width - arrowWidth;
-				if (DrawRightBorder)
-					arrowXPos -= 2;
-				DrawGradientBackground (g, new Gdk.Rectangle (arrowXPos, 0, Allocation.Width - arrowXPos, Allocation.Height));
+				DrawGradientBackground (g, new Gdk.Rectangle (arrowXPos - leftSpacing, 0, Allocation.Width - (arrowXPos - leftSpacing), Allocation.Height));
 				
 				Gtk.Style.PaintArrow (this.Style, win, StateType.Normal, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
 				Gtk.Style.PaintArrow (this.Style, win, StateType.Normal, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, (Allocation.Height) / 2, arrowWidth, arrowHeight);

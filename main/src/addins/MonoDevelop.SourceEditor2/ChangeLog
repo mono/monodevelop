@@ -1,5 +1,10 @@
 2009-12-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Added spacing
+	  for the right arrows.
+
+2009-12-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/objects.xml:
 	* MonoDevelop.SourceEditor.csproj:
