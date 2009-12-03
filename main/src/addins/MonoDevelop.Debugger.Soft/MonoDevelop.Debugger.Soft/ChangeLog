@@ -1,3 +1,8 @@
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Avoid NREs disposing session that
+	  never connected.
+
 2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* FieldValueReference.cs:

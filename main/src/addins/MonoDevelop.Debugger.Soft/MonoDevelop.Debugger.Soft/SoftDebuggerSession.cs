@@ -258,18 +258,20 @@ namespace MonoDevelop.Debugger.Soft
 			base.Dispose ();
 			if (!exited) {
 				EndLaunch ();
-				ThreadPool.QueueUserWorkItem (delegate {
-					try {
-						vm.Exit (0);
-					} catch (Exception ex) {
-						Console.WriteLine (ex);
-					}
-					try {
-						vm.Dispose ();
-					} catch (Exception ex) {
-						Console.WriteLine (ex);
-					}
-				});
+				if (vm != null) {
+					ThreadPool.QueueUserWorkItem (delegate {
+						try {
+							vm.Exit (0);
+						} catch (Exception ex) {
+							Console.WriteLine (ex);
+						}
+						try {
+							vm.Dispose ();
+						} catch (Exception ex) {
+							Console.WriteLine (ex);
+						}
+					});
+				}
 				exited = true;
 			}
 			Adaptor.Dispose ();
