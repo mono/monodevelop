@@ -57,6 +57,7 @@ namespace MonoDevelop.Core.Gui
 			arrBackgroundQueue = new ArrayList ();
 			arrGuiQueue = new ArrayList ();
 			thrBackground = new Thread (new ThreadStart (backgroundDispatcher));
+			thrBackground.Name = "Background dispatcher";
 			thrBackground.IsBackground = true;
 			thrBackground.Priority = ThreadPriority.Lowest;
 			thrBackground.Start ();
