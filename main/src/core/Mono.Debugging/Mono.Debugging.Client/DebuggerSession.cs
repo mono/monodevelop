@@ -174,7 +174,7 @@ namespace Mono.Debugging.Client
 					try {
 						OnRun (startInfo);
 					} catch (Exception ex) {
-						ForceStop ();
+						ForceExit ();
 						if (!HandleException (ex))
 							throw;
 					}
@@ -197,7 +197,7 @@ namespace Mono.Debugging.Client
 						OnAttachToProcess (proc.Id);
 						attached = true;
 					} catch (Exception ex) {
-						ForceStop ();
+						ForceExit ();
 						if (!HandleException (ex))
 							throw;
 					}
@@ -316,7 +316,7 @@ namespace Mono.Debugging.Client
 					try {
 						OnFinish ();
 					} catch (Exception ex) {
-						ForceStop ();
+						ForceExit ();
 						if (!HandleException (ex))
 							throw;
 					}
@@ -585,6 +585,12 @@ namespace Mono.Debugging.Client
 		void ForceStop ()
 		{
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
+			OnTargetEvent (args);
+		}
+		
+		void ForceExit ()
+		{
+			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetExited);
 			OnTargetEvent (args);
 		}
 		
