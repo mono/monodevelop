@@ -79,6 +79,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			IdeApp.Workspace.ItemUnloading += IdeAppWorkspaceItemUnloading;
+			
 		}
 		
 		public BuildResult LastCompilerResult {
@@ -936,10 +937,23 @@ namespace MonoDevelop.Ide.Gui
 			Clean (entry);
 			return Build (entry);
 		}
-
+		bool errorPadInitialized = false;
 		public IAsyncOperation Build (IBuildTarget entry)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
+			
+			if (!errorPadInitialized) {
+				try {
+					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
+					MonoDevelop.Ide.Gui.Pads.ErrorListPad content = (MonoDevelop.Ide.Gui.Pads.ErrorListPad)errorsPad.Content;
+					errorsPad.Window.PadHidden += delegate {
+						content.IsOpenedAutomatically = false;
+					};
+				} finally {
+					errorPadInitialized = true;
+				}
+			}
+
 			
 			DoBeforeCompileAction ();
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
@@ -1069,13 +1083,17 @@ namespace MonoDevelop.Ide.Gui
 				
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
+					MonoDevelop.Ide.Gui.Pads.ErrorListPad content = (MonoDevelop.Ide.Gui.Pads.ErrorListPad)errorsPad.Content;
 					switch (IdeApp.Preferences.ShowErrorPadAfterBuild) {
 					case BuildResultStates.Always:
+						if (!errorsPad.Visible)
+							content.IsOpenedAutomatically = true;
 						errorsPad.Visible = true;
 						errorsPad.BringToFront ();
 						break;
 					case BuildResultStates.Never:
-						errorsPad.Visible = false;
+						if (content.IsOpenedAutomatically)
+							errorsPad.Visible = false;
 						break;
 					case BuildResultStates.OnErrors:
 						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
