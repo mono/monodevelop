@@ -76,7 +76,7 @@ namespace MonoDevelop.IPhone
 			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
 				if (!op.Success || (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings))
 					return;
-				IPhoneUtility.Upload (proj.TargetRuntime, proj.TargetFramework, conf.AppDirectory);
+				using (var up = IPhoneUtility.Upload (proj.TargetRuntime, proj.TargetFramework, conf.AppDirectory)) {}
 			}; 
 		}
 		
@@ -182,7 +182,7 @@ namespace MonoDevelop.IPhone
 	
 	public static class IPhoneUtility
 	{
-		public static IAsyncOperation Upload (TargetRuntime runtime, TargetFramework fx, FilePath appBundle)
+		public static ProcessWrapper Upload (TargetRuntime runtime, TargetFramework fx, FilePath appBundle)
 		{
 			string mtouchPath = GetMtouchPath (runtime, fx);
 			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
