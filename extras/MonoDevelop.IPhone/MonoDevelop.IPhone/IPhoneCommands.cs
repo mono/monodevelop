@@ -76,7 +76,7 @@ namespace MonoDevelop.IPhone
 			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
 				if (!op.Success || (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings))
 					return;
-				using (var up = IPhoneUtility.Upload (proj.TargetRuntime, proj.TargetFramework, conf.AppDirectory)) {}
+				IPhoneUtility.Upload (proj.TargetRuntime, proj.TargetFramework, conf.AppDirectory);
 			}; 
 		}
 		
