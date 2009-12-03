@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 		// Other threads can use textEditorData to get the document.
 		TextEditorData textEditorData;
 		
-		const uint CHILD_PADDING = 3;
+		const uint CHILD_PADDING = 0;
 		
 		bool shouldShowclassBrowser;
 		bool canShowClassBrowser;
@@ -178,10 +178,12 @@ namespace MonoDevelop.SourceEditor
 		
 		public SourceEditorWidget (SourceEditorView view)
 		{
+			
 			this.view = view;
 			this.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
 			mainsw = new ScrolledWindow ();
+			mainsw.BorderWidth = 0;
 			mainsw.ShadowType = ShadowType.In;
 			mainsw.Child = this.TextEditor;
 			this.PackStart (mainsw, true, true, 0);
@@ -203,6 +205,8 @@ namespace MonoDevelop.SourceEditor
 			UpdateLineCol ();
 			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 			//			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
+			this.BorderWidth = 0;
+			this.Spacing = 0;
 		}
 
 		protected override bool OnFocused (DirectionType direction)

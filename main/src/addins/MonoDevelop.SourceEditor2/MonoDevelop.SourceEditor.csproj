@@ -178,6 +178,7 @@
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorTextMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TinyDropDownBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

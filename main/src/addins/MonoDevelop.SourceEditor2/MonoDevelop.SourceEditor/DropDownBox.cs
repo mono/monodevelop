@@ -32,7 +32,7 @@ using Pango;
 using Gdk;
 
 namespace MonoDevelop.SourceEditor
-{
+{/*
 	public class DropDownBox : Gtk.Button
 	{
 		Gtk.Label label;
@@ -86,6 +86,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			SetItem (DataProvider.GetText (i), DataProvider.GetIcon (i), DataProvider.GetTag (i));
 		}
+		
 		public DropDownBox ()
 		{
 //			this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask;
@@ -182,5 +183,5 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public EventHandler ItemSet;
-	}
+	}*/
 }

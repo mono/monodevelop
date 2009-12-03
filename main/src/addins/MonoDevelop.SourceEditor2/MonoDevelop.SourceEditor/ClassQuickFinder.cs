@@ -60,14 +60,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.editor = editor;
 			this.BorderWidth = 0;
-				
+			this.Spacing = 0;
 			typeCombo.DataProvider = new TypeDataProvider (this);
 			typeCombo.ItemSet += TypeChanged;
+			typeCombo.DrawRightBorder = true;
 			UpdateTypeComboTip (null);
 			this.PackStart (typeCombo);
 
 			membersCombo.DataProvider = new MemberDataProvider (this);
 			membersCombo.ItemSet += MemberChanged;
+			membersCombo.DrawRightBorder = true;
 			UpdateMemberComboTip (null);
 			this.PackStart (membersCombo);
 			

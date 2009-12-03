@@ -43,7 +43,8 @@ FILES =  \
 	MonoDevelop.SourceEditor/SourceEditorWidget.cs \
 	MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs \
 	MonoDevelop.SourceEditor/SyntaxModeCodon.cs \
-	MonoDevelop.SourceEditor/SyntaxModeService.cs 
+	MonoDevelop.SourceEditor/SyntaxModeService.cs \
+	MonoDevelop.SourceEditor/TinyDropDownBox.cs 
 
 RES =  \
 	gtk-gui/gui.stetic \

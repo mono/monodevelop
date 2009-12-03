@@ -3,4 +3,15 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.SourceEditor.DropDownBox" palette-category="Widgets" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups>
+      <itemgroup label="DropDownBox Properties">
+        <property name="Text" />
+        <property name="DefaultIconHeight" />
+        <property name="DefaultIconWidth" />
+        <property name="DrawRightBorder" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
 </objects>
