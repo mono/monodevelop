@@ -48,32 +48,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			var dsi = (IPhoneDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
-			if (cmd.Simulator) {
+			if (cmd.Simulator)
 				StartSimulatorProcess (cmd);
-				StartListening (dsi);
-			} else {
-				var markerFile = cmd.AppPath.ParentDirectory.Combine (".monotouch_last_uploaded");
-				if (File.Exists (markerFile) && File.GetLastWriteTime (markerFile) > File.GetLastWriteTime (cmd.AppPath)) {
-					StartListening (dsi);
-				} else {
-					IPhoneUtility.Upload (cmd.Runtime, cmd.Framework, cmd.AppPath).Completed += delegate(IAsyncOperation op) {
-						if (op.Success) {
-							TouchUploadMarker (markerFile);
-							StartListening (dsi);
-						} else {
-							EndSession ();
-						}
-					};
-				}
-			}
-		}
-		
-		void TouchUploadMarker (FilePath markerFile)
-		{
-			if (File.Exists (markerFile))
-				File.SetLastWriteTime (markerFile, DateTime.Now);
-			else
-				File.WriteAllText (markerFile, "This file is used to determine when the app was last uploaded to a device");
+			StartListening (dsi);
 		}
 		
 		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)

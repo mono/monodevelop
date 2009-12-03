@@ -233,6 +233,42 @@ namespace MonoDevelop.IPhone
 			};
 		}
 		
+		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
+		{
+			var conf = (IPhoneProjectConfiguration) GetConfiguration (configSel);
+			if (conf.Platform == PLAT_IPHONE) {
+				if (NeedsUploading (conf)) {
+					using (var opMon = new AggregatedOperationMonitor (monitor)) {
+						using (var op = IPhoneUtility.Upload (TargetRuntime, TargetFramework, conf.AppDirectory)) {
+							opMon.AddOperation (op);
+							op.WaitForOutput ();
+							if (op.ExitCode != 0)
+								return;
+						}
+						TouchUploadMarker (conf);
+					}
+				}
+			}
+			
+			base.OnExecute (monitor, context, configSel);
+		}
+		
+		static bool NeedsUploading (IPhoneProjectConfiguration conf)
+		{
+			var markerFile = conf.OutputDirectory.Combine (".monotouch_last_uploaded");
+			return Directory.Exists (conf.AppDirectory) && File.Exists (markerFile) 
+				&& File.GetLastWriteTime (markerFile) < File.GetLastWriteTime (conf.AppDirectory);
+		}
+				
+		static void TouchUploadMarker (IPhoneProjectConfiguration conf)
+		{
+			var markerFile = conf.OutputDirectory.Combine (".monotouch_last_uploaded");
+			if (File.Exists (markerFile))
+				File.SetLastWriteTime (markerFile, DateTime.Now);
+			else
+				File.WriteAllText (markerFile, "This file is used to determine when the app was last uploaded to a device");
+		}
+		
 		#endregion
 		
 		#region Platform properties
