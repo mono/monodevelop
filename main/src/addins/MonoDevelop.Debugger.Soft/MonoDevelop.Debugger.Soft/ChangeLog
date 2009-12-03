@@ -1,3 +1,9 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Run CancelAsyncOperations in a
+	  background thread, since it can block and cause a deadlock
+	  with the main session lock. Fixes bug #558273.
+
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: Don't show the socket exception
