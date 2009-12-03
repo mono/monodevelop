@@ -129,6 +129,7 @@ namespace MonoDevelop.IPhone
 				throw new InvalidOperationException ("Already started");
 			thread = new Thread (Run) {
 				IsBackground = true,
+				Name = "File tail",
 			};
 			thread.Start ();
 		}
