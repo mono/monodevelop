@@ -52,10 +52,11 @@ namespace MonoDevelop.Debugger.Win32
 			: base (ctx)
 		{
 			this.prop = prop;
-			this.thisobj = thisobj;
 			this.declaringType = declaringType;
 			this.module = declaringType.Class.Module;
 			this.index = index;
+			if (!prop.GetGetMethod (true).IsStatic)
+				this.thisobj = thisobj;
 
 			loader = delegate {
 				return ((CorValRef)Value).Val;

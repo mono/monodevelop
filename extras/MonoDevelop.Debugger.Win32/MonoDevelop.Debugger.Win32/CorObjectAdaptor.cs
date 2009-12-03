@@ -418,9 +418,6 @@ namespace MonoDevelop.Debugger.Win32
 			CorType t = (CorType) tt;
 			CorValRef val = (CorValRef) gval;
 
-			if (val != null)
-				t = GetRealObject (ctx, val).ExactType;
-
 			if (t.Class == null)
 				yield break;
 
@@ -509,7 +506,7 @@ namespace MonoDevelop.Debugger.Win32
 					MetadataType rt = co.ExactType.Class.GetTypeInfo (cctx.Session) as MetadataType;
 					bool isFlags = rt != null && rt.ReallyIsFlagsEnum;
 					string enumName = GetTypeName (ctx, co.ExactType);
-					ValueReference val = GetMember (ctx, objr, "value__");
+					ValueReference val = GetMember (ctx, null, objr, "value__");
 					ulong nval = (ulong) Convert.ChangeType (val.ObjectValue, typeof(ulong));
 					ulong remainingFlags = nval;
 					string flags = null;
@@ -684,6 +681,11 @@ namespace MonoDevelop.Debugger.Win32
 
 			foreach (MemberInfo m in mems) {
 				object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
+				if (atts.Length == 0) {
+					atts = m.GetCustomAttributes (typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
+					if (atts.Length > 0)
+						atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
+				}
 				if (atts.Length > 0) {
 					if (td == null) td = new TypeDisplayData ();
 					if (td.MemberData == null) td.MemberData = new Dictionary<string, DebuggerBrowsableState> ();
