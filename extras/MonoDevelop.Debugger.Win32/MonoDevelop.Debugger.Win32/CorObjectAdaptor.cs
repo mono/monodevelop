@@ -413,7 +413,7 @@ namespace MonoDevelop.Debugger.Win32
 			return cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, tpars.ToArray ());
 		}
 
-		public override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)
+		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)
 		{
 			CorType t = (CorType) tt;
 			CorValRef val = (CorValRef) gval;
