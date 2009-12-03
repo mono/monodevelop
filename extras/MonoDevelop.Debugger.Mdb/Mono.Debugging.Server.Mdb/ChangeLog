@@ -1,3 +1,14 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MdbObjectValueAdaptor.cs: Track api changes.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* FieldReference.cs:
+	* PropertyReference.cs:
+	* MdbObjectValueAdaptor.cs: Implement new members. Properly
+	  set the Global flag for static fields and properties.
+
 2009-11-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Convert.cs: Improve conversion of corlib types.

@@ -273,6 +273,15 @@ namespace DebuggerServer
 			return mctx.Frame.Language.LookupType (name);
 		}
 
+		public override object GetBaseType (EvaluationContext ctx, object t)
+		{
+			MdbEvaluationContext mctx = (MdbEvaluationContext) ctx;
+			TargetStructType type = t as TargetStructType;
+			if (type != null && type.HasParent)
+				return type.GetParentType (mctx.Thread);
+			else
+				return null;
+		}
 
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
@@ -414,7 +423,7 @@ namespace DebuggerServer
 			return obj.GetType ().GetProperty (name).GetValue (obj, null);
 		}
 
-		public override IEnumerable<ValueReference> GetMembers (EvaluationContext gctx, object tt, object ob, BindingFlags bindingFlags)
+		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext gctx, object tt, object ob, BindingFlags bindingFlags)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext)gctx;
 			TargetStructObject co = ctx.GetRealObject (ob) as TargetStructObject; // It can be a TargetObjectObject
@@ -944,7 +953,7 @@ namespace DebuggerServer
 					}
 				}
 				
-				if (type.HasParent)
+				if (type.HasParent && (flags & BindingFlags.DeclaredOnly) == 0)
 					type = type.GetParentType (ctx.Thread);
 				else
 					break;
