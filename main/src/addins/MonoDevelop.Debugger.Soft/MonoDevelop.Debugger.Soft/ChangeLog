@@ -1,5 +1,12 @@
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.Debugger.Soft.dll: Updated, fixes debugger keeping 
+	  socket open after cancellation.
+	* Mono.Debugger.Soft.dll.mdb:
+	* Makefile.am: Include the debugger mdb file.
+
+2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs: Name threads to make debugging
 	  easier.
 
