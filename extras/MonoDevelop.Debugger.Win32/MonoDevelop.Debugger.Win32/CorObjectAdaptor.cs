@@ -108,6 +108,11 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			return GetRealObject (ctx, val).ExactType;
 		}
+		
+		public override object GetBaseType (EvaluationContext ctx, object type)
+		{
+			return ((CorType) type).Base;
+		}
 
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
@@ -408,7 +413,7 @@ namespace MonoDevelop.Debugger.Win32
 			return cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, tpars.ToArray ());
 		}
 
-		public override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)
+		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)
 		{
 			CorType t = (CorType) tt;
 			CorValRef val = (CorValRef) gval;
@@ -437,6 +442,8 @@ namespace MonoDevelop.Debugger.Win32
 					if (mi != null && mi.GetParameters ().Length == 0)
 						yield return new PropertyReference (ctx, prop, val, t);
 				}
+				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
+					break;
 				t = t.Base;
 			}
 		}

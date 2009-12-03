@@ -1,3 +1,14 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CorObjectAdaptor.cs: Track api changes.
+
+2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* FieldReference.cs:
+	* CorObjectAdaptor.cs:
+	* PropertyReference.cs: Implement GetBaseType and
+	DeclaringType. Honor the DeclareOnly flag.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Win32.addin.xml: Bump MD version.
