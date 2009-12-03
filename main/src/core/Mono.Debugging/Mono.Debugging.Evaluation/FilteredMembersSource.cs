@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
+using System.Diagnostics;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -45,8 +46,18 @@ namespace Mono.Debugging.Evaluation
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
 		{
 			var names = new ObjectValueNameTracker (ctx);
+			object tdataType = null;
+			TypeDisplayData tdata = null;
 			List<ObjectValue> list = new List<ObjectValue> ();
 			foreach (ValueReference val in ctx.Adapter.GetMembersSorted (ctx, objectSource, type, obj, bindingFlags)) {
+				object decType = val.DeclaringType;
+				if (decType != null && decType != tdataType) {
+					tdataType = decType;
+					tdata = ctx.Adapter.GetTypeDisplayData (ctx, decType);
+				}
+				DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
+				if (state == DebuggerBrowsableState.Never)
+					continue;
 				ObjectValue oval = val.CreateObjectValue ();
 				names.FixName (val, oval);
 				list.Add (oval);

@@ -1,5 +1,10 @@
 2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Honor
+	  DebuggerBrowsableState in private and static member groups.
+
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* Mono.Debugging.csproj:
 	* Mono.Debugging.Evaluation/RawViewSource.cs:
