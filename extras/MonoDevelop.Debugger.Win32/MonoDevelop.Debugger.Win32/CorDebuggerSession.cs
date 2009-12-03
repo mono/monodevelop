@@ -715,10 +715,9 @@ namespace MonoDevelop.Debugger.Win32
 				process.OnEvalComplete += completeHandler;
 				process.OnEvalException += exceptionHandler;
 
-				OnStartEvaluating ();
 				ctx.Eval.NewString (value);
-
 				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
+				OnStartEvaluating ();
 				ClearEvalStatus ();
 				process.Continue (false);
 
@@ -884,7 +883,7 @@ namespace MonoDevelop.Debugger.Win32
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorObjectAdaptor actx = (CorObjectAdaptor) ctx.Adapter;
 			if (actx.IsEnum (ctx, thisVal.Val.ExactType) && !actx.IsEnum (ctx, val.Val.ExactType)) {
-				ValueReference vr = actx.GetMember (ctx, thisVal, "value__");
+				ValueReference vr = actx.GetMember (ctx, null, thisVal, "value__");
 				vr.Value = val;
 				// Required to make sure that var returns an up-to-date value object
 				thisVal.IsValid = false;

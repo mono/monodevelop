@@ -877,6 +877,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
 			if (attr != null)
 				attributes.Add (attr);
+			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute));
+			if (attr != null)
+				attributes.Add (attr);
 
 			if (attributes.Count == 0)
 				return emptyAttributes;
