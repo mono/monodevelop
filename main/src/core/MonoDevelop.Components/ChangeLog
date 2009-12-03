@@ -1,3 +1,9 @@
+2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/GtkUtil.cs: Make sure the tooltip is
+	  hidden when the mouse goes outside the tree or when it loses
+	  the focus.
+
 2009-12-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

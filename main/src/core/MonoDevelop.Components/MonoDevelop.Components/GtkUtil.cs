@@ -46,10 +46,17 @@ namespace MonoDevelop.Components
 			};
 		}
 
+		[GLib.ConnectBeforeAttribute]
 		static void HandleLeaveNotifyEvent(object o, LeaveNotifyEventArgs args)
 		{
-			TreeView tree = (TreeView) o;
-			HideTooltip (tree);
+			GLib.Timeout.Add (50, delegate {
+				Gtk.TreeView tree = (Gtk.TreeView) o;
+				TreeViewTooltipsData data = treeData [tree];
+				if (data != null && data.Tooltip != null && data.Tooltip.MouseIsOver)
+					return false;
+				HideTooltip (tree);
+				return false;
+			});
 		}
 
 		internal static void HideTooltip (TreeView tree)
@@ -114,6 +121,8 @@ namespace MonoDevelop.Components
 		TreePath path;
 		TreeIter iter;
 		
+		public bool MouseIsOver;
+		
 		public CellTooltipWindow (TreeView tree, TreeViewColumn col, TreePath path)
 		{
 			this.tree = tree;
@@ -122,7 +131,7 @@ namespace MonoDevelop.Components
 			
 			NudgeHorizontal = true;
 			
-			Events |= Gdk.EventMask.ButtonPressMask;
+			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			
 			Gdk.Rectangle rect = tree.GetCellArea (path, col);
 			rect.Inflate (2, 2);
@@ -194,9 +203,15 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
+			MouseIsOver = false;
 			GtkUtil.HideTooltip (tree);
 			return base.OnLeaveNotifyEvent (evnt);
 		}
-
+		
+		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			MouseIsOver = true;
+			return base.OnEnterNotifyEvent (evnt);
+		}
 	}
 }
