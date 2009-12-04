@@ -25,6 +25,7 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -37,6 +38,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />
@@ -145,6 +147,8 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DocumentationPanel.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\SearchEntry.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\HoverImageButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

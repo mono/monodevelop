@@ -165,6 +165,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public string GetDisassembly (ITreeNavigator navigator)
 		{
+			bool publicOnly = navigator.Options ["PublicApiOnly"];
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, type.Attributes));
@@ -198,6 +199,8 @@ namespace MonoDevelop.AssemblyBrowser
 //			string commentSpan = String.Format ("<span foreground=\"#{0:X6}\">", comments.Color.Pixel);
 			string commentSpan = "<span style=\"comment\">";
 			foreach (IField field in type.Fields) {
+				if (publicOnly && !field.IsPublic)
+					continue;
 				if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
 					continue;
 				if (first) {
@@ -216,6 +219,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IEvent evt in type.Events) {
+				if (publicOnly && !evt.IsPublic)
+					continue;
 				if (first) {
 					result.AppendLine ();
 					result.Append ("\t");
@@ -232,6 +237,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IMethod method in type.Methods) {
+				if (publicOnly && !method.IsPublic)
+					continue;
 				if (!method.IsConstructor)
 					continue;
 				if (first) {
@@ -250,6 +257,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IMethod method in type.Methods) {
+				if (publicOnly && !method.IsPublic)
+					continue;
 				if ((method.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName || method.IsConstructor)
 					continue;
 				if (first) {
@@ -268,6 +277,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IProperty property in type.Properties) {
+				if (publicOnly && !property.IsPublic)
+					continue;
 				if (first) {
 					result.AppendLine ();
 					result.Append ("\t");

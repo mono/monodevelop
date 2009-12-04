@@ -59,6 +59,11 @@ namespace MonoDevelop.AssemblyBrowser
 			private set;
 		}
 		
+		public bool PublicApiOnly {
+			get;
+			private set;
+		}
+		
 		Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
 		public Ambience Ambience {
 			get { return ambience; }
@@ -86,12 +91,12 @@ namespace MonoDevelop.AssemblyBrowser
 				new BaseTypeFolderNodeBuilder (this),
 				new DomReturnTypeNodeBuilder (this),
 				new ReferenceNodeBuilder (this),
-				}, new TreePadOption [] {
-					new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), PropertyService.Get ("AssemblyBrowser.ShowPublicOnly", true)),
-				});
+				}, new TreePadOption [] {
+				new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), true)
+			});
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
-				
+			
 			scrolledwindow2.AddWithViewport (TreeView);
 			scrolledwindow2.ShowAll ();
 			
@@ -129,16 +134,46 @@ namespace MonoDevelop.AssemblyBrowser
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
 			this.languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
-			this.languageCombobox.Active = PropertyService.Get ("AssemblyBrowser.InspectLanguage", 0);
+			this.languageCombobox.Active = PropertyService.Get ("AssemblyBrowser.InspectLanguage", 2);
 			this.languageCombobox.Changed += LanguageComboboxhandleChanged;
+			this.searchentry1.Ready = true;
+			this.searchentry1.WidthRequest = 200;
+			this.searchentry1.Visible = true;
+			this.searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types or members");
+			this.searchentry1.InnerEntry.Changed += SearchEntryhandleChanged;
+			this.buttonCancelSearch.Clicked += delegate {
+				notebook1.Page = 1;
+			};
+			CheckMenuItem checkMenuItem = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Types"));
+			checkMenuItem.Active = true;
+			checkMenuItem.Toggled += delegate {
+				if (checkMenuItem.Active) {
+					searchMode = AssemblyBrowserWidget.SearchMode.Type;
+					CreateColumns ();
+					StartSearch ();
+				}
+			};
 			
-			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Types"));
-			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Members"));
-			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Disassembler"));
-			this.searchInCombobox.AppendText (GettextCatalog.GetString ("Decompiler"));
+			CheckMenuItem checkMenuItem1 = this.searchentry1.AddFilterOption (1, GettextCatalog.GetString ("Members"));
+			checkMenuItem1.Toggled += delegate {
+				if (checkMenuItem1.Active) {
+					searchMode = AssemblyBrowserWidget.SearchMode.Member;
+					CreateColumns ();
+					StartSearch ();
+				}
+			};
+			comboboxVisibilty.InsertText (0, GettextCatalog.GetString ("Only public members"));
+			comboboxVisibilty.InsertText (1, GettextCatalog.GetString ("All members"));
+			comboboxVisibilty.Active = 0;
+			comboboxVisibilty.Changed += delegate {
+				PublicApiOnly = comboboxVisibilty.Active == 0;
+				this.TreeView.GetRootNode ().Options["PublicApiOnly"] = PublicApiOnly;
+				FillInspectLabel ();
+			};
+			/*
 			this.searchInCombobox.Active = 0;
 			this.searchInCombobox.Changed += SearchInComboboxhandleChanged;
-			
+			*/
 			this.notebook1.SetTabLabel (this.documentationScrolledWindow, new Label (GettextCatalog.GetString ("Documentation")));
 			this.notebook1.SetTabLabel (this.vboxInspect, new Label (GettextCatalog.GetString ("Inspect")));
 			this.notebook1.SetTabLabel (this.searchWidget, new Label (GettextCatalog.GetString ("Search")));
@@ -159,8 +194,12 @@ namespace MonoDevelop.AssemblyBrowser
 			                                  );
 			CreateColumns ();
 			SetInpectWidget ();
-			this.searchEntry.Changed += SearchEntryhandleChanged;
+//			this.searchEntry.Changed += SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated += SearchTreeviewhandleRowActivated;
+			this.searchentry1.ShowAll ();
+			this.buttonBack.Clicked += this.OnNavigateBackwardActionActivated;
+			this.buttonForeward.Clicked += this.OnNavigateForwardActionActivated;
+			
 		}
 
 		void SearchTreeviewhandleRowActivated (object o, RowActivatedArgs args)
@@ -192,16 +231,10 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			StartSearch ();
 		}
-
-		void SearchInComboboxhandleChanged (object sender, EventArgs e)
-		{
-			this.searchMode = (SearchMode)this.searchInCombobox.Active;
-			CreateColumns ();
-			StartSearch ();
-		}
-
+		
 		void LanguageComboboxhandleChanged (object sender, EventArgs e)
 		{
+			this.notebook1.Page = 1;
 			PropertyService.Set ("AssemblyBrowser.InspectLanguage", this.languageCombobox.Active);
 			SetInpectWidget ();
 			FillInspectLabel ();
@@ -360,6 +393,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public void StartSearch ()
 		{
+			this.notebook1.Page = 2;
 			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy)
 				searchBackgoundWorker.CancelAsync ();
 			
@@ -388,7 +422,7 @@ namespace MonoDevelop.AssemblyBrowser
 				searchBackgoundWorker = null;
 			};
 			
-			searchBackgoundWorker.RunWorkerAsync (searchEntry.Text);
+			searchBackgoundWorker.RunWorkerAsync (searchentry1.Query);
 		}
 	
 		void SearchDoWork (object sender, DoWorkEventArgs e)
@@ -921,23 +955,14 @@ namespace MonoDevelop.AssemblyBrowser
 				inspectEditor.Destroy ();
 				inspectEditor = null;
 			}
-			if (this.NavigateBackwardAction != null) {
-				this.NavigateBackwardAction.Activated -= this.OnNavigateBackwardActionActivated;
-				this.NavigateBackwardAction.Dispose ();
-				this.NavigateBackwardAction = null;
-			}
-			if (this.NavigateForwardAction != null) {
-				this.NavigateForwardAction.Activated -= this.OnNavigateForwardActionActivated;
-				this.NavigateForwardAction.Dispose ();
-				this.NavigateForwardAction = null;
-			}
+			
 			if (this.UIManager != null) {
 				this.UIManager.Dispose ();
 				this.UIManager = null;
 			}
 			this.languageCombobox.Changed -= LanguageComboboxhandleChanged;
-			this.searchInCombobox.Changed -= SearchInComboboxhandleChanged;
-			this.searchEntry.Changed -= SearchEntryhandleChanged;
+//			this.searchInCombobox.Changed -= SearchInComboboxhandleChanged;
+//			this.searchEntry.Changed -= SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated -= SearchTreeviewhandleRowActivated;
 			hpaned1.ExposeEvent -= HPaneExpose;
 			PropertyService.PropertyChanged -= HandlePropertyChanged;
@@ -970,7 +995,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			//this.searchWidget.Visible = true;
 			this.notebook1.Page = 2;
-			this.searchEntry.GrabFocus ();
+//			this.searchEntry.GrabFocus ();
 		}
 	
 		#region NavigationHistory
@@ -993,8 +1018,9 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		void UpdateNavigationActions ()
 		{
-			NavigateBackwardAction.Sensitive = navigationBackwardHistory.Count != 0;
-			NavigateForwardAction.Sensitive = navigationForwardHistory.Count != 0;
+			buttonBack.Sensitive = navigationBackwardHistory.Count != 0;
+			buttonForeward.Sensitive = navigationForwardHistory.Count != 0;
+			
 		}
 		
 		protected virtual void OnNavigateBackwardActionActivated (object sender, System.EventArgs e)

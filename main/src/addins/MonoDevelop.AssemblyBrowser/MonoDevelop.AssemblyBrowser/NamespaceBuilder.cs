@@ -96,6 +96,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public string GetDisassembly (ITreeNavigator navigator)
 		{
+			bool publicOnly = navigator.Options ["PublicApiOnly"];
 			Namespace ns = (Namespace)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			if (!String.IsNullOrEmpty (ns.Name)) {
@@ -108,6 +109,8 @@ namespace MonoDevelop.AssemblyBrowser
 				result.AppendLine ();
 			}
 			foreach (IType type in ns.Types) {
+				if (publicOnly && !type.IsPublic)
+					continue;
 				if (!String.IsNullOrEmpty (ns.Name))
 					result.Append ("\t");
 				result.Append (Ambience.GetString (type, DomTypeNodeBuilder.settings));

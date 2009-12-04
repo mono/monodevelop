@@ -31,8 +31,6 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-
-
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class DocumentationPanel : Gtk.DrawingArea
 	{
