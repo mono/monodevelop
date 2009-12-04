@@ -314,6 +314,30 @@ namespace OSXIntegration.Framework
 		static extern void DisposeNavPreviewUPP (NavPreviewUPP userUPP);
 		
 		#endregion
+		
+		#region Internal Mac API for setting process name
+		
+		[DllImport (CarbonLib)]
+		static extern int GetCurrentProcess (out ProcessSerialNumber psn);
+		
+		[DllImport (CarbonLib)]
+		static extern int CPSSetProcessName (ref ProcessSerialNumber psn, string name);
+		
+		public static void SetProcessName (string name)
+		{
+			try {
+				ProcessSerialNumber psn;
+				if (GetCurrentProcess (out psn) == 0)
+					CPSSetProcessName (ref psn, name);
+			} catch {} //EntryPointNotFoundException?
+		}
+		
+		struct ProcessSerialNumber {
+			ulong highLongOfPSN;
+			ulong lowLongOfPSN;
+		}
+		
+		#endregion
 	}
 	
 	struct NavEventUPP { IntPtr ptr; }

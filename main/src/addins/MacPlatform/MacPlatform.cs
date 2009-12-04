@@ -36,6 +36,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using OSXIntegration.Framework;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Platform
 {
@@ -47,6 +48,9 @@ namespace MonoDevelop.Platform
 
 		static MacPlatform ()
 		{
+			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
+			Carbon.SetProcessName ("MonoDevelop");
+			
 			GlobalSetup ();
 			mimemap = new Dictionary<string, string> ();
 			LoadMimeMap ();
