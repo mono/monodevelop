@@ -1,5 +1,10 @@
 2009-12-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Escape now
+	  closes drop down.
+
+2009-12-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Improved the
 	  drawing of the tiny drop down box.
 

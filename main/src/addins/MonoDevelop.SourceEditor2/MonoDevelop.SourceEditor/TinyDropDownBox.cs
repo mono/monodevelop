@@ -182,6 +182,10 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
+			if (evnt.Key == Gdk.Key.Escape) {
+				DestroyWindow (); 
+				return true;
+			}
 			if (window != null && window.ProcessKey (evnt.Key, evnt.State))
 				return true;
 			return base.OnKeyPressEvent (evnt);
