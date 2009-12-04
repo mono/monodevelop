@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -36,5 +37,15 @@ namespace MonoDevelop.Core.Execution
 		int ExitCode { get; }
 		
 		int ProcessId { get; }
+	}
+
+	public class NullProcessAsyncOperation : NullAsyncOperation, IProcessAsyncOperation
+	{
+		public NullProcessAsyncOperation (bool success) : base (success, false) {}
+		public int ExitCode { get { return ((IAsyncOperation)this).Success? 0 : 1; } }
+		public int ProcessId { get { return 0; } }
+		
+		public new static NullProcessAsyncOperation Success = new NullProcessAsyncOperation (true);
+		public new static NullProcessAsyncOperation Failure = new NullProcessAsyncOperation (false);
 	}
 }

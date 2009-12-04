@@ -44,14 +44,9 @@ namespace MonoDevelop.Moonlight
 		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			Console.WriteLine ("Executing");
 			var cmd = (MoonlightExecutionCommand) command;
-			var ret = BrowserLauncher.LaunchWhenReady (cmd.Url);
-			ret.Completed += delegate (IAsyncOperation op) {
-				if (!op.Success)
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to open test page in browser."));
-			};
-			return ret;
+			return BrowserLauncher.LaunchDefaultBrowser (cmd.Url);
 		}
 	}
+	
 }

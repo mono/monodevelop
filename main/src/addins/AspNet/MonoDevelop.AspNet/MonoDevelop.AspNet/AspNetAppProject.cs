@@ -244,41 +244,36 @@ namespace MonoDevelop.AspNet
 			var cmd = CreateExecutionCommand (config, configuration);
 			
 			IConsole console = null;
-			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
+			var operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
 				if (configuration.ExternalConsole)
 					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
 				else
 					console = context.ConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
+				
+				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
+				
+				bool isXsp = true; //FIXME: fix this when it might not be true
+				
+				if (isXsp) {
+					console = new XspBrowserLauncherConsole (console, delegate {
+						BrowserLauncher.LaunchDefaultBrowser (url);
+					});
+				}
 			
 				monitor.Log.WriteLine ("Running web server...");
 				
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
+				var op = context.ExecutionHandler.Execute (cmd, console);
 				operationMonitor.AddOperation (op); //handles cancellation
 				
-				//launch a separate thread to detect the running server and launch a web browser
-				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
-				BrowserLauncherOperation browserLauncher = BrowserLauncher.LaunchWhenReady (url);
-				operationMonitor.AddOperation (browserLauncher);
-				
-				//report errors from the browser launcher
-				browserLauncher.Completed += delegate (IAsyncOperation blop) {
-					if (!blop.Success)
-						MessageService.ShowError (
-						    GettextCatalog.GetString ("Error launching web browser"),
-						    ((BrowserLauncherOperation)blop).Error.ToString ()
-						);
-				};
+				if (!isXsp)
+					BrowserLauncher.LaunchDefaultBrowser (url);
 				
 				op.WaitForCompleted ();
+				
 				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
 				
-				//if server shut down before browser launched, abort browser launch
-				if (!browserLauncher.IsCompleted) {
-					browserLauncher.Cancel ();
-					browserLauncher.WaitForCompleted ();
-				}
 			} catch (Exception ex) {
 				monitor.ReportError ("Could not launch web server.", ex);
 			} finally {
@@ -755,4 +750,123 @@ namespace MonoDevelop.AspNet
 	}
 	
 	
+	class XspBrowserLauncherConsole : IConsole
+	{
+		IConsole real;
+		LineInterceptingTextWriter outWriter;
+		Action launchBrowser;
+		
+		public XspBrowserLauncherConsole (IConsole real, Action launchBrowser)
+		{
+			this.real = real;
+			this.launchBrowser = launchBrowser;
+		}
+		
+		public void Dispose ()
+		{
+			real.Dispose ();
+		}
+		
+		public event EventHandler CancelRequested {
+			add { real.CancelRequested += value; }
+			remove { real.CancelRequested -= value; }
+		}
+		
+		public TextReader In {
+			get { return real.In; }
+		}
+		
+		public TextWriter Out {
+			get {
+				if (outWriter == null)
+					outWriter = new LineInterceptingTextWriter (real.Out, delegate {
+						if (outWriter.GetLine ().StartsWith ("Listening on port: ")) {
+							launchBrowser ();
+							outWriter.FinishedIntercepting = true;
+						} else if (outWriter.LineCount > 20) {
+							outWriter.FinishedIntercepting = true;
+						}
+					});
+				return outWriter;
+			}
+		}
+		
+		public TextWriter Error {
+			get { return real.Error; }
+		}
+		
+		public TextWriter Log {
+			get { return real.Log; }
+		}
+		
+		public bool CloseOnDispose {
+			get { return real.CloseOnDispose; }
+		}
+		
+		class LineInterceptingTextWriter : TextWriter
+		{
+			const int SBCAP = 256;
+			TextWriter innerWriter;
+			System.Text.StringBuilder sb = new System.Text.StringBuilder (SBCAP);
+			Action onNewLine;
+			
+			public LineInterceptingTextWriter (TextWriter innerWriter, Action onNewLine)
+			{
+				this.innerWriter = innerWriter;
+				this.onNewLine = onNewLine;
+			}
+			
+			public bool FinishedIntercepting {
+				get { return sb == null; }
+				set { sb = null; }
+			}
+			
+			public int LineCount { get; private set; }
+			
+			public string GetLine ()
+			{
+				return sb.ToString ();
+			}
+			
+			public override void Write (char value)
+			{
+				innerWriter.Write (value);
+			}
+			
+			//the ProcessWrapper only feeds output to this method
+			public override void Write (string value)
+			{
+				if (sb != null) {
+					for (int i = 0; i < value.Length; i++) {
+						char c = value[i];
+						if (c == '\n' || c == '\r') {
+							LineCount++;
+							if (sb.Length > 0)
+								onNewLine ();
+							if (sb != null)
+								sb.Length = 0;
+						} else if (sb.Length < SBCAP) {
+							sb.Append (c);
+						}
+					}
+				}
+				innerWriter.Write (value);
+			}
+			
+			public override void Flush ()
+			{
+				innerWriter.Flush ();
+			}
+			
+			public override void Close ()
+			{
+				base.Close ();
+				innerWriter.Close ();
+			}
+			
+			public override System.Text.Encoding Encoding {
+				get { return innerWriter.Encoding; }
+			}
+		}
+	}
 }
