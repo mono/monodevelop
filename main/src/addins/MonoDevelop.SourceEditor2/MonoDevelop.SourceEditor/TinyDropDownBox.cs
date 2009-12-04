@@ -253,9 +253,9 @@ namespace MonoDevelop.SourceEditor
 				
 				
 				DrawGradientBackground (g, new Gdk.Rectangle (arrowXPos - leftSpacing, 0, Allocation.Width - (arrowXPos - leftSpacing), Allocation.Height));
-				
-				Gtk.Style.PaintArrow (this.Style, win, StateType.Normal, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
-				Gtk.Style.PaintArrow (this.Style, win, StateType.Normal, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, (Allocation.Height) / 2, arrowWidth, arrowHeight);
+				StateType state = Sensitive ? StateType.Normal : StateType.Insensitive;
+				Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
+				Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, (Allocation.Height) / 2, arrowWidth, arrowHeight);
 				if (DrawRightBorder)
 					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.Width - 1, 0, Allocation.Width - 1, Allocation.Height);
 				xPos += arrowWidth;
@@ -267,14 +267,30 @@ namespace MonoDevelop.SourceEditor
 		{
 			DrawRectangle (g, area.X, area.Y, area.Right, area.Bottom);
 			
-			Cairo.Gradient pat = new Cairo.LinearGradient (area.X, area.Y, area.X, area.Y + area.Height);
-			Cairo.Color lightBg = ToCairoColor (Style.Background (isMouseOver ? StateType.Prelight : StateType.Normal));
-			Cairo.Color darkBg = ToCairoColor (Style.Base (isMouseOver ? StateType.Prelight : StateType.Normal));
-	
-			pat.AddColorStop (0, lightBg);
-			pat.AddColorStop (0.5, darkBg);
-			pat.AddColorStop (1, lightBg);
-			g.Pattern = pat;
+			if (!Sensitive) {
+				g.Color = ToCairoColor (Style.Background (StateType.Insensitive));
+			} else {
+				Cairo.Gradient pat = new Cairo.LinearGradient (area.X, area.Y, area.X, area.Y + area.Height);
+				Cairo.Color lightBg;
+				Cairo.Color darkBg;
+				
+				if (!isMouseOver && window != null) {
+					lightBg = ToCairoColor (Style.Background (StateType.Normal));
+					darkBg = ToCairoColor (Style.Base (StateType.Normal));
+					pat.AddColorStop (0, lightBg);
+					pat.AddColorStop (1, darkBg);
+				} else {
+					lightBg = ToCairoColor (Style.Background (isMouseOver ? StateType.Prelight : StateType.Normal));
+					darkBg = ToCairoColor (Style.Base (isMouseOver ? StateType.Prelight : StateType.Normal));
+					
+					pat.AddColorStop (0, lightBg);
+					pat.AddColorStop (0.5, darkBg);
+					pat.AddColorStop (1, lightBg);
+				}
+				
+				g.Pattern = pat;
+			}
+			
 			g.Fill ();
 				
 		}

@@ -1,5 +1,10 @@
 2009-12-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Improved the
+	  drawing of the tiny drop down box.
+
+2009-12-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Keyboard now
 	  works in tiny drop down.
 
