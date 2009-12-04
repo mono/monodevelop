@@ -1,3 +1,7 @@
+2009-12-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.HexEditor.addin.xml: Added missing dependency.
+
 2009-12-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.HexEditor/MonoDevelopHexEditorStyle.cs: Fixed
