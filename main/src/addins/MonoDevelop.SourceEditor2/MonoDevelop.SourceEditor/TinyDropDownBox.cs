@@ -180,6 +180,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			if (window != null && window.ProcessKey (evnt.Key, evnt.State))
+				return true;
+			return base.OnKeyPressEvent (evnt);
+		}
+		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			isMouseOver = false;
