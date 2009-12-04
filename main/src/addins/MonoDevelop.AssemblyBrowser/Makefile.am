@@ -68,7 +68,7 @@ all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(top_builddir)/build/bin
-	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) $(build_deps)
+	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) --unsafe -out:$@ -t:library $(REFS) $(build_deps)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
