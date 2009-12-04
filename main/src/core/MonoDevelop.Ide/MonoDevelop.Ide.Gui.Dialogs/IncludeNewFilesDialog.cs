@@ -90,12 +90,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TraverseSubtree (TreeIter.Zero, delegate (TreeIter currentIter) {
 				bool isToggled = (bool) store.GetValue (currentIter, Columns.IsToggled);
 				string fileName = (string) store.GetValue (currentIter, Columns.FileName);
-				if (isToggled) {
-					project.AddFile (fileName);
-				} else {
-					ProjectFile projectFile = project.AddFile (fileName, BuildAction.None);
-					if (projectFile != null)
-						projectFile.Visible = false;
+				if (fileName != null) {
+					if (isToggled) {
+						project.AddFile (fileName);
+					} else {
+						ProjectFile projectFile = project.AddFile (fileName, BuildAction.None);
+						if (projectFile != null)
+							projectFile.Visible = false;
+					}
 				}
 			});
 			IdeApp.ProjectOperations.Save (project);

@@ -1,3 +1,8 @@
+2009-12-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs: Add
+	  missing null check. Fixes bug #560768.
+
 2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Add some sanity checks for
