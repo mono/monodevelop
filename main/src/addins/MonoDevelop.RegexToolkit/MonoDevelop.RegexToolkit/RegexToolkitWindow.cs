@@ -58,6 +58,10 @@ namespace MonoDevelop.RegexToolkit
 				this.Destroy ();
 			};
 			
+			this.buttonStart.Sensitive = false;
+			this.entryRegEx.Changed += UpdateStartButtonSensitivity;
+			this.inputTextview.Buffer.Changed += UpdateStartButtonSensitivity;
+			
 			this.buttonStart.Clicked += delegate {
 				PerformQuery (inputTextview.Buffer.Text,
 				              this.entryRegEx.Text,
@@ -78,6 +82,11 @@ namespace MonoDevelop.RegexToolkit
 			};
 			
 			SetFindMode (true);
+			
+			var cellRendText = new CellRendererText ();
+			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
+			var pix = new CellRendererPixbuf ();
+			
 			this.optionsTreeview.Model = this.optionsStore;
 			this.optionsTreeview.HeadersVisible = false;
 			
@@ -85,18 +94,16 @@ namespace MonoDevelop.RegexToolkit
 			cellRendToggle.Toggled += new ToggledHandler (OptionToggled);
 			cellRendToggle.Activatable = true;
 			this.optionsTreeview.AppendColumn ("", cellRendToggle, "active", 0);
-			
-			CellRendererText cellRendText = new CellRendererText ();
-			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
 			this.optionsTreeview.AppendColumn ("", cellRendText, "text", 1);
 			
 			this.resultsTreeview.Model = this.resultStore;
 			this.resultsTreeview.HeadersVisible = false;
-			this.resultsTreeview.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", 0);
-				
-			cellRendText = new CellRendererText ();
-			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
-			this.resultsTreeview.AppendColumn ("", cellRendText, "text", 1);
+			var col = new TreeViewColumn ();
+			this.resultsTreeview.AppendColumn (col);
+			col.PackStart (pix, false);
+			col.AddAttribute (pix, "stock_id", 0);
+			col.PackStart (cellRendText, true);
+			col.AddAttribute (cellRendText, "text", 1);
 			
 			this.resultsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
 				Gtk.TreeIter iter;
@@ -116,11 +123,13 @@ namespace MonoDevelop.RegexToolkit
 			this.elementsTreeview.Model = this.elementsStore;
 			this.elementsTreeview.HeadersVisible = false;
 			this.elementsTreeview.Selection.Mode = SelectionMode.Browse;
-			this.elementsTreeview.AppendColumn (String.Empty, new CellRendererPixbuf (), "stock_id", 0);
-			cellRendText = new CellRendererText ();
-			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
 			
-			this.elementsTreeview.AppendColumn ("", cellRendText, "text", 1);
+			col = new TreeViewColumn ();
+			this.elementsTreeview.AppendColumn (col);
+			col.PackStart (pix, false);
+			col.AddAttribute (pix, "stock_id", 0);
+			col.PackStart (cellRendText, true);
+			col.AddAttribute (cellRendText, "text", 1);
 			
 			this.elementsTreeview.Selection.Changed += delegate {
 				ShowTooltipForSelectedEntry ();			
@@ -175,6 +184,11 @@ namespace MonoDevelop.RegexToolkit
 			this.notebook2.ShowTabs = !findMode;
 			if (findMode)
 				this.notebook2.Page = 0;
+		}
+		
+		void UpdateStartButtonSensitivity (object sender, EventArgs args)
+		{
+			this.buttonStart.Sensitive = this.entryRegEx.Text.Length > 0 && inputTextview.Buffer.CharCount > 0;
 		}
 		
 		void ShowTooltipForSelectedEntry ()
