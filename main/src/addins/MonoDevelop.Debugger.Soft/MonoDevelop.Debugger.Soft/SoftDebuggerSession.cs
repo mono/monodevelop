@@ -102,8 +102,10 @@ namespace MonoDevelop.Debugger.Soft
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
-				OnConnected (VirtualMachineManager.EndLaunch (ar));
-			}), null));
+					OnConnected (VirtualMachineManager.EndLaunch (ar));
+				}),
+				null //new LaunchOptions { AgentArgs= "loglevel=1,logfile=/tmp/sdb.log"}
+			));
 		}
 		
 		internal AsyncCallback HandleCallbackErrors (AsyncCallback callback)
@@ -888,22 +890,26 @@ namespace MonoDevelop.Debugger.Soft
 			vm.Suspend ();
 			
 			//emit a stop event at the current position of the most recent thread
-			var process = OnGetProcesses () [0];				
-			EnsureRecentThreadIsValid ();
+			//we use "getprocesses" instead of "ongetprocesses" because it attaches the process to the session
+			//using private Mono.Debugging API, so our thread/backtrace calls will cache stuff that will get used later
+			var process = GetProcesses () [0];				
+			EnsureRecentThreadIsValid (process);
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetStopped) {
 				Process = process,
 				Thread = GetThread (process, recent_thread),
 				Backtrace = GetThreadBacktrace (recent_thread)});
 		}
 		
-		void EnsureRecentThreadIsValid ()
+		void EnsureRecentThreadIsValid (ProcessInfo process)
 		{
-			if (ThreadIsAlive (recent_thread))
+			var infos = process.GetThreads ();
+			
+			if (ThreadIsAlive (recent_thread) && HasUserFrame (recent_thread.Id, infos))
 				return;
 
 			var threads = vm.GetThreads ();
 			foreach (var thread in threads) {
-				if (ThreadIsAlive (thread)) {
+				if (ThreadIsAlive (thread) && HasUserFrame (thread.Id, infos)) {
 					recent_thread = thread;
 					return;
 				}
@@ -917,6 +923,23 @@ namespace MonoDevelop.Debugger.Soft
 				return false;
 			var state = thread.ThreadState;
 			return state != ThreadState.Stopped && state != ThreadState.Aborted;
+		}
+		
+		//we use the Mono.Debugging classes because they are cached
+		bool HasUserFrame (long tid, ThreadInfo[] infos)
+		{
+			foreach (var t in infos) {
+				if (t.Id != tid)
+					continue;
+				var bt = t.Backtrace;
+				for (int i = 0; i < bt.FrameCount; i++) {
+					var frame = bt.GetFrame (i);
+					if (frame != null && !frame.IsExternalCode)
+						return true;
+				}
+				return false;
+			}
+			return false;
 		}
 		
 		BreakInfo GetBreakInfo (BreakEvent be)
