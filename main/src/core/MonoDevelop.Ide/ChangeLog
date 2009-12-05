@@ -1,3 +1,9 @@
+2009-12-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	  Avoid appending '...' to commands that already end with
+	  '...'.
+
 2009-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs: Add
