@@ -297,7 +297,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			Workbench.RootWindow.Present ();
+			Workbench.Present ();
 		}
 		
 		static bool FileServiceErrorHandler (string message, Exception ex)

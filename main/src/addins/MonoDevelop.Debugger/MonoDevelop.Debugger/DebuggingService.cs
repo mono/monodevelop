@@ -447,7 +447,7 @@ namespace MonoDevelop.Debugger
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
-				IdeApp.Workbench.RootWindow.Present ();
+				IdeApp.Workbench.Present ();
 			});
 		}
 		

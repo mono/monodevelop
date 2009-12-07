@@ -344,7 +344,9 @@ namespace MonoDevelop.Ide
 				ret = base.OnKeyReleaseEvent (evnt);
 				Gtk.Window parent = this.TransientFor;
 				this.Destroy ();
-				parent.Present ();
+				//FIXME: Present is broken on Mac GTK+. It maximises the window.
+				if (!MonoDevelop.Core.PropertyService.IsMac)
+					parent.Present ();
 			} else {
 				ret = base.OnKeyReleaseEvent (evnt);
 			}

@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitors.Initialize ();
 			
-			RootWindow.Present ();
+			Present ();
 		}
 		
 		internal bool Close ()
@@ -176,6 +176,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Gtk.Window RootWindow {
 			get { return (Gtk.Window) workbench; }
+		}
+		
+		public void Present ()
+		{
+			//FIXME: Present is broken on Mac GTK+. It maximises the window.
+			if (!PropertyService.IsMac)
+				RootWindow.Present ();
 		}
 		
 		public WorkbenchContext Context {
@@ -374,7 +381,7 @@ namespace MonoDevelop.Ide.Gui
 					if (bringToFront) {
 						doc.Select ();
 						doc.Window.SwitchView (vcIndex);
-						RootWindow.Present ();
+						Present ();
 					}
 					
 					IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
@@ -406,7 +413,7 @@ namespace MonoDevelop.Ide.Gui
 				Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
 				NavigationHistoryService.LogActiveDocument ();
 				if (bringToFront)
-					RootWindow.Present ();
+					Present ();
 				return doc;
 			} else {
 				return null;
@@ -417,7 +424,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			workbench.ShowView (content, bringToFront);
 			if (bringToFront)
-				RootWindow.Present ();
+				Present ();
 			return WrapDocument (content.WorkbenchWindow);
 		}
 		

@@ -1,3 +1,19 @@
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Use Workbench.Present so
+	  that we can special-case for different platforms. Ignore
+	  Present on Mac since GTK+ is broken there.
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Use Workbench.Present so that we
+	  can special-case for different platforms.
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Use Workbench.Present so
+	  that we can special-case for different platforms. Also
+	  better logging of crashes.
+
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Ignore Present on
+	  Mac since GTK+ is broken there.
+
 2009-12-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
