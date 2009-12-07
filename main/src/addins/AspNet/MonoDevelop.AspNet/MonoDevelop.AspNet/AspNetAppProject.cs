@@ -756,6 +756,9 @@ namespace MonoDevelop.AspNet
 		LineInterceptingTextWriter outWriter;
 		Action launchBrowser;
 		
+		//note that /r/n currently counts as 2 lines
+		const int MAX_WATCHED_LINES = 40;
+		
 		public XspBrowserLauncherConsole (IConsole real, Action launchBrowser)
 		{
 			this.real = real;
@@ -783,7 +786,7 @@ namespace MonoDevelop.AspNet
 						if (outWriter.GetLine ().StartsWith ("Listening on port: ")) {
 							launchBrowser ();
 							outWriter.FinishedIntercepting = true;
-						} else if (outWriter.LineCount > 20) {
+						} else if (outWriter.LineCount > MAX_WATCHED_LINES) {
 							outWriter.FinishedIntercepting = true;
 						}
 					});

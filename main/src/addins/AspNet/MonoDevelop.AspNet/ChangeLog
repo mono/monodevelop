@@ -1,3 +1,8 @@
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Scan a few more
+	  output lines to check whether xsp has started.
+
 2009-12-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
