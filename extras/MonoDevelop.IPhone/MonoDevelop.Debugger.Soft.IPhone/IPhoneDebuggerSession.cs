@@ -115,6 +115,13 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 				IPhoneUtility.MakeSimulatorGrabFocus ();
 		}
 		
+		protected override void OnContinue ()
+		{
+			base.OnContinue ();
+			if (simProcess != null)
+				IPhoneUtility.MakeSimulatorGrabFocus ();
+		}
+		
 		protected override void OnExit ()
 		{
 			base.OnExit ();
