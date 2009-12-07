@@ -1,5 +1,9 @@
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs: Pass isError to OnTargetOutput.
+
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs:
 	* RemoteSoftDebuggerSession.cs: Add a fallback to try to kill
 	  hung debugger processes.

@@ -223,7 +223,7 @@ namespace MonoDevelop.Debugger.Soft
 				char[] buffer = new char [256];
 				while (!exited) {
 					int c = reader.Read (buffer, 0, buffer.Length);
-					OnTargetOutput (true, new string (buffer, 0, c));
+					OnTargetOutput (isError, new string (buffer, 0, c));
 				}
 			} catch {
 				// Ignore
