@@ -102,7 +102,7 @@ namespace MonoDevelop.Debugger.Soft
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
-					OnConnected (VirtualMachineManager.EndLaunch (ar));
+					HandleConnection (VirtualMachineManager.EndLaunch (ar));
 				}),
 				null //new LaunchOptions { AgentArgs= "loglevel=1,logfile=/tmp/sdb.log"}
 			));
@@ -161,7 +161,7 @@ namespace MonoDevelop.Debugger.Soft
 		/// If subclasses do an async connect in OnRun, they should pass the resulting VM to this method.
 		/// If the vm is null, the session will be closed.
 		/// </summary>
-		internal void OnConnected (VirtualMachine vm)
+		internal void HandleConnection (VirtualMachine vm)
 		{
 			if (this.vm != null)
 				throw new InvalidOperationException ("The VM has already connected");
@@ -178,6 +178,8 @@ namespace MonoDevelop.Debugger.Soft
 			ConnectOutput (vm.StandardOutput, false);
 			ConnectOutput (vm.StandardError, true);
 			
+			OnConnected ();
+			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
 			
 			OnStarted ();
@@ -189,6 +191,10 @@ namespace MonoDevelop.Debugger.Soft
 			eventHandler = new Thread (EventHandler);
 			eventHandler.Name = "SDB event handler";
 			eventHandler.Start ();
+		}
+		
+		protected virtual void OnConnected ()
+		{
 		}
 		
 		internal void RegisterUserAssemblies (List<AssemblyName> userAssemblyNames)

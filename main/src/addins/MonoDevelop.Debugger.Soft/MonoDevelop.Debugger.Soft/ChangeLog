@@ -1,5 +1,12 @@
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs:
+	* RemoteSoftDebuggerSession.cs: Add an OnConnected virtual
+	  method that subclasses can use to hook into when the app is
+	  successfully started.
+
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs: Pass isError to OnTargetOutput.
 
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
