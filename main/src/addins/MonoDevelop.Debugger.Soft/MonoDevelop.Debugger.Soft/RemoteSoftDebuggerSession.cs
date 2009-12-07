@@ -132,6 +132,11 @@ namespace MonoDevelop.Debugger.Soft
 				procs = new ProcessInfo[] { new ProcessInfo (0, appName) };
 			return procs;
 		}
+		
+		protected override void EnsureExited ()
+		{
+			//no-op, we can't kill remote processes
+		}
 	}
 	
 	public class RemoteDebuggerStartInfo : DebuggerStartInfo

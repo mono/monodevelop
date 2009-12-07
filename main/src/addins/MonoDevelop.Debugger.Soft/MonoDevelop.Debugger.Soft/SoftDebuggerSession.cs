@@ -306,7 +306,30 @@ namespace MonoDevelop.Debugger.Soft
 			EndLaunch ();
 			if (vm != null)
 				vm.Exit (0);
+			QueueEnsureExited ();
 			exited = true;
+		}
+		
+		void QueueEnsureExited ()
+		{
+			if (vm != null) {
+				//FIXME: this might never get reached if the IDE is exited first
+				GLib.Timeout.Add (10000, delegate {
+					EnsureExited ();
+					return false;
+				});
+			}	
+		}
+		
+		/// <summary>This is a fallback in case the debugger agent doesn't respond to an exit call</summary>
+		protected virtual void EnsureExited ()
+		{
+			try {
+				if (vm != null && vm.Process != null && !vm.Process.HasExited)
+					vm.Process.Kill ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error force-terminating soft debugger process", ex);
+			}
 		}
 
 		protected override void OnFinish ()
