@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.AspNet;
 using System.IO;
 using System.Threading;
 using System.Text;
@@ -84,23 +85,17 @@ namespace MonoDevelop.IPhone
 			outTail.Start ();
 			errTail.Start ();
 			
-			//FIXME: do something with these
-			var outWriter = new StringWriter ();
-			var errWriter = new StringWriter ();
-			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, outWriter, errWriter, null);
-			mtouchProcess.Exited += delegate {
-				string err;
-				if (mtouchProcess.ExitCode != 0 && (err = errWriter.ToString ()).Length > 0) {
-					Gtk.Application.Invoke (delegate {
-						using (var errorDialog = new ErrorDialog (IdeApp.Workbench.RootWindow)) {
-							errorDialog.Message = "mtouch encountered an error running the application";
-							errorDialog.AddDetails (err, false);
-							errorDialog.Run ();	
-						}
-					});
+			LineInterceptingTextWriter intercepter = null;
+			intercepter = new LineInterceptingTextWriter (null, delegate {
+				if (intercepter.GetLine ().StartsWith ("Application launched")) {
+					IPhoneUtility.MakeSimulatorGrabFocus ();
+					intercepter.FinishedIntercepting = true;
+				} else if (intercepter.LineCount > 20) {
+					intercepter.FinishedIntercepting = true;
 				}
-			};
+			});
 			
+			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, intercepter, console.Log, null);
 			return new IPhoneProcess (mtouchProcess, outTail, errTail);
 		}
 	}
