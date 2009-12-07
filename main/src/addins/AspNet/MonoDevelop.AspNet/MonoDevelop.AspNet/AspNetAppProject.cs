@@ -756,8 +756,7 @@ namespace MonoDevelop.AspNet
 		LineInterceptingTextWriter outWriter;
 		Action launchBrowser;
 		
-		//note that /r/n currently counts as 2 lines
-		const int MAX_WATCHED_LINES = 40;
+		const int MAX_WATCHED_LINES = 30;
 		
 		public XspBrowserLauncherConsole (IConsole real, Action launchBrowser)
 		{
@@ -804,72 +803,6 @@ namespace MonoDevelop.AspNet
 		
 		public bool CloseOnDispose {
 			get { return real.CloseOnDispose; }
-		}
-		
-		class LineInterceptingTextWriter : TextWriter
-		{
-			const int SBCAP = 256;
-			TextWriter innerWriter;
-			System.Text.StringBuilder sb = new System.Text.StringBuilder (SBCAP);
-			Action onNewLine;
-			
-			public LineInterceptingTextWriter (TextWriter innerWriter, Action onNewLine)
-			{
-				this.innerWriter = innerWriter;
-				this.onNewLine = onNewLine;
-			}
-			
-			public bool FinishedIntercepting {
-				get { return sb == null; }
-				set { sb = null; }
-			}
-			
-			public int LineCount { get; private set; }
-			
-			public string GetLine ()
-			{
-				return sb.ToString ();
-			}
-			
-			public override void Write (char value)
-			{
-				innerWriter.Write (value);
-			}
-			
-			//the ProcessWrapper only feeds output to this method
-			public override void Write (string value)
-			{
-				if (sb != null) {
-					for (int i = 0; i < value.Length; i++) {
-						char c = value[i];
-						if (c == '\n' || c == '\r') {
-							LineCount++;
-							if (sb.Length > 0)
-								onNewLine ();
-							if (sb != null)
-								sb.Length = 0;
-						} else if (sb.Length < SBCAP) {
-							sb.Append (c);
-						}
-					}
-				}
-				innerWriter.Write (value);
-			}
-			
-			public override void Flush ()
-			{
-				innerWriter.Flush ();
-			}
-			
-			public override void Close ()
-			{
-				base.Close ();
-				innerWriter.Close ();
-			}
-			
-			public override System.Text.Encoding Encoding {
-				get { return innerWriter.Encoding; }
-			}
 		}
 	}
 }

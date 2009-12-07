@@ -314,6 +314,7 @@
     <Compile Include="MonoDevelop.AspNet\AspNetMSBuildImportProvider.cs" />
     <Compile Include="MonoDevelop.Html\PathCompletion.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\ILanguageCompletionBuilder.cs" />
+    <Compile Include="MonoDevelop.AspNet\LineInterceptingTextWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

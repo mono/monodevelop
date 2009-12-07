@@ -1,5 +1,14 @@
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj:
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/LineInterceptingTextWriter.cs: Move the
+	  LineInterceptingTextWriter to another file and make it
+	  public. Implement proper support for crlf.
+
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Scan a few more
 	  output lines to check whether xsp has started.
 
