@@ -71,8 +71,11 @@ namespace MonoDevelop.Ide.Execution
 				foreach (IExecutionMode mode in modes) {
 					CommandInfo ci = info.Add (mode.Name, new CommandItem (ctx, mode));
 					if ((mode.ExecutionHandler is ParameterizedExecutionHandler) || ((mode is CustomExecutionMode) && ((CustomExecutionMode)mode).PromptForParameters)) {
-						// It will prompt parameters
-						ci.Text += "...";
+						// It will prompt parameters, so we need command to end with '..'.
+						// However, some commands may end with '...' already and we don't want to break 
+						// already-translated strings by altering them
+						if (!ci.Text.EndsWith ("...")) 
+							ci.Text += "...";
 					} else {
 						// The parameters window will be shown if ctrl is pressed
 						ci.Description = ci.Text + " - " + GettextCatalog.GetString ("Hold Control key to display the execution parameters dialog.");

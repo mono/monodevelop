@@ -118,6 +118,7 @@ FILES =  \
 	MonoDevelop.AspNet/AspNetToolboxProvider.cs \
 	MonoDevelop.AspNet/CodeBehind.cs \
 	MonoDevelop.AspNet/IAspNetLanguageBinding.cs \
+	MonoDevelop.AspNet/LineInterceptingTextWriter.cs \
 	MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs \
 	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \
 	MonoDevelop.AspNet/ProjectRegisteredControls.cs \

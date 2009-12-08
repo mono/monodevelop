@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.Gui
 					} catch {
 					}
 				}
-				IdeApp.Workbench.RootWindow.Present ();
+				IdeApp.Workbench.Present ();
 				return false;
 			}
 		}
@@ -380,17 +380,16 @@ namespace MonoDevelop.Ide.Gui
 		void SetupExceptionManager ()
 		{
 			GLib.ExceptionManager.UnhandledException += delegate (GLib.UnhandledExceptionArgs args) {
-				OnUnhandledException ((Exception)args.ExceptionObject);
+				var ex = (Exception)args.ExceptionObject;
+				LoggingService.LogError ("Unhandled Exception", ex);
+				MessageService.ShowException (ex, "Unhandled Exception");
 			};
 			AppDomain.CurrentDomain.UnhandledException += delegate (object sender, UnhandledExceptionEventArgs args) {
-				OnUnhandledException ((Exception)args.ExceptionObject);
+				//FIXME: try to save all open files, since we can't prevent the runtime from terminating
+				var ex = (Exception)args.ExceptionObject;
+				LoggingService.LogFatalError ("Unhandled Exception", ex);
+				MessageService.ShowException (ex, "Unhandled Exception. MonoDevelop will now close.");
 			};
-		}
-		
-		void OnUnhandledException (Exception ex)
-		{
-			LoggingService.LogError ("Unhandled Exception", ex);
-			MessageService.ShowException (ex, "Unhandled Exception");
 		}
 	}
 	

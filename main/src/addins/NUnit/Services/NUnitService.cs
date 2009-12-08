@@ -63,14 +63,14 @@ namespace MonoDevelop.NUnit
 			ps.DataContext.RegisterProperty (typeof(SolutionItemConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
 			
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
-			
-			RebuildTests ();
 		}
 		
 		public static NUnitService Instance {
 			get {
-				if (instance == null)
+				if (instance == null) {
 					instance = new NUnitService ();
+					instance.RebuildTests ();
+				}
 				return instance;
 			}
 		}

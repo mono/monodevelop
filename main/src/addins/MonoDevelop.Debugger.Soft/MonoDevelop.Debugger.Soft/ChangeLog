@@ -1,3 +1,30 @@
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated.
+
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs:
+	* RemoteSoftDebuggerSession.cs: Add an OnConnected virtual
+	  method that subclasses can use to hook into when the app is
+	  successfully started.
+
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Pass isError to OnTargetOutput.
+
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs:
+	* RemoteSoftDebuggerSession.cs: Add a fallback to try to kill
+	  hung debugger processes.
+
+2009-12-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: When pausing and picking a frame to
+	  display, pick one with user code.
+
 2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugger.Soft.dll:

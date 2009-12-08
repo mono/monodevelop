@@ -66,7 +66,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		void ListenCallback (IAsyncResult ar)
 		{
-			OnConnected (VirtualMachineManager.EndListen (ar));
+			HandleConnection (VirtualMachineManager.EndListen (ar));
 			Gtk.Application.Invoke (delegate {
 				if (dialog != null)
 					dialog.Respond (Gtk.ResponseType.Ok);
@@ -131,6 +131,11 @@ namespace MonoDevelop.Debugger.Soft
 			if (procs == null)
 				procs = new ProcessInfo[] { new ProcessInfo (0, appName) };
 			return procs;
+		}
+		
+		protected override void EnsureExited ()
+		{
+			//no-op, we can't kill remote processes
 		}
 	}
 	

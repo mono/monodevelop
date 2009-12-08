@@ -102,8 +102,10 @@ namespace MonoDevelop.Debugger.Soft
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
-				OnConnected (VirtualMachineManager.EndLaunch (ar));
-			}), null));
+					HandleConnection (VirtualMachineManager.EndLaunch (ar));
+				}),
+				null //new LaunchOptions { AgentArgs= "loglevel=1,logfile=/tmp/sdb.log"}
+			));
 		}
 		
 		internal AsyncCallback HandleCallbackErrors (AsyncCallback callback)
@@ -159,7 +161,7 @@ namespace MonoDevelop.Debugger.Soft
 		/// If subclasses do an async connect in OnRun, they should pass the resulting VM to this method.
 		/// If the vm is null, the session will be closed.
 		/// </summary>
-		internal void OnConnected (VirtualMachine vm)
+		internal void HandleConnection (VirtualMachine vm)
 		{
 			if (this.vm != null)
 				throw new InvalidOperationException ("The VM has already connected");
@@ -176,6 +178,8 @@ namespace MonoDevelop.Debugger.Soft
 			ConnectOutput (vm.StandardOutput, false);
 			ConnectOutput (vm.StandardError, true);
 			
+			OnConnected ();
+			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
 			
 			OnStarted ();
@@ -187,6 +191,10 @@ namespace MonoDevelop.Debugger.Soft
 			eventHandler = new Thread (EventHandler);
 			eventHandler.Name = "SDB event handler";
 			eventHandler.Start ();
+		}
+		
+		protected virtual void OnConnected ()
+		{
 		}
 		
 		internal void RegisterUserAssemblies (List<AssemblyName> userAssemblyNames)
@@ -221,7 +229,7 @@ namespace MonoDevelop.Debugger.Soft
 				char[] buffer = new char [256];
 				while (!exited) {
 					int c = reader.Read (buffer, 0, buffer.Length);
-					OnTargetOutput (true, new string (buffer, 0, c));
+					OnTargetOutput (isError, new string (buffer, 0, c));
 				}
 			} catch {
 				// Ignore
@@ -304,7 +312,30 @@ namespace MonoDevelop.Debugger.Soft
 			EndLaunch ();
 			if (vm != null)
 				vm.Exit (0);
+			QueueEnsureExited ();
 			exited = true;
+		}
+		
+		void QueueEnsureExited ()
+		{
+			if (vm != null) {
+				//FIXME: this might never get reached if the IDE is exited first
+				GLib.Timeout.Add (10000, delegate {
+					EnsureExited ();
+					return false;
+				});
+			}	
+		}
+		
+		/// <summary>This is a fallback in case the debugger agent doesn't respond to an exit call</summary>
+		protected virtual void EnsureExited ()
+		{
+			try {
+				if (vm != null && vm.Process != null && !vm.Process.HasExited)
+					vm.Process.Kill ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error force-terminating soft debugger process", ex);
+			}
 		}
 
 		protected override void OnFinish ()
@@ -888,22 +919,26 @@ namespace MonoDevelop.Debugger.Soft
 			vm.Suspend ();
 			
 			//emit a stop event at the current position of the most recent thread
-			var process = OnGetProcesses () [0];				
-			EnsureRecentThreadIsValid ();
+			//we use "getprocesses" instead of "ongetprocesses" because it attaches the process to the session
+			//using private Mono.Debugging API, so our thread/backtrace calls will cache stuff that will get used later
+			var process = GetProcesses () [0];				
+			EnsureRecentThreadIsValid (process);
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetStopped) {
 				Process = process,
 				Thread = GetThread (process, recent_thread),
 				Backtrace = GetThreadBacktrace (recent_thread)});
 		}
 		
-		void EnsureRecentThreadIsValid ()
+		void EnsureRecentThreadIsValid (ProcessInfo process)
 		{
-			if (ThreadIsAlive (recent_thread))
+			var infos = process.GetThreads ();
+			
+			if (ThreadIsAlive (recent_thread) && HasUserFrame (recent_thread.Id, infos))
 				return;
 
 			var threads = vm.GetThreads ();
 			foreach (var thread in threads) {
-				if (ThreadIsAlive (thread)) {
+				if (ThreadIsAlive (thread) && HasUserFrame (thread.Id, infos)) {
 					recent_thread = thread;
 					return;
 				}
@@ -917,6 +952,23 @@ namespace MonoDevelop.Debugger.Soft
 				return false;
 			var state = thread.ThreadState;
 			return state != ThreadState.Stopped && state != ThreadState.Aborted;
+		}
+		
+		//we use the Mono.Debugging classes because they are cached
+		bool HasUserFrame (long tid, ThreadInfo[] infos)
+		{
+			foreach (var t in infos) {
+				if (t.Id != tid)
+					continue;
+				var bt = t.Backtrace;
+				for (int i = 0; i < bt.FrameCount; i++) {
+					var frame = bt.GetFrame (i);
+					if (frame != null && !frame.IsExternalCode)
+						return true;
+				}
+				return false;
+			}
+			return false;
 		}
 		
 		BreakInfo GetBreakInfo (BreakEvent be)

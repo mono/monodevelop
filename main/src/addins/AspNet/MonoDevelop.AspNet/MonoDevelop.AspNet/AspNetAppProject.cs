@@ -244,41 +244,36 @@ namespace MonoDevelop.AspNet
 			var cmd = CreateExecutionCommand (config, configuration);
 			
 			IConsole console = null;
-			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
+			var operationMonitor = new AggregatedOperationMonitor (monitor);
 			
 			try {
 				if (configuration.ExternalConsole)
 					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
 				else
 					console = context.ConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
+				
+				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
+				
+				bool isXsp = true; //FIXME: fix this when it might not be true
+				
+				if (isXsp) {
+					console = new XspBrowserLauncherConsole (console, delegate {
+						BrowserLauncher.LaunchDefaultBrowser (url);
+					});
+				}
 			
 				monitor.Log.WriteLine ("Running web server...");
 				
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
+				var op = context.ExecutionHandler.Execute (cmd, console);
 				operationMonitor.AddOperation (op); //handles cancellation
 				
-				//launch a separate thread to detect the running server and launch a web browser
-				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
-				BrowserLauncherOperation browserLauncher = BrowserLauncher.LaunchWhenReady (url);
-				operationMonitor.AddOperation (browserLauncher);
-				
-				//report errors from the browser launcher
-				browserLauncher.Completed += delegate (IAsyncOperation blop) {
-					if (!blop.Success)
-						MessageService.ShowError (
-						    GettextCatalog.GetString ("Error launching web browser"),
-						    ((BrowserLauncherOperation)blop).Error.ToString ()
-						);
-				};
+				if (!isXsp)
+					BrowserLauncher.LaunchDefaultBrowser (url);
 				
 				op.WaitForCompleted ();
+				
 				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
 				
-				//if server shut down before browser launched, abort browser launch
-				if (!browserLauncher.IsCompleted) {
-					browserLauncher.Cancel ();
-					browserLauncher.WaitForCompleted ();
-				}
 			} catch (Exception ex) {
 				monitor.ReportError ("Could not launch web server.", ex);
 			} finally {
@@ -755,4 +750,59 @@ namespace MonoDevelop.AspNet
 	}
 	
 	
+	class XspBrowserLauncherConsole : IConsole
+	{
+		IConsole real;
+		LineInterceptingTextWriter outWriter;
+		Action launchBrowser;
+		
+		const int MAX_WATCHED_LINES = 30;
+		
+		public XspBrowserLauncherConsole (IConsole real, Action launchBrowser)
+		{
+			this.real = real;
+			this.launchBrowser = launchBrowser;
+		}
+		
+		public void Dispose ()
+		{
+			real.Dispose ();
+		}
+		
+		public event EventHandler CancelRequested {
+			add { real.CancelRequested += value; }
+			remove { real.CancelRequested -= value; }
+		}
+		
+		public TextReader In {
+			get { return real.In; }
+		}
+		
+		public TextWriter Out {
+			get {
+				if (outWriter == null)
+					outWriter = new LineInterceptingTextWriter (real.Out, delegate {
+						if (outWriter.GetLine ().StartsWith ("Listening on port: ")) {
+							launchBrowser ();
+							outWriter.FinishedIntercepting = true;
+						} else if (outWriter.LineCount > MAX_WATCHED_LINES) {
+							outWriter.FinishedIntercepting = true;
+						}
+					});
+				return outWriter;
+			}
+		}
+		
+		public TextWriter Error {
+			get { return real.Error; }
+		}
+		
+		public TextWriter Log {
+			get { return real.Log; }
+		}
+		
+		public bool CloseOnDispose {
+			get { return real.CloseOnDispose; }
+		}
+	}
 }

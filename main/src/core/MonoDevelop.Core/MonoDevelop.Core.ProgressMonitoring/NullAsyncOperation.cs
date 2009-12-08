@@ -39,7 +39,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		bool success;
 		bool warnings;
 		
-		private NullAsyncOperation (bool success, bool warnings)
+		protected NullAsyncOperation (bool success, bool warnings)
 		{
 			this.success = success;
 			this.warnings = warnings;
