@@ -199,5 +199,10 @@ namespace MonoDevelop.IPhone
 				throw new InvalidOperationException ("Cannot upload iPhone application. mtouch tool is missing.");
 			return mtouchPath;
 		}
+		
+		public static void MakeSimulatorGrabFocus ()
+		{
+			System.Diagnostics.Process.Start ("osascript", "-e 'tell application \"iPhone Simulator\"' -e 'activate' -e 'end tell'");
+		}
 	}
 }

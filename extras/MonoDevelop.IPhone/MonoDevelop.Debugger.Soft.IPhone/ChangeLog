@@ -1,3 +1,13 @@
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneDebuggerSession.cs: Focus the simulator when
+	  continuing.
+
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneDebuggerSession.cs: When the app is successfully
+	  launched, bring the simulator to the front.
+
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneDebuggerSession.cs: Don't upload, since the project

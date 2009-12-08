@@ -1,3 +1,15 @@
+2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj: Updated.
+
+	* IPhoneCommands.cs: Add method for bringing iPhone simulator
+	  to front.
+
+	* IPhoneExecutionHandler.cs: Watch the mtouch output to detect
+	  when the app is successfully launched, and bring the
+	  simulator to the front. Write mtouch error output to the
+	  console log.
+
 2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs: Don't dispose the uploader app too soon.
