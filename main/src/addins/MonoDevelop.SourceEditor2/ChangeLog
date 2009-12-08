@@ -1,3 +1,8 @@
+2009-12-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Check that
+	  file exists before getting its old attributes.
+
 2009-12-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Escape now
