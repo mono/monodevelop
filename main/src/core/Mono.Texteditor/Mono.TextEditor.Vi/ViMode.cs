@@ -160,7 +160,9 @@ namespace Mono.TextEditor.Vi
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			if (key == Gdk.Key.Escape || (key == Gdk.Key.c && (modifier & Gdk.ModifierType.ControlMask) != 0)) {
+			// Reset on Esc, Ctrl-C, Ctrl-[
+			if (key == Gdk.Key.Escape || 
+			    ((key == Gdk.Key.c || key == Gdk.Key.bracketleft) && (modifier & Gdk.ModifierType.ControlMask) != 0)) {
 				Reset (string.Empty);
 				return;
 			}
