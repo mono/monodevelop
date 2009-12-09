@@ -63,9 +63,9 @@ namespace JavaBinding
 			return Path.GetExtension (fileName) == ".java";
 		}
 		
-		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configurationSelector,  IProgressMonitor monitor)
 		{
-			return IKVMCompilerManager.Compile (projectItems, configuration, monitor);
+			return IKVMCompilerManager.Compile (projectItems, configuration, configurationSelector, monitor);
 		}
 		
 		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
