@@ -651,12 +651,13 @@ namespace MonoDevelop.Debugger.Soft
 				EnumMirror eob = (EnumMirror) obj;
 				return new LiteralExp (eob.StringValue);
 			}
-			else if (obj is PrimitiveValue) {
+			else if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value;
-			}
 			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
 				// Boxed primitive
 				StructMirror sm = (StructMirror) obj;
+				if (sm.Type.FullName == "System.IntPtr")
+					return new IntPtr ((long)((PrimitiveValue)sm.Fields[0]).Value);
 				if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
 					return ((PrimitiveValue)sm.Fields[0]).Value;
 			}
