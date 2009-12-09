@@ -1,4 +1,4 @@
-AC_INIT([monodevelop-vala], 2.2, [taktaktaktaktaktaktaktaktaktak@gmail.com])
+AC_INIT([monodevelop-vala], 2.1.2, [taktaktaktaktaktaktaktaktaktak@gmail.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE(1.9 tar-ustar)
 AM_MAINTAINER_MODE
