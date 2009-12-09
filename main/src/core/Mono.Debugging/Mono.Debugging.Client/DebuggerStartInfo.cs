@@ -72,5 +72,9 @@ namespace Mono.Debugging.Client
 				return environmentVariables;
 			}
 		}
+		
+		public bool UseExternalConsole { get; set; }
+		
+		public bool CloseExternalConsoleOnExit { get; set; }
 	}
 }
