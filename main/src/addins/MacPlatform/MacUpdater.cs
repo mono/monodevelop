@@ -49,6 +49,7 @@ namespace MonoDevelop.Platform
 				if (updateInfos == null) {
 					var files = new string[] {
 						"/Developer/MonoTouch/updateinfo",
+						"/Developer/MonoTouch/Source/updateinfo",
 						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo",
 						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo.csdk",
 						Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "/../../../updateinfo",
