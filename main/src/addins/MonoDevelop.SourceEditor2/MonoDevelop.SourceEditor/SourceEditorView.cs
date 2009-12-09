@@ -255,10 +255,12 @@ namespace MonoDevelop.SourceEditor
 			isInWrite = true;
 			try {
 				object attributes = null;
-				try {
-					attributes = DesktopService.GetFileAttributes (fileName);
-				} catch (Exception e) {
-					LoggingService.LogWarning ("Can't get file attributes", e);
+				if (File.Exists (fileName)) {
+					try {
+						attributes = DesktopService.GetFileAttributes (fileName);
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Can't get file attributes", e);
+					}
 				}
 
 				TextFile.WriteFile (fileName, Document.Text, encoding);

@@ -1,3 +1,7 @@
+2009-12-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacUpdater.cs: Add the updateinfo for MonoTouch source.
+
 2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs:
