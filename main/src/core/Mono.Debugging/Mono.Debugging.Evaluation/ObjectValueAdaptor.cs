@@ -346,8 +346,10 @@ namespace Mono.Debugging.Evaluation
 					if (state == DebuggerBrowsableState.RootHidden && dereferenceProxy) {
 						object ob = val.Value;
 						if (ob != null) {
+							values.Clear ();
 							values.AddRange (GetObjectValueChildren (ctx, val, ob, -1, -1));
 							showRawView = true;
+							break;
 						}
 					}
 					else {

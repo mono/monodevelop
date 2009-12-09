@@ -1,5 +1,10 @@
 2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: When a
+	  RootHidden member is found, hide everything but that member.
+
+2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Client/DebuggerStartInfo.cs: Added properties
 	  to support the external console option.
 
