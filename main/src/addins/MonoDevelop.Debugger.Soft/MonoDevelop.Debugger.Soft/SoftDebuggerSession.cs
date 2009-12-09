@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -95,16 +96,28 @@ namespace MonoDevelop.Debugger.Soft
 				UseShellExecute = false,
 			};
 			
+			LaunchOptions options = null;
+			
+			if (startInfo.UseExternalConsole) {
+				options = new LaunchOptions ();
+				options.CustomProcessLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
+					var vars = new Dictionary<string, string> ();
+					foreach (string k in psi.EnvironmentVariables.Keys)
+						vars [k] = psi.EnvironmentVariables [k];
+					return Runtime.ProcessService.StartConsoleProcess (psi.FileName, psi.Arguments, psi.WorkingDirectory, vars, ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), null);
+				};
+			}
+			
 			foreach (var env in dsi.Runtime.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			foreach (var env in startInfo.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
-			
+
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
 					HandleConnection (VirtualMachineManager.EndLaunch (ar));
 				}),
-				null //new LaunchOptions { AgentArgs= "loglevel=1,logfile=/tmp/sdb.log"}
+				options //new LaunchOptions { AgentArgs= "loglevel=1,logfile=/tmp/sdb.log"}
 			));
 		}
 		
