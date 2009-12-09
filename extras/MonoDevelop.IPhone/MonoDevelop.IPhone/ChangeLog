@@ -1,3 +1,10 @@
+2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Keychain.cs: More error logging for certificate/identity/key
+	  enumeration.
+
+	* gtk-gui/gui.stetic: Flush.
+
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.IPhone.csproj: Updated.

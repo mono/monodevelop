@@ -179,7 +179,8 @@ namespace MonoDevelop.IPhone
 			
 			var list = new List<string> ();
 			
-			while (SecKeychainSearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
+			OSStatus searchStatus;
+			while ((searchStatus = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
 				IntPtr commonName;
 				if (SecCertificateCopyCommonName (itemRef, out commonName) == OSStatus.Ok) {
 					list.Add (FetchString (commonName));
@@ -187,6 +188,9 @@ namespace MonoDevelop.IPhone
 				}
 				CFRelease (itemRef);
 			}
+			if (searchStatus != OSStatus.ItemNotFound)
+				LoggingService.LogWarning ("Unexpected error retrieving certificates from keychain:\n" + GetError (searchStatus));
+			
 			CFRelease (searchRef);
 			return list;
 		}
@@ -202,7 +206,8 @@ namespace MonoDevelop.IPhone
 			
 			var list = new List<string> ();
 			
-			while (SecIdentitySearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
+			OSStatus searchStatus;
+			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
 				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
 					if (SecCertificateCopyCommonName (certRef, out commonName) == OSStatus.Ok) {
 						string name = FetchString (commonName);
@@ -214,6 +219,9 @@ namespace MonoDevelop.IPhone
 				}
 				CFRelease (itemRef);
 			}
+			if (searchStatus != OSStatus.ItemNotFound)
+				LoggingService.LogWarning ("Unexpected error retrieving identities from keychain:\n" + GetError (searchStatus));
+			
 			CFRelease (searchRef);
 			return list;
 		}
@@ -237,14 +245,23 @@ namespace MonoDevelop.IPhone
 			
 			var list = new List<X509Certificate2> ();
 			
-			while (SecIdentitySearchCopyNext (searchRef, out itemRef) == OSStatus.Ok) {
+			OSStatus searchStatus;
+			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
 				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
 					CssmData data;
-					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok)
-						list.Add (new X509Certificate2 (data.GetCopy ()));
+					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok) {
+						try {
+							list.Add (new X509Certificate2 (data.GetCopy ()));
+						} catch (Exception ex) {
+							LoggingService.LogWarning ("Error loading signing certificate from keychain", ex);
+						}
+					}
 				}
 				CFRelease (itemRef);
 			}
+			if (searchStatus != OSStatus.ItemNotFound)
+				LoggingService.LogWarning ("Unexpected error code retrieving signing certificates from keychain:\n" + GetError (searchStatus));
+			
 			CFRelease (searchRef);
 			return list;
 		}

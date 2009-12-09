@@ -10,6 +10,7 @@
     <widget-library name="MonoDevelop.Projects.Gui, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.DesignerSupport, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.IPhone.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget" design-size="613 234">
