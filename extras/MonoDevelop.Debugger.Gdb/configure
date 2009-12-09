@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.2
+VERSION=2.1.2
 PACKAGE=monodevelop-debugger-gdb
 prefix=/usr/local
 config=DEBUG
