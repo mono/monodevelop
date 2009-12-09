@@ -339,6 +339,8 @@ namespace MonoDevelop.Debugger
 			}
 			
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
+			startInfo.UseExternalConsole = c is ExternalConsole;
+			startInfo.CloseExternalConsoleOnExit = c.CloseOnDispose;
 			currentEngine = factory;
 			session = factory.CreateSession ();
 			session.Initialize ();
