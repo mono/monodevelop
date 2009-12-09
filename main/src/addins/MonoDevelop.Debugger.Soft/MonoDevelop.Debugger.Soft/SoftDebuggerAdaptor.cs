@@ -235,7 +235,7 @@ namespace MonoDevelop.Debugger.Soft
 				}
 				foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
 					MethodMirror met = prop.GetGetMethod (true);
-					if (met == null || met.GetParameters ().Length != 0)
+					if (met == null || met.GetParameters ().Length != 0 || met.IsAbstract)
 						continue;
 					if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
 						continue;
