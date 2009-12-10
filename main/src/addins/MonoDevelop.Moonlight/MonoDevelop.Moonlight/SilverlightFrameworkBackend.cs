@@ -56,7 +56,7 @@ namespace MonoDevelop.Moonlight
 				var fxdir = dir.Combine (fxVersion);
 				var buildVersion = fxdir.Combine ("buildversion");
 				if (Directory.Exists (fxdir) && Directory.Exists (fxdir + "-redist") && File.Exists (buildVersion)) {
-					if (LoadVersionString (buildVersion) && RegisterRedistAssemblies (fxdir))
+					if (LoadVersionString (buildVersion) && RegisterRedistAssemblies (dir))
 						this.location = dir;
 					break;
 				}
