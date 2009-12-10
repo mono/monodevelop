@@ -172,12 +172,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter = new TreeModelFilter (store, null);
 			filter.VisibleFunc = filterFunct;
 			
-			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (filter);
+			TreeModelSort sort = new TreeModelSort (filter);
+			sort.SetSortFunc (VisibleColumns.Type, SeverityIterSort);
+			sort.SetSortFunc (VisibleColumns.Project, ProjectIterSort);
+			sort.SetSortFunc (VisibleColumns.File, FileIterSort);
+			
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (sort);
 			view.RulesHint = true;
 			view.PopupMenu += new PopupMenuHandler (OnPopupMenu);
 			view.ButtonPressEvent += new ButtonPressEventHandler (OnButtonPressed);
 			AddColumns ();
 			LoadColumnsVisibility ();
+			view.Columns[VisibleColumns.Type].SortColumnId = VisibleColumns.Type;
+			view.Columns[VisibleColumns.Project].SortColumnId = VisibleColumns.Project;
+			view.Columns[VisibleColumns.File].SortColumnId = VisibleColumns.File;
 			
 			sw = new Gtk.ScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
@@ -540,8 +548,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
 			if (task == null)
 				return;
-			string project = task.WorkspaceObject is SolutionItem ? task.WorkspaceObject.Name : "";
-			SetText (textRenderer, model, iter, task, project);
+			SetText (textRenderer, model, iter, task, GetProject(task));
+		}
+		
+		static string GetProject (Task task)
+		{
+			return (task != null && task.WorkspaceObject is SolutionItem)? task.WorkspaceObject.Name: string.Empty;
 		}
 		
 		static void PathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -830,6 +842,36 @@ namespace MonoDevelop.Ide.Gui.Pads
 				IdeApp.Workbench.StatusBar.ShowError (t.Code + " - " + t.Description);
 			else
 				IdeApp.Workbench.StatusBar.ShowMessage (t.Description);
+		}
+		
+		static int SeverityIterSort(TreeModel model, TreeIter a, TreeIter z)
+		{
+			Task aTask = model.GetValue(a, DataColumns.Task) as Task,
+			     zTask = model.GetValue(z, DataColumns.Task) as Task;
+			     
+			return (aTask != null && zTask != null) ?
+			       aTask.Severity.CompareTo(zTask.Severity) :
+			       0;
+		}
+		
+		static int ProjectIterSort (TreeModel model, TreeIter a, TreeIter z)
+		{
+			Task aTask = model.GetValue (a, DataColumns.Task) as Task,
+			     zTask = model.GetValue (z, DataColumns.Task) as Task;
+			     
+			return (aTask != null && zTask != null) ?
+			       GetProject (aTask).CompareTo (GetProject (zTask)) :
+			       0;
+		}
+		
+		static int FileIterSort (TreeModel model, TreeIter a, TreeIter z)
+		{
+			Task aTask = model.GetValue (a, DataColumns.Task) as Task,
+			     zTask = model.GetValue (z, DataColumns.Task) as Task;
+			     
+			return (aTask != null && zTask != null) ?
+			       aTask.FileName.CompareTo (zTask.FileName) :
+			       0;
 		}
 	}
 }

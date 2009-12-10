@@ -1,3 +1,8 @@
+2009-12-10  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Allow resorting by
+	  severity.
+
 2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/EmptyHTMLFile.xft.xml: Sane casing on HTML tags.
