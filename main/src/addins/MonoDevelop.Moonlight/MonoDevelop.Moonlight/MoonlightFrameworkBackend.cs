@@ -123,6 +123,20 @@ namespace MonoDevelop.Moonlight
 				yield return f;
 		}
 		
+		Dictionary<string, string> envVars;
+		
+		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
+		{
+			if (envVars == null) {
+				envVars = base.GetToolsEnvironmentVariables ();
+				if (envVars.ContainsKey ("MONO_PATH")) {
+					envVars = new Dictionary<string,string> (envVars);
+					envVars.Remove ("MONO_PATH");
+				}
+			}
+			return envVars;
+		}
+		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
 			yield return location.Combine (fxVersion);

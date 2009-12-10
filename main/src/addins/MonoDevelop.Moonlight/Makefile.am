@@ -32,11 +32,11 @@ FILES =  \
 	MonoDevelop.Moonlight/MoonlightEditorExtension.cs \
 	MonoDevelop.Moonlight/MoonlightExecutionCommand.cs \
 	MonoDevelop.Moonlight/MoonlightExecutionHandler.cs \
+	MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs \
 	MonoDevelop.Moonlight/MoonlightParser.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \
 	MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs \
-	MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs \
 	MonoDevelop.Moonlight/XamlG.cs
 
 RES =  \
