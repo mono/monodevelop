@@ -93,8 +93,14 @@ namespace MonoDevelop.Projects
 			get { return formatManager; }
 		}
 		
-		internal ProjectServiceExtension ExtensionChain {
-			get { return extensionChain; }
+		public ProjectServiceExtension GetExtensionChain (IBuildTarget target)
+		{
+			if (target == null)
+				target = UnknownItem.Instance;
+			if (extensionChain.SupportsItem (target))
+				return extensionChain;
+			else
+				return extensionChain.GetNext (target);
 		}
 		
 		public string DefaultPlatformTarget {
@@ -189,7 +195,7 @@ namespace MonoDevelop.Projects
 		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, string file)
 		{
 			file = GetTargetFile (file);
-			WorkspaceItem item = ExtensionChain.LoadWorkspaceItem (monitor, file) as WorkspaceItem;
+			WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
 			if (item != null)
 				item.NeedsReload = false;
 			else
@@ -461,7 +467,7 @@ namespace MonoDevelop.Projects
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 			filename = GetTargetFile (filename);
-			return ExtensionChain.IsSolutionItemFile (filename);
+			return GetExtensionChain (null).IsSolutionItemFile (filename);
 		}
 		
 		public bool IsWorkspaceItemFile (string filename)
@@ -469,7 +475,7 @@ namespace MonoDevelop.Projects
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 			filename = GetTargetFile (filename);
-			return ExtensionChain.IsWorkspaceItemFile (filename);
+			return GetExtensionChain (null).IsWorkspaceItemFile (filename);
 		}
 		
 		internal bool IsSolutionItemFileInternal (string filename)
@@ -580,6 +586,11 @@ namespace MonoDevelop.Projects
 	internal class DefaultProjectServiceExtension: ProjectServiceExtension
 	{
 		Dictionary <SolutionItem,bool> needsBuildingCache;
+		
+		public override object GetService (IBuildTarget item, Type type)
+		{
+			return null;
+		}
 		
 		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
 		{

@@ -55,12 +55,12 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public static SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, ItemLoadCallback callback)
 		{
-			return Services.ProjectService.ExtensionChain.LoadSolutionItem (monitor, fileName, callback);
+			return Services.ProjectService.GetExtensionChain (null).LoadSolutionItem (monitor, fileName, callback);
 		}
 		
 		public static BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)
 		{
-			return Services.ProjectService.ExtensionChain.Compile (monitor, item, buildData, callback);
+			return Services.ProjectService.GetExtensionChain (item).Compile (monitor, item, buildData, callback);
 		}
 		
 		public static void BeginLoadOperation ()

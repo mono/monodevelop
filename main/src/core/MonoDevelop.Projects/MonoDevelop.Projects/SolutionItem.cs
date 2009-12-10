@@ -88,6 +88,18 @@ namespace MonoDevelop.Projects
 			return this.handler;
 		}
 		
+		public T GetService<T> () where T: class
+		{
+			return (T) GetService (typeof(T));
+		}
+		
+		public virtual object GetService (Type t)
+		{
+			if (t.IsInstanceOfType (this))
+				return this;
+			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
+		}
+		
 		public Solution ParentSolution {
 			get {
 				if (parentFolder != null)
@@ -219,7 +231,7 @@ namespace MonoDevelop.Projects
 		
 		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, configuration);
+			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
 		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
@@ -309,22 +321,22 @@ namespace MonoDevelop.Projects
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, configuration);
+			Services.ProjectService.GetExtensionChain (this).Execute (monitor, this, context, configuration);
 		}
 		
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.CanExecute (this, context, configuration);
+			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 		
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, configuration);
+			return Services.ProjectService.GetExtensionChain (this).GetNeedsBuilding (this, configuration);
 		}
 		
 		public void SetNeedsBuilding (bool value, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, value, configuration);
+			Services.ProjectService.GetExtensionChain (this).SetNeedsBuilding (this, value, configuration);
 		}
 		
 		public virtual bool NeedsReload {

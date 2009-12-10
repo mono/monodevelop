@@ -1,5 +1,18 @@
 2009-12-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs:
+	* MonoDevelop.Projects/ProjectServiceExtension.cs:
+	* MonoDevelop.Projects.Extensions/ProjectExtensionUtil.cs: Add
+	  a generic mechanism for getting a service implemented in a
+	  solution or project. The new GetService method takes a type
+	  as parameter and looks for an implementation in the same
+	  object or in the project service extensions.
+
+2009-12-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/SolutionConfigurationSelector.cs:
 	  Implement ToString().
 

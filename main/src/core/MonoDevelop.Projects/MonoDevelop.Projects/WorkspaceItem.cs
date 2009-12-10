@@ -156,6 +156,18 @@ namespace MonoDevelop.Projects
 			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
 		}
 
+		public T GetService<T> () where T: class
+		{
+			return (T) GetService (typeof(T));
+		}
+		
+		public virtual object GetService (Type t)
+		{
+			if (t.IsInstanceOfType (this))
+				return this;
+			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
+		}
+		
 		public virtual List<FilePath> GetItemFiles (bool includeReferencedFiles)
 		{
 			List<FilePath> col = FileFormat.Format.GetItemFiles (this);
@@ -234,7 +246,7 @@ namespace MonoDevelop.Projects
 		
 		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, target, configuration);
+			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
 		public void Clean (IProgressMonitor monitor, string configuration)
@@ -244,7 +256,7 @@ namespace MonoDevelop.Projects
 		
 		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
+			Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
 		}
 		
 		public BuildResult Build (IProgressMonitor monitor, string configuration)
@@ -264,7 +276,7 @@ namespace MonoDevelop.Projects
 		
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.ExtensionChain.Execute (monitor, this, context, configuration);
+			Services.ProjectService.GetExtensionChain (this).Execute (monitor, this, context, configuration);
 		}
 		
 		public bool CanExecute (ExecutionContext context, string configuration)
@@ -274,7 +286,7 @@ namespace MonoDevelop.Projects
 		
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.CanExecute (this, context, configuration);
+			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 		
 		public bool NeedsBuilding (string configuration)
@@ -284,7 +296,7 @@ namespace MonoDevelop.Projects
 		
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.GetNeedsBuilding (this, configuration);
+			return Services.ProjectService.GetExtensionChain (this).GetNeedsBuilding (this, configuration);
 		}
 		
 		public void SetNeedsBuilding (bool value)
@@ -300,7 +312,7 @@ namespace MonoDevelop.Projects
 		
 		public void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration)
 		{
-			Services.ProjectService.ExtensionChain.SetNeedsBuilding (this, needsBuilding, configuration);
+			Services.ProjectService.GetExtensionChain (this).SetNeedsBuilding (this, needsBuilding, configuration);
 		}
 		
 		public virtual FileFormat FileFormat {
@@ -321,7 +333,7 @@ namespace MonoDevelop.Projects
 		
 		internal virtual BuildResult InternalBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return Services.ProjectService.ExtensionChain.RunTarget (monitor, this, ProjectService.BuildTarget, configuration);
+			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, ProjectService.BuildTarget, configuration);
 		}
 		
 		protected virtual void OnConfigurationsChanged ()
@@ -342,7 +354,7 @@ namespace MonoDevelop.Projects
 		{
 			try {
 				fileStatusTracker.BeginSave ();
-				Services.ProjectService.ExtensionChain.Save (monitor, this);
+				Services.ProjectService.GetExtensionChain (this).Save (monitor, this);
 				OnSaved (new WorkspaceItemEventArgs (this));
 				
 				// Update save times

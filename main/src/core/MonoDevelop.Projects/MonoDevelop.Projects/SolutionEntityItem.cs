@@ -222,7 +222,7 @@ namespace MonoDevelop.Projects
 			
 			try {
 				fileStatusTracker.BeginSave ();
-				Services.ProjectService.ExtensionChain.Save (monitor, this);
+				Services.ProjectService.GetExtensionChain (this).Save (monitor, this);
 				OnSaved (thisItemArgs);
 			} finally {
 				fileStatusTracker.EndSave ();
@@ -278,7 +278,7 @@ namespace MonoDevelop.Projects
 
 		public List<FilePath> GetItemFiles (bool includeReferencedFiles)
 		{
-			return Services.ProjectService.ExtensionChain.GetItemFiles (this, includeReferencedFiles);
+			return Services.ProjectService.GetExtensionChain (this).GetItemFiles (this, includeReferencedFiles);
 		}
 
 		internal protected virtual List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
