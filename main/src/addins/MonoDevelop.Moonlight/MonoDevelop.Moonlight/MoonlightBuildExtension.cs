@@ -378,8 +378,19 @@ namespace MonoDevelop.Moonlight
 					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointType")).Value = proj.SilverlightAppEntry;
 
 				if (deploymentNode.Attributes["RuntimeVersion"] == null) {
-					if (proj.TargetFramework.ClrVersion == ClrVersion.Clr_2_1)
-						deploymentNode.Attributes.Append (doc.CreateAttribute ("RuntimeVersion")).Value = "2.0.31005.0";
+					string runtimeVersion;
+					if (proj.TargetRuntime is MonoDevelop.Core.Assemblies.MonoTargetRuntime) {
+						var package = proj.TargetRuntime.AssemblyContext.GetPackage ("moonlight");
+						if (package == null || package.IsFrameworkPackage) {
+							res.AddError ("Moonlight package is missing, cannot determine version number");
+							return res;
+						}
+						runtimeVersion = package.Version;
+					} else {
+						//FIXME how will we determine this for other runtimes?
+						runtimeVersion = "2.0.31005.0";
+					}
+					deploymentNode.Attributes.Append (doc.CreateAttribute ("RuntimeVersion")).Value = runtimeVersion;
 				}
 
 				XmlNamespaceManager mgr = new XmlNamespaceManager (doc.NameTable);
@@ -500,7 +511,7 @@ namespace MonoDevelop.Moonlight
 			foreach (ProjectReference pr in proj.References) {
 				if (pr.LocalCopy) {
 					var pk = pr.Package;
-					if (pk == null || !pk.IsFrameworkPackage) {
+					if (pk == null || (!pk.IsFrameworkPackage || pk.Name.EndsWith ("-redist"))) {
 						string err = pr.ValidationErrorMessage;
 						if (!String.IsNullOrEmpty (err)) {
 							string msg = String.Format ("Could not add reference '{0}' to '{1}': {2}",

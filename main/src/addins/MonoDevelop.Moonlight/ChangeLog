@@ -1,3 +1,17 @@
+2009-12-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.csproj:
+	* MonoDevelop.Moonlight.addin.xml:
+	* MonoDevelop.Moonlight/MoonlightProject.cs:
+	* MonoDevelop.Moonlight/framework_SL_2_0.xml:
+	* MonoDevelop.Moonlight/framework_SL_3_0.xml:
+	* MonoDevelop.Moonlight/framework_Silverlight.xml:
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs:
+	* MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs: Track
+	  the new moonlight dev bits layout. Add preliminary support
+	  for multi-targetting SL2 and SL3.
+
 2009-12-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightExecutionHandler.cs: Track

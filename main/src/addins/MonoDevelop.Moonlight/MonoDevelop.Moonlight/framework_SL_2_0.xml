@@ -1,4 +1,4 @@
-<TargetFramework id="2.1" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1" SubsetOfFramework="3.5">
+<TargetFramework id="SL2.0" _name="Moonlight / Silverlight 2.0" clrVersion="Clr_2_1" SubsetOfFramework="3.5">
 <Assemblies>
   <Assembly name="System" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="mscorlib" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
@@ -10,5 +10,6 @@
   <Assembly name="System.Windows" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="System.Windows.Browser" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="System.Xml" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
+  <Assembly name="Microsoft.VisualBasic" version="2.0.5.0" publicKeyToken="31bf3856ad364e35" />
 </Assemblies>
 </TargetFramework>

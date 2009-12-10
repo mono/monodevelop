@@ -102,7 +102,7 @@ namespace MonoDevelop.Moonlight
 		void Init ()
 		{
 			//set parameters to ones required for Moonlight build
-			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.1");
+			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("SL2.0");
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -120,7 +120,7 @@ namespace MonoDevelop.Moonlight
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			return framework.Id == "2.1";
+			return framework.Id == "SL2.0" || framework.Id == "SL3.0";
 		}
 		
 		public override string ProjectType {

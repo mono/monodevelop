@@ -42,7 +42,8 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.Moonlight.addin.xml \
-	MonoDevelop.Moonlight/framework_Silverlight.xml \
+	MonoDevelop.Moonlight/framework_SL_2_0.xml \
+	MonoDevelop.Moonlight/framework_SL_3_0.xml \
 	Templates/Moonlight-ApplicationProject.xpt.xml \
 	Templates/Moonlight-ApplicationXaml.xft.xml \
 	Templates/Moonlight-LibraryProject.xpt.xml \

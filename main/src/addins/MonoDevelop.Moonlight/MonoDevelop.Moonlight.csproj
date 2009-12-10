@@ -129,8 +129,11 @@
     <EmbeddedResource Include="Templates\PreviewTemplate.html">
       <LogicalName>PreviewTemplate.html</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Moonlight\framework_Silverlight.xml">
-      <LogicalName>framework_Silverlight.xml</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Moonlight\framework_SL_2_0.xml">
+      <LogicalName>framework_SL_2_0.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Moonlight\framework_SL_3_0.xml">
+      <LogicalName>framework_SL_3_0.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
