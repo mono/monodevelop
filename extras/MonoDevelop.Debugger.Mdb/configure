@@ -4,7 +4,7 @@ PACKAGE=monodevelop-debugger-mdb
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" mono-addins;0.3 mono-debugger;2.0 monodevelop;2.2 monodevelop-core-addins;2.2"
+common_packages=" mono-addins;0.3 mono-debugger;2.0 monodevelop;2.1.2 monodevelop-core-addins;2.1.2"
 
 
 usage ()
