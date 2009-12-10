@@ -1,3 +1,17 @@
+2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Hide abstract properties. There is
+	  nothing we can do with them.
+
+2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Convert StructMirrors of type IntPtr
+	  to real IntPtr objects.
+
+2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Add support for external console.
+
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugger.Soft.dll:

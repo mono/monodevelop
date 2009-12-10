@@ -1,3 +1,16 @@
+2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Track the
+	  last mouse cursor position on a child cell in the widget,
+	  and clear when the cursor leaves. The cellrenderer can use
+	  this an an accurate source of information whether the
+	  pointer is still on this widget and where it is.
+
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs: Don't
+	  pick up the global cursor position, since it may just be an
+	  expose from a window being dragged over. Instead, use the
+	  cursor position from the parent FileTreeView.
+
 2009-12-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl/Task.cs:

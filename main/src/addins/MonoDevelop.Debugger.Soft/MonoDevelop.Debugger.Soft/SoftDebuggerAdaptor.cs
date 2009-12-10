@@ -235,7 +235,7 @@ namespace MonoDevelop.Debugger.Soft
 				}
 				foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
 					MethodMirror met = prop.GetGetMethod (true);
-					if (met == null || met.GetParameters ().Length != 0)
+					if (met == null || met.GetParameters ().Length != 0 || met.IsAbstract)
 						continue;
 					if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
 						continue;
@@ -651,12 +651,13 @@ namespace MonoDevelop.Debugger.Soft
 				EnumMirror eob = (EnumMirror) obj;
 				return new LiteralExp (eob.StringValue);
 			}
-			else if (obj is PrimitiveValue) {
+			else if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value;
-			}
 			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
 				// Boxed primitive
 				StructMirror sm = (StructMirror) obj;
+				if (sm.Type.FullName == "System.IntPtr")
+					return new IntPtr ((long)((PrimitiveValue)sm.Fields[0]).Value);
 				if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
 					return ((PrimitiveValue)sm.Fields[0]).Value;
 			}

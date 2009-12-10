@@ -1,3 +1,8 @@
+2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Pass along the
+	  external console option.
+
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Use

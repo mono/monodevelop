@@ -109,9 +109,8 @@ namespace MonoDevelop.VersionControl.Views
 				int w, maxy;
 				window.GetSize (out w, out maxy);
 				
-				Gdk.ModifierType mask;
-				int px, py;
-				((Gdk.Window)window).GetPointer (out px, out py, out mask);
+				var treeview = widget as FileTreeView;
+				var p = treeview != null? treeview.CursorLocation : null;
 				
 				int recty = cell_area.Y;
 				int recth = cell_area.Height - 1;
@@ -169,7 +168,7 @@ namespace MonoDevelop.VersionControl.Views
 						default: gc = normalGC; break;
 					}
 
-					if (px >= cell_area.X && px <= cell_area.Right && py >= y && py < y + lineHeight) {
+					if (p.HasValue && p.Value.X >= cell_area.X && p.Value.X <= cell_area.Right && p.Value.Y >= y && p.Value.Y < y + lineHeight) {
 						window.DrawRectangle (widget.Style.BaseGC (Gtk.StateType.Prelight), true, cell_area.X, y, cell_area.Width - 1, lineHeight);
 						selectedLine = thisLine;
 						selctedPath = path;
