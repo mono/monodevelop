@@ -1,5 +1,11 @@
 2009-12-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs:
+	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs: Fix
+	  fxversion lookup for manifest.
+
+2009-12-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Moonlight.csproj:
 	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs:

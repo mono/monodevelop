@@ -379,8 +379,10 @@ namespace MonoDevelop.Moonlight
 
 				if (deploymentNode.Attributes["RuntimeVersion"] == null) {
 					string runtimeVersion;
+					string fxVersion = MoonlightFrameworkBackend.GetFxVersion (proj.TargetFramework);
+					
 					if (proj.TargetRuntime is MonoDevelop.Core.Assemblies.MonoTargetRuntime) {
-						var package = proj.TargetRuntime.AssemblyContext.GetPackage ("moonlight");
+						var package = proj.TargetRuntime.AssemblyContext.GetPackage ("moonlight-web-" + fxVersion);
 						if (package == null || package.IsFrameworkPackage) {
 							res.AddError ("Moonlight package is missing, cannot determine version number");
 							return res;

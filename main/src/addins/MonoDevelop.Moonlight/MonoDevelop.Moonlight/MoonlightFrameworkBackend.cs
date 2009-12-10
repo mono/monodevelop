@@ -41,16 +41,7 @@ namespace MonoDevelop.Moonlight
 		protected override void Initialize (TargetRuntime runtime, TargetFramework framework)
 		{
 			base.Initialize (runtime, framework);
-			switch (framework.Id) {
-			case "SL2.0":
-				fxVersion = "2.0";
-				break;
-			case "SL3.0":
-				fxVersion = "3.0";
-				break;
-			default:
-				throw new InvalidOperationException ("Cannot handle unknown target framework '" + framework.Id +"'");
-			}
+			fxVersion = GetFxVersion (framework);
 			
 			foreach (var dir in GetMoonDirectories ()) {
 				var fxdir = dir.Combine (fxVersion);
@@ -60,6 +51,18 @@ namespace MonoDevelop.Moonlight
 						this.location = dir;
 					break;
 				}
+			}
+		}
+		
+		internal static string GetFxVersion (TargetFramework fx)
+		{
+			switch (fx.Id) {
+			case "SL2.0":
+				return "2.0";
+			case "SL3.0":
+				return "3.0";
+			default:
+				throw new InvalidOperationException ("Cannot handle unknown target framework '" + fx.Id +"'");
 			}
 		}
 		
