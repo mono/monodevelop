@@ -1093,16 +1093,33 @@ namespace MonoDevelop.VersionControl.Views
 			return true;
 		}
 		
+		internal Gdk.Point? CursorLocation { get; private set; }
+		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
 			TreePath path;
 			GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path);
-
+			
 			// Diff cells need to be redrawn so they can show the updated selected line
-			if (path != null && path.Depth == 2)
+			if (path != null && path.Depth == 2) {
+				CursorLocation = new Gdk.Point ((int)evnt.X, (int)evnt.Y);
+				//FIXME: we should optimize these draws
 				QueueDraw ();
+			} else if (CursorLocation.HasValue) {
+				CursorLocation = null;
+				QueueDraw ();
+			}
 			
 			return base.OnMotionNotifyEvent (evnt);
+		}
+		
+		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			if (CursorLocation.HasValue) {
+				CursorLocation = null;
+				QueueDraw ();
+			}
+			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
 		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
