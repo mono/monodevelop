@@ -162,7 +162,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			if (frameworkBackends == null)
 				frameworkBackends = new TargetFrameworkBackend [TargetFramework.FrameworkCount];
-			else if (fx.Index > frameworkBackends.Length)
+			else if (fx.Index >= frameworkBackends.Length)
 				Array.Resize (ref frameworkBackends, TargetFramework.FrameworkCount);
 			
 			TargetFrameworkBackend backend = frameworkBackends [fx.Index];

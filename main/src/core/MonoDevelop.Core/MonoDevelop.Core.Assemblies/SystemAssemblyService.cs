@@ -159,6 +159,7 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (TargetFramework fx in frameworks)
 				if (fx.Id == id)
 					return fx;
+			LoggingService.LogWarning ("Unregistered TargetFramework '{0}' is being requested from SystemAssemblyService", id);
 			TargetFramework f = new TargetFramework (id);
 			frameworks.Add (f);
 			return f;

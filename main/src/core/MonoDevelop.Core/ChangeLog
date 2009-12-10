@@ -1,3 +1,15 @@
+2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Fix array
+	  resizing.
+
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs: Don't
+	  explode trying to create backend for unregistered Framework
+	  that has been created in respose to a request.
+
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: Log a
+	  warning when an unregistered TargetFramework is requested.
+
 2009-12-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Execution/IProcessAsyncOperation.cs:
