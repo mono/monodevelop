@@ -4,7 +4,7 @@ PACKAGE=monodevelop-debugger-gdb
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" monodevelop;2.2"
+common_packages=" monodevelop;2.1.2"
 
 
 usage ()
