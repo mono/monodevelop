@@ -92,7 +92,7 @@ namespace MonoDevelop.Moonlight
 				IsCorePackage = true,
 				TargetFramework = framework.Id,
 			};
-			var dir = location.Combine (fxVersion, "-redist");
+			var dir = location.Combine (fxVersion + "-redist");
 			try {
 				var files = Directory.GetFiles (dir, "*.dll");
 				runtime.RegisterPackage (info, files);

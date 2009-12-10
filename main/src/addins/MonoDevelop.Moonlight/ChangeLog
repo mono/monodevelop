@@ -1,5 +1,13 @@
 2009-12-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs: Fix
+	  redist package enumeration.
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Try 3.0 first,
+	  fall back to 2.0.
+
+2009-12-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Moonlight.csproj:
 	* MonoDevelop.Moonlight.addin.xml:

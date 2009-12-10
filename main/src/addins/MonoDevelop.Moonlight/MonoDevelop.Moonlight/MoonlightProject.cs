@@ -101,8 +101,13 @@ namespace MonoDevelop.Moonlight
 		
 		void Init ()
 		{
-			//set parameters to ones required for Moonlight build
-			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("SL2.0");
+			//set the framework to an available SL version
+			//FIXME: we need to base these on the MSBuild targets, so that changes are persisted
+			var fx = Runtime.SystemAssemblyService.GetTargetFramework ("SL3.0");
+			if (TargetRuntime.IsInstalled (fx))
+				TargetFramework = fx;
+			else
+				TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("SL2.0");
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
