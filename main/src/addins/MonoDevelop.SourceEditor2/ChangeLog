@@ -1,3 +1,9 @@
+2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Re-enable
+	  syntax error underlining. No idea why Mike disabled it, but
+	  it's far more useful than error bubbles.
+
 2009-12-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Check that

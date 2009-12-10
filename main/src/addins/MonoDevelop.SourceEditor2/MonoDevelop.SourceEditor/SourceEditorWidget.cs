@@ -236,7 +236,7 @@ namespace MonoDevelop.SourceEditor
 		
 		#region Error underlining
 		Dictionary<int, ErrorMarker> errors = new Dictionary<int, ErrorMarker> ();
-		//uint resetTimerId;
+		uint resetTimerId;
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
@@ -325,7 +325,7 @@ namespace MonoDevelop.SourceEditor
 						widget.textEditorData.Document.UpdateFoldSegments (foldSegments, runInThread);
 						widget.firstUpdate = false;
 					}
-					//widget.UpdateAutocorTimer ();
+					widget.UpdateAutocorTimer ();
 					widget.PopulateClassCombo (runInThread);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
@@ -413,7 +413,7 @@ namespace MonoDevelop.SourceEditor
 				Thread.Sleep (50);
 			}
 		}
-		/*
+		
 		void UpdateAutocorTimer ()
 		{
 			if (!options.UnderlineErrors)
@@ -477,7 +477,7 @@ namespace MonoDevelop.SourceEditor
 			ErrorMarker error = new ErrorMarker (info, line);
 			errors [info.Region.Start.Line - 1] = error;
 			error.AddToLine (this.TextEditor.Document);
-		}*/
+		}
 		#endregion
 		
 		protected override void OnDestroyed ()
