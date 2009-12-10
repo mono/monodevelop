@@ -10,13 +10,13 @@
 	
 	<TemplateFiles>
 		<File DefaultExtension=".html" DefaultName="EmptyHtmlfile"><![CDATA[
-<Html>
-	<Head>
-		<Title></Title>
-	</Head>
-	<Body>
-	</Body>
-</Html>]]>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+	</body>
+</html>]]>
 		</File>
 	</TemplateFiles>
 	

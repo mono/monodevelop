@@ -1,3 +1,7 @@
+2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/EmptyHTMLFile.xft.xml: Sane casing on HTML tags.
+
 2009-12-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Use Workbench.Present so
