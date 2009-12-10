@@ -35,6 +35,11 @@ namespace MonoDevelop.Projects
 			Id = id;
 		}
 		
+		public override string ToString ()
+		{
+			return Id;
+		}
+		
 		public static explicit operator SolutionConfigurationSelector (string id)
 		{
 			return new SolutionConfigurationSelector (id);
