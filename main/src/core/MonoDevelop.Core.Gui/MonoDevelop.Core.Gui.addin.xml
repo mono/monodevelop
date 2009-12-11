@@ -91,7 +91,8 @@
 		<StockIcon stockid = "md-field" resource = "element-field-16.png" />
 		<StockIcon stockid = "md-static-field" icon = "res:element-field-16.png|res:static-16.png" size="Menu" />
 		<StockIcon stockid = "md-find-in-files" resource = "Icons.16x16.FindInFiles" />
-		<StockIcon stockid = "md-find-next-icon" resource = "Icons.16x16.FindNextIcon" />
+		<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-16.png" size="Menu"/>
+		<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-24.png" />
 		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen.png"  size = "Menu" />
 		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen_22.png" />
 		<StockIcon stockid = "md-goto-nextbookmark" resource = "Icons.16x16.GotoNextbookmark" size="Menu"/>
@@ -228,6 +229,26 @@
 		<StockIcon stockid = "md-keyword" resource = "keyword-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-template" resource = "template-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-template-surroundwith" resource = "template-surroundwith-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-author-information" resource = "author-information-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-author-information" resource = "author-information-24.png" />
+		<StockIcon stockid = "md-code-template" resource = "code-template-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-code-template" resource = "code-template-24.png" />
+		<StockIcon stockid = "md-compiler-options" resource = "compiler-options-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-compiler-options" resource = "compiler-options-24.png" />
+		<StockIcon stockid = "md-custom-commands" resource = "custom-commands-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-custom-commands" resource = "custom-commands-24.png" />
+		<StockIcon stockid = "md-formatting" resource = "formatting-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-formatting" resource = "formatting-24.png" />
+		<StockIcon stockid = "md-markers-rulers" resource = "markers-rulers-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-markers-rulers" resource = "markers-rulers-24.png" />
+		<StockIcon stockid = "md-syntax-highlighting" resource = "syntax-highlighting-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-syntax-highlighting" resource = "syntax-highlighting-24.png" />
+		<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-24.png" />
+		<StockIcon stockid = "md-message-log" resource = "view-message-log-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-message-log" resource = "view-message-log-24.png" />
+		<StockIcon stockid = "md-visual-style" resource = "visual-style-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-visual-style" resource = "visual-style-24.png" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">

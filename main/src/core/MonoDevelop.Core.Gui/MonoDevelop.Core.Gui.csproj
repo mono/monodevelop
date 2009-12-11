@@ -115,9 +115,6 @@
     <EmbeddedResource Include="icons\Icons.16x16.FindInFiles">
       <LogicalName>Icons.16x16.FindInFiles</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.FindNextIcon">
-      <LogicalName>Icons.16x16.FindNextIcon</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\Icons.16x16.GotoNextbookmark">
       <LogicalName>Icons.16x16.GotoNextbookmark</LogicalName>
     </EmbeddedResource>
@@ -483,6 +480,69 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\static-16.png">
       <LogicalName>static-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\edit-find-next-16.png">
+      <LogicalName>edit-find-next-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\formatting-16.png">
+      <LogicalName>formatting-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\markers-rulers-16.png">
+      <LogicalName>markers-rulers-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\syntax-highlighting-16.png">
+      <LogicalName>syntax-highlighting-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-editor-behavior-16.png">
+      <LogicalName>text-editor-behavior-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\view-message-log-16.png">
+      <LogicalName>view-message-log-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\author-information-16.png">
+      <LogicalName>author-information-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\compiler-options-16.png">
+      <LogicalName>compiler-options-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\custom-commands-16.png">
+      <LogicalName>custom-commands-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\author-information-24.png">
+      <LogicalName>author-information-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\compiler-options-24.png">
+      <LogicalName>compiler-options-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\custom-commands-24.png">
+      <LogicalName>custom-commands-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\edit-find-next-24.png">
+      <LogicalName>edit-find-next-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\formatting-24.png">
+      <LogicalName>formatting-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\markers-rulers-24.png">
+      <LogicalName>markers-rulers-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\syntax-highlighting-24.png">
+      <LogicalName>syntax-highlighting-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-editor-behavior-24.png">
+      <LogicalName>text-editor-behavior-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-template-16.png">
+      <LogicalName>code-template-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\code-template-24.png">
+      <LogicalName>code-template-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\visual-style-16.png">
+      <LogicalName>visual-style-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\visual-style-24.png">
+      <LogicalName>visual-style-24.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -1,3 +1,31 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* icons/formatting-24.png:
+	* icons/formatting-16.png:
+	* icons/visual-style-24.png:
+	* icons/visual-style-16.png:
+	* icons/code-template-16.png:
+	* icons/code-template-24.png:
+	* icons/markers-rulers-24.png:
+	* icons/markers-rulers-16.png:
+	* icons/edit-find-next-24.png:
+	* MonoDevelop.Core.Gui.csproj:
+	* icons/edit-find-next-16.png:
+	* icons/custom-commands-16.png:
+	* icons/custom-commands-24.png:
+	* icons/view-message-log-16.png:
+	* icons/compiler-options-24.png:
+	* icons/compiler-options-16.png:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* icons/Icons.16x16.FindNextIcon:
+	* icons/author-information-24.png:
+	* icons/author-information-16.png:
+	* icons/syntax-highlighting-16.png:
+	* icons/syntax-highlighting-24.png:
+	* icons/text-editor-behavior-24.png:
+	* icons/text-editor-behavior-16.png: Add new icons.
+
 2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs:
