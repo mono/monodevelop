@@ -378,20 +378,24 @@ namespace MonoDevelop.Moonlight
 					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointType")).Value = proj.SilverlightAppEntry;
 
 				if (deploymentNode.Attributes["RuntimeVersion"] == null) {
-					string runtimeVersion;
+					string runtimeVersion = null;
 					string fxVersion = MoonlightFrameworkBackend.GetFxVersion (proj.TargetFramework);
 					
 					if (proj.TargetRuntime is MonoDevelop.Core.Assemblies.MonoTargetRuntime) {
-						var package = proj.TargetRuntime.AssemblyContext.GetPackage ("moonlight-web-" + fxVersion);
-						if (package == null || package.IsFrameworkPackage) {
-							res.AddError ("Moonlight package is missing, cannot determine version number");
-							return res;
+						var package = proj.TargetRuntime.RuntimeAssemblyContext.GetPackage ("moonlight-web-" + fxVersion);
+						if (package != null && package.IsFrameworkPackage) {
+							runtimeVersion = package.Version;
+						} else {
+							LoggingService.LogWarning ("Moonlight core framework package not found, cannot determine " +
+								"runtime version string. Falling back to default value.");
 						}
-						runtimeVersion = package.Version;
-					} else {
+					}
+					
+					if (runtimeVersion == null) {
 						//FIXME how will we determine this for other runtimes?
 						runtimeVersion = "2.0.31005.0";
 					}
+					
 					deploymentNode.Attributes.Append (doc.CreateAttribute ("RuntimeVersion")).Value = runtimeVersion;
 				}
 

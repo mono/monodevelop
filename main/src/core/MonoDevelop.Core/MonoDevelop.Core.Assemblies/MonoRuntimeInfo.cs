@@ -96,7 +96,6 @@ namespace MonoDevelop.Core.Assemblies
 			string binDir = Path.Combine (prefix, "bin");
 			envVars ["PATH"] = libDir + Path.PathSeparator + binDir + Path.PathSeparator + Environment.GetEnvironmentVariable ("PATH");
 			envVars ["LD_LIBRARY_PATH"] = libDir + Path.PathSeparator + Environment.GetEnvironmentVariable ("LD_LIBRARY_PATH");
-			envVars ["MONO_PATH"] = libDir + Path.PathSeparator + binDir;
 			
 			StringWriter output = new StringWriter ();
 			try {
@@ -172,12 +171,6 @@ namespace MonoDevelop.Core.Assemblies
 			rt.SetupPkgconfigPaths (Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH"),
 			                        Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR"));
 			rt.envVars ["PATH"] = Environment.GetEnvironmentVariable ("PATH");
-			
-			string mlPath = Environment.GetEnvironmentVariable ("MOONLIGHT_2_SDK_PATH");
-			if (!String.IsNullOrEmpty (mlPath)) {
-				rt.envVars ["MOONLIGHT_2_SDK_PATH"] = mlPath;
-				rt.envVars ["PKG_CONFIG_PATH"] = mlPath + Path.PathSeparator + rt.envVars ["PKG_CONFIG_PATH"];
-			}
 			
 			rt.IsRunning = true;
 			rt.initialized = true;

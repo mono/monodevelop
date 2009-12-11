@@ -1,3 +1,8 @@
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* mdtool:
+	* monodevelop: Track Moonlight SDK env var change.
+
 2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Info.plist.in: Add file association for mdw files.

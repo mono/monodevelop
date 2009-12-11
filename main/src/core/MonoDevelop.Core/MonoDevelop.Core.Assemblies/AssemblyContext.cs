@@ -70,6 +70,15 @@ namespace MonoDevelop.Core.Assemblies
 		
 		SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, PackageAssemblyInfo[] assemblyFiles)
 		{
+			//don't allow packages to duplicate framework packages
+			SystemPackage oldPackage;
+			if (packagesHash.TryGetValue (pinfo.Name, out oldPackage)) {
+				if (oldPackage.IsFrameworkPackage)
+					return oldPackage;
+				else if (pinfo.IsFrameworkPackage)
+					ForceUnregisterPackage (oldPackage);
+			}
+			
 			SystemPackage p = new SystemPackage ();
 			List<SystemAssembly> asms = new List<SystemAssembly> ();
 			foreach (PackageAssemblyInfo asm in assemblyFiles)
@@ -95,6 +104,11 @@ namespace MonoDevelop.Core.Assemblies
 			if (!p.IsInternalPackage)
 				throw new InvalidOperationException ("Only internal packages can be unregistered");
 			
+			ForceUnregisterPackage (p);
+		}
+		
+		void ForceUnregisterPackage (SystemPackage p)
+		{
 			foreach (SystemAssembly asm in p.Assemblies)
 				RemoveAssembly (asm);
 			
@@ -497,6 +511,12 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal void InternalAddPackage (SystemPackage package)
 		{
+			SystemPackage oldPackage;
+			if (package.IsFrameworkPackage && !string.IsNullOrEmpty (package.Name)
+			    && packagesHash.TryGetValue (package.Name, out oldPackage) && !oldPackage.IsFrameworkPackage) {
+				ForceUnregisterPackage (oldPackage);
+			}
+			packagesHash [package.Name] = package;
 			packages.Add (package);
 		}
 

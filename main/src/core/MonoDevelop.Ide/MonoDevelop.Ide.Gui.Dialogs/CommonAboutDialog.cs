@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Jérémie Laval",
 			"Luciano N. Callero",
 			"Zach Lute",
-			"Andrea Krüger"
+			"Andrea Krüger",
+			"Jakub Steiner"
 		};
 		
 		string[] oldAuthors = new string[] {
@@ -105,6 +106,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			"Iain McCoy",
 			"Inigo Illan",
 			"Jacob Ilsø Christensen",
+			"Jakub Steiner",
 			"James Fitzsimons",
 			"Jeff Stedfast",
 			"Jérémie Laval",

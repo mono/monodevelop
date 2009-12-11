@@ -46,8 +46,13 @@ namespace MonoDevelop.AspNet
 		{
 			AspNetExecutionCommand cmd = command as AspNetExecutionCommand;
 			
-			string xspName = (cmd.ClrVersion == ClrVersion.Net_1_1)? "xsp" : "xsp2";
+			string xspName = (cmd.ClrVersion == ClrVersion.Net_1_1)? "xsp1" : "xsp2";
 			string xspPath = cmd.TargetRuntime.GetToolPath (cmd.TargetFramework, xspName);
+			
+			if (string.IsNullOrEmpty (xspPath) && cmd.ClrVersion == ClrVersion.Net_1_1) {
+				xspName = "xsp";
+				xspPath = cmd.TargetRuntime.GetToolPath (cmd.TargetFramework, xspName);
+			}
 			
 			//if the current runtime doesn't provide XSP, use one bundled alongside the addin
 			if (String.IsNullOrEmpty (xspPath))
