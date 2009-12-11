@@ -1,5 +1,11 @@
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: If the
+	  framework package is not found, fall back to default version
+	  string.
+
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Fix logic
 	  error.
 
