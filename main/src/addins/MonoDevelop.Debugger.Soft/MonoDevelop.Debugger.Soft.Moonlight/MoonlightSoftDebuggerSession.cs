@@ -44,6 +44,8 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 	{
 		Process browser;
 		
+		const string DEFAULT_PROFILE="monodevelop-moonlight-debug";
+		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MoonlightDebuggerStartInfo) startInfo;
@@ -56,7 +58,11 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			if (browser != null)
 				throw new InvalidOperationException ("Browser already started");
 			
-			var psi = new ProcessStartInfo ("firefox", string.Format (" -no-remote \"{0}\"", dsi.Url)) {
+			var firefoxProfile = PropertyService.Get<string> ("Moonlight.Debugger.FirefoxProfile", DEFAULT_PROFILE);
+			CreateFirefoxProfileIfNecessary (firefoxProfile);
+			
+			var psi = new ProcessStartInfo ("firefox") {
+				Arguments = string.Format (" -no-remote -P '{0}' '{1}'", firefoxProfile, dsi.Url),
 				UseShellExecute = false,
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
@@ -68,6 +74,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			ConnectOutput (browser.StandardOutput, false);
 			ConnectOutput (browser.StandardError, true);
 			
+			browser.EnableRaisingEvents = true;
 			browser.Exited += delegate {
 				EndSession ();
 			};
@@ -94,6 +101,80 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			
 			browser.Kill ();
 			browser = null;
+		}
+		
+		static void CreateFirefoxProfileIfNecessary (string profileName)
+		{
+			FilePath profilePath = FilePath.Null;
+			try {
+				profilePath = GetFirefoxProfilePath (profileName);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error reading Firefox profile list", ex);
+			}
+			if (profilePath.IsNullOrEmpty) {
+				var psi = new ProcessStartInfo ("firefox") {
+					Arguments = string.Format ("-no-remote -CreateProfile '{0}'", profileName),
+				};
+				using (var p = Process.Start (psi)) {
+					p.WaitForExit (5000); //wait 5 seconds
+					if (!p.HasExited) {
+						p.Kill ();
+						throw new UserException ("Failed to create Firefox profile. Firefox did not exit.");
+					}
+					if (p.ExitCode != 0)
+						throw new UserException ("Failed to create Firefox profile. Firefox exit code: '" + p.ExitCode + "'");
+				}
+			}
+		}
+		
+		static FilePath GetFirefoxProfilePath (string profileName)
+		{
+			FilePath profileDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+			profileDir = profileDir.Combine (".mozilla", "firefox");
+			FilePath iniFile = profileDir.Combine ("profiles.ini");
+			
+			if (!File.Exists (iniFile)) {
+				LoggingService.LogWarning ("Firefox profile list '{0}' does not exist", iniFile);
+				return FilePath.Null;
+			}
+			
+			try {
+				using (var file = File.OpenText (iniFile)) {
+					string nameLine = "Name=" + profileName;
+					while (!file.EndOfStream) {
+						var line = file.ReadLine ();
+						if (line != nameLine)
+							continue;
+						
+						string relativeLine = null;
+						string pathLine = null;
+						do {
+							line = file.ReadLine ();
+							if (line.StartsWith ("[") || line.StartsWith ("Name="))
+								break;
+							if (line.StartsWith ("IsRelative="))
+								relativeLine = line.Substring ("IsRelative=".Length);
+							else if (line.StartsWith ("Path="))
+								pathLine = line.Substring ("Path=".Length);
+						} while (!file.EndOfStream && (relativeLine == null || pathLine == null));
+						
+						if (relativeLine == null || pathLine == null)
+							throw new Exception ("Missing entries in Firefox profiles.ini");
+						
+						var dir = (relativeLine == "1")? profileDir.Combine (pathLine) : (FilePath)pathLine;
+						
+						if (!Directory.Exists (dir))
+							throw new Exception ("Firefox profile is registered but directory '" + dir + "' is missing");
+						
+						return dir;
+					}
+					
+					//no profile with this name exists
+					return FilePath.Null;
+				}
+			} catch (IOException ex) {
+				throw new Exception ("Error reading Firefox profiles.ini", ex);
+			}
 		}
 	}
 }
