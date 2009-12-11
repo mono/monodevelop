@@ -1,3 +1,11 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Gui/unit-test-16.png:
+	* Gui/unit-test-24.png:
+	* MonoDevelop.NUnit.csproj:
+	* MonoDevelopNUnit.addin.xml: Added new icon.
+
 2009-12-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/NUnitService.cs: Don't try to build tests until the
