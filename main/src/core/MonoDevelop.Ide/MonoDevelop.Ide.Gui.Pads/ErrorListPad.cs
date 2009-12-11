@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
 		TreeModelFilter filter;
+		TreeModelSort sort;
 		ToggleToolButton errorBtn, warnBtn, msgBtn;
 		Hashtable tasks = new Hashtable ();
 //		IPadWindow window;
@@ -172,7 +173,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter = new TreeModelFilter (store, null);
 			filter.VisibleFunc = filterFunct;
 			
-			TreeModelSort sort = new TreeModelSort (filter);
+			sort = new TreeModelSort (filter);
 			sort.SetSortFunc (VisibleColumns.Type, SeverityIterSort);
 			sort.SetSortFunc (VisibleColumns.Project, ProjectIterSort);
 			sort.SetSortFunc (VisibleColumns.File, FileIterSort);
@@ -436,7 +437,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TreeIter iter;
 			TreeModel model;
 			if (view.Selection.GetSelected (out model, out iter)) {
-				iter = filter.ConvertIterToChildIter (iter);
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (iter));
 				store.SetValue (iter, DataColumns.Read, true);
 				Task task = store.GetValue (iter, DataColumns.Task) as Task;
 				if (task != null) {
@@ -771,7 +772,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				line = t.Line;
 				column = t.Column;
 				view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
-				iter = filter.ConvertIterToChildIter (iter);
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (iter));
 				store.SetValue (iter, DataColumns.Read, true);
 				DisplayTask (t);
 				return true;
@@ -825,7 +826,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				line = t.Line;
 				column = t.Column;
 				view.ScrollToCell (view.Model.GetPath (prevIter), view.Columns[0], false, 0, 0);
-				prevIter = filter.ConvertIterToChildIter (prevIter);
+				prevIter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (prevIter));
 				store.SetValue (prevIter, DataColumns.Read, true);
 				DisplayTask (t);
 				return true;
