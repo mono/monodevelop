@@ -525,7 +525,7 @@ namespace DebuggerServer
 			TargetObject obj = ctx.GetRealObject (vobj);
 			
 			if (obj == null)
-				return ObjectValue.CreateObject (null, path, "", null, flags | ObjectValueFlags.ReadOnly, null);
+				return ObjectValue.CreateObject (null, path, "", "", flags | ObjectValueFlags.ReadOnly, null);
 
 			if (obj.HasAddress && obj.GetAddress (ctx.Thread).IsNull)
 				return ObjectValue.CreateObject (null, path, obj.TypeName, ctx.Evaluator.ToExpression (null), flags, null);
@@ -541,9 +541,9 @@ namespace DebuggerServer
 					if (co == null)
 						return ObjectValue.CreateUnknown (path.LastName);
 					else {
-						string tvalue;
+						EvaluationResult tvalue;
 						if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-							tvalue = EvaluateDisplayString (ctx, co, tdata.ValueDisplayString);
+							tvalue = new EvaluationResult (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
 						else
 							tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
 						

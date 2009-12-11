@@ -319,7 +319,7 @@ namespace DebuggerServer
 				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, SessionOptions.EvaluationOptions);
 				ML.TargetObject ob = EvaluateExp (ctx, bp.ConditionExpression);
 				if (ob != null)
-					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (ctx, ob);
+					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (ctx, ob).Value;
 			}
 			
 			events [ev.Index] = be;
@@ -377,7 +377,7 @@ namespace DebuggerServer
 				if (val == null)
 					return false;
 				if (bp.BreakIfConditionChanges) {
-					string current = evaluator.TargetObjectToExpression (ctx, val);
+					string current = evaluator.TargetObjectToExpression (ctx, val).Value;
 					string last;
 					bool found = lastConditionValue.TryGetValue (eventHandle, out last);
 					lastConditionValue [eventHandle] = current;
