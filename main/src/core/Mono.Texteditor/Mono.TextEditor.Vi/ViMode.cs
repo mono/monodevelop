@@ -798,7 +798,7 @@ namespace Mono.TextEditor.Vi
 					else RunAction (ViActions.Right);
 					int offset = data.Caret.Offset;
 					data.InsertAtCaret (contents);
-					data.Caret.Offset = offset;
+					RunAction (ViActions.Left);
 				}
 				Reset (string.Empty);
 			});
@@ -842,10 +842,9 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					else RunAction (ViActions.Left);
 					int offset = Caret.Offset;
 					data.InsertAtCaret (contents);
-					Caret.Offset = offset;
+					RunAction (ViActions.Left);
 				}
 				Reset (string.Empty);
 			});
