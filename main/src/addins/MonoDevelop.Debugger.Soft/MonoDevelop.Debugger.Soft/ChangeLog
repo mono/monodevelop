@@ -1,3 +1,7 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Implement TryConvert.
+
 2009-12-10  Geoff Norton  <gnorton@novell.com>
 
 	* RemoteSoftDebuggerSession.cs: Only redirect the output when

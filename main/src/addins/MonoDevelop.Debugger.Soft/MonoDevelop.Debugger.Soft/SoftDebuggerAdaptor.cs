@@ -73,16 +73,29 @@ namespace MonoDevelop.Debugger.Soft
 			return GetDisplayTypeName (GetValueTypeName (ctx, obj));
 		}
 
-
-		public override object Cast (EvaluationContext ctx, object obj, object targetType)
+		public override object TryConvert (EvaluationContext ctx, object obj, object targetType)
 		{
-			if (obj == null)
-				return null;
 			object res = TryCast (ctx, obj, targetType);
 			if (res != null)
 				return res;
-			else
-				throw new EvaluatorException ("Can't cast an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
+			if (obj == null)
+				return null;
+			object otype = GetValueType (ctx, obj);
+			if (otype is Type) {
+				if (targetType is TypeMirror)
+					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
+				Type tt = targetType as Type;
+				if (tt != null) {
+					try {
+						if (obj is PrimitiveValue)
+							obj = ((PrimitiveValue)obj).Value;
+						res = System.Convert.ChangeType (obj, tt);
+						return CreateValue (ctx, res);
+					} catch {
+					}
+				}
+			}
+			return null;
 		}
 
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
@@ -96,7 +109,8 @@ namespace MonoDevelop.Debugger.Soft
 			} else if (otype is Type) {
 				if (targetType is TypeMirror)
 					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
-				if ((targetType is Type) && ((Type)targetType).IsAssignableFrom ((Type)otype))
+				Type tt = targetType as Type;
+				if (tt != null && tt.IsAssignableFrom ((Type)otype))
 					return obj;
 			}
 			return null;
