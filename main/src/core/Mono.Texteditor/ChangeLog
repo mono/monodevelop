@@ -1,5 +1,11 @@
 2009-12-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Select the highlighted
+	  character by default when entering visual mode. Fixes
+	  #562304.
+
+2009-12-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Mono.TextEditor.Vi/ViMode.cs: Make inline paste behave more
 	  like vim. Fixes #562294.
 

@@ -217,8 +217,8 @@ namespace Mono.TextEditor.Vi
 						
 					case 'v':
 						Status = "-- VISUAL --";
-						if (Data.MainSelection == null)
-							Data.MainSelection = new Selection (Caret.Location, Caret.Location);
+						if (Data.MainSelection == null && Caret.Offset+1 < Data.Document.Length)
+							Data.SetSelection (Caret.Offset, Caret.Offset+1);
 						Data.MainSelection.Anchor = Caret.Location;
 						state = State.Visual;
 						return;
