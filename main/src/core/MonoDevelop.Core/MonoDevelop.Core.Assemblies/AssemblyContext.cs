@@ -515,8 +515,8 @@ namespace MonoDevelop.Core.Assemblies
 			if (package.IsFrameworkPackage && !string.IsNullOrEmpty (package.Name)
 			    && packagesHash.TryGetValue (package.Name, out oldPackage) && !oldPackage.IsFrameworkPackage) {
 				ForceUnregisterPackage (oldPackage);
-				packagesHash [package.Name] = package;
 			}
+			packagesHash [package.Name] = package;
 			packages.Add (package);
 		}
 
