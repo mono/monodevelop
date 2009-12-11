@@ -511,6 +511,12 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal void InternalAddPackage (SystemPackage package)
 		{
+			SystemPackage oldPackage;
+			if (package.IsFrameworkPackage && !string.IsNullOrEmpty (package.Name)
+			    && packagesHash.TryGetValue (package.Name, out oldPackage) && !oldPackage.IsFrameworkPackage) {
+				ForceUnregisterPackage (oldPackage);
+				packagesHash [package.Name] = package;
+			}
 			packages.Add (package);
 		}
 

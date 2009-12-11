@@ -1,5 +1,11 @@
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: Fix
+	  framework package duplication for internal backend packages
+	  too.
+
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
 	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: If package
 	  names are duplicated and one of them is a framework package,
