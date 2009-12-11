@@ -59,8 +59,8 @@ fi
 #fi
 
 ## Moonlight SDK
-if [ -d "$DIR/lib/MoonSDK" ]; then
-        export MOONLIGHT_2_SDK_PATH="$DIR/lib/MoonSDK"
+if [ -d "$DIR/lib/moonlight" ]; then
+        export MOONLIGHT_SDK_PATH="$DIR/lib/moonlight"
 fi
 
 _MD_LOG_FILE="${MD_LOG_FILE:-$HOME/Library/Logs/MonoDevelop/MonoDevelop.log}"
