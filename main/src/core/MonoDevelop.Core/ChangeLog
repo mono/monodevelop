@@ -1,3 +1,13 @@
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: If package
+	  names are duplicated and one of them is a framework package,
+	  remove the others.
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Remove
+	  unneeded env vars.
+
 2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Fix array

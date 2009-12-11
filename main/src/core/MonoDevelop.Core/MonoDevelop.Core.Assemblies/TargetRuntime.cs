@@ -271,7 +271,8 @@ namespace MonoDevelop.Core.Assemblies
 			SystemPackageInfo pi = node.GetPackageInfo ();
 			
 			if (args.Change == ExtensionChange.Add) {
-				if (assemblyContext.GetPackageInternal (pi.Name, pi.Version) == null)
+				var existing = assemblyContext.GetPackageInternal (pi.Name, pi.Version);
+				if (existing == null || (!existing.IsFrameworkPackage || pi.IsFrameworkPackage))
 					RegisterPackage (pi, node.Assemblies);
 			}
 			else {
