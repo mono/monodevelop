@@ -1,3 +1,8 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/Table.cs: Fix table creation issue. Sync call has no
+	  effect while loading a widget.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Widget.cs: Fix check for top level window.

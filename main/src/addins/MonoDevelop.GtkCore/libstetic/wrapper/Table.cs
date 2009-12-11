@@ -19,7 +19,7 @@ namespace Stetic.Wrapper {
 				table.RowSpacing = 6;
 				table.ColumnSpacing = 6;
 			}
-			Sync ();
+			DoSync ();
 		}
 
 		private Gtk.Table table {
