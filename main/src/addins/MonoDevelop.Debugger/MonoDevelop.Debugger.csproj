@@ -182,6 +182,21 @@
     <EmbeddedResource Include="icons\step-over-24.png">
       <LogicalName>step-over-24.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\view-debug-breakpoints-16.png">
+      <LogicalName>view-debug-breakpoints-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\view-debug-call-stack-16.png">
+      <LogicalName>view-debug-call-stack-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\view-debug-locals-16.png">
+      <LogicalName>view-debug-locals-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\view-debug-threads-16.png">
+      <LogicalName>view-debug-threads-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\view-debug-watch-16.png">
+      <LogicalName>view-debug-watch-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
