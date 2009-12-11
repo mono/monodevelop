@@ -480,11 +480,11 @@ namespace MonoDevelop.Debugger
 			}
 			else {
 				canEdit = val.IsPrimitive && !val.IsReadOnly && allowEditing;
-				strval = val.Value != null ? val.Value.ToString () : "(null)";
+				strval = val.DisplayValue ?? "(null)";
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = modifiedColor;
 			}
-
+			
 			string icon = GetIcon (val.Flags);
 
 			store.SetValue (it, NameCol, name);
@@ -592,6 +592,7 @@ namespace MonoDevelop.Debugger
 			Gtk.Entry e = (Gtk.Entry) args.Editable;
 			if (e.Text == createMsg)
 				e.Text = string.Empty;
+			
 			OnStartEditing (args);
 		}
 		
@@ -622,7 +623,17 @@ namespace MonoDevelop.Debugger
 		
 		void OnValueEditing (object s, Gtk.EditingStartedArgs args)
 		{
+			TreeIter it;
+			if (!store.GetIterFromString (out it, args.Path))
+				return;
+			
 			Gtk.Entry e = (Gtk.Entry) args.Editable;
+			
+			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
+			string strVal = val.Value;
+			if (!string.IsNullOrEmpty (strVal))
+				e.Text = strVal;
+			
 			e.GrabFocus ();
 			OnStartEditing (args);
 		}
@@ -645,7 +656,7 @@ namespace MonoDevelop.Debugger
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
 			}
-			store.SetValue (it, ValueCol, val.Value);
+			store.SetValue (it, ValueCol, val.DisplayValue);
 
 			// Update the color
 			

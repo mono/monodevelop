@@ -1,3 +1,8 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Use the new
+	  DisplayValue property.
+
 2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Pass along the
