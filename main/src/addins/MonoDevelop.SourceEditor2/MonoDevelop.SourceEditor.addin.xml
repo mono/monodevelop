@@ -130,9 +130,9 @@
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
 		<Section id = "General" insertbefore="Formatting" _label = "General" icon="md-text-editor" fill="true" class = "MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel"/>
-		<Section id = "Markers" _label = "Markers and Rulers" class = "MonoDevelop.SourceEditor.OptionPanels.MarkerPanel"/>
-		<Section id = "Behavior" _label = "Behavior" class = "MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel"/>
-		<Section id = "SyntaxHighlighting" _label = "Syntax Highlighting" fill="true" class = "MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel"/>
+		<Section id = "Markers" _label = "Markers and Rulers" icon="md-markers-rulers" class = "MonoDevelop.SourceEditor.OptionPanels.MarkerPanel"/>
+		<Section id = "Behavior" _label = "Behavior" icon="md-text-editor-behavior" class = "MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel"/>
+		<Section id = "SyntaxHighlighting" _label = "Syntax Highlighting" fill="true" icon="md-syntax-highlighting" class = "MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel"/>
 	</Extension>
 	
 </Addin>
