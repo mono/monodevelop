@@ -71,6 +71,11 @@ RES =  \
 	icons/step-over-16.png \
 	icons/step-over-22.png \
 	icons/step-over-24.png \
+	icons/view-debug-breakpoints-16.png \
+	icons/view-debug-call-stack-16.png \
+	icons/view-debug-locals-16.png \
+	icons/view-debug-threads-16.png \
+	icons/view-debug-watch-16.png \
 	MonoDevelop.Debugger.addin.xml
 
 DATA_FILES =

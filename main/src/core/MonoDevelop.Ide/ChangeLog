@@ -1,3 +1,16 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* icons/SplashScreen.png:
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Update splash.
+
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* icons/tools-external-tools-24.png:
+	* icons/tools-external-tools-16.png: Add new icons.
+
 2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/EmptyHTMLFile.xft.xml: Sane casing on HTML tags.

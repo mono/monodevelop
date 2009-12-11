@@ -32,17 +32,18 @@ FILES =  \
 	MonoDevelop.Moonlight/MoonlightEditorExtension.cs \
 	MonoDevelop.Moonlight/MoonlightExecutionCommand.cs \
 	MonoDevelop.Moonlight/MoonlightExecutionHandler.cs \
+	MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs \
 	MonoDevelop.Moonlight/MoonlightParser.cs \
 	MonoDevelop.Moonlight/MoonlightProject.cs \
 	MonoDevelop.Moonlight/MoonlightProjectBinding.cs \
 	MonoDevelop.Moonlight/MoonlightProjectConfiguration.cs \
-	MonoDevelop.Moonlight/SilverlightFrameworkBackend.cs \
 	MonoDevelop.Moonlight/XamlG.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.Moonlight.addin.xml \
-	MonoDevelop.Moonlight/framework_Silverlight.xml \
+	MonoDevelop.Moonlight/framework_SL_2_0.xml \
+	MonoDevelop.Moonlight/framework_SL_3_0.xml \
 	Templates/Moonlight-ApplicationProject.xpt.xml \
 	Templates/Moonlight-ApplicationXaml.xft.xml \
 	Templates/Moonlight-LibraryProject.xpt.xml \

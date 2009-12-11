@@ -78,6 +78,8 @@ RES =  \
 	Gui/NUnit.Success.png \
 	Gui/NUnit.SuccessAndFailed.png \
 	Gui/nunit-overlay-32.png \
+	Gui/unit-test-16.png \
+	Gui/unit-test-24.png \
 	md1format.xml \
 	MonoDevelopNUnit.addin.xml \
 	nunit.glade \

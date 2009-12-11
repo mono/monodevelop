@@ -1,3 +1,14 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj:
+	* icons/view-debug-watch-16.png:
+	* icons/view-debug-locals-16.png:
+	* MonoDevelop.Debugger.addin.xml:
+	* icons/view-debug-threads-16.png:
+	* icons/view-debug-call-stack-16.png:
+	* icons/view-debug-breakpoints-16.png: Added some new icons.
+
 2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Pass along the

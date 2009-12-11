@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop rev2237\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-06 20:07:12+0200\n"
-"PO-Revision-Date: 2009-10-11 17:38:04-0400\n"
+"PO-Revision-Date: 2009-12-11 05:24:32+0100\n"
 "Last-Translator: Andrés G. Aragoneses <knocte@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -2573,27 +2573,24 @@ msgid "Interface name"
 msgstr "Nombre del interfaz"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:562
-#, fuzzy
 msgid "Template for a Struct"
-msgstr "Struct vacío"
+msgstr "Plantilla para un Struct"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:568
 msgid "Struct name"
 msgstr "Nombre de la estructura"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:583
-#, fuzzy
 msgid "Template for an Enumeration"
-msgstr "Enumeración vacía"
+msgstr "Plantilla para una Enumeración"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:589
-#, fuzzy
 msgid "Enumeration name"
-msgstr "Enumeración vacía"
+msgstr "Nombre de la Enumeración"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:604
 msgid "Template for 'for' loop"
-msgstr ""
+msgstr "Plantilla para un bucle 'for'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:610
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:634
@@ -2663,11 +2660,11 @@ msgstr "Identificador para el elemento actual"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:812
 msgid "Template for 'if' statement"
-msgstr ""
+msgstr "Plantilla para una sentencia 'if'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:832
 msgid "Template for 'lock' statement"
-msgstr ""
+msgstr "Plantilla para una sentencia 'lock'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:838
 msgid "Object to lock"
@@ -2679,13 +2676,12 @@ msgid "Template for namespace"
 msgstr "Espacios de nombres anidados"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:858
-#, fuzzy
 msgid "Namespace name"
-msgstr "Espacio de nombres: "
+msgstr "Nombre del ámbito"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:872
 msgid "Template for try...catch"
-msgstr ""
+msgstr "Plantilla para un try...catch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:896
 msgid "Template for parentheses"
@@ -2701,11 +2697,11 @@ msgstr "Plantilla para try...finally"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:942
 msgid "Template for 'unchecked' block"
-msgstr ""
+msgstr "Plantilla para un bloque 'unchecked'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:956
 msgid "Template for 'unsafe' block"
-msgstr ""
+msgstr "Plantilla para un bloque 'unsafe'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:967
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:979
@@ -2720,12 +2716,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:971
 msgid "bold block"
-msgstr ""
+msgstr "bloque en negrita"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:983
-#, fuzzy
 msgid "comment block"
-msgstr "Copiar comentario de la tarea"
+msgstr "bloque de comentario"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:995
 msgid "heading 1 block"
@@ -2745,7 +2740,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1043
 msgid "italic block"
-msgstr ""
+msgstr "bloque en cursiva"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1055
 msgid "paragraph block"
@@ -2772,34 +2767,30 @@ msgid "Python"
 msgstr "Archivos Python"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1081
-#, fuzzy
 msgid "Template for while block"
-msgstr "Archivo de pla_ntilla:"
+msgstr "Plantilla para bloque while"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1099
 msgid "Template for function block"
-msgstr ""
+msgstr "Plantilla para un bloque de función"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1105
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1127
-#, fuzzy
 msgid "Function name"
-msgstr "Un juego de acción"
+msgstr "Nombre de la función"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1109
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1131
-#, fuzzy
 msgid "Function arguments"
-msgstr "_Argumentos adicionales:"
+msgstr "Argumentos de la función"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1121
 msgid "Template for class function block"
-msgstr ""
+msgstr "Plantilla para un bloque de función de clase"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1143
-#, fuzzy
 msgid "Template for if block"
-msgstr "Archivo de pla_ntilla:"
+msgstr "Plantilla para bloque if"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1149
 #, fuzzy
@@ -2807,13 +2798,12 @@ msgid "If condition"
 msgstr "Condición"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1161
-#, fuzzy
 msgid "Template for main block"
-msgstr "Archivo de pla_ntilla:"
+msgstr "Plantilla para bloque main"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1173
 msgid "Template for a class deriving from gtk.Window"
-msgstr ""
+msgstr "Plantilla para una clase que deriva de gtk.Window"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1179
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1203
@@ -2822,11 +2812,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1197
 msgid "Template for a class loading contents from a gtkbuilder file"
-msgstr ""
+msgstr "Plantilla para una clase que carga contenidos de un archivo gtkbuilder"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1207
 msgid "Path to ui description file (widgets.ui)"
-msgstr ""
+msgstr "Ruta al archivo de descripción de IU (widgets.ui)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1211
 msgid "The top-most child of the window within the gtk.Builder file."
@@ -2834,7 +2824,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:80
 msgid "File to Open"
-msgstr "Archivo por abrir"
+msgstr "Abrir archivo"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:90
 msgid "Only local files can be opened."
@@ -2993,9 +2983,8 @@ msgid "Only single-file templates allowed to generate resource files"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:132
-#, fuzzy
 msgid "Can't create project with type: {0}"
-msgstr "No se pudo crear el proyecto con tipo: {0}"
+msgstr "No se puede crear el proyecto de tipo: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:159
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:160
@@ -3037,6 +3026,8 @@ msgid ""
 "<b>Contributors to this Release</b>\n"
 "\n"
 msgstr ""
+"<b>Colaboradores en esta versión</b>\n"
+"\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:156
 msgid "Previous Contributors"
@@ -3051,7 +3042,6 @@ msgstr ""
 "Antonio Ognio"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:166
-#, fuzzy
 msgid ""
 "\n"
 "\n"
@@ -3171,9 +3161,8 @@ msgid "Path"
 msgstr "Ruta"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LoadSavePanel.cs:106
-#, fuzzy
 msgid "Invalid project path specified"
-msgstr "Despliegue del objetivo especificado no válido"
+msgstr "Especificada ruta de proyecto inválida"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs:55
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:51
@@ -3211,14 +3200,12 @@ msgid "Directory"
 msgstr "Directorio"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:159
-#, fuzzy
 msgid "(Cyclic dependencies not allowed)"
-msgstr "El uso de dependencias cíclicas no está soportado."
+msgstr "(Dependencias cíclicas no permitidas)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs:163
-#, fuzzy
 msgid "(Incompatible target framework: v{0})"
-msgstr "Framework destino ({0})  incompatible"
+msgstr "(Framework incompatible: v{0})"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs:152
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:46
@@ -3495,9 +3482,8 @@ msgstr ""
 "¿Está seguro de que desea quitar los archivos seleccionados del proyecto?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:215
-#, fuzzy
 msgid "The Delete option physically removes the file from disc."
-msgstr "El borrado elimina físicamente el archivo del disco."
+msgstr "La opción de eliminación borra físicamente el archivo del disco."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:257
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:214
@@ -4770,6 +4756,8 @@ msgid ""
 "Some files may need to be reloaded, and editing status for those files (such "
 "as the undo queue) will be lost."
 msgstr ""
+"Algunos archivos puede que necesiten ser re-cargados, con lo que su estado de "
+"edición se perderá (por ejemplo la lista de cambios a deshacer)."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:976
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:170
@@ -4919,9 +4907,8 @@ msgid "_Mime:"
 msgstr "_Nombre:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:157
-#, fuzzy
 msgid "_Group:"
-msgstr "Añadir grupo"
+msgstr "_Grupo:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:185
 #, fuzzy
@@ -4965,9 +4952,8 @@ msgid "Icon name"
 msgstr "Nombre del icono"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:42
-#, fuzzy
 msgid "Default value for this variable."
-msgstr "Define una cabecera para una lista o una tabla."
+msgstr "Valor predeterminado para esta variable."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:48
 msgid "The tooltip to display to the user for this variable."
@@ -4979,21 +4965,23 @@ msgstr "Una función a evaluar para el contenido de esta variable."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:61
 msgid "Whether the variable is an editable region."
-msgstr ""
+msgstr "Acaso la variable está en una región editable."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:68
 msgid ""
 "Whether the variable is an identifier, and should only accept valid "
 "identifiers as input."
 msgstr ""
+"Acaso la variable es un identificador, y debería aceptar sólo identificadores "
+"válidos como entrada."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:74
 msgid "A list of values for the user to choose from."
-msgstr ""
+msgstr "Una lista de valores a escoger por el usuario."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:65
 msgid "MonoDevelop is currently running on <b>{0}</b>."
-msgstr ""
+msgstr "MonoDevelop está ejecutándose actualmente en <b>{0}</b>."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:113
 #, fuzzy
@@ -5001,15 +4989,16 @@ msgid "Select the mono installation prefix"
 msgstr "<b>Seleccione los complementos a instalar y pulse Siguiente</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:127
-#, fuzzy
 msgid "Mono runtime not found"
-msgstr "Archivo no encontrado"
+msgstr "Runtime de Mono no encontrado"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:127
 msgid ""
 "Please provide a valid directory prefix where mono is installed (for example, "
 "/usr)"
 msgstr ""
+"Por favor proporcione un directorio válido donde mono esté instalado (por "
+"ejemplo, /usr)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:49
 msgid ""
@@ -5118,7 +5107,6 @@ msgid "Search time: {0} seconds."
 msgstr "Tiempo de búsqueda: {0} segundos."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:534
-#, fuzzy
 msgid "{0} match found"
 msgid_plural "{0} matches found"
 msgstr[0] "{0} coincidencia encontrada"
@@ -5149,9 +5137,8 @@ msgid "_Case sensitive"
 msgstr "Sensible a mayús_culas/minúsculas"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:180
-#, fuzzy
 msgid "Rege_x search"
-msgstr "Búsqueda _Regex"
+msgstr "Búsqueda Rege_x"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:192
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:409
@@ -5238,14 +5225,12 @@ msgid "Found new files in {0}"
 msgstr "Se encontraron nuevos archivos en {0}"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs:52
-#, fuzzy
 msgid "Choose files to include in the project"
-msgstr "El archivo '{0}' ya existe en el proyecto."
+msgstr "Seleccione archivos a incluir en el proyecto"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs:79
-#, fuzzy
 msgid "_Exclude All"
-msgstr "Expandir todo"
+msgstr "_Excluir todo"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs:91
 msgid "_Include All"
@@ -5402,9 +5387,8 @@ msgid "Serializer Generation"
 msgstr "Generación de serializadores"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:268
-#, fuzzy
 msgid "Mono Configuration Directory"
-msgstr "Directorio _raíz de la solución"
+msgstr "Directorio de configuración de Mono"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:276
 msgid "Mono Configuration File"
@@ -5468,9 +5452,8 @@ msgid "X11 Exceptions"
 msgstr "Excepciones X11"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:409
-#, fuzzy
 msgid "XDebug"
-msgstr "Depurar"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:161
 msgid "Enable debugging support."
@@ -5490,6 +5473,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:181
 msgid "Runs in profiling mode with the specified profiler module."
 msgstr ""
+"Se ejecuta en modo de perfilación con el módulo perfilador especificado."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:188
 msgid "Increases the verbosity level."
@@ -5502,6 +5486,7 @@ msgstr "Usar la versión del runtime especificada, en lugar de autodetectarla."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:201
 msgid "Turns on the unsupported security manager (off by default)."
 msgstr ""
+"Activa el administrador de seguridad sin soporte (desactivado por defecto)."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:208
 msgid ""
@@ -5551,11 +5536,15 @@ msgid ""
 "Overrides the default system configuration directory ($PREFIX/etc). It's used "
 "to locate machine.config file."
 msgstr ""
+"Redefine el directorio predeterminado de configuración del sistema "
+"($PREFIX/etc). Es usado para localizar el archivo machine.config."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:277
 msgid ""
 "Overrides the default runtime configuration file ($PREFIX/etc/mono/config)."
 msgstr ""
+"Redefine el archivo predeterminado de configuración del entorno de ejecución "
+"($PREFIX/etc/mono/config)."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:284
 msgid ""
@@ -5589,12 +5578,15 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:323
 msgid "When enabled, Mono removes the drive letter from Windows paths."
 msgstr ""
+"Al activarse, Mono elimina la letra de unidad de las rutas tipo Windows."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:329
 msgid ""
 "When enabled, Mono does case-insensitive file matching in every directory in "
 "a path."
 msgstr ""
+"Al activarse, Mono funcionará en modo no sensitivo a mayúsculas/minúsculas "
+"para las comparaciones de archivos de cualquier ruta."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:335
 msgid ""
@@ -5688,7 +5680,7 @@ msgstr "Depurar"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:369
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:400
 msgid "Runtime"
-msgstr ""
+msgstr "Entorno de ejecución"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:199
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:206
@@ -5713,9 +5705,8 @@ msgstr "Codificación"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:333
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:361
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:378
-#, fuzzy
 msgid "Library Options"
-msgstr "Opciones de visualización"
+msgstr "Opciones de librería"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:267
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:275
@@ -5732,19 +5723,16 @@ msgid "Compatibility"
 msgstr "Compatibilidad"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersWidget.cs:73
-#, fuzzy
 msgid "Are you sure you want to clear all specified options?"
-msgstr "¿Está seguro de que desea limpiar la lista de archivos recientes?"
+msgstr "¿Está seguro de que desea limpiar todas las opciones especificadas?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs:63
-#, fuzzy
 msgid "Clear All Options"
-msgstr "Limpiar puntos de ruptura"
+msgstr "Limpiar todas las opciones"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs:78
-#, fuzzy
 msgid "Preview Options"
-msgstr "Opciones del proyecto"
+msgstr "Previsualizar opciones"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersPreview.cs:52
 #, fuzzy
@@ -5752,14 +5740,12 @@ msgid "No options have been specified."
 msgstr "No se ha seleccionado una solución."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersPreview.cs:56
-#, fuzzy
 msgid "Command Line Options"
-msgstr "Opciones del compilador"
+msgstr "Opciones de línea de comandos"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersPreview.cs:63
-#, fuzzy
 msgid "Environment Variables"
-msgstr "Variables de entorno:"
+msgstr "Variables de entorno"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersPreview.cs:25
 #, fuzzy
@@ -5786,13 +5772,12 @@ msgid "Delete the following files and folders:"
 msgstr "Seleccione el nombre de archivo y formato:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:53
-#, fuzzy
 msgid "Select File Format"
-msgstr "Seleccionar archivo"
+msgstr "Seleccione el formato de archivo"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:91
 msgid "<b>File Format Incompatibility Detected</b>"
-msgstr ""
+msgstr "<b>Detectada incompatibilidad en el formato del archivo</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:102
 msgid ""
@@ -5806,14 +5791,12 @@ msgid "Please select a new file format for the solution:"
 msgstr "Por favor, seleccione un proyecto o solución."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:169
-#, fuzzy
 msgid "Current Format:"
 msgstr "Formato actual:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:178
-#, fuzzy
 msgid "New Format:"
-msgstr "Nuevo formato:"
+msgstr "Formato nuevo:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanelWidget.cs:32
 #, fuzzy
@@ -5877,7 +5860,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectReference.cs:207
 msgid "Assembly not available for {0} (in {1})"
-msgstr ""
+msgstr "Ensamblado no disponible para {0} (en {1})"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectReference.cs:209
 msgid "Assembly not found"
@@ -6276,9 +6259,8 @@ msgstr ""
 "proyecto ({2})"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:412
-#, fuzzy
 msgid "Invalid file path"
-msgstr "Nombre de archivo inválido"
+msgstr "Ruta de archivo inválida"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:905
 msgid "Reference to unknown project '{0}' ignored."
@@ -6419,7 +6401,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:943
 #, fuzzy
 msgid "Cannot execute \"{0}\""
-msgstr "No se puede acceder a la carpeta '{0}'"
+msgstr "No se puede ejecutar \"{0}\""
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:213
 #, fuzzy
@@ -6438,7 +6420,7 @@ msgstr "XML válido."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/CyclicDependencyException.cs:33
 msgid "A cyclic build dependency has been detected."
-msgstr ""
+msgstr "Se ha detectado una dependencia cíclica en la construcción."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild.Conditions/InvalidProjectFileException.cs:103
 msgid "errorCode"
@@ -6704,9 +6686,8 @@ msgid "Default Namespace:"
 msgstr "Espacio de nombres predeterminado:"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:154
-#, fuzzy
 msgid "Get version from parent solution"
-msgstr "Crea una solución en C vacía."
+msgstr "Obtener la versión de la solución padre"
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:172
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:110
@@ -7649,21 +7630,19 @@ msgstr "Capturar '{0}'"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1021
 #, fuzzy
 msgid "Deleted   '{0}'"
-msgstr "Eliminado"
+msgstr "Eliminado   '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1029
 msgid "Conflict {0}"
 msgstr "Conflicto {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1031
-#, fuzzy
 msgid "Added   {0}"
-msgstr "Añadido"
+msgstr "Añadido   {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1047
-#, fuzzy
 msgid "Restored '{0}'"
-msgstr "Capturar '{0}'"
+msgstr "Restaurado '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1050
 msgid "Reverted '{0}'"
@@ -7675,7 +7654,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1056
 msgid "Resolved conflict state of '{0}'"
-msgstr ""
+msgstr "Resuelto estado de conflicto de '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1060
 msgid "Add (bin) '{0}'"
@@ -7712,33 +7691,31 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1109
 msgid "Deleting       {0}"
-msgstr ""
+msgstr "Eliminando       {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1112
-#, fuzzy
 msgid "Sending        {0}"
-msgstr "Abriendo {0}"
+msgstr "Enviando        {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1117
 msgid "Adding  (bin)  '{0}'"
-msgstr ""
+msgstr "Añadiendo  (bin)  '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1119
 msgid "Adding         '{0}'"
-msgstr ""
+msgstr "Añadiendo         '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1123
-#, fuzzy
 msgid "Replacing      {0}"
-msgstr "{0} reemplazado."
+msgstr "Reemplazando      {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1128
 msgid "Transmitting file data"
-msgstr ""
+msgstr "Transmitiendo datos de archivo"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1138
 msgid "'{0}' locked by user '{1}'."
-msgstr ""
+msgstr "'{0}' bloqueado por usuario '{1}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1141
 msgid "'{0}' unlocked."
@@ -10505,7 +10482,7 @@ msgstr "Permitir bloque remove de una línea"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:381
 msgid "Brace forcement"
-msgstr ""
+msgstr "Forzado de llaves"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:382
 msgid "'if...else' statement"
@@ -10653,7 +10630,7 @@ msgstr "Operadores de desplazamiento (<<,>>)."
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:484
 msgid "Within Parentheses"
-msgstr ""
+msgstr "Dentro de paréntesis"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:485
 msgid "Parentheses"
@@ -10687,19 +10664,19 @@ msgstr "Operador condicional (?:)"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:535
 msgid "before '?'"
-msgstr ""
+msgstr "antes de '?'"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:536
 msgid "after '?'"
-msgstr ""
+msgstr "después de '?'"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:537
 msgid "before ':'"
-msgstr ""
+msgstr "antes de ':'"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:538
 msgid "after ':'"
-msgstr ""
+msgstr "después de ':'"
 
 #: ../src/addins/CSharpBinding/FormattingStrategy/CSharpFormattingPolicy.xml:542
 #, fuzzy
@@ -12890,7 +12867,7 @@ msgstr "Activar autocompletado de _código"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:122
 msgid "_Aggressively trigger code completion list"
-msgstr ""
+msgstr "L_anzar la lista de completado de código en modo agresivo"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:150
 msgid "_Commit completion list selection with space or punctuation."
@@ -15776,7 +15753,7 @@ msgstr "Implementación ToString()"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/ToStringGenerator.cs:56
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/WriteLineGenerator.cs:59
 msgid "Select members to be outputted."
-msgstr ""
+msgstr "Seleccione los miembros que desea sacar por pantalla."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:54
 msgid "Equality members"
@@ -16976,10 +16953,8 @@ msgstr "Plantillas T4"
 #~ msgstr "Eliminar archivo"
 #~ msgid "_Delete from disk"
 #~ msgstr "Suprimir en _disco"
-
 #~ msgid "Field name:"
 #~ msgstr "Nombre del campo:"
-
 #~ msgid "Are you sure to remove the custom header template '{0}'?"
 #~ msgstr ""
 #~ "¿Está seguro de que desea eliminar la plantilla de cabecera personalizada "
@@ -17913,10 +17888,8 @@ msgstr "Plantillas T4"
 #~ msgstr "Página 3"
 #~ msgid "page4"
 #~ msgstr "Página 4"
-
 #~ msgid "Not a deployable solution."
 #~ msgstr "Solución no apta para despliegue."
-
 #~ msgid "Create pkg-config files for libraries"
 #~ msgstr "Crear archivos pkg-config para las librerías"
 

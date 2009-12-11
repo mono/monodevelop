@@ -80,6 +80,8 @@ RES =  \
 	Base.glade \
 	gtk-gui/gui.stetic \
 	icons/add-namespace-16.png \
+	icons/author-information-16.png \
+	icons/author-information-24.png \
 	icons/breakpoint-16.png \
 	icons/breakpoint-22.png \
 	icons/breakpoint-disable-all-16.png \
@@ -98,7 +100,15 @@ RES =  \
 	icons/build-project-22.png \
 	icons/build-solution-16.png \
 	icons/build-solution-22.png \
+	icons/code-template-16.png \
+	icons/code-template-24.png \
 	icons/comment.png \
+	icons/compiler-options-16.png \
+	icons/compiler-options-24.png \
+	icons/custom-commands-16.png \
+	icons/custom-commands-24.png \
+	icons/edit-find-next-16.png \
+	icons/edit-find-next-24.png \
 	icons/edit-select-all.png \
 	icons/edit-select-all_22.png \
 	icons/element-class-16.png \
@@ -125,6 +135,8 @@ RES =  \
 	icons/file-xml-16.png \
 	icons/file-xml-32.png \
 	icons/folder-new-16.png \
+	icons/formatting-16.png \
+	icons/formatting-24.png \
 	icons/GeneralWizardBackground \
 	icons/gnome-fs-regular.png \
 	icons/Icons.16x16.ClearAllBookmarks \
@@ -136,7 +148,6 @@ RES =  \
 	icons/Icons.16x16.CombineIcon \
 	icons/Icons.16x16.Empty \
 	icons/Icons.16x16.FindInFiles \
-	icons/Icons.16x16.FindNextIcon \
 	icons/Icons.16x16.GotoNextbookmark \
 	icons/Icons.16x16.GotoPrevbookmark \
 	icons/Icons.16x16.MiscFiles \
@@ -165,6 +176,8 @@ RES =  \
 	icons/Icons.32x32.TextFileIcon \
 	icons/Icons.32x32.XMLFileIcon \
 	icons/keyword-16.png \
+	icons/markers-rulers-16.png \
+	icons/markers-rulers-24.png \
 	icons/monodevelop-16.png \
 	icons/monodevelop-22.png \
 	icons/monodevelop-32.png \
@@ -195,16 +208,23 @@ RES =  \
 	icons/solution-new-16.png \
 	icons/sort-namespace-16.png \
 	icons/static-16.png \
+	icons/syntax-highlighting-16.png \
+	icons/syntax-highlighting-24.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/template-16.png \
 	icons/template-surroundwith-16.png \
+	icons/text-editor-behavior-16.png \
+	icons/text-editor-behavior-24.png \
 	icons/uncomment.png \
 	icons/user-package.png \
+	icons/view-message-log-16.png \
 	icons/visibility-internal-16.png \
 	icons/visibility-private-16.png \
 	icons/visibility-protected-16.png \
 	icons/visual-studio.png \
+	icons/visual-style-16.png \
+	icons/visual-style-24.png \
 	icons/warning-overlay.png \
 	icons/web-overlay-16.png \
 	icons/web-overlay-32.png \
