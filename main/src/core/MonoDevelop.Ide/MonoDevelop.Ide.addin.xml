@@ -1253,7 +1253,7 @@
 		</SolutionPad>
 		
 		<Category id="Other" _name="Other Windows">
-			<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
+			<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" icon="md-message-log" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
 		</Category>
 	</Extension>
 	
@@ -1290,13 +1290,13 @@
 			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
 			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 			<Section id = "ExternalTools" _label = "External Tools" icon="md-external-tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
-			<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
+			<Section id = "GeneralAuthorInfo" _label = "Author Information" icon="md-author-information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
 			<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
 		</Section>
 
 		<Section id = "TextEditor" _label = "Text Editor">
-			<Section id = "Formatting" _label = "Formatting" />
-			<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
+			<Section id = "Formatting" icon="md-formatting" _label = "Formatting" />
+			<Section id = "CodeTemplates" icon="md-code-template" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
 		</Section>
 
 		<Section id = "VersionControl" _label = "Version Control" />
