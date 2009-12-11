@@ -1,3 +1,7 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Use new icons.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:

@@ -57,7 +57,7 @@
 				</Condition>
 			</Section>
 			<Condition id="ItemType" value="SolutionEntityItem">
-				<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
+				<Section id = "CustomCommands" _label = "Custom Commands" icon="md-custom-commands" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanel"/>
 			</Condition>
 		</Section>
 		<Section id="Build" _label="Build">
@@ -71,7 +71,7 @@
 			</Section>
 			<Condition id="ItemType" value="Project">
 				<Section id = "ProjectConfigurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.SolutionItemConfigurationsPanel"/>
-				<Section id = "Compiler" _label="Compiler" />
+				<Section id = "Compiler" _label="Compiler" icon="md-compiler-options" />
 				<Section id = "SigningPreferences" _label = "Assembly Signing" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferencesPanel"/>
 				<Section id = "OutputOptionsPanel" _label = "Output" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanel"/>
 			</Condition>
@@ -97,10 +97,10 @@
 				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
 			</Section>
 			<Condition id="ItemType" value="Solution">
-				<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
+				<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
 			</Condition>
 			<Condition id="ItemType" value="SolutionItem">
-				<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
+				<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
 			</Condition>
 		</Section>
 	</Extension>
