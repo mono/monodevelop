@@ -256,7 +256,7 @@ namespace Mono.Debugging.Evaluation
 			return sb.ToString ();
 		}
 		
-		public string SetValue (ObjectPath path, string value)
+		public EvaluationResult SetValue (ObjectPath path, string value)
 		{
 			if (path.Length != 2)
 				throw new NotSupportedException ();
@@ -272,7 +272,7 @@ namespace Mono.Debugging.Evaluation
 				cctx.Options = ops;
 				ValueReference var = ctx.Evaluator.Evaluate (ctx, value, array.ElementType);
 				val = var.Value;
-				val = ctx.Adapter.Cast (ctx, val, array.ElementType);
+				val = ctx.Adapter.Convert (ctx, val, array.ElementType);
 				array.SetElement (idx, val);
 			} catch {
 				val = array.GetElement (idx);
@@ -281,7 +281,7 @@ namespace Mono.Debugging.Evaluation
 				return ctx.Evaluator.TargetObjectToExpression (ctx, val);
 			} catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
-				return "? (" + ex.Message + ")";
+				return new EvaluationResult ("? (" + ex.Message + ")");
 			}
 		}
 		

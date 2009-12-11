@@ -27,6 +27,7 @@
 
 using System;
 using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Evaluation
 {

@@ -272,9 +272,9 @@ namespace Mono.Debugging.Evaluation
 			else {
 				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
 				
-				string tvalue;
+				EvaluationResult tvalue;
 				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-					tvalue = EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString);
+					tvalue = new EvaluationResult (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
 				else
 					tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
 				
@@ -637,9 +637,31 @@ namespace Mono.Debugging.Evaluation
 			return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
 		}
 
+		public object Convert (EvaluationContext ctx, object obj, object targetType)
+		{
+			if (obj == null)
+				return null;
+			object res = TryConvert (ctx, obj, targetType);
+			if (res != null)
+				return res;
+			else
+				throw new EvaluatorException ("Can't convert an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
+		}
+
+		public virtual object TryConvert (EvaluationContext ctx, object obj, object targetType)
+		{
+			return TryCast (ctx, obj, targetType);
+		}
+
 		public virtual object Cast (EvaluationContext ctx, object obj, object targetType)
 		{
-			return obj;
+			if (obj == null)
+				return null;
+			object res = TryCast (ctx, obj, targetType);
+			if (res != null)
+				return res;
+			else
+				throw new EvaluatorException ("Can't cast an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
 		}
 
 		public virtual string CallToString (EvaluationContext ctx, object obj)

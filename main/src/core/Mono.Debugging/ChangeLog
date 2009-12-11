@@ -1,3 +1,26 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Backend/IObjectValueSource.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/BaseTypeViewSource.cs:
+	* Mono.Debugging.Evaluation/LiteralValueReference.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Added a
+	  new EvaluationResult class to be used to provide expression
+	  evaluation values. This result can contain a value and a
+	  display value. The display value is shown in the value cell
+	  of the watch window, the original value is used when
+	  editing.
+
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: When
+	  setting a value, try converting it to the target type.
+
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs: Add
+	  support for character escapes.
+
 2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: When a
