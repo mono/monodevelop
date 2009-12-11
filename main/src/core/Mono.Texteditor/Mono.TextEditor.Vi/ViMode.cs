@@ -795,8 +795,7 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					else RunAction (ViActions.Right);
-					int offset = data.Caret.Offset;
+					else RunAction (CaretMoveActions.Right);
 					data.InsertAtCaret (contents);
 					RunAction (ViActions.Left);
 				}
@@ -842,7 +841,6 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					int offset = Caret.Offset;
 					data.InsertAtCaret (contents);
 					RunAction (ViActions.Left);
 				}

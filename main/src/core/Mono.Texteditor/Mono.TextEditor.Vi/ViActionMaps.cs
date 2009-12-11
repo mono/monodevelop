@@ -50,9 +50,9 @@ namespace Mono.TextEditor.Vi
 			case 'W':
 				return CaretMoveActions.NextWord;
 			case 'k':
-				return CaretMoveActions.Up;
+				return ViActions.Up;
 			case 'j':
-				return CaretMoveActions.Down;
+				return ViActions.Down;
 			case '%':
 				return MiscActions.GotoMatchingBracket;
 			case '0':
@@ -61,7 +61,7 @@ namespace Mono.TextEditor.Vi
 			case '_':
 				return CaretMoveActions.LineFirstNonWhitespace;
 			case '$':
-				return CaretMoveActions.LineEnd;
+				return ViActions.LineEnd;
 			case 'G':
 				return CaretMoveActions.ToDocumentEnd;
 			case '{':
