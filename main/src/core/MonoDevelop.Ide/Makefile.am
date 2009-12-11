@@ -374,6 +374,8 @@ RES =  \
 	icons/system-file-manager.png \
 	icons/text-editor-16.png \
 	icons/text-editor-22.png \
+	icons/tools-external-tools-16.png \
+	icons/tools-external-tools-24.png \
 	MonoDevelop.Ide.addin.xml \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \

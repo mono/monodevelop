@@ -1289,7 +1289,7 @@
 			</Section>
 			<Section id = "AddIns" _label = "Add-ins" icon="md-addin" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
 			<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
-			<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
+			<Section id = "ExternalTools" _label = "External Tools" icon="md-external-tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
 			<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
 			<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
 		</Section>
@@ -1703,6 +1703,8 @@
 		<StockIcon stockid = "md-keyboard-shortcuts" resource = "keyboard-shortcuts-22.png" />
 		<StockIcon stockid = "md-text-editor" resource = "text-editor-16.png" size="Menu"/>
 		<StockIcon stockid = "md-text-editor" resource = "text-editor-22.png" />
+		<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-16.png" size="Menu" />
+		<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-24.png"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">

@@ -246,6 +246,12 @@
     <EmbeddedResource Include="MonoDevelop.Ide.StandardHeader\LGPL3LicencePolicy.xml">
       <LogicalName>LGPL3LicencePolicy.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tools-external-tools-16.png">
+      <LogicalName>tools-external-tools-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tools-external-tools-24.png">
+      <LogicalName>tools-external-tools-24.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

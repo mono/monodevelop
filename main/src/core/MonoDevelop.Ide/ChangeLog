@@ -1,3 +1,11 @@
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* icons/tools-external-tools-24.png:
+	* icons/tools-external-tools-16.png: Add new icons.
+
 2009-12-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Fix jump-to
