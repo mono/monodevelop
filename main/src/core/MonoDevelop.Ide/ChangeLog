@@ -1,5 +1,10 @@
 2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* icons/SplashScreen.png:
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Update splash.
+
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.addin.xml:
