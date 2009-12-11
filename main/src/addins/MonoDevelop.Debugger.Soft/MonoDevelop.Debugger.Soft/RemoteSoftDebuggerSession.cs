@@ -160,7 +160,7 @@ namespace MonoDevelop.Debugger.Soft
 			this.Address = address;
 			this.DebugPort = debugPort;
 			this.OutputPort = outputPort;
-			this.RedirectOutput = true;
+			this.RedirectOutput = redirectOutput;
 		}
 		
 		public void SetUserAssemblies (IList<string> files)

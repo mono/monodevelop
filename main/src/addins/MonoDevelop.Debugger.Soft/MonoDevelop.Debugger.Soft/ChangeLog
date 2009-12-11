@@ -1,3 +1,8 @@
+2009-12-10  Geoff Norton  <gnorton@novell.com>
+
+	* RemoteSoftDebuggerSession.cs: Only redirect the output when
+	asked to do so.
+
 2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: Hide abstract properties. There is
