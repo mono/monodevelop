@@ -45,10 +45,6 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	cp ../../monodevelop.xml $(MACOS)/share/mime/packages
 	cp ../../monodevelop.desktop $(MACOS)/share/applications
 	
-# Copy icons from main/theme-icons/Mac/png to .app/Contents/MacOS/share/icons
-	mkdir -p $(MACOS)/share/icons
-	cp ../../theme-icons/Mac/png/* $(MACOS)/share/icons
-	
 # Remove addins that don't work on OSX
 	rm -rf  $(ADDINS)/GnomePlatform* \
 	  $(ADDINS)/WindowsPlatform* \
@@ -59,7 +55,8 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	rm -rf $(MACOS)/lib/monodevelop/bin/UnitTests.dll* \
 	  $(MACOS)/lib/monodevelop/bin/TestResult.xml \
 	  $(MACOS)/lib/monodevelop/bin/addin-db* \
-	  $(MACOS)/lib/monodevelop/bin/repository-cache*
+	  $(MACOS)/lib/monodevelop/bin/repository-cache* \
+	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
 	
 #emit the update marker file
 	if test -d ../.git/svn; then svn_info="git log --no-color --first-parent -n1 --grep=git-svn-id: --pretty=format:%b | sed -n -e 's,git-svn-id: \(.*\)@\(.*\) .*,URL: \1 Revision: \2,p'"; fi; \
