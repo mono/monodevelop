@@ -1,5 +1,19 @@
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Fix preventing
+	  showing a console for moonlight run. If we do create a
+	  console, dispose it. We need a real way to avoid showing
+	  consoles for execution handlers that don't use them.
+
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs: Check
+	  MOONLIGHT_SDK_PATH from env as well as the target runtime,
+	  since Moonlight needn't be bound strictly to a single target
+	  runtime.
+
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: If the
 	  framework package is not found, fall back to default version
 	  string.

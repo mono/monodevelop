@@ -112,6 +112,9 @@ namespace MonoDevelop.Moonlight
 			if (targetRuntime.EnvironmentVariables.TryGetValue ("MOONLIGHT_SDK_PATH", out path))
 				yield return (FilePath) path;
 			yield return ((FilePath)base.targetRuntime.Prefix).Combine ("lib", "moonlight");
+			var env = System.Environment.GetEnvironmentVariable ("MOONLIGHT_SDK_PATH");
+			if (!string.IsNullOrEmpty (env))
+				yield return (FilePath) env;
 		}
 		
 		public override bool IsInstalled {
