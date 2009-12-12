@@ -1,3 +1,7 @@
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating.Tests.csproj: Don't local-copy nunit.
+
 2009-11-27  Olivier Dagenais  <olivier.dagenais@gmail.com>
 
 	* GenerationTests.cs: Make tests independent of the runtime
