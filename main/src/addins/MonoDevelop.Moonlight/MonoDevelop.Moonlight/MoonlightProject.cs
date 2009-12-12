@@ -184,18 +184,28 @@ namespace MonoDevelop.Moonlight
 			
 			IConsole console = null;
 			
-			// The MoonlightExecutionHandler doesn't output anything to a console, so special-case it
-			// Other handlers, like the debug handler, do need a console, so we still need to create one in that case
-			if (!(context.ExecutionHandler is MoonlightExecutionHandler)) {
-				console = conf.ExternalConsole
-					? context.ExternalConsoleFactory.CreateConsole (!conf.PauseConsoleOutput)
-					: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput);
-			}
-			
-			var cmd = CreateExecutionCommand (configuration, conf);
-			using (var opMon = new AggregatedOperationMonitor (monitor)) {
-				var ex = context.ExecutionHandler.Execute (cmd, console);
-				opMon.AddOperation (ex);
+			try {
+				// The MoonlightExecutionHandler doesn't output anything to a console, so special-case it
+				// Other handlers, like the debug handler, do need a console, so we still need to create one in that case
+				// HACK: we can't get the type of the MoonlightExecutionHandler directly, so for now assume that
+				// we don't want to show a console for DefaultExecutionHandler
+				if (!(context.ExecutionHandler is MoonlightExecutionHandler)
+				    && !(context.ExecutionHandler.GetType ().Name == "DefaultExecutionHandler"))
+				{
+					console = conf.ExternalConsole
+						? context.ExternalConsoleFactory.CreateConsole (!conf.PauseConsoleOutput)
+						: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput);
+				}
+				
+				var cmd = CreateExecutionCommand (configuration, conf);
+				using (var opMon = new AggregatedOperationMonitor (monitor)) {
+					var ex = context.ExecutionHandler.Execute (cmd, console);
+					opMon.AddOperation (ex);
+					ex.WaitForCompleted ();
+				}
+			} finally {
+				if (console != null)
+					console.Dispose ();
 			}
 		}
 		
