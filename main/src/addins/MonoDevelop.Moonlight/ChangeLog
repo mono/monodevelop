@@ -1,5 +1,12 @@
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs: Check
+	  MOONLIGHT_SDK_PATH from env as well as the target runtime,
+	  since Moonlight needn't be bound strictly to a single target
+	  runtime.
+
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: If the
 	  framework package is not found, fall back to default version
 	  string.
