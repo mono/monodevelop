@@ -1,5 +1,11 @@
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core.Assemblies/TargetFramework.cs: Fix a
+	  possible NRE that could prevent SystemAssemblyService from
+	  fully initializing.
+
+2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: Always set
 	  the package name so that package name lookups work on
 	  framework packages.
