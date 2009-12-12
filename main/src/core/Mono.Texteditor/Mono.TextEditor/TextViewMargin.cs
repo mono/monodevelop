@@ -245,7 +245,7 @@ namespace Mono.TextEditor
 				return;
 			
 			int offset = Caret.Offset - 1;
-			if (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset)))
+			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset))))
 				offset++;
 			offset = System.Math.Max (0, offset);
 			if (offset >= Document.Length || !Document.IsBracket (Document.GetCharAt (offset))) {
