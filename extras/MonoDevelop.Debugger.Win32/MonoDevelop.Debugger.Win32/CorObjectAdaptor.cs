@@ -507,11 +507,11 @@ namespace MonoDevelop.Debugger.Win32
 					bool isFlags = rt != null && rt.ReallyIsFlagsEnum;
 					string enumName = GetTypeName (ctx, co.ExactType);
 					ValueReference val = GetMember (ctx, null, objr, "value__");
-					ulong nval = (ulong) Convert.ChangeType (val.ObjectValue, typeof(ulong));
+					ulong nval = (ulong) System.Convert.ChangeType (val.ObjectValue, typeof(ulong));
 					ulong remainingFlags = nval;
 					string flags = null;
 					foreach (ValueReference evals in GetMembers (ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static)) {
-						ulong nev = (ulong) Convert.ChangeType (evals.ObjectValue, typeof (ulong));
+						ulong nev = (ulong) System.Convert.ChangeType (evals.ObjectValue, typeof (ulong));
 						if (nval == nev)
 							return new LiteralExp (enumName + "." + evals.Name);
 						if (isFlags && nev != 0 && (nval & nev) == nev) {
