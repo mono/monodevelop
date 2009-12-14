@@ -1,3 +1,9 @@
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Mark all assemblies
+	  in the solution as user code, not just explictly referenced
+	  ones. Some may be loaded dynamically.
+
 2009-12-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs:
