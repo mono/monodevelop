@@ -113,6 +113,9 @@ namespace MonoDevelop.Debugger.Soft
 			
 			foreach (var env in startInfo.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
+			
+			if (!String.IsNullOrEmpty (dsi.LogMessage))
+				LogWriter (false, dsi.LogMessage + "\n");
 
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
 					HandleConnection (VirtualMachineManager.EndLaunch (ar));
