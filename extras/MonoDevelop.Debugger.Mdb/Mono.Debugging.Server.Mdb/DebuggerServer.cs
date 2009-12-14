@@ -32,6 +32,7 @@ namespace DebuggerServer
 		List<ST.WaitCallback> eventQueue = new List<ST.WaitCallback> ();
 		bool initializing;
 		bool running;
+		bool exited;
 		NRefactoryEvaluator evaluator = new NRefactoryEvaluator ();
 		MD.Thread activeThread;
 		Dictionary<int,BreakEvent> events = new Dictionary<int,BreakEvent> ();
@@ -328,6 +329,8 @@ namespace DebuggerServer
 		
 		public void RemoveBreakEvent (int handle)
 		{
+			if (exited)
+				return;
 			CancelRuntimeInvokes ();
 			Event ev = session.GetEvent (handle);
 			mdbAdaptor.RemoveEvent (ev);
@@ -878,6 +881,7 @@ namespace DebuggerServer
 
 		private void OnTargetExitedEvent (MD.Debugger debugger)
 		{
+			exited = true;
 			DispatchEvent (delegate {
 				controller.OnDebuggerOutput (false, "Target exited.\n");
 				DL.TargetEventArgs args = new DL.TargetEventArgs (DL.TargetEventType.TargetExited);
