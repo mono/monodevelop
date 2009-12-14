@@ -294,13 +294,15 @@ namespace MonoDevelop.Debugger.Soft
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
 							vm.Exit (0);
+						} catch (VMDisconnectedException) {
 						} catch (Exception ex) {
-							Console.WriteLine (ex);
+							LoggingService.LogError ("Error exiting SDB VM:", ex);
 						}
 						try {
 							vm.Dispose ();
+						} catch (VMDisconnectedException) {
 						} catch (Exception ex) {
-							Console.WriteLine (ex);
+							LoggingService.LogError ("Error disposing SDB VM:", ex);
 						}
 					});
 				}

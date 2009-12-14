@@ -1,5 +1,10 @@
 2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs: Ignore VMDisconnectedException when
+	  exiting/disposing. Log errors instead of console.writeline.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs: Add an environment variable for
 	  enabling sdb logging.
 
