@@ -597,8 +597,9 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
-				UpdateAssemblyFilters (ae.Assembly);
-				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}\n", ae.Assembly.Location));
+				bool isExternal = !UpdateAssemblyFilters (ae.Assembly) && userAssemblyNames != null;
+				string flagExt = isExternal? " [External]" : "";
+				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}{1}\n", ae.Assembly.Location, flagExt));
 			}
 			
 			if (e is TypeLoadEvent) {

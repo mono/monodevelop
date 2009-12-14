@@ -1,5 +1,10 @@
 2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs: Flag 'external' assemblies as such
+	  in the log.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerSession.cs: Ignore VMDisconnectedException when
 	  exiting/disposing. Log errors instead of console.writeline.
 
