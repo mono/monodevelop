@@ -1,5 +1,10 @@
 2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SoftDebuggerSession.cs: Add an environment variable for
+	  enabling sdb logging.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* SoftDebuggerEngine.cs:
 	* SoftDebuggerSession.cs:
 	* RemoteSoftDebuggerSession.cs: Pass the message along to the

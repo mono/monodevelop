@@ -108,6 +108,12 @@ namespace MonoDevelop.Debugger.Soft
 				};
 			}
 			
+			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");
+			if (!String.IsNullOrEmpty (sdbLog)) {
+				options = options ?? new LaunchOptions ();
+				options.AgentArgs = string.Format ("loglevel=1,logfile='{0}'", sdbLog);
+			}
+			
 			foreach (var env in dsi.Runtime.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
@@ -120,7 +126,7 @@ namespace MonoDevelop.Debugger.Soft
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
 					HandleConnection (VirtualMachineManager.EndLaunch (ar));
 				}),
-				options //new LaunchOptions { AgentArgs= "loglevel=1,logfile=/tmp/sdb.log"}
+				options
 			));
 		}
 		
