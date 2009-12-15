@@ -1,3 +1,22 @@
+2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/ObjectValue.cs: Forgot assignment in
+	  update method.
+
+	* Mono.Debugging.Backend/IObjectValueSource.cs:
+	* Mono.Debugging.Evaluation/LiteralValueReference.cs:
+	  LiteralExp has been replaced by EvaluationResult.
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Improve
+	  formatting of arrays, enums and types.
+
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs: Fix
+	  formatting of boolean values. LiteralExp has been replaced
+	  by EvaluationResult.
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Fix some
+	  evaluation issues.
+
 2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/ObjectValue.cs:

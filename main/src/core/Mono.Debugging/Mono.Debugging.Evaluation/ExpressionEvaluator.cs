@@ -94,7 +94,12 @@ namespace Mono.Debugging.Evaluation
 			}
 			else if (obj is string)
 				return new EvaluationResult ("\"" + EscapeString ((string)obj) + "\"");
-			
+			else if (obj is bool)
+				return new EvaluationResult (((bool)obj) ? "true" : "false");
+			else if (obj is decimal)
+				return new EvaluationResult (((decimal)obj).ToString (System.Globalization.CultureInfo.InvariantCulture));
+			else if (obj is EvaluationResult)
+				return (EvaluationResult) obj;
 			return new EvaluationResult (obj.ToString ());
 		}
 
@@ -123,22 +128,6 @@ namespace Mono.Debugging.Evaluation
 			}
 			return sb.ToString ();
 		}
-	}
-	
-	public class LiteralExp
-	{
-		public readonly string Exp;
-		
-		public LiteralExp (string exp)
-		{
-			Exp = exp;
-		}
-		
-		public override string ToString ()
-		{
-			return Exp;
-		}
-
 	}
 	
 	[Serializable]

@@ -381,6 +381,7 @@ namespace Mono.Debugging.Client
 				if (val.name != null)
 					name = val.name;
 				value = val.value;
+				displayValue = val.displayValue;
 				typeName = val.typeName;
 				flags = val.flags;
 				source = val.source;

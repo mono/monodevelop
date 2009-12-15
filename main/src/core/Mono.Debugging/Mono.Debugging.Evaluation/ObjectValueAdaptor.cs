@@ -80,11 +80,11 @@ namespace Mono.Debugging.Evaluation
 		
 		string GetDisplayTypeName (string typeName, int idx, int end)
 		{
-			int i = typeName.IndexOf ('[', idx, end - idx);
-			int ci = typeName.IndexOf (',', idx, end - idx);
+			int i = typeName.IndexOf ('[', idx, end - idx);  // Bracket may be an array start or a generic arg definition start
+			int ci = typeName.IndexOf (',', idx, end - idx); // Text after comma is the assembly name
 			
 			List<string> genericArgs = null;
-			string array = null;
+			string array = string.Empty;
 			int te = end;
 			if (i != -1) te = i;
 			if (ci != -1 && ci < te) te = ci;
@@ -97,8 +97,11 @@ namespace Mono.Debugging.Evaluation
 			}
 			if (i != -1) {
 				// Is array
-				int ea = typeName.IndexOf (']', i);
-				array = typeName.Substring (i, ea - i + 1);
+				while (i < end && typeName [i] == '[') {
+					int ea = typeName.IndexOf (']', i);
+					array += typeName.Substring (i, ea - i + 1);
+					i = ea + 1;
+				}
 			}
 			
 			if (genericArgs == null)
@@ -197,6 +200,23 @@ namespace Mono.Debugging.Evaluation
 		public abstract string GetTypeName (EvaluationContext ctx, object val);
 		public abstract object[] GetTypeArgs (EvaluationContext ctx, object type);
 		public abstract object GetBaseType (EvaluationContext ctx, object type);
+		
+		public virtual bool IsFlagsEnumType (EvaluationContext ctx, object type)
+		{
+			return true;
+		}
+		
+		public virtual IEnumerable<EnumMember> GetEnumMembers (EvaluationContext ctx, object type)
+		{
+			object longType = GetType (ctx, "System.Int64");
+			TypeValueReference tref = new TypeValueReference (ctx, type);
+			foreach (ValueReference cr in tref.GetChildReferences ()) {
+				object c = Cast (ctx, cr.Value, longType);
+				long val = (long) TargetObjectToObject (ctx, c);
+				EnumMember em = new EnumMember () { Name = cr.Name, Value = val };
+				yield return em;
+			}
+		}
 		
 		public object GetBaseType (EvaluationContext ctx, object type, bool includeObjectClass)
 		{
@@ -612,29 +632,71 @@ namespace Mono.Debugging.Evaluation
 				return null;
 			} else if (IsArray (ctx, obj)) {
 				ICollectionAdaptor adaptor = CreateArrayAdaptor (ctx, obj);
-				StringBuilder tn = new StringBuilder (GetDisplayTypeName (GetTypeName (ctx, adaptor.ElementType)));
+				string ename = GetDisplayTypeName (GetTypeName (ctx, adaptor.ElementType));
 				int[] dims = adaptor.GetDimensions ();
-				tn.Append ("[");
+				StringBuilder tn = new StringBuilder ("[");
 				for (int n=0; n<dims.Length; n++) {
 					if (n>0)
 						tn.Append (',');
 					tn.Append (dims[n]);
 				}
 				tn.Append ("]");
-				return new LiteralExp (tn.ToString ());
+				int i = ename.LastIndexOf ('>');
+				if (i == -1) i = 0;
+				i = ename.IndexOf ('[', i);
+				if (i != -1)
+					return new EvaluationResult ("{" + ename.Substring (0, i) + tn + ename.Substring (i) + "}");
+				else
+					return new EvaluationResult ("{" + ename + tn + "}");
+			}
+			else if (IsEnum (ctx, obj)) {
+				object type = GetValueType (ctx, obj);
+				object longType = GetType (ctx, "System.Int64");
+				object c = Cast (ctx, obj, longType);
+				long val = (long) TargetObjectToObject (ctx, c);
+				long rest = val;
+				string typeName = GetTypeName (ctx, type);
+				string composed = string.Empty;
+				string composedDisplay = string.Empty;
+				foreach (EnumMember em in GetEnumMembers (ctx, type)) {
+					if (em.Value == val)
+						return new EvaluationResult (typeName + "." + em.Name, em.Name);
+					else {
+						if ((rest & em.Value) == em.Value) {
+							rest &= ~em.Value;
+							if (composed.Length > 0) {
+								composed += "|";
+								composedDisplay += "|";
+							}
+							composed += typeName + "." + em.Name;
+							composedDisplay += em.Name;
+						}
+					}
+				}
+				if (IsFlagsEnumType (ctx, type) && rest == 0 && composed.Length > 0)
+					return new EvaluationResult (composed, composedDisplay);
+				else
+					return new EvaluationResult (val.ToString ());
+			}
+			else if (GetValueTypeName (ctx, obj) == "System.Decimal") {
+				string res = CallToString (ctx, obj);
+				// This returns the decimal formatted using the current culture. It has to be converted to invariant culture.
+				decimal dec = decimal.Parse (res);
+				res = dec.ToString (System.Globalization.CultureInfo.InvariantCulture);
+				return new EvaluationResult (res);
 			}
 			else if (IsClassInstance (ctx, obj)) {
 				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
 				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-					return new LiteralExp (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
+					return new EvaluationResult (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
 				// Return the type name
 				if (ctx.Options.AllowToStringCalls)
-					return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
+					return new EvaluationResult ("{" + CallToString (ctx, obj) + "}");
 				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-					return new LiteralExp ("{" + EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString) + "}");
-				return new LiteralExp ("{" + GetDisplayTypeName (GetValueTypeName (ctx, obj)) + "}");
+					return new EvaluationResult ("{" + EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString) + "}");
+				return new EvaluationResult ("{" + GetDisplayTypeName (GetValueTypeName (ctx, obj)) + "}");
 			}
-			return new LiteralExp ("{" + CallToString (ctx, obj) + "}");
+			return new EvaluationResult ("{" + CallToString (ctx, obj) + "}");
 		}
 
 		public object Convert (EvaluationContext ctx, object obj, object targetType)
@@ -879,5 +941,11 @@ namespace Mono.Debugging.Evaluation
 			} else
 				names [oval.Name] = new KeyValuePair<ObjectValue, ValueReference> (oval, val);
 		}
+	}
+	
+	public struct EnumMember
+	{
+		public string Name { get; set; }
+		public long Value { get; set; }
 	}
 }

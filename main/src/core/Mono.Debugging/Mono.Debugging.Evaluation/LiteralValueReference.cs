@@ -68,7 +68,7 @@ namespace Mono.Debugging.Evaluation
 				if (objLiteral)
 					return objValue;
 				else
-					return value;
+					return base.ObjectValue;
 			}
 		}
 
@@ -108,9 +108,9 @@ namespace Mono.Debugging.Evaluation
 
 		protected override ObjectValue OnCreateObjectValue ( )
 		{
-			if (ObjectValue is LiteralExp) {
-				LiteralExp exp = (LiteralExp) ObjectValue;
-				return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "", exp.Exp, Flags, null);
+			if (ObjectValue is EvaluationResult) {
+				EvaluationResult exp = (EvaluationResult) ObjectValue;
+				return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "", exp, Flags, null);
 			}
 			else
 				return base.OnCreateObjectValue ();
