@@ -1,3 +1,12 @@
+2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.Tests:
+	* MonoDevelop.Debugger.Tests.TestApp: Added new testing
+	  projects.
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Allow using the
+	  debugging service when the Ide is not initialized.
+
 2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Ensure that soft

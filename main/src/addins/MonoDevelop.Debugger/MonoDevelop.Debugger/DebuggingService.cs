@@ -84,10 +84,11 @@ namespace MonoDevelop.Debugger
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
-			IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
-			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
-			busyDialog = new BusyEvaluatorDialog ();
-			
+			if (IdeApp.IsInitialized) {
+				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
+				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
+				busyDialog = new BusyEvaluatorDialog ();
+			}
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list
 				engines = null;
