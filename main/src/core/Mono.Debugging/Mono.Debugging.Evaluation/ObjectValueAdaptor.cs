@@ -853,7 +853,7 @@ namespace Mono.Debugging.Evaluation
 				else
 					return ObjectValue.CreateUnknown (exp);
 			}
-			catch (NotSupportedExpressionException) {
+			catch (ImplicitEvaluationDisabledException) {
 				return ObjectValue.CreateImplicitNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), "", ObjectValueFlags.None);
 			}
 			catch (EvaluatorException ex) {

@@ -1,3 +1,12 @@
+2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs: Report the
+	  correct error for unsupported expressions. Fixes bug
+	  #564452.
+
 2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/ObjectValue.cs: Forgot assignment in

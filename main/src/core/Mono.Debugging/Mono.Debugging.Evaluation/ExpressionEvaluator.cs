@@ -156,4 +156,18 @@ namespace Mono.Debugging.Evaluation
 		{
 		}
 	}
+
+	[Serializable]
+	public class ImplicitEvaluationDisabledException: EvaluatorException
+	{
+		protected ImplicitEvaluationDisabledException (SerializationInfo info, StreamingContext context)
+			: base (info, context)
+		{
+		}
+		
+		public ImplicitEvaluationDisabledException ( )
+			: base ("Implicit property and method evaluation is disabled.")
+		{
+		}
+	}
 }

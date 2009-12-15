@@ -58,7 +58,7 @@ namespace Mono.Debugging.Evaluation
 		public void AssertTargetInvokeAllowed ()
 		{
 			if (!Options.AllowTargetInvoke)
-				throw new NotSupportedExpressionException ();
+				throw new ImplicitEvaluationDisabledException ();
 		}
 		
 		public EvaluationContext (EvaluationOptions options)
