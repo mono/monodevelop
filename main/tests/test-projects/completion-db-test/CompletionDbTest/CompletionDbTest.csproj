@@ -9,6 +9,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>CompletionDbTest</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>CompletionDbTest</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,8 +44,12 @@
       <Project>{728501FB-8FE6-4838-B475-FC377AECA606}</Project>
       <Name>Library1</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Library2\Library2.csproj">
+      <Project>{AC9D0338-CE0D-4ADF-8E0D-679B3653F3D5}</Project>
+      <Name>Library2</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Replacements/" />
+    <Folder Include="Replacements\" />
   </ItemGroup>
 </Project>

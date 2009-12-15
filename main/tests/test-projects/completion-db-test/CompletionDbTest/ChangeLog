@@ -1,0 +1,6 @@
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CompletionDbTest.csproj: Add explicit reference to Library2;
+	MD no longer allows completion from references of references,
+	only direct references.
+
