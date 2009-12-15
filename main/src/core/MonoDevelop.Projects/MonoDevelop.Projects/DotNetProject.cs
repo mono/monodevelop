@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.CodeDom.Compiler;
 using System.Text;
 using System.Collections;
@@ -645,21 +646,11 @@ namespace MonoDevelop.Projects
 		
 		public IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
 		{
-			var list = new List<string> ();
-			CollectUserAssemblyPaths (list, new HashSet<string> (), configuration);
-			return list;			
-		}
-
-		void CollectUserAssemblyPaths (List<string> paths, HashSet<string> examinedProjects, ConfigurationSelector configuration)
-		{
-			paths.Add (this.GetOutputFileName (configuration));
-			foreach (var pref in References) {
-				if (pref.ReferenceType == ReferenceType.Project && examinedProjects.Add (pref.Reference)) {
-					var p = ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
-					if (p != null)
-						p.CollectUserAssemblyPaths (paths, examinedProjects, configuration);
-				}
-			}
+			//return all projects in the sln in case some are loaded dynamically
+			//FIXME: should we do this for the whole workspace?
+			return ParentSolution.GetAllProjects ().OfType<DotNetProject> ()
+				.Select (d => (string) d.GetOutputFileName (configuration))
+				.Where (d => !string.IsNullOrEmpty (d)).ToList ();
 		}
 
 		protected virtual ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)

@@ -1,3 +1,27 @@
+2009-12-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Make bracket matching
+	  more selective for cursor types that enclose a character.
+	  Fixes #562289.
+
+2009-12-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor.Vi/ViActions.cs:
+	* Mono.TextEditor.Vi/ViActionMaps.cs: Make line-end behavior
+	  more consistent with vim. Fixes #562299.
+
+2009-12-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Select the highlighted
+	  character by default when entering visual mode. Fixes
+	  #562304.
+
+2009-12-11  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Make inline paste behave more
+	  like vim. Fixes #562294.
+
 2009-12-08  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Add Ctrl-[ as a workalike for

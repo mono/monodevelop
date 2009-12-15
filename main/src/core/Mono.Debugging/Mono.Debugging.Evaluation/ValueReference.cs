@@ -139,7 +139,7 @@ namespace Mono.Debugging.Evaluation
 			return CreateObjectValue (true);
 		}
 		
-		string IObjectValueSource.SetValue (ObjectPath path, string value)
+		EvaluationResult IObjectValueSource.SetValue (ObjectPath path, string value)
 		{
 			try {
 				ctx.WaitRuntimeInvokes ();
@@ -149,8 +149,7 @@ namespace Mono.Debugging.Evaluation
 				ops.AllowTargetInvoke = true;
 				cctx.Options = ops;
 				ValueReference vref = ctx.Evaluator.Evaluate (ctx, value, Type);
-				object newValue = vref.Value;
-				newValue = ctx.Adapter.Cast (ctx, newValue, Type);
+				object newValue = ctx.Adapter.Convert (ctx, vref.Value, Type);
 				Value = newValue;
 			} catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
@@ -164,7 +163,7 @@ namespace Mono.Debugging.Evaluation
 				ctx.WriteDebuggerOutput ("Value assignment failed: {0}: {1}\n", ex.GetType (), ex.Message);
 			}
 			
-			return value;
+			return null;
 		}
 
 		ObjectValue[] IObjectValueSource.GetChildren (ObjectPath path, int index, int count)

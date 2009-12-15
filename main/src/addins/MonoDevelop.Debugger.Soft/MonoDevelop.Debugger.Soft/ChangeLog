@@ -1,3 +1,41 @@
+2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Fixed ToString call for structs.
+	  Improve casting between primitive types and enums. Add some
+	  missing null checks.
+
+	* FieldValueReference.cs: Allow getting struct and primitive
+	  value fields.
+
+	* VariableValueReference.cs: Return correct origin flag.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Flag 'external' assemblies as such
+	  in the log.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Ignore VMDisconnectedException when
+	  exiting/disposing. Log errors instead of console.writeline.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Add an environment variable for
+	  enabling sdb logging.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerEngine.cs:
+	* SoftDebuggerSession.cs:
+	* RemoteSoftDebuggerSession.cs: Pass the message along to the
+	  debugger log output about missing user assemblies or errors
+	  getting assembly name.
+
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Implement TryConvert.
+
 2009-12-10  Geoff Norton  <gnorton@novell.com>
 
 	* RemoteSoftDebuggerSession.cs: Only redirect the output when

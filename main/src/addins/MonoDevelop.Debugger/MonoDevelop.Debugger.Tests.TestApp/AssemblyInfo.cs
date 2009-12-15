@@ -1,5 +1,5 @@
 // 
-// VariableValueReference.cs
+// AssemblyInfo.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -23,53 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-using System;
-using System.Collections.Generic;
-using Mono.Debugging.Evaluation;
-using Mono.Debugging.Client;
-using Mono.Debugger;
+// Information about this assembly is defined by the following attributes. 
+// Change them to the values specific to your project.
 
-namespace MonoDevelop.Debugger.Soft
-{
-	public class VariableValueReference : ValueReference
-	{
-		string name;
-		LocalVariable variable;
-		
-		public VariableValueReference (EvaluationContext ctx, string name, LocalVariable variable): base (ctx)
-		{
-			this.name = name;
-			this.variable = variable;
-		}
-		
-		public override ObjectValueFlags Flags {
-			get {
-				return ObjectValueFlags.Variable;
-			}
-		}
+[assembly: AssemblyTitle("MonoDevelop.Debugger.Tests.TestApp")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
 
-		public override string Name {
-			get {
-				return name;
-			}
-		}
+// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
+// The form "{Major}.{Minor}.*" will automatically update the build and revision,
+// and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-		public override object Type {
-			get {
-				return variable.Type;
-			}
-		}
+[assembly: AssemblyVersion("1.0.*")]
 
-		public override object Value {
-			get {
-				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
-				return ctx.Frame.GetValue (variable);
-			}
-			set {
-				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
-				ctx.Frame.SetValue (variable, (Value) value);
-			}
-		}
-	}
-}
+// The following attributes are used to specify the signing key for the assembly, 
+// if desired. See the Mono documentation for more information about signing.
+
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]

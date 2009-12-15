@@ -169,6 +169,7 @@ namespace Mono.TextEditor.Vi
 			LineSegment segment = data.Document.GetLine (data.Caret.Line);
 			if (segment.EndOffset-1 > data.Caret.Offset) {
 				CaretMoveActions.Right (data);
+				RetreatFromLineEnd (data);
 			}
 		}
 		
@@ -176,6 +177,48 @@ namespace Mono.TextEditor.Vi
 		{
 			if (0 < data.Caret.Column) {
 				CaretMoveActions.Left (data);
+			}
+		}
+		
+		public static void Down (TextEditorData data)
+		{
+			int desiredColumn = System.Math.Max (data.Caret.Column, data.Caret.DesiredColumn);
+			
+			CaretMoveActions.Down (data);
+			RetreatFromLineEnd (data);
+			
+			data.Caret.DesiredColumn = desiredColumn;
+		}
+		
+		public static void Up (TextEditorData data)
+		{
+			int desiredColumn = System.Math.Max (data.Caret.Column, data.Caret.DesiredColumn);
+			
+			CaretMoveActions.Up (data);
+			RetreatFromLineEnd (data);
+			
+			data.Caret.DesiredColumn = desiredColumn;
+		}
+		
+		public static void LineEnd (TextEditorData data)
+		{
+			int desiredColumn = System.Math.Max (data.Caret.Column, data.Caret.DesiredColumn);
+			
+			CaretMoveActions.LineEnd (data);
+			RetreatFromLineEnd (data);
+			
+			data.Caret.DesiredColumn = desiredColumn;
+		}
+		
+		internal static bool IsEol (char c)
+		{
+			return (c == '\r' || c == '\n');
+		}
+		
+		static void RetreatFromLineEnd (TextEditorData data)
+		{
+			while (0 < data.Caret.Column && IsEol (data.Document.GetCharAt (data.Caret.Offset))) {
+				Left (data);
 			}
 		}
 	}

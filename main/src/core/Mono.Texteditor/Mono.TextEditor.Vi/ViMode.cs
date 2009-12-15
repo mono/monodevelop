@@ -217,8 +217,8 @@ namespace Mono.TextEditor.Vi
 						
 					case 'v':
 						Status = "-- VISUAL --";
-						if (Data.MainSelection == null)
-							Data.MainSelection = new Selection (Caret.Location, Caret.Location);
+						if (Data.MainSelection == null && Caret.Offset+1 < Data.Document.Length)
+							Data.SetSelection (Caret.Offset, Caret.Offset+1);
 						Data.MainSelection.Anchor = Caret.Location;
 						state = State.Visual;
 						return;
@@ -795,10 +795,9 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					else RunAction (ViActions.Right);
-					int offset = data.Caret.Offset;
+					else RunAction (CaretMoveActions.Right);
 					data.InsertAtCaret (contents);
-					data.Caret.Offset = offset;
+					RunAction (ViActions.Left);
 				}
 				Reset (string.Empty);
 			});
@@ -842,10 +841,8 @@ namespace Mono.TextEditor.Vi
 					// Inline paste
 					if (data.IsSomethingSelected) 
 						RunAction (ClipboardActions.Cut);
-					else RunAction (ViActions.Left);
-					int offset = Caret.Offset;
 					data.InsertAtCaret (contents);
-					Caret.Offset = offset;
+					RunAction (ViActions.Left);
 				}
 				Reset (string.Empty);
 			});

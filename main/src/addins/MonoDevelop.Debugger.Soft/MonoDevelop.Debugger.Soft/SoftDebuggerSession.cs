@@ -108,16 +108,25 @@ namespace MonoDevelop.Debugger.Soft
 				};
 			}
 			
+			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");
+			if (!String.IsNullOrEmpty (sdbLog)) {
+				options = options ?? new LaunchOptions ();
+				options.AgentArgs = string.Format ("loglevel=1,logfile='{0}'", sdbLog);
+			}
+			
 			foreach (var env in dsi.Runtime.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			foreach (var env in startInfo.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
+			
+			if (!String.IsNullOrEmpty (dsi.LogMessage))
+				LogWriter (false, dsi.LogMessage + "\n");
 
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
 					HandleConnection (VirtualMachineManager.EndLaunch (ar));
 				}),
-				options //new LaunchOptions { AgentArgs= "loglevel=1,logfile=/tmp/sdb.log"}
+				options
 			));
 		}
 		
@@ -285,13 +294,15 @@ namespace MonoDevelop.Debugger.Soft
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
 							vm.Exit (0);
+						} catch (VMDisconnectedException) {
 						} catch (Exception ex) {
-							Console.WriteLine (ex);
+							LoggingService.LogError ("Error exiting SDB VM:", ex);
 						}
 						try {
 							vm.Dispose ();
+						} catch (VMDisconnectedException) {
 						} catch (Exception ex) {
-							Console.WriteLine (ex);
+							LoggingService.LogError ("Error disposing SDB VM:", ex);
 						}
 					});
 				}
@@ -586,8 +597,9 @@ namespace MonoDevelop.Debugger.Soft
 			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
-				UpdateAssemblyFilters (ae.Assembly);
-				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}\n", ae.Assembly.Location));
+				bool isExternal = !UpdateAssemblyFilters (ae.Assembly) && userAssemblyNames != null;
+				string flagExt = isExternal? " [External]" : "";
+				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}{1}\n", ae.Assembly.Location, flagExt));
 			}
 			
 			if (e is TypeLoadEvent) {

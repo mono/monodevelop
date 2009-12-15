@@ -112,7 +112,7 @@ namespace Mono.Debugging.Evaluation
 			throw new System.NotImplementedException();
 		}
 		
-		public string SetValue (ObjectPath path, string value)
+		public EvaluationResult SetValue (ObjectPath path, string value)
 		{
 			throw new System.NotImplementedException();
 		}

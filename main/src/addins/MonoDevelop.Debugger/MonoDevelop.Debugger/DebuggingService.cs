@@ -84,10 +84,11 @@ namespace MonoDevelop.Debugger
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
-			IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
-			IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
-			busyDialog = new BusyEvaluatorDialog ();
-			
+			if (IdeApp.IsInitialized) {
+				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
+				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
+				busyDialog = new BusyEvaluatorDialog ();
+			}
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list
 				engines = null;
@@ -616,7 +617,14 @@ namespace MonoDevelop.Debugger
 				Array.Sort (engs, delegate (IDebuggerEngine d1, IDebuggerEngine d2) {
 					int i1 = Array.IndexOf (priorities, d1.Id);
 					int i2 = Array.IndexOf (priorities, d2.Id);
-					if (i1 == -1 && i2 == -1)
+					
+					//ensure that soft debugger is prioritised over newly installed debuggers
+					if (i1 < 0 )
+						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Length;
+					if (i2 < 0)
+						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Length;
+					
+					if (i1 == i2)
 						return d1.Name.CompareTo (d2.Name);
 					else
 						return i1.CompareTo (i2);

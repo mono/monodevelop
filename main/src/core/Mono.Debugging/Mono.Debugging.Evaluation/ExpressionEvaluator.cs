@@ -28,6 +28,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Text;
+using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -68,24 +69,38 @@ namespace Mono.Debugging.Evaluation
 				return res.ToString ();
 		}
 
-		public string TargetObjectToExpression (EvaluationContext ctx, object obj)
+		public EvaluationResult TargetObjectToExpression (EvaluationContext ctx, object obj)
 		{
 			return ToExpression (ctx.Adapter.TargetObjectToObject (ctx, obj));
 		}
 		
-		public virtual string ToExpression (object obj)
+		public virtual EvaluationResult ToExpression (object obj)
 		{
 			if (obj == null)
-				return "null";
+				return new EvaluationResult ("null");
 			else if (obj is IntPtr) {
 				IntPtr p = (IntPtr) obj;
-				return "0x" + p.ToInt64 ().ToString ("x");
-			} else if (obj is char)
-				return "'" + obj + "'";
+				return new EvaluationResult ("0x" + p.ToInt64 ().ToString ("x"));
+			} else if (obj is char) {
+				char c = (char) obj;
+				string str;
+				if (c == '\'')
+					str = @"'\''";
+				else if (c == '"')
+					str = "'\"'";
+				else
+					str = EscapeString ("'" + c + "'");
+				return new EvaluationResult (str, ((int) c) + " " + str);
+			}
 			else if (obj is string)
-				return "\"" + EscapeString ((string)obj) + "\"";
-			
-			return obj.ToString ();
+				return new EvaluationResult ("\"" + EscapeString ((string)obj) + "\"");
+			else if (obj is bool)
+				return new EvaluationResult (((bool)obj) ? "true" : "false");
+			else if (obj is decimal)
+				return new EvaluationResult (((decimal)obj).ToString (System.Globalization.CultureInfo.InvariantCulture));
+			else if (obj is EvaluationResult)
+				return (EvaluationResult) obj;
+			return new EvaluationResult (obj.ToString ());
 		}
 
 		public static string EscapeString (string text)
@@ -95,6 +110,8 @@ namespace Mono.Debugging.Evaluation
 				char c = text[i];
 				string txt;
 				switch (c) {
+					case '"': txt = "\\\""; break;
+					case '\0': txt = @"\0"; break;
 					case '\\': txt = @"\\"; break;
 					case '\a': txt = @"\a"; break;
 					case '\b': txt = @"\b"; break;
@@ -111,22 +128,6 @@ namespace Mono.Debugging.Evaluation
 			}
 			return sb.ToString ();
 		}
-	}
-	
-	public class LiteralExp
-	{
-		public readonly string Exp;
-		
-		public LiteralExp (string exp)
-		{
-			Exp = exp;
-		}
-		
-		public override string ToString ()
-		{
-			return Exp;
-		}
-
 	}
 	
 	[Serializable]

@@ -118,26 +118,37 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public List<AssemblyName> UserAssemblyNames { get; private set; }
 		
+		internal string LogMessage { get; private set; }
+		
 		public void SetUserAssemblies (IList<string> files)
 		{
-			UserAssemblyNames = GetAssemblyNames (files);
+			string error;
+			UserAssemblyNames = GetAssemblyNames (files, out error);
+			LogMessage = error;
 		}
 		
-		internal static List<AssemblyName> GetAssemblyNames (IList<string> files)
+		internal static List<AssemblyName> GetAssemblyNames (IList<string> files, out string error)
 		{
+			error = null;
 			if (files == null || files.Count == 0)
 				return null;
 			
 			var names = new List<AssemblyName> ();
 			foreach (var file in files) {
+				if (!File.Exists (file)) {
+					error = GettextCatalog.GetString ("User assembly '{0}' is missing. " +
+						"Debugger will now debug all code, not just user code.", file);
+					return null;
+				}
 				try {
 					var asm = Mono.Cecil.AssemblyFactory.GetAssemblyManifest (file);
 					if (string.IsNullOrEmpty (asm.Name.Name))
 						throw new InvalidOperationException ("Assembly has no assembly name");
 					names.Add (new AssemblyName (asm.Name.FullName));
 				} catch (Exception ex) {
-					LoggingService.LogError ("Soft debug addin error getting assembly name for user assembly '" + file
-					                         + "'. Debugger will now debug all code, not just user code.", ex);
+					error = GettextCatalog.GetString ("Could not get assembly name for user assembly '{0}'. " +
+						"Debugger will now debug all code, not just user code.", file);
+					LoggingService.LogError ("Error getting assembly name for user assembly '" + file + "'", ex);
 					return null;
 				}
 			}

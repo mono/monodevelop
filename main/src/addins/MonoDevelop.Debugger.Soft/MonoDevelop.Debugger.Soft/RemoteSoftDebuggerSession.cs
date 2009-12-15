@@ -60,6 +60,9 @@ namespace MonoDevelop.Debugger.Soft
 			IPEndPoint dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
 			IPEndPoint conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
 			
+			if (!String.IsNullOrEmpty (dsi.LogMessage))
+				LogWriter (false, dsi.LogMessage + "\n");
+			
 			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, HandleCallbackErrors (ListenCallback)));
 			ShowListenDialog (dsi);
 		}
@@ -163,9 +166,13 @@ namespace MonoDevelop.Debugger.Soft
 			this.RedirectOutput = redirectOutput;
 		}
 		
+		internal string LogMessage { get; private set; }
+		
 		public void SetUserAssemblies (IList<string> files)
 		{
-			UserAssemblyNames = SoftDebuggerStartInfo.GetAssemblyNames (files);
+			string error;
+			UserAssemblyNames = SoftDebuggerStartInfo.GetAssemblyNames (files, out error);
+			LogMessage = error;
 		}
 	}
 }

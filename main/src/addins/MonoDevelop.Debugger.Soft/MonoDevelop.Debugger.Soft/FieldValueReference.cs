@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Reflection;
 using Mono.Debugging.Evaluation;
 using Mono.Debugger;
 using Mono.Debugging.Client;
@@ -44,8 +45,10 @@ namespace MonoDevelop.Debugger.Soft
 			this.obj = obj;
 			this.declaringType = declaringType;
 			flags = ObjectValueFlags.Field;
-			if (field.IsStatic)
+			if (field.IsStatic) {
 				flags |= ObjectValueFlags.Global;
+				this.obj = null;
+			}
 			if (field.IsPublic)
 				flags |= ObjectValueFlags.Public;
 			else if (field.IsPrivate)
@@ -56,6 +59,8 @@ namespace MonoDevelop.Debugger.Soft
 				flags |= ObjectValueFlags.Internal;
 			else if (field.IsFamilyOrAssembly)
 				flags |= ObjectValueFlags.InternalProtected;
+			if (obj is PrimitiveValue)
+				flags |= ObjectValueFlags.ReadOnly;
 		}
 		
 		public override ObjectValueFlags Flags {
@@ -88,7 +93,7 @@ namespace MonoDevelop.Debugger.Soft
 					return declaringType.GetValue (field);
 				else if (obj is ObjectMirror)
 					return ((ObjectMirror)obj).GetValue (field);
-				else {
+				else if (obj is StructMirror) {
 					StructMirror sm = (StructMirror)obj;
 					int idx = 0;
 					foreach (FieldInfoMirror f in sm.Type.GetFields ()) {
@@ -98,6 +103,16 @@ namespace MonoDevelop.Debugger.Soft
 						idx++;
 					}
 					return sm.Fields [idx];
+				} else if (obj is StringMirror) {
+					SoftEvaluationContext cx = (SoftEvaluationContext) Context;
+					StringMirror val = (StringMirror) obj;
+					FieldInfo rfield = typeof(string).GetField (field.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+					return cx.Session.VirtualMachine.CreateValue (rfield.GetValue (val.Value));
+				} else {
+					SoftEvaluationContext cx = (SoftEvaluationContext) Context;
+					PrimitiveValue val = (PrimitiveValue) obj;
+					FieldInfo rfield = val.Value.GetType ().GetField (field.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+					return cx.Session.VirtualMachine.CreateValue (rfield.GetValue (val.Value));
 				}
 			}
 			set {

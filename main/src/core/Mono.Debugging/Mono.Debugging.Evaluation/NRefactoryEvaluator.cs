@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Ast;
 using System.Reflection;
 using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -232,7 +233,7 @@ namespace Mono.Debugging.Evaluation
 			if (res != null)
 				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, res);
 			else
-				return LiteralValueReference.CreateObjectLiteral (ctx, name, new LiteralExp ("No return value."));
+				return LiteralValueReference.CreateObjectLiteral (ctx, name, new EvaluationResult ("No return value."));
 		}
 		
 		public override object VisitInnerClassTypeReference (ICSharpCode.NRefactory.Ast.InnerClassTypeReference innerClassTypeReference, object data)
@@ -384,7 +385,10 @@ namespace Mono.Debugging.Evaluation
 						throw CreateParseError ("Left operand of logical And must be a boolean");
 					if (!(bool)val)
 						return LiteralValueReference.CreateObjectLiteral (ctx, name, false);
-					return rightExp.AcceptVisitor (this, data);
+					ValueReference vr = (ValueReference) rightExp.AcceptVisitor (this, data);
+					if (ctx.Adapter.GetTypeName (ctx, vr.Type) != "System.Boolean")
+						throw CreateParseError ("Right operand of logical And must be a boolean");
+					return vr;
 				}
 				case BinaryOperatorType.LogicalOr: {
 					object val = left.ObjectValue;
@@ -392,52 +396,63 @@ namespace Mono.Debugging.Evaluation
 						throw CreateParseError ("Left operand of logical Or must be a boolean");
 					if ((bool)val)
 						return LiteralValueReference.CreateObjectLiteral (ctx, name, true);
-					return rightExp.AcceptVisitor (this, data);
+					ValueReference vr = (ValueReference) rightExp.AcceptVisitor (this, data);
+					if (ctx.Adapter.GetTypeName (ctx, vr.Type) != "System.Boolean")
+						throw CreateParseError ("Right operand of logical Or must be a boolean");
+					return vr;
 				}
 			}
 
 			ValueReference right = (ValueReference) rightExp.AcceptVisitor (this, data);
+			object targetVal1 = left.Value;
+			object targetVal2 = right.Value;
 			object val1 = left.ObjectValue;
 			object val2 = right.ObjectValue;
-
+			
 			if (oper == BinaryOperatorType.Add || oper == BinaryOperatorType.Concat) {
 				if (val1 is string || val2 is string) {
 					if (!(val1 is string) && val1 != null)
-						val1 = left.CallToString ();
+						val1 = ctx.Adapter.CallToString (ctx, targetVal1);
 					if (!(val2 is string) && val2 != null)
-						val2 = right.CallToString ();
+						val2 = ctx.Adapter.CallToString (ctx, targetVal2);
 					return LiteralValueReference.CreateObjectLiteral (ctx, name, (string) val1 + (string) val2);
 				}
 			}
 			
 			if ((oper == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && (val2 is bool))
 				return LiteralValueReference.CreateObjectLiteral (ctx, name, (bool)val1 ^ (bool)val2);
-			
-			switch (oper) {
-				case BinaryOperatorType.Equality:
-					if (val1 == null || val2 == null)
+
+			if ((val1 == null || !val1.GetType ().IsPrimitive) && (val2 == null || !val2.GetType ().IsPrimitive)) {
+				switch (oper) {
+					case BinaryOperatorType.Equality:
+						if (val1 == null || val2 == null)
+							return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1.Equals (val2));
+					case BinaryOperatorType.InEquality:
+						if (val1 == null || val2 == null)
+							return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, !val1.Equals (val2));
+					case BinaryOperatorType.ReferenceEquality:
 						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1.Equals (val2));
-				case BinaryOperatorType.InEquality:
-					if (val1 == null || val2 == null)
+					case BinaryOperatorType.ReferenceInequality:
 						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, !val1.Equals (val2));
-				case BinaryOperatorType.ReferenceEquality:
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
-				case BinaryOperatorType.ReferenceInequality:
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
-				case BinaryOperatorType.Concat:
-					throw CreateParseError ("Invalid binary operator.");
+					case BinaryOperatorType.Concat:
+						throw CreateParseError ("Invalid binary operator.");
+				}
 			}
 			
 			if (val1 == null || val2 == null || (val1 is bool) || (val2 is bool))
 				throw CreateParseError ("Invalid operands in binary operator");
 			
 			long v1, v2;
+			object longType = ctx.Adapter.GetType (ctx, "System.Int64");
 			
 			try {
-				v1 = Convert.ToInt64 (val1);
-				v2 = Convert.ToInt64 (val2);
+				object c1 = ctx.Adapter.Cast (ctx, targetVal1, longType);
+				v1 = (long) ctx.Adapter.TargetObjectToObject (ctx, c1);
+					
+				object c2 = ctx.Adapter.Cast (ctx, targetVal2, longType);
+				v2 = (long) ctx.Adapter.TargetObjectToObject (ctx, c2);
 			} catch {
 				throw CreateParseError ("Invalid operands in binary operator");
 			}
@@ -461,11 +476,25 @@ namespace Mono.Debugging.Evaluation
 				case BinaryOperatorType.GreaterThanOrEqual: res = v1 >= v2; break;
 				case BinaryOperatorType.LessThan: res = v1 < v2; break;
 				case BinaryOperatorType.LessThanOrEqual: res = v1 <= v2; break;
+				case BinaryOperatorType.ReferenceEquality:
+				case BinaryOperatorType.Equality: res = v1 == v2; break;
+				case BinaryOperatorType.ReferenceInequality:
+				case BinaryOperatorType.InEquality: res = v1 != v2; break;
 				default: throw CreateParseError ("Invalid binary operator.");
 			}
 			
 			if (!(res is bool))
 				res = (long) Convert.ChangeType (res, GetCommonType (v1, v2));
+			
+			if (ctx.Adapter.IsEnum (ctx, targetVal1)) {
+				object tval = ctx.Adapter.Cast (ctx, ctx.Adapter.CreateValue (ctx, res), ctx.Adapter.GetValueType (ctx, targetVal1));
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, tval);
+			}
+			if (ctx.Adapter.IsEnum (ctx, targetVal2)) {
+				object tval = ctx.Adapter.Cast (ctx, ctx.Adapter.CreateValue (ctx, res), ctx.Adapter.GetValueType (ctx, targetVal2));
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, tval);
+			}
+			
 			return LiteralValueReference.CreateObjectLiteral (ctx, name, res);
 		}
 		

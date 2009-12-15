@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using ST = System.Threading;
+using Mono.Debugging.Backend;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -70,19 +71,40 @@ namespace MonoDevelop.Debugger.Soft
 					return res.Value;
 				}
 			}
+			else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
+				StructMirror ob = (StructMirror) obj;
+				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
+				if (method != null && method.DeclaringType.FullName != "System.Object") {
+					StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
+					return res.Value;
+				}
+			}
 			return GetDisplayTypeName (GetValueTypeName (ctx, obj));
 		}
 
-
-		public override object Cast (EvaluationContext ctx, object obj, object targetType)
+		public override object TryConvert (EvaluationContext ctx, object obj, object targetType)
 		{
-			if (obj == null)
-				return null;
 			object res = TryCast (ctx, obj, targetType);
 			if (res != null)
 				return res;
-			else
-				throw new EvaluatorException ("Can't cast an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
+			if (obj == null)
+				return null;
+			object otype = GetValueType (ctx, obj);
+			if (otype is Type) {
+				if (targetType is TypeMirror)
+					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
+				Type tt = targetType as Type;
+				if (tt != null) {
+					try {
+						if (obj is PrimitiveValue)
+							obj = ((PrimitiveValue)obj).Value;
+						res = System.Convert.ChangeType (obj, tt);
+						return CreateValue (ctx, res);
+					} catch {
+					}
+				}
+			}
+			return null;
 		}
 
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
@@ -93,11 +115,32 @@ namespace MonoDevelop.Debugger.Soft
 			if (otype is TypeMirror) {
 				if ((targetType is TypeMirror) && ((TypeMirror)targetType).IsAssignableFrom ((TypeMirror)otype))
 					return obj;
+				// Try casting the primitive type of the enum
+				EnumMirror em = obj as EnumMirror;
+				if (em != null)
+					return TryCast (ctx, CreateValue (ctx, em.Value), targetType);
 			} else if (otype is Type) {
-				if (targetType is TypeMirror)
+				if (targetType is TypeMirror) {
+					TypeMirror tm = (TypeMirror) targetType;
+					if (tm.IsEnum) {
+						// TODO: convert to enum
+					}
 					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
-				if ((targetType is Type) && ((Type)targetType).IsAssignableFrom ((Type)otype))
-					return obj;
+				}
+				Type tt = targetType as Type;
+				if (tt != null) {
+					if (tt.IsAssignableFrom ((Type)otype))
+						return obj;
+					if (obj is PrimitiveValue)
+						obj = ((PrimitiveValue)obj).Value;
+					if (tt != typeof(string) && !(obj is string)) {
+						try {
+							object res = System.Convert.ChangeType (obj, tt);
+							return CreateValue (ctx, res);
+						} catch {
+						}
+					}
+				}
 			}
 			return null;
 		}
@@ -362,9 +405,18 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			
-			TypeMirror[] types = new TypeMirror [argTypes.Length];
-			for (int n=0; n<argTypes.Length; n++)
-				types [n] = (TypeMirror) argTypes [n];
+			TypeMirror[] types;
+			if (argTypes == null)
+				types = new TypeMirror [0];
+			else {
+				types = new TypeMirror [argTypes.Length];
+				for (int n=0; n<argTypes.Length; n++) {
+					if (argTypes [n] is TypeMirror)
+						types [n] = (TypeMirror) argTypes [n];
+					else
+						types [n] = (TypeMirror) GetType (ctx, ((Type)argTypes[n]).FullName);
+				}
+			}
 			
 			MethodMirror met = OverloadResolve (ctx, methodName, (TypeMirror) targetType, types, (flags & BindingFlags.Instance) != 0, (flags & BindingFlags.Static) != 0, false);
 			return met != null;
@@ -406,7 +458,7 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			return val is EnumMirror;
 		}
-
+		
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext gctx, object type)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
@@ -649,7 +701,7 @@ namespace MonoDevelop.Debugger.Soft
 				return ((StringMirror)obj).Value;
 			else if (obj is EnumMirror) {
 				EnumMirror eob = (EnumMirror) obj;
-				return new LiteralExp (eob.StringValue);
+				return new EvaluationResult (eob.Type.FullName + "." + eob.StringValue, eob.StringValue);
 			}
 			else if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value;

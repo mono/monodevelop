@@ -40,6 +40,7 @@ namespace Mono.Debugging.Client
 		string name;
 		string value;
 		string typeName;
+		string displayValue;
 		ObjectValueFlags flags;
 		IObjectValueSource source;
 		IObjectValueUpdater updater;
@@ -62,10 +63,16 @@ namespace Mono.Debugging.Client
 		
 		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags, ObjectValue[] children)
 		{
+			return CreateObject (source, path, typeName, new EvaluationResult (value), flags, children);
+		}
+		
+		public static ObjectValue CreateObject (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags, ObjectValue[] children)
+		{
 			ObjectValue ob = Create (source, path, typeName);
 			ob.path = path;
 			ob.flags = flags | ObjectValueFlags.Object;
-			ob.value = value;
+			ob.value = value.Value;
+			ob.displayValue = value.DisplayValue;
 			if (children != null) {
 				ob.children = new List<ObjectValue> ();
 				ob.children.AddRange (children);
@@ -81,11 +88,12 @@ namespace Mono.Debugging.Client
 			return ob;
 		}
 		
-		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, string value, ObjectValueFlags flags)
+		public static ObjectValue CreatePrimitive (IObjectValueSource source, ObjectPath path, string typeName, EvaluationResult value, ObjectValueFlags flags)
 		{
 			ObjectValue ob = Create (source, path, typeName);
 			ob.flags = flags | ObjectValueFlags.Primitive;
-			ob.value = value;
+			ob.value = value.Value;
+			ob.displayValue = value.DisplayValue;
 			return ob;
 		}
 		
@@ -176,8 +184,17 @@ namespace Mono.Debugging.Client
 			set {
 				if (IsReadOnly || source == null)
 					throw new InvalidOperationException ("Value is not editable");
-				this.value = source.SetValue (path, value);
+				EvaluationResult res = source.SetValue (path, value);
+				if (res != null) {
+					this.value = res.Value;
+					displayValue = res.DisplayValue;
+				}
 			}
+		}
+		
+		public string DisplayValue {
+			get { return displayValue ?? Value; }
+			set { displayValue = value; }
 		}
 		
 		public string TypeName {
@@ -364,6 +381,7 @@ namespace Mono.Debugging.Client
 				if (val.name != null)
 					name = val.name;
 				value = val.value;
+				displayValue = val.displayValue;
 				typeName = val.typeName;
 				flags = val.flags;
 				source = val.source;

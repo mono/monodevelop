@@ -1,3 +1,17 @@
+2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.Tests:
+	* MonoDevelop.Debugger.Tests.TestApp: Added new testing
+	  projects.
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Allow using the
+	  debugging service when the Ide is not initialized.
+
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Ensure that soft
+	  debugger is prioritised over newly installed debuggers.
+
 2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
@@ -8,6 +22,11 @@
 	* icons/view-debug-threads-16.png:
 	* icons/view-debug-call-stack-16.png:
 	* icons/view-debug-breakpoints-16.png: Added some new icons.
+
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Use the new
+	  DisplayValue property.
 
 2009-12-09  Lluis Sanchez Gual  <lluis@novell.com>
 
