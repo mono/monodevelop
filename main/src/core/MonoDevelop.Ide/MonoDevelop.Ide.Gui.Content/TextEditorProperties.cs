@@ -119,18 +119,14 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static IndentStyle IndentStyle {
 			get {
-				switch (PropertyService.Get ("IndentStyle", "Smart")) {
-				case "Smart":
+				try {
+					return PropertyService.Get ("IndentStyle", IndentStyle.Smart);
+				} catch {
+					// invalid indent style -> setting to smart for default
+					// fixes: Bug 446871 - [Regression] Autoindent doesn't indent far enough
+					PropertyService.Set ("IndentStyle", IndentStyle.Smart);
 					return IndentStyle.Smart;
-				case "Auto":
-					return IndentStyle.Auto;
-				case "None":
-					return IndentStyle.None;
 				}
-				// invalid indent style -> setting to smart for default
-				// fixes: Bug 446871 - [Regression] Autoindent doesn't indent far enough
-				PropertyService.Set ("IndentStyle", "Smart");
-				return IndentStyle.Smart;
 			}
 			set {
 				PropertyService.Set ("IndentStyle", value);
@@ -139,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static DocumentSelectionMode DocumentSelectionMode {
 			get {
-				return (DocumentSelectionMode) properties.Get ("DocumentSelectionMode", DocumentSelectionMode.Normal);
+				return properties.Get ("DocumentSelectionMode", DocumentSelectionMode.Normal);
 			}
 			set {
 				properties.Set ("DocumentSelectionMode", value);
@@ -355,7 +351,7 @@ namespace MonoDevelop.Ide.Gui.Content {
 		
 		public static Gtk.WrapMode WrapMode {
 			get {
-				return (Gtk.WrapMode) properties.Get ("WrapMode", Gtk.WrapMode.None);
+				return properties.Get ("WrapMode", Gtk.WrapMode.None);
 			}
 			set {
 				properties.Set ("WrapMode", value);

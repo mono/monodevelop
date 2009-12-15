@@ -118,6 +118,7 @@ namespace MonoDevelop.SourceEditor
 		// massive change event storms.
 		void UpdatePreferences (object sender, PropertyChangedEventArgs args)
 		{
+			try {
 			switch (args.Key) {
 			case "TabIsReindent": 
 				this.TabIsReindent = (bool) args.NewValue;
@@ -201,11 +202,14 @@ namespace MonoDevelop.SourceEditor
 				this.CompleteWithSpaceOrPunctuation = (bool) args.NewValue;
 				break;
 			case "ControlLeftRightMode":
-				this.ControlLeftRightMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), (string) args.NewValue);
+				this.ControlLeftRightMode = (ControlLeftRightMode) args.NewValue;
 				break;
 			case "EnableAnimations":
 				base.EnableAnimations =  (bool) args.NewValue;
 				break;
+			}
+			} catch (Exception ex) {
+				LoggingService.LogError ("SourceEditorOptions error with property value for '" + (args.Key ?? "") + "'", ex);
 			}
 		}
 		
@@ -239,7 +243,8 @@ namespace MonoDevelop.SourceEditor
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", false);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
-			this.ControlLeftRightMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), PropertyService.Get ("ControlLeftRightMode", DesktopService.DefaultControlLeftRightBehavior));
+			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode),DesktopService.DefaultControlLeftRightBehavior);
+			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 		}
 		
@@ -414,7 +419,7 @@ namespace MonoDevelop.SourceEditor
 			set {
 				if (value != this.indentStyle) {
 					this.indentStyle = value;
-					PropertyService.Set ("IndentStyle", value.ToString ());
+					PropertyService.Set ("IndentStyle", value);
 					OnChanged (EventArgs.Empty);
 				}
 			}
@@ -473,7 +478,7 @@ namespace MonoDevelop.SourceEditor
 			set {
 				if (controlLeftRightMode != value) {
 					controlLeftRightMode = value;
-					PropertyService.Set ("ControlLeftRightMode", value.ToString ());
+					PropertyService.Set ("ControlLeftRightMode", value);
 					SetWordFindStrategy ();
 					OnChanged (EventArgs.Empty);
 				}

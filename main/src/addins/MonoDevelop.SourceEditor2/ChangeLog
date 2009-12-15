@@ -1,3 +1,9 @@
+2009-12-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Use proper
+	  enums for values instead of letting them get cached as
+	  strings and having to reparse them every time.
+
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Use some of the new
