@@ -45,7 +45,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public override ObjectValueFlags Flags {
 			get {
-				return ObjectValueFlags.Field;
+				return ObjectValueFlags.Variable;
 			}
 		}
 
