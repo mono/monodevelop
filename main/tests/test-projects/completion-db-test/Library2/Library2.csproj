@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Library2</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>Library2</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,4 +39,10 @@
     <Compile Include="GenericSubclassing.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Library3\Library3.csproj">
+      <Project>{63573B20-8544-4FA8-A9B2-AF97BAD39285}</Project>
+      <Name>Library3</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

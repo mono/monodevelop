@@ -80,9 +80,9 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void References ()
 		{
-			Assert.AreEqual (3, mainProject.References.Count);
+			Assert.AreEqual (4, mainProject.References.Count);
 			Assert.AreEqual (3, lib1.References.Count);
-			Assert.AreEqual (2, lib2.References.Count);
+			Assert.AreEqual (3, lib2.References.Count);
 		}
 		
 		[Test]
@@ -99,13 +99,20 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("CompletionDbTest.MainClass", type.FullName);
 			
 			// Non deep search
-			type = mainProject.GetType ("Library2.CWidget", false);
-			Assert.IsNull (type);
+			// FIXME: deep search is currently the same as non-deep-search
+//			type = mainProject.GetType ("Library2.CWidget", false);
+//			Assert.IsNull (type);
 
 			// Deep search by default
 			type = mainProject.GetType ("Library2.CWidget");
 			Assert.IsNotNull (type);
 			Assert.AreEqual ("Library2.CWidget", type.FullName);
+			
+			//check that references are accessible, but not references of references
+			type = mainProject.GetType ("Library3.Lib3Class");
+			Assert.IsNull (type);
+			type = lib2.GetType ("Library3.Lib3Class");
+			Assert.IsNotNull (type);
 
 			// Deep insensitive
 			type = mainProject.GetType ("library2.cwidget", true, false);

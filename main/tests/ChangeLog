@@ -1,3 +1,18 @@
+2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* test-projects/completion-db-test/Library3:
+	* test-projects/completion-db-test/Library3/MyClass.cs:
+	* test-projects/completion-db-test/Library2/MyClass.cs:
+	* test-projects/completion-db-test/CompletionDbTest.sln:
+	* test-projects/completion-db-test/Library3/Library3.csproj:
+	* test-projects/completion-db-test/Library2/Library2.csproj:
+	* test-projects/completion-db-test/Library1/Library1.csproj:
+	* test-projects/completion-db-test/Library3/AssemblyInfo.cs:
+	  Add another project so that we can still test indirect refs.
+
+	* test-projects/csharp-console-mdp/csharp-console-mdp/csharp-console-mdp.mdp:
+	  Add new default attribute so roundtripping still works.
+
 2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* test-projects/console-project/ConsoleProject.sln: Flush.
