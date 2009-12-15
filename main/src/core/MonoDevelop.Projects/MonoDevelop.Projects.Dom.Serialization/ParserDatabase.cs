@@ -228,17 +228,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public IType DeepGetClass (SerializationCodeCompletionDatabase db, string typeName, IList<IReturnType> genericArguments, bool caseSensitive)
 		{
-			ArrayList visited = new ArrayList ();
-			IType c = DeepGetClassRec (visited, db, typeName, genericArguments, caseSensitive);
-			return c;
-		}
-		
-		internal IType DeepGetClassRec (ArrayList visitedDbs, SerializationCodeCompletionDatabase db, string typeName, IList<IReturnType> genericArguments, bool caseSensitive)
-		{
 			if (db == null) return null;
-			if (visitedDbs.Contains (db)) return null;
-			
-			visitedDbs.Add (db);
 			
 			IType c = db.GetClass (typeName, genericArguments, caseSensitive);
 			if (c != null) return c;
