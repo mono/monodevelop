@@ -1,3 +1,19 @@
+2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MdbObjectValueAdaptor.cs: Improved ToString method for
+	  primitive and class types. Improved Cast method. Allow
+	  casting between primitive types and enums. Removed a bunch
+	  of formatting code, now reused from the base
+	  ObjectValueAdapter. In GetRealObject, don't dereference enum
+	  types: we want to get the enum value and dereference only
+	  when necessary. Other misc fixes.
+
+	* FieldReference.cs: Allow getting fields from enums and other
+	  non-struct types.
+
+	* IndexerValueReference.cs: Added special case for string
+	  indexer.
+
 2009-12-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DebuggerServer.cs: Don't try to change breakpoints if the

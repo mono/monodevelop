@@ -46,27 +46,60 @@ namespace DebuggerServer
 			if (!gctx.Options.AllowTargetInvoke)
 				return GetValueTypeName (gctx, obj);
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			obj = ctx.GetRealObject (obj);
+			if (obj is TargetFundamentalObject) {
+				object fob = ((TargetFundamentalObject)obj).GetObject (ctx.Thread);
+				return fob != null ? fob.ToString () : null;
+			}
+			
+			TargetStructObject starget = obj as TargetStructObject;
+			if (starget != null) {
+				// Optimization: if ToString is not overriden, there is no need to call it since the result is the name of the type
+				MemberReference mem = OverloadResolve (ctx, "ToString", starget.Type, new TargetType [0], true, false, false);
+				if (mem == null || mem.DeclaringType.Name == "System.Object")
+					return GetDisplayTypeName (ctx, starget.Type);
+			}
+			
 			TargetObject retval = CallMethod (ctx, "ToString", (TargetStructObject) obj);
 			object s = ((TargetFundamentalObject) retval).GetObject (ctx.Thread);
 			return s != null ? s.ToString () : "";
 		}
 
-		public override object Cast (EvaluationContext gctx, object obj, object targetType)
-		{
-			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
-			return TargetObjectConvert.Cast (ctx, (TargetObject) obj, (TargetType) targetType);
-		}
-
-		public override object TryCast (EvaluationContext gctx, object val, object type)
+		public override object TryCast (EvaluationContext gctx, object val, object targetType)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext)gctx;
 			TargetObject tval = ctx.GetRealObject (val);
-			if (type is TargetObjectType)
+			if (targetType is TargetObjectType)
 				return val;
-			if (type is TargetClassType)
-				return TargetObjectConvert.TryCast (ctx, tval, (TargetClassType)type);
-			else
-				return null;
+			else if (targetType is TargetClassType)
+				return TargetObjectConvert.TryCast (ctx, tval, (TargetClassType)targetType);
+			else if (targetType is TargetEnumType) {
+				TargetType tt = ctx.Frame.Language.LookupType ("System.Enum");
+				TargetObject typeObj = (TargetObject) GetTypeOf (ctx, ((TargetEnumType)targetType).Name);
+				return CallStaticMethod (ctx, "ToObject", tt, typeObj, tval);
+			}
+			else if (targetType is TargetFundamentalType) {
+				if (tval is TargetEnumObject) {
+					TargetEnumObject eob = (TargetEnumObject) tval;
+					return TryCast (ctx, eob.GetValue (ctx.Thread), targetType);
+				}
+				TargetFundamentalType ftype = (TargetFundamentalType) targetType;
+				Type tt = Type.GetType (ObjectUtil.FixTypeName (ftype.Name));
+				if (tval is TargetFundamentalObject) {
+					TargetFundamentalObject fob = (TargetFundamentalObject) tval;
+					object obj = fob.GetObject (ctx.Thread);
+					if (tt.IsInstanceOfType (obj))
+						return val;
+					if (tt != typeof(string) && !(obj is string)) {
+						try {
+							object res = System.Convert.ChangeType (obj, tt);
+							return CreateValue (ctx, res);
+						} catch {
+						}
+					}
+				}
+			}
+			return null;
 		}
 
 
@@ -76,48 +109,12 @@ namespace DebuggerServer
 			TargetObject obj = ctx.GetRealObject (vobj);
 			
 			switch (obj.Kind) {
-				case Mono.Debugger.Languages.TargetObjectKind.Array:
-					TargetArrayObject arr = obj as TargetArrayObject;
-					if (arr == null)
-						return null;
-					StringBuilder tn = new StringBuilder (arr.Type.ElementType.Name);
-					tn.Append ("[");
-					TargetArrayBounds ab = arr.GetArrayBounds (ctx.Thread);
-					if (ab.IsMultiDimensional) {
-						for (int n=0; n<ab.Rank; n++) {
-							if (n>0)
-								tn.Append (',');
-							tn.Append (ab.UpperBounds [n] - ab.LowerBounds [n] + 1);
-						}
-					}
-					else if (!ab.IsUnbound) {
-						tn.Append (ab.Length.ToString ());
-					}
-					tn.Append ("]");
-					return new LiteralExp (tn.ToString ());
-					
+				case TargetObjectKind.Array:
 				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Struct:
 				case TargetObjectKind.Class:
-					TypeDisplayData tdata = GetTypeDisplayData (ctx, obj.Type);
-					TargetStructObject co = obj as TargetStructObject;
-					if (co == null)
-						return null;
-					if (ctx.Options.AllowTargetInvoke) {
-						if (co.TypeName == "System.Decimal")
-							return new LiteralExp (CallToString (ctx, co));
-						if (tdata.ValueDisplayString != null && ctx.Options.AllowDisplayStringEvaluation)
-							return new LiteralExp (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
-					}
-					
-					// Return the type name
-					if (tdata.TypeDisplayString != null)
-						return new LiteralExp ("{" + tdata.TypeDisplayString + "}");
-					return new LiteralExp ("{" + obj.Type.Name + "}");
-					
 				case TargetObjectKind.Enum:
-					TargetEnumObject eob = (TargetEnumObject) obj;
-					return new LiteralExp (Server.Instance.Evaluator.TargetObjectToString (ctx, eob.GetValue (ctx.Thread)));
+					return base.TargetObjectToObject (ctx, vobj);
 					
 				case TargetObjectKind.Fundamental:
 					TargetFundamentalObject fob = obj as TargetFundamentalObject;
@@ -136,7 +133,7 @@ namespace DebuggerServer
 					if (oob == null)
 						return null;
 					else
-						return new LiteralExp ("{" + oob.TypeName + "}");
+						return new EvaluationResult ("{" + oob.TypeName + "}");
 					
 				case TargetObjectKind.Nullable:
 					TargetNullableObject nob = (TargetNullableObject) obj;
@@ -145,7 +142,7 @@ namespace DebuggerServer
 					else
 						return null;
 			}
-			return new LiteralExp ("?");
+			return new EvaluationResult ("?");
 		}
 
 
@@ -535,29 +532,10 @@ namespace DebuggerServer
 				case TargetObjectKind.Struct:
 				case TargetObjectKind.GenericInstance:
 				case TargetObjectKind.Class:
-					TypeDisplayData tdata = GetTypeDisplayData (ctx, obj.Type);
-					
-					TargetStructObject co = obj as TargetStructObject;
-					if (co == null)
-						return ObjectValue.CreateUnknown (path.LastName);
-					else {
-						EvaluationResult tvalue;
-						if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-							tvalue = new EvaluationResult (EvaluateDisplayString (ctx, co, tdata.ValueDisplayString));
-						else
-							tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
-						
-						string tname;
-						if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-							tname = EvaluateDisplayString (ctx, co, tdata.TypeDisplayString);
-						else
-							tname = obj.TypeName;
-						
-						ObjectValue val = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
-						if (!string.IsNullOrEmpty (tdata.NameDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-							val.Name = EvaluateDisplayString (ctx, co, tdata.NameDisplayString);
-						return val;
-					}
+				case TargetObjectKind.Array:
+				case TargetObjectKind.Fundamental:
+				case TargetObjectKind.Enum:
+					return base.CreateObjectValueImpl (gctx, source, path, vobj, flags);
 					
 				case TargetObjectKind.Object:
 					TargetObjectObject oob = obj as TargetObjectObject;
@@ -565,18 +543,6 @@ namespace DebuggerServer
 						return ObjectValue.CreateUnknown (path.LastName);
 					else
 						return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
-					
-				case TargetObjectKind.Array:
-					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
-					
-				case TargetObjectKind.Fundamental:
-					TargetFundamentalObject fob = (TargetFundamentalObject) obj;
-					return ObjectValue.CreatePrimitive (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, fob), flags);
-					
-				case TargetObjectKind.Enum:
-					Console.WriteLine ("pp ??? ENUM: " + obj.GetType ());
-					TargetEnumObject enumobj = (TargetEnumObject) obj;
-					return CreateObjectValue (ctx, source, path, enumobj.GetValue (ctx.Thread), flags);
 					
 				case TargetObjectKind.Pointer:
 					return ObjectValue.CreateObject (source, path, obj.TypeName, Server.Instance.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
@@ -643,10 +609,10 @@ namespace DebuggerServer
 			MemberReference mem = OverloadResolve (ctx, name, starget.Type, types, true, false, true);
 			TargetFunctionType function = (TargetFunctionType) ((TargetMethodInfo) mem.Member).Type;
 			
-			while (target.Type != mem.DeclaringType) {
+			while (starget.Type != mem.DeclaringType) {
 				TargetStructObject par = starget.GetParentObject (ctx.Thread);
 				if (par != null)
-					target = par;
+					starget = par;
 				else
 					break;
 			}
@@ -688,7 +654,7 @@ namespace DebuggerServer
 			for (int n=0; n<types.Length; n++)
 				types [n] = args [n].Type;
 			
-			MemberReference mem = OverloadResolve (ctx, name, (TargetStructType) type, types, false, true, true);
+			MemberReference mem = OverloadResolve (ctx, name, type, types, false, true, true);
 			TargetFunctionType function = (TargetFunctionType) ((TargetMethodInfo) mem.Member).Type;
 			
 			TargetMethodSignature sig = function.GetSignature (ctx.Thread);
@@ -701,7 +667,7 @@ namespace DebuggerServer
 			return Server.Instance.RuntimeInvoke (ctx, function, null, objs);
 		}
 		
-		public static MemberReference OverloadResolve (MdbEvaluationContext ctx, string methodName, TargetStructType type, TargetType[] argtypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
+		public static MemberReference OverloadResolve (MdbEvaluationContext ctx, string methodName, TargetType type, TargetType[] argtypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
 		{
 			List<MemberReference> candidates = new List<MemberReference> ();
 
@@ -847,10 +813,6 @@ namespace DebuggerServer
 						TargetObject res = co.GetCurrentObject (ctx.Thread);
 						return res ?? obj;
 						
-					case TargetObjectKind.Enum:
-						TargetEnumObject eob = (TargetEnumObject) obj;
-						return eob.GetValue (ctx.Thread);
-						
 					case TargetObjectKind.Object:
 						TargetObjectObject oob = obj as TargetObjectObject;
 						if (oob == null)
@@ -873,16 +835,15 @@ namespace DebuggerServer
 			// must be retrieved before we can do anything with them.
 			List<MemberReference> members = new List<MemberReference> ();
 			
-			TargetStructType type = t as TargetStructType;
 			Dictionary<string,string> foundMethods = new Dictionary<string,string> ();
 
-			while (type != null) {
+			while (t != null) {
 				
 				TargetFieldInfo[] fields = null;
 				TargetPropertyInfo[] properties = null;
 				TargetMethodInfo[] methods = null;
 
-				TargetClass cls = type.GetClass (ctx.Thread);
+				TargetClass cls = t.HasClassType ? t.ClassType.GetClass (ctx.Thread) : null;
 				if (cls != null) {
 					if (includeFields)
 						fields = cls.GetFields (ctx.Thread);
@@ -892,9 +853,9 @@ namespace DebuggerServer
 						methods = cls.GetMethods (ctx.Thread);
 				}
 				else {
-					TargetClassType ct = type as TargetClassType;
-					if (ct == null && type.HasClassType)
-						ct = type.ClassType;
+					TargetClassType ct = t as TargetClassType;
+					if (ct == null && t.HasClassType)
+						ct = t.ClassType;
 					if (ct != null) {
 						if (includeFields)
 							fields = ct.Fields;
@@ -917,7 +878,7 @@ namespace DebuggerServer
 							continue;
 						if (!field.IsStatic && (flags & BindingFlags.Instance) == 0)
 							continue;
-						members.Add (new MemberReference (field, type));
+						members.Add (new MemberReference (field, t));
 					}
 				}
 				
@@ -931,7 +892,7 @@ namespace DebuggerServer
 							continue;
 						if (!prop.IsStatic && (flags & BindingFlags.Instance) == 0)
 							continue;
-						members.Add (new MemberReference (prop, type));
+						members.Add (new MemberReference (prop, t));
 					}
 				}
 				
@@ -948,13 +909,14 @@ namespace DebuggerServer
 						string sig = met.FullName;
 						if (!foundMethods.ContainsKey (sig)) {
 							foundMethods [sig] = sig;
-							members.Add (new MemberReference (met, type));
+							members.Add (new MemberReference (met, t));
 						}
 					}
 				}
 				
-				if (type.HasParent && (flags & BindingFlags.DeclaredOnly) == 0)
-					type = type.GetParentType (ctx.Thread);
+				TargetStructType type = t as TargetStructType;
+				if (type != null && type.HasParent && (flags & BindingFlags.DeclaredOnly) == 0)
+					t = type.GetParentType (ctx.Thread);
 				else
 					break;
 			}
@@ -1012,6 +974,7 @@ namespace DebuggerServer
 				
 				sb.Remove (sb.Length - 1, 1);
 				sb.Append (']');
+				sb.Append (typeName.Substring (e+1));
 				return sb.ToString ();
 			}
 			
@@ -1042,9 +1005,9 @@ namespace DebuggerServer
 	public class MemberReference
 	{
 		public readonly TargetMemberInfo Member;
-		public readonly TargetStructType DeclaringType;
+		public readonly TargetType DeclaringType;
 		
-		public MemberReference (TargetMemberInfo member, TargetStructType type)
+		public MemberReference (TargetMemberInfo member, TargetType type)
 		{
 			Member = member;
 			DeclaringType = type;
@@ -1060,7 +1023,7 @@ namespace DebuggerServer
 				TargetFieldInfo field = (TargetFieldInfo) Member;
 				if (field.HasConstValue)
 					return ctx.Frame.Language.CreateInstance (ctx.Thread, field.ConstValue);
-				TargetClass cls = DeclaringType.GetClass (ctx.Thread);
+				TargetClass cls = DeclaringType.ClassType.GetClass (ctx.Thread);
 				return ObjectUtil.GetRealObject (ctx, cls.GetField (ctx.Thread, thisObj, field));
 			}
 			else {

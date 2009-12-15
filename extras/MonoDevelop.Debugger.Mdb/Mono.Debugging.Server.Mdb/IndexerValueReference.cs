@@ -48,8 +48,18 @@ namespace DebuggerServer
 			this.index = index;
 		}
 		
-		public static IndexerValueReference CreateIndexerValueReference (MdbEvaluationContext ctx, TargetObject target, TargetObject index)
+		public static ValueReference CreateIndexerValueReference (MdbEvaluationContext ctx, TargetObject target, TargetObject index)
 		{
+			TargetFundamentalObject mstr = target as TargetFundamentalObject;
+			if (mstr != null && mstr.TypeName == "string") {
+				// Special case for strings
+				string name = "[" + ctx.Evaluator.TargetObjectToExpression (ctx, index) + "]";
+				string val = (string) mstr.GetObject (ctx.Thread);
+				object oo = ctx.Adapter.TargetObjectToObject (ctx, index);
+				int idx = (int) Convert.ChangeType (oo, typeof(int));
+				return LiteralValueReference.CreateObjectLiteral (ctx, name, val [idx]);
+			}
+			
 			TargetStructObject sob = target as TargetStructObject;
 			if (sob == null)
 				return null;
