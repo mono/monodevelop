@@ -1,3 +1,7 @@
+2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.sln: Added new test projects.
+
 2009-11-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* theme-icons/Makefile.am: dist all Mac icns files.
