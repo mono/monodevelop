@@ -1,3 +1,11 @@
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: When destroying the
+	  document switcher, don't present the IDE main window.
+	  Instead Gdk.Window.Focus on the toplevel of the selected
+	  item. Fixes selecting floating pads, and avoids Mac issues
+	  with Gtk.Window.Present.
+
 2009-12-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs: Use
