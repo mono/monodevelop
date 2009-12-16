@@ -223,6 +223,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Components.FolderListSelector.cs" />
     <Compile Include="MonoDevelop.Components\InfoBar.cs" />
     <Compile Include="MonoDevelop.Components\GtkUtil.cs" />
+    <Compile Include="MonoDevelop.Components\MiniButton.cs" />
+    <Compile Include="MonoDevelop.Components\HslColor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

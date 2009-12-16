@@ -130,11 +130,13 @@ FILES =  \
 	MonoDevelop.Components/FolderListSelector.cs \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
 	MonoDevelop.Components/GtkUtil.cs \
+	MonoDevelop.Components/HslColor.cs \
 	MonoDevelop.Components/IconView.cs \
 	MonoDevelop.Components/InfoBar.cs \
 	MonoDevelop.Components/InvisibleFrame.cs \
 	MonoDevelop.Components/ListView.cs \
 	MonoDevelop.Components/MenuButton.cs \
+	MonoDevelop.Components/MiniButton.cs \
 	MonoDevelop.Components/Navbar.cs \
 	MonoDevelop.Components/NotebookButtonBar.cs \
 	MonoDevelop.Components/TabLabel.cs \

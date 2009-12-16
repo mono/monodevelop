@@ -1,3 +1,14 @@
+2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj: Updated.
+
+	* MonoDevelop.Components/HslColor.cs: Taken from text editor.
+	  Allows changing color values such as brightness or
+	  saturation.
+
+	* MonoDevelop.Components/MiniButton.cs: Minimalistic button.
+
 2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/GtkUtil.cs: Make sure the tooltip is
