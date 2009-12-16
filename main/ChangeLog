@@ -1,3 +1,7 @@
+2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.sln: Don't build the test projects on windows.
+
 2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.sln: Added new test projects.
