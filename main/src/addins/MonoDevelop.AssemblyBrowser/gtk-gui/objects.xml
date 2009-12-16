@@ -7,22 +7,4 @@
     </itemgroups>
     <signals />
   </object>
-  <object type="MonoDevelop.AssemblyBrowser.SearchEntry" palette-category="General" allow-children="false" base-type="Gtk.EventBox">
-    <itemgroups>
-      <itemgroup label="SearchEntry Properties">
-        <property name="ActiveFilterID" />
-        <property name="EmptyMessage" />
-        <property name="Query" />
-        <property name="Ready" />
-        <property name="HasFocus" />
-      </itemgroup>
-    </itemgroups>
-    <signals>
-      <itemgroup label="SearchEntry Signals">
-        <signal name="Changed" />
-        <signal name="Activated" />
-        <signal name="FilterChanged" />
-      </itemgroup>
-    </signals>
-  </object>
 </objects>

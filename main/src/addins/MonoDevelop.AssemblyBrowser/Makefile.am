@@ -22,7 +22,6 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/Error.cs \
 	MonoDevelop.AssemblyBrowser/ErrorNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/HoverImageButton.cs \
 	MonoDevelop.AssemblyBrowser/IAssemblyBrowserNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs \
@@ -34,8 +33,7 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolder.cs \
 	MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/SearchEntry.cs
+	MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

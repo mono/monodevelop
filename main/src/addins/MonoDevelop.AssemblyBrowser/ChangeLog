@@ -1,5 +1,16 @@
 2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.AssemblyBrowser.csproj:
+	* MonoDevelop.AssemblyBrowser/SearchEntry.cs:
+	* MonoDevelop.AssemblyBrowser/HoverImageButton.cs:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:
+	  Moved the SearchEntry to MonoDevelop.Components.
+
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/objects.xml:
 	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:

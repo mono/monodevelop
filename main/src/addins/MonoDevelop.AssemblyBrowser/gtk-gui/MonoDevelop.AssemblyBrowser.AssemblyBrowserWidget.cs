@@ -35,7 +35,7 @@ namespace MonoDevelop.AssemblyBrowser {
         
         private Gtk.Button buttonCancelSearch;
         
-        private MonoDevelop.AssemblyBrowser.SearchEntry searchentry1;
+        private MonoDevelop.Components.SearchEntry searchentry1;
         
         private Gtk.Label label2;
         
@@ -167,13 +167,11 @@ namespace MonoDevelop.AssemblyBrowser {
             w16.Expand = false;
             w16.Fill = false;
             // Container child hbox2.Gtk.Box+BoxChild
-            this.searchentry1 = new MonoDevelop.AssemblyBrowser.SearchEntry();
+            this.searchentry1 = new MonoDevelop.Components.SearchEntry();
             this.searchentry1.Name = "searchentry1";
             this.searchentry1.ActiveFilterID = 0;
-            this.searchentry1.EmptyMessage = "";
-            this.searchentry1.Query = "";
-            this.searchentry1.Ready = true;
-            this.searchentry1.HasFocus = true;
+            this.searchentry1.Ready = false;
+            this.searchentry1.HasFocus = false;
             this.hbox2.Add(this.searchentry1);
             Gtk.Box.BoxChild w17 = ((Gtk.Box.BoxChild)(this.hbox2[this.searchentry1]));
             w17.PackType = ((Gtk.PackType)(1));

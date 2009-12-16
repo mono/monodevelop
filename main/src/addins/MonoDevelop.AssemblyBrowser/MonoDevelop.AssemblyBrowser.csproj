@@ -147,8 +147,6 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DocumentationPanel.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserTypeNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\SearchEntry.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\HoverImageButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
