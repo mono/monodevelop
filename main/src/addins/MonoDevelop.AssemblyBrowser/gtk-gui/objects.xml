@@ -25,12 +25,4 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" palette-category="MonoDevelop.AssemblyBrowser" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-      <itemgroup label="AssemblyBrowserWidget Properties">
-        <property name="PublicApiOnly" />
-      </itemgroup>
-    </itemgroups>
-    <signals />
-  </object>
 </objects>

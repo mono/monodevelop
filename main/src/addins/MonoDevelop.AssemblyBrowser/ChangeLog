@@ -1,3 +1,10 @@
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:
+	  Fix layout of the navigation bar.
+
 2009-12-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
