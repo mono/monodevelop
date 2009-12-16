@@ -22,6 +22,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -33,6 +34,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -226,6 +228,7 @@
     <Compile Include="MonoDevelop.Components\MiniButton.cs" />
     <Compile Include="MonoDevelop.Components\HslColor.cs" />
     <Compile Include="MonoDevelop.Components\SearchEntry.cs" />
+    <Compile Include="MonoDevelop.Components\HoverImageButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

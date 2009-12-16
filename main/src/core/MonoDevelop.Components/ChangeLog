@@ -1,5 +1,13 @@
 2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components/HoverImageButton.cs: Add the
+	  HoverImageButton required by SearchEntry.
+
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/generated.cs:
 	* MonoDevelop.Components/SearchEntry.cs:
 	* gtk-gui/MonoDevelop.Components.FolderListSelector.cs: Flush.

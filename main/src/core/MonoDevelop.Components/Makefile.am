@@ -130,6 +130,7 @@ FILES =  \
 	MonoDevelop.Components/FolderListSelector.cs \
 	MonoDevelop.Components/GladeWidgetExtract.cs \
 	MonoDevelop.Components/GtkUtil.cs \
+	MonoDevelop.Components/HoverImageButton.cs \
 	MonoDevelop.Components/HslColor.cs \
 	MonoDevelop.Components/IconView.cs \
 	MonoDevelop.Components/InfoBar.cs \
@@ -158,7 +159,7 @@ RES =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(top_builddir)/build/bin/MonoDevelop.Core.dll
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -debug -unsafe -out:$@ -target:library $(REFS) $(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 

@@ -95,7 +95,7 @@
       </itemgroup>
     </signals>
   </object>
-  <object type="MonoDevelop.AssemblyBrowser.SearchEntry" palette-category="General" allow-children="false" base-type="Gtk.EventBox">
+  <object type="MonoDevelop.Components.SearchEntry" palette-category="General" allow-children="false" base-type="Gtk.EventBox">
     <itemgroups>
       <itemgroup label="SearchEntry Properties">
         <property name="ActiveFilterID" />
