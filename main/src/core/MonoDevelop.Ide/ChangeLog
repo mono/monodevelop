@@ -1,5 +1,11 @@
 2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs: Added new property,
+	  HasToplevelFocus, which return true if the main window or
+	  any floating pads have toplevel focus.
+
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: When calling
 	  SelectWindow, make sure to grab focus, because it may have
 	  lost focus to a pad.

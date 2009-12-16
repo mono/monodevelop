@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
@@ -176,6 +177,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Gtk.Window RootWindow {
 			get { return (Gtk.Window) workbench; }
+		}
+		
+		/// <summary>
+		/// Whether the root window or any undocked part of it has toplevel focus. 
+		/// </summary>
+		public bool HasToplevelFocus {
+			get {
+				var toplevel = Gtk.Window.ListToplevels ().Where (x => x.HasToplevelFocus).FirstOrDefault ();
+				//FIXME: don't depend on type name string
+				return toplevel != null && 
+					(toplevel == RootWindow || toplevel.GetType ().FullName.StartsWith ("MonoDevelop.Components.Docking"));
+			}
 		}
 		
 		public void Present ()
