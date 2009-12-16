@@ -1,3 +1,13 @@
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: If C#
+	  compiler crashes, copy the stderr file to the monitor,
+	  report error message telling user to look there, and log
+	  location of the temp response/stderr/stdout files and avoid
+	  deleting them. Fixes "Bug 515013 - Compiling; a method call
+	  on an object that does not exist produces incomprehensible
+	  /tmp/*.tmp error".
+
 2009-12-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:

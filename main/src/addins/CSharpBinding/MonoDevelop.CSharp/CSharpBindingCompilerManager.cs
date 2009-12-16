@@ -287,15 +287,18 @@ namespace MonoDevelop.CSharp
 			
 			//if compiler crashes, output entire error string
 			if (result.ErrorCount == 0 && exitCode != 0) {
-				if (!string.IsNullOrEmpty (error))
-					result.AddError (error);
-				else
-					result.AddError ("The compiler appears to have crashed without any error output.");
+				try {
+					monitor.Log.Write (File.ReadAllText (error));
+				} catch (IOException) {
+				}
+				result.AddError ("The compiler appears to have crashed. Check the build output pad for details.");
+				LoggingService.LogError ("C# compiler crashed. Response file '{0}', stdout file '{1}', stderr file '{2}'",
+				                         responseFileName, output, error);
+			} else {
+				FileService.DeleteFile (responseFileName);
+				FileService.DeleteFile (output);
+				FileService.DeleteFile (error);
 			}
-			
-			FileService.DeleteFile (responseFileName);
-			FileService.DeleteFile (output);
-			FileService.DeleteFile (error);
 			return result;
 		}
 		
