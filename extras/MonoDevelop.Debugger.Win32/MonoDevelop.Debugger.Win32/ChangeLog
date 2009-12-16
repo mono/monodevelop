@@ -1,3 +1,7 @@
+2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CorObjectAdaptor.cs: 
+
 2009-12-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CorObjectAdaptor.cs: Track api changes.
