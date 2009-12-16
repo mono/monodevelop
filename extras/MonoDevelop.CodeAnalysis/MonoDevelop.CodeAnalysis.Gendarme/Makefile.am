@@ -6,7 +6,6 @@ REFS =  \
 	$(MONODEVELOP_LIBS) \
 	-r:$(top_builddir)/build/MonoDevelop.CodeAnalysis.dll \
 	-r:$(top_srcdir)/dlls/Gendarme.Framework.dll \
-	-r:$(top_srcdir)/dlls/Mono.Cecil.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml

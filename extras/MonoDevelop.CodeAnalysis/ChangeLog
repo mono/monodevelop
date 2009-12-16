@@ -1,3 +1,7 @@
+2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CodeAnalysis.sln: Flush.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.ac: We now depend on gtk# 2.12.8, Mono 2.4, and

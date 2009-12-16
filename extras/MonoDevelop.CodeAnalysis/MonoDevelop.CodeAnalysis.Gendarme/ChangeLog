@@ -1,3 +1,9 @@
+2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.CodeAnalysis.Gendarme.csproj: Remove local
+	  cecil.dll reference. MD already includes it.
+
 2009-09-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Fix references path again.

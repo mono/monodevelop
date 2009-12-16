@@ -10,6 +10,7 @@
     <newfilesearch>OnLoadAutoInsert</newfilesearch>
     <AssemblyName>MonoDevelop.CodeAnalysis.Gendarme</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDevelop.CodeAnalysis.Gendarme</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,10 +21,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -45,9 +46,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="Gendarme.Framework, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\dlls\Gendarme.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\dlls\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
@@ -89,7 +87,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.CodeAnalysis.Gendarme.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.CodeAnalysis.Gendarme.addin.xml">
+      <LogicalName>MonoDevelop.CodeAnalysis.Gendarme.addin.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
@@ -107,6 +107,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
+    <None Include="xdb.il" />
+    <None Include="xdb.s" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
