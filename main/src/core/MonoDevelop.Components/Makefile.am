@@ -139,6 +139,7 @@ FILES =  \
 	MonoDevelop.Components/MiniButton.cs \
 	MonoDevelop.Components/Navbar.cs \
 	MonoDevelop.Components/NotebookButtonBar.cs \
+	MonoDevelop.Components/SearchEntry.cs \
 	MonoDevelop.Components/TabLabel.cs \
 	MonoDevelop.Components/TooltipWindow.cs \
 	MonoDevelop.Components/TreeViewCellContainer.cs \

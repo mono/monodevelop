@@ -1,3 +1,14 @@
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Components/SearchEntry.cs:
+	* gtk-gui/MonoDevelop.Components.FolderListSelector.cs: Flush.
+
+	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Components.csproj: Move SearchEntry here from
+	  the AssemblyBrowser.
+
 2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

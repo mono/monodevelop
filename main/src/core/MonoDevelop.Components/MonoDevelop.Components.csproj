@@ -225,6 +225,7 @@
     <Compile Include="MonoDevelop.Components\GtkUtil.cs" />
     <Compile Include="MonoDevelop.Components\MiniButton.cs" />
     <Compile Include="MonoDevelop.Components\HslColor.cs" />
+    <Compile Include="MonoDevelop.Components\SearchEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

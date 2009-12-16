@@ -30,19 +30,6 @@
     <itemgroups />
     <signals />
   </object>
-  <object type="MonoDevelop.Components.PropertyGrid.PropertyGrid" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.VBox">
-    <itemgroups>
-      <itemgroup label="PropertyGrid Properties">
-        <property name="ShowToolbar" />
-        <property name="ShowHelp" />
-      </itemgroup>
-    </itemgroups>
-    <signals>
-      <itemgroup label="PropertyGrid Signals">
-        <signal name="Changed" />
-      </itemgroup>
-    </signals>
-  </object>
   <object type="MonoDevelop.Components.FileEntry" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.HBox">
     <itemgroups>
       <itemgroup label="BaseFileEntry Properties">
@@ -94,5 +81,36 @@
   <object type="MonoDevelop.Components.FolderListSelector" palette-category="General" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals />
+  </object>
+  <object type="MonoDevelop.Components.PropertyGrid.PropertyGrid" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.VBox">
+    <itemgroups>
+      <itemgroup label="PropertyGrid Properties">
+        <property name="ShowToolbar" />
+        <property name="ShowHelp" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="PropertyGrid Signals">
+        <signal name="Changed" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.AssemblyBrowser.SearchEntry" palette-category="General" allow-children="false" base-type="Gtk.EventBox">
+    <itemgroups>
+      <itemgroup label="SearchEntry Properties">
+        <property name="ActiveFilterID" />
+        <property name="EmptyMessage" />
+        <property name="Query" />
+        <property name="Ready" />
+        <property name="HasFocus" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="SearchEntry Signals">
+        <signal name="Changed" />
+        <signal name="Activated" />
+        <signal name="FilterChanged" />
+      </itemgroup>
+    </signals>
   </object>
 </objects>
