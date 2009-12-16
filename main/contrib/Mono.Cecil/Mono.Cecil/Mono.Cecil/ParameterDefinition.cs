@@ -63,6 +63,10 @@ namespace Mono.Cecil {
 			set { m_method = value; }
 		}
 
+		public bool HasCustomAttributes {
+			get { return (m_customAttrs == null) ? false : (m_customAttrs.Count > 0); }
+		}
+
 		public CustomAttributeCollection CustomAttributes {
 			get {
 				if (m_customAttrs == null)
@@ -105,6 +109,26 @@ namespace Mono.Cecil {
 			}
 		}
 
+		public bool IsRetval {
+			get { return (m_attributes & ParameterAttributes.Retval) != 0; }
+			set {
+				if (value)
+					m_attributes |= ParameterAttributes.Retval;
+				else
+					m_attributes &= ~ParameterAttributes.Retval;
+			}
+		}
+
+		public bool IsLcid {
+			get { return (m_attributes & ParameterAttributes.Lcid) != 0; }
+			set {
+				if (value)
+					m_attributes |= ParameterAttributes.Lcid;
+				else
+					m_attributes &= ~ParameterAttributes.Lcid;
+			}
+		}
+
 		public bool IsOptional {
 			get { return (m_attributes & ParameterAttributes.Optional) != 0; }
 			set {
@@ -130,6 +154,11 @@ namespace Mono.Cecil {
 		public ParameterDefinition (TypeReference paramType) :
 			this (string.Empty, -1, (ParameterAttributes) 0, paramType)
 		{
+		}
+
+		public override ParameterDefinition Resolve ()
+		{
+			return this;
 		}
 
 		public ParameterDefinition (string name, int seq, ParameterAttributes attrs, TypeReference paramType) : base (name, seq, paramType)

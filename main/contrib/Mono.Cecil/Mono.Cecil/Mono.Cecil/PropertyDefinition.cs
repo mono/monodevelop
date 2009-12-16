@@ -49,12 +49,29 @@ namespace Mono.Cecil {
 			set { m_attributes = value; }
 		}
 
+		public bool HasCustomAttributes {
+			get { return (m_customAttrs == null) ? false : (m_customAttrs.Count > 0); }
+		}
+
 		public CustomAttributeCollection CustomAttributes {
 			get {
 				if (m_customAttrs == null)
 					m_customAttrs = new CustomAttributeCollection (this);
 
 				return m_customAttrs;
+			}
+		}
+
+		public override bool HasParameters {
+			get {
+				if (m_getMeth != null)
+					return m_getMeth.HasParameters;
+				else if (m_setMeth != null)
+					return m_setMeth.HasParameters;
+				else if (m_parameters == null)
+					return false;
+				else
+					return m_parameters.Count > 0;
 			}
 		}
 
@@ -142,9 +159,19 @@ namespace Mono.Cecil {
 
 		#endregion
 
+		public new TypeDefinition DeclaringType {
+			get { return (TypeDefinition) base.DeclaringType; }
+			set { base.DeclaringType = value; }
+		}
+
 		public PropertyDefinition (string name, TypeReference propertyType, PropertyAttributes attrs) : base (name, propertyType)
 		{
 			m_attributes = attrs;
+		}
+
+		public override PropertyDefinition Resolve ()
+		{
+			return this;
 		}
 
 		public static MethodDefinition CreateGetMethod (PropertyDefinition prop)

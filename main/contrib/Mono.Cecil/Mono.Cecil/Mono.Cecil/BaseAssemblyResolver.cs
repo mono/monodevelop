@@ -37,6 +37,7 @@ namespace Mono.Cecil {
 	public abstract class BaseAssemblyResolver : IAssemblyResolver {
 
 		ArrayList m_directories;
+		string[] m_monoGacPaths;
 
 		public void AddSearchDirectory (string directory)
 		{
@@ -50,7 +51,7 @@ namespace Mono.Cecil {
 
 		public string [] GetSearchDirectories ()
 		{
-			return (string []) m_directories.ToArray ();
+			return (string []) m_directories.ToArray (typeof (string));
 		}
 
 		public virtual AssemblyDefinition Resolve (string fullName)
@@ -131,28 +132,38 @@ namespace Mono.Cecil {
 					typeof (object).Module.FullyQualifiedName).FullName
 				).FullName;
 
+			string runtime_path = null;
 			if (OnMono ()) {
 				if (reference.Version.Major == 1)
-					path = Path.Combine (path, "1.0");
+					runtime_path = "1.0";
 				else if (reference.Version.Major == 2) {
 					if (reference.Version.Minor == 1)
-						path = Path.Combine (path, "2.1");
+						runtime_path = "2.1";
 					else
-						path = Path.Combine (path, "2.0");
-				} else
-					throw new NotSupportedException ("Version not supported: " + reference.Version);
+						runtime_path = "2.0";
+				} else if (reference.Version.Major == 4)
+					runtime_path = "4.0";
 			} else {
-				if (reference.Version.ToString () == "1.0.3300.0")
-					path = Path.Combine (path, "v1.0.3705");
-				else if (reference.Version.ToString () == "1.0.5000.0")
-					path = Path.Combine (path, "v1.1.4322");
-				else if (reference.Version.ToString () == "2.0.0.0")
-					path = Path.Combine (path, "v2.0.50727");
-				else if (reference.Version.ToString () == "4.0.0.0")
-					path = Path.Combine (path, "v4.0.20506");
-				else
-					throw new NotSupportedException ("Version not supported: " + reference.Version);
+				switch (reference.Version.ToString ()) {
+				case "1.0.3300.0":
+					runtime_path = "v1.0.3705";
+					break;
+				case "1.0.5000.0":
+					runtime_path = "v1.1.4322";
+					break;
+				case "2.0.0.0":
+					runtime_path = "v2.0.50727";
+					break;
+				case "4.0.0.0":
+					runtime_path = "v4.0.21006";
+					break;
+				}
 			}
+
+			if (runtime_path == null)
+				throw new NotSupportedException ("Version not supported: " + reference.Version);
+
+			path = Path.Combine (path, runtime_path);
 
 			if (File.Exists (Path.Combine (path, "mscorlib.dll")))
 				return AssemblyFactory.GetAssembly (Path.Combine (path, "mscorlib.dll"));
@@ -165,17 +176,50 @@ namespace Mono.Cecil {
 			return typeof (object).Assembly.GetType ("System.MonoType", false) != null;
 		}
 
-		static AssemblyDefinition GetAssemblyInGac (AssemblyNameReference reference)
+		string[] MonoGacPaths {
+			get {
+				if (m_monoGacPaths == null)
+					m_monoGacPaths = GetDefaultMonoGacPaths ();
+				return m_monoGacPaths;	
+			}
+		}
+
+		static string[] GetDefaultMonoGacPaths ()
+		{
+			ArrayList paths = new ArrayList ();
+			string s = GetCurrentGacPath ();
+			if (s != null)
+				paths.Add (s);
+			string gacPathsEnv = Environment.GetEnvironmentVariable ("MONO_GAC_PREFIX");
+			if (gacPathsEnv != null && gacPathsEnv.Length > 0) {
+				string[] gacPrefixes = gacPathsEnv.Split (Path.PathSeparator);
+				foreach (string gacPrefix in gacPrefixes) {
+					if (gacPrefix != null && gacPrefix.Length > 0) {
+						string gac = Path.Combine (Path.Combine (Path.Combine (gacPrefix, "lib"), "mono"), "gac");
+						if (Directory.Exists (gac) && !paths.Contains (gac))
+							paths.Add (gac);
+					}
+				}
+			}
+			return (string[]) paths.ToArray (typeof (String));
+		}
+
+		AssemblyDefinition GetAssemblyInGac (AssemblyNameReference reference)
 		{
 			if (reference.PublicKeyToken == null || reference.PublicKeyToken.Length == 0)
 				return null;
 
-			string currentGac = GetCurrentGacPath ();
 			if (OnMono ()) {
-				string s = GetAssemblyFile (reference, currentGac);
-				if (File.Exists (s))
-					return AssemblyFactory.GetAssembly (s);
+				foreach (string gacpath in MonoGacPaths) {
+					string s = GetAssemblyFile (reference, gacpath);
+					if (File.Exists (s))
+						return AssemblyFactory.GetAssembly (s);
+				}
 			} else {
+				string currentGac = GetCurrentGacPath ();
+				if (currentGac == null)
+					return null;
+
 				string [] gacs = new string [] {"GAC_MSIL", "GAC_32", "GAC"};
 				for (int i = 0; i < gacs.Length; i++) {
 					string gac = Path.Combine (Directory.GetParent (currentGac).FullName, gacs [i]);
@@ -204,10 +248,14 @@ namespace Mono.Cecil {
 
 		static string GetCurrentGacPath ()
 		{
+			string file = typeof (Uri).Module.FullyQualifiedName;
+			if (!File.Exists (file))
+				return null;
+
 			return Directory.GetParent (
 				Directory.GetParent (
 					Path.GetDirectoryName (
-						typeof (Uri).Module.FullyQualifiedName)
+						file)
 					).FullName
 				).FullName;
 		}

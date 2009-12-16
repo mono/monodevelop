@@ -1,8 +1,362 @@
-2008-06-28  Sebastien Pouliot  <sebastien@ximian.com> 
+2009-12-14  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* Mono.Cecil/BaseAssemblyResolver.cs: Update to .net fx 4 beta2
+	version number and reduce code duplication.
+
+2009-08-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Cecil/BaseAssemblyResolver.cs: Search GACs specified in the 
+	  MONO_GAC_PREFIX environment variable.
+
+2009-08-06  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/BaseAssemblyResolver.cs:
+	Do not crash when the GAC folder can't be found.
+
+2009-07-28  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/AssemblyStripper.cs: Make all methods share
+	the same body.
+
+2009-07-16  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/AssemblyFactory.cs
+	* Mono.Cecil.Metadata/MetadataWriter.cs
+	* Mono.Cecil.Binary/ImageWriter.cs:
+		Support for properly writing 4.0 dlls.
+		Patch by Carlo Kok  <ck@remobjects.com>.
+
+2009-06-05  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/BaseAssemblyResolver.cs: properly look for the 4.0 corlib
+	when running on Mono.
+
+2009-06-03  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/MetadataResolver.cs: add support for resolving from
+	a ModuleReference.
+
+2009-06-03  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/BaseAssemblyResolver.cs: look for 4.0.0.0 assemblies.
+
+2009-05-21  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs: add support for type forwarders.
+
+2009-05-19  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/TargetRuntime.cs
+	* Mono.Cecil/StructureReader.cs
+	* Mono.Cecil.Metadata/MetadataWriter.cs:
+		add support for .net 4.0 detection.
+
+2009-04-30  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Signatures/SignatureReader.cs: fix reading out extra mods.
+
+2009-04-21  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Cil/SymbolStoreHelper.cs: look for the assembly in the GAC
+	as well if it's not local.
+
+2009-04-03  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Metadata/BlobHeap.cs
+	* Mono.Cecil.Metadata/MetadataWriter.cs:
+		do a better job at emitting a blob heap.
+
+2009-04-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ModuleDefinition.cs (Import): add overloads
+	taking a MethodDefinition as a generic context.
+
+2009-04-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionHelper.cs: throw proper exception
+	when importing in an invalid context.
+
+2009-03-12  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/AssemblyStripper.cs (PatchHeap): don't crash
+	if the assembly doesn't contain a specific metadata heap.
+
+2009-03-04  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/StructureWriter.cs: properly set the metadata tokens
+	of newly emitted modules and assemblies. Fix #480729.
+
+2009-01-28  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/MetadataResolver.cs:
+		Add new MetadataResolver.
+
+	* Mono.Cecil/GenericParameter.cs
+	  Mono.Cecil/FieldDefinition.cs
+	  Mono.Cecil/TypeReference.cs
+	  Mono.Cecil/GenericInstanceMethod.cs
+	  Mono.Cecil/IMemberDefinition.cs
+	  Mono.Cecil/TypeDefinition.cs
+	  Mono.Cecil/PropertyReference.cs
+	  Mono.Cecil/EventReference.cs
+	  Mono.Cecil/MethodDefinition.cs
+	  Mono.Cecil/EventDefinition.cs
+	  Mono.Cecil/ModuleDefinition.cs
+	  Mono.Cecil/MethodReference.cs
+	  Mono.Cecil/FieldReference.cs
+	  Mono.Cecil/ParameterDefinition.cs
+	  Mono.Cecil/PropertyDefinition.cs
+	  Mono.Cecil/ParameterReference.cs
+	  Mono.Cecil.Cil/VariableReference.cs
+	  Mono.Cecil.Cil/VariableDefinition.cs:
+		Add Resolve to Definition methods on References.
+
+	* Mono.Cecil.dll.sources, Mono.Cecil.csproj: add MetadataResolver.cs
+
+2009-01-05  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionHelper.cs
+	* Mono.Cecil/DefaultImporter.cs:
+		Adjust references's generic parameter count on import.
+
+2009-01-05  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* CodeReader.cs: Do not call VisitVariableDefinitionCollection
+	unless LocalVarToken is different from zero.
+	* CodeWriter.cs: Use HasVariables and HasExceptionHandlers.
+	Write zero, not TokenType.Signature, for LocalVarToken if no
+	variable is defined. That should fix the problem with unsign
+	* Mono.Cecil.Cil/MethodBody.cs: Add HasExceptionHandlers,
+	HasVariables and HasScopes to avoid creating empty collections
+	inside Cecil. There is no HasInstruction because there's always
+	something if MethodDefinition.HasBody is true (i.e. a MethodBody
+	exists). [re-apply r1222198]
+
+2008-12-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/MethodReturnType.cs: Override ToString so we can, by
+	default, display something useful about the return type.
+
+2008-12-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/GenericInstanceMethod.cs,
+	* Mono.Cecil/GenericInstanceType.cs,
+	* Mono.Cecil/IGenericInstance.cs: Introduce HasGenericArguments into
+	the interface and implement it inside GenericInstance[Method|Type]
+
+2008-12-16  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Signatures/SignatureReader.cs: fix reading of wrong
+	modifiers.
+
+2008-12-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil.Signatures/CustomAttrib.cs: Define reusable Empty
+	arrays for both FixedArg and NamedArg.
+	* Mono.Cecil.Signatures/SignatureReader.cs: Avoid creating empty
+	ParameterDefinitionCollection on constructors. Use the new Empty
+	arrays when possible.
+
+2008-12-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/MethodReference.cs: Make HasParameters virtual
+	* Mono.Cecil/MethodSpecification.cs: Override HasParameters to make
+	sure we're tracking the same object as the Parameters property does.
+	* Mono.Cecil/PropertyDefinition.cs: Implement HasParameters based on
+	the GetMethod, SetMethod or its own parameter collection.
+	* Mono.Cecil/PropertyReference.cs: Add abstract HasParameters property
+
+2008-11-27  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ExternTypeCollection.cs: don't attach types as they
+	are already attached to the current module.
+
+2008-11-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/GenericParameter.cs,
+	* Mono.Cecil/ICustomAttributeProvider.cs,
+	* Mono.Cecil/CallSite.cs,
+	* Mono.Cecil/IMethodSignature.cs,
+	* Mono.Cecil/FunctionPointerType.cs,
+	* Mono.Cecil/FieldDefinition.cs,
+	* Mono.Cecil/TypeReference.cs,
+	* Mono.Cecil/GenericInstanceMethod.cs,
+	* Mono.Cecil/IHasSecurity.cs,
+	* Mono.Cecil/MethodReturnType.cs,
+	* Mono.Cecil/AssemblyDefinition.cs,
+	* Mono.Cecil/TypeDefinition.cs,
+	* Mono.Cecil/MethodDefinition.cs,
+	* Mono.Cecil/EventDefinition.cs,
+	* Mono.Cecil/ModuleDefinition.cs,
+	* Mono.Cecil/MethodReference.cs,
+	* Mono.Cecil/ReflectionWriter.cs,
+	* Mono.Cecil/ParameterDefinition.cs,
+	* Mono.Cecil/PropertyDefinition.cs,
+	* Mono.Cecil/IGenericParameterProvider.cs:
+		Add boolean Has{x} properties so Cecil consumers are able
+		to avoid the lazy allocations that would be made for an
+		empty {x}. Use the Has{x} properties inside Cecil (some
+		cases might be missing).
+
+2008-11-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/TypeDefinition.cs (IsValueType): Inline the call to
+	IsEnum and remove the double null check being done.
+
+2008-11-14  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ParameterAttributes.cs: add Retval and Lcid.
+	* Mono.Cecil/ParameterDefinition.cs: add Is* property accordingly.
+
+2008-11-12  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Signatures/SignatureReader.cs: properly construct
+	TypeReferences when reading them from custom attributes data.
+
+2008-11-11  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs (AddTypeRef):
+	protect against invalid token.
+
+2008-11-11  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Cil/CodeWriter.cs: fix writing of catch handlers
+	of a generic exception type.
+
+2008-11-06  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Metadata/MetadataWriter.cs: properly clean
+	the runtime image in case we're unsigning an assembly.
+
+2008-11-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Binary/RuntimeImage.cs: add [Flags] attribute.
+	Fixes #440574.
+
+2008-10-27  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/AssemblyInfo.cs: bump version.
+
+2008-10-27  Zoltan Varga  <vargaz@gmail.com>
+
+	* Mono.Cecil/AssemblyStripper.cs: Strip locals info too.
+
+2008-10-17  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionWriter.cs: remove dead code.
+	* Mono.Cecil.Cil/ISymbolWriter.cs: simplify Write method.
+
+2008-10-17	Rodrigo B. de Oliveira <rodrigobamboo@gmail.com>
+
+	* Mono.Cecil.Cil/CodeWriter.cs
+	* Mono.Cecil.Cil/MethodBody.cs:
+		mcs-cecil-local-var-1.diff patch enabling better handling of local
+		variable debugging information applied.
+		Patch by Juerg Billeter <j@bitron.ch>
+
+2008-10-17	Rodrigo B. de Oliveira <rodrigobamboo@gmail.com>
+
+	* Mono.Cecil/ConstructorCollection.cs
+	* Mono.Cecil.Binary/ImageReader.cs:
+		Compact Framework compilation fixes.
+
+2008-10-14  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/SecurityDeclarationReader.cs: protect against
+	wrongly formatted security attributes.
+
+2008-10-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil.Cil/SymbolStoreHelper.cs: Change two "static readonly"
+	fields into const.
+	[Found using Gendarme PreferLiteralOverInitOnlyFieldsRule]
+
+2008-10-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Mono.Cecil/ConstructorCollection.cs: Fix a NRE if a null parameter
+	is provided to one of the GetConstructor overloads.
+
+2008-10-07  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs: don't cache generic typespecs,
+	as some compiler reuse generic instance signatures with different
+	generic contexts.
+
+2008-10-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.dll.sources
+	* Mono.Cecil.csproj
+	* Mono.Cecil/AssemblyStripper.cs
+	* Mono.Cecil.Cil/CodeWriter.cs
+	* Mono.Cecil.Metadata/MetadataWriter.cs: add a new AssemblyStripper
+	class to be used by a tool to empty method bodies for assemblies
+	that have been AOTed.
+
+2008-09-29  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/GenericParameter.cs: override TypeReference.Scope.
+
+2008-09-25  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Binary/MemoryBinaryWriter.cs: Make sure QuadAlign
+	properly enlarge the memory stream if needed.
+	Patch by Regis Vaquette <rvaquette@yahoo.fr>.
+
+2008-09-18  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs (GetModifierType): protect against
+	zero rids.
+
+2008-09-15  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Signatures/SignatureReader.cs: fix regression
+	in reading custom mods.
+
+2008-09-04  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Signatures/SignatureReader.cs: better read modifiers on
+	return types and parameters.
+
+2008-09-02  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Metadata/UserStringsHeap.cs: fix reading of some unicode fu.
+
+2008-09-02  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/MethodAttributes.cs: add CheckAccessOnOverride.
+	* Mono.Cecil/MethodDefinition.cs: add IsCheckAccessOnOverride.
+
+2008-09-02  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/GenericParameter.cs: fix Has*Constraint properties.
+
+2008-09-02  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/SecurityDeclarationReader.cs: fix reading
+	multiple permissions. Patch by Carsten Keutmann.
+
+2008-09-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionReader.cs: properly compose mod and byref types
+	for parameters and return types.
+	Based on a patch by Carlo Kok <ck@remobjects.com>
+
+2008-09-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil.Signatures/SignatureReader.cs: Avoid a crash
+	when looking for an enumeration definition when the assembly
+	could not be resolved. Patch by Carlo Kok <ck@remobjects.com>
+
+2008-09-01  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/ReflectionWriter.cs: fix for writing null string
+	constants. Patch by Ewout Prangsma <ewout@tallapplications.com>.
+
+2008-06-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Mono.Cecil.dll.sources
 	* Mono.Xml/MiniParser.cs:
-		Remove MiniParser as it is no more required (replaced by 
+		Remove MiniParser as it is no more required (replaced by
 		SmallXmlParser) and save a few KB in the binary size
 
 	* Mono.Xml/SecurityParser.cs
@@ -51,7 +405,7 @@
 		[Found using Gendarme CompareWithEmptyStringEfficientlyRule]
 
 	* Mono.Cecil.Metadata/MetadataToken.cs:
-		Add a private Equals(MetadataToken) method. This allows the 
+		Add a private Equals(MetadataToken) method. This allows the
 		existing operators (== and !=) to avoid boxing, since they
 		will prefer it to the Equals(object) method.
 		[Found using Gendarme ImplementEqualsTypeRule]
