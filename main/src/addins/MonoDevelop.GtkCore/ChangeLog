@@ -1,3 +1,16 @@
+2009-12-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs:
+	  Implement SupportsItem.
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs: When
+	  adding a stock gtk widget to a window there is no need to
+	  update the references. Fixes bug #565492.
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs:
+	  Flush.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:
