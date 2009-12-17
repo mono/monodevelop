@@ -88,6 +88,10 @@ namespace Mono.Cecil {
 			}
 		}
 
+		public bool HasCustomAttributes {
+			get { return (m_customAttrs == null) ? false : (m_customAttrs.Count > 0); }
+		}
+
 		public CustomAttributeCollection CustomAttributes {
 			get {
 				if (m_customAttrs == null)
@@ -269,10 +273,20 @@ namespace Mono.Cecil {
 
 		#endregion
 
+		public new TypeDefinition DeclaringType {
+			get { return (TypeDefinition) base.DeclaringType; }
+			set { base.DeclaringType = value; }
+		}
+
 		public FieldDefinition (string name, TypeReference fieldType,
 			FieldAttributes attrs) : base (name, fieldType)
 		{
 			m_attributes = attrs;
+		}
+
+		public override FieldDefinition Resolve ()
+		{
+			return this;
 		}
 
 		public FieldDefinition Clone ()

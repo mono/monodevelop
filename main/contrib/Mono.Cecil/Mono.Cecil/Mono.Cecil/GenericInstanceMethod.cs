@@ -42,6 +42,10 @@ namespace Mono.Cecil {
 			}
 		}
 
+		public bool HasGenericArguments {
+			get { return m_genArgs == null ? false : m_genArgs.Count > 0; }
+		}
+
 		public GenericInstanceMethod (MethodReference elemMethod) : base (elemMethod)
 		{
 		}
@@ -63,10 +67,12 @@ namespace Mono.Cecil {
 			}
 			sb.Append (">");
 			sb.Append ("(");
-			for (int i = 0; i < meth.Parameters.Count; i++) {
-				sb.Append (meth.Parameters [i].ParameterType.FullName);
-				if (i < meth.Parameters.Count - 1)
-					sb.Append (",");
+			if (meth.HasParameters) {
+				for (int i = 0; i < meth.Parameters.Count; i++) {
+					sb.Append (meth.Parameters [i].ParameterType.FullName);
+					if (i < meth.Parameters.Count - 1)
+						sb.Append (",");
+				}
 			}
 			sb.Append (")");
 			return sb.ToString ();

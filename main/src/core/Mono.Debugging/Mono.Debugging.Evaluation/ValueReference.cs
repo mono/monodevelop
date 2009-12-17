@@ -104,6 +104,8 @@ namespace Mono.Debugging.Evaluation
 			Connect ();
 			try {
 				return OnCreateObjectValue ();
+			} catch (ImplicitEvaluationDisabledException) {
+				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
 			} catch (NotSupportedExpressionException ex) {
 				return DC.ObjectValue.CreateNotSupported (this, new ObjectPath (Name), ex.Message, ctx.Adapter.GetTypeName (Context, Type), Flags);
 			} catch (EvaluatorException ex) {

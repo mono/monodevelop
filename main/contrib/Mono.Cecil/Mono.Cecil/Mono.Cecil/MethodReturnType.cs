@@ -26,9 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace Mono.Cecil {
+using System;
+using Mono.Cecil.Metadata;
 
-	using Mono.Cecil.Metadata;
+namespace Mono.Cecil {
 
 	public sealed class MethodReturnType : ICustomAttributeProvider, IHasMarshalSpec, IHasConstant {
 
@@ -64,6 +65,10 @@ namespace Mono.Cecil {
 			set { Parameter.MetadataToken = value; }
 		}
 
+		public bool HasCustomAttributes {
+			get { return Parameter.HasCustomAttributes; }
+		}
+
 		public CustomAttributeCollection CustomAttributes {
 			get { return Parameter.CustomAttributes; }
 		}
@@ -85,6 +90,11 @@ namespace Mono.Cecil {
 		public MethodReturnType (TypeReference retType)
 		{
 			m_returnType = retType;
+		}
+
+		public override string ToString ()
+		{
+			return String.Format ("[return: {0}]", m_returnType);
 		}
 	}
 }

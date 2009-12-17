@@ -352,6 +352,8 @@
     <Compile Include="Mono.Cecil\Mono.Xml\MiniParser.cs" />
     <Compile Include="Mono.Cecil\Mono.Xml\SecurityParser.cs" />
     <Compile Include="Mono.Cecil\Mono.Xml\SmallXmlParser.cs" />
+    <Compile Include="Mono.Cecil\Mono.Cecil\AssemblyStripper.cs" />
+    <Compile Include="Mono.Cecil\Mono.Cecil\MetadataResolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

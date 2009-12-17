@@ -59,6 +59,7 @@ namespace Mono.Cecil {
 
 		ImageReader m_imgReader;
 		ReflectionController m_controller;
+		MetadataResolver m_resolver;
 		SecurityDeclarationReader m_secReader;
 
 		public Guid Mvid {
@@ -104,6 +105,10 @@ namespace Mono.Cecil {
 			}
 		}
 
+		public bool HasCustomAttributes {
+			get { return (m_customAttrs == null) ? false : (m_customAttrs.Count > 0); }
+		}
+
 		public CustomAttributeCollection CustomAttributes {
 			get {
 				if (m_customAttrs == null)
@@ -119,6 +124,10 @@ namespace Mono.Cecil {
 
 		internal ReflectionController Controller {
 			get { return m_controller; }
+		}
+
+		internal MetadataResolver Resolver {
+			get { return m_resolver; }
 		}
 
 		internal ImageReader ImageReader {
@@ -170,6 +179,7 @@ namespace Mono.Cecil {
 			m_members = new MemberReferenceCollection (this);
 
 			m_controller = new ReflectionController (this);
+			m_resolver = new MetadataResolver (asm);
 		}
 
 		public IMetadataTokenProvider LookupByToken (MetadataToken token)
@@ -184,10 +194,21 @@ namespace Mono.Cecil {
 
 		void CheckContext (TypeDefinition context)
 		{
-			if (context == null)
-				throw new ArgumentNullException ("context");
 			if (context.Module != this)
 				throw new ArgumentException ("The context parameter does not belongs to this module");
+
+			CheckGenericParameterProvider (context);
+		}
+
+		void CheckContext (MethodDefinition context)
+		{
+			CheckGenericParameterProvider (context);
+		}
+
+		static void CheckGenericParameterProvider (IGenericParameterProvider context)
+		{
+			if (context == null)
+				throw new ArgumentNullException ("context");
 			if (context.GenericParameters.Count == 0)
 				throw new ArgumentException ("The context parameter is not a generic type");
 		}
@@ -207,6 +228,11 @@ namespace Mono.Cecil {
 			return new ImportContext (m_controller.Importer, context);
 		}
 
+		ImportContext GetContext (MethodDefinition context)
+		{
+			return new ImportContext (m_controller.Importer, context);
+		}
+
 		static ImportContext GetContext (IImporter importer, TypeDefinition context)
 		{
 			return new ImportContext (importer, context);
@@ -221,6 +247,15 @@ namespace Mono.Cecil {
 		}
 
 		public TypeReference Import (Type type, TypeDefinition context)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			CheckContext (context);
+
+			return m_controller.Helper.ImportSystemType (type, GetContext (context));
+		}
+
+		public TypeReference Import (Type type, MethodDefinition context)
 		{
 			if (type == null)
 				throw new ArgumentNullException ("type");
@@ -248,12 +283,14 @@ namespace Mono.Cecil {
 				throw new ArgumentNullException ("meth");
 			CheckContext (context);
 
+			ImportContext import_context = GetContext (context);
+
 			if (meth is SR.ConstructorInfo)
 				return m_controller.Helper.ImportConstructorInfo (
-					meth as SR.ConstructorInfo, GetContext (context));
+					meth as SR.ConstructorInfo, import_context);
 			else
 				return m_controller.Helper.ImportMethodInfo (
-					meth as SR.MethodInfo, GetContext (context));
+					meth as SR.MethodInfo, import_context);
 		}
 
 		public FieldReference Import (SR.FieldInfo field)
@@ -265,6 +302,15 @@ namespace Mono.Cecil {
 		}
 
 		public FieldReference Import (SR.FieldInfo field, TypeDefinition context)
+		{
+			if (field == null)
+				throw new ArgumentNullException ("field");
+			CheckContext (context);
+
+			return m_controller.Helper.ImportFieldInfo (field, GetContext (context));
+		}
+
+		public FieldReference Import (SR.FieldInfo field, MethodDefinition context)
 		{
 			if (field == null)
 				throw new ArgumentNullException ("field");
@@ -290,6 +336,15 @@ namespace Mono.Cecil {
 			return m_controller.Importer.ImportTypeReference (type, GetContext (context));
 		}
 
+		public TypeReference Import (TypeReference type, MethodDefinition context)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			CheckContext (context);
+
+			return m_controller.Importer.ImportTypeReference (type, GetContext (context));
+		}
+
 		public MethodReference Import (MethodReference meth)
 		{
 			if (meth == null)
@@ -307,6 +362,15 @@ namespace Mono.Cecil {
 			return m_controller.Importer.ImportMethodReference (meth, GetContext (context));
 		}
 
+		public MethodReference Import (MethodReference meth, MethodDefinition context)
+		{
+			if (meth == null)
+				throw new ArgumentNullException ("meth");
+			CheckContext (context);
+
+			return m_controller.Importer.ImportMethodReference (meth, GetContext (context));
+		}
+
 		public FieldReference Import (FieldReference field)
 		{
 			if (field == null)
@@ -316,6 +380,15 @@ namespace Mono.Cecil {
 		}
 
 		public FieldReference Import (FieldReference field, TypeDefinition context)
+		{
+			if (field == null)
+				throw new ArgumentNullException ("field");
+			CheckContext (context);
+
+			return m_controller.Importer.ImportFieldReference (field, GetContext (context));
+		}
+
+		public FieldReference Import (FieldReference field, MethodDefinition context)
 		{
 			if (field == null)
 				throw new ArgumentNullException ("field");

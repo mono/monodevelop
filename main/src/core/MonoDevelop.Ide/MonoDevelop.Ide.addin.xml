@@ -805,6 +805,18 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.SwitchSplitWindow"
 				shortcut = "Control|M"
 				_label = "_Switch Between Splits" />
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchNextDocument"
+				defaultHandler = "MonoDevelop.Ide.Commands.SwitchNextDocument"
+				shortcut = "Control|Tab"
+				macShortcut = "Control|Tab"
+				_label = "Switch to next document"
+				_description = "Switch to next document" />
+		<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchPreviousDocument"
+				defaultHandler = "MonoDevelop.Ide.Commands.SwitchPreviousDocument"
+				shortcut = "Control|Shift|Tab"
+				macShortcut = "Control|Shift|Tab"
+				_label = "Switch to previous document"
+				_description = "Switch to previous document" />
 		</Category>
 				
 		<!-- HelpCommands -->

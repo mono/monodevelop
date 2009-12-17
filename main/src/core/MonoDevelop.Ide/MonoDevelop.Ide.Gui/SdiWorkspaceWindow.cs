@@ -24,7 +24,9 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 using System;
+using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Gtk;
 
@@ -176,8 +178,36 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			int toSelect = tabControl.PageNum (this);
 			tabControl.CurrentPage = toSelect;
+			if (tabControl.FocusChild != null) {
+				tabControl.FocusChild.GrabFocus ();
+			} else {
+				DeepGrabFocus (this.ActiveViewContent.Control);
+			}
 		}
 		
+		static void DeepGrabFocus (Gtk.Widget widget)
+		{
+			Widget first = null;
+			foreach (var f in GetFocussableWidgets (widget)) {
+				if (f.HasFocus)
+					return;
+				if (first == null)
+					first = f;
+			}
+			if (first != null)
+				first.GrabFocus ();
+		}
+		
+		static IEnumerable<Gtk.Widget> GetFocussableWidgets (Gtk.Widget widget)
+		{
+			var c = widget as Container;
+			if (widget.CanFocus)
+				yield return widget;
+			if (c != null) {
+				foreach (var f in c.FocusChain.SelectMany (x => GetFocussableWidgets (x)).Where (y => y != null))
+					yield return f;
+			}
+		}
 
 		void BeforeSave(object sender, EventArgs e)
 		{

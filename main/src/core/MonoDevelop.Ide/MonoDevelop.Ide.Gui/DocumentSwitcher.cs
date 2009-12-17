@@ -37,7 +37,8 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide
 {
-	public partial class DocumentSwitcher : Gtk.Window
+	
+	internal partial class DocumentSwitcher : Gtk.Window
 	{
 		Gtk.ListStore padListStore;
 		Gtk.ListStore documentListStore;
@@ -292,6 +293,8 @@ namespace MonoDevelop.Ide
 				                                doc);
 			}
 		}
+		
+		//FIXME: get ctrl(-shift)-tab keybindings from the Switch(Next|Previous)Document commands
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			bool next = (evnt.State & Gdk.ModifierType.ShiftMask) != ModifierType.ShiftMask;
@@ -333,20 +336,23 @@ namespace MonoDevelop.Ide
 		{
 			bool ret;
 			if (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R) {
+				Gdk.Window focusTarget = null;
 				Document doc = SelectedDocument;
 				if (doc != null) {
 					doc.Select ();
+					focusTarget = doc.ActiveView.Control.Toplevel.GdkWindow;
 				} else {
 					Pad pad = SelectedPad;
-					if (pad != null)
+					if (pad != null) {
 						pad.BringToFront (true);
+						focusTarget = pad.Window.Content.Control.Toplevel.GdkWindow;
+					}
 				}
 				ret = base.OnKeyReleaseEvent (evnt);
 				Gtk.Window parent = this.TransientFor;
 				this.Destroy ();
-				//FIXME: Present is broken on Mac GTK+. It maximises the window.
-				if (!MonoDevelop.Core.PropertyService.IsMac)
-					parent.Present ();
+				
+				(focusTarget ?? parent.GdkWindow).Focus (0);
 			} else {
 				ret = base.OnKeyReleaseEvent (evnt);
 			}

@@ -1,3 +1,9 @@
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Menus/OSXMenu.cs: Use new Workbench.HasToplevelFocus
+	  property so that the main menu is enabled when focus is in
+	  floating pad.
+
 2009-12-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacUpdater.cs: Add the updateinfo for MonoTouch source.

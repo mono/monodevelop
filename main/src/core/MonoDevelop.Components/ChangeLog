@@ -1,3 +1,26 @@
+2009-12-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Avoid the
+	  toolbar update scan if the CommandService has been disposed,
+	  because that can happen after running a command that
+	  disposes the CommandService such as the quit command. In
+	  such cases it tries to resurrect wrappers for
+	  destroyed/disposed managed widgets from "FocusChild"
+	  properties of GTK windows, which never works. Also release
+	  "lastFocused" window ref when disposing or window is
+	  destroyed.
+
+2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj: Updated.
+
+	* MonoDevelop.Components/HslColor.cs: Taken from text editor.
+	  Allows changing color values such as brightness or
+	  saturation.
+
+	* MonoDevelop.Components/MiniButton.cs: Minimalistic button.
+
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Use the correct Mono.Cairo reference.

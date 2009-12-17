@@ -95,8 +95,14 @@ namespace Mono.Cecil {
 						return dec;
 					}
 
-					IPermission p = sa.CreatePermission ();
-					dec.PermissionSet.AddPermission (p);
+					try {
+						IPermission p = sa.CreatePermission ();
+						dec.PermissionSet.AddPermission (p);
+					} catch {
+						dec.Resolved = false;
+						dec.Blob = declaration;
+						return dec;
+					}
 				}
 
 				dec.Resolved = true;
@@ -155,6 +161,8 @@ namespace Mono.Cecil {
 					pi.SetValue (sa, na.FixedArg.Elems[0].Value, null);
 				}
 			}
+
+			start = (int) br.BaseStream.Position;
 
 			return sa;
 		}

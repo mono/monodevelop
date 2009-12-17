@@ -293,7 +293,7 @@ namespace OSXIntegration
 		// We can justify this because safari 3.2.1 does it ("do you want to close all tabs?").
 		static bool IsGloballyDisabled {
 			get {
-				return !MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow.HasToplevelFocus;
+				return !MonoDevelop.Ide.Gui.IdeApp.Workbench.HasToplevelFocus;
 			}
 		}
 		

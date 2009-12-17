@@ -143,18 +143,30 @@ namespace Mono.Cecil {
 				return null;
 
 			int index = (int) rid - 1;
-			TypeReference tspec = m_typeSpecs [index];
-			if (tspec != null)
-				return tspec;
 
 			TypeSpecTable tsTable = m_tableReader.GetTypeSpecTable ();
 			TypeSpecRow tsRow = tsTable [index];
 			TypeSpec ts = m_sigReader.GetTypeSpec (tsRow.Signature);
-			tspec = GetTypeRefFromSig (ts.Type, context);
-			tspec = GetModifierType (ts.CustomMods, tspec);
-			tspec.MetadataToken = MetadataToken.FromMetadataRow (TokenType.TypeSpec, index);
+
+			// don't cache generic instances
+			if (ts.Type.ElementType == ElementType.GenericInst)
+				return CreateTypeSpecFromSig (ts, index, context);
+
+			TypeReference tspec = m_typeSpecs [index];
+			if (tspec != null)
+				return tspec;
+
+			tspec = CreateTypeSpecFromSig (ts, index, context);
 			m_typeSpecs [index] = tspec;
 
+			return tspec;
+		}
+
+		TypeReference CreateTypeSpecFromSig (TypeSpec ts, int index, GenericContext context)
+		{
+			TypeReference tspec = GetTypeRefFromSig (ts.Type, context);
+			tspec = GetModifierType (ts.CustomMods, tspec);
+			tspec.MetadataToken = MetadataToken.FromMetadataRow (TokenType.TypeSpec, index);
 			return tspec;
 		}
 
@@ -513,6 +525,9 @@ namespace Mono.Cecil {
 
 		void AddTypeRef (TypeRefTable typesRef, int i)
 		{
+			if (i >= typesRef.Rows.Count)
+				return;
+
 			// Check if index has been already added.
 			if (m_typeRefs [i] != null)
 				return;
@@ -536,7 +551,8 @@ namespace Mono.Cecil {
 				case TokenType.TypeRef:
 					AddTypeRef (typesRef, rid);
 					parent = GetTypeRefAt (type.ResolutionScope.RID);
-					scope = parent.Scope;
+					if (parent != null)
+						scope = parent.Scope;
 					break;
 				}
 			}
@@ -799,15 +815,12 @@ namespace Mono.Cecil {
 
 			for (int i = 0; i < etTable.Rows.Count; i++) {
 				ExportedTypeRow etRow = etTable [i];
-				if (etRow.Implementation.TokenType != TokenType.File)
-					continue;
 
-				string name = m_root.Streams.StringsHeap [etRow.TypeName];
-				string ns = m_root.Streams.StringsHeap [etRow.TypeNamespace];
-				if (ns.Length == 0)
-					buffer [i] = m_module.TypeReferences [name];
-				else
-					buffer [i] = m_module.TypeReferences [string.Concat (ns, '.', name)];
+				buffer [i] = new TypeDefinition (
+					m_root.Streams.StringsHeap [etRow.TypeName],
+					m_root.Streams.StringsHeap [etRow.TypeNamespace],
+					etRow.Flags);
+				buffer [i].AttachToScope (GetExportedTypeScope (etRow.Implementation));
 			}
 
 			for (int i = 0; i < etTable.Rows.Count; i++) {
@@ -815,15 +828,31 @@ namespace Mono.Cecil {
 				if (etRow.Implementation.TokenType != TokenType.ExportedType)
 					continue;
 
+				TypeReference exported = buffer [i];
 				TypeReference owner = buffer [etRow.Implementation.RID - 1];
-				string name = m_root.Streams.StringsHeap [etRow.TypeName];
-				buffer [i] = m_module.TypeReferences [string.Concat (owner.FullName, '/', name)];
+				exported.DeclaringType = owner;
+				exported.AttachToScope (owner.Scope);
 			}
 
 			for (int i = 0; i < buffer.Length; i++) {
 				TypeReference curs = buffer [i];
 				if (curs != null)
 					ext.Add (curs);
+			}
+		}
+
+		IMetadataScope GetExportedTypeScope (MetadataToken scope)
+		{
+			int index = (int) scope.RID - 1;
+			switch (scope.TokenType) {
+			case TokenType.AssemblyRef:
+				return Module.AssemblyReferences [index];
+			case TokenType.File:
+				return Module.ModuleReferences [index];
+			case TokenType.ExportedType:
+				return null; // resolved later
+			default:
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -888,14 +917,15 @@ namespace Mono.Cecil {
 		{
 			TypeReference paramType;
 
-			if (signature.ByRef)
-				paramType = new ReferenceType (GetTypeRefFromSig (signature.Type, context));
-			else if (signature.TypedByRef)
+			if (signature.TypedByRef)
 				paramType = SearchCoreType (Constants.TypedReference);
 			else
 				paramType = GetTypeRefFromSig (signature.Type, context);
 
 			paramType = GetModifierType (signature.CustomMods, paramType);
+
+			if (signature.ByRef)
+				paramType = new ReferenceType (paramType);
 
 			parameter.ParameterType = paramType;
 		}
@@ -979,6 +1009,9 @@ namespace Mono.Cecil {
 				CustomMod cmod = cmods [i];
 				TypeReference modType;
 
+				if (cmod.TypeDefOrRef.RID == 0)
+					continue;
+
 				if (cmod.TypeDefOrRef.TokenType == TokenType.TypeDef)
 					modType = GetTypeDefAt (cmod.TypeDefOrRef.RID);
 				else
@@ -997,14 +1030,15 @@ namespace Mono.Cecil {
 			TypeReference retType;
 			if (msig.RetType.Void)
 				retType = SearchCoreType (Constants.Void);
-			else if (msig.RetType.ByRef)
-				retType = new ReferenceType (GetTypeRefFromSig (msig.RetType.Type, context));
 			else if (msig.RetType.TypedByRef)
 				retType = SearchCoreType (Constants.TypedReference);
 			else
 				retType = GetTypeRefFromSig (msig.RetType.Type, context);
 
 			retType = GetModifierType (msig.RetType.CustomMods, retType);
+
+			if (msig.RetType.ByRef)
+				retType = new ReferenceType (retType);
 
 			return new MethodReturnType (retType);
 		}
@@ -1160,7 +1194,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		private object GetConstantLittleEndian (ElementType elemType, byte[] constant)
+		static object GetConstantLittleEndian (ElementType elemType, byte [] constant)
 		{
 			switch (elemType) {
 			case ElementType.Char :
@@ -1186,7 +1220,7 @@ namespace Mono.Cecil {
 			}
 		}
 
-		private object GetConstantBigEndian (ElementType elemType, byte[] constant)
+		static object GetConstantBigEndian (ElementType elemType, byte [] constant)
 		{
 			// BinaryReader always read it's data in LE format
 			// note: this could be further optimized (even without unsafe code)

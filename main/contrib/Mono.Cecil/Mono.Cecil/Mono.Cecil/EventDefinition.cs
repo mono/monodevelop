@@ -58,6 +58,10 @@ namespace Mono.Cecil {
 			set { m_remMeth = value; }
 		}
 
+		public bool HasCustomAttributes {
+			get { return (m_customAttrs == null) ? false : (m_customAttrs.Count > 0); }
+		}
+
 		public CustomAttributeCollection CustomAttributes {
 			get {
 				if (m_customAttrs == null)
@@ -91,10 +95,20 @@ namespace Mono.Cecil {
 
 		#endregion
 
+		public new TypeDefinition DeclaringType {
+			get { return (TypeDefinition) base.DeclaringType; }
+			set { base.DeclaringType = value; }
+		}
+
 		public EventDefinition (string name, TypeReference eventType,
 			EventAttributes attrs) : base (name, eventType)
 		{
 			m_attributes = attrs;
+		}
+
+		public override EventDefinition Resolve ()
+		{
+			return this;
 		}
 
 		public static MethodDefinition CreateAddMethod (EventDefinition evt)

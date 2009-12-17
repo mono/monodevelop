@@ -245,12 +245,15 @@ namespace MonoDevelop.Components.Commands
 			w.Destroyed -= TopLevelDestroyed;
 			w.KeyPressEvent -= OnKeyPressed;
 			topLevelWindows.Remove (w);
+			if (w == lastFocused)
+				lastFocused = null;
 		}
 		
 		public void Dispose ()
 		{
 			disposed = true;
 			bindings.Dispose ();
+			lastFocused = null;
 		}
 		
 		public void LockAll ()
@@ -1010,6 +1013,11 @@ namespace MonoDevelop.Components.Commands
 		
 		void UpdateToolbars ()
 		{
+			// This might get called after the app has exited, e.g. after executing the quit command
+			// It then queries widgets, which resurrects widget wrappers, which breaks on managed widgets
+			if (this.disposed)
+				return;
+			
 			object activeWidget = GetActiveWidget (rootWidget);
 			foreach (CommandToolbar toolbar in toolbars) {
 				if (toolbar.Visible)

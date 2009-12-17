@@ -12,6 +12,7 @@
 ./Mono.Cecil/AssemblyNameDefinition.cs
 ./Mono.Cecil/AssemblyNameReference.cs
 ./Mono.Cecil/AssemblyNameReferenceCollection.cs
+./Mono.Cecil/AssemblyStripper.cs
 ./Mono.Cecil/BaseAssemblyResolver.cs
 ./Mono.Cecil/BaseReflectionReader.cs
 ./Mono.Cecil/BaseReflectionVisitor.cs
@@ -72,6 +73,7 @@
 ./Mono.Cecil/MarshalSpec.cs
 ./Mono.Cecil/MemberReference.cs
 ./Mono.Cecil/MemberReferenceCollection.cs
+./Mono.Cecil/MetadataResolver.cs
 ./Mono.Cecil/MethodAttributes.cs
 ./Mono.Cecil/MethodCallingConvention.cs
 ./Mono.Cecil/MethodDefinition.cs
