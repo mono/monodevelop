@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui
 
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
-		static string upgradedFromVersion;
+		static Version upgradedFromVersion;
 		
 		public static event ExitEventHandler Exiting;
 		public static event EventHandler Exited;
@@ -128,8 +128,12 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		// If IsInitialRunAfterUpgrade is true, returns the previous version
-		public static string UpgradedFromVersion {
+		public static Version UpgradedFromVersion {
 			get { return upgradedFromVersion; }
+		}
+		
+		public static Version Version {
+			get { return new Version (BuildVariables.PackageVersion); }
 		}
 		
 		public static void Initialize (IProgressMonitor monitor)
@@ -208,7 +212,7 @@ namespace MonoDevelop.Ide.Gui
 			string lastVersion = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.9.1");
 			if (lastVersion != BuildVariables.PackageVersion && !isInitialRun) {
 				isInitialRunAfterUpgrade = true;
-				upgradedFromVersion = lastVersion;
+				upgradedFromVersion = new Version (lastVersion);
 				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildVariables.PackageVersion);
 			}
 			
@@ -373,11 +377,15 @@ namespace MonoDevelop.Ide.Gui
 			Workbench.ResetToolbars ();
 		}
 
-		static void OnUpgraded (string previousVersion)
+		static void OnUpgraded (Version previousVersion)
 		{
 			// Upgrade to latest msbuild version
 			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
 				IdeApp.Preferences.DefaultProjectFileFormat = MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat;
+			
+			// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
+			if (previousVersion <= new Version ("2.2"))
+				IdeApp.Preferences.DefaultTargetRuntime = Runtime.SystemAssemblyService.CurrentRuntime;
 		}
 
 		static TimeCounter commandTimeCounter;

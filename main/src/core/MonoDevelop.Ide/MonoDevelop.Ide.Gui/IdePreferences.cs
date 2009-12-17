@@ -183,11 +183,13 @@ namespace MonoDevelop.Ide.Gui
 
 		public TargetRuntime DefaultTargetRuntime {
 			get {
-				string id = PropertyService.Get ("MonoDevelop.Ide.DefaultTargetRuntime", Runtime.SystemAssemblyService.CurrentRuntime.Id); 
+				string id = PropertyService.Get ("MonoDevelop.Ide.DefaultTargetRuntime", "__current"); 
+				if (id == "__current")
+					return Runtime.SystemAssemblyService.CurrentRuntime;
 				TargetRuntime tr = Runtime.SystemAssemblyService.GetTargetRuntime (id);
 				return tr ?? Runtime.SystemAssemblyService.CurrentRuntime;
 			}
-			set { PropertyService.Set ("MonoDevelop.Ide.DefaultTargetRuntime", value.Id); }
+			set { PropertyService.Set ("MonoDevelop.Ide.DefaultTargetRuntime", value.IsRunning ? "__current" : value.Id); }
 		}
 
 		public event EventHandler<PropertyChangedEventArgs> DefaultTargetRuntimeChanged {
