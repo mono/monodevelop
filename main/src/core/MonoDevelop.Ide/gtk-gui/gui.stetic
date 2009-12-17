@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -4134,6 +4134,7 @@ Months</property>
   </widget>
   <widget class="Gtk.Window" id="MonoDevelop.Ide.DocumentSwitcher" design-size="490 350">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes" />
     <property name="TypeHint">Menu</property>
     <property name="WindowPosition">CenterOnParent</property>

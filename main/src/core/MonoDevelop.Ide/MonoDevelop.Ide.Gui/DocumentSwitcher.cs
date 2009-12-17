@@ -37,7 +37,8 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide
 {
-	public partial class DocumentSwitcher : Gtk.Window
+	
+	internal partial class DocumentSwitcher : Gtk.Window
 	{
 		Gtk.ListStore padListStore;
 		Gtk.ListStore documentListStore;
@@ -292,6 +293,8 @@ namespace MonoDevelop.Ide
 				                                doc);
 			}
 		}
+		
+		//FIXME: get ctrl(-shift)-tab keybindings from the Switch(Next|Previous)Document commands
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			bool next = (evnt.State & Gdk.ModifierType.ShiftMask) != ModifierType.ShiftMask;

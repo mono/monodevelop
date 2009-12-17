@@ -1,5 +1,12 @@
 2009-12-17  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs: Make widget
+	  internal. Add a note re. getting keybindings from commands.
+
+2009-12-17  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs: Fix the HasToplevelFocus
 	  behaviour with floating pads.
 
