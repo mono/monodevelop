@@ -27,6 +27,7 @@
 
 
 using System;
+using System.Linq;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.Addins;
@@ -49,7 +50,9 @@ namespace MonoDevelop.Ide.Commands
 		SplitWindowVertically,
 		SplitWindowHorizontally,
 		UnsplitWindow,
-		SwitchSplitWindow
+		SwitchSplitWindow,
+		SwitchNextDocument,
+		SwitchPreviousDocument
 	}
 
 	internal class NextWindowHandler : CommandHandler
@@ -220,5 +223,40 @@ namespace MonoDevelop.Ide.Commands
 				splittUnsplitt.SwitchWindow ();
 		}
 	}
-
+	
+	internal class SwitchNextDocument : CommandHandler
+	{
+		protected static void Switch (bool next)
+		{
+			//FIXME: does this option need to exist?
+			if (!PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true)) {
+				IdeApp.CommandService.DispatchCommand (next? WindowCommands.NextWindow : WindowCommands.PrevWindow);
+				return;
+			}
+			
+			var toplevel = Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus)
+				?? IdeApp.Workbench.RootWindow;
+			var sw = new DocumentSwitcher (toplevel, next);
+			sw.ShowAll ();
+			sw.GrabFocus ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.HasToplevelFocus;
+		}
+		
+		protected override void Run ()
+		{
+			Switch (true);
+		}
+	}
+	
+	internal class SwitchPreviousDocument : SwitchNextDocument
+	{
+		protected override void Run ()
+		{
+			Switch (false);
+		}
+	}
 }

@@ -446,7 +446,6 @@ namespace MonoDevelop.Ide.Gui
 					memento.Bounds = normalBounds;
 				}
 				memento.WindowState = GdkWindow.State;
-	
 				memento.FullScreen  = fullscreen;
 				if (layout != null)
 					memento.LayoutMemento = (Properties)layout.Memento;
@@ -636,21 +635,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			//FIXME: Mac-ify this. The control key use is hardcoded into DocumentSwitcher too
 			Gdk.ModifierType tabSwitchModifier = Gdk.ModifierType.ControlMask;
-			
-			// Handle Tab+Control == NextWindow, Tab+Shift+Control == PrevWindow commands.
-			if (evnt.Key == Gdk.Key.Tab || evnt.Key == Gdk.Key.ISO_Left_Tab) {
-				if ((evnt.State & tabSwitchModifier) != 0) {
-					bool selectNext = (evnt.State & Gdk.ModifierType.ShiftMask) != Gdk.ModifierType.ShiftMask;
-					if (PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true)) {
-						DocumentSwitcher switcher = new DocumentSwitcher (this, selectNext);
-						switcher.ShowAll ();
-						switcher.GrabFocus ();
-					} else {
-						IdeApp.CommandService.DispatchCommand (selectNext ? WindowCommands.NextWindow : WindowCommands.PrevWindow);
-					}
-					return true;
-				}
-			}
 			
 			// Handle Alt+1-0 keys
 			Gdk.ModifierType winSwitchModifier = PropertyService.IsMac

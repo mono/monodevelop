@@ -1,3 +1,12 @@
+2009-12-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Commands/WindowCommands.cs: Make the
+	  document switcher into a pair of commands, instead of
+	  hardcoding it into the main view, so it can be triggered
+	  from floating pads.
+
 2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Added new property,
