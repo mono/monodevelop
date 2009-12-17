@@ -141,9 +141,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchentry1.Visible = true;
 			this.searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types or members");
 			this.searchentry1.InnerEntry.Changed += SearchEntryhandleChanged;
-			this.buttonCancelSearch.Clicked += delegate {
-				notebook1.Page = 1;
-			};
+			
 			CheckMenuItem checkMenuItem = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Types"));
 			checkMenuItem.Active = true;
 			checkMenuItem.Toggled += delegate {
@@ -393,9 +391,16 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public void StartSearch ()
 		{
-			this.notebook1.Page = 2;
+			string query = searchentry1.Query;
 			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy)
 				searchBackgoundWorker.CancelAsync ();
+			
+			if (string.IsNullOrEmpty (query)) {
+				notebook1.Page = 1;
+				return;
+			}
+			
+			this.notebook1.Page = 2;
 			
 			switch (searchMode) {
 			case SearchMode.Member:
@@ -422,7 +427,7 @@ namespace MonoDevelop.AssemblyBrowser
 				searchBackgoundWorker = null;
 			};
 			
-			searchBackgoundWorker.RunWorkerAsync (searchentry1.Query);
+			searchBackgoundWorker.RunWorkerAsync (query);
 		}
 	
 		void SearchDoWork (object sender, DoWorkEventArgs e)

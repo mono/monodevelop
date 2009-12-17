@@ -1,5 +1,14 @@
 2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:
+	  Remove the cancel-search button, because it duplicates the
+	  function clear-textbox button.
+
+2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/objects.xml:

@@ -116,23 +116,6 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Button" id="buttonCancelSearch">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Type">TextAndIcon</property>
-                <property name="Icon">stock:gtk-close Menu</property>
-                <property name="Label" translatable="yes" />
-                <property name="UseUnderline">True</property>
-              </widget>
-              <packing>
-                <property name="PackType">End</property>
-                <property name="Position">5</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="MonoDevelop.Components.SearchEntry" id="searchentry1">
                 <property name="MemberName" />
                 <property name="ActiveFilterID">0</property>
@@ -141,7 +124,7 @@
               </widget>
               <packing>
                 <property name="PackType">End</property>
-                <property name="Position">6</property>
+                <property name="Position">5</property>
                 <property name="AutoSize">True</property>
               </packing>
             </child>
@@ -155,7 +138,7 @@
               </widget>
               <packing>
                 <property name="PackType">End</property>
-                <property name="Position">7</property>
+                <property name="Position">6</property>
                 <property name="AutoSize">False</property>
               </packing>
             </child>
@@ -167,7 +150,7 @@
               </widget>
               <packing>
                 <property name="PackType">End</property>
-                <property name="Position">8</property>
+                <property name="Position">7</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
