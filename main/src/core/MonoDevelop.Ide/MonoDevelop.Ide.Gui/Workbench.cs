@@ -185,9 +185,13 @@ namespace MonoDevelop.Ide.Gui
 		public bool HasToplevelFocus {
 			get {
 				var toplevel = Gtk.Window.ListToplevels ().Where (x => x.HasToplevelFocus).FirstOrDefault ();
+				if (toplevel == null)
+					return false;
+				if (toplevel == RootWindow)
+					return true;
 				//FIXME: don't depend on type name string
-				return toplevel != null && 
-					(toplevel == RootWindow || toplevel.GetType ().FullName.StartsWith ("MonoDevelop.Components.Docking"));
+				var c = toplevel.Child;
+				return c != null && c.GetType ().FullName.StartsWith ("MonoDevelop.Components.Docking");
 			}
 		}
 		
