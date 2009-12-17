@@ -1,3 +1,8 @@
+2009-12-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/PadTreeView.cs: Enable
+	  AutoTooltips on all PadTreeViews.
+
 2009-12-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs:

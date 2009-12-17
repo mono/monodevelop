@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			changer = new PadFontChanger (this,
 				delegate (Pango.FontDescription desc) { textRenderer.FontDesc = desc; },
 				ColumnsAutosize);
+			MonoDevelop.Components.GtkUtil.EnableAutoTooltips (this);
 		}
 		
 		public CellRendererText TextRenderer {
