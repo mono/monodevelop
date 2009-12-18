@@ -636,6 +636,11 @@ namespace Stetic
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
+			bool r = base.OnExposeEvent (ev);
+			//FIXME Disabled checkerboard background because it's very inefficient and makes the control *very* slow to resize
+			// It should take the EventExpose area into account, invalidate more selectively during resizes (GTK viewport 
+			// code would probably be a good start), and take advantage of the flat block color the parent is rendering.
+			/*
 			int size = 8;
 			bool squareColor = true;
 			bool startsquareColor = true;
@@ -653,7 +658,7 @@ namespace Stetic
 			}
 
 			foreach (Widget cw in Children)
-				PropagateExpose (cw, ev);
+				PropagateExpose (cw, ev);*/
 
 			Gdk.Rectangle rect = child.Allocation;
 			if (Stetic.Metacity.Preview.ThemeError) 
@@ -661,7 +666,7 @@ namespace Stetic
 			
 			Pixbuf sh = Shadow.AddShadow (rect.Width, rect.Height);
 			GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), sh, 0, 0, rect.X - 5, rect.Y - 5, sh.Width, sh.Height, RgbDither.None, 0, 0); 
-			return true;
+			return r;
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey ev)
