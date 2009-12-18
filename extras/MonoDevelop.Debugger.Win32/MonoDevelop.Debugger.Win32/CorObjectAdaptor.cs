@@ -479,7 +479,7 @@ namespace MonoDevelop.Debugger.Win32
 			CorValue obj = GetRealObject (ctx, objr);
 
 			if ((obj is CorReferenceValue) && ((CorReferenceValue) obj).IsNull)
-				return new LiteralExp ("(null)");
+				return new EvaluationResult ("(null)");
 
 			CorStringValue stringVal = obj as CorStringValue;
 			if (stringVal != null)
@@ -496,7 +496,7 @@ namespace MonoDevelop.Debugger.Win32
 					tn.Append (dims [n]);
 				}
 				tn.Append ("]");
-				return new LiteralExp (tn.ToString ());
+				return new EvaluationResult (tn.ToString ());
 			}
 
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
@@ -513,7 +513,7 @@ namespace MonoDevelop.Debugger.Win32
 					foreach (ValueReference evals in GetMembers (ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static)) {
 						ulong nev = (ulong) System.Convert.ChangeType (evals.ObjectValue, typeof (ulong));
 						if (nval == nev)
-							return new LiteralExp (enumName + "." + evals.Name);
+							return new EvaluationResult (enumName + "." + evals.Name);
 						if (isFlags && nev != 0 && (nval & nev) == nev) {
 							if (flags == null)
 								flags = enumName + "." + evals.Name;
@@ -527,7 +527,7 @@ namespace MonoDevelop.Debugger.Win32
 							return nval;
 						if (remainingFlags != 0)
 							flags += " | " + remainingFlags;
-						return new LiteralExp (flags);
+						return new EvaluationResult (flags);
 					} else
 						return nval;
 				}
@@ -535,7 +535,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (co == null)
 					return null;
 				if (co.Class.GetTypeInfo (cctx.Session).Name == "System.Decimal")
-					return new LiteralExp (CallToString (ctx, objr));
+					return new EvaluationResult (CallToString (ctx, objr));
 
 				return base.TargetObjectToObject (ctx, objr);
 			}
