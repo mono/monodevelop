@@ -122,6 +122,7 @@
     <Compile Include="MobileProvision.cs" />
     <Compile Include="PropertyList\PlistDate.cs" />
     <Compile Include="Device.cs" />
+    <Compile Include="DataConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

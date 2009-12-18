@@ -201,35 +201,49 @@ namespace MonoDevelop.IPhone.Gui
 		void UpdateProfiles ()
 		{
 			profileStore.Clear ();
+			
 			TreeIter iter;
 			int active = identityCombo.Active;
 			if (active >= 0 && identityStore.GetIter (out iter, new TreePath (new int[] { active }))) {
 				var name = (string) identityStore.GetValue (iter, 1);
-				if (name.StartsWith (Keychain.DIST_CERT_PREFIX)) {
-					var cert = identityStore.GetValue (iter, 2) as X509Certificate2;
-					foreach (var mp in profiles) {
-						foreach (var profileCert in mp.DeveloperCertificates) {
-							if ((cert == null && Keychain.GetCertificateCommonName (profileCert).StartsWith (Keychain.DIST_CERT_PREFIX))
-							    || (cert != null && profileCert.Thumbprint == cert.Thumbprint))
-							{
-								if (string.IsNullOrEmpty (mp.Uuid))
-									LoggingService.LogWarning ("Provisioning Profile '{0}' has no UUID", mp.Name);
-								else
-									profileStore.AppendValues (GLib.Markup.EscapeText (mp.Name), mp.Uuid, mp);
-								break;
-							}
-						}
+				var cert = identityStore.GetValue (iter, 2) as X509Certificate2;
+				
+				Func<X509Certificate2, bool> matchIdentity;
+				if (cert != null) {
+					matchIdentity = c => c.Thumbprint == cert.Thumbprint;
+				} else {
+					string autoPrefix = name.StartsWith (Keychain.DIST_CERT_PREFIX)?
+						Keychain.DIST_CERT_PREFIX : Keychain.DEV_CERT_PREFIX;
+					matchIdentity = c => Keychain.GetCertificateCommonName (c).StartsWith (autoPrefix);
+				}
+				
+				var isDuplicate = new Dictionary<string, bool> ();
+				var filtered = profiles.Where (p => p.DeveloperCertificates.Any (matchIdentity)).Where (p => {
+					if (string.IsNullOrEmpty (p.Uuid)) {
+						LoggingService.LogWarning ("Provisioning Profile '{0}' has no UUID", p.Name);
+						return false;
 					}
-					if (profileStore.IterNChildren () > 0) {
-						provisioningCombo.Active = 0;
-						provisioningCombo.Sensitive = true;
-						return;
+					isDuplicate[p.Name] = isDuplicate.ContainsKey (p.Name);
+					return true;
+				}).ToList ();
+				
+				if (filtered.Any ()) {
+					profileStore.AppendValues (GettextCatalog.GetString ("<b>Automatic</b>"), null, null);
+					
+					foreach (var f in filtered) {
+						var displayName = isDuplicate[f.Name]
+							? string.Format ("{0} ({1})", f.Name, f.CreationDate)
+							: f.Name;
+						profileStore.AppendValues (GLib.Markup.EscapeText (displayName), f.Uuid, f);
 					}
-				//	provisioningCombo.ActiveText = GettextCatalog.GetString ("(none found)");
-				//} else {
-				//	provisioningCombo.ActiveText = GettextCatalog.GetString ("(development)");
+					provisioningCombo.Active = 0;
+					provisioningCombo.Sensitive = true;
+					return;
 				}
 			}
+			
+			profileStore.AppendValues (GettextCatalog.GetString ("None found"), null, null);
+			provisioningCombo.Active = 0;
 			provisioningCombo.Sensitive = false;
 		}
 		

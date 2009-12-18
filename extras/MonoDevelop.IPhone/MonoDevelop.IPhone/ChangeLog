@@ -1,3 +1,20 @@
+2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneSigningKeyPanel.cs: Enable provisioning profiles
+	  for dev keys too. Add an "automatic" entry.
+
+	* DataConverter.cs:
+	* MobileProvision.cs:
+	* MonoDevelop.IPhone.csproj: Added DataConverter.
+
+	* IPhoneBuildExtension.cs: Embed entitlements and provisioning
+	  profile into developer-signed builds. Autodetect valid
+	  profiles and keys for the app bundle. Merge provisioning
+	  profile entitlements into the app entitlements. Generate the
+	  xcent directly instead of calling mtouchpack. Add much more
+	  detailed error outputs. Refactor the packaging code into a
+	  number of separate methods so it's easier to follow.
+
 2009-12-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Keychain.cs: More error logging for certificate/identity/key
