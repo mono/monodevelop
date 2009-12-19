@@ -340,9 +340,6 @@ namespace MonoDevelop.Core.Assemblies
 			if (asm != null)
 				return asm.Location;
 			
-			if (assemblyName == "mscorlib" || assemblyName.StartsWith ("mscorlib,"))
-				return typeof(object).Assembly.Location;
-			
 			return null;
 		}
 		

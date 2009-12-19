@@ -1,3 +1,12 @@
+2009-12-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: Don't fall
+	  back to returning current corlib if an exact match for a
+	  corlib assembly name can't be found, as this breaks composed
+	  assembly contexts. The first context will return current
+	  corlib, and the later assembly contexts - that contains the
+	  real corlib - are then not queried at all.
+
 2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: When
