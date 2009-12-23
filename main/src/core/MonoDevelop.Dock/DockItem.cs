@@ -107,6 +107,11 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
+		public bool VisibleInLayout (string layout)
+		{
+			return frame.GetVisible (this, layout); 
+		}
+		
 		public DockItemStatus Status {
 			get {
 				return frame.GetStatus (this); 

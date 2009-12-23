@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.Docking
 		int handlePadding = 1;
 		int defaultItemWidth = 130;
 		int defaultItemHeight = 130;
-		uint autoShowDelay = 500;
+		uint autoShowDelay = 50;
 		uint autoHideDelay = 500;
 		
 		SortedDictionary<string,DockLayout> layouts = new SortedDictionary<string,DockLayout> ();
@@ -328,6 +328,18 @@ namespace MonoDevelop.Components.Docking
 		internal bool GetVisible (DockItem item)
 		{
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
+			if (gitem == null)
+				return false;
+			return gitem.VisibleFlag;
+		}
+		
+		internal bool GetVisible (DockItem item, string layoutName)
+		{
+			DockLayout dl;
+			if (!layouts.TryGetValue (layoutName, out dl))
+				return false;
+			
+			DockGroupItem gitem = dl.FindDockGroupItem (item.Id);
 			if (gitem == null)
 				return false;
 			return gitem.VisibleFlag;

@@ -1,3 +1,10 @@
+2009-12-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockItem.cs:
+	* DockFrame.cs: Reduce default delay for showing a minimized
+	  pad. Added method for checking if a pad is visible in a
+	  layout.
+
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
