@@ -1,3 +1,12 @@
+2009-12-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/GtkUtil.cs:
+	* MonoDevelop.Components/HslColor.cs: Added Cairo color
+	  conversion methods.
+
+	* MonoDevelop.Components/MiniButton.cs: Added clickable
+	  option.
+
 2009-12-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandManager.cs: Avoid the

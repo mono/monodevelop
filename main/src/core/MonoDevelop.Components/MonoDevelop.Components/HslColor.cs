@@ -86,6 +86,11 @@ namespace MonoDevelop.Components
 			                  (byte)(255 * b));
 		}
 		
+		public static implicit operator Cairo.Color (HslColor hsl)
+		{
+			return ((Gdk.Color)hsl).ToCairoColor ();
+		}
+		
 		public static implicit operator HslColor (Color color)
 		{
 			return new HslColor (color);

@@ -39,6 +39,7 @@ namespace MonoDevelop.Components
 		public MiniButton ()
 		{
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
+			Clickable = true;
 		}
 		
 		public MiniButton (Gtk.Widget label): this ()
@@ -47,6 +48,27 @@ namespace MonoDevelop.Components
 			label.Show ();
 		}
 		
+		public MiniButton (string text): this ()
+		{
+			Label label = new Label (text);
+			Add (label);
+			label.Show ();
+		}
+		
+		public MiniButton (string text, string icon): this ()
+		{
+			HBox box = new HBox (false, 3);
+			Image img = new Image (icon, IconSize.Menu);
+			box.PackStart (img, false, false, 0);
+			Label label = new Label (text);
+			label.Xalign = 0;
+			box.PackStart (label, true, true, 0);
+			box.ShowAll ();
+			Add (box);
+		}
+		
+		public bool Clickable { get; set; }
+		
 		public bool ToggleMode { get; set; }
 		
 		public bool Pressed {
@@ -54,7 +76,7 @@ namespace MonoDevelop.Components
 				return pressed;
 			}
 			set {
-				if (ToggleMode && pressed != value) {
+				if (ToggleMode && Clickable && pressed != value) {
 					pressed = value;
 					SetBg (value || highligted);
 				}
@@ -71,7 +93,7 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1)
+			if (evnt.Button == 1 && Clickable)
 				OnClicked ();
 			return base.OnButtonPressEvent (evnt);
 		}
@@ -79,22 +101,26 @@ namespace MonoDevelop.Components
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			normalColor = Style.Background (Gtk.StateType.Normal);
+			normalColor = Parent.Style.Background (Gtk.StateType.Normal);
 		}
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			highligted = true;
-			if (!ToggleMode || !pressed)
-				SetBg (true);
+			if (Clickable) {
+				highligted = true;
+				if (!ToggleMode || !pressed)
+					SetBg (true);
+			}
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			highligted = false;
-			if (!ToggleMode || !pressed)
-				SetBg (false);
+			if (Clickable) {
+				highligted = false;
+				if (!ToggleMode || !pressed)
+					SetBg (false);
+			}
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		

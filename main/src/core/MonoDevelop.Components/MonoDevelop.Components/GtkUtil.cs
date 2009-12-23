@@ -35,6 +35,13 @@ namespace MonoDevelop.Components
 	{
 		static Dictionary<TreeView, TreeViewTooltipsData> treeData = new Dictionary<TreeView, TreeViewTooltipsData> ();
 		
+		public static Cairo.Color ToCairoColor (this Gdk.Color color)
+		{
+			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
+			                        (double)color.Green / ushort.MaxValue,
+			                        (double)color.Blue / ushort.MaxValue);
+		}
+		
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();
