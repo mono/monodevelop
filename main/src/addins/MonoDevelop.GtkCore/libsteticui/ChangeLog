@@ -1,3 +1,11 @@
+2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* WidgetDesignerBackend.cs: Disable checkerboard background
+	  because redraw is super-inefficient and makes resizing
+	  unbearably slow. It needs to do more selective invalidation
+	  in resizes (like GTK viewport), and take the exposed area
+	  into account in expose events.
+
 2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WidgetDesignerBackend.cs: Don't try to realize the child if

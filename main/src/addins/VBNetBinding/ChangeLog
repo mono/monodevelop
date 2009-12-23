@@ -1,3 +1,8 @@
+2009-12-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/VBGtkSharp2Project.xpt.xml: Set correct assembly
+	  target for gui projects.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBLanguageBinding.cs:

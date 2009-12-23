@@ -452,35 +452,39 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 		void CheckReference (ComponentToolboxNode node)
 		{
-				if (node.Reference == null)
+			if (node.Reference == null)
+				return;
+			
+			ProjectReference pref;
+			
+			// If the class name includes an assembly name it means that the
+			// widget is implemented in another assembly, not in the one that
+			// has the objects.xml file.
+			int i = node.ClassName.IndexOf (',');
+			if (i != -1) {
+				string asm = node.ClassName.Substring (i+1).Trim ();
+				if (asm == "gtk-sharp")
+					// If we are adding a widget to a window, the project must already have a gtk# reference
 					return;
 				
-				ProjectReference pref;
-				
-				// If the class name includes an assembly name it means that the
-				// widget is implemented in another assembly, not in the one that
-				// has the objects.xml file.
-				int i = node.ClassName.IndexOf (',');
-				if (i != -1) {
-					string asm = node.ClassName.Substring (i+1).Trim ();
-					asm = gproject.Project.AssemblyContext.GetAssemblyFullName (asm, gproject.Project.TargetFramework);
-					if (asm == null)
-						return;
-					if (gproject.Project.AssemblyContext.GetPackagesFromFullName (asm).Length > 0) {
-						pref = new ProjectReference (ReferenceType.Gac, asm);
-					} else {
-						asm = gproject.Project.AssemblyContext.GetAssemblyLocation (asm, gproject.Project.TargetFramework);
-						pref = new ProjectReference (ReferenceType.Assembly, asm);
-					}
+				asm = gproject.Project.AssemblyContext.GetAssemblyFullName (asm, gproject.Project.TargetFramework);
+				if (asm == null)
+					return;
+				if (gproject.Project.AssemblyContext.GetPackagesFromFullName (asm).Length > 0) {
+					pref = new ProjectReference (ReferenceType.Gac, asm);
+				} else {
+					asm = gproject.Project.AssemblyContext.GetAssemblyLocation (asm, gproject.Project.TargetFramework);
+					pref = new ProjectReference (ReferenceType.Assembly, asm);
 				}
-				else
-					pref = new ProjectReference (node.ReferenceType, node.Reference);
-				
-				foreach (ProjectReference pr in gproject.Project.References) {
-					if (pr.Reference == pref.Reference)
-						return;
-				}
-				gproject.Project.References.Add (pref);
+			}
+			else
+				pref = new ProjectReference (node.ReferenceType, node.Reference);
+			
+			foreach (ProjectReference pr in gproject.Project.References) {
+				if (pr.Reference == pref.Reference)
+					return;
+			}
+			gproject.Project.References.Add (pref);
 		}
 		
 		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()

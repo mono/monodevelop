@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -80,6 +81,15 @@ namespace MonoDevelop.Core.Assemblies
 					j = FullName.Length;
 				return FullName.Substring (i, j - i);
 			}
+		}
+		
+		internal IEnumerable<SystemAssembly> AllSameName ()
+		{
+			SystemAssembly asm = this;
+			do {
+				yield return asm;
+				asm = asm.NextSameName;
+			} while (asm != null);
 		}
 	}
 }

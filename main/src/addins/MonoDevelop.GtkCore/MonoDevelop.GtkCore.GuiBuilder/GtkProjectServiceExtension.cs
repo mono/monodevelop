@@ -10,37 +10,38 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GtkProjectServiceExtension: ProjectServiceExtension
 	{
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
+		public override bool SupportsItem (IBuildTarget item)
 		{
 			if (!IdeApp.IsInitialized)
-				return base.Build (monitor, entry, configuration);
+				return false;
 			
-			DotNetProject project = entry as DotNetProject;
-			if (GtkDesignInfo.HasDesignedObjects (project)) {
+			DotNetProject project = item as DotNetProject;
+			return project != null && GtkDesignInfo.HasDesignedObjects (project);
+		}
 
-				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
+		{
+			DotNetProject project = (DotNetProject) entry;
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 
-				// The code generator must run in the GUI thread since it needs to
-				// access to Gtk classes
-				Generator gen = new Generator ();
-				lock (gen) {
-					Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
-					Monitor.Wait (gen);
-				}
-						
-				BuildResult res = base.Build (monitor, entry, configuration);
-						
-				if (gen.Messages != null) {
-					foreach (string s in gen.Messages)
-						res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
-							
-					if (gen.Messages.Length > 0)
-						info.ForceCodeGenerationOnBuild ();
-				}
-				return res;
+			// The code generator must run in the GUI thread since it needs to
+			// access to Gtk classes
+			Generator gen = new Generator ();
+			lock (gen) {
+				Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
+				Monitor.Wait (gen);
 			}
-			
-			return base.Build (monitor, entry, configuration);
+					
+			BuildResult res = base.Build (monitor, entry, configuration);
+
+			if (gen.Messages != null) {
+				foreach (string s in gen.Messages)
+					res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
+						
+				if (gen.Messages.Length > 0)
+					info.ForceCodeGenerationOnBuild ();
+			}
+			return res;
 		}
 	}
 	

@@ -1,3 +1,26 @@
+2009-12-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: Don't fall
+	  back to returning current corlib if an exact match for a
+	  corlib assembly name can't be found, as this breaks composed
+	  assembly contexts. The first context will return current
+	  corlib, and the later assembly contexts - that contains the
+	  real corlib - are then not queried at all.
+
+2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: When
+	  searching for an assembly by name, prefer framework
+	  assemblies. Consider all assemblies of same name when
+	  determining whether an assembly name is a framework
+	  assembly.
+
+	* MonoDevelop.Core.Assemblies/SystemAssembly.cs: Add method
+	  for enumerating the NextSameName linked list.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Block name
+	  conflicts with existing fx packages, not just name+version.
+
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetFramework.cs: Fix a

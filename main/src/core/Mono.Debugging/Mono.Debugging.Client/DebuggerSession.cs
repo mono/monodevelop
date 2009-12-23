@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using Mono.Debugging.Backend;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Mono.Debugging.Client
 {
@@ -461,8 +462,17 @@ namespace Mono.Debugging.Client
 
 		void BreakpointStoreCheckingReadOnly (object sender, ReadOnlyCheckEventArgs e)
 		{
-			lock (slock) {
-				e.SetReadOnly (!AllowBreakEventChanges);
+			// When this used 'lock', it was a common cause of deadlocks, as it is called on a timeout from the GUI 
+			// thread, so if something else held the session lock, the GUI would deadlock. Instead we use TryEnter,
+			// so the worst that can happen is that users won't be able to modify breakpoints.
+			//FIXME: why do we always lock accesses to AllowBreakEventChanges? Only MonoDebuggerSession needs it locked.
+			bool entered = false;
+			try {
+				entered = Monitor.TryEnter (slock, TimeSpan.FromMilliseconds (10));
+				e.SetReadOnly (!entered || !AllowBreakEventChanges);
+			} finally {
+				if (entered)
+					Monitor.Exit (slock);
 			}
 		}
 		

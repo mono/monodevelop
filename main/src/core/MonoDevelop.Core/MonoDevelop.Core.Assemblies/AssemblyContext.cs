@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
@@ -280,22 +281,27 @@ namespace MonoDevelop.Core.Assemblies
 			if (fasm != null)
 				return fullname;
 			
-			// Try to find a newer version of the same assembly
-			
+			// Try to find a newer version of the same assembly, preferring framework assemblies
 			if (fx == null) {
-				foreach (SystemAssembly asm in FindNewerAssembliesSameName (fullname))
-					if (package == null || asm.Package.Name == package)
-						return asm.FullName;
-				return null;
+				string best = null;
+				foreach (SystemAssembly asm in FindNewerAssembliesSameName (fullname)) {
+					if (package == null || asm.Package.Name == package) {
+						if (asm.Package.IsFrameworkPackage)
+							return asm.FullName;
+						else
+							best = asm.FullName;
+					}
+				}
+				return best;
 			}
 			
 			string bestMatch = null;
 			foreach (SystemAssembly asm in FindNewerAssembliesSameName (fullname)) {
-				if (fx.Id == asm.Package.TargetFramework) {
-					if (package == null || asm.Package.Name == package)
-						return asm.FullName;
-				}
-				if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework)) {
+				if (asm.Package.IsFrameworkPackage) {
+					if (fx.IsExtensionOfFramework (asm.Package.TargetFramework))
+						if (package == null || asm.Package.Name == package)
+							return asm.FullName;
+				} else if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework)) {
 					if (package != null && asm.Package.Name == package)
 						return asm.FullName;
 					bestMatch = asm.FullName;
@@ -333,9 +339,6 @@ namespace MonoDevelop.Core.Assemblies
 			SystemAssembly asm = GetAssemblyFromFullName (assemblyName, package, fx);
 			if (asm != null)
 				return asm.Location;
-			
-			if (assemblyName == "mscorlib" || assemblyName.StartsWith ("mscorlib,"))
-				return typeof(object).Assembly.Location;
 			
 			return null;
 		}
@@ -407,28 +410,31 @@ namespace MonoDevelop.Core.Assemblies
 			if (asm == null)
 				return null;
 			
-			//if the asm isn't a framework asm, we don't upgrade it automatically
-			if (!asm.Package.IsFrameworkPackage) {
+			var fxAsms = asm.AllSameName ().Where (a => a.Package.IsFrameworkPackage);
+			
+			//if the asm is not a framework asm, we don't upgrade it automatically
+			if (!fxAsms.Any ()) {
 				// Return null if the package is not compatible with the requested version
 				if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework))
 					return asm;
 				else
 					return null;
 			}
-			if (fx.IsExtensionOfFramework (asm.Package.TargetFramework))
-				return asm;
+			
+			foreach (var fxAsm in fxAsms) {
+				if (fx.IsExtensionOfFramework (fxAsm.Package.TargetFramework))
+					return fxAsm;
+			}
 
 			// We have to find the assembly with the same name in the target fx
-			string fname = Path.GetFileName ((string) asm.Location);
+			string fname = Path.GetFileName ((string) fxAsms.First ().Location);
 			
-			foreach (KeyValuePair<string, SystemAssembly> pair in assemblyFullNameToAsm) {
-				SystemAssembly fxAsm = pair.Value;
-				do {
-					SystemPackage rpack = fxAsm.Package;
+			foreach (var pair in assemblyFullNameToAsm) {
+				foreach (var fxAsm in pair.Value.AllSameName ()) {
+					var rpack = fxAsm.Package;
 					if (rpack.IsFrameworkPackage && fx.IsExtensionOfFramework (rpack.TargetFramework) && Path.GetFileName (fxAsm.Location) == fname)
 						return fxAsm;
-					fxAsm = fxAsm.NextSameName;
-				} while (fxAsm != null);
+				}
 			}
 			return null;
 		}

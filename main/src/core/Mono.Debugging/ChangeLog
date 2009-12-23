@@ -1,3 +1,8 @@
+2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.Debugging.Client/DebuggerSession.cs: Workaround for
+	  possible deadlock.
+
 2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ValueReference.cs:

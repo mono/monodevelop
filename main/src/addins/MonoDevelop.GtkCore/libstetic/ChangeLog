@@ -1,3 +1,7 @@
+2009-12-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libstetic.csproj: Flush.
+
 2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Table.cs: Fix table creation issue. Sync call has no

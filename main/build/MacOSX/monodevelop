@@ -73,7 +73,7 @@ else
 fi
 
 if [ -z "$MD_DONT_REDIRECT_OUTPUT" ]; then
-	mkdir -p `dirname "$_MD_LOG_FILE"`
+	mkdir -p "`dirname \"$_MD_LOG_FILE\"`"
 	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$_MD_LOG_FILE"
 else
 	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $*

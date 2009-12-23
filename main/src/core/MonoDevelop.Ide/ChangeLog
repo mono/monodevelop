@@ -1,3 +1,13 @@
+2009-12-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: When setting the
+	  current runtime as default, don't store the actual runtime
+	  id, but a marker saying that we want the current. In this
+	  way we'll stay current even if the current Mono version is
+	  upgraded. Handle upgrade from MD 2.2-, which didn't have
+	  this behavior.
+
 2009-12-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:
