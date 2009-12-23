@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		ArrayList alltemplates = new ArrayList();
 		List<Category> categories = new List<Category> ();
 		
-		IconView TemplateView;
+		TemplateView templateView;
 		TreeStore catStore;
 		
 		bool openSolution;
@@ -68,6 +68,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		SolutionFolder parentFolder;
 		CombineEntryFeatureSelector featureList;
 		IWorkspaceFileObject newItem;
+		Category recentCategory;
+		List<string> recentIds = new List<string> ();
 			
 		public NewProjectDialog (SolutionFolder parentFolder, bool openCombine, string basePath)
 		{
@@ -91,7 +93,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				txt_subdirectory.Hide ();
 				chk_combine_directory.Active = false;
 				chk_combine_directory.Hide ();
-				hseparator.Hide ();
 				lbl_subdirectory.Hide ();
 			}
 		}
@@ -103,13 +104,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			SelectTemplate (iter, id);
 		}
 		
+		ProjectTemplate GetTemplate (string id)
+		{
+			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
+				if (template.Id == id)
+					return template;
+			}
+			return null;
+		}
+		
 		bool SelectTemplate (TreeIter iter, string id)
 		{
 			do {
 				foreach (TemplateItem item in ((Category)catStore.GetValue (iter, 1)).Templates) {
 					if (item.Template.Id == id) {
 						lst_template_types.Selection.SelectIter (iter);
-						TemplateView.CurrentlySelected = item.Template;
+						templateView.CurrentlySelected = item.Template;
 						return true;
 					}
 				}
@@ -166,10 +176,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		void InitializeView()
 		{
 			InsertCategories (TreeIter.Zero, categories);
-			catStore.SetSortColumnId (0, SortType.Ascending);
-			SelectCategory (PropertyService.Get<string> ("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
+			if (recentCategory.Templates.Count == 0)
+				SelectCategory (PropertyService.Get<string> ("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
+			else
+				SelectTemplate (recentCategory.Templates [0].Template.Id);
 			ShowAll ();
 		}
+		
 		protected override void OnDestroyed ()
 		{
 			if (catStore != null) {
@@ -359,8 +372,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		bool CreateProject ()
 		{
-			if (TemplateView.CurrentlySelected != null) {
-				PropertyService.Set("Dialogs.NewProjectDialog.LastSelectedCategory",  ((ProjectTemplate)TemplateView.CurrentlySelected).Category);
+			if (templateView.CurrentlySelected != null) {
+				PropertyService.Set ("Dialogs.NewProjectDialog.LastSelectedCategory",  ((ProjectTemplate)templateView.CurrentlySelected).Category);
+				recentIds.Remove (templateView.CurrentlySelected.Id);
+				recentIds.Insert (0, templateView.CurrentlySelected.Id);
+				if (recentIds.Count > 15)
+					recentIds.RemoveAt (recentIds.Count - 1);
+				string strRecent = string.Join (",", recentIds.ToArray ());
+				PropertyService.Set ("Dialogs.NewProjectDialog.RecentTemplates", strRecent);
+				PropertyService.SaveProperties ();
 				//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
 			}
 			
@@ -388,10 +408,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
 				CreateSolutionDirectory);
 			
-			if (TemplateView.CurrentlySelected == null || name.Length == 0)
+			if (templateView.CurrentlySelected == null || name.Length == 0)
 				return false;
 				
-			ProjectTemplate item = (ProjectTemplate) TemplateView.CurrentlySelected;
+			ProjectTemplate item = (ProjectTemplate) templateView.CurrentlySelected;
 			
 			try {
 				System.IO.Directory.CreateDirectory (ProjectLocation);
@@ -452,9 +472,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		// icon view event handlers
 		void SelectedIndexChange(object sender, EventArgs e)
 		{
-			if (TemplateView.CurrentlySelected != null) {
-				ProjectTemplate ptemplate = (ProjectTemplate) TemplateView.CurrentlySelected;
+			if (templateView.CurrentlySelected != null) {
+				ProjectTemplate ptemplate = (ProjectTemplate) templateView.CurrentlySelected;
 				lbl_template_descr.Text = StringParserService.Parse (ptemplate.Description);
+				labelTemplateTitle.Markup = "<b>" + GLib.Markup.EscapeText (ptemplate.Name) + "</b>";
 				
 				if (ptemplate.SolutionDescriptor.EntryDescriptors.Length == 0) {
 					txt_subdirectory.Sensitive = false;
@@ -474,8 +495,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 						btn_new.Label = Gtk.Stock.Ok;
 				}
 			}
-			else
+			else {
 				lbl_template_descr.Text = String.Empty;
+				labelTemplateTitle.Text = "";
+			}
 			
 			PathChanged (null, null);
 		}
@@ -487,7 +510,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void ActivateIfReady ()
 		{
-			if (TemplateView.CurrentlySelected == null || txt_name.Text.Trim () == "" || (txt_subdirectory.Sensitive && chk_combine_directory.Active && txt_subdirectory.Text.Trim ().Length == 0))
+			if (templateView.CurrentlySelected == null || txt_name.Text.Trim () == "" || (txt_subdirectory.Sensitive && chk_combine_directory.Active && txt_subdirectory.Text.Trim ().Length == 0))
 				btn_new.Sensitive = false;
 			else
 				btn_new.Sensitive = true;
@@ -513,8 +536,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 
 			lst_template_types.AppendColumn (catColumn);
 
-			TemplateView = new IconView ();
-			hbox_template.PackStart (TemplateView, true, true, 0);
+			templateView = new TemplateView ();
+			
+			boxTemplates.Add (templateView);
 
 			if (basePath == null)
 				basePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
@@ -523,9 +547,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 			PathChanged (null, null);
 			
-			TemplateView.IconSelected += new EventHandler(SelectedIndexChange);
-			TemplateView.IconDoubleClicked += new EventHandler(OpenEvent);
-			entry_location.PathChanged += new EventHandler (PathChanged);
+			templateView.SelectionChanged += SelectedIndexChange;
+			templateView.DoubleClicked += OpenEvent;
+			entry_location.PathChanged += PathChanged;
 			InitializeView ();
 		}
 
@@ -564,9 +588,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				
 				Category category = GetCategory(templateItem.Template.Category);
 				if (category != null )
-					category.Templates.Add(templateItem);
+					category.Templates.Add (templateItem);
 				
 				alltemplates.Add(templateItem);
+			}
+			
+			recentCategory = new Category (GettextCatalog.GetString ("Recent"));
+			string strRecent = PropertyService.Get<string> ("Dialogs.NewProjectDialog.RecentTemplates", "");
+			recentIds = new List<string> (strRecent.Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries));
+
+			foreach (string id in recentIds) {
+				ProjectTemplate pt = GetTemplate (id);
+				if (pt != null)
+					recentCategory.Templates.Add (new TemplateItem (pt));
 			}
 			
 			InitializeComponents ();
@@ -574,6 +608,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		private void InsertCategories (TreeIter node, List<Category> listCategories)
 		{
+			listCategories.Sort ();
+			if (TreeIter.Zero.Equals (node))
+				listCategories.Insert (0, recentCategory);
 			foreach (Category category in listCategories) {
 				if (TreeIter.Zero.Equals (node))
 					InsertCategories (catStore.AppendValues (category.Name, category), category.Categories);
@@ -589,10 +626,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			TreeIter treeIter;
 			
 			if (lst_template_types.Selection.GetSelected(out treeModel, out treeIter)) {
-				TemplateView.Clear();
+				templateView.Clear();
 				
 				foreach ( TemplateItem templateItem in  (catStore.GetValue(treeIter, 1) as Category).Templates) {
-					TemplateView.AddIcon(ImageService.GetStockId(templateItem.Template.Icon ?? "md-project", IconSize.Dnd), IconSize.Dnd, templateItem.Name, templateItem.Template);
+					templateView.Add (templateItem);
 				}
 				
 				btn_new.Sensitive = false;
@@ -600,7 +637,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			
 		}
 		
-		internal class Category 
+		protected virtual void OnBoxInfoSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+		}
+		
+		protected virtual void OnScrolledInfoSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+			if (labelTemplateTitle.WidthRequest != scrolledInfo.Allocation.Width) {
+				labelTemplateTitle.WidthRequest = scrolledInfo.Allocation.Width;
+				lbl_template_descr.WidthRequest = scrolledInfo.Allocation.Width;
+			}
+		}
+		
+		internal class Category: IComparable<Category>
 		{
 			private string name;
 			public string Name
@@ -623,6 +672,112 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			public List<Category> Categories
 			{
 				get { return categories; }
+			}
+
+			public int CompareTo (Category other)
+			{
+				return name.CompareTo (other.name);
+			}
+		}
+	
+		class TemplateView: ScrolledWindow
+		{
+			TemplateTreeView tree;
+			
+			public TemplateView ()
+			{
+				tree = new TemplateTreeView ();
+				tree.Selection.Changed += delegate {
+					if (SelectionChanged != null)
+						SelectionChanged (this, EventArgs.Empty);
+				};
+				tree.RowActivated += delegate {
+					if (DoubleClicked != null)
+						DoubleClicked (this, EventArgs.Empty);
+				};
+				Add (tree);
+				HscrollbarPolicy = PolicyType.Automatic;
+				VscrollbarPolicy = PolicyType.Automatic;
+				ShadowType = ShadowType.In;
+				ShowAll ();
+			}
+			
+			public ProjectTemplate CurrentlySelected {
+				get { return tree.CurrentlySelected; }
+				set { tree.CurrentlySelected = value; }
+			}
+			
+			public void Add (TemplateItem templateItem)
+			{
+				tree.Add (templateItem);
+			}
+			
+			public void Clear ()
+			{
+				tree.Clear ();
+			}
+			
+			public event EventHandler SelectionChanged;
+			public event EventHandler DoubleClicked;
+		}
+			
+		class TemplateTreeView: TreeView
+		{
+			Gtk.ListStore templateStore;
+			
+			public TemplateTreeView ()
+			{
+				HeadersVisible = false;
+				templateStore = new ListStore (typeof(string), typeof(string), typeof(ProjectTemplate));
+				Model = templateStore;
+				
+				TreeViewColumn col = new TreeViewColumn ();
+				CellRendererPixbuf crp = new CellRendererPixbuf ();
+				crp.StockSize = (uint) Gtk.IconSize.Dnd;
+				crp.Ypad = 2;
+				col.PackStart (crp, false);
+				col.AddAttribute (crp, "stock-id", 0);
+				
+				CellRendererText crt = new CellRendererText ();
+				col.PackStart (crt, false);
+				col.AddAttribute (crt, "markup", 1);
+				
+				AppendColumn (col);
+				ShowAll ();
+			}
+			
+			public ProjectTemplate CurrentlySelected {
+				get {
+					Gtk.TreeIter iter;
+					if (!Selection.GetSelected (out iter))
+						return null;
+					return (ProjectTemplate) templateStore.GetValue (iter, 2);
+				}
+				set {
+					Gtk.TreeIter iter;
+					if (templateStore.GetIterFirst (out iter)) {
+						do {
+							ProjectTemplate t = (ProjectTemplate) templateStore.GetValue (iter, 2);
+							if (t == value) {
+								Selection.SelectIter (iter);
+								return;
+							}
+						} while (templateStore.IterNext (ref iter));
+					}
+				}
+			}
+			
+			public void Add (TemplateItem templateItem)
+			{
+				string name = GLib.Markup.EscapeText (templateItem.Name);
+				if (!string.IsNullOrEmpty (templateItem.Template.LanguageName))
+					name += "\n<span foreground='darkgrey'><small>" + templateItem.Template.LanguageName + "</small></span>";
+				templateStore.AppendValues (templateItem.Template.Icon ?? "md-project", name, templateItem.Template);
+			}
+			
+			public void Clear ()
+			{
+				templateStore.Clear ();
 			}
 		}
 	}

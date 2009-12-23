@@ -281,7 +281,7 @@ namespace MonoDevelop.Ide.FindInFiles {
                 this.Child.ShowAll();
             }
             this.DefaultWidth = 456;
-            this.DefaultHeight = 268;
+            this.DefaultHeight = 288;
             this.labelFileMask.MnemonicWidget = this.comboboxentryFileMask;
             this.labelFind.MnemonicWidget = this.comboboxentryFind;
             this.labelScope.MnemonicWidget = this.comboboxScope;

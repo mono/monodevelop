@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide {
             w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w11 = new Gtk.Image();
-            w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Button, 20);
+            w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-forward", Gtk.IconSize.Button, 16);
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w13 = new Gtk.Label();
@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide {
             this.image9.Name = "image9";
             this.image9.Xalign = 0F;
             this.image9.Yalign = 0F;
-            this.image9.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-up", Gtk.IconSize.Button, 20);
+            this.image9.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-up", Gtk.IconSize.Button, 16);
             this.btnUp.Add(this.image9);
             this.btnUp.Label = null;
             this.vbox75.Add(this.btnUp);
@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide {
             this.image10.Name = "image10";
             this.image10.Xalign = 0F;
             this.image10.Yalign = 0F;
-            this.image10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-down", Gtk.IconSize.Button, 20);
+            this.image10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-go-down", Gtk.IconSize.Button, 16);
             this.btnDown.Add(this.image10);
             this.btnDown.Label = null;
             this.vbox75.Add(this.btnDown);

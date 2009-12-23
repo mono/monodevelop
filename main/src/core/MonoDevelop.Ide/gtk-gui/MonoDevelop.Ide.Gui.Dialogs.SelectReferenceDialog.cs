@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
             this.but.Name = "but";
             this.but.Xalign = 0F;
             this.but.Yalign = 0F;
-            this.but.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-remove", Gtk.IconSize.Button, 20);
+            this.but.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-remove", Gtk.IconSize.Button, 16);
             this.RemoveReferenceButton.Add(this.but);
             this.RemoveReferenceButton.Label = null;
             this.vbox70.Add(this.RemoveReferenceButton);
