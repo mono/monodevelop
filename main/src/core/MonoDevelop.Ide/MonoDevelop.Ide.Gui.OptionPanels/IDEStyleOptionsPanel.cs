@@ -66,18 +66,27 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		void Load ()
 		{
-			string name = fontButton.Style.FontDescription.ToString ();
+			string name = fontOutputButton.Style.FontDescription.ToString ();
 			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
 			hiddenButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
-			fontCheckbox.Active = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false);
-			fontButton.FontName = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
+			fontCheckbox.Active = IdeApp.Preferences.CustomPadFont != null;
+			fontButton.FontName = IdeApp.Preferences.CustomPadFont ?? name;
 			fontButton.Sensitive = fontCheckbox.Active;
+			fontOutputCheckbox.Active = IdeApp.Preferences.CustomOutputPadFont != null;
+			fontOutputButton.FontName = IdeApp.Preferences.CustomOutputPadFont ?? name;
+			fontOutputButton.Sensitive = fontOutputCheckbox.Active;
 			
 			fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
+			fontOutputCheckbox.Toggled += new EventHandler (FontOutputCheckboxToggled);
 
 			Gtk.IconSize curSize = IdeApp.Preferences.ToolbarSize;
 			toolbarCombobox.Active = Array.IndexOf (sizes, curSize);
+		}
+		
+		void FontOutputCheckboxToggled (object sender, EventArgs e)
+		{
+			fontOutputButton.Sensitive = fontOutputCheckbox.Active;
 		}
 		void FontCheckboxToggled (object sender, EventArgs e)
 		{
@@ -87,8 +96,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Store()
 		{
 			PropertyService.Set ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
-			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.UseCustomFont", fontCheckbox.Active);
-			PropertyService.Set ("MonoDevelop.Core.Gui.Pads.CustomFont", fontButton.FontName);
+			if (fontCheckbox.Active)
+				IdeApp.Preferences.CustomPadFont = fontButton.FontName;
+			else
+				IdeApp.Preferences.CustomPadFont = null;
+			
+			if (fontOutputCheckbox.Active)
+				IdeApp.Preferences.CustomOutputPadFont = fontOutputButton.FontName;
+			else
+				IdeApp.Preferences.CustomOutputPadFont = null;
 			
 			IdeApp.Preferences.ToolbarSize = sizes [toolbarCombobox.Active];
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);

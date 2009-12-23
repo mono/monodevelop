@@ -383,9 +383,13 @@ namespace MonoDevelop.Ide.Gui
 			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
 				IdeApp.Preferences.DefaultProjectFileFormat = MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat;
 			
-			// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
-			if (previousVersion <= new Version ("2.2"))
+			if (previousVersion <= new Version ("2.2")) {
+				// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
 				IdeApp.Preferences.DefaultTargetRuntime = Runtime.SystemAssemblyService.CurrentRuntime;
+				
+				if (PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false))
+					IdeApp.Preferences.CustomPadFont = PropertyService.Get<string> ("MonoDevelop.Core.Gui.Pads.CustomFont", null);
+			}
 		}
 
 		static TimeCounter commandTimeCounter;

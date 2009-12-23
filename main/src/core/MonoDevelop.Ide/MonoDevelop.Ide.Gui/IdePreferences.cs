@@ -221,6 +221,32 @@ namespace MonoDevelop.Ide.Gui
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.EnableInstrumentation", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.EnableInstrumentation", value); }
 		}
+		
+		/// <summary>
+		/// Font to use for treeview pads. Returns null if no custom font is set.
+		/// </summary>
+		public string CustomPadFont {
+			get { string res = PropertyService.Get<string> ("MonoDevelop.Ide.CustomPadFont", string.Empty); return string.IsNullOrEmpty (res) ? null : res; }
+			set { PropertyService.Set ("MonoDevelop.Ide.CustomPadFont", value ?? string.Empty); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> CustomPadFontChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.CustomPadFont", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.CustomPadFont", value); }
+		}
+		
+		/// <summary>
+		/// Font to use for output pads. Returns null if no custom font is set.
+		/// </summary>
+		public string CustomOutputPadFont {
+			get { string res = PropertyService.Get<string> ("MonoDevelop.Ide.CustomOutputPadFont", string.Empty); return string.IsNullOrEmpty (res) ? null : res; }
+			set { PropertyService.Set ("MonoDevelop.Ide.CustomOutputPadFont", value ?? string.Empty); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> CustomOutputPadFontChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.CustomOutputPadFont", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.CustomOutputPadFont", value); }
+		}
 	}
 	
 	public enum BeforeCompileAction {

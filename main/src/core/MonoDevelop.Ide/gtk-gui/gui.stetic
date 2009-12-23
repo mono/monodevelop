@@ -4453,7 +4453,7 @@ Large</property>
                         <child>
                           <widget class="Gtk.CheckButton" id="fontCheckbox">
                             <property name="MemberName" />
-                            <property name="Label" translatable="yes">_Use a different font for pads:</property>
+                            <property name="Label" translatable="yes">_Custom font for pads:</property>
                             <property name="DrawIndicator">True</property>
                             <property name="HasLabel">True</property>
                             <property name="UseUnderline">True</property>
@@ -4478,6 +4478,43 @@ Large</property>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.HBox" id="hbox3">
+                        <property name="MemberName" />
+                        <property name="Spacing">6</property>
+                        <child>
+                          <widget class="Gtk.CheckButton" id="fontOutputCheckbox">
+                            <property name="MemberName" />
+                            <property name="Label" translatable="yes">_Custom font for Output pads:</property>
+                            <property name="DrawIndicator">True</property>
+                            <property name="HasLabel">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">False</property>
+                            <property name="Expand">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.FontButton" id="fontOutputButton">
+                            <property name="MemberName" />
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>

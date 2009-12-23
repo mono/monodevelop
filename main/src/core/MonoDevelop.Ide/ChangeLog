@@ -1,6 +1,16 @@
 2009-12-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:
+	  Allow changing output pad fonts. Added new properties for
+	  setting custom fonts.
+
+2009-12-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs:
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:
 	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs:
