@@ -55,21 +55,35 @@ namespace MonoDevelop.IPhone
 		
 		public static IList<MobileProvision> GetAllInstalledProvisions ()
 		{
+			return GetAllInstalledProvisions (false);
+		}
+		
+		/// <summary>
+		/// All installed provisioning profiles, sorted by newest first.
+		/// </returns>
+		public static IList<MobileProvision> GetAllInstalledProvisions (bool includeExpired)
+		{
 			
 			if (!Directory.Exists (ProfileDirectory))
 				return new MobileProvision[0];
 			
+			DateTime now = DateTime.Now;
 			var list = new List<MobileProvision> ();
 			
 			foreach (string file in Directory.GetFiles (ProfileDirectory, "*.mobileprovision")) {
 				var m = new MobileProvision ();
 				try {
 					m.Load (file);
-					list.Add (m);
+					if (includeExpired || m.ExpirationDate > now)
+						list.Add (m);
 				} catch (Exception ex) {
 					LoggingService.LogWarning ("Error reading iPhone mobile provision file '" + file +"'", ex);
 				}
 			}
+			
+			//newest first
+			list.Sort ((x,y) => y.CreationDate.CompareTo (x.CreationDate));
+			
 			return list;
 		}
 

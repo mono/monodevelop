@@ -36,6 +36,7 @@ using System.Text;
 using System.Diagnostics;
 using PropertyList;
 using System.CodeDom.Compiler;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MonoDevelop.IPhone
 {
@@ -428,22 +429,56 @@ namespace MonoDevelop.IPhone
 			return result;
 		}
 		
-		BuildResult ProcessPackaging (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf)
+		static BuildResult ProcessPackaging (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf)
 		{
-			bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
-			bool dist = !sim && !string.IsNullOrEmpty (conf.CodesignKey)
-				&& conf.CodesignKey.StartsWith (Keychain.DIST_CERT_PREFIX);
-			BuildResult result = new BuildResult ();
-			
 			//don't bother signing in the sim
+			bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
 			if (sim)
 				return null;
+			
+			BuildResult result = new BuildResult ();
 			
 			var pkgInfo = conf.AppDirectory.Combine ("PkgInfo");
 			if (!File.Exists (pkgInfo))
 				using (var f = File.OpenWrite (pkgInfo))
 					f.Write (new byte [] { 0X41, 0X50, 0X50, 0X4C, 0x3f, 0x3f, 0x3f, 0x3f}, 0, 8);
 			
+			if (result.Append (CompressResources (monitor, conf)).ErrorCount > 0)
+				return result;
+			
+			X509Certificate2 key;
+			MobileProvision provision;
+			string appId;
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Detecting signing identity..."), 0);
+			if (result.Append (GetIdentity (monitor, proj, conf, out provision, out appId, out key)).ErrorCount > 0)
+				return result;
+			
+			monitor.Log.WriteLine ("Provisioning profile: \"{0}\" ({1})", provision.Name, provision.Uuid);
+			monitor.Log.WriteLine ("Signing Identity: \"{0}\"", Keychain.GetCertificateCommonName (key));
+			monitor.Log.WriteLine ("App ID: \"{0}\"", appId);
+			
+			monitor.EndTask ();
+			
+			if (result.Append (EmbedProvisioningProfile (monitor, conf, provision)).ErrorCount > 0)
+				return result;
+			
+			string xcent;
+			if (result.Append (GenXcent (monitor, proj, conf, provision, appId, out xcent)).ErrorCount > 0)
+				return result;
+			
+			string resRules;
+			if (result.Append (PrepareResourceRules (monitor, conf, out resRules)).ErrorCount > 0)
+				return result;
+			
+			if (result.Append (SignAppBundle (monitor, proj, conf, key, resRules, xcent)).ErrorCount > 0)
+				return result;
+			
+			return result;
+		}
+		
+		static BuildResult CompressResources (IProgressMonitor monitor, IPhoneProjectConfiguration conf)
+		{
 			monitor.BeginTask (GettextCatalog.GetString ("Compressing resources"), 0);
 			
 			var optTool = new ProcessStartInfo () {
@@ -455,109 +490,218 @@ namespace MonoDevelop.IPhone
 			string errorOutput;
 			int code = ExecuteCommand (monitor, optTool, out errorOutput);
 			if (code != 0) {
+				var result = new BuildResult ();
 				result.AddError ("Compressing the resources failed: " + errorOutput);
 				return result;
 			}
 			
 			monitor.EndTask ();
 			
-			string xcentName = null;
-			MobileProvision provision = null;
+			return null;
+		}
+		
+		static BuildResult GetIdentity (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
+		                            out MobileProvision profile, out string appid, out X509Certificate2 signingKey)
+		{
+			profile = null;
+			appid = null;
+			signingKey = null;
 			
-			if (dist) {
-				monitor.BeginTask (GettextCatalog.GetString ("Embedding provisioning profile"), 0);
-				
-				if (string.IsNullOrEmpty (conf.CodesignProvision)) {
-					string err = string.Format ("Provisioning profile missing from code signing settings");
-					result.AddError (err);
-					return result;
-				}
-				
-				string provisionFile = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision)
-					.ChangeExtension (".mobileprovision");
-				
-				if (!File.Exists (provisionFile)) {
-					string err = string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision);
-					result.AddError (err);
-					return result;
-				}
-				
-				try {
-					provision = MobileProvision.LoadFromFile (provisionFile);
-				} catch (Exception ex) {
-					string msg = "Could not read mobile provisioning file '" + provisionFile + "'.";
-					monitor.ReportError (msg, ex);
-					result.AddError (msg);
-					return result;
-				}
-				
-				if (string.IsNullOrEmpty (proj.BundleIdentifier)) {
-					result.AddError ("Cannot build for distribution with empty bundle identifier");
-					return result;
-				}
-				
-				string appid = provision.ApplicationIdentifierPrefix[0] + "." + proj.BundleIdentifier;
-				
-				if (provision.Entitlements.ContainsKey ("application-identifier")) {
-					var allowed = ((PlistString)provision.Entitlements ["application-identifier"]).Value;
-					int max = Math.Max (allowed.Length, appid.Length);
-					for (int i = 0; i < max; i++) {
-						if (i < allowed.Length && allowed[i] == '*')
-							break;
-						if (i >= appid.Length || allowed[i] != appid[i]) {
-							result.AddWarning (String.Format (
-						 		"Application identifier '{0}' does not match the provisioning profile entitlements ID '{1}'.",
-								appid, allowed));
-							break;
-						}
-					}
-				}
-				
-				try {
-					File.Copy (provisionFile, conf.AppDirectory.Combine ("embedded.mobileprovision"), true);
-				} catch (IOException ex) {
-					result.AddError ("Embedding the provisioning profile failed: " + ex.Message);
-					return result;
-				}
-				
-				monitor.EndTask ();
-				
-				monitor.BeginTask (GettextCatalog.GetString ("Processing entitlements file"), 0);
-				
-				BuildResult mtpResult;
-				var mtouchpack = GetTool ("mtouchpack", proj, monitor, out mtpResult);
-				if (mtouchpack == null)
-					return result.Append (mtpResult);
-				
-				if (!string.IsNullOrEmpty (conf.CodesignEntitlements)) {
-					if (!File.Exists (conf.CodesignEntitlements))
-						result.AddWarning ("Entitlements file \"" + conf.CodesignEntitlements + "\" not found. Using default.");
-				}
-				
-				xcentName = Path.ChangeExtension (conf.CompiledOutputName, ".xcent");
-				
-				mtouchpack.Arguments = string.Format ("-genxcent \"{0}\" -appid=\"{1}\"", xcentName, appid);
-				
-				if (!string.IsNullOrEmpty (conf.CodesignEntitlements))
-					mtouchpack.Arguments += string.Format (" -entitlements \"{0}\"", conf.CodesignEntitlements);
-				else if (conf.MtouchSdkVersion != "3.0")
-					mtouchpack.Arguments += string.Format (
-						" -entitlements \"Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS{0}.sdk/" +
-						"Entitlements.plist\"", conf.MtouchSdkVersion);
-				
-				monitor.Log.WriteLine ("mtouchpack " + mtouchpack.Arguments);
-				code = ExecuteCommand (monitor, mtouchpack, out errorOutput);
-				if (code != 0) {
-					result.AddError ("Processing the entitlements failed: " + errorOutput);
-					return result;
-				}
-				
-				monitor.EndTask ();
+			if (string.IsNullOrEmpty (proj.BundleIdentifier))
+				return BuildError ("Project does not have a bundle identifier");
+			
+			if (string.IsNullOrEmpty (conf.CodesignKey)) {
+				return BuildError ("No signing identity specified in configuration.");
 			}
+			
+			IList<X509Certificate2> certs = null;
+			if (conf.CodesignKey == Keychain.DEV_CERT_PREFIX || conf.CodesignKey == Keychain.DIST_CERT_PREFIX) {
+				certs = Keychain.FindNamedSigningCertificates (x => x.StartsWith (conf.CodesignKey)).ToList ();
+				if (certs.Count == 0)
+					return BuildError ("No valid identities found in keychain.");
+			} else {
+				signingKey = Keychain.FindNamedSigningCertificates (x => x == conf.CodesignKey).FirstOrDefault ();
+				if (signingKey == null)
+					return BuildError ("Signing identity '" + conf.CodesignKey + "' not found in keychain.");
+				certs = new X509Certificate2[] { signingKey };
+			}
+			
+			if (!string.IsNullOrEmpty (conf.CodesignProvision)) {
+				var file = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision).ChangeExtension (".mobileprovision");
+				if (!File.Exists (file))
+					return BuildError (string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision));
+				try {
+					profile = MobileProvision.LoadFromFile (file);
+				} catch (Exception ex) {
+					string msg = "Could not read provisioning profile '" + file + "'.";
+					monitor.ReportError (msg, ex);
+					return BuildError (msg);
+				}
+				var prof = profile; //capture ref for lambda
+				signingKey = certs.Where (c => prof.DeveloperCertificates.Any (p => p.Thumbprint == c.Thumbprint)).FirstOrDefault ();
+				if (signingKey == null)
+					return BuildError ("No signing key matches provisioning profile.");
 				
+				bool exact;
+				appid = ConstructValidAppId (profile, proj.BundleIdentifier, out exact);
+				if (appid == null)
+					return BuildError ("Project bundle ID does not match provisioning profile");
+				return null;
+			}
+			
+			var pairs = (from p in MobileProvision.GetAllInstalledProvisions ()
+				from c in certs
+				where p.DeveloperCertificates.Any (d => d.Thumbprint == c.Thumbprint)
+				select new { Cert = c, Profile = p }).ToList ();
+				
+			if (pairs.Count == 0)
+				return BuildError ("No provisioning profiles match the signing keys.");
+			
+			foreach (var p in pairs) {
+				bool exact;
+				var id = ConstructValidAppId (p.Profile, proj.BundleIdentifier, out exact);
+				if (id != null) {
+					if (exact || appid == null) {
+						profile = p.Profile;
+						signingKey = p.Cert;
+						appid = id;
+					}
+					if (exact)
+						break;
+				}
+			}
+			
+			if (profile != null && signingKey != null && appid != null)
+				return null;
+			
+			if (signingKey != null)
+				return BuildError ("App ID does not match any provisioning profile for selected signing identity.");
+			else
+				return BuildError ("App ID does not match any provisioning profile.");
+		}
+		
+		static BuildResult EmbedProvisioningProfile (IProgressMonitor monitor, IPhoneProjectConfiguration conf, MobileProvision profile)
+		{
+			monitor.BeginTask (GettextCatalog.GetString ("Embedding provisioning profile"), 0);
+			
+			try {
+				File.Copy (profile.FileName, conf.AppDirectory.Combine ("embedded.mobileprovision"), true);
+			} catch (IOException ex) {
+				var result = new BuildResult ();
+				result.AddError ("Embedding the provisioning profile failed: " + ex.Message);
+				return result;
+			}
+			
+			monitor.EndTask ();
+			return null;
+		}
+		
+		static string ConstructValidAppId (MobileProvision provision, string bundleId, out bool exact)
+		{
+			exact = false;
+			
+			string appid = provision.ApplicationIdentifierPrefix[0] + "." + bundleId;
+			
+			if (!provision.Entitlements.ContainsKey ("application-identifier"))
+				return null;
+			
+			var allowed = ((PlistString)provision.Entitlements ["application-identifier"]).Value;
+			int max = Math.Max (allowed.Length, appid.Length);
+			for (int i = 0; i < max; i++) {
+				if (i < allowed.Length && allowed[i] == '*')
+					break;
+				if (i >= appid.Length || allowed[i] != appid[i])
+					return null;
+			}
+			exact = (allowed.Length == appid.Length) && allowed[allowed.Length -1] != '*';
+			return appid;
+		}
+		
+		static BuildResult GenXcent (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
+		                      MobileProvision profile, string appID, out string xcentName)
+		{
+			xcentName = conf.CompiledOutputName.ChangeExtension (".xcent");
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Processing entitlements file"), 0);
+			
+			string srcFile;
+			
+			if (!string.IsNullOrEmpty (conf.CodesignEntitlements)) {
+				if (!File.Exists (conf.CodesignEntitlements))
+					return BuildError ("Entitlements file \"" + conf.CodesignEntitlements + "\" not found.");
+				srcFile = conf.CodesignEntitlements;
+			} else {
+				srcFile = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + conf.MtouchSdkVersion
+					+ ".sdk/Entitlements.plist";
+			}
+			
+			var doc = new PlistDocument ();
+			try {
+				doc.LoadFromXmlFile (srcFile);
+			} catch (Exception ex) {
+				monitor.Log.WriteLine (ex.ToString ());
+				return BuildError ("Error loading entitlements source file '" + srcFile +"'.");
+			}
+			
+			//insert the app ID into the plist at the beginning
+			var oldDict = doc.Root as PlistDictionary;
+			var newDict = new PropertyList.PlistDictionary ();
+			doc.Root = newDict;
+			newDict["application-identifier"] = appID;
+			
+			//merge in the settings from the provisioning profile
+			foreach (var item in profile.Entitlements)
+				if (item.Key != "application-identifier" && item.Key != "keychain-access-groups")
+					newDict.Add (item.Key, item.Value);
+			
+			//and merge in the user's values
+			foreach (var item in oldDict) {
+				if (newDict.ContainsKey (item.Key))
+					newDict[item.Key] = item.Value;
+				else
+					newDict.Add (item.Key, item.Value);
+			}
+			
+			try {
+				WriteXcent (doc, xcentName);
+			} catch (Exception ex) {
+				monitor.Log.WriteLine (ex.ToString ());
+				return BuildError ("Error writing entitlements file '" + xcentName +"'.");
+			}
+			
+			monitor.EndTask ();
+			return null;
+		}
+		
+		static void WriteXcent (PlistDocument doc, string file)
+		{
+			//write the plist to a byte[] as UTF8 without a BOM
+			var ms = new MemoryStream ();
+			var xmlSettings = new XmlWriterSettings () {
+				Encoding = new UTF8Encoding (false), //no BOM
+				CloseOutput = false,
+				Indent = true,
+				IndentChars = "\t",
+			};
+			using (var writer = XmlTextWriter.Create (ms, xmlSettings))
+				doc.Write (writer);
+			
+			//write the xcent file with the magic header, length, and the plist
+			byte[] magic = new byte[] { 0xfa, 0xde, 0x71, 0x71 };
+			byte[] fileLen = Mono.DataConverter.BigEndian.GetBytes ((uint)ms.Length + 8); // 8 = magic.length + magicLen.Length
+			using (var fs = File.Open (file, FileMode.Create)) {
+				fs.Write (magic, 0, magic.Length);
+				fs.Write (fileLen, 0, fileLen.Length);
+				fs.Write (ms.GetBuffer (), 0, (int)ms.Length);
+			}
+		}
+		
+		static BuildResult PrepareResourceRules (IProgressMonitor monitor, IPhoneProjectConfiguration conf, out string resRulesFile)
+		{
+			resRulesFile = conf.AppDirectory.Combine ("ResourceRules.plist");
+			
 			monitor.BeginTask (GettextCatalog.GetString ("Preparing resources rules"), 0);
 			
-			string resRulesFile = conf.AppDirectory.Combine ("ResourceRules.plist");
 			if (File.Exists (resRulesFile))
 				File.Delete (resRulesFile);
 			
@@ -565,58 +709,24 @@ namespace MonoDevelop.IPhone
 				? "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS"
 					+ conf.MtouchSdkVersion + ".sdk/ResourceRules.plist"
 				: (string) conf.CodesignResourceRules;
-			if (File.Exists (resRulesSrc))
+			if (File.Exists (resRulesSrc)) {
 				File.Copy (resRulesSrc, resRulesFile, true);
-			else
-				result.AddWarning ("Resources rules file \"" + conf.CodesignResourceRules + "\" not found. Using default.");
+			} else {
+				return BuildError ("Resources rules file \"" + conf.CodesignResourceRules + "\" not found.");
+			}
 			
 			monitor.EndTask ();
-			
-			string keyName = conf.CodesignKey;
-			if (String.IsNullOrEmpty (keyName)) {
-				result.AddWarning ("No signing identity specified in configuration. Using Developer (Automatic).");
-				keyName = Keychain.DEV_CERT_PREFIX;
-			}
-			
+			return null;
+		}
+		
+		static BuildResult SignAppBundle (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
+		                           X509Certificate2 key, string resRules, string xcent)
+		{
 			monitor.BeginTask (GettextCatalog.GetString ("Signing application"), 0);
 			
-			IEnumerable<System.Security.Cryptography.X509Certificates.X509Certificate2> installedKeyNames;
-			
-			if (keyName == Keychain.DEV_CERT_PREFIX || keyName == Keychain.DIST_CERT_PREFIX) {
-				installedKeyNames = Keychain.FindNamedSigningCertificates (x => x.StartsWith (keyName));
-			} else {
-				installedKeyNames = Keychain.FindNamedSigningCertificates (x => x == keyName);
-			}
-			
-			if (provision != null) {
-				installedKeyNames = installedKeyNames.Where (c => {
-					foreach (var provcert in provision.DeveloperCertificates)
-						if (c.Thumbprint == provcert.Thumbprint)
-							return true;
-					return false;
-				});
-			}
-			
-			var installedCert = installedKeyNames.FirstOrDefault ();
-				
-			if (installedCert == null) {
-				if (provision != null)
-					result.AddError ("Identity '" + keyName + "' did not match the provisioning profile \""
-					                 + provision.Name + "\". The application will not be signed");
-				else
-					result.AddError ("A key could not be found matching the name \"" + keyName
-					                    + "\". The application will not be signed");
-
-				return result;
-			}
-			
 			var args = new StringBuilder ();
-			args.AppendFormat ("-v -f -s \"{0}\"", Keychain.GetCertificateCommonName (installedCert));
-			
-			if (dist) {
-				args.AppendFormat (" --resource-rules=\"{0}\" --entitlements \"{1}\"",
-				                   conf.AppDirectory.Combine ("ResourceRules.plist"), xcentName);
-			}
+			args.AppendFormat ("-v -f -s \"{0}\"", Keychain.GetCertificateCommonName (key));
+			args.AppendFormat (" --resource-rules=\"{0}\" --entitlements \"{1}\"", resRules, xcent);
 			
 			args.Append (" ");
 			args.Append (conf.AppDirectory);
@@ -636,15 +746,22 @@ namespace MonoDevelop.IPhone
 				"/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate");
 			string output;
 			if ((signResultCode = ExecuteCommand (monitor, psi, out output)) != 0) {
-				result.AddError (string.Format ("Code signing failed with error code {0}: {1}", signResultCode, output));
-				return result;
+				monitor.Log.WriteLine (output);
+				return BuildError (string.Format ("Code signing failed with error code {0}. See output for details.", signResultCode));
 			}
 			monitor.EndTask ();
 			
-			return result;
+			return null;
 		}
 		
-		IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
+		static BuildResult BuildError (string error)
+		{
+			var br = new BuildResult ();
+			br.AddError (error);
+			return br;
+		}
+		
+		static IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
 		{
 			return allItems.OfType<ProjectFile> ()
 				.Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
@@ -657,7 +774,7 @@ namespace MonoDevelop.IPhone
 				});
 		}
 		
-		IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
+		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
 		{
 			return allItems.OfType<ProjectFile> ().Where (pf => pf.BuildAction == BuildAction.Content)
 				.Select (pf => new FilePair (pf.FilePath, pf.RelativePath.ToAbsolute (outputRoot)));
@@ -685,7 +802,7 @@ namespace MonoDevelop.IPhone
 		}
 		
 		//copied from MoonlightBuildExtension
-		int ExecuteCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo, out string errorOutput)
+		static int ExecuteCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo, out string errorOutput)
 		{
 			startInfo.UseShellExecute = false;
 			startInfo.RedirectStandardError = true;
