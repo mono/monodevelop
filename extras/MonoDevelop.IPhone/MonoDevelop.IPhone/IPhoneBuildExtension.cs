@@ -235,7 +235,7 @@ namespace MonoDevelop.IPhone
 					dict["CFBundleResourceSpecification"] = "ResourceRules.plist";
 				SetIfNotPresent (dict, "CFBundleSignature", "????");
 				SetIfNotPresent (dict,  "CFBundleSupportedPlatforms",
-					new PropertyList.PlistArray () { sim? "iphonesimulator" : "iphoneos" });
+					new PropertyList.PlistArray () { sim? "iPhoneSimulator" : "iPhoneOS" });
 				SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
 				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
 				SetIfNotPresent (dict, "DTSDKName", (sim? "iphonesimulator" : "iphoneos")  + conf.MtouchSdkVersion);
@@ -527,16 +527,25 @@ namespace MonoDevelop.IPhone
 			}
 			
 			if (!string.IsNullOrEmpty (conf.CodesignProvision)) {
+				//if the profile was installed by Xcode, we can determine the filename directly from the UUID
+				//but if it was installed by iTunes, we need to search all profiles for the UUID.
 				var file = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision).ChangeExtension (".mobileprovision");
-				if (!File.Exists (file))
-					return BuildError (string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision));
-				try {
-					profile = MobileProvision.LoadFromFile (file);
-				} catch (Exception ex) {
-					string msg = "Could not read provisioning profile '" + file + "'.";
-					monitor.ReportError (msg, ex);
-					return BuildError (msg);
+				if (File.Exists (file)) {
+					try {
+						profile = MobileProvision.LoadFromFile (file);
+					} catch (Exception ex) {
+						string msg = "Could not read provisioning profile '" + file + "'.";
+						monitor.ReportError (msg, ex);
+						return BuildError (msg);
+					}
+				} else {
+					profile = MobileProvision.GetAllInstalledProvisions ()
+						.Where (p => p.Uuid == conf.CodesignProvision).FirstOrDefault ();
 				}
+				
+				if (profile == null)
+					return BuildError (string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision));
+				
 				var prof = profile; //capture ref for lambda
 				signingKey = certs.Where (c => prof.DeveloperCertificates.Any (p => p.Thumbprint == c.Thumbprint)).FirstOrDefault ();
 				if (signingKey == null)
@@ -682,17 +691,32 @@ namespace MonoDevelop.IPhone
 				CloseOutput = false,
 				Indent = true,
 				IndentChars = "\t",
+				NewLineChars = "\n",
 			};
 			using (var writer = XmlTextWriter.Create (ms, xmlSettings))
 				doc.Write (writer);
 			
+			//HACK: workaround for bug in Apple's entitlements XML parser
+			//having written to a UTF8 stream to convince the xmlwriter to do the right thing,
+			//we now convert to string and back to do some substitutions to work around bugs
+			//in Apple's braindead entitlements XML parser.
+			//Specifically, it chokes on "<true />" but accepts "<true">
+			//Hence, to be on the safe side, we produce EXACTLY the same format
+			var sb = new StringBuilder (Encoding.UTF8.GetString (ms.GetBuffer ()));
+			sb.Replace ("-//Apple Computer//DTD PLIST 1.0//EN", "-//Apple//DTD PLIST 1.0//EN");
+			sb.Replace ("<?xml version=\"1.0\" encoding=\"utf-8\"?>", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+			sb.Replace ("\n\t", "\n");
+			sb.Replace (" />\n", "/>\n");
+			sb.Append ("\n");
+			var buf = Encoding.UTF8.GetBytes (sb.ToString ());
+			
 			//write the xcent file with the magic header, length, and the plist
 			byte[] magic = new byte[] { 0xfa, 0xde, 0x71, 0x71 };
-			byte[] fileLen = Mono.DataConverter.BigEndian.GetBytes ((uint)ms.Length + 8); // 8 = magic.length + magicLen.Length
+			byte[] fileLen = Mono.DataConverter.BigEndian.GetBytes ((uint)buf.Length + 8); // 8 = magic.length + magicLen.Length
 			using (var fs = File.Open (file, FileMode.Create)) {
 				fs.Write (magic, 0, magic.Length);
 				fs.Write (fileLen, 0, fileLen.Length);
-				fs.Write (ms.GetBuffer (), 0, (int)ms.Length);
+				fs.Write (buf, 0, (int)buf.Length);
 			}
 		}
 		
