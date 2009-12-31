@@ -1,3 +1,7 @@
+2009-12-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Keychain.cs: Fix extracting the CN from X509 certs.
+
 2009-12-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MobileProvision.cs: Only return the first profile with each
