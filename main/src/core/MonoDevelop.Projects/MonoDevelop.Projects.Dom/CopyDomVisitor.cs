@@ -157,6 +157,7 @@ namespace MonoDevelop.Projects.Dom
 		protected virtual IReturnTypePart Visit (IReturnTypePart returnTypePart, T data)
 		{
 			ReturnTypePart newPart = new ReturnTypePart ();
+			newPart.IsGenerated = returnTypePart.IsGenerated;
 			newPart.Name = returnTypePart.Name;
 			foreach (IReturnType ga in returnTypePart.GenericArguments)
 				newPart.AddTypeParameter ((IReturnType)ga.AcceptVisitor (this, data));

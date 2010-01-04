@@ -116,6 +116,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				ReturnTypePart part = new ReturnTypePart ();
 				parts.Add (part);
 				part.Name = ReadString (reader, nameTable);
+				part.IsGenerated = reader.ReadBoolean ();
 				uint arguments  = ReadUInt (reader, 1000);
 				while (arguments-- > 0)
 					part.AddTypeParameter (ReadReturnType (reader, nameTable));
@@ -143,6 +144,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			writer.Write ((uint) returnType.Parts.Count);
 			foreach (ReturnTypePart part in returnType.Parts) {
 				WriteString (part.Name, writer, nameTable);
+				writer.Write (part.IsGenerated);
 				writer.Write ((uint) part.GenericArguments.Count);
 				foreach (IReturnType rtp in part.GenericArguments)
 					Write (writer, nameTable, rtp);

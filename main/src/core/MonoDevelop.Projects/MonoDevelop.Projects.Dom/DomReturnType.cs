@@ -51,6 +51,10 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public bool IsGenerated {
+			get;
+			set;
+		}
 		
 		public object Tag {
 			get;
@@ -137,6 +141,12 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly IReturnType String;
 		public static readonly IReturnType Char;
 		public static readonly IReturnType Bool;
+		
+		
+		public bool IsGenerated {
+			get;
+			set;
+		}
 		
 		public object Tag {
 			get {

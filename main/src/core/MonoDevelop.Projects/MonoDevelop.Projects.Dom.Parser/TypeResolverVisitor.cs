@@ -94,6 +94,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			IType curType = lookupType.DeclaringType;
 			while (curType != null) {
 				ReturnTypePart newPart = new ReturnTypePart {Name = curType.Name};
+				newPart.IsGenerated = true;
 				for (int n=curType.TypeParameters.Count - 1; n >= 0; n--)
 					newPart.AddTypeParameter (new DomReturnType ("?"));
 				parts.Insert (0, newPart);
