@@ -1,3 +1,8 @@
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: fixed
+	  'Bug 561609 - Unhandled exception searching in my project'.
+
 2010-01-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/DragNotebook.cs: Don't shrink the tab
