@@ -1,5 +1,10 @@
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: fixed 'Bug 560510 -
+	  Preprocessor enabled code shows as comment anyway'.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed
 	  'Bug 560510 - Preprocessor enabled code shows as comment
