@@ -78,6 +78,7 @@ FILES =  \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
+	MonoDevelop.Ide.CodeTemplates/CodeTemplateCodon.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateListDataProvider.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs \

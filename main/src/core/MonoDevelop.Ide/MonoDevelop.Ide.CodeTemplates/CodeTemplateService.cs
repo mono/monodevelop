@@ -36,6 +36,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui.Completion;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -61,6 +62,17 @@ namespace MonoDevelop.Ide.CodeTemplates
 			} catch (Exception e) {
 				LoggingService.LogError ("CodeTemplateService: Exception while loading templates.", e);
 			}
+			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CodeTemplates", delegate(object sender, ExtensionNodeEventArgs args) {
+				CodeTemplateCodon syntaxModeCodon = (CodeTemplateCodon)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					using (XmlReader reader = syntaxModeCodon.Open ()) {
+						LoadTemplates (reader).ForEach (t => templates.Add (t));
+					}
+					break;
+				}
+			});
 		}
 		
 		public static IEnumerable<CodeTemplate> GetCodeTemplates (string mimeType)
