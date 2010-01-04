@@ -1,3 +1,9 @@
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: fixed
+	  'Bug 560510 - Preprocessor enabled code shows as comment
+	  anyway'.
+
 2009-12-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/GtkSharp2Project.xpt.xml:
