@@ -1,5 +1,10 @@
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
+	* SyntaxModes/CSharpSyntaxMode.xml: fixed 'Bug 564378 - Inline
+	  comments in c# with ///< screw up code coloring'.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs: fixed 'Bug 560510 -
 	  Preprocessor enabled code shows as comment anyway'.
 
