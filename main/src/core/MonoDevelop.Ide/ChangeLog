@@ -1,3 +1,8 @@
+2010-01-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/DragNotebook.cs: Don't shrink the tab
+	  border with the windows theme, because it looks ugly. 
+
 2009-12-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
