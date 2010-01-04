@@ -2140,6 +2140,8 @@ namespace Mono.TextEditor
 		{
 			int delta = 0;
 			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
+				if (extendedTextMarkerLine == null)
+					continue;
 				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
 				if (lineNumber >= logicalLine || Document.GetFoldingContaining (extendedTextMarkerLine).Any (fs => fs.IsFolded))
 					continue;
