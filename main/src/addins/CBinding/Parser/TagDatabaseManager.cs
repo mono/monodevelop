@@ -114,12 +114,25 @@ namespace CBinding.Parser
 		
 		private string[] Headers (Project project, string filename, bool with_system)
 		{
-			string option = (with_system ? "-M" : "-MM");
+			List<string> headers = new List<string> ();
+			CProject cproject = project as CProject;
+			if (cproject == null){ return headers.ToArray(); }
+			
 			StringBuilder output = new StringBuilder ();
+			StringBuilder option = new StringBuilder ("-M");
+			if (!with_system) {
+				option.Append("M");
+			}
+			
+			option.Append (" -MG ");
+			foreach (Package package in cproject.Packages) {
+				package.ParsePackage ();
+				option.AppendFormat ("{0} ", string.Join(" ", package.CFlags.ToArray ()));
+			}
 			
 			ProcessWrapper p = null;
 			try {
-				p = Runtime.ProcessService.StartProcess ("gcc", option + " -MG " + filename.Replace(@"\ ", " ").Replace(" ", @"\ "), null, null);
+				p = Runtime.ProcessService.StartProcess ("gcc", option.ToString () + filename.Replace(@"\ ", " ").Replace(" ", @"\ "), null, null);
 				p.WaitForOutput ();
 
 				// Doing the below completely breaks header parsing
@@ -138,8 +151,7 @@ namespace CBinding.Parser
 				if(p != null)
 					p.Dispose();
 			}
-
-			List<string> headers = new List<string> ();
+			
 			MatchCollection files = Regex.Matches(output.ToString().Replace(@" \", String.Empty), @" (?<file>([^ \\]|(\\ ))+)", RegexOptions.IgnoreCase);
 
 			foreach (Match match in files) {
