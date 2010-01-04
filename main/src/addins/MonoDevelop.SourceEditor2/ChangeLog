@@ -1,5 +1,11 @@
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: fixed/added
+	  debug messages for 'Bug 566249 - InvalidCastException when
+	  deleting some text in the text editor'.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed 'Bug
 	  560510 - Preprocessor enabled code shows as comment anyway'.
 
