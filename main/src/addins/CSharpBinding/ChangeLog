@@ -1,5 +1,10 @@
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: Fixed 'Bug 567906
+	  - Given error of .NET 3.0 in .NET 3.5 project'.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: defines
 	  get updated by the source editor on parse event.
 

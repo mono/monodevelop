@@ -219,6 +219,8 @@ namespace MonoDevelop.CSharp.Dom
 					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (returnType.Namespace))));
 				
 				foreach (ReturnTypePart part in returnType.Parts) {
+					if (part.IsGenerated)
+						continue;
 					if (result.Length > 0)
 						result.Append (settings.EmitName (returnType, "."));
 					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (part.Name))));
