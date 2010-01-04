@@ -254,7 +254,7 @@ namespace MonoDevelop.SourceEditor
 			foldSegments.Add (result);
 			return result;
 		}
-		
+		HashSet<string> symbols = new HashSet<string> ();
 		class ParseInformationUpdaterWorkerThread : WorkerThread
 		{
 			SourceEditorWidget widget;
@@ -274,7 +274,22 @@ namespace MonoDevelop.SourceEditor
 				try {
 					if (this.widget.options.ShowFoldMargin && widget.parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
-						
+						bool updateSymbols = widget.parsedDocument.Defines.Count != widget.symbols.Count;
+						if (!updateSymbols) {
+							foreach (PreProcessorDefine define in widget.parsedDocument.Defines) {
+								if (!widget.symbols.Contains (define.Define)) {
+									updateSymbols = true;
+									break;
+								}
+							}
+						}
+						if (updateSymbols) {
+							widget.symbols.Clear ();
+							foreach (PreProcessorDefine define in widget.parsedDocument.Defines) {
+								widget.symbols.Add (define.Define);
+							}
+							widget.Document.UpdateHighlighting ();
+						}
 						foreach (FoldingRegion region in widget.parsedDocument.GenerateFolds ()) {
 							if (runInThread && IsStopping)
 								return;
