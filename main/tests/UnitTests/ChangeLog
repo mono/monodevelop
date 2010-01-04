@@ -1,3 +1,9 @@
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: added
+	  test for 'Bug 561964 - Wrong type in tooltip when there are
+	  two properties with the same name'.
+
 2009-12-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Track

@@ -2143,5 +2143,41 @@ class MainClass
 			Assert.IsNotNull (provider.Find ("BB"), "property 'BB' not found.");
 		}
 		
+		
+		/// <summary>
+		/// Bug 561964 - Wrong type in tooltip when there are two properties with the same name
+		/// </summary>
+		[Test()]
+		public void TestBug561964 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+interface A1 {
+	int A { get; }
+}
+interface A2 {
+	int B { get; }
+}
+
+interface IFoo {
+	A1 Bar { get; }
+}
+
+class Foo : IFoo
+{
+	A1 IFoo.Bar { get { return null; } }
+	public A2 Bar { get { return null; } }
+
+	public static int Main (string[] args)
+	{
+		$new Foo().Bar.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("B"), "property 'B' not found.");
+		}
+		
+		
 	}
 }
