@@ -200,8 +200,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					
 					ProjectDom dom = ProjectDomService.GetProjectDom (project);
 					ParsedDocument parsedDocument = ProjectDomService.GetParsedDocument (dom, doc.FileName);
-					if (parsedDocument == null)
-						parsedDocument = ProjectDomService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });
+/*					if (parsedDocument == null)
+						parsedDocument = ProjectDomService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });*/
 					if (parsedDocument != null) {
 						foreach (PreProcessorDefine define in parsedDocument.Defines) {
 							symbols.Add (define.Define);
