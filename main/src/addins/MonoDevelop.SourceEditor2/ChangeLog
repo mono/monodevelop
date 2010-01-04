@@ -1,3 +1,9 @@
+2010-01-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Constrain the
+	  text layout so it doesn't ever render under the dropdown
+	  arrows.
+
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: fixed/added

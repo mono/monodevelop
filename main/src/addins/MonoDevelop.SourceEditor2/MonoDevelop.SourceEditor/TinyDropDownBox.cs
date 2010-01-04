@@ -255,6 +255,8 @@ namespace MonoDevelop.SourceEditor
 			if (DrawRightBorder)
 				arrowXPos -= 2;
 			
+			//HACK: don't ever draw insensitive, only active/prelight/normal, because insensitive generally looks really ugly
+			//this *might* cause some theme issues with the state of the text/arrows rendering on top of it
 			var state = window != null? StateType.Active
 				: State == StateType.Insensitive? StateType.Normal : State;
 			
@@ -271,15 +273,16 @@ namespace MonoDevelop.SourceEditor
 				win.DrawPixbuf (this.Style.BaseGC (StateType.Normal), Pixbuf, 0, 0, xPos + pixbufSpacing, Allocation.Y + (Allocation.Height - Pixbuf.Height) / 2, Pixbuf.Width, Pixbuf.Height, Gdk.RgbDither.None, 0, 0);
 				xPos += Pixbuf.Width + pixbufSpacing * 2;
 			}
-			win.DrawLayout (this.Style.TextGC (StateType.Normal), xPos, Allocation.Y + ySpacing, layout);
+			
+			//constrain the text area so it doesn't get rendered under the arrows
+			var textArea = new Gdk.Rectangle (xPos, Allocation.Y + ySpacing, arrowXPos - xPos - 2, Allocation.Height - ySpacing);
+			Style.PaintLayout (Style, win, state, true, textArea, this, "", textArea.X, textArea.Y, layout);
 			
 			state = Sensitive ? StateType.Normal : StateType.Insensitive;
 			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
 			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2, arrowWidth, arrowHeight);
 			if (DrawRightBorder)
-				win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);
-			xPos += arrowWidth;
-			
+				win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);			
 			return true;
 		}
 		
