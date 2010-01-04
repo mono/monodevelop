@@ -32,10 +32,10 @@ namespace MonoDevelop.SourceEditor
 {
 	[Category ("Widgets")]
 	[ToolboxItem (true)]
-	public class DropDownBox  : Gtk.DrawingArea
+	public class DropDownBox  : Gtk.Button
 	{
 		Pango.Layout layout;
-		const int pixbufSpacing = 4;
+		const int pixbufSpacing = 2;
 		const int leftSpacing   = 2;
 		const int ySpacing   = 1;
 		
@@ -71,6 +71,9 @@ namespace MonoDevelop.SourceEditor
 		
 		int defaultIconHeight, defaultIconWidth;
 		
+		/// <summary>
+		/// This is so that the height doesn't jump around depending whether there's an icon assigned or not.
+		/// </summary>
 		public int DefaultIconHeight {
 			get { return defaultIconHeight; }
 			set {
@@ -90,6 +93,7 @@ namespace MonoDevelop.SourceEditor
 			layout = new Pango.Layout (this.PangoContext);
 			this.Events = Gdk.EventMask.KeyPressMask | Gdk.EventMask.FocusChangeMask | Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 			this.CanFocus = true;
+			BorderWidth = 0;
 		}
 		
 		void PositionListWindow ()
@@ -150,14 +154,16 @@ namespace MonoDevelop.SourceEditor
 			layout.GetPixelSize (out width, out height);
 			
 			if (Pixbuf != null) {
-				width += Pixbuf.Width + pixbufSpacing;
+				width += Pixbuf.Width + pixbufSpacing * 2;
 				height = System.Math.Max (height, Pixbuf.Height);
+			} else {
+				height = System.Math.Max (height, defaultIconHeight);
 			}
 			
 			if (DrawRightBorder)
 				width += 2;
 			int arrowHeight = height / 2; 
-			int arrowWidth = arrowHeight;
+			int arrowWidth = arrowHeight + 1;
 			
 			requisition.Width = width + arrowWidth + leftSpacing;
 			requisition.Height = height + ySpacing * 2;
@@ -219,6 +225,11 @@ namespace MonoDevelop.SourceEditor
 			return base.OnButtonPressEvent (e);
 		}
 		
+		protected override void OnStateChanged (StateType previous_state)
+		{
+			base.OnStateChanged (previous_state);
+		}
+
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton e)
 		{
 			return base.OnButtonReleaseEvent (e);
@@ -234,88 +245,42 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			Gdk.Drawable win = args.Window;
-			using (var g = Gdk.CairoHelper.Create (win)) {
-				int width, height;
-				layout.GetPixelSize (out width, out height);
-				
-				int arrowHeight = height / 2; 
-				int arrowWidth = arrowHeight;
-				int arrowXPos = this.Allocation.Width - arrowWidth;
-				if (DrawRightBorder)
-					arrowXPos -= 2;
-				
-				DrawGradientBackground (g, new Gdk.Rectangle (0, 0, arrowXPos - leftSpacing , Allocation.Height));
-				
-				int xPos = leftSpacing;
-				if (Pixbuf != null) {
-					
-					win.DrawPixbuf (this.Style.BaseGC (StateType.Normal), Pixbuf, 0, 0, xPos, (this.Allocation.Height - Pixbuf.Height) / 2, Pixbuf.Width, Pixbuf.Height, Gdk.RgbDither.None, 0, 0);
-					xPos += Pixbuf.Width + pixbufSpacing;
-				}
-				win.DrawLayout (this.Style.TextGC (StateType.Normal), xPos, ySpacing, layout);
-				
-				
-				
-				DrawGradientBackground (g, new Gdk.Rectangle (arrowXPos - leftSpacing, 0, Allocation.Width - (arrowXPos - leftSpacing), Allocation.Height));
-				StateType state = Sensitive ? StateType.Normal : StateType.Insensitive;
-				Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
-				Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, (Allocation.Height) / 2, arrowWidth, arrowHeight);
-				if (DrawRightBorder)
-					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.Width - 1, 0, Allocation.Width - 1, Allocation.Height);
-				xPos += arrowWidth;
+		
+			int width, height;
+			layout.GetPixelSize (out width, out height);
+			
+			int arrowHeight = height / 2; 
+			int arrowWidth = arrowHeight + 1;
+			int arrowXPos = this.Allocation.X + this.Allocation.Width - arrowWidth;
+			if (DrawRightBorder)
+				arrowXPos -= 2;
+			
+			var state = window != null? StateType.Active
+				: State == StateType.Insensitive? StateType.Normal : State;
+			
+			//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
+			// so we get the content but not the border. This might break with crazy themes.
+			//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
+			// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
+			const int padding = 4;
+			Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
+			                Allocation.X - padding, Allocation.Y - padding, Allocation.Width + padding * 2, Allocation.Height + padding * 2);
+			
+			int xPos = Allocation.Left;
+			if (Pixbuf != null) {
+				win.DrawPixbuf (this.Style.BaseGC (StateType.Normal), Pixbuf, 0, 0, xPos + pixbufSpacing, Allocation.Y + (Allocation.Height - Pixbuf.Height) / 2, Pixbuf.Width, Pixbuf.Height, Gdk.RgbDither.None, 0, 0);
+				xPos += Pixbuf.Width + pixbufSpacing * 2;
 			}
+			win.DrawLayout (this.Style.TextGC (StateType.Normal), xPos, Allocation.Y + ySpacing, layout);
+			
+			state = Sensitive ? StateType.Normal : StateType.Insensitive;
+			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
+			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2, arrowWidth, arrowHeight);
+			if (DrawRightBorder)
+				win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);
+			xPos += arrowWidth;
+			
 			return true;
-		}
-		
-		void DrawGradientBackground (Cairo.Context g, Gdk.Rectangle area)
-		{
-			DrawRectangle (g, area.X, area.Y, area.Right, area.Bottom);
-			
-			if (!Sensitive) {
-				g.Color = ToCairoColor (Style.Background (StateType.Insensitive));
-			} else {
-				Cairo.Gradient pat = new Cairo.LinearGradient (area.X, area.Y, area.X, area.Y + area.Height);
-				Cairo.Color lightBg;
-				Cairo.Color darkBg;
-				
-				if (!isMouseOver && window != null) {
-					lightBg = ToCairoColor (Style.Background (StateType.Normal));
-					darkBg = ToCairoColor (Style.Base (StateType.Normal));
-					pat.AddColorStop (0, lightBg);
-					pat.AddColorStop (1, darkBg);
-				} else {
-					lightBg = ToCairoColor (Style.Background (isMouseOver ? StateType.Prelight : StateType.Normal));
-					darkBg = ToCairoColor (Style.Base (isMouseOver ? StateType.Prelight : StateType.Normal));
-					
-					pat.AddColorStop (0, lightBg);
-					pat.AddColorStop (0.5, darkBg);
-					pat.AddColorStop (1, lightBg);
-				}
-				
-				g.Pattern = pat;
-			}
-			
-			g.Fill ();
-				
-		}
-		
-		public static Cairo.Color ToCairoColor (Gdk.Color color)
-		{
-			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
-			                        (double)color.Green / ushort.MaxValue,
-			                        (double)color.Blue / ushort.MaxValue);
-		}
-		
-		static void DrawRectangle (Cairo.Context g, int x, int y, int width, int height)
-		{
-			int right = x + width;
-			int bottom = y + height;
-			g.MoveTo (new Cairo.PointD (x, y));
-			g.LineTo (new Cairo.PointD (right, y));
-			g.LineTo (new Cairo.PointD (right, bottom));
-			g.LineTo (new Cairo.PointD (x, bottom));
-			g.LineTo (new Cairo.PointD (x, y));
-			g.ClosePath ();
 		}
 		
 		public EventHandler ItemSet;
