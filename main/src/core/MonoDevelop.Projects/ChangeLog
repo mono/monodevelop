@@ -1,3 +1,8 @@
+2010-01-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Fix NRE with
+	  standalone C# files.
+
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IReturnType.cs:
