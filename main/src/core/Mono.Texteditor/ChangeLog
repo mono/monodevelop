@@ -1,5 +1,11 @@
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
+	* SyntaxModes/CSyntaxMode.xml:
+	* SyntaxModes/CPPSyntaxMode.xml: Fixed 'Bug 564387 - #if 0
+	  grayed out until #endif'.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/CSharpSyntaxMode.xml: fixed 'Bug 564378 - Inline
 	  comments in c# with ///< screw up code coloring'.
 

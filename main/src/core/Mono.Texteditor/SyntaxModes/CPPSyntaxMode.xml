@@ -27,9 +27,9 @@
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
 		
-	<Span color = "comment" rule="Comment" tagColor="comment.tag">
+	<Span color = "comment" rule="Comment" tagColor="text.preprocessor">
 		<Begin>#if 0</Begin>
-		<End>#endif</End>
+		<End>#endif|#else</End>
 	</Span>
 	
 	<EolSpan color = "text.preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
