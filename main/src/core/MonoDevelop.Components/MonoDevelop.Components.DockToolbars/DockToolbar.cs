@@ -265,12 +265,17 @@ namespace MonoDevelop.Components.DockToolbars
 		{
 			//use the base class to paint the background like a toolbar, which may be a gradient
 			// but only if horizontal, else the gradient usually looks really ugly
-			if (this.Orientation == Orientation.Horizontal)
-				return base.OnExposeEvent (evnt);
-			
-			//else we paint a plain flat background to make everything even - see DockToolbarPanel.OnExposeEvent
-			
-		    GdkWindow.DrawRectangle (Style.BackgroundGC (State), true, Allocation);
+			if (this.Orientation == Orientation.Horizontal){
+				//the WIMP theme engine's rendering is a bit off, need to force it to render wider
+				int widen = MonoDevelop.Core.PropertyService.IsWindows? 1 : 0;
+				
+				var shadowType = (ShadowType)StyleGetProperty ("shadow-type");
+				Style.PaintBox (Style, evnt.Window, State, shadowType, evnt.Area, this, "toolbar", 
+				                Allocation.X - widen, Allocation.Y, Allocation.Width + widen + widen, Allocation.Height);
+			} else {
+				//else we paint a plain flat background to make everything even - see DockToolbarPanel.OnExposeEvent
+				GdkWindow.DrawRectangle (Style.BackgroundGC (State), true, Allocation);
+			}
             
             foreach (Widget child in Children) {
                 PropagateExpose (child, evnt);

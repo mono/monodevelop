@@ -1,3 +1,18 @@
+2010-01-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs: Use
+	  the right kind of cursor for drag-moving.
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs:
+	  Render each row separately so that background matches
+	  individual bars.
+
+	* MonoDevelop.Components.DockToolbars/DockGrip.cs: Narrow the
+	  grip on Windows, so it looks better.
+
+	* MonoDevelop.Components.DockToolbars/DockToolbar.cs:
+	  Eliminate ugly styled toolbox borders on Windows.
+
 2009-12-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/GtkUtil.cs:

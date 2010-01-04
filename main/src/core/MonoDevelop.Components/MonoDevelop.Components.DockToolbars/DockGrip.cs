@@ -34,7 +34,7 @@ namespace MonoDevelop.Components.DockToolbars
 {
 	internal class DockGrip: ToolItem
 	{
-		const int GripSize = 6;
+		static int GripSize = MonoDevelop.Core.PropertyService.IsWindows? 4 : 6; //wimp theme engine looks ugly with width 6
 		const int MarginLeft = 1;
 		const int MarginRight = 3;
 		
