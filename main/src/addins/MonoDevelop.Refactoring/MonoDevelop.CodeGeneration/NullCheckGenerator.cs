@@ -81,6 +81,8 @@ namespace MonoDevelop.CodeGeneration
 					yield break;
 				
 				foreach (var parameter in Options.EnclosingMember.Parameters) {
+					if (parameter == null || parameter.ReturnType == null)
+						continue;
 					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.CompilationUnit, parameter.Location.Line, parameter.Location.Column, parameter.ReturnType.FullName, parameter.ReturnType.GenericArguments));
 					if (type != null && (type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface || type.ClassType == MonoDevelop.Projects.Dom.ClassType.Class))
 						yield return parameter;
