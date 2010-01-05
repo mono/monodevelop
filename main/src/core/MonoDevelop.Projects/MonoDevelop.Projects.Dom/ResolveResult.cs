@@ -66,6 +66,10 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
+		public virtual IEnumerable<ResolveResult> ResolveResults {
+			get { yield return this; }
+		}
+		
 		public ResolveResult () : this (false)
 		{
 		}
@@ -89,7 +93,7 @@ namespace MonoDevelop.Projects.Dom
 				return resolveResults[0];
 			}
 		}
-					
+		
 		public override IReturnType UnresolvedType {
 			get {
 				if (PrimaryResult == null)
@@ -97,7 +101,9 @@ namespace MonoDevelop.Projects.Dom
 				return PrimaryResult.UnresolvedType;
 			}
 		}
-
+		public override IEnumerable<ResolveResult> ResolveResults {
+			get { return this.resolveResults; }
+		}
 		
 		public override IReturnType ResolvedType {
 			get {
