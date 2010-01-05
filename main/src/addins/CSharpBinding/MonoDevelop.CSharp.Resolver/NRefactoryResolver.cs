@@ -142,7 +142,7 @@ namespace MonoDevelop.CSharp.Resolver
 			foreach (IMember member in type.Members) {
 				if (!(member is IMethod || member is IProperty || member is IEvent || member is IField))
 					continue;
-				if (member.Location.Line == location.Line || member.BodyRegion.Start <= location && (location < member.BodyRegion.End || member.BodyRegion.End.IsEmpty)) {
+				if (member.Location.Line == location.Line || (!member.BodyRegion.IsEmpty && member.BodyRegion.Start <= location && (location < member.BodyRegion.End || member.BodyRegion.End.IsEmpty))) {
 					return member;
 				}
 			}
