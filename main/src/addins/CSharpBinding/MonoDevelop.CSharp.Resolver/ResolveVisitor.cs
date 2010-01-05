@@ -501,80 +501,89 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 
 			if (result != null && result.ResolvedType != null) {
-				IType type = resolver.Dom.GetType (result.ResolvedType);
-				if (type != null) {
-					List<IMember> member = new List<IMember> ();
-					List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
-					// Inheritance of extension methods is handled in DomType
-					foreach (IMethod method in type.GetExtensionMethods (accessibleExtTypes)) {
-						if (method.Name == memberReferenceExpression.MemberName) {
-							member.Add (method);
-						}
-					}
-					bool includeProtected = true;
-					foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
-						if (curType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface && type.ClassType != MonoDevelop.Projects.Dom.ClassType.Interface)
-							continue;
-						if (curType.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected)) {
-							foreach (IMember foundMember in curType.SearchMember (memberReferenceExpression.MemberName, true)) {
-								if (foundMember.IsExplicitDeclaration)
-									continue;
-								member.Add (foundMember);
-							}
-						}
-					}
-					if (member.Count > 0) {
-						if (member[0] is IMethod) {
-							bool isStatic = result.StaticResolve;
-							List<IMember> nonMethodMembers = new List<IMember> ();
-							for (int i = 0; i < member.Count; i++) {
-								IMethod method = member[i] as IMethod;
-								if (method == null)
-									nonMethodMembers.Add (member[i]);
-								if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended) && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
-									continue;
-								if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || (method != null && method.IsFinalizer)) {
-									member.RemoveAt (i);
-									i--;
-								}
-							}
-							if (member.Count == 0)
-								return null;
-							result = new MethodResolveResult (member);
-							((MethodResolveResult)result).Type = type;
-							result.CallingType   = resolver.CallingType;
-							result.CallingMember = resolver.CallingMember;
-							//result.StaticResolve = isStatic;
-							//result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
-							foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
-								((MethodResolveResult)result).AddGenericArgument (typeReference.ConvertToReturnType ());
-							}
-							((MethodResolveResult)result).ResolveExtensionMethods ();
-							if (nonMethodMembers.Count > 0) {
-								IType searchType = resolver.Dom.GetType (nonMethodMembers[0].ReturnType);
-								MemberResolveResult baseResult = (MemberResolveResult) CreateResult (nonMethodMembers[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
-								baseResult.ResolvedMember = nonMethodMembers[0];
-								return new CombinedMethodResolveResult (baseResult, (MethodResolveResult)result);
-							}
-							//System.Console.WriteLine(result + "/" + result.ResolvedType);
-							return result;
-						}
-						
-						if (member[0] is IType) {
-							result = CreateResult (member[0].FullName);
-							result.StaticResolve = true;
-						} else {
-							IType searchType = resolver.Dom.GetType (member[0].ReturnType);
-							result = CreateResult (member[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
-							((MemberResolveResult)result).ResolvedMember = member[0];
-						}
-						return result;
-					}
-				} else {
-					MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result.ResolvedType);
+				foreach (ResolveResult innerResult in result.ResolveResults) {
+					ResolveResult resolvedResult = ResolveMemberReference (innerResult, memberReferenceExpression);
+					if (resolvedResult != null)
+						return resolvedResult;
+				}
+			} else {
+				MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result.ResolvedType);
+			}
+			return null;
+		}
+		
+		ResolveResult ResolveMemberReference (ResolveResult result, MemberReferenceExpression memberReferenceExpression)
+		{
+			IType type = resolver.Dom.GetType (result.ResolvedType);
+			if (type == null) 
+				return null;
+			List<IMember> member = new List<IMember> ();
+			List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
+			// Inheritance of extension methods is handled in DomType
+			foreach (IMethod method in type.GetExtensionMethods (accessibleExtTypes)) {
+				if (method.Name == memberReferenceExpression.MemberName) {
+					member.Add (method);
 				}
 			}
-			
+			bool includeProtected = true;
+			foreach (IType curType in resolver.Dom.GetInheritanceTree (type)) {
+				if (curType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface && type.ClassType != MonoDevelop.Projects.Dom.ClassType.Interface)
+					continue;
+				if (curType.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected)) {
+					foreach (IMember foundMember in curType.SearchMember (memberReferenceExpression.MemberName, true)) {
+						if (foundMember.IsExplicitDeclaration)
+							continue;
+						member.Add (foundMember);
+					}
+				}
+			}
+			if (member.Count > 0) {
+				if (member[0] is IMethod) {
+					bool isStatic = result.StaticResolve;
+					List<IMember> nonMethodMembers = new List<IMember> ();
+					for (int i = 0; i < member.Count; i++) {
+						IMethod method = member[i] as IMethod;
+						if (method == null)
+							nonMethodMembers.Add (member[i]);
+						if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended) && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
+							continue;
+						if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || (method != null && method.IsFinalizer)) {
+							member.RemoveAt (i);
+							i--;
+						}
+					}
+					if (member.Count == 0)
+						return null;
+					result = new MethodResolveResult (member);
+					((MethodResolveResult)result).Type = type;
+					result.CallingType   = resolver.CallingType;
+					result.CallingMember = resolver.CallingMember;
+					//result.StaticResolve = isStatic;
+					//result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
+					foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
+						((MethodResolveResult)result).AddGenericArgument (typeReference.ConvertToReturnType ());
+					}
+					((MethodResolveResult)result).ResolveExtensionMethods ();
+					if (nonMethodMembers.Count > 0) {
+						IType searchType = resolver.Dom.GetType (nonMethodMembers[0].ReturnType);
+						MemberResolveResult baseResult = (MemberResolveResult) CreateResult (nonMethodMembers[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
+						baseResult.ResolvedMember = nonMethodMembers[0];
+						return new CombinedMethodResolveResult (baseResult, (MethodResolveResult)result);
+					}
+					//System.Console.WriteLine(result + "/" + result.ResolvedType);
+					return result;
+				}
+				
+				if (member[0] is IType) {
+					result = CreateResult (member[0].FullName);
+					result.StaticResolve = true;
+				} else {
+					IType searchType = resolver.Dom.GetType (member[0].ReturnType);
+					result = CreateResult (member[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
+					((MemberResolveResult)result).ResolvedMember = member[0];
+				}
+				return result;
+			}
 			return null;
 		}
 		

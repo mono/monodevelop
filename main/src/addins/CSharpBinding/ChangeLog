@@ -1,3 +1,9 @@
+2010-01-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
+	  'Bug 568204 - Inconsistency in resolution'.
+
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: Fixed 'Bug 567906

@@ -797,9 +797,6 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 			
-		
-			
-			
 			if (searchedType != null) {
 				result = new MemberResolveResult (null, true);
 				result.UnresolvedType = result.ResolvedType = new DomReturnType (searchedType);
