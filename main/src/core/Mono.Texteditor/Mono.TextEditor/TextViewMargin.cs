@@ -309,10 +309,18 @@ namespace Mono.TextEditor
 		protected internal override void OptionsChanged ()
 		{
 			DisposeGCs ();
-
+			
 			markerLayout.FontDescription = textEditor.Options.Font;
+			markerLayout.FontDescription.Weight = Pango.Weight.Bold;
 			markerLayout.SetText (" ");
 			markerLayout.GetPixelSize (out this.charWidth, out this.lineHeight);
+			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
+			
+			Pango.Font font = textEditor.PangoContext.LoadFont (markerLayout.FontDescription);
+			Pango.FontMetrics metrics = font.GetMetrics (null);
+			this.charWidth = (int)(metrics.ApproximateCharWidth / Pango.Scale.PangoScale);
+			
+			font.Dispose ();
 			
 			CaretMoveActions.LineHeight = lineHeight = System.Math.Max (1, lineHeight);
 
@@ -867,6 +875,25 @@ namespace Mono.TextEditor
 				get;
 				set;
 			}
+			public bool StartSet {
+				get;
+				set;
+			}
+			int selectionStartIndex;
+			public int SelectionStartIndex {
+				get { 
+					return selectionStartIndex; 
+				}
+				set { 
+					selectionStartIndex = value; 
+					StartSet = true; 
+				}
+			}
+			
+			public int SelectionEndIndex {
+				get;
+				set;
+			}
 			
 			Pango.AttrList attrList;
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
@@ -975,12 +1002,12 @@ namespace Mono.TextEditor
 								endIndex += preeditLength;
 						}
 						HandleSelection (line, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
-
+							
 							Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
 							foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							wrapper.Add (foreGround);
-
+							
 							if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
 								Pango.AttrBackground backGround = new Pango.AttrBackground (chunkStyle.BackgroundColor.Red, chunkStyle.BackgroundColor.Green, chunkStyle.BackgroundColor.Blue);
 								backGround.StartIndex = foreGround.StartIndex;
@@ -992,7 +1019,11 @@ namespace Mono.TextEditor
 							selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							wrapper.Add (selectedForeground);
-
+							if (!wrapper.StartSet) 
+								wrapper.SelectionStartIndex = (int)selectedForeground.StartIndex;
+							wrapper.SelectionEndIndex   = (int)selectedForeground.EndIndex;
+							
+							/*Console.WriteLine (wrapper.SelectionStartIndex + " -- " + wrapper.SelectionEndIndex);
 							Color bgColor;
 							int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 							if (!textEditor.Options.ShowRuler || start - line.Offset < logicalRulerColumn) {
@@ -1003,8 +1034,7 @@ namespace Mono.TextEditor
 							Pango.AttrBackground attrBackground = new Pango.AttrBackground (bgColor.Red, bgColor.Green, bgColor.Blue);
 							attrBackground.StartIndex = selectedForeground.StartIndex;
 							attrBackground.EndIndex = selectedForeground.EndIndex;
-							wrapper.Add (attrBackground);
-
+							wrapper.Add (attrBackground);*/
 						});
 
 						if (chunkStyle.Bold) {
@@ -1124,9 +1154,15 @@ namespace Mono.TextEditor
 
 			if (DecorateLineBg != null)
 				DecorateLineBg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
-
+			
+			if (layout.StartSet) {
+				var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
+				var end   = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
+				DrawRectangleWithRuler (win, xPos, new Rectangle ((int)(xPos + start.X / Pango.Scale.PangoScale), y, (int)((end.X - start.X) / Pango.Scale.PangoScale), textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
+			}
+			
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout.Layout);
-
+			
 			if (DecorateLineFg != null)
 				DecorateLineFg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
 

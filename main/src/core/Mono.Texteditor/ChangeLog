@@ -1,3 +1,9 @@
+2010-01-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 567317 -
+	  Underscores not always visible in text editor when usign
+	  specific fonts, like Courier New'.
+
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
 	* SyntaxModes/CSyntaxMode.xml:
