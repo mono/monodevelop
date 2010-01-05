@@ -1,5 +1,11 @@
 2010-01-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/LineSplitter.cs: Remove lines with extending
+	  markers, when the line is removed.
+
+2010-01-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 567317 -
 	  Underscores not always visible in text editor when usign
 	  specific fonts, like Courier New'.

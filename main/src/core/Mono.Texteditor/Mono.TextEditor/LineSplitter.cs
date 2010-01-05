@@ -130,7 +130,7 @@ namespace Mono.TextEditor
 				int oldDelimiterLength = line.DelimiterLength;
 				lines.ChangeLength (line, offset + delimiter.EndOffset - line.Offset, delimiter.Length);
 				bool isBookmark = line.IsBookmarked;
-				line.ClearMarker ();
+				//line.ClearMarker ();
 				if (isBookmark)
 					line.IsBookmarked = true;
 				line = this.lines.InsertAfter (line, newLineLength, oldDelimiterLength);

@@ -210,6 +210,8 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnTextReplaced (ReplaceEventArgs args)
 		{
+			linesWithExtendingTextMarkers.RemoveAll (ls => args.Offset <= ls.Offset && ls.EndOffset < args.Offset + args.Count);
+				
 			if (TextReplaced != null)
 				TextReplaced (this, args);
 		}
