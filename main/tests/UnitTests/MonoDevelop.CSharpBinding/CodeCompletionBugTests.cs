@@ -1666,7 +1666,7 @@ public abstract class GenericBase<T> : NonGenericBase where T : GenericBase<T>
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.Find ("Instance"), "class 'Inner' not found.");
+			Assert.IsNotNull (provider.Find ("Instance"), "property 'Instance' not found.");
 			Assert.IsNull (provider.Find ("this"), "'this' found, but shouldn't.");
 		}
 		
@@ -2177,6 +2177,43 @@ class Foo : IFoo
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("B"), "property 'B' not found.");
 		}
+		
+		
+		/// <summary>
+		/// Bug 568204 - Inconsistency in resolution
+		/// </summary>
+		[Test()]
+		public void TestBug568204 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+public class Style 
+{
+	public static Style TestMe ()
+	{
+		return new Style ();
+	}
+	
+	public void Print ()
+	{
+		System.Console.WriteLine (""Hello World!"");
+	}
+}
+
+public class Foo
+{
+	public Style Style { get; set;} 
+	
+	public void Bar ()
+	{
+		$Style.TestMe ().$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Print"), "method 'Print' not found.");
+		}
+		
 		
 		
 	}
