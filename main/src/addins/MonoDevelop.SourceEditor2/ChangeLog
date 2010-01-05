@@ -1,6 +1,8 @@
 2010-01-05  Mike Krüger  <mkrueger@novell.com>
 
-	* MonoDevelop.SourceEditor/SourceEditorView.cs: 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed Bug 
+	  564855 - Pressing Enter at the end of a line with a breakpoint 
+	  on it causes the line to be drawn as a not "breakpointed" line.
 
 2010-01-05  Mike Krüger  <mkrueger@novell.com>
 
