@@ -546,16 +546,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (splitContainer == null)
 				return;
-
+			double vadjustment = mainsw.Vadjustment.Value;
+			double hadjustment = mainsw.Hadjustment.Value;
+			
 			splitContainer.Remove (mainsw);
 			if (this.textEditor == lastActiveEditor) {
 				secondsw.Destroy ();
 				secondsw = null;
 				splittedTextEditor = null;
-
 			} else {
 				this.mainsw.Destroy ();
 				this.mainsw = secondsw;
+				vadjustment = secondsw.Vadjustment.Value;
+				hadjustment = secondsw.Hadjustment.Value;
+
 				splitContainer.Remove (secondsw);
 				lastActiveEditor = this.textEditor = splittedTextEditor;
 				splittedTextEditor = null;
@@ -567,6 +571,8 @@ namespace MonoDevelop.SourceEditor
 			RecreateMainSw ();
 			this.PackStart (mainsw, true, true, 0);
 			this.ShowAll ();
+			mainsw.Vadjustment.Value = vadjustment; 
+			mainsw.Hadjustment.Value = hadjustment;
 		}
 		
 		public void SwitchWindow ()
@@ -580,9 +586,11 @@ namespace MonoDevelop.SourceEditor
 		ScrolledWindow secondsw;
 		public void Split (bool vSplit)
 		{
+			double vadjustment = this.mainsw.Vadjustment.Value;
+			double hadjustment = this.mainsw.Hadjustment.Value;
+			
 			if (splitContainer != null)
 				Unsplit ();
-
 			this.Remove (this.mainsw);
 			
 			RecreateMainSw ();
@@ -608,18 +616,23 @@ namespace MonoDevelop.SourceEditor
 				this.UpdateLineCol ();
 			};
 			this.splittedTextEditor.Caret.PositionChanged += CaretPositionChanged;
-
+			
 			secondsw.Child = splittedTextEditor;
 			splitContainer.Add2 (secondsw);
 			this.PackStart (splitContainer, true, true, 0);
 			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2 - 1;
+			
 			this.ShowAll ();
+			secondsw.Vadjustment.Value = mainsw.Vadjustment.Value = vadjustment; 
+			secondsw.Hadjustment.Value = mainsw.Hadjustment.Value = hadjustment;
 		}
 
 		void RecreateMainSw ()
 		{
 			// destroy old scrolled window to work around Bug 526721 - When splitting window vertically, 
 			// the slider under left split is not shown unitl window is resized
+			double vadjustment = this.mainsw.Vadjustment.Value;
+			double hadjustment = this.mainsw.Hadjustment.Value;
 			
 			this.mainsw.Remove (textEditor);
 			textEditor.Unparent ();
@@ -629,6 +642,8 @@ namespace MonoDevelop.SourceEditor
 			this.mainsw.ShadowType = ShadowType.In;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			this.mainsw.Child = textEditor;
+			this.mainsw.Vadjustment.Value = vadjustment; 
+			this.mainsw.Hadjustment.Value = hadjustment;
 		}
 
 		
