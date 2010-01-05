@@ -156,6 +156,9 @@ namespace MonoDevelop.SourceEditor
 				if (TextChanged != null)
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 			};
+			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
+				UpdateBreakpoints ();
+			};
 			
 			widget.TextEditor.Document.EndUndo += delegate {
 				if (!inLoad && wasEdited) {
