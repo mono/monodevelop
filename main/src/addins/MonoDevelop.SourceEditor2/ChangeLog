@@ -1,5 +1,15 @@
 2010-01-05  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:
+	  fixed "Bug 561572 - Search keeps defaulting to case
+	  sensitive" & "Bug 564384 - Can't turn off case sensitivity".
+
+2010-01-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed Bug 
 	  564855 - Pressing Enter at the end of a line with a breakpoint 
 	  on it causes the line to be drawn as a not "breakpointed" line.

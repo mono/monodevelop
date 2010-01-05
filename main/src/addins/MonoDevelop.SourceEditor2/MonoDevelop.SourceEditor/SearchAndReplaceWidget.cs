@@ -93,6 +93,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public SearchAndReplaceWidget (SourceEditorWidget widget)
 		{
+			widget.DisableAutomaticSearchPatternCaseMatch = false;
 			Build();
 			
 			replaceWidgets = new Widget [] {
@@ -113,6 +114,12 @@ namespace MonoDevelop.SourceEditor
 			UpdateSearchPattern ();
 			
 			entrySearch.Model = searchHistory;
+			entrySearch.KeyReleaseEvent += delegate {
+				widget.CheckSearchPatternCasing (SearchPattern);
+				widget.SetSearchPattern (SearchPattern);
+				searchPattern = SearchPattern;
+				UpdateSearchEntry ();
+			};
 			
 			RestoreSearchHistory ();
 			
@@ -144,7 +151,7 @@ namespace MonoDevelop.SourceEditor
 			FocusChildSet += delegate {
 				StoreWidgetState ();
 			};
-			
+			/*
 			entrySearch.Changed += delegate {
 				widget.SetSearchPattern (SearchPattern);
 				// if (!inSearchUpdate) {
@@ -152,7 +159,7 @@ namespace MonoDevelop.SourceEditor
 				// 	FireSearchPatternChanged ();
 				// }
 				UpdateSearchEntry ();
-			};
+			};*/
 			entrySearch.Entry.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
 				buttonSearchForward.GrabFocus ();
@@ -181,6 +188,7 @@ namespace MonoDevelop.SourceEditor
 				
 				caseSensitive.ButtonPressEvent += delegate {
 					caseSensitive.Toggle ();
+					widget.DisableAutomaticSearchPatternCaseMatch = true;
 				};
 				
 				menu.Append (caseSensitive);
@@ -253,6 +261,9 @@ namespace MonoDevelop.SourceEditor
 		public void UpdateSearchPattern ()
 		{
 			entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
+			widget.SetSearchPattern (widget.TextEditor.SearchPattern);
+			searchPattern = widget.TextEditor.SearchPattern;
+//			UpdateSearchEntry ();
 		}
 		
 		private void OnNavigateKeyPressEvent (object o, KeyPressEventArgs args)

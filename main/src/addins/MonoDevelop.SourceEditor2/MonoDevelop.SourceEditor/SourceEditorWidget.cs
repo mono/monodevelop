@@ -866,17 +866,24 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetSearchPattern (string searchPattern)
 		{
-			CheckSearchPatternCasing (searchPattern);
-			
 			this.textEditor.SearchPattern = searchPattern;
 			if (this.splittedTextEditor != null)
 				this.splittedTextEditor.SearchPattern = searchPattern;
 		}
 		
-		void CheckSearchPatternCasing (string searchPattern)
+		public bool DisableAutomaticSearchPatternCaseMatch {
+			get;
+			set;
+		}
+		
+		internal void CheckSearchPatternCasing (string searchPattern)
 		{
-			if (searchPattern.Any (ch => Char.IsUpper (ch)))
-				SearchAndReplaceWidget.IsCaseSensitive = true;
+			if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true) && searchPattern.Any (ch => Char.IsUpper (ch))) {
+				if (!SearchAndReplaceWidget.IsCaseSensitive) {
+					SearchAndReplaceWidget.IsCaseSensitive = true;
+					SetSearchOptions ();
+				}
+			}
 		}
 		
 		internal bool RemoveSearchWidget ()
@@ -1054,7 +1061,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (TextEditor.IsSomethingSelected) {
 				TextEditor.SearchPattern = TextEditor.SelectedText;
-				CheckSearchPatternCasing (TextEditor.SelectedText);
+	//			CheckSearchPatternCasing (TextEditor.SelectedText);
 			}
 			if (searchAndReplaceWidget != null)
 				searchAndReplaceWidget.UpdateSearchPattern ();
