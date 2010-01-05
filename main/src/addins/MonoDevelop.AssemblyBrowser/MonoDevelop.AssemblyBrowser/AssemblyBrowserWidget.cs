@@ -97,8 +97,9 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
 			
-			scrolledwindow2.AddWithViewport (TreeView);
-			scrolledwindow2.ShowAll ();
+			TreeView.ShadowType = ShadowType.In;
+			treeViewPlaceholder.Add (TreeView);
+			treeViewPlaceholder.ShowAll ();
 			
 //			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
 			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));

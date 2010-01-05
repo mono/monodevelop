@@ -29,13 +29,28 @@
         <property name="StockId">gtk-go-forward</property>
         <signal name="Activated" handler="OnNavigateForwardActionActivated" />
       </action>
+      <action id="goBackAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes" />
+        <property name="StockId">gtk-go-back</property>
+      </action>
+      <action id="goForwardAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes" />
+        <property name="StockId">gtk-go-forward</property>
+      </action>
+      <action id="goBackAction1">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes" />
+        <property name="StockId">gtk-go-back</property>
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
+        <property name="Spacing">2</property>
         <child>
           <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
@@ -170,28 +185,10 @@
             <property name="CanFocus">True</property>
             <property name="Position">271</property>
             <child>
-              <widget class="Gtk.VBox" id="vbox2">
+              <widget class="Gtk.Alignment" id="treeViewPlaceholder">
                 <property name="MemberName" />
-                <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShadowType">In</property>
-                    <child>
-                      <widget class="Gtk.Viewport" id="GtkViewport1">
-                        <property name="MemberName" />
-                        <property name="ShadowType">None</property>
-                        <child>
-                          <placeholder />
-                        </child>
-                      </widget>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                  </packing>
+                  <placeholder />
                 </child>
               </widget>
               <packing>
@@ -207,6 +204,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="CurrentPage">0</property>
+                    <property name="ShowBorder">False</property>
                     <property name="ShowTabs">False</property>
                     <child>
                       <widget class="Gtk.ScrolledWindow" id="documentationScrolledWindow">
