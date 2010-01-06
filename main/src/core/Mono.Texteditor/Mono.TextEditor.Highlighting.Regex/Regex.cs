@@ -22,16 +22,16 @@ namespace Mono.TextEditor.Highlighting
 			foreach (string pattern in patterns) {
 				int curOffset = offset;
 				bool match = true;
-				for (int i = 0; i < pattern.Length; i++) {
+				for (int i = 0; i < pattern.Length && curOffset < doc.Length; i++) {
 					if (doc.GetCharAt (curOffset) != pattern[i]) {
 						match = false;
 						break;
 					}
 					curOffset++;
-					if (curOffset >= doc.Length) {
+/*					if (curOffset >= doc.Length) {
 						match = i + 1 == pattern.Length;
 						break;
-					}
+					}*/
 				}
 				if (match)
 					return new RegexMatch (pattern.Length);
