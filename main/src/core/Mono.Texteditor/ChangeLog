@@ -1,5 +1,9 @@
 2010-01-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: fixed hruler drawing bug.
+
+2010-01-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting.Regex/Regex.cs: fixed 'Bug
 	  568483 - IndexOutOfRangeException in CSharpSyntaxMode'.
 

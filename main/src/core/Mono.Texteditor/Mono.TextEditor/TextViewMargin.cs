@@ -1158,7 +1158,7 @@ namespace Mono.TextEditor
 			if (layout.StartSet) {
 				var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
 				var end   = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
-				DrawRectangleWithRuler (win, xPos, new Rectangle ((int)(xPos + start.X / Pango.Scale.PangoScale), y, (int)((end.X - start.X) / Pango.Scale.PangoScale), textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
+				DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value, new Rectangle ((int)(xPos + start.X / Pango.Scale.PangoScale), y, (int)((end.X - start.X) / Pango.Scale.PangoScale), textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
 			}
 			
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout.Layout);
