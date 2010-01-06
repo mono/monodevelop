@@ -507,7 +507,8 @@ namespace MonoDevelop.CSharp.Resolver
 						return resolvedResult;
 				}
 			} else {
-				MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result.ResolvedType);
+				if (result != null)
+					MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result.ResolvedType);
 			}
 			return null;
 		}

@@ -1,3 +1,9 @@
+2010-01-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: fixed 'Bug
+	  568484 - NRE in resolver'.
+
 2010-01-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: fixed

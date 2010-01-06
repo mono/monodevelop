@@ -1,3 +1,7 @@
+2010-01-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am: fixed 'Bug 568484 - NRE in resolver'.
+
 2009-10-09  Mike Krüger  <mkrueger@novell.com>
 
 	* CSharpAutotoolsSetup.cs: Renamed some namespaces.

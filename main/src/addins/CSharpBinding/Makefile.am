@@ -8,8 +8,8 @@ PARSE = parse.exe
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
-	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
