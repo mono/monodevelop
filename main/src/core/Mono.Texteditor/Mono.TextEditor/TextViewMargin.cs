@@ -1672,7 +1672,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
+		public void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
 		{
 			if (BackgroundRenderer != null)
 				return;
@@ -1781,7 +1781,7 @@ namespace Mono.TextEditor
 				}
 				if (textEditor.Options.ShowRuler) {
 					// warning: code duplication, look at the method end.
-					win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + LineHeight);
+					win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + textEditor.GetLineHeight (line));
 				}
 				return;
 			}
@@ -1880,7 +1880,7 @@ namespace Mono.TextEditor
 				DrawEolMarker (win, isEolSelected, xPos, y);
 			if (textEditor.Options.ShowRuler) {
 				// warning: code duplication, scroll up.
-				win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + LineHeight);
+				win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + textEditor.GetLineHeight (line));
 			}
 			
 			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
