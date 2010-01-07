@@ -1,3 +1,8 @@
+2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CBinding.addin.xml: Reverted the fix for Bug 468416 because
+	  it marked .h as c++ headers, which is the wrong mimetype.
+
 2010-01-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Parser/TagDatabaseManager.cs: Allow parsing of headers
