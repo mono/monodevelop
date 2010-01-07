@@ -25,19 +25,38 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Mono.TextEditor;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Tasks;
+using System.Collections.Generic;
 
 namespace MonoDevelop.SourceEditor
 {
+	public class ErrorText
+	{
+		public bool IsError { get; set; }
+		public string ErrorMessage { get; set; }
+		
+		public ErrorText (bool isError, string errorMessage)
+		{
+			this.IsError = isError;
+			this.ErrorMessage = errorMessage;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[ErrorText: IsError={0}, ErrorMessage={1}]", IsError, ErrorMessage);
+		}
+	}
+	
 	public class ErrorTextMarker : TextMarker, IBackgroundMarker, IIconBarMarker, IExtendingTextMarker, IDisposable
 	{
 		const int border = 4;
-		Gdk.Pixbuf iconPixbuf;
+		Gdk.Pixbuf errorPixbuf;
+		Gdk.Pixbuf warningPixbuf;
 //		bool fitCalculated = false;
 		bool fitsInSameLine = true;
-		public bool IsError { get; set; }
 		public bool IsExpanded { 
 			get {
 				return !task.Completed;
@@ -46,16 +65,21 @@ namespace MonoDevelop.SourceEditor
 				task.Completed = !value;
 			}
 		}
-		public string ErrorMessage { get; set; }
+		
+		List<ErrorText> errors = new List<ErrorText> ();
+		
 		Task task;
 		LineSegment lineSegment;
 		
 		public int GetLineHeight (TextEditor editor) 
 		{
 			if (!IsExpanded || DebuggingService.IsDebugging) 
-				return editor.LineHeight;
+				return editor.LineHeight; 
 			CalculateLineFit (editor, editor.TextViewMargin.GetLayout (lineSegment).Layout);
-			return fitsInSameLine ? editor.LineHeight : editor.LineHeight * 2;
+			int height = editor.LineHeight * errors.Count;
+			if (!fitsInSameLine)
+				height += editor.LineHeight;
+			return height;
 		}
 		
 		void CalculateLineFit (TextEditor editor, Pango.Layout textLayout)
@@ -64,7 +88,7 @@ namespace MonoDevelop.SourceEditor
 			textLayout.GetPixelSize (out textWidth, out textHeight);
 			
 			EnsureLayoutCreated (editor);
-			fitsInSameLine = editor.TextViewMargin.XOffset + textWidth + layoutWidth + iconPixbuf.Width + border + editor.LineHeight / 2  < editor.Allocation.Width;
+			fitsInSameLine = editor.TextViewMargin.XOffset + textWidth + layouts[0].Width + errorPixbuf.Width + border + editor.LineHeight / 2  < editor.Allocation.Width;
 		}
 		
 		public ErrorTextMarker (Task task, LineSegment lineSegment, bool isError, string errorMessage)
@@ -72,16 +96,22 @@ namespace MonoDevelop.SourceEditor
 			this.task = task;
 			this.IsExpanded = true;
 			this.lineSegment = lineSegment;
-			this.IsError = isError;
-			this.ErrorMessage = errorMessage;
-			iconPixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (isError ? MonoDevelop.Core.Gui.Stock.Error : MonoDevelop.Core.Gui.Stock.Warning, Gtk.IconSize.Menu);
+			errors.Add (new ErrorText (isError, errorMessage));
+			errorPixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Error, Gtk.IconSize.Menu);
+			warningPixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Warning, Gtk.IconSize.Menu);
+		}
+		
+		public void AddError (bool isError, string errorMessage)
+		{
+			errors.Add (new ErrorText (isError, errorMessage));
+			DisposeLayout ();
 		}
 		
 		public void DisposeLayout ()
 		{
-			if (layout != null) {
-				layout.Dispose ();
-				layout = null;
+			if (layouts != null) {
+				layouts.ForEach (l => l.Layout.Dispose ());
+				layouts = null;
 			}
 			if (fontDescription != null) {
 				fontDescription.Dispose ();
@@ -98,16 +128,33 @@ namespace MonoDevelop.SourceEditor
 			DisposeLayout ();
 		}
 		
+		class LayoutDescriptor 
+		{
+			public Pango.Layout Layout { get; set; }
+			public int Width { get; set; }
+			public int Height { get; set; }
+			
+			public LayoutDescriptor (Pango.Layout layout, int width, int height)
+			{
+				this.Layout = layout;
+				this.Width = width;
+				this.Height = height;
+			}
+		}
+		
 		Gdk.GC gc;
-		Pango.Layout layout;
+		List<LayoutDescriptor> layouts;
 		Pango.FontDescription fontDescription;
-		int layoutWidth, layoutHeight;
 		
-		Cairo.Color lightBg;
-		Cairo.Color darkBg;
-		
-		Cairo.Color lightBg2;
-		Cairo.Color darkBg2;
+		Cairo.Color errorLightBg;
+		Cairo.Color errorDarkBg;
+		Cairo.Color errorLightBg2;
+		Cairo.Color errorDarkBg2;
+
+		Cairo.Color warningLightBg;
+		Cairo.Color warningDarkBg;
+		Cairo.Color warningLightBg2;
+		Cairo.Color warningDarkBg2;
 		
 		Cairo.Color topLine;
 		Cairo.Color bottomLine;
@@ -115,30 +162,43 @@ namespace MonoDevelop.SourceEditor
 		void EnsureLayoutCreated (TextEditor editor)
 		{
 			if (editor.ColorStyle != null && gc == null) {
+				bool isError = errors.Any (e => e.IsError);
 				gc = new Gdk.GC (editor.GdkWindow);
-				gc.RgbFgColor = editor.ColorStyle.GetChunkStyle (IsError ? "error.text" : "warning.text").Color;
+				gc.RgbFgColor = editor.ColorStyle.GetChunkStyle (isError ? "error.text" : "warning.text").Color;
 				
-				lightBg = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.light.color1" : "warning.light.color1").Color);
-				darkBg  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.light.color2" : "warning.light.color2").Color);
+				errorLightBg = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("error.light.color1").Color);
+				errorDarkBg  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("error.light.color2").Color);
 			
-				lightBg2 = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.dark.color1" : "warning.dark.color1").Color);
-				darkBg2  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.dark.color2" : "warning.dark.color2").Color);
+				errorLightBg2 = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("error.dark.color1").Color);
+				errorDarkBg2  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("error.dark.color2").Color);
 			
-				topLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.line.top" : "warning.line.top").Color);
-				bottomLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (IsError ? "error.line.bottom" : "warning.line.bottom").Color);
+				warningLightBg = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("warning.light.color1").Color);
+				warningDarkBg  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("warning.light.color2").Color);
+			
+				warningLightBg2 = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("warning.dark.color1").Color);
+				warningDarkBg2  = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("warning.dark.color2").Color);
+			
+				topLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (isError ? "error.line.top" : "warning.line.top").Color);
+				bottomLine = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle (isError ? "error.line.bottom" : "warning.line.bottom").Color);
 			}
 			
-			if (layout != null)
+			if (layouts != null)
 				return;
-			layout = new Pango.Layout (editor.PangoContext);
+			layouts = new List<LayoutDescriptor> ();
 			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
 			fontDescription.Family = "Sans";
 			fontDescription.Size = (int)(fontDescription.Size * 0.8f * editor.Options.Zoom);
-			layout.FontDescription = fontDescription;
-			layout.SetText (ErrorMessage);
 			
-			layout.GetPixelSize (out layoutWidth, out layoutHeight);
-			
+			foreach (ErrorText errorText in errors) {
+				Console.WriteLine (errorText);
+				Pango.Layout layout = new Pango.Layout (editor.PangoContext);
+				layout.FontDescription = fontDescription;
+				layout.SetText (errorText.ErrorMessage);
+				
+				int layoutWidth, layoutHeight;
+				layout.GetPixelSize (out layoutWidth, out layoutHeight);
+				layouts.Add (new LayoutDescriptor (layout, layoutWidth, layoutHeight));
+			}
 		}
 		
 		public bool DrawBackground (TextEditor editor, Gdk.Drawable win, Pango.Layout layout2, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
@@ -151,11 +211,12 @@ namespace MonoDevelop.SourceEditor
 			int x = editor.TextViewMargin.XOffset;
 			int right = editor.Allocation.Width;
 			
-			int x2 = System.Math.Max (right - layoutWidth - border - iconPixbuf.Width, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
+			int x2 = System.Math.Max (right - layouts[0].Width - border - errorPixbuf.Width, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
+			bool isEolSelected = editor.IsSomethingSelected ? editor.SelectionRange.Contains (lineSegment.EndOffset) : false;
+			bool isError = errors.Any (e => e.IsError);
 			
 			using (var g = Gdk.CairoHelper.Create (win)) {
 				if (!fitsInSameLine) {
-					bool isEolSelected = editor.IsSomethingSelected ? editor.SelectionRange.Contains (lineSegment.EndOffset) : false;
 					if (isEolSelected)
 						x2 = editor.Allocation.Width;
 					DrawRectangle (g, x, y + editor.LineHeight, x2, editor.LineHeight);
@@ -164,8 +225,9 @@ namespace MonoDevelop.SourceEditor
 				}
 				DrawRectangle (g, x, y, right, editor.LineHeight);
 				Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x, y + editor.LineHeight);
-				pat.AddColorStop (0, lightBg);
-				pat.AddColorStop (1, darkBg);
+				
+				pat.AddColorStop (0, isError ? errorLightBg : warningLightBg);
+				pat.AddColorStop (1, isError ? errorDarkBg : warningDarkBg);
 				g.Pattern = pat;
 				g.Fill ();
 				
@@ -200,22 +262,48 @@ namespace MonoDevelop.SourceEditor
 					g.ClosePath ();
 				
 				Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x, y2Bottom);
-				pat.AddColorStop (0, fitsInSameLine ? lightBg2 : darkBg);
-				pat.AddColorStop (1, fitsInSameLine ? darkBg2 : lightBg);
+				if (isError) {
+					pat.AddColorStop (0, fitsInSameLine ? errorLightBg2 : errorDarkBg);
+					pat.AddColorStop (1, fitsInSameLine ? errorDarkBg2 : errorLightBg);
+				} else {
+					pat.AddColorStop (0, fitsInSameLine ? warningLightBg2 : warningDarkBg);
+					pat.AddColorStop (1, fitsInSameLine ? warningDarkBg2 : warningLightBg);
+				}
 				g.Pattern = pat;
 				g.FillPreserve ();
 				g.Color = bottomLine;
 				g.LineWidth = 1;
 				g.Stroke ();
 			}
-			win.DrawLayout (gc, x2 + iconPixbuf.Width + border, y + (editor.LineHeight - layoutHeight) / 2, layout);
+			for (int i = 0; i < layouts.Count; i++) {
+				LayoutDescriptor layout = layouts[i];
+				x2 = System.Math.Max (right - layout.Width - border - errorPixbuf.Width, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
+				if (i > 0) {
+					editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y, right, editor.LineHeight), isEolSelected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor, true);
+					using (var g = Gdk.CairoHelper.Create (win)) {
+						g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
+						g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
+						g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
+						g.LineTo (new Cairo.PointD (right, y));
+						g.ClosePath ();
+						
+						Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x, y + editor.LineHeight);
+						pat.AddColorStop (0, errors[i].IsError ? errorLightBg : warningLightBg);
+						pat.AddColorStop (1, errors[i].IsError ? errorDarkBg : warningDarkBg);
+						g.Pattern = pat;
+						g.Fill ();
+					}
+				}
+				win.DrawLayout (gc, x2 + errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2, layout.Layout);
+				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), 
+				                errors[i].IsError ? errorPixbuf : warningPixbuf, 
+				                0, 0, 
+				                x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, 
+				                errorPixbuf.Width, errorPixbuf.Height, 
+				                Gdk.RgbDither.None, 0, 0);
+				y += editor.LineHeight;
+			}
 			
-			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), 
-			                iconPixbuf, 
-			                0, 0, 
-			                x2, y + (editor.LineHeight - iconPixbuf.Height) / 2, 
-			                iconPixbuf.Width, iconPixbuf.Height, 
-			                Gdk.RgbDither.None, 0, 0);
 			
 			return true;
 		}
@@ -248,10 +336,10 @@ namespace MonoDevelop.SourceEditor
 			if (DebuggingService.IsDebugging) 
 				return;
 			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), 
-			                iconPixbuf, 
+			                errors.Any (e => e.IsError) ? errorPixbuf : warningPixbuf, 
 			                0, 0, 
-			                x + (width - iconPixbuf.Width) / 2, y + (height - iconPixbuf.Height) / 2, 
-			                iconPixbuf.Width, iconPixbuf.Height, 
+			                x + (width - errorPixbuf.Width) / 2, y + (height - errorPixbuf.Height) / 2, 
+			                errorPixbuf.Width, errorPixbuf.Height, 
 			                Gdk.RgbDither.None, 0, 0);
 		}
 		
