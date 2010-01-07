@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "C" mimeTypes="text/x-csrc;text/x-chdr">
+<SyntaxMode name = "C" mimeTypes="text/x-csrc"> <!-- The C++ syntax mode handles .h files since they're often C++ -->
 	
 	<Property name="LineComment">//</Property>
 	<Property name="BlockCommentStart">/*</Property>

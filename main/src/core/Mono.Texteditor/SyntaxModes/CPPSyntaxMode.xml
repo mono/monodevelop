@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "C++" mimeTypes="text/x-c++src;text/x-c++hdr" extends="text/x-csrc">
+<SyntaxMode name = "C++" mimeTypes="text/x-c++src;text/x-c++hdr;text/x-chdr" extends="text/x-csrc">
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
 		
