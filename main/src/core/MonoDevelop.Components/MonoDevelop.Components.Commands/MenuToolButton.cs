@@ -42,13 +42,8 @@ namespace MonoDevelop.Components.Commands
 			if (string.IsNullOrEmpty (icon)) {
 				this.Expand = false;
 				this.Homogeneous = false;
-				this.IconWidget = new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.None);;
+				this.IconWidget = new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.None);
 			}
-		}
-		
-		protected override void OnClicked ()
-		{
-			base.OnClicked ();
 		}
 		
 		[GLib.ConnectBeforeAttribute]

@@ -229,6 +229,7 @@
     <Compile Include="MonoDevelop.Components\HslColor.cs" />
     <Compile Include="MonoDevelop.Components\SearchEntry.cs" />
     <Compile Include="MonoDevelop.Components\HoverImageButton.cs" />
+    <Compile Include="MonoDevelop.Components\PathBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
