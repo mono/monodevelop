@@ -280,18 +280,20 @@ namespace MonoDevelop.SourceEditor
 				x2 = System.Math.Max (right - layout.Width - border - errorPixbuf.Width, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 				if (i > 0) {
 					editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y, right, editor.LineHeight), isEolSelected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor, true);
-					using (var g = Gdk.CairoHelper.Create (win)) {
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
-						g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
-						g.LineTo (new Cairo.PointD (right, y));
-						g.ClosePath ();
-						
-						Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x, y + editor.LineHeight);
-						pat.AddColorStop (0, errors[i].IsError ? errorLightBg : warningLightBg);
-						pat.AddColorStop (1, errors[i].IsError ? errorDarkBg : warningDarkBg);
-						g.Pattern = pat;
-						g.Fill ();
+					if (!isEolSelected) {
+						using (var g = Gdk.CairoHelper.Create (win)) {
+							g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
+							g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
+							g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
+							g.LineTo (new Cairo.PointD (right, y));
+							g.ClosePath ();
+							
+							Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x, y + editor.LineHeight);
+							pat.AddColorStop (0, errors[i].IsError ? errorLightBg : warningLightBg);
+							pat.AddColorStop (1, errors[i].IsError ? errorDarkBg : warningDarkBg);
+							g.Pattern = pat;
+							g.Fill ();
+						}
 					}
 				}
 				win.DrawLayout (gc, x2 + errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2, layout.Layout);

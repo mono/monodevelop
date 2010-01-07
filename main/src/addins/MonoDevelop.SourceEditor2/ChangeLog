@@ -1,5 +1,10 @@
 2010-01-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: fixed selection
+	  drawing bug.
+
+2010-01-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added support
 	  for multiple errors/warnings in one line.
