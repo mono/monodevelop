@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui
 		ArrayList subViewContents = null;
 		Notebook subViewNotebook = null;
 		Toolbar subViewToolbar = null;
-		HBox pathBox = null;
+		PathBar pathBar = null;
 		HBox toolbarBox = null;
 		
 		VBox box;
@@ -365,13 +365,13 @@ namespace MonoDevelop.Ide.Gui
 			if (toolbarBox == null || subViewToolbar == null)
 				return;
 
-			if (separatorItem != null && pathBox == null) {
+			if (separatorItem != null && pathBar == null) {
 				subViewToolbar.Remove (separatorItem);
 				separatorItem = null;
-			} else if (separatorItem == null && pathBox != null) {
+			} else if (separatorItem == null && pathBar != null) {
 				separatorItem = new SeparatorToolItem ();
 				subViewToolbar.Insert (separatorItem, -1);
-			} else if (separatorItem != null && pathBox != null) {
+			} else if (separatorItem != null && pathBar != null) {
 				if (subViewToolbar.GetItemIndex(separatorItem) != subViewToolbar.NumChildren - 1) {
 					subViewToolbar.Remove (separatorItem);
 					subViewToolbar.Insert (separatorItem, -1);
@@ -469,80 +469,44 @@ namespace MonoDevelop.Ide.Gui
 		
 		void HandlePathChange (object sender, MonoDevelop.Ide.Gui.Content.DocumentPathChangedEventArgs args)
 		{
-			MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
-			
-			while (pathBox.Children.Length > 0)
-				pathBox.Remove (pathBox.Children[0]);
-			
-			if (pathDoc.CurrentPath == null || pathDoc.CurrentPath.Length == 0)
-				return;
-			
-			for (int i = 0; i < pathDoc.CurrentPath.Length; i++) {
-				PathMenuButton button = new PathMenuButton (pathDoc, i);
-				button.ArrowType = (i + 1 < pathDoc.CurrentPath.Length)? ArrowType.Right : (ArrowType?) null;
-				
-				if (i == pathDoc.SelectedIndex) {
-					string escaped = GLib.Markup.EscapeText (pathDoc.CurrentPath[i]);
-					button.Markup = string.Concat ("<b>", escaped ,"</b>");
-				} else {
-					button.Label = pathDoc.CurrentPath[i];
-				}
-				pathBox.PackStart (button, false, false, 0);
-			}
-			pathBox.PackEnd (new Label (string.Empty), true, true, 0);
-			pathBox.ShowAll ();
+			var pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
+			pathBar.SetPath (pathDoc.CurrentPath);
+			pathBar.SetActive (pathDoc.SelectedIndex);
 		}
 		
 		bool PathWidgetEnabled {
-			get { return (pathBox != null); }
+			get { return (pathBar != null); }
 			set {
 				if (PathWidgetEnabled == value)
 					return;
 				if (value) {
 					CheckCreateToolbarBox ();
-					
-					pathBox = new HBox ();
-					pathBox.Spacing = 0;
-					
-					toolbarBox.PackEnd (pathBox, true, true, 0);
+					pathBar = new PathBar (CreatePathMenu);
+					toolbarBox.PackEnd (pathBar, true, true, 0);
 					toolbarBox.ShowAll ();
 				} else {
-					toolbarBox.Remove (pathBox);
+					toolbarBox.Remove (pathBar);
 					toolbarBox.Destroy ();
 				}
 				EnsureToolbarBoxSeparator ();
 			}
 		}
 		
-		private class PathMenuButton : MenuButton
+		Menu CreatePathMenu (int index)
 		{
-			MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc;
-			int index;
-			
-			public PathMenuButton (MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc, int index)
-			{
-				this.pathDoc = pathDoc;
-				this.index = index;
-				this.MenuCreator = PathMenuCreator;
-				this.Relief = Gtk.ReliefStyle.None;
-			}
-			
-			Menu PathMenuCreator (MenuButton button)	
-			{
-				Menu menu = new Menu ();
-				MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
-				mi.Activated += delegate {
-					pathDoc.SelectPath (index);
-				};
-				menu.Add (mi);
-				mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
-				mi.Activated += delegate {
-					pathDoc.SelectPathContents (index);
-				};
-				menu.Add (mi);
-				menu.ShowAll ();
-				return menu;
-			}
+			Menu menu = new Menu ();
+			MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
+			mi.Activated += delegate {
+				pathDoc.SelectPath (index);
+			};
+			menu.Add (mi);
+			mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
+			mi.Activated += delegate {
+				pathDoc.SelectPathContents (index);
+			};
+			menu.Add (mi);
+			menu.ShowAll ();
+			return menu;
 		}
 		
 		#endregion
