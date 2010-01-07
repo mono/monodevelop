@@ -1,3 +1,10 @@
+2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/PathBar.cs: Implement menu support.
+	  Still needs scrolling/ellipsizing etc. - right now it just
+	  cuts off if it's overwide, but at least it's better than
+	  widening the window like the old one did.
+
 2010-01-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/PathBar.cs: Track button press.

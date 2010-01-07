@@ -43,14 +43,16 @@ namespace MonoDevelop.Components
 		int[] widths;
 		int height;
 		
-		bool pressed = false;
-		int hovered = -1;
+		bool pressed, hovering, menuVisible;
+		int hoverIndex = -1;
 		int activeIndex = -1;
 		
 		const int padding = 2;
 		const int spacing = 10;
 		
-		public PathBar ()
+		Func<int,Menu> createMenuForItem;
+		
+		public PathBar (Func<int,Menu> createMenuForItem)
 		{
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |
@@ -60,6 +62,7 @@ namespace MonoDevelop.Components
 				           EventMask.KeyPressMask | 
 					       EventMask.PointerMotionMask;
 			boldAtts.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
+			this.createMenuForItem = createMenuForItem;
 		}
 		
 		public string[] Path { get { return path; } }
@@ -115,9 +118,11 @@ namespace MonoDevelop.Components
 			for (int i = 0; i < path.Length; i++) {
 				bool last = i == path.Length - 1;
 				
-				if (hovered == i) {
-					Style.PaintBox (Style, GdkWindow, pressed? StateType.Active : StateType.Prelight,
-					                pressed? ShadowType.In : ShadowType.Out, evnt.Area, this, "button",
+				if (hoverIndex == i && (menuVisible || pressed || hovering)) {
+					Style.PaintBox (Style, GdkWindow,
+					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
+					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
+					                evnt.Area, this, "button",
 					                xpos - padding, ypos - padding, widths[i] + padding + (last? padding : spacing),
 					                height + padding * 2);
 				}
@@ -141,17 +146,60 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			pressed = true;
-			QueueDraw ();
+			if (hovering) {
+				pressed = true;
+				QueueDraw ();
+			}
 			return true;
 		}
 		
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
 			pressed = false;
-			QueueDraw ();
-			//TODO: show menu
+			if (hovering) {
+				QueueDraw ();
+				ShowMenu ();
+			}
 			return true;
+		}
+		
+		void ShowMenu ()
+		{
+			if (hoverIndex < 0)
+				return;
+			
+			Menu menu = createMenuForItem (hoverIndex);
+			menu.Hidden += delegate {
+				
+				menuVisible = false;
+				QueueDraw ();
+				
+				//FIXME: for some reason the menu's children don't get activated if we destroy 
+				//directly here, so use a timeout to delay it
+				GLib.Timeout.Add (100, delegate {
+					menu.Destroy ();
+					return false;
+				});
+			};
+			menuVisible = true;
+			menu.Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
+		}
+		
+		void PositionFunc (Menu mn, out int x, out int y, out bool push_in)
+		{
+			this.GdkWindow.GetOrigin (out x, out y);
+			var rect = this.Allocation;
+			y += rect.Height;
+			x += widths.Take (hoverIndex).Sum () + hoverIndex * spacing;
+			
+			//if the menu would be off the bottom of the screen, "drop" it upwards
+			if (y + mn.Requisition.Height > this.Screen.Height) {
+				y -= mn.Requisition.Height;
+				y -= rect.Height;
+			}
+			
+			//let GTK reposition the button if it still doesn't fit on the screen
+			push_in = true;
 		}
 		
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
@@ -160,19 +208,29 @@ namespace MonoDevelop.Components
 			return true;
 		}
 		
-		void SetHover (int i)
-		{
-			if (hovered != i) {
-				hovered = i;
-				QueueDraw ();
-			}
-		}
-		
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
 			pressed = false;
 			SetHover (-1);
-			return base.OnLeaveNotifyEvent (evnt);
+			return true;
+		}
+		
+		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		{
+			SetHover (GetItemAt ((int)evnt.X, (int)evnt.Y));
+			return true;
+		}
+		
+		void SetHover (int i)
+		{
+			bool oldHovering = hovering;
+			hovering = i > -1;
+			
+			if (hoverIndex != i || oldHovering != hovering) {
+				if (hovering)
+					hoverIndex = i;
+				QueueDraw ();
+			}
 		}
 		
 		int GetItemAt (int x, int y)
