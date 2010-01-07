@@ -43,6 +43,7 @@ namespace MonoDevelop.Components
 		int[] widths;
 		int height;
 		
+		bool pressed = false;
 		int hovered = -1;
 		int activeIndex = -1;
 		
@@ -103,7 +104,7 @@ namespace MonoDevelop.Components
 		{
 			EnsureWidths ();
 			requisition.Width = widths.Sum () + (widths.Length - 1) * spacing + 2 * padding;
-			requisition.Height = height;
+			requisition.Height = height + padding * 2;
 		}
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
@@ -112,17 +113,21 @@ namespace MonoDevelop.Components
 			//FIXME: why don't we need to use the allocation.x and allocation.y here?
 			int xpos = padding, ypos = padding;
 			for (int i = 0; i < path.Length; i++) {
+				bool last = i == path.Length - 1;
+				
 				if (hovered == i) {
-					Style.PaintFlatBox (Style, GdkWindow, StateType.Prelight, ShadowType.Out, evnt.Area, this, "",
-					                    xpos, ypos, widths[i], height);
+					Style.PaintBox (Style, GdkWindow, pressed? StateType.Active : StateType.Prelight,
+					                pressed? ShadowType.In : ShadowType.Out, evnt.Area, this, "button",
+					                xpos - padding, ypos - padding, widths[i] + padding + (last? padding : spacing),
+					                height + padding * 2);
 				}
 				
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
 				layout.SetText (path[i]);
-				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", xpos, 0, layout);
+				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", xpos, ypos, layout);
 				
 				xpos += widths[i];
-				if (i < path.Length - 1) {
+				if (!last) {
 					int arrowH = Math.Min (height, spacing);
 					int arrowY = ypos + (height - arrowH) / 2;
 					Style.PaintArrow (Style, GdkWindow, State, ShadowType.None, evnt.Area, this, "", ArrowType.Right,
@@ -131,6 +136,21 @@ namespace MonoDevelop.Components
 				xpos += spacing;
 			}
 			
+			return true;
+		}
+		
+		protected override bool OnButtonPressEvent (EventButton evnt)
+		{
+			pressed = true;
+			QueueDraw ();
+			return true;
+		}
+		
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			pressed = false;
+			QueueDraw ();
+			//TODO: show menu
 			return true;
 		}
 		
@@ -150,6 +170,7 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
+			pressed = false;
 			SetHover (-1);
 			return base.OnLeaveNotifyEvent (evnt);
 		}

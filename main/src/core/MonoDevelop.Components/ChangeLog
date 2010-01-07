@@ -1,5 +1,9 @@
 2010-01-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components/PathBar.cs: Track button press.
+
+2010-01-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Components.csproj: Add path bar source file to
 	  project.
