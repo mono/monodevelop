@@ -928,13 +928,15 @@ namespace MonoDevelop.SourceEditor
 		
 		void ShowSearchReplaceWidget (bool replace)
 		{
-			this.textEditor.SearchPattern = SearchAndReplaceWidget.searchPattern =""; // reset pattern, to force an update
+			this.textEditor.SearchPattern = SearchAndReplaceWidget.searchPattern = "";
+			// reset pattern, to force an update
 			
 			if (TextEditor.IsSomethingSelected)
 				TextEditor.SearchPattern = TextEditor.SelectedText;
 			
 			if (searchAndReplaceWidget == null) {
-				SearchAndReplaceWidget.IsCaseSensitive = TextEditor.IsSomethingSelected ? true : false;
+				if (PropertyService.Get ("AutoSetPatternCasing", true))
+					SearchAndReplaceWidget.IsCaseSensitive = TextEditor.IsSomethingSelected;
 				
 				KillWidgets ();
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
