@@ -1,5 +1,10 @@
 2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: Clean up the
+	  display of comment tags.
+
+2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: New path bar
 	  widget has reached feature parity wth the old version, so
 	  enable it.
