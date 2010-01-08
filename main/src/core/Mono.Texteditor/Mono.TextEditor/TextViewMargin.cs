@@ -1650,6 +1650,11 @@ namespace Mono.TextEditor
 		}
 
 		internal int rulerX = 0;
+		
+		public int RulerX {
+			get { return this.rulerX; }
+		}
+		
 		public int GetWidth (string text)
 		{
 			text = text.Replace ("\t", new string (' ', textEditor.Options.TabSize));

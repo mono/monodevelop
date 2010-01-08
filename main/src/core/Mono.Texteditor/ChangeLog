@@ -1,5 +1,9 @@
 2010-01-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: added missing property.
+
+2010-01-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: ruler divider line is now
 	  drawn in background.
 
