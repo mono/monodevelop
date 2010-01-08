@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet
 					if (c == '\n' || c == '\r') {
 						if (!prevCharWasCR || c == '\r') {
 							LineCount++;
-							if (sb.Length > 0)
+							if (sb != null && sb.Length > 0)
 								onNewLine ();
 							if (sb != null)
 								sb.Length = 0;
