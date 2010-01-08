@@ -240,12 +240,9 @@ namespace MonoDevelop.Components
 				return -1;
 			//could do a binary search, but probably not worth it
 			for (int i = 0; i < path.Length; i++) {
-				xpos += widths[i];
+				xpos += widths[i] + spacing;
 				if (x < xpos)
 					return i;
-				xpos += spacing;
-				if (x < xpos)
-					return -1;
 			}
 			return -1;
 		}
