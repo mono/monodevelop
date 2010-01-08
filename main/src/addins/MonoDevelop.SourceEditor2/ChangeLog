@@ -1,5 +1,10 @@
 2010-01-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: Worked on
+	  collapsible error bubbles.
+
+2010-01-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: added case
 	  check.
 
