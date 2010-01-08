@@ -219,9 +219,7 @@ namespace MonoDevelop.SourceEditor
 				if (!fitsInSameLine) {
 					if (isEolSelected)
 						x2 = editor.Allocation.Width;
-					DrawRectangle (g, x, y + editor.LineHeight, x2, editor.LineHeight);
-					g.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (isEolSelected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor);
-					g.Fill ();
+					editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y + editor.LineHeight, x2, editor.LineHeight), isEolSelected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor, true);
 				}
 				DrawRectangle (g, x, y, right, editor.LineHeight);
 				Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x, y + editor.LineHeight);
