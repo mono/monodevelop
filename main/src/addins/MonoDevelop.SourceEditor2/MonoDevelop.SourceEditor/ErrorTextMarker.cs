@@ -215,6 +215,7 @@ namespace MonoDevelop.SourceEditor
 			bool isEolSelected = editor.IsSomethingSelected ? editor.SelectionRange.Contains (lineSegment.EndOffset) : false;
 			bool isError = errors.Any (e => e.IsError);
 			
+			
 			using (var g = Gdk.CairoHelper.Create (win)) {
 				if (!fitsInSameLine) {
 					if (isEolSelected)
@@ -240,6 +241,14 @@ namespace MonoDevelop.SourceEditor
 				g.Color = bottomLine;
 				g.LineWidth = 1;
 				g.Stroke ();
+				if (editor.Options.ShowRuler) {
+					int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+					g.MoveTo (new Cairo.PointD (divider + 0.5, y));
+					g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
+					g.Color = isError ? errorDarkBg2 : warningDarkBg2;
+					g.LineWidth = 1;
+					g.Stroke ();
+				}
 			}
 			
 			if (!fitsInSameLine) 
@@ -272,6 +281,16 @@ namespace MonoDevelop.SourceEditor
 				g.Color = bottomLine;
 				g.LineWidth = 1;
 				g.Stroke ();
+				if (editor.Options.ShowRuler) {
+					int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+					if (divider >= x2) {
+						g.MoveTo (new Cairo.PointD (divider + 0.5, y2));
+						g.LineTo (new Cairo.PointD (divider + 0.5, y2Bottom));
+						g.Color = isError ? errorDarkBg2 : warningDarkBg2;
+						g.LineWidth = 1;
+						g.Stroke ();
+					}
+				}
 			}
 			for (int i = 0; i < layouts.Count; i++) {
 				LayoutDescriptor layout = layouts[i];
@@ -291,16 +310,28 @@ namespace MonoDevelop.SourceEditor
 							pat.AddColorStop (1, errors[i].IsError ? errorDarkBg : warningDarkBg);
 							g.Pattern = pat;
 							g.Fill ();
+							if (editor.Options.ShowRuler) {
+								int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+								if (divider >= x2) {
+									g.MoveTo (new Cairo.PointD (divider + 0.5, y));
+									g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
+									g.Color = errors[i].IsError ? errorDarkBg2 : warningDarkBg2;
+									g.LineWidth = 1;
+									g.Stroke ();
+								}
+							}
 						}
 					}
 				}
-				win.DrawLayout (gc, x2 + errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2, layout.Layout);
-				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), 
-				                errors[i].IsError ? errorPixbuf : warningPixbuf, 
-				                0, 0, 
-				                x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, 
-				                errorPixbuf.Width, errorPixbuf.Height, 
-				                Gdk.RgbDither.None, 0, 0);
+				if (!isEolSelected) {
+					win.DrawLayout (gc, x2 + errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2, layout.Layout);
+					win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), 
+					                errors[i].IsError ? errorPixbuf : warningPixbuf, 
+					                0, 0, 
+					                x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, 
+					                errorPixbuf.Width, errorPixbuf.Height, 
+					                Gdk.RgbDither.None, 0, 0);
+				}
 				y += editor.LineHeight;
 			}
 			

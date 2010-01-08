@@ -1,5 +1,10 @@
 2010-01-08  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: fixed 'Bug
+	  568979 - Hruler paints over error text'.
+
+2010-01-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: Fixed 'Bug
 	  568966 - Error bubbles wrapped lines have wrong bg in ruler
 	  area'.
