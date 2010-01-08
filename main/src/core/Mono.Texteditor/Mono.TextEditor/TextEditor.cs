@@ -2126,8 +2126,11 @@ namespace Mono.TextEditor
 				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
 				if (lineNumber >= logicalLine || Document.GetFoldingContaining (extendedTextMarkerLine).Any (fs => fs.IsFolded))
 					continue;
-				yPos -= GetLineHeight (extendedTextMarkerLine) - LineHeight;
+				int curLineHeight = GetLineHeight (extendedTextMarkerLine);
+				yPos -= curLineHeight - LineHeight;
 				logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
+				if (logicalLine < lineNumber)
+					return lineNumber;
 			}
 			
 			return logicalLine;

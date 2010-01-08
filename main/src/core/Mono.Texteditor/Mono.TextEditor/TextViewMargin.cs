@@ -1270,6 +1270,18 @@ namespace Mono.TextEditor
 				VisualLocationTranslator trans = new VisualLocationTranslator (this, args.X, args.Y);
 				clickLocation = trans.VisualToDocumentLocation (args.X, args.Y);
 				LineSegment line = Document.GetLine (clickLocation.Line);
+				bool isHandled = false;
+				if (line != null) {
+					foreach (TextMarker marker in line.Markers) {
+						if (marker is IActionTextMarker) {
+							isHandled |= ((IActionTextMarker)marker).MousePressed (this.textEditor, args);
+							if (isHandled)
+								break;
+						}
+					}
+				}
+				if (isHandled)
+					return;
 				if (line != null && clickLocation.Column >= line.EditableLength && GetWidth (Document.GetTextAt (line) + "-") < args.X) {
 					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
 					clickLocation.Column = nextColumn;
@@ -1453,6 +1465,30 @@ namespace Mono.TextEditor
 		{
 			base.MouseHover (args);
 
+			bool isHandled = false;
+			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
+			
+			LineSegment line = Document.GetLine (loc.Line);
+			if (line != null) {
+				foreach (TextMarker marker in line.Markers) {
+					if (marker is IActionTextMarker) {
+						Gdk.Cursor markerCursor = null;
+						isHandled |= ((IActionTextMarker)marker).MouseHover (this.textEditor, args, ref markerCursor);
+						if (isHandled) {
+							if (markerCursor != null)
+								base.cursor = markerCursor;
+							break;
+						}
+					}
+				}
+			}
+			if (isHandled) {
+				return;
+			} else {
+				base.cursor = xtermCursor;
+			}
+			
+			
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker 
 				int lineNr = args.LineNumber;
@@ -1472,9 +1508,11 @@ namespace Mono.TextEditor
 				}
 				return;
 			}
+			
+			
 			if (inDrag)
 				return;
-			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
+			
 			Caret.PreserveSelection = true;
 			switch (this.mouseSelectionMode) {
 			case MouseSelectionMode.SingleChar:
@@ -1951,6 +1989,7 @@ namespace Mono.TextEditor
 				
 				lineNumber = System.Math.Min (margin.textEditor.CalculateLineNumber (yp + (int)margin.textEditor.VAdjustment.Value), margin.Document.LineCount - 1);
 				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
+				
 			}
 			
 			TextViewMargin.LayoutWrapper layoutWrapper;
