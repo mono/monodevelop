@@ -1686,6 +1686,7 @@ namespace Mono.TextEditor
 					win.DrawRectangle (gc, true, new Rectangle (area.X, area.Y, divider - area.X, area.Height));
 					gc = GetGC (DimColor (color));
 					win.DrawRectangle (gc, true, new Rectangle (divider, area.Y, area.Right - divider, area.Height));
+					win.DrawLine (GetGC (ColorStyle.Ruler), divider, area.Top, divider, area.Bottom);
 					return;
 				}
 			}
@@ -1778,10 +1779,6 @@ namespace Mono.TextEditor
 			if (line == null) {
 				if (textEditor.Options.ShowInvalidLines) {
 					DrawInvalidLineMarker (win, xPos, y);
-				}
-				if (textEditor.Options.ShowRuler) {
-					// warning: code duplication, look at the method end.
-					win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + textEditor.GetLineHeight (line));
 				}
 				return;
 			}
@@ -1878,10 +1875,6 @@ namespace Mono.TextEditor
 			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);
-			if (textEditor.Options.ShowRuler) {
-				// warning: code duplication, scroll up.
-				win.DrawLine (GetGC (ColorStyle.Ruler), x + rulerX, y, x + rulerX, y + textEditor.GetLineHeight (line));
-			}
 			
 			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
 				/*		string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
