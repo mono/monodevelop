@@ -935,7 +935,7 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.SearchPattern = TextEditor.SelectedText;
 			
 			if (searchAndReplaceWidget == null) {
-				if (PropertyService.Get ("AutoSetPatternCasing", true))
+				if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true))
 					SearchAndReplaceWidget.IsCaseSensitive = TextEditor.IsSomethingSelected;
 				
 				KillWidgets ();
