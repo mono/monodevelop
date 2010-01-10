@@ -85,6 +85,7 @@
 				defaultHandler = "MonoDevelop.SourceEditor.DynamicAbbrevHandler"
 				_label = "Dynamic abbrev"
 				_description = "Cycles completing the current word from matching words in all open files"
+				macShortcut = "Meta|/"
 				shortcut = "Alt|/" />
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PulseCaret"
 				_label = "Find caret"
