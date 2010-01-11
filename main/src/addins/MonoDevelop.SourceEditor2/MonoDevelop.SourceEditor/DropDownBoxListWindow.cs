@@ -65,6 +65,7 @@ namespace MonoDevelop.SourceEditor
 					vScrollbar.Value++;
 				}
 			};
+			
 			hBox.PackStart (list, true, true, 0);
 			
 			vScrollbar = new VScrollbar (null);
@@ -141,10 +142,9 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void ResetSizes ()
 		{
-			vScrollbar.Adjustment.Lower = 0;
-			vScrollbar.Adjustment.Upper = Math.Max(0, DataProvider.IconCount - list.VisibleRows);
-			vScrollbar.Adjustment.PageIncrement = list.VisibleRows - 1;
-			vScrollbar.Adjustment.StepIncrement = 1;
+			var upper = Math.Max(0, DataProvider.IconCount);
+			var pageStep = list.VisibleRows;
+			vScrollbar.Adjustment.SetBounds (0, upper, 1, pageStep, pageStep);
 			
 			if (list.VisibleRows >= DataProvider.IconCount)
 				hBox.Remove (vScrollbar);
@@ -317,6 +317,15 @@ namespace MonoDevelop.SourceEditor
 				Selection = GetRowByPosition ((int) e.Y);
 				
 				return base.OnMotionNotifyEvent (e);
+			}
+			
+			protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+			{
+				var s = GetRowByPosition ((int) evnt.Y);
+				if (Selection != s)
+					Selection = s;
+				
+				return base.OnScrollEvent (evnt);
 			}
 	
 			protected override bool OnExposeEvent (Gdk.EventExpose args)
