@@ -68,6 +68,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		TaskStore comments = new TaskStore ();
 		Dictionary<string, TaskPriority> priorities = new Dictionary<string, TaskPriority> ();
+		HashSet<Solution> loadedSlns = new HashSet<Solution> ();
 
 		public CommentTasksView ()
 		{
@@ -128,16 +129,25 @@ namespace MonoDevelop.Ide.Tasks
 			col.Clicked += new EventHandler (Resort);
 
 			LoadColumnsVisibility ();
+			
+			comments.BeginTaskUpdates ();
+			try {
+				foreach (var item in IdeApp.Workspace.Items) {
+					LoadWorkspaceItemContents (item);
+				}
+			} finally {
+				comments.EndTaskUpdates ();
+			}
 
 			comments.TasksAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskAdded));
 			comments.TasksRemoved += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (GeneratedTaskRemoved));
 
 			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));
-
+			
 			CreateMenu ();
 			
 			// Initialize with existing tags.
-			foreach (Task t in comments) 
+			foreach (Task t in comments)
 				AddGeneratedTask (t);
 		}
 
@@ -170,35 +180,50 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			comments.BeginTaskUpdates ();
 			try {
-				Solution sol = e.Item as Solution;
-				if (sol != null) {
-					// Load all tags that are stored in pidb files
-					foreach (Project p in sol.GetAllProjects ()) {
-						ProjectDom pContext = ProjectDomService.GetProjectDom (p);
-						if (pContext == null)
-							continue;
-						foreach (ProjectFile file in p.Files) {
-							IList<Tag> tags = pContext.GetSpecialComments (file.Name);
-							if (tags !=null)
-								UpdateCommentTags (sol, file.Name, tags);
-						}
-					}
-				}
+				LoadWorkspaceItemContents (e.Item);
 			}
 			finally {
 				comments.EndTaskUpdates ();
 			}
 		}
 		
+		void LoadWorkspaceItemContents (WorkspaceItem wob)
+		{
+			foreach (var sln in wob.GetAllSolutions ())
+				LoadSolutionContents (sln);
+		}
+		
+		void LoadSolutionContents (Solution sln)
+		{
+			loadedSlns.Add (sln);
+			
+			// Load all tags that are stored in pidb files
+			foreach (Project p in sln.GetAllProjects ()) {
+				ProjectDom pContext = ProjectDomService.GetProjectDom (p);
+				if (pContext == null)
+					continue;
+				foreach (ProjectFile file in p.Files) {
+					IList<Tag> tags = pContext.GetSpecialComments (file.Name);
+					if (tags != null && tags.Count > 0)
+						UpdateCommentTags (sln, file.Name, tags);
+				}
+			}
+		}
+		
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
 		{
+			foreach (var sln in e.Item.GetAllSolutions ())
+				loadedSlns.Remove (sln);
 			comments.RemoveItemTasks (e.Item, true);
 		}		
 
 		void OnCommentTasksChanged (object sender, CommentTasksChangedEventArgs e)
 		{
-			if (e.Project != null)
-				UpdateCommentTags (e.Project, e.FileName, e.TagComments);
+			//because of parse queueing, it's possible for this event to come in after the solution is closed
+			//so we track which solutions are currently open so that we don't leak memory by holding 
+			// on to references to closed projects
+			if (e.Project != null && e.Project.ParentSolution != null && loadedSlns.Contains (e.Project.ParentSolution))
+				UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
 		}
 		
 		void OnCommentTagsChanged (object sender, EventArgs e)
@@ -206,7 +231,7 @@ namespace MonoDevelop.Ide.Tasks
 			ReloadPriorities ();
 		}
 		
-		void UpdateCommentTags (IWorkspaceObject wob, FilePath fileName, IEnumerable<Tag> tagComments)
+		void UpdateCommentTags (Solution wob, FilePath fileName, IEnumerable<Tag> tagComments)
 		{
 			if (fileName == FilePath.Null)
 				return;

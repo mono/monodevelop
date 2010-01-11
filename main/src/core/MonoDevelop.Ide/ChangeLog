@@ -1,3 +1,11 @@
+2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: Fix memory leak
+	  where the comments task list could hold onto references to
+	  projects after they were closed. Also handle loading all
+	  comment tasks for the open workspaces if the view is first
+	  shown after loading.
+
 2010-01-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
