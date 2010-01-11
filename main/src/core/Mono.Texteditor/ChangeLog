@@ -1,3 +1,10 @@
+2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/Platform.cs:
+	* Mono.TextEditor/SimpleEditMode.cs: Kill a few more trivial
+	  GTK 2.12 FIXMEs.
+
 2010-01-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

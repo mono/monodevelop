@@ -33,9 +33,6 @@ namespace Mono.TextEditor
 {
 	public static class Platform
 	{
-		internal const Gdk.ModifierType META_MASK = (Gdk.ModifierType) 0x10000000; //FIXME GTK+ 2.12: Gdk.ModifierType.MetaMask;
-		internal const Gdk.ModifierType SUPER_MASK = (Gdk.ModifierType) 0x40000000; //FIXME GTK+ 2.12: Gdk.ModifierType.SuperMask;
-
 		static Platform ()
 		{
  			IsWindows = System.IO.Path.DirectorySeparatorChar == '\\';
@@ -87,7 +84,7 @@ namespace Mono.TextEditor
 			if (IsMac && !IsX11) {
 				if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
 					mod ^= Gdk.ModifierType.Mod1Mask;
-					mod |= META_MASK;
+					mod |= Gdk.ModifierType.MetaMask;
 				}
 				if ((mod & Gdk.ModifierType.Mod5Mask) != 0) {
 					mod ^= Gdk.ModifierType.Mod5Mask;
