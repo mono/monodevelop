@@ -192,6 +192,56 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			public bool OneChangedVariable { get; set; }
 		}
 		
+		static string GetIndent (string text)
+		{
+			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			doc.Text = text;
+			StringBuilder result = null;
+			for (int i = 1; i < doc.LineCount; i++) {
+				LineSegment line = doc.GetLine (i);
+				
+				StringBuilder lineIndent = new StringBuilder ();
+				foreach (char ch in doc.GetTextAt (line)) {
+					if (!char.IsWhiteSpace (ch))
+						break;
+					lineIndent.Append (ch);
+				}
+				if (line.EditableLength == lineIndent.Length)
+					continue;
+				if (result == null || lineIndent.Length < result.Length)
+					result = lineIndent;
+			}
+			if (result == null)
+				return "";
+			return result.ToString ();
+		}
+		
+		static string RemoveIndent (string text, string indent)
+		{
+			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			doc.Text = text;
+			StringBuilder result = new StringBuilder ();
+			foreach (LineSegment line in doc.Lines) {
+				string curLineIndent = line.GetIndentation (doc);
+				int offset = Math.Min (curLineIndent.Length, indent.Length);
+				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffset));
+			}
+			return result.ToString ();
+		}
+		
+		static string AddIndent (string text, string indent)
+		{
+			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			doc.Text = text;
+			StringBuilder result = new StringBuilder ();
+			foreach (LineSegment line in doc.Lines) {
+				if (result.Length > 0)
+					result.Append (indent);
+				result.Append (doc.GetTextAt (line));
+			}
+			return result.ToString ();
+		}
+		
 		ICSharpCode.NRefactory.Ast.INode Analyze (RefactoringOptions options, ExtractMethodParameters param, bool fillParameter)
 		{
 			IResolver resolver = options.GetResolver ();
@@ -200,7 +250,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				return null;
 
 			string text = options.Document.TextEditor.GetText (options.Document.TextEditor.SelectionStartPosition, options.Document.TextEditor.SelectionEndPosition);
-			param.Text = text;
+			param.Text = RemoveIndent (text, GetIndent (text)).TrimEnd ('\n', '\r');
+			
 			ICSharpCode.NRefactory.Ast.INode result = provider.ParseText (text);
 
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
@@ -297,9 +348,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					invocation.Arguments.Add (new IdentifierExpression (var.Name));
 				}
 			}
-		//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
+			//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
 			TypeReference returnType = new TypeReference ("System.Void", true);
-
+			
 			ICSharpCode.NRefactory.Ast.INode outputNode;
 			if (param.OneChangedVariable) {
 				string name = param.ChangedVariables.First ();
@@ -332,12 +383,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode).Trim ();
 			
 			result.Add (replacement);
-
+			
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = options.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
 			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (param.DeclaringMember.BodyRegion.End.Line, param.DeclaringMember.BodyRegion.End.Column);
-
+			
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
 			if (!param.OneChangedVariable && node is Expression) {
@@ -362,10 +413,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				methodDecl.Body = new BlockStatement ();
 				methodDecl.Body.AddChild (new ReturnStatement (node as Expression));
 			}
-
+			
 			foreach (VariableDescriptor var in param.VariablesToDefine) {
 				BlockStatement block = methodDecl.Body;
-				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (options.ShortenTypeName (var.ReturnType).ConvertToTypeReference());
+				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ());
 				varDecl.Variables.Add (new VariableDeclaration (var.Name));
 				block.Children.Insert (0, varDecl);
 			}
@@ -403,11 +454,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				methodText.AppendLine ("/// </summary>");
 				Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
 				foreach (ParameterDeclarationExpression pde in methodDecl.Parameters) {
-						methodText.Append (indent);
+					methodText.Append (indent);
 					methodText.Append ("/// <param name=\"");
 					methodText.Append (pde.ParameterName);
 					methodText.Append ("\"> A ");
-					methodText.Append (ambience.GetString (pde.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName) );
+					methodText.Append (ambience.GetString (pde.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName));
 					methodText.Append (" </param>");
 					methodText.AppendLine ();
 				}
@@ -416,18 +467,18 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					methodText.AppendLine ("/// <returns>");
 					methodText.Append (indent);
 					methodText.Append ("/// A ");
-					methodText.AppendLine (ambience.GetString (methodDecl.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName) );
+					methodText.AppendLine (ambience.GetString (methodDecl.TypeReference.ConvertToReturnType (), OutputFlags.IncludeGenerics | OutputFlags.UseFullName));
 					methodText.Append (indent);
 					methodText.AppendLine ("/// </returns>");
 				}
 			}
-	/*		foreach (VariableDescriptor var in variablesToOutput) {
+			/*		foreach (VariableDescriptor var in variablesToOutput) {
 				TypeReference typeReference = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
 				if (!param.OneChangedVariable && param.ChangedVariables.Contains (var.Name))
 					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
 				methodDecl.Parameters.Add (pde);
-			}*/
+			}*/			
 			
 			methodText.Append (indent);
 			if (node is BlockStatement) {
@@ -435,11 +486,16 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				int emptyStatementMarker = text.LastIndexOf (';');
 				if (param.OneChangedVariable)
 					emptyStatementMarker = text.LastIndexOf (';', emptyStatementMarker - 1);
-				text = text.Substring (0, emptyStatementMarker) + param.Text + text.Substring (emptyStatementMarker + 1);
-				methodText.Append (text);
+				StringBuilder sb = new StringBuilder ();
+				sb.Append (text.Substring (0, emptyStatementMarker));
+				sb.Append (AddIndent (param.Text, indent + "\t"));
+				sb.Append (text.Substring (emptyStatementMarker + 1));
+				
+				methodText.Append (sb.ToString ());
 			} else {
 				methodText.Append (provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember)).Trim ());
 			}
+			
 			insertNewMethod.InsertedText = methodText.ToString ();
 			result.Add (insertNewMethod);
 

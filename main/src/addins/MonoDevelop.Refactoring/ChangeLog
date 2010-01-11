@@ -1,3 +1,15 @@
+2010-01-11  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs:
+	* gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs:
+	* gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs:
+	* gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs:
+	  Normalized extract method indentation - fixing 'Bug 569370 -
+	  Extract method doesn't fix indentation'.
+
 2010-01-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs: added null
