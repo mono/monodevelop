@@ -36,6 +36,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.StandardHeader
 {
@@ -56,45 +57,43 @@ namespace MonoDevelop.Ide.StandardHeader
 		
 		public static string GetHeader (SolutionItem policyParent, string language, string fileName, bool newFile)
 		{
-			StandardHeaderPolicy policy = policyParent != null
-				? policyParent.Policies.Get<StandardHeaderPolicy> ()
-				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<StandardHeaderPolicy> ();
+			StandardHeaderPolicy headerPolicy = policyParent != null ? policyParent.Policies.Get<StandardHeaderPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<StandardHeaderPolicy> ();
+			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain") : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
 			AuthorInformation authorInfo = IdeApp.Workspace.GetAuthorInformation (policyParent);
 			
-			return GetHeader (authorInfo, policy, language, fileName, newFile);
+			return GetHeader (authorInfo, headerPolicy, textPolicy, language, fileName, newFile);
 		}
 		
-		public static string GetHeader (AuthorInformation authorInfo, StandardHeaderPolicy policy,
+		public static string GetHeader (AuthorInformation authorInfo, StandardHeaderPolicy policy, TextStylePolicy textPolicy,
 		                                string language, string fileName, bool newFile)
 		{
 			string[] comment = GetComment (language);
 			if (comment == null)
 				return "";
-				
+			
 			if (string.IsNullOrEmpty (policy.Text) || (newFile && !policy.IncludeInNewFiles))
 				return "";
 			
 			string result;
+			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
 			
 			if (comment.Length == 1) {
 				string cmt = comment[0];
 				//make sure there's a space between the comment char and the license text
-				if (!char.IsWhiteSpace (cmt[cmt.Length -1]))
+				if (!char.IsWhiteSpace (cmt[cmt.Length - 1]))
 					cmt = cmt + " ";
-			
+				
 				StringBuilder sb = new StringBuilder (policy.Text.Length);
 				string[] lines = policy.Text.Split ('\n');
 				foreach (string line in lines) {
 					sb.Append (cmt);
 					sb.Append (line);
-					// the text editor should take care of conversions to preferred newline char
-					sb.Append ('\n');
+					sb.Append (eolMarker);
 				}
 				result = sb.ToString ();
 			} else {
 				//multiline comment
 				result = String.Concat (comment[0], "\n", policy.Text, "\n", comment[1], "\n");
-				
 			}
 			
 			return StringParserService.Parse (result, new string[,] { 

@@ -1,5 +1,11 @@
 2010-01-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Templates now take care of line ending conventions.
+
+2010-01-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs: Added helper
 	  method to convert eol markers to a string.
 

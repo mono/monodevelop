@@ -39,6 +39,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.StandardHeader;
 using System.Text;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -232,28 +233,40 @@ namespace MonoDevelop.Ide.Templates
 		// project and language parameters are optional
 		public virtual Stream CreateFileContent (SolutionItem policyParent, Project project, string language, string fileName)
 		{
-			Dictionary<string,string> tags = new Dictionary<string,string> ();
+			Dictionary<string, string> tags = new Dictionary<string, string> ();
 			ModifyTags (policyParent, project, language, null, fileName, ref tags);
 			
 			string content = CreateContent (project, tags, language);
 			content = StringParserService.Parse (content, tags);
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			IFormatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
+			
 			if (formatter != null)
 				content = formatter.FormatText (policyParent, mime, content);
+			
 			IPrettyPrinter prettyPrinter = !String.IsNullOrEmpty (mime) ? TextFileService.GetPrettyPrinter (mime) : null;
 			if (prettyPrinter != null)
-				content = prettyPrinter.FormatText (policyParent,  mime, content);
+				content = prettyPrinter.FormatText (policyParent, mime, content);
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (AddStandardHeader) {
-				string header = StandardHeaderService.GetHeader (policyParent, language, fileName, true); 
+				string header = StandardHeaderService.GetHeader (policyParent, language, fileName, true);
 				data = System.Text.Encoding.UTF8.GetBytes (header);
 				ms.Write (data, 0, data.Length);
 			}
 			
-			data = System.Text.Encoding.UTF8.GetBytes (content);
-			ms.Write (data, 0, data.Length);
+			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			doc.Text = content;
+			
+			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain") : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
+			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
+			byte[] eolMarkerBytes = System.Text.Encoding.UTF8.GetBytes (eolMarker);
+			foreach (Mono.TextEditor.LineSegment line in doc.Lines) {
+				data = System.Text.Encoding.UTF8.GetBytes (doc.GetTextAt (line.Offset, line.EditableLength));
+				ms.Write (data, 0, data.Length);
+				ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
+			}
+			
 			ms.Position = 0;
 			return ms;
 		}
