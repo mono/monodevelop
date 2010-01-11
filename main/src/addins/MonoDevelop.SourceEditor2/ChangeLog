@@ -1,3 +1,8 @@
+2010-01-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs: Use the eol
+	  marker from the policy.
+
 2010-01-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: Worked on

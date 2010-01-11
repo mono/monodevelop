@@ -106,6 +106,8 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateStylePolicy (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
 		{
+			this.defaultEolMarker = TextStylePolicy.GetEolMarker (currentPolicy.EolMarker);
+			
 			base.TabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
 			base.IndentationSize       = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
 			base.RulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
@@ -249,12 +251,15 @@ namespace MonoDevelop.SourceEditor
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", false);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
-			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode),DesktopService.DefaultControlLeftRightBehavior);
+			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
+			
 		}
 		
 		#region new options
+		
+		
 		bool enableAutoCodeCompletion;
 		public bool EnableAutoCodeCompletion {
 			get {
@@ -476,6 +481,11 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region old options
+		string defaultEolMarker;
+		public override string DefaultEolMarker {
+			get { return defaultEolMarker; }
+		}
+
 		ControlLeftRightMode controlLeftRightMode = ControlLeftRightMode.MonoDevelop;
 		public ControlLeftRightMode ControlLeftRightMode {
 			get {
