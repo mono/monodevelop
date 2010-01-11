@@ -72,9 +72,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		[ItemProperty]
 		public EolMarker EolMarker { get; private set; }
 		
-		public string GetEolMarker ()
+		public static string GetEolMarker (EolMarker eolMarker)
 		{
-			switch (EolMarker) {
+			switch (eolMarker) {
 			case EolMarker.Mac:
 				return "\r";
 			case EolMarker.Unix:
@@ -84,7 +84,14 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			return Environment.NewLine;
 		}
-		
+
+	
+		public string GetEolMarker ()
+		{
+			return GetEolMarker (EolMarker);
+		}
+
+	
 		public bool Equals (TextStylePolicy other)
 		{
 			return other != null && other.FileWidth == FileWidth && other.TabWidth == TabWidth
