@@ -1,3 +1,10 @@
+2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/PathBar.cs: Don't requisition full
+	  width, just fill whatever space is available. Still need
+	  scrolling or ellipsis to make it fully usable in such cases,
+	  but it's still an improvement over the old version.
+
 2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/PathBar.cs: Include arrow area in

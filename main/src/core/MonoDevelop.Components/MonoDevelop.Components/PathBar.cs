@@ -106,7 +106,7 @@ namespace MonoDevelop.Components
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			EnsureWidths ();
-			requisition.Width = widths.Sum () + (widths.Length - 1) * spacing + 2 * padding;
+			requisition.Width = Math.Max (WidthRequest, 0);
 			requisition.Height = height + padding * 2;
 		}
 		
