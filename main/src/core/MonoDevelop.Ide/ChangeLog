@@ -1,5 +1,11 @@
 2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Commit fix for
+	  "Bug 569588 - Pressing 'escape' in the Delete Project dialog
+	  removes the project" from Chris Wright <dhasenan@gmail.com>.
+
+2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: Fix memory leak
 	  where the comments task list could hold onto references to
 	  projects after they were closed. Also handle loading all
