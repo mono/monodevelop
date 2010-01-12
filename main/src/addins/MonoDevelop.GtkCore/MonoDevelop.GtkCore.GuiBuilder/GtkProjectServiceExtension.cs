@@ -10,15 +10,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GtkProjectServiceExtension: ProjectServiceExtension
 	{
-		public override bool SupportsItem (IBuildTarget item)
-		{
-			if (!IdeApp.IsInitialized)
-				return false;
-			
-			DotNetProject project = item as DotNetProject;
-			return project != null && GtkDesignInfo.HasDesignedObjects (project);
-		}
-
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
 			DotNetProject project = (DotNetProject) entry;
