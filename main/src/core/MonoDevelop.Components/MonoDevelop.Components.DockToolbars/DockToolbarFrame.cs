@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.DockToolbars
 		Hashtable layouts = new Hashtable ();
 		string currentLayout = "";
 		
-		Cursor handCursor = new Cursor (CursorType.Hand2);
+		Cursor handCursor = new Cursor (CursorType.Fleur);
 		
 		public DockToolbarFrame ()
 		{

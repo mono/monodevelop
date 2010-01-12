@@ -237,7 +237,7 @@
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
-		<Span color = "comment" rule = "XmlDocumentationTag">
+		<Span color = "comment" rule = "XmlDocumentationTag" stopateol = "true" >
 			<Begin>&lt;</Begin>
 			<End>&gt;</End>
 		</Span>

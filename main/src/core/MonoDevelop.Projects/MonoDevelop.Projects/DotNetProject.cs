@@ -646,6 +646,8 @@ namespace MonoDevelop.Projects
 		
 		public IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
 		{
+			if (ParentSolution == null)
+				return null;
 			//return all projects in the sln in case some are loaded dynamically
 			//FIXME: should we do this for the whole workspace?
 			return ParentSolution.GetAllProjects ().OfType<DotNetProject> ()

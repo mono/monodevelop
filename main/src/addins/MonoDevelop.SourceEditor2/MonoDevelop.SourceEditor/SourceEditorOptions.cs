@@ -141,7 +141,13 @@ namespace MonoDevelop.SourceEditor
 				this.UnderlineErrors = (bool) args.NewValue;
 				break;
 			case "IndentStyle":
-				this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle) args.NewValue;
+				if (args.NewValue == null) {
+					LoggingService.LogWarning ("tried to set indent style == null");
+				} else if (!(args.NewValue is MonoDevelop.Ide.Gui.Content.IndentStyle)) {
+					LoggingService.LogWarning ("tried to set indent style to " + args.NewValue + " which isn't from type IndentStyle instead it is from:" +  args.NewValue.GetType ());
+					this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)Enum.Parse (typeof (MonoDevelop.Ide.Gui.Content.IndentStyle), args.NewValue.ToString ());
+				} else 
+					this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle) args.NewValue;
 				break;
 			case "EditorFontType":
 				this.EditorFontType = (MonoDevelop.SourceEditor.EditorFontType) args.NewValue;

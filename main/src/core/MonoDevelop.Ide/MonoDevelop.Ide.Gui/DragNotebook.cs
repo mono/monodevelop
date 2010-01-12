@@ -40,7 +40,10 @@ namespace MonoDevelop.Ide.Gui
 			ButtonPressEvent += new ButtonPressEventHandler (OnButtonPress);
 			ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonRelease);
 			AddEvents ((Int32) (EventMask.AllEventsMask));
-			this.SetProperty ("tab-border", new GLib.Value (0));
+			
+			//FIXME: we make the tabs smaller by shrinking the border, but this looks ugly with the windows theme
+			if (!MonoDevelop.Core.PropertyService.IsWindows)
+				this.SetProperty ("tab-border", new GLib.Value (0));
 		}
 		
 		Cursor fleurCursor = new Cursor (CursorType.Fleur);

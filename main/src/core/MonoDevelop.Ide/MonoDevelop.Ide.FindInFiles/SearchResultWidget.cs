@@ -332,6 +332,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			SearchResult searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			SearchResult searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
+			if (searchResult1 == null || searchResult2 == null || searchResult1.FileName == null || searchResult2.FileName == null)
+				return -1;
 			return System.IO.Path.GetFileName (searchResult1.FileName).CompareTo (System.IO.Path.GetFileName (searchResult2.FileName));
 		}
 		
@@ -339,6 +341,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			SearchResult searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			SearchResult searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
+			if (searchResult1 == null || searchResult2 == null || searchResult1.FileName == null || searchResult2.FileName == null)
+				return -1;
 			return System.IO.Path.GetDirectoryName (searchResult1.FileName).CompareTo (System.IO.Path.GetDirectoryName (searchResult2.FileName));
 		}
 		

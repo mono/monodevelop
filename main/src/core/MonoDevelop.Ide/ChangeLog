@@ -1,3 +1,27 @@
+2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Commit fix for
+	  "Bug 569588 - Pressing 'escape' in the Delete Project dialog
+	  removes the project" from Chris Wright <dhasenan@gmail.com>.
+
+2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: Fix memory leak
+	  where the comments task list could hold onto references to
+	  projects after they were closed. Also handle loading all
+	  comment tasks for the open workspaces if the view is first
+	  shown after loading.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: fixed
+	  'Bug 561609 - Unhandled exception searching in my project'.
+
+2010-01-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/DragNotebook.cs: Don't shrink the tab
+	  border with the windows theme, because it looks ugly. 
+
 2009-12-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs:

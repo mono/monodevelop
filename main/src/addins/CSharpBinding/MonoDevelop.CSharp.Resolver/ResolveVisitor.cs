@@ -515,7 +515,11 @@ namespace MonoDevelop.CSharp.Resolver
 						if (curType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface && type.ClassType != MonoDevelop.Projects.Dom.ClassType.Interface)
 							continue;
 						if (curType.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected)) {
-							member.AddRange (curType.SearchMember (memberReferenceExpression.MemberName, true));
+							foreach (IMember foundMember in curType.SearchMember (memberReferenceExpression.MemberName, true)) {
+								if (foundMember.IsExplicitDeclaration)
+									continue;
+								member.Add (foundMember);
+							}
 						}
 					}
 					if (member.Count > 0) {

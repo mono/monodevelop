@@ -790,6 +790,13 @@ namespace MonoDevelop.Components.DockToolbars
 			return t;
 		}
 		
+		int MaxRow {
+			get {
+				var lastBar = (DockToolbar)bars[bars.Count -1];
+				return lastBar.DockRow;
+			}
+		}
+		
 		void SortBars ()
 		{
 			bars.Sort (DocBarComparer.Instance);
@@ -827,8 +834,19 @@ namespace MonoDevelop.Components.DockToolbars
 			// get a proper GTK+ toolbar style by using one of the children, i.e. a DockToolbar, a subclass of GtkToolbar
 			var styleProvider = (Widget)bars[0];
 			var shadowType = (ShadowType) styleProvider.StyleGetProperty ("shadow-type");
-			Style.PaintBox (styleProvider.Style, evnt.Window, State, shadowType, evnt.Area, styleProvider, "toolbar", 
-			                Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+			
+			//render each row separately, so the theme treats each as a row, and they match the individual toolbars' themed painting
+			//FIXME: Mac only seems to display the last-painted row, even though we make paint calls for all of them
+			int row = MaxRow;
+			for (int i = bars.Count - 1; i >= 0; i--) {
+				var bar = (DockToolbar) bars[i];
+				if (bar.DockRow == row) {
+					row--;
+					Style.PaintBox (bar.Style, evnt.Window, State, shadowType, evnt.Area, bar, "toolbar", 
+					                Allocation.X, bar.Allocation.Y, Allocation.Width, bar.Allocation.Height);
+				}
+			}
+			
 			foreach (DockToolbar bar in bars)
 				this.PropagateExpose (bar, evnt);
 			return true;

@@ -788,7 +788,7 @@ namespace MonoDevelop.Ide.Gui
 				} else
 					dlg.Destroy ();
 			}
-			else if (result != AlertButton.Cancel && IdeApp.Workspace.RequestItemUnload (prj)) {
+			else if (result == AlertButton.Remove && IdeApp.Workspace.RequestItemUnload (prj)) {
 				RemoveItemFromSolution (prj);
 			}
 		}
