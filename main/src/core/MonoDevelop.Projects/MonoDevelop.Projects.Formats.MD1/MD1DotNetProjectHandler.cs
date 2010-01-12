@@ -193,29 +193,14 @@ namespace MonoDevelop.Projects.Formats.MD1
 				BuildResult res = BuildResources (buildData.Configuration, ref items, monitor);
 				if (res != null)
 					return res;
-				
-				List<string> supportAssemblies = new List<string> ();
-				CopySupportAssemblies (supportAssemblies, configuration);
 	
-				try {
-					res = project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
-					if (refres != null) {
-						refres.Append (res);
-						return refres;
-					}
-					else
-						return res;
+				res = project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
+				if (refres != null) {
+					refres.Append (res);
+					return refres;
 				}
-				finally {
-					// Delete support assemblies
-					foreach (string s in supportAssemblies) {
-						try {
-							FileService.DeleteFile (s);
-						} catch {
-							// Ignore
-						}
-					}
-				}		
+				else
+					return res;
 			});
 		}		
 
@@ -270,46 +255,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 
 			return null;
-		}
-		
-		void CopySupportAssemblies (List<string> files, ConfigurationSelector configuration)
-		{
-			foreach (ProjectReference projectReference in Project.References) {
-				if (projectReference.ReferenceType == ReferenceType.Project) {
-					// It is a project reference. If this project depends
-					// on other (non-gac) assemblies there may be a compilation problem because
-					// the compiler won't be able to indirectly find them.
-					// The solution is to copy them in the project directory, and delete
-					// them after compilation.
-					DotNetProject p = Project.ParentSolution.FindProjectByName (projectReference.Reference) as DotNetProject;
-					if (p == null)
-						continue;
-					
-					string tdir = Path.GetDirectoryName (p.GetOutputFileName (configuration));
-					CopySupportAssemblies (p, tdir, files, configuration);
-				}
-			}
-		}
-		
-		void CopySupportAssemblies (DotNetProject prj, string targetDir, List<string> files, ConfigurationSelector configuration)
-		{
-			foreach (ProjectReference pref in prj.References) {
-				if (pref.ReferenceType == ReferenceType.Gac)
-					continue;
-				foreach (string referenceFileName in pref.GetReferencedFileNames (configuration)) {
-					string asmName = Path.GetFileName (referenceFileName);
-					asmName = Path.Combine (targetDir, asmName);
-					if (!File.Exists (asmName)) {
-						File.Copy (referenceFileName, asmName);
-						files.Add (asmName);
-					}
-				}
-				if (pref.ReferenceType == ReferenceType.Project) {
-					DotNetProject sp = Project.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
-					if (sp != null)
-						CopySupportAssemblies (sp, targetDir, files, configuration);
-				}
-			}
 		}
 		
 		CompilerError GetResourceId (ProjectFile finfo, ref string fname, string resgen, out string resourceId, IProgressMonitor monitor)

@@ -1,3 +1,9 @@
+2010-01-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	  Don't copy "support assemblies"; such assemblies should be
+	  referenced directly.
+
 2010-01-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: fixed 'Bug 568204
