@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 		public void AddError (bool isError, string errorMessage)
 		{
 			errors.Add (new ErrorText (isError, errorMessage));
-			CollapseExtendedErrors = errors.Count > 2;
+			CollapseExtendedErrors = errors.Count > 1;
 			DisposeLayout ();
 		}
 		

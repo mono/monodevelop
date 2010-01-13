@@ -1670,5 +1670,17 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
 		}
 		
+		[CommandHandler (TextEditorCommands.MoveBlockUp)]
+		protected void OnMoveBlockUp ()
+		{
+			TextEditor.RunAction (MiscActions.MoveBlockUp);
+		}
+		
+		[CommandHandler (TextEditorCommands.MoveBlockDown)]
+		protected void OnMoveBlockDown ()
+		{
+			TextEditor.RunAction (MiscActions.MoveBlockDown);
+		}
+		
 	}
 } 
