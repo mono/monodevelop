@@ -43,7 +43,8 @@ namespace MonoDevelop.Refactoring.Rename
 	{
 		public override string AccelKey {
 			get {
-				return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).AccelKey.Replace ("dead_circumflex", "^");
+				var key = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).AccelKey;
+				return key == null ? null : key.Replace ("dead_circumflex", "^");
 			}
 		}
 		
