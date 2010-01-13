@@ -93,6 +93,14 @@ namespace MonoDevelop.DesignerSupport
 			set { file.CopyToOutputDirectory = value; }
 		}
 		
+		[LocalizedCategory ("Build")]
+		[LocalizedDisplayName ("Generator")]
+		[LocalizedDescription ("The ID of a MSBuild custom generator to process the file during the build.")]
+		public string Generator {
+			get { return file.Generator; }
+			set { file.Generator = value; }
+		}
+		
 		protected override bool IsReadOnly (string propertyName)
 		{
 			if (propertyName == "ResourceId" && file.BuildAction != MonoDevelop.Projects.BuildAction.EmbeddedResource)
