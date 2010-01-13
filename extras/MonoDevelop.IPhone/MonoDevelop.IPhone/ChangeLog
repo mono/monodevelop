@@ -1,3 +1,25 @@
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Treat empty identity as "developer
+	  automatic".
+
+2009-12-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Keychain.cs: Fix extracting the CN from X509 certs.
+
+2009-12-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MobileProvision.cs: Only return the first profile with each
+	  UUID. iTunes and Xcode install the same cert with different
+	  names, but the file is exactly the same. Prevents displaying
+	  same cert twice if it was installed both ways.
+
+	* IPhoneBuildExtension.cs: Work around bug in Apple's XML
+	  entitlements parser that broke entitlements when booleans
+	  were present in the plist. Also fix embedding provisioning
+	  profiles that were installed using iTunes rather than Xcode.
+	  Fix casing of some entries in info.plist.
+
 2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneSigningKeyPanel.cs: Enable provisioning profiles

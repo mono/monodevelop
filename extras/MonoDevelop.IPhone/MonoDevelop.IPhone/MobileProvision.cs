@@ -69,13 +69,15 @@ namespace MonoDevelop.IPhone
 			
 			DateTime now = DateTime.Now;
 			var list = new List<MobileProvision> ();
+			var uuids = new HashSet<string> ();
 			
-			foreach (string file in Directory.GetFiles (ProfileDirectory, "*.mobileprovision")) {
+			foreach (FilePath file in Directory.GetFiles (ProfileDirectory, "*.mobileprovision")) {
 				var m = new MobileProvision ();
 				try {
 					m.Load (file);
 					if (includeExpired || m.ExpirationDate > now)
-						list.Add (m);
+						if (uuids.Add (m.Uuid))
+							list.Add (m);
 				} catch (Exception ex) {
 					LoggingService.LogWarning ("Error reading iPhone mobile provision file '" + file +"'", ex);
 				}

@@ -316,13 +316,7 @@ namespace MonoDevelop.IPhone
 		
 		public static string GetCertificateCommonName (X509Certificate2 cert)
 		{
-			int start = cert.Subject.IndexOf ("CN=");
-			if (start < 0)
-				return null;
-			int end = cert.Subject.IndexOf (",", start);
-			if (end < start)
-				return null;
-			return cert.Subject.Substring (start + 3, end - start - 3);
+			return cert.GetNameInfo (X509NameType.SimpleName, false);
 		}
 		
 		public const string DEV_CERT_PREFIX  = "iPhone Developer";
