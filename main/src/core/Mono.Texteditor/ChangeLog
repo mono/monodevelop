@@ -1,5 +1,11 @@
 2010-01-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextEditor.cs: Worked on 'Bug 570164 - Click
+	  positioning on wrapped message bubble is wrong'.
+
+2010-01-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DefaultEditActions.cs: Added move
 	  blockup/down actions.
 
