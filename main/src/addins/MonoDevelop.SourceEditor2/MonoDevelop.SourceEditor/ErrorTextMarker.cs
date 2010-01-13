@@ -466,7 +466,7 @@ namespace MonoDevelop.SourceEditor
 		bool MouseIsOverMarker (TextEditor editor, MarginMouseEventArgs args)
 		{
 			int ew = 0, eh = 0;
-			int y = editor.LineToVisualY (args.LineNumber);
+			int y = editor.LineToVisualY (args.LineNumber) - (int)editor.VAdjustment.Value;
 			if (fitsInSameLine) {
 				if (args.Y > y + editor.LineHeight)
 					return false;

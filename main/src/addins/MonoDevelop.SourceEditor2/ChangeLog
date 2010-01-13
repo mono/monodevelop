@@ -1,5 +1,10 @@
 2010-01-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: fixed bug in
+	  error text marker collapsing sign.
+
+2010-01-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed 'Bug
 	  569665 - Moving entire lines of code with Alt + Up/Down
