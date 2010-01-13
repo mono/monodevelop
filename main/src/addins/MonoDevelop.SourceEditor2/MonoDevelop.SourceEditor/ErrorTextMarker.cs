@@ -351,9 +351,10 @@ namespace MonoDevelop.SourceEditor
 			
 			for (int i = 0; i < layouts.Count; i++) {
 				LayoutDescriptor layout = layouts[i];
-				x2 = System.Math.Max (right - layout.Width - border - errorPixbuf.Width, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
+				x2 = right - layout.Width - border - errorPixbuf.Width;
 				if (i == 0)
 					x2 -= errorCounterWidth;
+				x2 = System.Math.Max (x2, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 				if (i > 0) {
 					editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y, right, editor.LineHeight), isEolSelected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor, true);
 					if (!isEolSelected) {

@@ -1,5 +1,10 @@
 2010-01-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: icon is no
+	  longer drawn over the left margins.
+
+2010-01-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: fixed bug in
 	  error text marker collapsing sign.
 
