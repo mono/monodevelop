@@ -1,3 +1,9 @@
+2010-01-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: fixed 'Bug
+	  569665 - Moving entire lines of code with Alt + Up/Down
+	  causes the editor to behave erratically.'.
+
 2010-01-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
