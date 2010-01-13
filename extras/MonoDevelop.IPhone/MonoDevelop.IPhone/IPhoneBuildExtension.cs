@@ -510,8 +510,9 @@ namespace MonoDevelop.IPhone
 			if (string.IsNullOrEmpty (proj.BundleIdentifier))
 				return BuildError ("Project does not have a bundle identifier");
 			
+			//treat empty as "developer automatic"
 			if (string.IsNullOrEmpty (conf.CodesignKey)) {
-				return BuildError ("No signing identity specified in configuration.");
+				conf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 			}
 			
 			IList<X509Certificate2> certs = null;
