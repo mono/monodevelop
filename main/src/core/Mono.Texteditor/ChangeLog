@@ -1,3 +1,9 @@
+2010-01-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Wait for
+	  parser service update before document changing.
+
 2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/EditMode.cs:

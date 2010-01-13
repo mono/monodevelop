@@ -208,12 +208,21 @@ namespace Mono.TextEditor.Highlighting
 			int startOffset;
 			int endOffset;
 			
+			public Document Doc {
+				get { return this.doc; }
+			}
+			
+			public bool IsFinished {
+				get;
+				set;
+			}
 			public UpdateWorker (Document doc, SyntaxMode mode, int startOffset, int endOffset)
 			{
-				this.doc         = doc;
-				this.mode        = mode;
+				this.doc = doc;
+				this.mode = mode;
 				this.startOffset = startOffset;
-				this.endOffset   = endOffset;
+				this.endOffset = endOffset;
+				IsFinished = false;
 			}
 			
 			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
@@ -235,7 +244,7 @@ namespace Mono.TextEditor.Highlighting
 				if (iter == null || iter.Current == null)
 					return;
 				Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
-				try { 
+				try {
 					LineSegment oldLine = iter.Current.Offset > 0 ? doc.GetLineByOffset (iter.Current.Offset - 1) : null;
 					do {
 						LineSegment line = iter.Current;
@@ -254,7 +263,7 @@ namespace Mono.TextEditor.Highlighting
 						if (line.Offset > endOffset) {
 							bool equal = IsEqual (line.StartSpan, newSpans);
 							doUpdate |= !equal;
-							if (equal) 
+							if (equal)
 								break;
 						}
 						line.StartSpan = newSpans.Length > 0 ? newSpans : null;
@@ -266,15 +275,18 @@ namespace Mono.TextEditor.Highlighting
 						ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
 						while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
 							spanStack.Pop ();
-						
+					
 					} while (iter.MoveNext ());
-				} catch (Exception e) { Console.WriteLine ("Syntax highlighting exception:" + e); }
+				} catch (Exception e) {
+					Console.WriteLine ("Syntax highlighting exception:" + e);
+				}
 				if (doUpdate) {
-					Gtk.Application.Invoke ( delegate {
+					Gtk.Application.Invoke (delegate {
 						doc.RequestUpdate (new UpdateAll ());
 						doc.CommitDocumentUpdate ();
 					});
 				}
+				IsFinished = true;
 			}
 		}
 		
@@ -316,6 +328,16 @@ namespace Mono.TextEditor.Highlighting
 				updateQueue.Enqueue (new UpdateWorker (doc, mode, startOffset, endOffset));
 			}
 			queueSignal.Set ();
+		}
+		public static void WaitUpdate (Document doc)
+		{
+			foreach (UpdateWorker worker in updateQueue.ToArray ()) {
+				if (worker != null && worker.Doc == doc) {
+					while (!worker.IsFinished) {
+						Thread.Sleep (20);
+					}
+				}
+			}
 		}
 		
 		static string Scan (XmlReader reader, string attribute)

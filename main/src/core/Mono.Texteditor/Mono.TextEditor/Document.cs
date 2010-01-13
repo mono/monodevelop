@@ -147,20 +147,23 @@ namespace Mono.TextEditor
 		
 		void IBuffer.Replace (int offset, int count, string value)
 		{
+			if (this.syntaxMode != null)
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
+			
 			InterruptFoldWorker ();
-//			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
-//			Debug.Assert (count >= 0);
-//			Debug.Assert (0 <= offset && offset + count <= Length);
+			//			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
+		//			Debug.Assert (count >= 0);
+		//			Debug.Assert (0 <= offset && offset + count <= Length);
 			int oldLineCount = this.LineCount;
 			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
 			OnTextReplacing (args);
 			value = args.Value;
-/* insert/repla
+			/* insert/repla
 			lock (syncObject) {
 				int endOffset = offset + count;
 				foldSegments = new List<FoldSegment> (foldSegments.Where (s => (s.Offset < offset || s.Offset >= endOffset) && 
 				                                                               (s.EndOffset <= offset || s.EndOffset >= endOffset)));
-			}*/
+			}*/			
 			UndoOperation operation = null;
 			if (!isInUndo) {
 				operation = new UndoOperation (args, count > 0 ? GetTextAt (offset, count) : "");
