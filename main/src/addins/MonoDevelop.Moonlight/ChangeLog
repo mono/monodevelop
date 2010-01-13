@@ -1,3 +1,9 @@
+2010-01-13  Chris Toshok  <toshok@ximian.com>
+
+	* MonoDevelop.Moonlight/XamlG.cs: when generating fields for fully
+	qualified types, use global references to keep from conflicting
+	type/namespace names.
+
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightProject.cs: Fix preventing
