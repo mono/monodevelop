@@ -1,5 +1,10 @@
 2010-01-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DefaultEditActions.cs: Added move
+	  blockup/down actions.
+
+2010-01-13  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Wait for
 	  parser service update before document changing.

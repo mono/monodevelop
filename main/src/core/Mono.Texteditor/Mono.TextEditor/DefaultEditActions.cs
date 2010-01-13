@@ -305,6 +305,86 @@ namespace Mono.TextEditor
 		{
 			data.Document.Redo ();
 		}
+		
+		public static void MoveBlockUp (TextEditorData data)
+		{
+			int lineStart = data.Caret.Line;
+			int lineEnd = data.Caret.Line;
+			bool setSelection = lineStart != lineEnd;
+			if (data.IsSomethingSelected) {
+				setSelection = true;
+				lineStart = data.MainSelection.MinLine;
+				lineEnd = data.MainSelection.MaxLine;
+			}
+			
+			if (lineStart <= 0)
+				return;
+			
+			Mono.TextEditor.LineSegment startLine = data.Document.GetLine (lineStart);
+			Mono.TextEditor.LineSegment endLine = data.Document.GetLine (lineEnd);
+			Mono.TextEditor.LineSegment prevLine = data.Document.GetLine (lineStart - 1);
+			int relCaretOffset = data.Caret.Offset - startLine.Offset;
+			data.Document.BeginAtomicUndo ();
+			
+			string text = data.Document.GetTextBetween (startLine.Offset, endLine.EndOffset);
+			
+			int delta = endLine.EndOffset - startLine.Offset;
+			int newStartOffset = prevLine.Offset;
+			bool hasEmptyDelimiter = endLine.DelimiterLength == 0;
+			
+			data.Remove (startLine.Offset, delta);
+			
+			// handle the last line case
+			
+			if (hasEmptyDelimiter) {
+				text = text + data.EolMarker;
+				data.Remove (prevLine.Offset + prevLine.EditableLength, prevLine.DelimiterLength);
+			}
+			
+			data.Insert (newStartOffset, text);
+			data.Caret.Offset = newStartOffset + relCaretOffset;
+			if (setSelection)
+				data.SetSelection (newStartOffset, newStartOffset + delta - endLine.DelimiterLength);
+			data.Document.EndAtomicUndo ();
+		}
+		
+		public static void MoveBlockDown (TextEditorData data)
+		{
+			int lineStart = data.Caret.Line;
+			int lineEnd = data.Caret.Line;
+			bool setSelection = lineStart != lineEnd;
+			if (data.IsSomethingSelected) {
+				setSelection = true;
+				lineStart = data.MainSelection.MinLine;
+				lineEnd = data.MainSelection.MaxLine;
+			}
+			
+			if (lineEnd + 1 >= data.Document.LineCount)
+				return;
+			
+			Mono.TextEditor.LineSegment startLine = data.Document.GetLine (lineStart);
+			Mono.TextEditor.LineSegment endLine = data.Document.GetLine (lineEnd);
+			Mono.TextEditor.LineSegment nextLine = data.Document.GetLine (lineEnd + 1);
+			int relCaretOffset = data.Caret.Offset - startLine.Offset;
+			data.Document.BeginAtomicUndo ();
+			string text = data.Document.GetTextBetween (startLine.Offset, endLine.EndOffset);
+			
+			int nextLineOffset = nextLine.EndOffset;
+			int delta = endLine.EndOffset - startLine.Offset;
+			int newStartOffset = nextLineOffset - delta;
+			
+			// handle the last line case
+			if (nextLine.DelimiterLength == 0) {
+				text = data.EolMarker + text.Substring (0, text.Length - endLine.DelimiterLength);
+				newStartOffset += data.EolMarker.Length;
+			}
+			data.Insert (nextLineOffset, text);
+			data.Remove (startLine.Offset, delta);
+			
+			data.Caret.Offset = newStartOffset + relCaretOffset;
+			if (setSelection)
+				data.SetSelection (newStartOffset, newStartOffset + text.Length - endLine.DelimiterLength);
+			data.Document.EndAtomicUndo ();
+		}
 	}
-	
 }
