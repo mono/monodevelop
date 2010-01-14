@@ -62,6 +62,9 @@ namespace MonoDevelop.Core
 			if (o is T) 
 				return (T)o;
 			
+			if ((object)o == null)
+				return (T) o;
+			
 			TypeConverter converter = GetConverter (typeof(T));
 			
 			if (o is string) {
