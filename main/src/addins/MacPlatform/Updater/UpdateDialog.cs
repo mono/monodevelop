@@ -40,7 +40,6 @@ namespace MonoDevelop.Platform.Updater
 	{
 		const int PAGE_MESSAGE = 0;
 		const int PAGE_UPDATES = 1;
-		UpdateResult result;
 
 		public UpdateDialog ()
 		{
@@ -56,13 +55,8 @@ namespace MonoDevelop.Platform.Updater
 			checkIncludeUnstable.Toggled += delegate {
 				UpdateService.IncludeUnstable = checkIncludeUnstable.Active;
 				
-				//if we didn't already have the unstable updates, download them
-				if (result == null || (checkIncludeUnstable.Active && !result.IncludesUnstable)) {
-					SetMessage (GettextCatalog.GetString ("Checking for updates..."));
-					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, UpdateService.IncludeUnstable, LoadResult);
-				} else {
-					LoadUpdates (result.Updates);
-				}
+				SetMessage (GettextCatalog.GetString ("Checking for updates..."));
+				UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, checkIncludeUnstable.Active, LoadResult);
 			};
 			
 			SetMessage (GettextCatalog.GetString ("Checking for updates..."));
@@ -70,8 +64,6 @@ namespace MonoDevelop.Platform.Updater
 		
 		public void LoadResult (UpdateResult result)
 		{
-			this.result = result;
-			
 			if (result.HasError) {
 				SetMessage (result.ErrorMessage);
 			} else {

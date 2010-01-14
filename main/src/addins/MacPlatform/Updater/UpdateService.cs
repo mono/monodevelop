@@ -106,10 +106,10 @@ namespace MonoDevelop.Platform.Updater
 				});
 			} else {
 				QueryUpdateServer (updateInfos, IncludeUnstable, delegate (UpdateResult result) {
-					if (result.HasUpdates && !result.HasError) {
-						ShowUpdateDialog ();
-						ShowUpdateResult (result);
-					}
+					if (result.HasError || !result.HasUpdates)
+						return;
+					ShowUpdateDialog ();
+					ShowUpdateResult (result);
 				});
 			}
 		}

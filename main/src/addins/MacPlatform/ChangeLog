@@ -1,6 +1,13 @@
 2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateDialog.cs:
+	* Updater/UpdateService.cs: Let the server handle the logic of
+	  showing stable updates to users with unstable versions when
+	  they opt back out of the unstable channel.
+
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs:
 	* Updater/UpdateResult.cs:
 	* Updater/UpdateService.cs: Filter and flag unstable updates.
 
