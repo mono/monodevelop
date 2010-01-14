@@ -24,7 +24,7 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 			
-			new AddWorker (items).Start();
+			new AddWorker (items).Run();
 			return true;
 		}
 		
@@ -41,6 +41,7 @@ namespace MonoDevelop.VersionControl
 			public AddWorker (VersionControlItemList items) 
 			{
 				this.items = items;
+				Description = GettextCatalog.GetString ("Add files to version control");
 			}
 			
 			protected override string GetDescription()
@@ -48,7 +49,7 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Adding...");
 			}
 			
-			protected override void Run ()
+			protected override void RunTask ()
 			{
 				IProgressMonitor monitor = GetProgressMonitor ();
 				
@@ -121,7 +122,7 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 			
-			new RemoveWorker (items).Start();
+			new RemoveWorker (items).Run();
 			return true;
 		}
 		
@@ -137,13 +138,14 @@ namespace MonoDevelop.VersionControl
 						
 			public RemoveWorker (VersionControlItemList items) {
 				this.items = items;
+				Description = GettextCatalog.GetString ("Remove files from version control");
 			}
 			
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Removing...");
 			}
 			
-			protected override void Run()
+			protected override void RunTask()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					VersionControlItemList files = list.GetFiles ();

@@ -235,10 +235,16 @@ namespace MonoDevelop.Components.Docking
 		private void HeaderExpose (object ob, Gtk.ExposeEventArgs a)
 		{
 			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, header.Allocation.Width - 1, header.Allocation.Height);
-			Gdk.Color gcol = pointerHover
-				? frame.Style.Mid (Gtk.StateType.Active)
-				: frame.Style.Mid (Gtk.StateType.Normal);
+			HslColor gcol = frame.Style.Background (Gtk.StateType.Normal);
 			
+			if (pointerHover)
+				gcol.L *= 1.1;
+			else
+				gcol.L *= 1;
+			
+			if (gcol.L > 1)
+				gcol.L = 1;
+				
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (a.Event.Window)) {
 				cr.NewPath ();
 				cr.MoveTo (0, 0);
@@ -248,7 +254,7 @@ namespace MonoDevelop.Components.Docking
 				cr.RelLineTo (0, -rect.Height);
 				cr.ClosePath ();
 				Cairo.Gradient pat = new Cairo.LinearGradient (0, 0, rect.Width, rect.Height);
-				Cairo.Color color1 = DockFrame.ToCairoColor (gcol);
+				Cairo.Color color1 = gcol;
 				pat.AddColorStop (0, color1);
 				color1.A = 0.3;
 				pat.AddColorStop (1, color1);

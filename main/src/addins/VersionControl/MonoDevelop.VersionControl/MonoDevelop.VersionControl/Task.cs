@@ -6,10 +6,11 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Jobs;
 
 namespace MonoDevelop.VersionControl
 {
-	internal abstract class Task 
+	internal abstract class Task: OutputPadJob
 	{
 		IProgressMonitor tracker;
 		ThreadNotify threadnotify;
@@ -17,7 +18,7 @@ namespace MonoDevelop.VersionControl
 		protected abstract string GetDescription();
 		
 		// This occurs in the background.
-		protected abstract void Run();
+		protected abstract void RunTask ();
 		
 		// This occurs on the main thread when the background
 		// task is complete.
@@ -25,10 +26,11 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 
-		protected Task() {
+		protected Task()
+		{
+			Title = "Version Control";
+			Icon = "md-version-control";
 			threadnotify = new ThreadNotify(new ReadyEvent(Wakeup));
-			
-			tracker = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor("Version Control", null, true, true);
 		}
 		
 		protected IProgressMonitor GetProgressMonitor ()
@@ -36,7 +38,9 @@ namespace MonoDevelop.VersionControl
 			return tracker;
 		}
 		
-		public void Start() {
+		protected override void OnRun (IProgressMonitor monitor)
+		{
+			tracker = monitor;
 			tracker.BeginTask(GetDescription(), 0);
 			new Thread(new ThreadStart(BackgroundWorker)) {
 				Name = "VCS background tasks",
@@ -46,7 +50,7 @@ namespace MonoDevelop.VersionControl
 		
 		void BackgroundWorker() {
 			try {
-				Run();
+				RunTask();
 				tracker.ReportSuccess(GettextCatalog.GetString ("Done."));
 			} catch (DllNotFoundException e) {
 				tracker.ReportError("The operation could not be completed because a shared library is missing: " + e.Message, null);

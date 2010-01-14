@@ -774,7 +774,7 @@ namespace MonoDevelop.Components.Docking
 		public void Draw (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex)
 		{
 			if (type != DockGroupType.Tabbed) {
-				DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, false, false);
+				DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, false, false, null);
 				foreach (DockObject it in VisibleObjects) {
 					DockGroup grp = it as DockGroup;
 					if (grp != null)
@@ -783,12 +783,12 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly)
+		public void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, List<Gdk.Rectangle> areasList)
 		{
-			DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, true);
+			DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, true, areasList);
 		}
 		
-		void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, bool drawChildrenSep)
+		void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, bool drawChildrenSep, List<Gdk.Rectangle> areasList)
 		{
 			if (type == DockGroupType.Tabbed || VisibleObjects.Count == 0)
 				return;
@@ -806,20 +806,23 @@ namespace MonoDevelop.Components.Docking
 				DockObject ob = VisibleObjects [n];
 				DockGroup grp = ob as DockGroup;
 				if (grp != null && drawChildrenSep)
-					grp.DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly);
+					grp.DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, areasList);
 				if (ob != last) {
 					if (horiz)
 						x += ob.Allocation.Width + Frame.HandlePadding;
 					else
 						y += ob.Allocation.Height + Frame.HandlePadding;
 					
-					if (invalidateOnly) {
+					if (areasList != null) {
+						areasList.Add (new Gdk.Rectangle (x, y, hw, hh));
+					} else if (invalidateOnly) {
 						Frame.Container.QueueDrawArea (x, y, hw, hh);
 					}
 					else {
 						StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
-						if (!DockFrame.IsWindows)
-							Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
+						Frame.ShadedContainer.DrawBackground (Frame.Container, new Gdk.Rectangle (x, y, hw, hh));
+//						if (!DockFrame.IsWindows)
+//							Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
 					}
 					
 					if (horiz)

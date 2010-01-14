@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl
 					try {
 						if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 							if (VersionControlService.NotifyBeforeCommit (vc, changeSet)) {
-								new CommitWorker (vc, changeSet, dlg).Start();
+								new CommitWorker (vc, changeSet, dlg).Run();
 								return true;
 							}
 						}
@@ -83,6 +83,7 @@ namespace MonoDevelop.VersionControl
 				this.vc = vc;
 				this.changeSet = changeSet;
 				this.dlg = dlg;
+				Description = GettextCatalog.GetString ("Commit '{0}'", changeSet.BaseLocalPath);
 			}
 			
 			protected override string GetDescription()
@@ -90,7 +91,7 @@ namespace MonoDevelop.VersionControl
 				return GettextCatalog.GetString ("Committing {0}...", changeSet.BaseLocalPath);
 			}
 			
-			protected override void Run ()
+			protected override void RunTask ()
 			{
 				bool success = true;
 				try {

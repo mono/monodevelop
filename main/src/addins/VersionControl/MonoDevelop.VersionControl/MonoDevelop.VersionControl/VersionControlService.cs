@@ -14,6 +14,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
+using MonoDevelop.Ide.Jobs;
 
 namespace MonoDevelop.VersionControl
 {
@@ -486,7 +487,8 @@ namespace MonoDevelop.VersionControl
 		
 		static IProgressMonitor GetStatusMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Updating version control repository"), "vc-remote-status", true);
+			Job job = new OutputPadJob ("Updating version control repository", "vc-remote-status");
+			return job.Run ().Monitor;
 		}
 		
 		static string ConfigFile {

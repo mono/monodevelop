@@ -36,10 +36,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public class SearchResultPad : AbstractPadContent, ILocationListPad
+	public class SearchResultPad : AbstractPadContent
 	{
 		SearchResultWidget widget = new SearchResultWidget ();
 		
@@ -103,18 +104,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			base.Initialize (window);
 		}
 		
-		string originalTitle;
 		public void BeginProgress (string title)
 		{
-			originalTitle = title;
-			Window.Title = "<span foreground=\"blue\">" + originalTitle + "</span>";
+			Window.IsWorking = true;
 			widget.ShowStatus (GettextCatalog.GetString ("Searching..."));
 			widget.BeginProgress ();
 		}
 		
 		public void EndProgress ()
 		{
-			Window.Title = originalTitle;
+			Window.IsWorking = false;
 			widget.ShowStatus (" " + GettextCatalog.GetString("Search completed") + " - " + 
 				string.Format (GettextCatalog.GetPluralString("{0} match.", "{0} matches.", widget.ResultCount), widget.ResultCount));
 			widget.EndProgress ();
@@ -151,18 +150,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			widget.CopySelection ();
 		}
 
-		#endregion
-
-		#region ILocationListPad implementation
-		public bool GetNextLocation (out string file, out int line, out int column)
-		{
-			return widget.GetNextLocation (out file, out line, out column);
-		}
-		
-		public bool GetPreviousLocation (out string file, out int line, out int column)
-		{
-			return widget.GetPreviousLocation (out file, out line, out column);
-		}
 		#endregion
 	}
 }

@@ -71,7 +71,7 @@ namespace MonoDevelop.VersionControl
 				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;
 
-				new RevertWorker(vc, path, revision, toRevision).Start();
+				new RevertWorker(vc, path, revision, toRevision).Run();
 				return true;
 			}
 			catch (Exception ex) {
@@ -94,6 +94,7 @@ namespace MonoDevelop.VersionControl
 				this.path = path;
 				this.revision = revision;
 				this.toRevision = toRevision;
+				Description = GettextCatalog.GetString ("Revert files");
 			}
 			
 			protected override string GetDescription() {
@@ -103,7 +104,7 @@ namespace MonoDevelop.VersionControl
 					return GettextCatalog.GetString ("Reverting revision {0}...", revision);
 			}
 			
-			protected override void Run ()
+			protected override void RunTask ()
 			{
 				IProgressMonitor monitor = GetProgressMonitor ();
 				

@@ -31,6 +31,7 @@
 
 using System;
 using Gtk;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -40,8 +41,13 @@ namespace MonoDevelop.Components.Docking
 		Box box;
 		DockFrame frame;
 		
+		const int SizePadding = 1;
+		const int StartPadding = 6;
+		
 		public DockBar (DockFrame frame, Gtk.PositionType position)
 		{
+			frame.ShadedContainer.Add (this);
+			VisibleWindow = false;
 			this.frame = frame;
 			this.position = position;
 			Gtk.Alignment al = new Alignment (0,0,0,0);
@@ -51,15 +57,21 @@ namespace MonoDevelop.Components.Docking
 				box = new VBox ();
 				
 			switch (position) {
-				case PositionType.Top: al.BottomPadding = 2; break;
-				case PositionType.Bottom: al.TopPadding = 2; break;
-				case PositionType.Left: al.RightPadding = 2; break;
-				case PositionType.Right: al.LeftPadding = 2; break;
+				case PositionType.Top: al.BottomPadding = SizePadding; al.LeftPadding = al.RightPadding = StartPadding; break;
+				case PositionType.Bottom: al.TopPadding = SizePadding; al.LeftPadding = al.RightPadding = StartPadding; break;
+				case PositionType.Left: al.RightPadding = SizePadding; al.TopPadding = al.BottomPadding = StartPadding; break;
+				case PositionType.Right: al.LeftPadding = SizePadding; al.TopPadding = al.BottomPadding = StartPadding; break;
 			}
 			
 			box.Spacing = 3;
 			al.Add (box);
 			Add (al);
+			if (position == PositionType.Top) {
+				Label filler = new Label ();
+				filler.WidthRequest = 4;
+				filler.HeightRequest = 4;
+				box.PackEnd (filler);
+			}
 			ShowAll ();
 		}
 		
@@ -100,12 +112,19 @@ namespace MonoDevelop.Components.Docking
 		
 		public void UpdateTitle (DockItem item)
 		{
-			foreach (DockBarItem it in box.Children) {
-				if (it.DockItem == item) {
+			foreach (Widget w in box.Children) {
+				DockBarItem it = w as DockBarItem;
+				if (it != null && it.DockItem == item) {
 					it.UpdateTab ();
 					break;
 				}
 			}
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			frame.ShadedContainer.DrawBackground (this);
+			return base.OnExposeEvent (evnt);
 		}
 	}
 }

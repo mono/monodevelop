@@ -227,12 +227,18 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.ShowMessageBubblesChanged += HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
+			TaskService.BubblesVisibilityChanged += HandleTaskServiceBubblesVisibilityChanged;
 			widget.TextEditor.Options.Changed += delegate {
 				lineSegmentWithTasks.ForEach (ls => {
 					foreach (ErrorTextMarker marker in ls.Markers.Where (marker => marker is ErrorTextMarker)) 
 						marker.DisposeLayout ();
 				});
 			};
+		}
+
+		void HandleTaskServiceBubblesVisibilityChanged (object sender, EventArgs e)
+		{
+			this.TextEditor.Repaint ();
 		}
 
 		void HandleIdeAppPreferencesShowMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
@@ -448,6 +454,7 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled -= HandleErrorListPadTaskToggled;
+			TaskService.BubblesVisibilityChanged -= HandleTaskServiceBubblesVisibilityChanged;
 			DisposeErrorMarkers ();
 			
 			if (autoSave != null) {

@@ -47,7 +47,7 @@ namespace MonoDevelop.VersionControl
 						AlertButton publishButton = new AlertButton ("_Publish");					
 						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project?"), GettextCatalog.GetString ("The project will be published to the repository '{0}', module '{1}'.", dlg.Repository.Name, dlg.ModuleName), AlertButton.Cancel, publishButton) == publishButton) {
 							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, files.ToArray (), dlg.Message);
-							w.Start ();
+							w.Run ();
 							break;
 						}
 					} else
@@ -86,6 +86,7 @@ namespace MonoDevelop.VersionControl
 			this.moduleName = moduleName;
 			this.files = files;
 			this.message = message;
+			Description = GettextCatalog.GetString ("Publish '{0}'", moduleName);
 		}
 
 		protected override string GetDescription ()
@@ -93,7 +94,7 @@ namespace MonoDevelop.VersionControl
 			return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
 		}
 		
-		protected override void Run ()
+		protected override void RunTask ()
 		{
 			vc.Publish (moduleName, path, files, message, GetProgressMonitor ());
 			

@@ -30,29 +30,51 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using Gtk;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Jobs;
 
 namespace MonoDevelop.Ide
 {
 	public class MonoDevelopStatusBar : Gtk.Statusbar
 	{
 		ProgressBar progressBar = new ProgressBar ();
-		Frame textStatusBarPanel = new Frame ();
-		
+		HBox textStatusBarPanel;
+		JobBar jobBar = new JobBar ();
+		ErrorsStatusPanel errorsStatusPanel;
 		
 		Label statusLabel;
-		Label modeLabel;
 		Label cursorLabel;
 		
 		HBox statusBox;
 		Image currentStatusImage;
 		EventBox eventBox;
+		PopupStatusBar currentPopup;
+		ExpandedBox expandedBox;
+		Widget expandedWidget;
+		EventBox mainBox;
+		uint popupAnimation, cursorChecker;
+		ExpandableStatusBarPanel currentExpandedPanel;
+		Gtk.Widget currentExpandedMainWidget;
+		int expandCenter;
+		
 		internal MonoDevelopStatusBar()
 		{
+			Events |= Gdk.EventMask.LeaveNotifyMask;
+			
 			Frame originalFrame = (Frame)Children[0];
 //			originalFrame.WidthRequest = 8;
 //			originalFrame.Shadow = ShadowType.In;
 //			originalFrame.BorderWidth = 0;
 			
+			DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
+			Gtk.Widget dockBar = wb.WorkbenchLayout.DockFrame.ExtractDockBar (PositionType.Bottom);
+			PackStart (dockBar, false, false, 0);
+
+			mainBox = new EventBox ();
+			mainBox.Show ();
+			PackStart (mainBox, true, true, 0);
+			mainBox.Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.PointerMotionMask;
 			BorderWidth = 0;
 			
 			progressBar = new ProgressBar ();
@@ -72,35 +94,31 @@ namespace MonoDevelop.Ide
 			statusLabel.SetPadding (0, 0);
 			
 			statusBox.PackStart (progressBar, false, false, 0);
-			statusBox.PackStart (statusLabel, true, true, 0);
+			statusBox.PackStart (statusLabel, false, false, 0);
 			
-			textStatusBarPanel.BorderWidth = 0;
-			textStatusBarPanel.ShadowType = ShadowType.None;
-			textStatusBarPanel.Add (statusBox);
-			Label fillerLabel = new Label ();
-			fillerLabel.WidthRequest = 8;
-			statusBox.PackEnd (fillerLabel, false, false, 0);
-			
-			modeLabel = new Label (" ");
-			statusBox.PackEnd (modeLabel, false, false, 8);
+			jobBar = new JobBar ();
+			jobBar.ShowAll ();
+			statusBox.PackStart (jobBar, true, true, 0);
 			
 			cursorLabel = new Label (" ");
 			statusBox.PackEnd (cursorLabel, false, false, 0);
+			
+			VSeparator sep = new VSeparator ();
+			sep.Show ();
+			statusBox.PackEnd (sep, false, false, 9);
 			
 			eventBox = new EventBox ();
 			eventBox.BorderWidth = 0;
 			statusBox.PackEnd (eventBox, false, false, 4);
 			
-			this.PackStart (textStatusBarPanel, true, true, 0);
+			errorsStatusPanel = new ErrorsStatusPanel ();
+			statusBox.PackEnd (errorsStatusPanel, false, false, 0);
+			
+			textStatusBarPanel = statusBox;
+			textStatusBarPanel.BorderWidth = 2;
+			mainBox.Add (textStatusBarPanel);
 			
 			ShowReady ();
-			Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)this[textStatusBarPanel];
-			boxChild.Position = 0;
-			boxChild.Expand = boxChild.Fill = true;
-			
-	//		boxChild = (Gtk.Box.BoxChild)this[originalFrame];
-	//		boxChild.Padding = 0;
-	//		boxChild.Expand = boxChild.Fill = false;
 			
 			this.progressBar.Fraction = 0.0;
 			this.ShowAll ();
@@ -112,6 +130,144 @@ namespace MonoDevelop.Ide
 			// the Mac has a resize grip by default, and the GTK+ one breaks it
 			if (MonoDevelop.Core.PropertyService.IsMac)
 				HasResizeGrip = false;
+			
+			jobBar.MainOperationStarted += delegate {
+				HideMessageBar ();
+			};
+		}
+
+		int basePopupY;
+
+		internal void ExpandPanel (ExpandableStatusBarPanel panel)
+		{
+			if (currentPopup != null)
+				HidePopup ();
+			
+			if (!IdeApp.Workbench.RootWindow.IsActive)
+				return;
+			
+			Gdk.Rectangle pos = IdeApp.Workbench.RootWindow.GetCoordinates (panel);
+			
+			int x,y;
+			expandCenter = pos.X;
+			panel.GetPointer (out x, out y);
+			expandCenter += x;
+			
+			currentExpandedPanel = panel;
+
+			SetupExpandedPanel (panel);
+			
+			int newHeight = expandedBox.SizeRequest ().Height;
+			basePopupY = pos.Y - (newHeight - pos.Height);
+			//textStatusBarPanel.BorderWidth = 0;
+			
+			Widget content = panel.DetachContent ();
+			ExpandableStatusBarPanelTitle newPanel = new ExpandableStatusBarPanelTitle (content);
+			currentPopup = new PopupStatusBar (newPanel);
+			currentPopup.Show ();
+			
+			IdeApp.Workbench.RootWindow.AddTopLevelWidget (currentPopup, pos.X, basePopupY);
+			
+			popupAnimation = GLib.Timeout.Add (25, AnimatePopup);
+			cursorChecker = GLib.Timeout.Add (25, CheckPointer);
+		}
+		
+		void SetupExpandedPanel (ExpandableStatusBarPanel panel)
+		{
+			panel.Expanded = true;
+			expandedWidget = panel.ExpandedPanel;
+			expandedWidget.Show ();
+			currentExpandedMainWidget = panel.MainPanelWidget;
+			currentExpandedMainWidget.SizeAllocated += HandleCurrentExpandedMainWidgetSizeAllocated;
+			expandedBox = new ExpandedBox (expandedWidget);
+			Gdk.Rectangle pos = IdeApp.Workbench.RootWindow.GetCoordinates (panel);
+//			expandedBox.WidthRequest = IdeApp.Workbench.RootWindow.Allocation.Width;
+			expandedBox.Show ();
+			IdeApp.Workbench.RootWindow.AddTopLevelWidget (expandedBox, pos.X, pos.Bottom - expandedBox.SizeRequest ().Height);
+			// For some weird reason size request may change after adding the widget
+			IdeApp.Workbench.RootWindow.MoveTopLevelWidget (expandedBox, pos.X, pos.Bottom - expandedBox.SizeRequest ().Height);
+		}
+
+		void HandleCurrentExpandedMainWidgetSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			Gdk.Rectangle pos = IdeApp.Workbench.RootWindow.GetCoordinates (currentExpandedMainWidget);
+			int shiftSize = expandCenter - (pos.X + (pos.Width/2));
+			if (shiftSize == 0)
+				return;
+			pos = IdeApp.Workbench.RootWindow.GetCoordinates (expandedBox);
+			Gdk.Rectangle headerPos = IdeApp.Workbench.RootWindow.GetTopLevelPosition (currentPopup);
+			int newX = pos.X + shiftSize;
+			if (newX > headerPos.X) {
+				expandedBox.Shift (newX - headerPos.X);
+				newX = headerPos.X;
+			}
+			int w = expandedBox.SizeRequest ().Width;
+			if (newX + w < headerPos.Right)
+				expandedBox.WidthRequest = headerPos.Right - newX;
+			IdeApp.Workbench.RootWindow.MoveTopLevelWidget (expandedBox, newX, pos.Y);
+//			expandedBox.Shift (shiftSize);
+			currentExpandedMainWidget.SizeAllocated -= HandleCurrentExpandedMainWidgetSizeAllocated; // Shift only once
+		}
+		
+		bool AnimatePopup ()
+		{
+			int targetPopupY = basePopupY - currentPopup.SizeRequest ().Height;
+			
+			Gdk.Rectangle pos = IdeApp.Workbench.RootWindow.GetCoordinates (currentPopup);
+			
+			int newY = targetPopupY + (int)((double) (pos.Y - targetPopupY) * 0.4);
+			IdeApp.Workbench.RootWindow.MoveTopLevelWidget (currentPopup, pos.X, newY);
+			currentPopup.Show ();
+			if (newY == targetPopupY) {
+				popupAnimation = 0;
+				return false;
+			} else
+				return true;
+		}
+		
+		bool CheckPointer ()
+		{
+			int x, y;
+			IdeApp.Workbench.RootWindow.GetPointer (out x, out y);
+			if (!IdeApp.Workbench.RootWindow.GetCoordinates (currentPopup).Contains (x, y) && !IdeApp.Workbench.RootWindow.GetCoordinates (expandedBox).Contains (x,y))
+				HidePopup ();
+			return true;
+		}
+		
+		void RemoveExpandedBox ()
+		{
+			((Gtk.Container)expandedWidget.Parent).Remove (expandedWidget);
+			IdeApp.Workbench.RootWindow.RemoveTopLevelWidget (expandedBox);
+			expandedBox.Destroy ();
+			currentExpandedMainWidget.SizeAllocated -= HandleCurrentExpandedMainWidgetSizeAllocated;
+			expandedWidget = null;
+			currentExpandedMainWidget = null;
+		}
+
+		void HidePopup ()
+		{
+			if (currentPopup != null) {
+				RemoveExpandedBox ();
+				currentExpandedPanel.ReattachContent ();
+				currentExpandedPanel.Expanded = false;
+				currentExpandedPanel = null;
+				IdeApp.Workbench.RootWindow.RemoveTopLevelWidget (currentPopup);
+				currentPopup.Destroy ();
+				currentPopup = null;
+				if (popupAnimation != 0) {
+					GLib.Source.Remove (popupAnimation);
+					popupAnimation = 0;
+				}
+				GLib.Source.Remove (cursorChecker);
+			}
+		}
+		
+		void HideMessageBar ()
+		{
+			progressBar.Visible = false;
+			if (currentStatusImage != null)
+				currentStatusImage.Visible = false;
+			statusLabel.Visible = false;
 		}
 		
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
@@ -121,21 +277,17 @@ namespace MonoDevelop.Ide
 			string cursorText = selectedChars > 0 ? String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars) : String.Format ("{0,3} : {1,-3}", line, column);
 			if (cursorLabel.Text != cursorText)
 				cursorLabel.Text = cursorText;
-			
-			string modeStatusText = isInInsertMode ? GettextCatalog.GetString ("INS") : GettextCatalog.GetString ("OVR");
-			if (modeLabel.Text != modeStatusText)
-				modeLabel.Text = modeStatusText;
 		}
 		
 		public void ClearCaretState ()
 		{
 			cursorLabel.Text = "";
-			modeLabel.Text = "";
 		}
 		
 		public void ShowReady ()
 		{
-			ShowMessage (GettextCatalog.GetString ("Ready"));	
+			HideMessageBar ();
+			jobBar.RestoreMainOperation ();
 		}
 		
 		public void ShowError (string error)
@@ -173,17 +325,23 @@ namespace MonoDevelop.Ide
 				currentStatusImage = image;
 				if (image != null) {
 					image.SetPadding (0, 0);
-					statusBox.PackStart (image, false, false, 3);
+					statusBox.PackStart (image, false, false, 0);
 					statusBox.ReorderChild (image, 1);
 					image.Show ();
 				}
 			}
-			
 			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
 			if (isMarkup) {
 				statusLabel.Markup = txt;
 			} else {
 				statusLabel.Text = txt;
+			}
+			
+			if (!jobBar.IsMainOperationRunning) {
+				jobBar.ShiftMainOperation ();
+				if (currentStatusImage != null)
+					currentStatusImage.Show ();
+				statusLabel.Show ();
 			}
 		}
 		
@@ -331,5 +489,201 @@ namespace MonoDevelop.Ide
 				return true;
 			}
 		}
+	}
+	
+	class PopupStatusBar: Gtk.EventBox
+	{
+		public PopupStatusBar (Gtk.Widget child)
+		{
+			Alignment al = new Alignment (0,0,1,1);
+			al.TopPadding = 2;
+			Add (al);
+			ShowAll ();
+			al.Add (child);
+		}
+	}
+	
+	abstract class ExpandableStatusBarPanel: EventBox
+	{
+		bool expanded;
+		HBox mainBox;
+		const int expandedMargin = 3;
+		
+		public ExpandableStatusBarPanel ()
+		{
+			Events |= Gdk.EventMask.EnterNotifyMask;
+			mainBox = new HBox ();
+			mainBox.Show ();
+			Add (mainBox);
+			Expandable = true;
+		}
+		
+		public Gtk.Widget DetachContent ()
+		{
+			Requisition req = SizeRequest ();
+			WidthRequest = req.Width;
+			HeightRequest = req.Height;
+			Remove (mainBox);
+			mainBox.BorderWidth = 2;
+			return mainBox;
+		}
+		
+		public void ReattachContent ()
+		{
+			if (mainBox.Parent != null)
+				((Gtk.Container)mainBox.Parent).Remove (mainBox);
+			mainBox.BorderWidth = 0;
+			Add (mainBox);
+			WidthRequest = -1;
+			HeightRequest = -1;
+		}
+		
+		public HBox MainBox {
+			get { return mainBox; }
+		}
+		
+		public bool Expandable { get; set; }
+		
+		public abstract Gtk.Widget ExpandedPanel { get; }
+		
+		public abstract Gtk.Widget MainPanelWidget { get; }
+		
+		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			if (!expanded && Expandable)
+				IdeApp.Workbench.StatusBar.ExpandPanel (this);
+			return base.OnEnterNotifyEvent (evnt);
+		}
+		
+		internal bool Expanded {
+			get {
+				return expanded;
+			}
+			set {
+				expanded = value;
+			}
+		}
+	}
+	
+	class ExpandableStatusBarPanelTitle: EventBox
+	{
+		public ExpandableStatusBarPanelTitle (Gtk.Widget content)
+		{
+			Show ();
+			Add (content);
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			int w, h;
+			GdkWindow.GetSize (out w, out h);
+			int x=0, y=0, r=5;
+			using (Cairo.Context ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				HslColor c1 = new HslColor (Style.Background (Gtk.StateType.Normal));
+				HslColor c2 = c1;
+				c1.L *= 0.7;
+				c2.L *= 0.9;
+				Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x, y+h);
+				pat.AddColorStop (0, c1);
+				pat.AddColorStop (1, c2);
+				ctx.NewPath ();
+				ctx.Arc (x+r, y+r, r, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
+				ctx.LineTo (x+w-r, y);
+				ctx.Arc (x+w-r, y+r, r, 270 * (Math.PI / 180), 360 * (Math.PI / 180));
+				ctx.LineTo (x+w, y+h);
+				ctx.LineTo (x, y+h);
+				ctx.ClosePath ();
+				ctx.Pattern = pat;
+				ctx.Fill ();
+			}
+			PropagateExpose (Child, evnt);
+			return true;
+		}
+	}
+	
+	class ExpandedBox: EventBox
+	{
+		Label filler;
+		ExpandedPanelContainer expanded;
+		HBox mainBox;
+		
+		public ExpandedBox (Gtk.Widget w)
+		{
+			mainBox = new HBox ();
+			Add (mainBox);
+			mainBox.Show ();
+			filler = new Label ();
+			filler.WidthRequest = 0;
+			filler.Show ();
+			mainBox.PackStart (filler, false, false, 0);
+			expanded = new ExpandedPanelContainer (w);
+			expanded.Show ();
+			mainBox.PackStart (expanded, false, false, 0);
+			Show ();
+		}
+		
+		public void Shift (int x)
+		{
+//			if (x + expanded.SizeRequest ().Width > Allocation.Width)
+//				x = Allocation.Width - expanded.SizeRequest ().Width - 1;
+			if (x >= 0)
+				filler.WidthRequest = x;
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			Gdk.Rectangle r = new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+			using (Cairo.Context ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				HslColor c1 = new HslColor (Style.Background (Gtk.StateType.Normal));
+				HslColor c2 = c1;
+				c1.L *= 0.9;
+				c2.L *= 0.95;
+				Cairo.Gradient pat = new Cairo.LinearGradient (r.X, r.Y, r.X, r.Bottom);
+				pat.AddColorStop (0, c1);
+				pat.AddColorStop (0.3, c2);
+				pat.AddColorStop (1, c2);
+				ctx.Rectangle (r.X, r.Y, r.Width, r.Height);
+				ctx.Pattern = pat;
+				ctx.Fill ();
+			}
+			foreach (Gtk.Widget w in Children)
+				PropagateExpose (w, evnt);
+			return true;
+		}
+
+	}
+	
+	class ExpandedPanelContainer: HBox
+	{
+		HBox mainBox = new HBox ();
+		
+		public ExpandedPanelContainer (Gtk.Widget w)
+		{
+			mainBox.BorderWidth = 3;
+			Add (mainBox);
+			ShowAll ();
+			mainBox.Add (w);
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			Gdk.Rectangle r = Allocation;
+			using (Cairo.Context ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				HslColor c1 = new HslColor (Style.Background (Gtk.StateType.Normal));
+				HslColor c2 = c1;
+				c1.L *= 0.9;
+				c2.L *= 0.7;
+				Cairo.Gradient pat = new Cairo.LinearGradient (r.X, r.Y, r.X, r.Bottom);
+				pat.AddColorStop (0, c1);
+				pat.AddColorStop (1, c2);
+				ctx.Rectangle (r.X, r.Y, r.Width, r.Height);
+				ctx.Pattern = pat;
+				ctx.Fill ();
+			}
+			foreach (Gtk.Widget w in Children)
+				PropagateExpose (w, evnt);
+			return true;
+		}
+
 	}
 }

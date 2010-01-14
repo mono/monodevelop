@@ -20,7 +20,7 @@ namespace MonoDevelop.VersionControl
 			try {
 				if (del.Run () == (int) Gtk.ResponseType.Ok && del.Repository != null) {
 					CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
-					w.Start ();
+					w.Run ();
 				}
 			} finally {
 				del.Destroy ();
@@ -37,6 +37,7 @@ namespace MonoDevelop.VersionControl
 		{
 			this.vc = vc;
 			this.path = path;
+			Description = GettextCatalog.GetString ("Checkout from repository '{0}', path '{1}'", vc.Name, path);
 		}
 		
 		protected override string GetDescription ()
@@ -44,7 +45,7 @@ namespace MonoDevelop.VersionControl
 			return GettextCatalog.GetString ("Checkout {0}...", path);
 		}
 		
-		protected override void Run () 
+		protected override void RunTask () 
 		{
 			vc.Checkout (path, null, true, GetProgressMonitor ());
 			string projectFn = null;

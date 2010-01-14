@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 			
-			new LockWorker (items).Start();
+			new LockWorker (items).Run();
 			return true;
 		}
 
@@ -51,13 +51,14 @@ namespace MonoDevelop.VersionControl
 						
 			public LockWorker (VersionControlItemList items) {
 				this.items = items;
+				Description = GettextCatalog.GetString ("Lock files");
 			}
 			
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Locking...");
 			}
 			
-			protected override void Run ()
+			protected override void RunTask ()
 			{
 				IProgressMonitor monitor = GetProgressMonitor ();
 				

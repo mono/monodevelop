@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
 	/// </summary>
-	internal class DefaultWorkbench : Gtk.Window, IWorkbench
+	internal class DefaultWorkbench : WorkbenchWindow
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string viewContentPath = "/MonoDevelop/Ide/Pads";
@@ -68,16 +68,18 @@ namespace MonoDevelop.Ide.Gui
 		bool fullscreen;
 		Rectangle normalBounds = new Rectangle(0, 0, 640, 480);
 		
-		private IWorkbenchLayout layout = null;
+		private SdiWorkbenchLayout layout = null;
 
 		internal static GType gtype;
 		
 		Gtk.MenuBar topMenu = null;
 		private Gtk.Toolbar[] toolbars = null;
-		MonoDevelopStatusBar statusBar = new MonoDevelop.Ide.MonoDevelopStatusBar ();
+		MonoDevelopStatusBar statusBar;
 		
 		public MonoDevelopStatusBar StatusBar {
 			get {
+				if (statusBar == null)
+					statusBar = new MonoDevelop.Ide.MonoDevelopStatusBar ();
 				return statusBar;
 			}
 		}
@@ -120,7 +122,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		EventHandler windowChangeEventHandler;
 		
-		public IWorkbenchLayout WorkbenchLayout {
+		public SdiWorkbenchLayout WorkbenchLayout {
 			get {
 				//FIXME: i added this, we need to fix this shit
 				//				if (layout == null) {
@@ -169,7 +171,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public DefaultWorkbench() : base (Gtk.WindowType.Toplevel)
+		public DefaultWorkbench()
 		{
 			Title = "MonoDevelop";
 			LoggingService.LogInfo ("Creating DefaultWorkbench");
@@ -604,7 +606,7 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		public void InitializeLayout (IWorkbenchLayout workbenchLayout)
+		public void InitializeLayout (SdiWorkbenchLayout workbenchLayout)
 		{
 			ExtensionNodeList padCodons = AddinManager.GetExtensionNodes (viewContentPath);
 			

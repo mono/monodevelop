@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 			
-			new UnlockWorker (items).Start();
+			new UnlockWorker (items).Run();
 			return true;
 		}
 
@@ -53,13 +53,14 @@ namespace MonoDevelop.VersionControl
 						
 			public UnlockWorker (VersionControlItemList items) {
 				this.items = items;
+				Description = GettextCatalog.GetString ("Unlock files");
 			}
 			
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Unlocking...");
 			}
 			
-			protected override void Run ()
+			protected override void RunTask ()
 			{
 				IProgressMonitor monitor = GetProgressMonitor ();
 				

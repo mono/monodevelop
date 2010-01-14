@@ -52,6 +52,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		LogTextWriter logger = new LogTextWriter ();
 		LogTextWriter internalLogger = new LogTextWriter ();
+		NotSupportedTextReader inputReader = new NotSupportedTextReader ();
 		
 		public DefaultMonitorPad OutputPad {
 			get { return this.outputPad; }
@@ -121,7 +122,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		TextReader IConsole.In {
-			get { return new StringReader (""); }
+			get { return inputReader; }
 		}
 		
 		TextWriter IConsole.Out {
@@ -139,6 +140,57 @@ namespace MonoDevelop.Ide.Gui
 		event EventHandler IConsole.CancelRequested {
 			add { stopRequested += value; }
 			remove { stopRequested -= value; }
+		}
+	}
+	
+	class NotSupportedTextReader: TextReader
+	{
+		bool userWarned;
+		
+		void WarnUser ()
+		{
+			if (userWarned)
+				return;
+			userWarned = true;
+			string title = GettextCatalog.GetString ("Console input not supported");
+			string desc = GettextCatalog.GetString ("Console input is not supported when using the MonoDevelop output console. If your applications needs to read data from the standard input, please set the 'Run in External Console' option in the project options.");
+			MessageService.ShowWarning (title, desc);
+		}
+		
+		public override int Peek ()
+		{
+			WarnUser ();
+			return -1;
+		}
+		
+		public override int ReadBlock (char[] buffer, int index, int count)
+		{
+			WarnUser ();
+			return base.ReadBlock(buffer, index, count);
+		}
+		
+		public override int Read (char[] buffer, int index, int count)
+		{
+			WarnUser ();
+			return base.Read(buffer, index, count);
+		}
+		
+		public override int Read ()
+		{
+			WarnUser ();
+			return base.Read();
+		}
+		
+		public override string ReadLine ()
+		{
+			WarnUser ();
+			return base.ReadLine();
+		}
+		
+		public override string ReadToEnd ()
+		{
+			WarnUser ();
+			return base.ReadToEnd();
 		}
 	}
 }

@@ -37,6 +37,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.Jobs;
+using MonoDevelop.Core.Gui.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -85,12 +87,24 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs)
 		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, true, false);
+			OutputPadJob job = new OutputPadJob (title, icon);
+			job.SaveInJobHistory = false;
+			job.ShowErrorsDialog = showErrorDialogs;
+			job.MasterMonitor = new BaseProgressMonitor ();
+			return job.Run ().Monitor; 
+//			return new StatusProgressMonitor (title, icon, showErrorDialogs, true, false);
 		}
 		
 		public IProgressMonitor GetStatusProgressMonitor (string title, string icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui)
 		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui);
+			OutputPadJob job = new OutputPadJob (title, icon);
+			job.SaveInJobHistory = false;
+			job.ShowErrorsDialog = showErrorDialogs;
+			job.ShowTaskTitle = showTaskTitle;
+			job.LockGui = lockGui;
+			job.MasterMonitor = new BaseProgressMonitor ();
+			return job.Run ().Monitor;
+//			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui);
 		}
 		
 		public IProgressMonitor GetBackgroundProgressMonitor (string title, string icon)
@@ -150,7 +164,7 @@ namespace MonoDevelop.Ide.Gui
 			else
 				pad = IdeApp.Workbench.AddPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", icon);
 			
-			pad.Sticky = true;
+//			pad.Sticky = true;
 			outputMonitors.Add (pad);
 			
 			if (instanceCount > 0) {
@@ -206,7 +220,7 @@ namespace MonoDevelop.Ide.Gui
 			SearchResultPad monitorPad = new SearchResultPad (instanceNum) { FocusPad = focusPad };
 			
 			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", MonoDevelop.Core.Gui.Stock.FindIcon);
-			pad.Sticky = true;
+//			pad.Sticky = true;
 			searchMonitors.Add (pad);
 
 			if (searchMonitors.Count > 1) {

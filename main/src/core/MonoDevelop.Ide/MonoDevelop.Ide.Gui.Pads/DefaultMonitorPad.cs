@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Gtk.HBox hbox;
 		ToolButton buttonStop;
 		ToggleToolButton buttonPin;
+		ToolButton buttonClear;
 		TextMark endMark;
 		bool progressStarted;
 		
@@ -62,7 +63,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ArrayList tags = new ArrayList ();
 		Stack indents = new Stack ();
 
-		string originalTitle;
 		string icon;
 		string id;
 		int instanceNum;
@@ -87,6 +87,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buffer = new Gtk.TextBuffer (new Gtk.TextTagTable ());
 			textEditorControl = new Gtk.TextView (buffer);
 			textEditorControl.Editable = false;
+			
+			if (IdeApp.Preferences.CustomOutputPadFont != null) {
+				FontDescription desc = Pango.FontDescription.FromString (IdeApp.Preferences.CustomOutputPadFont);
+				if (desc != null)
+					textEditorControl.ModifyFont (desc);
+			}
+			
+			IdeApp.Preferences.CustomOutputPadFontChanged += HandleIdeAppPreferencesCustomOutputPadFontChanged;
+			
 			scroller = new Gtk.ScrolledWindow ();
 			scroller.ShadowType = ShadowType.None;
 			scroller.Add (textEditorControl);
@@ -102,7 +111,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
-			ToolButton buttonClear = new ToolButton ("gtk-clear");
+			buttonClear = new ToolButton ("gtk-clear");
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear console");
 			toolbar.Insert (buttonClear, -1);
@@ -142,6 +151,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Control.ShowAll ();
 			
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
+		}
+
+		void HandleIdeAppPreferencesCustomOutputPadFontChanged (object sender, PropertyChangedEventArgs e)
+		{
+			if (IdeApp.Preferences.CustomOutputPadFont != null) {
+				FontDescription desc = Pango.FontDescription.FromString (IdeApp.Preferences.CustomOutputPadFont);
+				if (desc != null) {
+					textEditorControl.ModifyFont (desc);
+					return;
+				}
+			}
+			textEditorControl.ModifyFont (Control.Style.FontDescription);
 		}
 		
 		//mechanism to to batch copy text when large amounts are being dumped
@@ -196,14 +217,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnCombineOpen (object sender, EventArgs e)
 		{
-			lock (updates.SyncRoot) outputDispatcherRunning = false;
-			buffer.Clear ();
+//			lock (updates.SyncRoot) outputDispatcherRunning = false;
+//			buffer.Clear ();
 		}
 
 		void OnCombineClosed (object sender, EventArgs e)
 		{
-			lock (updates.SyncRoot) outputDispatcherRunning = false;
-			buffer.Clear ();
+//			lock (updates.SyncRoot) outputDispatcherRunning = false;
+//			buffer.Clear ();
 		}
 		
 		void OnButtonPinClick (object sender, EventArgs e)
@@ -239,9 +260,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 			
 			Gtk.Application.Invoke (delegate {
-				originalTitle = window.Title;
+				if (window != null)
+					window.IsWorking = true;
+				else
+					buttonPin.Hide ();
 				buffer.Clear ();
-				window.Title = "<span foreground=\"blue\">" + originalTitle + "</span>";
 				buttonStop.Sensitive = true;
 			});
 		}
@@ -338,9 +361,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public void EndProgress ()
 		{
 			Gtk.Application.Invoke (delegate {
-				window.Title = originalTitle;
+				if (window != null)
+					window.IsWorking = false;
 				buttonStop.Sensitive = false;
 				progressStarted = false;
+				if (window == null)
+					buttonClear.Sensitive = false;
 			});
 		}
 		
@@ -399,6 +425,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				updates.Clear ();
 				lastTextWrite = null;
 			}
+			IdeApp.Preferences.CustomOutputPadFontChanged -= HandleIdeAppPreferencesCustomOutputPadFontChanged;
 		}
 	
 		public void RedrawContent()

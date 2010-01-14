@@ -41,13 +41,14 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Gui.Content;
 
 using Gtk;
 using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class ErrorListPad : IPadContent, ILocationListPad
+	public class ErrorListPad : IPadContent
 	{
 		VBox control;
 		ScrolledWindow sw;
@@ -58,7 +59,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ToggleToolButton errorBtn, warnBtn, msgBtn;
 		Hashtable tasks = new Hashtable ();
 //		IPadWindow window;
-		bool initializeLocation = true;
 		int errorCount;
 		int warningCount;
 		int infoCount;
@@ -194,6 +194,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TaskService.Errors.TasksRemoved      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (ShowResults));
 			TaskService.Errors.TasksAdded        += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskAdded));
 			TaskService.Errors.TasksChanged      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (TaskChanged));
+			TaskService.Errors.CurrentLocationTaskChanged += HandleTaskServiceErrorsCurrentLocationTaskChanged;
 			
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
@@ -218,6 +219,28 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.FocusChain = new Gtk.Widget [] { sw };
 		}
+
+		void HandleTaskServiceErrorsCurrentLocationTaskChanged (object sender, EventArgs e)
+		{
+			if (TaskService.Errors.CurrentLocationTask == null) {
+				view.Selection.UnselectAll ();
+				return;
+			}
+			TreeIter it;
+			if (!view.Model.GetIterFirst (out it))
+				return;
+			do {
+				Task t = (Task) view.Model.GetValue (it, DataColumns.Task);
+				if (t == TaskService.Errors.CurrentLocationTask) {
+					view.Selection.SelectIter (it);
+					view.ScrollToCell (view.Model.GetPath (it), view.Columns[0], false, 0, 0);
+					it = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (it));
+					store.SetValue (it, DataColumns.Read, true);
+					return;
+				}
+			} while (view.Model.IterNext (ref it));
+		}
+		
 		void LoadColumnsVisibility ()
 		{
 			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
@@ -441,8 +464,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 				store.SetValue (iter, DataColumns.Read, true);
 				Task task = store.GetValue (iter, DataColumns.Task) as Task;
 				if (task != null) {
-					DisplayTask (task);
+					TaskService.ShowStatus (task);
 					task.JumpToPosition ();
+					TaskService.Errors.CurrentLocationTask = task;
+					IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
 				}
 			}
 		}
@@ -639,7 +664,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
-			initializeLocation = true;
 		}
 		
 		void TaskChanged (object sender, TaskEventArgs e)
@@ -734,117 +758,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public virtual bool GetNextLocation (out string file, out int line, out int column)
-		{
-			bool hasNext;
-			TreeIter iter;
-			TreeModel model;
-			
-			if (!initializeLocation && view.Selection.GetSelected (out model, out iter)) {
-				hasNext = model.IterNext (ref iter);
-			} else {
-				model = view.Model;
-				hasNext = model.GetIterFirst (out iter);
-				initializeLocation = false;
-			}
-			
-			if (!hasNext) {
-				file = null;
-				line = 0;
-				column = 0;
-				view.Selection.UnselectAll ();
-				DisplayTask (null);
-				return false;
-			} else {
-				view.Selection.SelectIter (iter);
-				Task t =  model.GetValue (iter, DataColumns.Task) as Task;
-				if (t == null) {
-					file = null;
-					line = 0;
-					column = 0;
-					view.Selection.UnselectAll ();
-					DisplayTask (null);
-					return false;
-				}
-				file = t.FileName;
-				if (file == null)
-					return GetNextLocation (out file, out line, out column);
-				line = t.Line;
-				column = t.Column;
-				view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
-				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (iter));
-				store.SetValue (iter, DataColumns.Read, true);
-				DisplayTask (t);
-				return true;
-			}
-		}
-
-		public virtual bool GetPreviousLocation (out string file, out int line, out int column)
-		{
-			bool hasNext;
-			TreeIter iter;
-			TreeModel model;
-			TreeIter selIter = TreeIter.Zero;
-			TreeIter prevIter = TreeIter.Zero;
-			
-			TreePath selPath = null;
-			
-			if (!initializeLocation && view.Selection.GetSelected (out model, out selIter))
-				selPath = view.Model.GetPath (selIter);
-
-			hasNext = view.Model.GetIterFirst (out iter);
-			initializeLocation = false;
-			
-			while (hasNext) {
-				if (selPath != null && view.Model.GetPath (iter).Equals (selPath))
-					break;
-				prevIter = iter;
-				hasNext = view.Model.IterNext (ref iter);
-			}
-			
-			if (prevIter.Equals (TreeIter.Zero)) {
-				file = null;
-				line = 0;
-				column = 0;
-				view.Selection.UnselectAll ();
-				DisplayTask (null);
-				return false;
-			} else {
-				view.Selection.SelectIter (prevIter);
-				Task t = view.Model.GetValue (prevIter, DataColumns.Task) as Task;
-				if (t == null) {
-					file = null;
-					line = 0;
-					column = 0;
-					view.Selection.UnselectAll ();
-					DisplayTask (null);
-					return false;
-				}
-				file = t.FileName;
-				if (file == null)
-					return GetPreviousLocation (out file, out line, out column);
-				line = t.Line;
-				column = t.Column;
-				view.ScrollToCell (view.Model.GetPath (prevIter), view.Columns[0], false, 0, 0);
-				prevIter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (prevIter));
-				store.SetValue (prevIter, DataColumns.Read, true);
-				DisplayTask (t);
-				return true;
-			}
-		}
-
-		void DisplayTask (Task t)
-		{
-			if (t == null)
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
-			else if (t.Severity == TaskSeverity.Error)
-				IdeApp.Workbench.StatusBar.ShowError (t.Code + " - " + t.Description);
-			else if (t.Severity == TaskSeverity.Warning)
-				IdeApp.Workbench.StatusBar.ShowError (t.Code + " - " + t.Description);
-			else
-				IdeApp.Workbench.StatusBar.ShowMessage (t.Description);
-		}
-		
 		static int SeverityIterSort(TreeModel model, TreeIter a, TreeIter z)
 		{
 			Task aTask = model.GetValue(a, DataColumns.Task) as Task,

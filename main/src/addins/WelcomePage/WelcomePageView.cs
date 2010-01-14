@@ -235,7 +235,7 @@ namespace MonoDevelop.WelcomePage
 		public void SetLinkStatus (string link)
 		{
 			if (String.IsNullOrEmpty (link) || link.IndexOf ("monodevelop://") != -1) {
-				IdeApp.Workbench.StatusBar.ShowMessage (null);
+				IdeApp.Workbench.StatusBar.ShowReady ();
 			} else if (link.IndexOf ("project://") != -1) {
 				string message = link;
 				message = message.Substring (10);
@@ -287,6 +287,16 @@ namespace MonoDevelop.WelcomePage
 			get {
 				return IdeApp.Workbench.RecentOpen.RecentProjectsCount;
 			}
+		}
+	}
+	
+	class WelcomePageWidget: Gtk.VBox
+	{
+		public WelcomePageWidget ()
+		{
+			WelcomePageView wpv = WelcomePageView.GetWelcomePage ();
+			PackStart (wpv.Control);
+			ShowAll ();
 		}
 	}
 }

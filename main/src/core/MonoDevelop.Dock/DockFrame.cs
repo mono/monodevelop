@@ -45,7 +45,7 @@ namespace MonoDevelop.Components.Docking
 		DockContainer container;
 		
 		int handleSize = IsWindows ? 4 : 6;
-		int handlePadding = 1;
+		int handlePadding = 0;
 		int defaultItemWidth = 130;
 		int defaultItemHeight = 130;
 		uint autoShowDelay = 50;
@@ -57,9 +57,12 @@ namespace MonoDevelop.Components.Docking
 		
 		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
 		VBox mainBox;
+		ShadedContainer shadedContainer;
 		
 		public DockFrame ()
 		{
+			shadedContainer = new ShadedContainer ();
+			
 			dockBarTop = new DockBar (this, Gtk.PositionType.Top);
 			dockBarBottom = new DockBar (this, Gtk.PositionType.Bottom);
 			dockBarLeft = new DockBar (this, Gtk.PositionType.Left);
@@ -77,16 +80,38 @@ namespace MonoDevelop.Components.Docking
 			Add (mainBox);
 			mainBox.ShowAll ();
 
-			dockBarTop.Hide ();
-			dockBarBottom.Hide ();
-			dockBarLeft.Hide ();
-			dockBarRight.Hide ();
-
 			mainBox.NoShowAll = true;
+		}
+		
+		public Gtk.Widget ExtractDockBar (PositionType pos)
+		{
+			DockBar db = new DockBar (this, pos);
+			switch (pos) {
+				case PositionType.Left: dockBarLeft = db; break;
+				case PositionType.Top: dockBarTop = db; break;
+				case PositionType.Right: dockBarRight = db; break;
+				case PositionType.Bottom: dockBarBottom = db; break;
+			}
+			return db;
+		}
+		
+		internal DockBar GetDockBar (PositionType pos)
+		{
+			switch (pos) {
+				case Gtk.PositionType.Top: return dockBarTop;
+				case Gtk.PositionType.Bottom: return dockBarBottom;
+				case Gtk.PositionType.Left: return dockBarLeft;
+				case Gtk.PositionType.Right: return dockBarRight;
+			}
+			return null;
 		}
 		
 		internal DockContainer Container {
 			get { return container; }
+		}
+		
+		public ShadedContainer ShadedContainer {
+			get { return this.shadedContainer; }
 		}
 		
 		public int HandleSize {
@@ -490,13 +515,7 @@ namespace MonoDevelop.Components.Docking
 		
 		internal DockBarItem BarDock (Gtk.PositionType pos, DockItem item, int size)
 		{
-			switch (pos) {
-				case Gtk.PositionType.Top: return dockBarTop.AddItem (item, size);
-				case Gtk.PositionType.Bottom: return dockBarBottom.AddItem (item, size); 
-				case Gtk.PositionType.Left: return dockBarLeft.AddItem (item, size);
-				case Gtk.PositionType.Right: return dockBarRight.AddItem (item, size);
-			}
-			throw new InvalidOperationException ();
+			return GetDockBar (pos).AddItem (item, size);
 		}
 		
 		internal AutoHideBox AutoShow (DockItem item, DockBar bar, int size)
@@ -561,6 +580,18 @@ namespace MonoDevelop.Components.Docking
 			foreach (DockFrameTopLevel child in clone)
 				callback (child);
 		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			HslColor cLight = new HslColor (Style.Background (Gtk.StateType.Normal));
+			HslColor cDark = cLight;
+			cLight.L *= 0.9;
+			cDark.L *= 0.8;
+			shadedContainer.LightColor = cLight;
+			shadedContainer.DarkColor = cDark;
+		}
+
 
 		static internal bool IsWindows {
 			get { return System.IO.Path.DirectorySeparatorChar == '\\'; }

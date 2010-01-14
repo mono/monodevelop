@@ -28,13 +28,14 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
-	
 	public class TextFileNavigationPoint : DocumentNavigationPoint
 	{
 		int line;
+		int column;
 		string snippet;
 		
 		public TextFileNavigationPoint (Document doc, IEditableTextBuffer buffer)
@@ -45,8 +46,20 @@ namespace MonoDevelop.Ide.Gui
 			UpdateSnippet (buffer);
 		}
 		
+		public TextFileNavigationPoint (FilePath file, int line, int column)
+			: base (file)
+		{
+			this.line = line;
+			this.column = column;
+			snippet = file + ":" + line;
+		}
+		
 		public int Line {
 			get { return line; }
+		}
+		
+		public int Column {
+			get { return this.column; }
 		}
 		
 		public override string DisplayName {

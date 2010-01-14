@@ -66,6 +66,7 @@
 		<StockIcon stockid = "vc-commit" resource = "menu_commit.png" />
 		<StockIcon stockid = "vc-remote-status" resource = "menu_remote_status.png" />
 		<StockIcon stockid = "vc-comment" resource = "comment.png" />
+		<StockIcon stockid = "md-version-control" resource = "version-control-16.png" />
 	</Extension>
     
 	<Extension path = "/MonoDevelop/Ide/Commands">

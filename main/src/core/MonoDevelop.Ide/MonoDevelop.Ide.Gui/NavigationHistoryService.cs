@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui
 	public static class NavigationHistoryService
 	{
 		
-		static HistoryList<NavigationPoint> history = new HistoryList<NavigationPoint> ();
+		static HistoryList<NavigationHistoryItem> history = new HistoryList<NavigationHistoryItem> ();
 		
 		//used to prevent re-logging the current point during a switch
 		static bool switching;
@@ -83,6 +83,8 @@ namespace MonoDevelop.Ide.Gui
 			if (point == null)
 				return;
 			
+			NavigationHistoryItem item = new NavigationHistoryItem (point);
+			
 			//if the current node's transient but has been around for a while, consider making it permanent
 			if (Current == null ||
 			    (currentIsTransient && DateTime.Now.Subtract (Current.Created).TotalMilliseconds > TRANSIENT_TIMEOUT))
@@ -94,8 +96,8 @@ namespace MonoDevelop.Ide.Gui
 			if (currentIsTransient)
 			{
 				//collapse down possible extra point in history
-				NavigationPoint	backOne = history[-1];
-				if (backOne != null && point.ShouldReplace (backOne)) {
+				NavigationHistoryItem backOne = history[-1];
+				if (backOne != null && point.ShouldReplace (backOne.NavigationPoint)) {
 					history.MoveBack ();
 					history.ClearForward ();
 					currentIsTransient = false;
@@ -103,12 +105,12 @@ namespace MonoDevelop.Ide.Gui
 					currentIsTransient = transient;
 				}
 				
-				history.ReplaceCurrent (point);
+				history.ReplaceCurrent (item);
 			}
 			//if the new point wants to replace the old one, let it
-			else if (point.ShouldReplace (Current))
+			else if (Current != null && point.ShouldReplace (Current.NavigationPoint))
 			{
-				history.ReplaceCurrent (point);
+				history.ReplaceCurrent (item);
 				
 				//but in this case, the point should not be transient -- unless the old point was,
 				//but that's handled earlier
@@ -116,9 +118,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 			//final choice: append the the node
 			//BUT only if the existing current node would not want to replace the new node
-			else if (Current == null || !Current.ShouldReplace (point))
+			else if (Current == null || !Current.NavigationPoint.ShouldReplace (point))
 			{
-				history.AddPoint (point);
+				history.AddPoint (item);
 				currentIsTransient = transient;
 			}
 				
@@ -178,9 +180,9 @@ namespace MonoDevelop.Ide.Gui
 			OnHistoryChanged ();
 		}
 		
-		public static void MoveTo (NavigationPoint point)
+		public static void MoveTo (NavigationHistoryItem item)
 		{
-			history.MoveTo (point);
+			history.MoveTo (item);
 			SwitchToCurrent ();
 			OnHistoryChanged ();
 		}
@@ -196,31 +198,31 @@ namespace MonoDevelop.Ide.Gui
 		
 		#endregion
 		
-		public static IList<NavigationPoint> GetNavigationList (int desiredLength)
+		public static IList<NavigationHistoryItem> GetNavigationList (int desiredLength)
 		{
 			return history.GetList (desiredLength);
 		}
 		
-		public static IList<NavigationPoint> GetNavigationList (int desiredLength, out int currentIndex)
+		public static IList<NavigationHistoryItem> GetNavigationList (int desiredLength, out int currentIndex)
 		{
 			return history.GetList (desiredLength, out currentIndex);
 		}
 		
-		public static NavigationPoint Current { get { return history.Current; } }
+		public static NavigationHistoryItem Current { get { return history.Current; } }
 		
-		public static bool IsCurrent (NavigationPoint point)
+		public static bool IsCurrent (NavigationHistoryItem point)
 		{
 			return history.IsCurrent (point);
 		}
 		
 		public static void Clear ()
 		{
-			NavigationPoint current = history.Current;
+			NavigationHistoryItem current = history.Current;
 			history.Clear ();
 			history.AddPoint (current);
 		}
 		
-		internal static void Remove (NavigationPoint point)
+		internal static void Remove (NavigationHistoryItem point)
 		{
 			history.Remove (point);
 		}
@@ -319,8 +321,8 @@ namespace MonoDevelop.Ide.Gui
 		static void FileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)
 		{
 			bool changed = false;
-			foreach (NavigationPoint point in history) {
-				DocumentNavigationPoint dp = point as DocumentNavigationPoint;
+			foreach (NavigationHistoryItem point in history) {
+				DocumentNavigationPoint dp = point.NavigationPoint as DocumentNavigationPoint;
 				changed &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
 			}
 			if (changed)
@@ -330,21 +332,49 @@ namespace MonoDevelop.Ide.Gui
 		#endregion
 	}
 	
-	public abstract class NavigationPoint
+	public class NavigationHistoryItem
 	{
 		DateTime created = DateTime.Now;
+		NavigationPoint navPoint;
 		
-		public abstract string DisplayName { get; }
-		public abstract string Tooltip { get; }
+		internal NavigationHistoryItem (NavigationPoint navPoint)
+		{
+			this.navPoint = navPoint;
+			navPoint.Destroyed += HandleNavPointDestroyed;
+		}
+
+		void HandleNavPointDestroyed (object sender, EventArgs e)
+		{
+			NavigationHistoryService.Remove (this);
+			navPoint.Destroyed -= HandleNavPointDestroyed;
+		}
 		
 		public void Show ()
 		{
 			if (!NavigationHistoryService.IsCurrent (this))
 				NavigationHistoryService.MoveTo (this);
-			DoShow ();
+			NavigationPoint.Show ();
 		}
 		
-		protected abstract Document DoShow ();
+		public string DisplayName {
+			get { return navPoint.DisplayName; }
+		}
+		
+		public DateTime Created {
+			get { return created; }
+		}
+		
+		internal NavigationPoint NavigationPoint {
+			get { return navPoint; }
+		}
+	}
+	
+	public abstract class NavigationPoint
+	{
+		public abstract string DisplayName { get; }
+		public abstract string Tooltip { get; }
+		
+		public abstract void Show ();
 		
 		// used for fuzzy matching to decide whether to replace an existing nav point
 		// e.g if user just moves around a little, we don't want to add too many points
@@ -353,18 +383,18 @@ namespace MonoDevelop.Ide.Gui
 			return this.Equals (oldPoint);
 		}
 		
-		public DateTime Created {
-			get { return created; }
+		// To be called by subclass when the navigation point is not valid anymore
+		protected virtual void OnDestroyed ()
+		{
+			if (Destroyed != null)
+				Destroyed (this, EventArgs.Empty);
 		}
+		
+		public event EventHandler Destroyed;
 		
 		public override string ToString ()
 		{
 			return string.Format ("[NavigationPoint {0}]", DisplayName);
-		}
-		
-		protected void RemoveSelfFromHistory ()
-		{
-			NavigationHistoryService.Remove (this);
 		}
 	}
 	

@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Gui
 		bool Visible { get; set; }
 		bool ContentVisible { get; }
 		bool Sticky { get; set; }
+		bool IsWorking { get; set; }
 		IPadContent Content { get; }
 		
 		void Activate (bool giveFocus);
@@ -59,34 +60,17 @@ namespace MonoDevelop.Ide.Gui
 	{
 		string title;
 		string icon;
+		bool isWorking;
 		IPadContent content;
 		PadCodon codon;
-		IWorkbenchLayout layout;
+		SdiWorkbenchLayout layout;
 		
-		static IPadWindow lastWindow;
-		static IPadWindow lastLocationList;
-		
-		internal PadWindow (IWorkbenchLayout layout, PadCodon codon)
+		internal PadWindow (SdiWorkbenchLayout layout, PadCodon codon)
 		{
 			this.layout = layout;
 			this.codon = codon;
 			this.title = GettextCatalog.GetString (codon.Label);
 			this.icon = codon.Icon;
-		}
-		
-		// This property keeps track of the last focused pad. It is used by the
-		// ShowNext/ShowPrevious commands to know which pad has to show the next/previous item.
-		internal static IPadWindow LastActivePadWindow {
-			get { return lastWindow; }
-			set {
-				lastWindow = value;
-				if (lastWindow != null && lastWindow.Content is MonoDevelop.Ide.Gui.Pads.ILocationListPad)
-					lastLocationList = lastWindow;
-			}
-		}
-		
-		internal static IPadWindow LastActiveLocationList {
-			get { return lastLocationList; }
 		}
 		
 		public IPadContent Content {
@@ -100,8 +84,8 @@ namespace MonoDevelop.Ide.Gui
 			get { return title; }
 			set { 
 				title = value;
-				if (TitleChanged != null)
-					TitleChanged (this, EventArgs.Empty);
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
 			}
 		}
 		
@@ -109,8 +93,17 @@ namespace MonoDevelop.Ide.Gui
 			get { return icon; }
 			set { 
 				icon = value;
-				if (IconChanged != null)
-					IconChanged (this, EventArgs.Empty);
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
+			}
+		}
+		
+		public bool IsWorking {
+			get { return isWorking; }
+			set {
+				isWorking = value;
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
 			}
 		}
 		
@@ -200,7 +193,6 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler PadContentHidden;
 		public event EventHandler PadDestroyed;
 		
-		internal event EventHandler TitleChanged;
-		internal event EventHandler IconChanged;
+		internal event EventHandler StatusChanged;
 	}
 }

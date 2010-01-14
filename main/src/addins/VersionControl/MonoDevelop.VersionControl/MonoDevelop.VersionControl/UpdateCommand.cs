@@ -23,7 +23,7 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 			
-			new UpdateWorker (items).Start();
+			new UpdateWorker (items).Run();
 			return true;
 		}
 
@@ -32,13 +32,14 @@ namespace MonoDevelop.VersionControl
 						
 			public UpdateWorker (VersionControlItemList items) {
 				this.items = items;
+				Description = GettextCatalog.GetString ("Update '{0}'", items[0].Path);
 			}
 			
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Updating...");
 			}
 			
-			protected override void Run ()
+			protected override void RunTask ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					list[0].Repository.Update (list.Paths, true, GetProgressMonitor ());

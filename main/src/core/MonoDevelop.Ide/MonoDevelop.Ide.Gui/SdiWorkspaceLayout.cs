@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the a Workspace with a single document interface.
 	/// </summary>
-	internal class SdiWorkbenchLayout : IWorkbenchLayout
+	internal class SdiWorkbenchLayout
 	{
 		static string configFile = Path.Combine (PropertyService.ConfigPath, "EditingLayout.xml");
 		const string fullViewModeTag = "[FullViewMode]";
@@ -107,13 +107,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public DockFrame DockFrame {
+			get { return dock; }
+		}
+		
 		Gtk.VBox fullViewVBox = new VBox (false, 0);
 		DockItem documentDockItem;
 		
-		public void Attach (IWorkbench wb)
+		public void Attach (DefaultWorkbench workbench)
 		{
-			DefaultWorkbench workbench = (DefaultWorkbench) wb;
-
 			this.workbench = workbench;
 			wbWindow = (Window) workbench;
 			
@@ -137,7 +139,7 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.AddContent (dock);
 
 			// Create the notebook for the various documents.
-			tabControl = new SdiDragNotebook ();
+			tabControl = new SdiDragNotebook (dock.ShadedContainer);
 			tabControl.Scrollable = true;
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
 			tabControl.PageAdded += delegate { ActiveMdiChanged (null, null); };
@@ -467,8 +469,7 @@ namespace MonoDevelop.Ide.Gui
 			padWindows [padCodon] = window;
 			padCodons [window] = padCodon;
 			
-			window.TitleChanged += new EventHandler (UpdatePad);
-			window.IconChanged += new EventHandler (UpdatePad);
+			window.StatusChanged += new EventHandler (UpdatePad);
 			
 			string location = "";
 			foreach (string s in placement.Split (' ')) {
@@ -526,6 +527,8 @@ namespace MonoDevelop.Ide.Gui
 				string windowTitle = GettextCatalog.GetString (window.Title); 
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
+				if (window.IsWorking)
+					windowTitle = "<span foreground='blue'>" + windowTitle + "</span>";
 				item.Label = windowTitle;
 				item.Icon  = window.Icon;
 			}
@@ -664,7 +667,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IPadWindow GetPadWindow (PadCodon content)
 		{
-			return padWindows [content];
+			IPadWindow w;
+			padWindows.TryGetValue (content, out w);
+			return w;
 		}
 		
 		bool SelectLastActiveWindow (IWorkbenchWindow cur)
@@ -691,7 +696,7 @@ namespace MonoDevelop.Ide.Gui
 			f.TabLabel.CloseClicked -= new EventHandler (closeClicked);
 			
 			if (f.ViewContent != null) {
-				((IWorkbench)wbWindow).CloseContent (f.ViewContent);
+				((DefaultWorkbench)wbWindow).CloseContent (f.ViewContent);
 				if (e.WasActive && !SelectLastActiveWindow (f))
 					ActiveMdiChanged(this, null);
 			}
@@ -853,20 +858,9 @@ namespace MonoDevelop.Ide.Gui
 
 	class PadCommandRouterContainer: CommandRouterContainer
 	{
-		PadWindow window;
-		
 		public PadCommandRouterContainer (PadWindow window, Gtk.Widget child, object target, bool continueToParent): base (child, target, continueToParent)
 		{
-			this.window = window;
 		}
-		
-		public override object GetDelegatedCommandTarget ()
-		{
-			// This pad has currently the focus. Set the actve pad property.
-			PadWindow.LastActivePadWindow = window;
-			return base.GetDelegatedCommandTarget ();
-		}
-
 	}
 	
 	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
@@ -874,6 +868,14 @@ namespace MonoDevelop.Ide.Gui
 	
 	class SdiDragNotebook: DragNotebook, ICommandDelegatorRouter
 	{
+		ShadedContainer shadedContainer;
+		
+		public SdiDragNotebook (ShadedContainer shadedContainer)
+		{
+			this.shadedContainer = shadedContainer;
+			shadedContainer.Add (this);
+		}
+		
 		public object GetNextCommandTarget ()
 		{
 			return Parent;
@@ -887,8 +889,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
+			shadedContainer.DrawBackground (this);
 			bool res = base.OnExposeEvent (evnt);
-			if (Children.Length == 0) {
+/*			if (Children.Length == 0) {
 				Gdk.Rectangle rect = Allocation;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 					cr.NewPath ();
@@ -908,7 +911,7 @@ namespace MonoDevelop.Ide.Gui
 					cr.Pattern = pat;
 					cr.FillPreserve ();
 				}
-			}
+			}*/
 			return res;
 		}
 

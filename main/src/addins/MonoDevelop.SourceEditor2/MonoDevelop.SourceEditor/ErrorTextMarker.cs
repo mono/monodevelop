@@ -59,7 +59,7 @@ namespace MonoDevelop.SourceEditor
 		bool fitsInSameLine = true;
 		public bool IsExpanded {
 			get {
-				return !task.Completed;
+				return !task.Completed && ((task.Severity == TaskSeverity.Error && TaskService.ErrorBubblesVisible) || (task.Severity == TaskSeverity.Warning && TaskService.WarningBubblesVisible));
 			}
 			set {
 				task.Completed = !value;

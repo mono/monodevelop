@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	internal class SdiWorkspaceWindow : Frame, IWorkbenchWindow, ICommandDelegatorRouter
 	{
-		IWorkbench workbench;
+		DefaultWorkbench workbench;
 		IViewContent content;
 		
 		ArrayList subViewContents = null;
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		ViewCommandHandlers commandHandler;
 		
-		public SdiWorkspaceWindow (IWorkbench workbench, IViewContent content, Notebook tabControl, TabLabel tabLabel) : base ()
+		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, Notebook tabControl, TabLabel tabLabel) : base ()
 		{
 			this.workbench = workbench;
 			this.tabControl = tabControl;

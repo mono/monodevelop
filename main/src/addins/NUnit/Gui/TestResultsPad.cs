@@ -265,10 +265,7 @@ namespace MonoDevelop.NUnit
 			set {
 				running = value;
 				string title = GettextCatalog.GetString ("Test results");
-				if (running) 
-					window.Title = "<span foreground=\"blue\">" + title + "</span>";
-				else
-					window.Title = title;
+				window.IsWorking = value;
 			}
 		}
 		

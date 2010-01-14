@@ -40,7 +40,9 @@ FILES =  \
 	DockLayout.cs \
 	DockObject.cs \
 	DockPosition.cs \
+	HslColor.cs \
 	PlaceholderWindow.cs \
+	ShadedContainer.cs \
 	TabStrip.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

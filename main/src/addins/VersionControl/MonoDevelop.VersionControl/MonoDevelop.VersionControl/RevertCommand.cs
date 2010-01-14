@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 				                                AlertButton.Cancel, AlertButton.Revert) != AlertButton.Revert)
 					return false;
 
-				new RevertWorker (items).Start();
+				new RevertWorker (items).Run();
 				return true;
 			}
 			catch (Exception ex) {
@@ -60,13 +60,14 @@ namespace MonoDevelop.VersionControl
 						
 			public RevertWorker (VersionControlItemList items) {
 				this.items = items;
+				Description = GettextCatalog.GetString ("Revert files");
 			}
 			
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Reverting ...");
 			}
 			
-			protected override void Run ()
+			protected override void RunTask ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Revert (list.Paths, true, GetProgressMonitor ());

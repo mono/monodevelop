@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.FindInFiles
 	public abstract class Scope
 	{
 		public abstract int GetTotalWork (FilterOptions filterOptions);
-		public abstract IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions);
+		public abstract IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions);
 		public abstract string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern);
 	}
 
@@ -53,8 +53,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 		}
 		
-		public override IEnumerable<FileProvider> GetFiles(FilterOptions filterOptions)
+		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", IdeApp.Workbench.ActiveDocument.FileName));
 			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName);
 		}
 
@@ -78,7 +79,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 		}
 
-		public override IEnumerable<FileProvider> GetFiles(FilterOptions filterOptions)
+		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName, null,
 				IdeApp.Workbench.ActiveDocument.TextEditor.SelectionStartPosition,
@@ -104,10 +105,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			return result;
 		}
 		
-		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
+		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 					foreach (ProjectFile file in project.Files) {
 						if (filterOptions.NameMatches (file.Name))
 							yield return new FileProvider (file.Name, project);
@@ -141,9 +143,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.project = project;
 		}
 		
-		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
+		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			if (IdeApp.Workspace.IsOpen) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				foreach (ProjectFile file in project.Files) {
 					if (filterOptions.NameMatches (file.Name))
 						yield return new FileProvider (file.Name, project);
@@ -171,9 +174,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 		}
 		
-		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
+		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			foreach (Document document in IdeApp.Workbench.Documents) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", document.FileName));
 				if (!string.IsNullOrEmpty (document.FileName))
 					yield return new FileProvider (document.FileName);
 			}
@@ -195,7 +199,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return GetFileNames (path, recurse, filterOptions).Count ();
+			return GetFileNames (null, path, recurse, filterOptions).Count ();
 		}
 		
 		public DirectoryScope (string path, bool recurse)
@@ -204,12 +208,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.recurse = recurse;
 		}
 		
-		static IEnumerable<string> GetFileNames (string path, bool recurse, FilterOptions filterOptions)
+		static IEnumerable<string> GetFileNames (IProgressMonitor monitor, string path, bool recurse, FilterOptions filterOptions)
 		{
+			if (monitor != null)
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", path));
 			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
 				string[] files;
 				try {
-					files = Directory.GetFiles (path, filterOptions.FileMask, SearchOption.TopDirectoryOnly);
+					files = Directory.GetFiles (path, fileMask, SearchOption.TopDirectoryOnly);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't access path " + path, e);
 					continue;
@@ -223,7 +229,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					foreach (string directoryName in Directory.GetDirectories (path)) {
 						if (directoryName.StartsWith ("."))
 							continue;
-						foreach (string fileName in GetFileNames (Path.Combine (path, directoryName), recurse, filterOptions)) {
+						foreach (string fileName in GetFileNames (monitor, Path.Combine (path, directoryName), recurse, filterOptions)) {
 							yield return fileName;
 						}
 					}
@@ -231,9 +237,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public override IEnumerable<FileProvider> GetFiles (FilterOptions filterOptions)
+		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
-			foreach (string file in GetFileNames (path, recurse, filterOptions)) {
+			foreach (string file in GetFileNames (monitor, path, recurse, filterOptions)) {
 				yield return new FileProvider (file);
 			}
 		}

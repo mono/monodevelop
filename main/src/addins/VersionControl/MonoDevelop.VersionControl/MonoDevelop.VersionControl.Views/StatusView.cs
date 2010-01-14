@@ -360,7 +360,7 @@ namespace MonoDevelop.VersionControl.Views
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
 			
-			new Worker(vc, filepath, remoteStatus, this).Start();
+			new Worker(vc, filepath, remoteStatus, this).Run();
 		}
 		
 		void UpdateControlStatus ()
@@ -1020,13 +1020,14 @@ namespace MonoDevelop.VersionControl.Views
 				this.filepath = filepath;
 				this.view = view;
 				this.remoteStatus = remoteStatus;
+				Description = GettextCatalog.GetString ("Get status for {0}", Path.GetFileName (filepath));
 			}
 			
 			protected override string GetDescription() {
 				return string.Format (GettextCatalog.GetString ("Retrieving status for {0}..."), Path.GetFileName (filepath));
 			}
 			
-			protected override void Run() {
+			protected override void RunTask () {
 				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
 			}
 		

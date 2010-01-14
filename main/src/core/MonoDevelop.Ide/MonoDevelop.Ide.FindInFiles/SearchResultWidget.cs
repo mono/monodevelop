@@ -37,12 +37,13 @@ using System.Text;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using System.IO;
+using MonoDevelop.Ide.Gui.Content;
 
 
 namespace MonoDevelop.Ide.FindInFiles
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class SearchResultWidget : Gtk.Bin
+	public partial class SearchResultWidget : Gtk.Bin, ILocationList
 	{
 		ListStore store;
 		ToolButton buttonStop;
@@ -137,6 +138,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			store.SetSortColumnId (3, SortType.Ascending);
 			ShowAll ();
 			
+			IdeApp.Workbench.ActiveLocationList = this;
 			
 			scrolledwindowLogView.Hide ();
 		}
@@ -520,6 +522,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					continue;
 				OpenDocumentAt (iter);
 			}
+			IdeApp.Workbench.ActiveLocationList = this;
 		}
 		
 		public void SelectAll ()
@@ -552,7 +555,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			clipboard.Text = sb.ToString ();
 		}
 		
-		public bool GetNextLocation (out string file, out int line, out int column)
+		public string ItemName {
+			get {
+				return GettextCatalog.GetString ("Search Result");
+			}
+		}
+		
+		public NavigationPoint GetNextLocation ()
 		{
 			TreeIter iter = TreeIter.Zero;
 			TreePath[] path = treeviewSearchResults.Selection.GetSelectedRows ();
@@ -563,10 +572,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				store.GetIterFirst (out iter);
 			}
 			
-			return GetLocation (iter, out file, out line, out column);
+			return GetLocation (iter);
 		}
 		
-		public bool GetPreviousLocation (out string file, out int line, out int column)
+		public NavigationPoint GetPreviousLocation ()
 		{
 			TreeIter iter;
 			TreeIter prevIter = TreeIter.Zero;
@@ -582,7 +591,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				hasNext = store.IterNext (ref iter);
 			}
 			
-			return GetLocation (prevIter, out file, out line, out column);
+			return GetLocation (prevIter);
 		}
 
 		bool IsIterSelected (TreePath selPath, TreeIter iter)
@@ -590,23 +599,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			return selPath != null && store.GetPath (iter).Equals (selPath);
 		}
 
-		bool GetLocation (TreeIter iter, out string file, out int line, out int column)
+		NavigationPoint GetLocation (TreeIter iter)
 		{
 			this.treeviewSearchResults.Selection.UnselectAll ();
-			if (!store.IterIsValid (iter)) {
-				file = null;
-				line = column = 0;
-				return false;
-			}
+			if (!store.IterIsValid (iter))
+				return null;
+
 			this.treeviewSearchResults.Selection.SelectIter (iter);
 			this.treeviewSearchResults.ScrollToCell (store.GetPath (iter), this.treeviewSearchResults.Columns[0], false, 0, 0);
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			file = searchResult.FileName;
 			Mono.TextEditor.Document doc = GetDocument (searchResult);
 			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);
-			line = location.Line;
-			column = location.Column;
-			return true;
+			return new TextFileNavigationPoint (searchResult.FileName, location.Line, location.Column);
 		}
 	}
 }

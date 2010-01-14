@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl.Views
 					if (test)
 						return true;
 					found = true;
-					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
+					new Worker (item.Repository, item.Path, item.IsDirectory, since).Run ();
 				}
 			}
 			return found;
@@ -50,13 +50,14 @@ namespace MonoDevelop.VersionControl.Views
 				this.filepath = filepath;
 				this.isDirectory = isDirectory;
 				this.since = since;
+				Description = GettextCatalog.GetString ("Get history from repository '{0}', path '{1}'", vc, filepath);
 			}
 			
 			protected override string GetDescription () {
 				return GettextCatalog.GetString ("Retrieving history for {0}...", Path.GetFileName (filepath));
 			}
 			
-			protected override void Run () {
+			protected override void RunTask () {
 				history = vc.GetHistory (filepath, since);
 			}
 		
@@ -263,7 +264,7 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = GetSelectedRev ();
 			if (d == null)
 				return;
-			new DiffWorker (Path.GetFileName (filepath), vc, vinfo.RepositoryPath, d).Start ();
+			new DiffWorker (Path.GetFileName (filepath), vc, vinfo.RepositoryPath, d).Run ();
 		}
 		
 		void ViewTextButtonClicked (object src, EventArgs args) {
@@ -317,13 +318,14 @@ namespace MonoDevelop.VersionControl.Views
 				this.vc = vc;
 				this.revPath = revPath;
 				this.revision = revision;
+				Description = GettextCatalog.GetString ("Get changes in '{0}' at revision {1}", name, revision);
 			}
 			
 			protected override string GetDescription () {
 				return GettextCatalog.GetString ("Retrieving changes in {0} at revision {1}...", name, revision);
 			}
 			
-			protected override void Run () {
+			protected override void RunTask () {
 				Log (GettextCatalog.GetString ("Getting text of {0} at revision {1}...", revPath, revision.GetPrevious ()));
 				try {
 					text1 = vc.GetTextAtRevision (revPath, revision.GetPrevious ());
@@ -356,7 +358,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 		public static void Show (string file, Repository vc, string revPath, Revision revision) {
 			new Worker (Path.GetFileName (file) + " (revision " + revision.ToString () + ")",
-				file, vc, revPath, revision).Start ();
+				file, vc, revPath, revision).Run ();
 		}
 		
 			
@@ -373,13 +375,14 @@ namespace MonoDevelop.VersionControl.Views
 				this.vc = vc;
 				this.revPath = revPath;
 				this.revision = revision;
+				Description = GettextCatalog.GetString ("Get content of '{0}' at revision {1}", name, revision);
 			}
 			
 			protected override string GetDescription () {
 				return GettextCatalog.GetString ("Retreiving content of {0} at revision {1}...", name, revision);
 			}
 			
-			protected override void Run () {
+			protected override void RunTask () {
 				text = vc.GetTextAtRevision (revPath, revision);
 			}
 		

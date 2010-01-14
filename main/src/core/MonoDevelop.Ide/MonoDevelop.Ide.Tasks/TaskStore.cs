@@ -39,10 +39,11 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public class TaskStore: IEnumerable<Task>
+	public class TaskStore: IEnumerable<Task>, ILocationList
 	{
 		int taskUpdateCount;
 		List<Task> tasks = new List<Task> ();
@@ -167,6 +168,10 @@ namespace MonoDevelop.Ide.Tasks
 			} finally {
 				EndTaskUpdates ();
 			}
+		}
+		
+		public int Count {
+			get { return tasks.Count; }
 		}
 		
 		public IEnumerator<Task> GetEnumerator ()
@@ -331,6 +336,82 @@ namespace MonoDevelop.Ide.Tasks
 				EndTaskUpdates ();
 			}
 		}
+		
+		#region ILocationList implementation
+		
+		Task currentLocationTask;
+		
+		public event EventHandler CurrentLocationTaskChanged;
+		
+		public Task CurrentLocationTask {
+			get { return currentLocationTask; }
+			set { currentLocationTask = value; }
+		}
+		
+		public NavigationPoint GetNextLocation ()
+		{
+			Task ct = null;
+			if (currentLocationTask == null) {
+				if (tasks.Count > 0)
+					ct = tasks [0];
+			}
+			else {
+				for (int n=0; n<tasks.Count; n++) {
+					if (tasks [n] == currentLocationTask) {
+						if (n < tasks.Count - 1)
+							ct = tasks [n+1];
+						break;
+					}
+				}
+			}
+			
+			currentLocationTask = ct;
+			if (CurrentLocationTaskChanged != null)
+				CurrentLocationTaskChanged (this, EventArgs.Empty);
+			
+			if (currentLocationTask != null) {
+				TaskService.ShowStatus (currentLocationTask);
+				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
+			}
+			else
+				return null;
+		}
+		
+		
+		public NavigationPoint GetPreviousLocation ()
+		{
+			Task ct = null;
+			if (currentLocationTask == null) {
+				if (tasks.Count > 0)
+					ct = tasks [tasks.Count - 1];
+			}
+			else {
+				for (int n=0; n<tasks.Count; n++) {
+					if (tasks [n] == currentLocationTask) {
+						if (n > 0)
+							ct = tasks [n-1];
+						break;
+					}
+				}
+			}
+			
+			currentLocationTask = ct;
+			if (CurrentLocationTaskChanged != null)
+				CurrentLocationTaskChanged (this, EventArgs.Empty);
+			
+			if (currentLocationTask != null) {
+				TaskService.ShowStatus (currentLocationTask);
+				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
+			}
+			else
+				return null;
+		}
+		
+		public string ItemName {
+			get; set;
+		}
+		
+		#endregion
 	}
 		
 	public delegate void TaskEventHandler (object sender, TaskEventArgs e);

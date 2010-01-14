@@ -40,10 +40,10 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IPadWindow window;
 		PadCodon content;
-		IWorkbench workbench;
+		DefaultWorkbench workbench;
 		string[] categories;
 		
-		internal Pad (IWorkbench workbench, PadCodon content)
+		internal Pad (DefaultWorkbench workbench, PadCodon content)
 		{
 			this.window    = workbench.WorkbenchLayout.GetPadWindow (content);
 			this.content   = content;
@@ -92,7 +92,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void BringToFront (bool grabFocus)
 		{
-			PadWindow.LastActivePadWindow = window;
 			workbench.BringToFront (content);
 			window.Activate (grabFocus);
 		}

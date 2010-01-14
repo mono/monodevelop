@@ -53,6 +53,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide.Jobs;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -85,6 +86,8 @@ namespace MonoDevelop.Ide.Gui
 		public BuildResult LastCompilerResult {
 			get { return lastResult; }
 		}
+		
+		public JobInstance LastBuildJob { get; private set; }
 		
 		public Project CurrentSelectedProject {
 			get {
@@ -937,11 +940,23 @@ namespace MonoDevelop.Ide.Gui
 			Clean (entry);
 			return Build (entry);
 		}
+		
 		bool errorPadInitialized = false;
+		
 		public IAsyncOperation Build (IBuildTarget entry)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
-			
+			BuildJob job = new BuildJob (entry, IdeApp.Workspace.ActiveConfiguration);
+			JobInstance ji = job.Run ();
+			LastBuildJob = ji;
+			currentBuildOperation = ji.Monitor.AsyncOperation;
+			currentBuildOperationOwner = entry;
+			currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
+			return currentBuildOperation;
+		}
+		
+		internal void InternalBuild (IProgressMonitor monitor, IBuildTarget entry, ConfigurationSelector config)
+		{
 			if (!errorPadInitialized) {
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
@@ -956,17 +971,12 @@ namespace MonoDevelop.Ide.Gui
 
 			
 			DoBeforeCompileAction ();
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 			
 			BeginBuild (monitor);
 
 			DispatchService.ThreadDispatch (delegate {
 				BuildSolutionItemAsync (entry, monitor);
 			}, null);
-			currentBuildOperation = monitor.AsyncOperation;
-			currentBuildOperationOwner = entry;
-			currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
-			return currentBuildOperation;
 		}
 		
 		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor)
@@ -1043,6 +1053,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 
 					TaskService.Errors.AddRange (tasks);
+					IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);

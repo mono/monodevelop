@@ -194,11 +194,11 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			Pad pad = IdeApp.Workbench.GetLocationListPad ();
-			if (pad == null)
+			ILocationList list = IdeApp.Workbench.ActiveLocationList;
+			if (list == null)
 				info.Enabled = false;
 			else
-				info.Text = GettextCatalog.GetString ("Show Next ({0})", pad.Title);
+				info.Text = GettextCatalog.GetString ("Show Next ({0})", list.ItemName);
 		}
 	}
 
@@ -212,11 +212,11 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			Pad pad = IdeApp.Workbench.GetLocationListPad ();
-			if (pad == null)
+			ILocationList list = IdeApp.Workbench.ActiveLocationList;
+			if (list == null)
 				info.Enabled = false;
 			else
-				info.Text = GettextCatalog.GetString ("Show Previous ({0})", pad.Title);
+				info.Text = GettextCatalog.GetString ("Show Previous ({0})", list.ItemName);
 		}
 	}
 

@@ -103,6 +103,7 @@ FILES =  \
 	MonoDevelop.Ide.Codons/PadOptionCodon.cs \
 	MonoDevelop.Ide.Codons/ProjectActiveCondition.cs \
 	MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs \
+	MonoDevelop.Ide.Codons/SideBarTabNode.cs \
 	MonoDevelop.Ide.Codons/SolutionPadCodon.cs \
 	MonoDevelop.Ide.Codons/TaskListViewCodon.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
@@ -135,6 +136,7 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/FileProvider.cs \
 	MonoDevelop.Ide.FindInFiles/FilterOptions.cs \
 	MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs \
+	MonoDevelop.Ide.FindInFiles/FindInFilesJob.cs \
 	MonoDevelop.Ide.FindInFiles/FindReplace.cs \
 	MonoDevelop.Ide.FindInFiles/ISearchProgressMonitor.cs \
 	MonoDevelop.Ide.FindInFiles/Scope.cs \
@@ -170,6 +172,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 	MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
 	MonoDevelop.Ide.Gui.Content/IFoldable.cs \
+	MonoDevelop.Ide.Gui.Content/ILocationList.cs \
 	MonoDevelop.Ide.Gui.Content/INavigable.cs \
 	MonoDevelop.Ide.Gui.Content/IndentStyle.cs \
 	MonoDevelop.Ide.Gui.Content/IPathedDocument.cs \
@@ -267,7 +270,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/FileList.cs \
 	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
 	MonoDevelop.Ide.Gui.Pads/FileScout.cs \
-	MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
@@ -289,6 +291,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
 	MonoDevelop.Ide.Gui/DragNotebook.cs \
+	MonoDevelop.Ide.Gui/ErrorsStatusPanel.cs \
 	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/HelpOperations.cs \
@@ -325,6 +328,16 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
+	MonoDevelop.Ide.Gui/WorkbenchWindow.cs \
+	MonoDevelop.Ide.Jobs/BuildJob.cs \
+	MonoDevelop.Ide.Jobs/Job.cs \
+	MonoDevelop.Ide.Jobs/JobBar.cs \
+	MonoDevelop.Ide.Jobs/JobHistoryWindow.cs \
+	MonoDevelop.Ide.Jobs/JobInstance.cs \
+	MonoDevelop.Ide.Jobs/JobService.cs \
+	MonoDevelop.Ide.Jobs/JobStatusViewWindow.cs \
+	MonoDevelop.Ide.Jobs/OutputPadJob.cs \
+	MonoDevelop.Ide.Jobs/SearchJob.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
