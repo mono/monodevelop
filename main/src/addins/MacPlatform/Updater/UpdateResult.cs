@@ -42,12 +42,12 @@ namespace MonoDevelop.Platform.Updater
 		public string Version;
 		public DateTime Date;
 		public List<Release> Releases;
+		public bool IsUnstable;
 	}
 	
 	public class Release
 	{
 		public string Version;
-		public bool IsUnstable;
 		public DateTime Date;
 		public string Notes;
 	}

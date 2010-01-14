@@ -54,12 +54,14 @@ namespace MonoDevelop.Platform.Updater
 			
 			checkIncludeUnstable.Active = UpdateService.CheckAutomatically;
 			checkIncludeUnstable.Toggled += delegate {
-				UpdateService.CheckAutomatically = checkIncludeUnstable.Active;
+				UpdateService.IncludeUnstable = checkIncludeUnstable.Active;
 				
-				//if we didn't alreday have the unstable updates, download them
-				if (checkIncludeUnstable.Active && (result == null || !result.IncludesUnstable)) {
+				//if we didn't already have the unstable updates, download them
+				if (result == null || (checkIncludeUnstable.Active && !result.IncludesUnstable)) {
 					SetMessage (GettextCatalog.GetString ("Checking for updates..."));
 					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, UpdateService.IncludeUnstable, LoadResult);
+				} else {
+					LoadUpdates (result.Updates);
 				}
 			};
 			
@@ -70,12 +72,10 @@ namespace MonoDevelop.Platform.Updater
 		{
 			this.result = result;
 			
-			if (result.HasUpdates) {
-				LoadUpdates (result.Updates);
-			} else if (result.HasError) {
+			if (result.HasError) {
 				SetMessage (result.ErrorMessage);
 			} else {
-				SetMessage (GettextCatalog.GetString ("No updates available"));
+				LoadUpdates (result.Updates);
 			}
 		}
 		
@@ -87,19 +87,30 @@ namespace MonoDevelop.Platform.Updater
 		
 		void LoadUpdates (List<Update> updates)
 		{
+			if (updates == null || updates.Count == 0) {
+				SetMessage (GettextCatalog.GetString ("No updates available"));
+				return;
+			}
+			
 			foreach (var c in productBox.Children) {
 				productBox.Remove (c);
 				c.Destroy ();
 			}
 			
+			bool includeUnstable = checkIncludeUnstable.Active;
+			
 			foreach (var update in updates) {
+				if (!includeUnstable && update.IsUnstable)
+					continue;
+				
 				var updateBox = new VBox () { Spacing = 2 };
 				var labelBox = new HBox ();
 				updateBox.PackStart (labelBox, false, false, 0);
 				
 				var updateExpander = new Expander ("");
 				updateExpander.LabelWidget = new Label () {
-					Markup = string.Format ("<b>{0}</b> {1} ({2:yyyy-MM-dd})", update.Name, update.Version, update.Date),
+					Markup = string.Format ("<b>{0}</b> {1} ({2:yyyy-MM-dd}){3}", update.Name, update.Version, update.Date,
+					                        update.IsUnstable? "\n<b>UNSTABLE PREVIEW RELEASE</b>" : ""),
 				};
 				labelBox.PackStart (updateExpander, true, true, 0);
 				

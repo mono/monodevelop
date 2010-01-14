@@ -1,5 +1,11 @@
 2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Updater/UpdateDialog.cs:
+	* Updater/UpdateResult.cs:
+	* Updater/UpdateService.cs: Filter and flag unstable updates.
+
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* Updater/UpdateDialog.cs:
 	* gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs: Tweak

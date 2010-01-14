@@ -82,7 +82,7 @@ namespace MonoDevelop.Platform.Updater
 		
 		public static bool IncludeUnstable {
 			get {
-				return PropertyService.Get<bool> (includeUnstableKey, true);
+				return PropertyService.Get<bool> (includeUnstableKey, false);
 			}
 			set {
 				PropertyService.Set (includeUnstableKey, value);
@@ -188,9 +188,9 @@ namespace MonoDevelop.Platform.Updater
 								Name = x.Attribute ("name").Value,
 								Url = first.Attribute ("url").Value,
 								Version = first.Attribute ("version").Value,
+								IsUnstable = first.Attribute ("unstable") != null && (bool)first.Attribute ("unstable"),
 								Date = DateTime.Parse (first.Attribute ("date").Value),
 								Releases = x.Elements ("Update").Select (y => new Release () {
-									IsUnstable = y.Attribute ("unstable") != null && (bool)y.Attribute ("unstable"),
 									Version = y.Attribute ("version").Value,
 									Date = DateTime.Parse (y.Attribute ("date").Value),
 									Notes = y.Value
