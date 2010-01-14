@@ -25,34 +25,65 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
 using Gtk;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Platform
+namespace MonoDevelop.Platform.Updater
 {
 
 
 	partial class UpdateDialog : Gtk.Dialog
 	{
+		const int PAGE_MESSAGE = 0;
+		const int PAGE_UPDATES = 1;
+		UpdateResult result;
 
-		public UpdateDialog (List<AppUpdater.Update> updates)
+		public UpdateDialog ()
 		{
 			this.Build ();
-			checkAutomaticallyCheck.Active = AppUpdater.CheckAutomatically;
+			checkAutomaticallyCheck.Active = UpdateService.CheckAutomatically;
 			checkAutomaticallyCheck.Toggled += delegate {
-				AppUpdater.CheckAutomatically = checkAutomaticallyCheck.Active;
+				UpdateService.CheckAutomatically = checkAutomaticallyCheck.Active;
 			};
 			
-			if (updates == null || updates.Count == 0) {
-				((VBox)infoLabel.Parent).Remove (infoLabel);
-				productBox.PackStart (new Alignment (0.5f, 0.5f, 0f, 0f) {
-					Child = new Label (GettextCatalog.GetString ("No updates available"))
-				}, true, true, 0);
-				productBox.ShowAll ();
-				return;
+			checkIncludeUnstable.Active = UpdateService.CheckAutomatically;
+			checkIncludeUnstable.Toggled += delegate {
+				UpdateService.CheckAutomatically = checkIncludeUnstable.Active;
+				if (checkIncludeUnstable.Active && (result == null || !result.IncludesUnstable))
+					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, UpdateService.IncludeUnstable, LoadResult);
+			};
+			
+			SetMessage (GettextCatalog.GetString ("Checking for updates..."));
+		}
+		
+		public void LoadResult (UpdateResult result)
+		{
+			this.result = result;
+			
+			if (result.HasUpdates) {
+				LoadUpdates (result.Updates);
+			} else if (result.HasError) {
+				SetMessage (result.ErrorMessage);
+			} else {
+				SetMessage (GettextCatalog.GetString ("No updates available"));
+			}
+		}
+		
+		void SetMessage (string message)
+		{
+			notebook1.CurrentPage = PAGE_MESSAGE;
+			messageLabel.Text = message;
+		}
+		
+		void LoadUpdates (List<Update> updates)
+		{
+			foreach (var c in productBox.Children) {
+				productBox.Remove (c);
+				c.Destroy ();
 			}
 			
 			foreach (var update in updates) {
@@ -110,12 +141,14 @@ namespace MonoDevelop.Platform
 					ShadowType = ShadowType.In
 				};
 				updateBox.BorderWidth = 6;
-				productBox.Spacing = 2;
 				productBox.PackStart (f, false, false, 0);
 				f.ShowAll ();
 				
 				textView.Visible = false;
 			}
+			
+			notebook1.CurrentPage = PAGE_UPDATES;
+			productBox.ShowAll ();
 		}
 	}
 }

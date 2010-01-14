@@ -4,7 +4,7 @@
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,48 +26,33 @@
 
 using System;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using OSXIntegration.Framework;
-using MonoDevelop.Platform.Updater;
 
-namespace MonoDevelop.Platform.Mac
+namespace MonoDevelop.Platform.Updater
 {
 	public enum Commands
 	{
-		MinimizeWindow,
-		HideWindow,
-		HideOthers,
 		CheckForUpdates,
 	}
 	
-	internal class MinimizeWindowHandler : CommandHandler
+	internal class CheckForUpdatesHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workbench.RootWindow.Iconify ();
-		}
-	}
-	
-	internal class HideWindowHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			HideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
-		}
-	}
-	
-	internal class HideOthersHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			RunMenuCommand (CarbonCommandID.HideOthers);
+			UpdateService.RunCheckDialog (false);
 		}
 		
-		internal static void RunMenuCommand (CarbonCommandID commandID)
+		protected override void Update (CommandInfo info)
 		{
-			var item = HIToolbox.GetMenuItem ((uint)commandID);
-			var cmd = new CarbonHICommand ((uint)commandID, item);
-			Carbon.ProcessHICommand (ref cmd);
+			info.Visible = UpdateService.DefaultUpdateInfos.Length > 0;
+		}
+	}
+	
+	class CheckForUpdatesOnStartUpHandler : CommandHandler
+	{
+		protected override void Run()
+		{
+			UpdateService.RunCheckDialog (true);
 		}
 	}
 }
+
