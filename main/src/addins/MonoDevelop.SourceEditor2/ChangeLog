@@ -1,3 +1,8 @@
+2010-01-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:
+	  fixed bug with on the fly formatting check button.
+
 2010-01-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: icon is no

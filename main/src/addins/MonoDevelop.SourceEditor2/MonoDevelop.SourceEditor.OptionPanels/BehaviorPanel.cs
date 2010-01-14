@@ -52,7 +52,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.indentationCombobox.Active = (int)DefaultSourceEditorOptions.Instance.IndentStyle;
 			this.controlLeftRightCombobox.Active = (int)DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
 			this.useViModesCheck.Active = DefaultSourceEditorOptions.Instance.UseViModes;
-			this.checkbuttonAutoSetSearchPatternCasing.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
+			this.checkbuttonOnTheFlyFormatting.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			
 			checkbuttonAutoSetSearchPatternCasing.Active = PropertyService.Get ("AutoSetPatternCasing", true);
 			
@@ -67,7 +67,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.TabIsReindent = this.tabAsReindentCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (ControlLeftRightMode)this.controlLeftRightCombobox.Active;
 			DefaultSourceEditorOptions.Instance.UseViModes = this.useViModesCheck.Active;
-			DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = this.checkbuttonAutoSetSearchPatternCasing.Active;
+			DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = this.checkbuttonOnTheFlyFormatting.Active;
 			PropertyService.Set ("AutoSetPatternCasing", checkbuttonAutoSetSearchPatternCasing.Active);
 		}
 
