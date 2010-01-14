@@ -54,6 +54,7 @@ namespace MonoDevelop.Components.Docking
 		SortedDictionary<string,DockLayout> layouts = new SortedDictionary<string,DockLayout> ();
 		List<DockFrameTopLevel> topLevels = new List<DockFrameTopLevel> ();
 		string currentLayout;
+		int compactGuiLevel = 3;
 		
 		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
 		VBox mainBox;
@@ -79,8 +80,31 @@ namespace MonoDevelop.Components.Docking
 			mainBox.PackStart (dockBarBottom, false, false, 0);
 			Add (mainBox);
 			mainBox.ShowAll ();
-
 			mainBox.NoShowAll = true;
+			CompactGuiLevel = 3;
+		}
+		
+		/// <summary>
+		/// Compactness level of the gui, from 1 (not compact) to 5 (very compact).
+		/// </summary>
+		public int CompactGuiLevel {
+			get { return compactGuiLevel; }
+			set {
+				compactGuiLevel = value;
+				switch (compactGuiLevel) {
+					case 1: handleSize = 6; break;
+					case 2: 
+					case 3: handleSize = IsWindows ? 4 : 6; break;
+					case 4:
+					case 5: handleSize = 3; break;
+				}
+				handlePadding = 0;
+				dockBarTop.UpdateVisibility ();
+				dockBarBottom.UpdateVisibility ();
+				dockBarLeft.UpdateVisibility ();
+				dockBarRight.UpdateVisibility ();
+				container.RelayoutWidgets ();
+			}
 		}
 		
 		public Gtk.Widget ExtractDockBar (PositionType pos)

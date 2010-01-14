@@ -40,16 +40,30 @@ namespace MonoDevelop.Components.Docking
 		bool ellipsized = true;
 		HBox box = new HBox ();
 		DockFrame frame;
+		Label bottomFiller = new Label ();
 		
 		public TabStrip (DockFrame frame)
 		{
 			this.frame = frame;
 			frame.ShadedContainer.Add (this);
+			VBox vbox = new VBox ();
 			box = new HBox ();
-			AppendPage (box, null);
+			vbox.PackStart (box, false, false, 0);
+			vbox.PackStart (bottomFiller, false, false, 0);
+			AppendPage (vbox, null);
 			ShowBorder = false;
 			ShowTabs = false;
 			ShowAll ();
+			bottomFiller.Hide ();
+			BottomPadding = 3;
+		}
+		
+		public int BottomPadding {
+			get { return bottomFiller.HeightRequest; }
+			set {
+				bottomFiller.HeightRequest = value;
+				bottomFiller.Visible = value > 0;
+			}
 		}
 		
 		public void AddTab (Gtk.Widget page, string icon, string label)

@@ -637,6 +637,10 @@ namespace MonoDevelop.Components.Docking
 				} else
 					boundTabStrip.CurrentTab = 0;
 			}
+			if (Frame.CompactGuiLevel == 3 && IsNextToMargin (PositionType.Bottom))
+				boundTabStrip.BottomPadding = 3;
+			else
+				boundTabStrip.BottomPadding = 0;
 		}
 		
 		internal void Present (DockItem it, bool giveFocus)
@@ -800,7 +804,7 @@ namespace MonoDevelop.Components.Docking
 			int y = Allocation.Y;
 			int hw = horiz ? Frame.HandleSize : Allocation.Width;
 			int hh = horiz ? Allocation.Height : Frame.HandleSize;
-			Gtk.Orientation or = horiz ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
+//			Gtk.Orientation or = horiz ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
 
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
@@ -819,8 +823,8 @@ namespace MonoDevelop.Components.Docking
 						Frame.Container.QueueDrawArea (x, y, hw, hh);
 					}
 					else {
-						StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
 						Frame.ShadedContainer.DrawBackground (Frame.Container, new Gdk.Rectangle (x, y, hw, hh));
+//						StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
 //						if (!DockFrame.IsWindows)
 //							Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
 					}
@@ -1089,6 +1093,31 @@ namespace MonoDevelop.Components.Docking
 			reader.ReadEndElement ();
 		}
 
+		public bool IsChildNextToMargin (Gtk.PositionType margin, DockObject obj)
+		{
+			if (type == DockGroupType.Tabbed)
+				return true;
+			else if (type == DockGroupType.Horizontal) {
+				if (margin == PositionType.Top || margin == PositionType.Bottom)
+					return true;
+				int i = VisibleObjects.IndexOf (obj);
+				if (margin == PositionType.Left && i == 0)
+					return true;
+				if (margin == PositionType.Right && i == VisibleObjects.Count - 1)
+					return true;
+			}
+			else if (type == DockGroupType.Vertical) {
+				if (margin == PositionType.Left || margin == PositionType.Right)
+					return true;
+				int i = VisibleObjects.IndexOf (obj);
+				if (margin == PositionType.Top && i == 0)
+					return true;
+				if (margin == PositionType.Bottom && i == VisibleObjects.Count - 1)
+					return true;
+			}
+			return false;
+		}
+		
 		internal TabStrip TabStrip {
 			get { return boundTabStrip; }
 		}

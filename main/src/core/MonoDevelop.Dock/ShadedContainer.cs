@@ -154,6 +154,16 @@ namespace MonoDevelop.Components.Docking
 		
 		public void DrawBackground (Gtk.Widget w, Gdk.Rectangle allocation)
 		{
+			if (shadowSize == 0) {
+				Gdk.Rectangle wr = new Gdk.Rectangle (allocation.X, allocation.Y, allocation.Width, allocation.Height);
+				using (Cairo.Context ctx = Gdk.CairoHelper.Create (w.GdkWindow)) {
+					ctx.Rectangle (wr.X, wr.Y, wr.Width, wr.Height);
+					ctx.Color = GtkUtil.ToCairoColor (lightColor);
+					ctx.Fill ();
+				}
+				return;
+			}
+			
 			List<Section> secsT = new List<Section> ();
 			List<Section> secsB = new List<Section> ();
 			List<Section> secsR = new List<Section> ();

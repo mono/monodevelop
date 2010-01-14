@@ -40,9 +40,7 @@ namespace MonoDevelop.Components.Docking
 		Gtk.PositionType position;
 		Box box;
 		DockFrame frame;
-		
-		const int SizePadding = 1;
-		const int StartPadding = 6;
+		Label filler;
 		
 		public DockBar (DockFrame frame, Gtk.PositionType position)
 		{
@@ -55,23 +53,31 @@ namespace MonoDevelop.Components.Docking
 				box = new HBox ();
 			else
 				box = new VBox ();
-				
+			
+			uint sizePadding = 1;
+			uint startPadding = 6;
+			switch (Frame.CompactGuiLevel) {
+				case 1: sizePadding = 2; break;
+				case 4: startPadding = 3; break;
+				case 5: startPadding = 0; sizePadding = 0; break;
+			}
+			
 			switch (position) {
-				case PositionType.Top: al.BottomPadding = SizePadding; al.LeftPadding = al.RightPadding = StartPadding; break;
-				case PositionType.Bottom: al.TopPadding = SizePadding; al.LeftPadding = al.RightPadding = StartPadding; break;
-				case PositionType.Left: al.RightPadding = SizePadding; al.TopPadding = al.BottomPadding = StartPadding; break;
-				case PositionType.Right: al.LeftPadding = SizePadding; al.TopPadding = al.BottomPadding = StartPadding; break;
+				case PositionType.Top: al.BottomPadding = sizePadding; al.LeftPadding = al.RightPadding = startPadding; break;
+				case PositionType.Bottom: al.TopPadding = sizePadding; al.LeftPadding = al.RightPadding = startPadding; break;
+				case PositionType.Left: al.RightPadding = sizePadding; al.TopPadding = al.BottomPadding = startPadding; break;
+				case PositionType.Right: al.LeftPadding = sizePadding; al.TopPadding = al.BottomPadding = startPadding; break;
 			}
 			
 			box.Spacing = 3;
 			al.Add (box);
 			Add (al);
-			if (position == PositionType.Top) {
-				Label filler = new Label ();
-				filler.WidthRequest = 4;
-				filler.HeightRequest = 4;
-				box.PackEnd (filler);
-			}
+			
+			filler = new Label ();
+			filler.WidthRequest = 4;
+			filler.HeightRequest = 4;
+			box.PackEnd (filler);
+			
 			ShowAll ();
 		}
 		
@@ -98,16 +104,20 @@ namespace MonoDevelop.Components.Docking
 			DockBarItem it = new DockBarItem (this, item, size);
 			box.PackStart (it, false, false, 0);
 			it.ShowAll ();
-			if (!Visible)
-				Show ();
+			UpdateVisibility ();
 			return it;
+		}
+		
+		internal void UpdateVisibility ()
+		{
+			filler.Visible = ((Frame.CompactGuiLevel == 3 && position == PositionType.Top) || Frame.CompactGuiLevel < 3);
+			Visible = filler.Visible || box.Children.Length > 1;
 		}
 		
 		internal void RemoveItem (DockBarItem it)
 		{
 			box.Remove (it);
-			if (box.Children.Length == 0)
-				Hide ();
+			UpdateVisibility ();
 		}
 		
 		public void UpdateTitle (DockItem item)
