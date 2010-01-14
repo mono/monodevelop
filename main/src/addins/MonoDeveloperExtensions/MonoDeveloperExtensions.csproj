@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDeveloperExtensions</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>MonoDeveloperExtensions</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -93,7 +94,9 @@
     <Compile Include="MonoSolutionItemHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDeveloperExtensions.addin.xml" />
+    <EmbeddedResource Include="MonoDeveloperExtensions.addin.xml">
+      <LogicalName>MonoDeveloperExtensions.addin.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
