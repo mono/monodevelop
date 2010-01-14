@@ -1,5 +1,12 @@
 2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* Updater/UpdateDialog.cs:
+	* gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs: Tweak
+	  layout. Show message when fetching unstable updates.
+
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Updater:
 	* Makefile.am:
 	* Commands.cs:

@@ -45,6 +45,8 @@ namespace MonoDevelop.Platform.Updater
 		public UpdateDialog ()
 		{
 			this.Build ();
+			notebook1.ShowTabs = false;
+			
 			checkAutomaticallyCheck.Active = UpdateService.CheckAutomatically;
 			checkAutomaticallyCheck.Toggled += delegate {
 				UpdateService.CheckAutomatically = checkAutomaticallyCheck.Active;
@@ -53,8 +55,12 @@ namespace MonoDevelop.Platform.Updater
 			checkIncludeUnstable.Active = UpdateService.CheckAutomatically;
 			checkIncludeUnstable.Toggled += delegate {
 				UpdateService.CheckAutomatically = checkIncludeUnstable.Active;
-				if (checkIncludeUnstable.Active && (result == null || !result.IncludesUnstable))
+				
+				//if we didn't alreday have the unstable updates, download them
+				if (checkIncludeUnstable.Active && (result == null || !result.IncludesUnstable)) {
+					SetMessage (GettextCatalog.GetString ("Checking for updates..."));
 					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, UpdateService.IncludeUnstable, LoadResult);
+				}
 			};
 			
 			SetMessage (GettextCatalog.GetString ("Checking for updates..."));
