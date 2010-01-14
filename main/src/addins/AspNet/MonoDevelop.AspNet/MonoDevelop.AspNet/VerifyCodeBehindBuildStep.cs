@@ -46,13 +46,15 @@ namespace MonoDevelop.AspNet
 	
 	public class VerifyCodeBehindBuildStep : ProjectServiceExtension
 	{
+		public override bool SupportsItem (IBuildTarget item)
+		{
+			AspNetAppProject aspProject = item as AspNetAppProject;
+			return aspProject != null && aspProject.LanguageBinding != null;
+		}
 		
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem project, ConfigurationSelector configuration)
 		{
 			AspNetAppProject aspProject = project as AspNetAppProject;
-			
-			if (aspProject == null || aspProject.LanguageBinding == null)
-				return base.Build (monitor, project, configuration);
 			
 			//get the config object and validate
 			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.GetConfiguration (configuration);
