@@ -43,13 +43,14 @@ namespace CBinding
 {
 	public class CProjectServiceExtension : ProjectServiceExtension
 	{
+		public override bool SupportsItem (IBuildTarget item)
+		{
+			return item is CProject;
+		}
+
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
-			CProject project = entry as CProject;
-			
-			if (project == null)
-				return base.Build (monitor, entry, configuration);
-			
+			CProject project = (CProject) entry;
 			CProjectConfiguration conf = (CProjectConfiguration) project.GetConfiguration (configuration);
 			if (conf.CompileTarget != CompileTarget.Bin)
 				project.WriteMDPkgPackage (configuration);
@@ -61,10 +62,7 @@ namespace CBinding
 		{
 			base.Clean (monitor, entry, configuration);
 			
-			CProject project = entry as CProject;
-			if (project == null)
-				return;
-			
+			CProject project = (CProject) entry;
 			CProjectConfiguration conf = (CProjectConfiguration) project.GetConfiguration (configuration);
 			project.Compiler.Clean (project.Files, conf, monitor);
 		}

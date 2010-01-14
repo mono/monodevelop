@@ -1,3 +1,7 @@
+2010-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDeveloperExtensions.csproj: Flush.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoSolutionItemHandler.cs: Introduced the

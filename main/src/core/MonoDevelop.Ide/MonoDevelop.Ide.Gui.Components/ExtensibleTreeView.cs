@@ -698,7 +698,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			// will be handled by the node Entry.
 			if (editingText)
 				return null;
-
+			
 			ArrayList targets = new ArrayList ();
 			
 			foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
@@ -716,17 +716,47 @@ namespace MonoDevelop.Ide.Gui.Components
 							lastNode = newNode;
 						}
 					}
-
+					
 					if (targetChain != null)
 						targets.Add (targetChain);
 				}
 			}
 			if (targets.Count == 1)
-				return targets [0];
+				return targets[0];
 			else if (targets.Count > 1)
 				return new MulticastNodeRouter (targets);
 			else
 				return null;
+		}
+		
+		void ExpandCurrentItem ()
+		{
+			try {
+				LockUpdates ();
+				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+					grp.SavePositions ();
+					foreach (var node in grp.Nodes) {
+						node.Expanded = true;
+					}
+				}
+			} finally {
+				UnlockUpdates ();
+			}
+		}
+
+		void CollapseCurrentItem ()
+		{
+			try {
+				LockUpdates ();
+				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+					grp.SavePositions ();
+					foreach (var node in grp.Nodes) {
+						node.Expanded = false;
+					}
+				}
+			} finally {
+				UnlockUpdates ();
+			}
 		}
 
 		[CommandHandler (ViewCommands.Open)]
@@ -1645,6 +1675,12 @@ namespace MonoDevelop.Ide.Gui.Components
 					Expand (iter);
 				}
 				args.RetVal = true;
+			}
+			if (args.Event.Key == Gdk.Key.Right || args.Event.Key == Gdk.Key.KP_Right) {
+				ExpandCurrentItem ();
+			}
+			if (args.Event.Key == Gdk.Key.Left || args.Event.Key == Gdk.Key.KP_Left) {
+				CollapseCurrentItem ();
 			}
 
 			if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter) {

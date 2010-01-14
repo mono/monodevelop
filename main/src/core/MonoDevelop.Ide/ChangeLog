@@ -1,3 +1,8 @@
+2010-01-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Added
+	  left/right as collapse/expand keys.
+
 2010-01-13  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: fixed 'Bug

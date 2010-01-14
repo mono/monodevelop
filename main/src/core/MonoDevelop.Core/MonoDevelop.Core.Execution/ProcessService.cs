@@ -180,13 +180,9 @@ namespace MonoDevelop.Core.Execution
 		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
 			if (console == null || (console is ExternalConsole)) {
-				ProcessStartInfo psi = ExternalConsoleLocator.GetConsoleProcess (command, arguments, workingDirectory, 
+				ProcessStartInfo psi = ExternalConsoleLocator.GetConsoleProcess (command, arguments, workingDirectory, environmentVariables,
 				    GettextCatalog.GetString ("MonoDevelop External Console"), !console.CloseOnDispose);
 
-				if (environmentVariables != null)
-					foreach (KeyValuePair<string, string> kvp in environmentVariables)
-						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
-				
 				ProcessWrapper p = new ProcessWrapper();
 				
 				if (exited != null)
