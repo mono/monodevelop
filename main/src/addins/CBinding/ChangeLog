@@ -1,3 +1,8 @@
+2010-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/CProjectServiceExtension.cs: Enable extension only
+	  for C projects.
+
 2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CBinding.addin.xml: Reverted the fix for Bug 468416 because
