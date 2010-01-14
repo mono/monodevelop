@@ -115,8 +115,7 @@ namespace MonoDevelop.Core.Gui
 			int n = 1000;
 			Gdk.Threads.Enter();
 			while (Gtk.Application.EventsPending () && --n > 0) {
-				if (!Gtk.Application.RunIteration (false))
-					break;
+				Gtk.Application.RunIteration (false);
 			}
 			Gdk.Threads.Leave();
 			guiDispatcher ();
