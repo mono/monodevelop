@@ -173,6 +173,8 @@ namespace MonoDevelop.Core.Serialization
 				return new PrimitiveDataType (type);
 			else if (type == typeof(DateTime))
 				return new DateTimeDataType ();
+			else if (type == typeof(TimeSpan))
+				return new TimeSpanDataType ();
 			else if (type == typeof(FilePath))
 				return new FilePathDataType ();
 			else if (type == typeof(XmlElement))
