@@ -207,7 +207,10 @@ namespace Mono.TextEditor.Highlighting
 			SyntaxMode mode;
 			int startOffset;
 			int endOffset;
-			
+			public ManualResetEvent ManualResetEvent {
+				get;
+				set;
+			}
 			public Document Doc {
 				get { return this.doc; }
 			}
@@ -223,6 +226,7 @@ namespace Mono.TextEditor.Highlighting
 				this.startOffset = startOffset;
 				this.endOffset = endOffset;
 				IsFinished = false;
+				ManualResetEvent = new ManualResetEvent (false);
 			}
 			
 			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
@@ -287,6 +291,7 @@ namespace Mono.TextEditor.Highlighting
 					});
 				}
 				IsFinished = true;
+				ManualResetEvent.Set ();
 			}
 		}
 		
@@ -329,14 +334,12 @@ namespace Mono.TextEditor.Highlighting
 			}
 			queueSignal.Set ();
 		}
+		
 		public static void WaitUpdate (Document doc)
 		{
 			foreach (UpdateWorker worker in updateQueue.ToArray ()) {
-				if (worker != null && worker.Doc == doc) {
-					while (!worker.IsFinished) {
-						Thread.Sleep (20);
-					}
-				}
+				if (worker != null && worker.Doc == doc)
+					worker.ManualResetEvent.WaitOne ();
 			}
 		}
 		
