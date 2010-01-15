@@ -1,6 +1,6 @@
 BINDIR=$(top_builddir)/build/bin
 
-all: $(CECIL)
+all: $(CECIL) $(CECIL_MDB) $(CECIL_DECOMPILER)
 
 CECIL_DLL=Mono.Cecil.dll
 CECIL=$(BINDIR)/$(CECIL_DLL)
@@ -24,10 +24,20 @@ CECIL_MDB_DIST= $(CECIL_MDB_CSFILES)
 
 $(CECIL_MDB): $(CECIL_MDB_CSFILES) $(CECIL)
 	mkdir -p $(BINDIR)
-	mcs $(CECIL_MDB_CSFILES) /debug /target:library /r:$(CECIL) /d:CECIL /out:$(CECIL_MDB)
+	gmcs $(CECIL_MDB_CSFILES) /debug /target:library /r:$(CECIL) /d:CECIL /out:$(CECIL_MDB)
 
 $(CECIL_MDB_DEBUG): $(CECIL_MDB)
 
+CECIL_DECOMPILER_DLL=Cecil.Decompiler.dll
+CECIL_DECOMPILER=$(BINDIR)/$(CECIL_DECOMPILER_DLL)
+CECIL_DECOMPILER_DEBUG=$(BINDIR)/$(CECIL_DECOMPILER_DLL).mdb
+CECIL_DECOMPILER_DIR=$(srcdir)/Cecil.Decompiler
+CECIL_DECOMPILER_CSFILES=$(CECIL_DECOMPILER_DIR)/*/*.cs
+CECIL_DECOMPILER_DIST= $(CECIL_DECOMPILER_CSFILES)
+
+$(CECIL_DECOMPILER): $(CECIL_DECOMPILER_CSFILES) $(CECIL)
+	mkdir -p $(BINDIR)
+	gmcs /debug /target:library /r:$(CECIL) /r:System /r:System.Core /r:System.Xml /out:$(CECIL_DECOMPILER) $(CECIL_DECOMPILER_CSFILES)
 
 ## Helpers for re-importing the latest source
 ## Can specify revision with SVN_REVISION environment variable and username with $USER
@@ -51,7 +61,12 @@ update-source: update-source-Mono.Cecil update-source-Mono.Cecil.Mdb update-sour
 
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(CECIL) $(CECIL_MDB) $(CECIL_DEBUG) $(CECIL_MDB_DEBUG)
+assembly_DATA = $(CECIL) $(CECIL_MDB) $(CECIL_DEBUG) $(CECIL_MDB_DEBUG) $(CECIL_DECOMPILER) $(DECIL_DECOMPILER_DEBUG)
 
-CLEANFILES =  $(CECIL) $(CECIL_MDB) $(CECIL_DEBUG) $(CECIL_MDB_DEBUG)
-EXTRA_DIST = $(CECIL_DIST) $(CECIL_DIR)/Mono.Cecil.dll.sources $(CECIL_MDB_DIST) $(CECIL_MDB_DIR)/Mono.Cecil.Mdb.dll.sources stripnewline.sed
+CLEANFILES =  $(CECIL) $(CECIL_MDB) $(CECIL_DEBUG) $(CECIL_MDB_DEBUG) $(CECIL_DECOMPILER) $(DECIL_DECOMPILER_DEBUG)
+EXTRA_DIST = \
+	$(CECIL_DIST) $(CECIL_DIR)/Mono.Cecil.dll.sources \
+	$(CECIL_MDB_DIST) $(CECIL_MDB_DIR)/Mono.Cecil.Mdb.dll.sources \
+	stripnewline.sed \
+	$(CECIL_DECOMPILER_DIST)
+

@@ -1,3 +1,12 @@
+2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.AssemblyBrowser.csproj:
+	* MonoDevelop.AssemblyBrowser.addin.xml: Fix the Cecil
+	  decompiler in the build. Make building MD with Makefiles
+	  work again, and puts the decompiler properly in its own dll
+	  instead of merging it into a franken-Cecil.
+
 2010-01-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

@@ -1,3 +1,10 @@
+2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Main.sln: Fix the Cecil decompiler in the build. Make
+	  building MD with Makefiles work again, and puts the
+	  decompiler properly in its own dll instead of merging it
+	  into a franken-Cecil.
+
 2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.sln: Don't build the test projects on windows.

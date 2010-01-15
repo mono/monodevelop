@@ -9,7 +9,7 @@
        version     = "2.2">
 	
 	<Runtime>
-		<Import assembly="MonoDevelop.AssemblyBrowser.dll"/>
+		<Import assembly="../bin/Cecil.Decompiler.dll"/>
 	</Runtime>
 	
 	<Dependencies>
