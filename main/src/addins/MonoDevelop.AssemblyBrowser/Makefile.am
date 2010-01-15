@@ -11,6 +11,7 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/BaseTypeFolder.cs \
 	MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/ColoredCSharpFormatter.cs \
 	MonoDevelop.AssemblyBrowser/Decompiler.cs \
 	MonoDevelop.AssemblyBrowser/DisplayBinding.cs \
 	MonoDevelop.AssemblyBrowser/DocumentationPanel.cs \
