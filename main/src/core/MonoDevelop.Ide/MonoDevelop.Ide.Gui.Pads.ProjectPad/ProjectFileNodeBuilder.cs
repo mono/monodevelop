@@ -198,6 +198,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			AlertButton removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
 			
 			string question, secondaryText;
+			
+			secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. Click Remove from Project if you only want to remove it from your current solution.");
+			
 			if (hasChildren) {
 				if (files.Count == 1)
 					question = GettextCatalog.GetString ("Are you sure you want to remove the file {0} and " + 
@@ -206,14 +209,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				else
 					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files and " + 
 					                                     "their code-behind children from the project?");
-				secondaryText = GettextCatalog.GetString ("Delete physically removes the files from disc.");
 			} else {
 				if (files.Count == 1)
 					question = GettextCatalog.GetString ("Are you sure you want to remove file {0} from project {1}?",
 					                                     Path.GetFileName (files[0].Name), files[0].Project.Name);
 				else
 					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files from the project?");
-				secondaryText = GettextCatalog.GetString ("The Delete option physically removes the file from disc.");
 			}
 			
 			AlertButton result = MessageService.AskQuestion (question, secondaryText,
