@@ -1,5 +1,9 @@
 2010-01-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectService.cs: Fix another warning.
+
+2010-01-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MD1/MD1ProjectService.cs: Fix
 	  warning issued by mcs trunk.
 
