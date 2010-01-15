@@ -35,11 +35,11 @@ namespace DebuggerServer
 {
 	public class FieldReference: ValueReference
 	{
-		TargetStructType type;
+		TargetType type;
 		TargetFieldInfo field;
 		TargetStructObject thisobj;
 		
-		public FieldReference (EvaluationContext ctx, TargetStructObject thisobj, TargetStructType type, TargetFieldInfo field): base (ctx)
+		public FieldReference (EvaluationContext ctx, TargetStructObject thisobj, TargetType type, TargetFieldInfo field): base (ctx)
 		{
 			this.type = type;
 			this.field = field;
@@ -62,14 +62,35 @@ namespace DebuggerServer
 		public override object Value {
 			get {
 				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
-				if (field.HasConstValue)
-					return ctx.Frame.Language.CreateInstance (ctx.Thread, field.ConstValue);
-				TargetClass cls = type.GetClass (ctx.Thread);
-				return ObjectUtil.GetRealObject (ctx, cls.GetField (ctx.Thread, thisobj, field));
+				if (field.HasConstValue) {
+					object obj = ctx.Frame.Language.CreateInstance (ctx.Thread, field.ConstValue);
+					if (type is TargetEnumType)
+						// Enum constants are integers, so they have to be converted to enum objects
+						return ctx.Adapter.Cast (ctx, obj, type);
+					else
+						return obj;
+				}
+				TargetClass cls;
+				TargetStructType tt = type as TargetStructType;
+				if (tt != null)
+					cls = tt.GetClass (ctx.Thread);
+				else if (type.HasClassType)
+					cls = type.ClassType.GetClass (ctx.Thread);
+				else
+					throw new NotSupportedException ("Can't get field '" + Name + "' from type '" + type.Name + "'");
+				
+				return cls.GetField (ctx.Thread, thisobj, field);
 			}
 			set {
 				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
-				TargetClass cls = type.GetClass (ctx.Thread);
+				TargetClass cls;
+				TargetStructType tt = type as TargetStructType;
+				if (tt != null)
+					cls = tt.GetClass (ctx.Thread);
+				else if (type.HasClassType)
+					cls = type.ClassType.GetClass (ctx.Thread);
+				else
+					throw new NotSupportedException ("Can't set field '" + Name + "' from type '" + type.Name + "'");
 				cls.SetField (ctx.Thread, thisobj, field, (TargetObject) value);
 			}
 		}
