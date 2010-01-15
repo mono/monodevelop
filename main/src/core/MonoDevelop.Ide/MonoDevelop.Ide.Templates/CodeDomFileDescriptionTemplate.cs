@@ -85,10 +85,10 @@ namespace MonoDevelop.Ide.Templates
 			provider.GenerateCodeFromCompileUnit (cu, sw, options);
 			sw.Close ();
 			
-			return StripHeader (sw.ToString ());
+			return StripHeaderAndBlankLines (sw.ToString ());
 		}
 		
-		static string StripHeader (string text)
+		static string StripHeaderAndBlankLines (string text)
 		{
 			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 			doc.Text = text;
@@ -101,8 +101,25 @@ namespace MonoDevelop.Ide.Templates
 					break;
 				}
 			}
+			for (int i = 0; i < doc.LineCount; i++) {
+				Mono.TextEditor.LineSegment line = doc.GetLine (i);
+				if (IsBlankLine (doc, line) && line.Length > 0) {
+					((Mono.TextEditor.IBuffer)doc).Remove (line.Offset, line.Length);
+					i--;
+					continue;
+				}
+			}
 			int offset = doc.GetLine (realStartLine).Offset;
 			return doc.GetTextAt (offset, doc.Length - offset);
+		}
+
+		static bool IsBlankLine (Mono.TextEditor.Document doc, Mono.TextEditor.LineSegment line)
+		{
+			for (int i = 0; i < line.EditableLength; i++) {
+				if (!Char.IsWhiteSpace (doc.GetCharAt (line.Offset + i)))
+					return false;
+			}
+			return true;
 		}
 		
 		internal static string StripImplicitNamespace (Project project, Dictionary<string,string> tags, string ns)

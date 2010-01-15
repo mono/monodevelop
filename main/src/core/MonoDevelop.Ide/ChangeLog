@@ -1,3 +1,8 @@
+2010-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
+	  strip blank lines in CodeDOM output.
+
 2010-01-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
