@@ -322,7 +322,6 @@ namespace MonoDevelop.CSharp.Formatting
 			int textOffset = 0;
 			int caretOffset = data.Caret.Offset;
 		//			Console.WriteLine ("formattedText:" + formattedText);
-			Console.WriteLine ("caretOffset={0}", caretOffset);
 			while (textOffset < formattedText.Length /*&& offset < caretOffset*/) {
 				if (offset < 0) {
 					offset++;
@@ -357,7 +356,6 @@ namespace MonoDevelop.CSharp.Formatting
 						int length = textOffset - firstWhitespace - 1;
 						data.Insert (offset, formattedText.Substring (firstWhitespace, length) + data.EolMarker);
 						length += data.EolMarker.Length;
-						Console.WriteLine (data.EolMarker.Length);
 						if (offset < caretOffset)
 							caretOffset += length;
 						if (offset < selAnchor)
@@ -422,7 +420,6 @@ namespace MonoDevelop.CSharp.Formatting
 //				Console.WriteLine ("BAIL OUT");
 				break;
 			}
-			Console.WriteLine ("caretOffset={0}", caretOffset);
 			data.Caret.Offset = caretOffset;
 			
 			if (selAnchor >= 0)
