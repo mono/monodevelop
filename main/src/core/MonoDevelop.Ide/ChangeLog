@@ -1,3 +1,8 @@
+2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
+	  Only strip blank lines from C#, not all languages.
+
 2010-01-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
