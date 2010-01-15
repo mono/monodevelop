@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7926DB5B-96A7-47A7-9870-DB42FA5C3548}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AssemblyName>libsteticui</AssemblyName>
     <RootNamespace>libsteticui</RootNamespace>
   </PropertyGroup>
