@@ -49,6 +49,13 @@ namespace MonoDevelop.Components
 		static Gdk.Color black = new  Gdk.Color (0, 0, 0);
 		public static implicit operator Color (HslColor hsl)
 		{
+			if (hsl.L > 1) hsl.L = 1;
+			if (hsl.L < 0) hsl.L = 0;
+			if (hsl.H > 1) hsl.H = 1;
+			if (hsl.H < 0) hsl.H = 0;
+			if (hsl.S > 1) hsl.S = 1;
+			if (hsl.S < 0) hsl.S = 0;
+			
 			double r = 0, g = 0, b = 0;
 			
 			if (hsl.L == 0)
