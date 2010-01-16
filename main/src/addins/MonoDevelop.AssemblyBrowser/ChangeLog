@@ -1,3 +1,9 @@
+2010-01-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs: fixed
+	  'Bug 571178 - Assembly browser should show protected
+	  members'.
+
 2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
