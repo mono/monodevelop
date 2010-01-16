@@ -1,3 +1,10 @@
+2010-01-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs:
+	  implemented 'Bug 571252 - Quick finder dropdowns should take
+	  mouse grab'.
+
 2010-01-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:
