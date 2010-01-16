@@ -1,3 +1,8 @@
+2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/FileService.cs: Add type and null checks on
+	  equality and hash.
+
 2010-01-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs:
