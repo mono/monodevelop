@@ -1,3 +1,8 @@
+2010-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneOptionsPanel.cs: Make the main nib picker entry
+	  editable so that it can be cleared.
+
 2010-01-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneBuildOptionsPanel.cs: Fix displaying i18n options.
