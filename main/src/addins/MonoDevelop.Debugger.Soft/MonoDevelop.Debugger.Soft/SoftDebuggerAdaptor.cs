@@ -74,7 +74,7 @@ namespace MonoDevelop.Debugger.Soft
 			else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
 				StructMirror ob = (StructMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
-				if (method != null && method.DeclaringType.FullName != "System.Object") {
+				if (method != null && method.DeclaringType.FullName != "System.ValueType") {
 					StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
 					return res.Value;
 				}
