@@ -56,11 +56,11 @@ namespace MonoDevelop.XmlEditor
 			return DesktopService.GetMimeTypeIsSubtype (mimeType, "application/xml");
 		}
 		
-		public string FormatText (MonoDevelop.Projects.SolutionItem policyParent, string mimeType, string input)
+		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
 		{
 			TextStylePolicy policy;
 			if (policyParent != null)
-				policy = policyParent.Policies.Get <TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain (mimeType));
+				policy = policyParent.Get <TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			else
 				policy = PolicyService.GetDefaultPolicy <TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			
@@ -89,7 +89,7 @@ namespace MonoDevelop.XmlEditor
 			return indentedXmlWriter.ToString ();
 		}
 		
-		public string FormatText (MonoDevelop.Projects.SolutionItem policyParent, string mimeType, string input, int fromOffest, int toOffset)
+		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
 		{
 			return input;
 		}
