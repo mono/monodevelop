@@ -1,0 +1,6 @@
+2010-01-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Properties:
+	* Cecil.Decompiler.csproj:
+	* Properties/AssemblyInfo.cs: Added assembly info.
+
