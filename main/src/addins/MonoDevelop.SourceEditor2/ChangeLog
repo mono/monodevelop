@@ -1,3 +1,9 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/DefaultFormatter.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Track api
+	  changes.
+
 2010-01-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/TinyDropDownBox.cs:

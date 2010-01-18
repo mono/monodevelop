@@ -30,6 +30,7 @@ using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -46,11 +47,11 @@ namespace MonoDevelop.SourceEditor
 			return (result / tabSize) * tabSize;
 		}
 		
-		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
+		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
 			IEnumerable<string> mtypes = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (mimeType);
 			TextStylePolicy currentPolicy = policyParent != null
-					? policyParent.Policies.Get<TextStylePolicy> (mtypes)
+					? policyParent.Get<TextStylePolicy> (mtypes)
 					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mtypes);
 			
 			input = input ?? "";
