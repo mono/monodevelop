@@ -74,8 +74,8 @@ namespace Mono.TextEditor
 		
 		public double Zoom {
 			get {
-				return zoom;
-					}
+				 return zoom;
+			}
 			set {
 				if (zoom != value) {
 					zoom = value;
@@ -105,14 +105,14 @@ namespace Mono.TextEditor
 		
 		public void ZoomIn ()
 		{
-			zoom *= 1.1;
-			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
+			double newZoom = Zoom * 1.1;
+			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, newZoom));
 		}
 		
 		public void ZoomOut ()
 		{
-			zoom *= 0.9;
-			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
+			double newZoom = Zoom * 0.9;
+			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, newZoom));
 		}
 		
 		public void ZoomReset ()

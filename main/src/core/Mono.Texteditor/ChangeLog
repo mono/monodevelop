@@ -1,5 +1,10 @@
 2010-01-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorOptions.cs: Fixed mousewheel zoom
+	  bug.
+
+2010-01-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: added font null check.
 
 2010-01-14  Mike Krüger  <mkrueger@novell.com>
