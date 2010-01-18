@@ -29,16 +29,27 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Policies
 {
+	/// <summary>
+	/// A set of policies. Policies are identified by type.
+	/// </summary>
 	public abstract class PolicyContainer
 	{
 		internal PolicyDictionary policies;
 		
+		/// <summary>
+		/// Returns true if there isn't any policy defined.
+		/// </summary>
 		public bool IsEmpty {
 			get { return policies == null || policies.Count == 0; }
 		}
 		
-		// The Get methods return policies taking into account inheritance. If a policy
-		// can't be found it may return null, but never an 'undefined' policy.
+		/// <summary>
+		/// The Get methods return policies taking into account inheritance. If a policy
+		/// can't be found it may return null, but never an 'undefined' policy.
+		/// </summary>
+		/// <returns>
+		/// The policy of the given type, or null if not found.
+		/// </returns>
 		public T Get<T> () where T : class, IEquatable<T>, new ()
 		{
 			if (policies != null) {
@@ -113,6 +124,15 @@ namespace MonoDevelop.Projects.Policies
 			OnPolicyChanged (key.PolicyType, key.Scope);
 		}
 		
+		internal void InternalSet (Type t, object ob)
+		{
+			PolicyKey key = new PolicyKey (t, null);
+			if (policies == null)
+				policies = new PolicyDictionary ();
+			policies[key] = ob;
+			OnPolicyChanged (key.PolicyType, key.Scope);
+		}
+		
 		public bool Remove<T> () where T : class, IEquatable<T>, new ()
 		{
 			return Remove<T> (null);
@@ -120,10 +140,15 @@ namespace MonoDevelop.Projects.Policies
 		
 		public bool Remove<T> (string scope) where T : class, IEquatable<T>, new ()
 		{
+			return Remove (typeof(T), scope);
+		}
+			
+		internal bool Remove (Type type, string scope)
+		{
 			CheckReadOnly ();
 			if (policies != null) {
-				if (policies.Remove (new PolicyKey (typeof(T), scope))) {
-					OnPolicyChanged (typeof(T), scope);
+				if (policies.Remove (new PolicyKey (type, scope))) {
+					OnPolicyChanged (type, scope);
 					if (policies.Count == 0)
 						policies = null;
 					return true;
@@ -228,10 +253,17 @@ namespace MonoDevelop.Projects.Policies
 			return false;
 		}
 
+		/// <summary>
+		/// The set of policies from which inherit policies when not found in this container
+		/// </summary>
 		public abstract PolicyContainer ParentPolicies { get; }
 		
 		#endregion
 		
+		/// <summary>
+		/// When set to true, the container will return a default policy when requesting a
+		/// policy object that is not defined in the container.
+		/// </summary>
 		protected abstract bool InheritDefaultPolicies { get; }
 		
 		protected virtual void OnPolicyChanged (Type policyType, string scope)

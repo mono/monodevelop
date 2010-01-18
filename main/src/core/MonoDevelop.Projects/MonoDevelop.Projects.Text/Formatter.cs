@@ -1,10 +1,10 @@
 // 
-// IPrettyPrinter.cs
+// Formatter.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +25,45 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects.Text
 {
-	public interface IPrettyPrinter
+	public sealed class Formatter
 	{
-		bool CanFormat (string mimeType);
+		IPrettyPrinter prettyPrinter;
+		IFormatter formatter;
+		string mimeType;
 		
-		bool SupportsOnTheFlyFormatting {
-			get;
+		internal Formatter (string mimeType, IPrettyPrinter prettyPrinter, IFormatter formatter)
+		{
+			this.mimeType = mimeType;
+			this.prettyPrinter = prettyPrinter;
+			this.formatter = formatter;
+		}
+		
+		public string FormatText (PolicyContainer policyParent, string input)
+		{
+			if (policyParent == null)
+				policyParent = PolicyService.DefaultPolicies;
+			if (prettyPrinter != null)
+				return prettyPrinter.FormatText (policyParent, mimeType, input);
+			return formatter.FormatText (policyParent, mimeType, input);
+		}
+		
+		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
+		{
+			if (policyParent == null)
+				policyParent = PolicyService.DefaultPolicies;
+			if (prettyPrinter != null)
+				return prettyPrinter.FormatText (policyParent, mimeType, input, fromOffest, toOffset);
+			return formatter.FormatText (policyParent, mimeType, input, fromOffest, toOffset);
+		}
+		
+		public bool SupportsOnTheFlyFormatting {
+			get { return prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting; }
 		}
 		
 		/// <summary>
@@ -54,41 +81,12 @@ namespace MonoDevelop.Projects.Text
 		/// <param name="caretLocation">
 		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
-		void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation);
-		
-		string FormatText (PolicyContainer policyParent, string mimeType, string input);
-		string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset);
-	}
-	
-	public abstract class AbstractPrettyPrinter : IPrettyPrinter
-	{
-		public abstract bool CanFormat (string mimeType);
-		
-		public virtual bool SupportsOnTheFlyFormatting {
-			get {
-				return false;
-			}
-		}
-		
-		public virtual void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation)
+		public void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation)
 		{
-			throw new NotSupportedException ();
-		}
-		
-		protected abstract string InternalFormat (PolicyContainer policyParent, string mimeType, string text, int fromOffest, int toOffset);
-		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
-		{
-			if (string.IsNullOrEmpty (input))
-				return input;
-			return FormatText (policyParent, mimeType, input, 0, input.Length - 1);
-		}
-		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
-		{
-			if (string.IsNullOrEmpty (input))
-				return input;
-			return InternalFormat (policyParent, mimeType, input, fromOffest, toOffset);
+			if (prettyPrinter == null || !prettyPrinter.SupportsOnTheFlyFormatting)
+				throw new InvalidOperationException ("On the fly formatting not supported");
+			prettyPrinter.OnTheFlyFormat (textEditorData, callingType, callingMember, dom, unit, endLocation);
 		}
 	}
 }
+

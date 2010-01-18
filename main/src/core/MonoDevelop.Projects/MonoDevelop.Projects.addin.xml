@@ -167,6 +167,7 @@
 		<PolicySet id="VisualStudio" _name="Microsoft Visual Studio">
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
+		<PolicySet id="Invariant" _name="Invariant" visible="false" />
 	</Extension>
 	
 	
