@@ -317,10 +317,12 @@ namespace Mono.TextEditor
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
 			
 			Pango.Font font = textEditor.PangoContext.LoadFont (markerLayout.FontDescription);
-			Pango.FontMetrics metrics = font.GetMetrics (null);
-			this.charWidth = (int)(metrics.ApproximateCharWidth / Pango.Scale.PangoScale);
-			
-			font.Dispose ();
+			if (font != null) {
+				Pango.FontMetrics metrics = font.GetMetrics (null);
+				this.charWidth = (int)(metrics.ApproximateCharWidth / Pango.Scale.PangoScale);
+				
+				font.Dispose ();
+			}
 			
 			CaretMoveActions.LineHeight = lineHeight = System.Math.Max (1, lineHeight);
 
