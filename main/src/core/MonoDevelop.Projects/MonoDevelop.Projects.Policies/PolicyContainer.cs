@@ -124,9 +124,9 @@ namespace MonoDevelop.Projects.Policies
 			OnPolicyChanged (key.PolicyType, key.Scope);
 		}
 		
-		internal void InternalSet (Type t, object ob)
+		internal void InternalSet (Type t, string scope, object ob)
 		{
-			PolicyKey key = new PolicyKey (t, null);
+			PolicyKey key = new PolicyKey (t, scope);
 			if (policies == null)
 				policies = new PolicyDictionary ();
 			policies[key] = ob;
@@ -135,17 +135,18 @@ namespace MonoDevelop.Projects.Policies
 		
 		public bool Remove<T> () where T : class, IEquatable<T>, new ()
 		{
+			CheckReadOnly ();
 			return Remove<T> (null);
 		}
 		
 		public bool Remove<T> (string scope) where T : class, IEquatable<T>, new ()
 		{
-			return Remove (typeof(T), scope);
+			CheckReadOnly ();
+			return InternalRemove (typeof(T), scope);
 		}
 			
-		internal bool Remove (Type type, string scope)
+		internal bool InternalRemove (Type type, string scope)
 		{
-			CheckReadOnly ();
 			if (policies != null) {
 				if (policies.Remove (new PolicyKey (type, scope))) {
 					OnPolicyChanged (type, scope);

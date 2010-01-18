@@ -63,6 +63,22 @@ namespace MonoDevelop.Projects.Policies
 			};
 			LoadDefaultPolicies ();
 			defaultPolicyBag.ReadOnly = true;
+			
+			PolicySet pset = GetPolicySet ("Invariant");
+			pset.PolicyChanged += HandleInvariantPolicySetChanged;
+			foreach (var pol in pset.Policies)
+				invariantPolicies.InternalSet (pol.Key.PolicyType, pol.Key.Scope, pol.Value);
+			invariantPolicies.ReadOnly = true;
+		}
+
+		static void HandleInvariantPolicySetChanged (object sender, PolicyChangedEventArgs e)
+		{
+			PolicySet pset = GetPolicySet ("Invariant");
+			object p = pset.Get (e.PolicyType, e.Scope);
+			if (p != null)
+				invariantPolicies.InternalSet (e.PolicyType, e.Scope, p);
+			else
+				invariantPolicies.InternalSet (e.PolicyType, e.Scope, Activator.CreateInstance (e.PolicyType));
 		}
 		
 		static void HandlePolicySetUpdated (object sender, ExtensionNodeEventArgs args)
@@ -103,12 +119,13 @@ namespace MonoDevelop.Projects.Policies
 					throw new UserException ("Only one Policy type may have the ID '" + name + "'");
 				policyTypes.Add (t, name);
 				policyNames.Add (name, t);
-				invariantPolicies.InternalSet (t, Activator.CreateInstance (t));
+				if (invariantPolicies.Get (t) == null)
+					invariantPolicies.InternalSet (t, null, Activator.CreateInstance (t));
 				break;
 			case ExtensionChange.Remove:
 				policyTypes.Remove (t);
 				policyNames.Remove (name);
-				invariantPolicies.Remove (t, null);
+				invariantPolicies.InternalRemove (t, null);
 				break;
 			}
 		}

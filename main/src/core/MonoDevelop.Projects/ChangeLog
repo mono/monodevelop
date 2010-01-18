@@ -1,5 +1,11 @@
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Policies/PolicyService.cs:
+	* MonoDevelop.Projects.Policies/PolicyContainer.cs: Properly
+	  read invariant policies from the invariant policy set.
+
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Policies/PolicySet.cs:
 	* MonoDevelop.Projects.Policies/PolicyService.cs:
 	* MonoDevelop.Projects.Extensions/PolicySetNode.cs:
