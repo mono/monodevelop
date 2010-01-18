@@ -1,3 +1,8 @@
+2010-01-18  Mike Krüger  <mkrueger@novell.com>
+
+	* de.po: fixed Bug 571563 - German typo in right click menu of
+	  project.
+
 2009-12-11  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* es.po: Updating to >97%.

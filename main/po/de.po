@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-11-16 11:09:04+0100\n"
-"PO-Revision-Date: 2009-11-16 15:23:05+0100\n"
+"PO-Revision-Date: 2010-01-18 12:18:26+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -887,8 +887,7 @@ msgstr "_Standard-Richtlinien"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:316
 msgid "Edit the default policies that are applied to new projects"
-msgstr ""
-"Standard-Richtlinien bearbeiten (wird für neue Projekte verwendet)"
+msgstr "Standard-Richtlinien bearbeiten (wird für neue Projekte verwendet)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:318
 msgid "_Insert Standard Header"
@@ -1095,7 +1094,7 @@ msgstr "N_eu erstellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:428
 msgid "_Set As Startup Project"
-msgstr "Als Start-_Projekt setzten"
+msgstr "Als Start-_Projekt setzen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:434
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:84
@@ -2812,8 +2811,7 @@ msgstr "Fenster-Klassenname"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1196
 msgid "Template for a class loading contents from a gtkbuilder file"
-msgstr ""
-"Vorlage für eine Klasse, die Inhalte aus einer gtkbuilder-Datei liest"
+msgstr "Vorlage für eine Klasse, die Inhalte aus einer gtkbuilder-Datei liest"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1206
 msgid "Path to ui description file (widgets.ui)"
@@ -3042,7 +3040,7 @@ msgstr "An älteren Versionen haben mitgearbeitet"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:184
 msgid "translator-credits"
-msgstr "Übersetzter-Credits"
+msgstr "Übersetzer-Credits"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:186
 msgid ""
@@ -3468,8 +3466,8 @@ msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
 msgstr ""
-"Sind Sie sich sicher, dass Sie die ausgewählten Dateien und deren CodeBehind-"
-"Kinder aus dem Projekt entfernen wollen?"
+"Sind Sie sich sicher, dass Sie die ausgewählten Dateien und deren "
+"CodeBehind-Kinder aus dem Projekt entfernen wollen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:208
 msgid "Delete physically removes the files from disc."
@@ -5493,8 +5491,8 @@ msgid ""
 "with the debugger."
 msgstr ""
 "Einige JIT-Optimierungen deaktivieren, die normalerweise im Debugger "
-"ausgeschaltet sind. Dies ist sinnvoll, wenn während des Ausführens ein Debugger an den "
-"Prozess angehängt werden soll."
+"ausgeschaltet sind. Dies ist sinnvoll, wenn während des Ausführens ein Debugger an "
+"den Prozess angehängt werden soll."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:181
 msgid "Runs in profiling mode with the specified profiler module."
@@ -5574,8 +5572,8 @@ msgid ""
 "behavior can be disabled by setting the option `nofallback' (for example: "
 "'0,nofallback')."
 msgstr ""
-"Die möglichen Werte sind `no' - schaltet den benutzerdefinierten C#-"
-"Serializer aus oder ein Integer der die minimale Zahl von Benutzungen angibt bevor die "
+"Die möglichen Werte sind `no' - schaltet den benutzerdefinierten "
+"C#-Serializer aus oder ein Integer der die minimale Zahl von Benutzungen angibt bevor die "
 "Runtime einen benutzerdefinierten Serializer benutzt (0 wird einen "
 "benutzerdefinierten Serialisierer beim ersten Zugriff erzeugen, 50 wird einen "
 "Serialisierer beim 50. Zugriff erzeugen). Mono wird einen interpretierten Serializer "
@@ -5620,8 +5618,8 @@ msgid ""
 "A colon-separated list of text encodings to try when turning "
 "externally-generated text (e.g. command-line arguments or filenames) into Unicode."
 msgstr ""
-"Eine durch Doppelpunkte getrennte Liste von Zeichenkodierungen, die versucht wird, "
-"wenn extern generierter Text nach Unicode transformiert wird."
+"Eine durch Doppelpunkte getrennte Liste von Zeichenkodierungen, die versucht "
+"wird, wenn extern generierter Text nach Unicode transformiert wird."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:312
 msgid ""
@@ -5645,7 +5643,9 @@ msgstr "Wenn gesetzt entfernt Mono die Laufwerksbuchstaben von Windows-Pfaden."
 msgid ""
 "When enabled, Mono does case-insensitive file matching in every directory in "
 "a path."
-msgstr "Wenn gesetzt, vergleicht Mono Dateinamen ohne Berücksichtigung der Groß-/Kleinschreibung."
+msgstr ""
+"Wenn gesetzt, vergleicht Mono Dateinamen ohne Berücksichtigung der "
+"Groß-/Kleinschreibung."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:335
 msgid ""
@@ -6163,8 +6163,8 @@ msgid ""
 "reference is required to build the project you may get compilation errors."
 msgstr ""
 "Assembly '{0}' nicht gefunden. Stellen Sie sicher, dass die Assembly "
-"existiert. Falls die Referenz im Projekt gebraucht wird, sind Compiler-Fehlermeldungen "
-"möglich."
+"existiert. Falls die Referenz im Projekt gebraucht wird, sind "
+"Compiler-Fehlermeldungen möglich."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:163
 msgid ""
@@ -6230,8 +6230,7 @@ msgid ""
 "Reason: \n"
 "{2}\n"
 msgstr ""
-"Kann Satelliten-Assembly für '{0}' Sprache mit {1} nicht "
-"erzeugen.\n"
+"Kann Satelliten-Assembly für '{0}' Sprache mit {1} nicht erzeugen.\n"
 "Grund: \n"
 "{2}\n"
 
@@ -6321,8 +6320,8 @@ msgid ""
 "version of Visual Studio does not support the framework that the project is "
 "targetting ({2})"
 msgstr ""
-"Das Projekt '{0}' wird im Format '{1}' gespeichert. Aber diese Version von Visual Studio "
-"unterstützt nicht das Zielframework ({2}) des Projekts."
+"Das Projekt '{0}' wird im Format '{1}' gespeichert. Aber diese Version von "
+"Visual Studio unterstützt nicht das Zielframework ({2}) des Projekts."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:412
 msgid "Invalid file path"
@@ -6340,7 +6339,8 @@ msgstr "Speichere Projekte"
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:593
 msgid "Invalid Project definition on line number #{0} in file '{1}'. Ignoring."
 msgstr ""
-"Ungültige Projekt-Definition in Zeile Nummer #{0} in Datei '{1}'. Wird ignoriert."
+"Ungültige Projekt-Definition in Zeile Nummer #{0} in Datei '{1}'. Wird "
+"ignoriert."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:606
 msgid "Invalid Project type guid '{0}' on line #{1}. Ignoring."
@@ -6460,8 +6460,8 @@ msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for "
 ".NET projects."
 msgstr ""
-"Konnte \"{0}\" nicht ausführen. Der ausgewählte Ausführungsmodus ist für .NET-"
-"Projekte nicht vorgesehen."
+"Konnte \"{0}\" nicht ausführen. Der ausgewählte Ausführungsmodus ist für "
+".NET-Projekte nicht vorgesehen."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:959
 msgid "Cannot execute \"{0}\""
@@ -6663,9 +6663,9 @@ msgid ""
 "custom commands which will be available in the project or solution menu."
 msgstr ""
 "MonoDevelop kann benutzerdefinierte Befehle oder Skripte ausführen, nach oder "
-"anstatt von häufigen Projekt-Operationen. Es ist ebenfalls "
-"möglich, benutzerdefinierte Befehle einzugeben, die dann im Projekt- oder "
-"Projektmappen-Menü verfügbar sein werden."
+"anstatt von häufigen Projekt-Operationen. Es ist ebenfalls möglich, "
+"benutzerdefinierte Befehle einzugeben, die dann im Projekt- oder Projektmappen-Menü "
+"verfügbar sein werden."
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs:80
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs:70
@@ -7385,8 +7385,7 @@ msgstr "Übertragungs-Nachricht (Mehrfach-Auswahl):"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:608
 msgid "Some of the files in this commit do not have ChangeLog messages."
-msgstr ""
-"Einige Dateien in dieser Übertragung haben keine ChangeLog-Einträge."
+msgstr "Einige Dateien in dieser Übertragung haben keine ChangeLog-Einträge."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:609
 msgid "You may have forgotten to unselect items."
@@ -7456,8 +7455,7 @@ msgstr "Sind Sie sich sicher, dass Sie das Projekt veröffentlichen wollen?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:47
 msgid "The project will be published to the repository '{0}', module '{1}'."
-msgstr ""
-"Das Projekt wird in Repository '{0}' im Modul '{1}' veröffentlicht."
+msgstr "Das Projekt wird in Repository '{0}' im Modul '{1}' veröffentlicht."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:92
 msgid "Publishing \"{0}\" Project..."
@@ -8024,8 +8022,8 @@ msgid ""
 "Please select the class you want to bind to the design:"
 msgstr ""
 "Die Klasse, die mit dem aktuell editierten Design verknüpft war, konnte nicht "
-"gefunden werden. Bitte wählen Sie die Klasse, die Sie mit dem Design verknüpfen "
-"wollen:"
+"gefunden werden. Bitte wählen Sie die Klasse, die Sie mit dem Design "
+"verknüpfen wollen:"
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:143
 msgid "Bind Widget Design"
@@ -8180,8 +8178,8 @@ msgid ""
 "The class bound to the component '{0}' could not be found. This may be due to "
 "syntax errors in the source code file."
 msgstr ""
-"Die Klasse, die an die Komponente '{0}' gebunden ist, konnte nicht gefunden werden. "
-"Dies könnte an Syntax-Fehlern in der Quelltext-Datei liegen."
+"Die Klasse, die an die Komponente '{0}' gebunden ist, konnte nicht gefunden "
+"werden. Dies könnte an Syntax-Fehlern in der Quelltext-Datei liegen."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:143
 msgid "Reference Type"
@@ -8262,8 +8260,8 @@ msgid ""
 "The Gtk# User Interface designer will be disabled by removing the gtk-sharp "
 "reference."
 msgstr ""
-"Der Gtk#-Benutzerinterface-Designer wird deaktiviert, wenn die gtk-sharp-"
-"Referenz gelöscht wird."
+"Der Gtk#-Benutzerinterface-Designer wird deaktiviert, wenn die "
+"gtk-sharp-Referenz gelöscht wird."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore/ReferenceManager.cs:217
 msgid "Disable Designer"
@@ -9109,8 +9107,7 @@ msgstr "Die ChangeLog-Datei existiert nicht und wird erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:192
 msgid "This ChangeLog file does not exist and will <b>not</b> be created."
-msgstr ""
-"Die ChangeLog-Datei existiert nicht und wird <b>nicht</b> erstellt."
+msgstr "Die ChangeLog-Datei existiert nicht und wird <b>nicht</b> erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:232
 msgid ""
@@ -9146,9 +9143,9 @@ msgid ""
 "ChangeLog files will never be automatically created."
 msgstr ""
 "<b>Aktualisiere nächstes ChangeLog</b>\n"
-"Die nächste ChangeLog-Datei in der Ordnerebene wird erneuert (unter "
-"dem Übertragungsordner). Wenn keine gefunden wird, wird einen Warnmeldung "
-"angezeigt. ChangeLog-Dateien werden niemals automatisch erstellt."
+"Die nächste ChangeLog-Datei in der Ordnerebene wird erneuert (unter dem "
+"Übertragungsordner). Wenn keine gefunden wird, wird einen Warnmeldung angezeigt. "
+"ChangeLog-Dateien werden niemals automatisch erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:109
 msgid "One ChangeLog in the project root directory"
@@ -9177,8 +9174,8 @@ msgid ""
 "The ChangeLog file will be created if it doesn't exist."
 msgstr ""
 "<b>Ein ChangeLog in jedem Ordner</b>\n"
-"Dateiänderungen werden in einem ChangeLog im Ordner der Datei "
-"gespeichert. Die ChangeLog-Datei wird erstellt falls sie nicht existiert."
+"Dateiänderungen werden in einem ChangeLog im Ordner der Datei gespeichert. "
+"Die ChangeLog-Datei wird erstellt falls sie nicht existiert."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:161
 msgid "Integrate with _version control"
@@ -9186,8 +9183,7 @@ msgstr "_Integrieren in Versionskontrolle"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:179
 msgid "_Require ChangeLog entries for all files when committing"
-msgstr ""
-"Cha_ngeLog-Einträge für alle Dateien beim Übertragen vorraussetzen"
+msgstr "Cha_ngeLog-Einträge für alle Dateien beim Übertragen vorraussetzen"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:193
 msgid "ChangeLog Generation"
@@ -9246,16 +9242,16 @@ msgid ""
 "Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
 "name with an incompatible return type."
 msgstr ""
-"Kann {0} '{1}' nicht zur Klasse '{2}' hinzufügen, da unter diesem Namen bereits ein {3} mit "
-"inkompatiblen Rückgabewert existiert."
+"Kann {0} '{1}' nicht zur Klasse '{2}' hinzufügen, da unter diesem Namen "
+"bereits ein {3} mit inkompatiblen Rückgabewert existiert."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:112
 msgid ""
 "Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
 "name."
 msgstr ""
-"Kann {0} '{1}' nicht zur Klasse '{2}' hinzufügen da unter diesem Namen bereits ein {3} "
-"existiert."
+"Kann {0} '{1}' nicht zur Klasse '{2}' hinzufügen da unter diesem Namen "
+"bereits ein {3} existiert."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TypeReference.cs:109
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:78
@@ -9836,8 +9832,7 @@ msgid ""
 msgstr ""
 "Aktiviere Makefile-Integration. Sie können wählen ob Sie entweder das Projekt "
 "oder das Makefile als Hauptkopie benutzen möchten. Dies wird nur beim "
-"Aktivieren des Features gemacht. Danach wird das Makefile als Hauptkopie "
-"genommen."
+"Aktivieren des Features gemacht. Danach wird das Makefile als Hauptkopie genommen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:711
 msgid ""
@@ -10065,10 +10060,10 @@ msgid ""
 "(error number) and message."
 msgstr ""
 "Wählen sie das Compilermeldungs-Format zum Parsen der Compiler-Fehler und "
-"-Warnungen. Sie können entweder eine der eingebauten Optionen wählen, oder "
-"einen eigenen regulären Ausdruck für Fehler und Warnungen angeben. Der reguläre "
-"Ausdruck muss ein .net-artiger RegEx sein. Die folgenden Gruppen sind "
-"relevant : Datei, Zeile, Spalte, Nummer (Fehler-Nummer) und Nachricht."
+"-Warnungen. Sie können entweder eine der eingebauten Optionen wählen, oder einen "
+"eigenen regulären Ausdruck für Fehler und Warnungen angeben. Der reguläre "
+"Ausdruck muss ein .net-artiger RegEx sein. Die folgenden Gruppen sind relevant "
+": Datei, Zeile, Spalte, Nummer (Fehler-Nummer) und Nachricht."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:979
 msgid "Error regex :"
@@ -17608,7 +17603,6 @@ msgstr "Warte, bis der Debugger verbunden hat..."
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
 
