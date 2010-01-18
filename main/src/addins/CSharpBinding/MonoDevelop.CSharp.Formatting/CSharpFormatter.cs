@@ -42,6 +42,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -209,7 +210,7 @@ namespace MonoDevelop.CSharp.Formatting
 			CSharpFormatter formatter = new CSharpFormatter ();
 			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
 			
-			string formattedText = formatter.InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
+			string formattedText = formatter.InternalFormat (dom.Project.Policies, MimeType, wrapper, 0, wrapper.Length);
 			
 			if (formatter.hasErrors)
 				return;
@@ -445,11 +446,11 @@ namespace MonoDevelop.CSharp.Formatting
 			return (result / tabSize) * tabSize;
 		}
 
-		public static void SetFormatOptions (CSharpOutputVisitor outputVisitor, SolutionItem policyParent)
+		public static void SetFormatOptions (CSharpOutputVisitor outputVisitor, PolicyContainer policyParent)
 		{
 			IEnumerable<string> types = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (MimeType);
-			TextStylePolicy currentPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
-			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Policies.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			TextStylePolicy currentPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 
 			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
 			outputVisitor.Options.TabSize = currentPolicy.TabWidth;
@@ -481,7 +482,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		bool hasErrors = false;
 		int startIndentLevel = 0;
-		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
+		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
 			string text = GetFormattedText (policyParent, input);
 			if (startOffset == 0 && endOffset >= input.Length - 1)
@@ -518,7 +519,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return j;
 		}
 		
-		string GetFormattedText (SolutionItem policyParent, string input)
+		string GetFormattedText (PolicyContainer policyParent, string input)
 		{
 			hasErrors = false;
 			if (string.IsNullOrEmpty (input))
