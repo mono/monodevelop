@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Workspace</_Name>
-		<_Category>MonoDevelop</_Category>
+		<_Category>Other</_Category>
 		<Icon>md-workspace</Icon>
 		<LanguageName/>
 		<_Description>A blank workspace</_Description>

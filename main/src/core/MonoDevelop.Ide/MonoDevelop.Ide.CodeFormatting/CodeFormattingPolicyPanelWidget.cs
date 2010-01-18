@@ -143,12 +143,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		void UpdateExample ()
 		{
-			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (description.MimeType);
-			if (printer == null)
+			Formatter formatter = TextFileService.GetFormatter (description.MimeType);
+			if (formatter == null)
 				return;
 			DotNetAssemblyProject parent = new DotNetAssemblyProject ();
 			parent.Policies.Set<T> (settings, description.MimeType);
-			texteditor1.Document.Text  = printer.FormatText (parent, description.MimeType, texteditor1.Document.Text);
+			texteditor1.Document.Text  = formatter.FormatText (parent.Policies, texteditor1.Document.Text);
 		}
 		
 		protected override void HandleChanged (object sender, EditedArgs e)
