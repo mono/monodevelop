@@ -1,5 +1,10 @@
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Track api changes.
+
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
 	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
 	  Track api changes in the text service.
