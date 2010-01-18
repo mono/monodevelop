@@ -1352,6 +1352,9 @@
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/VisualStudio" >
 		<Policies resource="VisualStudioTextStylePolicy.xml" />
 	</Extension>
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Invariant" >
+		<Policies resource="InvariantTextStylePolicy.xml" />
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
 		<PolicySet id="MITX11License" _name="MIT/X11 License">

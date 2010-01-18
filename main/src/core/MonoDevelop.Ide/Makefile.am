@@ -378,6 +378,7 @@ RES =  \
 	icons/tools-external-tools-16.png \
 	icons/tools-external-tools-24.png \
 	MonoDevelop.Ide.addin.xml \
+	MonoDevelop.Ide.CodeFormatting/InvariantTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml \
