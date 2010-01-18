@@ -1,3 +1,9 @@
+2010-01-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/ColoredCSharpFormatter.cs: fixed
+	  'Bug 571177 - Assembly browser text widget issues'.
+
 2010-01-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs: fixed

@@ -135,6 +135,7 @@ namespace MonoDevelop.AssemblyBrowser
 				ColoredCSharpFormatter formatter = new ColoredCSharpFormatter ();
 				ILanguageWriter langWriter = lang.GetWriter (formatter);
 				langWriter.Write (method.MethodDefinition);
+				Console.WriteLine ("text:" + formatter.Text);
 				result.Append (formatter.Text);
 			} catch (Exception e) {
 				result.Append ("got exception while decompilation: \n" + e);

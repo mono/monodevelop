@@ -46,6 +46,13 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		#region IFormatter implementation
 		
+		void InternalWrite (string str)
+		{
+			WriteIndent ();
+			sb.Append (str);
+			write_indent = false;
+		}
+		
 		void WriteIndent ()
 		{
 			if (!write_indent)
@@ -57,9 +64,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public void Write (string str)
 		{
-			WriteIndent ();
-			sb.Append (str);
-			write_indent = false;
+			InternalWrite (GLib.Markup.EscapeText (str));
 		}
 		
 		
@@ -72,50 +77,51 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public void WriteSpace ()
 		{
-			Write (" ");
+			InternalWrite (" ");
 		}
 		
 		
 		public void WriteToken (string token)
 		{
-			Write (DomTypeNodeBuilder.MarkupKeyword (token));
+			
+			InternalWrite (DomTypeNodeBuilder.MarkupKeyword (GLib.Markup.EscapeText (token)));
 		}
 		
 		
 		public void WriteComment (string comment)
 		{
-			Write ("<span style=\"comment\">" + comment + "</span>");
+			InternalWrite ("<span style=\"comment\">" + GLib.Markup.EscapeText (comment) + "</span>");
 			WriteLine ();
 		}
 		
 		
 		public void WriteKeyword (string keyword)
 		{
-			Write (DomTypeNodeBuilder.MarkupKeyword (keyword));
+			InternalWrite (DomTypeNodeBuilder.MarkupKeyword (GLib.Markup.EscapeText (keyword)));
 		}
 		
 		
 		public void WriteLiteral (string literal)
 		{
-			Write ("<span style=\"constant\">" + literal + "</span>");
+			InternalWrite ("<span style=\"constant\">" + GLib.Markup.EscapeText (literal) + "</span>");
 		}
 		
 		
 		public void WriteDefinition (string value, object definition)
 		{
-			Write (value);
+			InternalWrite (GLib.Markup.EscapeText (value));
 		}
 		
 		
 		public void WriteReference (string value, object reference)
 		{
-			Write (DomTypeNodeBuilder.MarkupKeyword (value));
+			InternalWrite (DomTypeNodeBuilder.MarkupKeyword (GLib.Markup.EscapeText (value)));
 		}
 		
 		
 		public void WriteIdentifier (string value, object identifier)
 		{
-			Write (value);
+			InternalWrite (GLib.Markup.EscapeText (value));
 		}
 		
 		
