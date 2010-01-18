@@ -94,6 +94,7 @@ namespace Stetic.Wrapper
 						d.Add (t);
 						defaultStyle = t.ToolbarStyle;
 						d.Destroy ();
+						gotDefault = true;
 					}
 					toolbar.ToolbarStyle = defaultStyle;
 				} else {
@@ -154,7 +155,7 @@ namespace Stetic.Wrapper
 			
 			CodeExpression exp = GenerateUiManagerElement (ctx, actionTree);
 			if (exp != null)
-				return new CodeCastExpression (typeof(Gtk.Toolbar),	exp);
+				return new CodeCastExpression (typeof(Gtk.Toolbar).ToGlobalTypeRef (),	exp);
 			else
 				return base.GenerateObjectCreation (ctx);
 		}

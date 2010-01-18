@@ -376,5 +376,15 @@ namespace Stetic
 				return MissingIcon;
 			}
 		}
+		
+		public static System.CodeDom.CodeTypeReference ToGlobalTypeRef (this Type type)
+		{
+			return new System.CodeDom.CodeTypeReference (type, System.CodeDom.CodeTypeReferenceOptions.GlobalReference);
+		}
+		
+		public static System.CodeDom.CodeTypeReference ToGlobalTypeRef (this string type)
+		{
+			return new System.CodeDom.CodeTypeReference (type, System.CodeDom.CodeTypeReferenceOptions.GlobalReference);
+		}
 	}
 }

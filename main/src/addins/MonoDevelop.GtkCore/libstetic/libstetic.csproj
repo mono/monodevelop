@@ -8,7 +8,7 @@
     <ProjectGuid>{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>libstetic</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>Stetic</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -56,6 +56,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassDescriptor.cs" />

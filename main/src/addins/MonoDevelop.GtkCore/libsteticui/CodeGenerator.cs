@@ -121,19 +121,19 @@ namespace Stetic
 				if (options.UsePartialClasses) {
 					createDelegate =
 						new CodeDelegateCreateExpression (
-							new CodeTypeReference (descriptor.HandlerTypeName),
+							new CodeTypeReference (descriptor.HandlerTypeName, CodeTypeReferenceOptions.GlobalReference),
 							new CodeThisReferenceExpression (),
 							signal.Handler);
 				} else {
 					createDelegate =
 						new CodeMethodInvokeExpression (
-							new CodeTypeReferenceExpression (typeof(Delegate)),
+							new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Delegate), CodeTypeReferenceOptions.GlobalReference)),
 							"CreateDelegate",
 							new CodeTypeOfExpression (descriptor.HandlerTypeName),
 							targetObjectVar,
 							new CodePrimitiveExpression (signal.Handler));
 					
-					createDelegate = new CodeCastExpression (descriptor.HandlerTypeName, createDelegate);
+					createDelegate = new CodeCastExpression (descriptor.HandlerTypeName.ToGlobalTypeRef (), createDelegate);
 				}
 				
 				CodeAttachEventStatement cevent = new CodeAttachEventStatement (
@@ -187,7 +187,7 @@ namespace Stetic
 
 			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
 					new CodeMethodReferenceExpression (
-						new CodeTypeReferenceExpression (cns.Name + ".ActionGroups"),
+						new CodeTypeReferenceExpression (new CodeTypeReference (cns.Name + ".ActionGroups")),
 						"GetActionGroup"
 					),
 					new CodePropertyReferenceExpression (
@@ -238,11 +238,11 @@ namespace Stetic
 				
 				foreach (Wrapper.ActionGroup grp in gp.ActionGroups) {
 					string fname = "group" + (n++);
-					CodeMemberField grpField = new CodeMemberField (typeof(Gtk.ActionGroup), fname);
+					CodeMemberField grpField = new CodeMemberField (new CodeTypeReference (typeof(Gtk.ActionGroup), CodeTypeReferenceOptions.GlobalReference), fname);
 					grpField.Attributes |= MemberAttributes.Static;
 					type.Members.Add (grpField);
 					CodeFieldReferenceExpression grpVar = new CodeFieldReferenceExpression (
-						new CodeTypeReferenceExpression (cns.Name + ".ActionGroups"),
+						new CodeTypeReferenceExpression (new CodeTypeReference (cns.Name + ".ActionGroups", CodeTypeReferenceOptions.GlobalReference)),
 						fname
 					);
 					
@@ -381,7 +381,7 @@ namespace Stetic
 				if (ww == null || (!ww.IsTopLevel && ww.InternalChildProperty == null && !ww.Unselectable)) {
 					type.Members.Add (
 						new CodeMemberField (
-							typeName,
+							new CodeTypeReference (typeName, CodeTypeReferenceOptions.GlobalReference),
 							memberName
 						)
 					);

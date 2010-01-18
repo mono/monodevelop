@@ -181,7 +181,7 @@ namespace Stetic.Wrapper
 				new CodePrimitiveExpression (name),
 				new CodePrimitiveExpression (action != null ? action.Name : null),
 				new CodeFieldReferenceExpression (
-					new CodeTypeReferenceExpression (typeof(Gtk.UIManagerItemType)),
+					new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Gtk.UIManagerItemType), CodeTypeReferenceOptions.GlobalReference)),
 					type.ToString()
 				),
 				new CodePrimitiveExpression (false)

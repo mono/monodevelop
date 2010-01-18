@@ -28,7 +28,6 @@ namespace Stetic.Editor {
 
 		Gtk.EventBox ebox;
 		Gtk.ComboBoxEntry combo;
-		Gtk.Tooltips tips;
 		EnumDescriptor enm;
 
 		public EnumerationEditor () : base (false, 0)
@@ -52,8 +51,6 @@ namespace Stetic.Editor {
 			combo.Show ();
 			ebox.Add (combo);
 
-			tips = new Gtk.Tooltips ();
-
 			enm = Registry.LookupEnum (prop.PropertyType.FullName);
 			foreach (Enum value in enm.Values)
 				combo.AppendText (enm[value].Label);
@@ -63,12 +60,6 @@ namespace Stetic.Editor {
 		{
 		}
 		
-		public override void Dispose ()
-		{
-			tips.Destroy ();
-			base.Dispose ();
-		}
-
 		public object Value {
 			get {
 				return enm.Values[combo.Active];
@@ -88,9 +79,9 @@ namespace Stetic.Editor {
 				ValueChanged (this, EventArgs.Empty);
 			EnumValue value = enm[(Enum)Value];
 			if (value != null)
-				tips.SetTip (ebox, value.Description, value.Description);
+				ebox.TooltipText = value.Description;
 			else
-				tips.SetTip (ebox, null, null);
+				ebox.TooltipText = string.Empty;
 		}
 	}
 }

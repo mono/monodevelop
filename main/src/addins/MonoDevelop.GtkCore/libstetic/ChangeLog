@@ -1,3 +1,39 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* ImageInfo.cs:
+	* wrapper/Bin.cs:
+	* WidgetUtils.cs:
+	* libstetic.csproj:
+	* ObjectWrapper.cs:
+	* wrapper/Action.cs:
+	* wrapper/Widget.cs:
+	* wrapper/VScale.cs:
+	* wrapper/HScale.cs:
+	* wrapper/MenuBar.cs:
+	* wrapper/Expander.cs:
+	* GeneratorContext.cs:
+	* wrapper/Notebook.cs:
+	* wrapper/ComboBox.cs:
+	* wrapper/Container.cs:
+	* RadioGroupManager.cs:
+	* wrapper/VScrollbar.cs:
+	* ProjectIconFactory.cs:
+	* wrapper/HScrollbar.cs:
+	* wrapper/ToolButton.cs:
+	* wrapper/ActionTree.cs:
+	* wrapper/ActionGroup.cs:
+	* wrapper/ComboBoxEntry.cs:
+	* wrapper/ActionToolbarWrapper.cs:
+	* wrapper/RadioActionGroupManager.cs: Use global:: for type
+	  references in generated code. 
+
+	* Placeholder.cs:
+	* editor/Flags.cs:
+	* editor/Enumeration.cs:
+	* editor/ActionMenuItem.cs:
+	* editor/ActionToolItem.cs: Fix warnings.
+
 2009-12-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* libstetic.csproj: Flush.

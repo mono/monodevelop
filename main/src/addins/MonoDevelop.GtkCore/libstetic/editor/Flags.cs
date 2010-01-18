@@ -37,7 +37,6 @@ namespace Stetic.Editor {
 
 		EnumDescriptor enm;
 		Hashtable flags;
-		Gtk.Tooltips tips;
 		Gtk.Entry flagsLabel;
 		string property;
 
@@ -62,7 +61,6 @@ namespace Stetic.Editor {
 			{
 				Gtk.VBox vbox = new Gtk.VBox (true, 3);
 
-				tips = new Gtk.Tooltips ();
 				flags = new Hashtable ();
 
 				foreach (Enum value in enm.Values) {
@@ -71,7 +69,7 @@ namespace Stetic.Editor {
 						continue;
 
 					Gtk.CheckButton check = new Gtk.CheckButton (eval.Label);
-					tips.SetTip (check, eval.Description, eval.Description);
+					check.TooltipText = eval.Description;
 					uint uintVal = (uint) Convert.ToInt32 (eval.Value);
 					flags[check] = uintVal;
 					flags[uintVal] = check;
@@ -102,12 +100,6 @@ namespace Stetic.Editor {
 		
 		public void AttachObject (object ob)
 		{
-		}
-
-		public override void Dispose ()
-		{
-			tips.Destroy ();
-			base.Dispose ();
 		}
 
 		public object Value {

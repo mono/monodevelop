@@ -75,7 +75,7 @@ namespace Stetic.Wrapper {
 		internal protected override CodeExpression GenerateObjectCreation (GeneratorContext ctx)
 		{
 			return new CodeObjectCreateExpression (
-				ClassDescriptor.WrappedTypeName, 
+				ClassDescriptor.WrappedTypeName.ToGlobalTypeRef (), 
 				new CodePrimitiveExpression (null), 
 				new CodePrimitiveExpression (null)
 			);

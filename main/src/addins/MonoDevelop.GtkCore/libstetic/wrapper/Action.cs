@@ -327,11 +327,11 @@ namespace Stetic.Wrapper
 			exp.Parameters.Add (ctx.GenerateValue (prop.GetValue (Wrapped), prop.RuntimePropertyType, prop.Translatable));
 			
 			if (type == ActionType.Action)
-				exp.CreateType = new CodeTypeReference ("Gtk.Action");
+				exp.CreateType = new CodeTypeReference ("Gtk.Action", CodeTypeReferenceOptions.GlobalReference);
 			else if (type == ActionType.Toggle)
-				exp.CreateType = new CodeTypeReference ("Gtk.ToggleAction");
+				exp.CreateType = new CodeTypeReference ("Gtk.ToggleAction", CodeTypeReferenceOptions.GlobalReference);
 			else {
-				exp.CreateType = new CodeTypeReference ("Gtk.RadioAction");
+				exp.CreateType = new CodeTypeReference ("Gtk.RadioAction", CodeTypeReferenceOptions.GlobalReference);
 				prop = (PropertyDescriptor) ClassDescriptor ["Value"];
 				exp.Parameters.Add (ctx.GenerateValue (prop.GetValue (Wrapped), typeof(int)));
 			}

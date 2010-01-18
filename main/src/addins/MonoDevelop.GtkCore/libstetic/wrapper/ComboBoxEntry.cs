@@ -22,7 +22,7 @@ namespace Stetic.Wrapper {
 		{
 			if (IsTextCombo) {
 				return new CodeMethodInvokeExpression (
-					new CodeTypeReferenceExpression ("Gtk.ComboBoxEntry"),
+					new CodeTypeReferenceExpression (new CodeTypeReference ("Gtk.ComboBoxEntry", CodeTypeReferenceOptions.GlobalReference)),
 					"NewText"
 				);
 			} else

@@ -47,7 +47,6 @@ namespace Stetic {
 			
 			Gdk.Rectangle a = new Gdk.Rectangle (0,0,width,height);
 			
-			byte b1 = 210;
 			byte b2 = 210;
 			
 			int ssLT = 12;

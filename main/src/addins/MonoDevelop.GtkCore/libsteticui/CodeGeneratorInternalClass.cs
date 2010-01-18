@@ -16,7 +16,7 @@ namespace Stetic
 		
 		static CodeGeneratorInternalClass ()
 		{
-			CodeTypeReferenceExpression flagsType = new CodeTypeReferenceExpression ("System.Reflection.BindingFlags");
+			CodeTypeReferenceExpression flagsType = new CodeTypeReferenceExpression (new CodeTypeReference ("System.Reflection.BindingFlags", CodeTypeReferenceOptions.GlobalReference));
 			bindingFlags = new CodeBinaryOperatorExpression (
 				new CodeFieldReferenceExpression (flagsType, "Public"),
 				CodeBinaryOperatorType.BitwiseOr,
@@ -48,7 +48,7 @@ namespace Stetic
 			
 			CodeMethodInvokeExpression call = new CodeMethodInvokeExpression (
 					new CodeMethodReferenceExpression (
-						new CodeTypeReferenceExpression (globalNs.Name + ".Gui"),
+						new CodeTypeReferenceExpression (new CodeTypeReference (globalNs.Name + ".Gui", CodeTypeReferenceOptions.GlobalReference)),
 						"Build"
 					),
 					new CodeArgumentReferenceExpression ("cobj"),
@@ -89,7 +89,7 @@ namespace Stetic
 			
 			tcond.TrueStatements.Add (
 					new CodeMethodInvokeExpression (
-						new CodeTypeReferenceExpression (globalNs.Name + ".Gui"),
+						new CodeTypeReferenceExpression (new CodeTypeReference (globalNs.Name + ".Gui", CodeTypeReferenceOptions.GlobalReference)),
 						"Initialize",
 			            cobj
 					)
@@ -201,7 +201,7 @@ namespace Stetic
 			
 			// Generate the build code
 			
-			CodeVariableDeclarationStatement varDecHash = new CodeVariableDeclarationStatement (typeof(System.Collections.Hashtable), "bindings");
+			CodeVariableDeclarationStatement varDecHash = new CodeVariableDeclarationStatement (typeof(System.Collections.Hashtable).ToGlobalTypeRef (), "bindings");
 			met.Statements.Add (varDecHash);
 			varDecHash.InitExpression = new CodeObjectCreateExpression (
 				typeof(System.Collections.Hashtable),
@@ -226,9 +226,9 @@ namespace Stetic
 			
 			statements.Add (
 				new CodeMethodInvokeExpression (
-					new CodeTypeReferenceExpression (options.GlobalNamespace + ".SteticGenerated." + internalClassName),
+					new CodeTypeReferenceExpression (new CodeTypeReference (options.GlobalNamespace + ".SteticGenerated." + internalClassName, CodeTypeReferenceOptions.GlobalReference)),
 					"Build",
-					new CodeCastExpression (typeName, cobj)
+					new CodeCastExpression (typeName.ToGlobalTypeRef (), cobj)
 				)
 			);
 		}
@@ -241,7 +241,7 @@ namespace Stetic
 			varDecIndex.InitExpression = new CodePrimitiveExpression (0);
 			CodeExpression varIndex = new CodeVariableReferenceExpression ("n");
 			
-			CodeVariableDeclarationStatement varDecArray = new CodeVariableDeclarationStatement (typeof(FieldInfo[]), "fields");
+			CodeVariableDeclarationStatement varDecArray = new CodeVariableDeclarationStatement (typeof(FieldInfo[]).ToGlobalTypeRef (), "fields");
 			varDecArray.InitExpression = new CodeMethodInvokeExpression (
 				new CodeMethodInvokeExpression (
 					cobj,
@@ -273,7 +273,7 @@ namespace Stetic
 				)
 			);
 			
-			CodeVariableDeclarationStatement varDecField = new CodeVariableDeclarationStatement (typeof(FieldInfo), "field");
+			CodeVariableDeclarationStatement varDecField = new CodeVariableDeclarationStatement (typeof(FieldInfo).ToGlobalTypeRef (), "field");
 			varDecField.InitExpression = new CodeArrayIndexerExpression (varArray, new CodeExpression [] {varIndex});
 			CodeVariableReferenceExpression varField = new CodeVariableReferenceExpression ("field");
 			iteration.Statements.Add (varDecField);

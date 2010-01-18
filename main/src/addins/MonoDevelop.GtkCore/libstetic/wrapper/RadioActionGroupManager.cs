@@ -127,9 +127,9 @@ namespace Stetic.Wrapper
 			
 			if (var == null) {
 				return new CodeObjectCreateExpression (
-					"GLib.SList",
+					"GLib.SList".ToGlobalTypeRef (),
 					new CodePropertyReferenceExpression (
-						new CodeTypeReferenceExpression (typeof(IntPtr)),
+						new CodeTypeReferenceExpression (typeof(IntPtr).ToGlobalTypeRef ()),
 						"Zero"
 					)
 				);
