@@ -588,6 +588,8 @@ namespace Mono.TextEditor
 				DocumentLocation visEnd = LogicalToVisualLocation (selection.Lead);
 				int startCol = System.Math.Min (visStart.Column, visEnd.Column);
 				int endCol = System.Math.Max (visStart.Column, visEnd.Column);
+				bool preserve = Caret.PreserveSelection;
+				Caret.PreserveSelection = true;
 				for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 					LineSegment curLine = Document.GetLine (lineNr);
 					int col1 = curLine.GetLogicalColumn (this, startCol);
@@ -599,12 +601,21 @@ namespace Mono.TextEditor
 					if (Caret.Line == lineNr && Caret.Column >= col1)
 						Caret.Column -= col2 - col1;
 				}
+				int column = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
+				selection.Anchor = new DocumentLocation (selection.Anchor.Line, column);
+				selection.Lead = new DocumentLocation (selection.Lead.Line, column);
+				Caret.Column = column;
+				Caret.PreserveSelection = preserve;
 				break;
 			}
-			
+		
 		}
 		
 		public void DeleteSelectedText ()
+		{
+			DeleteSelectedText (true);
+		}
+		public void DeleteSelectedText (bool clearSelection)
 		{
 			if (!IsSomethingSelected)
 				return;
@@ -615,7 +626,8 @@ namespace Mono.TextEditor
 				needUpdate |= Document.OffsetToLineNumber (segment.Offset) != Document.OffsetToLineNumber (segment.EndOffset);
 				DeleteSelection (selection);
 			}
-			ClearSelection ();
+			if (clearSelection)
+				ClearSelection ();
 			document.EndAtomicUndo ();
 			if (needUpdate)
 				Document.CommitDocumentUpdate ();

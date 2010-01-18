@@ -809,7 +809,7 @@ namespace Mono.TextEditor
 			if (startOffset >= selectionStart && endOffset <= selectionEnd) {
 				if (handleSelected != null)
 					handleSelected (startOffset, endOffset);
-			} else if (startOffset >= selectionStart && startOffset < selectionEnd && endOffset > selectionEnd) {
+			} else if (startOffset >= selectionStart && startOffset <= selectionEnd && endOffset >= selectionEnd) {
 				if (handleSelected != null)
 					handleSelected (startOffset, selectionEnd);
 				if (handleNotSelected != null)
@@ -1024,7 +1024,6 @@ namespace Mono.TextEditor
 							if (!wrapper.StartSet) 
 								wrapper.SelectionStartIndex = (int)selectedForeground.StartIndex;
 							wrapper.SelectionEndIndex   = (int)selectedForeground.EndIndex;
-							
 							/*Console.WriteLine (wrapper.SelectionStartIndex + " -- " + wrapper.SelectionEndIndex);
 							Color bgColor;
 							int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
@@ -1131,12 +1130,12 @@ namespace Mono.TextEditor
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
 			int selectionEnd;
-			if (BackgroundRenderer != null)  {
+			if (BackgroundRenderer != null) {
 				selectionStart = selectionEnd = -1;
 			} else {
 				GetSelectionOffsets (line, out selectionStart, out selectionEnd);
 			}
-
+			
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
 			
@@ -1153,14 +1152,20 @@ namespace Mono.TextEditor
 					continue;
 				drawText &= bgMarker.DrawBackground (textEditor, win, layout.Layout, false, 				/*selected*/offset, offset + length, y, xPos, xPos + width, ref drawBg);
 			}
-
+			
 			if (DecorateLineBg != null)
 				DecorateLineBg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
 			
 			if (layout.StartSet) {
 				var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
-				var end   = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
-				DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value, new Rectangle ((int)(xPos + start.X / Pango.Scale.PangoScale), y, (int)((end.X - start.X) / Pango.Scale.PangoScale), textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
+				int startX = (int)(start.X / Pango.Scale.PangoScale);
+				
+				var end = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
+				int endX = (int)(end.X / Pango.Scale.PangoScale);
+				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
+					endX = startX + 2;
+				}
+				DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value, new Rectangle (xPos + startX, y, endX - startX, textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
 			}
 			
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout.Layout);
@@ -1466,7 +1471,9 @@ namespace Mono.TextEditor
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
-
+			if (textEditor.IsSomethingSelected && textEditor.MainSelection.SelectionMode == SelectionMode.Block) {
+				Caret.AllowCaretBehindLineEnd = true;
+			}
 			bool isHandled = false;
 			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
 			
@@ -1514,8 +1521,8 @@ namespace Mono.TextEditor
 			
 			if (inDrag)
 				return;
-			
 			Caret.PreserveSelection = true;
+			
 			switch (this.mouseSelectionMode) {
 			case MouseSelectionMode.SingleChar:
 				if (!inSelectionDrag) {
@@ -1924,9 +1931,9 @@ namespace Mono.TextEditor
 			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
 				/*		string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
 				int visibleColumn = line.EditableLength;
-				for (int i = 0; i < virtualText.Length; i++) {
-					if (virtualText[i] != '\t') {
-						textRenderer.SetText (virtualText[i].ToString ());
+				for (int endX = 0; endX < virtualText.Length; endX++) {
+					if (virtualText[endX] != '\t') {
+						textRenderer.SetText (virtualText[endX].ToString ());
 						textRenderer.GetPixelSize (out width, out height, out xadv);
 						if (textEditor.Options.ShowSpaces)
 							DrawSpaceMarker (win, isEolSelected, xPos, y);
