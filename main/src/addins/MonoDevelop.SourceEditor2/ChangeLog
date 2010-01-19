@@ -1,3 +1,9 @@
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented
+	  'Bug 433318 - Allow scrolling the text boxes that appear
+	  when hovering over a folded region'.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/DefaultFormatter.cs:
