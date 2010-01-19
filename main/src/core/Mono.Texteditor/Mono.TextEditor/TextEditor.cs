@@ -736,6 +736,11 @@ namespace Mono.TextEditor
 				return true;
 			}
 			
+			if (key == Gdk.Key.F3 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
+				textViewMargin.OpenCodeSegmentEditor ();
+				return true;
+			}
+			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
 				ResetIMContext ();	
@@ -746,7 +751,7 @@ namespace Mono.TextEditor
 			if (!filter) {
 				return OnIMProcessedKeyPressEvent (key, unicodeChar, mod);
 			}
-			return true;
+			return base.OnKeyPressEvent (evt);
 		}
 		
 		/// <<remarks>

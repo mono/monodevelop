@@ -380,6 +380,11 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.o, Gdk.ModifierType.ControlMask), MiscActions.InsertNewLinePreserveCaretPosition);
 		}
 		
+		public void AddBinding (Gdk.Key key, Action<TextEditorData> action)
+		{
+			keyBindings.Add (GetKeyCode (key), action);
+		}
+		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			int keyCode = GetKeyCode (key, modifier);

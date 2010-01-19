@@ -542,6 +542,7 @@ namespace Mono.TextEditor
 				win.DrawLine (caretGc, caretX, bottom, caretX + this.charWidth, bottom);
 				break;
 			}
+			
 		}
 
 		public Gdk.Rectangle GetCaretRectangle (Mono.TextEditor.CaretMode mode)
@@ -1406,13 +1407,40 @@ namespace Mono.TextEditor
 
 		CodeSegmentPreviewWindow previewWindow = null;
 		ISegment previewSegment = null;
-
+		public bool IsCodeSegmentPreviewWindowShown {
+			get {
+				return previewWindow != null;
+			}
+		}
+		
 		public void HideCodeSegmentPreviewWindow ()
 		{
 			if (previewWindow != null) {
 				previewWindow.Destroy ();
 				previewWindow = null;
 			}
+		}
+		
+		internal void OpenCodeSegmentEditor ()
+		{
+			if (!IsCodeSegmentPreviewWindowShown)
+				throw new InvalidOperationException ("CodeSegment preview window isn't shown.");
+			
+			int x = 0, y = 0;
+			this.previewWindow.GdkWindow.GetOrigin (out x, out y);
+			int w = previewWindow.Allocation.Width;
+			int h = previewWindow.Allocation.Height;
+			
+			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
+			codeSegmentEditorWindow.Move (x, y);
+			codeSegmentEditorWindow.Resize (w, h);
+			codeSegmentEditorWindow.SyntaxMode = Document.SyntaxMode;
+			codeSegmentEditorWindow.Text       = this.Document.GetTextAt (previewSegment);
+			HideCodeSegmentPreviewWindow ();
+			codeSegmentEditorWindow.ShowAll ();
+			
+			codeSegmentEditorWindow.GrabFocus ();
+			
 		}
 
 		void ShowTooltip (ISegment segment, Rectangle hintRectangle)

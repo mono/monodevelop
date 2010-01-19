@@ -1,3 +1,16 @@
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/SimpleEditMode.cs:
+	* Mono.TextEditor/CodeSegmentEditorWindow.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Implemented
+	  'Bug 433318 - Allow scrolling the text boxes that appear
+	  when hovering over a folded region'.
+
 2010-01-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/EditMode.cs:
