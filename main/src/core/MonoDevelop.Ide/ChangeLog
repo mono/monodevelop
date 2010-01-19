@@ -1,5 +1,12 @@
 2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/IdePreferences.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:
+	  Allow setting a custom gtk theme for MD.
+
+2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs:
 	* MonoDevelop.Ide.Gui/IdePreferences.cs:
 	* MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:

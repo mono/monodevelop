@@ -257,6 +257,16 @@ namespace MonoDevelop.Ide.Gui
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceLanguage", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceLanguage", value); }
 		}
+		
+		public string UserInterfaceTheme {
+			get { return PropertyService.Get ("MonoDevelop.Ide.UserInterfaceTheme", ""); }
+			set { PropertyService.Set ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+		}
+		
+		public event EventHandler<PropertyChangedEventArgs> UserInterfaceThemeChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+		}
 	}
 	
 	public enum BeforeCompileAction {

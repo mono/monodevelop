@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Gui
 		static string fileToOpen = String.Empty;
 		ArrayList errorsList = new ArrayList ();
 		bool initialized;
+		internal static string DefaultTheme;
 		
 		public int Run (string[] args)
 		{
@@ -98,6 +99,10 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
+			
+			DefaultTheme = Gtk.Settings.Default.ThemeName;
+			if (!string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceTheme))
+				Gtk.Settings.Default.ThemeName = IdeApp.Preferences.UserInterfaceTheme;
 			
 			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
 			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.

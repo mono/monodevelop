@@ -76,6 +76,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (i == -1) i = 0;
 			comboLanguage.Active = i / 2;
 			
+			comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
+			List<string> themes = new List<string> ();
+
+			// Code for getting the list of themes taken from f-spot
+			string homeDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
+			string [] search = {System.IO.Path.Combine (homeDir, ".themes"), "/usr/share/themes"};
+			foreach (string path in search)
+				if (System.IO.Directory.Exists (path))
+					foreach (string dir in System.IO.Directory.GetDirectories (path))
+						if (System.IO.File.Exists (System.IO.Path.Combine (dir, gtkrc)))
+							themes.Add (System.IO.Path.GetFileName (dir));
+			
+			themes.Sort ();
+			foreach (string t in themes)
+				comboTheme.AppendText (t);
+			
+			comboTheme.Active = themes.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
+			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
 			hiddenButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 			fontCheckbox.Active = IdeApp.Preferences.CustomPadFont != null;
@@ -108,6 +127,19 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				IdeApp.Preferences.UserInterfaceLanguage = lc;
 				MessageService.ShowMessage (GettextCatalog.GetString ("The user interface language change will take effect the next time you start MonoDevelop"));
 			}
+			string theme;
+			if (comboTheme.Active == 0) {
+				theme = IdeStartup.DefaultTheme;
+				IdeApp.Preferences.UserInterfaceTheme = "";
+			}
+			else {
+				theme = comboTheme.ActiveText;
+				IdeApp.Preferences.UserInterfaceTheme = theme;
+			}
+			
+			if (theme != Gtk.Settings.Default.ThemeName)
+				Gtk.Settings.Default.ThemeName = theme;
+			
 			PropertyService.Set ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
 			if (fontCheckbox.Active)
 				IdeApp.Preferences.CustomPadFont = fontButton.FontName;
