@@ -1,5 +1,10 @@
 2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core\Gettext.cs: Make languange selection work
+	  on windows.
+
+2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core/Gettext.cs: Honor the custom language
 	  option.
 
