@@ -1,3 +1,9 @@
+2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GeneratorContext.cs: When loading an icon, don't hardcode
+	  the required size. Instead, call SizeLookup to get the
+	  correct size for the current theme.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

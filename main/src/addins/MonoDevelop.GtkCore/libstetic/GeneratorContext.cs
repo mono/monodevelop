@@ -235,7 +235,6 @@ namespace Stetic
 				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(Gtk.Widget), "widget"));
 				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(string), "name"));
 				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(Gtk.IconSize), "size"));
-				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(int), "sz"));
 				met.ReturnType = new CodeTypeReference (typeof(Gdk.Pixbuf));
 				
 				CodeExpression widgetExp = new CodeVariableReferenceExpression ("widget");
@@ -270,6 +269,19 @@ namespace Stetic
 				);
 				nullcheck.TrueStatements.Add (new CodeMethodReturnStatement (resExp));
 				
+				// int sz, h;
+				// Gtk.Icon.SizeLookup (size, out sz, out h);
+
+				nullcheck.FalseStatements.Add (new CodeVariableDeclarationStatement (typeof(int), "sz"));
+				nullcheck.FalseStatements.Add (new CodeVariableDeclarationStatement (typeof(int), "sy"));
+				nullcheck.FalseStatements.Add (new CodeMethodInvokeExpression (
+				    new CodeTypeReferenceExpression (typeof(Gtk.Icon).ToGlobalTypeRef ()),
+				    "SizeLookup",
+				    sizeExp,
+				    new CodeDirectionExpression (FieldDirection.Out, szExp),
+				    new CodeDirectionExpression (FieldDirection.Out, new CodeVariableReferenceExpression ("sy"))
+				));
+
 				CodeTryCatchFinallyStatement trycatch = new CodeTryCatchFinallyStatement ();
 				nullcheck.FalseStatements.Add (trycatch);
 				trycatch.TryStatements.Add (
@@ -306,8 +318,7 @@ namespace Stetic
 							"LoadIcon",
 							widgetExp,
 							new CodePrimitiveExpression ("gtk-missing-image"),
-							sizeExp,
-							szExp
+							sizeExp
 						)
 					)
 				);
@@ -455,8 +466,7 @@ namespace Stetic
 			    new CodeFieldReferenceExpression (
 					new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Gtk.IconSize), CodeTypeReferenceOptions.GlobalReference)),
 					size.ToString ()
-				),
-				new CodePrimitiveExpression (sz)
+				)
 			);
 		}
 	}
