@@ -103,6 +103,7 @@
         <property name="Query" />
         <property name="Ready" />
         <property name="HasFocus" />
+        <property name="IsCheckMenu" />
       </itemgroup>
     </itemgroups>
     <signals>

@@ -1,3 +1,10 @@
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/SearchEntry.cs: seach entry menu can
+	  now contain check items.
+
+	* gtk-gui/objects.xml: 
+
 2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/PathBar.cs: Don't requisition full
