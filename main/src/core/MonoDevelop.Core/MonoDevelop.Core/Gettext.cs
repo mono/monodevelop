@@ -42,6 +42,9 @@ namespace MonoDevelop.Core
 		{
 			//variable can be used to override where Gettext looks for the catalogues
 			string catalog = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
+			string lang = PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", "");
+			if (!string.IsNullOrEmpty (lang))
+				Environment.SetEnvironmentVariable ("LANGUAGE", lang);
 			
 			if (string.IsNullOrEmpty (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;

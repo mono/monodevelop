@@ -1,3 +1,8 @@
+2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/Gettext.cs: Honor the custom language
+	  option.
+
 2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core/FileService.cs: Add type and null checks on
