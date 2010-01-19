@@ -40,6 +40,9 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
+using Cecil.Decompiler.Cil;
+using Cecil.Decompiler.Languages;
+using System.IO;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -127,8 +130,13 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			StringBuilder result = new StringBuilder ();
 			try {
-				string decompiledCode = new Decompiler().Decompile (method);
-				result.Append (decompiledCode);
+				//ControlFlowGraph controlFlowGraph = ControlFlowGraph.Create (method.MethodDefinition);
+				ILanguage lang = CSharp.GetLanguage (CSharpVersion.V3);
+				ColoredCSharpFormatter formatter = new ColoredCSharpFormatter ();
+				ILanguageWriter langWriter = lang.GetWriter (formatter);
+				langWriter.Write (method.MethodDefinition);
+				Console.WriteLine ("text:" + formatter.Text);
+				result.Append (formatter.Text);
 			} catch (Exception e) {
 				result.Append ("got exception while decompilation: \n" + e);
 			}
@@ -155,13 +163,13 @@ namespace MonoDevelop.AssemblyBrowser
 				return "";
 			
 			StringBuilder result = new StringBuilder ();
-			result.Append (GetAttributes (Ambience, method.Attributes));
+/*			result.Append (GetAttributes (Ambience, method.Attributes));
 			result.Append (Ambience.GetString (method, DomTypeNodeBuilder.settings));
 			result.AppendLine ();
 			result.Append ("{");
-			result.AppendLine ();
+			result.AppendLine ();*/
 			result.Append (Decompile (method, true));
-			result.Append ("}");
+//			result.Append ("}");
 			return result.ToString ();
 		}
 		

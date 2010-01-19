@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public string OutputNode (ProjectDom dom, INode node, string indent)
 		{
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor ();
-			CSharpFormatter.SetFormatOptions (outputVisitor, dom.Project);
+			CSharpFormatter.SetFormatOptions (outputVisitor, dom.Project.Policies);
 			int col = CSharpFormatter.GetColumn (indent, 0, 4);
 			outputVisitor.OutputFormatter.IndentationLevel = System.Math.Max (0, col / 4);
 			node.AcceptVisitor (outputVisitor, null);

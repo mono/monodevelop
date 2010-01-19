@@ -52,6 +52,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		static PolicySet defaultPolicies;
 		static PolicyBag defaultPolicyBag = new PolicyBag ();
+		static PolicyBag invariantPolicies = new PolicyBag ();
 		
 		static PolicyService ()
 		{
@@ -62,6 +63,22 @@ namespace MonoDevelop.Projects.Policies
 			};
 			LoadDefaultPolicies ();
 			defaultPolicyBag.ReadOnly = true;
+			
+			PolicySet pset = GetPolicySet ("Invariant");
+			pset.PolicyChanged += HandleInvariantPolicySetChanged;
+			foreach (var pol in pset.Policies)
+				invariantPolicies.InternalSet (pol.Key.PolicyType, pol.Key.Scope, pol.Value);
+			invariantPolicies.ReadOnly = true;
+		}
+
+		static void HandleInvariantPolicySetChanged (object sender, PolicyChangedEventArgs e)
+		{
+			PolicySet pset = GetPolicySet ("Invariant");
+			object p = pset.Get (e.PolicyType, e.Scope);
+			if (p != null)
+				invariantPolicies.InternalSet (e.PolicyType, e.Scope, p);
+			else
+				invariantPolicies.InternalSet (e.PolicyType, e.Scope, Activator.CreateInstance (e.PolicyType));
 		}
 		
 		static void HandlePolicySetUpdated (object sender, ExtensionNodeEventArgs args)
@@ -102,11 +119,13 @@ namespace MonoDevelop.Projects.Policies
 					throw new UserException ("Only one Policy type may have the ID '" + name + "'");
 				policyTypes.Add (t, name);
 				policyNames.Add (name, t);
-				
+				if (invariantPolicies.Get (t) == null)
+					invariantPolicies.InternalSet (t, null, Activator.CreateInstance (t));
 				break;
 			case ExtensionChange.Remove:
 				policyTypes.Remove (t);
 				policyNames.Remove (name);
+				invariantPolicies.InternalRemove (t, null);
 				break;
 			}
 		}
@@ -389,39 +408,64 @@ namespace MonoDevelop.Projects.Policies
 		
 		public static IEnumerable<PolicySet> GetPolicySets<T> ()
 		{
+			return GetPolicySets<T> (false);
+		}
+		
+		public static IEnumerable<PolicySet> GetPolicySets<T> (bool includeHidden)
+		{
 			foreach (PolicySet s in sets)
-				if (s.DirectHas<T> ())
+				if (s.DirectHas<T> () && (s.Visible || includeHidden))
 					yield return s;
 		}
 		
 		public static IEnumerable<PolicySet> GetPolicySets<T> (string scope)
 		{
+			return GetPolicySets<T> (scope, false);
+		}
+		
+		public static IEnumerable<PolicySet> GetPolicySets<T> (string scope, bool includeHidden)
+		{
 			foreach (PolicySet s in sets)
-				if (s.DirectHas<T> (scope))
+				if (s.DirectHas<T> (scope) && (s.Visible || includeHidden))
 					yield return s;
 		}
 		
 		public static IEnumerable<PolicySet> GetPolicySets<T> (IEnumerable<string> scopes)
 		{
+			return GetPolicySets<T> (scopes, false);
+		}
+		
+		public static IEnumerable<PolicySet> GetPolicySets<T> (IEnumerable<string> scopes, bool includeHidden)
+		{
 			foreach (PolicySet s in sets)
-				if (s.DirectHas<T> (scopes))
+				if (s.DirectHas<T> (scopes) && (s.Visible || includeHidden))
 					yield return s;
 		}
 		
 		public static IEnumerable<PolicySet> GetMatchingSets<T> (T policy) where T : class, IEquatable<T>, new ()
 		{
+			return GetMatchingSets<T> (policy, false);
+		}
+		
+		public static IEnumerable<PolicySet> GetMatchingSets<T> (T policy, bool includeHidden) where T : class, IEquatable<T>, new ()
+		{
 			foreach (PolicySet ps in sets) {
 				IEquatable<T> match = ps.Get<T> () as IEquatable<T>;
-				if (match != null && match.Equals (policy))
+				if (match != null && (ps.Visible || includeHidden) && match.Equals (policy))
 					yield return ps;
 			}
 		}
 		
 		public static PolicySet GetMatchingSet<T> (T policy) where T : class, IEquatable<T>, new ()
 		{
+			return GetMatchingSet<T> (policy, false);
+		}
+		
+		public static PolicySet GetMatchingSet<T> (T policy, bool includeHidden) where T : class, IEquatable<T>, new ()
+		{
 			foreach (PolicySet ps in sets) {
 				T match = ps.Get<T> ();
-				if (match != null && match.Equals (policy))
+				if (match != null  && (ps.Visible || includeHidden) && match.Equals (policy))
 					return ps;
 			}
 			return null;
@@ -429,9 +473,14 @@ namespace MonoDevelop.Projects.Policies
 		
 		public static PolicySet GetMatchingSet<T> (T policy, IEnumerable<string> scopes) where T : class, IEquatable<T>, new ()
 		{
+			return GetMatchingSet<T> (policy, scopes, false);
+		}
+		
+		public static PolicySet GetMatchingSet<T> (T policy, IEnumerable<string> scopes, bool includeHidden) where T : class, IEquatable<T>, new ()
+		{
 			foreach (PolicySet ps in sets) {
 				T match = ps.Get<T> (scopes);
-				if (match != null && match.Equals (policy))
+				if (match != null && (ps.Visible || includeHidden) && match.Equals (policy))
 					return ps;
 			}
 			return null;
@@ -473,7 +522,11 @@ namespace MonoDevelop.Projects.Policies
 			return defaultPolicies;
 		}
 		
-		public static PolicyBag DefaultPolicies {
+		public static PolicyContainer InvariantPolicies {
+			get { return invariantPolicies; }
+		}
+		
+		public static PolicyContainer DefaultPolicies {
 			get { return defaultPolicyBag; }
 		}
 		

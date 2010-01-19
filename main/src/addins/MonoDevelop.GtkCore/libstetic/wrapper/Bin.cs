@@ -34,7 +34,7 @@ namespace Stetic.Wrapper
 					GenerateHelperClass (ctx);
 				
 				CodeMethodInvokeExpression attachExp = new CodeMethodInvokeExpression (
-					new CodeTypeReferenceExpression (ctx.GlobalCodeNamespace.Name + ".BinContainer"),
+					new CodeTypeReferenceExpression (new CodeTypeReference (ctx.GlobalCodeNamespace.Name + ".BinContainer", CodeTypeReferenceOptions.GlobalReference)),
 					"Attach",
 					var
 				);
@@ -50,7 +50,7 @@ namespace Stetic.Wrapper
 					binContainerVar = ctx.NewId ();
 					ctx.Statements.Add (
 						new CodeVariableDeclarationStatement (
-							ctx.GlobalCodeNamespace.Name + ".BinContainer", 
+							(ctx.GlobalCodeNamespace.Name + ".BinContainer"), 
 							binContainerVar,
 							attachExp
 						)

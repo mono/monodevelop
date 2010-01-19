@@ -112,7 +112,7 @@ namespace Stetic.Wrapper
 		internal protected override CodeExpression GenerateObjectCreation (GeneratorContext ctx)
 		{
 			return new CodeObjectCreateExpression (
-				typeof(Gtk.ActionGroup),
+				typeof(Gtk.ActionGroup).ToGlobalTypeRef (),
 				new CodePrimitiveExpression (Name)
 			);
 		}

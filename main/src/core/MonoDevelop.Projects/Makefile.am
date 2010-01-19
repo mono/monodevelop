@@ -198,6 +198,7 @@ FILES =  \
 	MonoDevelop.Projects.Policies/PolicySet.cs \
 	MonoDevelop.Projects.Policies/ScopedPolicy.cs \
 	MonoDevelop.Projects.Text/CodeFormatDescription.cs \
+	MonoDevelop.Projects.Text/Formatter.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
 	MonoDevelop.Projects.Text/IFormatter.cs \
 	MonoDevelop.Projects.Text/IPrettyPrinter.cs \

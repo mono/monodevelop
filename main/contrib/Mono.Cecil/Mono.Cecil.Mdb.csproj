@@ -8,7 +8,7 @@
     <ProjectGuid>{201F7AC0-D2D5-4F51-85A8-17475DADBED3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Cecil.Mdb</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>Mono.Cecil.Mdb</RootNamespace>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
   </PropertyGroup>

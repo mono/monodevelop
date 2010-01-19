@@ -44,8 +44,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
 				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
-				IPrettyPrinter printer = TextFileService.GetPrettyPrinter (mt);
-				if (printer != null)
+				Formatter formatter = TextFileService.GetFormatter (mt);
+				if (formatter != null)
 					return;
 			}
 			info.Enabled = false;
@@ -57,14 +57,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (doc == null)
 				return;
 			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
-			IPrettyPrinter printer = TextFileService.GetPrettyPrinter (mt);
-			if (printer == null)
+			Formatter formatter = TextFileService.GetFormatter (mt);
+			if (formatter == null)
 				return;
 			doc.TextEditor.BeginAtomicUndo ();
 			int line = doc.TextEditor.CursorLine;
 			int column = doc.TextEditor.CursorColumn;
 			doc.TextEditor.Select (0, doc.TextEditor.TextLength);
-			doc.TextEditor.SelectedText = printer.FormatText (doc.Project, mt, doc.TextEditor.Text);
+			doc.TextEditor.SelectedText = formatter.FormatText (doc.Project.Policies, doc.TextEditor.Text);
 			doc.TextEditor.CursorLine = line ;
 			doc.TextEditor.CursorColumn = column;
 			doc.TextEditor.EndAtomicUndo ();

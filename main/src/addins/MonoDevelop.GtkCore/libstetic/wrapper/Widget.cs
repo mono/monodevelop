@@ -539,7 +539,7 @@ namespace Stetic.Wrapper {
 			if (!String.IsNullOrEmpty (UIManagerName)) {
 				// Create an UI manager
 				CodeFieldReferenceExpression uixp = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), UIManagerName);
-				CodeAssignStatement uim_init = new CodeAssignStatement (uixp, new CodeObjectCreateExpression (typeof (Gtk.UIManager)));
+				CodeAssignStatement uim_init = new CodeAssignStatement (uixp, new CodeObjectCreateExpression (typeof (Gtk.UIManager).ToGlobalTypeRef ()));
 				ctx.Statements.Add (uim_init);
 				
 				includedActionGroups = new ArrayList ();
@@ -550,7 +550,7 @@ namespace Stetic.Wrapper {
 					// Create the action group
 					string grpVar = ctx.NewId ();
 					CodeVariableDeclarationStatement uidec = new CodeVariableDeclarationStatement (
-						typeof (Gtk.ActionGroup),
+						typeof (Gtk.ActionGroup).ToGlobalTypeRef (),
 						grpVar,
 						actionGroup.GenerateObjectCreation (ctx)
 					);

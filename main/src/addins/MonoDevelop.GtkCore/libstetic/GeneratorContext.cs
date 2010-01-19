@@ -63,7 +63,7 @@ namespace Stetic
 		public virtual CodeExpression GenerateInstanceExpression (ObjectWrapper wrapper, CodeExpression newObject)
 		{
 			string varName = NewId ();
-			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (wrapper.WrappedTypeName, varName);
+			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (wrapper.WrappedTypeName.ToGlobalTypeRef (), varName);
 			varDec.InitExpression = newObject;
 			statements.Add (varDec);
 			return new CodeVariableReferenceExpression (varName);
@@ -107,7 +107,7 @@ namespace Stetic
 				} else {
 					long ival = (long) Convert.ChangeType (value, typeof(long));
 					return new CodeCastExpression (
-						new CodeTypeReference (value.GetType ()), 
+						value.GetType ().ToGlobalTypeRef (), 
 						new CodePrimitiveExpression (ival)
 					);
 				}
@@ -116,7 +116,7 @@ namespace Stetic
 			if (value is Gtk.Adjustment) {
 				Gtk.Adjustment adj = value as Gtk.Adjustment;
 				return new CodeObjectCreateExpression (
-					typeof(Gtk.Adjustment),
+					typeof(Gtk.Adjustment).ToGlobalTypeRef (),
 					new CodePrimitiveExpression (adj.Value),
 					new CodePrimitiveExpression (adj.Lower),
 					new CodePrimitiveExpression (adj.Upper),
@@ -126,7 +126,7 @@ namespace Stetic
 			}
 			if (value is ushort || value is uint) {
 				return new CodeCastExpression (
-					new CodeTypeReference (value.GetType ()),
+					value.GetType ().ToGlobalTypeRef (),
 					new CodePrimitiveExpression (Convert.ChangeType (value, typeof(long))));
 			}
 			if (value is ulong) {
@@ -142,7 +142,7 @@ namespace Stetic
 			if (value is Wrapper.ActionGroup) {
 				return new CodeMethodInvokeExpression (
 					new CodeMethodReferenceExpression (
-						new CodeTypeReferenceExpression (GlobalCodeNamespace.Name + ".ActionGroups"),
+						new CodeTypeReferenceExpression (new CodeTypeReference (GlobalCodeNamespace.Name + ".ActionGroups", CodeTypeReferenceOptions.GlobalReference)),
 						"GetActionGroup"
 					),
 					new CodePrimitiveExpression (((Wrapper.ActionGroup)value).Name)
@@ -158,14 +158,14 @@ namespace Stetic
 			
 			if (value is DateTime) {
 				return new CodeObjectCreateExpression (
-					typeof(DateTime),
+					typeof(DateTime).ToGlobalTypeRef (),
 					new CodePrimitiveExpression (((DateTime)value).Ticks)
 				);
 			}
 			
 			if (value is TimeSpan) {
 				return new CodeObjectCreateExpression (
-					typeof(TimeSpan),
+					typeof(TimeSpan).ToGlobalTypeRef (),
 					new CodePrimitiveExpression (((TimeSpan)value).Ticks)
 				);
 			}
@@ -173,7 +173,7 @@ namespace Stetic
 			string str = value as string;
 			if (translatable && str != null && str.Length > 0 && options.UseGettext) {
 				return new CodeMethodInvokeExpression (
-					new CodeTypeReferenceExpression (options.GettextClass),
+					new CodeTypeReferenceExpression (new CodeTypeReference (options.GettextClass, CodeTypeReferenceOptions.GlobalReference)),
 					"GetString",
 					new CodePrimitiveExpression (str)
 				);
@@ -235,7 +235,6 @@ namespace Stetic
 				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(Gtk.Widget), "widget"));
 				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(string), "name"));
 				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(Gtk.IconSize), "size"));
-				met.Parameters.Add (new CodeParameterDeclarationExpression (typeof(int), "sz"));
 				met.ReturnType = new CodeTypeReference (typeof(Gdk.Pixbuf));
 				
 				CodeExpression widgetExp = new CodeVariableReferenceExpression ("widget");
@@ -270,13 +269,26 @@ namespace Stetic
 				);
 				nullcheck.TrueStatements.Add (new CodeMethodReturnStatement (resExp));
 				
+				// int sz, h;
+				// Gtk.Icon.SizeLookup (size, out sz, out h);
+
+				nullcheck.FalseStatements.Add (new CodeVariableDeclarationStatement (typeof(int), "sz"));
+				nullcheck.FalseStatements.Add (new CodeVariableDeclarationStatement (typeof(int), "sy"));
+				nullcheck.FalseStatements.Add (new CodeMethodInvokeExpression (
+				    new CodeTypeReferenceExpression (typeof(Gtk.Icon).ToGlobalTypeRef ()),
+				    "SizeLookup",
+				    sizeExp,
+				    new CodeDirectionExpression (FieldDirection.Out, szExp),
+				    new CodeDirectionExpression (FieldDirection.Out, new CodeVariableReferenceExpression ("sy"))
+				));
+
 				CodeTryCatchFinallyStatement trycatch = new CodeTryCatchFinallyStatement ();
 				nullcheck.FalseStatements.Add (trycatch);
 				trycatch.TryStatements.Add (
 					new CodeMethodReturnStatement (
 						new CodeMethodInvokeExpression (
 							new CodePropertyReferenceExpression (
-								new CodeTypeReferenceExpression (typeof(Gtk.IconTheme)),
+								new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Gtk.IconTheme))),
 								"Default"
 							),
 							"LoadIcon",
@@ -306,8 +318,7 @@ namespace Stetic
 							"LoadIcon",
 							widgetExp,
 							new CodePrimitiveExpression ("gtk-missing-image"),
-							sizeExp,
-							szExp
+							sizeExp
 						)
 					)
 				);
@@ -448,15 +459,14 @@ namespace Stetic
 			Gtk.Icon.SizeLookup (size, out sz, out h);
 			
 			return new CodeMethodInvokeExpression (
-				new CodeTypeReferenceExpression (cns.Name + ".IconLoader"),
+				new CodeTypeReferenceExpression (new CodeTypeReference (cns.Name + ".IconLoader", CodeTypeReferenceOptions.GlobalReference)),
 				"LoadIcon",
 				rootObject,
 				new CodePrimitiveExpression (name),
 			    new CodeFieldReferenceExpression (
-					new CodeTypeReferenceExpression (typeof(Gtk.IconSize)),
+					new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Gtk.IconSize), CodeTypeReferenceOptions.GlobalReference)),
 					size.ToString ()
-				),
-				new CodePrimitiveExpression (sz)
+				)
 			);
 		}
 	}

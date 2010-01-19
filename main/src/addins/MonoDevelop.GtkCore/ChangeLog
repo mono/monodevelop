@@ -1,3 +1,15 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.GtkCore.csproj:
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Format
+	  generated files using the MD formatter to ensure that the
+	  generated text is the same for al platforms and
+	  environments.
+
+	* gtk-gui/gui.stetic: Use global:: for type references in
+	  generated code. 
+
 2009-12-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GtkProjectServiceExtension.cs:

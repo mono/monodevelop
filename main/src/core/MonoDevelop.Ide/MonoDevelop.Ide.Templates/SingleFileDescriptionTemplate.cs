@@ -239,14 +239,11 @@ namespace MonoDevelop.Ide.Templates
 			string content = CreateContent (project, tags, language);
 			content = StringParserService.Parse (content, tags);
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
-			IFormatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
+			Formatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
 			
 			if (formatter != null)
-				content = formatter.FormatText (policyParent, mime, content);
+				content = formatter.FormatText (policyParent.Policies, content);
 			
-			IPrettyPrinter prettyPrinter = !String.IsNullOrEmpty (mime) ? TextFileService.GetPrettyPrinter (mime) : null;
-			if (prettyPrinter != null)
-				content = prettyPrinter.FormatText (policyParent, mime, content);
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (AddStandardHeader) {

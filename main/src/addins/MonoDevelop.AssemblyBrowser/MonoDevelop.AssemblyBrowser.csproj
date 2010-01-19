@@ -113,6 +113,11 @@
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Cecil.Decompiler.csproj">
+      <Project>{F42917B1-C243-4B2B-AD2B-3B40CD7BCC33}</Project>
+      <Name>Cecil.Decompiler</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -147,6 +152,7 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DocumentationPanel.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\ColoredCSharpFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -111,10 +111,6 @@ namespace Stetic.Editor
 				}
 			}
 			
-			Gtk.Tooltips tooltips = null;
-			if (editing)
-				tooltips = new Gtk.Tooltips ();
-			
 			if (editing) {
 				Gtk.HBox bbox = new Gtk.HBox ();
 				bbox.Spacing = 3;
@@ -123,7 +119,7 @@ namespace Stetic.Editor
 				}
 				bbox.PackStart (new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.In), false, false, 0);
 				Gtk.Button b = new Gtk.Button (bbox);
-				tooltips.SetTip (b, "Select action type", "");
+				b.TooltipText = Catalog.GetString ("Select action type");
 				b.Relief = Gtk.ReliefStyle.None;
 				b.ButtonPressEvent += OnSelectIcon;
 				dropButton = b;
@@ -136,7 +132,7 @@ namespace Stetic.Editor
 					entry.Activated += OnLabelActivated;
 					entry.HasFrame = false;
 					label = entry;
-					tooltips.SetTip (entry, "Action label", "");
+					entry.TooltipText = Catalog.GetString ("Action label");
 				}
 			} else if (showText && text != null && text.Length > 0) {
 				label = new Gtk.Label (text);

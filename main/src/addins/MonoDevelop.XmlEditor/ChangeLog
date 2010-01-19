@@ -1,3 +1,7 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlFormatter.cs: Track api changes.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

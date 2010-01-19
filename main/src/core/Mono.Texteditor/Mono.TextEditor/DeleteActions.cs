@@ -126,7 +126,20 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			if (data.IsSomethingSelected) {
-				data.DeleteSelectedText ();
+				if (!data.MainSelection.IsDirty) {
+					data.DeleteSelectedText (data.MainSelection.SelectionMode != SelectionMode.Block);
+				} else {
+					bool preserve = data.Caret.PreserveSelection;
+					data.Caret.PreserveSelection = true;
+					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
+						data.Remove (data.Document.GetLine (lineNumber).Offset + data.Caret.Column - 1, 1);
+					}
+					data.Caret.Column--;
+					data.MainSelection.Lead = new DocumentLocation (data.MainSelection.Lead.Line, data.Caret.Column);
+					data.MainSelection.IsDirty = true;
+					data.Caret.PreserveSelection = preserve;
+					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+				}
 				return;
 			}
 			if (data.Caret.Offset == 0)

@@ -42,6 +42,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -209,7 +210,7 @@ namespace MonoDevelop.CSharp.Formatting
 			CSharpFormatter formatter = new CSharpFormatter ();
 			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
 			
-			string formattedText = formatter.InternalFormat (dom.Project, MimeType, wrapper, 0, wrapper.Length);
+			string formattedText = formatter.InternalFormat (dom.Project.Policies, MimeType, wrapper, 0, wrapper.Length);
 			
 			if (formatter.hasErrors)
 				return;
@@ -269,7 +270,7 @@ namespace MonoDevelop.CSharp.Formatting
 					textOffset++;
 					offset++;
 					continue;
-				} else if (ch1 == '\n') {
+				} else if (ch1 == '\n' || ch1 == '\r') {
 					// skip Ws
 					int firstWhitespace = -1;
 					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
@@ -313,16 +314,15 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static void InsertFormattedText (TextEditorData data, int offset, string formattedText)
 		{
+			formattedText = formattedText.Replace ("\r\n", "\n").Replace ("\r", "\n");
 			data.Document.BeginAtomicUndo ();
-//			DocumentLocation caretLocation = data.Caret.Location;
+			//			DocumentLocation caretLocation = data.Caret.Location;
 
 			int selAnchor = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Anchor) : -1;
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
 			int caretOffset = data.Caret.Offset;
-			
-//			Console.WriteLine ("formattedText:" + formattedText);
-			
+		//			Console.WriteLine ("formattedText:" + formattedText);
 			while (textOffset < formattedText.Length /*&& offset < caretOffset*/) {
 				if (offset < 0) {
 					offset++;
@@ -331,25 +331,39 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				char ch1 = data.Document.GetCharAt (offset);
 				char ch2 = formattedText[textOffset];
-//				Console.WriteLine (((int)ch1) + ":" + ch1 + " -- " + ((int)ch2) + ": " + ch2);
-				if (ch1 == ch2) {
+				bool isCh1Eol = ch1 == '\n'|| ch1 == '\r';
+				
+				if (ch1 == '\r' && offset + 1 < data.Document.Length && data.Document.GetCharAt (offset + 1) == '\n')  {
+					offset++;
+					ch1 = '\n';
+				}
+				
+				if (ch1 == ch2 || (ch2 == '\n' && isCh1Eol)) {
 					textOffset++;
 					offset++;
 					continue;
-				} else if (ch1 == '\n') {
-					//LineSegment line = data.Document.GetLineByOffset (offset);
-					// skip all white spaces in formatted text - we had a line break
+				} else if (isCh1Eol) {
+					
+					int firstWhitespace = 0;
+					/*
+					 // skip all white spaces in formatted text - we had a line break
 					int firstWhitespace = -1;
 					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
 						if (firstWhitespace < 0)
 							firstWhitespace = textOffset;
 						textOffset++;
-					}
-					if (firstWhitespace >= 0 && firstWhitespace != textOffset && (formattedText[textOffset] == '\n' || formattedText[textOffset] == '\r')) {
-						int length = textOffset - firstWhitespace;
-						data.Insert (offset, formattedText.Substring (firstWhitespace, length));
+					}*/
+					if (firstWhitespace >= 0 && firstWhitespace != textOffset && formattedText[textOffset] == '\n') {
+						int length = textOffset - firstWhitespace - 1;
+						data.Insert (offset, formattedText.Substring (firstWhitespace, length) + data.EolMarker);
+						length += data.EolMarker.Length;
 						if (offset < caretOffset)
-							caretOffset+= length;
+							caretOffset += length;
+						if (offset < selAnchor)
+							selAnchor += length;
+						if (offset < selLead)
+							selLead += length;
+						
 						offset += length - 1;
 						textOffset++;
 					}
@@ -364,15 +378,27 @@ namespace MonoDevelop.CSharp.Formatting
 				bool ch2Ws = Char.IsWhiteSpace (ch2);
 
 				if (ch2Ws && !ch1Ws) {
-					data.Insert (offset, ch2.ToString ());
-					if (offset < caretOffset)
-						caretOffset++;
-					if (offset < selAnchor)
-						selAnchor++;
-					if (offset < selLead)
-						selLead++;
-					textOffset++;
-					offset++;
+					if (ch2 == '\n') {
+						data.Insert (offset, data.EolMarker);
+						if (offset < caretOffset)
+							caretOffset += data.EolMarker.Length;
+						if (offset < selAnchor)
+							selAnchor += data.EolMarker.Length;
+						if (offset < selLead)
+							selLead += data.EolMarker.Length;
+						textOffset++;
+						offset += data.EolMarker.Length;
+					} else {
+						data.Insert (offset, ch2.ToString ());
+						if (offset < caretOffset)
+							caretOffset++;
+						if (offset < selAnchor)
+							selAnchor++;
+						if (offset < selLead)
+							selLead++;
+						textOffset++;
+						offset++;
+					}
 					continue;
 				}
 
@@ -388,7 +414,6 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				if (ch1Ws && ch2Ws) {
 					data.Replace (offset, 1, ch2.ToString ());
-
 					textOffset++;
 					offset++;
 					continue;
@@ -421,11 +446,11 @@ namespace MonoDevelop.CSharp.Formatting
 			return (result / tabSize) * tabSize;
 		}
 
-		public static void SetFormatOptions (CSharpOutputVisitor outputVisitor, SolutionItem policyParent)
+		public static void SetFormatOptions (CSharpOutputVisitor outputVisitor, PolicyContainer policyParent)
 		{
 			IEnumerable<string> types = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (MimeType);
-			TextStylePolicy currentPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
-			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Policies.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			TextStylePolicy currentPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 
 			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
 			outputVisitor.Options.TabSize = currentPolicy.TabWidth;
@@ -457,7 +482,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		bool hasErrors = false;
 		int startIndentLevel = 0;
-		protected override string InternalFormat (SolutionItem policyParent, string mimeType, string input, int startOffset, int endOffset)
+		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
 			string text = GetFormattedText (policyParent, input);
 			if (startOffset == 0 && endOffset >= input.Length - 1)
@@ -494,7 +519,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return j;
 		}
 		
-		string GetFormattedText (SolutionItem policyParent, string input)
+		string GetFormattedText (PolicyContainer policyParent, string input)
 		{
 			hasErrors = false;
 			if (string.IsNullOrEmpty (input))

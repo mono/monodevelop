@@ -252,6 +252,9 @@
     <EmbeddedResource Include="icons\tools-external-tools-24.png">
       <LogicalName>tools-external-tools-24.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.CodeFormatting\InvariantTextStylePolicy.xml">
+      <LogicalName>InvariantTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

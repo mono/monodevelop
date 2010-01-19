@@ -76,9 +76,9 @@ namespace Stetic.Wrapper {
 				// If the page contains a placeholder, generate a dummy page
 				if (page is Stetic.Placeholder) {
 					CodeVariableDeclarationStatement dvar = new CodeVariableDeclarationStatement (
-						"Gtk.Label",
+						"Gtk.Label".ToGlobalTypeRef (),
 						ctx.NewId (),
-						new CodeObjectCreateExpression ("Gtk.Label")
+						new CodeObjectCreateExpression ("Gtk.Label".ToGlobalTypeRef ())
 					);
 					ctx.Statements.Add (dvar);
 					ctx.Statements.Add (

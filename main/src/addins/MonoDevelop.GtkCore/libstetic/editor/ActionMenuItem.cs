@@ -226,10 +226,6 @@ namespace Stetic.Editor
 					icon = node.Action.CreateIcon (Gtk.IconSize.Menu);
 			}
 			
-			Gtk.Tooltips tooltips = null;
-			if (editing)
-				tooltips = new Gtk.Tooltips ();
-			
 			if (editing && !isGlobal) {
 				if (!barItem) {
 					Gtk.HBox bbox = new Gtk.HBox ();
@@ -238,7 +234,7 @@ namespace Stetic.Editor
 					}
 					bbox.PackStart (new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.In), false, false, 0);
 					Gtk.Button b = new Gtk.Button (bbox);
-					tooltips.SetTip (b, Catalog.GetString ("Select action type"), "");
+					b.TooltipText = Catalog.GetString ("Select action type");
 					b.Relief = Gtk.ReliefStyle.None;
 					b.ButtonPressEvent += OnSelectIcon;
 					icon = b;
@@ -251,7 +247,7 @@ namespace Stetic.Editor
 				entry.KeyPressEvent += OnEntryKeyPress;
 				entry.HasFrame = false;
 				this.label = entry;
-				tooltips.SetTip (entry, Catalog.GetString ("Action label"), "");
+				entry.TooltipText = Catalog.GetString ("Action label");
 			} else {
 				Gtk.Label label = new Gtk.Label (text);
 				label.Xalign = 0;
@@ -271,7 +267,7 @@ namespace Stetic.Editor
 				}
 					
 				Gtk.Button sb = new Gtk.Button (new Gtk.Image (img));
-				tooltips.SetTip (sb, tip, "");
+				sb.TooltipText = tip;
 				sb.Relief = Gtk.ReliefStyle.None;
 				sb.Clicked += OnCreateDeleteSubmenu;
 				

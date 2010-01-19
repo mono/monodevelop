@@ -160,7 +160,7 @@ namespace Stetic.Wrapper
 			actionTree.Name = Name;
 			CodeExpression exp = GenerateUiManagerElement (ctx, actionTree);
 			if (exp != null)
-				return new CodeCastExpression (typeof(Gtk.MenuBar),	exp);
+				return new CodeCastExpression (typeof(Gtk.MenuBar).ToGlobalTypeRef (),	exp);
 			else
 				return base.GenerateObjectCreation (ctx);
 		}
@@ -214,7 +214,7 @@ namespace Stetic.Wrapper
 	class CustomMenuBarItem: Gtk.MenuItem
 	{
 		public ActionMenuItem ActionMenuItem;
-		public ActionTreeNode Node;
+//		public ActionTreeNode Node;
 	}
 		
 	public class ActionPaletteItem: Gtk.HBox

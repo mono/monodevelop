@@ -266,9 +266,9 @@ namespace Stetic {
 					PropertyDescriptor prop = ClassDescriptor.InitializationProperties [n];
 					paramters [n] = ctx.GenerateValue (prop.GetValue (Wrapped), prop.RuntimePropertyType, prop.Translatable && prop.IsTranslated (Wrapped));
 				}
-				return new CodeObjectCreateExpression (WrappedTypeName, paramters);
+				return new CodeObjectCreateExpression (WrappedTypeName.ToGlobalTypeRef (), paramters);
 			} else
-				return new CodeObjectCreateExpression (WrappedTypeName);
+				return new CodeObjectCreateExpression (WrappedTypeName.ToGlobalTypeRef ());
 		}
 		
 		protected virtual void GeneratePropertySet (GeneratorContext ctx, CodeExpression var, PropertyDescriptor prop)

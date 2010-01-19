@@ -565,7 +565,7 @@ namespace MonoDevelop.Core
 
 		public override bool Equals (object obj)
 		{
-			if (obj == null)
+			if (obj == null && !(obj is FilePath))
 				return false;
 
 			FilePath fn = (FilePath) obj;
@@ -574,6 +574,8 @@ namespace MonoDevelop.Core
 
 		public override int GetHashCode ( )
 		{
+			if (fileName == null)
+				return 0;
 			if (PropertyService.IsWindows)
 				return fileName.ToLower ().GetHashCode ();
 			else

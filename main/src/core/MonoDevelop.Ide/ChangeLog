@@ -1,3 +1,44 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.CodeFormatting/InvariantTextStylePolicy.xml:
+	  Define invariant text style policy.
+
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Track api changes.
+
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  Track api changes in the text service.
+
+	* templates/Workspace.xpt.xml:
+	* templates/BlankCombine.xpt.xml:
+	* templates/GenericProject.xpt.xml: Updated categories.
+
+	* MonoDevelop.Ide.addin.xml: Use new visual style icon.
+
+2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
+	  Only strip blank lines from C#, not all languages.
+
+2010-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Templates/CodeDomFileDescriptionTemplate.cs:
+	  strip blank lines in CodeDOM output.
+
+2010-01-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	  Improve error message. Fixes bug #570188 - Incorrect
+	  description of options in delete dialog.
+
 2010-01-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Added

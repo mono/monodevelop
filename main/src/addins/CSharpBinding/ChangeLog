@@ -1,3 +1,31 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
+	* MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs:
+	  Track api changes.
+
+2010-01-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  fixed 'Bug 571175 - ArgumentNullException in C# code
+	  completion'.
+
+2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj: Fix NRefactory project reference
+	  AGAIN.
+
+2010-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: removed
+	  debug messages.
+
+2010-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed 'Bug
+	  569545 - [Windows] TextEditor sometimes adds LF on Windows'.
+
 2010-01-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

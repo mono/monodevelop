@@ -178,11 +178,12 @@ namespace MonoDevelop.SourceEditor
 		
 		bool isMouseOver = false;
 		DropDownBoxListWindow window = null;
-		void DestroyWindow ()
+		internal void DestroyWindow ()
 		{
 			if (window != null) {
 				window.Destroy ();
 				window = null;
+				QueueDraw ();
 			}
 		}
 		

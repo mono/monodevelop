@@ -35,17 +35,27 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects.Policies
 {
+	/// <summary>
+	/// A named set of policies.
+	/// </summary>
 	public class PolicySet: PolicyContainer
 	{
 		internal PolicySet (string id, string name)
 		{
 			this.Id = id;
 			this.Name = name;
+			Visible = true;
 		}
 		
 		public override bool IsRoot {
 			get { return true; }
 		}
+
+		/// <summary>
+		/// When set to false, this policy set is not visible to the user. This flag can be used
+		/// to deprecate existing policy sets (since registered policy sets can't be modified/removed).
+		/// </summary>
+		public bool Visible { get; set; }
 		
 		public override PolicyContainer ParentPolicies {
 			get { return null; }

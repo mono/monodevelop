@@ -65,7 +65,6 @@ namespace MonoDevelop.Projects
 		public const string BuildTarget = "Build";
 		public const string CleanTarget = "Clean";
 		
-		const string ProjectFileFormatsExtensionPath = "/MonoDevelop/ProjectModel/ProjectFileFormats";
 		const string FileFormatsExtensionPath = "/MonoDevelop/ProjectModel/FileFormats";
 		const string SerializableClassesExtensionPath = "/MonoDevelop/ProjectModel/SerializableClasses";
 		const string ExtendedPropertiesExtensionPath = "/MonoDevelop/ProjectModel/ExtendedProperties";

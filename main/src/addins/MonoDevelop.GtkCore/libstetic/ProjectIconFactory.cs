@@ -47,8 +47,8 @@ namespace Stetic
 		public void GenerateBuildCode (GeneratorContext ctx)
 		{
 			string varName = ctx.NewId ();
-			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (typeof(Gtk.IconFactory), varName);
-			varDec.InitExpression = new CodeObjectCreateExpression (typeof(Gtk.IconFactory));
+			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (typeof(Gtk.IconFactory).ToGlobalTypeRef (), varName);
+			varDec.InitExpression = new CodeObjectCreateExpression (typeof(Gtk.IconFactory).ToGlobalTypeRef ());
 			ctx.Statements.Add (varDec);
 			
 			CodeVariableReferenceExpression var = new CodeVariableReferenceExpression (varName);
@@ -134,18 +134,18 @@ namespace Stetic
 		internal CodeExpression GenerateObjectBuild (GeneratorContext ctx)
 		{
 			string varName = ctx.NewId ();
-			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (typeof(Gtk.IconSet), varName);
+			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (typeof(Gtk.IconSet).ToGlobalTypeRef (), varName);
 			ctx.Statements.Add (varDec);
 			
 			CodeVariableReferenceExpression var = new CodeVariableReferenceExpression (varName);
 			
 			if (sources.Count == 1 && sources[0].AllWildcarded) {
 				varDec.InitExpression = new CodeObjectCreateExpression (
-					typeof(Gtk.IconSet),
+					typeof(Gtk.IconSet).ToGlobalTypeRef (),
 					sources[0].Image.ToCodeExpression (ctx)
 				);
 			} else {
-				varDec.InitExpression = new CodeObjectCreateExpression (typeof(Gtk.IconSet));
+				varDec.InitExpression = new CodeObjectCreateExpression (typeof(Gtk.IconSet).ToGlobalTypeRef ());
 				foreach (ProjectIconSource src in sources) {
 					CodeExpression exp = new CodeMethodInvokeExpression (
 						var,
@@ -241,8 +241,8 @@ namespace Stetic
 		internal CodeExpression GenerateObjectBuild (GeneratorContext ctx)
 		{
 			string varName = ctx.NewId ();
-			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (typeof(Gtk.IconSource), varName);
-			varDec.InitExpression = new CodeObjectCreateExpression (typeof(Gtk.IconSource));
+			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (typeof(Gtk.IconSource).ToGlobalTypeRef (), varName);
+			varDec.InitExpression = new CodeObjectCreateExpression (typeof(Gtk.IconSource).ToGlobalTypeRef ());
 			ctx.Statements.Add (varDec);
 			
 			CodeVariableReferenceExpression var = new CodeVariableReferenceExpression (varName);
@@ -260,7 +260,7 @@ namespace Stetic
 				ctx.Statements.Add (new CodeAssignStatement (
 					new CodePropertyReferenceExpression (var, "Size"),
 					new CodeFieldReferenceExpression (
-						new CodeTypeReferenceExpression ("Gtk.IconSize"),
+						new CodeTypeReferenceExpression (new CodeTypeReference ("Gtk.IconSize", CodeTypeReferenceOptions.GlobalReference)),
 						Size.ToString ()
 					)
 				));
@@ -274,7 +274,7 @@ namespace Stetic
 				ctx.Statements.Add (new CodeAssignStatement (
 					new CodePropertyReferenceExpression (var, "State"),
 					new CodeFieldReferenceExpression (
-						new CodeTypeReferenceExpression ("Gtk.StateType"),
+						new CodeTypeReferenceExpression (new CodeTypeReference ("Gtk.StateType", CodeTypeReferenceOptions.GlobalReference)),
 						State.ToString ()
 					)
 				));
@@ -288,7 +288,7 @@ namespace Stetic
 				ctx.Statements.Add (new CodeAssignStatement (
 					new CodePropertyReferenceExpression (var, "Direction"),
 					new CodeFieldReferenceExpression (
-						new CodeTypeReferenceExpression ("Gtk.TextDirection"),
+						new CodeTypeReferenceExpression (new CodeTypeReference ("Gtk.TextDirection", CodeTypeReferenceOptions.GlobalReference)),
 						Direction.ToString ()
 					)
 				));

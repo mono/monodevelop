@@ -30,6 +30,7 @@ using System;
 
 using Gdk;
 using Gtk;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -41,7 +42,7 @@ namespace Mono.TextEditor
 		Pango.FontDescription fontDescription;
 		Pango.Layout layout;
 		
-		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this (editor, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
+		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this(editor, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
 		{
 		}
 		

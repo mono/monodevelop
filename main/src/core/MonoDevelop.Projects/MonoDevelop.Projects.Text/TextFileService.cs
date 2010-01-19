@@ -125,14 +125,14 @@ namespace MonoDevelop.Projects.Text
 			return descriptions.Find (d => d.MimeType == mimeType);
 		}*/
 		
-		public static IFormatter GetFormatter (string mimeType)
+		public static Formatter GetFormatter (string mimeType)
 		{
-			return formatters.Find (x => x.CanFormat (mimeType));
-		}
-		
-		public static IPrettyPrinter GetPrettyPrinter (string mimeType)
-		{
-			return prettyPrinters.Find (x => x.CanFormat (mimeType));
+			IPrettyPrinter prettyPrinter = prettyPrinters.Find (x => x.CanFormat (mimeType));
+			IFormatter formatter = formatters.Find (x => x.CanFormat (mimeType));
+			if (prettyPrinter != null || formatter != null)
+				return new Formatter (mimeType, prettyPrinter, formatter);
+			else
+				return null;
 		}
 		
 		public static void FireLineCountChanged (ITextFile textFile, int lineNumber, int lineCount, int column)

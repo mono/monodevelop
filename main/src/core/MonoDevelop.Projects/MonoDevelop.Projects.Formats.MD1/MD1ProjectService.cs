@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 		static MD1ProjectService ()
 		{
 			attributeProvider = new XmlMapAttributeProvider ();
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/MD1SerializationMaps", OnMapsChanged);
+			AddinManager.AddExtensionNodeHandler (MD1SerializationMapsExtensionPath, OnMapsChanged);
 			
 			Services.ProjectService.DataContextChanged += delegate {
 				// Regenerate the data context

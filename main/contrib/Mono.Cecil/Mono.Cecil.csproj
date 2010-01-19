@@ -8,7 +8,7 @@
     <ProjectGuid>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Cecil</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>Mono.Cecil</RootNamespace>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -374,5 +374,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
   </ItemGroup>
 </Project>

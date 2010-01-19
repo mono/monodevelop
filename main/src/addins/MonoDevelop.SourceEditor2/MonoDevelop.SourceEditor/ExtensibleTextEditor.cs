@@ -775,10 +775,10 @@ namespace MonoDevelop.SourceEditor
 		void HandleTextPaste (int insertionOffset, string text)
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-				IPrettyPrinter prettyPrinter = TextFileService.GetPrettyPrinter (Document.MimeType);
+				Formatter prettyPrinter = TextFileService.GetFormatter (Document.MimeType);
 				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting && ProjectDom != null && text != null) {
 					try {
-						string newText = prettyPrinter.FormatText (ProjectDom.Project, Document.MimeType, Document.Text, insertionOffset, insertionOffset + text.Length);
+						string newText = prettyPrinter.FormatText (ProjectDom.Project.Policies, Document.MimeType, Document.Text, insertionOffset, insertionOffset + text.Length);
 						if (!string.IsNullOrEmpty (newText)) {
 							Replace (insertionOffset, text.Length, newText);
 							Caret.Offset = insertionOffset + newText.Length;
@@ -799,10 +799,10 @@ namespace MonoDevelop.SourceEditor
 			                                             result.TextLinks);
 			
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-				IPrettyPrinter prettyPrinter = TextFileService.GetPrettyPrinter (Document.MimeType);
+				Formatter prettyPrinter = TextFileService.GetFormatter (Document.MimeType);
 				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
 					int endOffset = result.InsertPosition + result.Code.Length;
-					string text = prettyPrinter.FormatText (document.Project, Document.MimeType, Document.Text, result.InsertPosition, endOffset);
+					string text = prettyPrinter.FormatText (document.Project.Policies, Document.MimeType, Document.Text, result.InsertPosition, endOffset);
 					string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
 					//					Console.WriteLine (result.InsertPosition);
 					//					Console.WriteLine ("old:" + oldText);

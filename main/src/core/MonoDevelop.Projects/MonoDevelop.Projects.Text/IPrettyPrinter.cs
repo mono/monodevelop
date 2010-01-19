@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -55,8 +56,8 @@ namespace MonoDevelop.Projects.Text
 		/// </param>
 		void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation);
 		
-		string FormatText (SolutionItem policyParent, string mimeType, string input);
-		string FormatText (SolutionItem policyParent, string mimeType, string input, int fromOffest, int toOffset);
+		string FormatText (PolicyContainer policyParent, string mimeType, string input);
+		string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset);
 	}
 	
 	public abstract class AbstractPrettyPrinter : IPrettyPrinter
@@ -74,16 +75,16 @@ namespace MonoDevelop.Projects.Text
 			throw new NotSupportedException ();
 		}
 		
-		protected abstract string InternalFormat (SolutionItem policyParent, string mimeType, string text, int fromOffest, int toOffset);
+		protected abstract string InternalFormat (PolicyContainer policyParent, string mimeType, string text, int fromOffest, int toOffset);
 		
-		public string FormatText (SolutionItem policyParent, string mimeType, string input)
+		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;
 			return FormatText (policyParent, mimeType, input, 0, input.Length - 1);
 		}
 		
-		public string FormatText (SolutionItem policyParent, string mimeType, string input, int fromOffest, int toOffset)
+		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;

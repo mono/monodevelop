@@ -1,3 +1,16 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* CodeGenerator.cs:
+	* libsteticui.csproj:
+	* CodeGeneratorPartialClass.cs:
+	* CodeGeneratorInternalClass.cs: Use global:: for type
+	  references in generated code. 
+
+2010-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* libsteticui.csproj: upgraded to v3.5 framework.
+
 2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* WidgetDesignerBackend.cs: Disable checkerboard background

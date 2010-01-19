@@ -76,7 +76,7 @@ namespace Stetic
 
 			met.Statements.Add (
 					new CodeMethodInvokeExpression (
-						new CodeTypeReferenceExpression (globalNs.Name + ".Gui"),
+						new CodeTypeReferenceExpression (new CodeTypeReference (globalNs.Name + ".Gui", CodeTypeReferenceOptions.GlobalReference)),
 						"Initialize",
 			            new CodeThisReferenceExpression ()
 					)
@@ -88,7 +88,7 @@ namespace Stetic
 				type.TypeAttributes = TypeAttributes.NotPublic;
 			
 			if (!String.IsNullOrEmpty (wwidget.UIManagerName))
-				type.Members.Add (new CodeMemberField ("Gtk.UIManager", wwidget.UIManagerName));
+				type.Members.Add (new CodeMemberField (new CodeTypeReference ("Gtk.UIManager", CodeTypeReferenceOptions.GlobalReference), wwidget.UIManagerName));
 
 			Stetic.WidgetMap map = Stetic.CodeGenerator.GenerateCreationCode (globalNs, type, w, new CodeThisReferenceExpression (), met.Statements, options, warnings);
 			CodeGenerator.BindSignalHandlers (new CodeThisReferenceExpression (), wwidget, map, met.Statements, options);
@@ -99,7 +99,7 @@ namespace Stetic
 			foreach (ObjectBindInfo binfo in CodeGenerator.GetFieldsToBind (wrapper)) {
 				type.Members.Add (
 					new CodeMemberField (
-						binfo.TypeName,
+						new CodeTypeReference (binfo.TypeName, CodeTypeReferenceOptions.GlobalReference),
 						binfo.Name
 					)
 				);

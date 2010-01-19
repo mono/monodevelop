@@ -590,7 +590,7 @@ namespace Stetic.Wrapper
 			if (cwrapper != null) {
 				ctx.Statements.Add (new CodeCommentStatement ("Internal child " + Wrapped.Name + "." + prop.Name));
 				string childVar = ctx.NewId ();
-				CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (child.GetType(), childVar);
+				CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (child.GetType().ToGlobalTypeRef (), childVar);
 				ctx.Statements.Add (varDec);
 				varDec.InitExpression = new CodePropertyReferenceExpression (parentVar, prop.Name);
 			
@@ -607,9 +607,9 @@ namespace Stetic.Wrapper
 			// Generate a variable that holds the container child
 			
 			string contChildVar = ctx.NewId ();
-			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (cc.GetType(), contChildVar);
+			CodeVariableDeclarationStatement varDec = new CodeVariableDeclarationStatement (cc.GetType().ToGlobalTypeRef (), contChildVar);
 			varDec.InitExpression = new CodeCastExpression ( 
-				cc.GetType (),
+				cc.GetType ().ToGlobalTypeRef (),
 				new CodeIndexerExpression (parentVar, childVar)
 			);
 			
@@ -682,7 +682,7 @@ namespace Stetic.Wrapper
 				string tid = ctx.NewId ();
 				Type t = typeof(Gtk.Widget).Assembly.GetType ("Gtk.Tooltips");
 				CodeVariableDeclarationStatement vardec = new CodeVariableDeclarationStatement (
-					t, tid, new CodeObjectCreateExpression (t)
+					t.ToGlobalTypeRef (), tid, new CodeObjectCreateExpression (t)
 				);
 				ctx.Statements.Add (vardec);
 				generatedTooltips = new CodeVariableReferenceExpression (tid);

@@ -184,7 +184,7 @@ namespace Stetic
 			switch (source) {
 				case ImageSource.Resource:
 					return new CodeMethodInvokeExpression (
-						new CodeTypeReferenceExpression (typeof(Gdk.Pixbuf)),
+						new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Gdk.Pixbuf), CodeTypeReferenceOptions.GlobalReference)),
 						"LoadFromResource",
 						new CodePrimitiveExpression (name)
 					);
@@ -194,13 +194,13 @@ namespace Stetic
 					
 				case ImageSource.File:
 					return new CodeObjectCreateExpression (
-						typeof(Gdk.Pixbuf),
+						typeof(Gdk.Pixbuf).ToGlobalTypeRef (),
 						new CodeMethodInvokeExpression (
-							new CodeTypeReferenceExpression (typeof(System.IO.Path)),
+							new CodeTypeReferenceExpression (new CodeTypeReference (typeof(System.IO.Path), CodeTypeReferenceOptions.GlobalReference)),
 							"Combine",
 							new CodePropertyReferenceExpression (
 								new CodePropertyReferenceExpression (
-									new CodeTypeReferenceExpression (typeof(AppDomain)),
+									new CodeTypeReferenceExpression (new CodeTypeReference (typeof(AppDomain), CodeTypeReferenceOptions.GlobalReference)),
 									"CurrentDomain"
 								),
 								"BaseDirectory"

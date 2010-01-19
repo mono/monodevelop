@@ -1,3 +1,44 @@
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicyService.cs:
+	* MonoDevelop.Projects.Policies/PolicyContainer.cs: Properly
+	  read invariant policies from the invariant policy set.
+
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicySet.cs:
+	* MonoDevelop.Projects.Policies/PolicyService.cs:
+	* MonoDevelop.Projects.Extensions/PolicySetNode.cs:
+	* MonoDevelop.Projects.Policies/PolicyContainer.cs: Add
+	  support for hidden policy sets (which can be used when
+	  serializing, but which are not shown to the user). Added
+	  Invariant policy set, which will always return the same
+	  default settings, no matter what the user changed.
+
+	* MonoDevelop.Projects.addin.xml: Define invariant policy.
+
+	* MonoDevelop.Projects.Text/IFormatter.cs:
+	* MonoDevelop.Projects.Text/IPrettyPrinter.cs: The formatting
+	  interfaces now take a PolicyContainer as parent policy
+	  provider, instead of a solution item.
+
+	* MonoDevelop.Projects.Text/Formatter.cs:
+	* MonoDevelop.Projects.Text/TextFileService.cs: Added new
+	  Formatter class which wraps IFormatter and IPrettyPrinter.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj: New Formatter class that wraps
+	  IFormatter and IPrettyPrinter.
+
+2010-01-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs: Fix another warning.
+
+2010-01-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MD1/MD1ProjectService.cs: Fix
+	  warning issued by mcs trunk.
+
 2010-01-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:

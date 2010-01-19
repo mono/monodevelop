@@ -195,9 +195,9 @@ namespace Stetic {
 			
 			if (var == null) {
 				return new CodeObjectCreateExpression (
-					"GLib.SList",
+					"GLib.SList".ToGlobalTypeRef (),
 					new CodePropertyReferenceExpression (
-						new CodeTypeReferenceExpression (typeof(IntPtr)),
+						new CodeTypeReferenceExpression (new CodeTypeReference (typeof(IntPtr), CodeTypeReferenceOptions.GlobalReference)),
 						"Zero"
 					)
 				);

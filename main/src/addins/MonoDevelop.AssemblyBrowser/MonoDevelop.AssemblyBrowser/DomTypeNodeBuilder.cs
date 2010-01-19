@@ -127,7 +127,7 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)dataObject;
 			ctx.AddChild (new BaseTypeFolder (type));
 			bool publicOnly = ctx.Options ["PublicApiOnly"];
-			ctx.AddChildren (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !member.IsPublic)));
+			ctx.AddChildren (type.Members.Where (member => !(member.IsSpecialName && !(member is IMethod && ((IMethod)member).IsConstructor)) && !(publicOnly && !(member.IsPublic || member.IsProtected))));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -199,7 +199,7 @@ namespace MonoDevelop.AssemblyBrowser
 //			string commentSpan = String.Format ("<span foreground=\"#{0:X6}\">", comments.Color.Pixel);
 			string commentSpan = "<span style=\"comment\">";
 			foreach (IField field in type.Fields) {
-				if (publicOnly && !field.IsPublic)
+				if (publicOnly && !(field.IsPublic || field.IsProtected))
 					continue;
 				if ((field.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName)
 					continue;
@@ -219,7 +219,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IEvent evt in type.Events) {
-				if (publicOnly && !evt.IsPublic)
+				if (publicOnly && !(evt.IsPublic || evt.IsProtected))
 					continue;
 				if (first) {
 					result.AppendLine ();
@@ -237,7 +237,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IMethod method in type.Methods) {
-				if (publicOnly && !method.IsPublic)
+				if (publicOnly && !(method.IsPublic || method.IsProtected))
 					continue;
 				if (!method.IsConstructor)
 					continue;
@@ -257,7 +257,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IMethod method in type.Methods) {
-				if (publicOnly && !method.IsPublic)
+				if (publicOnly && !(method.IsPublic || method.IsProtected))
 					continue;
 				if ((method.Modifiers & Modifiers.SpecialName) == Modifiers.SpecialName || method.IsConstructor)
 					continue;
@@ -277,7 +277,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			first = true;
 			foreach (IProperty property in type.Properties) {
-				if (publicOnly && !property.IsPublic)
+				if (publicOnly && !(property.IsPublic || property.IsProtected))
 					continue;
 				if (first) {
 					result.AppendLine ();

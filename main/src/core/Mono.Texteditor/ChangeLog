@@ -1,3 +1,23 @@
+2010-01-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/Selection.cs:
+	* Mono.TextEditor/DeleteActions.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Implemented
+	  'Bug 571367 - Block selection should allow change/replace
+	  test by'.
+
+2010-01-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorOptions.cs: Fixed mousewheel zoom
+	  bug.
+
+2010-01-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: added font null check.
+
 2010-01-14  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Use a
