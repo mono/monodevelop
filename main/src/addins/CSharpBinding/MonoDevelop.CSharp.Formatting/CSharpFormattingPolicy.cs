@@ -250,30 +250,37 @@ namespace MonoDevelop.CSharp.Formatting
 		#endregion
 		
 		#region Force Braces
+		[ItemProperty]
 		public BraceForcement IfElseBraceForcement {
 			get;
 			set;
 		}
 		
+		[ItemProperty]
 		public BraceForcement ForBraceForcement {
 			get;
 			set;
 		}
 		
+		[ItemProperty]
 		public BraceForcement ForEachBraceForcement {
 			get;
 			set;
 		}
 		
+		[ItemProperty]
 		public BraceForcement WhileBraceForcement {
 			get;
 			set;
 		}
+		
+		[ItemProperty]
 		public BraceForcement UsingBraceForcement {
 			get;
 			set;
 		}
 		
+		[ItemProperty]
 		public BraceForcement FixedBraceForcement {
 			get;
 			set;
@@ -664,9 +671,12 @@ namespace MonoDevelop.CSharp.Formatting
 			foreach (PropertyInfo info in typeof (CSharpFormattingPolicy).GetProperties ()) {
 				object val      = info.GetValue (this, null);
 				object otherVal = info.GetValue (other, null);
-				if (!val.Equals (otherVal))
+				if (!val.Equals (otherVal)) {
+					Console.WriteLine ("!equal");
 					return false;
+				}
 			}
+			Console.WriteLine ("== equal");
 			return true;
 		}
 	}

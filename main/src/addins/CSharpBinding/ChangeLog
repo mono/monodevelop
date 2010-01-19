@@ -1,3 +1,8 @@
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	  brace forcement is now saved.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
