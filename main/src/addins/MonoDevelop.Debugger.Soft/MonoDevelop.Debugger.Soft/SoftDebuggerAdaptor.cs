@@ -759,7 +759,7 @@ namespace MonoDevelop.Debugger.Soft
 				exception = ex;
 			} catch (Exception ex) {
 				ctx.Session.StackVersion++;
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			}
 		}
@@ -787,10 +787,29 @@ namespace MonoDevelop.Debugger.Soft
 			} catch (InvocationException ex) {
 				exception = ex;
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			} finally {
 				ctx.Session.StackVersion++;
+			}
+		}
+		
+		string GetInfo ()
+		{
+			try {
+				TypeMirror type = null;
+				if (obj is ObjectMirror)
+					type = ((ObjectMirror)obj).Type;
+				else if (obj is TypeMirror)
+					type = (TypeMirror)obj;
+				else if (obj is StructMirror)
+					type = ((StructMirror)obj).Type;
+				return string.Format ("method {0} on object {1}",
+				                      function == null? "[null]" : function.FullName,
+				                      type == null? "[null]" : type.FullName);
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Error getting info for SDB MethodCall", ex);
+				return "";
 			}
 		}
 
