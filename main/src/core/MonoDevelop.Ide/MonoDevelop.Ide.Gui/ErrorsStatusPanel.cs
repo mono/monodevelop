@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Gui
 		CheckButton errorsCheck;
 		CheckButton warningsCheck;
 		Button outputButton;
+		Button firstErrorButton;
 		
 		public ErrorsStatusPanel ()
 		{
@@ -73,6 +74,15 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.ProjectOperations.LastBuildJob.ToggleStatusView (outputButton, PositionType.Top, 0, false);
 			};
 			expandedPanel.PackStart (outputButton, false, false, 0);
+			
+			firstErrorButton = new Button (GettextCatalog.GetString ("Show First Error"));
+			firstErrorButton.Relief = ReliefStyle.None;
+			firstErrorButton.Clicked += delegate {
+				TaskService.Errors.ResetLocationList ();
+				IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
+				IdeApp.Workbench.ShowNext ();
+			};
+			expandedPanel.PackStart (firstErrorButton, false, false, 0);
 			
 			listButton = new Button (GettextCatalog.GetString ("Error List"));
 			listButton.Relief = ReliefStyle.None;
@@ -135,6 +145,7 @@ namespace MonoDevelop.Ide.Gui
 			labelErrors.Text = ec.ToString ();
 			labelWarnings.Text = wc.ToString ();
 			outputButton.Sensitive = IdeApp.IsInitialized && IdeApp.ProjectOperations.LastBuildJob != null;
+			firstErrorButton.Sensitive = ec + wc > 0;
 		}
 		
 		protected override void OnDestroyed ()

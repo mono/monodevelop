@@ -1053,6 +1053,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 
 					TaskService.Errors.AddRange (tasks);
+					TaskService.Errors.ResetLocationList ();
 					IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);

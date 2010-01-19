@@ -340,28 +340,52 @@ namespace MonoDevelop.Ide.Tasks
 		#region ILocationList implementation
 		
 		Task currentLocationTask;
+		TaskSeverity iteratingSeverity;
+		
+		public void ResetLocationList ()
+		{
+			currentLocationTask = null;
+			iteratingSeverity = TaskSeverity.Error;
+		}
 		
 		public event EventHandler CurrentLocationTaskChanged;
 		
 		public Task CurrentLocationTask {
 			get { return currentLocationTask; }
-			set { currentLocationTask = value; }
+			set {
+				currentLocationTask = value;
+				iteratingSeverity = value != null ? value.Severity : TaskSeverity.Error;
+			}
 		}
 		
 		public NavigationPoint GetNextLocation ()
 		{
-			Task ct = null;
+			return GetNextLocation (false);
+		}
+		
+		NavigationPoint GetNextLocation (bool followSeverity)
+		{
+			int n;
 			if (currentLocationTask == null) {
-				if (tasks.Count > 0)
-					ct = tasks [0];
+				n = 0;
+				if (!followSeverity)
+					iteratingSeverity = TaskSeverity.Error;
 			}
 			else {
-				for (int n=0; n<tasks.Count; n++) {
-					if (tasks [n] == currentLocationTask) {
-						if (n < tasks.Count - 1)
-							ct = tasks [n+1];
-						break;
-					}
+				n = IndexOfTask (currentLocationTask);
+				if (n != -1)
+					n++;
+			}
+			
+			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity))
+				n++;
+			
+			Task ct = n != -1 && n < tasks.Count ? tasks [n] : null;
+			if (ct == null) {
+				if (iteratingSeverity != TaskSeverity.Comment) {
+					iteratingSeverity++;
+					currentLocationTask = null;
+					return GetNextLocation (true);
 				}
 			}
 			
@@ -373,25 +397,41 @@ namespace MonoDevelop.Ide.Tasks
 				TaskService.ShowStatus (currentLocationTask);
 				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
 			}
-			else
+			else {
+				IdeApp.Workbench.StatusBar.ShowReady ();
 				return null;
+			}
 		}
 		
 		
 		public NavigationPoint GetPreviousLocation ()
 		{
-			Task ct = null;
+			return GetPreviousLocation (false);
+		}
+		
+		NavigationPoint GetPreviousLocation (bool followSeverity)
+		{
+			int n;
 			if (currentLocationTask == null) {
-				if (tasks.Count > 0)
-					ct = tasks [tasks.Count - 1];
+				n = tasks.Count - 1;
+				if (!followSeverity)
+					iteratingSeverity = TaskSeverity.Comment;
 			}
 			else {
-				for (int n=0; n<tasks.Count; n++) {
-					if (tasks [n] == currentLocationTask) {
-						if (n > 0)
-							ct = tasks [n-1];
-						break;
-					}
+				n = IndexOfTask (currentLocationTask);
+				if (n != -1)
+					n--;
+			}
+			
+			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity))
+				n--;
+			
+			Task ct = n != -1 && n < tasks.Count ? tasks [n] : null;
+			if (ct == null) {
+				if (iteratingSeverity != TaskSeverity.Error) {
+					iteratingSeverity--;
+					currentLocationTask = null;
+					return GetPreviousLocation (true);
 				}
 			}
 			
@@ -403,8 +443,19 @@ namespace MonoDevelop.Ide.Tasks
 				TaskService.ShowStatus (currentLocationTask);
 				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
 			}
-			else
+			else {
+				IdeApp.Workbench.StatusBar.ShowReady ();
 				return null;
+			}
+		}
+		
+		int IndexOfTask (Task t)
+		{
+			for (int n=0; n<tasks.Count; n++) {
+				if (tasks [n] == t)
+					return n;
+			}
+			return -1;
 		}
 		
 		public string ItemName {
