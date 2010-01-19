@@ -1,3 +1,8 @@
+2010-01-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Use
+	  FilePath to clean up code, and set resource IDs for respack.
+
 2010-01-13  Chris Toshok  <toshok@ximian.com>
 
 	* MonoDevelop.Moonlight/XamlG.cs: when generating fields for fully
