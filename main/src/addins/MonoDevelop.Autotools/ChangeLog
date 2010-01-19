@@ -1,3 +1,8 @@
+2010-01-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SolutionDeployer.cs: Fix Bug 572048 - Spelling mistake in
+	  Packaging Output.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Handler.cs:

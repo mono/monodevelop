@@ -212,7 +212,7 @@ namespace MonoDevelop.Autotools
 			{
 				monitor.EndTask ();
 			}
-			monitor.ReportSuccess ( GettextCatalog.GetString ( "Solution was succesfully deployed" ) );
+			monitor.ReportSuccess (GettextCatalog.GetString ("Solution was successfully deployed."));
 			return true;
 		}
 
