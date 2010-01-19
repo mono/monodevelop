@@ -1,3 +1,8 @@
+2010-01-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Quote
+	  respack arguments.
+
 2010-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MonoDevelop.Moonlight/XamlG.cs: A file without a x:Class attribute

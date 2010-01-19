@@ -137,10 +137,7 @@ namespace MonoDevelop.Moonlight
 			sb.Append (outfile);
 			
 			foreach (var infile in toResGen) {
-				sb.Append (" ");
-				sb.Append (infile.FullPath);
-				sb.Append (",");
-				sb.Append (infile.ToRelative (proj.BaseDirectory));
+				sb.AppendFormat (" \"{0}\",\"{1}\"", infile.FullPath, infile.ToRelative (proj.BaseDirectory));
 			}
 			si.Arguments = sb.ToString ();
 			string err;
