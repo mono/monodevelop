@@ -36,6 +36,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using Gtk;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -68,6 +69,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			string name = fontOutputButton.Style.FontDescription.ToString ();
 			
+			for (int n=1; n < isoCodes.Length; n += 2)
+				comboLanguage.AppendText (GettextCatalog.GetString (isoCodes [n]));
+			
+			int i = Array.IndexOf (isoCodes, IdeApp.Preferences.UserInterfaceLanguage);
+			if (i == -1) i = 0;
+			comboLanguage.Active = i / 2;
+			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
 			hiddenButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 			fontCheckbox.Active = IdeApp.Preferences.CustomPadFont != null;
@@ -95,6 +103,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store()
 		{
+			string lc = isoCodes [comboLanguage.Active * 2];
+			if (lc != IdeApp.Preferences.UserInterfaceLanguage) {
+				IdeApp.Preferences.UserInterfaceLanguage = lc;
+				MessageService.ShowMessage (GettextCatalog.GetString ("The user interface language change will take effect the next time you start MonoDevelop"));
+			}
 			PropertyService.Set ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
 			if (fontCheckbox.Active)
 				IdeApp.Preferences.CustomPadFont = fontButton.FontName;
@@ -109,6 +122,32 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.ToolbarSize = sizes [toolbarCombobox.Active];
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
 		}
+		
+		static string[] isoCodes = new string[] {
+			"", "(Default)",
+			"ca", "Catalan",
+			"zh_CN", "Chinese - China",
+			"zh_TW", "Chinese - Taiwan",
+			"cs", "Czech",
+			"da", "Danish",
+			"nl", "Dutch",
+			"fr", "French",
+			"gl", "Galician",
+			"de", "German",
+			"en", "English",
+			"hu", "Hungarian",
+			"id", "Indonesian",
+			"it", "Italian",
+			"ja", "Japanese",
+			"pl", "Polish",
+			"pt", "Portuguese",
+			"pt_BR", "Portuguese - Brazil",
+			"ru", "Russian",
+			"sl", "Slovenian",
+			"es", "Spanish",
+			"sv", "Swedish",
+			"tr", "Turkish"
+		};
 		
 	}
 }

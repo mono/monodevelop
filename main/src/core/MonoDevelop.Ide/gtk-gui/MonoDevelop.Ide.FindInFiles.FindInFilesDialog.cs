@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			w20.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w21 = new global::Gtk.Image ();
-			w21.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find-and-replace", global::Gtk.IconSize.Menu, 16);
+			w21.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find-and-replace", global::Gtk.IconSize.Menu);
 			w20.Add (w21);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w23 = new global::Gtk.Label ();

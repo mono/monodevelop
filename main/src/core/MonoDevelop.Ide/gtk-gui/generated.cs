@@ -69,17 +69,20 @@ namespace Stetic
 
 	internal class IconLoader
 	{
-		public static Gdk.Pixbuf LoadIcon (Gtk.Widget widget, string name, Gtk.IconSize size, int sz)
+		public static Gdk.Pixbuf LoadIcon (Gtk.Widget widget, string name, Gtk.IconSize size)
 		{
 			Gdk.Pixbuf res = widget.RenderIcon (name, size, null);
 			if ((res != null)) {
 				return res;
 			} else {
+				int sz;
+				int sy;
+				global::Gtk.Icon.SizeLookup (size, out sz, out sy);
 				try {
 					return Gtk.IconTheme.Default.LoadIcon (name, sz, 0);
 				} catch (System.Exception) {
 					if ((name != "gtk-missing-image")) {
-						return Stetic.IconLoader.LoadIcon (widget, "gtk-missing-image", size, sz);
+						return Stetic.IconLoader.LoadIcon (widget, "gtk-missing-image", size);
 					} else {
 						Gdk.Pixmap pmap = new Gdk.Pixmap (Gdk.Screen.Default.RootWindow, sz, sz);
 						Gdk.GC gc = new Gdk.GC (pmap);
