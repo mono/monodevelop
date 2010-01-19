@@ -52,6 +52,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public bool HideCodeSegmentPreviewInformString {
+			get;
+			set;
+		}
+		
 		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this(editor, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
 		{
 		}
@@ -123,16 +128,18 @@ namespace Mono.TextEditor
 			gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
 			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
 			
-			Pango.Layout informLayout = new Pango.Layout (PangoContext);
-			informLayout.SetText (CodeSegmentPreviewInformString);
-			int w, h;
-			informLayout.GetPixelSize (out w, out h); 
-			
-			gc.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
-			ev.Window.DrawRectangle (gc, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
-			gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
-			ev.Window.DrawLayout (gc, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
-			informLayout.Dispose ();
+			if (!HideCodeSegmentPreviewInformString) {
+				using (Pango.Layout informLayout = new Pango.Layout (PangoContext)) {
+					informLayout.SetText (CodeSegmentPreviewInformString);
+					int w, h;
+					informLayout.GetPixelSize (out w, out h); 
+					
+					gc.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
+					ev.Window.DrawRectangle (gc, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
+					gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
+					ev.Window.DrawLayout (gc, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
+				}
+			}
 			return true;
 		}
 	}

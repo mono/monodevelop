@@ -1,5 +1,11 @@
 2010-01-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Hide inform
+	  string during dnd.
+
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/EditMode.cs:
