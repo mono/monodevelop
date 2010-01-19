@@ -1,5 +1,16 @@
 2010-01-19  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs:
+	  Implemented 'Bug 552017 - Saner and new default options for
+	  Find in Files -> Directories dialog'.
+
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
 	  Added null check for policies.
 
