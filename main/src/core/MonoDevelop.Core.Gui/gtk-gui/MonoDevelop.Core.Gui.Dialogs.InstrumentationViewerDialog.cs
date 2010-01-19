@@ -106,7 +106,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			w5.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w6 = new global::Gtk.Image ();
-			w6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-save", global::Gtk.IconSize.Button, 16);
+			w6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-save", global::Gtk.IconSize.Button);
 			w5.Add (w6);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w8 = new global::Gtk.Label ();
@@ -130,7 +130,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			w14.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w15 = new global::Gtk.Image ();
-			w15.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-save-as", global::Gtk.IconSize.Button, 16);
+			w15.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-save-as", global::Gtk.IconSize.Button);
 			w14.Add (w15);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w17 = new global::Gtk.Label ();
@@ -154,7 +154,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			w23.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w24 = new global::Gtk.Image ();
-			w24.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-delete", global::Gtk.IconSize.Button, 16);
+			w24.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-delete", global::Gtk.IconSize.Button);
 			w23.Add (w24);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w26 = new global::Gtk.Label ();
@@ -296,7 +296,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			w44.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w45 = new global::Gtk.Image ();
-			w45.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-out", global::Gtk.IconSize.Menu, 16);
+			w45.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-out", global::Gtk.IconSize.Menu);
 			w44.Add (w45);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w47 = new global::Gtk.Label ();
@@ -321,7 +321,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			w53.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w54 = new global::Gtk.Image ();
-			w54.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-in", global::Gtk.IconSize.Menu, 16);
+			w54.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-in", global::Gtk.IconSize.Menu);
 			w53.Add (w54);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w56 = new global::Gtk.Label ();

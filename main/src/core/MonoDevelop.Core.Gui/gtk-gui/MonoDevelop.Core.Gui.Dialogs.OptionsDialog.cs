@@ -68,7 +68,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.image = new global::Gtk.Image ();
 			this.image.Name = "image";
-			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-preferences", global::Gtk.IconSize.LargeToolbar, 24);
+			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-preferences", global::Gtk.IconSize.LargeToolbar);
 			this.hbox2.Add (this.image);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.image]));
 			w4.Position = 0;
