@@ -1,3 +1,15 @@
+2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs:
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrameStatus.cs:
+	* MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs:
+	  Use an Id instead of a localizable name to identify
+	  toolbars. Fixes toolbar layout issue when switching locales.
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Components.FolderListSelector.cs: Flush.
+
 2010-01-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/SearchEntry.cs: seach entry menu can

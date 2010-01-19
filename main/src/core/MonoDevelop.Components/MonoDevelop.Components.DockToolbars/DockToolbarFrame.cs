@@ -106,6 +106,8 @@ namespace MonoDevelop.Components.DockToolbars
 		{
 			SaveCurrentLayout ();
 			DockToolbarFrameStatus col = new DockToolbarFrameStatus ();
+			col.Version = DockToolbarFrameStatus.CurrentVersion;
+			
 			foreach (DictionaryEntry e in layouts) {
 				DockToolbarFrameLayout ctx = new DockToolbarFrameLayout ();
 				ctx.Id = (string)e.Key;
@@ -119,8 +121,14 @@ namespace MonoDevelop.Components.DockToolbars
 		{
 			layouts.Clear ();
 			if (status != null && status.Status != null) {
-				foreach (DockToolbarFrameLayout c in status.Status)
+				foreach (DockToolbarFrameLayout c in status.Status) {
+					if (status.Version < 2) {
+						// Convert from old to new toolbar id
+						foreach (DockToolbarStatus ts in c.Bars)
+							ts.BarId = ConvertToolbarId (ts.BarId);
+					}
 					layouts [c.Id] = c.Bars;
+				}
 			}
 			RestoreLayout ("");
 		}
@@ -138,6 +146,27 @@ namespace MonoDevelop.Components.DockToolbars
 			DockToolbarFrameStatus col = (DockToolbarFrameStatus) ser.Deserialize (reader);
 			SetStatus (col);
 		} 
+		
+		string ConvertToolbarId (string id)
+		{
+			// Old MD versions include the display name of the toolbar in the id.
+			// New MD versions use a different id composition.
+			// This method translates the id from the old to the new format (when possible)
+			
+			int i = id.LastIndexOf ('/');
+			if (i == -1)
+				return id;
+			
+			string baseId = id.Substring (0, i + 1);
+			
+			foreach (DockToolbar t in bars) {
+				if (t.Id == id)
+					return id;
+				if (baseId + t.Title == id)
+					return t.Id;
+			}
+			return id;
+		}
 		
 		public IDockToolbar AddBar (DockToolbar bar)
 		{
