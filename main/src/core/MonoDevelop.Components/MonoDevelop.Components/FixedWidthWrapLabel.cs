@@ -50,6 +50,16 @@ namespace MonoDevelop.Components
 		
 		Pango.WrapMode wrapMode = Pango.WrapMode.Word;
 		
+		Pango.FontDescription fontDescription;
+		public Pango.FontDescription FontDescription { 
+			get {
+				return fontDescription;
+			}
+			set {
+				fontDescription = value;
+			}
+			
+		}
 		public FixedWidthWrapLabel ()
 		{
 			WidgetFlags |= WidgetFlags.NoWindow;
@@ -67,13 +77,15 @@ namespace MonoDevelop.Components
 			this.width = width;
 		}
 		
-		private void CreateLayout ()
+		void CreateLayout ()
 		{
 			if (layout != null) {
 				layout.Dispose ();
 			}
 			
 			layout = new Pango.Layout (PangoContext);
+			if (FontDescription != null)
+				layout.FontDescription = FontDescription;
 			if (use_markup) {
 				layout.SetMarkup (brokentext != null? brokentext : (text ?? string.Empty));
 			} else {
@@ -88,7 +100,7 @@ namespace MonoDevelop.Components
 			QueueResize ();
 		}
 		
-		private void UpdateLayout ()
+		void UpdateLayout ()
 		{
 			if (layout == null) {
 				CreateLayout ();

@@ -1,3 +1,8 @@
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/FixedWidthWrapLabel.cs: Added support
+	  for setting a font description.
+
 2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandManager.cs:
