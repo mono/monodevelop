@@ -28,7 +28,7 @@ using System;
 using Mono.Debugging.Evaluation;
 using Mono.Debugger;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
 	public class ArrayAdaptor: ICollectionAdaptor
 	{

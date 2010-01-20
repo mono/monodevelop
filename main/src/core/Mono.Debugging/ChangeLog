@@ -1,3 +1,9 @@
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* mono.debugging.snk:
+	* Mono.Debugging.csproj: Sign and fix deps.
+
 2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Fix

@@ -30,7 +30,7 @@ using Mono.Debugging.Evaluation;
 using Mono.Debugging.Client;
 using Mono.Debugger;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
 	public class VariableValueReference : ValueReference
 	{

@@ -35,7 +35,7 @@ using System.Reflection;
 using ST = System.Threading;
 using Mono.Debugging.Backend;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
 	public class SoftDebuggerAdaptor : ObjectValueAdaptor
 	{
@@ -759,7 +759,7 @@ namespace MonoDevelop.Debugger.Soft
 				exception = ex;
 			} catch (Exception ex) {
 				ctx.Session.StackVersion++;
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
+				LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			}
 		}
@@ -787,7 +787,7 @@ namespace MonoDevelop.Debugger.Soft
 			} catch (InvocationException ex) {
 				exception = ex;
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
+				LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			} finally {
 				ctx.Session.StackVersion++;
@@ -808,7 +808,7 @@ namespace MonoDevelop.Debugger.Soft
 				                      function == null? "[null]" : function.FullName,
 				                      type == null? "[null]" : type.FullName);
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Error getting info for SDB MethodCall", ex);
+				LoggingService.LogError ("Error getting info for SDB MethodCall", ex);
 				return "";
 			}
 		}

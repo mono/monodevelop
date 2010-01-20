@@ -2,6 +2,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.Soft.Moonlight.dll
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Moonlight/MonoDevelop.Moonlight.dll \
@@ -16,7 +17,7 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Mono.Debugger.Soft.dll \
+	-r:$(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft/Mono.Debugger.Soft.dll \
 	-r:System \
 	-r:System.Core
 

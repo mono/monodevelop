@@ -1,3 +1,9 @@
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.Soft.Moonlight.csproj: Fix deps to
+	  track the dll split.
+
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MoonlightSoftDebuggerSession.cs: Create the

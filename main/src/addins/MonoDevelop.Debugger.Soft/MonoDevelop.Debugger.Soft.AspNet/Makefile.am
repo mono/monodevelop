@@ -3,6 +3,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.Soft.AspNet.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
@@ -16,7 +17,7 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Mono.Debugger.Soft.dll \
+	-r:$(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft/Mono.Debugger.Soft.dll \
 	-r:System \
 	-r:System.Core
 
