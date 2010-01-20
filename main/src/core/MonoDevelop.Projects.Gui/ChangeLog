@@ -1,3 +1,28 @@
+2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.AddMimeTypeDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:
+	  Flush.
+
 2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.addin.xml: Use new icons.
