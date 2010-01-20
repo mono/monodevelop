@@ -36,10 +36,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="System">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -88,6 +84,11 @@
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=777769bbe9a538f6">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml">
@@ -103,6 +104,7 @@
     <ProjectReference Include="..\MonoDevelop.IPhone\MonoDevelop.IPhone.csproj">
       <Project>{B9D6A509-8369-4E86-B04E-936491E11801}</Project>
       <Name>MonoDevelop.IPhone</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>
