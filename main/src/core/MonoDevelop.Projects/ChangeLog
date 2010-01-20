@@ -1,3 +1,8 @@
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed
+	  bug with windows line endings.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyService.cs:
