@@ -46,6 +46,11 @@ namespace MonoDevelop.CSharp.Formatting
 		RemoveBracesForSingleLine
 	}
 	
+	public enum ArrayInitializerPlacement {
+		AlwaysNewLine,
+		AlwaysSameLine
+	}
+	
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
 		public CSharpFormattingPolicy Clone ()
@@ -314,6 +319,12 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		[ItemProperty]
 		public bool PlaceWhileOnNewLine {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public ArrayInitializerPlacement PlaceArrayInitializersOnNewLine {
 			get;
 			set;
 		}
@@ -616,6 +627,7 @@ namespace MonoDevelop.CSharp.Formatting
 			PlaceCatchOnNewLine = false;
 			PlaceFinallyOnNewLine = false;
 			PlaceWhileOnNewLine = false;
+			PlaceArrayInitializersOnNewLine = ArrayInitializerPlacement.AlwaysSameLine;
 
 			BeforeMethodCallParentheses = true;
 			BeforeMethodDeclarationParentheses = true;

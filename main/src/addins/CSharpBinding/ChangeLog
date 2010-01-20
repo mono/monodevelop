@@ -1,3 +1,15 @@
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:
+	* gtk-gui/MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs:
+	* gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:
+	  Implemented 'Bug 550947 - Arrays initailizers should not
+	  automatically be split on multiple lines'.
+
 2010-01-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
