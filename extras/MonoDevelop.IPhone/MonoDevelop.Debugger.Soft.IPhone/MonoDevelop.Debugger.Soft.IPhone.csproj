@@ -76,7 +76,17 @@
     </Reference>
     <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\src\addins\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft\Mono.Debugger.Soft.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Debugger.Soft">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\src\addins\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=889ced0135e7a3f3">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
