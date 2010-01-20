@@ -43,6 +43,7 @@ RES =  \
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
+	$(top_builddir)/build/bin/Cecil.Decompiler.dll \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
@@ -51,8 +52,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
-	$(top_builddir)/build/bin/NRefactory.dll \
-	$(top_builddir)/contrib/Mono.Cecil/Cecil.Decompiler/bin/Debug/Cecil.Decompiler.dll
+	$(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
