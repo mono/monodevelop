@@ -73,7 +73,7 @@ namespace Mono.Debugging.Evaluation
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
 			if (expObj == null)
-				throw new EvaluatorException ("Could not parse expression '" + exp + "'");
+				throw new EvaluatorException ("Could not parse expression '{0}'", exp);
 			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, expectedType, userVariables);
 			return (ValueReference) expObj.AcceptVisitor (ev, null);
 		}
