@@ -117,6 +117,7 @@
     <Compile Include="MonoDevelop.CodeGeneration\NullCheckGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.DeclareLocal\GetContainingEmbeddedStatementVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeSearchVisitor.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

@@ -54,6 +54,7 @@
 		<Class id="IntroduceFormatItem" class = "MonoDevelop.Refactoring.IntroduceFormat.IntroduceFormatItemRefactoring" />
 		<Class id="ImplementImplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementImplicit" />
 		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementExplicit" />
+		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers" />
 		<Class id="CreateBackingStore" class = "MonoDevelop.Refactoring.ConvertPropery.CreateBackingStore" />
 		<Class id="RemoveBackingStore" class = "MonoDevelop.Refactoring.ConvertPropery.RemoveBackingStore" />
 	</Extension>

@@ -533,24 +533,36 @@ namespace MonoDevelop.Refactoring
 					// Class might have interfaces... offer to implement them
 					CommandInfoSet impset = new CommandInfoSet ();
 					CommandInfoSet expset = new CommandInfoSet ();
-					bool added = false;
+					CommandInfoSet abstactset = new CommandInfoSet ();
+					bool ifaceAdded = false;
+					bool abstractAdded = false;
 					
 					foreach (IReturnType rt in cls.BaseTypes) {
 						IType iface = ctx.GetType (rt);
-						if (iface != null && iface.ClassType == ClassType.Interface) {
+						if (iface == null)
+							continue;
+						if (iface.ClassType == ClassType.Interface) {
 							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
 							impset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementImplicitInterface));
 							expset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementExplicitInterface));
-							added = true;
+							ifaceAdded = true;
+						} else if (ContainsAbstractMembers (iface)) {
+							Refactorer ifaceRefactorer = new Refactorer (ctx, pinfo, cls, iface, rt);
+							abstactset.CommandInfos.Add (ambience.GetString (rt, OutputFlags.IncludeGenerics), new RefactoryOperation (ifaceRefactorer.ImplementAbstractMembers));
+							abstractAdded = true;
 						}
 					}
 					
-					if (added) {
+					if (ifaceAdded) {
 						impset.Text = GettextCatalog.GetString ("Implement Interface (implicit)");
 						ciset.CommandInfos.Add (impset, null);
 						
 						expset.Text = GettextCatalog.GetString ("Implement Interface (explicit)");
 						ciset.CommandInfos.Add (expset, null);
+					}
+					if (abstractAdded) {
+						abstactset.Text = GettextCatalog.GetString ("Implement abstract members");
+						ciset.CommandInfos.Add (abstactset, null);
 					}
 				}
 			} else if (item is IField) {
@@ -593,6 +605,17 @@ namespace MonoDevelop.Refactoring
 			ciset.Text = txt;
 			ciset.UseMarkup = true;
 			return ciset;
+		}
+
+		public static bool ContainsAbstractMembers (MonoDevelop.Projects.Dom.IType cls)
+		{
+			if (cls == null)
+				return false;
+			foreach (IMember member in cls.Members) {
+				if (member.IsAbstract)
+					return true;
+			}
+			return false;
 		}
 		
 		void AddRefactoryMenuForClass (ProjectDom ctx, ICompilationUnit pinfo, CommandInfoSet ciset, string className)
@@ -781,6 +804,8 @@ namespace MonoDevelop.Refactoring
 				editor.BeginAtomicUndo ();
 				
 			try {
+				Console.WriteLine ("klass:" + klass);
+				Console.WriteLine ("item:"+ item);
 				refactorer.ImplementInterface (pinfo, klass, iface, explicitly, iface, this.hintReturnType);
 			} finally {
 				if (editor != null)
@@ -796,6 +821,34 @@ namespace MonoDevelop.Refactoring
 		public void ImplementExplicitInterface ()
 		{
 			ImplementInterface (true);
+		}
+		
+		public void ImplementAbstractMembers ()
+		{
+			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			IType aclass = item as IType;
+			
+			if (klass == null)
+				return;
+			
+			if (aclass == null)
+				return;
+				
+			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
+			if (editor != null)
+				editor.BeginAtomicUndo ();
+				
+			try {
+				List<KeyValuePair<IMember,IReturnType>> members = new List<KeyValuePair<IMember, IReturnType>> ();
+				foreach (IMember member in aclass.Members) {
+					if (member.IsAbstract && !klass.Members.Any (m => member.Name == m.Name)) 
+						members.Add (new KeyValuePair<IMember,IReturnType> (member, null));
+				}
+				refactorer.ImplementMembers (klass, members, "implemented abstract members of " + aclass.FullName);
+			} finally {
+				if (editor != null)
+					editor.EndAtomicUndo ();
+			}
 		}
 		
 		public void EncapsulateField ()

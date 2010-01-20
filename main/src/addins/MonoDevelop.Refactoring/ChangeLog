@@ -1,3 +1,19 @@
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs:
+	* gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs:
+	* gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs:
+	* gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs:
+	* gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs:
+	  Implemented 'Bug 525257 - Missing "Implement abstract
+	  members'.
+
 2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fix NRE
