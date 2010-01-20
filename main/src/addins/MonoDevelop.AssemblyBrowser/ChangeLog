@@ -1,3 +1,8 @@
+2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.AssemblyBrowser.csproj: Fix project reference.
+
 2010-01-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:
