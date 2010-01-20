@@ -22,6 +22,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		RemoveBracesForSingleLine
 	}
 	
+	public enum ArrayInitializerPlacement {
+		AlwaysNewLine,
+		AlwaysSameLine,
+	}
+	
 	/// <summary>
 	/// Description of PrettyPrintOptions.	
 	/// </summary>
@@ -426,6 +431,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public bool PlaceElseIfOnNewLine { get; set; }
 		public bool PlaceNonBlockElseOnNewLine { get; set; }
 		public bool PlaceWhileOnNewLine { get; set; }
+		public ArrayInitializerPlacement PlaceArrayInitializersOnNewLine { get; set; }
 		#endregion
 		
 		#region Spaces
