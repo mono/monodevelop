@@ -1,3 +1,8 @@
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: fixed 'Bug
+	  366110 - Accessibility issue regarding tooltips font'.
+
 2010-01-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented
