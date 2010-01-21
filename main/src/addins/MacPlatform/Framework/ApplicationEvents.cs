@@ -30,6 +30,8 @@ namespace OSXIntegration.Framework
 {
 	public static class ApplicationEvents
 	{
+		static object lockObj = new object ();
+		
 		#region Quit
 		
 		static EventHandler<ApplicationEventArgs> quit;
@@ -37,14 +39,14 @@ namespace OSXIntegration.Framework
 		
 		public static event EventHandler<ApplicationEventArgs> Quit {
 			add {
-				lock (quit) {
+				lock (lockObj) {
 					quit += value;
 					if (quitHandlerRef == IntPtr.Zero)
 						quitHandlerRef = Carbon.InstallApplicationEventHandler (HandleQuit, CarbonEventApple.QuitApplication);
 				}
 			}
 			remove {
-				lock (quit) {
+				lock (lockObj) {
 					quit -= value;
 					if (quit == null && quitHandlerRef != IntPtr.Zero)
 						Carbon.RemoveEventHandler (quitHandlerRef);
@@ -68,14 +70,14 @@ namespace OSXIntegration.Framework
 		
 		public static event EventHandler<ApplicationEventArgs> Reopen {
 			add {
-				lock (reopen) {
+				lock (lockObj) {
 					reopen += value;
 					if (reopenHandlerRef == IntPtr.Zero)
 						reopenHandlerRef = Carbon.InstallApplicationEventHandler (HandleReopen, CarbonEventApple.ReopenApplication);
 				}
 			}
 			remove {
-				lock (reopen) {
+				lock (lockObj) {
 					reopen -= value;
 					if (reopen == null && reopenHandlerRef != IntPtr.Zero)
 						Carbon.RemoveEventHandler (reopenHandlerRef);
@@ -99,14 +101,14 @@ namespace OSXIntegration.Framework
 		
 		public static event EventHandler<ApplicationDocumentEventArgs> OpenDocuments {
 			add {
-				lock (openDocuments) {
+				lock (lockObj) {
 					openDocuments += value;
 					if (openDocumentsHandlerRef == IntPtr.Zero)
 						openDocumentsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenDocuments, CarbonEventApple.ReopenApplication);
 				}
 			}
 			remove {
-				lock (openDocuments) {
+				lock (lockObj) {
 					openDocuments -= value;
 					if (openDocuments == null && openDocumentsHandlerRef != IntPtr.Zero)
 						Carbon.RemoveEventHandler (openDocumentsHandlerRef);
@@ -136,14 +138,14 @@ namespace OSXIntegration.Framework
 		
 		public static event EventHandler<ApplicationDocumentEventArgs> OpenContents {
 			add {
-				lock (openContents) {
+				lock (lockObj) {
 					openContents += value;
 					if (openContentsHandlerRef == IntPtr.Zero)
 						openDocumentsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenContents, CarbonEventApple.OpenContents);
 				}
 			}
 			remove {
-				lock (openContents) {
+				lock (lockObj) {
 					openContents -= value;
 					if (openContents == null && openContentsHandlerRef != IntPtr.Zero)
 						Carbon.RemoveEventHandler (openContentsHandlerRef);
@@ -173,14 +175,14 @@ namespace OSXIntegration.Framework
 		
 		public static event EventHandler<ApplicationUrlEventArgs> OpenUrls {
 			add {
-				lock (openUrls) {
+				lock (lockObj) {
 					openUrls += value;
 					if (openUrlsHandlerRef == IntPtr.Zero)
 						openUrlsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenUrls, CarbonEventApple.OpenContents);
 				}
 			}
 			remove {
-				lock (openUrls) {
+				lock (lockObj) {
 					openUrls -= value;
 					if (openUrls == null && openUrlsHandlerRef != IntPtr.Zero)
 						Carbon.RemoveEventHandler (openUrlsHandlerRef);
