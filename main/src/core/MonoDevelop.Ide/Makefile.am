@@ -24,6 +24,7 @@ REFS =  \
 	-r:System.Data \
 	-r:System.Drawing \
 	-r:System.Runtime.Remoting \
+	-r:System.Web \
 	-r:System.Web.Services \
 	-r:System.Xml
 

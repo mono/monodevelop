@@ -51,6 +51,20 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (topic == null || topic.Trim ().Length == 0)
 				return;
+			
+			if (PropertyService.IsMac) {
+				var url = "monodoc://" + System.Web.HttpUtility.UrlEncode (topic);
+				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location)
+					.ParentDirectory
+					.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
+				Console.WriteLine (mdapp);
+				Console.WriteLine (url);
+				if (Directory.Exists (mdapp))
+					System.Diagnostics.Process.Start ("open", "-a \"" + mdapp + "\" " + url);
+				else
+					System.Diagnostics.Process.Start ("open", url);
+				return;
+			}
 	
 			if (firstCall)
 				CheckExternalMonodoc ();
