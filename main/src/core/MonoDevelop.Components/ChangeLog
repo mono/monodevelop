@@ -1,5 +1,13 @@
 2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components/SelectFileDialog.cs:
+	* MonoDevelop.Components/SelectFolderDialog.cs:
+	* MonoDevelop.Components.Extensions/PlatformDialog.cs:
+	* MonoDevelop.Components.Extensions/ISelectFileDialog.cs: Fix
+	  headers and add some comments.
+
+2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Components.csproj:
 	* MonoDevelop.Components.addin.xml:
