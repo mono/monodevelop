@@ -202,6 +202,7 @@ namespace OSXIntegration.Framework
 		[DllImport (CarbonLib)]
 		public static extern AEDescStatus AESizeOfNthItem  (ref AEDesc descList, int index, ref CarbonEventParameterType type, out int size);
 		
+		//FIXME: this might not work in some encodings. need to test more.
 		static string GetStringFromAEPtr (ref AEDesc descList, int index)
 		{
 			int size;
@@ -210,7 +211,7 @@ namespace OSXIntegration.Framework
 				IntPtr buffer = Marshal.AllocHGlobal (size);
 				try {
 					if (AEGetNthPtr (ref descList, index, type, 0, 0, buffer, size, 0) == AEDescStatus.Ok)
-						return Marshal.PtrToStringUni (buffer, size / sizeof (char));
+						return Marshal.PtrToStringAuto (buffer, size);
 				} finally {
 					Marshal.FreeHGlobal (buffer);
 				}
@@ -451,6 +452,7 @@ namespace OSXIntegration.Framework
 		Accessibility = 1633903461, // 'acce'
 		HIObject = 1751740258, // 'hiob'
 		AppleEvent = 1634039412, // 'aevt'
+		Internet = 1196773964, // 'GURL'
 	}
 	
 	public enum CarbonCommandID : uint

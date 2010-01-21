@@ -35,7 +35,7 @@ namespace OSXIntegration.Framework
 		#region Quit
 		
 		static EventHandler<ApplicationEventArgs> quit;
-		static IntPtr quitHandlerRef;
+		static IntPtr quitHandlerRef = IntPtr.Zero;
 		
 		public static event EventHandler<ApplicationEventArgs> Quit {
 			add {
@@ -48,8 +48,10 @@ namespace OSXIntegration.Framework
 			remove {
 				lock (lockObj) {
 					quit -= value;
-					if (quit == null && quitHandlerRef != IntPtr.Zero)
+					if (quit == null && quitHandlerRef != IntPtr.Zero) {
 						Carbon.RemoveEventHandler (quitHandlerRef);
+						quitHandlerRef = IntPtr.Zero;
+					}
 				}
 			}
 		}
@@ -66,7 +68,7 @@ namespace OSXIntegration.Framework
 		#region Reopen
 		
 		static EventHandler<ApplicationEventArgs> reopen;
-		static IntPtr reopenHandlerRef;
+		static IntPtr reopenHandlerRef = IntPtr.Zero;
 		
 		public static event EventHandler<ApplicationEventArgs> Reopen {
 			add {
@@ -79,8 +81,10 @@ namespace OSXIntegration.Framework
 			remove {
 				lock (lockObj) {
 					reopen -= value;
-					if (reopen == null && reopenHandlerRef != IntPtr.Zero)
+					if (reopen == null && reopenHandlerRef != IntPtr.Zero) {
 						Carbon.RemoveEventHandler (reopenHandlerRef);
+						reopenHandlerRef = IntPtr.Zero;
+					}
 				}
 			}
 		}
@@ -97,7 +101,7 @@ namespace OSXIntegration.Framework
 		#region OpenDocuments
 		
 		static EventHandler<ApplicationDocumentEventArgs> openDocuments;
-		static IntPtr openDocumentsHandlerRef;
+		static IntPtr openDocumentsHandlerRef = IntPtr.Zero;
 		
 		public static event EventHandler<ApplicationDocumentEventArgs> OpenDocuments {
 			add {
@@ -110,8 +114,10 @@ namespace OSXIntegration.Framework
 			remove {
 				lock (lockObj) {
 					openDocuments -= value;
-					if (openDocuments == null && openDocumentsHandlerRef != IntPtr.Zero)
+					if (openDocuments == null && openDocumentsHandlerRef != IntPtr.Zero) {
 						Carbon.RemoveEventHandler (openDocumentsHandlerRef);
+						openDocumentsHandlerRef = IntPtr.Zero;
+					}
 				}
 			}
 		}
@@ -134,21 +140,29 @@ namespace OSXIntegration.Framework
 		#region OpenUrls
 		
 		static EventHandler<ApplicationUrlEventArgs> openUrls;
-		static IntPtr openUrlsHandlerRef;
+		static IntPtr openUrlsHandlerRef = IntPtr.Zero;
 		
 		public static event EventHandler<ApplicationUrlEventArgs> OpenUrls {
 			add {
 				lock (lockObj) {
 					openUrls += value;
 					if (openUrlsHandlerRef == IntPtr.Zero)
-						openUrlsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenUrls, CarbonEventApple.GetUrl);
+						openUrlsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenUrls,
+							new CarbonEventTypeSpec[] {
+								//For some reason GetUrl doesn't take CarbonEventClass.AppleEvent
+								//need to use GURL, GURL
+								new CarbonEventTypeSpec (CarbonEventClass.Internet, (int)CarbonEventApple.GetUrl)
+							}
+						);
 				}
 			}
 			remove {
 				lock (lockObj) {
 					openUrls -= value;
-					if (openUrls == null && openUrlsHandlerRef != IntPtr.Zero)
+					if (openUrls == null && openUrlsHandlerRef != IntPtr.Zero) {
 						Carbon.RemoveEventHandler (openUrlsHandlerRef);
+						openUrlsHandlerRef = IntPtr.Zero;
+					}
 				}
 			}
 		}
