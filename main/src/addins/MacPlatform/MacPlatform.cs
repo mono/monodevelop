@@ -222,11 +222,6 @@ namespace MonoDevelop.Platform
 					e.Handled = true;
 				};
 				
-				ApplicationEvents.OpenContents += delegate (object sender, ApplicationDocumentEventArgs e) {
-					foreach (var s in e.Documents)
-						Console.WriteLine (s);
-				};
-				
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);
 				setupFail = true;

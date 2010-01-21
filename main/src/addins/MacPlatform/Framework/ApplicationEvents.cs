@@ -131,43 +131,6 @@ namespace OSXIntegration.Framework
 		
 		#endregion
 		
-		#region OpenContents
-		
-		static EventHandler<ApplicationDocumentEventArgs> openContents;
-		static IntPtr openContentsHandlerRef;
-		
-		public static event EventHandler<ApplicationDocumentEventArgs> OpenContents {
-			add {
-				lock (lockObj) {
-					openContents += value;
-					if (openContentsHandlerRef == IntPtr.Zero)
-						openDocumentsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenContents, CarbonEventApple.OpenContents);
-				}
-			}
-			remove {
-				lock (lockObj) {
-					openContents -= value;
-					if (openContents == null && openContentsHandlerRef != IntPtr.Zero)
-						Carbon.RemoveEventHandler (openContentsHandlerRef);
-				}
-			}
-		}
-		
-		static CarbonEventHandlerStatus HandleOpenContents (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
-		{
-			try {
-				var docs = Carbon.GetFileListFromEventRef (eventRef);
-				var args = new ApplicationDocumentEventArgs (docs);
-				openContents (null, args);
-				return args.HandledStatus;
-			} catch (Exception ex) {
-				System.Console.WriteLine (ex);
-				return CarbonEventHandlerStatus.NotHandled;
-			}
-		}
-		
-		#endregion
-		
 		#region OpenUrls
 		
 		static EventHandler<ApplicationUrlEventArgs> openUrls;
