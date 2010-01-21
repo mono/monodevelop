@@ -27,6 +27,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace OSXIntegration.Framework
 {
@@ -338,6 +339,21 @@ namespace OSXIntegration.Framework
 		}
 		
 		#endregion
+		
+		public static List<string> GetFileListFromEventRef (IntPtr eventRef)
+		{
+			AEDesc list = Carbon.GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+			long count = Carbon.AECountItems (ref list);
+			List<string> files = new List<string> ();
+			for (int i = 1; i <= count; i++) {
+				FSRef fsRef = Carbon.AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
+				string file = Carbon.FSRefToPath (ref fsRef);
+				if (!String.IsNullOrEmpty (file))
+					files.Add (file);
+			}
+			Carbon.CheckReturn (Carbon.AEDisposeDesc (ref list));
+			return files;
+		}
 	}
 	
 	struct NavEventUPP { IntPtr ptr; }

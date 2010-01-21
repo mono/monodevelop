@@ -22,6 +22,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	Commands.cs \
+	Framework/ApplicationEvents.cs \
 	Framework/Carbon.cs \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \

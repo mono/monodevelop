@@ -1,3 +1,12 @@
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacPlatform.cs:
+	* MacPlatform.csproj:
+	* Framework/Carbon.cs:
+	* Framework/ApplicationEvents.cs: Refactor out
+	  ApplicationEvents code.
+
 2010-01-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateDialog.cs: Cache the stable/unstable result so

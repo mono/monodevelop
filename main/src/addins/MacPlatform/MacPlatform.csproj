@@ -92,6 +92,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Platform.Updater.UpdateDialog.cs" />
     <Compile Include="Updater\UpdateResult.cs" />
     <Compile Include="Updater\Commands.cs" />
+    <Compile Include="Framework\ApplicationEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

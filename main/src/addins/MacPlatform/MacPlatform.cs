@@ -202,51 +202,35 @@ namespace MonoDevelop.Platform
 				return;
 			initedGlobal = true;
 			
+			//FIXME: should we remove these when finalizing?
 			try {
-				//FIXME: remove these when finalizing
-				Carbon.InstallApplicationEventHandler (HandleAppReopen, CarbonEventApple.ReopenApplication);
-				Carbon.InstallApplicationEventHandler (HandleAppQuit, CarbonEventApple.QuitApplication);
-				Carbon.InstallApplicationEventHandler (HandleAppDocOpen, CarbonEventApple.OpenDocuments); //kAEOpenDocuments
+				ApplicationEvents.Quit += delegate (object sender, ApplicationEventArgs e) {
+					IdeApp.Exit ();
+					e.Handled = true;
+				};
+				
+				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
+					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
+						IdeApp.Workbench.RootWindow.Deiconify ();
+						IdeApp.Workbench.RootWindow.Visible = true;
+						e.Handled = true;
+					}
+				};
+				
+				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
+					IdeApp.OpenFiles (e.Documents);
+					e.Handled = true;
+				};
+				
+				ApplicationEvents.OpenContents += delegate (object sender, ApplicationDocumentEventArgs e) {
+					foreach (var s in e.Documents)
+						Console.WriteLine (s);
+				};
+				
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);
 				setupFail = true;
 			}
-		}
-		
-		static CarbonEventHandlerStatus HandleAppReopen (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
-		{
-			if (IdeApp.Workbench == null || IdeApp.Workbench.RootWindow == null)
-				return CarbonEventHandlerStatus.NotHandled;
-			
-			IdeApp.Workbench.RootWindow.Deiconify ();
-			IdeApp.Workbench.RootWindow.Visible = true;
-			return CarbonEventHandlerStatus.Handled;
-		}
-		
-		static CarbonEventHandlerStatus HandleAppQuit (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
-		{
-			IdeApp.Exit ();
-			return CarbonEventHandlerStatus.Handled;
-		}
-		
-		static CarbonEventHandlerStatus HandleAppDocOpen (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
-		{
-			try {
-				AEDesc list = Carbon.GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
-				long count = Carbon.AECountItems (ref list);
-				List<string> files = new List<string> ();
-				for (int i = 1; i <= count; i++) {
-					FSRef fsRef = Carbon.AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
-					string file = Carbon.FSRefToPath (ref fsRef);
-					if (!String.IsNullOrEmpty (file))
-						files.Add (file);
-				}
-				IdeApp.OpenFiles (files);
-				Carbon.CheckReturn (Carbon.AEDisposeDesc (ref list));
-			} catch (Exception ex) {
-				System.Console.WriteLine (ex);
-			}
-			return CarbonEventHandlerStatus.Handled;
 		}
 		
 		[GLib.ConnectBefore]
