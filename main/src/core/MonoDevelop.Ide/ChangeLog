@@ -1,5 +1,9 @@
 2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/HelpOperations.cs: Remove debug code.
+
+2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/HelpOperations.cs: On Mac, use open -a
 	  MonoDoc.app $URL to open MonoDoc urls.
 

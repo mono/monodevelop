@@ -57,8 +57,6 @@ namespace MonoDevelop.Ide.Gui
 				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location)
 					.ParentDirectory
 					.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
-				Console.WriteLine (mdapp);
-				Console.WriteLine (url);
 				if (Directory.Exists (mdapp))
 					System.Diagnostics.Process.Start ("open", "-a \"" + mdapp + "\" " + url);
 				else
