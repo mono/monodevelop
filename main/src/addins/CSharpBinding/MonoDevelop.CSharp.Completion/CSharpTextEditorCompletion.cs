@@ -1029,13 +1029,41 @@ namespace MonoDevelop.CSharp.Completion
 					hideExtensionParameter = value;
 				}
 			}
-
+			public class NegateKeyHandler : ICompletionKeyHandler
+			{
+				public bool ProcessKey (CompletionListWindow window, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction)
+				{
+					if (keyChar != '!') {
+						keyAction = KeyActions.None;
+						return false;
+					}
+					
+					keyAction = KeyActions.CloseWindow;
+					
+					CodeCompletionContext ctx = window.CodeCompletionContext;
+					int offset = ctx.TriggerOffset;
+					while (offset > 0) {
+						char ch = window.CompletionWidget.GetChar (offset);
+						if (ch != '.' && ch != '_' && !Char.IsLetterOrDigit (ch)) {
+							keyAction = KeyActions.CloseWindow | KeyActions.Ignore | KeyActions.Complete;
+							window.CompletionWidget.Replace (offset + 1, 0, "!");
+							ctx.TriggerOffset++;
+							ctx.TriggerLineOffset++;
+							break;
+						}
+						offset--;
+					}
+					
+					return true;
+				}
+				
+			}
 			public CompletionDataCollector (CompletionDataList completionList, ICompilationUnit unit, DomLocation location)
 			{
 				this.CompletionList = completionList;
 				this.unit = unit;
 				this.FullyQualify = false;
-				
+				completionList.AddKeyHandler (new NegateKeyHandler ());
 				// Get a list of all namespaces in scope
 				if (unit != null) {
 					foreach (IUsing u in unit.Usings) {

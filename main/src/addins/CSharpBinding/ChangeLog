@@ -1,3 +1,8 @@
+2010-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Added '!' as special closing key.
+
 2010-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed bug
