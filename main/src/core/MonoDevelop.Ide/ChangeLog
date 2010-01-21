@@ -1,5 +1,11 @@
 2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:
+	  Fix typo in UI string.
+
+2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/HelpOperations.cs: Remove debug code.
 
 2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>

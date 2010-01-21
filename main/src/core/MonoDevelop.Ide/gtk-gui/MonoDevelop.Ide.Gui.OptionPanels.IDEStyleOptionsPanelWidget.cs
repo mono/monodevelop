@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0f;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("User Interface Labguage:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("User Interface Language:");
 			this.table1.Add (this.label2);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));

@@ -4397,7 +4397,7 @@ Months</property>
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">User Interface Labguage:</property>
+                <property name="LabelProp" translatable="yes">User Interface Language:</property>
               </widget>
               <packing>
                 <property name="AutoSize">True</property>
