@@ -43,6 +43,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 		CompletionSelectionMode CompletionSelectionMode { get; }
 		void Sort (Comparison<ICompletionData> comparison);
 		void Sort (IComparer<ICompletionData> comparison);
+		
+		IEnumerable<ICompletionKeyHandler> KeyHandler { get; }
+	}
+	
+	
+	public interface ICompletionKeyHandler
+	{
+		bool ProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
 	}
 	
 	public enum CompletionSelectionMode {
@@ -60,6 +68,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public bool AutoCompleteEmptyMatch { get; set; }
 		public CompletionSelectionMode CompletionSelectionMode { get; set; }
 		
+		List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
+		public IEnumerable<ICompletionKeyHandler> KeyHandler {
+			get { return keyHandler; }
+		}
 		public CompletionDataList ()
 		{
 			this.AutoSelect = true;
@@ -68,6 +80,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public CompletionDataList (IEnumerable<ICompletionData> data) : base(data)
 		{
 			this.AutoSelect = true;
+		}
+		
+		public void AddKeyHandler (ICompletionKeyHandler keyHandler)
+		{
+			this.keyHandler.Add (keyHandler);
 		}
 		
 		public CompletionData Add (string text)

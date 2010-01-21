@@ -1,3 +1,10 @@
+2010-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added support for custom key actions in completion list.
+
 2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

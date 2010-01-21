@@ -89,7 +89,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
 		{
-			ka = ProcessKey (key, keyChar, modifier);
+			ka = KeyActions.None;
+			bool keyHandled = false;
+			foreach (ICompletionKeyHandler handler in CompletionDataList.KeyHandler) {
+				if (handler.ProcessKey (this, key, keyChar, modifier, out ka)) {
+					keyHandled = true;
+					break;
+				}
+			}
+			if (!keyHandled) {
+				ka = ProcessKey (key, keyChar, modifier);
+			}
 			
 			if ((ka & KeyActions.Complete) != 0) {
 				CompleteWord ();
