@@ -1,3 +1,16 @@
+2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Extensions:
+	* MonoDevelop.Ide.Gui.Dialogs\AddFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs\OpenFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs:
+	* MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs:
+	* MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad\FolderNodeBuilder.cs:
+	  Add support for platform-specific dialogs for adding files
+	  and for opening files.
+
 2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

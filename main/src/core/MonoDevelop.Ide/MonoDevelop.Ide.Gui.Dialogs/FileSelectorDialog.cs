@@ -35,12 +35,13 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using Gtk;
+using MonoDevelop.Core.Gui;
 
 #pragma warning disable 612
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public class FileSelectorDialog: FileSelector
+	class FileSelectorDialog: FileSelector
 	{
 		Hashtable filterPairs;
 		int selectOption;

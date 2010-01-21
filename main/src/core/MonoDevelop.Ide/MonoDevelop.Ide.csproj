@@ -585,6 +585,10 @@
     <Compile Include="MonoDevelop.Ide.Gui\HiddenWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenTextEditorViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\OpenFileDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddFileDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -630,5 +634,6 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
     <Folder Include="MonoDevelop.Ide.Execution\" />
+    <Folder Include="MonoDevelop.Ide.Extensions\" />
   </ItemGroup>
 </Project>

@@ -41,6 +41,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
@@ -342,45 +343,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			
-			FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"));
-			fdiag.SetCurrentFolder (GetFolderPath (CurrentNode.DataItem));
+			AddFileDialog fdiag  = new AddFileDialog (GettextCatalog.GetString ("Add files"));
+			fdiag.CurrentFolder = GetFolderPath (CurrentNode.DataItem);
 			fdiag.SelectMultiple = true;
 			fdiag.TransientFor = IdeApp.Workbench.RootWindow;
-			
-			//add a combo that can be used to override the default build action
-			ComboBox combo = new ComboBox (project.GetBuildActions ());
-			combo.Sensitive = false;
-			combo.Active = 0;
-			combo.RowSeparatorFunc = delegate (TreeModel model, TreeIter iter) {
-				return "--" == ((string) model.GetValue (iter, 0));
-			};
-			
-			CheckButton check = new CheckButton (GettextCatalog.GetString ("Override default build action"));
-			check.Toggled += delegate { combo.Sensitive = check.Active; };
-			
-			HBox box = new HBox ();
-			fdiag.ExtraWidget = box;
-			box.PackStart (check, false, false, 4);
-			box.PackStart (combo, false, false, 4);
-			box.ShowAll ();
+			fdiag.BuildActions = project.GetBuildActions ();	
 			
 			int result;
 			string[] files;
 			string overrideAction = null;
 			
-			try {
-				result = fdiag.Run ();
-				files = fdiag.Filenames;
-				if (result != (int) ResponseType.Ok)
-					return;
-				if (check.Active)
-					overrideAction = combo.ActiveText;
-			} finally {
-				fdiag.Destroy ();
-			}
+			if (!fdiag.Run ())
+				return;
+			
+			files = fdiag.SelectedFiles;
+			overrideAction = fdiag.OverrideAction;
 			
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
-			string baseDirectory = folder != null ? folder.Path : project.BaseDirectory;
+			FilePath baseDirectory = folder != null ? folder.Path : project.BaseDirectory;
 			
 			string[] addedFiles = IdeApp.ProjectOperations.AddFilesToProject (project, files, baseDirectory);
 			
