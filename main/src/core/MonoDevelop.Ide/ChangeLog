@@ -1,5 +1,9 @@
 2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am: Add missing files.
+
+2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Extensions:
 	* MonoDevelop.Ide.Gui.Dialogs\AddFileDialog.cs:

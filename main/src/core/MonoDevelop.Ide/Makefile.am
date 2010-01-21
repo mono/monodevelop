@@ -129,6 +129,8 @@ FILES =  \
 	MonoDevelop.Ide.Execution/MonoExecutionCustomizer.cs \
 	MonoDevelop.Ide.Execution/MonoExecutionParameters.cs \
 	MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs \
+	MonoDevelop.Ide.Extensions/IAddFileDialogHandler.cs \
+	MonoDevelop.Ide.Extensions/IOpenFileDialogHandler.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
@@ -187,6 +189,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs \
+	MonoDevelop.Ide.Gui.Dialogs/AddFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
@@ -208,6 +211,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/OpenFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
