@@ -176,10 +176,13 @@ namespace OSXIntegration.Framework
 		{
 			int len = Marshal.SizeOf (typeof (T));
 			IntPtr bufferPtr = Marshal.AllocHGlobal (len);
-			CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, bufferPtr, len, 0));
-			T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
-			Marshal.FreeHGlobal (bufferPtr);
-			return val;
+			try {
+				CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, bufferPtr, len, 0));
+				T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
+				return val;
+			} finally{ 
+				Marshal.FreeHGlobal (bufferPtr);
+			}
 		}
 		
 		[DllImport (CarbonLib)]
@@ -198,6 +201,22 @@ namespace OSXIntegration.Framework
 		
 		[DllImport (CarbonLib)]
 		public static extern AEDescStatus AESizeOfNthItem  (ref AEDesc descList, int index, ref CarbonEventParameterType type, out int size);
+		
+		static string GetStringFromAEPtr (ref AEDesc descList, int index)
+		{
+			int size;
+			CarbonEventParameterType type = CarbonEventParameterType.UnicodeText;
+			if (AESizeOfNthItem (ref descList, index, ref type, out size) == AEDescStatus.Ok) {
+				IntPtr buffer = Marshal.AllocHGlobal (size);
+				try {
+					if (AEGetNthPtr (ref descList, index, type, 0, 0, buffer, size, 0) == AEDescStatus.Ok)
+						return Marshal.PtrToStringUni (buffer, size / sizeof (char));
+				} finally {
+					Marshal.FreeHGlobal (buffer);
+				}
+			}
+			return null;
+		}
 		
 		#endregion
 		
@@ -342,14 +361,28 @@ namespace OSXIntegration.Framework
 		
 		public static List<string> GetFileListFromEventRef (IntPtr eventRef)
 		{
-			AEDesc list = Carbon.GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
-			long count = Carbon.AECountItems (ref list);
-			List<string> files = new List<string> ();
+			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+			long count = AECountItems (ref list);
+			var files = new List<string> ();
 			for (int i = 1; i <= count; i++) {
-				FSRef fsRef = Carbon.AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
-				string file = Carbon.FSRefToPath (ref fsRef);
-				if (!String.IsNullOrEmpty (file))
+				FSRef fsRef = AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
+				string file = FSRefToPath (ref fsRef);
+				if (!string.IsNullOrEmpty (file))
 					files.Add (file);
+			}
+			CheckReturn (AEDisposeDesc (ref list));
+			return files;
+		}
+		
+		public static List<string> GetUrlListFromEventRef (IntPtr eventRef)
+		{
+			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+			long count = AECountItems (ref list);
+			var files = new List<string> ();
+			for (int i = 1; i <= count; i++) {
+				string url = GetStringFromAEPtr (ref list, i); 
+				if (!string.IsNullOrEmpty (url))
+					files.Add (url);
 			}
 			Carbon.CheckReturn (Carbon.AEDisposeDesc (ref list));
 			return files;

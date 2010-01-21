@@ -1,5 +1,13 @@
 2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Framework/ApplicationEvents.cs: Fix event IDs. Use
+	  GetUrlListFromEventRef.
+
+	* Framework/Carbon.cs: New GetUrlListFromEventRef and
+	  GetStringFromAEPtr methods.
+
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacPlatform.cs:
 	* Framework/ApplicationEvents.cs: Remove OpenContents event
 	  since it didn't really work.

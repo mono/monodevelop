@@ -104,7 +104,7 @@ namespace OSXIntegration.Framework
 				lock (lockObj) {
 					openDocuments += value;
 					if (openDocumentsHandlerRef == IntPtr.Zero)
-						openDocumentsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenDocuments, CarbonEventApple.ReopenApplication);
+						openDocumentsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenDocuments, CarbonEventApple.OpenDocuments);
 				}
 			}
 			remove {
@@ -141,7 +141,7 @@ namespace OSXIntegration.Framework
 				lock (lockObj) {
 					openUrls += value;
 					if (openUrlsHandlerRef == IntPtr.Zero)
-						openUrlsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenUrls, CarbonEventApple.OpenContents);
+						openUrlsHandlerRef = Carbon.InstallApplicationEventHandler (HandleOpenUrls, CarbonEventApple.GetUrl);
 				}
 			}
 			remove {
@@ -156,7 +156,7 @@ namespace OSXIntegration.Framework
 		static CarbonEventHandlerStatus HandleOpenUrls (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
 			try {
-				var urls = Carbon.GetFileListFromEventRef (eventRef);
+				var urls = Carbon.GetUrlListFromEventRef (eventRef);
 				var args = new ApplicationUrlEventArgs (urls);
 				openUrls (null, args);
 				return args.HandledStatus;
