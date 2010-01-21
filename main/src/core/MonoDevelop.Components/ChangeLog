@@ -1,3 +1,18 @@
+2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components.addin.xml:
+	* MonoDevelop.Components.Extensions:
+	* MonoDevelop.Components\FileEntry.cs:
+	* MonoDevelop.Components\FolderEntry.cs:
+	* MonoDevelop.Components\SelectFileDialog.cs:
+	* MonoDevelop.Components\SelectFolderDialog.cs:
+	* MonoDevelop.Components.Extensions\PlatformDialog.cs:
+	* MonoDevelop.Components.Extensions\ISelectFileDialog.cs: Add
+	  support for platform-specific common dialogs. Added the
+	  default implementations for file and folder selectors.
+
 2010-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/FixedWidthWrapLabel.cs: Added support

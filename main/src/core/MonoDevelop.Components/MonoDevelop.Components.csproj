@@ -40,7 +40,9 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
-    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Posix">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -65,7 +67,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Mono.Cairo" />
+    <Reference Include="Mono.Cairo">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -230,6 +234,10 @@
     <Compile Include="MonoDevelop.Components\SearchEntry.cs" />
     <Compile Include="MonoDevelop.Components\HoverImageButton.cs" />
     <Compile Include="MonoDevelop.Components\PathBar.cs" />
+    <Compile Include="MonoDevelop.Components.Extensions\PlatformDialog.cs" />
+    <Compile Include="MonoDevelop.Components.Extensions\ISelectFileDialog.cs" />
+    <Compile Include="MonoDevelop.Components\SelectFileDialog.cs" />
+    <Compile Include="MonoDevelop.Components\SelectFolderDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -252,4 +260,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Components.Extensions\" />
+  </ItemGroup>
 </Project>
