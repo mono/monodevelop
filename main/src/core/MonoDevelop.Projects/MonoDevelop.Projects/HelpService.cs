@@ -161,7 +161,7 @@ namespace MonoDevelop.Projects
 			var map = new Dictionary<string,string> ();
 			foreach (var dir in mergeSources) {
 				foreach (var file in Directory.GetFiles (dir)) {
-					if (file.EndsWith (".source") || file.EndsWith (".zip") || file.EndsWith (".source"))
+					if (file.EndsWith (".source") || file.EndsWith (".zip") || file.EndsWith (".tree"))
 						map[Path.GetFileName (file)] = file;
 				}
 			}
