@@ -1,5 +1,24 @@
 2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/StackFrame.cs:
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Client/EvaluationOptions.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	* Mono.Debugging.Evaluation/NRefactoryResolverVisitor.cs: Add
+	  suport for an external type resolver. The first time an
+	  expression is evaluated in a context, the debugger tries to
+	  resolve the type references using the external resolver, and
+	  will use the resolved expression to do the evaluation.
+
+	* Mono.Debugging.Client/SourceLocation.cs: Add column field.
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Added
+	  method for forcing the loading of a type.
+
+2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Generate
 	  NotSupported values when getting such exception.
 

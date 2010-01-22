@@ -60,6 +60,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/LiteralValueReference.cs \
 	Mono.Debugging.Evaluation/NamespaceValueReference.cs \
 	Mono.Debugging.Evaluation/NRefactoryEvaluator.cs \
+	Mono.Debugging.Evaluation/NRefactoryResolverVisitor.cs \
 	Mono.Debugging.Evaluation/NullValueReference.cs \
 	Mono.Debugging.Evaluation/ObjectValueAdaptor.cs \
 	Mono.Debugging.Evaluation/RawViewSource.cs \

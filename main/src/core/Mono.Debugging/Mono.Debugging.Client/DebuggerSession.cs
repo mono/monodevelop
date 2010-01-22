@@ -39,6 +39,7 @@ namespace Mono.Debugging.Client
 	public delegate void ProcessEventHandler(int process_id);
 	public delegate void ThreadEventHandler(int thread_id);
 	public delegate bool ExceptionHandler (Exception ex);
+	public delegate string TypeResolverHandler (string identifier, SourceLocation location);
 	
 	public abstract class DebuggerSession: IDisposable
 	{
@@ -57,6 +58,7 @@ namespace Mono.Debugging.Client
 		BreakEventHitHandler customBreakpointHitHandler;
 		ExceptionHandler exceptionHandler;
 		DebuggerSessionOptions options;
+		Dictionary<string,string> resolvedExpressionCache = new Dictionary<string, string> ();
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -97,6 +99,8 @@ namespace Mono.Debugging.Client
 			get { return exceptionHandler; }
 			set { exceptionHandler = value; }
 		}
+		
+		public TypeResolverHandler TypeResolverHandler { get; set; }
 
 		public BreakpointStore Breakpoints {
 			get {
@@ -570,6 +574,41 @@ namespace Mono.Debugging.Client
 			lock (slock) {
 				return OnDisassembleFile (file);
 			}
+		}
+		
+		public string ResolveExpression (string expression, string file, int line, int column)
+		{
+			return ResolveExpression (expression, new SourceLocation (null, file, line, column));
+		}
+		
+		public virtual string ResolveExpression (string expression, SourceLocation location)
+		{
+			if (TypeResolverHandler == null)
+				return expression;
+			else {
+				string key = expression + " " + location;
+				string resolved;
+				if (!resolvedExpressionCache.TryGetValue (key, out resolved)) {
+					resolved = OnResolveExpression (expression, location);
+					resolvedExpressionCache [key] = resolved;
+				}
+				return resolved;
+			}
+		}
+		
+		Mono.Debugging.Evaluation.NRefactoryEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryEvaluator ();
+		
+		protected virtual string OnResolveExpression (string expression, SourceLocation location)
+		{
+			return defaultResolver.Resolve (this, location, expression);
+		}
+		
+		internal protected string ResolveIdentifierAsType (string identifier, SourceLocation location)
+		{
+			if (TypeResolverHandler != null)
+				return TypeResolverHandler (identifier, location);
+			else
+				return null;
 		}
 		
 		internal ThreadInfo[] GetThreads (long processId)
