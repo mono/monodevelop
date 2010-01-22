@@ -159,4 +159,10 @@
 		<StockIcon stockid = "iphone-project-options-panel" resource = "iphone-project-options-panel-16.png" size="Menu" />
 		<StockIcon stockid = "iphone-project-options-panel" resource = "iphone-project-options-panel-24.png" size="Button" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MonoDocSources">
+		<Condition id="MonoTouchInstalled">
+			<Source directory="/Developer/MonoTouch/usr/share/doc/MonoTouch/" />
+		</Condition>
+	</Extension>
 </Addin>

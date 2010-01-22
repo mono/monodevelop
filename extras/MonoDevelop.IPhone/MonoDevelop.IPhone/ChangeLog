@@ -1,3 +1,9 @@
+2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: Add a MonoDoc source for the
+	  MonoTouch docs, so that MD can load them even after the Mono
+	  framework directory is upgraded.
+
 2010-01-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneOptionsPanel.cs: Make the main nib picker entry
