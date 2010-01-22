@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public static bool IsWordSeparator (char ch)
 		{
-			return Char.IsWhiteSpace (ch) || (Char.IsPunctuation (ch) && ch != '_');
+			return !Char.IsLetterOrDigit (ch) && ch != '_';
 		}
 		
 		public static bool IsWholeWordAt (string text, int offset, int length)
