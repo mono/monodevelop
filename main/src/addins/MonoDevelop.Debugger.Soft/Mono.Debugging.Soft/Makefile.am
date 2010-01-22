@@ -9,12 +9,10 @@ DBG_MDB_SRC = $(DBG_ASM_SRC).mdb
 SIGNING_KEY=$(top_srcdir)/src/core/Mono.Debugging/mono.debugging.snk
 
 DEPS =  \
-	$(top_builddir)/build/bin/Mono.Debugging.dll \
-	../../../../build/bin/Mono.Debugging.dll
+	$(top_builddir)/build/bin/Mono.Debugging.dll
 
 REFS =  \
 	-r:$(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft/Mono.Debugger.Soft.dll \
-	-r:Mono.Debugger.Soft.dll \
 	-r:System \
 	-r:System.Core
 
@@ -52,7 +50,7 @@ $(ASSEMBLY).mdb: $(ASSEMBLY)
 
 check: all
 
-assemblydir = $(MD_ADDIN_DIR)/Mono.Debugging.Soft
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Debugger.Soft
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(DBG_ASM) $(DBG_MDB)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DBG_ASM) $(DBG_MDB)
