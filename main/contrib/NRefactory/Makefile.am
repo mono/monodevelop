@@ -6,6 +6,8 @@ REFS =  \
 	-r:System \
 	-r:System.Drawing \
 	-r:System.Xml
+	
+SIGNING_KEY=$(srcdir)/Project/Resources/ICSharpCode.NRefactory.snk
 
 FILES =  \
 	Project/Configuration/AssemblyInfo.cs \
@@ -85,7 +87,7 @@ FILES =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -define:NET35 -debug -out:$@ -target:library $(REFS) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -keyfile:"$(SIGNING_KEY)" -define:NET35 -debug -out:$@ -target:library $(REFS) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
@@ -94,6 +96,6 @@ assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-EXTRA_DIST = $(FILES)
+EXTRA_DIST = $(FILES) $(SIGNING_KEY)
 
 include $(top_srcdir)/Makefile.include
