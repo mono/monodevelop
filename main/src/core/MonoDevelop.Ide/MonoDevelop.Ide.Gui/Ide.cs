@@ -190,7 +190,8 @@ namespace MonoDevelop.Ide.Gui
 
 			// Perser service initialization
 
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.AsyncInitialize ();
+			MonoDevelop.Projects.HelpService.AsyncInitialize ();
+			
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.TrackFileChanges = true;
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 

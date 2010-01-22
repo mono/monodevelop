@@ -1,3 +1,11 @@
+2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/HelpOperations.cs: Use the HelpService's
+	  cache root dir for launched MonoDoc instances. Moved
+	  GetHelpUrl to the HelpService.
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Track HelpService API.
+
 2010-01-22  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:

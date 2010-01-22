@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -58,7 +59,7 @@ namespace MonoDevelop.Ide.Gui
 					.ParentDirectory
 					.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
 				if (Directory.Exists (mdapp))
-					System.Diagnostics.Process.Start ("open", "-a \"" + mdapp + "\" " + url);
+					System.Diagnostics.Process.Start ("open", "-a \"" + mdapp + "\" " + url + " --args " + RootDirArg);
 				else
 					System.Diagnostics.Process.Start ("open", url);
 				return;
@@ -106,6 +107,16 @@ namespace MonoDevelop.Ide.Gui
 				MessageService.ShowError (
 					GettextCatalog.GetString ("You need a newer monodoc to use it externally from monodevelop. Using the integrated help viewer now."));
 		}
+		
+		string RootDirArg {
+			get {
+				//docrootdir only works on Mono 2.6, but 2.4 should just ignore it
+				string mdocroot = HelpService.GetMonoDocCacheRoot ();
+				if (mdocroot != null)
+					return " --docrootdir=\"" + mdocroot + "\" ";
+				return "";
+			}
+		}
 
 		void ShowHelpExternal (string topic)
 		{
@@ -113,8 +124,9 @@ namespace MonoDevelop.Ide.Gui
 				if (pw == null || pw.HasExited == true) {
 					outWriter = new StringWriter ();
 					errWriter = new StringWriter ();
+					
 					pw = Runtime.ProcessService.StartProcess (
-						"monodoc", "--remote-mode", "", outWriter, errWriter, 
+						"monodoc", "--remote-mode" + RootDirArg, "", outWriter, errWriter, 
 						delegate { 
 							if (pw.ExitCode == 0)
 								return;
@@ -140,48 +152,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool CanShowHelp (ResolveResult result)
 		{
-			return CanShowHelp (GetHelpUrl (result));
-		}
-		
-		//note: this method is very careful to check that the generated URLs exist in MonoDoc
-		//because if we send nonexistent URLS to MonoDoc, it shows empty pages
-		public string GetHelpUrl (ResolveResult result)
-		{
-			if (result == null)
-				return null;
-			
-			if (result is AggregatedResolveResult) 
-				result = ((AggregatedResolveResult)result).PrimaryResult;
-			
-			
-			if (result is NamespaceResolveResult)
-			{
-				string namespc = ((NamespaceResolveResult)result).Namespace;
-				//verify that the namespace exists in the help tree
-				//FIXME: GetHelpXml doesn't seem to work for namespaces, so forced to do full render
-				Monodoc.Node dummy;
-				if (!String.IsNullOrEmpty (namespc) && ProjectDomService.HelpTree != null && ProjectDomService.HelpTree.RenderUrl ("N:" + namespc, out dummy) != null)
-					return "N:" + namespc;
-				else return null;
-			}
-			
-			IMember member = null;
-			if (result is MethodResolveResult)
-				member = ((MethodResolveResult)result).MostLikelyMethod;
-			else if (result is MemberResolveResult)
-				member = ((MemberResolveResult)result).ResolvedMember;
-			
-			if (member != null && member.GetMonodocDocumentation () != null)
-				return member.HelpUrl;
-			
-			IReturnType type = result.ResolvedType;
-			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
-				string t = "T:" + type.FullName;
-				if (ProjectDomService.HelpTree != null && ProjectDomService.HelpTree.GetHelpXml (t) != null)
-					return t;
-			}
-			
-			return null;
+			return CanShowHelp (HelpService.GetMonoDocHelpUrl (result));
 		}
 	}
 }
