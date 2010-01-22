@@ -125,12 +125,12 @@ namespace Mono.TextEditor
 					OptionsChanged (null, null);
 			}
 		}
-		
-		public TextEditor () : this (new Document ())
+		Dictionary<int, int> lineHeights = new Dictionary<int, int> ();
+		public TextEditor () : this(new Document ())
 		{
-			
+			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 		}
-		
+
 		Gdk.Pixmap buffer = null, flipBuffer = null;
 		
 		void DoFlipBuffer ()
@@ -2178,6 +2178,19 @@ namespace Mono.TextEditor
 		{
 			return GetLineHeight (Document.GetLine (logicalLineNumber));
 		}
+		
+		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
+		{
+			if (!e.Line.Markers.Any (m => m is IExtendingTextMarker))
+				return;
+			int currentHeight = GetLineHeight (e.Line);
+			int h;
+			if (lineHeights.TryGetValue (e.Line.Offset, out h) && h != currentHeight) {
+				textEditorData.Document.CommitLineToEndUpdate (textEditorData.Document.OffsetToLineNumber (e.Line.Offset));
+			}
+			lineHeights[e.Line.Offset] = currentHeight;
+		}
+		
 	}
 	
 	public interface ITextEditorDataProvider
