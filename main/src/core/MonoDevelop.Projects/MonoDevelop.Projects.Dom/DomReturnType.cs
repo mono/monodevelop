@@ -124,7 +124,7 @@ namespace MonoDevelop.Projects.Dom
 		
 	}
 	
-	public class DomReturnType : IReturnType
+	public class DomReturnType : AbstractNode, IReturnType
 	{
 		static readonly int[] zeroDimensions = new int[0];
 		static readonly int[] oneDimensions = new int[] { 0 };
@@ -486,7 +486,7 @@ namespace MonoDevelop.Projects.Dom
 			return invariantString = result.ToString ();
 		}
 		
-		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}

@@ -34,7 +34,7 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public abstract class AbstractMember : IMember
+	public abstract class AbstractMember : AbstractNode, IMember
 	{
 		protected List<IReturnType> explicitInterfaces = null;
 		
@@ -434,8 +434,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return null;
 		}
-		
-		public abstract S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 		
 		public override bool Equals (object obj)
 		{

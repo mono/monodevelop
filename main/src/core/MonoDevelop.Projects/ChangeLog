@@ -1,3 +1,17 @@
+2010-01-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/INode.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomUsing.cs:
+	* MonoDevelop.Projects.Dom/DomAttribute.cs:
+	* MonoDevelop.Projects.Dom/DomParameter.cs:
+	* MonoDevelop.Projects.Dom/LocalVariable.cs:
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom/AbstractMember.cs:
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
+	* MonoDevelop.Projects.Dom/DomMemberDecorator.cs: Worked on
+	  dom tree model.
+
 2010-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: fixed

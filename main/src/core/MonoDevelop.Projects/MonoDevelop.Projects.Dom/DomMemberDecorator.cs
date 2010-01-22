@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Dom
 	/// <summary>
 	/// Decorates an IMember object.
 	/// </summary>
-	class DomMemberDecorator : IMember
+	class DomMemberDecorator : AbstractNode, IMember
 	{
 		IMember member;
 		
@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		#region INode implementation 
 		
-		public virtual S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return member.AcceptVisitor (visitor, data);
 		}
