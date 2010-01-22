@@ -473,7 +473,7 @@ namespace MonoDevelop.Refactoring
 				Document = doc,
 				Dom = ctx,
 				ResolveResult = null,
-				SelectedItem = item
+				SelectedItem = item is InstantiatedType ? ((InstantiatedType)item).UninstantiatedType : item
 			};
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {

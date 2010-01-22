@@ -62,7 +62,7 @@ namespace MonoDevelop.Refactoring
 				Document = doc,
 				Dom = dom,
 				ResolveResult = result,
-				SelectedItem = item
+				SelectedItem = item is InstantiatedType ? ((InstantiatedType)item).UninstantiatedType : item
 			};
 			Run (options);
 		}
