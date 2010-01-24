@@ -1,3 +1,17 @@
+2010-01-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.RegexToolkit.csproj:
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs:
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:
+	* MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs:
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:
+	* gtk-gui/MonoDevelop.RegexToolkit.UpdateInProgressDialog.cs:
+	  Made the regex toolkit a bit nicer.
+
 2009-12-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Set button

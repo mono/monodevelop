@@ -27,11 +27,9 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs \
 	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs \
-	gtk-gui/MonoDevelop.RegexToolkit.UpdateInProgressDialog.cs \
 	MonoDevelop.RegexToolkit/Commands.cs \
 	MonoDevelop.RegexToolkit/RegexLibraryWindow.cs \
 	MonoDevelop.RegexToolkit/RegexToolkitWindow.cs \
-	MonoDevelop.RegexToolkit/UpdateInProgressDialog.cs \
 	MonoDevelop.RegexToolkit/Webservices.cs
 
 RES =  \
