@@ -1,3 +1,8 @@
+2010-01-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionItem.cs: Added method for
+	  registering/unregistering internal children.
+
 2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/HelpService.cs: Oops, include tree

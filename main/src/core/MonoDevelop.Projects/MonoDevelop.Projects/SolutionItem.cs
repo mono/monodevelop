@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects
 		Solution parentSolution;
 		ISolutionItemHandler handler;
 		int loading;
+		SolutionFolder internalChildren;
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		string baseDirectory;
@@ -348,6 +349,21 @@ namespace MonoDevelop.Projects
 			}
 			set {
 			}
+		}
+		
+		protected void RegisterInternalChild (SolutionItem item)
+		{
+			if (internalChildren == null) {
+				internalChildren = new SolutionFolder ();
+				internalChildren.ParentFolder = parentFolder;
+			}
+			internalChildren.Items.Add (item);
+		}
+		
+		protected void UnregisterInternalChild (SolutionItem item)
+		{
+			if (internalChildren != null)
+				internalChildren.Items.Remove (item);
 		}
 		
 		public static ReadOnlyCollection<T> TopologicalSort<T> (IEnumerable<T> items, ConfigurationSelector configuration) where T: SolutionItem
