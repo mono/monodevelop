@@ -119,7 +119,7 @@ namespace Mono.Debugging.Soft
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			if (!String.IsNullOrEmpty (dsi.LogMessage))
-				LogWriter (false, dsi.LogMessage + "\n");
+				OnDebuggerOutput (false, dsi.LogMessage + "\n");
 
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
 					HandleConnection (VirtualMachineManager.EndLaunch (ar));
@@ -836,6 +836,8 @@ namespace Mono.Debugging.Soft
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n", s, bp.Line, l.Method.FullName, l.ILOffset));
 							ResolvePendingBreakpoint (bp, l);
 							resolved.Add (bp);
+						} else {
+							OnDebuggerOutput (true, string.Format ("Could not insert pending breakpoint at '{0}:{1}'. Perhaps the source line does not contain any statements, or the source does not correspond to the current binary.\n", s, bp.Line));
 						}
 					}
 				}

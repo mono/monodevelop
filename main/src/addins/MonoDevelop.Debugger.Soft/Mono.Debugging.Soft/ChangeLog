@@ -1,3 +1,8 @@
+2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Write a message to the debugger
+	  output if unable to insert a breakpoint.
+
 2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: Implement new ForceLoadType
