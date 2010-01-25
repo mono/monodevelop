@@ -18,7 +18,7 @@
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="MainWindow.xib.designer.${LanguageExtension}" DependsOn="${Name}.xib" SuppressAutoOpen="True"
+		<File name="MainWindow.xib.designer.cs" DependsOn="${Name}.xib" SuppressAutoOpen="True"
 			ShowAutogenerationNotice="True" AddStandardHeader="False" ><![CDATA[
 namespace ${Namespace}
 {

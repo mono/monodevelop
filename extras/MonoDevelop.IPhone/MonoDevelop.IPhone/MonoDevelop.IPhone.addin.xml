@@ -40,8 +40,14 @@
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<Condition id="MonoTouchInstalled">
-			<ProjectTemplate id       = "IPhoneProject"
-			                 resource = "IPhoneProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneWindowBasedProject"
+			                 resource = "IPhoneWindowBasedProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneOpenGLProject"
+			                 resource = "IPhoneOpenGLProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneNavBasedProject"
+			                 resource = "IPhoneNavBasedProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneUtilityProject"
+			                 resource = "IPhoneUtilityProject.xpt.xml" />
 			<ProjectTemplate id       = "IPhoneLibraryProject"
 			                 resource = "IPhoneLibraryProject.xpt.xml" />
 			<ProjectTemplate id       = "IPhoneProject-Empty"

@@ -1,3 +1,20 @@
+2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneProject.xpt.xml:
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml: Added 3 new project
+	  templates.
+
+	* Templates/IPhoneViewXib.xft.xml:
+	* Templates/IPhoneApplicationXib.xft.xml:
+	* Templates/IPhoneViewController.xft.xml: Small tweaks.
+
+	* Templates/IPhoneWindowBasedProject.xpt.xml: Renamed the
+	  default project template to match Xcode.
+
 2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.IPhone.addin.xml: Add a MonoDoc source for the
