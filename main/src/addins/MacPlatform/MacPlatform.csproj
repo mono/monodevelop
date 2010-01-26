@@ -86,10 +86,12 @@
     <Compile Include="Framework\CoreFoundation.cs" />
     <Compile Include="Framework\HIToolbox.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="MacUpdater.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="UpdateDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Platform.UpdateDialog.cs" />
+    <Compile Include="Updater\UpdateService.cs" />
+    <Compile Include="Updater\UpdateDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Platform.Updater.UpdateDialog.cs" />
+    <Compile Include="Updater\UpdateResult.cs" />
+    <Compile Include="Updater\Commands.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -122,5 +124,6 @@
   <ItemGroup>
     <Folder Include="Menus\" />
     <Folder Include="Framework\" />
+    <Folder Include="Updater\" />
   </ItemGroup>
 </Project>

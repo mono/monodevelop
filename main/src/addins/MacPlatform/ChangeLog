@@ -1,3 +1,44 @@
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs:
+	* Updater/UpdateService.cs: Let the server handle the logic of
+	  showing stable updates to users with unstable versions when
+	  they opt back out of the unstable channel.
+
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs:
+	* Updater/UpdateResult.cs:
+	* Updater/UpdateService.cs: Filter and flag unstable updates.
+
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* Updater/UpdateDialog.cs:
+	* gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs: Tweak
+	  layout. Show message when fetching unstable updates.
+
+2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater:
+	* Makefile.am:
+	* Commands.cs:
+	* MacUpdater.cs:
+	* UpdateDialog.cs:
+	* MacPlatform.csproj:
+	* gtk-gui/gui.stetic:
+	* Updater/Commands.cs:
+	* MacPlatform.addin.xml:
+	* Updater/UpdateResult.cs:
+	* Updater/UpdateDialog.cs:
+	* Updater/UpdateService.cs:
+	* gtk-gui/MonoDevelop.Platform.UpdateDialog.cs:
+	* gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs:
+	  Refactor the updater code into something a bit more
+	  reusable. Make update dialog singleton. Allow checking for
+	  unstable updates, when the web service allows it. Present
+	  errors in the updater dialog iteself.
+
 2009-12-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Menus/OSXMenu.cs: Use new Workbench.HasToplevelFocus

@@ -26,11 +26,13 @@ FILES =  \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Platform.UpdateDialog.cs \
+	gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs \
 	MacPlatform.cs \
-	MacUpdater.cs \
 	Menus/OSXMenu.cs \
-	UpdateDialog.cs
+	Updater/Commands.cs \
+	Updater/UpdateDialog.cs \
+	Updater/UpdateResult.cs \
+	Updater/UpdateService.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

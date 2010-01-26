@@ -3,13 +3,12 @@
        name        = "MonoDevelop Mac Platform Support"
        author      = "Geoff Norton, Michael Hutchinson"
        copyright   = "MIT X11"
-       url         = "http://blog.sublimeintervention.com/"
+       url         = "http://monodevelop.com/"
        description = "Mac Platform Support for MonoDevelop"
        category    = "Platform Support"
        version     = "2.2">
 	
 	<Runtime>
-		<Import assembly="MacPlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
@@ -40,23 +39,26 @@
 				macShortcut = "Meta|Alt|H" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Commands/Help">
-		<Command id  = "MonoDevelop.Platform.Mac.Commands.CheckForUpdates"
-				defaultHandler = "MonoDevelop.Platform.Mac.CheckForUpdatesHandler"
-				_label = "_Check for Updates"
-				_description = "Check for updates to MonoDevelop and packages it requires" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.MinimizeWindow"
 		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
 	</Extension>
+	
+	<!-- Updater -->
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Help">
+		<Command id  = "MonoDevelop.Platform.Updater.Commands.CheckForUpdates"
+				defaultHandler = "MonoDevelop.Platform.Updater.CheckForUpdatesHandler"
+				_label = "_Check for Updates"
+				_description = "Check for updates to MonoDevelop and packages it requires" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Help">
-		<CommandItem id = "MonoDevelop.Platform.Mac.Commands.CheckForUpdates"
+		<CommandItem id = "MonoDevelop.Platform.Updater.Commands.CheckForUpdates"
 		             insertafter = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class="MonoDevelop.Platform.Mac.CheckForUpdatesOnStartUpHandler" />
+		<Class class="MonoDevelop.Platform.Updater.CheckForUpdatesOnStartUpHandler" />
 	</Extension>
 </Addin>

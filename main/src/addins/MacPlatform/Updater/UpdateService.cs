@@ -33,13 +33,14 @@ using System.Net;
 using MonoDevelop.Core.Gui;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Platform
+namespace MonoDevelop.Platform.Updater
 {
 
-	public static class AppUpdater
+	public static class UpdateService
 	{
 		const int formatVersion = 1;
 		const string updateAutoPropertyKey = "AppUpdater.CheckAutomatically";
+		const string includeUnstableKey = "AppUpdate.IncludeUnstable";
 		
 		static UpdateInfo[] updateInfos;
 		
@@ -79,15 +80,75 @@ namespace MonoDevelop.Platform
 			}
 		}
 		
-		public static void RunCheck (bool automatic)
-		{
-			RunCheck (DefaultUpdateInfos, automatic);
+		public static bool IncludeUnstable {
+			get {
+				return PropertyService.Get<bool> (includeUnstableKey, false);
+			}
+			set {
+				PropertyService.Set (includeUnstableKey, value);
+			}
 		}
 		
-		public static void RunCheck (UpdateInfo[] updateInfos, bool automatic)
+		public static void RunCheckDialog (bool automatic)
+		{
+			RunCheckDialog (DefaultUpdateInfos, automatic);
+		}
+		
+		public static void RunCheckDialog (UpdateInfo[] updateInfos, bool automatic)
 		{
 			if (updateInfos == null || updateInfos.Length == 0 || (automatic && !CheckAutomatically))
 				return;
+			
+			if (!automatic) {
+				ShowUpdateDialog ();
+				QueryUpdateServer (updateInfos, IncludeUnstable, delegate (UpdateResult result) {
+					ShowUpdateResult (result);
+				});
+			} else {
+				QueryUpdateServer (updateInfos, IncludeUnstable, delegate (UpdateResult result) {
+					if (result.HasError || !result.HasUpdates)
+						return;
+					ShowUpdateDialog ();
+					ShowUpdateResult (result);
+				});
+			}
+		}
+		
+		#region Singleton dialog management. Methods are threadsafe, field is not
+		
+		static UpdateDialog visibleDialog;
+		
+		static void ShowUpdateDialog ()
+		{
+			Gtk.Application.Invoke (delegate {
+				if (visibleDialog == null) {
+					visibleDialog = new UpdateDialog ();
+					MessageService.ShowCustomDialog (visibleDialog);
+					visibleDialog.Destroy ();
+					visibleDialog = null;
+				} else {
+					visibleDialog.GdkWindow.Focus (0);
+				}
+			});
+		}
+		
+		static void ShowUpdateResult (UpdateResult result)
+		{
+			Gtk.Application.Invoke (delegate {
+				if (visibleDialog != null)
+					visibleDialog.LoadResult (result);
+			});
+		}
+			
+		#endregion
+		
+		public static void QueryUpdateServer (UpdateInfo[] updateInfos, bool includeUnstable, Action<UpdateResult> callback)
+		{
+			if (updateInfos == null || updateInfos.Length == 0) {
+				string error = GettextCatalog.GetString ("No updatable products detected");
+				callback (new UpdateResult (null, false, error, null));
+				return;
+			}
 			
 			var query = new StringBuilder ("http://go-mono.com/macupdate/update?v=");
 			query.Append (formatVersion);
@@ -97,29 +158,37 @@ namespace MonoDevelop.Platform
 			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATER_TEST")))
 				query.Append ("&test=1");
 			
+			if (includeUnstable)
+				query.Append ("&unstable=yes");
+			
 			var request = (HttpWebRequest) WebRequest.Create (query.ToString ());
 			
 			//FIXME: use IfModifiedSince
 			//request.IfModifiedSince = somevalue;
 			
 			request.BeginGetResponse (delegate (IAsyncResult ar) {
-				ReceivedResponse (request, ar, automatic);
+				ReceivedResponse (request, ar, includeUnstable, callback);
 			}, null);
 		}
 		
-		static void ReceivedResponse (HttpWebRequest request, IAsyncResult ar, bool automatic)
+		static void ReceivedResponse (HttpWebRequest request, IAsyncResult ar, bool includesUnstable, Action<UpdateResult> callback)
 		{
+			List<Update> updates = null;
+			string error = null;
+			Exception errorDetail = null;
+			
 			try {
 				using (var response = (HttpWebResponse) request.EndGetResponse (ar)) {
 					var encoding = Encoding.GetEncoding (response.CharacterSet);
 					using (var reader = new StreamReader (response.GetResponseStream(), encoding)) {
 						var doc = System.Xml.Linq.XDocument.Load (reader);
-						var updates = (from x in doc.Root.Elements ("Application")
+						updates = (from x in doc.Root.Elements ("Application")
 							let first = x.Elements ("Update").First ()
 							select new Update () {
 								Name = x.Attribute ("name").Value,
 								Url = first.Attribute ("url").Value,
 								Version = first.Attribute ("version").Value,
+								IsUnstable = first.Attribute ("unstable") != null && (bool)first.Attribute ("unstable"),
 								Date = DateTime.Parse (first.Attribute ("date").Value),
 								Releases = x.Elements ("Update").Select (y => new Release () {
 									Version = y.Attribute ("version").Value,
@@ -127,64 +196,13 @@ namespace MonoDevelop.Platform
 									Notes = y.Value
 								}).ToList ()
 							}).ToList ();
-						
-						if (!automatic || (updates != null && updates.Count > 0)) {
-							Gtk.Application.Invoke (delegate {
-								MessageService.ShowCustomDialog (new UpdateDialog (updates));
-							});
-						}
 					}
 				}
-			} catch (WebException ex) {
-				LoggingService.LogError ("Error retrieving update information", ex);
-				if (!automatic)
-					MessageService.ShowException (ex, GettextCatalog.GetString ("Error retrieving update information"));
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error retrieving update information", ex);
-				if (!automatic)
-					MessageService.ShowException (ex, GettextCatalog.GetString ("Error retrieving update information"));
+				error = GettextCatalog.GetString ("Error retrieving update information");
+				errorDetail = ex;
 			}
-		}
-		
-		public class Update
-		{
-			public string Name;
-			public string Url;
-			public string Version;
-			public DateTime Date;
-			public List<Release> Releases;
-		}
-		
-		public class Release
-		{
-			public string Version;
-			public DateTime Date;
-			public string Notes;
-		}
-		
-		public class UpdateInfo
-		{
-			UpdateInfo ()
-			{
-			}
-			
-			public UpdateInfo (Guid appId, long versionId)
-			{
-				this.AppId = appId;
-				this.VersionId = versionId;
-			}
-			
-			public readonly Guid AppId;
-			public readonly long VersionId;
-			
-			public static UpdateInfo FromFile (string fileName)
-			{
-				using (var f = File.OpenText (fileName)) {
-					var s = f.ReadLine ();
-					var parts = s.Split (' ');
-					return new UpdateInfo (new Guid (parts[0]), long.Parse (parts[1]));
-				}
-			}
+			callback (new UpdateResult (updates, includesUnstable, error, errorDetail));
 		}
 	}
 }
