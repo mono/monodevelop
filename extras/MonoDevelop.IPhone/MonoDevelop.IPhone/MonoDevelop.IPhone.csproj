@@ -137,9 +137,6 @@
     <EmbeddedResource Include="Templates\IPhoneApplicationPList.xft.xml">
       <LogicalName>IPhoneApplicationPList.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneProject.xpt.xml">
-      <LogicalName>IPhoneProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneProjectEmpty.xpt.xml">
       <LogicalName>IPhoneProjectEmpty.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -211,6 +208,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneLibraryProject.xpt.xml">
       <LogicalName>IPhoneLibraryProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneWindowBasedProject.xpt.xml">
+      <LogicalName>IPhoneWindowBasedProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneOpenGLProject.xpt.xml">
+      <LogicalName>IPhoneOpenGLProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneNavBasedProject.xpt.xml">
+      <LogicalName>IPhoneNavBasedProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneUtilityProject.xpt.xml">
+      <LogicalName>IPhoneUtilityProject.xpt.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

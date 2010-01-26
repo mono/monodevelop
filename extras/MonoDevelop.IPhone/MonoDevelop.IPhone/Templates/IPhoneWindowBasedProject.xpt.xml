@@ -4,11 +4,11 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>iPhone MonoTouch Project</_Name>
+		<_Name>iPhone Window-based Project</_Name>
 		<_Category>C#/iPhone</_Category>
 		<Icon>md-project-iphone</Icon>
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates a MonoTouch project for for iPhone and iPod Touch.</_Description>
+		<_Description>Window-based project for iPhone and iPod Touch.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

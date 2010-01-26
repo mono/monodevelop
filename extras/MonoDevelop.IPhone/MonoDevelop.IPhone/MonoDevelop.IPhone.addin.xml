@@ -40,8 +40,14 @@
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<Condition id="MonoTouchInstalled">
-			<ProjectTemplate id       = "IPhoneProject"
-			                 resource = "IPhoneProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneWindowBasedProject"
+			                 resource = "IPhoneWindowBasedProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneOpenGLProject"
+			                 resource = "IPhoneOpenGLProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneNavBasedProject"
+			                 resource = "IPhoneNavBasedProject.xpt.xml" />
+			<ProjectTemplate id       = "IPhoneUtilityProject"
+			                 resource = "IPhoneUtilityProject.xpt.xml" />
 			<ProjectTemplate id       = "IPhoneLibraryProject"
 			                 resource = "IPhoneLibraryProject.xpt.xml" />
 			<ProjectTemplate id       = "IPhoneProject-Empty"
@@ -158,5 +164,11 @@
 		           resource = "application-x-mono-develop-xib-48.png" size="Dialog" />
 		<StockIcon stockid = "iphone-project-options-panel" resource = "iphone-project-options-panel-16.png" size="Menu" />
 		<StockIcon stockid = "iphone-project-options-panel" resource = "iphone-project-options-panel-24.png" size="Button" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MonoDocSources">
+		<Condition id="MonoTouchInstalled">
+			<Source directory="/Developer/MonoTouch/usr/share/doc/MonoTouch/" />
+		</Condition>
 	</Extension>
 </Addin>
