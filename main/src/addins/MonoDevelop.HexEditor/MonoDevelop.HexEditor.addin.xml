@@ -18,13 +18,12 @@
 		<Addin id="Ide" version="2.2"/>
 		<Addin id="AssemblyBrowser" version="2.2"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding 
 			id = "HexEditor"
 			insertafter ="AssemblyBrowser"
-			class = "MonoDevelop.HexEditor.DisplayBinding" />
-	</Extension>
-	
+			class = "MonoDevelop.HexEditor.HexEditorDisplayBinding" />
+	</Extension>	
 	
 </Addin>

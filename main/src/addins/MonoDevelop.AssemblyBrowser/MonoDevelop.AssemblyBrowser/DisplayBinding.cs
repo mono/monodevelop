@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class DisplayBinding : DefaultDisplayBinding
+	public class AssemblyBrowserDisplayBinding : DisplayBinding
 	{
 		public override string Name {
 			get {

@@ -43,7 +43,7 @@ using MonoDevelop.GtkCore.Dialogs;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class ActionGroupDisplayBinding : DefaultDisplayBinding
+	public class ActionGroupDisplayBinding : DisplayBinding
 	{
 		bool excludeThis = false;
 		
@@ -62,7 +62,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			IDisplayBinding db = DisplayBindingService.GetBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
 			excludeThis = false;
 			return db != null;
 		}
@@ -70,7 +70,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override IViewContent CreateContentForUri (string fileName)
 		{
 			excludeThis = true;
-			IDisplayBinding db = DisplayBindingService.GetBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
 			
 			Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
 			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);

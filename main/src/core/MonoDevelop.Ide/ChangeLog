@@ -1,3 +1,15 @@
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DisplayBinding.cs:
+	* MonoDevelop.Ide.Codons/IDisplayBinding.cs:
+	* MonoDevelop.Ide.Gui/DisplayBindingService.cs:
+	* MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs: Added a
+	  mechanism for display bindings to be marked as 'non-default-
+	  so they can only be opened explicitly, not automatically.
+
 2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/HelpOperations.cs: Use the HelpService's

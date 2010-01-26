@@ -287,8 +287,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AuthorInformation.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
-	MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
+	MonoDevelop.Ide.Gui/DisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
 	MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs \

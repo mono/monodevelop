@@ -398,7 +398,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\ExportProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CombineEntryFeatureSelector.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DefaultDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeatureSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs" />
@@ -589,6 +588,7 @@
     <Compile Include="MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddFileDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DisplayBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

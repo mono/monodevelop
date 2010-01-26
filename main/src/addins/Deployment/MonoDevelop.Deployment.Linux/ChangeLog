@@ -1,3 +1,8 @@
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Deployment.Linux/DotDesktopDisplayBinding.cs:
+	  Track DisplayBinding API.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs:

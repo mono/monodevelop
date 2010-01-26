@@ -25,7 +25,7 @@
 	
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding id = "AssemblyBrowser" class = "MonoDevelop.AssemblyBrowser.DisplayBinding" />
+		<DisplayBinding id = "AssemblyBrowser" class = "MonoDevelop.AssemblyBrowser.AssemblyBrowserDisplayBinding" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">

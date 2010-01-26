@@ -1,3 +1,9 @@
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderDisplayBinding.cs:
+	* MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs:
+	  Track DisplayBinding API.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

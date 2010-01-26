@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Gettext
 {	
-	public class GettextEditorDisplayBinding : DefaultDisplayBinding
+	public class GettextEditorDisplayBinding : DisplayBinding
 	{
 		public override string Name {
 			get { return GettextCatalog.GetString ("Gettext Editor"); }

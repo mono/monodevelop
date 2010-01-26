@@ -463,7 +463,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, Stream content)
 		{
-			IDisplayBinding binding = DisplayBindingService.GetBinding (null, mimeType);
+			IDisplayBinding binding = DisplayBindingService.GetDefaultBinding (null, mimeType);
 			IViewContent newContent;
 			
 			if (binding != null) {
@@ -733,7 +733,7 @@ namespace MonoDevelop.Ide.Gui
 				if (oFileInfo.DisplayBinding != null) {
 					binding = oFileInfo.DisplayBinding;
 				} else {
-					binding = DisplayBindingService.GetBinding (fileName, DesktopService.GetMimeTypeForUri (fileName));
+					binding = DisplayBindingService.GetDefaultBinding (fileName, DesktopService.GetMimeTypeForUri (fileName));
 				}
 				
 				if (binding != null) {

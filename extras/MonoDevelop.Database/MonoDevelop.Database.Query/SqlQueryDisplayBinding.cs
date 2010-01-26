@@ -32,35 +32,34 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Database.Query
 {
 	
-	public class SqlQueryDisplayBinding:IDisplayBinding
+	public class SqlQueryDisplayBinding : DisplayBinding
 	{
-		public string Name {
+		public override string Name {
 			get {
 				return GettextCatalog.GetString ("Query Editor");
 			}
 		}
 
-		public bool CanCreateContentForUri (string uri)
+		public override bool CanCreateContentForUri (string uri)
 		{
 			return uri.ToLower ().EndsWith (".sql");
 		}
 		
-		public IViewContent CreateContentForUri (string uri)
+		public override IViewContent CreateContentForUri (string uri)
 		{
 			return new SqlQueryView ();
 		}
 		
-		public bool CanCreateContentForMimeType (string mimetype)
+		public override bool CanCreateContentForMimeType (string mimetype)
 		{
 			return mimetype == "text/x-sql";
 		}
 
-		public IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
+		public override IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
 		{
 			return new SqlQueryView ();
 		}
-
 		
-		
+		public override bool CanUseAsDefault { get { return false; } }
 	}
 }

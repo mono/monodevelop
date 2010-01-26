@@ -32,7 +32,7 @@ using System.IO;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class DefaultDisplayBinding: IDisplayBinding
+	public abstract class DisplayBinding: IDisplayBinding
 	{
 		public virtual bool CanCreateContentForMimeType (string mimetype)
 		{
@@ -54,9 +54,12 @@ namespace MonoDevelop.Ide.Gui
 			throw new NotSupportedException ();
 		}
 
-		public virtual string Name {
-			get { return ""; }
+		public abstract string Name {
+			get;
 		}
-
+		
+		public virtual bool CanUseAsDefault {
+			get { return true; }
+		}
 	}
 }

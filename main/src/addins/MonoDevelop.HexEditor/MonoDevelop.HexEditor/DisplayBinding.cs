@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.HexEditor
 {
-	public class DisplayBinding : DefaultDisplayBinding
+	public class HexEditorDisplayBinding : DisplayBinding
 	{
 		public override string Name {
 			get {
