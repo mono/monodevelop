@@ -104,6 +104,10 @@
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildImportProvider"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
+		<ExtensionNode name="Source" type="MonoDevelop.Projects.Extensions.MonoDocSourceNode" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -168,6 +172,4 @@
 		<!--	<Policies resource="" /> -->
 		</PolicySet>
 	</Extension>
-	
-	
 </Addin>
