@@ -386,5 +386,71 @@ namespace Mono.TextEditor
 				data.SetSelection (newStartOffset, newStartOffset + text.Length - endLine.DelimiterLength);
 			data.Document.EndAtomicUndo ();
 		}
+		
+		/// <summary>
+		/// Transpose characters (Emacs C-t)
+		/// </summary>
+		public static void TransposeCharacters (TextEditorData data)
+		{
+			if (data.Caret.Offset == 0)
+				return;
+			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			if (line == null)
+				return;
+			int transposeOffset = data.Caret.Offset - 1;
+			char ch;
+			if (data.Caret.Column == 0) {
+				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
+				if (lineAbove.EditableLength == 0 && line.EditableLength == 0) 
+					return;
+				
+				if (line.EditableLength != 0) {
+					ch = data.Document.GetCharAt (data.Caret.Offset);
+					data.Remove (data.Caret.Offset, 1);
+					data.Insert (lineAbove.Offset + lineAbove.EditableLength, ch.ToString ());
+					data.Document.CommitLineUpdate (data.Caret.Line - 1);
+					return;
+				}
+				
+				int lastCharOffset = lineAbove.Offset + lineAbove.EditableLength - 1;
+				ch = data.Document.GetCharAt (lastCharOffset);
+				data.Remove (lastCharOffset, 1);
+				data.Insert (data.Caret.Offset, ch.ToString ());
+				data.Document.CommitLineUpdate (data.Caret.Line - 1);
+				data.Caret.Offset++;
+				return;
+			}
+			
+			int offset = data.Caret.Offset;
+			if (data.Caret.Column >= line.EditableLength) {
+				offset = line.Offset + line.EditableLength - 1;
+				transposeOffset = offset - 1;
+				// case one char in line:
+				if (transposeOffset < line.Offset) {
+					LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
+					transposeOffset = lineAbove.Offset + lineAbove.EditableLength;
+					ch = data.Document.GetCharAt (offset);
+					data.Remove (offset, 1);
+					data.Insert (transposeOffset, ch.ToString ());
+					data.Caret.Offset = line.Offset;
+					data.Document.CommitLineUpdate (data.Caret.Line - 1);
+					return;
+				}
+			}
+			
+			ch = data.Document.GetCharAt (offset);
+			data.Replace (offset, 1, data.Document.GetCharAt (transposeOffset).ToString ());
+			data.Replace (transposeOffset, 1, ch.ToString ());
+			if (data.Caret.Column < line.EditableLength)
+				data.Caret.Offset = offset + 1;
+		}
+		/// <summary>
+		/// Emacs c-l recenter editor command.
+		/// </summary>
+		public static void RecenterEditor (TextEditorData data)
+		{
+			data.RequestRecenter ();
+		}
+		
 	}
 }

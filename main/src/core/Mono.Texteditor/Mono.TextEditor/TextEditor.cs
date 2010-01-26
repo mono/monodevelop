@@ -257,6 +257,10 @@ namespace Mono.TextEditor
 		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			textEditorData = new TextEditorData (doc);
+			textEditorData.RecenterEditor += delegate {
+				CenterToCaret ();
+				StartCaretPulseAnimation ();
+			};
 			doc.TextReplaced += OnDocumentStateChanged;
 			doc.TextSet += OnTextSet;
 
