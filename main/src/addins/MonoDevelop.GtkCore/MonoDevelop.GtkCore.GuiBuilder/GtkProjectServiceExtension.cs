@@ -12,27 +12,35 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
-			DotNetProject project = (DotNetProject) entry;
-			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			if (!IdeApp.IsInitialized)
+				return base.Build (monitor, entry, configuration);
+			
+			DotNetProject project = entry as DotNetProject;
+			if (GtkDesignInfo.HasDesignedObjects (project)) {
 
-			// The code generator must run in the GUI thread since it needs to
-			// access to Gtk classes
-			Generator gen = new Generator ();
-			lock (gen) {
-				Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
-				Monitor.Wait (gen);
-			}
-					
-			BuildResult res = base.Build (monitor, entry, configuration);
+				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 
-			if (gen.Messages != null) {
-				foreach (string s in gen.Messages)
-					res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
+				// The code generator must run in the GUI thread since it needs to
+				// access to Gtk classes
+				Generator gen = new Generator ();
+				lock (gen) {
+					Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
+					Monitor.Wait (gen);
+				}
 						
-				if (gen.Messages.Length > 0)
-					info.ForceCodeGenerationOnBuild ();
+				BuildResult res = base.Build (monitor, entry, configuration);
+						
+				if (gen.Messages != null) {
+					foreach (string s in gen.Messages)
+						res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
+							
+					if (gen.Messages.Length > 0)
+						info.ForceCodeGenerationOnBuild ();
+				}
+				return res;
 			}
-			return res;
+			
+			return base.Build (monitor, entry, configuration);
 		}
 	}
 	
