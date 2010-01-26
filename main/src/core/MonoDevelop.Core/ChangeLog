@@ -1,3 +1,9 @@
+2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs:
+	  Prefer using launch scripts for tools if they exist, rather
+	  than using the exes directly.
+
 2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core/FileService.cs: Add type and null checks on
