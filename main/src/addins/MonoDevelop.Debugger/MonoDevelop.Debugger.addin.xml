@@ -116,7 +116,7 @@
 				icon = "md-breakpoint"
 				defaultHandler = "MonoDevelop.Debugger.ToggleBreakpointHandler"
 				shortcut = "F9"
-				macShortcut = "Meta|/" />
+				macShortcut = "Meta|\" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.AddTracepoint"
 				_label = "Add Tracepoint"
 				defaultHandler = "MonoDevelop.Debugger.AddTracepointHandler"
