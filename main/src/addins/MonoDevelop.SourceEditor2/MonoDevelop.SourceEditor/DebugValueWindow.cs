@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using Mono.Debugging.Client;
 using MonoDevelop.Debugger;
 using MonoDevelop.Components;
@@ -39,9 +40,15 @@ namespace MonoDevelop.SourceEditor
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 		bool resetSelection = true;
+		Mono.TextEditor.TextEditor editor;
+		int offset;
+		ObjectValue value;
 		
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, StackFrame frame, ObjectValue value)
+		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value)
 		{
+			this.editor = editor;
+			this.offset = offset;
+			this.value  = value;
 			TransientFor = (Gtk.Window) editor.Toplevel;
 			AcceptFocus = true;
 			
@@ -51,7 +58,17 @@ namespace MonoDevelop.SourceEditor
 			
 			tree = new ObjectValueTreeView ();
 			sw.Add (tree);
-			Add (sw);
+			HBox box = new HBox ();
+			box.Add (sw); 
+			
+			Button button = new Button ();
+			button.Label = ">";
+			button.Clicked += HandlePinButtonClicked;
+			VBox vbox = new VBox ();
+			vbox.PackStart (button, false, false, 0);
+			
+			box.PackEnd (vbox, false, false, 0);
+			Add (box);
 			
 			tree.Frame = frame;
 			tree.CompactView = true;
@@ -79,6 +96,19 @@ namespace MonoDevelop.SourceEditor
 					tree.Selection.UnselectAll ();
 				}
 			};
+		}
+
+		void HandlePinButtonClicked (object sender, EventArgs e)
+		{
+			LineSegment lineSegment = editor.Document.GetLineByOffset (offset);
+			DebugValueMarker marker = (DebugValueMarker)lineSegment.Markers.FirstOrDefault (m => m is DebugValueMarker);
+			if (marker == null) {
+				marker = new DebugValueMarker (editor, lineSegment);
+				editor.Document.AddMarker (lineSegment, marker);
+			}
+			marker.AddValue (value);
+			editor.Document.CommitLineUpdate (lineSegment);
+			Destroy ();
 		}
 		
 		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)

@@ -1,3 +1,14 @@
+2010-01-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs:
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs:
+	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs:
+	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
+	* MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs:
+	  Implemented 'quick watches'.
+
 2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:
