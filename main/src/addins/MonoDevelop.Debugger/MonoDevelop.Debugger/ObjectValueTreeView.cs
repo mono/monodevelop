@@ -507,7 +507,7 @@ namespace MonoDevelop.Debugger
 			
 		}
 		
-		internal static string GetIcon (ObjectValueFlags flags)
+		public static string GetIcon (ObjectValueFlags flags)
 		{
 			if ((flags & ObjectValueFlags.Field) != 0 && (flags & ObjectValueFlags.ReadOnly) != 0)
 				return "md-literal";
