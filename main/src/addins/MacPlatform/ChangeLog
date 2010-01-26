@@ -1,3 +1,8 @@
+2010-01-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Cache the stable/unstable result so
+	  we don't re-request on every toggle.
+
 2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateDialog.cs:
