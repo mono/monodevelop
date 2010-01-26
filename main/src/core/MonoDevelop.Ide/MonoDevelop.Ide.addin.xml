@@ -200,6 +200,11 @@
 		<ExtensionNode name="Customizer" type="MonoDevelop.Ide.Execution.ExecutionCommandCustomizer" objectType="MonoDevelop.Ide.Execution.IExecutionCommandCustomizer"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/CodeTemplates" name = "Code Templates">
+		<Description>Custom code templates.</Description>
+		<ExtensionNode name="CodeTemplate" type="MonoDevelop.Ide.CodeTemplates.CodeTemplateCodon"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">

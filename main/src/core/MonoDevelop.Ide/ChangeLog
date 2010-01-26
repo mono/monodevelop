@@ -14,6 +14,16 @@
 
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCodon.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateService.cs:
+	  implemented 'Bug 562124 - Add ability to create custom built
+	  templates for AddIn'.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: fixed
 	  'Bug 561609 - Unhandled exception searching in my project'.
 
