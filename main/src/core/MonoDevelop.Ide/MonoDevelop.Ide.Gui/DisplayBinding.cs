@@ -62,4 +62,11 @@ namespace MonoDevelop.Ide.Gui
 			get { return true; }
 		}
 	}
+	
+	//this is a dummy binding simply used as an anchor point in the extension chain
+	class DefaultDisplayBinding: DisplayBinding
+	{
+		public override string Name { get { return ""; } }
+	}
+
 }
