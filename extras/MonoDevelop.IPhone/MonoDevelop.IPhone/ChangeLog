@@ -1,5 +1,13 @@
 2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml: Fix xib file
+	  format, standard headers, and auto-opening.
+
+2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.csproj:
 	* MonoDevelop.IPhone.addin.xml:
 	* Templates/IPhoneProject.xpt.xml:
