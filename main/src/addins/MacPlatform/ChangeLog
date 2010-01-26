@@ -1,5 +1,9 @@
 2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Updater/UpdateDialog.cs: Improve update GUI a bit more.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Updater/UpdateDialog.cs: Tidy up the update list a little.
 
 2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>

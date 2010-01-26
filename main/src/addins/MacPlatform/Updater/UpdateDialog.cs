@@ -105,7 +105,7 @@ namespace MonoDevelop.Platform.Updater
 			
 			bool includeUnstable = checkIncludeUnstable.Active;
 			
-			bool isFirst = false;
+			bool isFirst = true;
 			foreach (var update in updates) {
 				if (!includeUnstable && update.IsUnstable)
 					continue;
@@ -156,30 +156,45 @@ namespace MonoDevelop.Platform.Updater
 				updateBox.PackStart (textView, false, false, 0);
 				
 				updateExpander.Expanded = true;
+				textView.Visible = false;
 				updateExpander.Activated += delegate {
 					textView.Visible = updateExpander.Expanded;
 				};
 				
-				var f = new Frame () {
-					BorderWidth = 2,
-					Child = updateBox,
-					ShadowType = ShadowType.In
-				};
-				updateBox.BorderWidth = 6;
+				updateBox.BorderWidth = 4;
 				
-				if (!isFirst) {
-					isFirst = true;
-					updateBox.PackStart (new Gtk.HSeparator ());
+				if (isFirst) {
+					isFirst = false;
+				} else {
+					productBox.PackStart (new NarrowHSeparator (), false, false, 0);
 				}
 				productBox.PackStart (updateBox, false, false, 0);
-				
-				textView.Visible = false;
+				updateBox.ShowAll ();
 			}
-			
-			productBox.ShowAll ();
 			
 			notebook1.CurrentPage = PAGE_UPDATES;
 			productBox.ShowAll ();
+		}
+		
+		class NarrowHSeparator : Gtk.Widget
+		{
+			public NarrowHSeparator ()
+			{
+				WidgetFlags |= WidgetFlags.NoWindow;
+			}
+			
+			protected override void OnSizeRequested (ref Requisition requisition)
+			{
+				requisition.Height = 4;
+				requisition.Width = 0;
+			}
+			
+			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+			{
+				Style.PaintHline (Style, evnt.Window, State, evnt.Area, this, "hseparator",
+				                  Allocation.X, Allocation.Right, Allocation.Y);
+				return true;
+			}
 		}
 	}
 }
