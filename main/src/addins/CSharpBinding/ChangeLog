@@ -1,3 +1,9 @@
+2010-01-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  fixed 'Bug 571175 - ArgumentNullException in C# code
+	  completion'.
+
 2010-01-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed 'Bug

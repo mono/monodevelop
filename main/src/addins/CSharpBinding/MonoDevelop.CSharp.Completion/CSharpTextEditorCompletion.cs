@@ -736,7 +736,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					int tokenIndex = completionContext.TriggerOffset;
 
-					// Search base types " : [Type1, ... ,TypeN,] <Caret>"
+										// Search base types " : [Type1, ... ,TypeN,] <Caret>"
 					string token = null;
 					do {
 						token = GetPreviousToken (ref tokenIndex, false);
@@ -776,7 +776,9 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				break;
 			case "is":
-			case "as": {
+			case "as":
+				
+				{
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					ExpressionResult expressionResult = FindExpression (dom, completionContext, wordStart - Editor.CursorPosition);
 					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
@@ -789,13 +791,16 @@ namespace MonoDevelop.CSharp.Completion
 							if (exactContext is ExpressionContext.TypeExpressionContext) {
 								foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)exactContext).Type, resolver.CallingType));
 
+																
 								AddAsCompletionData (col, foundType);
 							}
 						}
 
+												
 						if (foundType == null)
 							foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
 
+												
 						if (foundType != null) {
 							foreach (IType type in dom.GetSubclasses (foundType)) {
 								if (type.IsSpecialName || type.Name.StartsWith ("<"))
@@ -809,7 +814,7 @@ namespace MonoDevelop.CSharp.Completion
 								IType type = (IType)o;
 								if (type.ClassType != ClassType.Interface || type.IsSpecialName || type.Name.StartsWith ("<"))
 									continue;
-								if (!dom.GetInheritanceTree (foundType).Any (x => x.FullName == type.FullName))
+								if (foundType != null && !dom.GetInheritanceTree (foundType).Any (x => x.FullName == type.FullName))
 									continue;
 								AddAsCompletionData (col, type);
 								continue;

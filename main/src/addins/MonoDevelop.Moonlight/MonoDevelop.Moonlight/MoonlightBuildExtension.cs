@@ -39,9 +39,9 @@ namespace MonoDevelop.Moonlight
 	
 	public class MoonlightBuildExtension : ProjectServiceExtension
 	{
-		string GetObjDir (MoonlightProject proj, DotNetProjectConfiguration conf)
+		FilePath GetObjDir (MoonlightProject proj, DotNetProjectConfiguration conf)
 		{
-			return Path.Combine (Path.Combine (proj.BaseDirectory, "obj"), conf.Id);
+			return proj.BaseDirectory.Combine ("obj", conf.Id);
 		}
 		
 		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
@@ -50,14 +50,14 @@ namespace MonoDevelop.Moonlight
 			if (proj == null)
 				return base.Compile (monitor, item, buildData);
 			
-			string objDir = GetObjDir (proj, buildData.Configuration);
+			var objDir = GetObjDir (proj, buildData.Configuration);
 			if (!Directory.Exists (objDir))
 				Directory.CreateDirectory (objDir);
 			
 			var codeDomProvider = proj.LanguageBinding.GetCodeDomProvider ();
 			string appName = proj.Name;
 			
-			List<string> toResGen = new List<string> ();
+			var toResGen = new List<FilePath> ();
 			List<BuildResult> results = new List<BuildResult> ();
 			
 			foreach (ProjectFile pf in proj.Files) {
@@ -65,7 +65,7 @@ namespace MonoDevelop.Moonlight
 					toResGen.Add (pf.FilePath);
 				
 				if (pf.FilePath.Extension == ".xaml" && pf.Generator == "MSBuild:MarkupCompilePass1") {
-					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
+					var outFile = objDir.Combine (proj.LanguageBinding.GetFileName (pf.FilePath.FileName + ".g"));
 					buildData.Items.Add (new ProjectFile (outFile, BuildAction.Compile));
 					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath)) {
 						string rel = pf.RelativePath;
@@ -78,7 +78,7 @@ namespace MonoDevelop.Moonlight
 				}
 			}
 			
-			string resFile = Path.Combine (objDir, appName + ".g.resources");
+			string resFile = objDir.Combine (appName + ".g.resources");
 			if (toResGen.Count > 0) {
 				DateTime lastMod = DateTime.MinValue;
 				if (File.Exists (resFile))
@@ -92,9 +92,9 @@ namespace MonoDevelop.Moonlight
 						break;
 					}
 				}
-				ProjectFile pf = new ProjectFile (resFile, BuildAction.EmbeddedResource);
-				pf.ResourceId = appName + ".g.resources";
-				buildData.Items.Add (pf);
+				buildData.Items.Add (new ProjectFile (resFile, BuildAction.EmbeddedResource) {
+					ResourceId = appName + ".g.resources"
+				});
 			} else {
 				if (File.Exists (resFile))
 					File.Delete (resFile);
@@ -103,7 +103,7 @@ namespace MonoDevelop.Moonlight
 			return base.Compile (monitor, item, buildData).Append (results);
 		}
 		
-		BuildResult Respack (IProgressMonitor monitor, MoonlightProject proj, List<string> toResGen, string outfile)
+		BuildResult Respack (IProgressMonitor monitor, MoonlightProject proj, List<FilePath> toResGen, FilePath outfile)
 		{
 			monitor.Log.WriteLine ("Packing resources...");
 			
@@ -127,7 +127,7 @@ namespace MonoDevelop.Moonlight
 				}
 			}
 			si.FileName = respack.EndsWith (".exe")? "mono" : respack;
-			si.WorkingDirectory = Path.GetDirectoryName (outfile);
+			si.WorkingDirectory = outfile.ParentDirectory;
 			
 			var sb = new System.Text.StringBuilder ();
 			if (respack.EndsWith (".exe")) {
@@ -136,9 +136,8 @@ namespace MonoDevelop.Moonlight
 			}
 			sb.Append (outfile);
 			
-			foreach (string infile in toResGen) {
-				sb.Append (" ");
-				sb.Append (infile);
+			foreach (var infile in toResGen) {
+				sb.AppendFormat (" \"{0}\",\"{1}\"", infile.FullPath, infile.ToRelative (proj.BaseDirectory));
 			}
 			si.Arguments = sb.ToString ();
 			string err;
@@ -202,20 +201,20 @@ namespace MonoDevelop.Moonlight
 			if (conf == null)
 				return;
 			
-			string objDir = GetObjDir (proj, conf);
+			var objDir = GetObjDir (proj, conf);
 			if (!Directory.Exists (objDir))
 				return;
 			
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.FilePath.Extension == ".xaml" && pf.Generator == "MSBuild:MarkupCompilePass1") {
-					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
+					var outFile = objDir.Combine (proj.LanguageBinding.GetFileName (pf.FilePath.FileName + ".g"));
 					if (File.Exists (outFile))
 						File.Delete (outFile);
 				}
 			}
 			
 			if (proj.GenerateSilverlightManifest) {
-				string manifest = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
+				var manifest = conf.OutputDirectory.Combine ("AppManifest.xaml");
 				if (File.Exists (manifest))
 					File.Delete (manifest);
 			}
@@ -226,12 +225,12 @@ namespace MonoDevelop.Moonlight
 					File.Delete (testPageFile);
 			}
 			
-			string resFile = Path.Combine (objDir, proj.Name + ".g.resources");
+			var resFile = objDir.Combine (proj.Name + ".g.resources");
 			if (File.Exists (resFile))
 				File.Delete (resFile);
 			
 			if (proj.XapOutputs) {
-				string xapName = GetXapName (proj, conf);
+				var xapName = GetXapName (proj, conf);
 				if (File.Exists (xapName))
 					File.Delete (xapName);
 			}
@@ -249,17 +248,17 @@ namespace MonoDevelop.Moonlight
 			if (base.GetNeedsBuilding (item, configuration))
 				return true;
 			
-			string objDir = GetObjDir (proj, conf);
+			var objDir = GetObjDir (proj, conf);
 			
 			DateTime xapLastMod = DateTime.MaxValue;
 			if (proj.XapOutputs) {
-				string xapName = GetXapName (proj, conf);
+				var xapName = GetXapName (proj, conf);
 				if (!File.Exists (xapName))
 					return true;
 				xapLastMod = File.GetLastWriteTime (xapName);
 			}
 
-			string manifest = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
+			var manifest = conf.OutputDirectory.Combine ("AppManifest.xaml");
 			if (proj.GenerateSilverlightManifest) {
 				if (!File.Exists (manifest))
 					return true;
@@ -277,7 +276,7 @@ namespace MonoDevelop.Moonlight
 			}
 			
 			string appName = proj.Name;
-			string resFile = Path.Combine (objDir, appName + ".g.resources");
+			var resFile = objDir.Combine (appName + ".g.resources");
 			DateTime resLastMod = DateTime.MinValue;
 			if (File.Exists (resFile))
 				resLastMod = File.GetLastWriteTime (resFile);
@@ -289,7 +288,7 @@ namespace MonoDevelop.Moonlight
 					return true;
 				}
 				if (pf.FilePath.Extension == ".xaml" && pf.Generator == "MSBuild:MarkupCompilePass1") {
-					string outFile = Path.Combine (objDir, proj.LanguageBinding.GetFileName (Path.GetFileName (pf.FilePath) + ".g"));
+					var outFile = objDir.Combine (proj.LanguageBinding.GetFileName (pf.FilePath.FileName + ".g"));
 					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath))
 						return true;
 				}
@@ -332,8 +331,8 @@ namespace MonoDevelop.Moonlight
 			
 			monitor.Log.WriteLine ("Generating manifest...");
 			
-			BuildResult res = new BuildResult ();
-			string manifest = Path.Combine (conf.OutputDirectory, "AppManifest.xaml");
+			var res = new BuildResult ();
+			var manifest = conf.OutputDirectory.Combine ("AppManifest.xaml");
 
 			string template = String.IsNullOrEmpty (proj.SilverlightManifestTemplate)?
 				null : proj.GetAbsoluteChildPath (proj.SilverlightManifestTemplate);
@@ -373,7 +372,7 @@ namespace MonoDevelop.Moonlight
 					return res;
 				}
 				if (deploymentNode.Attributes["EntryPointAssembly"] == null)
-					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointAssembly")).Value = Path.GetFileNameWithoutExtension (conf.CompiledOutputName);
+					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointAssembly")).Value = conf.CompiledOutputName.FileNameWithoutExtension;
 				if (!String.IsNullOrEmpty (proj.SilverlightAppEntry) && deploymentNode.Attributes["EntryPointType"] == null)
 					deploymentNode.Attributes.Append (doc.CreateAttribute ("EntryPointType")).Value = proj.SilverlightAppEntry;
 
@@ -428,10 +427,10 @@ namespace MonoDevelop.Moonlight
 			return res;
 		}
 
-		static void AddAssemblyPart (XmlDocument doc, XmlNode partsNode, string assem)
+		static void AddAssemblyPart (XmlDocument doc, XmlNode partsNode, FilePath assem)
 		{
 			XmlNode child = doc.CreateElement ("AssemblyPart", "http://schemas.microsoft.com/client/2007/deployment");
-			child.Attributes.Append (doc.CreateAttribute ("Name", "http://schemas.microsoft.com/winfx/2006/xaml")).Value = Path.GetFileNameWithoutExtension (assem);
+			child.Attributes.Append (doc.CreateAttribute ("Name", "http://schemas.microsoft.com/winfx/2006/xaml")).Value = assem.FileNameWithoutExtension;
 			child.Attributes.Append (doc.CreateAttribute ("Source")).Value = Path.GetFileName (assem);
 			partsNode.AppendChild (child);
 		}
@@ -459,31 +458,31 @@ namespace MonoDevelop.Moonlight
 			return null;
 		}
 		
-		string GetTestPageFileName (MoonlightProject proj, DotNetProjectConfiguration conf)
+		FilePath GetTestPageFileName (MoonlightProject proj, DotNetProjectConfiguration conf)
 		{
 			string testPage = proj.TestPageFileName;
 			if (String.IsNullOrEmpty (testPage))
 				testPage = "TestPage.html";
-			return Path.Combine (conf.OutputDirectory, "TestPage.html");
+			return conf.OutputDirectory.Combine (testPage);
 		}
 		
-		string GetXapName (MoonlightProject proj, DotNetProjectConfiguration conf)
+		FilePath GetXapName (MoonlightProject proj, DotNetProjectConfiguration conf)
 		{
 			string xapName = proj.XapFilename;
 			if (String.IsNullOrEmpty (xapName))
 				xapName = proj.Name + ".xap";
-			return Path.Combine (conf.OutputDirectory, xapName);
+			return conf.OutputDirectory.Combine (xapName);
 		}
 		
 		BuildResult Zip (IProgressMonitor monitor, MoonlightProject proj, DotNetProjectConfiguration conf, ConfigurationSelector slnConf)
 		{
-			string xapName = GetXapName (proj, conf);
+			var xapName = GetXapName (proj, conf);
 			
 			var src = new List<string> ();
 			var targ = new List<string> ();
 			
 			src.Add (conf.CompiledOutputName);
-			targ.Add (Path.GetFileName (conf.CompiledOutputName));
+			targ.Add (conf.CompiledOutputName.FileName);
 			
 			// FIXME: this is a hack for the Mono Soft Debugger. In future the mdb files should be *beside* the xap,
 			// when sdb supports that model. Note that there's no point doing this for pdb files, because the debuggers 
@@ -491,15 +490,15 @@ namespace MonoDevelop.Moonlight
 			var doSdbCopy = conf.DebugMode && proj.TargetRuntime is MonoDevelop.Core.Assemblies.MonoTargetRuntime;
 			
 			if (doSdbCopy) {
-				var mdb = conf.CompiledOutputName + ".mdb";
+				FilePath mdb = conf.CompiledOutputName + ".mdb";
 				if (File.Exists (mdb)) {
 					src.Add (mdb);
-					targ.Add (Path.GetFileName (mdb));
+					targ.Add (mdb.FileName);
 				}
 			}
 
 			if (proj.GenerateSilverlightManifest) {
-				src.Add (Path.Combine (conf.OutputDirectory, "AppManifest.xaml"));
+				src.Add (conf.OutputDirectory.Combine ("AppManifest.xaml"));
 				targ.Add ("AppManifest.xaml");
 			}
 
@@ -521,7 +520,7 @@ namespace MonoDevelop.Moonlight
 						string err = pr.ValidationErrorMessage;
 						if (!String.IsNullOrEmpty (err)) {
 							string msg = String.Format ("Could not add reference '{0}' to '{1}': {2}",
-							                            pr.Reference, Path.GetFileName (xapName), err);
+							                            pr.Reference, xapName.FileName, err);
 							res.AddError (msg);
 							monitor.Log.WriteLine (msg);
 							continue;
@@ -531,10 +530,10 @@ namespace MonoDevelop.Moonlight
 							targ.Add (Path.GetFileName (s));
 							
 							if (doSdbCopy && s.EndsWith (".dll")) {
-								var mdb = s + ".mdb";
+								FilePath mdb = s + ".mdb";
 								if (File.Exists (mdb)) {
 									src.Add (mdb);
-									targ.Add (Path.GetFileName (mdb));
+									targ.Add (mdb.FileName);
 								}
 							}
 						}

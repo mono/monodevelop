@@ -74,7 +74,7 @@ namespace MonoDevelop.Debugger.Soft
 			else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
 				StructMirror ob = (StructMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
-				if (method != null && method.DeclaringType.FullName != "System.Object") {
+				if (method != null && method.DeclaringType.FullName != "System.ValueType") {
 					StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
 					return res.Value;
 				}
@@ -759,7 +759,7 @@ namespace MonoDevelop.Debugger.Soft
 				exception = ex;
 			} catch (Exception ex) {
 				ctx.Session.StackVersion++;
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			}
 		}
@@ -787,10 +787,29 @@ namespace MonoDevelop.Debugger.Soft
 			} catch (InvocationException ex) {
 				exception = ex;
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			} finally {
 				ctx.Session.StackVersion++;
+			}
+		}
+		
+		string GetInfo ()
+		{
+			try {
+				TypeMirror type = null;
+				if (obj is ObjectMirror)
+					type = ((ObjectMirror)obj).Type;
+				else if (obj is TypeMirror)
+					type = (TypeMirror)obj;
+				else if (obj is StructMirror)
+					type = ((StructMirror)obj).Type;
+				return string.Format ("method {0} on object {1}",
+				                      function == null? "[null]" : function.FullName,
+				                      type == null? "[null]" : type.FullName);
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Error getting info for SDB MethodCall", ex);
+				return "";
 			}
 		}
 

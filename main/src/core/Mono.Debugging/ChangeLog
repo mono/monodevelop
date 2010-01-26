@@ -1,3 +1,10 @@
+2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Fix
+	  potential string parsing issue. Fixes bug #571232 -
+	  System.FormatException: Input string was not in a correct
+	  format.
+
 2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs: Workaround for
