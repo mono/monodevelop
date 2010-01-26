@@ -65,12 +65,7 @@ fi
 
 _MD_LOG_FILE="${MD_LOG_FILE:-$HOME/Library/Logs/MonoDevelop/MonoDevelop.log}"
 
-# NOTE: remove this for stable releases
-if [ -z "$MD_NO_DEBUG" ]; then
-	_MONO_OPTIONS=${MONO_OPTIONS:---debug}
-else
-	_MONO_OPTIONS=$MONO_OPTIONS
-fi
+_MONO_OPTIONS=$MONO_OPTIONS
 
 if [ -z "$MD_DONT_REDIRECT_OUTPUT" ]; then
 	mkdir -p "`dirname \"$_MD_LOG_FILE\"`"
