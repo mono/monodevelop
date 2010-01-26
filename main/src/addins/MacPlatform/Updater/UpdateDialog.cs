@@ -105,6 +105,7 @@ namespace MonoDevelop.Platform.Updater
 			
 			bool includeUnstable = checkIncludeUnstable.Active;
 			
+			bool isFirst = false;
 			foreach (var update in updates) {
 				if (!includeUnstable && update.IsUnstable)
 					continue;
@@ -115,7 +116,7 @@ namespace MonoDevelop.Platform.Updater
 				
 				var updateExpander = new Expander ("");
 				updateExpander.LabelWidget = new Label () {
-					Markup = string.Format ("<b>{0}</b> {1} ({2:yyyy-MM-dd}){3}", update.Name, update.Version, update.Date,
+					Markup = string.Format ("<b>{0}</b>\n{1} ({2:yyyy-MM-dd}){3}", update.Name, update.Version, update.Date,
 					                        update.IsUnstable? "\n<b>UNSTABLE PREVIEW RELEASE</b>" : ""),
 				};
 				labelBox.PackStart (updateExpander, true, true, 0);
@@ -154,6 +155,7 @@ namespace MonoDevelop.Platform.Updater
 				textView.LeftMargin = textView.RightMargin = 4;
 				updateBox.PackStart (textView, false, false, 0);
 				
+				updateExpander.Expanded = true;
 				updateExpander.Activated += delegate {
 					textView.Visible = updateExpander.Expanded;
 				};
@@ -164,11 +166,17 @@ namespace MonoDevelop.Platform.Updater
 					ShadowType = ShadowType.In
 				};
 				updateBox.BorderWidth = 6;
-				productBox.PackStart (f, false, false, 0);
-				f.ShowAll ();
+				
+				if (!isFirst) {
+					isFirst = true;
+					updateBox.PackStart (new Gtk.HSeparator ());
+				}
+				productBox.PackStart (updateBox, false, false, 0);
 				
 				textView.Visible = false;
 			}
+			
+			productBox.ShowAll ();
 			
 			notebook1.CurrentPage = PAGE_UPDATES;
 			productBox.ShowAll ();
