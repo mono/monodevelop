@@ -1,3 +1,8 @@
+2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Implement new ForceLoadType
+	  overridable.
+
 2010-01-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerAdaptor.cs: In the log message for failed

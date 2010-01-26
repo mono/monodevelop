@@ -254,6 +254,11 @@ namespace Mono.Debugging.Evaluation
 		{
 			return default (object);
 		}
+		
+		public virtual object ForceLoadType (EvaluationContext ctx, string typeName)
+		{
+			return null;
+		}
 
 		public abstract object CreateValue (EvaluationContext ctx, object value);
 
@@ -855,6 +860,9 @@ namespace Mono.Debugging.Evaluation
 			}
 			catch (ImplicitEvaluationDisabledException) {
 				return ObjectValue.CreateImplicitNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), "", ObjectValueFlags.None);
+			}
+			catch (NotSupportedExpressionException ex) {
+				return ObjectValue.CreateNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), ex.Message, "", ObjectValueFlags.None);
 			}
 			catch (EvaluatorException ex) {
 				return ObjectValue.CreateError (ctx.ExpressionValueSource, new ObjectPath (exp), "", ex.Message, ObjectValueFlags.None);

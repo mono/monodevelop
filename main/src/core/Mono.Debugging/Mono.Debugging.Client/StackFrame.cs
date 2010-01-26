@@ -122,6 +122,11 @@ namespace Mono.Debugging.Client
 			return value;
 		}
 		
+		public string ResolveExpression (string exp)
+		{
+			return session.ResolveExpression (exp, location);
+		}
+		
 		public ObjectValue[] GetExpressionValues (string[] expressions, bool evaluateMethods)
 		{
 			EvaluationOptions options = session.EvaluationOptions;
@@ -131,6 +136,12 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetExpressionValues (string[] expressions, EvaluationOptions options)
 		{
+			if (options.UseExternalTypeResolver) {
+				string[] resolved = new string [expressions.Length];
+				for (int n=0; n<expressions.Length; n++)
+					resolved [n] = ResolveExpression (expressions [n]);
+				expressions = resolved;
+			}
 			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, expressions, options);
 			ObjectValue.ConnectCallbacks (values);
 			return values;
@@ -145,6 +156,8 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue GetExpressionValue (string expression, EvaluationOptions options)
 		{
+			if (options.UseExternalTypeResolver)
+				expression = ResolveExpression (expression);
 			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, options);
 			ObjectValue.ConnectCallbacks (values);
 			return values [0];
