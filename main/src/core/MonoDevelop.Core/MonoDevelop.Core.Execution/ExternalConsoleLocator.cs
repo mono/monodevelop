@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.Core.Execution
 		private static TerminalRunnerHandler runner;
 		
 		public static ProcessStartInfo GetConsoleProcess (string command, string commandArguments, 
-			string workingDirectory, string title, bool pauseWhenFinished)
+			string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished)
 		{
 			ProbeTerminal ();
 			
@@ -51,6 +52,10 @@ namespace MonoDevelop.Core.Execution
 			ProcessStartInfo psi = new ProcessStartInfo (terminal_command, exec);
 			psi.WorkingDirectory = workingDirectory;
 			psi.UseShellExecute = false;
+			
+			if (environmentVariables != null)
+				foreach (KeyValuePair<string, string> kvp in environmentVariables)
+					psi.EnvironmentVariables [kvp.Key] = kvp.Value;
 			
 			return psi;
 		}

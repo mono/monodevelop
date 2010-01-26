@@ -63,6 +63,12 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			tracker.Step (work);
 			OnProgressChanged ();
 		}
+		
+		protected override void OnCompleted ()
+		{
+			base.OnCompleted ();
+			OnProgressChanged ();
+		}
 
 		protected virtual void OnProgressChanged ()
 		{

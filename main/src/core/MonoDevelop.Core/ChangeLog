@@ -1,3 +1,19 @@
+2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/FileService.cs: Add type and null checks on
+	  equality and hash.
+
+2010-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Execution/ExternalConsoleLocator.cs:
+	  Factorize code for setting env vars.
+
+	* MonoDevelop.Core.ProgressMonitoring/SimpleProgressMonitor.cs:
+	  Fire the progress changed event when progress is completed.
+
+	* MonoDevelop.Core/Properties.cs: Added null check.
+
 2009-12-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/AssemblyContext.cs: Don't fall

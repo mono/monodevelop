@@ -1,3 +1,8 @@
+2010-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed 'Bug
+	  569545 - [Windows] TextEditor sometimes adds LF on Windows'.
+
 2010-01-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: fixed 'Bug
