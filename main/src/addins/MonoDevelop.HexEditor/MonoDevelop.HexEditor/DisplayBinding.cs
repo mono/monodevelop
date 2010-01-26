@@ -67,5 +67,7 @@ namespace MonoDevelop.HexEditor
 		{
 			return true;
 		}
+		
+		public override bool CanUseAsDefault { get { return false; } } 
 	}
 }
