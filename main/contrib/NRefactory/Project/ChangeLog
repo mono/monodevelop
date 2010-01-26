@@ -1,3 +1,9 @@
+2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Src/Lexer/CSharp/Lexer.cs: When reading single-line comment
+	  tags, don't read the whole line with the ch prepended, just
+	  read the actual content.
+
 2009-11-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Lexer/CSharp/Lexer.cs: Fixed 'Bug 552276 - MonoDevelop

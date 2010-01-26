@@ -243,13 +243,20 @@ namespace MonoDevelop.Ide.Tasks
 				foreach (Tag tag in tagComments) {
 					if (!priorities.ContainsKey (tag.Key))
 						continue;
-					Task t = new Task (fileName,
-					                      tag.Key + tag.Text,
-					                      tag.Region.Start.Column - 1,
-					                      tag.Region.Start.Line,
-					                      TaskSeverity.Information, 
-					                      priorities[tag.Key],
-					                      wob);
+					
+					//prepend the tag if it's not already there
+					string desc = tag.Text.Trim ();
+					if (!desc.StartsWith (tag.Key)) {
+						if (desc.StartsWith (":"))
+							desc = tag.Key + desc;
+						else if (tag.Key.EndsWith (":"))
+							desc = tag.Key + " " + desc;
+						else
+							desc = tag.Key + ": " + desc;
+					}
+					
+					Task t = new Task (fileName, desc, tag.Region.Start.Column - 1, tag.Region.Start.Line,
+					                   TaskSeverity.Information, priorities[tag.Key], wob);
 					newTasks.Add (t);
 				}
 			}

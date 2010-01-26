@@ -832,7 +832,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					curWord.Length = 0;
 					if (specialCommentHash.ContainsKey(tag)) {
 						Location p = new Location(Col, Line);
-						string comment = ch + ReadToEndOfLine(false);
+						string comment = ReadToEndOfLine ();
 						this.TagComments.Add(new TagComment(tag, comment, isAtLineBegin, p, new Location(Col, Line)));
 						break;
 					}
