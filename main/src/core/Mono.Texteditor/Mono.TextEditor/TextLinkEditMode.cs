@@ -481,7 +481,7 @@ namespace Mono.TextEditor
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 		
-		public Gtk.Window CreateTooltipWindow (TextEditor Editor, Gdk.ModifierType modifierState, object item)
+		public Gtk.Window CreateTooltipWindow (TextEditor Editor, int offset, Gdk.ModifierType modifierState, object item)
 		{
 			TextLink link = item as TextLink;
 			if (link == null || string.IsNullOrEmpty (link.Tooltip))

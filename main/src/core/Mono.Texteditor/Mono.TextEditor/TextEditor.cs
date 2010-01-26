@@ -1997,7 +1997,7 @@ namespace Mono.TextEditor
 
 				HideTooltip ();
 
-				Gtk.Window tw = provider.CreateTooltipWindow (this, modifierState, item);
+				Gtk.Window tw = provider.CreateTooltipWindow (this, offset, modifierState, item);
 				if (tw == null)
 					return false;
 				
