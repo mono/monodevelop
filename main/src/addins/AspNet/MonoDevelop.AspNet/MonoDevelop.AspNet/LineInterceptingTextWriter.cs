@@ -88,7 +88,7 @@ namespace MonoDevelop.AspNet
 							if (sb != null)
 								sb.Length = 0;
 						}
-					} else if (sb.Length < MaxLineLength) {
+					} else if (sb != null && sb.Length < MaxLineLength) {
 						sb.Append (c);
 					}
 					prevCharWasCR = c == '\r';
