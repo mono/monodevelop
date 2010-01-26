@@ -73,6 +73,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Dock\MonoDevelop.Dock.csproj">
