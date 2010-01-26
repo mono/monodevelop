@@ -268,7 +268,7 @@ namespace Mono.TextEditor.Highlighting
 							spanStack.Pop ();
 						
 					} while (iter.MoveNext ());
-				} catch (Exception) {}
+				} catch (Exception e) { Console.WriteLine ("Syntax highlighting exception:" + e); }
 				if (doUpdate) {
 					Gtk.Application.Invoke ( delegate {
 						doc.RequestUpdate (new UpdateAll ());

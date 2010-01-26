@@ -30,12 +30,12 @@ namespace MonoDevelop.Projects.Dom
 {
 	public class PreProcessorDefine
 	{
-		public DomLocation Location {
+		public string Define {
 			get;
 			set;
 		}
 		
-		public string Define {
+		public DomLocation Location {
 			get;
 			set;
 		}
@@ -48,6 +48,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 			this.Define = define;
 			this.Location = location;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[PreProcessorDefine: Define={0}, Location={1}]", Define, Location);
 		}
 	}
 }

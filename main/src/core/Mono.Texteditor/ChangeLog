@@ -9,6 +9,18 @@
 	* SyntaxModes/CSharpSyntaxMode.xml: fixed 'Bug 564378 - Inline
 	  comments in c# with ///< screw up code coloring'.
 
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: fixed 'Bug 560510 -
+	  Preprocessor enabled code shows as comment anyway'.
+
+2010-01-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed
+	  'Bug 560510 - Preprocessor enabled code shows as comment
+	  anyway'.
+
 2009-12-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Make bracket matching

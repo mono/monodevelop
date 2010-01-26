@@ -35,6 +35,8 @@ using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -177,7 +179,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			class ConditinalExpressionEvaluator : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 			{
 				HashSet<string> symbols = new HashSet<string> ();
-				public ConditinalExpressionEvaluator ()
+				
+				public ConditinalExpressionEvaluator (Document doc)
 				{
 					var project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentSelectedProject;
 					if (project != null) {
@@ -192,6 +195,16 @@ namespace MonoDevelop.CSharp.Highlighting
 										symbols.Add (ss);
 								}
 							}
+						}
+					}
+					
+					ProjectDom dom = ProjectDomService.GetProjectDom (project);
+					ParsedDocument parsedDocument = ProjectDomService.GetParsedDocument (dom, doc.FileName);
+					if (parsedDocument == null)
+						parsedDocument = ProjectDomService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });
+					if (parsedDocument != null) {
+						foreach (PreProcessorDefine define in parsedDocument.Defines) {
+							symbols.Add (define.Define);
 						}
 					}
 				}
@@ -241,8 +254,11 @@ namespace MonoDevelop.CSharp.Highlighting
 					base.ScanSpan (ref i);
 					return;
 				}
-				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#else" && spanStack.Any (span => span is IfBlockSpan)) {
+				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#else") {
+					LineSegment line = doc.GetLineByOffset (i);
+					
 					bool previousResult = false;
+					
 					foreach (Span span in spanStack.ToArray ().Reverse ()) {
 						if (span is IfBlockSpan) {
 							previousResult = ((IfBlockSpan)span).IsValid;
@@ -252,13 +268,12 @@ namespace MonoDevelop.CSharp.Highlighting
 						}
 					}
 					
-					LineSegment line = doc.GetLineByOffset (i);
+					
 					int length = line.Offset + line.EditableLength - i;
 					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan)) {
 						spanStack.Pop ();
 					}
 //					IfBlockSpan ifBlock = (IfBlockSpan)CurSpan;
-					
 					ElseBlockSpan elseBlockSpan = new ElseBlockSpan (!previousResult);
 					OnFoundSpanBegin (elseBlockSpan, i, 0);
 					
@@ -272,6 +287,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					i += length - 1;
 					return;
 				}
+				
 				if (CurRule.Name == "text.preprocessor" && i >= 3 && doc.GetTextAt (i - 3, 3) == "#if") {
 					LineSegment line = doc.GetLineByOffset (i);
 					int length = line.Offset + line.EditableLength - i;
@@ -280,7 +296,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
 					bool result = false;
 					if (expr != null && !expr.IsNull) {
-						object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null);
+						object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null);
 						if (o is bool)
 							result = (bool)o;
 					}
@@ -299,7 +315,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
 					ICSharpCode.NRefactory.Ast.Expression expr = lexer.PPExpression ();
 				
-					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (), null) : false;
+					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null) : false;
 					
 					if (result) {
 						bool previousResult = false;

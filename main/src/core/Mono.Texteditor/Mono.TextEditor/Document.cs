@@ -122,7 +122,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void UpdateHighlighting ()
+		public void UpdateHighlighting ()
 		{
 			if (this.syntaxMode != null) {
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
