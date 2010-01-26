@@ -305,6 +305,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 			return result;
 		}
+		
 		static int[] Match (string filterText, string text)
 		{
 			if (string.IsNullOrEmpty (filterText))

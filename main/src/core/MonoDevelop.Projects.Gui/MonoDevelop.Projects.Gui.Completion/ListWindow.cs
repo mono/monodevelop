@@ -394,33 +394,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 					hasMismatches = false;
 				}
 			}
-
+			
 			// Search for history matches.
-			string historyWord = null;
-			for (int i = wordHistory.Count - 1; i >= 0; i--) {
-				string word = wordHistory[i];
-				if (ListWidget.Matches (partialWord, word)) {
-					historyWord = word;
-					break;
-				}
-			}
-
-			if (historyWord != null) {
-				for (int i = 0; i < list.filteredItems.Count; i++) {
-					string currentWord = DataProvider.GetText (list.filteredItems[i]);
-					if (currentWord == historyWord) {
-						if (curRating <= ListWidget.MatchRating (partialWord, currentWord)) {
-							hasMismatches = false;
-							return i;
+			for (int i = 0; i < wordHistory.Count; i++) {
+				string historyWord = wordHistory[i];
+				
+				if (ListWidget.Matches (partialWord, historyWord)) {
+					for (int j = 0; j < list.filteredItems.Count; j++) {
+						string currentWord = DataProvider.GetText (list.filteredItems[j]);
+						if (currentWord == historyWord) {
+							idx = j;
+							break;
 						}
-						break;
 					}
 				}
 			}
+			
 			return idx;
 		}
 
-		List<string> wordHistory = new List<string> ();
+		static List<string> wordHistory = new List<string> ();
 		const int maxHistoryLength = 500;
 		protected void AddWordToHistory (string word)
 		{
@@ -443,13 +436,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public virtual void SelectEntry (string s)
 		{
 			list.FilterWords ();
+			/* // disable this, because we select now the last selected entry by default (word history mode)
 			//when the list is empty, disable the selection or users get annoyed by it accepting
 			//the top entry automatically
 			if (string.IsNullOrEmpty (s)) {
 				ResetSizes ();
 				list.Selection = 0;
 				return;
-			}
+			}*/
 			bool hasMismatches;
 			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
 			ResetSizes ();
