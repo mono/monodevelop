@@ -1,3 +1,7 @@
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/DataProvider.cs: Track API changes.
+
 2010-01-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/CProjectServiceExtension.cs: Enable extension only
