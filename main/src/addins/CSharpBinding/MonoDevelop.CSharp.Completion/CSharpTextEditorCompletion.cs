@@ -1075,12 +1075,27 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
+			Dictionary<IType, CompletionCategory> completionCategories = new Dictionary<IType, CompletionCategory> ();
+			
+			CompletionCategory GetCompletionCategory (IType type)
+			{
+				if (type == null)
+					return null;
+				if (!completionCategories.ContainsKey (type)) {
+					completionCategories[type] = new CompletionCategory (type.FullName, type.StockIcon);
+				}
+				return completionCategories[type];
+			}
+			
 			MemberCompletionData AddMemberCompletionData (object member, OutputFlags flags)
 			{
 				MemberCompletionData newData = new MemberCompletionData (member as INode, flags);
 				newData.HideExtensionParameter = HideExtensionParameter;
 				string memberKey = newData.CompletionText;
-				
+				if (member is IMember) {
+					Console.WriteLine ("add to category:" + ((IMember)member).DeclaringType);
+					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
+				}
 				MemberCompletionData existingData;
 				if (data.TryGetValue (memberKey, out existingData)) {
 					if (existingData == null)
