@@ -82,6 +82,10 @@ namespace MonoDevelop.XmlEditor.Completion
 		public DisplayFlags DisplayFlags {
 			get { return DisplayFlags.None; }
 		}
+
+		public CompletionCategory CompletionCategory {
+			get { return null; }
+		}
 		
 		#endregion
 		

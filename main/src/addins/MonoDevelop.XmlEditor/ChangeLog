@@ -1,3 +1,10 @@
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlMultipleClosingTagCompletionData.cs:
+	  Track API changes.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlFormatter.cs: Track api changes.
