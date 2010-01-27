@@ -1,3 +1,15 @@
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Tidy up updater GUI a little more.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Improve update GUI a bit more.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Tidy up the update list a little.
+
 2010-01-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateDialog.cs: Cache the stable/unstable result so

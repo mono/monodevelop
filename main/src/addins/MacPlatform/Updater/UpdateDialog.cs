@@ -103,19 +103,20 @@ namespace MonoDevelop.Platform.Updater
 				c.Destroy ();
 			}
 			
+			productBox.Spacing = 0;
+			
 			bool includeUnstable = checkIncludeUnstable.Active;
 			
 			foreach (var update in updates) {
 				if (!includeUnstable && update.IsUnstable)
 					continue;
-				
 				var updateBox = new VBox () { Spacing = 2 };
 				var labelBox = new HBox ();
 				updateBox.PackStart (labelBox, false, false, 0);
 				
 				var updateExpander = new Expander ("");
 				updateExpander.LabelWidget = new Label () {
-					Markup = string.Format ("<b>{0}</b> {1} ({2:yyyy-MM-dd}){3}", update.Name, update.Version, update.Date,
+					Markup = string.Format ("<b>{0}</b>\n{1} ({2:yyyy-MM-dd}){3}", update.Name, update.Version, update.Date,
 					                        update.IsUnstable? "\n<b>UNSTABLE PREVIEW RELEASE</b>" : ""),
 				};
 				labelBox.PackStart (updateExpander, true, true, 0);
@@ -154,20 +155,23 @@ namespace MonoDevelop.Platform.Updater
 				textView.LeftMargin = textView.RightMargin = 4;
 				updateBox.PackStart (textView, false, false, 0);
 				
+				bool startsExpanded = false;
+				updateExpander.Expanded = startsExpanded;
 				updateExpander.Activated += delegate {
 					textView.Visible = updateExpander.Expanded;
 				};
 				
-				var f = new Frame () {
-					BorderWidth = 2,
-					Child = updateBox,
-					ShadowType = ShadowType.In
-				};
-				updateBox.BorderWidth = 6;
-				productBox.PackStart (f, false, false, 0);
-				f.ShowAll ();
+				updateBox.BorderWidth = 4;
 				
-				textView.Visible = false;
+				productBox.PackStart (updateBox, false, false, 0);
+				updateBox.ShowAll ();
+				//this has to be set false after the ShowAll
+				textView.Visible = startsExpanded;
+				
+				
+				var sep = new HSeparator ();
+				productBox.PackStart (sep, false, false, 0);
+				sep.Show ();
 			}
 			
 			notebook1.CurrentPage = PAGE_UPDATES;
