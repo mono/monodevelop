@@ -175,7 +175,6 @@ namespace MonoDevelop.Platform.Updater
 			}
 			
 			notebook1.CurrentPage = PAGE_UPDATES;
-			productBox.ShowAll ();
 		}
 	}
 }
