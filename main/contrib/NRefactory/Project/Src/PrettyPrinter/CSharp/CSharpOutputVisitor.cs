@@ -2888,17 +2888,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (arrayInitializerExpression.CreateExpressions.Count == 1) {
 				outputFormatter.Space ();
 			} else {
-				outputFormatter.IndentationLevel++;
-				outputFormatter.NewLine ();
-				outputFormatter.Indent ();
+				if (this.prettyPrintOptions.PlaceArrayInitializersOnNewLine == ArrayInitializerPlacement.AlwaysNewLine) {
+					outputFormatter.IndentationLevel++;
+					outputFormatter.NewLine ();
+					outputFormatter.Indent ();
+				} else {
+					outputFormatter.Space ();
+				}
 			}
-			this.AppendCommaSeparatedList (arrayInitializerExpression.CreateExpressions, true);
+			this.AppendCommaSeparatedList (arrayInitializerExpression.CreateExpressions, this.prettyPrintOptions.PlaceArrayInitializersOnNewLine == ArrayInitializerPlacement.AlwaysNewLine);
 			if (arrayInitializerExpression.CreateExpressions.Count == 1) {
 				outputFormatter.Space ();
 			} else {
-				outputFormatter.IndentationLevel--;
-				outputFormatter.NewLine();
-				outputFormatter.Indent();
+				if (this.prettyPrintOptions.PlaceArrayInitializersOnNewLine == ArrayInitializerPlacement.AlwaysNewLine) {
+					outputFormatter.IndentationLevel--;
+					outputFormatter.NewLine();
+					outputFormatter.Indent();
+				} else {
+					outputFormatter.Space();
+				}
 			}
 			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			return null;

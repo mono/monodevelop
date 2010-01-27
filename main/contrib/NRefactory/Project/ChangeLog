@@ -1,3 +1,10 @@
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Implemented
+	  'Bug 550947 - Arrays initailizers should not automatically
+	  be split on multiple lines'.
+
 2010-01-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Src/Lexer/CSharp/Lexer.cs: When reading single-line comment
