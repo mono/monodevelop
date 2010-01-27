@@ -1,3 +1,10 @@
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Html/PathCompletion.cs:
+	* MonoDevelop.Html/DocTypeCompletionData.cs:
+	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:
+	  Track API changes.
+
 2010-01-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs: Implement

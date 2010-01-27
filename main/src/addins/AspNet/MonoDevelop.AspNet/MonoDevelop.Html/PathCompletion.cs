@@ -99,6 +99,10 @@ namespace MonoDevelop.Html
 				get { return DisplayFlags.None; }
 			}
 			
+			public CompletionCategory CompletionCategory  {
+				get { return null; }
+			}
+			
 			public int CompareTo (ICompletionData other)
 			{
 				return DisplayText.CompareTo (other.DisplayText);
@@ -136,6 +140,12 @@ namespace MonoDevelop.Html
 			
 			public DisplayFlags DisplayFlags {
 				get { return DisplayFlags.None; }
+			}
+			
+			public CompletionCategory CompletionCategory  {
+				get {
+					return null;
+				}
 			}
 			
 			public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)

@@ -78,7 +78,13 @@ namespace MonoDevelop.AspNet.Parser
 		public DisplayFlags DisplayFlags {
 			get { return DisplayFlags.None; }
 		}
-
+		
+		public CompletionCategory CompletionCategory  {
+			get {
+				return null;
+			}
+		}
+		
 		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			//insert the method name
