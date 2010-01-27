@@ -1,3 +1,8 @@
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API
+	  changes.
+
 2010-01-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Made GetIcon

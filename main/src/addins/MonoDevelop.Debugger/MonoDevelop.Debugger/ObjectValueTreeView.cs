@@ -967,6 +967,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
+		public CompletionCategory CompletionCategory  {
+			get {
+				return null;
+			}
+		}
+		
 		public DisplayFlags DisplayFlags {
 			get { return DisplayFlags.None; }
 		}
