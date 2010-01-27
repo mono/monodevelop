@@ -103,13 +103,13 @@ namespace MonoDevelop.Platform.Updater
 				c.Destroy ();
 			}
 			
+			productBox.Spacing = 0;
+			
 			bool includeUnstable = checkIncludeUnstable.Active;
 			
-			bool isFirst = true;
 			foreach (var update in updates) {
 				if (!includeUnstable && update.IsUnstable)
 					continue;
-				
 				var updateBox = new VBox () { Spacing = 2 };
 				var labelBox = new HBox ();
 				updateBox.PackStart (labelBox, false, false, 0);
@@ -155,46 +155,27 @@ namespace MonoDevelop.Platform.Updater
 				textView.LeftMargin = textView.RightMargin = 4;
 				updateBox.PackStart (textView, false, false, 0);
 				
-				updateExpander.Expanded = true;
-				textView.Visible = false;
+				bool startsExpanded = false;
+				updateExpander.Expanded = startsExpanded;
 				updateExpander.Activated += delegate {
 					textView.Visible = updateExpander.Expanded;
 				};
 				
 				updateBox.BorderWidth = 4;
 				
-				if (isFirst) {
-					isFirst = false;
-				} else {
-					productBox.PackStart (new NarrowHSeparator (), false, false, 0);
-				}
 				productBox.PackStart (updateBox, false, false, 0);
 				updateBox.ShowAll ();
+				//this has to be set false after the ShowAll
+				textView.Visible = startsExpanded;
+				
+				
+				var sep = new HSeparator ();
+				productBox.PackStart (sep, false, false, 0);
+				sep.Show ();
 			}
 			
 			notebook1.CurrentPage = PAGE_UPDATES;
 			productBox.ShowAll ();
-		}
-		
-		class NarrowHSeparator : Gtk.Widget
-		{
-			public NarrowHSeparator ()
-			{
-				WidgetFlags |= WidgetFlags.NoWindow;
-			}
-			
-			protected override void OnSizeRequested (ref Requisition requisition)
-			{
-				requisition.Height = 4;
-				requisition.Width = 0;
-			}
-			
-			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-			{
-				Style.PaintHline (Style, evnt.Window, State, evnt.Area, this, "hseparator",
-				                  Allocation.X, Allocation.Right, Allocation.Y);
-				return true;
-			}
 		}
 	}
 }
