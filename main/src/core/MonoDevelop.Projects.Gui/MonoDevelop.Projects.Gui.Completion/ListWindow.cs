@@ -243,7 +243,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (!SelectionEnabled) {
 					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
-					list.Selection--;
+					list.MoveCursor (-1);
 				}
 				return KeyActions.Ignore;
 
@@ -253,20 +253,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (!SelectionEnabled) {
 					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
-					list.Selection++;
+					list.MoveCursor (1);
 				}
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Up:
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				list.Selection -= list.VisibleRows - 1;
+				list.MoveCursor (-(list.VisibleRows - 1));
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Down:
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				list.Selection += list.VisibleRows - 1;
+				list.MoveCursor (list.VisibleRows - 1);
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Left:
@@ -480,23 +480,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
-
+			
 			int winWidth, winHeight;
 			this.GetSize (out winWidth, out winHeight);
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth - 1, winHeight - 1);
 			return true;
 		}
-
+		
 		public int TextOffset {
 			get { return list.TextOffset + (int)this.BorderWidth; }
 		}
 	}
-	
+
 	public interface IListDataProvider
 	{
 		int ItemCount { get; }
 		string GetText (int n);
 		string GetMarkup (int n);
+		CompletionCategory GetCompletionCategory (int n);
 		bool HasMarkup (int n);
 		string GetCompletionText (int n);
 		Gdk.Pixbuf GetIcon (int n);

@@ -97,10 +97,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 					break;
 				}
 			}
+			
 			if (!keyHandled) {
 				ka = ProcessKey (key, keyChar, modifier);
 			}
 			
+			if (key == Gdk.Key.ISO_Next_Group || key == Gdk.Key.ISO_Prev_Group) {
+				this.List.InCategoryMode = !this.List.InCategoryMode;
+				this.List.QueueDraw ();
+				return true;
+			}
 			if ((ka & KeyActions.Complete) != 0) {
 				CompleteWord ();
 			}
@@ -440,6 +446,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		int IListDataProvider.ItemCount 
 		{ 
 			get { return completionDataList.Count; } 
+		}
+		
+		CompletionCategory IListDataProvider.GetCompletionCategory (int n)
+		{
+			return completionDataList[n].CompletionCategory;
 		}
 		
 		string IListDataProvider.GetText (int n)

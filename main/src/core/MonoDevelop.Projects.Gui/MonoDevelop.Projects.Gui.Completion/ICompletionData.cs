@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		string DisplayText { get; }
 		string Description { get; }
 		string CompletionText { get; }
+		CompletionCategory CompletionCategory { get; }
 		DisplayFlags DisplayFlags { get; }
 	}
 	

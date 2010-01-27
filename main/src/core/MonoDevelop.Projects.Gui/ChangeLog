@@ -1,3 +1,12 @@
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Worked on 'completion categories'.
+
 2010-01-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
