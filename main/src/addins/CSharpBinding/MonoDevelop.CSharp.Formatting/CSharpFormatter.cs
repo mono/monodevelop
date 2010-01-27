@@ -344,15 +344,15 @@ namespace MonoDevelop.CSharp.Formatting
 					continue;
 				} else if (isCh1Eol) {
 					
-					int firstWhitespace = 0;
-					/*
+				//	int firstWhitespace = 0;
+					
 					 // skip all white spaces in formatted text - we had a line break
 					int firstWhitespace = -1;
 					while (textOffset < formattedText.Length && IsPlainWhitespace (formattedText[textOffset])) {
 						if (firstWhitespace < 0)
 							firstWhitespace = textOffset;
 						textOffset++;
-					}*/
+					}
 					if (firstWhitespace >= 0 && firstWhitespace != textOffset && formattedText[textOffset] == '\n') {
 						int length = textOffset - firstWhitespace - 1;
 						data.Insert (offset, formattedText.Substring (firstWhitespace, length) + data.EolMarker);

@@ -14,6 +14,11 @@
 		<Value _displayName="Add braces">AddBraces</Value>
 	</Type>
 	
+	<Type name = "ArrayInitializerPlacement">
+		<Value _displayName="Always break line">AlwaysNewLine</Value>
+		<Value _displayName="Never break line">AlwaysSameLine</Value>
+	</Type>
+	
 	<Example name = "event"><![CDATA[
 	class ClassDeclaration { 
 		EventHandler<EventArgs> onAction;
@@ -310,6 +315,7 @@ class ClassDeclaration {
 	}
 ]]></Example>
 
+
 	<Category _displayName="Indentation">
 		<Category _displayName="Declarations">
 			<Option name="IndentNamespaceBody" _displayName="within namespaces"><Example><![CDATA[namespace Test { class AClass {} }]]></Example></Option>
@@ -445,8 +451,8 @@ class ClassDeclaration {
 			<Option name="PlaceCatchOnNewLine" _displayName="'catch'" example="simpleCatch"/>
 			<Option name="PlaceFinallyOnNewLine" _displayName="'finally'" example="simpleCatch"/>
 			<Option name="PlaceWhileOnNewLine" _displayName="'while'" example="simpleDoWhile"/>
+			<Option name="PlaceArrayInitializersOnNewLine" _displayName="array initializers" example="simpleArrayInitializer"/>
 		</Category>
-		
 	</Category>
 	
 	<Category _displayName="Spaces">
