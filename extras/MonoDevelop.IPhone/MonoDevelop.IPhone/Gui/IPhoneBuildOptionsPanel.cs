@@ -90,6 +90,7 @@ namespace MonoDevelop.IPhone.Gui
 			
 			sdkComboEntry.AppendText ("3.0");
 			sdkComboEntry.AppendText ("3.1");
+			sdkComboEntry.AppendText ("3.2");
 			
 			store = new ListStore (typeof (string), typeof (bool));
 			i18nTreeView.Model = store;

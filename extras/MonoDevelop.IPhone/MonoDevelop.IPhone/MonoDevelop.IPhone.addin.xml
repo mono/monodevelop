@@ -35,6 +35,10 @@
 			              resource = "IPhoneApplicationPList.xft.xml"/>
 			<FileTemplate id       = "IPhoneEntitlements"
 			              resource = "IPhoneEntitlements.xft.xml"/>
+			<FileTemplate id       = "IPadApplicationXib"
+			              resource = "IPadApplicationXib.xft.xml"/>
+			<FileTemplate id       = "IPadInfoPlist"
+			              resource = "IPadInfoPlist.xft.xml"/>
 		</Condition>
 	</Extension>
 
@@ -52,6 +56,8 @@
 			                 resource = "IPhoneLibraryProject.xpt.xml" />
 			<ProjectTemplate id       = "IPhoneProject-Empty"
 			                 resource = "IPhoneProjectEmpty.xpt.xml"/>
+			<ProjectTemplate id       = "IPadWindowBasedProject"
+			                 resource = "IPadWindowBasedProject.xpt.xml" />
 		</Condition>
 	</Extension>
 	

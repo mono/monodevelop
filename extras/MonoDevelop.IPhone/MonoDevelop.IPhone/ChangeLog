@@ -1,3 +1,14 @@
+2010-01-27  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: 
+	* MonoDevelop.IPhone.csproj:
+	* Templates/IPadApplicationXib.xft.xml: 
+	* Templates/IPadInfoPlist.xft.xml:
+	* Templates/IPadWindowBasedProject.xpt.xml: Added
+	  iPad templates to the build.  Subject to change
+	* Gui/IPhoneBuildOptionsPanel.cs: Added 3.2 to the
+	  available SDK versions.
+
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneExecutionHandler.cs: Move some code into
