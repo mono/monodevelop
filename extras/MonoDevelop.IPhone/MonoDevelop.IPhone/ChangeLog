@@ -6,6 +6,11 @@
 
 2010-01-27  Geoff Norton  <gnorton@novell.com>
 
+	* Templates/IPadApplicationXib.xft.xml: Fix template
+	to properly hook up the app delegate
+
+2010-01-27  Geoff Norton  <gnorton@novell.com>
+
 	* MonoDevelop.IPhone.addin.xml: 
 	* MonoDevelop.IPhone.csproj:
 	* Templates/IPadApplicationXib.xft.xml: 
