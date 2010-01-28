@@ -56,8 +56,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.editor = editor;
 			this.lineSegment = lineSegment;
+			editor.TextViewMargin.HoveredLineChanged += HandleEditorTextViewMarginHoveredLineChanged;
 			DebuggingService.PausedEvent += HandleDebuggingServiceCallStackChanged;
 			DebuggingService.CurrentFrameChanged += HandleDebuggingServiceCurrentFrameChanged;
+		}
+
+		void HandleEditorTextViewMarginHoveredLineChanged (object sender, LineEventArgs e)
+		{
+			if (e.Line == lineSegment || editor.TextViewMargin.HoveredLine == lineSegment) {
+				editor.Document.CommitLineUpdate (lineSegment);
+			}
 		}
 		
 		
@@ -111,7 +119,7 @@ namespace MonoDevelop.SourceEditor
 			return val.DisplayValue ?? "(null)";
 		}
 		
-		static int MeasureObjectValue (int y, int lineHeight, Pango.Layout layout, int startXPos, TextEditor editor, ObjectValue val)
+		int MeasureObjectValue (int y, int lineHeight, Pango.Layout layout, int startXPos, TextEditor editor, ObjectValue val)
 		{
 			int width, height;
 			int xPos = startXPos;
@@ -137,19 +145,20 @@ namespace MonoDevelop.SourceEditor
 			
 			valueLayout.GetPixelSize (out width, out height);
 			xPos += width;
-			
-			xPos += 4;
-			
-			pixbuf = ImageService.GetPixbuf (Stock.CloseIcon, Gtk.IconSize.Menu);
-			pW = pixbuf.Width;
-			xPos += pW + 2;
+			if (editor.TextViewMargin.HoveredLine == lineSegment) {
+				xPos += 4;
+				
+				pixbuf = ImageService.GetPixbuf (Stock.CloseIcon, Gtk.IconSize.Menu);
+				pW = pixbuf.Width;
+				xPos += pW + 2;
+			}
 			
 			nameLayout.Dispose ();
 			valueLayout.Dispose ();
 			return xPos;
 		}
 		
-		static int DrawObjectValue (int y, int lineHeight, int startXPos, Gdk.Drawable win, TextEditor editor, ObjectValue val)
+		int DrawObjectValue (int y, int lineHeight, int startXPos, Gdk.Drawable win, TextEditor editor, ObjectValue val)
 		{
 			int y2 = y + lineHeight;
 			
@@ -188,15 +197,17 @@ namespace MonoDevelop.SourceEditor
 			win.DrawLayout (textGc, xPos, y  + (lineHeight - height) / 2, valueLayout);
 			xPos += width;
 			
-			win.DrawLine (lineGc, xPos + 2, y, xPos + 2, y2);
+			xPos += 2;
 			
-			xPos += 4;
-			
-			pixbuf = ImageService.GetPixbuf ("md-pin-down", Gtk.IconSize.Menu);
-			pW = pixbuf.Width;
-			pH = pixbuf.Height;
-			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), pixbuf, 0, 0, xPos, y, pW, pH, Gdk.RgbDither.None, 0, 0 );
-			xPos += pW + 2;
+			if (editor.TextViewMargin.HoveredLine == lineSegment) {
+				win.DrawLine (lineGc, xPos, y, xPos, y2);
+				xPos += 2;
+				pixbuf = ImageService.GetPixbuf ("md-pin-down", Gtk.IconSize.Menu);
+				pW = pixbuf.Width;
+				pH = pixbuf.Height;
+				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), pixbuf, 0, 0, xPos, y, pW, pH, Gdk.RgbDither.None, 0, 0 );
+				xPos += pW + 2;
+			}
 			
 			win.DrawRectangle (lineGc, false, startX, y, xPos - startX, lineHeight);
 			
@@ -260,6 +271,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			DebuggingService.CallStackChanged -= HandleDebuggingServiceCallStackChanged;
 			DebuggingService.CurrentFrameChanged -= HandleDebuggingServiceCurrentFrameChanged;
+			editor.TextViewMargin.HoveredLineChanged -= HandleEditorTextViewMarginHoveredLineChanged;
 		}
 		#endregion
 	}

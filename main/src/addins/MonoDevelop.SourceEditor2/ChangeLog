@@ -1,5 +1,10 @@
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs: hide close
+	  pins, when mouse is not in the right line.
+
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs:
 	* MonoDevelop.SourceEditor/DebugValueMarker.cs: Worked on
 	  pinnable watches.
