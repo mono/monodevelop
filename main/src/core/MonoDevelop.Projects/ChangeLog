@@ -1,3 +1,15 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/IMSBuildImportProvider.cs:
+	  Keep unknown imports when saving a project.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Text/XmlDefinitionCodon.cs: Remove
+	  unused extension.
+
 2010-01-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs: Added method for

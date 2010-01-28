@@ -210,7 +210,6 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFileReader.cs \
 	MonoDevelop.Projects.Text/TextFileService.cs \
 	MonoDevelop.Projects.Text/TextFormatter.cs \
-	MonoDevelop.Projects.Text/XmlDefinitionCodon.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
 	MonoDevelop.Projects/BuildAction.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \

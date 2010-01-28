@@ -316,7 +316,6 @@
     <Compile Include="MonoDevelop.Projects.Dom\ExtensionMethod.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\AnonymousType.cs" />
     <Compile Include="MonoDevelop.Projects.Text\CodeFormatDescription.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\XmlDefinitionCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Text\IPrettyPrinter.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryDatabase.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryProjectDom.cs" />

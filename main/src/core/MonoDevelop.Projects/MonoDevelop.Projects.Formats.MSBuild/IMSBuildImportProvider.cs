@@ -31,6 +31,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public interface IMSBuildImportProvider
 	{
-		IEnumerable<string> GetRequiredImports (SolutionEntityItem item);
+		void UpdateImports (SolutionEntityItem item, List<string> imports);
 	}
 }

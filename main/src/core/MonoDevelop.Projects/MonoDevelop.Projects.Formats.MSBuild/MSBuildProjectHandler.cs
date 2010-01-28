@@ -720,13 +720,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Impdate the imports section
 			
 			List<string> currentImports = msproject.Imports;
-			List<string> newImports = GetImports ();
-			foreach (string imp in newImports) {
-				if (!currentImports.Contains (imp))
+			List<string> imports = new List<string> (currentImports);
+			UpdateImports (imports);
+			foreach (string imp in imports) {
+				if (!currentImports.Contains (imp)) {
 					msproject.AddNewImport (imp, null);
+					currentImports.Add (imp);
+				}
 			}
 			foreach (string imp in currentImports) {
-				if (!newImports.Contains (imp))
+				if (!imports.Contains (imp))
 					msproject.RemoveImport (imp);
 			}
 			
@@ -926,18 +929,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			buildItem.Condition = pref.Condition;
 		}
 		
-		List<string> GetImports ()
+		void UpdateImports (List<string> imports)
 		{
-			List<string> imps = new List<string> ();
 			if (targetImports != null) {
 				foreach (string imp in targetImports)
-					imps.Add (imp);
+					if (!imports.Contains (imp))
+						imports.Add (imp);
 			}
 			foreach (IMSBuildImportProvider ip in AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/MSBuildImportProviders")) {
-				foreach (string imp in ip.GetRequiredImports (EntityItem))
-					imps.Add (imp);
+				ip.UpdateImports (EntityItem, imports);
 			}
-			return imps;
 		}
 
 		void UnmergeBaseConfiguration (List<ConfigData> configData, MSBuildPropertyGroup propGroup, string conf, string platform)
