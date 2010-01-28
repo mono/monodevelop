@@ -36,11 +36,19 @@ using System.Collections.Generic;
 namespace MonoDevelop.Platform.Updater
 {
 
+	public enum UpdateLevel
+	{
+		Stable = 0,
+		Beta = 1,
+		Alpha = 2,
+		Test = 3
+	}
+	
 	public static class UpdateService
 	{
 		const int formatVersion = 1;
 		const string updateAutoPropertyKey = "AppUpdater.CheckAutomatically";
-		const string includeUnstableKey = "AppUpdate.IncludeUnstable";
+		const string updateLevelKey = "AppUpdate.UpdateLevel";
 		
 		static UpdateInfo[] updateInfos;
 		
@@ -80,12 +88,12 @@ namespace MonoDevelop.Platform.Updater
 			}
 		}
 		
-		public static bool IncludeUnstable {
+		public static UpdateLevel UpdateLevel {
 			get {
-				return PropertyService.Get<bool> (includeUnstableKey, false);
+				return PropertyService.Get<UpdateLevel> (updateLevelKey, UpdateLevel.Stable);
 			}
 			set {
-				PropertyService.Set (includeUnstableKey, value);
+				PropertyService.Set (updateLevelKey, value);
 			}
 		}
 		
@@ -101,11 +109,11 @@ namespace MonoDevelop.Platform.Updater
 			
 			if (!automatic) {
 				ShowUpdateDialog ();
-				QueryUpdateServer (updateInfos, IncludeUnstable, delegate (UpdateResult result) {
+				QueryUpdateServer (updateInfos, UpdateLevel, delegate (UpdateResult result) {
 					ShowUpdateResult (result);
 				});
 			} else {
-				QueryUpdateServer (updateInfos, IncludeUnstable, delegate (UpdateResult result) {
+				QueryUpdateServer (updateInfos, UpdateLevel, delegate (UpdateResult result) {
 					if (result.HasError || !result.HasUpdates)
 						return;
 					ShowUpdateDialog ();
@@ -142,11 +150,11 @@ namespace MonoDevelop.Platform.Updater
 			
 		#endregion
 		
-		public static void QueryUpdateServer (UpdateInfo[] updateInfos, bool includeUnstable, Action<UpdateResult> callback)
+		public static void QueryUpdateServer (UpdateInfo[] updateInfos, UpdateLevel level, Action<UpdateResult> callback)
 		{
 			if (updateInfos == null || updateInfos.Length == 0) {
 				string error = GettextCatalog.GetString ("No updatable products detected");
-				callback (new UpdateResult (null, false, error, null));
+				callback (new UpdateResult (null, level, error, null));
 				return;
 			}
 			
@@ -156,10 +164,12 @@ namespace MonoDevelop.Platform.Updater
 				query.AppendFormat ("&{0}={1}", info.AppId, info.VersionId);
 			
 			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATER_TEST")))
-				query.Append ("&test=1");
+				level = UpdateLevel.Test;
 			
-			if (includeUnstable)
-				query.Append ("&unstable=yes");
+			if (level != UpdateLevel.Stable) {
+				query.Append ("&level=");
+				query.Append (level.ToString ().ToLower ());
+			}
 			
 			var request = (HttpWebRequest) WebRequest.Create (query.ToString ());
 			
@@ -167,11 +177,11 @@ namespace MonoDevelop.Platform.Updater
 			//request.IfModifiedSince = somevalue;
 			
 			request.BeginGetResponse (delegate (IAsyncResult ar) {
-				ReceivedResponse (request, ar, includeUnstable, callback);
+				ReceivedResponse (request, ar, level, callback);
 			}, null);
 		}
 		
-		static void ReceivedResponse (HttpWebRequest request, IAsyncResult ar, bool includesUnstable, Action<UpdateResult> callback)
+		static void ReceivedResponse (HttpWebRequest request, IAsyncResult ar, UpdateLevel level, Action<UpdateResult> callback)
 		{
 			List<Update> updates = null;
 			string error = null;
@@ -188,7 +198,9 @@ namespace MonoDevelop.Platform.Updater
 								Name = x.Attribute ("name").Value,
 								Url = first.Attribute ("url").Value,
 								Version = first.Attribute ("version").Value,
-								IsUnstable = first.Attribute ("unstable") != null && (bool)first.Attribute ("unstable"),
+								Level = first.Attribute ("level") != null
+									? (UpdateLevel)Enum.Parse (typeof(UpdateLevel), (string)first.Attribute ("unstable"))
+									: UpdateLevel.Stable,
 								Date = DateTime.Parse (first.Attribute ("date").Value),
 								Releases = x.Elements ("Update").Select (y => new Release () {
 									Version = y.Attribute ("version").Value,
@@ -202,7 +214,7 @@ namespace MonoDevelop.Platform.Updater
 				error = GettextCatalog.GetString ("Error retrieving update information");
 				errorDetail = ex;
 			}
-			callback (new UpdateResult (updates, includesUnstable, error, errorDetail));
+			callback (new UpdateResult (updates, level, error, errorDetail));
 		}
 	}
 }

@@ -41,8 +41,9 @@ namespace MonoDevelop.Platform.Updater
 		const int PAGE_MESSAGE = 0;
 		const int PAGE_UPDATES = 1;
 		
-		UpdateResult stableResult, unstableResult;
-
+		List<UpdateResult> results = new List<UpdateResult> ();
+		ListStore store;
+		
 		public UpdateDialog ()
 		{
 			this.Build ();
@@ -53,18 +54,23 @@ namespace MonoDevelop.Platform.Updater
 				UpdateService.CheckAutomatically = checkAutomaticallyCheck.Active;
 			};
 			
-			checkIncludeUnstable.Active = UpdateService.CheckAutomatically;
-			checkIncludeUnstable.Toggled += delegate {
-				bool includeUnstable = checkIncludeUnstable.Active;
-				UpdateService.IncludeUnstable = includeUnstable;
+			updateLevelCombo.AppendText (GettextCatalog.GetString ("Stable"));              // index = UpdateLevel.Stable
+			updateLevelCombo.AppendText (GettextCatalog.GetString ("Beta (unstable)"));     // index = UpdateLevel.Beta
+			updateLevelCombo.AppendText (GettextCatalog.GetString ("Alpha (experimental)"));// index = UpdateLevel.Alpha
+			
+			updateLevelCombo.Active = (int) UpdateService.UpdateLevel;
 				
-				SetMessage (GettextCatalog.GetString ("Checking for updates..."));
+			updateLevelCombo.Changed += delegate {
+				var level = (UpdateLevel) updateLevelCombo.Active;
+				UpdateService.UpdateLevel = level;
 				
-				var cachedResult = includeUnstable? unstableResult : stableResult;
+				var cachedResult = results.Where (r => r.Level == level).FirstOrDefault ();
+				
 				if (cachedResult != null && !cachedResult.HasError) {
 					LoadUpdates (cachedResult.Updates);
 				} else {
-					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, includeUnstable, LoadResult);
+					SetMessage (GettextCatalog.GetString ("Checking for updates..."));
+					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, level, LoadResult);
 				}
 			};
 			
@@ -73,10 +79,16 @@ namespace MonoDevelop.Platform.Updater
 		
 		public void LoadResult (UpdateResult result)
 		{
-			if (result.IncludesUnstable)
-				unstableResult = result;
-			else
-				stableResult = result;
+			bool replaced = false;
+			for (int i = 0; i < results.Count; i++) {
+				if (result.Level == results[i].Level) {
+					results[i] = result;
+					replaced = true;
+					break;
+				}
+			}
+			if (!replaced)
+				results.Add (result);
 			
 			if (result.HasError) {
 				SetMessage (result.ErrorMessage);
@@ -105,19 +117,30 @@ namespace MonoDevelop.Platform.Updater
 			
 			productBox.Spacing = 0;
 			
-			bool includeUnstable = checkIncludeUnstable.Active;
-			
 			foreach (var update in updates) {
-				if (!includeUnstable && update.IsUnstable)
-					continue;
 				var updateBox = new VBox () { Spacing = 2 };
 				var labelBox = new HBox ();
 				updateBox.PackStart (labelBox, false, false, 0);
 				
+				string warning = null;
+				switch (update.Level) {
+				case UpdateLevel.Alpha:
+					warning = GettextCatalog.GetString ("ALPHA");
+					break;
+				case UpdateLevel.Beta:
+					warning = GettextCatalog.GetString ("BETA");
+					break;
+				case UpdateLevel.Test:
+					warning = GettextCatalog.GetString ("TEST");
+					break;
+				}
+				if (warning != null)
+					warning = "<b>" + warning + "</b>";
+				
 				var updateExpander = new Expander ("");
 				updateExpander.LabelWidget = new Label () {
-					Markup = string.Format ("<b>{0}</b>\n{1} ({2:yyyy-MM-dd}){3}", update.Name, update.Version, update.Date,
-					                        update.IsUnstable? "\n<b>UNSTABLE PREVIEW RELEASE</b>" : ""),
+					Markup = string.Format ("<b>{0}</b>\n{1} {2:yyyy-MM-dd} {3}", update.Name, update.Version, update.Date,
+					                        warning ?? ""),
 				};
 				labelBox.PackStart (updateExpander, true, true, 0);
 				
