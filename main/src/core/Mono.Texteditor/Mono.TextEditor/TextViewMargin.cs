@@ -1495,7 +1495,19 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-
+		
+		public LineSegment HoveredLine {
+			get;
+			set;
+		}
+		public event EventHandler<LineEventArgs> HoveredLineChanged;
+		protected virtual void OnHoveredLineChanged (LineEventArgs e)
+		{
+			EventHandler<LineEventArgs> handler = this.HoveredLineChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
@@ -1506,6 +1518,9 @@ namespace Mono.TextEditor
 			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
 			
 			LineSegment line = Document.GetLine (loc.Line);
+			LineSegment oldHoveredLine = HoveredLine;
+			HoveredLine = line;
+			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 			if (line != null) {
 				foreach (TextMarker marker in line.Markers) {
 					if (marker is IActionTextMarker) {

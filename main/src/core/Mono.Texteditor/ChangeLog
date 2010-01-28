@@ -1,3 +1,8 @@
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Added hovered line
+	  events.
+
 2010-01-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
