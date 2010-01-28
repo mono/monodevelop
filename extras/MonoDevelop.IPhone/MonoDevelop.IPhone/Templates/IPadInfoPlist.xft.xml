@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Template Originator="Michael Hutchinson" Created="2009/06/08">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>iPad Info PList</_Name>
+		<_Category>iPad</_Category>
+		<Icon>res:xib-template-application.png</Icon>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>IPhone</ProjectType>
+		<DefaultFilename IsFixed="True">Info.plist</DefaultFilename>
+		<_Description></_Description>
+	</TemplateConfiguration>
+	
+	<Conditions>
+		<ParentProject PermittedCreationPaths="" ExcludedFiles="MainWindow.xib" RequireProject="True"/>
+	</Conditions>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="Info.plist" AddStandardHeader="False">
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>UIDeviceFamily</key>
+        <array>
+                <string>2</string>
+        </array>
+</dict>
+</plist>
+]]></File>
+	</TemplateFiles>
+</Template>

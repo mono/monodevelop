@@ -52,27 +52,14 @@ namespace MonoDevelop.IPhone
 			return cmd != null && cmd.Simulator;
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public static ProcessStartInfo CreateMtouchSimStartInfo (IPhoneExecutionCommand cmd, bool logSimOutput)
 		{
-			IPhoneExecutionCommand cmd = (IPhoneExecutionCommand) command;
-			
 			string mtouchPath = cmd.Runtime.GetToolPath (cmd.Framework, "mtouch");
 			if (string.IsNullOrEmpty (mtouchPath))
 				throw new InvalidOperationException ("Cannot execute iPhone application. mtouch tool is missing.");
 			
-			string outLog = cmd.LogDirectory.Combine ("out.log");
-			string errLog = cmd.LogDirectory.Combine ("err.log");
-			
-			string mtouchArgs = String.Format ("-launchsim='{0}' -stderr='{1}' -stdout='{2}'", cmd.AppPath, errLog, outLog);
-			
-			var psi = new ProcessStartInfo (mtouchPath, mtouchArgs) {
-				RedirectStandardError = true,
-				RedirectStandardOutput = true,
-				RedirectStandardInput = true,
-				WorkingDirectory = cmd.LogDirectory,
-				UseShellExecute = false
-			};
-			
+			var outLog = cmd.OutputLogPath;
+			var errLog = cmd.ErrorLogPath;
 			try {
 				if (File.Exists (errLog))
 				    File.Delete (errLog);
@@ -80,10 +67,28 @@ namespace MonoDevelop.IPhone
 				    File.Delete (outLog);
 			} catch (IOException) {}
 			
-			var outTail = new Tail (outLog, console.Out);
-			var errTail = new Tail (errLog, console.Error);
-			outTail.Start ();
-			errTail.Start ();
+			var sb = new StringBuilder ();
+			sb.AppendFormat ("-launchsim='{0}'", cmd.AppPath);
+			if (logSimOutput) 
+				sb.AppendFormat (" -stderr='{0}' -stdout='{1}'", errLog, outLog);
+			if (!string.IsNullOrEmpty (cmd.SdkVersion))
+				sb.AppendFormat (" -sdk='{0}'", cmd.SdkVersion);
+			
+			var psi = new ProcessStartInfo (mtouchPath, sb.ToString ()) {
+				WorkingDirectory = cmd.LogDirectory,
+				UseShellExecute = false
+			};
+			
+			return psi;
+		}
+		
+		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		{
+			IPhoneExecutionCommand cmd = (IPhoneExecutionCommand) command;
+			var psi = CreateMtouchSimStartInfo (cmd, true);
+			psi.RedirectStandardOutput = true;
+			psi.RedirectStandardError = true;
+			psi.RedirectStandardInput = true;
 			
 			LineInterceptingTextWriter intercepter = null;
 			intercepter = new LineInterceptingTextWriter (null, delegate {
@@ -95,20 +100,25 @@ namespace MonoDevelop.IPhone
 				}
 			});
 			
+			var outTail = new Tail (cmd.OutputLogPath, console.Out.Write);
+			var errTail = new Tail (cmd.ErrorLogPath, console.Error.Write);
+			outTail.Start ();
+			errTail.Start ();
+			
 			var mtouchProcess = Runtime.ProcessService.StartProcess (psi, intercepter, console.Log, null);
 			return new IPhoneProcess (mtouchProcess, outTail, errTail);
 		}
 	}
 	
-	class Tail : IDisposable
+	public class Tail : IDisposable
 	{
 		volatile bool finish;
 		string file;
-		TextWriter writer;
+		Action<string> writer;
 		Thread thread;
 		ManualResetEvent endHandle = new ManualResetEvent (false);
 		
-		public Tail (string file, TextWriter writer)
+		public Tail (string file, Action<string> writer)
 		{
 			this.file = file;
 			this.writer = writer;
@@ -140,7 +150,7 @@ namespace MonoDevelop.IPhone
 					Thread.Sleep (500);
 					int nr;
 					while ((nr = fs.Read (buffer, 0, buffer.Length)) > 0)
-						writer.Write (encoding.GetString (buffer, 0, nr));
+						writer (encoding.GetString (buffer, 0, nr));
 				}
 			} catch (ThreadAbortException) {
 				Thread.ResetAbort ();

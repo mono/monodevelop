@@ -4,11 +4,11 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>iPhone Window-based Project</_Name>
-		<_Category>C#/iPhone</_Category>
-		<Icon>md-project-iphone</Icon>
+		<_Name>iPad Window-based Project</_Name>
+		<_Category>C#/iPad</_Category>
+		<Icon>md-project-ipad</Icon>
 		<LanguageName>C#</LanguageName>
-		<_Description>Window-based project for iPhone and iPod Touch.</_Description>
+		<_Description>Window-based project for iPad.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -23,7 +23,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = "." type = "IPhone">
-			<Options MainNibFile="MainWindow.nib" />
+			<Options MainNibFile="MainWindow.nib" SdkVersion="3.2" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -31,7 +31,8 @@
 				<Reference type="Gac" refto="monotouch" />
 			</References>
 			<Files>
-				<FileTemplateReference TemplateID="IPhoneApplicationXib" />
+				<FileTemplateReference TemplateID="IPadApplicationXib" />
+				<FileTemplateReference TemplateID="IPadInfoPlist" />
 				<File name="Main.cs"
 				      AddStandardHeader="True">
 <![CDATA[
@@ -63,11 +64,6 @@ namespace ${Namespace}
 			window.MakeKeyAndVisible ();
 	
 			return true;
-		}
-	
-		// This method is required in iPhoneOS 3.0
-		public override void OnActivated (UIApplication application)
-		{
 		}
 	}
 }

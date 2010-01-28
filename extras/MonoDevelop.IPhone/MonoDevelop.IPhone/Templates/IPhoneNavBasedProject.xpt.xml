@@ -13,6 +13,7 @@
 	
 	<!-- Actions -->
 	<Actions>
+		<Open filename = "Main.cs"/>
 	</Actions>
 	
 	<!-- Template Content -->
@@ -30,7 +31,8 @@
 				<Reference type="Gac" refto="monotouch" />
 			</References>
 			<Files>
-				<File name="Main.cs">
+				<File name="Main.cs"
+				      AddStandardHeader="True">
 <![CDATA[
 using System;
 using System.Collections.Generic;
@@ -115,8 +117,7 @@ namespace ${Namespace} {
 				</File>
 				<File name="MainWindow.xib"
 				      SuppressAutoOpen="True">
-<![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">784</int>
@@ -388,8 +389,7 @@ namespace ${Namespace} {
 				</File>
 				<File name="RootViewController.xib"
 				      SuppressAutoOpen="True">
-<![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">784</int>
@@ -569,7 +569,8 @@ namespace ${Namespace} {
 				</File>
 				<File name="RootViewController.xib.cs"
 				      SuppressAutoOpen="True"
-				      DependsOn="RootViewController.xib">
+				      DependsOn="RootViewController.xib"
+				      AddStandardHeader="True">
 <![CDATA[
 using MonoTouch.UIKit;
 using System;

@@ -156,10 +156,13 @@ namespace MonoDevelop.IPhone
 		{
 			Init ();
 			
-			XmlNode mainNibNode = projectOptions.SelectSingleNode ("MainNibFile");
-			if (mainNibFile != null) {
-				this.mainNibFile = mainNibNode.InnerText;	
+			var mainNibAtt = projectOptions.Attributes ["MainNibFile"];
+			if (mainNibAtt != null) {
+				this.mainNibFile = mainNibAtt.InnerText;	
 			}
+			
+			var sdkVersionAtt = projectOptions.Attributes ["SdkVersion"];
+			string sdkVersion = sdkVersionAtt != null? sdkVersionAtt.InnerText : null;
 			
 			FilePath binPath = (info != null)? info.BinPath : new FilePath ("bin");
 			
@@ -171,6 +174,9 @@ namespace MonoDevelop.IPhone
 				deviceConf.Platform = PLAT_IPHONE;
 				deviceConf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 				Configurations.Add (deviceConf);
+				
+				if (sdkVersion != null)
+					deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = sdkVersion;
 				
 				if (simConf.Name == "Debug")
 					simConf.MtouchDebug = deviceConf.MtouchDebug = true;
@@ -228,7 +234,8 @@ namespace MonoDevelop.IPhone
 		{
 			var conf = (IPhoneProjectConfiguration) configuration;
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode && conf.MtouchDebug) {
+			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode && conf.MtouchDebug,
+			                                   conf.MtouchSdkVersion) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}

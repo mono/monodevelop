@@ -13,6 +13,7 @@
 	
 	<!-- Actions -->
 	<Actions>
+		<Open filename = "Main.cs"/>
 	</Actions>
 	
 	<!-- Template Content -->
@@ -30,7 +31,8 @@
 				<Reference type="Gac" refto="monotouch" />
 			</References>
 			<Files>
-				<File name="Main.cs">
+				<File name="Main.cs"
+				      AddStandardHeader="True">
 <![CDATA[
 using System;
 using System.Collections.Generic;
@@ -100,8 +102,7 @@ namespace ${Namespace} {
 				</File>
 				<File name="MainWindow.xib"
 				      SuppressAutoOpen="True">
-<![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">784</int>
@@ -288,8 +289,7 @@ namespace ${Namespace} {
 				</File>
 				<File name="MainView.xib"
 				      SuppressAutoOpen="True">
-<![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">784</int>
@@ -510,7 +510,8 @@ namespace ${Namespace} {
 				</File>
 				<File name="MainViewController.cs"
 				      SuppressAutoOpen="True"
-				      DependsOn="MainView.xib">
+				      DependsOn="MainView.xib"
+				      AddStandardHeader="True">
 <![CDATA[
 using MonoTouch.UIKit;
 using System.Drawing;
@@ -574,7 +575,8 @@ namespace ${Namespace}
 				</File>
 				<File name="MainView.cs"
 				      SuppressAutoOpen="True"
-				      DependsOn="MainView.xib">
+				      DependsOn="MainView.xib"
+				      AddStandardHeader="True">
 <![CDATA[
 using MonoTouch.UIKit;
 using System.Drawing;
@@ -633,8 +635,7 @@ namespace ${Namespace} {
 				</File>
 				<File name="FlipsideView.xib"
 				      SuppressAutoOpen="True">
-<![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
+<![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">784</int>
@@ -881,7 +882,8 @@ namespace ${Namespace} {
 				</File>
 				<File name="FlipsideViewController.cs"
 				      SuppressAutoOpen="True"
-				      DependsOn="FlipsideView.xib">
+				      DependsOn="FlipsideView.xib"
+				      AddStandardHeader="True">
 <![CDATA[
 using MonoTouch.UIKit;
 using System.Drawing;
@@ -940,7 +942,8 @@ namespace ${Namespace}
 				</File>
 				<File name="FlipsideView.cs"
 				      SuppressAutoOpen="True"
-				      DependsOn="FlipsideView.xib">
+				      DependsOn="FlipsideView.xib"
+				      AddStandardHeader="True">
 <![CDATA[
 using MonoTouch.UIKit;
 using System.Drawing;
