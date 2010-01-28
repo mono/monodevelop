@@ -86,9 +86,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set;
 		}
 		
+		bool inCategoryMode;
 		public bool InCategoryMode {
-			get;
-			set;
+			get { return inCategoryMode; }
+			set { inCategoryMode = value; this.CalcVisibleRows (); this.UpdatePage (); }
 		}
 		
 		public ListWidget (ListWindow win)
@@ -286,13 +287,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 				window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
 				
 				layout.SetMarkup ("<span style='italic' foreground='#CCCCCC'>" + category.CompletionCategory.DisplayText + "</span>");
-				window.DrawLayout (this.Style.TextGC (StateType.Normal), icon.Width + margin * 2, ypos, layout);
+				window.DrawLayout (this.Style.TextGC (StateType.Normal), icon.Width + 4, ypos, layout);
 				layout.SetMarkup ("");
 			}, delegate (Category curCategory, int item, int ypos) {
 				if (ypos >= winHeight - margin)
 					return;
 				int itemIndex = filteredItems[item];
-				
+				if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null) {
+					xpos = margin + padding + 8;
+				} else {
+					xpos = margin + padding;
+				}
 				bool hasMarkup = win.DataProvider.HasMarkup (itemIndex);
 				if (hasMarkup) {
 					layout.SetMarkup (win.DataProvider.GetMarkup (itemIndex) ?? "&lt;null&gt;");
@@ -505,9 +510,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Category result = new Category ();
 			result.CompletionCategory = completionCategory;
 			if (completionCategory == null) {
-				categories.Insert (0, result);
-			} else {
 				categories.Add (result);
+			} else {
+				categories.Insert (0, result);
 			}
 			return result;
 		}
@@ -561,7 +566,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			rowHeight += padding;
 			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
 			
-			int viewableCats = InCategoryMode? categories.Count : 0;
+			int viewableCats = InCategoryMode ? categories.Count : 0;
 			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count + viewableCats))) + margin * 2;
 			if (PreviewCompletionString) {
 				visibleRows--;

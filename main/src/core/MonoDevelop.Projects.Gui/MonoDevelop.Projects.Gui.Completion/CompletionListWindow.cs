@@ -104,6 +104,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			if (key == Gdk.Key.ISO_Next_Group || key == Gdk.Key.ISO_Prev_Group) {
 				this.List.InCategoryMode = !this.List.InCategoryMode;
+				this.ResetSizes ();
 				this.List.QueueDraw ();
 				return true;
 			}
