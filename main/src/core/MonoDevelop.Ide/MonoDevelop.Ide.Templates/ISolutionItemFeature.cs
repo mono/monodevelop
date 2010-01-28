@@ -34,13 +34,20 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Templates
 {
+	public enum FeatureSupportLevel
+	{
+		NotSupported,
+		Enabled,
+		Supported,
+		SupportedByDefault
+	}
+	
 	public interface ISolutionItemFeature
 	{
-		bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry);
+		FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry);
 		string Title { get; }
 		string Description { get; }
 		Gtk.Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry);
-		bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry);
 		string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor);
 		void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor);
 	}
@@ -51,7 +58,8 @@ namespace MonoDevelop.Ide.Templates
 		{
 			List<ISolutionItemFeature> list = new List<ISolutionItemFeature> ();
 			foreach (ISolutionItemFeature e in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFeatures", typeof(ISolutionItemFeature), true)) {
-				if (e.SupportsSolutionItem (parentCombine, entry))
+				FeatureSupportLevel level = e.GetSupportLevel (parentCombine, entry);
+				if (level == FeatureSupportLevel.Enabled || level == FeatureSupportLevel.SupportedByDefault)
 					list.Add (e);
 			}
 			return list.ToArray ();

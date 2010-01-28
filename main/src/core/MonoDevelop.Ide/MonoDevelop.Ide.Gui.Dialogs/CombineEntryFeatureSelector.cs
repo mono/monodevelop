@@ -70,13 +70,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			// Show enabled features at the beginning
 			foreach (ISolutionItemFeature feature in features)
-				if (feature.IsEnabled (parentCombine, entry)) {
+				if (feature.GetSupportLevel (parentCombine, entry) == FeatureSupportLevel.Enabled) {
 					Gtk.Widget editor = AddFeature (feature);
 					selectedFeatures.Add (feature);
 					selectedEditors.Add (editor);
 				}
 			foreach (ISolutionItemFeature feature in features)
-				if (!feature.IsEnabled (parentCombine, entry))
+				if (feature.GetSupportLevel (parentCombine, entry) != FeatureSupportLevel.Enabled)
 					AddFeature (feature);
 			
 			if (box.Children.Length == 0) {
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			fl.Wrap = true;
 			fl.WidthRequest = 630;
 			fl.Markup = "<b>" + feature.Title + "</b>\n<small>" + feature.Description + "</small>";
-			bool enabledByDefault = feature.IsEnabled (parentCombine, entry);
+			bool enabledByDefault = feature.GetSupportLevel (parentCombine, entry) == FeatureSupportLevel.Enabled;
 
 			if (enabledByDefault) {
 				Alignment al = new Alignment (0,0,0,0);
