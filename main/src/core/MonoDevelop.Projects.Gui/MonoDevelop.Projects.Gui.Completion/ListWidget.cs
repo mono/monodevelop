@@ -561,7 +561,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			rowHeight += padding;
 			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
 			
-			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count + this.categories.Count))) + margin * 2;
+			int viewableCats = InCategoryMode? categories.Count : 0;
+			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count + viewableCats))) + margin * 2;
 			if (PreviewCompletionString) {
 				visibleRows--;
 				newHeight += rowHeight;
