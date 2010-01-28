@@ -1,5 +1,9 @@
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Updater/UpdateDialog.cs: Fix threading issue.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:
 	* Updater/UpdateResult.cs:

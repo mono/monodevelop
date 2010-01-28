@@ -70,7 +70,11 @@ namespace MonoDevelop.Platform.Updater
 					LoadUpdates (cachedResult.Updates);
 				} else {
 					SetMessage (GettextCatalog.GetString ("Checking for updates..."));
-					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, level, LoadResult);
+					UpdateService.QueryUpdateServer (UpdateService.DefaultUpdateInfos, level, delegate (UpdateResult result) {
+						Application.Invoke (delegate {
+							LoadResult (result);
+						});
+					});
 				}
 			};
 			
