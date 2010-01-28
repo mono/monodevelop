@@ -156,13 +156,13 @@ namespace MonoDevelop.IPhone
 		{
 			Init ();
 			
-			XmlNode mainNibNode = projectOptions.SelectSingleNode ("MainNibFile");
-			if (mainNibFile != null) {
-				this.mainNibFile = mainNibNode.InnerText;	
+			var mainNibAtt = projectOptions.Attributes ["MainNibFile"];
+			if (mainNibAtt != null) {
+				this.mainNibFile = mainNibAtt.InnerText;	
 			}
 			
-			XmlNode sdkVersionNode = projectOptions.SelectSingleNode ("SdkVersion");
-			string sdkVersion = sdkVersionNode != null? sdkVersionNode.InnerText : null;
+			var sdkVersionAtt = projectOptions.Attributes ["SdkVersion"];
+			string sdkVersion = sdkVersionAtt != null? sdkVersionAtt.InnerText : null;
 			
 			FilePath binPath = (info != null)? info.BinPath : new FilePath ("bin");
 			

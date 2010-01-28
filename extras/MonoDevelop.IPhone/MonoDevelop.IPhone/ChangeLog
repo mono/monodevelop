@@ -1,3 +1,9 @@
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* Templates/IPadWindowBasedProject.xpt.xml: Fix project option
+	  attributes.
+
 2010-01-27  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.IPhone.addin.xml: 
