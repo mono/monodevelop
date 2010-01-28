@@ -1,3 +1,13 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Deployment.Linux.DesktopPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:
+	* MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:
+	* gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:
+	  Flush.
+
 2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Deployment.Linux/DotDesktopDisplayBinding.cs:

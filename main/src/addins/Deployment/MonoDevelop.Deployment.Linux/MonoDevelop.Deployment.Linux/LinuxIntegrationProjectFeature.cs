@@ -16,6 +16,16 @@ namespace MonoDevelop.Deployment.Linux
 		public string Description {
 			get { return GettextCatalog.GetString ("Set options for generating files to better integrate the application or library in a Unix system."); }
 		}
+		
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
+		{
+			if (entry is DotNetAssemblyProject)
+				return FeatureSupportLevel.SupportedByDefault;
+			if (entry is DotNetProject)
+				return FeatureSupportLevel.Supported;
+			else
+				return FeatureSupportLevel.NotSupported;
+		}
 
 		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
 		{
@@ -35,11 +45,6 @@ namespace MonoDevelop.Deployment.Linux
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
 		{
 			return ((BasicOptionPanelWidget)editor).Validate ();
-		}
-		
-		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
-		{
-			return false;
 		}
 	}
 }

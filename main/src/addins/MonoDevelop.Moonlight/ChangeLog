@@ -1,3 +1,9 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Moonlight.Gui.MoonlightOptionsPanelWidget.cs:
+	  Flush.
+
 2010-01-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Quote
