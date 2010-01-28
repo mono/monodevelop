@@ -1,5 +1,9 @@
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MakefileIntegrationFeature.cs: Track api changes.
+
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs:
 	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:

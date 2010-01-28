@@ -48,9 +48,16 @@ namespace MonoDevelop.GtkCore.Dialogs
 			get { return GettextCatalog.GetString ("Enables support for GTK# in the project. Allows the visual design of GTK# windows, and the creation of a GTK# widget library."); }
 		}
 
-		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			return GtkDesignInfo.SupportsRefactoring (entry as DotNetProject);
+			if (!(entry is DotNetProject) || !GtkDesignInfo.SupportsRefactoring (entry as DotNetProject))
+				return FeatureSupportLevel.NotSupported;
+			else if (GtkDesignInfo.SupportsDesigner ((Project)entry))
+				return FeatureSupportLevel.Enabled;
+			else if (entry is DotNetAssemblyProject)
+				return FeatureSupportLevel.SupportedByDefault;
+			else
+				return FeatureSupportLevel.Supported;
 		}
 		
 		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
@@ -69,11 +76,6 @@ namespace MonoDevelop.GtkCore.Dialogs
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
 		{
 			return null;
-		}
-		
-		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
-		{
-			return GtkDesignInfo.SupportsDesigner ((Project)entry);
 		}
 	}
 }

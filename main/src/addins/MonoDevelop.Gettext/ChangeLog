@@ -1,5 +1,9 @@
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Gettext/GettextFeature.cs: Track api changes.
+
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:
 	* gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs:

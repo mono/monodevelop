@@ -46,9 +46,14 @@ namespace MonoDevelop.Gettext
 			get { return GettextCatalog.GetString ("Add a Translation Project to the solution that will use gettext to generate a set of PO files for the new project."); }
 		}
 		
-		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			return ((entry is Project) || (entry is TranslationProject)) && parentCombine != null;
+			if (entry is TranslationProject && parentCombine != null)
+				return FeatureSupportLevel.Enabled;
+			else if ((entry is Project) && parentCombine != null)
+				return FeatureSupportLevel.Supported;
+			else
+				return FeatureSupportLevel.NotSupported;
 		}
 		
 		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
