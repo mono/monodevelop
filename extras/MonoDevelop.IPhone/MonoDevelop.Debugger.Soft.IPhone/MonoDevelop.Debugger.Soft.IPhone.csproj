@@ -89,6 +89,9 @@
       <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml">

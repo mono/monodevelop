@@ -1,5 +1,11 @@
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneExecutionHandler.cs: Move some code into
+	  CreateStartInfo method so it can be re-used by the debug
+	  handler.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs: Allow setting SdkVersion from project
 	  template. Pass SdkVersion to IPhoneExecutionCommand.
 
