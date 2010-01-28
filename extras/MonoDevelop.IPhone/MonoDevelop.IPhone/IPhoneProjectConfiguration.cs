@@ -134,9 +134,11 @@ namespace MonoDevelop.IPhone
 			CodesignResourceRules = cfg.CodesignResourceRules;
 			CodesignExtraArgs = cfg.CodesignExtraArgs;
 			
-			MtouchExtraArgs = cfg.MtouchExtraArgs;
 			MtouchDebug = cfg.MtouchDebug;
 			MtouchLink = cfg.MtouchLink;
+			MtouchSdkVersion = cfg.MtouchSdkVersion;
+			MtouchExtraArgs = cfg.MtouchExtraArgs;
+			MtouchI18n = cfg.MtouchI18n;
 		}
 		
 		//always set the MtouchDebug element
