@@ -1,3 +1,86 @@
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* Templates/IPadWindowBasedProject.xpt.xml: Fix project option
+	  attributes.
+
+2010-01-27  Geoff Norton  <gnorton@novell.com>
+
+	* Templates/IPadApplicationXib.xft.xml: Fix template
+	to properly hook up the app delegate
+
+2010-01-27  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: 
+	* MonoDevelop.IPhone.csproj:
+	* Templates/IPadApplicationXib.xft.xml: 
+	* Templates/IPadInfoPlist.xft.xml:
+	* Templates/IPadWindowBasedProject.xpt.xml: Added
+	  iPad templates to the build.  Subject to change
+	* Gui/IPhoneBuildOptionsPanel.cs: Added 3.2 to the
+	  available SDK versions.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneExecutionHandler.cs: Move some code into
+	  CreateStartInfo method so it can be re-used by the debug
+	  handler.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Allow setting SdkVersion from project
+	  template. Pass SdkVersion to IPhoneExecutionCommand.
+
+	* IPhoneExecutionCommand.cs: Add SdkVersion property on
+	  IPhoneExecutionCommand, and some utility properties for the
+	  log paths.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProjectConfiguration.cs: Copy MtouchI18n and
+	  MtouchSdkVersion when cloning configs. Fixes persisting
+	  these values after editing them.
+
+2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml: Fix xib file
+	  format, standard headers, and auto-opening.
+
+2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneProject.xpt.xml:
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml: Added 3 new project
+	  templates.
+
+	* Templates/IPhoneViewXib.xft.xml:
+	* Templates/IPhoneApplicationXib.xft.xml:
+	* Templates/IPhoneViewController.xft.xml: Small tweaks.
+
+	* Templates/IPhoneWindowBasedProject.xpt.xml: Renamed the
+	  default project template to match Xcode.
+
+2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: Add a MonoDoc source for the
+	  MonoTouch docs, so that MD can load them even after the Mono
+	  framework directory is upgraded.
+
+2010-01-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneOptionsPanel.cs: Make the main nib picker entry
+	  editable so that it can be cleared.
+
+2010-01-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneBuildOptionsPanel.cs: Fix displaying i18n options.
+
 2010-01-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneBuildExtension.cs: Treat empty identity as "developer

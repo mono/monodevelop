@@ -90,6 +90,7 @@ namespace MonoDevelop.IPhone.Gui
 			
 			sdkComboEntry.AppendText ("3.0");
 			sdkComboEntry.AppendText ("3.1");
+			sdkComboEntry.AppendText ("3.2");
 			
 			store = new ListStore (typeof (string), typeof (bool));
 			i18nTreeView.Model = store;
@@ -128,13 +129,14 @@ namespace MonoDevelop.IPhone.Gui
 		void LoadI18nValues (string values)
 		{
 			store.Clear ();
-			
-			if (values == null)
-				return;
-			var arr = values.Split (',');
-			
-			foreach (string s in i18n)
-				store.AppendValues (s, arr.Contains (s));
+			if (values == null) {
+				foreach (string s in i18n)
+					store.AppendValues (s, false);
+			} else {
+				var arr = values.Split (',');
+				foreach (string s in i18n)
+					store.AppendValues (s, arr.Contains (s));
+			}
 		}
 		
 		string GetI18nValues ()

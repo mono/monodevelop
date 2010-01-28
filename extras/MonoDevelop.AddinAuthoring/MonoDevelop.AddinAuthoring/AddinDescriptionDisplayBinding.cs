@@ -69,5 +69,8 @@ namespace MonoDevelop.AddinAuthoring
 			throw new NotImplementedException();
 		}
 
+		public bool CanUseAsDefault {
+			get { return true; }
+		}
 	}
 }

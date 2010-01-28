@@ -36,10 +36,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="System">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -76,7 +72,25 @@
     </Reference>
     <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\src\addins\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft\Mono.Debugger.Soft.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Debugger.Soft">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\src\addins\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=889ced0135e7a3f3">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=777769bbe9a538f6">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +107,7 @@
     <ProjectReference Include="..\MonoDevelop.IPhone\MonoDevelop.IPhone.csproj">
       <Project>{B9D6A509-8369-4E86-B04E-936491E11801}</Project>
       <Name>MonoDevelop.IPhone</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>

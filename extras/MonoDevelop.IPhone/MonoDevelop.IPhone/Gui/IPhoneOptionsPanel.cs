@@ -72,6 +72,7 @@ namespace MonoDevelop.IPhone.Gui
 			displayNameEntry.Text = proj.BundleDisplayName ?? "";
 			
 			mainNibPicker.Project = proj;
+			mainNibPicker.EntryIsEditable = true;
 			mainNibPicker.DefaultFilter = "*.xib";
 			mainNibPicker.DialogTitle = GettextCatalog.GetString ("Select main interface file...");
 			mainNibPicker.SelectedFile = proj.MainNibFile.ToString () ?? "";

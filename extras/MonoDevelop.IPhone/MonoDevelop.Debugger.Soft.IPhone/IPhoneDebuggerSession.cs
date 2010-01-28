@@ -35,6 +35,7 @@ using System.IO;
 using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
+using System.Text;
 
 namespace MonoDevelop.Debugger.Soft.IPhone
 {
@@ -68,19 +69,11 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			EndSimProcess ();
 		}
 
-		//FIXME: hook up the app's stdin and stdout
+		//FIXME: hook up the app's stdin and stdout, and mtouch's stdin and stdout
 		void StartSimulatorProcess (IPhoneExecutionCommand cmd)
 		{
-			string mtouchPath = cmd.Runtime.GetToolPath (cmd.Framework, "mtouch");
-			if (string.IsNullOrEmpty (mtouchPath))
-				throw new InvalidOperationException ("Cannot execute iPhone application. mtouch tool is missing.");
-			
-			var psi = new ProcessStartInfo () {
-				FileName = mtouchPath,
-				UseShellExecute = false,
-				Arguments = string.Format ("-launchsim='{0}'", cmd.AppPath),
-				RedirectStandardInput = true,
-			};
+			var psi = IPhoneExecutionHandler.CreateMtouchSimStartInfo (cmd, false);
+			psi.RedirectStandardInput = true;
 			simProcess = System.Diagnostics.Process.Start (psi);
 			
 			simProcess.Exited += delegate {

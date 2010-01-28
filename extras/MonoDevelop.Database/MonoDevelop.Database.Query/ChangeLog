@@ -1,3 +1,7 @@
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SqlQueryDisplayBinding.cs: Track DisplayBinding API.
+
 2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* SqlQueryView.cs: Implement Syntax mode by provider.
