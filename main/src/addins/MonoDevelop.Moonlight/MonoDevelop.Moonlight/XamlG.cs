@@ -63,7 +63,7 @@ namespace MonoDevelop.Moonlight
 
 			XmlAttribute root_class = root.Attributes ["x:Class"];
 			if (root_class == null) {
-				result.AddError (xaml_file, 0, 0, "", "Does not contain an x:Class attribute.");
+				File.WriteAllText (out_file, "");
 				return result;
 			}
 

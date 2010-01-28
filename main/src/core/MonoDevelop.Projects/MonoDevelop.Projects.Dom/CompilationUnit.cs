@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class CompilationUnit : ICompilationUnit
+	public class CompilationUnit : AbstractNode, ICompilationUnit
 	{
 		protected FilePath fileName;
 		public FilePath FileName {

@@ -1,3 +1,14 @@
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.addin.xml:
+	* icons/hicolor_status_16x16_pin-up.png:
+	* icons/hicolor_status_16x16_pin-down.png:
+	* icons/hicolor_status_16x16_pin-active.png: Added pin icons
+	  from tomboy (for pinnable watches).
+
 2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

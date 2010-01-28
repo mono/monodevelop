@@ -1,3 +1,23 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileIntegrationFeature.cs: Track api changes.
+
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs:
+	* gtk-gui/MonoDevelop.Autotools.GenerateMakefilesDialog.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileIntegrationFeatureWidget.cs:
+	  Flush.
+
+2010-01-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SolutionDeployer.cs: Fix Bug 572048 - Spelling mistake in
+	  Packaging Output.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Handler.cs:

@@ -128,10 +128,6 @@
 		</MimeType>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/TextFormatDefinition">
-		<Definition resource="CSharpFormattingStyleDefinition.xml"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
 		<Class class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>

@@ -123,7 +123,7 @@ namespace MonoDevelop.Components.Commands
 			foreach (CommandEntry ce in cset) {
 				CommandEntrySet ces = ce as CommandEntrySet;
 				if (ces != null)
-					bars.Add (CreateToolbar (addinPath + "/" + ces.Name, ces));
+					bars.Add (CreateToolbar (addinPath + "/" + ces.CommandId, ces));
 			}
 			return (Gtk.Toolbar[]) bars.ToArray (typeof(Gtk.Toolbar));
 		}

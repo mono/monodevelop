@@ -30,26 +30,37 @@ namespace MonoDevelop.Projects.Dom
 {
 	public interface INode
 	{
-/*		INode Parent { 
-			get; 
+		INode Parent { 
+			get;
+			set;
 		}
+		
+		int Role {
+			get;
+			set;
+		}
+		
 		
 		INode NextSibling {
 			get;
+			set;
 		}
 		
 		INode PrevSibling {
 			get;
+			set;
 		}
 		
 		INode FirstChild {
 			get;
+			set;
 		}
 		
 		INode LastChild {
 			get;
+			set;
 		}
-		*/
+		
 		S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 	}
 	
@@ -143,6 +154,24 @@ namespace MonoDevelop.Projects.Dom
 					yield return cur;
 				cur = (AbstractNode)cur.NextSibling;
 			}
+		}
+		
+		protected void AddChild (INode child)
+		{
+			child.Parent = this;
+			if (FirstChild == null) {
+				LastChild = FirstChild = child;
+			} else {
+				LastChild.NextSibling = child;
+				child.PrevSibling = LastChild;
+				LastChild = child;
+			}
+		}
+		
+		protected void AddChild (INode child, int role)
+		{
+			child.Role = role;
+			AddChild (child);
 		}
 		
 		public virtual S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)

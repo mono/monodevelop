@@ -30,4 +30,9 @@
 	<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme">
 		<ExtensionNode name="Scheme" type="MonoDevelop.Components.Commands.ExtensionNodes.SchemeExtensionNode" />
 	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/Components/DialogHandlers" name = "Dialog Handlers">
+		<Description>Allows providing platform-specific implementations for common dialogs</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
 </Addin>

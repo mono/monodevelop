@@ -17,9 +17,12 @@ namespace MonoDevelop.Autotools
 			get { return string.Empty; }
 		}
 
-		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			return entry is Project;
+			if (entry is Project)
+				return FeatureSupportLevel.SupportedByDefault;
+			else
+				return FeatureSupportLevel.NotSupported;
 		}
 		
 		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
@@ -35,11 +38,6 @@ namespace MonoDevelop.Autotools
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
 		{
 			return null;
-		}
-		
-		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
-		{
-			return false;
 		}
 	}
 }

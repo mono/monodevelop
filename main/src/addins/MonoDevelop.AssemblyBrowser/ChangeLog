@@ -1,3 +1,20 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:
+	  Flush.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AssemblyBrowser.addin.xml:
+	* MonoDevelop.AssemblyBrowser/DisplayBinding.cs: Track
+	  DisplayBinding API.
+
+2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.AssemblyBrowser.csproj: Fix project reference.
+
 2010-01-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:

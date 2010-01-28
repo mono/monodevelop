@@ -34,7 +34,7 @@ using MonoDevelop.Core.Collections;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class DomAttribute : IAttribute
+	public class DomAttribute : AbstractNode, IAttribute
 	{
 		public string Name {
 			get;
@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Dom
 			namedArguments [name] = exp;
 		}
 		
-		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}

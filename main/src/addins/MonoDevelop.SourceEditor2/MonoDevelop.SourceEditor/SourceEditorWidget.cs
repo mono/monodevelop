@@ -1124,7 +1124,7 @@ namespace MonoDevelop.SourceEditor
 		internal void MonodocResolver ()
 		{
 			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
-			string url = IdeApp.HelpOperations.GetHelpUrl (res);
+			string url = HelpService.GetMonoDocHelpUrl (res);
 			if (url != null)
 				IdeApp.HelpOperations.ShowHelp (url);
 		}

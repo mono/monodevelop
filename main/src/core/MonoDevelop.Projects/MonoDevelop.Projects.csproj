@@ -316,7 +316,6 @@
     <Compile Include="MonoDevelop.Projects.Dom\ExtensionMethod.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\AnonymousType.cs" />
     <Compile Include="MonoDevelop.Projects.Text\CodeFormatDescription.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\XmlDefinitionCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Text\IPrettyPrinter.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryDatabase.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.MemoryDatabase\MemoryProjectDom.cs" />
@@ -344,6 +343,8 @@
     <Compile Include="MonoDevelop.Projects\ConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Parser\ProjectDomDecorator.cs" />
     <Compile Include="MonoDevelop.Projects.Text\Formatter.cs" />
+    <Compile Include="MonoDevelop.Projects\HelpService.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\MonoDocSourceNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

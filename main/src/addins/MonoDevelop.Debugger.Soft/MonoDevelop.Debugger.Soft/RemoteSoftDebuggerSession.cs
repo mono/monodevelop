@@ -31,11 +31,12 @@ using Mono.Debugging.Client;
 using System.Threading;
 using System.Diagnostics;
 using System.IO;
-using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
 using System.Collections.Generic;
 using System.Reflection;
+using MonoDevelop.Core;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -159,6 +160,7 @@ namespace MonoDevelop.Debugger.Soft
 
 		RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort,  bool redirectOutput, int outputPort)
 		{
+			SoftDebuggerEngine.EnsureSdbLoggingService ();
 			this.AppName = appName;
 			this.Address = address;
 			this.DebugPort = debugPort;
@@ -171,7 +173,7 @@ namespace MonoDevelop.Debugger.Soft
 		public void SetUserAssemblies (IList<string> files)
 		{
 			string error;
-			UserAssemblyNames = SoftDebuggerStartInfo.GetAssemblyNames (files, out error);
+			UserAssemblyNames = SoftDebuggerEngine.GetAssemblyNames (files, out error);
 			LogMessage = error;
 		}
 	}

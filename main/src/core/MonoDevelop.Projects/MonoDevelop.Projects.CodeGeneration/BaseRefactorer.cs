@@ -179,6 +179,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			generatedString.Length -= indent.Length + Environment.NewLine.Length;
 			// remove indent from last generated code member
 			generatedString.Length -= indent.Length;
+			if (buffer.GetCharAt (pos) == '\n')
+				pos++;
 			buffer.InsertText (pos, generatedString.ToString ());
 		}
 		
@@ -955,6 +957,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				} else if (code[i] == '\n')
 					result.Append (indent);
 			}
+			
 			return result.ToString ();
 		}
 		

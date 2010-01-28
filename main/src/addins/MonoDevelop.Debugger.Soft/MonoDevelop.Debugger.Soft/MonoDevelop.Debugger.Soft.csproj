@@ -33,7 +33,8 @@
     <Reference Include="System" />
     <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Mono.Debugger.Soft.dll</HintPath>
+      <HintPath>..\Mono.Debugging.Soft\Mono.Debugger.Soft.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -46,15 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="SoftDebuggerSession.cs" />
     <Compile Include="SoftDebuggerEngine.cs" />
-    <Compile Include="SoftDebuggerBacktrace.cs" />
-    <Compile Include="SoftDebuggerAdaptor.cs" />
-    <Compile Include="SoftEvaluationContext.cs" />
-    <Compile Include="ArrayAdaptor.cs" />
-    <Compile Include="VariableValueReference.cs" />
-    <Compile Include="FieldValueReference.cs" />
-    <Compile Include="PropertyValueReference.cs" />
     <Compile Include="RemoteSoftDebuggerSession.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +105,11 @@
     <ProjectReference Include="..\..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
       <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
+      <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
+      <Name>Mono.Debugging.Soft</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>

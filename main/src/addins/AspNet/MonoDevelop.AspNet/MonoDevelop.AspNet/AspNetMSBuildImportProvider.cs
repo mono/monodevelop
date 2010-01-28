@@ -35,14 +35,20 @@ namespace MonoDevelop.AspNet
 	[Extension]
 	public class AspNetMSBuildImportProvider: IMSBuildImportProvider
 	{
-		public IEnumerable<string> GetRequiredImports (SolutionEntityItem item)
+		const string target05 = @"$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v8.0\WebApplications\Microsoft.WebApplication.targets";
+		const string target08 = @"$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets";
+			
+		public void UpdateImports (SolutionEntityItem item, List<string> imports)
 		{
+			imports.Remove (target05);
+			imports.Remove (target08);
+			
 			AspNetAppProject project = item as AspNetAppProject;
 			if (project != null) {
 				if (project.FileFormat.Id == "MSBuild05")
-					yield return @"$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v8.0\WebApplications\Microsoft.WebApplication.targets";
+					imports.Add (target05);
 				else
-					yield return @"$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets";
+					imports.Add (target08);
 			}
 		}
 	}

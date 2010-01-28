@@ -104,8 +104,6 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\Commands.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\Webservices.cs" />
-    <Compile Include="MonoDevelop.RegexToolkit\UpdateInProgressDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.RegexToolkit.UpdateInProgressDialog.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\RegexToolkitWindow.cs" />
     <Compile Include="gtk-gui\MonoDevelop.RegexToolkit.RegexToolkitWindow.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\RegexLibraryWindow.cs" />

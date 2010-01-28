@@ -403,7 +403,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		
-		public Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, Gdk.ModifierType modifierState, object item)
+		public Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, object item)
 		{
 			return new LanguageItemWindow (null, modifierState, null, null, item as string, null);
 		}

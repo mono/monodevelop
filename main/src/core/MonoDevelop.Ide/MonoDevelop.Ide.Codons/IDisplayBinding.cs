@@ -53,5 +53,11 @@ namespace MonoDevelop.Ide.Codons
 		
 		bool CanCreateContentForUri (string uri);
 		IViewContent CreateContentForUri (string uri);
+		
+		/// <summary>
+		/// Whether the display binding can be used as the default handler for the content types
+		/// that it handles. If this is false, the binding is only used when the user explicitly picks it.
+		/// </summary>
+		bool CanUseAsDefault { get; }
 	}
 }

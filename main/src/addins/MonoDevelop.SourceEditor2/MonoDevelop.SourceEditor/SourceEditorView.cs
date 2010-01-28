@@ -1093,7 +1093,15 @@ namespace MonoDevelop.SourceEditor
 				return widget.Style.Copy ();
 			}
 		}
-
+		public void Replace (int offset, int count, string text)
+		{
+			widget.TextEditor.GetTextEditorData ().Replace (offset, count, text);
+			if (widget.TextEditor.Caret.Offset >= offset) {
+				widget.TextEditor.Caret.Offset -= count;
+				widget.TextEditor.Caret.Offset += text.Length;
+			}
+		}
+		
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset) 
 		{
 			CodeCompletionContext result = new CodeCompletionContext ();
@@ -1434,6 +1442,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorView ()
 		{
+			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press F3 to scroll");
 			ClipboardActions.CopyOperation.Copy += delegate (string text) {
 				if (String.IsNullOrEmpty (text))
 					return;

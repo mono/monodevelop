@@ -1,0 +1,30 @@
+2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Write a message to the debugger
+	  output if unable to insert a breakpoint.
+
+2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Implement new ForceLoadType
+	  overridable.
+
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AssemblyInfo.cs:
+	* ArrayAdaptor.cs:
+	* LoggingService.cs:
+	* SoftDebuggerSession.cs:
+	* SoftDebuggerAdaptor.cs:
+	* Mono.Debugger.Soft.dll:
+	* FieldValueReference.cs:
+	* SoftDebuggerBacktrace.cs:
+	* SoftDebuggerStartInfo.cs:
+	* SoftEvaluationContext.cs:
+	* VariableValueReference.cs:
+	* PropertyValueReference.cs:
+	* Mono.Debugger.Soft.dll.mdb:
+	* Mono.Debugging.Soft.csproj: Split out a new dll
+	  Mono.Debugging.Soft from the soft debugger addin. It has the
+	  bits that have with no MD deps apart from Mono.Debugging,
+	  and it's strongnamed so MonoVS can use it.
+

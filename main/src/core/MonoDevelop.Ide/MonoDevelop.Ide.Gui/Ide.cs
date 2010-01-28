@@ -50,7 +50,7 @@ using MonoDevelop.Projects.Gui;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class IdeApp
+	public static class IdeApp
 	{
 		static bool isInitialized;
 		static Workbench workbench;
@@ -79,8 +79,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		IdeApp ()
+		static IdeApp ()
 		{
+			preferences = new IdePreferences ();
 		}
 		
 		public static Workbench Workbench {
@@ -138,7 +139,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
-			preferences = new IdePreferences ();
 			workbench = new Workbench ();
 			workspace = new RootWorkspace ();
 			projectOperations = new ProjectOperations ();
@@ -190,7 +190,8 @@ namespace MonoDevelop.Ide.Gui
 
 			// Perser service initialization
 
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.AsyncInitialize ();
+			MonoDevelop.Projects.HelpService.AsyncInitialize ();
+			
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.TrackFileChanges = true;
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 

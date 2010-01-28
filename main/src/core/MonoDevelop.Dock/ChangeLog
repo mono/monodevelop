@@ -1,3 +1,8 @@
+2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockFrame.cs: Increase delay for autoshow. Fixes bug #571268
+	  - Pads show on hover too aggressively.
+
 2009-12-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockItem.cs:

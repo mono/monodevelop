@@ -145,6 +145,7 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/ItemTypeCondition.cs \
 	MonoDevelop.Projects.Extensions/ItemTypeNode.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
+	MonoDevelop.Projects.Extensions/MonoDocSourceNode.cs \
 	MonoDevelop.Projects.Extensions/PolicyNode.cs \
 	MonoDevelop.Projects.Extensions/PolicySetNode.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \
@@ -209,7 +210,6 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFileReader.cs \
 	MonoDevelop.Projects.Text/TextFileService.cs \
 	MonoDevelop.Projects.Text/TextFormatter.cs \
-	MonoDevelop.Projects.Text/XmlDefinitionCodon.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
 	MonoDevelop.Projects/BuildAction.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \
@@ -237,6 +237,7 @@ FILES =  \
 	MonoDevelop.Projects/FileFormatManager.cs \
 	MonoDevelop.Projects/GenericProject.cs \
 	MonoDevelop.Projects/GenericProjectBinding.cs \
+	MonoDevelop.Projects/HelpService.cs \
 	MonoDevelop.Projects/IBuildTarget.cs \
 	MonoDevelop.Projects/IConfigurationTarget.cs \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \

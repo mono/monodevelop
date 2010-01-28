@@ -36,7 +36,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		int TextLength { get; }
 		int SelectedLength { get; }
 		string GetText (int startOffset, int endOffset);
+		
 		char GetChar (int offset);
+		
+		void Replace (int offset, int count, string text);
+		
 		Gtk.Style GtkStyle { get; }
 
 		CodeCompletionContext CreateCodeCompletionContext (int triggerOffset);

@@ -24,6 +24,7 @@ REFS =  \
 	-r:System.Data \
 	-r:System.Drawing \
 	-r:System.Runtime.Remoting \
+	-r:System.Web \
 	-r:System.Web.Services \
 	-r:System.Xml
 
@@ -129,6 +130,8 @@ FILES =  \
 	MonoDevelop.Ide.Execution/MonoExecutionCustomizer.cs \
 	MonoDevelop.Ide.Execution/MonoExecutionParameters.cs \
 	MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs \
+	MonoDevelop.Ide.Extensions/IAddFileDialogHandler.cs \
+	MonoDevelop.Ide.Extensions/IOpenFileDialogHandler.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolService.cs \
@@ -189,6 +192,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs \
+	MonoDevelop.Ide.Gui.Dialogs/AddFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
@@ -210,6 +214,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/OpenFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
@@ -284,8 +289,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AuthorInformation.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
-	MonoDevelop.Ide.Gui/DefaultDisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
+	MonoDevelop.Ide.Gui/DisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
 	MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs \

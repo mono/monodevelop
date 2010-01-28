@@ -1,3 +1,12 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/objects.xml:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:
+	  Flush.
+
 2009-12-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/VBGtkSharp2Project.xpt.xml: Set correct assembly

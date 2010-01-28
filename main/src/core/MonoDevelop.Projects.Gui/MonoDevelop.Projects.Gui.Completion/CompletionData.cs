@@ -32,6 +32,23 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
+	public class CompletionCategory
+	{
+		public string DisplayText { get; set; }
+		public string Icon { get; set; }
+		
+		public CompletionCategory ()
+		{
+		}
+		
+		public CompletionCategory (string displayText, string icon)
+		{
+			this.DisplayText = displayText;
+			this.Icon = icon;
+		}
+		
+	}
+	
 	public class CompletionData : ICompletionData
 	{
 		protected CompletionData () {}
@@ -51,6 +68,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
+		public virtual CompletionCategory CompletionCategory { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
 		
 		public override string ToString ()

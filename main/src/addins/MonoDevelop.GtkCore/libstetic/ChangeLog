@@ -1,5 +1,10 @@
 2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* TypedPropertyDescriptor.cs: Don't translate property names
+	  in the property grid. See bug #571351.
+
+2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* GeneratorContext.cs: When loading an icon, don't hardcode
 	  the required size. Instead, call SizeLookup to get the
 	  correct size for the current theme.

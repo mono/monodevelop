@@ -1,8 +1,8 @@
 // 
-// XmlDefinitionCodon.cs
+// VariableValueReference.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Lluis Sanchez Gual <lluis@novell.com>
 // 
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
 // 
@@ -25,38 +25,51 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
-using System.Xml;
+using System.Collections.Generic;
+using Mono.Debugging.Evaluation;
+using Mono.Debugging.Client;
+using Mono.Debugger;
 
-using Mono.Addins;
-
-namespace MonoDevelop.Projects.Text
+namespace Mono.Debugging.Soft
 {
-	[ExtensionNode (Description="A xml definition.")]
-	public class XmlDefinitionCodon : ExtensionNode
+	public class VariableValueReference : ValueReference
 	{
-		[NodeAttribute("resource", "Name of the resource where the xml is stored.")]
-		string resource = null;
+		string name;
+		LocalVariable variable;
 		
-		[NodeAttribute("file", "Name of the file where the xml is stored.")]
-		string file = null;
-		
-		public XmlReader Open ()
+		public VariableValueReference (EvaluationContext ctx, string name, LocalVariable variable): base (ctx)
 		{
-			Stream stream;
-			if (!string.IsNullOrEmpty (file)) {
-				stream = File.OpenRead (Addin.GetFilePath (file));
-			} else if (!string.IsNullOrEmpty (resource)) {
-				stream = Addin.GetResource (resource);
-				if (stream == null)
-					throw new ApplicationException ("Xml " + resource + " not found");
-			} else {
-				throw new InvalidOperationException ("Xml file or resource not provided");
+			this.name = name;
+			this.variable = variable;
+		}
+		
+		public override ObjectValueFlags Flags {
+			get {
+				return ObjectValueFlags.Variable;
 			}
-			
-			XmlReaderSettings settings = new XmlReaderSettings ();
-			settings.CloseInput = true;
-			return XmlTextReader.Create (stream, settings);
+		}
+
+		public override string Name {
+			get {
+				return name;
+			}
+		}
+
+		public override object Type {
+			get {
+				return variable.Type;
+			}
+		}
+
+		public override object Value {
+			get {
+				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
+				return ctx.Frame.GetValue (variable);
+			}
+			set {
+				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
+				ctx.Frame.SetValue (variable, (Value) value);
+			}
 		}
 	}
 }

@@ -89,8 +89,25 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
 		{
-			ka = ProcessKey (key, keyChar, modifier);
+			ka = KeyActions.None;
+			bool keyHandled = false;
+			foreach (ICompletionKeyHandler handler in CompletionDataList.KeyHandler) {
+				if (handler.ProcessKey (this, key, keyChar, modifier, out ka)) {
+					keyHandled = true;
+					break;
+				}
+			}
 			
+			if (!keyHandled) {
+				ka = ProcessKey (key, keyChar, modifier);
+			}
+			
+			if (key == Gdk.Key.ISO_Next_Group || key == Gdk.Key.ISO_Prev_Group) {
+				this.List.InCategoryMode = !this.List.InCategoryMode;
+				this.ResetSizes ();
+				this.List.QueueDraw ();
+				return true;
+			}
 			if ((ka & KeyActions.Complete) != 0) {
 				CompleteWord ();
 			}
@@ -176,6 +193,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 					ResetSizes ();
 					ShowAll ();
 					SetScrollbarVisibilty ();
+					UpdateWordSelection ();
+					
 					//if there is only one matching result we take it by default
 					if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 						CompleteWord ();
@@ -428,6 +447,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 		int IListDataProvider.ItemCount 
 		{ 
 			get { return completionDataList.Count; } 
+		}
+		
+		CompletionCategory IListDataProvider.GetCompletionCategory (int n)
+		{
+			return completionDataList[n].CompletionCategory;
 		}
 		
 		string IListDataProvider.GetText (int n)

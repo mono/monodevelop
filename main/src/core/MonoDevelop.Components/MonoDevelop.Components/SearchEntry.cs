@@ -151,10 +151,13 @@ namespace MonoDevelop.Components
         }
 
         private bool toggling = false;
-
+		public bool IsCheckMenu {
+			get;
+			set;
+		}
         private void OnMenuItemToggled(object o, EventArgs args)
         {
-            if(toggling || !(o is FilterMenuItem)) {
+            if(IsCheckMenu || toggling || !(o is FilterMenuItem)) {
                 return;
             }
 

@@ -33,13 +33,11 @@ using Mono.Debugger;
 using Mono.Debugging.Evaluation;
 using MDB = Mono.Debugger;
 using System.Net.Sockets;
-using MonoDevelop.Core;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
 	public class SoftDebuggerSession : DebuggerSession
 	{
@@ -85,7 +83,7 @@ namespace MonoDevelop.Debugger.Soft
 				throw new InvalidOperationException ("Already exited");
 			
 			var dsi = (SoftDebuggerStartInfo) startInfo;
-			var runtime = Path.Combine (Path.Combine (dsi.Runtime.Prefix, "bin"), "mono");
+			var runtime = Path.Combine (Path.Combine (dsi.MonoRuntimePrefix, "bin"), "mono");
 			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
 			var psi = new System.Diagnostics.ProcessStartInfo (runtime) {
@@ -97,7 +95,7 @@ namespace MonoDevelop.Debugger.Soft
 			};
 			
 			LaunchOptions options = null;
-			
+			/*
 			if (startInfo.UseExternalConsole) {
 				options = new LaunchOptions ();
 				options.CustomProcessLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
@@ -107,21 +105,21 @@ namespace MonoDevelop.Debugger.Soft
 					return Runtime.ProcessService.StartConsoleProcess (psi.FileName, psi.Arguments, psi.WorkingDirectory, vars, ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), null);
 				};
 			}
-			
+			*/
 			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");
 			if (!String.IsNullOrEmpty (sdbLog)) {
 				options = options ?? new LaunchOptions ();
 				options.AgentArgs = string.Format ("loglevel=1,logfile='{0}'", sdbLog);
 			}
 			
-			foreach (var env in dsi.Runtime.EnvironmentVariables)
+			foreach (var env in dsi.MonoRuntimeEnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			foreach (var env in startInfo.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			if (!String.IsNullOrEmpty (dsi.LogMessage))
-				LogWriter (false, dsi.LogMessage + "\n");
+				OnDebuggerOutput (false, dsi.LogMessage + "\n");
 
 			OnConnecting (VirtualMachineManager.BeginLaunch (psi, HandleCallbackErrors (delegate (IAsyncResult ar) {
 					HandleConnection (VirtualMachineManager.EndLaunch (ar));
@@ -130,7 +128,7 @@ namespace MonoDevelop.Debugger.Soft
 			));
 		}
 		
-		internal AsyncCallback HandleCallbackErrors (AsyncCallback callback)
+		protected AsyncCallback HandleCallbackErrors (AsyncCallback callback)
 		{
 			return delegate (IAsyncResult ar) {
 				connectionHandle = null;
@@ -139,8 +137,7 @@ namespace MonoDevelop.Debugger.Soft
 				} catch (Exception ex) {
 					//only show the exception if we didn't cause it by cancelling & closing the socket
 					if (!(connectionHandle == null && ex is SocketException)) {
-						MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Soft debugger error: " + ex.Message);
-						LoggingService.LogError ("Unhandled error launching soft debugger", ex);
+						LoggingService.LogAndShowException ("Unhandled error launching soft debugger", ex);
 					}
 					EndSession ();
 				}
@@ -151,7 +148,7 @@ namespace MonoDevelop.Debugger.Soft
 		/// Subclasses should pass any handles they get from the VirtualMachineManager to this
 		/// so that they will be closed if the connection attempt is aborted before OnConnected is called.
 		/// </summary>
-		internal void OnConnecting (IAsyncResult connectionHandle)
+		protected void OnConnecting (IAsyncResult connectionHandle)
 		{
 			if (this.connectionHandle != null)
 				throw new InvalidOperationException ("Already connecting");
@@ -183,7 +180,7 @@ namespace MonoDevelop.Debugger.Soft
 		/// If subclasses do an async connect in OnRun, they should pass the resulting VM to this method.
 		/// If the vm is null, the session will be closed.
 		/// </summary>
-		internal void HandleConnection (VirtualMachine vm)
+		protected void HandleConnection (VirtualMachine vm)
 		{
 			if (this.vm != null)
 				throw new InvalidOperationException ("The VM has already connected");
@@ -219,7 +216,7 @@ namespace MonoDevelop.Debugger.Soft
 		{
 		}
 		
-		internal void RegisterUserAssemblies (List<AssemblyName> userAssemblyNames)
+		protected void RegisterUserAssemblies (List<AssemblyName> userAssemblyNames)
 		{
 			if (Options.ProjectAssembliesOnly && userAssemblyNames != null) {
 				assemblyFilters = new List<AssemblyMirror> ();
@@ -344,10 +341,14 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			if (vm != null) {
 				//FIXME: this might never get reached if the IDE is exited first
-				GLib.Timeout.Add (10000, delegate {
+				var t = new System.Timers.Timer ();
+				t.Interval = 10000;
+				t.Elapsed += delegate {
 					EnsureExited ();
-					return false;
-				});
+					t.Enabled = false;
+					t.Dispose ();
+				};
+				t.Enabled = true;
 			}	
 		}
 		
@@ -835,6 +836,8 @@ namespace MonoDevelop.Debugger.Soft
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n", s, bp.Line, l.Method.FullName, l.ILOffset));
 							ResolvePendingBreakpoint (bp, l);
 							resolved.Add (bp);
+						} else {
+							OnDebuggerOutput (true, string.Format ("Could not insert pending breakpoint at '{0}:{1}'. Perhaps the source line does not contain any statements, or the source does not correspond to the current binary.\n", s, bp.Line));
 						}
 					}
 				}

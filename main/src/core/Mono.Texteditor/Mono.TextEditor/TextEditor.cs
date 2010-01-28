@@ -125,12 +125,12 @@ namespace Mono.TextEditor
 					OptionsChanged (null, null);
 			}
 		}
-		
-		public TextEditor () : this (new Document ())
+		Dictionary<int, int> lineHeights = new Dictionary<int, int> ();
+		public TextEditor () : this(new Document ())
 		{
-			
+			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 		}
-		
+
 		Gdk.Pixmap buffer = null, flipBuffer = null;
 		
 		void DoFlipBuffer ()
@@ -257,6 +257,10 @@ namespace Mono.TextEditor
 		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			textEditorData = new TextEditorData (doc);
+			textEditorData.RecenterEditor += delegate {
+				CenterToCaret ();
+				StartCaretPulseAnimation ();
+			};
 			doc.TextReplaced += OnDocumentStateChanged;
 			doc.TextSet += OnTextSet;
 
@@ -736,6 +740,11 @@ namespace Mono.TextEditor
 				return true;
 			}
 			
+			if (key == Gdk.Key.F3 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
+				textViewMargin.OpenCodeSegmentEditor ();
+				return true;
+			}
+			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
 				ResetIMContext ();	
@@ -746,7 +755,7 @@ namespace Mono.TextEditor
 			if (!filter) {
 				return OnIMProcessedKeyPressEvent (key, unicodeChar, mod);
 			}
-			return true;
+			return base.OnKeyPressEvent (evt);
 		}
 		
 		/// <<remarks>
@@ -944,6 +953,7 @@ namespace Mono.TextEditor
 				dragContents.CopyData (textEditorData);
 				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
 				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, textEditorData.SelectionRange, 300, 300);
+				window.HideCodeSegmentPreviewInformString = true;
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = Selection.Clone (MainSelection);
 				textViewMargin.inDrag = false;
@@ -1987,7 +1997,7 @@ namespace Mono.TextEditor
 
 				HideTooltip ();
 
-				Gtk.Window tw = provider.CreateTooltipWindow (this, modifierState, item);
+				Gtk.Window tw = provider.CreateTooltipWindow (this, offset, modifierState, item);
 				if (tw == null)
 					return false;
 				
@@ -2172,6 +2182,19 @@ namespace Mono.TextEditor
 		{
 			return GetLineHeight (Document.GetLine (logicalLineNumber));
 		}
+		
+		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
+		{
+			if (!e.Line.Markers.Any (m => m is IExtendingTextMarker))
+				return;
+			int currentHeight = GetLineHeight (e.Line);
+			int h;
+			if (lineHeights.TryGetValue (e.Line.Offset, out h) && h != currentHeight) {
+				textEditorData.Document.CommitLineToEndUpdate (textEditorData.Document.OffsetToLineNumber (e.Line.Offset));
+			}
+			lineHeights[e.Line.Offset] = currentHeight;
+		}
+		
 	}
 	
 	public interface ITextEditorDataProvider

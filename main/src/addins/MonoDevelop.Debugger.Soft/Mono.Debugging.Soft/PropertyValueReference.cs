@@ -29,7 +29,7 @@ using Mono.Debugging.Evaluation;
 using Mono.Debugger;
 using Mono.Debugging.Client;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
 	public class PropertyValueReference: ValueReference
 	{

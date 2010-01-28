@@ -27,6 +27,7 @@
 using System;
 using ICSharpCode.NRefactory.Visitors;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MonoDevelop.Refactoring.MoveTypeToFile
 {
@@ -44,13 +45,41 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 		
 		public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 		{
-			if (typeDeclaration.Name != fullName) {
+			if (BuildName (typeDeclaration) != fullName) {
 				RemoveCurrentNode ();
 				return null;
 			}
 			TypeDeclaration = typeDeclaration;
-			return base.VisitTypeDeclaration (typeDeclaration, data);
+			object result = base.VisitTypeDeclaration (typeDeclaration, data);
+			return result;
 		}
+		
+		Stack<ICSharpCode.NRefactory.Ast.NamespaceDeclaration> namespaces = new Stack<ICSharpCode.NRefactory.Ast.NamespaceDeclaration> ();
+		public override object VisitNamespaceDeclaration (ICSharpCode.NRefactory.Ast.NamespaceDeclaration namespaceDeclaration, object data)
+		{
+			namespaces.Push (namespaceDeclaration);
+			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
+			namespaces.Pop ();
+			return result;
+		}
+
+		string BuildName (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration)
+		{
+			// note: inner types can't be moved therefore they're missing here.
+			StringBuilder result = new StringBuilder ();
+			foreach (var ns in namespaces) {
+				result.Append (ns.Name);
+				result.Append (".");
+			}
+			result.Append (typeDeclaration.Name);
+			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
+				result.Append ("`");
+				result.Append (typeDeclaration.Templates.Count);
+			}
+			
+			return result.ToString ();
+		}
+
 	}
 	
 	

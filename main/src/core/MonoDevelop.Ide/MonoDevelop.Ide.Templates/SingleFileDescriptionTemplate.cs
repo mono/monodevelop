@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide.Templates
 			Formatter formatter = !String.IsNullOrEmpty (mime) ? TextFileService.GetFormatter (mime) : null;
 			
 			if (formatter != null)
-				content = formatter.FormatText (policyParent.Policies, content);
+				content = formatter.FormatText (policyParent != null ? policyParent.Policies : null, content);
 			
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;

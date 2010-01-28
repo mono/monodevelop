@@ -117,6 +117,7 @@
     <Compile Include="MonoDevelop.CodeGeneration\NullCheckGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.DeclareLocal\GetContainingEmbeddedStatementVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeSearchVisitor.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -197,7 +198,7 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
           <ResourcesVar Sync="true" Name="RES" />

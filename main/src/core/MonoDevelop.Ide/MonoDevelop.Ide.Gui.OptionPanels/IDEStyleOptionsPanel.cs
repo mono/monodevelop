@@ -36,6 +36,7 @@ using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using Gtk;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -68,6 +69,32 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			string name = fontOutputButton.Style.FontDescription.ToString ();
 			
+			for (int n=1; n < isoCodes.Length; n += 2)
+				comboLanguage.AppendText (GettextCatalog.GetString (isoCodes [n]));
+			
+			int i = Array.IndexOf (isoCodes, IdeApp.Preferences.UserInterfaceLanguage);
+			if (i == -1) i = 0;
+			comboLanguage.Active = i / 2;
+			
+			comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
+			List<string> themes = new List<string> ();
+
+			// Code for getting the list of themes taken from f-spot
+			string homeDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
+			string [] search = {System.IO.Path.Combine (homeDir, ".themes"), "/usr/share/themes"};
+			foreach (string path in search)
+				if (System.IO.Directory.Exists (path))
+					foreach (string dir in System.IO.Directory.GetDirectories (path))
+						if (System.IO.File.Exists (System.IO.Path.Combine (dir, gtkrc)))
+							themes.Add (System.IO.Path.GetFileName (dir));
+			
+			themes.Sort ();
+			foreach (string t in themes)
+				comboTheme.AppendText (t);
+			
+			comboTheme.Active = themes.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
+			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
 			hiddenButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
 			fontCheckbox.Active = IdeApp.Preferences.CustomPadFont != null;
@@ -95,6 +122,24 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store()
 		{
+			string lc = isoCodes [comboLanguage.Active * 2];
+			if (lc != IdeApp.Preferences.UserInterfaceLanguage) {
+				IdeApp.Preferences.UserInterfaceLanguage = lc;
+				MessageService.ShowMessage (GettextCatalog.GetString ("The user interface language change will take effect the next time you start MonoDevelop"));
+			}
+			string theme;
+			if (comboTheme.Active == 0) {
+				theme = IdeStartup.DefaultTheme;
+				IdeApp.Preferences.UserInterfaceTheme = "";
+			}
+			else {
+				theme = comboTheme.ActiveText;
+				IdeApp.Preferences.UserInterfaceTheme = theme;
+			}
+			
+			if (theme != Gtk.Settings.Default.ThemeName)
+				Gtk.Settings.Default.ThemeName = theme;
+			
 			PropertyService.Set ("MonoDevelop.Core.Gui.FileScout.ShowHidden", hiddenButton.Active);
 			if (fontCheckbox.Active)
 				IdeApp.Preferences.CustomPadFont = fontButton.FontName;
@@ -109,6 +154,32 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.ToolbarSize = sizes [toolbarCombobox.Active];
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
 		}
+		
+		static string[] isoCodes = new string[] {
+			"", "(Default)",
+			"ca", "Catalan",
+			"zh_CN", "Chinese - China",
+			"zh_TW", "Chinese - Taiwan",
+			"cs", "Czech",
+			"da", "Danish",
+			"nl", "Dutch",
+			"fr", "French",
+			"gl", "Galician",
+			"de", "German",
+			"en", "English",
+			"hu", "Hungarian",
+			"id", "Indonesian",
+			"it", "Italian",
+			"ja", "Japanese",
+			"pl", "Polish",
+			"pt", "Portuguese",
+			"pt_BR", "Portuguese - Brazil",
+			"ru", "Russian",
+			"sl", "Slovenian",
+			"es", "Spanish",
+			"sv", "Swedish",
+			"tr", "Turkish"
+		};
 		
 	}
 }

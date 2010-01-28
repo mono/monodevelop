@@ -43,6 +43,8 @@ using MonoDevelop.Ide.Gui;
 
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Dom;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -384,6 +386,8 @@ namespace MonoDevelop.Debugger
 				return true;
 			};
 			session.BusyStateChanged += OnBusyStateChanged;
+			
+			session.TypeResolverHandler = ResolveType;
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
 			NotifyLocationChanged ();
@@ -670,6 +674,24 @@ namespace MonoDevelop.Debugger
 			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 			if (elem != null)
 				breakpoints.Load (elem);
+		}
+		
+		static string ResolveType (string identifier, SourceLocation location)
+		{
+			Document doc = IdeApp.Workbench.GetDocument (location.Filename);
+			if (doc != null) {
+				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
+				if (textEditorResolver != null) {
+					ResolveResult rr = textEditorResolver.GetLanguageItem (doc.TextEditor.GetPositionFromLineColumn (location.Line, 1), identifier);
+					NamespaceResolveResult ns = rr as NamespaceResolveResult;
+					if (ns != null)
+						return ns.Namespace;
+					MemberResolveResult result = rr as MemberResolveResult;
+					if (result != null && (result.ResolvedMember == null || result.ResolvedMember is IType) && result.ResolvedType != null)
+						return result.ResolvedType.FullName;
+				}
+			}
+			return null;
 		}
 	}
 	

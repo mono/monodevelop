@@ -46,6 +46,8 @@ namespace Mono.Debugging.Client
 				ops.GroupPrivateMembers = true;
 				ops.GroupStaticMembers = true;
 				ops.GroupUserPrivateMembers = false;
+				ops.AllowImplicitTypeLoading = true;
+				ops.UseExternalTypeResolver = true;
 				return ops;
 			}
 		}
@@ -79,5 +81,9 @@ namespace Mono.Debugging.Client
 		public bool GroupUserPrivateMembers { get; set; }
 		
 		public bool GroupStaticMembers { get; set; }
+		
+		public bool UseExternalTypeResolver { get; set; }
+		
+		public bool AllowImplicitTypeLoading { get; set; }
 	}
 }

@@ -34,7 +34,7 @@ using System.Text;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class DomUsing : IUsing
+	public class DomUsing : AbstractNode, IUsing
 	{
 		static readonly Dictionary<string, IReturnType> emptyAliases = new Dictionary<string,IReturnType> ();
 		static readonly List<string> emptyNamespaces = new List<string> ();
@@ -95,7 +95,7 @@ namespace MonoDevelop.Projects.Dom
 			aliases[nspace] = alias;
 		}
 
-		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}

@@ -139,6 +139,9 @@ RES =  \
 	icons/formatting-24.png \
 	icons/GeneralWizardBackground \
 	icons/gnome-fs-regular.png \
+	icons/hicolor_status_16x16_pin-active.png \
+	icons/hicolor_status_16x16_pin-down.png \
+	icons/hicolor_status_16x16_pin-up.png \
 	icons/Icons.16x16.ClearAllBookmarks \
 	icons/Icons.16x16.CloseAllDocuments \
 	icons/Icons.16x16.CloseCombineIcon \

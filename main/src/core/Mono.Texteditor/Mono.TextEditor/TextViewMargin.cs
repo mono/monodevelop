@@ -542,6 +542,7 @@ namespace Mono.TextEditor
 				win.DrawLine (caretGc, caretX, bottom, caretX + this.charWidth, bottom);
 				break;
 			}
+			
 		}
 
 		public Gdk.Rectangle GetCaretRectangle (Mono.TextEditor.CaretMode mode)
@@ -1406,13 +1407,40 @@ namespace Mono.TextEditor
 
 		CodeSegmentPreviewWindow previewWindow = null;
 		ISegment previewSegment = null;
-
+		public bool IsCodeSegmentPreviewWindowShown {
+			get {
+				return previewWindow != null;
+			}
+		}
+		
 		public void HideCodeSegmentPreviewWindow ()
 		{
 			if (previewWindow != null) {
 				previewWindow.Destroy ();
 				previewWindow = null;
 			}
+		}
+		
+		internal void OpenCodeSegmentEditor ()
+		{
+			if (!IsCodeSegmentPreviewWindowShown)
+				throw new InvalidOperationException ("CodeSegment preview window isn't shown.");
+			
+			int x = 0, y = 0;
+			this.previewWindow.GdkWindow.GetOrigin (out x, out y);
+			int w = previewWindow.Allocation.Width;
+			int h = previewWindow.Allocation.Height;
+			
+			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
+			codeSegmentEditorWindow.Move (x, y);
+			codeSegmentEditorWindow.Resize (w, h);
+			codeSegmentEditorWindow.SyntaxMode = Document.SyntaxMode;
+			codeSegmentEditorWindow.Text       = this.Document.GetTextAt (previewSegment);
+			HideCodeSegmentPreviewWindow ();
+			codeSegmentEditorWindow.ShowAll ();
+			
+			codeSegmentEditorWindow.GrabFocus ();
+			
 		}
 
 		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
@@ -1467,7 +1495,19 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-
+		
+		public LineSegment HoveredLine {
+			get;
+			set;
+		}
+		public event EventHandler<LineEventArgs> HoveredLineChanged;
+		protected virtual void OnHoveredLineChanged (LineEventArgs e)
+		{
+			EventHandler<LineEventArgs> handler = this.HoveredLineChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
@@ -1478,6 +1518,9 @@ namespace Mono.TextEditor
 			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
 			
 			LineSegment line = Document.GetLine (loc.Line);
+			LineSegment oldHoveredLine = HoveredLine;
+			HoveredLine = line;
+			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 			if (line != null) {
 				foreach (TextMarker marker in line.Markers) {
 					if (marker is IActionTextMarker) {

@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -197,6 +198,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		string path;
 		bool recurse;
 		
+		public bool IncludeBinaryFiles {
+			get;
+			set;
+		}
+		
+		public bool IncludeHiddenFiles {
+			get;
+			set;
+		}
+		
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
 			return GetFileNames (null, path, recurse, filterOptions).Count ();
@@ -208,7 +219,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.recurse = recurse;
 		}
 		
-		static IEnumerable<string> GetFileNames (IProgressMonitor monitor, string path, bool recurse, FilterOptions filterOptions)
+		static bool MimeTypeIsBinary (string mimeType)
+		{
+			if (string.IsNullOrEmpty (mimeType))
+				return false;
+			return !(mimeType.StartsWith ("text/") || 
+			         mimeType == "image/x-xbitmap" || 
+			         mimeType == "image/x-xpixmap");
+		}
+		
+		IEnumerable<string> GetFileNames (IProgressMonitor monitor, string path, bool recurse, FilterOptions filterOptions)
 		{
 			if (monitor != null)
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", path));
@@ -222,12 +242,16 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 				
 				foreach (string fileName in files) {
+					if (fileName.StartsWith (".") && !IncludeHiddenFiles)
+						continue;
+					if (!IncludeBinaryFiles && MimeTypeIsBinary (DesktopService.GetMimeTypeForUri (fileName))) 
+						continue;
 					yield return fileName;
 				}
 				
 				if (recurse) {
 					foreach (string directoryName in Directory.GetDirectories (path)) {
-						if (directoryName.StartsWith ("."))
+						if (directoryName.StartsWith (".") && !IncludeHiddenFiles)
 							continue;
 						foreach (string fileName in GetFileNames (monitor, Path.Combine (path, directoryName), recurse, filterOptions)) {
 							yield return fileName;

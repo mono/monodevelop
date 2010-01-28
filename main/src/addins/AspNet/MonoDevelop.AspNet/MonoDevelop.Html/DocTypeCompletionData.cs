@@ -72,6 +72,12 @@ namespace MonoDevelop.Html
 			get { return DisplayFlags.None; }
 		}
 
+		public CompletionCategory CompletionCategory  {
+			get {
+				return null;
+			}
+		}
+		
 		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 		{
 			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;

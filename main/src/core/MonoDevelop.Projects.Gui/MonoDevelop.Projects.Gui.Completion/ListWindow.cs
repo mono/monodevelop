@@ -243,7 +243,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (!SelectionEnabled) {
 					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
-					list.Selection--;
+					list.MoveCursor (-1);
 				}
 				return KeyActions.Ignore;
 
@@ -253,20 +253,20 @@ namespace MonoDevelop.Projects.Gui.Completion
 				if (!SelectionEnabled) {
 					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
-					list.Selection++;
+					list.MoveCursor (1);
 				}
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Up:
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				list.Selection -= list.VisibleRows - 1;
+				list.MoveCursor (-(list.VisibleRows - 1));
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Down:
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				list.Selection += list.VisibleRows - 1;
+				list.MoveCursor (list.VisibleRows - 1);
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Left:
@@ -394,33 +394,26 @@ namespace MonoDevelop.Projects.Gui.Completion
 					hasMismatches = false;
 				}
 			}
-
+			
 			// Search for history matches.
-			string historyWord = null;
-			for (int i = wordHistory.Count - 1; i >= 0; i--) {
-				string word = wordHistory[i];
-				if (ListWidget.Matches (partialWord, word)) {
-					historyWord = word;
-					break;
-				}
-			}
-
-			if (historyWord != null) {
-				for (int i = 0; i < list.filteredItems.Count; i++) {
-					string currentWord = DataProvider.GetText (list.filteredItems[i]);
-					if (currentWord == historyWord) {
-						if (curRating <= ListWidget.MatchRating (partialWord, currentWord)) {
-							hasMismatches = false;
-							return i;
+			for (int i = 0; i < wordHistory.Count; i++) {
+				string historyWord = wordHistory[i];
+				
+				if (ListWidget.Matches (partialWord, historyWord)) {
+					for (int j = 0; j < list.filteredItems.Count; j++) {
+						string currentWord = DataProvider.GetText (list.filteredItems[j]);
+						if (currentWord == historyWord) {
+							idx = j;
+							break;
 						}
-						break;
 					}
 				}
 			}
+			
 			return idx;
 		}
 
-		List<string> wordHistory = new List<string> ();
+		static List<string> wordHistory = new List<string> ();
 		const int maxHistoryLength = 500;
 		protected void AddWordToHistory (string word)
 		{
@@ -443,13 +436,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public virtual void SelectEntry (string s)
 		{
 			list.FilterWords ();
+			/* // disable this, because we select now the last selected entry by default (word history mode)
 			//when the list is empty, disable the selection or users get annoyed by it accepting
 			//the top entry automatically
 			if (string.IsNullOrEmpty (s)) {
 				ResetSizes ();
 				list.Selection = 0;
 				return;
-			}
+			}*/
 			bool hasMismatches;
 			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
 			ResetSizes ();
@@ -486,23 +480,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
-
+			
 			int winWidth, winHeight;
 			this.GetSize (out winWidth, out winHeight);
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth - 1, winHeight - 1);
 			return true;
 		}
-
+		
 		public int TextOffset {
 			get { return list.TextOffset + (int)this.BorderWidth; }
 		}
 	}
-	
+
 	public interface IListDataProvider
 	{
 		int ItemCount { get; }
 		string GetText (int n);
 		string GetMarkup (int n);
+		CompletionCategory GetCompletionCategory (int n);
 		bool HasMarkup (int n);
 		string GetCompletionText (int n);
 		Gdk.Pixbuf GetIcon (int n);

@@ -1,5 +1,5 @@
 // 
-// VariableValueReference.cs
+// ArrayAdaptor.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,50 +25,57 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using Mono.Debugging.Evaluation;
-using Mono.Debugging.Client;
 using Mono.Debugger;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
-	public class VariableValueReference : ValueReference
+	public class ArrayAdaptor: ICollectionAdaptor
 	{
-		string name;
-		LocalVariable variable;
+		ArrayMirror array;
+		int[] dimensions;
 		
-		public VariableValueReference (EvaluationContext ctx, string name, LocalVariable variable): base (ctx)
+		public ArrayAdaptor (ArrayMirror array)
 		{
-			this.name = name;
-			this.variable = variable;
+			this.array = array;
 		}
 		
-		public override ObjectValueFlags Flags {
-			get {
-				return ObjectValueFlags.Variable;
+		public int[] GetDimensions ()
+		{
+			if (dimensions == null) {
+				dimensions = new int [array.Rank];
+				for (int n=0; n<array.Rank; n++)
+					dimensions [n] = array.GetLength (n);
 			}
+			return dimensions;
 		}
-
-		public override string Name {
-			get {
-				return name;
-			}
+		
+		public object GetElement (int[] indices)
+		{
+			int i = GetIndex (indices);
+			return array.GetValues (i, 1) [0];
 		}
-
-		public override object Type {
-			get {
-				return variable.Type;
-			}
+		
+		public void SetElement (int[] indices, object val)
+		{
+			array.SetValues (GetIndex (indices), new Value[] { (Value) val });
 		}
-
-		public override object Value {
-			get {
-				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
-				return ctx.Frame.GetValue (variable);
+		
+		int GetIndex (int[] indices)
+		{
+			int ts = 1;
+			int i = 0;
+			int[] dims = GetDimensions ();
+			for (int n = indices.Length - 1; n >= 0; n--) {
+				i += indices [n] * ts;
+				ts *= dims [n];
 			}
-			set {
-				SoftEvaluationContext ctx = (SoftEvaluationContext) Context;
-				ctx.Frame.SetValue (variable, (Value) value);
+			return i;
+		}
+		
+		public object ElementType {
+			get {
+				return array.Type.GetElementType ();
 			}
 		}
 	}

@@ -27,15 +27,14 @@
 //
 
 using System;
+using System.Linq;
 using System.CodeDom;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class DomParameter : IParameter
+	public class DomParameter : AbstractNode, IParameter
 	{
-		protected List<IAttribute> attributes = null;
-
 		public MemberType MemberType {
 			get {
 				return MemberType.Parameter;
@@ -87,7 +86,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public System.Collections.Generic.IEnumerable<IAttribute> Attributes {
 			get {
-				return (IEnumerable<IAttribute>)attributes ?? new IAttribute[0];
+				return GetChildrenByRole (Roles.Attribute).Cast<IAttribute> ();
 			}
 		}
 
@@ -115,9 +114,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void Add (IAttribute attribute)
 		{
-			if (attributes == null)
-				attributes = new List<IAttribute> ();
-			attributes.Add (attribute);
+			AddChild (attribute, Roles.Attribute);
 		}
 		
 		public override string ToString ()
@@ -129,7 +126,7 @@ namespace MonoDevelop.Projects.Dom
 			                      Location);
 		}
 
-		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}

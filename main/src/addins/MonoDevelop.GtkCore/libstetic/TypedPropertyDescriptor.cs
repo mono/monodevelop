@@ -57,7 +57,7 @@ namespace Stetic
 				description = pspec.Blurb;
 				minimum = pspec.Minimum;
 				maximum = pspec.Maximum;
-				label = pspec.Nick;
+				label = propertyName;
 				if (!elem.HasAttribute ("ignore-default"))
 					hasDefault = Type.GetTypeCode (PropertyType) != TypeCode.Object || PropertyType.IsEnum;
 			} else {
@@ -88,7 +88,7 @@ namespace Stetic
 
 			pspec = FindPSpec (propertyInfo);
 			if (pspec != null) {
-				label = pspec.Nick;
+				label = propertyName;
 				description = pspec.Blurb;
 				minimum = pspec.Minimum;
 				maximum = pspec.Maximum;

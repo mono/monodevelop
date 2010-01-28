@@ -177,6 +177,9 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			MonoDevelop.Components.FixedWidthWrapLabel lab = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			Pango.FontDescription font =  new Gtk.Label ("").Style.FontDescription;
+			font.Size = DefaultSourceEditorOptions.Instance.Font.Size;
+			lab.FontDescription = font;
 			lab.Wrap = Pango.WrapMode.WordChar;
 			lab.Indent = -20;
 			lab.BreakOnCamelCasing = true;

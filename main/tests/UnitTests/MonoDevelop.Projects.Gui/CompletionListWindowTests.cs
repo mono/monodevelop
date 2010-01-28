@@ -75,7 +75,9 @@ namespace MonoDevelop.Projects.Gui
 			{
 				this.CompletedWord = complete_word;
 			}
-			
+			public void Replace (int offset, int count, string text)
+			{
+			}
 			public int TextLength {
 				get {
 					return 0;

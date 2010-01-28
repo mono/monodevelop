@@ -32,7 +32,7 @@ using System.Collections.Specialized;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class LocalVariable : IBaseMember
+	public class LocalVariable : AbstractNode, IBaseMember
 	{
 		public string Name {
 			get;
@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects.Dom
 			this.Location = region.Start;
 		}
 		
-		public S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);
 		}

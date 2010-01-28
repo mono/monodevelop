@@ -1,4 +1,4 @@
-BUNDLE_VERSION=2.1.1
+BUNDLE_VERSION=$(VERSION)
 MAC_APP_DIR=MonoDevelop.app
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
 MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop

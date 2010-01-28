@@ -204,6 +204,11 @@ namespace MonoDevelop.CSharp.Completion
 			get { return overloads != null && overloads.Count > 0; }
 		}
 		
+		public CompletionCategory CompletionCategory  {
+			get;
+			set;
+		}
+		
 		public void AddOverload (MemberCompletionData overload)
 		{
 			if (overloads == null)

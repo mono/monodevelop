@@ -71,10 +71,10 @@ namespace MonoDevelop.Core.Assemblies
 					if (File.Exists (toolPath + ".bat"))
 						return toolPath + ".bat";
 				}
-				if (File.Exists (toolPath + ".exe"))
-					return toolPath + ".exe";
 				if (File.Exists (toolPath))
 					return toolPath;
+				if (File.Exists (toolPath + ".exe"))
+					return toolPath + ".exe";
 			}
 			return null;
 		}

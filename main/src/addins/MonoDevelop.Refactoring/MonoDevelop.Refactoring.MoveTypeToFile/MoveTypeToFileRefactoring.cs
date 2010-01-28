@@ -80,8 +80,11 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				INRefactoryASTProvider provider = options.GetASTProvider ();
 				Mono.TextEditor.TextEditorData data = options.GetTextEditorData ();
 				ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (options.Document.TextEditor.Text);
-				TypeFilterTransformer typeFilterTransformer = new TypeFilterTransformer (type.Name);
+				
+				TypeFilterTransformer typeFilterTransformer = new TypeFilterTransformer ((type is InstantiatedType) ? ((InstantiatedType)type).UninstantiatedType.DecoratedFullName : type.DecoratedFullName);
 				unit.AcceptVisitor (typeFilterTransformer, null);
+				if (typeFilterTransformer.TypeDeclaration == null)
+					return result;
 				Mono.TextEditor.Document generatedDocument = new Mono.TextEditor.Document ();
 				generatedDocument.Text = provider.OutputNode (options.Dom, unit);
 				

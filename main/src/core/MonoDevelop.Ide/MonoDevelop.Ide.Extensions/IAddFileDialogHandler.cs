@@ -1,10 +1,10 @@
 // 
-// ArrayAdaptor.cs
+// IAddFileDialogHandler.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,58 +25,36 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugging.Evaluation;
-using Mono.Debugger;
+using MonoDevelop.Components.Extensions;
 
-namespace MonoDevelop.Debugger.Soft
+
+namespace MonoDevelop.Ide.Extensions
 {
-	public class ArrayAdaptor: ICollectionAdaptor
+	/// <summary>
+	/// This interface can be implemented to provide a custom implementation
+	/// for the AddFileDialog dialog (used to add files to a project)
+	/// </summary>
+	public interface IAddFileDialogHandler
 	{
-		ArrayMirror array;
-		int[] dimensions;
+		/// <summary>
+		/// Show the dialog
+		/// </summary>
+		bool Run (AddFileDialogData data);
+	}
+
+	/// <summary>
+	/// Data for the IAddFileDialogHandler implementations
+	/// </summary>
+	public class AddFileDialogData: SelectFileDialogData
+	{
+		/// <summary>
+		/// Build actions from which the user can select the one to apply to the new file
+		/// </summary>
+		public string[] BuildActions;
 		
-		public ArrayAdaptor (ArrayMirror array)
-		{
-			this.array = array;
-		}
-		
-		public int[] GetDimensions ()
-		{
-			if (dimensions == null) {
-				dimensions = new int [array.Rank];
-				for (int n=0; n<array.Rank; n++)
-					dimensions [n] = array.GetLength (n);
-			}
-			return dimensions;
-		}
-		
-		public object GetElement (int[] indices)
-		{
-			int i = GetIndex (indices);
-			return array.GetValues (i, 1) [0];
-		}
-		
-		public void SetElement (int[] indices, object val)
-		{
-			array.SetValues (GetIndex (indices), new Value[] { (Value) val });
-		}
-		
-		int GetIndex (int[] indices)
-		{
-			int ts = 1;
-			int i = 0;
-			int[] dims = GetDimensions ();
-			for (int n = indices.Length - 1; n >= 0; n--) {
-				i += indices [n] * ts;
-				ts *= dims [n];
-			}
-			return i;
-		}
-		
-		public object ElementType {
-			get {
-				return array.Type.GetElementType ();
-			}
-		}
+		/// <summary>
+		/// Selected build action. To be set by the handler.
+		/// </summary>
+		public string OverrideAction { get; set; }
 	}
 }

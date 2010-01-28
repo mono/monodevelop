@@ -20,6 +20,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/ClassQuickFinder.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/Counters.cs \
+	MonoDevelop.SourceEditor/DebugValueMarker.cs \
 	MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueWindow.cs \
 	MonoDevelop.SourceEditor/DefaultFormatter.cs \

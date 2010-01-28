@@ -42,6 +42,21 @@ namespace Mono.TextEditor
 		Pango.FontDescription fontDescription;
 		Pango.Layout layout;
 		
+		static string codeSegmentPreviewInformString = "Press F3 to scroll";
+		public static string CodeSegmentPreviewInformString {
+			get {
+				return codeSegmentPreviewInformString;
+			}
+			set {
+				codeSegmentPreviewInformString = value;
+			}
+		}
+		
+		public bool HideCodeSegmentPreviewInformString {
+			get;
+			set;
+		}
+		
 		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this(editor, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
 		{
 		}
@@ -89,9 +104,16 @@ namespace Mono.TextEditor
 			gc = gc.Kill ();
 			base.OnDestroyed ();
 		}
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			Console.WriteLine (evnt.Key);
+			return base.OnKeyPressEvent (evnt);
+		}
 
 		
 		Gdk.GC gc = null;
+		
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
 			if (gc == null) {
@@ -105,6 +127,19 @@ namespace Mono.TextEditor
 			ev.Window.DrawRectangle (gc, false, 1, 1, this.Allocation.Width - 3, this.Allocation.Height - 3);
 			gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
 			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
+			
+			if (!HideCodeSegmentPreviewInformString) {
+				using (Pango.Layout informLayout = new Pango.Layout (PangoContext)) {
+					informLayout.SetText (CodeSegmentPreviewInformString);
+					int w, h;
+					informLayout.GetPixelSize (out w, out h); 
+					
+					gc.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
+					ev.Window.DrawRectangle (gc, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
+					gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
+					ev.Window.DrawLayout (gc, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
+				}
+			}
 			return true;
 		}
 	}

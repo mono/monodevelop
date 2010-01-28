@@ -1,3 +1,45 @@
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Kill debug code that spammed MD's stdout.
+
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Track API changes.
+
+2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CSharpBinding.addin.xml: Remove unused extension.
+
+2010-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Added '!' as special closing key.
+
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed bug
+	  in auto formatting.
+
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:
+	* gtk-gui/MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs:
+	* gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:
+	  Implemented 'Bug 550947 - Arrays initailizers should not
+	  automatically be split on multiple lines'.
+
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	  brace forcement is now saved.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:

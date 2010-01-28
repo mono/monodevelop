@@ -57,6 +57,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			label = StringParserService.Parse (label);
 			if (icon != null) icon = CommandCodon.GetStockId (Addin, icon);
 			CommandEntrySet cset = new CommandEntrySet (label, icon);
+			cset.CommandId = Id;
 			cset.AutoHide = autohide;
 			foreach (InstanceExtensionNode e in ChildNodes) {
 				CommandEntry ce = e.CreateInstance () as CommandEntry;

@@ -73,6 +73,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Dock\MonoDevelop.Dock.csproj">
@@ -397,7 +398,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\ExportProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CombineEntryFeatureSelector.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DefaultDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FeatureSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs" />
@@ -597,6 +597,11 @@
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ILocationList.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\OpenFileDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddFileDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DisplayBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -643,5 +648,6 @@
     <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
     <Folder Include="MonoDevelop.Ide.Execution\" />
     <Folder Include="MonoDevelop.Ide.Jobs\" />
+    <Folder Include="MonoDevelop.Ide.Extensions\" />
   </ItemGroup>
 </Project>

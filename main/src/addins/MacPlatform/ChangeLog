@@ -1,3 +1,79 @@
+2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Colorize betas and alphas in the
+	  update dialog.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateResult.cs: Fix property initialization.
+
+	* Updater/UpdateDialog.cs: Remove unused field.
+
+	* Updater/UpdateService.cs: Fix attribute name.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Fix threading issue.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* Updater/UpdateResult.cs:
+	* Updater/UpdateDialog.cs:
+	* Updater/UpdateService.cs:
+	* gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs: Add
+	  new alpha channel and clean up GUI for switching channels.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Remove stray ShowAll call.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Tidy up updater GUI a little more.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Improve update GUI a bit more.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Tidy up the update list a little.
+
+2010-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/Carbon.cs:
+	* Framework/ApplicationEvents.cs: Fix HandleOpenUrls event
+	  class and string marshalling. Also fix event uninstallation.
+
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/ApplicationEvents.cs: Fix event IDs. Use
+	  GetUrlListFromEventRef.
+
+	* Framework/Carbon.cs: New GetUrlListFromEventRef and
+	  GetStringFromAEPtr methods.
+
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs:
+	* Framework/ApplicationEvents.cs: Remove OpenContents event
+	  since it didn't really work.
+
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/ApplicationEvents.cs: Fix locking.
+
+2010-01-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacPlatform.cs:
+	* MacPlatform.csproj:
+	* Framework/Carbon.cs:
+	* Framework/ApplicationEvents.cs: Refactor out
+	  ApplicationEvents code.
+
 2010-01-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateDialog.cs: Cache the stable/unstable result so

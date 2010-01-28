@@ -507,7 +507,7 @@ namespace MonoDevelop.Debugger
 			
 		}
 		
-		internal static string GetIcon (ObjectValueFlags flags)
+		public static string GetIcon (ObjectValueFlags flags)
 		{
 			if ((flags & ObjectValueFlags.Field) != 0 && (flags & ObjectValueFlags.ReadOnly) != 0)
 				return "md-literal";
@@ -783,6 +783,14 @@ namespace MonoDevelop.Debugger
 			return editEntry.Text.Substring (startOffset, endOffset - startOffset);
 		}
 		
+		void ICompletionWidget.Replace (int offset, int count, string text)
+		{
+			if (count > 0)
+				editEntry.Text = editEntry.Text.Remove (offset, count);
+			if (!string.IsNullOrEmpty (text))
+				editEntry.Text = editEntry.Text.Insert (offset, text);
+		}
+		
 		char ICompletionWidget.GetChar (int offset)
 		{
 			string txt = editEntry.Text;
@@ -922,6 +930,8 @@ namespace MonoDevelop.Debugger
 			get;
 			set;
 		}
+		static List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
+		public IEnumerable<ICompletionKeyHandler> KeyHandler { get { return keyHandler;} }
 	}
 	
 	class DebugCompletionData: ICompletionData
@@ -954,6 +964,12 @@ namespace MonoDevelop.Debugger
 		public string CompletionText {
 			get {
 				return item.Name;
+			}
+		}
+		
+		public CompletionCategory CompletionCategory  {
+			get {
+				return null;
 			}
 		}
 		

@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.Docking
 		int handlePadding = 0;
 		int defaultItemWidth = 130;
 		int defaultItemHeight = 130;
-		uint autoShowDelay = 50;
+		uint autoShowDelay = 400;
 		uint autoHideDelay = 500;
 		
 		SortedDictionary<string,DockLayout> layouts = new SortedDictionary<string,DockLayout> ();

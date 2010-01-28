@@ -35,7 +35,7 @@ using System.Reflection;
 using ST = System.Threading;
 using Mono.Debugging.Backend;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
 	public class SoftDebuggerAdaptor : ObjectValueAdaptor
 	{
@@ -476,7 +476,7 @@ namespace MonoDevelop.Debugger.Soft
 					DebuggerTypeProxyAttribute at = BuildAttribute<DebuggerTypeProxyAttribute> (attr);
 					td.ProxyType = at.ProxyTypeName;
 					if (!string.IsNullOrEmpty (td.ProxyType))
-						ForceLoadType (ctx, t, td.ProxyType);
+						ForceLoadType (ctx, td.ProxyType);
 				}
 			}
 			foreach (FieldInfoMirror fi in t.GetFields ()) {
@@ -513,16 +513,35 @@ namespace MonoDevelop.Debugger.Soft
 			return default(T);
 		}
 		
-		void ForceLoadType (SoftEvaluationContext ctx, TypeMirror helperType, string typeName)
+		public override object ForceLoadType (EvaluationContext gctx, string typeName)
 		{
+			// Shortcut to avoid a target invoke in case the type is already loaded
+			object t = GetType (gctx, typeName);
+			if (t != null)
+				return t;
+			
+			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			if (!ctx.Options.AllowTargetInvoke)
-				return;
-			TypeMirror tm = helperType.GetTypeObject ().Type;
-			TypeMirror[] ats = new TypeMirror[] { ctx.Session.GetType ("System.String") };
+				return null;
+			TypeMirror tm = (TypeMirror) ctx.Thread.Type.GetTypeObject ().Type;
+			TypeMirror stype = ctx.Session.GetType ("System.String");
+			if (stype == null) {
+				// If the string type is not loaded, we need to get it in another way
+				StringMirror ss = ctx.Thread.Domain.CreateString ("");
+				stype = ss.Type;
+			}
+			TypeMirror[] ats = new TypeMirror[] { stype };
 			MethodMirror met = OverloadResolve (ctx, "GetType", tm, ats, false, true, true);
-			tm.InvokeMethod (ctx.Thread, met, new Value[] {(Value) CreateValue (ctx, typeName)});
-			ctx.Session.StackVersion++;
+			try {
+				tm.InvokeMethod (ctx.Thread, met, new Value[] {(Value) CreateValue (ctx, typeName)});
+			} catch {
+				return null;
+			} finally {
+				ctx.Session.StackVersion++;
+			}
+			return GetType (ctx, typeName);
 		}
+
 		
 		T BuildAttribute<T> (CustomAttributeDataMirror attr)
 		{
@@ -759,7 +778,7 @@ namespace MonoDevelop.Debugger.Soft
 				exception = ex;
 			} catch (Exception ex) {
 				ctx.Session.StackVersion++;
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			}
 		}
@@ -787,10 +806,29 @@ namespace MonoDevelop.Debugger.Soft
 			} catch (InvocationException ex) {
 				exception = ex;
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Error in soft debugger method call thread", ex);
+				LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);
 				exception = ex;
 			} finally {
 				ctx.Session.StackVersion++;
+			}
+		}
+		
+		string GetInfo ()
+		{
+			try {
+				TypeMirror type = null;
+				if (obj is ObjectMirror)
+					type = ((ObjectMirror)obj).Type;
+				else if (obj is TypeMirror)
+					type = (TypeMirror)obj;
+				else if (obj is StructMirror)
+					type = ((StructMirror)obj).Type;
+				return string.Format ("method {0} on object {1}",
+				                      function == null? "[null]" : function.FullName,
+				                      type == null? "[null]" : type.FullName);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error getting info for SDB MethodCall", ex);
+				return "";
 			}
 		}
 

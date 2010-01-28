@@ -1,3 +1,50 @@
+2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/SelectFileDialog.cs:
+	* MonoDevelop.Components/SelectFolderDialog.cs:
+	* MonoDevelop.Components.Extensions/PlatformDialog.cs:
+	* MonoDevelop.Components.Extensions/ISelectFileDialog.cs: Fix
+	  headers and add some comments.
+
+2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components.addin.xml:
+	* MonoDevelop.Components.Extensions:
+	* MonoDevelop.Components\FileEntry.cs:
+	* MonoDevelop.Components\FolderEntry.cs:
+	* MonoDevelop.Components\SelectFileDialog.cs:
+	* MonoDevelop.Components\SelectFolderDialog.cs:
+	* MonoDevelop.Components.Extensions\PlatformDialog.cs:
+	* MonoDevelop.Components.Extensions\ISelectFileDialog.cs: Add
+	  support for platform-specific common dialogs. Added the
+	  default implementations for file and folder selectors.
+
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/FixedWidthWrapLabel.cs: Added support
+	  for setting a font description.
+
+2010-01-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs:
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrameStatus.cs:
+	* MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs:
+	  Use an Id instead of a localizable name to identify
+	  toolbars. Fixes toolbar layout issue when switching locales.
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Components.FolderListSelector.cs: Flush.
+
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/SearchEntry.cs: seach entry menu can
+	  now contain check items.
+
+	* gtk-gui/objects.xml: 
+
 2010-01-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/PathBar.cs: Don't requisition full

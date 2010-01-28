@@ -30,18 +30,37 @@ using System;
 using System.IO;
 
 using Mono.Unix;
+using System.Globalization;
 
 namespace MonoDevelop.Core
 {
-	
-	
 	public static class GettextCatalog
 	{
-		
 		static GettextCatalog ()
 		{
 			//variable can be used to override where Gettext looks for the catalogues
 			string catalog = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
+
+            // Set the user defined language
+			string lang = PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", "");
+			if (!string.IsNullOrEmpty (lang)) {
+                if (PropertyService.IsWindows) {
+                    lang = lang.Replace("_", "-");
+                    CultureInfo ci = CultureInfo.GetCultureInfo(lang);
+                    if (ci.IsNeutralCulture) {
+                        // We need a neutral culture
+                        foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
+                            if (c.Parent != null && c.Parent.Name == ci.Name) {
+                                ci = c;
+                                break;
+                            }
+                    }
+                    if (!ci.IsNeutralCulture)
+                        System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+                }
+                else
+    				Environment.SetEnvironmentVariable ("LANGUAGE", lang);
+            }
 			
 			if (string.IsNullOrEmpty (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;

@@ -17,9 +17,17 @@ namespace MonoDevelop.Deployment.Gui
 			get { return GettextCatalog.GetString ("Add a Packaging Project to the solution for generating different kinds of packages for the new project."); }
 		}
 
-		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			return ((entry is Project) || (entry is PackagingProject)) && parentCombine != null;
+			if (parentCombine == null)
+				return FeatureSupportLevel.NotSupported;
+			
+			if (entry is PackagingProject)
+				return FeatureSupportLevel.Enabled;
+			else if (entry is Project)
+				return FeatureSupportLevel.SupportedByDefault;
+			else
+				return FeatureSupportLevel.NotSupported;
 		}
 		
 		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
@@ -35,11 +43,6 @@ namespace MonoDevelop.Deployment.Gui
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
 		{
 			return null;
-		}
-		
-		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
-		{
-			return entry is PackagingProject;
 		}
 	}
 }

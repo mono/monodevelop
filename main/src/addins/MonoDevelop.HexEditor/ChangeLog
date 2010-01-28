@@ -1,3 +1,19 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs: Flush.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.HexEditor.csproj: Don't use makefiles for
+	  building.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.HexEditor.addin.xml:
+	* MonoDevelop.HexEditor/DisplayBinding.cs: Mark hex editor as
+	  non-default so it doesn't try to take over all filetypes.
+	  Users will have to open it explicitly if they need it.
+
 2009-12-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.HexEditor.addin.xml: Added missing dependency.

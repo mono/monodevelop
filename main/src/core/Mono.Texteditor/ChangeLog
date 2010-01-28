@@ -1,3 +1,39 @@
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Added hovered line
+	  events.
+
+2010-01-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/ITooltipProvider.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs: Some API changes
+	  required for pin watches.
+
+2010-01-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Fixed extending text line
+	  markers update bug.
+
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Hide inform
+	  string during dnd.
+
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/EditMode.cs:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/SimpleEditMode.cs:
+	* Mono.TextEditor/CodeSegmentEditorWindow.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Implemented
+	  'Bug 433318 - Allow scrolling the text boxes that appear
+	  when hovering over a folded region'.
+
 2010-01-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/EditMode.cs:

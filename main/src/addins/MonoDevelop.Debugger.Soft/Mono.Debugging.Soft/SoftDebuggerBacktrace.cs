@@ -32,7 +32,7 @@ using MDB = Mono.Debugger;
 using DC = Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
-namespace MonoDevelop.Debugger.Soft
+namespace Mono.Debugging.Soft
 {
 	public class SoftDebuggerBacktrace: BaseBacktrace
 	{

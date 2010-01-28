@@ -35,6 +35,7 @@ using Mono.Debugging.Client;
 using MonoDevelop.Debugger.Soft;
 using System.Net;
 using MonoDevelop.Core.Assemblies;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.AspNet
 {
@@ -56,16 +57,20 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 		{
 			var cmd = (AspNetExecutionCommand) command;
 			
-			var startInfo = new SoftDebuggerStartInfo ((MonoTargetRuntime)cmd.TargetRuntime) {
+			var runtime = (MonoTargetRuntime)cmd.TargetRuntime;
+			var startInfo = new SoftDebuggerStartInfo (runtime.Prefix, runtime.EnvironmentVariables) {
 				WorkingDirectory = cmd.BaseDirectory,
 				Arguments = cmd.XspParameters.GetXspParameters ().Trim (),
 			};
 			
+			FilePath prefix = runtime.Prefix;
 			startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
-				? startInfo.MonoPrefix.Combine ("lib", "mono", "1.0", "xsp.exe")
-				: startInfo.MonoPrefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
+				? prefix.Combine ("lib", "mono", "1.0", "xsp.exe")
+				: prefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
 			
-			startInfo.SetUserAssemblies (cmd.UserAssemblyPaths);
+			string error;
+			startInfo.UserAssemblyNames = SoftDebuggerEngine.GetAssemblyNames (cmd.UserAssemblyPaths, out error);
+			startInfo.LogMessage = error;
 			
 			return startInfo;
 		}

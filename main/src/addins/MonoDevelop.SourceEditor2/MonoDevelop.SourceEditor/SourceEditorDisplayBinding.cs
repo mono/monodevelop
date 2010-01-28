@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class SourceEditorDisplayBinding : DefaultDisplayBinding
+	public class SourceEditorDisplayBinding : DisplayBinding
 	{
 		public static string SyntaxModePath {
 			get {

@@ -844,5 +844,13 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler UpdateAdjustmentsRequested;
+
+		public void RequestRecenter ()
+		{
+			EventHandler handler = RecenterEditor;
+			if (handler != null)
+				handler (this, EventArgs.Empty);
+		}
+		public event EventHandler RecenterEditor;
 	}
 }

@@ -37,7 +37,7 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderDisplayBinding : DefaultDisplayBinding
+	public class GuiBuilderDisplayBinding : DisplayBinding
 	{
 		bool excludeThis = false;
 		
@@ -53,7 +53,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			IDisplayBinding db = DisplayBindingService.GetBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
 			excludeThis = false;
 			return db != null;
 		}
@@ -61,7 +61,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override IViewContent CreateContentForUri (string fileName)
 		{
 			excludeThis = true;
-			IDisplayBinding db = DisplayBindingService.GetBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
 			GuiBuilderView view = new GuiBuilderView (db.CreateContentForUri (fileName), GetWindow (fileName));
 			excludeThis = false;
 			return view;

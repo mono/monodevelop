@@ -1,3 +1,58 @@
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs: hide close
+	  pins, when mouse is not in the right line.
+
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs:
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs: Worked on
+	  pinnable watches.
+
+2010-01-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs:
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs:
+	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs:
+	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
+	* MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs:
+	  Implemented 'quick watches'.
+
+2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:
+	  Track DisplayBinding API.
+
+2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Track
+	  HelpService API.
+
+2010-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/generated.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Added support for custom key actions in completion list.
+
+2010-01-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: fixed 'Bug
+	  366110 - Accessibility issue regarding tooltips font'.
+
+2010-01-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented
+	  'Bug 433318 - Allow scrolling the text boxes that appear
+	  when hovering over a folded region'.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/DefaultFormatter.cs:

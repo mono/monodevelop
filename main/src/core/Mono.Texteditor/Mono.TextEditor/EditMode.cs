@@ -139,7 +139,8 @@ namespace Mono.TextEditor
 			try {
 				Document.BeginAtomicUndo ();
 				action (this.textEditorData);
-				Document.EndAtomicUndo ();
+				if (Document != null) // action may have closed the document.
+					Document.EndAtomicUndo ();
 			} catch (Exception e) {
 				Console.WriteLine ("Error while executing action " + action.ToString () + " :" + e);
 			}
@@ -179,5 +180,6 @@ namespace Mono.TextEditor
 			
 			return (int)key | (int)(m << 16);
 		}
+		
 	}
 }

@@ -43,10 +43,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		static readonly ReadOnlyCollection<ITypeParameter> emptyParamList = new List<ITypeParameter> ().AsReadOnly ();
 		static readonly ReadOnlyCollection<IReturnType> emptyTypeList = new List<IReturnType> ().AsReadOnly ();
-		static readonly IList<IMember> emptyMembers = new List<IMember> ();
 		
 		protected List<ITypeParameter> typeParameters      = null;
-		List<IMember> members                    = null;
+
 		List<IReturnType> implementedInterfaces  = null;
 		
 		protected ClassType classType = ClassType.Unknown;
@@ -194,7 +193,11 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual IEnumerable<IMember> Members {
 			get {
-				return members ?? emptyMembers;
+				INode child = FirstChild;
+				while (child != null) {
+					yield return (IMember)child;
+					child = child.NextSibling;
+				}
 			}
 		}
 		
@@ -300,14 +303,13 @@ namespace MonoDevelop.Projects.Dom
 		public DomType (ICompilationUnit compilationUnit, ClassType classType, string name, DomLocation location, string namesp, DomRegion region, List<IMember> members)
 		{
 			this.compilationUnit = compilationUnit;
-			this.classType   = classType;
-			this.Name        = name;
-			this.Namespace   = namesp;
-			this.BodyRegion  = region;
-			this.members     = members;
-			this.Location    = location;
-			
+			this.classType = classType;
+			this.Name = name;
+			this.Namespace = namesp;
+			this.BodyRegion = region;
+			this.Location = location;
 			foreach (IMember member in members) {
+				AddChild (member);
 				((AbstractMember)member).DeclaringType = this;
 			}
 		}
@@ -511,35 +513,33 @@ namespace MonoDevelop.Projects.Dom
 			member.DeclaringType = this;
 			
 			switch (member.MemberType) {
-				case MemberType.Field:
-					fieldCount++;
-					break;
-				case MemberType.Method:
-					if (((IMethod)member).IsConstructor) {
-						constructorCount++;
-					} else {
-						methodCount++;
-					}
-					break;
-				case MemberType.Property:
-					if (((IProperty)member).IsIndexer) {
-						indexerCount++;
-					} else {
-						propertyCount++;
-					}
-					break;
-				case MemberType.Event:
-					eventCount++;
-					break;
-				case MemberType.Type:
-					innerTypeCount++;
-					break;
-				default:
-					throw new InvalidOperationException ();
+			case MemberType.Field:
+				fieldCount++;
+				break;
+			case MemberType.Method:
+				if (((IMethod)member).IsConstructor) {
+					constructorCount++;
+				} else {
+					methodCount++;
+				}
+				break;
+			case MemberType.Property:
+				if (((IProperty)member).IsIndexer) {
+					indexerCount++;
+				} else {
+					propertyCount++;
+				}
+				break;
+			case MemberType.Event:
+				eventCount++;
+				break;
+			case MemberType.Type:
+				innerTypeCount++;
+				break;
+			default:
+				throw new InvalidOperationException ();
 			}
-			if (this.members == null)
-				this.members = new List<IMember> ();
-			this.members.Add (member);
+			AddChild (member);
 		}
 		
 		protected void ClearInterfaceImplementations ()

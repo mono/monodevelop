@@ -36,6 +36,7 @@ using System.Xml;
 using Gtk;
 
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -46,15 +47,23 @@ namespace MonoDevelop.RegexToolkit
 		ListStore store;
 		Expression[] expressions;
 		
-		public RegexLibraryWindow() : base(Gtk.WindowType.Toplevel)
+		public RegexLibraryWindow () : base(Gtk.WindowType.Toplevel)
 		{
-			this.Build();
+			this.Build ();
 			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			
 			this.buttonCancel.Clicked += delegate {
 				Destroy ();
 			};
-			this.buttonOk.Clicked += delegate {
+			this.buttonUpdate.Clicked += delegate {
+				if (updateThread != null && updateThread.IsAlive) {
+					updateThread.Abort ();
+					updateThread.Join ();
+					SetButtonUpdate (GettextCatalog.GetString ("Update Library"), "gtk-refresh");
+					updateThread = null;
+					return;
+				}
+				SetButtonUpdate (GettextCatalog.GetString ("_Abort update"), "gtk-media-stop");
 				SynchronizeExpressions ();
 			};
 			
@@ -65,13 +74,20 @@ namespace MonoDevelop.RegexToolkit
 			this.expressionsTreeview.AppendColumn (GettextCatalog.GetString ("Rating"), new CellRendererText (), "text", 1);
 			
 			this.expressionsTreeview.Selection.Changed += delegate {
-				ShowSelectedEntry ();			
+				ShowSelectedEntry ();
 			};
 			this.searchEntry.Changed += delegate {
 				FilterItems (searchEntry.Text);
 			};
 			LoadRegexes ();
 			UpdateExpressions ();
+		}
+
+		void SetButtonUpdate (string text, string icon)
+		{
+			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonUpdate.Child).Child).Children[1]).Text = text;
+			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonUpdate.Child).Child).Children[1]).UseUnderline = true;
+			((Gtk.Image)((Gtk.HBox)((Gtk.Alignment)this.buttonUpdate.Child).Child).Children[0]).Pixbuf = global::Stetic.IconLoader.LoadIcon (this, icon, global::Gtk.IconSize.Menu);
 		}
 		
 		protected override void OnDestroyed ()
@@ -119,16 +135,28 @@ namespace MonoDevelop.RegexToolkit
 			}
 		}
 		
+		Thread updateThread;
+		
 		void SynchronizeExpressions ()
 		{
-			UpdateInProgressDialog updateDialog = new UpdateInProgressDialog ();
-			updateDialog.TransientFor = this;
-			updateDialog.Run ();
-			if (updateDialog.Expressions != null) {
-				this.expressions = updateDialog.Expressions;
-				WriteRegexes ();
-				UpdateExpressions ();
-			}
+			updateThread = new Thread (delegate() {
+				try {
+					Webservices services = new Webservices ();
+					this.expressions = services.ListAllAsXml (1230);
+					Gtk.Application.Invoke (delegate {
+						WriteRegexes ();
+						UpdateExpressions ();
+					});
+				} catch (ThreadAbortException) {
+					Thread.ResetAbort ();
+				} finally {
+					Gtk.Application.Invoke (delegate {
+						SetButtonUpdate (GettextCatalog.GetString ("Update Library"), "gtk-refresh");
+					});
+				}
+			});
+			updateThread.IsBackground = true;
+			updateThread.Start ();
 		}
 		
 #region I/O
@@ -155,8 +183,10 @@ namespace MonoDevelop.RegexToolkit
 		
 		void LoadRegexes ()
 		{
+			if (!File.Exists (LibraryLocation))
+				return;
 			XmlReader reader = null;
-			List<Expression> expressionList = new List<Expression> (); 
+			List<Expression> expressionList = new List<Expression> ();
 			try {
 				reader = XmlTextReader.Create (LibraryLocation);
 				while (reader.Read ()) {

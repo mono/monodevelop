@@ -47,20 +47,16 @@ namespace MonoDevelop.Components {
 		
 		protected override string ShowBrowseDialog (string name, string start_in)
 		{
-			FolderDialog fd = new FolderDialog (name);
+			SelectFolderDialog fd = new SelectFolderDialog (name);
 			if (start_in != null)
-				fd.SetFilename (start_in);
+				fd.InitialFileName = start_in;
 			
 			fd.TransientFor = TransientFor;
-			int response = fd.Run ();
 			
-			if (response == (int) ResponseType.Ok) {
-				fd.Hide ();
-				return fd.Filename;
-			}
-			fd.Hide ();
-			
-			return null;
+			if (fd.Run ())
+				return fd.SelectedFile;
+			else
+				return null;
 		}
 	}
 }

@@ -73,9 +73,26 @@ namespace Mono.Debugging.Evaluation
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
 			if (expObj == null)
-				throw new EvaluatorException ("Could not parse expression '" + exp + "'");
+				throw new EvaluatorException ("Could not parse expression '{0}'", exp);
 			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, expectedType, userVariables);
 			return (ValueReference) expObj.AcceptVisitor (ev, null);
+		}
+		
+		public string Resolve (DebuggerSession session, SourceLocation location, string exp)
+		{
+			if (exp.StartsWith ("?"))
+				return "?" + Resolve (session, location, exp.Substring (1).Trim ());
+			if (exp.StartsWith ("var "))
+				return "var " + Resolve (session, location, exp.Substring (4).Trim (' ','\t'));
+
+			StringReader codeStream = new StringReader (exp);
+			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
+			Expression expObj = parser.ParseExpression ();
+			if (expObj == null)
+				throw new EvaluatorException ("Could not parse expression '{0}'", exp);
+			NRefactoryResolverVisitor ev = new NRefactoryResolverVisitor (session, location, exp);
+			expObj.AcceptVisitor (ev, null);
+			return ev.GetResolvedExpression ();
 		}
 	}
 
@@ -137,6 +154,26 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitTypeReferenceExpression (ICSharpCode.NRefactory.Ast.TypeReferenceExpression typeReferenceExpression, object data)
 		{
+			if (typeReferenceExpression.TypeReference.IsGlobal) {
+				string name = typeReferenceExpression.TypeReference.Type;
+				object type = ctx.Options.AllowImplicitTypeLoading ? ctx.Adapter.ForceLoadType (ctx, name) : ctx.Adapter.GetType (ctx, name);
+				if (type != null)
+					return new TypeValueReference (ctx, type);
+	
+				if (!ctx.Options.AllowImplicitTypeLoading) {
+					string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
+					if (namespaces.Length > 0) {
+						// Look in namespaces
+						foreach (string ns in namespaces) {
+							if (name == ns || ns.StartsWith (name + "."))
+								return new NamespaceValueReference (ctx, name);
+						}
+					}
+				} else {
+					// Assume it is a namespace.
+					return new NamespaceValueReference (ctx, name);
+				}
+			}			
 			throw CreateNotSupportedError ();
 		}
 
@@ -267,8 +304,11 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
 		{
-			string name = identifierExpression.Identifier;
-			
+			return VisitIdentifier (identifierExpression.Identifier);
+		}
+		
+		object VisitIdentifier (string name)
+		{
 			// Look in user defined variables
 			
 			ValueReference userVar;
@@ -315,7 +355,8 @@ namespace Mono.Debugging.Evaluation
 				if (namespaces.Length > 0) {
 					// Look in namespaces
 					foreach (string ns in namespaces) {
-						vtype = ctx.Adapter.GetType (ctx, ns + "." + name);
+						string nm = ns + "." + name;
+						vtype = ctx.Options.AllowImplicitTypeLoading ? ctx.Adapter.ForceLoadType (ctx, nm) : ctx.Adapter.GetType (ctx, nm);
 						if (vtype != null)
 							return new TypeValueReference (ctx, vtype);
 					}

@@ -27,6 +27,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace OSXIntegration.Framework
 {
@@ -175,10 +176,13 @@ namespace OSXIntegration.Framework
 		{
 			int len = Marshal.SizeOf (typeof (T));
 			IntPtr bufferPtr = Marshal.AllocHGlobal (len);
-			CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, bufferPtr, len, 0));
-			T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
-			Marshal.FreeHGlobal (bufferPtr);
-			return val;
+			try {
+				CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, bufferPtr, len, 0));
+				T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
+				return val;
+			} finally{ 
+				Marshal.FreeHGlobal (bufferPtr);
+			}
 		}
 		
 		[DllImport (CarbonLib)]
@@ -197,6 +201,23 @@ namespace OSXIntegration.Framework
 		
 		[DllImport (CarbonLib)]
 		public static extern AEDescStatus AESizeOfNthItem  (ref AEDesc descList, int index, ref CarbonEventParameterType type, out int size);
+		
+		//FIXME: this might not work in some encodings. need to test more.
+		static string GetStringFromAEPtr (ref AEDesc descList, int index)
+		{
+			int size;
+			CarbonEventParameterType type = CarbonEventParameterType.UnicodeText;
+			if (AESizeOfNthItem (ref descList, index, ref type, out size) == AEDescStatus.Ok) {
+				IntPtr buffer = Marshal.AllocHGlobal (size);
+				try {
+					if (AEGetNthPtr (ref descList, index, type, 0, 0, buffer, size, 0) == AEDescStatus.Ok)
+						return Marshal.PtrToStringAuto (buffer, size);
+				} finally {
+					Marshal.FreeHGlobal (buffer);
+				}
+			}
+			return null;
+		}
 		
 		#endregion
 		
@@ -338,6 +359,35 @@ namespace OSXIntegration.Framework
 		}
 		
 		#endregion
+		
+		public static List<string> GetFileListFromEventRef (IntPtr eventRef)
+		{
+			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+			long count = AECountItems (ref list);
+			var files = new List<string> ();
+			for (int i = 1; i <= count; i++) {
+				FSRef fsRef = AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
+				string file = FSRefToPath (ref fsRef);
+				if (!string.IsNullOrEmpty (file))
+					files.Add (file);
+			}
+			CheckReturn (AEDisposeDesc (ref list));
+			return files;
+		}
+		
+		public static List<string> GetUrlListFromEventRef (IntPtr eventRef)
+		{
+			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+			long count = AECountItems (ref list);
+			var files = new List<string> ();
+			for (int i = 1; i <= count; i++) {
+				string url = GetStringFromAEPtr (ref list, i); 
+				if (!string.IsNullOrEmpty (url))
+					files.Add (url);
+			}
+			Carbon.CheckReturn (Carbon.AEDisposeDesc (ref list));
+			return files;
+		}
 	}
 	
 	struct NavEventUPP { IntPtr ptr; }
@@ -402,6 +452,7 @@ namespace OSXIntegration.Framework
 		Accessibility = 1633903461, // 'acce'
 		HIObject = 1751740258, // 'hiob'
 		AppleEvent = 1634039412, // 'aevt'
+		Internet = 1196773964, // 'GURL'
 	}
 	
 	public enum CarbonCommandID : uint

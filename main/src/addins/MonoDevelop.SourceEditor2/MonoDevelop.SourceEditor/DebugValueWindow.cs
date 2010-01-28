@@ -26,22 +26,55 @@
 //
 
 using System;
+using System.Linq;
 using Mono.Debugging.Client;
 using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Gtk;
 using Mono.TextEditor;
+using MonoDevelop.Core.Gui;
+using Gdk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class DebugValueWindow: TooltipWindow
+	public class BaseWindow : Gtk.Window
+	{
+		public BaseWindow () : base(Gtk.WindowType.Popup)
+		{
+			this.SkipPagerHint = true;
+			this.SkipTaskbarHint = true;
+			this.Decorated = false;
+			this.BorderWidth = 2;
+			this.TypeHint = WindowTypeHint.Tooltip;
+			this.AllowShrink = false;
+			this.AllowGrow = false;
+		}
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			int winWidth, winHeight;
+			this.GetSize (out winWidth, out winHeight);
+			evnt.Window.DrawRectangle (Style.BaseGC (StateType.Normal), true, 0, 0, winWidth - 1, winHeight - 1);
+			evnt.Window.DrawRectangle (Style.MidGC (StateType.Normal), false, 0, 0, winWidth - 1, winHeight - 1);
+			foreach (var child in this.Children)
+				this.PropagateExpose (child, evnt);
+			return false;
+		}
+	}
+	
+	public class DebugValueWindow : BaseWindow
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 		bool resetSelection = true;
+		Mono.TextEditor.TextEditor editor;
+		int offset;
+		ObjectValue value;
 		
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, StackFrame frame, ObjectValue value)
+		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value)
 		{
+			this.editor = editor;
+			this.offset = offset;
+			this.value  = value;
 			TransientFor = (Gtk.Window) editor.Toplevel;
 			AcceptFocus = true;
 			
@@ -51,7 +84,29 @@ namespace MonoDevelop.SourceEditor
 			
 			tree = new ObjectValueTreeView ();
 			sw.Add (tree);
-			Add (sw);
+			HBox box = new HBox ();
+			box.Add (sw); 
+			
+			Gtk.EventBox imageEventBox = new Gtk.EventBox ();
+			imageEventBox.VisibleWindow = false;
+			Gtk.Image image = new Gtk.Image ();
+			image.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
+			imageEventBox.EnterNotifyEvent += delegate {
+				image.Pixbuf = ImageService.GetPixbuf ("md-pin-active", IconSize.Menu);
+			};
+			imageEventBox.LeaveNotifyEvent += delegate {
+				image.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
+			};
+			imageEventBox.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
+				if (args.Event.Button == 1)
+					HandlePinButtonClicked (this, EventArgs.Empty);
+			};
+			imageEventBox.Add (image);
+			VBox vbox = new VBox ();
+			vbox.PackStart (imageEventBox, false, false, 0);
+			
+			box.PackEnd (vbox, false, false, 0);
+			Add (box);
 			
 			tree.Frame = frame;
 			tree.CompactView = true;
@@ -79,6 +134,22 @@ namespace MonoDevelop.SourceEditor
 					tree.Selection.UnselectAll ();
 				}
 			};
+		}
+
+		void HandlePinButtonClicked (object sender, EventArgs e)
+		{
+			LineSegment lineSegment = editor.Document.GetLineByOffset (offset);
+			DebugValueMarker marker = (DebugValueMarker)lineSegment.Markers.FirstOrDefault (m => m is DebugValueMarker);
+			
+			if (marker == null) {
+				marker = new DebugValueMarker (editor, lineSegment);
+				editor.Document.AddMarker (lineSegment, marker);
+			}
+			if (!marker.HasValue (value)) {
+				marker.AddValue (value);
+				editor.Document.CommitLineUpdate (lineSegment);
+			}
+			Destroy ();
 		}
 		
 		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)

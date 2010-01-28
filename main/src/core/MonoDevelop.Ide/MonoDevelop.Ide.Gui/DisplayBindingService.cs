@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		static DisplayBindingService ()
 		{
+			//FIXME: this ignores node ordering
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/DisplayBindings", delegate(object sender, ExtensionNodeEventArgs args) {
 				DisplayBindingCodon displayBindingCodon = (DisplayBindingCodon)args.ExtensionNode;
 				switch (args.Change) {
@@ -57,23 +58,26 @@ namespace MonoDevelop.Ide.Gui
 		
 		static IEnumerable<IDisplayBinding> RealDisplayBindings {
 			get {
-				return from binding in displayBindings where binding.DisplayBinding is IDisplayBinding select (IDisplayBinding)binding.DisplayBinding;
+				return displayBindings.Select (d => d.DisplayBinding).OfType<IDisplayBinding> ();
 			}
 		}
 		
-		public static IDisplayBinding GetBindingForUri (string uri)
+		public static IDisplayBinding GetDefaultBindingForUri (string uri)
 		{
-			return GetBinding (uri, null);
+			return GetDefaultBinding (uri, null);
 		}
 		
-		public static IDisplayBinding GetBinding (string uri, string mimeType)
+		public static IDisplayBinding GetDefaultBinding (string uri, string mimeType)
 		{
-			return RealDisplayBindings.FirstOrDefault (binding => (uri != null && binding.CanCreateContentForUri (uri)) || (mimeType != null && binding.CanCreateContentForMimeType (mimeType)));
+			return RealDisplayBindings.FirstOrDefault (binding =>
+				binding.CanUseAsDefault && (
+			    		(uri != null && binding.CanCreateContentForUri (uri))
+			    		|| (mimeType != null && binding.CanCreateContentForMimeType (mimeType))));
 		}
 		
 		public static IEnumerable<IDisplayBinding> GetBindingsForMimeType (string mimeType)
 		{
-			return from binding in RealDisplayBindings where binding.CanCreateContentForMimeType (mimeType) select binding;
+			return RealDisplayBindings.Where (b => b.CanCreateContentForMimeType (mimeType));
 		}
 		
 		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)

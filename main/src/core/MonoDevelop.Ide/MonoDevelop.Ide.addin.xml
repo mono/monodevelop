@@ -837,7 +837,8 @@
 				icon = "gtk-help"
 				_description = "Show help"
 				defaultHandler = "MonoDevelop.Ide.Commands.HelpHandler"
-				shortcut = "F1" />
+				shortcut = "F1"
+				macShortcut = "Meta|Alt|Shift|/" />
 		<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 				defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
 				_label = "_Tip of the Day" 

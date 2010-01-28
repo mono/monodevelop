@@ -1,3 +1,30 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment.Gui/PackagingFeature.cs: Track api
+	  changes.
+
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.InstallDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.DeployFileListWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.EntrySelectionTree.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.PackagingFeatureWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:
+	  Flush.
+
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/PackagingProject.xpt.xml: Move to Other category.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment/IDeployable.cs:

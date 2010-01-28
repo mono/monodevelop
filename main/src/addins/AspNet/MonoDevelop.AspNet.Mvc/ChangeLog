@@ -1,3 +1,8 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs: Flush.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AspMvcProject.cs: Introduced the ConfigurationSelector class

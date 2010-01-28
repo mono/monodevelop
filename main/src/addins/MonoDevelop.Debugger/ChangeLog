@@ -1,3 +1,36 @@
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API
+	  changes.
+
+2010-01-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Made GetIcon
+	  public.
+
+2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.AttachToProcessDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs:
+	  Flush.
+
+2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Implement a type
+	  resolver. Helps fixing bug #570855 - Poor type resolution in
+	  debugger.
+
+2010-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API
+	  changes.
+
 2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Tests:
