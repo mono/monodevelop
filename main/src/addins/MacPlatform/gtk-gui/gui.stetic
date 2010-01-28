@@ -11,7 +11,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/AddIns/MacPlatform.dll" internal="true" />
   </import>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.Updater.UpdateDialog" design-size="450 335">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Platform.Updater.UpdateDialog" design-size="450 373">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">MonoDevelop Updater</property>
@@ -28,7 +28,7 @@
             <child>
               <widget class="Gtk.VBox" id="vbox2">
                 <property name="MemberName" />
-                <property name="Spacing">2</property>
+                <property name="Spacing">6</property>
                 <property name="BorderWidth">6</property>
                 <child>
                   <widget class="Gtk.Notebook" id="notebook1">
@@ -114,13 +114,36 @@ please close MonoDevelop before installing them.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.CheckButton" id="checkAutomaticallyCheck">
+                  <widget class="Gtk.HBox" id="hbox1">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">Check for updates automatically</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Label" id="label1">
+                        <property name="MemberName" />
+                        <property name="LabelProp" translatable="yes">Update _level:</property>
+                        <property name="UseUnderline">True</property>
+                        <property name="MnemonicWidget">updateLevelCombo</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.ComboBox" id="updateLevelCombo">
+                        <property name="MemberName" />
+                        <property name="IsTextCombo">True</property>
+                        <property name="Items" translatable="yes" />
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">False</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -130,10 +153,10 @@ please close MonoDevelop before installing them.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.CheckButton" id="checkIncludeUnstable">
+                  <widget class="Gtk.CheckButton" id="checkAutomaticallyCheck">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">Include unstable/beta versions</property>
+                    <property name="Label" translatable="yes">Check for updates automatically</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>

@@ -42,7 +42,7 @@ namespace MonoDevelop.Platform.Updater
 		public string Version;
 		public DateTime Date;
 		public List<Release> Releases;
-		public bool IsUnstable;
+		public UpdateLevel Level;
 	}
 	
 	public class Release
@@ -79,16 +79,16 @@ namespace MonoDevelop.Platform.Updater
 	
 	public class UpdateResult
 	{
-		public UpdateResult (List<Update> updates, bool includesUnstable, string errorMessage, Exception errorDetail)
+		public UpdateResult (List<Update> updates, UpdateLevel level, string errorMessage, Exception errorDetail)
 		{
 			this.Updates = updates;
-			this.IncludesUnstable = includesUnstable;
+			this.Level = level;
 			this.ErrorMessage = errorMessage;
 			this.ErrorDetail = errorDetail;
 		}
 		
 		public List<Update> Updates { get; private set; }
-		public bool IncludesUnstable { get; private set; }
+		public UpdateLevel Level { get; private set; }
 		public string ErrorMessage { get; private set; }
 		public Exception ErrorDetail { get; private set; }
 		
