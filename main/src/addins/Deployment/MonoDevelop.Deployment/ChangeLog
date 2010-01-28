@@ -1,3 +1,7 @@
+2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/PackagingProject.xpt.xml: Move to Other category.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment/IDeployable.cs:
