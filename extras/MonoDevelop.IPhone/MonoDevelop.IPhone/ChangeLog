@@ -1,5 +1,14 @@
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Allow setting SdkVersion from project
+	  template. Pass SdkVersion to IPhoneExecutionCommand.
+
+	* IPhoneExecutionCommand.cs: Add SdkVersion property on
+	  IPhoneExecutionCommand, and some utility properties for the
+	  log paths.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProjectConfiguration.cs: Copy MtouchI18n and
 	  MtouchSdkVersion when cloning configs. Fixes persisting
 	  these values after editing them.
