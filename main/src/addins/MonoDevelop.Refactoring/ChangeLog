@@ -1,3 +1,8 @@
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Refactoring.csproj: Don't use makefiles for
+	  building.
+
 2010-01-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
