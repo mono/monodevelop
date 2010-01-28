@@ -171,6 +171,10 @@ namespace MonoDevelop.Platform.Updater
 				query.Append (level.ToString ().ToLower ());
 			}
 			
+			if (Directory.Exists ("/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.2.sdk")) {
+				query.Append ("&env=iphsdk3.2");
+			}
+			
 			var request = (HttpWebRequest) WebRequest.Create (query.ToString ());
 			
 			//FIXME: use IfModifiedSince

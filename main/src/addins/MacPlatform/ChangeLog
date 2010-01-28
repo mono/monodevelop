@@ -1,5 +1,10 @@
 2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Updater/UpdateService.cs: Send env flags to the update
+	  server.
+
+2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Updater/UpdateDialog.cs: Colorize betas and alphas in the
 	  update dialog.
 
