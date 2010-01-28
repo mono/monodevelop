@@ -1093,7 +1093,6 @@ namespace MonoDevelop.CSharp.Completion
 				newData.HideExtensionParameter = HideExtensionParameter;
 				string memberKey = newData.CompletionText;
 				if (member is IMember) {
-					Console.WriteLine ("add to category:" + ((IMember)member).DeclaringType);
 					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
 				}
 				MemberCompletionData existingData;
