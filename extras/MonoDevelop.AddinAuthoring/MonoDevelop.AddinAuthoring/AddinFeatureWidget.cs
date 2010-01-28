@@ -220,9 +220,16 @@ namespace MonoDevelop.AddinAuthoring
 			get { return AddinManager.CurrentLocalizer.GetString ("Support of extensibility with add-ins"); }
 		}
 		
-		public bool SupportsSolutionItem (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			return entry is DotNetProject;
+			if (entry is DotNetProject) {
+				if (AddinData.GetAddinData ((DotNetProject)entry) != null)
+					return FeatureSupportLevel.Enabled;
+				else
+					return FeatureSupportLevel.Supported;
+			}
+			else
+				return FeatureSupportLevel.NotSupported;
 		}
 
 		public Widget CreateFeatureEditor (SolutionFolder parentFolder, SolutionItem entry)
@@ -232,11 +239,6 @@ namespace MonoDevelop.AddinAuthoring
 			return w;
 		}
 		
-		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry)
-		{
-			return AddinData.GetAddinData ((DotNetProject)entry) != null;
-		}
-
 		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Widget ed)
 		{
 			AddinFeatureWidget editor = (AddinFeatureWidget) ed;
