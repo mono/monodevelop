@@ -340,11 +340,15 @@ namespace MonoDevelop.AddinAuthoring
 	[Extension]
 	public class MonoAddinsMSBuildImportProvider: IMSBuildImportProvider
 	{
-		public IEnumerable<string> GetRequiredImports (SolutionEntityItem item)
+		const string import = @"$(MSBuildExtensionsPath)\Mono.Addins.targets";
+		
+		public void UpdateImports (SolutionEntityItem item, List<string> imports)
 		{
 			DotNetProject project = item as DotNetProject;
 			if (project != null && project.GetAddinData () != null)
-				yield return @"$(MSBuildExtensionsPath)\Mono.Addins.targets";
+				imports.Add (import);
+			else
+				imports.Remove (import);
 		}
 	}
 }
