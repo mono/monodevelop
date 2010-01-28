@@ -138,11 +138,11 @@ namespace MonoDevelop.Platform.Updater
 					break;
 				}
 				if (warning != null)
-					warning = "<b>" + warning + "</b>";
+					warning = "<b><span color=\"#DD1111\">" + warning + "</span></b>";
 				
 				var updateExpander = new Expander ("");
 				updateExpander.LabelWidget = new Label () {
-					Markup = string.Format ("<b>{0}</b>\n{1} {2:yyyy-MM-dd} {3}", update.Name, update.Version, update.Date,
+					Markup = string.Format ("<b>{0}</b>\n{1} ({2:yyyy-MM-dd}) {3}", update.Name, update.Version, update.Date,
 					                        warning ?? ""),
 				};
 				labelBox.PackStart (updateExpander, true, true, 0);

@@ -1,3 +1,8 @@
+2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Updater/UpdateDialog.cs: Colorize betas and alphas in the
+	  update dialog.
+
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateResult.cs: Fix property initialization.
