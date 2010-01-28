@@ -32,13 +32,20 @@ using MonoDevelop.Ide.Tasks;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class DebugValueMarker : TextMarker, IActionTextMarker
+	public class DebugValueMarker : TextMarker, IActionTextMarker, IDisposable
 	{
+		TextEditor editor;
 		LineSegment lineSegment;
 		List<ObjectValue> objectValues = new List<ObjectValue> ();
+		
+		public bool HasValue (ObjectValue val)
+		{
+			return objectValues.Any (v => v.Name == val.Name);
+		}
 		
 		public void AddValue (ObjectValue val)
 		{
@@ -47,11 +54,32 @@ namespace MonoDevelop.SourceEditor
 		
 		public DebugValueMarker (TextEditor editor, LineSegment lineSegment)
 		{
+			this.editor = editor;
 			this.lineSegment = lineSegment;
-			DebuggingService.CurrentFrameChanged += delegate {
-				if (!DebuggingService.IsDebugging)
-					editor.Document.RemoveMarker (lineSegment, this);
-			};
+			DebuggingService.PausedEvent += HandleDebuggingServiceCallStackChanged;
+			DebuggingService.CurrentFrameChanged += HandleDebuggingServiceCurrentFrameChanged;
+		}
+		
+		
+		void HandleDebuggingServiceCurrentFrameChanged (object sender, EventArgs e)
+		{
+			if (!DebuggingService.IsDebugging) {
+				editor.Document.RemoveMarker (lineSegment, this);
+				Dispose ();
+			}
+		}
+
+		void HandleDebuggingServiceCallStackChanged (object sender, EventArgs e)
+		{
+			if (!DebuggingService.IsDebugging)
+				return;
+			StackFrame frame =  DebuggingService.CurrentFrame;
+//			EvaluationOptions evaluationOptions = frame.DebuggerSession.Options.EvaluationOptions;
+			List<ObjectValue> newValues = new List<ObjectValue> ();
+			foreach (ObjectValue val in this.objectValues) {
+				newValues.Add (frame.GetExpressionValue (val.Name, false));
+			}
+			objectValues = newValues;
 		}
 		
 		public override void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
@@ -68,9 +96,23 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		static string GetString (ObjectValue val)
+		{
+			if (val.IsUnknown) 
+				return GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
+			if (val.IsError) 
+				return val.Value;
+			if (val.IsNotSupported) 
+				return val.Value;
+			if (val.IsError) 
+				return val.Value;
+			if (val.IsEvaluating) 
+				return GettextCatalog.GetString ("Evaluating...");
+			return val.DisplayValue ?? "(null)";
+		}
+		
 		static int MeasureObjectValue (int y, int lineHeight, Pango.Layout layout, int startXPos, TextEditor editor, ObjectValue val)
 		{
-			
 			int width, height;
 			int xPos = startXPos;
 			
@@ -80,7 +122,7 @@ namespace MonoDevelop.SourceEditor
 			
 			Pango.Layout valueLayout = new Pango.Layout (editor.PangoContext);
 			valueLayout.FontDescription = editor.Options.Font;
-			valueLayout.SetText (val.Value);
+			valueLayout.SetText (GetString (val));
 			
 			Gdk.Pixbuf pixbuf = ImageService.GetPixbuf (ObjectValueTreeView.GetIcon (val.Flags), Gtk.IconSize.Menu);
 			int pW = pixbuf.Width;
@@ -126,7 +168,7 @@ namespace MonoDevelop.SourceEditor
 			
 			Pango.Layout valueLayout = new Pango.Layout (editor.PangoContext);
 			valueLayout.FontDescription = editor.Options.Font;
-			valueLayout.SetText (val.Value);
+			valueLayout.SetText (GetString (val));
 			
 			Gdk.Pixbuf pixbuf = ImageService.GetPixbuf (ObjectValueTreeView.GetIcon (val.Flags), Gtk.IconSize.Menu);
 			int pW = pixbuf.Width;
@@ -150,10 +192,10 @@ namespace MonoDevelop.SourceEditor
 			
 			xPos += 4;
 			
-			pixbuf = ImageService.GetPixbuf (Stock.CloseIcon, Gtk.IconSize.Menu);
+			pixbuf = ImageService.GetPixbuf ("md-pin-down", Gtk.IconSize.Menu);
 			pW = pixbuf.Width;
 			pH = pixbuf.Height;
-			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), pixbuf, 0, 0, xPos, y + 1 + (lineHeight - pH) / 2, pW, pH, Gdk.RgbDither.None, 0, 0 );
+			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), pixbuf, 0, 0, xPos, y, pW, pH, Gdk.RgbDither.None, 0, 0 );
 			xPos += pW + 2;
 			
 			win.DrawRectangle (lineGc, false, startX, y, xPos - startX, lineHeight);
@@ -211,6 +253,14 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
+		#endregion
+		
+		#region IDisposable implementation
+		public void Dispose ()
+		{
+			DebuggingService.CallStackChanged -= HandleDebuggingServiceCallStackChanged;
+			DebuggingService.CurrentFrameChanged -= HandleDebuggingServiceCurrentFrameChanged;
+		}
 		#endregion
 	}
 }

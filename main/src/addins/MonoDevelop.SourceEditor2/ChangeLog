@@ -1,3 +1,9 @@
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs:
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs: Worked on
+	  pinnable watches.
+
 2010-01-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
