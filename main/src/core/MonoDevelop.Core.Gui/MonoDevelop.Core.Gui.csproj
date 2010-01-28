@@ -544,6 +544,15 @@
     <EmbeddedResource Include="icons\visual-style-24.png">
       <LogicalName>visual-style-24.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\hicolor_status_16x16_pin-active.png">
+      <LogicalName>hicolor_status_16x16_pin-active.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\hicolor_status_16x16_pin-down.png">
+      <LogicalName>hicolor_status_16x16_pin-down.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\hicolor_status_16x16_pin-up.png">
+      <LogicalName>hicolor_status_16x16_pin-up.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />
