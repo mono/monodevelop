@@ -42,7 +42,6 @@ namespace MonoDevelop.Platform.Updater
 		const int PAGE_UPDATES = 1;
 		
 		List<UpdateResult> results = new List<UpdateResult> ();
-		ListStore store;
 		
 		public UpdateDialog ()
 		{

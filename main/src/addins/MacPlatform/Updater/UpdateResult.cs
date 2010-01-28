@@ -82,7 +82,7 @@ namespace MonoDevelop.Platform.Updater
 		public UpdateResult (List<Update> updates, UpdateLevel level, string errorMessage, Exception errorDetail)
 		{
 			this.Updates = updates;
-			this.Level = Level;
+			this.Level = level;
 			this.ErrorMessage = errorMessage;
 			this.ErrorDetail = errorDetail;
 		}

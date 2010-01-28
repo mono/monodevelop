@@ -1,5 +1,13 @@
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Updater/UpdateResult.cs: Fix property initialization.
+
+	* Updater/UpdateDialog.cs: Remove unused field.
+
+	* Updater/UpdateService.cs: Fix attribute name.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Updater/UpdateDialog.cs: Fix threading issue.
 
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>

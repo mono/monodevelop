@@ -199,7 +199,7 @@ namespace MonoDevelop.Platform.Updater
 								Url = first.Attribute ("url").Value,
 								Version = first.Attribute ("version").Value,
 								Level = first.Attribute ("level") != null
-									? (UpdateLevel)Enum.Parse (typeof(UpdateLevel), (string)first.Attribute ("unstable"))
+									? (UpdateLevel)Enum.Parse (typeof(UpdateLevel), (string)first.Attribute ("level"))
 									: UpdateLevel.Stable,
 								Date = DateTime.Parse (first.Attribute ("date").Value),
 								Releases = x.Elements ("Update").Select (y => new Release () {
