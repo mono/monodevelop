@@ -232,25 +232,29 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		internal static IEnumerable<IMember> CollectMembers (ProjectDom dom, IMember member)
 		{
-			// for members we need to collect the whole 'class' of members (overloads & implementing types)
-			HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
-			foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-				if (type.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
-					// search in the class for the member
-					foreach (IMember interfaceMember in type.SearchMember (member.Name, true)) {
-						if (interfaceMember.MemberType == member.MemberType)
-							yield return interfaceMember;
-					}
-					
-					// now search in all subclasses of this class for the member
-					foreach (IType implementingType in dom.GetSubclasses (type)) {
-						string name = implementingType.DecoratedFullName;
-						if (alreadyVisitedTypes.Contains (name))
-							continue;
-						alreadyVisitedTypes.Add (name);
-						foreach (IMember typeMember in implementingType.SearchMember (member.Name, true)) {
-							if (typeMember.MemberType == member.MemberType)
-								yield return typeMember;
+			if (member is IMethod && ((IMethod)member).IsConstructor) {
+				yield return member;
+			} else {
+				// for members we need to collect the whole 'class' of members (overloads & implementing types)
+				HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
+				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
+					if (type.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
+						// search in the class for the member
+						foreach (IMember interfaceMember in type.SearchMember (member.Name, true)) {
+							if (interfaceMember.MemberType == member.MemberType)
+								yield return interfaceMember;
+						}
+						
+						// now search in all subclasses of this class for the member
+						foreach (IType implementingType in dom.GetSubclasses (type)) {
+							string name = implementingType.DecoratedFullName;
+							if (alreadyVisitedTypes.Contains (name))
+								continue;
+							alreadyVisitedTypes.Add (name);
+							foreach (IMember typeMember in implementingType.SearchMember (member.Name, true)) {
+								if (typeMember.MemberType == member.MemberType)
+									yield return typeMember;
+							}
 						}
 					}
 				}
