@@ -145,13 +145,14 @@ namespace MonoDevelop.SourceEditor
 			
 			valueLayout.GetPixelSize (out width, out height);
 			xPos += width;
+			/*
 			if (editor.TextViewMargin.HoveredLine == lineSegment) {
 				xPos += 4;
 				
 				pixbuf = ImageService.GetPixbuf (Stock.CloseIcon, Gtk.IconSize.Menu);
 				pW = pixbuf.Width;
 				xPos += pW + 2;
-			}
+			}*/
 			
 			nameLayout.Dispose ();
 			valueLayout.Dispose ();
@@ -202,7 +203,7 @@ namespace MonoDevelop.SourceEditor
 			xPos += width;
 			
 			xPos += 2;
-			
+			/*
 			if (editor.TextViewMargin.HoveredLine == lineSegment) {
 				win.DrawLine (lineGc, xPos, y, xPos, y2);
 				xPos += 2;
@@ -211,7 +212,7 @@ namespace MonoDevelop.SourceEditor
 				pH = pixbuf.Height;
 				win.DrawPixbuf (lineGc, pixbuf, 0, 0, xPos, y, pW, pH, Gdk.RgbDither.None, 0, 0 );
 				xPos += pW + 2;
-			}
+			}*/
 			
 			win.DrawRectangle (lineGc, false, startX, y, xPos - startX, lineHeight);
 			
@@ -223,9 +224,11 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region IActionTextMarker implementation
-		int MouseIsOverMarker (TextEditor editor, MarginMouseEventArgs args)
+		int MouseIsOverMarker (TextEditor editor, MarginMouseEventArgs args, out int x, out int y, out int w, out int h)
 		{
-			int y = editor.LineToVisualY (args.LineNumber) - (int)editor.VAdjustment.Value;
+			x = y = w = h = -1;
+			y = editor.LineToVisualY (args.LineNumber) - (int)editor.VAdjustment.Value;
+			h = editor.GetLineHeight (lineSegment);
 			if (args.Y > y + editor.LineHeight)
 				return -1;
 			TextViewMargin.LayoutWrapper layoutWrapper = editor.TextViewMargin.GetLayout (lineSegment);
@@ -236,13 +239,47 @@ namespace MonoDevelop.SourceEditor
 				layoutWrapper.Dispose ();
 			
 			int startXPos = width;
-			int x = (int)(args.X + editor.HAdjustment.Value);
+			x = (int)(args.X + editor.HAdjustment.Value);
 			
 			for (int i = 0; i < objectValues.Count; i++) {
 				ObjectValue curValue = objectValues[i];
+				int oldX = startXPos;
 				startXPos = MeasureObjectValue (y, 0, layoutWrapper.Layout, startXPos, editor, curValue) + 2;
-				if (x < startXPos && x >= startXPos - 16)
+				if (x < startXPos && x >= startXPos - 16) {
+					w = startXPos - oldX;
 					return i;
+				}
+			}
+			
+			return -1;
+		}
+		
+		int MouseIsOverBox (TextEditor editor, MarginMouseEventArgs args, out int x, out int y, out int w, out int h)
+		{
+			x = y = w = h = -1;
+			y = editor.LineToVisualY (args.LineNumber) - (int)editor.VAdjustment.Value;
+			h = editor.GetLineHeight (lineSegment);
+			if (args.Y > y + editor.LineHeight)
+				return -1;
+			TextViewMargin.LayoutWrapper layoutWrapper = editor.TextViewMargin.GetLayout (lineSegment);
+			int width, height;
+			layoutWrapper.Layout.GetPixelSize (out width, out height);
+			
+			if (layoutWrapper.IsUncached)
+				layoutWrapper.Dispose ();
+			
+			int startXPos = width;
+			int mouseX = (int)(args.X + editor.HAdjustment.Value);
+			
+			for (int i = 0; i < objectValues.Count; i++) {
+				ObjectValue curValue = objectValues[i];
+				int oldX = startXPos;
+				startXPos = MeasureObjectValue (y, 0, layoutWrapper.Layout, startXPos, editor, curValue) + 2;
+				if (oldX < mouseX && mouseX < startXPos) {
+					x = oldX;
+					w = startXPos - oldX;
+					return i;
+				}
 			}
 			
 			return -1;
@@ -250,20 +287,30 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool MousePressed (TextEditor editor, MarginMouseEventArgs args)
 		{
-			int marker = MouseIsOverMarker (editor, args);
-			if (marker >= 0) {
-				objectValues.RemoveAt (marker);
-				editor.Document.CommitLineUpdate (lineSegment);
-				return true;
-			}
 			return false;
 		}
 		
-		static Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
+//		static Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
 		public bool MouseHover (TextEditor editor, MarginMouseEventArgs args, ref Gdk.Cursor cursor)
 		{
-			if (MouseIsOverMarker (editor, args) >= 0) {
-				cursor = arrowCursor;
+			int x, y, w, h;
+			int value = MouseIsOverBox (editor, args, out x, out y, out w, out h);
+			if (value >= 0) {
+				DebugValueWindow window = new DebugValueWindow (editor, lineSegment.Offset, DebuggingService.CurrentFrame, objectValues[value], true);
+				int ox = 0, oy = 0;
+				editor.GdkWindow.GetOrigin (out ox, out oy);
+				window.Events |= Gdk.EventMask.LeaveNotifyMask; 
+				window.Move (ox + editor.TextViewMargin.XOffset + x, oy + y);
+				window.Resize (w, h);
+				window.LeaveNotifyEvent += delegate {
+					window.Destroy ();
+				};
+				window.PinButtonClicked += delegate {
+					objectValues.RemoveAt (value);
+					editor.Document.CommitLineUpdate (lineSegment);
+					window.Destroy ();
+				};
+				window.ShowAll ();
 				return true;
 			}
 			return false;

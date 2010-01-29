@@ -70,7 +70,7 @@ namespace MonoDevelop.SourceEditor
 		int offset;
 		ObjectValue value;
 		
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value)
+		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, bool unpin)
 		{
 			this.editor = editor;
 			this.offset = offset;
@@ -90,15 +90,19 @@ namespace MonoDevelop.SourceEditor
 			Gtk.EventBox imageEventBox = new Gtk.EventBox ();
 			imageEventBox.VisibleWindow = false;
 			Gtk.Image image = new Gtk.Image ();
-			image.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
-			imageEventBox.EnterNotifyEvent += delegate {
-				image.Pixbuf = ImageService.GetPixbuf ("md-pin-active", IconSize.Menu);
-			};
-			imageEventBox.LeaveNotifyEvent += delegate {
-				image.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
-			};
+			image.Pixbuf = ImageService.GetPixbuf (unpin ? "md-pin-down" : "md-pin-up", IconSize.Menu);
+			if (!unpin) {
+				imageEventBox.EnterNotifyEvent += delegate {
+					image.Pixbuf = ImageService.GetPixbuf ("md-pin-active", IconSize.Menu);
+				};
+				imageEventBox.LeaveNotifyEvent += delegate {
+					image.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
+				};
+			}
 			imageEventBox.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
-				HandlePinButtonClicked (this, EventArgs.Empty);
+				OnPinButtonClicked (EventArgs.Empty);
+				if (!unpin)
+					HandlePinButtonClicked (this, EventArgs.Empty);
 			};
 			imageEventBox.Add (image);
 			VBox vbox = new VBox ();
@@ -134,9 +138,18 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 		}
-
+		
+		public event EventHandler PinButtonClicked;
+		protected virtual void OnPinButtonClicked (EventArgs e)
+		{
+			EventHandler handler = this.PinButtonClicked;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		void HandlePinButtonClicked (object sender, EventArgs e)
 		{
+			
 			LineSegment lineSegment = editor.Document.GetLineByOffset (offset);
 			DebugValueMarker marker = (DebugValueMarker)lineSegment.Markers.FirstOrDefault (m => m is DebugValueMarker);
 			
