@@ -1,3 +1,10 @@
+2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Don't
+	  show the window in the ctor. This means the creator can move
+	  it before showing it, and we don't get a flicker. Also means
+	  we have to grab/ungrab in map/unmap.
+
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DebugValueMarker.cs: hide close

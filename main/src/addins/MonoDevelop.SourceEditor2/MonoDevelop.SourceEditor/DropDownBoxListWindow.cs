@@ -77,9 +77,7 @@ namespace MonoDevelop.SourceEditor
 			Add (hBox);
 			
 			ResetSizes ();
-			this.ShowAll ();
-			Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
-			Gtk.Grab.Add (this);
+			this.Child.ShowAll ();
 		}
 		
 		public void SelectItem (object item)
@@ -91,7 +89,20 @@ namespace MonoDevelop.SourceEditor
 					break;
 				}
 			}
-				
+		}
+		
+		protected override void OnMapped ()
+		{
+			base.OnMapped ();
+			Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
+			Gtk.Grab.Add (this);
+		}
+		
+		protected override void OnUnmapped ()
+		{
+			Gtk.Grab.Remove (this);
+			Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
+			base.OnUnmapped ();
 		}
 		
 		public bool ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
@@ -173,14 +184,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.parent.DestroyWindow ();
 			return base.OnButtonPressEvent (evnt);
-		}
-
-		
-		protected override void OnDestroyed ()
-		{
-			Gtk.Grab.Remove (this);
-			Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-			base.OnDestroyed ();
 		}
 
 		internal class ListWidget: Gtk.DrawingArea
