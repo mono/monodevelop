@@ -1,3 +1,8 @@
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs: handles h
+	  scrolling & clipping.
+
 2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Don't

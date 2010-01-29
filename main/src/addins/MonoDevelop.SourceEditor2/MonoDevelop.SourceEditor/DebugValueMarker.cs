@@ -166,9 +166,13 @@ namespace MonoDevelop.SourceEditor
 			int xPos = startXPos;
 			int startX = xPos;
 			Gdk.GC lineGc = new Gdk.GC (win);
+			
+			Gdk.Rectangle clipRectangle = new Gdk.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+			lineGc.ClipRectangle = clipRectangle;
 			lineGc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
 			
 			Gdk.GC textGc = new Gdk.GC (win);
+			textGc.ClipRectangle = clipRectangle;
 			textGc.RgbFgColor = editor.ColorStyle.Default.Color;
 			
 			Pango.Layout nameLayout = new Pango.Layout (editor.PangoContext);
@@ -183,7 +187,7 @@ namespace MonoDevelop.SourceEditor
 			int pW = pixbuf.Width;
 			int pH = pixbuf.Height;
 			xPos += 2;
-			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), pixbuf, 0, 0, xPos, y + 1 + (lineHeight - pH) / 2, pW, pH, Gdk.RgbDither.None, 0, 0 );
+			win.DrawPixbuf (lineGc, pixbuf, 0, 0, xPos, y + 1 + (lineHeight - pH) / 2, pW, pH, Gdk.RgbDither.None, 0, 0 );
 			xPos += pixbuf.Width + 2;
 			nameLayout.GetPixelSize (out width, out height);
 			win.DrawLayout (textGc, xPos, y + (lineHeight - height) / 2, nameLayout);
@@ -205,7 +209,7 @@ namespace MonoDevelop.SourceEditor
 				pixbuf = ImageService.GetPixbuf ("md-pin-down", Gtk.IconSize.Menu);
 				pW = pixbuf.Width;
 				pH = pixbuf.Height;
-				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), pixbuf, 0, 0, xPos, y, pW, pH, Gdk.RgbDither.None, 0, 0 );
+				win.DrawPixbuf (lineGc, pixbuf, 0, 0, xPos, y, pW, pH, Gdk.RgbDither.None, 0, 0 );
 				xPos += pW + 2;
 			}
 			
@@ -232,11 +236,12 @@ namespace MonoDevelop.SourceEditor
 				layoutWrapper.Dispose ();
 			
 			int startXPos = width;
+			int x = (int)(args.X + editor.HAdjustment.Value);
 			
 			for (int i = 0; i < objectValues.Count; i++) {
 				ObjectValue curValue = objectValues[i];
 				startXPos = MeasureObjectValue (y, 0, layoutWrapper.Layout, startXPos, editor, curValue) + 2;
-				if (args.X < startXPos && args.X >= startXPos - 16)
+				if (x < startXPos && x >= startXPos - 16)
 					return i;
 			}
 			
