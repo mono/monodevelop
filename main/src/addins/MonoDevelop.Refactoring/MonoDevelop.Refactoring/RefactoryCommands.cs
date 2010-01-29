@@ -55,6 +55,7 @@ namespace MonoDevelop.Refactoring
 		CurrentRefactoryOperations,
 		GotoDeclaration,
 		FindReferences,
+		FindDerivedClasses,
 		DeclareLocal,
 		Rename,
 		RemoveUnusedImports,

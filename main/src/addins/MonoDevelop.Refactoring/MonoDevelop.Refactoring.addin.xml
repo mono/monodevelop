@@ -85,6 +85,9 @@
 					_label = "_Find references" 
 					shortcut = "Shift|F12"
 					macShortcut = "Shift|F12"/>
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
+					defaultHandler = "MonoDevelop.Refactoring.FindDerivedClassesHandler"
+					_label = "Find _derived classes" />
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Rename"
 					defaultHandler = "MonoDevelop.Refactoring.Rename.RenameHandler"
 					_label = "_Rename..." 

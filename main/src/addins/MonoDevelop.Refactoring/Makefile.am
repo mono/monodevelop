@@ -77,6 +77,7 @@ FILES =  \
 	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
 	MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs \
 	MonoDevelop.Refactoring/Change.cs \
+	MonoDevelop.Refactoring/FindDerivedClassesHandler.cs \
 	MonoDevelop.Refactoring/FindReferencesHandler.cs \
 	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
 	MonoDevelop.Refactoring/HelperMethods.cs \

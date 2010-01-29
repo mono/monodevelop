@@ -1,5 +1,14 @@
 2010-01-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/FindDerivedClassesHandler.cs: Added
+	  FindDerivedClasses command.
+
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: fixed
 	  'Bug 574924 - Find references doesn't work for constructor'.
 
