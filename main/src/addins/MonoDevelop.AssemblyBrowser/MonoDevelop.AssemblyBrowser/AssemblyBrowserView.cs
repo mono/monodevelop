@@ -93,5 +93,18 @@ namespace MonoDevelop.AssemblyBrowser
 			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
 			refactorer.FindReferences ();
 		}
+		
+		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses)]
+		public void FindDerivedClasses ()
+		{
+			IMember member = widget.ActiveMember;
+			if (member == null)
+				return;
+			ProjectDom dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
+			if (dom == null)
+				return;
+			Refactorer refactorer = new Refactorer (dom, null, null, member, null);
+			refactorer.FindDerivedClasses ();
+		}
 	}
 }
