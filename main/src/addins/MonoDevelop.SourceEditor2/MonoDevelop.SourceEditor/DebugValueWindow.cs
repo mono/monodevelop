@@ -98,8 +98,7 @@ namespace MonoDevelop.SourceEditor
 				image.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
 			};
 			imageEventBox.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
-				if (args.Event.Button == 1)
-					HandlePinButtonClicked (this, EventArgs.Empty);
+				HandlePinButtonClicked (this, EventArgs.Empty);
 			};
 			imageEventBox.Add (image);
 			VBox vbox = new VBox ();
