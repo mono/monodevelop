@@ -1,3 +1,8 @@
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	  fixed intellisense bug found by Marek.
+
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

@@ -832,7 +832,7 @@ namespace MonoDevelop.CSharp.Resolver
 		void TrackCurrentContext (Token token)
 		{
 			if (frame.state == FrameState.ObjectCreation) {
-				if (token.Kind == Tokens.CloseParenthesis) {
+				if (token.Kind == Tokens.CloseParenthesis || token.Kind == Tokens.CloseSquareBracket) {
 					if (frame.context.IsObjectCreation) {
 						frame.SetContext (ExpressionContext.Default);
 						frame.lastExpressionStart = frame.lastNewTokenStart;
