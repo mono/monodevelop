@@ -1,3 +1,9 @@
+2010-01-28  Scott Willeke  <scott@willeke.com>
+	* MonoDevelop.Ide.Commands/FileCommands.cs
+	Catching exception to prevent lock on load due to no permission 
+	to recently used file.
+	  
+	
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/ISolutionItemFeature.cs:
