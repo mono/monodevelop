@@ -1,3 +1,9 @@
+2010-02-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Don't
+	  inherit the MONO_PATH var from the current process
+	  environment.
+
 2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs:
