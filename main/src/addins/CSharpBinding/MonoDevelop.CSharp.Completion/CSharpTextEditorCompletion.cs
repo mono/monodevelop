@@ -362,7 +362,9 @@ namespace MonoDevelop.CSharp.Completion
 					resolveResult = resolver.Resolve (result, location);
 					if (resolveResult != null) {
 						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
-						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
+						if (resolvedType == null) 
+							return null;
+						if (resolvedType.ClassType == ClassType.Enum) {
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
 							CompletionDataCollector cdc = new CompletionDataCollector (completionList, Document.CompilationUnit, location);
 							IReturnType returnType = new DomReturnType (resolvedType);
@@ -392,6 +394,29 @@ namespace MonoDevelop.CSharp.Completion
 									completionList.Add (memberData);
 							}
 							completionList.AutoCompleteEmptyMatch = false;
+							return completionList;
+						} else if (resolvedType.FullName == DomReturnType.Bool.FullName) {
+							CompletionDataList completionList = new ProjectDomCompletionDataList ();
+							CompletionDataCollector cdc = new CompletionDataCollector (completionList, Document.CompilationUnit, location);
+							completionList.AutoCompleteEmptyMatch = false;
+							cdc.Add ("true", "md-keyword");
+							cdc.Add ("false", "md-keyword");
+							
+							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
+								MemberCompletionData memberData = o as MemberCompletionData;
+								if (memberData == null || memberData.Member == null)
+									continue;
+								IReturnType returnType = null;
+								if (memberData.Member is IMember) {
+									returnType = ((IMember)memberData.Member).ReturnType;
+								} else if (memberData.Member is IParameter) {
+									returnType = ((IParameter)memberData.Member).ReturnType;
+								} else {
+									returnType = ((LocalVariable)memberData.Member).ReturnType;
+								}
+								if (returnType != null && returnType.FullName == DomReturnType.Bool.FullName)
+									completionList.Add (memberData);
+							}
 							return completionList;
 						}
 					}

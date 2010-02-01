@@ -1,3 +1,9 @@
+2010-02-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  added completion context for boolean variables (case:
+	  "varName = ").
+
 2010-01-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
