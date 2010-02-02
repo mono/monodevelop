@@ -1,3 +1,10 @@
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: Added
+	  unit test file for the new formatter.
+
 2010-01-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Track
