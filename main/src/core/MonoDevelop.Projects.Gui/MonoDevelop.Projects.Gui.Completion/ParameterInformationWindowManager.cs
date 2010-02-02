@@ -54,6 +54,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			MethodData cmd = methods [methods.Count - 1];
 			
 			if (key == Gdk.Key.Down) {
+				if (cmd.MethodProvider.OverloadCount <= 1)
+					return false;
 				if (cmd.CurrentOverload < cmd.MethodProvider.OverloadCount - 1)
 					cmd.CurrentOverload ++;
 				else
@@ -62,6 +64,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return true;
 			}
 			else if (key == Gdk.Key.Up) {
+				if (cmd.MethodProvider.OverloadCount <= 1)
+					return false;
 				if (cmd.CurrentOverload > 0)
 					cmd.CurrentOverload --;
 				else

@@ -1,5 +1,11 @@
 2010-02-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  parameter info window no longer takes the up/down keys when
+	  there are no overloads.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  changed categorized window toggle key to shift+space since
 	  F3 may be bound to commands.
