@@ -221,6 +221,12 @@ namespace MonoDevelop.ValaBinding
 		public DisplayFlags DisplayFlags {
 			get { return DisplayFlags.None; }
 		}
+		
+		public CompletionCategory CompletionCategory  {
+			get {
+				return null;
+			}
+		}
 	}
 
 	/// <summary>
