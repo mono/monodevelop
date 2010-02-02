@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
@@ -156,6 +157,17 @@ namespace MonoDevelop.Moonlight
 			info.Description = "Moonlight " + fxVersion;
 			info.Version = pluginVersion;
 			return info;
+		}
+		
+		public override string GetToolPath (string toolName)
+		{
+			// never run smcs.exe directly. 
+			// base method also checks for the exe in each path, but don't want that
+			// it needs magic mono runtime args and maybe a special runtime.
+			if (toolName == "csc" || toolName == "mcs" || toolName == "smcs")
+				return GetToolsPaths ().Select (p => Path.Combine (p, "smcs")).Where (File.Exists).FirstOrDefault ();
+			
+			return base.GetToolPath (toolName);
 		}
 	}
 }

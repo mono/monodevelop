@@ -1,5 +1,12 @@
 2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs: Make
+	  sure not to ever use smcs.exe directly. It needs magic
+	  runtime args and maybe a different Mono - and we need the
+	  smcs script to handle that.
+
+2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightParser.cs: Use
 	  DomRegion.Empty.
 
