@@ -239,7 +239,7 @@ namespace MonoDevelop.Components
 		int GetItemAt (int x, int y)
 		{
 			int xpos = padding;
-			if (widths == 0 || x < xpos)
+			if (widths == null || x < xpos)
 				return -1;
 			//could do a binary search, but probably not worth it
 			for (int i = 0; i < path.Length; i++) {
