@@ -1,6 +1,12 @@
 2010-02-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  changed categorized window toggle key to shift+space since
+	  F3 may be bound to commands.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Changed the category mode hotkey for code completion to F3.
 
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
