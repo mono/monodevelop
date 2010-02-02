@@ -29,9 +29,9 @@ using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
-using Mono.Debugger;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
-using MDB = Mono.Debugger;
+using MDB = Mono.Debugger.Soft;
 using System.Net.Sockets;
 using System.IO;
 using System.Reflection;
@@ -1008,7 +1008,7 @@ namespace Mono.Debugging.Soft
 				return null;
 		}
 		
-		public bool IsExternalCode (Mono.Debugger.StackFrame frame)
+		public bool IsExternalCode (Mono.Debugger.Soft.StackFrame frame)
 		{
 			return frame.Method == null || string.IsNullOrEmpty (frame.FileName)
 				|| (assemblyFilters != null && !assemblyFilters.Contains (frame.Method.DeclaringType.Assembly));
