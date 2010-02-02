@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
-		protected INode GetChildByRole (int role)
+		public INode GetChildByRole (int role)
 		{
 			AbstractNode cur = (AbstractNode)FirstChild;
 			while (cur != null) {
@@ -146,7 +146,7 @@ namespace MonoDevelop.Projects.Dom
 			return null;
 		}
 		
-		protected IEnumerable<INode> GetChildrenByRole (int role)
+		public IEnumerable<INode> GetChildrenByRole (int role)
 		{
 			AbstractNode cur = (AbstractNode)FirstChild;
 			while (cur != null) {
