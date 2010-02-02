@@ -1,3 +1,4 @@
+/*
 // 
 // DomFormattingVisitor.cs
 //  
@@ -138,4 +139,4 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 	}
 }
-
+*/
