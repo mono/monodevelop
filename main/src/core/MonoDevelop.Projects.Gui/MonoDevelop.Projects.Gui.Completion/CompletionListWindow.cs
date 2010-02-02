@@ -102,7 +102,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ka = ProcessKey (key, keyChar, modifier);
 			}
 			
-			if (key == Gdk.Key.ISO_Next_Group || key == Gdk.Key.ISO_Prev_Group) {
+			if (key == Gdk.Key.F3) {
 				this.List.InCategoryMode = !this.List.InCategoryMode;
 				this.ResetSizes ();
 				this.List.QueueDraw ();
