@@ -508,7 +508,7 @@ namespace MonoDevelop.CSharp.Completion
 					char nextCh = completionContext.TriggerOffset < Editor.TextLength
 							? Editor.GetCharAt (completionContext.TriggerOffset)
 							: ' ';
-					const string allowedChars = ";[(){}+-*/%^?:&|~!<>=";
+					const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
 					if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
 						return null;
 					if (Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0)

@@ -1,3 +1,19 @@
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom/Identifier.cs:
+	* MonoDevelop.CSharp.Dom/CSharpTokenNode.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/CompilationUnit.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs:
+	  Worked on new dom/gmcs based parser.
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  fixed code completion activation in some cases.
+
 2010-02-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

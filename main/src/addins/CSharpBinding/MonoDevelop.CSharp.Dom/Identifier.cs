@@ -37,16 +37,16 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public int Offset {
+		public DomLocation Location {
 			get;
 			set;
 		}
-		
+		/*
 		public ISegment Segment {
 			get {
 				return new Segment (Offset, Name != null ? Name.Length : 0);
 			}
-		}
+		}*/
 		
 		public Identifier ()
 		{

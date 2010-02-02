@@ -45,7 +45,10 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
 	MonoDevelop.CSharp.Dom/AbstractCSharpNode.cs \
+	MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs \
+	MonoDevelop.CSharp.Dom/CompilationUnit.cs \
 	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
+	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/BaseReferenceExpression.cs \
@@ -122,6 +125,7 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngineStack.cs \
 	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
+	MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs \
 	MonoDevelop.CSharp.Formatting/FormattingPanel.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \

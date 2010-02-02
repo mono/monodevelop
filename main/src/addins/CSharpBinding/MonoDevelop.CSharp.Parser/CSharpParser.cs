@@ -23,94 +23,169 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 /*
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Mono.CSharp;
 using System.Text;
+using Mono.TextEditor;
 using MonoDevelop.CSharp.Dom;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Parser
 {
 	public class CSharpParser
 	{
-		class Dumper : IStructuralVisitor
+		class ConversionVisitor : AbstractStructuralVisitor
 		{
+			MonoDevelop.CSharp.Dom.CompilationUnit unit = new MonoDevelop.CSharp.Dom.CompilationUnit ();
 			
-			public Dumper ()
-			{
-				currentNode = new NamespaceDeclaration ();
-			}
-			
-			#region IStructuralVisitor Members
-			
-			public void Visit (MemberCore member)
+			#region IStructuralVisitor implementation
+			public override void Visit (MemberCore member)
 			{
 				Console.WriteLine ("Unknown member:");
-	//			Console.WriteLine (member.GetType () + "-> Member {0}", member.GetSignatureForError ());
+				Console.WriteLine (member.GetType () + "-> Member {0}", member.GetSignatureForError ());
 			}
 			
-			AbstractCSharpNode currentNode;
+			Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 			
-			public void Visit (TypeContainer typeContainer)
+			public override void Visit (Class c)
 			{
-	//			TypeDeclaration typeDeclaration = new TypeDeclaration ();
-				Console.WriteLine (typeContainer.MemberName);
+				TypeDeclaration newType = CreateTypeDeclaration (c);
+				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Class;
+				newType.AddChild (new CSharpTokenNode (Convert (c.BodyStartLocation)), AbstractCSharpNode.Roles.LBrace);
 				
-				
+				typeStack.Push (newType);
+				base.Visit (c);
+				newType.AddChild (new CSharpTokenNode  (Convert (c.BodyEndLocation)), AbstractCSharpNode.Roles.RBrace);
+				typeStack.Pop ();
 			}
-		
-			public void Visit (Method member)
+
+			TypeDeclaration CreateTypeDeclaration (Mono.CSharp.TypeContainer tc)
 			{
+				TypeDeclaration newType = new TypeDeclaration ();
+				Identifier nameIdentifier = new Identifier () {
+					Name = tc.Name
+				};
 				
+				newType.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
+				unit.AddChild (newType);
+				return newType;
 			}
-				
-			public void Visit (Field member)
-			{
-				
-			}
+
 			
-			public void Visit (Constructor member)
+			public override void Visit (Struct s)
 			{
-				
-			}
-			
-			public void Visit (Destructor member)
-			{
-				
-			}
-			
-			public void Visit (Operator member)
-			{
-				
-			}
-			
-			public void Visit (Property member)
-			{
-				
+				TypeDeclaration newType = CreateTypeDeclaration (s);
+				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Struct;
+				typeStack.Push (newType);
+				base.Visit (s);
+				typeStack.Pop ();
 			}
 			
-			public void Visit (Event member)
+			public override void Visit (Interface i)
 			{
+				TypeDeclaration newType = CreateTypeDeclaration (i);
+				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Interface;
+				typeStack.Push (newType);
+				base.Visit (i);
+				typeStack.Pop ();
+			}
+			
+			public override void Visit (Mono.CSharp.Delegate d)
+			{
+			}
+			
+			public override void Visit (Mono.CSharp.Enum e)
+			{
+				TypeDeclaration newType = CreateTypeDeclaration (e);
+				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Enum;
+				typeStack.Push (newType);
+				base.Visit (e);
+				typeStack.Pop ();
+			}
+			
+			public override void Visit (FixedField f)
+			{
+			}
+			
+			
+			public static DomLocation Convert (Mono.CSharp.Location loc)
+			{
+				return new DomLocation (loc.Row, loc.Column);
+			}
+			public static DomReturnType ConvertToReturnType (FullNamedExpression typeName)
+			{
+				return new DomReturnType ("TODO");
+			}
+			
+			public override void Visit (Field f)
+			{
+				TypeDeclaration typeDeclaration = typeStack.Peek ();
 				
+				FieldDeclaration newField = new FieldDeclaration ();
+				newField.AddChild (ConvertToReturnType (f.TypeName), AbstractNode.Roles.ReturnType);
+				Identifier fieldName = new Identifier () {
+					Name = f.MemberName.Name,
+					Location = Convert (f.MemberName.Location)
+				};
+				newField.AddChild (fieldName, AbstractNode.Roles.Identifier);
+				
+				typeDeclaration.AddChild (newField);
+			}
+			
+			public override void Visit (Operator o)
+			{
+			}
+			
+			public override void Visit (Indexer i)
+			{
+			}
+			
+			public override void Visit (Method m)
+			{
+			}
+			
+			public override void Visit (Property p)
+			{
+			}
+			
+			public override void Visit (Constructor c)
+			{
+			}
+			
+			public override void Visit (Destructor d)
+			{
+			}
+			
+			public override void Visit (Event e)
+			{
 			}
 			#endregion
+			public MonoDevelop.CSharp.Dom.CompilationUnit Unit {
+				get {
+					return unit;
+				}
+				set {
+					unit = value;
+				}
+			}
 		}
 
-		public void Parse (string fileName)
+		public MonoDevelop.CSharp.Dom.CompilationUnit Parse (TextEditorData data)
 		{
+		//	data.Document
 			ModuleContainer top;
-			using (FileStream fs = File.OpenRead (fileName)) {
-				top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v"}, fs, fs.Name, Console.Out);
+			using (Stream stream = data.OpenStream ()) {
+				top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v"}, stream, data.Document.FileName, Console.Out);
 			}
 
 			if (top == null)
-				return;
-
-			top.Accept (new Dumper ());
-			
+				return null;
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor ();
+			top.Accept (conversionVisitor);
+			return conversionVisitor.Unit;
 		}
 	}
 }
