@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Gtk;
+using System.IO;
 
 namespace Mono.TextEditor
 {
@@ -830,6 +831,11 @@ namespace Mono.TextEditor
 			return 0;
 		}
 		#endregion
+		
+		public Stream OpenStream ()
+		{
+			return new MemoryStream (System.Text.Encoding.UTF8.GetBytes (Document.Text), false);
+		}
 		
 		public void RaiseUpdateAdjustmentsRequested ()
 		{

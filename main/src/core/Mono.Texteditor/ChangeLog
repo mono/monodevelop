@@ -1,3 +1,7 @@
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs: Added OpenStream method.
+
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Added hovered line
