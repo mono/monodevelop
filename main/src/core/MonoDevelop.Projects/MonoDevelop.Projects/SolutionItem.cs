@@ -207,6 +207,8 @@ namespace MonoDevelop.Projects
 			}
 			internal set {
 				parentFolder = value;
+				if (internalChildren != null)
+					internalChildren.ParentFolder = value;
 			}
 		}
 		
