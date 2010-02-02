@@ -1,3 +1,10 @@
+2010-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	  Make sure the Run With menu is hidden when there are no
+	  handlers that can run a project. Fixes bug #575657 - Crash
+	  is custom execution modes.
+
 2010-01-28  Scott Willeke  <scott@willeke.com>
 	* MonoDevelop.Ide.Commands/FileCommands.cs
 	Catching exception to prevent lock on load due to no permission 

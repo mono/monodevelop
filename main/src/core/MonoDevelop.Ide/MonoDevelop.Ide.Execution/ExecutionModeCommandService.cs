@@ -81,10 +81,13 @@ namespace MonoDevelop.Ide.Execution
 						ci.Description = ci.Text + " - " + GettextCatalog.GetString ("Hold Control key to display the execution parameters dialog.");
 					}
 				}
-				info.AddSeparator ();
+				if (info.Count > 0)
+					info.AddSeparator ();
 			}
-			info.AddSeparator ();
-			info.Add (GettextCatalog.GetString ("Edit Custom Modes..."), new CommandItem (ctx, null));
+			if (info.Count > 0) {
+				info.AddSeparator ();
+				info.Add (GettextCatalog.GetString ("Edit Custom Modes..."), new CommandItem (ctx, null));
+			}
 		}
 		
 		public static IExecutionHandler GetExecutionModeForCommand (object data)
@@ -132,8 +135,10 @@ namespace MonoDevelop.Ide.Execution
 				List<IExecutionMode> items = new List<IExecutionMode> ();
 				HashSet<string> setModes = new HashSet<string> ();
 				foreach (IExecutionMode mode in mset.ExecutionModes) {
+					if (!ctx.CanExecute (mode.ExecutionHandler))
+						continue;
 					setModes.Add (mode.Id);
-					if (ctx.CanExecute (mode.ExecutionHandler) && (mode.Id != "Default" || includeDefault))
+					if (mode.Id != "Default" || includeDefault)
 						items.Add (mode);
 					if (mode.Id == "Default" && includeDefaultCustomizer) {
 						CustomExecutionMode cmode = new CustomExecutionMode ();
