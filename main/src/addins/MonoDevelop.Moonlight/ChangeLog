@@ -1,5 +1,10 @@
 2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightParser.cs: Use
+	  DomRegion.Empty.
+
+2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs: Redist
 	  assemblies are neither GAC nor Core. Fixes refs to redist
 	  assemblies.

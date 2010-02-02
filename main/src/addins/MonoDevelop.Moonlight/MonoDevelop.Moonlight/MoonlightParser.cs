@@ -119,15 +119,15 @@ namespace MonoDevelop.Moonlight
 			if (isApplication)
 				return;
 			
-			cu.Add (new DomUsing (new DomRegion (), "System"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Controls"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Documents"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Input"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Media"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Media.Animation"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Shapes"));
-			cu.Add (new DomUsing (new DomRegion (), "System.Windows.Controls.Primitives"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Documents"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Input"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media.Animation"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Shapes"));
+			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls.Primitives"));
 			
 //			Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
 //			namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
