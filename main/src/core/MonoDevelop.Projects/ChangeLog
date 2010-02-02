@@ -1,3 +1,8 @@
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/INode.cs: made the addchild methods
+	  public.
+
 2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs: Propagate parent

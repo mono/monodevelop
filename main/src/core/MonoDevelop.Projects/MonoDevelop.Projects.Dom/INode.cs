@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected void AddChild (INode child)
+		public void AddChild (INode child)
 		{
 			child.Parent = this;
 			if (FirstChild == null) {
@@ -168,7 +168,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		protected void AddChild (INode child, int role)
+		public void AddChild (INode child, int role)
 		{
 			child.Role = role;
 			AddChild (child);
