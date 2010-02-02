@@ -91,8 +91,8 @@ namespace MonoDevelop.Moonlight
 				Description = "Moonlight " + fxVersion + " Redistributable Assemblies",
 				Version = pluginVersion,
 				IsFrameworkPackage = true,
-				IsGacPackage = true,
-				IsCorePackage = true,
+				IsGacPackage = false,
+				IsCorePackage = false,
 				TargetFramework = framework.Id,
 			};
 			var dir = location.Combine (fxVersion + "-redist");
