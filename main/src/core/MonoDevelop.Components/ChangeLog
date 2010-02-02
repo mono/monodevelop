@@ -1,3 +1,9 @@
+2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Flush sort order.
+
+	* MonoDevelop.Components/PathBar.cs: Fix possible NREs.
+
 2010-01-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/SelectFileDialog.cs:

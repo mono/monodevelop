@@ -92,8 +92,8 @@ FILES =  \
 	MonoDevelop.Components.DockToolbars/FloatingPosition.cs \
 	MonoDevelop.Components.DockToolbars/IDockBar.cs \
 	MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
-	MonoDevelop.Components.Extensions/PlatformDialog.cs \
 	MonoDevelop.Components.Extensions/ISelectFileDialog.cs \
+	MonoDevelop.Components.Extensions/PlatformDialog.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs \
