@@ -79,14 +79,23 @@ namespace MonoDevelop.Debugger
 			if (!DebuggingService.IsDebuggingSupported && !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 				MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
 				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
-			} 
+			}
 			
 			if (!IdeApp.Preferences.BuildBeforeExecuting) {
-				if (IdeApp.Workspace.IsOpen)
-					ExecuteWorkspace ();
-				else
+				if (IdeApp.Workspace.IsOpen) {
+					CheckResult cr = CheckBeforeDebugging (IdeApp.Workspace);
+					if (cr == DebugHandler.CheckResult.Cancel)
+						return;
+					if (cr == DebugHandler.CheckResult.Run) {
+						ExecuteWorkspace ();
+						return;
+					}
+					// Else continue building
+				}
+				else {
 					ExecuteDocument (IdeApp.Workbench.ActiveDocument);
-				return;
+					return;
+				}
 			}
 			
 			if (IdeApp.Workspace.IsOpen) {
@@ -155,6 +164,39 @@ namespace MonoDevelop.Debugger
 				info.Enabled = (doc != null && doc.IsBuildTarget) && (doc.CanRun () || doc.CanDebug ());
 			}
 		}
+		
+		internal static CheckResult CheckBeforeDebugging (IBuildTarget target)
+		{
+			if (IdeApp.Preferences.BuildBeforeExecuting)
+				return CheckResult.BuildBeforeRun;
+			
+			if (!IdeApp.Workspace.NeedsBuilding ())
+				return CheckResult.Run;
+			
+			AlertButton bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
+			AlertButton bRun = new AlertButton (Gtk.Stock.Execute, true);
+			AlertButton res = MessageService.AskQuestion (
+			                                 GettextCatalog.GetString ("Outdated Debug Information"), 
+			                                 GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. The debug information may be outdated. Do you want to continue?"),
+			                                 2,
+			                                 AlertButton.Cancel,
+			                                 bBuild,
+			                                 bRun);
+			if (res == AlertButton.Cancel)
+				return CheckResult.Cancel;
+			else if (res == bRun)
+				return CheckResult.Run;
+			else
+				return CheckResult.BuildBeforeRun;
+		}
+			
+		internal enum CheckResult
+		{
+			Cancel,
+			BuildBeforeRun,
+			Run
+		}
+			
 	}
 	
 	internal class DebugEntryHandler: CommandHandler
@@ -162,7 +204,9 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			if (IdeApp.Preferences.BuildBeforeExecuting) {
+			DebugHandler.CheckResult cr = DebugHandler.CheckBeforeDebugging (entry);
+			
+			if (cr == DebugHandler.CheckResult.BuildBeforeRun) {
 				IAsyncOperation op = IdeApp.ProjectOperations.Build (entry);
 				op.Completed += delegate {
 					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
@@ -170,7 +214,7 @@ namespace MonoDevelop.Debugger
 					if (op.Success)
 						IdeApp.ProjectOperations.Debug (entry);
 				};
-			} else
+			} else if (cr == DebugHandler.CheckResult.Run)
 				IdeApp.ProjectOperations.Debug (entry);
 		}
 		
