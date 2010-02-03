@@ -83,6 +83,7 @@ namespace MonoDevelop.Projects.Dom
 			public const int Expression = 12;
 			public const int Statement = 13;
 			public const int TargetExpression = 14;
+			public const int Member = 15;
 			
 			// some pre defined constants for most used punctuation 
 			
@@ -133,6 +134,16 @@ namespace MonoDevelop.Projects.Dom
 		public INode LastChild {
 			get;
 			set;
+		}
+		
+		public IEnumerable<INode> Children {
+			get {
+				INode cur = FirstChild;
+				while (cur != null) {
+					yield return cur;
+					cur = cur.NextSibling;
+				}
+			}
 		}
 		
 		public INode GetChildByRole (int role)

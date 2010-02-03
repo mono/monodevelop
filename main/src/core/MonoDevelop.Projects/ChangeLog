@@ -1,3 +1,7 @@
+2010-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/INode.cs: some DOM changes 
+
 2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom/INode.cs: Fix C# binding build.
