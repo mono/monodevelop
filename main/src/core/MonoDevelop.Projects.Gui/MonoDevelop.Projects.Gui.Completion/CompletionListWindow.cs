@@ -117,7 +117,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			if ((ka & KeyActions.Ignore) != 0)
 				return true;
-
+			
 			if ((ka & KeyActions.Process) != 0) {
 				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
 					// Close if there's a modifier active EXCEPT lock keys and Modifiers
