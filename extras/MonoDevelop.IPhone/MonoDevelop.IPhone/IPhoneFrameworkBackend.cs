@@ -129,7 +129,8 @@ namespace MonoDevelop.IPhone
 				yield break;
 			foreach (var dir in Directory.GetDirectories (sdkDir)) {
 				string d = dir.Substring (sdkDir.Length);
-				if (d.StartsWith ("iPhoneOS"))
+				//NOTE: limit to 3.x for now
+				if (d.StartsWith ("iPhoneOS3"))
 					d = d.Substring ("iPhoneOS".Length);
 				if (d.EndsWith (".sdk"))
 					d = d.Substring (0, d.Length - ".sdk".Length);

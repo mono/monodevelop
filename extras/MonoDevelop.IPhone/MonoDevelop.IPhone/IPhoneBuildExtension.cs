@@ -83,8 +83,8 @@ namespace MonoDevelop.IPhone
 				monitor.EndTask ();
 			} else {
 				identity = new IPhoneAppIdentity () {
-					BundleID = !string.IsNullOrEmpty (identity.BundleID)?
-						proj.BundleIdentifier : GetDefaultBundleID (proj)
+					BundleID = !string.IsNullOrEmpty (proj.BundleIdentifier)?
+						proj.BundleIdentifier : GetDefaultBundleID (proj, null)
 				};
 			}
 			
@@ -523,13 +523,10 @@ namespace MonoDevelop.IPhone
 		{
 			var result = new BuildResult ();
 			identity = new IPhoneAppIdentity ();
+			bool defaultID = string.IsNullOrEmpty (proj.BundleIdentifier);
 			
-			if (!string.IsNullOrEmpty (proj.BundleIdentifier)) {
+			if (!defaultID)
 				identity.BundleID = proj.BundleIdentifier;
-			} else {
-				identity.BundleID = GetDefaultBundleID (proj);
-				result.AddWarning (string.Format ("Project does not have a bundle identifier specified. Using default '{0}'", identity.BundleID));
-			}
 			
 			//treat empty as "developer automatic"
 			if (string.IsNullOrEmpty (conf.CodesignKey)) {
@@ -583,6 +580,11 @@ namespace MonoDevelop.IPhone
 					return result;
 				}
 				
+				if (defaultID) {
+					identity.BundleID = GetDefaultBundleID (proj, GetProfileBundleID (identity.Profile));
+					result.AddWarning (string.Format ("Project does not have bundle identifier specified. Generated '{0}' to match provisioning profile.", identity.BundleID));
+				}
+				
 				bool exact;
 				identity.AppID = ConstructValidAppId (identity.Profile, identity.BundleID, out exact);
 				if (identity.AppID == null) {
@@ -603,19 +605,37 @@ namespace MonoDevelop.IPhone
 				return result;
 			}
 			
-			//find a provisioning profile with compatible appid, preferring exact match
-			foreach (var p in pairs) {
-				bool exact;
-				var id = ConstructValidAppId (p.Profile, identity.BundleID, out exact);
-				if (id != null) {
-					if (exact || identity.AppID == null) {
+			if (!defaultID) {
+				//find a provisioning profile with compatible appid, preferring exact match
+				foreach (var p in pairs) {
+					bool exact;
+					var id = ConstructValidAppId (p.Profile, identity.BundleID, out exact);
+					if (id != null) {
+						if (exact || identity.AppID == null) {
+							identity.Profile = p.Profile;
+							identity.SigningKey = p.Cert;
+							identity.AppID = id;
+						}
+						if (exact)
+							break;
+					}
+				}
+			} else {
+				//pick provisioning profile to provide appid and better default bundle ID, preferring star bundle IDs
+				foreach (var p in pairs) {
+					var suggestion = GetProfileBundleID (p.Profile);
+					bool star = (suggestion != null) && suggestion.EndsWith ("*");
+					if (star || identity.Profile == null) {
 						identity.Profile = p.Profile;
 						identity.SigningKey = p.Cert;
-						identity.AppID = id;
+						identity.BundleID = GetDefaultBundleID (proj, suggestion);
+						bool exact;
+						identity.AppID = ConstructValidAppId (p.Profile, identity.BundleID, out exact);
 					}
-					if (exact)
+					if (star)
 						break;
 				}
+				result.AddWarning (string.Format ("Project does not have bundle identifier specified. Generated '{0}' to match an installed provisioning profile.", identity.BundleID));
 			}
 			
 			if (identity.Profile != null && identity.SigningKey != null && identity.AppID != null)
@@ -639,17 +659,27 @@ namespace MonoDevelop.IPhone
 			public string AppID { get; set; }
 			public string BundleID { get; set; }
 			public X509Certificate2 SigningKey { get; set; }
+			public bool DefaultID { get; set; }
 		}
 		
-		static string GetDefaultBundleID (IPhoneProject project)
+		static string GetDefaultBundleID (IPhoneProject project, string suggestion)
+		{
+			if (string.IsNullOrEmpty (suggestion)) {
+				return "com.yourcompany." + GetFilteredProjectName (project);
+			} else if (suggestion.EndsWith ("*")) {
+				return suggestion.Substring (0, suggestion.Length - 1) + GetFilteredProjectName (project);
+			} else {
+				return suggestion;
+			}
+		}
+		
+		static string GetFilteredProjectName (IPhoneProject project)
 		{
 			var sb = new StringBuilder ();
 			foreach (char c in project.Name)
 				if (char.IsLetterOrDigit (c))
 					sb.Append (c);
-			if (sb.Length > 0)
-				return "com.yourcompany." + sb.ToString ().ToLowerInvariant ();
-			return "com.yourcompany.application";
+			return sb.Length > 0? sb.ToString ().ToLowerInvariant () : "application";
 		}
 		
 		static BuildResult EmbedProvisioningProfile (IProgressMonitor monitor, IPhoneProjectConfiguration conf, MobileProvision profile)
@@ -665,6 +695,18 @@ namespace MonoDevelop.IPhone
 			}
 			
 			monitor.EndTask ();
+			return null;
+		}
+		
+		static string GetProfileBundleID (MobileProvision provision)
+		{
+			if (!provision.Entitlements.ContainsKey ("application-identifier"))
+				return null;
+			
+			var id = ((PlistString)provision.Entitlements ["application-identifier"]).Value;
+			int i = id.IndexOf ('.') + 1;
+			if (i > 0 && i < id.Length)
+				return id.Substring (i);
 			return null;
 		}
 		
