@@ -38,24 +38,136 @@ using MonoDevelop.CSharp.Completion;
 using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
 
-namespace MonoDevelop.CSharpBinding
+namespace MonoDevelop.CSharpBinding.FormattingTests
 {
 	[TestFixture()]
-	public class TestFormattingVisitor
+	public class TestFormattingVisitor : UnitTests.TestBase
 	{
 		[Test()]
-		public void TestClassBraceFormatting ()
+		public void TestClassBraceFormattingEndOfLine1 ()
 		{
 			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
 			data.Document.Text = @"class Test{}";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomOutputVisitor (policy, null), null);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
-}");
+}", data.Document.Text);
 		}
+		
+		[Test()]
+		public void TestClassBraceFormattingEndOfLine2 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+		}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestClassBraceFormattingEndOfLineWithoutSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test{}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.EndOfLineWithoutSpace;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test{
+}", data.Document.Text);
+		}
+		[Test()]
+		public void TestClassBraceFormattingNextLine ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test{}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.NextLine;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestClassBraceFormattingNextLineShifted ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test{}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.NextLineShifted;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+	{
+	}", data.Document.Text);
+		}
+		
+		
+		[Test()]
+		public void TestFieldSpacesBeforeComma1 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	int a           ,                   b,          c;
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.SpacesAfterComma = false;
+			policy.SpacesBeforeComma = false;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	int a,b,c;
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestFieldSpacesBeforeComma2 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	int a           ,                   b,          c;
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.SpacesAfterComma = true;
+			policy.SpacesBeforeComma = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	int a , b , c;
+}", data.Document.Text);
+		}
+		
 	}
 }*/
