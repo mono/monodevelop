@@ -60,7 +60,7 @@ namespace MonoDevelop.IPhone
 			
 			if (!IPhoneFramework.SdkIsInstalled (conf.MtouchSdkVersion)) {
 				var r = new BuildResult ();
-				r.AddError (string.Format ("Apple iPhone SDK for target OS version '{0}' is not installed"));
+				r.AddError (string.Format ("Apple iPhone SDK for target OS version '{0}' is not installed", conf.MtouchSdkVersion));
 				return r;
 			}
 			
