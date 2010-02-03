@@ -1,5 +1,12 @@
 2010-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerAdaptor.cs: Implemented GetTypeArgs. Report the
+	  correct exception name when an exception is thrown in the
+	  target. Fixes bug #576427 - Debugger hides any user
+	  exception.
+
+2010-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerSession.cs: When a breakpoint can't be resolved,
 	  set it as invalid. Set it to valid when resolved. Fixes bug
 	  #564541 - Set breakpoint should work on expressions and not
