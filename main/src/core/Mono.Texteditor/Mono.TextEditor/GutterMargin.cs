@@ -93,7 +93,8 @@ namespace Mono.TextEditor
 				DocumentLocation loc = new DocumentLocation (lineNumber, 0);
 				LineSegment line = args.LineSegment;
 				if (args.Type == EventType.TwoButtonPress) {
-					editor.MainSelection = new Selection (loc, new DocumentLocation (lineNumber, line.EditableLength));
+					if (line != null)
+						editor.MainSelection = new Selection (loc, new DocumentLocation (lineNumber, line.EditableLength));
 				} else if (extendSelection) {
 					if (!editor.IsSomethingSelected) {
 						editor.MainSelection = new Selection (loc, loc);
