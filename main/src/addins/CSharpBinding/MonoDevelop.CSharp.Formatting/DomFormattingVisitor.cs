@@ -29,6 +29,8 @@ using MonoDevelop.CSharp.Dom;
 using System.Text;
 using MonoDevelop.Projects.Dom;
 using Mono.TextEditor;
+using MonoDevelop.Refactoring;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -36,13 +38,39 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		CSharpFormattingPolicy policy;
 		TextEditorData data;
-		
+		List<Change> changes = new List<Change> ();
 		public DomFormattingVisitor (CSharpFormattingPolicy policy, TextEditorData data)
 		{
 			this.policy = policy;
 			this.data = data;
 		}
 		
+		class MyTextReplaceChange : TextReplaceChange
+		{
+			TextEditorData data;
+			protected override TextEditorData TextEditorData {
+				get {
+					return data;
+				}
+			}
+			
+			public MyTextReplaceChange (TextEditorData data, int offset, int count, string replaceWith)
+			{
+				this.data = data;
+				this.FileName = data.Document.FileName;
+				this.Offset = offset;
+				this.RemovedChars = count;
+				this.InsertedText = replaceWith;
+			}
+		}
+		
+		public override object VisitCompilationUnit (MonoDevelop.CSharp.Dom.CompilationUnit unit, object data)
+		{
+			base.VisitCompilationUnit (unit, data);
+			RefactoringService.AcceptChanges (null, null, changes);
+			return null;
+		}
+
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
 			BraceStyle braceStyle;
@@ -62,9 +90,39 @@ namespace MonoDevelop.CSharp.Formatting
 			default:
 				throw new InvalidOperationException ("unsupported class type : " + typeDeclaration.ClassType);
 			}
-			EnforceBraceStyle (braceStyle, (CSharpTokenNode)typeDeclaration.GetChildByRole (AbstractNode.Roles.LBrace), (CSharpTokenNode)typeDeclaration.GetChildByRole (AbstractNode.Roles.RBrace));
+			EnforceBraceStyle (braceStyle, 
+			                   (CSharpTokenNode)typeDeclaration.GetChildByRole (TypeDeclaration.TypeKeyword), 
+			                   (CSharpTokenNode)typeDeclaration.GetChildByRole (AbstractNode.Roles.LBrace), 
+			                   (CSharpTokenNode)typeDeclaration.GetChildByRole (AbstractNode.Roles.RBrace));
 			
-			return null;
+			return base.VisitTypeDeclaration (typeDeclaration, data);
+		}
+		
+		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
+		{
+			foreach (INode node in fieldDeclaration.Children) {
+				if (node is VariableInitializer && node.NextSibling != null && node.NextSibling.Role == FieldDeclaration.Roles.Comma) {
+					VariableInitializer initializer = node as VariableInitializer;
+					CSharpTokenNode commaToken = (CSharpTokenNode)node.NextSibling;
+					int offset      = this.data.Document.LocationToOffset (initializer.NameIdentifier.Location.Line, initializer.NameIdentifier.Location.Column);
+					int commaOffset = this.data.Document.LocationToOffset (commaToken.Location.Line, commaToken.Location.Column);
+					ForceSpace (offset, commaOffset, policy.SpacesAfterComma);
+					Console.WriteLine (initializer.Name +"/" + initializer.NameIdentifier.Location + "/" + commaToken.Location);
+					
+					if (node.NextSibling.NextSibling is VariableInitializer) {
+						DomLocation location = ((VariableInitializer)node.NextSibling.NextSibling).NameIdentifier.Location;
+						int nextOffset = this.data.Document.LocationToOffset (location.Line, location.Column);
+						ForceSpace (commaOffset, nextOffset, policy.SpacesAfterComma);
+					}
+				}
+			}
+			return base.VisitFieldDeclaration (fieldDeclaration, data);
+		}
+
+		void ForceSpace (int startOffset, int endOffset, bool spaceBefore)
+		{
+			int lastNonWs = SearchLastNonWsChar (startOffset, endOffset);
+			changes.Add (new MyTextReplaceChange (data, lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), spaceBefore ? " " : ""));
 		}
 		
 		int GetLastNonWsChar (LineSegment line, int lastColumn)
@@ -93,50 +151,77 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 		
-		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, CSharpTokenNode lbrace, CSharpTokenNode rbrace)
+		int SearchLastNonWsChar (int startOffset, int endOffset)
+		{
+			if (startOffset >= endOffset)
+				return startOffset;
+			int result = -1;
+			bool inComment = false;
+			for (int i = startOffset; i < endOffset; i++) {
+				char ch = data.Document.GetCharAt (i);
+				if (Char.IsWhiteSpace (ch))
+					continue;
+				if (ch == '/' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '/')
+					return result;
+				if (ch == '/' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '*') {
+					inComment = true;
+					i++;
+					continue;
+				}
+				if (inComment && ch == '*' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '/') {
+					inComment = false;
+					i++;
+					continue;
+				}
+				if (!inComment)
+					result = i;
+			}
+			return result;
+		}
+		
+		string SingleIndent {
+			get {
+				return "\t";
+			}
+		}
+		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, CSharpTokenNode startKeyword, CSharpTokenNode lbrace, CSharpTokenNode rbrace)
 		{
 			LineSegment lbraceLineSegment = data.Document.GetLine (lbrace.Location.Line);
 			string indent = lbraceLineSegment.GetIndentation (data.Document);
 			
 			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.Location.Line);
 			
+			int lbraceOffset = data.Document.LocationToOffset (lbrace.Location.Line, lbrace.Location.Column);
+			int lastNonWsChar = SearchLastNonWsChar (data.Document.LocationToOffset (startKeyword.Location.Line, startKeyword.Location.Column), lbraceOffset);
 			switch (braceStyle) {
+			case BraceStyle.EndOfLineWithoutSpace:
+				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, null));
+				break;
 			case BraceStyle.EndOfLine:
-				LineSegment curLine = lbraceLineSegment;
-				int curColumn = lbrace.Location.Column;
-				
-				int lastNonWsChar = GetLastNonWsChar (curLine, curColumn);
-				if (lastNonWsChar == -1) {
-					if (curColumn < lbraceLineSegment.EditableLength) {
-						data.Remove (lbraceLineSegment.Offset, curColumn - 1);
-					} else {
-						data.Remove (lbraceLineSegment.Offset, lbraceLineSegment.Length);
-					}
-					do {
-						curLine = data.Document.GetLineByOffset (curLine.Offset - 1);
-						curColumn = curLine.EditableLength;
-					} while (-1 == (lastNonWsChar = GetLastNonWsChar (curLine, curColumn)));
-					data.Insert (curLine.Offset + lastNonWsChar, " {");
-				}
+				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, " "));
 				break;
 			case BraceStyle.NextLine:
+				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, data.EolMarker));
 				break;
 			case BraceStyle.NextLineShifted:
+				indent += SingleIndent;
+				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, data.EolMarker + SingleIndent));
 				break;
 			case BraceStyle.NextLineShifted2:
+				indent += SingleIndent;
+				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, data.EolMarker + SingleIndent));
 				break;
 			}
 			
 			int firstNonWsChar = rbrace.Location.Column - 1;
 			
 			for (; firstNonWsChar >= 0; firstNonWsChar--) {
-				char ch = data.Document.GetCharAt (rbraceLineSegment.Offset);
+				char ch = data.Document.GetCharAt (rbraceLineSegment.Offset + firstNonWsChar);
 				if (!Char.IsWhiteSpace (ch))
 					break;
 			}
-			data.Remove (rbraceLineSegment.Offset + firstNonWsChar, rbrace.Location.Column - firstNonWsChar - 1);
-			data.Insert (rbraceLineSegment.Offset + firstNonWsChar, firstNonWsChar != 0 ? data.EolMarker + indent : indent);
+			
+			changes.Add (new MyTextReplaceChange (data, rbraceLineSegment.Offset + firstNonWsChar + 1, rbrace.Location.Column - firstNonWsChar - 1, firstNonWsChar > 0 ? data.EolMarker + indent : indent));
 		}
 	}
-}
-*/
+}*/

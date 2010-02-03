@@ -1,3 +1,13 @@
+2010-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Dom/ICSharpNode.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/CompilationUnit.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	  Worked on mcs parser/dom.
+
 2010-02-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

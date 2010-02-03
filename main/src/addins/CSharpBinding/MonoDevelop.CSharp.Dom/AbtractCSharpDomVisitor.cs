@@ -32,7 +32,18 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		protected S VisitChildren (ICSharpNode node, T data)
 		{
-			return node.AcceptVisitor (this, data);
+			ICSharpNode child = node.FirstChild as ICSharpNode;
+			while (child != null) {
+				child.AcceptVisitor (this, data);
+				Console.WriteLine ("next child:" + child.NextSibling);
+				child = child.NextSibling as ICSharpNode;
+			}
+			return default (S);
+		}
+		
+		public virtual S VisitCompilationUnit (CompilationUnit unit, T data)
+		{
+			return VisitChildren (unit, data);
 		}
 		
 		public virtual S VisitAttribute (Attribute attribute, T data) 
@@ -57,7 +68,10 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public virtual S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data) 
 		{
-			return VisitChildren (typeDeclaration, data);
+			foreach (ICSharpNode node in typeDeclaration.GetChildrenByRole (TypeDeclaration.Roles.Member)) {
+				node.AcceptVisitor (this, data);
+			}
+			return default (S);
 		}
 		
 		public virtual S VisitEnumDeclaration (EnumDeclaration enumDeclaration, T data) 

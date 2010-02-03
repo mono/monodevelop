@@ -1,3 +1,4 @@
+/*
 // 
 // CSharpParser.cs
 //  
@@ -23,7 +24,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,6 +43,12 @@ namespace MonoDevelop.CSharp.Parser
 			MonoDevelop.CSharp.Dom.CompilationUnit unit = new MonoDevelop.CSharp.Dom.CompilationUnit ();
 			
 			#region IStructuralVisitor implementation
+			public override void Visit (ModuleCompiled mc)
+			{
+				Console.WriteLine ("visit:" + mc.OrderedAllMembers.Count);
+				base.Visit (mc);
+			}
+
 			public override void Visit (MemberCore member)
 			{
 				Console.WriteLine ("Unknown member:");
@@ -54,9 +61,11 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				TypeDeclaration newType = CreateTypeDeclaration (c);
 				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Class;
+				
 				newType.AddChild (new CSharpTokenNode (Convert (c.BodyStartLocation)), AbstractCSharpNode.Roles.LBrace);
 				
 				typeStack.Push (newType);
+				
 				base.Visit (c);
 				newType.AddChild (new CSharpTokenNode  (Convert (c.BodyEndLocation)), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
@@ -68,7 +77,7 @@ namespace MonoDevelop.CSharp.Parser
 				Identifier nameIdentifier = new Identifier () {
 					Name = tc.Name
 				};
-				
+				newType.AddChild (new CSharpTokenNode (Convert (tc.ContainerTypeTokenPosition)), TypeDeclaration.TypeKeyword);
 				newType.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
 				unit.AddChild (newType);
 				return newType;
@@ -113,26 +122,40 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public static DomLocation Convert (Mono.CSharp.Location loc)
 			{
-				return new DomLocation (loc.Row, loc.Column);
+				return new DomLocation (loc.Row - 1, loc.Column - 1);
 			}
 			public static DomReturnType ConvertToReturnType (FullNamedExpression typeName)
 			{
 				return new DomReturnType ("TODO");
 			}
 			
+			HashSet<Field> visitedFields = new HashSet<Field> ();
 			public override void Visit (Field f)
 			{
+				if (visitedFields.Contains (f))
+					return;
+				
 				TypeDeclaration typeDeclaration = typeStack.Peek ();
 				
 				FieldDeclaration newField = new FieldDeclaration ();
 				newField.AddChild (ConvertToReturnType (f.TypeName), AbstractNode.Roles.ReturnType);
-				Identifier fieldName = new Identifier () {
-					Name = f.MemberName.Name,
-					Location = Convert (f.MemberName.Location)
-				};
-				newField.AddChild (fieldName, AbstractNode.Roles.Identifier);
 				
-				typeDeclaration.AddChild (newField);
+				Field curField = f;
+				while (curField != null) {
+					visitedFields.Add (curField);
+					VariableInitializer variable = new VariableInitializer ();
+					
+					Identifier fieldName = new Identifier () {
+						Name = curField.MemberName.Name,
+						Location = Convert (curField.MemberName.Location)
+					};
+					variable.AddChild (fieldName, AbstractNode.Roles.Identifier);
+					newField.AddChild (variable, AbstractNode.Roles.Initializer);
+					if (curField.ConnectedField != null)
+						newField.AddChild (new CSharpTokenNode (Convert (curField.ConnectedCommaLocation)), AbstractNode.Roles.Comma);
+					curField = curField.ConnectedField;
+				}
+				typeDeclaration.AddChild (newField, TypeDeclaration.Roles.Member);
 			}
 			
 			public override void Visit (Operator o)
@@ -175,7 +198,7 @@ namespace MonoDevelop.CSharp.Parser
 
 		public MonoDevelop.CSharp.Dom.CompilationUnit Parse (TextEditorData data)
 		{
-		//	data.Document
+			Tokenizer.InterpretTabAsSingleChar = true;
 			ModuleContainer top;
 			using (Stream stream = data.OpenStream ()) {
 				top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v"}, stream, data.Document.FileName, Console.Out);
@@ -188,5 +211,5 @@ namespace MonoDevelop.CSharp.Parser
 			return conversionVisitor.Unit;
 		}
 	}
-}
-*/
+}*/
+

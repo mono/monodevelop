@@ -30,6 +30,8 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public interface ICSharpDomVisitor<T, S>
 	{
+		S VisitCompilationUnit (CompilationUnit unit, T data);
+		
 		#region General scope
 		S VisitAttribute (Attribute attribute, T data);
 		S VisitAttributeSection (AttributeSection attributeSection, T data);

@@ -30,16 +30,15 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CompilationUnit : AbstractCSharpNode 
 	{
-		#region implemented abstract members of MonoDevelop.CSharp.Dom.AbstractCSharpNode
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
-		{
-			return default(S);
-		}
-		#endregion
-		
 		public CompilationUnit ()
 		{
 		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitCompilationUnit (this, data);
+		}
+		
 	}
 }
 
