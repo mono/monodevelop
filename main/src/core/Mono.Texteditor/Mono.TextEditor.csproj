@@ -145,7 +145,7 @@
     <Compile Include="Mono.TextEditor\IBackgroundRenderer.cs" />
     <Compile Include="Mono.TextEditor\IAnimation.cs" />
     <Compile Include="Mono.TextEditor\CodeSegmentEditorWindow.cs" />
-    <Compile Include="Mono.TextEditor\TextEditorWidgetController.cs" />
+    <Compile Include="Mono.TextEditor\TextEditorContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
