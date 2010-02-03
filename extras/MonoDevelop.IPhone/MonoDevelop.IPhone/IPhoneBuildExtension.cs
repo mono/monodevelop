@@ -56,15 +56,39 @@ namespace MonoDevelop.IPhone
 			
 			//prebuild
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
+			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
 			
-			if (IPhoneFramework.SimOnly && conf.Platform == IPhoneProject.PLAT_IPHONE) {
+			if (!IPhoneFramework.SdkIsInstalled (conf.MtouchSdkVersion)) {
+				var r = new BuildResult ();
+				r.AddError (string.Format ("Apple iPhone SDK for target OS version '{0}' is not installed"));
+				return r;
+			}
+			
+			if (IPhoneFramework.SimOnly && isDevice) {
 				//if in the GUI, show a dialog too
 				if (MonoDevelop.Ide.Gui.IdeApp.IsInitialized)
 					Gtk.Application.Invoke (delegate { IPhoneFramework.ShowSimOnlyDialog (); } );
 				return IPhoneFramework.GetSimOnlyError ();
 			}
 			
-			BuildResult result = base.Build (monitor, item, configuration);
+			BuildResult result = null;
+			IPhoneAppIdentity identity = null;
+			if (isDevice) {
+				monitor.BeginTask (GettextCatalog.GetString ("Detecting signing identity..."), 0);
+				if ((result = GetIdentity (monitor, proj, conf, out identity)).ErrorCount > 0)
+					return result;
+				monitor.Log.WriteLine ("Provisioning profile: \"{0}\" ({1})", identity.Profile.Name, identity.Profile.Uuid);
+				monitor.Log.WriteLine ("Signing Identity: \"{0}\"", Keychain.GetCertificateCommonName (identity.SigningKey));
+				monitor.Log.WriteLine ("App ID: \"{0}\"", identity.AppID);
+				monitor.EndTask ();
+			} else {
+				identity = new IPhoneAppIdentity () {
+					BundleID = !string.IsNullOrEmpty (identity.BundleID)?
+						proj.BundleIdentifier : GetDefaultBundleID (proj)
+				};
+			}
+			
+			result = base.Build (monitor, item, configuration).Append (result);
 			if (result.ErrorCount > 0)
 				return result;
 			
@@ -125,7 +149,7 @@ namespace MonoDevelop.IPhone
 			    	(appInfoIn != null && new FilePair (appInfoIn.FilePath, plistOut).NeedsBuilding ())) {
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Updating application manifest"), 0);
-					if (result.Append (UpdateInfoPlist (monitor, proj, conf, appInfoIn, plistOut)).ErrorCount > 0)
+					if (result.Append (UpdateInfoPlist (monitor, proj, conf, identity, appInfoIn, plistOut)).ErrorCount > 0)
 						return result;
 				} finally {
 					monitor.EndTask ();
@@ -145,7 +169,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			try {
-				if (result.Append (ProcessPackaging (monitor, proj, conf)).ErrorCount > 0)
+				if (result.Append (ProcessPackaging (monitor, proj, conf, identity)).ErrorCount > 0)
 					return result;
 			} finally {
 				//if packaging failed, make sure that it's marked as needing buildind
@@ -206,7 +230,7 @@ namespace MonoDevelop.IPhone
 		}
 		
 		BuildResult UpdateInfoPlist (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
-		                             ProjectFile template, string plistOut)
+		                             IPhoneAppIdentity identity, ProjectFile template, string plistOut)
 		{
 			return CreateMergedPlist (monitor, conf, template, plistOut, 
 				(IPhoneProjectConfiguration config, PlistDocument doc) => 
@@ -227,7 +251,7 @@ namespace MonoDevelop.IPhone
 				if (!(icon.IsNullOrEmpty || icon.ToString () == "."))
 					SetIfNotPresent (dict, "CFBundleIconFile", icon.FileName);
 				
-				SetIfNotPresent (dict, "CFBundleIdentifier", proj.BundleIdentifier ?? ("com.yourcompany." + proj.Name));
+				SetIfNotPresent (dict, "CFBundleIdentifier", identity.BundleID);
 				SetIfNotPresent (dict, "CFBundleInfoDictionaryVersion", "6.0");
 				SetIfNotPresent (dict, "CFBundleName", proj.Name);
 				SetIfNotPresent (dict, "CFBundlePackageType", "APPL");
@@ -394,7 +418,14 @@ namespace MonoDevelop.IPhone
 					monitor.Log.WriteLine (psi.FileName + " " + psi.Arguments);
 					psi.WorkingDirectory = cfg.OutputDirectory;
 					string errorOutput;
-					int code = ExecuteCommand (monitor, psi, out errorOutput);
+					int code;
+					try {
+					code = ExecuteCommand (monitor, psi, out errorOutput);
+					} catch (System.ComponentModel.Win32Exception ex) {
+						LoggingService.LogError ("Error running ibtool", ex);
+						result.AddError (null, 0, 0, null, "ibtool not found. Please ensure the Apple SDK is installed.");
+						return result;
+					}
 					if (code != 0) {
 						//FIXME: parse the plist that ibtool returns
 						result.AddError (null, 0, 0, null, "ibtool returned error code " + code);
@@ -429,11 +460,12 @@ namespace MonoDevelop.IPhone
 			return result;
 		}
 		
-		static BuildResult ProcessPackaging (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf)
+		static BuildResult ProcessPackaging (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
+		                                     IPhoneAppIdentity identity)
 		{
 			//don't bother signing in the sim
-			bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
-			if (sim)
+			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			if (!isDevice)
 				return null;
 			
 			BuildResult result = new BuildResult ();
@@ -446,32 +478,18 @@ namespace MonoDevelop.IPhone
 			if (result.Append (CompressResources (monitor, conf)).ErrorCount > 0)
 				return result;
 			
-			X509Certificate2 key;
-			MobileProvision provision;
-			string appId;
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Detecting signing identity..."), 0);
-			if (result.Append (GetIdentity (monitor, proj, conf, out provision, out appId, out key)).ErrorCount > 0)
-				return result;
-			
-			monitor.Log.WriteLine ("Provisioning profile: \"{0}\" ({1})", provision.Name, provision.Uuid);
-			monitor.Log.WriteLine ("Signing Identity: \"{0}\"", Keychain.GetCertificateCommonName (key));
-			monitor.Log.WriteLine ("App ID: \"{0}\"", appId);
-			
-			monitor.EndTask ();
-			
-			if (result.Append (EmbedProvisioningProfile (monitor, conf, provision)).ErrorCount > 0)
+			if (result.Append (EmbedProvisioningProfile (monitor, conf, identity.Profile)).ErrorCount > 0)
 				return result;
 			
 			string xcent;
-			if (result.Append (GenXcent (monitor, proj, conf, provision, appId, out xcent)).ErrorCount > 0)
+			if (result.Append (GenXcent (monitor, proj, conf, identity, out xcent)).ErrorCount > 0)
 				return result;
 			
 			string resRules;
 			if (result.Append (PrepareResourceRules (monitor, conf, out resRules)).ErrorCount > 0)
 				return result;
 			
-			if (result.Append (SignAppBundle (monitor, proj, conf, key, resRules, xcent)).ErrorCount > 0)
+			if (result.Append (SignAppBundle (monitor, proj, conf, identity.SigningKey, resRules, xcent)).ErrorCount > 0)
 				return result;
 			
 			return result;
@@ -501,14 +519,17 @@ namespace MonoDevelop.IPhone
 		}
 		
 		static BuildResult GetIdentity (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
-		                            out MobileProvision profile, out string appid, out X509Certificate2 signingKey)
+		                                out IPhoneAppIdentity identity)
 		{
-			profile = null;
-			appid = null;
-			signingKey = null;
+			var result = new BuildResult ();
+			identity = new IPhoneAppIdentity ();
 			
-			if (string.IsNullOrEmpty (proj.BundleIdentifier))
-				return BuildError ("Project does not have a bundle identifier");
+			if (!string.IsNullOrEmpty (proj.BundleIdentifier)) {
+				identity.BundleID = proj.BundleIdentifier;
+			} else {
+				identity.BundleID = GetDefaultBundleID (proj);
+				result.AddWarning (string.Format ("Project does not have a bundle identifier specified. Using default '{0}'", identity.BundleID));
+			}
 			
 			//treat empty as "developer automatic"
 			if (string.IsNullOrEmpty (conf.CodesignKey)) {
@@ -518,13 +539,17 @@ namespace MonoDevelop.IPhone
 			IList<X509Certificate2> certs = null;
 			if (conf.CodesignKey == Keychain.DEV_CERT_PREFIX || conf.CodesignKey == Keychain.DIST_CERT_PREFIX) {
 				certs = Keychain.FindNamedSigningCertificates (x => x.StartsWith (conf.CodesignKey)).ToList ();
-				if (certs.Count == 0)
-					return BuildError ("No valid identities found in keychain.");
+				if (certs.Count == 0) {
+					result.AddError ("No valid iPhone code signing keys found in keychain.");
+					return result;
+				}
 			} else {
-				signingKey = Keychain.FindNamedSigningCertificates (x => x == conf.CodesignKey).FirstOrDefault ();
-				if (signingKey == null)
-					return BuildError ("Signing identity '" + conf.CodesignKey + "' not found in keychain.");
-				certs = new X509Certificate2[] { signingKey };
+				identity.SigningKey = Keychain.FindNamedSigningCertificates (x => x == conf.CodesignKey).FirstOrDefault ();
+				if (identity.SigningKey == null) {
+					result.AddError (string.Format ("iPhone code signing key '{0}' not found in keychain.", conf.CodesignKey));
+					return result;
+				}
+				certs = new X509Certificate2[] { identity.SigningKey };
 			}
 			
 			if (!string.IsNullOrEmpty (conf.CodesignProvision)) {
@@ -533,30 +558,39 @@ namespace MonoDevelop.IPhone
 				var file = MobileProvision.ProfileDirectory.Combine (conf.CodesignProvision).ChangeExtension (".mobileprovision");
 				if (File.Exists (file)) {
 					try {
-						profile = MobileProvision.LoadFromFile (file);
+						identity.Profile = MobileProvision.LoadFromFile (file);
 					} catch (Exception ex) {
 						string msg = "Could not read provisioning profile '" + file + "'.";
 						monitor.ReportError (msg, ex);
-						return BuildError (msg);
+						result.AddError (msg);
+						return result;
 					}
 				} else {
-					profile = MobileProvision.GetAllInstalledProvisions ()
+					identity.Profile = MobileProvision.GetAllInstalledProvisions ()
 						.Where (p => p.Uuid == conf.CodesignProvision).FirstOrDefault ();
 				}
 				
-				if (profile == null)
-					return BuildError (string.Format ("The provisioning profile '{0}' could not be found", conf.CodesignProvision));
+				if (identity.Profile == null) {
+					result.AddError (string.Format ("The specified provisioning profile '{0}' could not be found", conf.CodesignProvision));
+					return result;
+				}
 				
-				var prof = profile; //capture ref for lambda
-				signingKey = certs.Where (c => prof.DeveloperCertificates.Any (p => p.Thumbprint == c.Thumbprint)).FirstOrDefault ();
-				if (signingKey == null)
-					return BuildError ("No signing key matches provisioning profile.");
+				var prof = identity.Profile; //capture ref for lambda
+				identity.SigningKey = certs.Where (c => prof.DeveloperCertificates
+				                           .Any (p => p.Thumbprint == c.Thumbprint)).FirstOrDefault ();
+				if (identity.SigningKey == null) {
+					result.AddError (string.Format ("No iPhone code signing key matches specified provisioning profile '{0}'.", conf.CodesignProvision));
+					return result;
+				}
 				
 				bool exact;
-				appid = ConstructValidAppId (profile, proj.BundleIdentifier, out exact);
-				if (appid == null)
-					return BuildError ("Project bundle ID does not match provisioning profile");
-				return null;
+				identity.AppID = ConstructValidAppId (identity.Profile, identity.BundleID, out exact);
+				if (identity.AppID == null) {
+					result.AddError (string.Format (
+						"Project bundle ID '{0}' does not match specified provisioning profile '{1}'", identity.BundleID, conf.CodesignProvision));
+					return result;
+				}
+				return result;
 			}
 			
 			var pairs = (from p in MobileProvision.GetAllInstalledProvisions ()
@@ -564,30 +598,58 @@ namespace MonoDevelop.IPhone
 				where p.DeveloperCertificates.Any (d => d.Thumbprint == c.Thumbprint)
 				select new { Cert = c, Profile = p }).ToList ();
 				
-			if (pairs.Count == 0)
-				return BuildError ("No provisioning profiles match the signing keys.");
+			if (pairs.Count == 0) {
+				result.AddError ("No installed provisioning profiles match the installed iPhone code signing keys.");
+				return result;
+			}
 			
+			//find a provisioning profile with compatible appid, preferring exact match
 			foreach (var p in pairs) {
 				bool exact;
-				var id = ConstructValidAppId (p.Profile, proj.BundleIdentifier, out exact);
+				var id = ConstructValidAppId (p.Profile, identity.BundleID, out exact);
 				if (id != null) {
-					if (exact || appid == null) {
-						profile = p.Profile;
-						signingKey = p.Cert;
-						appid = id;
+					if (exact || identity.AppID == null) {
+						identity.Profile = p.Profile;
+						identity.SigningKey = p.Cert;
+						identity.AppID = id;
 					}
 					if (exact)
 						break;
 				}
 			}
 			
-			if (profile != null && signingKey != null && appid != null)
-				return null;
+			if (identity.Profile != null && identity.SigningKey != null && identity.AppID != null)
+				return result;
 			
-			if (signingKey != null)
-				return BuildError ("App ID does not match any provisioning profile for selected signing identity.");
-			else
-				return BuildError ("App ID does not match any provisioning profile.");
+			if (identity.SigningKey != null) {
+				result.AddError (string.Format (
+					"Bundle identifier '{0}' does not match any installed provisioning profile for selected signing identity '{0}'.",
+					identity.BundleID, identity.SigningKey));
+			} else {
+				result.AddError (string.Format (
+					"Bundle identifier '{0}' does not match any installed provisioning profile.",
+					identity.BundleID));
+			}
+			return result;
+		}
+		
+		class IPhoneAppIdentity
+		{
+			public MobileProvision Profile { get; set; }
+			public string AppID { get; set; }
+			public string BundleID { get; set; }
+			public X509Certificate2 SigningKey { get; set; }
+		}
+		
+		static string GetDefaultBundleID (IPhoneProject project)
+		{
+			var sb = new StringBuilder ();
+			foreach (char c in project.Name)
+				if (char.IsLetterOrDigit (c))
+					sb.Append (c);
+			if (sb.Length > 0)
+				return "com.yourcompany." + sb.ToString ().ToLowerInvariant ();
+			return "com.yourcompany.application";
 		}
 		
 		static BuildResult EmbedProvisioningProfile (IProgressMonitor monitor, IPhoneProjectConfiguration conf, MobileProvision profile)
@@ -628,7 +690,7 @@ namespace MonoDevelop.IPhone
 		}
 		
 		static BuildResult GenXcent (IProgressMonitor monitor, IPhoneProject proj, IPhoneProjectConfiguration conf,
-		                      MobileProvision profile, string appID, out string xcentName)
+		                      IPhoneAppIdentity identity, out string xcentName)
 		{
 			xcentName = conf.CompiledOutputName.ChangeExtension (".xcent");
 			
@@ -657,10 +719,10 @@ namespace MonoDevelop.IPhone
 			var oldDict = doc.Root as PlistDictionary;
 			var newDict = new PropertyList.PlistDictionary ();
 			doc.Root = newDict;
-			newDict["application-identifier"] = appID;
+			newDict["application-identifier"] = identity.AppID;
 			
 			//merge in the settings from the provisioning profile
-			foreach (var item in profile.Entitlements)
+			foreach (var item in identity.Profile.Entitlements)
 				if (item.Key != "application-identifier" && item.Key != "keychain-access-groups")
 					newDict.Add (item.Key, item.Value);
 			

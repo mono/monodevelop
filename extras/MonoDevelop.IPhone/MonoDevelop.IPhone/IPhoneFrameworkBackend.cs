@@ -116,6 +116,28 @@ namespace MonoDevelop.IPhone
 			return res;
 		}
 		
+		public static bool SdkIsInstalled (string version)
+		{
+			return File.Exists ("/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS"
+			                    + version + ".sdk/ResourceRules.plist");
+		}
+		
+		public static IEnumerable<string> GetInstalledSdkVersions ()
+		{
+			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
+			if (!Directory.Exists (sdkDir))
+				yield break;
+			foreach (var dir in Directory.GetDirectories (sdkDir)) {
+				string d = dir.Substring (sdkDir.Length);
+				if (d.StartsWith ("iPhoneOS"))
+					d = d.Substring ("iPhoneOS".Length);
+				if (d.EndsWith (".sdk"))
+					d = d.Substring (0, d.Length - ".sdk".Length);
+				if (d.Length > 0)
+					yield return d;
+			}
+		}
+		
 		public static void ShowSimOnlyDialog ()
 		{
 			if (!SimOnly)

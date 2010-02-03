@@ -1,3 +1,16 @@
+2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Check target SDK is installed and
+	  resolve signing identity before building. Improve errors a
+	  bit. If no app ID set and doing device build, warn user but
+	  use a default, and pass the default around so it's used
+	  consistently.
+
+	* IPhoneFrameworkBackend.cs: Add methods for listing SDKs and
+	  checking if SDK version is installed.
+
+	* Gui/IPhoneBuildOptionsPanel.cs: List installed SDKs.
+
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs:
