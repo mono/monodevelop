@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
@@ -88,6 +89,7 @@ namespace MonoDevelop.IPhone
 	{
 		static bool? isInstalled = null;
 		static bool? simOnly = null;
+		static string[] installedSdkVersions;
 		
 		public static bool IsInstalled {
 			get {
@@ -122,21 +124,60 @@ namespace MonoDevelop.IPhone
 			                    + version + ".sdk/ResourceRules.plist");
 		}
 		
-		public static IEnumerable<string> GetInstalledSdkVersions ()
+		public static string[] GetInstalledSdkVersions ()
 		{
+			EnsureSdkVersions ();
+			return installedSdkVersions;
+		}
+		
+		static void EnsureSdkVersions ()
+		{
+			if (installedSdkVersions != null)
+				return;
+			
 			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
-			if (!Directory.Exists (sdkDir))
-				yield break;
+			if (!Directory.Exists (sdkDir)) {
+				installedSdkVersions = new string[0];
+				return;
+			}
+			
+			var sdks = new List<string> ();
 			foreach (var dir in Directory.GetDirectories (sdkDir)) {
 				string d = dir.Substring (sdkDir.Length);
-				//NOTE: limit to 3.x for now
-				if (d.StartsWith ("iPhoneOS3"))
+				if (d.StartsWith ("iPhoneOS"))
 					d = d.Substring ("iPhoneOS".Length);
 				if (d.EndsWith (".sdk"))
 					d = d.Substring (0, d.Length - ".sdk".Length);
 				if (d.Length > 0)
-					yield return d;
+					sdks.Add (d);
 			}
+			var vs = new List<int[]> ();
+			foreach (var s in sdks) {
+				try {
+					var vstr = s.Split ('.');
+					var vint = new int[vstr.Length];
+					for (int j = 0; j < vstr.Length; j++)
+						vint[j] = int.Parse (vstr[j]);
+					vs.Add (vint);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not parse iPhone SDK version {0}", s);
+				}
+			}
+			vs.Sort ((x,y) => {
+				for (int i = 0; i < Math.Min (x.Length,y.Length); i++) {
+					int res = x[i] - y[i];
+					if (res != 0)
+						return res;
+				}
+				return x.Length - y.Length;
+			});
+			installedSdkVersions = vs.Select (a => string.Join (".", a.Select (b => b.ToString ()).ToArray ())).ToArray ();
+		}
+		
+		public static string GetDefaultSdkVersion ()
+		{
+			EnsureSdkVersions ();
+			return installedSdkVersions.Length > 0? installedSdkVersions[0] : "3.0";
 		}
 		
 		public static void ShowSimOnlyDialog ()
