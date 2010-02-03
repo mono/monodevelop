@@ -113,13 +113,17 @@ namespace MonoDevelop.Refactoring
 			}
 			return null;
 		}
-		
+		protected virtual TextEditorData TextEditorData {
+			get {
+				return GetTextEditorData (FileName);
+			}
+		}
 		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
 		{
 			if (rctx == null)
 				throw new InvalidOperationException ("Refactory context not available.");
 			
-			TextEditorData textEditorData = GetTextEditorData (FileName);
+			TextEditorData textEditorData = this.TextEditorData;
 			if (textEditorData == null) {
 				IEditableTextFile file = rctx.GetFile (FileName);
 				if (file != null) {

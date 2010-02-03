@@ -1,3 +1,8 @@
+2010-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs: TextReplace change is now
+	  re-usable by the formatting visitor.
+
 2010-02-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
