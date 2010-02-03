@@ -44,7 +44,7 @@ namespace Mono.Debugging.Client
 	public abstract class DebuggerSession: IDisposable
 	{
 		InternalDebuggerSession frontend;
-		Dictionary<BreakEvent,object> breakpoints = new Dictionary<BreakEvent,object> ();
+		Dictionary<BreakEvent,BreakEventInfo> breakpoints = new Dictionary<BreakEvent,BreakEventInfo> ();
 		bool isRunning;
 		bool started;
 		BreakpointStore breakpointStore;
@@ -59,6 +59,18 @@ namespace Mono.Debugging.Client
 		ExceptionHandler exceptionHandler;
 		DebuggerSessionOptions options;
 		Dictionary<string,string> resolvedExpressionCache = new Dictionary<string, string> ();
+		
+		struct BreakEventInfo {
+			// Handle is the native debugger breakpoint handle
+			public object Handle;
+			// IsValid is always true unless the subclass explicitly sets it to false using SetBreakEventStatus.
+			public bool IsValid;
+			
+			public BreakEventInfo (object handle) {
+				Handle = handle;
+				IsValid = true;
+			}
+		}
 		
 		ProcessInfo[] currentProcesses;
 		
@@ -114,8 +126,10 @@ namespace Mono.Debugging.Client
 				lock (slock) {
 					if (breakpointStore != null) {
 						if (started) {
-							foreach (BreakEvent bp in breakpointStore)
+							foreach (BreakEvent bp in breakpointStore) {
 								RemoveBreakEvent (bp);
+								Breakpoints.NotifyStatusChanged (bp);
+							}
 						}
 						breakpointStore.BreakEventAdded -= OnBreakpointAdded;
 						breakpointStore.BreakEventRemoved -= OnBreakpointRemoved;
@@ -329,14 +343,48 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Returns true if the breakpoint is valid for this debugger session.
+		/// It may be invalid, for example, if the breakpoint was placed in a line
+		/// that has no code.
+		/// </summary>
 		public bool IsBreakEventValid (BreakEvent be)
 		{
 			if (!started)
 				return true;
 			
-			object handle;
+			BreakEventInfo binfo;
 			lock (breakpoints) {
-				return (breakpoints.TryGetValue (be, out handle) && handle != null);
+				return (breakpoints.TryGetValue (be, out binfo) && binfo.IsValid && binfo.Handle != null);
+			}
+		}
+		
+		/// <summary>
+		/// This method can be used by subclasses to set the validity of a breakpoint.
+		/// </summary>
+		protected void SetBreakEventStatus (BreakEvent be, bool isValid)
+		{
+			lock (breakpoints) {
+				BreakEventInfo bi;
+				if (!breakpoints.TryGetValue (be, out bi))
+					bi = new BreakEventInfo (null);
+				if (bi.IsValid != isValid) {
+					bi.IsValid = isValid;
+					breakpoints [be] = bi;
+					Breakpoints.NotifyStatusChanged (be);
+				}
+			}
+		}
+
+		void SetBreakEventHandle (BreakEvent be, object handle)
+		{
+			lock (breakpoints) {
+				BreakEventInfo bi;
+				if (!breakpoints.TryGetValue (be, out bi))
+					bi = new BreakEventInfo (handle);
+				else
+					bi.Handle = handle;
+				breakpoints [be] = bi;
 			}
 		}
 
@@ -357,7 +405,7 @@ namespace Mono.Debugging.Client
 			}
 
 			lock (breakpoints) {
-				breakpoints.Add (be, handle);
+				SetBreakEventHandle (be, handle);
 				Breakpoints.NotifyStatusChanged (be);
 			}
 		}
@@ -370,7 +418,6 @@ namespace Mono.Debugging.Client
 					try {
 						if (handle != null)
 							OnRemoveBreakEvent (handle);
-						breakpoints.Remove (be);
 					} catch (Exception ex) {
 						if (started)
 							OnDebuggerOutput (false, ex.Message);
@@ -378,6 +425,7 @@ namespace Mono.Debugging.Client
 						return false;
 					}
 				}
+				breakpoints.Remove (be);
 				return true;
 			}
 		}
@@ -407,7 +455,7 @@ namespace Mono.Debugging.Client
 						object newHandle = OnUpdateBreakEvent (handle, be);
 						if (newHandle != handle && (newHandle == null || !newHandle.Equals (handle))) {
 							// Update the handle if it has changed, and notify the status change
-							breakpoints [be] = newHandle;
+							SetBreakEventHandle (be, newHandle);
 						}
 						Breakpoints.NotifyStatusChanged (be);
 					} else {
@@ -416,7 +464,7 @@ namespace Mono.Debugging.Client
 							handle = OnInsertBreakEvent (be, be.Enabled);
 							if (handle != null) {
 								// This time worked
-								breakpoints [be] = handle;
+								SetBreakEventHandle (be, handle);
 								Breakpoints.NotifyStatusChanged (be);
 							}
 						} catch (Exception ex) {
@@ -482,7 +530,13 @@ namespace Mono.Debugging.Client
 		
 		protected bool GetBreakpointHandle (BreakEvent be, out object handle)
 		{
-			return breakpoints.TryGetValue (be, out handle);
+			BreakEventInfo binfo;
+			if (!breakpoints.TryGetValue (be, out binfo)) {
+				handle = null;
+				return false;
+			}
+			handle = binfo.Handle;
+			return true;
 		}
 		
 		public DebuggerSessionOptions Options {
@@ -756,10 +810,10 @@ namespace Mono.Debugging.Client
 		{
 			lock (breakpoints) {
 				// Make a copy of the breakpoints table since it can be modified while iterating
-				Dictionary<BreakEvent, object> breakpointsCopy = new Dictionary<BreakEvent, object> (breakpoints);
-				foreach (KeyValuePair<BreakEvent, object> bps in breakpointsCopy) {
+				Dictionary<BreakEvent, BreakEventInfo> breakpointsCopy = new Dictionary<BreakEvent, BreakEventInfo> (breakpoints);
+				foreach (KeyValuePair<BreakEvent, BreakEventInfo> bps in breakpointsCopy) {
 					Breakpoint bp = bps.Key as Breakpoint;
-					if (bp != null && bps.Value == null) {
+					if (bp != null && bps.Value.Handle == null) {
 						if (string.Compare (System.IO.Path.GetFullPath (bp.FileName), fullFilePath, System.IO.Path.DirectorySeparatorChar == '\\') == 0)
 							UpdateBreakEvent (bp);
 					}
@@ -772,16 +826,16 @@ namespace Mono.Debugging.Client
 			List<BreakEvent> toUpdate = new List<BreakEvent> ();
 			lock (breakpoints) {
 				// Make a copy of the breakpoints table since it can be modified while iterating
-				Dictionary<BreakEvent, object> breakpointsCopy = new Dictionary<BreakEvent, object> (breakpoints);
-				foreach (KeyValuePair<BreakEvent, object> bps in breakpointsCopy) {
+				Dictionary<BreakEvent, BreakEventInfo> breakpointsCopy = new Dictionary<BreakEvent, BreakEventInfo> (breakpoints);
+				foreach (KeyValuePair<BreakEvent, BreakEventInfo> bps in breakpointsCopy) {
 					Breakpoint bp = bps.Key as Breakpoint;
-					if (bp != null && bps.Value != null) {
+					if (bp != null && bps.Value.Handle != null) {
 						if (System.IO.Path.GetFullPath (bp.FileName) == fullFilePath)
 							toUpdate.Add (bp);
 					}
 				}
 				foreach (BreakEvent be in toUpdate) {
-					breakpoints[be] = null;
+					SetBreakEventHandle (be, null);
 					Breakpoints.NotifyStatusChanged (be);
 				}
 			}
@@ -789,8 +843,8 @@ namespace Mono.Debugging.Client
 
 		BreakEvent GetBreakEvent (object handle)
 		{
-			foreach (KeyValuePair<BreakEvent,object> e in breakpoints) {
-				if (handle == e.Value || handle.Equals (e.Value))
+			foreach (KeyValuePair<BreakEvent,BreakEventInfo> e in breakpoints) {
+				if (handle == e.Value.Handle || handle.Equals (e.Value.Handle))
 					return e.Key;
 			}
 			return null;
