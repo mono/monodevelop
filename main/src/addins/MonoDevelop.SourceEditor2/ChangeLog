@@ -1,3 +1,12 @@
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs:
+	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs: Added first
+	  version of widget based pinned watches.
+
 2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs:

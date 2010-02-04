@@ -649,37 +649,49 @@ namespace MonoDevelop.SourceEditor
 		struct PinnedWatchInfo {
 			public PinnedWatch Watch;
 			public LineSegment Line;
-			public DebugValueMarker Marker;
+			public PinnedWatchWidget Widget;
+//			public DebugValueMarker Marker;
 		}
 		
 		void UpdatePinnedWatches ()
 		{
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
-				widget.TextEditor.Document.RemoveMarker (wi.Line, wi.Marker);
-				wi.Marker.Dispose ();
+				widget.TextEditor.Remove (wi.Widget);
+				wi.Widget.Destroy ();
 			}
 			pinnedWatches.Clear ();
 			if (ContentName == null || !DebuggingService.IsDebugging)
 				return;
-			foreach (PinnedWatch w in DebuggingService.PinnedWatches.GetWatchesForFile (Path.GetFullPath (ContentName)))
+			foreach (PinnedWatch w in DebuggingService.PinnedWatches.GetWatchesForFile (Path.GetFullPath (ContentName))) {
 				AddWatch (w);
+			}
 			widget.TextEditor.QueueDraw ();
 		}
 		
 		void AddWatch (PinnedWatch w)
 		{
-			LineSegment line = widget.TextEditor.Document.GetLine (w.Line-1);
+			LineSegment line = widget.TextEditor.Document.GetLine (w.Line - 1);
 			if (line == null)
 				return;
 			PinnedWatchInfo wi = new PinnedWatchInfo ();
 			wi.Line = line;
-			wi.Marker = new DebugValueMarker (widget.TextEditor, line, w);
+			if (w.OffsetX < 0) {
+				w.OffsetY = widget.TextEditor.LineToVisualY (w.Line - 1);
+				int lw, lh;
+				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
+				w.OffsetX = widget.TextEditor.TextViewMargin.XOffset + lw + 4;
+			}
+			wi.Widget = new PinnedWatchWidget (widget.TextEditor, w);
+			
+//			wi.Marker = new DebugValueMarker (widget.TextEditor, line, w);
 			wi.Watch = w;
 			pinnedWatches.Add (wi);
-			if (w.Value != null)
-				wi.Marker.AddValue (w.Value);
-			widget.TextEditor.Document.AddMarker (line, wi.Marker);
-			widget.TextEditor.QueueDraw ();
+//			if (w.Value != null)
+//				wi.Marker.AddValue (w.Value);
+
+			widget.TextEditor.AddTopLevelWidget (wi.Widget, w.OffsetX, w.OffsetY);
+			
+//			widget.TextEditor.QueueDraw ();
 		}
 
 		void OnDebugSessionStarted (object sender, EventArgs e)
@@ -695,9 +707,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnWatchRemoved (object s, PinnedWatchEventArgs args)
 		{
+			Console.WriteLine ("Remove watch !!!");
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
-					widget.TextEditor.Document.RemoveMarker (wi.Line, wi.Marker);
+					widget.TextEditor.Remove (wi.Widget);
+					wi.Widget.Destroy ();
 					break;
 				}
 			}
@@ -707,10 +721,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
-					wi.Marker.Clear ();
-					if (wi.Watch.Value != null)
-						wi.Marker.AddValue (wi.Watch.Value);
-					widget.TextEditor.Document.CommitLineUpdate (wi.Line);
+					wi.Widget.ObjectValue = wi.Watch.Value;
+					Console.WriteLine (args.Watch.OffsetX +"x" + args.Watch.OffsetY);
+					TextEditor.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
+//					widget.TextEditor.Document.CommitLineUpdate (wi.Line);
 					break;
 				}
 			}

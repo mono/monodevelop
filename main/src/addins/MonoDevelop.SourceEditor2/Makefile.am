@@ -36,6 +36,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
+	MonoDevelop.SourceEditor/PinnedWatchWidget.cs \
 	MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs \
 	MonoDevelop.SourceEditor/SourceEditorCommands.cs \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \
