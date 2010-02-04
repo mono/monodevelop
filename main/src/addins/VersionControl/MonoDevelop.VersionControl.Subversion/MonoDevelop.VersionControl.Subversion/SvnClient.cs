@@ -1201,7 +1201,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				string smessage = "";
 				
 				if (message != IntPtr.Zero)
-					smessage = Marshal.PtrToStringAnsi (message).Trim ();
+					smessage = Marshal.PtrToStringAnsi (message);
+				
+				if (smessage != null)
+					smessage = smessage.Trim ();
 				
 				List<RevisionPath> items = new List<RevisionPath>();
 				

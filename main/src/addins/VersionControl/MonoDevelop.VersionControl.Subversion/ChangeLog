@@ -1,3 +1,8 @@
+2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Prevent
+	  occasional NRE.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
