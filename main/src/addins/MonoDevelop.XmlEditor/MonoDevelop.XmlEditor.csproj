@@ -119,6 +119,10 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -232,7 +236,6 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\..\md.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
