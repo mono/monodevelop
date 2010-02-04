@@ -89,7 +89,7 @@ namespace MonoDevelop.IPhone
 	{
 		static bool? isInstalled = null;
 		static bool? simOnly = null;
-		static string[] installedSdkVersions;
+		static int[][] installedSdkVersions;
 		
 		public static bool IsInstalled {
 			get {
@@ -124,10 +124,10 @@ namespace MonoDevelop.IPhone
 			                    + version + ".sdk/ResourceRules.plist");
 		}
 		
-		public static string[] GetInstalledSdkVersions ()
+		public static IEnumerable<string> GetInstalledSdkVersions ()
 		{
 			EnsureSdkVersions ();
-			return installedSdkVersions;
+			return installedSdkVersions.Select (x => GetVersionString (x));
 		}
 		
 		static void EnsureSdkVersions ()
@@ -137,7 +137,7 @@ namespace MonoDevelop.IPhone
 			
 			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
 			if (!Directory.Exists (sdkDir)) {
-				installedSdkVersions = new string[0];
+				installedSdkVersions = new int[0][];
 				return;
 			}
 			
@@ -160,24 +160,44 @@ namespace MonoDevelop.IPhone
 						vint[j] = int.Parse (vstr[j]);
 					vs.Add (vint);
 				} catch (Exception ex) {
-					LoggingService.LogError ("Could not parse iPhone SDK version {0}", s);
+					LoggingService.LogError ("Could not parse iPhone SDK version {0}:\n{1}", s, ex.ToString ());
 				}
 			}
-			vs.Sort ((x,y) => {
-				for (int i = 0; i < Math.Min (x.Length,y.Length); i++) {
-					int res = x[i] - y[i];
-					if (res != 0)
-						return res;
-				}
-				return x.Length - y.Length;
-			});
-			installedSdkVersions = vs.Select (a => string.Join (".", a.Select (b => b.ToString ()).ToArray ())).ToArray ();
+			installedSdkVersions = vs.ToArray ();
+			Array.Sort (installedSdkVersions, CompareVersions);
 		}
 		
-		public static string GetDefaultSdkVersion ()
+		public static string GetVersionString (int[] version)
+		{
+			string[] v = new string [version.Length];
+			for (int i = 0; i < v.Length; i++)
+				v[i] = version[i].ToString ();
+			return string.Join (".", v);
+		}
+		
+		static int CompareVersions (int[] x, int[] y)
+		{
+			for (int i = 0; i < Math.Min (x.Length,y.Length); i++) {
+				int res = x[i] - y[i];
+				if (res != 0)
+					return res;
+			}
+			return x.Length - y.Length;
+		}
+		
+		public static int[] GetDefaultSdkVersion ()
 		{
 			EnsureSdkVersions ();
-			return installedSdkVersions.Length > 0? installedSdkVersions[0] : "3.0";
+			return installedSdkVersions.Length > 0? installedSdkVersions[0] : new int[] { 3, 0 };
+		}
+		
+		public static int[] GetNextLowestInstalledSdk (int[] version)
+		{
+			EnsureSdkVersions ();
+			foreach (int[] i in installedSdkVersions)
+				if (CompareVersions (version, i) <= 0)
+					return i;
+			return null;
 		}
 		
 		public static void ShowSimOnlyDialog ()
