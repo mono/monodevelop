@@ -1,3 +1,8 @@
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: added
+	  some tests.
+
 2010-02-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: worked

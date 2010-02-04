@@ -1,3 +1,4 @@
+/*
 // 
 // TestFormattingVisitor.cs
 //  
@@ -23,7 +24,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*
+
 using System;
 using NUnit.Framework;
 using MonoDevelop.Ide.Gui;
@@ -169,5 +170,61 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 }", data.Document.Text);
 		}
 		
+		[Test()]
+		public void TestDelegateFormatting ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = "delegate void TestDelegate();";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeDelegateDeclarationParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"delegate void TestDelegate ();", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestDelegateFormattingComplex ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = "delegate void TestDelegate\n\t\t\t();";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeDelegateDeclarationParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"delegate void TestDelegate ();", data.Document.Text);
+		}
+		
+
+		[Test()]
+		public void TestPropertyBraceFormatting ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	int Property {get; set;}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			policy.PropertyBraceStyle = BraceStyle.EndOfLine;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	int Property {
+		get;
+		set;
+	}
+}", data.Document.Text);
+		}
+		
 	}
 }*/
+
+	
