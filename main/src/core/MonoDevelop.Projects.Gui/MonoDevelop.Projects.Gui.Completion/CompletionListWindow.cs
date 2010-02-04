@@ -124,11 +124,15 @@ namespace MonoDevelop.Projects.Gui.Completion
 					// Makes an exception for Mod1Mask (usually alt), shift, control, meta and super
 					// This prevents the window from closing if the num/scroll/caps lock are active
 					// FIXME: modifier mappings depend on X server settings
-					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)))) != 0) {
+					
+//					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)))) != 0) {
+					// this version doesn't work for my system - seems that I've a modifier active
+					// that gdk doesn't know about. How about the 2nd version - should close on left/rigt + shift/mod1/control/meta/super
+					if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)) != 0) {
 						CompletionWindowManager.HideWindow ();
 						return false;
 					}
-
+					
 					if (declarationviewwindow.Multiple) {
 						if (key == Gdk.Key.Left)
 							declarationviewwindow.OverloadLeft ();

@@ -1,3 +1,9 @@
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  fixed a bug where left/right didn't go through the overloads
+	  in the cc list.
+
 2010-02-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
