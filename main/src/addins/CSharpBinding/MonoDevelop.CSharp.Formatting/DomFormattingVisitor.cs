@@ -118,6 +118,41 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
+		
+		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
+		{
+			CSharpTokenNode lParen = (CSharpTokenNode)delegateDeclaration.GetChildByRole (DelegateDeclaration.Roles.LPar);
+			int offset = this.data.Document.LocationToOffset (lParen.Location.Line, lParen.Location.Column);
+			ForceSpaceBefore (offset - 1, policy.BeforeDelegateDeclarationParentheses);
+			return base.VisitDelegateDeclaration (delegateDeclaration, data);
+		}
+		
+		void ForceSpaceBefore (int offset, bool forceSpace)
+		{
+			bool insertedSpace = false;
+			do {
+				char ch = data.Document.GetCharAt (offset);
+				Console.WriteLine (ch);
+				if (!Char.IsWhiteSpace (ch) && (insertedSpace || !forceSpace))
+					break;
+				if (ch == ' ' && forceSpace) {
+					if (insertedSpace) {
+						changes.Add (new MyTextReplaceChange (data, offset, 1, null));
+					} else {
+						insertedSpace = true;
+					}
+				} else if (forceSpace) {
+					if (!insertedSpace) {
+						changes.Add (new MyTextReplaceChange (data, offset, Char.IsWhiteSpace (ch) ? 1 :  0, " "));
+						insertedSpace = true;
+					} else if (Char.IsWhiteSpace (ch)) {
+						changes.Add (new MyTextReplaceChange (data, offset, 1, null));
+					}
+				}
+				
+				offset--;
+			} while (offset >= 0);
+		}
 
 		void ForceSpace (int startOffset, int endOffset, bool spaceBefore)
 		{
@@ -224,4 +259,6 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.Add (new MyTextReplaceChange (data, rbraceLineSegment.Offset + firstNonWsChar + 1, rbrace.Location.Column - firstNonWsChar - 1, firstNonWsChar > 0 ? data.EolMarker + indent : indent));
 		}
 	}
-}*/
+}
+
+*/

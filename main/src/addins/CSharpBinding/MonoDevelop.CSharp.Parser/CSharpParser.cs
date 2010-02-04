@@ -74,6 +74,7 @@ namespace MonoDevelop.CSharp.Parser
 			TypeDeclaration CreateTypeDeclaration (Mono.CSharp.TypeContainer tc)
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
+				
 				Identifier nameIdentifier = new Identifier () {
 					Name = tc.Name
 				};
@@ -104,6 +105,23 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (Mono.CSharp.Delegate d)
 			{
+				DelegateDeclaration newDelegate = new DelegateDeclaration ();
+				Identifier nameIdentifier = new Identifier () {
+					Name = d.Name
+				};
+				Console.WriteLine ("Visit delegate !!!");
+				newDelegate.AddChild (new CSharpTokenNode (Convert (d.ContainerTypeTokenPosition)), TypeDeclaration.TypeKeyword);
+				newDelegate.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
+				
+				newDelegate.AddChild (new CSharpTokenNode (Convert (d.OpenParenthesisLocation)), DelegateDeclaration.Roles.LPar);
+				newDelegate.AddChild (new CSharpTokenNode (Convert (d.CloseParenthesisLocation)), DelegateDeclaration.Roles.RPar);
+				newDelegate.AddChild (new CSharpTokenNode (Convert (d.SemicolonLocation)), DelegateDeclaration.Roles.Semicolon);
+				
+				if (typeStack.Count > 0) {
+					typeStack.Peek ().AddChild (newDelegate);
+				} else {
+					unit.AddChild (newDelegate);
+				}
 			}
 			
 			public override void Visit (Mono.CSharp.Enum e)
@@ -211,5 +229,5 @@ namespace MonoDevelop.CSharp.Parser
 			return conversionVisitor.Unit;
 		}
 	}
-}*/
-
+}
+*/

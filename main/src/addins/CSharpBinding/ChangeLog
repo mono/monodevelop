@@ -1,3 +1,9 @@
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	  Worked on DOM visitor.
+
 2010-02-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Dom/ICSharpNode.cs:
