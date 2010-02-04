@@ -858,6 +858,8 @@ namespace MonoDevelop.Debugger
 			watch.File = PinnedWatchFile;
 			watch.Line = PinnedWatchLine;
 			watch.Expression = exp;
+			watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
+			watch.OffsetY = -1;
 			DebuggingService.PinnedWatches.Add (watch);
 			if (PinStatusChanged != null)
 				PinStatusChanged (this, EventArgs.Empty);
