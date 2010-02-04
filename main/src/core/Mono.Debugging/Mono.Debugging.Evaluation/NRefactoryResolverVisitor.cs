@@ -74,6 +74,8 @@ namespace Mono.Debugging.Evaluation
 		
 		void ResolveType (string typeName, ICSharpCode.NRefactory.Location loc)
 		{
+			if (loc.IsEmpty)
+				return;
 			string type = session.ResolveIdentifierAsType (typeName, location);
 			if (!string.IsNullOrEmpty (type)) {
 				type = "global::" + type;

@@ -41,6 +41,7 @@ namespace Mono.Debugging.Client
 		string value;
 		string typeName;
 		string displayValue;
+		string childSelector;
 		ObjectValueFlags flags;
 		IObjectValueSource source;
 		IObjectValueUpdater updater;
@@ -200,6 +201,15 @@ namespace Mono.Debugging.Client
 		public string TypeName {
 			get { return typeName; }
 			set { typeName = value; }
+		}
+		
+		/// <summary>
+		/// The expression to concatenate to a parent expression to get this child
+		/// (for example ".foo" if this object represents a "foo" field of an object
+		/// </summary>
+		public string ChildSelector {
+			get { return childSelector ?? "." + Name; }
+			set { childSelector = value; }
 		}
 		
 		public bool HasChildren {

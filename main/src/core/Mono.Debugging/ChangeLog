@@ -1,3 +1,14 @@
+2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/DebuggerSession.cs: Added delegate
+	  which is called when a tracepoint is hit.
+
+	* Mono.Debugging.Client/ObjectValue.cs: New ChildSelector
+	  property.
+
+	* Mono.Debugging.Evaluation/NRefactoryResolverVisitor.cs: Fix
+	  nullref.
+
 2010-02-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs:

@@ -40,6 +40,7 @@ namespace Mono.Debugging.Client
 	public delegate void ThreadEventHandler(int thread_id);
 	public delegate bool ExceptionHandler (Exception ex);
 	public delegate string TypeResolverHandler (string identifier, SourceLocation location);
+	public delegate void BreakpointTraceHandler (BreakEvent be, string trace);
 	
 	public abstract class DebuggerSession: IDisposable
 	{
@@ -57,6 +58,7 @@ namespace Mono.Debugging.Client
 		ThreadInfo activeThread;
 		BreakEventHitHandler customBreakpointHitHandler;
 		ExceptionHandler exceptionHandler;
+		BreakpointTraceHandler breakpointTraceHandler;
 		DebuggerSessionOptions options;
 		Dictionary<string,string> resolvedExpressionCache = new Dictionary<string, string> ();
 		
@@ -111,6 +113,8 @@ namespace Mono.Debugging.Client
 			get { return exceptionHandler; }
 			set { exceptionHandler = value; }
 		}
+		
+		public BreakpointTraceHandler BreakpointTraceHandler { get; set; }
 		
 		public TypeResolverHandler TypeResolverHandler { get; set; }
 
@@ -879,6 +883,12 @@ namespace Mono.Debugging.Client
 			if (ev != null) {
 				ev.LastTraceValue = value;
 				ev.NotifyUpdate ();
+				if (value != null) {
+					if (BreakpointTraceHandler != null)
+						BreakpointTraceHandler (ev, value);
+					else
+						OnDebuggerOutput (false, value + "\n");
+				}
 			}
 		}
 		
