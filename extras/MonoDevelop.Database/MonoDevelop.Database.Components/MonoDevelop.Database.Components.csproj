@@ -226,6 +226,7 @@
     <None Include="ChangeLog" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -243,4 +244,11 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.Core,2.2" />
+    <AddinReference Include="MonoDevelop.Core.Gui,2.2" />
+    <AddinReference Include="MonoDevelop.Ide,2.2" />
+    <AddinReference Include="MonoDevelop.SourceEditor2,2.2" />
+    <AddinReference Include="MonoDevelop.Projects,2.2" />
+  </ItemGroup>
 </Project>

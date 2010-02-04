@@ -76,6 +76,10 @@
       <Project>{70E5F8DB-FB9B-41BE-A4D5-4075056C6D04}</Project>
       <Name>MonoDevelop.Database.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Database.Designer\MonoDevelop.Database.Designer.csproj">
+      <Project>{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}</Project>
+      <Name>MonoDevelop.Database.Designer</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OracleConnectionProvider.cs" />
@@ -95,6 +99,7 @@
     <Folder Include="Schema\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -103,4 +108,9 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.Core,2.2" />
+    <AddinReference Include="MonoDevelop.Core.Gui,2.2" />
+    <AddinReference Include="MonoDevelop.Ide,2.2" />
+  </ItemGroup>
 </Project>

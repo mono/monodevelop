@@ -137,11 +137,12 @@
     <Reference Include="MonoDevelop.Refactoring, Version=2.1.1.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +177,10 @@
     <Compile Include="Widgets\SqlServerColumnEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Dialogs\SqlServerCreateDatabaseDialog.cs" />
+    <Compile Include="Schema\SqlServerCollationSchema.cs" />
+    <Compile Include="Collections\SqlServerCollationSchemaCollection.cs" />
+    <Compile Include="Schema\SqlServerDatabaseSchema.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Database.Sql.SqlServer.addin.xml">
@@ -190,12 +195,16 @@
     <EmbeddedResource Include="SqlServerSyntaxMode.xml">
       <LogicalName>SqlServerSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SysObjects.xml">
+      <LogicalName>SysObjects.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="ChangeLog" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -213,4 +222,13 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Collections\" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.Core,2.2" />
+    <AddinReference Include="MonoDevelop.Core.Gui,2.2" />
+    <AddinReference Include="MonoDevelop.Ide,2.2" />
+    <AddinReference Include="MonoDevelop.SourceEditor2,2.2" />
+  </ItemGroup>
 </Project>

@@ -47,16 +47,9 @@ namespace MonoDevelop.Database.Sql.Npgsql
 			tablespacesStore = new ListStore (typeof (string), typeof(NpgsqlTablespace));
 			
 			comboOwner.Model = ownersStore;
-			comboOwner.TextColumn = 0;
-			
 			comboTemplate.Model = templatesStore;
-			comboTemplate.TextColumn = 0;
-
 			comboEncoding.Model = encodingsStore;
-			comboEncoding.TextColumn = 0;
-			
 			comboTablespace.Model = tablespacesStore;
-			comboTablespace.TextColumn = 0;
 		}
 		
 		private void ClearCombos ()

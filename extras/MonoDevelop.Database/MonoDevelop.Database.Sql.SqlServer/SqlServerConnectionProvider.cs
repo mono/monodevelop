@@ -50,13 +50,12 @@ using System.Collections.Generic;
 						builder.Password = settings.Password;
 					}
 					if (settings.Port == 0) // Don't assign default port
-						builder.DataSource = String.Concat (settings.Server, ",", settings.Port);
+						builder.DataSource = settings.Server;
 					else
 						builder.DataSource = String.Concat (settings.Server, ",", settings.Port);
 					//builder.NetworkLibrary = "DBMSSOCN";
 				}
 				builder.Pooling = false;
-				Console.WriteLine ("---> {0}", builder.ToString ());
 				SqlConnection connection = new SqlConnection (builder.ToString ());
 				connection.Open ();
 				

@@ -1,3 +1,7 @@
+2010-02-03  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* MonoDevelop.Database.Query.csproj: - Flush changes.
+
 2010-01-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SqlQueryDisplayBinding.cs: Track DisplayBinding API.

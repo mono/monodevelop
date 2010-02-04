@@ -92,6 +92,54 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="MonoDevelop.VersionControl, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.NUnit, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.XmlEditor, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.AspNet, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Gettext, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.GtkCore, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.VBNetBinding, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CBinding, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CSharpBinding, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Autotools, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Refactoring, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Sql\MonoDevelop.Database.Sql.csproj">
@@ -150,6 +198,7 @@
     <None Include="ChangeLog" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -167,4 +216,10 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.Core,2.2" />
+    <AddinReference Include="MonoDevelop.Core.Gui,2.2" />
+    <AddinReference Include="MonoDevelop.Ide,2.2" />
+    <AddinReference Include="MonoDevelop.SourceEditor2,2.2" />
+  </ItemGroup>
 </Project>

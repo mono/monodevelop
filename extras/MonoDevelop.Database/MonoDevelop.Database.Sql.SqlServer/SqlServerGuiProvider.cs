@@ -35,7 +35,18 @@ using MonoDevelop.Database.Components;
 	{
 		public bool ShowCreateDatabaseDialog (IDbFactory factory)
 		{
-			return false;
+			SqlServerCreateDatabaseDialog dialog = new SqlServerCreateDatabaseDialog (factory);
+			int resp;
+			do {
+				resp = dialog.Run ();
+			} while (resp != (int)ResponseType.Cancel && 
+				    	     resp != (int)ResponseType.Ok && 
+				    		resp != (int)ResponseType.DeleteEvent);
+			dialog.Destroy ();
+			if (resp == (int)ResponseType.Ok)
+				return true;
+			else
+				return false;
 		}
 
 		public bool ShowAddConnectionDialog (IDbFactory factory)
@@ -48,12 +59,13 @@ using MonoDevelop.Database.Components;
 		                                      DatabaseConnectionSettings settings, 
 		                                      out DatabaseConnectionSettings newSettings)
 		{
+			
 			DatabaseConnectionSettingsDialog dlg = new DatabaseConnectionSettingsDialog (factory, settings);
 			bool result = RunDialog (dlg);
 			if (result)
 				newSettings = dlg.ConnectionSettings;
 			else
-				newSettings = null;	
+				newSettings = null;
 			return result;
 		}
 

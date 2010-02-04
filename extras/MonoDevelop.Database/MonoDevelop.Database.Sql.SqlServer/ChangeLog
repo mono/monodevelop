@@ -1,3 +1,33 @@
+2010-02-03  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Collections:
+	* Dialogs/SqlServerCreateDatabaseDialog.cs:
+	* Collections/SqlServerCollationSchemaCollection.cs: Sql
+	  Server Provider Collections.
+
+	* SqlServerConnectionProvider.cs: Remove SCWL.
+
+	* SqlServerSchemaProvider.cs: Implement Drop Database.
+
+	* SysObjects.xml: XML Sys Objects.
+
+	* Schema/SqlServerCollationSchema.cs: Collation Schema.
+
+	* Schema/SqlServerDatabaseSchema.cs: Database Schema.
+
+	* Widgets/SqlServerCreateDatabaseWidget.cs: Create Database
+	  changes.
+
+	* gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:
+	  Create Database Widget implementation.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Database.Sql.SqlServer.csproj: Flush Changes.
+
+	* SqlServerGuiProvider.cs: Change create database dialog call.
+
 2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

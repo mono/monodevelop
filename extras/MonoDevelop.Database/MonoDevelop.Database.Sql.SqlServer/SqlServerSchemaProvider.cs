@@ -28,23 +28,26 @@
 //
 
 using System;
+using System.IO;
 using System.Text;
 using System.Data;
+using System.Xml;
+using System.Linq;
+using System.Xml.Linq;
+using System.Reflection;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+
 namespace MonoDevelop.Database.Sql.SqlServer
 {
-//TODO: retrieve a list of collations
 	// see:
 	// http://www.alberton.info/sql_server_meta_info.html + msdn
 	public class SqlServerSchemaProvider : AbstractEditSchemaProvider
 	{
-		string[] system_procs = new string [] {"dt_addtosourcecontrol", "dt_addtosourcecontrol_u", "dt_adduserobject", "dt_adduserobject_vcs", "dt_checkinobject", "dt_checkinobject_u",
-			"dt_checkoutobject", "dt_checkoutobject_u", "dt_displayoaerror", "dt_displayoaerror_u", "dt_droppropertiesbyid", "dt_dropuserobjectbyid", 
-			"dt_generateansiname", "dt_getobjwithprop", "dt_getobjwithprop_u", "dt_getpropertiesbyid", "dt_getpropertiesbyid_u", "dt_getpropertiesbyid_vcs",
-			"dt_getpropertiesbyid_vcs_u", "dt_isundersourcecontrol", "dt_isundersourcecontrol_u", "dt_removefromsourcecontrol", "dt_setpropertybyid", 
-			"dt_setpropertybyid_u", "dt_validateloginparams", "dt_validateloginparams_u", "dt_vcsenabled", "dt_verstamp006", "dt_whocheckedout", "dt_whocheckedout_u"};
+		string[] system_procs;
+		string[] system_tables;
+		
 
 		public SqlServerSchemaProvider (IConnectionPool connectionPool)
 			: base (connectionPool)
@@ -61,7 +64,34 @@ using MonoDevelop.Core;
 			AddSupportedSchemaActions (SchemaType.CheckConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.UniqueConstraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
-			AddSupportedSchemaActions (SchemaType.User, SchemaActions.Schema);
+			
+			// TODO: XDocument.Load(XmlTextReader) isn't working on Mono 2.4. Should be fixed in 2.6
+			/* using (System.IO.Stream stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("SysObjects.xml")) {
+				XmlTextReader reader = new XmlTextReader (stream);
+				XDocument doc = XDocument.Load (reader);
+				
+				var sysSP = from item in doc.Elements("SysObjects").Descendants () 
+					where item.Attribute ("type") != null && item.Attribute("type").Value == "SP" 
+					select item;
+				reader.Close ();
+			}
+			*/
+			
+			using (System.IO.Stream stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("SysObjects.xml")) {
+				XmlDocument doc = new XmlDocument ();
+				doc.Load (stream);
+				List<string> sps = new List<string> ();
+				List<string> tables = new List<string> ();
+				foreach (XmlNode node in doc.FirstChild.ChildNodes)
+					if (node.Attributes["type"].Value == "SP") 
+						sps.Add (node.InnerText);
+					else if (node.Attributes["type"].Value == "Table") 
+						tables.Add (node.InnerText);
+				
+				system_procs = sps.ToArray ();
+				system_tables = tables.ToArray ();
+			}
+			
 		}
 		
 		public override DatabaseSchemaCollection GetDatabases ()
@@ -91,6 +121,38 @@ using MonoDevelop.Core;
 			}
 			return databases;
 		}
+		
+		public virtual SqlServerCollationSchemaCollection GetCollations ()
+		{
+			SqlServerCollationSchemaCollection collations = new SqlServerCollationSchemaCollection();
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				
+				conn.DbConnection.ChangeDatabase ("master"); 
+				using (IDbCommand command = conn.CreateCommand ("SELECT * FROM ::fn_helpcollations()")) {
+					try {
+						using (IDataReader reader = command.ExecuteReader ()) {
+							while (reader.Read ()) {
+								SqlServerCollationSchema coll = new SqlServerCollationSchema (this);
+								coll.Name = reader.GetString (0);
+								coll.Description = reader.GetString (1);
+								collations.Add (coll);
+							}
+							reader.Close ();
+						}
+					 } catch (IOException ioex) {
+						//FIXME: Avoid an IOException AND ObjectDisposedException (https://bugzilla.novell.com/show_bug.cgi?id=556406)
+					} catch (ObjectDisposedException dex) {
+					}
+					catch (Exception e) {
+					 	QueryService.RaiseException (e);
+					 } finally {
+						connectionPool.Release(conn);
+					 }
+				}
+			}
+			return collations;			
+		}
+		
 
 		public override TableSchemaCollection GetTables ()
 		{
@@ -115,7 +177,13 @@ using MonoDevelop.Core;
 								while (r.Read()) {
 									TableSchema table = new TableSchema (this);
 									table.Name = r.GetString(1);
-									table.IsSystemTable = r.GetString(4) == "S" ? true : false;
+									if (r.GetString(4) == "S")
+										table.IsSystemTable = true;
+									else 
+										if (Array.Exists (system_tables, delegate (string s) {return s == table.Name; }))
+											table.IsSystemTable = true;
+										else 
+											table.IsSystemTable = false;
 									table.OwnerName = r.GetString(0);
 									table.Definition = GetTableDefinition (table);
 									tables.Add (table);
@@ -594,18 +662,47 @@ using MonoDevelop.Core;
 			return dts;
 		}
 		
+		public override DatabaseSchema CreateDatabaseSchema (string name)
+		{
+			SqlServerDatabaseSchema schema = new SqlServerDatabaseSchema (this);
+			schema.Name = name;
+			return schema;
+		}
+
+		
 		//http://msdn2.microsoft.com/en-us/library/aa258257(SQL.80).aspx
 		public override void CreateDatabase (DatabaseSchema database)
 		{
-			IPooledDbConnection conn = connectionPool.Request ();
-			using (IDbCommand command = conn.CreateCommand (string.Concat("CREATE DATABASE ", database.Name)))
-				try {
-						command.ExecuteNonQuery ();
-				} catch (Exception e) {
-					QueryService.RaiseException (e);
-				} finally {
-					conn.Release ();
-				}
+			SqlServerDatabaseSchema schema = (SqlServerDatabaseSchema)database;
+			StringBuilder db = new StringBuilder ("CREATE DATABASE ");
+			string newLine = Environment.NewLine;
+			db.Append (schema.Name);
+			if (schema.FileName != string.Empty && schema.Name != string.Empty) {
+				db.AppendLine ();
+				db.Append ("ON ");
+				db.AppendFormat ("{0}(NAME = {1},", newLine, schema.LogicalName);
+				db.AppendFormat ("{0}FILENAME = '{1}'", newLine, schema.FileName);
+				if (schema.Size.Size > 0)
+					db.AppendFormat(",{0}SIZE = {1}{2}", newLine, schema.Size.Size.ToString (), schema.Size.Type);
+				if (schema.MaxSize.Size > 0)
+					db.AppendFormat(",{0}MAXSIZE = {1}{2}", newLine, schema.MaxSize.Size.ToString (), schema.MaxSize.Type);
+				if (schema.FileGrowth.Size > 0)
+					db.AppendFormat(",{0}FILEGROWTH = {1}{2}", newLine, schema.FileGrowth.Size.ToString (), schema.FileGrowth.Type == SizeType.PERCENTAGE ? "%" : schema.FileGrowth.Type.ToString ());
+				db.Append (")");
+			}
+			if (schema.Collation != null)
+				db.AppendFormat ("{0}COLLATE {1}{0}", newLine, schema.Collation.Name);
+			
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (db.ToString ()))
+					try {
+							command.ExecuteNonQuery ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
+					}
+			}
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa258255(SQL.80).aspx
@@ -815,7 +912,16 @@ using MonoDevelop.Core;
 		//http://msdn2.microsoft.com/en-us/library/aa258843(SQL.80).aspx
 		public override void DropDatabase (DatabaseSchema database)
 		{
-			ExecuteNonQuery (string.Concat("DROP DATABASE ", database.Name));
+			using (IPooledDbConnection conn = connectionPool.Request ()) {
+				using (IDbCommand command = conn.CreateCommand (string.Concat("DROP DATABASE ", database.Name)))
+					try {
+							command.ExecuteNonQuery ();
+					} catch (Exception e) {
+						QueryService.RaiseException (e);
+					} finally {
+						conn.Release ();
+					}
+			}
 		}
 
 		//http://msdn2.microsoft.com/en-us/library/aa258841(SQL.80).aspx

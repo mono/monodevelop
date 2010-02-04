@@ -15,13 +15,41 @@ namespace MonoDevelop.Database.Sql.SqlServer {
         
         private Gtk.Table table;
         
-        private Gtk.ComboBoxEntry comboCollation;
+        private Gtk.ComboBoxEntry comboCollations;
+        
+        private Gtk.Entry entryFilename;
         
         private Gtk.Entry entryName;
+        
+        private Gtk.HBox hbox1;
+        
+        private Gtk.SpinButton spinSize;
+        
+        private Gtk.ComboBox comboSize;
+        
+        private Gtk.HBox hbox2;
+        
+        private Gtk.SpinButton spinMaxSize;
+        
+        private Gtk.ComboBox comboMaxSize;
+        
+        private Gtk.HBox hbox3;
+        
+        private Gtk.SpinButton spinFilegrowth;
+        
+        private Gtk.ComboBox comboFilegrowth;
         
         private Gtk.Label label1;
         
         private Gtk.Label label3;
+        
+        private Gtk.Label label4;
+        
+        private Gtk.Label label5;
+        
+        private Gtk.Label label6;
+        
+        private Gtk.Label label7;
         
         protected virtual void Build() {
             Stetic.Gui.Initialize(this);
@@ -29,16 +57,16 @@ namespace MonoDevelop.Database.Sql.SqlServer {
             Stetic.BinContainer.Attach(this);
             this.Name = "MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget";
             // Container child MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.Gtk.Container+ContainerChild
-            this.table = new Gtk.Table(((uint)(2)), ((uint)(2)), false);
+            this.table = new Gtk.Table(((uint)(6)), ((uint)(2)), false);
             this.table.Name = "table";
             this.table.RowSpacing = ((uint)(6));
             this.table.ColumnSpacing = ((uint)(6));
             this.table.BorderWidth = ((uint)(6));
             // Container child table.Gtk.Table+TableChild
-            this.comboCollation = Gtk.ComboBoxEntry.NewText();
-            this.comboCollation.Name = "comboCollation";
-            this.table.Add(this.comboCollation);
-            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table[this.comboCollation]));
+            this.comboCollations = Gtk.ComboBoxEntry.NewText();
+            this.comboCollations.Name = "comboCollations";
+            this.table.Add(this.comboCollations);
+            Gtk.Table.TableChild w1 = ((Gtk.Table.TableChild)(this.table[this.comboCollations]));
             w1.TopAttach = ((uint)(1));
             w1.BottomAttach = ((uint)(2));
             w1.LeftAttach = ((uint)(1));
@@ -46,41 +74,208 @@ namespace MonoDevelop.Database.Sql.SqlServer {
             w1.XOptions = ((Gtk.AttachOptions)(4));
             w1.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
+            this.entryFilename = new Gtk.Entry();
+            this.entryFilename.CanFocus = true;
+            this.entryFilename.Name = "entryFilename";
+            this.entryFilename.IsEditable = true;
+            this.entryFilename.InvisibleChar = '●';
+            this.table.Add(this.entryFilename);
+            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table[this.entryFilename]));
+            w2.TopAttach = ((uint)(2));
+            w2.BottomAttach = ((uint)(3));
+            w2.LeftAttach = ((uint)(1));
+            w2.RightAttach = ((uint)(2));
+            w2.XOptions = ((Gtk.AttachOptions)(4));
+            w2.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
             this.entryName = new Gtk.Entry();
             this.entryName.CanFocus = true;
             this.entryName.Name = "entryName";
             this.entryName.IsEditable = true;
             this.entryName.InvisibleChar = '●';
             this.table.Add(this.entryName);
-            Gtk.Table.TableChild w2 = ((Gtk.Table.TableChild)(this.table[this.entryName]));
-            w2.LeftAttach = ((uint)(1));
-            w2.RightAttach = ((uint)(2));
-            w2.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table[this.entryName]));
+            w3.LeftAttach = ((uint)(1));
+            w3.RightAttach = ((uint)(2));
+            w3.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.hbox1 = new Gtk.HBox();
+            this.hbox1.Name = "hbox1";
+            this.hbox1.Spacing = 6;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.spinSize = new Gtk.SpinButton(0, 2147483647, 1);
+            this.spinSize.CanFocus = true;
+            this.spinSize.Name = "spinSize";
+            this.spinSize.Adjustment.PageIncrement = 10;
+            this.spinSize.ClimbRate = 1;
+            this.spinSize.Numeric = true;
+            this.hbox1.Add(this.spinSize);
+            Gtk.Box.BoxChild w4 = ((Gtk.Box.BoxChild)(this.hbox1[this.spinSize]));
+            w4.Position = 0;
+            // Container child hbox1.Gtk.Box+BoxChild
+            this.comboSize = Gtk.ComboBox.NewText();
+            this.comboSize.AppendText(AddinCatalog.GetString("KB"));
+            this.comboSize.AppendText(AddinCatalog.GetString("MB"));
+            this.comboSize.AppendText(AddinCatalog.GetString("GB"));
+            this.comboSize.AppendText(AddinCatalog.GetString("TB"));
+            this.comboSize.Name = "comboSize";
+            this.comboSize.Active = 1;
+            this.hbox1.Add(this.comboSize);
+            Gtk.Box.BoxChild w5 = ((Gtk.Box.BoxChild)(this.hbox1[this.comboSize]));
+            w5.Position = 1;
+            w5.Expand = false;
+            w5.Fill = false;
+            this.table.Add(this.hbox1);
+            Gtk.Table.TableChild w6 = ((Gtk.Table.TableChild)(this.table[this.hbox1]));
+            w6.TopAttach = ((uint)(3));
+            w6.BottomAttach = ((uint)(4));
+            w6.LeftAttach = ((uint)(1));
+            w6.RightAttach = ((uint)(2));
+            w6.XOptions = ((Gtk.AttachOptions)(4));
+            w6.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.hbox2 = new Gtk.HBox();
+            this.hbox2.Name = "hbox2";
+            this.hbox2.Spacing = 6;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.spinMaxSize = new Gtk.SpinButton(0, 2147483647, 1);
+            this.spinMaxSize.CanFocus = true;
+            this.spinMaxSize.Name = "spinMaxSize";
+            this.spinMaxSize.Adjustment.PageIncrement = 10;
+            this.spinMaxSize.ClimbRate = 1;
+            this.spinMaxSize.Numeric = true;
+            this.hbox2.Add(this.spinMaxSize);
+            Gtk.Box.BoxChild w7 = ((Gtk.Box.BoxChild)(this.hbox2[this.spinMaxSize]));
+            w7.Position = 0;
+            // Container child hbox2.Gtk.Box+BoxChild
+            this.comboMaxSize = Gtk.ComboBox.NewText();
+            this.comboMaxSize.AppendText(AddinCatalog.GetString("KB"));
+            this.comboMaxSize.AppendText(AddinCatalog.GetString("MB"));
+            this.comboMaxSize.AppendText(AddinCatalog.GetString("GB"));
+            this.comboMaxSize.AppendText(AddinCatalog.GetString("TB"));
+            this.comboMaxSize.AppendText(AddinCatalog.GetString("UNLIMITED"));
+            this.comboMaxSize.Name = "comboMaxSize";
+            this.comboMaxSize.Active = 1;
+            this.hbox2.Add(this.comboMaxSize);
+            Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox2[this.comboMaxSize]));
+            w8.Position = 1;
+            w8.Expand = false;
+            w8.Fill = false;
+            this.table.Add(this.hbox2);
+            Gtk.Table.TableChild w9 = ((Gtk.Table.TableChild)(this.table[this.hbox2]));
+            w9.TopAttach = ((uint)(4));
+            w9.BottomAttach = ((uint)(5));
+            w9.LeftAttach = ((uint)(1));
+            w9.RightAttach = ((uint)(2));
+            w9.XOptions = ((Gtk.AttachOptions)(4));
+            w9.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.hbox3 = new Gtk.HBox();
+            this.hbox3.Name = "hbox3";
+            this.hbox3.Spacing = 6;
+            // Container child hbox3.Gtk.Box+BoxChild
+            this.spinFilegrowth = new Gtk.SpinButton(0, 100, 1);
+            this.spinFilegrowth.CanFocus = true;
+            this.spinFilegrowth.Name = "spinFilegrowth";
+            this.spinFilegrowth.Adjustment.PageIncrement = 10;
+            this.spinFilegrowth.ClimbRate = 1;
+            this.spinFilegrowth.Numeric = true;
+            this.hbox3.Add(this.spinFilegrowth);
+            Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox3[this.spinFilegrowth]));
+            w10.Position = 0;
+            // Container child hbox3.Gtk.Box+BoxChild
+            this.comboFilegrowth = Gtk.ComboBox.NewText();
+            this.comboFilegrowth.AppendText(AddinCatalog.GetString("KB"));
+            this.comboFilegrowth.AppendText(AddinCatalog.GetString("MB"));
+            this.comboFilegrowth.AppendText(AddinCatalog.GetString("GB"));
+            this.comboFilegrowth.AppendText(AddinCatalog.GetString("TB"));
+            this.comboFilegrowth.AppendText(AddinCatalog.GetString("%"));
+            this.comboFilegrowth.Name = "comboFilegrowth";
+            this.comboFilegrowth.Active = 1;
+            this.hbox3.Add(this.comboFilegrowth);
+            Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox3[this.comboFilegrowth]));
+            w11.Position = 1;
+            w11.Expand = false;
+            w11.Fill = false;
+            this.table.Add(this.hbox3);
+            Gtk.Table.TableChild w12 = ((Gtk.Table.TableChild)(this.table[this.hbox3]));
+            w12.TopAttach = ((uint)(5));
+            w12.BottomAttach = ((uint)(6));
+            w12.LeftAttach = ((uint)(1));
+            w12.RightAttach = ((uint)(2));
+            w12.XOptions = ((Gtk.AttachOptions)(4));
+            w12.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
             this.label1.Xalign = 0F;
-            this.label1.LabelProp = AddinCatalog.GetString("Database:");
+            this.label1.LabelProp = AddinCatalog.GetString("Name");
             this.table.Add(this.label1);
-            Gtk.Table.TableChild w3 = ((Gtk.Table.TableChild)(this.table[this.label1]));
-            w3.XOptions = ((Gtk.AttachOptions)(4));
-            w3.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w13 = ((Gtk.Table.TableChild)(this.table[this.label1]));
+            w13.XOptions = ((Gtk.AttachOptions)(4));
+            w13.YOptions = ((Gtk.AttachOptions)(4));
             // Container child table.Gtk.Table+TableChild
             this.label3 = new Gtk.Label();
             this.label3.Name = "label3";
             this.label3.Xalign = 0F;
-            this.label3.LabelProp = AddinCatalog.GetString("Collation:");
+            this.label3.LabelProp = AddinCatalog.GetString("Collation");
             this.table.Add(this.label3);
-            Gtk.Table.TableChild w4 = ((Gtk.Table.TableChild)(this.table[this.label3]));
-            w4.TopAttach = ((uint)(1));
-            w4.BottomAttach = ((uint)(2));
-            w4.XOptions = ((Gtk.AttachOptions)(4));
-            w4.YOptions = ((Gtk.AttachOptions)(4));
+            Gtk.Table.TableChild w14 = ((Gtk.Table.TableChild)(this.table[this.label3]));
+            w14.TopAttach = ((uint)(1));
+            w14.BottomAttach = ((uint)(2));
+            w14.XOptions = ((Gtk.AttachOptions)(4));
+            w14.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.label4 = new Gtk.Label();
+            this.label4.Name = "label4";
+            this.label4.Xalign = 0F;
+            this.label4.LabelProp = AddinCatalog.GetString("File Name");
+            this.table.Add(this.label4);
+            Gtk.Table.TableChild w15 = ((Gtk.Table.TableChild)(this.table[this.label4]));
+            w15.TopAttach = ((uint)(2));
+            w15.BottomAttach = ((uint)(3));
+            w15.XOptions = ((Gtk.AttachOptions)(4));
+            w15.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.label5 = new Gtk.Label();
+            this.label5.Name = "label5";
+            this.label5.Xalign = 0F;
+            this.label5.LabelProp = AddinCatalog.GetString("Size");
+            this.table.Add(this.label5);
+            Gtk.Table.TableChild w16 = ((Gtk.Table.TableChild)(this.table[this.label5]));
+            w16.TopAttach = ((uint)(3));
+            w16.BottomAttach = ((uint)(4));
+            w16.XOptions = ((Gtk.AttachOptions)(4));
+            w16.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.label6 = new Gtk.Label();
+            this.label6.Name = "label6";
+            this.label6.Xalign = 0F;
+            this.label6.LabelProp = AddinCatalog.GetString("Max Size");
+            this.table.Add(this.label6);
+            Gtk.Table.TableChild w17 = ((Gtk.Table.TableChild)(this.table[this.label6]));
+            w17.TopAttach = ((uint)(4));
+            w17.BottomAttach = ((uint)(5));
+            w17.XOptions = ((Gtk.AttachOptions)(4));
+            w17.YOptions = ((Gtk.AttachOptions)(4));
+            // Container child table.Gtk.Table+TableChild
+            this.label7 = new Gtk.Label();
+            this.label7.Name = "label7";
+            this.label7.Xalign = 0F;
+            this.label7.LabelProp = AddinCatalog.GetString("File Growth");
+            this.table.Add(this.label7);
+            Gtk.Table.TableChild w18 = ((Gtk.Table.TableChild)(this.table[this.label7]));
+            w18.TopAttach = ((uint)(5));
+            w18.BottomAttach = ((uint)(6));
+            w18.XOptions = ((Gtk.AttachOptions)(4));
+            w18.YOptions = ((Gtk.AttachOptions)(4));
             this.Add(this.table);
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
             this.Show();
+            this.comboFilegrowth.Changed += new System.EventHandler(this.OnComboFilegrowthChanged);
+            this.comboMaxSize.Changed += new System.EventHandler(this.OnComboMaxSizeChanged);
         }
     }
 }

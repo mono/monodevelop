@@ -42,9 +42,7 @@ namespace MonoDevelop.Database.Sql.MySql
 		{
 			this.Build();
 			comboCharset.Model = storeCharset;
-			comboCharset.TextColumn = 0;
 			comboCollation.Model = storeCollation;
-			comboCollation.TextColumn = 0;
 		}
 		
 		public void Initialize (MySqlSchemaProvider provider)

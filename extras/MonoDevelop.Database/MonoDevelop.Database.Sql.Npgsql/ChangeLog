@@ -1,3 +1,9 @@
+2010-02-03  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* gtk-gui/gui.stetic:
+	* Widgets/NpgsqlCreateDatabaseWidget.cs:
+	* MonoDevelop.Database.Sql.Npgsql.csproj: - Flush changes.
+
 2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Makefile.am:
