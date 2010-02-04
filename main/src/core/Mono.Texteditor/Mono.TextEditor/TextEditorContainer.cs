@@ -5,10 +5,10 @@ namespace Mono.TextEditor
 {
 	public class TextEditorContainer : Container
 	{
-		Widget textEditor = new TextEditor ();
+		TextEditor textEditor;
 		TopLevelChild textEditorChild;
 		
-		public Widget TextEditor {
+		public TextEditor TextEditor {
 			get { return this.textEditor; }
 		}
 		
@@ -37,9 +37,12 @@ namespace Mono.TextEditor
 		public TextEditorContainer ()
 		{
 			WidgetFlags |= WidgetFlags.NoWindow;
-			
+		}
+		
+		public void CreateEditor ()
+		{
+			textEditor = new TextEditor ();
 			textEditor.Parent = this;
-			textEditor.Show ();
 			textEditorChild = new TopLevelChild (this, textEditor);
 		}
 		
@@ -105,8 +108,8 @@ namespace Mono.TextEditor
 			textEditor.SizeAllocate (new Gdk.Rectangle (allocation.X, allocation.Y, allocation.Width, allocation.Height));
 			foreach (TopLevelChild child in topLevels) {
 				req = child.Child.SizeRequest ();
-				Console.WriteLine (new Gdk.Rectangle (allocation.X + child.X + (int)hAdjustement.Value, allocation.Y + child.Y + (int)vAdjustement.Value, req.Width, req.Height));
-				child.Child.SizeAllocate (new Gdk.Rectangle (allocation.X + child.X + (int)hAdjustement.Value, allocation.Y + child.Y + (int)vAdjustement.Value, req.Width, req.Height));
+				child.Child.SizeAllocate (new Gdk.Rectangle (allocation.X + child.X - (int)hAdjustement.Value, 
+				                                             allocation.Y + child.Y - (int)vAdjustement.Value, req.Width, req.Height));
 			}
 		}
 		
@@ -114,6 +117,7 @@ namespace Mono.TextEditor
 		{
 			if (textEditor != null)
 				callback (textEditor);
+			
 			foreach (TopLevelChild child in topLevels) {
 				callback (child.Child);
 			}
@@ -127,10 +131,11 @@ namespace Mono.TextEditor
 			this.vAdjustement = vAdjustement ?? new Adjustment (0, 0, 0, 0, 0, 0);
 			textEditor.SetScrollAdjustments (hAdjustement, vAdjustement);
 			
-			this.hAdjustement.Changed += delegate {
+			this.hAdjustement.ValueChanged += delegate {
 				QueueResize ();
 			};
-			this.vAdjustement.Changed += delegate {
+			this.vAdjustement.ValueChanged += delegate {
+				Console.WriteLine ("changed !!!");
 				QueueResize ();
 			};
 		}

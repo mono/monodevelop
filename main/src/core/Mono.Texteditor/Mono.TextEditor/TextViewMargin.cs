@@ -361,7 +361,7 @@ namespace Mono.TextEditor
 
 		void EnsureCaretGc ()
 		{
-			if (caretGc != null) 
+			if (caretGc != null || textEditor.GdkWindow == null) 
 				return;
 			caretGc = new Gdk.GC (textEditor.GdkWindow);
 			caretGc.RgbFgColor = new Color (255, 255, 255);
@@ -2012,7 +2012,8 @@ namespace Mono.TextEditor
 		{
 			clipRectangle = rect;
 			EnsureCaretGc ();
-			caretGc.ClipRectangle = rect;
+			if (caretGc != null)
+				caretGc.ClipRectangle = rect;
 			foreach (Gdk.GC gc in gcDictionary.Values)
 				gc.ClipRectangle = rect;
 		}
