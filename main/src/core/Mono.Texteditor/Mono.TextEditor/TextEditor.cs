@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Gtk.DrawingArea, ITextEditorDataProvider
+	public class TextEditor : Gtk.EventBox, ITextEditorDataProvider
 	{
 		TextEditorData textEditorData;
 		
@@ -161,6 +161,8 @@ namespace Mono.TextEditor
 				this.textEditorData.HAdjustment.Value = System.Math.Ceiling (this.textEditorData.HAdjustment.Value);
 				return;
 			}
+			if (this.topLevels.Count > 0)
+				QueueResize ();
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			int curHAdjustment = (int)this.textEditorData.HAdjustment.Value;
@@ -168,7 +170,6 @@ namespace Mono.TextEditor
 				return;
 			
 			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
-			oldHAdjustment = curHAdjustment;
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
@@ -183,6 +184,8 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
+			if (this.topLevels.Count > 0)
+				QueueResize ();
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			textViewMargin.VAdjustmentValueChanged ();
@@ -265,13 +268,13 @@ namespace Mono.TextEditor
 			doc.TextSet += OnTextSet;
 
 			textEditorData.CurrentMode = initialMode;
-
+			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			this.DoubleBuffered = false;
 			this.AppPaintable = true;
 			base.CanFocus = true;
-
+			
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
 			dashedLineMargin = new DashedLineMargin (this);
@@ -488,6 +491,13 @@ namespace Mono.TextEditor
 		
 		protected override void OnRealized ()
 		{
+/*			WidgetFlags |= WidgetFlags.Realized;
+			WindowAttr attributes = new WindowAttr ();
+			
+			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
+			GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
+			Style = Style.Attach (GdkWindow);
+			*/
 			base.OnRealized ();
 			imContext.ClientWindow = this.GdkWindow;
 		}
@@ -1170,6 +1180,12 @@ namespace Mono.TextEditor
 			SetAdjustments (Allocation);
 			Repaint ();
 			textViewMargin.SetClip ();
+			foreach (TopLevelChild child in topLevels) {
+				Requisition req = child.Child.SizeRequest ();
+				child.Child.SizeAllocate (new Gdk.Rectangle (allocation.X + child.X - (int)this.HAdjustment.Value, 
+				                                             allocation.Y + child.Y - (int)this.VAdjustment.Value, req.Width, req.Height));
+			}
+			
 		}
 		
 		protected override void OnMapped ()
@@ -2091,6 +2107,93 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
+		
+#region Container
+		public override ContainerChild this [Widget w] {
+			get {
+				foreach (TopLevelChild info in topLevels) {
+					if (info.Child == w) 
+						return info;
+				}
+				return null;
+			}
+		}
+		
+		class TopLevelChild : Container.ContainerChild
+		{
+			public int X;
+			public int Y;
+				
+			public TopLevelChild (Container parent, Widget child) : base (parent, child)
+			{
+			}
+		}
+		
+		
+		public override GLib.GType ChildType ()
+		{
+			return Gtk.Widget.GType;
+		}
+		
+		List<TopLevelChild> topLevels = new List<TopLevelChild> ();
+		
+		public void AddTopLevelWidget (Gtk.Widget w, int x, int y)
+		{
+			w.Parent = this;
+			TopLevelChild info = new TopLevelChild (this, w);
+			info.X = x;
+			info.Y = y;
+			topLevels.Add (info);
+		}
+		
+		
+		public void MoveTopLevelWidget (Gtk.Widget w, int x, int y)
+		{
+			foreach (TopLevelChild info in topLevels) {
+				if (info.Child == w) {
+					info.X = x;
+					info.Y = y;
+					QueueResize ();
+					break;
+				}
+			}
+		}
+		
+		protected override void OnAdded (Widget widget)
+		{
+			AddTopLevelWidget (widget, 0, 0);
+		}
+		
+		protected override void OnRemoved (Widget widget)
+		{
+			foreach (TopLevelChild info in topLevels) {
+				if (info.Child == widget) {
+					widget.Unparent ();
+					topLevels.Remove (info);
+					break;
+				}
+			}
+		}
+		
+		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			
+			// Ignore the size of top levels. They are supposed to fit the available space
+			foreach (TopLevelChild tchild in topLevels)
+				tchild.Child.SizeRequest ();
+		}
+
+		
+		protected override void ForAll (bool include_internals, Gtk.Callback callback)
+		{
+			foreach (TopLevelChild child in topLevels) {
+				callback (child.Child);
+			}
+		}
+		
+#endregion
+		
 		internal void FireLinkEvent (string link, int button, ModifierType modifierState)
 		{
 			if (LinkRequest != null)
