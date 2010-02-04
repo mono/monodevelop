@@ -1,3 +1,7 @@
+2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Compiler/GNUCompiler.cs: Support gcc "note" errortype.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
