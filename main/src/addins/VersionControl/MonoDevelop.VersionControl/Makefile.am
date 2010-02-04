@@ -56,6 +56,7 @@ FILES =  \
 	MonoDevelop.VersionControl/VersionStatus.cs
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/AddIns/VersionControl/Diff.dll \
