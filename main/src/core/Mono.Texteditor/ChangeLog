@@ -1,5 +1,10 @@
 2010-02-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Added some changes for
+	  container childs.
+
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: some refactorings.
 
 2010-02-02  Mike Krüger  <mkrueger@novell.com>

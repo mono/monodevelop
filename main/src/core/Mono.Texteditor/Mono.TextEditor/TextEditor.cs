@@ -521,11 +521,14 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public event EventHandler EditorOptionsChanged;
+		
 		protected virtual void OptionsChanged (object sender, EventArgs args)
 		{
 			if (!this.IsRealized)
 				return;
-			
+			if (EditorOptionsChanged != null)
+				EditorOptionsChanged (this, args);
 			if (currentStyleName != Options.ColorScheme) {
 				currentStyleName = Options.ColorScheme;
 				this.textEditorData.ColorStyle = Options.GetColorStyle (this.Style);
@@ -540,6 +543,7 @@ namespace Mono.TextEditor
 				margin.OptionsChanged ();
 			}
 			SetAdjustments (Allocation);
+			this.QueueResize ();
 			this.Repaint ();
 		}
 		
@@ -1182,8 +1186,8 @@ namespace Mono.TextEditor
 			textViewMargin.SetClip ();
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
 				Requisition req = child.Child.SizeRequest ();
-				child.Child.SizeAllocate (new Gdk.Rectangle (allocation.X + child.X - (int)this.HAdjustment.Value, 
-				                                             allocation.Y + child.Y - (int)this.VAdjustment.Value, req.Width, req.Height));
+				child.Child.SizeAllocate (new Gdk.Rectangle ((int)(child.X * Options.Zoom - this.HAdjustment.Value), 
+				                                             (int)(child.Y * Options.Zoom - this.VAdjustment.Value), req.Width, req.Height));
 			}
 			
 		}
@@ -2129,7 +2133,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
 		public override GLib.GType ChildType ()
 		{
 			return Gtk.Widget.GType;
@@ -2146,7 +2149,6 @@ namespace Mono.TextEditor
 			containerChildren.Add (info);
 		}
 		
-		
 		public void MoveTopLevelWidget (Gtk.Widget w, int x, int y)
 		{
 			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
@@ -2157,6 +2159,17 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
+		}
+		
+		public void MoveToTop (Gtk.Widget w)
+		{
+			EditorContainerChild editorContainerChild = containerChildren.FirstOrDefault (c => c.Child == w);
+			if (editorContainerChild == null)
+				throw new Exception ("child " + w + " not found.");
+			List<EditorContainerChild> newChilds = new List<EditorContainerChild> (containerChildren.Where (child => child != editorContainerChild));
+			newChilds.Add (editorContainerChild);
+			this.containerChildren = newChilds;
+			w.GdkWindow.Raise ();
 		}
 		
 		protected override void OnAdded (Widget widget)
