@@ -359,6 +359,24 @@ namespace MonoDevelop.VersionControl
 			return PathDiff (cset.BaseLocalPath, paths.ToArray (), remoteDiff);
 		}
 		
+		/// <summary>
+		/// Returns a recursive diff set for a revision range.
+		/// </summary>
+		/// <param name="localPath">
+		/// A <see cref="FilePath"/>: A local file path to diff; 
+		/// directories will be diffed recursively.
+		/// </param>
+		/// <param name="fromRevision">
+		/// A <see cref="Revision"/>: The beginning revision
+		/// </param>
+		/// <param name="toRevision">
+		/// A <see cref="Revision"/>: The ending revision
+		/// </param>
+		public virtual DiffInfo[] PathDiff (FilePath localPath, Revision fromRevision, Revision toRevision)
+		{
+			return new DiffInfo [0];
+		}
+		
 		public virtual DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
 			return new DiffInfo [0];
