@@ -1,3 +1,15 @@
+2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/PinnedWatch.cs:
+	* MonoDevelop.Debugger/PinnedWatchStore.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:
+	  Implemented infrastructure for supporting persistent pinned
+	  watches.
+
 2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebugCommands.cs: Warn the user when

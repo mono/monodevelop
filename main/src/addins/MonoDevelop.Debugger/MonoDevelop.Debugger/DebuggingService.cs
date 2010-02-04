@@ -60,6 +60,7 @@ namespace MonoDevelop.Debugger
 		static IDebuggerEngine[] engines;
 		
 		static BreakpointStore breakpoints = new BreakpointStore ();
+		static PinnedWatchStore pinnedWatches = new PinnedWatchStore ();
 		
 		static IConsole console;
 		static DebugExecutionHandlerFactory executionHandlerFactory;
@@ -71,7 +72,7 @@ namespace MonoDevelop.Debugger
 
 		static BusyEvaluatorDialog busyDialog;
 
-			
+		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
 		static public event EventHandler ResumedEvent;
 		static public event EventHandler StoppedEvent;
@@ -86,11 +87,11 @@ namespace MonoDevelop.Debugger
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
-			if (IdeApp.IsInitialized) {
+			IdeApp.Initialized += delegate {
 				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 				busyDialog = new BusyEvaluatorDialog ();
-			}
+			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list
 				engines = null;
@@ -108,6 +109,37 @@ namespace MonoDevelop.Debugger
 		
 		public static BreakpointStore Breakpoints {
 			get { return breakpoints; }
+		}
+		
+		public static PinnedWatchStore PinnedWatches {
+			get { return pinnedWatches; }
+		}
+		
+		public static void SetLiveUpdateMode (PinnedWatch watch, bool liveUpdate)
+		{
+			if (watch.LiveUpdate == liveUpdate)
+				return;
+			
+			watch.LiveUpdate = liveUpdate;
+			if (liveUpdate) {
+				Breakpoint bp = new Breakpoint (watch.File, watch.Line);
+				bp.TraceExpression = "{" + watch.Expression + "}";
+				bp.HitAction = HitAction.PrintExpression;
+				breakpoints.Add (bp);
+				pinnedWatches.Bind (watch, bp);
+			} else {
+				pinnedWatches.Bind (watch, null);
+				breakpoints.Remove (watch.BoundTracer);
+			}
+		}
+		
+		static void BreakpointTraceHandler (BreakEvent be, string trace)
+		{
+			if (be is Breakpoint) {
+				if (pinnedWatches.UpdateLiveWatch ((Breakpoint) be, trace))
+					return; // No need to log the value. It is shown in the watch.
+			}
+			console.Log.Write (trace + "\n");
 		}
 		
 		public static string[] EnginePriority {
@@ -388,8 +420,13 @@ namespace MonoDevelop.Debugger
 			session.BusyStateChanged += OnBusyStateChanged;
 			
 			session.TypeResolverHandler = ResolveType;
+			session.BreakpointTraceHandler = BreakpointTraceHandler;
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
+			
+			if (DebugSessionStarted != null)
+				DebugSessionStarted (null, EventArgs.Empty);
+			
 			NotifyLocationChanged ();
 		}
 		
@@ -466,6 +503,7 @@ namespace MonoDevelop.Debugger
 		
 		static void NotifyCurrentFrameChanged ()
 		{
+			pinnedWatches.InvalidateAll ();
 			if (CurrentFrameChanged != null)
 				CurrentFrameChanged (null, EventArgs.Empty);
 		}
@@ -666,14 +704,21 @@ namespace MonoDevelop.Debugger
 		
 		static void OnStoreUserPrefs (object s, UserPreferencesEventArgs args)
 		{
-			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService", breakpoints.Save ());
+			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.Breakpoints", breakpoints.Save ());
+			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.PinnedWatches", pinnedWatches);
 		}
 		
 		static void OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
 		{
-			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
+			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints");
+			if (elem == null)
+				elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 			if (elem != null)
 				breakpoints.Load (elem);
+			PinnedWatchStore wstore = args.Properties.GetValue<PinnedWatchStore> ("MonoDevelop.Ide.DebuggingService.PinnedWatches");
+			if (wstore != null)
+				pinnedWatches.LoadFrom (wstore);
+			pinnedWatches.BindAll (breakpoints);
 		}
 		
 		static string ResolveType (string identifier, SourceLocation location)

@@ -53,6 +53,8 @@ FILES =  \
 	MonoDevelop.Debugger/LocalsPad.cs \
 	MonoDevelop.Debugger/ObjectValuePad.cs \
 	MonoDevelop.Debugger/ObjectValueTreeView.cs \
+	MonoDevelop.Debugger/PinnedWatch.cs \
+	MonoDevelop.Debugger/PinnedWatchStore.cs \
 	MonoDevelop.Debugger/StackTracePad.cs \
 	MonoDevelop.Debugger/ThreadsPad.cs \
 	MonoDevelop.Debugger/WatchPad.cs
