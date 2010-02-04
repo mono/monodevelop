@@ -161,7 +161,7 @@ namespace Mono.TextEditor
 				this.textEditorData.HAdjustment.Value = System.Math.Ceiling (this.textEditorData.HAdjustment.Value);
 				return;
 			}
-			if (this.topLevels.Count > 0)
+			if (this.containerChildren.Count > 0)
 				QueueResize ();
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
@@ -184,7 +184,7 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
-			if (this.topLevels.Count > 0)
+			if (this.containerChildren.Count > 0)
 				QueueResize ();
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
@@ -1180,7 +1180,7 @@ namespace Mono.TextEditor
 			SetAdjustments (Allocation);
 			Repaint ();
 			textViewMargin.SetClip ();
-			foreach (TopLevelChild child in topLevels) {
+			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
 				Requisition req = child.Child.SizeRequest ();
 				child.Child.SizeAllocate (new Gdk.Rectangle (allocation.X + child.X - (int)this.HAdjustment.Value, 
 				                                             allocation.Y + child.Y - (int)this.VAdjustment.Value, req.Width, req.Height));
@@ -2111,7 +2111,7 @@ namespace Mono.TextEditor
 #region Container
 		public override ContainerChild this [Widget w] {
 			get {
-				foreach (TopLevelChild info in topLevels) {
+				foreach (EditorContainerChild info in containerChildren.ToArray ()) {
 					if (info.Child == w) 
 						return info;
 				}
@@ -2119,12 +2119,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		class TopLevelChild : Container.ContainerChild
+		class EditorContainerChild : Container.ContainerChild
 		{
-			public int X;
-			public int Y;
+			public int X { get; set; }
+			public int Y { get; set; }
 				
-			public TopLevelChild (Container parent, Widget child) : base (parent, child)
+			public EditorContainerChild (Container parent, Widget child) : base (parent, child)
 			{
 			}
 		}
@@ -2135,21 +2135,21 @@ namespace Mono.TextEditor
 			return Gtk.Widget.GType;
 		}
 		
-		List<TopLevelChild> topLevels = new List<TopLevelChild> ();
+		List<EditorContainerChild> containerChildren = new List<EditorContainerChild> ();
 		
 		public void AddTopLevelWidget (Gtk.Widget w, int x, int y)
 		{
 			w.Parent = this;
-			TopLevelChild info = new TopLevelChild (this, w);
+			EditorContainerChild info = new EditorContainerChild (this, w);
 			info.X = x;
 			info.Y = y;
-			topLevels.Add (info);
+			containerChildren.Add (info);
 		}
 		
 		
 		public void MoveTopLevelWidget (Gtk.Widget w, int x, int y)
 		{
-			foreach (TopLevelChild info in topLevels) {
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
 				if (info.Child == w) {
 					info.X = x;
 					info.Y = y;
@@ -2166,10 +2166,10 @@ namespace Mono.TextEditor
 		
 		protected override void OnRemoved (Widget widget)
 		{
-			foreach (TopLevelChild info in topLevels) {
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
 				if (info.Child == widget) {
 					widget.Unparent ();
-					topLevels.Remove (info);
+					containerChildren.Remove (info);
 					break;
 				}
 			}
@@ -2180,18 +2180,17 @@ namespace Mono.TextEditor
 			base.OnSizeRequested (ref requisition);
 			
 			// Ignore the size of top levels. They are supposed to fit the available space
-			foreach (TopLevelChild tchild in topLevels)
+			foreach (EditorContainerChild tchild in containerChildren.ToArray ())
 				tchild.Child.SizeRequest ();
 		}
 
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
-			foreach (TopLevelChild child in topLevels) {
+			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
 				callback (child.Child);
 			}
 		}
-		
 #endregion
 		
 		internal void FireLinkEvent (string link, int button, ModifierType modifierState)
