@@ -1,5 +1,10 @@
 2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Add support for revision-range-based recursive diffing.
+
+2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Prevent
 	  occasional NRE.
 
