@@ -758,7 +758,6 @@ namespace Mono.Debugging.Soft
 					return OnCustomBreakpointAction (bp.CustomActionId, binfo);
 				case HitAction.PrintExpression: {
 					string exp = EvaluateTrace (thread, bp.TraceExpression);
-					OnDebuggerOutput (false, exp + "\n");
 					UpdateLastTraceValue (binfo, exp);
 					return true;
 				}
