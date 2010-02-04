@@ -66,15 +66,9 @@ namespace MonoDevelop.SourceEditor
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 		bool resetSelection = true;
-		Mono.TextEditor.TextEditor editor;
-		int offset;
-		ObjectValue value;
 		
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, bool unpin)
+		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch)
 		{
-			this.editor = editor;
-			this.offset = offset;
-			this.value  = value;
 			TransientFor = (Gtk.Window) editor.Toplevel;
 			AcceptFocus = true;
 			
@@ -84,42 +78,25 @@ namespace MonoDevelop.SourceEditor
 			
 			tree = new ObjectValueTreeView ();
 			sw.Add (tree);
-			HBox box = new HBox ();
-			box.Add (sw); 
-			
-			Gtk.EventBox imageEventBox = new Gtk.EventBox ();
-			imageEventBox.VisibleWindow = false;
-			Gtk.Image image = new Gtk.Image ();
-			image.Pixbuf = ImageService.GetPixbuf (unpin ? "md-pin-down" : "md-pin-up", IconSize.Menu);
-			if (!unpin) {
-				imageEventBox.EnterNotifyEvent += delegate {
-					image.Pixbuf = ImageService.GetPixbuf ("md-pin-active", IconSize.Menu);
-				};
-				imageEventBox.LeaveNotifyEvent += delegate {
-					image.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
-				};
-			}
-			imageEventBox.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
-				OnPinButtonClicked (EventArgs.Empty);
-				if (!unpin)
-					HandlePinButtonClicked (this, EventArgs.Empty);
-			};
-			imageEventBox.Add (image);
-			VBox vbox = new VBox ();
-			vbox.PackStart (imageEventBox, false, false, 0);
-			
-			box.PackEnd (vbox, false, false, 0);
-			Add (box);
+			Add (sw);
 			
 			tree.Frame = frame;
 			tree.CompactView = true;
 			tree.AllowAdding = false;
 			tree.AllowEditing = true;
 			tree.HeadersVisible = false;
+			tree.AllowPinning = true;
+			tree.PinnedWatch = watch;
+			DocumentLocation location = editor.Document.OffsetToLocation (offset);
+			tree.PinnedWatchLine = location.Line + 1;
+			tree.PinnedWatchFile = ((ExtensibleTextEditor)editor).View.ContentName;
 			
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();
 			tree.SizeAllocated += OnTreeSizeChanged;
+			tree.PinStatusChanged += delegate {
+				Destroy ();
+			};
 			
 			sw.ShowAll ();
 			
@@ -137,31 +114,6 @@ namespace MonoDevelop.SourceEditor
 					tree.Selection.UnselectAll ();
 				}
 			};
-		}
-		
-		public event EventHandler PinButtonClicked;
-		protected virtual void OnPinButtonClicked (EventArgs e)
-		{
-			EventHandler handler = this.PinButtonClicked;
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		void HandlePinButtonClicked (object sender, EventArgs e)
-		{
-			
-			LineSegment lineSegment = editor.Document.GetLineByOffset (offset);
-			DebugValueMarker marker = (DebugValueMarker)lineSegment.Markers.FirstOrDefault (m => m is DebugValueMarker);
-			
-			if (marker == null) {
-				marker = new DebugValueMarker (editor, lineSegment);
-				editor.Document.AddMarker (lineSegment, marker);
-			}
-			if (!marker.HasValue (value)) {
-				marker.AddValue (value);
-				editor.Document.CommitLineUpdate (lineSegment);
-			}
-			Destroy ();
 		}
 		
 		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)

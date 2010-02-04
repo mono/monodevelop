@@ -41,6 +41,7 @@ namespace MonoDevelop.SourceEditor
 		TextEditor editor;
 		LineSegment lineSegment;
 		List<ObjectValue> objectValues = new List<ObjectValue> ();
+		PinnedWatch watch;
 		
 		public bool HasValue (ObjectValue val)
 		{
@@ -52,13 +53,17 @@ namespace MonoDevelop.SourceEditor
 			objectValues.Add (val);
 		}
 		
-		public DebugValueMarker (TextEditor editor, LineSegment lineSegment)
+		public DebugValueMarker (TextEditor editor, LineSegment lineSegment, PinnedWatch watch)
 		{
+			this.watch = watch;
 			this.editor = editor;
 			this.lineSegment = lineSegment;
 			editor.TextViewMargin.HoveredLineChanged += HandleEditorTextViewMarginHoveredLineChanged;
-			DebuggingService.PausedEvent += HandleDebuggingServiceCallStackChanged;
-			DebuggingService.CurrentFrameChanged += HandleDebuggingServiceCurrentFrameChanged;
+		}
+		
+		public void Clear ()
+		{
+			objectValues.Clear ();
 		}
 
 		void HandleEditorTextViewMarginHoveredLineChanged (object sender, LineEventArgs e)
@@ -68,27 +73,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		
-		void HandleDebuggingServiceCurrentFrameChanged (object sender, EventArgs e)
-		{
-			if (!DebuggingService.IsDebugging) {
-				editor.Document.RemoveMarker (lineSegment, this);
-				Dispose ();
-			}
-		}
-
-		void HandleDebuggingServiceCallStackChanged (object sender, EventArgs e)
-		{
-			if (!DebuggingService.IsDebugging)
-				return;
-			StackFrame frame =  DebuggingService.CurrentFrame;
-//			EvaluationOptions evaluationOptions = frame.DebuggerSession.Options.EvaluationOptions;
-			List<ObjectValue> newValues = new List<ObjectValue> ();
-			foreach (ObjectValue val in this.objectValues) {
-				newValues.Add (frame.GetExpressionValue (val.Name, false));
-			}
-			objectValues = newValues;
-		}
 		
 		public override void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
@@ -296,18 +280,13 @@ namespace MonoDevelop.SourceEditor
 			int x, y, w, h;
 			int value = MouseIsOverBox (editor, args, out x, out y, out w, out h);
 			if (value >= 0) {
-				DebugValueWindow window = new DebugValueWindow (editor, lineSegment.Offset, DebuggingService.CurrentFrame, objectValues[value], true);
+				DebugValueWindow window = new DebugValueWindow (editor, lineSegment.Offset, DebuggingService.CurrentFrame, objectValues[value], watch);
 				int ox = 0, oy = 0;
 				editor.GdkWindow.GetOrigin (out ox, out oy);
 				window.Events |= Gdk.EventMask.LeaveNotifyMask; 
 				window.Move (ox + editor.TextViewMargin.XOffset + x, oy + y);
 				window.Resize (w, h);
 				window.LeaveNotifyEvent += delegate {
-					window.Destroy ();
-				};
-				window.PinButtonClicked += delegate {
-					objectValues.RemoveAt (value);
-					editor.Document.CommitLineUpdate (lineSegment);
 					window.Destroy ();
 				};
 				window.ShowAll ();
@@ -321,8 +300,6 @@ namespace MonoDevelop.SourceEditor
 		#region IDisposable implementation
 		public void Dispose ()
 		{
-			DebuggingService.CallStackChanged -= HandleDebuggingServiceCallStackChanged;
-			DebuggingService.CurrentFrameChanged -= HandleDebuggingServiceCurrentFrameChanged;
 			editor.TextViewMargin.HoveredLineChanged -= HandleEditorTextViewMarginHoveredLineChanged;
 		}
 		#endregion

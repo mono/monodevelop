@@ -90,6 +90,7 @@ namespace MonoDevelop.SourceEditor
 		List<LineSegment> breakpointSegments = new List<LineSegment> ();
 		LineSegment debugStackSegment;
 		LineSegment currentLineSegment;
+		List<PinnedWatchInfo> pinnedWatches = new List<PinnedWatchInfo> ();
 		
 		bool writeAllowed;
 		bool writeAccessChecked;
@@ -215,6 +216,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
+			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
 			DebuggingService.CurrentFrameChanged += currentFrameChanged;
 			DebuggingService.StoppedEvent += currentFrameChanged;
 			DebuggingService.ResumedEvent += currentFrameChanged;
@@ -222,6 +224,10 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
 			DebuggingService.Breakpoints.BreakpointModified += breakpointStatusChanged;
+			DebuggingService.PinnedWatches.WatchAdded += OnWatchAdded;
+			DebuggingService.PinnedWatches.WatchRemoved += OnWatchRemoved;
+			DebuggingService.PinnedWatches.WatchChanged += OnWatchChanged;
+			
 			TaskService.Errors.TasksAdded   += UpdateTasks;
 			TaskService.Errors.TasksRemoved += UpdateTasks;
 			IdeApp.Preferences.ShowMessageBubblesChanged += HandleIdeAppPreferencesShowMessageBubblesChanged;
@@ -390,6 +396,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
+			UpdatePinnedWatches ();
 			this.IsDirty = false;
 			UpdateTasks (null, null);
 		}
@@ -415,6 +422,7 @@ namespace MonoDevelop.SourceEditor
 
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
+			UpdatePinnedWatches ();
 			this.IsDirty = false;
 		}
 		
@@ -472,6 +480,7 @@ namespace MonoDevelop.SourceEditor
 				widget = null;
 			}
 			
+			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
 			DebuggingService.CurrentFrameChanged -= currentFrameChanged;
 			DebuggingService.StoppedEvent -= currentFrameChanged;
 			DebuggingService.ResumedEvent -= currentFrameChanged;
@@ -479,6 +488,9 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
 			DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
 			DebuggingService.Breakpoints.BreakpointModified -= breakpointStatusChanged;
+			DebuggingService.PinnedWatches.WatchAdded -= OnWatchAdded;
+			DebuggingService.PinnedWatches.WatchRemoved -= OnWatchRemoved;
+			DebuggingService.PinnedWatches.WatchChanged -= OnWatchChanged;
 			
 			TaskService.Errors.TasksAdded   -= UpdateTasks;
 			TaskService.Errors.TasksRemoved -= UpdateTasks;
@@ -578,6 +590,8 @@ namespace MonoDevelop.SourceEditor
 		void OnCurrentFrameChanged (object s, EventArgs args)
 		{
 			UpdateExecutionLocation ();
+			if (!DebuggingService.IsDebugging)
+				UpdatePinnedWatches ();
 		}
 		
 		void UpdateExecutionLocation ()
@@ -632,6 +646,76 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		struct PinnedWatchInfo {
+			public PinnedWatch Watch;
+			public LineSegment Line;
+			public DebugValueMarker Marker;
+		}
+		
+		void UpdatePinnedWatches ()
+		{
+			foreach (PinnedWatchInfo wi in pinnedWatches) {
+				widget.TextEditor.Document.RemoveMarker (wi.Line, wi.Marker);
+				wi.Marker.Dispose ();
+			}
+			pinnedWatches.Clear ();
+			if (ContentName == null || !DebuggingService.IsDebugging)
+				return;
+			foreach (PinnedWatch w in DebuggingService.PinnedWatches.GetWatchesForFile (Path.GetFullPath (ContentName)))
+				AddWatch (w);
+			widget.TextEditor.QueueDraw ();
+		}
+		
+		void AddWatch (PinnedWatch w)
+		{
+			LineSegment line = widget.TextEditor.Document.GetLine (w.Line-1);
+			if (line == null)
+				return;
+			PinnedWatchInfo wi = new PinnedWatchInfo ();
+			wi.Line = line;
+			wi.Marker = new DebugValueMarker (widget.TextEditor, line, w);
+			wi.Watch = w;
+			pinnedWatches.Add (wi);
+			if (w.Value != null)
+				wi.Marker.AddValue (w.Value);
+			widget.TextEditor.Document.AddMarker (line, wi.Marker);
+			widget.TextEditor.QueueDraw ();
+		}
+
+		void OnDebugSessionStarted (object sender, EventArgs e)
+		{
+			UpdatePinnedWatches ();
+		}
+		
+		void OnWatchAdded (object s, PinnedWatchEventArgs args)
+		{
+			if (args.Watch.File == ContentName && DebuggingService.IsDebugging)
+				AddWatch (args.Watch);
+		}
+		
+		void OnWatchRemoved (object s, PinnedWatchEventArgs args)
+		{
+			foreach (PinnedWatchInfo wi in pinnedWatches) {
+				if (wi.Watch == args.Watch) {
+					widget.TextEditor.Document.RemoveMarker (wi.Line, wi.Marker);
+					break;
+				}
+			}
+		}
+		
+		void OnWatchChanged (object s, PinnedWatchEventArgs args)
+		{
+			foreach (PinnedWatchInfo wi in pinnedWatches) {
+				if (wi.Watch == args.Watch) {
+					wi.Marker.Clear ();
+					if (wi.Watch.Value != null)
+						wi.Marker.AddValue (wi.Watch.Value);
+					widget.TextEditor.Document.CommitLineUpdate (wi.Line);
+					break;
+				}
+			}
+		}
+		
 		void UpdateBreakpoints ()
 		{
 			foreach (LineSegment line in breakpointSegments) {
@@ -653,6 +737,8 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddBreakpoint (Breakpoint bp)
 		{
+			if (DebuggingService.PinnedWatches.IsWatcherBreakpoint (bp))
+				return;
 			FilePath fp = ContentName;
 			if (fp.FullPath == bp.FileName) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
