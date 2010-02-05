@@ -1,3 +1,10 @@
+2010-02-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:
+	* gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:
+	  Avoid unhandled exception on invalid expression.
+
 2010-01-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
