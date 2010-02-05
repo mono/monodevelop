@@ -1,3 +1,16 @@
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs:
+	* MonoDevelop.Ide.Gui/HiddenTextEditorViewContent.cs: Added
+	  method to check whether text editor has input focus.
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs: Only enable
+	  "Insert standard header" command when text editor has input
+	  focus. 
+
+	* MonoDevelop.Ide.addin.xml: Improve ordering of edit menu.
+
 2010-02-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs: Don't

@@ -1,3 +1,11 @@
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CodeGeneration/CodeGenerationCommands.cs: Only
+	  enable command when text editor has input focus. 
+
+	* MonoDevelop.Refactoring.addin.xml: Insert the Code
+	  Generation command into edit menu and editor context menu.
+
 2010-02-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/Change.cs: TextReplace change is now

@@ -1,3 +1,8 @@
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added method
+	  to check whether text editor has input focus.
+
 2010-02-04  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
