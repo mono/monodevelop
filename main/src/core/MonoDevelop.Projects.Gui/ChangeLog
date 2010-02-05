@@ -1,3 +1,8 @@
+2010-02-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  Completion categories are now easier to read.
+
 2010-02-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

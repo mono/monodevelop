@@ -308,11 +308,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Iterate (true, ref yPos, delegate (Category category, int ypos) {
 				if (ypos >= winHeight - margin)
 					return;
+				
+			//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, Allocation.Width, rowHeight);
+				
 				Gdk.Pixbuf icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
 				window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
 				
-				layout.SetMarkup ("<span style='italic' foreground='#CCCCCC'>" + category.CompletionCategory.DisplayText + "</span>");
-				window.DrawLayout (this.Style.TextGC (StateType.Normal), icon.Width + 4, ypos, layout);
+				layout.SetMarkup ("<span weight='bold'>" + category.CompletionCategory.DisplayText + "</span>");
+				window.DrawLayout (this.Style.TextGC (StateType.Insensitive), icon.Width + 4, ypos, layout);
 				layout.SetMarkup ("");
 			}, delegate (Category curCategory, int item, int ypos) {
 				if (ypos >= winHeight - margin)
