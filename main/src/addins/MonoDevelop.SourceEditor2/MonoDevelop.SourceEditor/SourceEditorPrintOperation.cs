@@ -42,7 +42,7 @@ namespace MonoDevelop.SourceEditor
 			this.options = options;
 			this.style = style;
 			
-			this.Unit = Unit.Pixel;
+			this.Unit = Unit.Mm;
 		}
 		
 		protected override void OnBeginPrint (PrintContext context)
@@ -50,14 +50,15 @@ namespace MonoDevelop.SourceEditor
 			layout = context.CreatePangoLayout ();
 			layout.FontDescription = options.Font;
 			
-			int charWidth;
 			layout.FontDescription.Weight = Pango.Weight.Bold;
 			layout.SetText (" ");
-			layout.GetPixelSize (out charWidth, out this.lineHeight);
+			int w, h;
+			layout.GetSize (out w, out h);
+			this.lineHeight = h / Pango.Scale.PangoScale;
 			layout.FontDescription.Weight = Pango.Weight.Normal;
 			
-			pageWidth = context.PageSetup.GetPageWidth (Unit.Pixel);
-			pageHeight = context.PageSetup.GetPageHeight (Unit.Pixel);
+			pageWidth = context.PageSetup.GetPageWidth (Unit.Mm);
+			pageHeight = context.PageSetup.GetPageHeight (Unit.Mm);
 			double contentHeight = pageHeight - (headerLines > 0? headerPadding : 0) - (footerLines > 0? footerPadding : 0);
 			linesPerPage = (int)(contentHeight / lineHeight) - (headerLines + footerLines);
 			totalPages = (int)Math.Ceiling ((double)doc.LineCount / linesPerPage); 
@@ -78,10 +79,11 @@ namespace MonoDevelop.SourceEditor
 		int footerLines = 0;
 		double headerSeparatorWidth = 0.5;
 		double footerSeparatorWidth = 0.5;
-		const int headerPadding = 10;
-		const int footerPadding = 10;
+		const int headerPadding = 6;
+		const int footerPadding = 6;
 		
-		int totalPages, linesPerPage, lineHeight;
+		int totalPages, linesPerPage;
+		double lineHeight;
 		double pageWidth, pageHeight;
 		
 		Pango.Layout layout;
@@ -126,8 +128,11 @@ namespace MonoDevelop.SourceEditor
 					cr.MoveTo (xPos, yPos);
 					Pango.CairoHelper.ShowLayout (cr, layout);
 					
-					int w, h;
-					layout.GetPixelSize (out w, out h);
+					int wout, hout;
+					layout.GetSize (out wout, out hout);
+					double w = wout / Pango.Scale.PangoScale;
+					double h = hout / Pango.Scale.PangoScale;
+						
 					xPos += w;
 					
 					if (w > pageWidth)
@@ -158,8 +163,11 @@ namespace MonoDevelop.SourceEditor
 			
 			layout.SetText (Subst (headerText, page));
 			
-			int w, h;
-			layout.GetPixelSize (out w, out h);
+			int wout, hout;
+			layout.GetSize (out wout, out hout);
+			double w = wout / Pango.Scale.PangoScale;
+			double h = hout / Pango.Scale.PangoScale;
+			
 			cr.MoveTo ((pageWidth - w) / 2, yPos);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 			
@@ -203,8 +211,11 @@ namespace MonoDevelop.SourceEditor
 			
 			layout.SetText (Subst (footerText, page));
 			
-			int w, h;
-			layout.GetPixelSize (out w, out h);
+			int wout, hout;
+			layout.GetSize (out wout, out hout);
+			double w = wout / Pango.Scale.PangoScale;
+			double h = hout / Pango.Scale.PangoScale;
+			
 			cr.MoveTo ((pageWidth - w) / 2, yPos);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 		}

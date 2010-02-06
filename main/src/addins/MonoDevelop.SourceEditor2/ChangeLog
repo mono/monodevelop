@@ -1,5 +1,10 @@
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs: Use
+	  mm units instead of px.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.SourceEditor.csproj:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
