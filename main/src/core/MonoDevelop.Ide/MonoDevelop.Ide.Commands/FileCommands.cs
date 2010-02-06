@@ -212,14 +212,20 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IPrintable print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ();
-			print.PrintDocument ();
+			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintDocument ();
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
-				IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> () != null;
+			info.Enabled = CanPrint ();
+		}
+		
+		internal static bool CanPrint ()
+		{
+			IPrintable print;
+			return IdeApp.Workbench.ActiveDocument != null
+				&& (print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ()) != null
+				&& print.CanPrint;
 		}
 	}
 	// MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument
@@ -227,14 +233,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IPrintable print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ();
-			print.PrintPreviewDocument ();
+			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintPreviewDocument ();
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
-				IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> () != null;
+			info.Enabled = PrintHandler.CanPrint ();
 		}
 	}
 	// MonoDevelop.Ide.Commands.FileCommands.RecentFileList

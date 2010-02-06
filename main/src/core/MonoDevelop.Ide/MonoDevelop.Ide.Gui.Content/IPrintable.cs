@@ -34,5 +34,6 @@ namespace MonoDevelop.Ide.Gui.Content
 	{
 		void PrintDocument ();
 		void PrintPreviewDocument ();
+		bool CanPrint { get; }
 	}
 }
