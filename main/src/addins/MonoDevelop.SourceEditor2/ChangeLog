@@ -1,5 +1,21 @@
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/PrintSettingsWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.PrintSettingsWidget.cs:
+	  Stub out a widget for editing custom print settings.
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs:
+	  Unify and expand the custom print settings in a settings
+	  class. Fix warnings.
+
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Fix warning.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs: Use
 	  mm units instead of px.
 

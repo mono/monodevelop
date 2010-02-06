@@ -1359,10 +1359,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		PrintSettings printSettings;
-		/*
-		Gtk.PrintUnixDialog printDialog;
-		Gnome.PrintJob printJob;
-		*/
+		
 		public void PrintDocument ()
 		{
 			RunPrintOperation (PrintOperationAction.PrintDialog);
@@ -1375,16 +1372,13 @@ namespace MonoDevelop.SourceEditor
 		
 		void RunPrintOperation (PrintOperationAction action)
 		{
-			//TODO: custom options for printing
-			var op = new SourceEditorPrintOperation (TextEditor.Document, TextEditor.Options, TextEditor.ColorStyle);
+			var op = new SourceEditorPrintOperation (TextEditor.Document, Name);
 			
+			//FIXME: persist print settings (and page settings?) properly
 			if (printSettings != null)
 				op.PrintSettings = printSettings;
 			else if (action != PrintOperationAction.PrintDialog)
 				action = PrintOperationAction.PrintDialog;
-			
-			op.SetHeaderFormat (SourceEditorWidget.EllipsizeMiddle (Name, 60));
-			op.SetFooterFormat (GettextCatalog.GetString ("Page %N of %Q"));
 			
 			//FIXME: implement in-place preview
 			//op.Preview += HandleOpPreview;

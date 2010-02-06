@@ -176,7 +176,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		
-		bool isMouseOver = false;
 		DropDownBoxListWindow window = null;
 		internal void DestroyWindow ()
 		{
@@ -200,7 +199,6 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			isMouseOver = false;
 			QueueDraw ();
 			return base.OnLeaveNotifyEvent (evnt);
 		}
@@ -238,7 +236,6 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			isMouseOver = true;
 			QueueDraw ();
 			return base.OnMotionNotifyEvent (e);
 		}

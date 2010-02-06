@@ -27,20 +27,21 @@ using System;
 using Gtk;
 using Mono.TextEditor;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
 	class SourceEditorPrintOperation : PrintOperation
 	{
 		Document doc;
-		ISourceEditorOptions options;
-		Mono.TextEditor.Highlighting.Style style;
+		FilePath filename;
+		SourceEditorPrintSettings settings;
 		
-		public SourceEditorPrintOperation (Document doc, ISourceEditorOptions options, Mono.TextEditor.Highlighting.Style style)
+		public SourceEditorPrintOperation (Document doc, FilePath filename)
 		{
 			this.doc = doc;
-			this.options = options;
-			this.style = style;
+			this.filename = filename;
+			this.settings = SourceEditorPrintSettings.Load ();
 			
 			this.Unit = Unit.Mm;
 		}
@@ -48,7 +49,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnBeginPrint (PrintContext context)
 		{
 			layout = context.CreatePangoLayout ();
-			layout.FontDescription = options.Font;
+			layout.FontDescription = settings.Font;
 			
 			layout.FontDescription.Weight = Pango.Weight.Bold;
 			layout.SetText (" ");
@@ -57,9 +58,16 @@ namespace MonoDevelop.SourceEditor
 			this.lineHeight = h / Pango.Scale.PangoScale;
 			layout.FontDescription.Weight = Pango.Weight.Normal;
 			
+			SetHeaderFormat (settings.HeaderFormat);
+			SetFooterFormat (settings.FooterFormat);
+			
+			style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (null, settings.ColorScheme);
+			
 			pageWidth = context.PageSetup.GetPageWidth (Unit.Mm);
 			pageHeight = context.PageSetup.GetPageHeight (Unit.Mm);
-			double contentHeight = pageHeight - (headerLines > 0? headerPadding : 0) - (footerLines > 0? footerPadding : 0);
+			double contentHeight = pageHeight
+				- (headerLines > 0? settings.HeaderPadding : 0) 
+				- (footerLines > 0? settings.FooterPadding : 0);
 			linesPerPage = (int)(contentHeight / lineHeight) - (headerLines + footerLines);
 			totalPages = (int)Math.Ceiling ((double)doc.LineCount / linesPerPage); 
 			
@@ -77,16 +85,13 @@ namespace MonoDevelop.SourceEditor
 		
 		int headerLines = 0;
 		int footerLines = 0;
-		double headerSeparatorWidth = 0.5;
-		double footerSeparatorWidth = 0.5;
-		const int headerPadding = 6;
-		const int footerPadding = 6;
 		
 		int totalPages, linesPerPage;
 		double lineHeight;
 		double pageWidth, pageHeight;
 		
 		Pango.Layout layout;
+		Mono.TextEditor.Highlighting.Style style;
 		
 		string headerText;
 		string footerText;
@@ -104,11 +109,24 @@ namespace MonoDevelop.SourceEditor
 			//FIXME: use proper 1-layout-per-line
 			for (int i = startLine; i < endLine; i++) {
 				var line = doc.GetLine (i);
+				
+				if (!settings.UseHighlighting) {
+					string text = doc.GetTextAt (line);
+					text = text.Replace ("\t", new string (' ', settings.TabSize));
+					
+					layout.SetText (text);
+					cr.MoveTo (xPos, yPos);
+					Pango.CairoHelper.ShowLayout (cr, layout);
+					
+					yPos += lineHeight;
+					continue;
+				}
+					
 				Chunk startChunk = doc.SyntaxMode.GetChunks (doc, style, line, line.Offset, line.Length);
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (style) : null;
 					string text = chunk.GetText (doc);
-					text = text.Replace ("\t", new string (' ', options.TabSize));
+					text = text.Replace ("\t", new string (' ', settings.TabSize));
 					layout.SetText (text);
 					
 					var atts = ResetAttributes ();
@@ -131,7 +149,6 @@ namespace MonoDevelop.SourceEditor
 					int wout, hout;
 					layout.GetSize (out wout, out hout);
 					double w = wout / Pango.Scale.PangoScale;
-					double h = hout / Pango.Scale.PangoScale;
 						
 					xPos += w;
 					
@@ -159,28 +176,27 @@ namespace MonoDevelop.SourceEditor
 			if (headerLines == 0)
 				return;
 			
-			var atts = ResetAttributes ();
+			ResetAttributes ();
 			
 			layout.SetText (Subst (headerText, page));
 			
 			int wout, hout;
 			layout.GetSize (out wout, out hout);
 			double w = wout / Pango.Scale.PangoScale;
-			double h = hout / Pango.Scale.PangoScale;
 			
 			cr.MoveTo ((pageWidth - w) / 2, yPos);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 			
 			yPos += lineHeight * headerLines;
 			
-			if (headerSeparatorWidth > 0) {
-				cr.LineWidth = 1;
-				cr.MoveTo (pageWidth / 3, yPos + (headerPadding / 2));
-				cr.LineTo (2 * pageWidth / 3, yPos + (headerPadding / 2));
+			if (settings.HeaderSeparatorWeight > 0) {
+				cr.LineWidth = settings.HeaderSeparatorWeight;
+				cr.MoveTo (pageWidth / 3, yPos + (settings.HeaderPadding / 2));
+				cr.LineTo (2 * pageWidth / 3, yPos + (settings.HeaderPadding / 2));
 				cr.Stroke ();
 			}
 			
-			yPos += headerPadding;
+			yPos += settings.HeaderPadding;
 		}
 
 		string Subst (string text, int page)
@@ -188,6 +204,8 @@ namespace MonoDevelop.SourceEditor
 			var sb = new StringBuilder (text);
 			sb.Replace ("%N", (page + 1).ToString ());
 			sb.Replace ("%Q", totalPages.ToString ());
+			//FIXME: use font width for ellipsizing better 
+			sb.Replace ("%F", SourceEditorWidget.EllipsizeMiddle (filename, 60));
 			return sb.ToString ();
 		}
 		
@@ -196,46 +214,104 @@ namespace MonoDevelop.SourceEditor
 			if (footerLines == 0)
 				return;
 			
-			yPos = pageHeight - (lineHeight * footerLines) - footerPadding;
+			yPos = pageHeight - (lineHeight * footerLines) - settings.FooterPadding;
 			
-			if (footerSeparatorWidth > 0) {
-				cr.LineWidth = footerSeparatorWidth;
-				cr.MoveTo (pageWidth / 3, yPos + (footerPadding / 2));
-				cr.LineTo (2 * pageWidth / 3, yPos + (footerPadding / 2));
+			if (settings.FooterSeparatorWeight > 0) {
+				cr.LineWidth = settings.FooterSeparatorWeight;
+				cr.MoveTo (pageWidth / 3, yPos + (settings.FooterPadding / 2));
+				cr.LineTo (2 * pageWidth / 3, yPos + (settings.FooterPadding / 2));
 				cr.Stroke ();
 			}
 			
-			yPos += footerPadding;
+			yPos += settings.FooterPadding;
 			
-			var atts = ResetAttributes ();
+			ResetAttributes ();
 			
 			layout.SetText (Subst (footerText, page));
 			
 			int wout, hout;
 			layout.GetSize (out wout, out hout);
 			double w = wout / Pango.Scale.PangoScale;
-			double h = hout / Pango.Scale.PangoScale;
 			
 			cr.MoveTo ((pageWidth - w) / 2, yPos);
 			Pango.CairoHelper.ShowLayout (cr, layout);
 		}
 		
-		public void SetHeaderFormat (string middle)
+		void SetHeaderFormat (string middle)
 		{
 			headerText = middle;
 			headerLines = middle == null || middle.Length == 0? 0 : middle.Split ('\n').Length;
 		}
 		
-		public void SetFooterFormat (string middle)
+		void SetFooterFormat (string middle)
 		{
 			footerText = middle;
 			footerLines = middle == null || middle.Length == 0? 0 : middle.Split ('\n').Length;
 		}
+		
+		protected override void OnDone (PrintOperationResult result)
+		{
+			if (result == PrintOperationResult.Apply) {
+				settings.Save ();
+			}
+			base.OnDone (result);
+		}
+
 		/*
+		//FIXME: implement custom print settings widget
 		protected override Widget OnCreateCustomWidget ()
 		{
-			return base.OnCreateCustomWidget ();
+			return new PrintSettingsWidget (this.settings);
+		}
+		
+		protected override void OnCustomWidgetApply (Widget widget)
+		{
+			((PrintSettingsWidget)widget).ApplySettings ();
 		}*/
+	}
+	
+	//these should be stored
+	class SourceEditorPrintSettings
+	{
+		public static SourceEditorPrintSettings Load ()
+		{
+			return new SourceEditorPrintSettings ();
+		}
+		
+		public void Save ()
+		{
+		}
+		
+		private SourceEditorPrintSettings ()
+		{
+			Font = DefaultSourceEditorOptions.Instance.Font;
+			TabSize = DefaultSourceEditorOptions.Instance.TabSize;
+			HeaderFormat = "%F";
+			FooterFormat = GettextCatalog.GetString ("Page %N of %Q");
+			ColorScheme = "default";
+			HeaderSeparatorWeight = FooterSeparatorWeight = 0.5;
+			HeaderPadding = FooterPadding = 6;
+			UseHighlighting = true;
+		}
+		
+		public bool UseHighlighting { get; private set; }
+		public Pango.FontDescription Font { get; private set; }
+		public int TabSize { get; private set; }
+		public string ColorScheme { get; private set; }
+		
+		public string HeaderFormat { get; private set; }
+		public string FooterFormat { get; private set; }
+		public double HeaderSeparatorWeight { get; private set; }
+		public double FooterSeparatorWeight { get; private set; }
+		public double HeaderPadding { get; private set; }
+		public double FooterPadding { get; private set; }
+		
+		//not yet implemented
+		public Pango.FontDescription HeaderFooterFont { get; private set; }
+		public Pango.FontDescription LineNumberFont { get; private set; }
+		public bool ShowLineNumbers  { get; private set; }
+		public bool WrapLines { get; private set; }
+		
 	}
 }
 
