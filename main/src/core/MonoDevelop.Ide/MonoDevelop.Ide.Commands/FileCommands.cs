@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.Commands
 		SaveAs,
 		PrintDocument,
 		PrintPreviewDocument,
+		PrintPageSetup,
 		RecentFileList,
 		ClearRecentFiles,
 		RecentProjectList,
@@ -212,7 +213,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintDocument ();
+			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintDocument (PrintingSettings.Instance);
 		}
 
 		protected override void Update (CommandInfo info)
@@ -233,7 +234,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintPreviewDocument ();
+			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintPreviewDocument (PrintingSettings.Instance);
 		}
 
 		protected override void Update (CommandInfo info)
@@ -241,6 +242,27 @@ namespace MonoDevelop.Ide.Commands
 			info.Enabled = PrintHandler.CanPrint ();
 		}
 	}
+	
+	//FIXME: on GTK 2.18.x there is an option to integrate print preview with the print dialog, which makes this unnecessary
+	// ideally we could only conditionally show it - this is why we handle the PrintingSettings here
+	// MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup
+	public class PrintPageSetupHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var settings = PrintingSettings.Instance;
+			settings.PageSetup = Gtk.Print.RunPageSetupDialog (IdeApp.Workbench.RootWindow, settings.PageSetup, 
+			                                                   settings.PrintSettings);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = PrintHandler.CanPrint ();
+		}
+	}
+	
+	
+	
 	// MonoDevelop.Ide.Commands.FileCommands.RecentFileList
 	public class RecentFileListHandler : CommandHandler
 	{

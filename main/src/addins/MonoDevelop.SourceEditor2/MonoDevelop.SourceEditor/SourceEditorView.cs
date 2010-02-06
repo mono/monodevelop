@@ -1358,35 +1358,33 @@ namespace MonoDevelop.SourceEditor
 			get { return true; }
 		}
 		
-		PrintSettings printSettings;
-		
-		public void PrintDocument ()
+		public void PrintDocument (PrintingSettings settings)
 		{
-			RunPrintOperation (PrintOperationAction.PrintDialog);
+			RunPrintOperation (PrintOperationAction.PrintDialog, settings);
 		}
 		
-		public void PrintPreviewDocument ()
+		public void PrintPreviewDocument (PrintingSettings settings)
 		{
-			RunPrintOperation (PrintOperationAction.Preview);
+			RunPrintOperation (PrintOperationAction.Preview, settings);
 		}
 		
-		void RunPrintOperation (PrintOperationAction action)
+		void RunPrintOperation (PrintOperationAction action, PrintingSettings settings)
 		{
 			var op = new SourceEditorPrintOperation (TextEditor.Document, Name);
 			
-			//FIXME: persist print settings (and page settings?) properly
-			if (printSettings != null)
-				op.PrintSettings = printSettings;
-			else if (action != PrintOperationAction.PrintDialog)
-				action = PrintOperationAction.PrintDialog;
+			if (settings.PrintSettings != null)
+				op.PrintSettings = settings.PrintSettings;
+			if (settings.PageSetup != null)
+				op.DefaultPageSetup = settings.PageSetup;
 			
 			//FIXME: implement in-place preview
 			//op.Preview += HandleOpPreview;
 			
-			var result = op.Run (action, (Window)this.TextEditor.Toplevel);
+			//FIXME: implement async on platforms that support it
+			var result = op.Run (action, IdeApp.Workbench.RootWindow);
 			
 			if (result == PrintOperationResult.Apply)
-				printSettings = op.PrintSettings;
+				settings.PrintSettings = op.PrintSettings;
 			else if (result == PrintOperationResult.Error)
 				//FIXME: can't show more details, GTK# GetError binding is bad
 				MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));

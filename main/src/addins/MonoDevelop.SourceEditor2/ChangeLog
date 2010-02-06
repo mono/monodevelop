@@ -1,5 +1,10 @@
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track print
+	  API.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.SourceEditor.csproj:

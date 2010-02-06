@@ -1,5 +1,12 @@
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Gui.Content/IPrintable.cs: Implement a Page
+	  Setup command.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Commands/FileCommands.cs:
 	* MonoDevelop.Ide.Gui.Content/IPrintable.cs: Add CanPrint
 	  method to IPrintable.

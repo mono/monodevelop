@@ -587,6 +587,11 @@
 				_description = "Show print preview" 
 				icon  = "gtk-print-preview"
 				shortcut = "Shift|Control|P" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup"
+				defaultHandler = "MonoDevelop.Ide.Commands.PrintPageSetupHandler"
+				_label = "Page Set_up" 
+				_description = "Show page setup" 
+				icon  = "gtk-page-setup" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList"
 				defaultHandler = "MonoDevelop.Ide.Commands.RecentFileListHandler"
 				type="array"
@@ -1463,6 +1468,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile" />
 			<SeparatorItem id = "SaveSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
 			<SeparatorItem id = "RecentSeparator" />
