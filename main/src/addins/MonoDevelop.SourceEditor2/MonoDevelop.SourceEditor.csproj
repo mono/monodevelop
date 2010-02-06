@@ -181,6 +181,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TinyDropDownBox.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

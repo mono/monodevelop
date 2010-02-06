@@ -1,5 +1,14 @@
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs:
+	  Replace the Gnome printing code with a new GTK 2.10
+	  implementation.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added method
 	  to check whether text editor has input focus.
 

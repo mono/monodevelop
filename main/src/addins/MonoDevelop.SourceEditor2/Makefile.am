@@ -41,6 +41,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/SourceEditorCommands.cs \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \
 	MonoDevelop.SourceEditor/SourceEditorOptions.cs \
+	MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs \
 	MonoDevelop.SourceEditor/SourceEditorView.cs \
 	MonoDevelop.SourceEditor/SourceEditorWidget.cs \
 	MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs \
