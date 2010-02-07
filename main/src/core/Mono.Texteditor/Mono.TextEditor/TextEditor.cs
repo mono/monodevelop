@@ -130,7 +130,12 @@ namespace Mono.TextEditor
 		{
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 		}
-
+		
+		protected TextEditor (IntPtr ptr) : base (ptr)
+		{
+			
+		}
+		
 		Gdk.Pixmap buffer = null, flipBuffer = null;
 		
 		void DoFlipBuffer ()
