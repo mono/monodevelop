@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
-		public void TestDelegateFormatting ()
+		public void TestBeforeDelegateDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -186,7 +186,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
-		public void TestDelegateFormattingComplex ()
+		public void TestBeforeDelegateDeclarationParenthesesComplex ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -207,7 +207,10 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = @"class Test {
-	int Property {get; set;}
+	int Property 					{
+		get;
+		set;
+	}
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
@@ -224,7 +227,108 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 }", data.Document.Text);
 		}
 		
+		[Test()]
+		public void TestBeforeMethodDeclarationParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"public abstract class Test
+{
+	public abstract int TestMethod();
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeMethodDeclarationParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"public abstract class Test
+{
+	public abstract int TestMethod ();
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestBeforeConstructorDeclarationParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test()
+	{
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeConstructorDeclarationParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test ()
+	{
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestBeforeConstructorDeclarationParenthesesDestructorCase ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	~Test()
+	{
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeConstructorDeclarationParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	~Test ()
+	{
+	}
+}", data.Document.Text);
+		}
+		
+		
+		[Test()]
+		public void TestIndexerBraceFormatting ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	int this[int a]{
+		get {
+		}
+		set {
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			policy.PropertyBraceStyle = BraceStyle.EndOfLine;
+			policy.PropertyGetBraceStyle = BraceStyle.EndOfLine;
+			policy.PropertySetBraceStyle = BraceStyle.EndOfLine;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	int this[int a] {
+		get {
+		}
+		set {
+		}
+	}
+}", data.Document.Text);
+		}
 	}
 }*/
-
-	

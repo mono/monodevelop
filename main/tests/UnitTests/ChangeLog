@@ -1,3 +1,9 @@
+2010-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/TestViewContent.cs:
+	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: worked
+	  on unit tests/track api changes.
+
 2010-02-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: added
