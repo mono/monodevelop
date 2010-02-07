@@ -29,6 +29,20 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
+	
+	public class Accessor : AbstractMember
+	{
+		public DomLocation Location {
+			get;
+			set;
+		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return default(S);
+		}
+	}
+	
 	public class PropertyDeclaration : AbstractMember
 	{
 		public const int PropertyGetRole = 100;

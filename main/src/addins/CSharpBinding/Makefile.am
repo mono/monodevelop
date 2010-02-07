@@ -72,6 +72,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Expressions/TypeOfExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/UnaryOperatorExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/UncheckedExpression.cs \
+	MonoDevelop.CSharp.Dom/FullTypeName.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/Attribute.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/DelegateDeclaration.cs \

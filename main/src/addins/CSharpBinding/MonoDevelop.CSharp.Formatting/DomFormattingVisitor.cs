@@ -1,3 +1,4 @@
+
 /*
 // 
 // DomFormattingVisitor.cs
@@ -91,13 +92,33 @@ namespace MonoDevelop.CSharp.Formatting
 				throw new InvalidOperationException ("unsupported class type : " + typeDeclaration.ClassType);
 			}
 			EnforceBraceStyle (braceStyle, 
-			                   (CSharpTokenNode)typeDeclaration.GetChildByRole (TypeDeclaration.TypeKeyword), 
+			                   ((CSharpTokenNode)typeDeclaration.GetChildByRole (TypeDeclaration.TypeKeyword)).Location, 
 			                   (CSharpTokenNode)typeDeclaration.GetChildByRole (AbstractNode.Roles.LBrace), 
 			                   (CSharpTokenNode)typeDeclaration.GetChildByRole (AbstractNode.Roles.RBrace));
 			
 			return base.VisitTypeDeclaration (typeDeclaration, data);
 		}
 		
+		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
+		{
+			EnforceBraceStyle (policy.PropertyBraceStyle, 
+			                   ((FullTypeName)propertyDeclaration.GetChildByRole (PropertyDeclaration.Roles.ReturnType)).Location, 
+			                   (CSharpTokenNode)propertyDeclaration.GetChildByRole (PropertyDeclaration.Roles.LBrace), 
+			                   (CSharpTokenNode)propertyDeclaration.GetChildByRole (PropertyDeclaration.Roles.RBrace));
+		
+			return base.VisitPropertyDeclaration (propertyDeclaration, data);
+		}
+		
+		public override object VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
+		{
+			EnforceBraceStyle (policy.PropertyBraceStyle, 
+			                   ((FullTypeName)indexerDeclaration.GetChildByRole (IndexerDeclaration.Roles.ReturnType)).Location, 
+			                   (CSharpTokenNode)indexerDeclaration.GetChildByRole (IndexerDeclaration.Roles.LBrace), 
+			                   (CSharpTokenNode)indexerDeclaration.GetChildByRole (IndexerDeclaration.Roles.RBrace));
+			return base.VisitIndexerDeclaration (indexerDeclaration, data);
+		}
+
+
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			foreach (INode node in fieldDeclaration.Children) {
@@ -123,8 +144,33 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			CSharpTokenNode lParen = (CSharpTokenNode)delegateDeclaration.GetChildByRole (DelegateDeclaration.Roles.LPar);
 			int offset = this.data.Document.LocationToOffset (lParen.Location.Line, lParen.Location.Column);
-			ForceSpaceBefore (offset - 1, policy.BeforeDelegateDeclarationParentheses);
+			ForceSpaceBefore (offset, policy.BeforeDelegateDeclarationParentheses);
 			return base.VisitDelegateDeclaration (delegateDeclaration, data);
+		}
+		
+		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
+		{
+			CSharpTokenNode lParen = (CSharpTokenNode)methodDeclaration.GetChildByRole (MethodDeclaration.Roles.LPar);
+			int offset = this.data.Document.LocationToOffset (lParen.Location.Line, lParen.Location.Column);
+			ForceSpaceBefore (offset, policy.BeforeMethodDeclarationParentheses);
+			return base.VisitMethodDeclaration (methodDeclaration, data);
+		}
+		
+		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
+		{
+			CSharpTokenNode lParen = (CSharpTokenNode)constructorDeclaration.GetChildByRole (ConstructorDeclaration.Roles.LPar);
+			int offset = this.data.Document.LocationToOffset (lParen.Location.Line, lParen.Location.Column);
+			ForceSpaceBefore (offset, policy.BeforeConstructorDeclarationParentheses);
+			
+			return base.VisitConstructorDeclaration (constructorDeclaration, data);
+		}
+		
+		public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
+		{
+			CSharpTokenNode lParen = (CSharpTokenNode)destructorDeclaration.GetChildByRole (DestructorDeclaration.Roles.LPar);
+			int offset = this.data.Document.LocationToOffset (lParen.Location.Line, lParen.Location.Column);
+			ForceSpaceBefore (offset, policy.BeforeConstructorDeclarationParentheses);
+			return base.VisitDestructorDeclaration (destructorDeclaration, data);
 		}
 		
 		void ForceSpaceBefore (int offset, bool forceSpace)
@@ -192,8 +238,10 @@ namespace MonoDevelop.CSharp.Formatting
 				return startOffset;
 			int result = -1;
 			bool inComment = false;
+			Console.WriteLine ("----");
 			for (int i = startOffset; i < endOffset; i++) {
 				char ch = data.Document.GetCharAt (i);
+				Console.WriteLine (ch);
 				if (Char.IsWhiteSpace (ch))
 					continue;
 				if (ch == '/' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '/')
@@ -219,15 +267,18 @@ namespace MonoDevelop.CSharp.Formatting
 				return "\t";
 			}
 		}
-		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, CSharpTokenNode startKeyword, CSharpTokenNode lbrace, CSharpTokenNode rbrace)
+		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, DomLocation startLocation, CSharpTokenNode lbrace, CSharpTokenNode rbrace)
 		{
+			
 			LineSegment lbraceLineSegment = data.Document.GetLine (lbrace.Location.Line);
 			string indent = lbraceLineSegment.GetIndentation (data.Document);
 			
 			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.Location.Line);
 			
 			int lbraceOffset = data.Document.LocationToOffset (lbrace.Location.Line, lbrace.Location.Column);
-			int lastNonWsChar = SearchLastNonWsChar (data.Document.LocationToOffset (startKeyword.Location.Line, startKeyword.Location.Column), lbraceOffset);
+			Console.WriteLine ("lbraceOffset={0}/" + data.Document.Length, lbraceOffset);
+			int lastNonWsChar = SearchLastNonWsChar (data.Document.LocationToOffset (startLocation.Line, startLocation.Column), lbraceOffset);
+			
 			switch (braceStyle) {
 			case BraceStyle.EndOfLineWithoutSpace:
 				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, null));
@@ -252,6 +303,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			for (; firstNonWsChar >= 0; firstNonWsChar--) {
 				char ch = data.Document.GetCharAt (rbraceLineSegment.Offset + firstNonWsChar);
+				Console.WriteLine (ch);
 				if (!Char.IsWhiteSpace (ch))
 					break;
 			}
@@ -259,6 +311,4 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.Add (new MyTextReplaceChange (data, rbraceLineSegment.Offset + firstNonWsChar + 1, rbrace.Location.Column - firstNonWsChar - 1, firstNonWsChar > 0 ? data.EolMarker + indent : indent));
 		}
 	}
-}
-
-*/
+}*/

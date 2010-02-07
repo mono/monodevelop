@@ -1,10 +1,10 @@
 // 
-// OperatorDeclaration.cs
+// FullTypeName.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,63 +23,38 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public enum OperatorType {
-		// Unary operators
-		LogicalNot,
-		OnesComplement,
-		Increment,
-		Decrement,
-		True,
-		False,
-
-		// Unary and Binary operators
-		Addition,
-		Subtraction,
-
-		UnaryPlus,
-		UnaryNegation,
-		
-		// Binary operators
-		Multiply,
-		Division,
-		Modulus,
-		BitwiseAnd,
-		BitwiseOr,
-		ExclusiveOr,
-		LeftShift,
-		RightShift,
-		Equality,
-		Inequality,
-		GreaterThan,
-		LessThan,
-		GreaterThanOrEqual,
-		LessThanOrEqual,
-
-		// Implicit and Explicit
-		Implicit,
-		Explicit
-	}
-	
-	public class OperatorDeclaration : MethodDeclaration
+	public class FullTypeName : AbstractNode
 	{
-		public OperatorType OperatorType {
+		public string Name {
 			get;
 			set;
 		}
 		
-		public string OverloadOperator {
+		public DomLocation Location {
 			get;
 			set;
 		}
+		/*
+		public ISegment Segment {
+			get {
+				return new Segment (Offset, Name != null ? Name.Length : 0);
+			}
+		}*/
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public FullTypeName ()
 		{
-			return visitor.VisitOperatorDeclaration (this, data);
 		}
+		public FullTypeName (string name, DomLocation location)
+		{
+			this.Name = name;
+			this.Location = location;
+		}
+		
 	}
 }
+

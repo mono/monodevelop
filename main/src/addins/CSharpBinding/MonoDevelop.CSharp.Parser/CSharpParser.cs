@@ -45,7 +45,6 @@ namespace MonoDevelop.CSharp.Parser
 			#region IStructuralVisitor implementation
 			public override void Visit (ModuleCompiled mc)
 			{
-				Console.WriteLine ("visit:" + mc.OrderedAllMembers.Count);
 				base.Visit (mc);
 			}
 
@@ -109,8 +108,9 @@ namespace MonoDevelop.CSharp.Parser
 				Identifier nameIdentifier = new Identifier () {
 					Name = d.Name
 				};
-				Console.WriteLine ("Visit delegate !!!");
+				
 				newDelegate.AddChild (new CSharpTokenNode (Convert (d.ContainerTypeTokenPosition)), TypeDeclaration.TypeKeyword);
+				newDelegate.AddChild (ConvertToReturnType (d.TypeName), AbstractNode.Roles.ReturnType);
 				newDelegate.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
 				
 				newDelegate.AddChild (new CSharpTokenNode (Convert (d.OpenParenthesisLocation)), DelegateDeclaration.Roles.LPar);
@@ -142,9 +142,9 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				return new DomLocation (loc.Row - 1, loc.Column - 1);
 			}
-			public static DomReturnType ConvertToReturnType (FullNamedExpression typeName)
+			public static FullTypeName ConvertToReturnType (FullNamedExpression typeName)
 			{
-				return new DomReturnType ("TODO");
+				return new FullTypeName (typeName.ToString (), Convert (typeName.Location));
 			}
 			
 			HashSet<Field> visitedFields = new HashSet<Field> ();
@@ -178,31 +178,122 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (Operator o)
 			{
+				OperatorDeclaration newOperator = new OperatorDeclaration ();
+				newOperator.OperatorType = (OperatorType)o.OperatorType;
+				
+				newOperator.AddChild (ConvertToReturnType (o.TypeName), AbstractNode.Roles.ReturnType);
+				
+				newOperator.AddChild (new CSharpTokenNode (Convert (o.OpenParenthesisLocation)), MethodDeclaration.Roles.LPar);
+				newOperator.AddChild (new CSharpTokenNode (Convert (o.CloseParenthesisLocation)), MethodDeclaration.Roles.RPar);
+				
+				if (o.Block == null) {
+					
+				}
+				
+				typeStack.Peek ().AddChild (newOperator, TypeDeclaration.Roles.Member);
 			}
 			
-			public override void Visit (Indexer i)
+			public override void Visit (Indexer indexer)
 			{
+				IndexerDeclaration newIndexer = new IndexerDeclaration ();
+				newIndexer.AddChild (ConvertToReturnType (indexer.TypeName), AbstractNode.Roles.ReturnType);
+				
+				newIndexer.AddChild (new CSharpTokenNode (Convert (indexer.OpenBracketLocation)), IndexerDeclaration.Roles.LBracket);
+				newIndexer.AddChild (new CSharpTokenNode (Convert (indexer.CloseBracketLocation)), IndexerDeclaration.Roles.RBracket);
+				Console.WriteLine (Convert (indexer.OpenBracketLocation) +"/" + Convert (indexer.CloseBracketLocation));
+				newIndexer.AddChild (new CSharpTokenNode (Convert (indexer.BodyStartLocation)), IndexerDeclaration.Roles.LBrace);
+				newIndexer.AddChild (new CSharpTokenNode (Convert (indexer.BodyEndLocation)), IndexerDeclaration.Roles.RBrace);
+				
+				if (indexer.Get != null) {
+					MonoDevelop.CSharp.Dom.Accessor getAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
+					getAccessor.Location = Convert (indexer.Get.Location);
+					newIndexer.AddChild (getAccessor, IndexerDeclaration.PropertyGetRole);
+				}
+				
+				if (indexer.Set != null) {
+					MonoDevelop.CSharp.Dom.Accessor getAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
+					getAccessor.Location = Convert (indexer.Set.Location);
+					newIndexer.AddChild (getAccessor, IndexerDeclaration.PropertySetRole);
+				}
+				
+				typeStack.Peek ().AddChild (newIndexer, TypeDeclaration.Roles.Member);
 			}
 			
 			public override void Visit (Method m)
 			{
+				MethodDeclaration newMethod = new MethodDeclaration ();
+				
+				Identifier nameIdentifier = new Identifier () {
+					Name = m.Name
+				};
+				newMethod.AddChild (ConvertToReturnType (m.TypeName), AbstractNode.Roles.ReturnType);
+				newMethod.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
+				
+				newMethod.AddChild (new CSharpTokenNode (Convert (m.OpenParenthesisLocation)), MethodDeclaration.Roles.LPar);
+				newMethod.AddChild (new CSharpTokenNode (Convert (m.CloseParenthesisLocation)), MethodDeclaration.Roles.RPar);
+				
+				if (m.Block == null) {
+					
+				}
+				
+				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.Roles.Member);
 			}
 			
 			public override void Visit (Property p)
 			{
+				PropertyDeclaration newProperty = new PropertyDeclaration ();
+				newProperty.AddChild (ConvertToReturnType (p.TypeName), AbstractNode.Roles.ReturnType);
+				
+				newProperty.AddChild (new CSharpTokenNode (Convert (p.BodyStartLocation)), MethodDeclaration.Roles.LBrace);
+				newProperty.AddChild (new CSharpTokenNode (Convert (p.BodyEndLocation)), MethodDeclaration.Roles.RBrace);
+				
+				if (p.Get != null) {
+					MonoDevelop.CSharp.Dom.Accessor getAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
+					getAccessor.Location = Convert (p.Get.Location);
+					newProperty.AddChild (getAccessor, PropertyDeclaration.PropertyGetRole);
+				}
+				
+				if (p.Set != null) {
+					MonoDevelop.CSharp.Dom.Accessor getAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
+					getAccessor.Location = Convert (p.Set.Location);
+					newProperty.AddChild (getAccessor, PropertyDeclaration.PropertySetRole);
+				}
+				
+				typeStack.Peek ().AddChild (newProperty, TypeDeclaration.Roles.Member);
 			}
 			
 			public override void Visit (Constructor c)
 			{
+				ConstructorDeclaration newConstructor = new ConstructorDeclaration ();
+				newConstructor.AddChild (new CSharpTokenNode (Convert (c.OpenParenthesisLocation)), MethodDeclaration.Roles.LPar);
+				newConstructor.AddChild (new CSharpTokenNode (Convert (c.CloseParenthesisLocation)), MethodDeclaration.Roles.RPar);
+				
+				typeStack.Peek ().AddChild (newConstructor, TypeDeclaration.Roles.Member);
 			}
 			
 			public override void Visit (Destructor d)
 			{
+				DestructorDeclaration newDestructor = new DestructorDeclaration ();
+				newDestructor.AddChild (new CSharpTokenNode (Convert (d.OpenParenthesisLocation)), MethodDeclaration.Roles.LPar);
+				newDestructor.AddChild (new CSharpTokenNode (Convert (d.CloseParenthesisLocation)), MethodDeclaration.Roles.RPar);
+			
+				typeStack.Peek ().AddChild (newDestructor, TypeDeclaration.Roles.Member);
 			}
 			
 			public override void Visit (Event e)
 			{
+				EventDeclaration newEvent = new EventDeclaration ();
+				
+				newEvent.AddChild (ConvertToReturnType (e.TypeName), AbstractNode.Roles.ReturnType);
+				
+				Identifier nameIdentifier = new Identifier () {
+					Name = e.Name
+				};
+				newEvent.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
+				
+				typeStack.Peek ().AddChild (newEvent, TypeDeclaration.Roles.Member);
 			}
+			
 			#endregion
 			public MonoDevelop.CSharp.Dom.CompilationUnit Unit {
 				get {
@@ -229,5 +320,5 @@ namespace MonoDevelop.CSharp.Parser
 			return conversionVisitor.Unit;
 		}
 	}
-}
-*/
+}*/
+
