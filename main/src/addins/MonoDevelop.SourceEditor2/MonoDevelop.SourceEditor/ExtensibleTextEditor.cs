@@ -65,6 +65,10 @@ namespace MonoDevelop.SourceEditor
 			get { return (ISourceEditorOptions)base.Options; }
 		}
 		
+		protected ExtensibleTextEditor (IntPtr ptr) : base (ptr)
+		{
+		}
+		
 		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.Document doc) : base(doc, null)
 		{
 			base.Options = options;
