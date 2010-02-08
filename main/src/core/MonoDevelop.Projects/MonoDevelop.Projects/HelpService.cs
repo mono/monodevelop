@@ -52,6 +52,7 @@ namespace MonoDevelop.Projects
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
 				// Load the help tree asynchronously. Reduces startup time.
+				LoggingService.Trace ("Ide.HelpService", "[ASYNC] Initializing Help Service");
 				InitializeHelpTree ();
 			});
 		}
@@ -72,6 +73,7 @@ namespace MonoDevelop.Projects
 						LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
 				} finally {
 					helpTreeInitialized = true;
+					LoggingService.Trace ("Ide.HelpService", "[ASYNC] Initialized Help Service");
 				}
 			}
 		}

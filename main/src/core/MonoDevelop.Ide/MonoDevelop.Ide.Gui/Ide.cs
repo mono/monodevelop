@@ -139,8 +139,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
+			LoggingService.Trace ("IdeApp", "Creating Workbench");
 			workbench = new Workbench ();
+			LoggingService.Trace ("IdeApp", "Creating Root Workspace");
 			workspace = new RootWorkspace ();
+			LoggingService.Trace ("IdeApp", "Creating Services");
 			projectOperations = new ProjectOperations ();
 			helpOperations = new HelpOperations ();
 			commandService = new CommandManager ();
@@ -159,10 +162,12 @@ namespace MonoDevelop.Ide.Gui
 			FileService.ErrorHandler = FileServiceErrorHandler;
 		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
+			LoggingService.Trace ("IdeApp", "Loading Commands");
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
 			monitor.Step (1);
 
+			LoggingService.Trace ("IdeApp", "Initializing Workbench");
 			workbench.Initialize (monitor);
 			monitor.Step (1);
 			
@@ -173,8 +178,11 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitor.Step (1);
 
+			LoggingService.Trace ("IdeApp", "Restoring Workbench State");
 			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
 			monitor.Step (1);
+			
+			LoggingService.Trace ("IdeApp", "Flushing GUI events");
 			DispatchService.RunPendingEvents ();
 			
 			MessageService.RootWindow = workbench.RootWindow;
@@ -197,11 +205,12 @@ namespace MonoDevelop.Ide.Gui
 
 			
 			// Startup commands
-			
+			LoggingService.Trace ("IdeApp", "Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
 
 			// Set initial run flags
+			LoggingService.Trace ("IdeApp", "Upgrading Settings");
 
 			if (PropertyService.Get("MonoDevelop.Core.FirstRun", false)) {
 				isInitialRun = true;
@@ -241,6 +250,7 @@ namespace MonoDevelop.Ide.Gui
 				initializedEvent (null, EventArgs.Empty);
 			
 			// Load requested files
+			LoggingService.Trace ("IdeApp", "Opening Files");
 			OpenFiles (StartupInfo.GetRequestedFileList ());
 			
 			// load previous combine

@@ -53,7 +53,7 @@ namespace MonoDevelop.Core
 		{
 			if (initialized)
 				return;
-			
+			LoggingService.Trace ("Core", "Runtime Loading");
 			SetupInstrumentation ();
 			
 			AddinManager.AddinLoadError += OnLoadError;
@@ -61,7 +61,7 @@ namespace MonoDevelop.Core
 			AddinManager.AddinUnloaded += OnUnload;
 			
 			try {
-			
+				LoggingService.Trace ("Core", "Initializing Addin Manager");
 				AddinManager.Initialize (MonoDevelop.Core.PropertyService.ConfigPath);
 				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
 				
@@ -82,6 +82,7 @@ namespace MonoDevelop.Core
 				}
 				setupService.Repositories.RegisterRepository (null, mainRep, false);
 	
+				LoggingService.Trace ("Core", "Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
 				
@@ -93,6 +94,7 @@ namespace MonoDevelop.Core
 				AddinManager.AddinLoaded -= OnLoad;
 				AddinManager.AddinUnloaded -= OnUnload;
 			}
+			LoggingService.Trace ("Core", "Runtime Loaded");
 		}
 		
 		static void SetupInstrumentation ()
