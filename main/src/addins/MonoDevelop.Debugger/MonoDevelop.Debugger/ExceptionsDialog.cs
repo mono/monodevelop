@@ -89,6 +89,7 @@ namespace MonoDevelop.Debugger
 				}
 				dom = ProjectDomService.GetAssemblyDom (Runtime.SystemAssemblyService.CurrentRuntime, asm);
 			}
+			classes.Add ("System.Exception");
 			foreach (IType t in dom.GetSubclasses (dom.GetType ("System.Exception", true)))
 				classes.Add (t.FullName);
 		}
