@@ -42,7 +42,26 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			MonoDevelop.CSharp.Dom.CompilationUnit unit = new MonoDevelop.CSharp.Dom.CompilationUnit ();
 			
-			#region IStructuralVisitor implementation
+			public MonoDevelop.CSharp.Dom.CompilationUnit Unit {
+				get {
+					return unit;
+				}
+				set {
+					unit = value;
+				}
+			}
+			
+			public static DomLocation Convert (Mono.CSharp.Location loc)
+			{
+				return new DomLocation (loc.Row - 1, loc.Column - 1);
+			}
+			public static FullTypeName ConvertToReturnType (FullNamedExpression typeName)
+			{
+				return new FullTypeName (typeName.ToString (), Convert (typeName.Location));
+			}
+			
+			
+			#region Global
 			public override void Visit (ModuleCompiled mc)
 			{
 				base.Visit (mc);
@@ -133,19 +152,13 @@ namespace MonoDevelop.CSharp.Parser
 				typeStack.Pop ();
 			}
 			
+			#endregion
+			
+			#region Type members
 			public override void Visit (FixedField f)
 			{
 			}
 			
-			
-			public static DomLocation Convert (Mono.CSharp.Location loc)
-			{
-				return new DomLocation (loc.Row - 1, loc.Column - 1);
-			}
-			public static FullTypeName ConvertToReturnType (FullNamedExpression typeName)
-			{
-				return new FullTypeName (typeName.ToString (), Convert (typeName.Location));
-			}
 			
 			HashSet<Field> visitedFields = new HashSet<Field> ();
 			public override void Visit (Field f)
@@ -295,14 +308,458 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			#endregion
-			public MonoDevelop.CSharp.Dom.CompilationUnit Unit {
-				get {
-					return unit;
-				}
-				set {
-					unit = value;
-				}
+			
+			#region Statements
+			public override object Visit (Statement stmt)
+			{
+				Console.WriteLine ("unknown statement:" + stmt);
+				return null;
 			}
+			
+			public override object Visit (Mono.CSharp.EmptyStatement emptyStatement)
+			{
+				var result = new MonoDevelop.CSharp.Dom.EmptyStatement ();
+				result.Location = Convert (emptyStatement.loc);
+				return result;
+			}
+			
+			public override object Visit (If ifStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Do doStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (While whileStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (For forStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (StatementExpression statementExpression)
+			{
+				return null;
+			}
+			
+			public override object Visit (Return returnStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Goto gotoStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (LabeledStatement labeledStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (GotoDefault gotoDefault)
+			{
+				return null;
+			}
+			
+			public override object Visit (GotoCase gotoCase)
+			{
+				return null;
+			}
+			
+			public override object Visit (Throw throwStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Break breakStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Continue continueStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Block blockStatement)
+			{
+				var result = new BlockStatement ();
+				result.AddChild (new CSharpTokenNode (Convert (blockStatement.StartLocation)), AbstractCSharpNode.Roles.LBrace);
+				foreach (Statement stmt in blockStatement.Statements) {
+					result.AddChild ((INode)stmt.Accept (this), AbstractCSharpNode.Roles.Statement);
+				}
+				result.AddChild (new CSharpTokenNode (Convert (blockStatement.EndLocation)), AbstractCSharpNode.Roles.RBrace);
+				return result;
+			}
+			
+			public override object Visit (Switch switchStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Lock lockStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Unchecked uncheckedStatement)
+			{
+				return null;
+			}
+			
+			
+			public override object Visit (Checked checkedStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Unsafe unsafeStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Fixed fixedStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (TryFinally tryFinallyStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (TryCatch tryCatchStatement)
+			{
+				return null;
+			}
+			
+			public override object Visit (Using usingStatement)
+			{
+				return null;
+			}
+			
+			
+			public override object Visit (Foreach foreachStatement)
+			{
+				return null;
+			}
+			#endregion
+			
+			#region Expression
+			public override object Visit (Expression expression)
+			{
+				Console.WriteLine ("Visit unknown expression:" + expression);
+				return null;
+			}
+			
+			public override object Visit (Mono.CSharp.ParenthesizedExpression parenthesizedExpression)
+			{
+				var result = new MonoDevelop.CSharp.Dom.ParenthesizedExpression ();
+				result.AddChild (new CSharpTokenNode (Convert (parenthesizedExpression.OpenParenthesisLocation)), MonoDevelop.CSharp.Dom.ParenthesizedExpression.Roles.LPar);
+				result.AddChild ((INode)parenthesizedExpression.Expr.Accept (this), MonoDevelop.CSharp.Dom.ParenthesizedExpression.Roles.Expression);
+				result.AddChild (new CSharpTokenNode (Convert (parenthesizedExpression.CloseParenthesisLocation)), MonoDevelop.CSharp.Dom.ParenthesizedExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (Unary unaryExpression)
+			{
+				var result = new UnaryOperatorExpression ();
+				switch (unaryExpression.Oper) {
+				case Unary.Operator.UnaryPlus:
+					result.UnaryOperatorType = UnaryOperatorType.Plus;
+					break;
+				case Unary.Operator.UnaryNegation:
+					result.UnaryOperatorType = UnaryOperatorType.Minus;
+					break;
+				case Unary.Operator.LogicalNot:
+					result.UnaryOperatorType = UnaryOperatorType.Not;
+					break;
+				case Unary.Operator.OnesComplement:
+					result.UnaryOperatorType = UnaryOperatorType.BitNot;
+					break;
+				case Unary.Operator.AddressOf:
+					result.UnaryOperatorType = UnaryOperatorType.AddressOf;
+					break;
+				}
+				result.AddChild (new CSharpTokenNode (Convert (unaryExpression.OperatorLocation)), UnaryOperatorExpression.Operator);
+				result.AddChild ((INode)unaryExpression.Expr.Accept (this), UnaryOperatorExpression.Roles.Expression);
+				return result;
+			}
+			
+			public override object Visit (UnaryMutator unaryMutatorExpression)
+			{
+				var result = new UnaryOperatorExpression ();
+				
+				INode expression = (INode)unaryMutatorExpression.Expr.Accept (this);
+				
+				switch (unaryMutatorExpression.UnaryMutatorMode) {
+				case UnaryMutator.Mode.PostDecrement:
+					result.UnaryOperatorType = UnaryOperatorType.PostDecrement;
+					result.AddChild (expression, UnaryOperatorExpression.Roles.Expression);
+					result.AddChild (new CSharpTokenNode (Convert (unaryMutatorExpression.OperatorLocation)), UnaryOperatorExpression.Operator);
+					break;
+				case UnaryMutator.Mode.PostIncrement:
+					result.UnaryOperatorType = UnaryOperatorType.PostIncrement;
+					result.AddChild (expression, UnaryOperatorExpression.Roles.Expression);
+					result.AddChild (new CSharpTokenNode (Convert (unaryMutatorExpression.OperatorLocation)), UnaryOperatorExpression.Operator);
+					break;
+					
+				case UnaryMutator.Mode.PreIncrement:
+					result.UnaryOperatorType = UnaryOperatorType.Increment;
+					result.AddChild (new CSharpTokenNode (Convert (unaryMutatorExpression.OperatorLocation)), UnaryOperatorExpression.Operator);
+					result.AddChild (expression, UnaryOperatorExpression.Roles.Expression);
+					break;
+				case UnaryMutator.Mode.PreDecrement:
+					result.UnaryOperatorType = UnaryOperatorType.Decrement;
+					result.AddChild (new CSharpTokenNode (Convert (unaryMutatorExpression.OperatorLocation)), UnaryOperatorExpression.Operator);
+					result.AddChild (expression, UnaryOperatorExpression.Roles.Expression);
+					break;
+				}
+				
+				return result;
+			}
+			
+			public override object Visit (Indirection indirectionExpression)
+			{
+				var result = new UnaryOperatorExpression ();
+				result.UnaryOperatorType = UnaryOperatorType.Dereference;
+				result.AddChild (new CSharpTokenNode (Convert (indirectionExpression.OperatorLocation)), UnaryOperatorExpression.Operator);
+				result.AddChild ((INode)indirectionExpression.Expr.Accept (this), UnaryOperatorExpression.Roles.Expression);
+				return result;
+			}
+			
+			public override object Visit (Is isExpression)
+			{
+				var result = new IsExpression ();
+				result.AddChild ((INode)isExpression.Expr.Accept (this), IsExpression.Roles.Expression);
+				result.AddChild (new CSharpTokenNode (Convert (isExpression.Location)), IsExpression.Roles.Keyword);
+				result.AddChild ((INode)isExpression.ProbeType.Accept (this), IsExpression.Roles.ReturnType);
+				return result;
+			}
+			
+			public override object Visit (As asExpression)
+			{
+				var result = new AsExpression ();
+				result.AddChild ((INode)asExpression.Expr.Accept (this), AsExpression.Roles.Expression);
+				result.AddChild (new CSharpTokenNode (Convert (asExpression.Location)), AsExpression.Roles.Keyword);
+				result.AddChild ((INode)asExpression.ProbeType.Accept (this), AsExpression.Roles.ReturnType);
+				return result;
+			}
+			
+			public override object Visit (Cast castExpression)
+			{
+				var result = new CastExpression ();
+				result.AddChild (new CSharpTokenNode (Convert (castExpression.OpenParenthesisLocation)), CastExpression.Roles.LPar);
+				result.AddChild ((INode)castExpression.TargetType.Accept (this), CastExpression.Roles.ReturnType);
+				result.AddChild (new CSharpTokenNode (Convert (castExpression.CloseParenthesisLocation)), CastExpression.Roles.RPar);
+				result.AddChild ((INode)castExpression.Expr.Accept (this), CastExpression.Roles.Expression);
+				return result;
+			}
+			
+			public override object Visit (Mono.CSharp.DefaultValueExpression defaultValueExpression)
+			{
+				var result = new MonoDevelop.CSharp.Dom.DefaultValueExpression ();
+				result.AddChild (new CSharpTokenNode (Convert (defaultValueExpression.Location)), CastExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (defaultValueExpression.OpenParenthesisLocation)), CastExpression.Roles.LPar);
+				result.AddChild ((INode)defaultValueExpression.Expr.Accept (this), CastExpression.Roles.ReturnType);
+				result.AddChild (new CSharpTokenNode (Convert (defaultValueExpression.CloseParenthesisLocation)), CastExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (Binary binaryExpression)
+			{
+				var result = new BinaryOperatorExpression ();
+				switch (binaryExpression.Oper) {
+					case Binary.Operator.Multiply:
+						result.BinaryOperatorType = BinaryOperatorType.Multiply;
+						break;
+					case Binary.Operator.Division:
+						result.BinaryOperatorType = BinaryOperatorType.Divide;
+						break;
+					case Binary.Operator.Modulus:
+						result.BinaryOperatorType = BinaryOperatorType.Modulus;
+						break;
+					case Binary.Operator.Addition:
+						result.BinaryOperatorType = BinaryOperatorType.Add;
+						break;
+					case Binary.Operator.Subtraction:
+						result.BinaryOperatorType = BinaryOperatorType.Subtract;
+						break;
+					case Binary.Operator.LeftShift:
+						result.BinaryOperatorType = BinaryOperatorType.ShiftLeft;
+						break;
+					case Binary.Operator.RightShift:
+						result.BinaryOperatorType = BinaryOperatorType.ShiftRight;
+						break;
+					case Binary.Operator.LessThan:
+						result.BinaryOperatorType = BinaryOperatorType.LessThan;
+						break;
+					case Binary.Operator.GreaterThan:
+						result.BinaryOperatorType = BinaryOperatorType.GreaterThan;
+						break;
+					case Binary.Operator.LessThanOrEqual:
+						result.BinaryOperatorType = BinaryOperatorType.LessThanOrEqual;
+						break;
+					case Binary.Operator.GreaterThanOrEqual:
+						result.BinaryOperatorType = BinaryOperatorType.GreaterThanOrEqual;
+						break;
+					case Binary.Operator.Equality:
+						result.BinaryOperatorType = BinaryOperatorType.Equality;
+						break;
+					case Binary.Operator.Inequality:
+						result.BinaryOperatorType = BinaryOperatorType.InEquality;
+						break;
+					case Binary.Operator.BitwiseAnd:
+						result.BinaryOperatorType = BinaryOperatorType.BitwiseAnd;
+						break;
+					case Binary.Operator.ExclusiveOr:
+						result.BinaryOperatorType = BinaryOperatorType.ExclusiveOr;
+						break;
+					case Binary.Operator.BitwiseOr:
+						result.BinaryOperatorType = BinaryOperatorType.BitwiseOr;
+						break;
+					case Binary.Operator.LogicalAnd:
+						result.BinaryOperatorType = BinaryOperatorType.LogicalAnd;
+						break;
+					case Binary.Operator.LogicalOr:
+						result.BinaryOperatorType = BinaryOperatorType.LogicalOr;
+						break;
+				}
+				
+				result.AddChild ((INode)binaryExpression.Left.Accept (this), BinaryOperatorExpression.LeftExpressionRole);
+				result.AddChild (new CSharpTokenNode (Convert (binaryExpression.OperatorLocation)), BinaryOperatorExpression.OperatorRole);
+				result.AddChild ((INode)binaryExpression.Left.Accept (this), BinaryOperatorExpression.RightExpressionRole);
+				return result;
+			}
+			
+			public override object Visit (Mono.CSharp.Nullable.NullCoalescingOperator nullCoalescingOperator)
+			{
+				var result = new BinaryOperatorExpression ();
+				result.BinaryOperatorType = BinaryOperatorType.NullCoalescing;
+				result.AddChild ((INode)nullCoalescingOperator.Left.Accept (this), BinaryOperatorExpression.LeftExpressionRole);
+				result.AddChild (new CSharpTokenNode (Convert (nullCoalescingOperator.OperatorLocation)), BinaryOperatorExpression.OperatorRole);
+				result.AddChild ((INode)nullCoalescingOperator.Left.Accept (this), BinaryOperatorExpression.RightExpressionRole);
+				return result;
+			}
+			
+			public override object Visit (Conditional conditionalExpression)
+			{
+				var result = new ConditionalExpression ();
+				result.AddChild ((INode)conditionalExpression.Expr.Accept (this), ConditionalExpression.Roles.Condition);
+				result.AddChild (new CSharpTokenNode (Convert (conditionalExpression.QuestionMarkLocation)), ConditionalExpression.Roles.QuestionMark);
+				result.AddChild ((INode)conditionalExpression.TrueExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
+				result.AddChild (new CSharpTokenNode (Convert (conditionalExpression.ColonLocation)), ConditionalExpression.Roles.Colon);
+				result.AddChild ((INode)conditionalExpression.FalseExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
+				return result;
+			}
+			
+			public override object Visit (Invocation invocationExpression)
+			{
+				var result = new InvocationExpression ();
+				result.AddChild ((INode)invocationExpression.Expr.Accept (this), InvocationExpression.Roles.TargetExpression);
+				result.AddChild (new CSharpTokenNode (Convert (invocationExpression.OpenParenthesisLocation)), InvocationExpression.Roles.RPar);
+				for (int i = 0 ;i < invocationExpression.Arguments.Count; i++) {
+					if (i > 0)
+						result.AddChild (new CSharpTokenNode (Convert (invocationExpression.Arguments[i].SeparatingCommaLocation)), InvocationExpression.Roles.Comma);
+					result.AddChild ((INode)invocationExpression.Arguments[i].Expr.Accept (this), InvocationExpression.Roles.Argument);
+				}
+				result.AddChild (new CSharpTokenNode (Convert (invocationExpression.CloseParenthesisLocation)), InvocationExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (New newExpression)
+			{
+				return null;
+			}
+			
+			public override object Visit (ArrayCreation ArrayCreationExpression)
+			{
+				return null;
+			}
+			
+			public override object Visit (This thisExpression)
+			{
+				var result = new ThisReferenceExpression ();
+				result.Location = Convert (thisExpression.Location);
+				return result;
+			}
+			
+			public override object Visit (ArglistAccess argListAccessExpression)
+			{
+				return null;
+			}
+			
+			public override object Visit (Arglist argListExpression)
+			{
+				return null;
+			}
+			
+			public override object Visit (TypeOf typeOfExpression)
+			{
+				var result = new TypeOfExpression ();
+				
+				result.AddChild (new CSharpTokenNode (Convert (typeOfExpression.Location)), TypeOfExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (typeOfExpression.OpenParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				result.AddChild ((INode)typeOfExpression.QueriedType.Accept (this), TypeOfExpression.Roles.ReturnType);
+				result.AddChild (new CSharpTokenNode (Convert (typeOfExpression.CloseParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (SizeOf sizeOfExpression)
+			{
+				var result = new SizeOfExpression ();
+				
+				result.AddChild (new CSharpTokenNode (Convert (sizeOfExpression.Location)), TypeOfExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (sizeOfExpression.OpenParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				result.AddChild ((INode)sizeOfExpression.QueriedType.Accept (this), TypeOfExpression.Roles.ReturnType);
+				result.AddChild (new CSharpTokenNode (Convert (sizeOfExpression.CloseParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (CheckedExpr checkedExpression)
+			{
+				var result = new CheckedExpression ();
+				
+				result.AddChild (new CSharpTokenNode (Convert (checkedExpression.Location)), TypeOfExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (checkedExpression.OpenParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				result.AddChild ((INode)checkedExpression.Expr.Accept (this), TypeOfExpression.Roles.Expression);
+				result.AddChild (new CSharpTokenNode (Convert (checkedExpression.CloseParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (UnCheckedExpr uncheckedExpression)
+			{
+				var result = new UncheckedExpression ();
+				
+				result.AddChild (new CSharpTokenNode (Convert (uncheckedExpression.Location)), TypeOfExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (uncheckedExpression.OpenParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				result.AddChild ((INode)uncheckedExpression.Expr.Accept (this), TypeOfExpression.Roles.Expression);
+				result.AddChild (new CSharpTokenNode (Convert (uncheckedExpression.CloseParenthesisLocation)), TypeOfExpression.Roles.RPar);
+				return result;
+			}
+			
+			public override object Visit (ElementAccess elementAccessExpression)
+			{
+				return null;
+			}
+			
+			public override object Visit (BaseAccess baseAccessExpression)
+			{
+				return null;
+			}
+			
+			public override object Visit (StackAlloc stackAllocExpression)
+			{
+				return null;
+			}
+			#endregion
 		}
 
 		public MonoDevelop.CSharp.Dom.CompilationUnit Parse (TextEditorData data)
@@ -321,4 +778,5 @@ namespace MonoDevelop.CSharp.Parser
 		}
 	}
 }*/
+
 

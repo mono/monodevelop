@@ -112,6 +112,9 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitTypeOfExpression (TypeOfExpression typeOfExpression, T data);
 		S VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, T data);
 		S VisitUncheckedExpression (UncheckedExpression uncheckedExpression, T data);
+		S VisitAsExpression (AsExpression asExpression, T data);
+		S VisitIsExpression (IsExpression isExpression, T data);
+		S VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, T data);
 		#endregion
 		
 		#region Query Expressions

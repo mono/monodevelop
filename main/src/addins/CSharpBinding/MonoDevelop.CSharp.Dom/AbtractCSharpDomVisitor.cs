@@ -428,5 +428,20 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			return VisitChildren (queryExpressionSelectClause, data);
 		}
+		
+		public virtual S VisitAsExpression (AsExpression asExpression, T data)
+		{
+			return VisitChildren (asExpression, data);
+		}
+		
+		public virtual S VisitIsExpression (IsExpression isExpression, T data)
+		{
+			return VisitChildren (isExpression, data);
+		}
+		
+		public virtual S VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, T data)
+		{
+			return VisitChildren (defaultValueExpression, data);
+		}
 	}
 }

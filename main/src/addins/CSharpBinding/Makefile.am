@@ -50,15 +50,18 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
 	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/AsExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/BaseReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/BinaryOperatorExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/CastExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/CheckedExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ConditionalExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/DefaultValueExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/IdentifierExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/IndexerExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/InvocationExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/IsExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/MemberReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/NullReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ObjectCreateExpression.cs \

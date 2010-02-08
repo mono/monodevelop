@@ -31,6 +31,8 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class UnaryOperatorExpression : AbstractCSharpNode
 	{
+		public const int Operator = 100;
+		
 		public UnaryOperatorType UnaryOperatorType {
 			get;
 			set;

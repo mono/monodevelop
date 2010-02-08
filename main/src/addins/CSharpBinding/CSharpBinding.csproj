@@ -241,6 +241,9 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\TypeOfExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\UnaryOperatorExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\BinaryOperatorExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\AsExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\IsExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DefaultValueExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ICSharpNode.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ICSharpDomVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\AbstractCSharpNode.cs" />
