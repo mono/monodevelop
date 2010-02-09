@@ -184,7 +184,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			CellRendererToggle cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
-			CellRendererPixbuf crc = new CellRendererPixbuf();
+			var crc = new MonoDevelop.Core.Gui.CellRendererPixbuf();
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
 			colCommit.Spacing = 2;
@@ -197,7 +197,7 @@ namespace MonoDevelop.VersionControl.Views
 			colCommit.AddAttribute (crc, "visible", ColShowComment);
 			
 			CellRendererText crt = new CellRendererText();
-			CellRendererPixbuf crp = new CellRendererPixbuf();
+			var crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			TreeViewColumn colStatus = new TreeViewColumn ();
 			colStatus.Title = GettextCatalog.GetString ("Status");
 			colStatus.PackStart (crp, false);
@@ -210,7 +210,7 @@ namespace MonoDevelop.VersionControl.Views
 			TreeViewColumn colFile = new TreeViewColumn ();
 			colFile.Title = GettextCatalog.GetString ("File");
 			colFile.Spacing = 2;
-			crp = new CellRendererPixbuf();
+			crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			diffRenderer = new CellRendererDiff ();
 			colFile.PackStart (crp, false);
 			colFile.PackStart (diffRenderer, true);
@@ -219,7 +219,7 @@ namespace MonoDevelop.VersionControl.Views
 			colFile.SetCellDataFunc (diffRenderer, new TreeCellDataFunc (SetDiffCellData));
 			
 			crt = new CellRendererText();
-			crp = new CellRendererPixbuf();
+			crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			colRemote = new TreeViewColumn ();
 			colRemote.Title = GettextCatalog.GetString ("Remote Status");
 			colRemote.PackStart (crp, false);

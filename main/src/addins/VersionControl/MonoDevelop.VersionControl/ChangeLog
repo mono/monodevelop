@@ -1,3 +1,10 @@
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/LogView.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs: Track
+	  API changes for lazy loading images.
+
 2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl.Views/LogView.cs: Allow viewing
