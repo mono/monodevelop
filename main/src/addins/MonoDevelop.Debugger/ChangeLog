@@ -1,3 +1,11 @@
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs:
+	* MonoDevelop.Debugger/BreakpointPad.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API
+	  changes for lazy loading images.
+
 2010-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/ExceptionsDialog.cs: Include

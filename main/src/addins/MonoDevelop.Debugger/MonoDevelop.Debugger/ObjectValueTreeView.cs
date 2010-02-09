@@ -60,9 +60,9 @@ namespace MonoDevelop.Debugger
 		CellRendererText crtExp;
 		CellRendererText crtValue;
 		CellRendererText crtType;
-		CellRendererPixbuf crpButton;
-		CellRendererPixbuf crpPin;
-		CellRendererPixbuf crpLiveUpdate;
+		MonoDevelop.Core.Gui.CellRendererPixbuf crpButton;
+		MonoDevelop.Core.Gui.CellRendererPixbuf crpPin;
+		MonoDevelop.Core.Gui.CellRendererPixbuf crpLiveUpdate;
 		Gtk.Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
@@ -107,7 +107,7 @@ namespace MonoDevelop.Debugger
 			
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Name");
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			MonoDevelop.Core.Gui.CellRendererPixbuf crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock_id", IconCol);
 			crtExp = new CellRendererText ();
@@ -126,7 +126,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crtValue, "text", ValueCol);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableCol);
 			valueCol.AddAttribute (crtValue, "foreground", ValueColorCol);
-			crpButton = new CellRendererPixbuf ();
+			crpButton = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			crpButton.StockSize = (uint) Gtk.IconSize.Menu;
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "stock_id", ValueButtonIconCol);
@@ -144,10 +144,10 @@ namespace MonoDevelop.Debugger
 			AppendColumn (typeCol);
 			
 			pinCol = new TreeViewColumn ();
-			crpPin = new CellRendererPixbuf ();
+			crpPin = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			pinCol.PackStart (crpPin, false);
 			pinCol.AddAttribute (crpPin, "stock_id", PinIconCol);
-			crpLiveUpdate = new CellRendererPixbuf ();
+			crpLiveUpdate = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			pinCol.PackStart (crpLiveUpdate, false);
 			pinCol.AddAttribute (crpLiveUpdate, "pixbuf", LiveUpdateIconCol);
 			pinCol.Resizable = false;
