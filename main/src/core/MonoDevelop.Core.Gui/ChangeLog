@@ -1,3 +1,13 @@
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs:
+	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Implemented a
+	  lazy loading image service/implemented custom
+	  cellrendererpixbuf.
+
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

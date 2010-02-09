@@ -54,6 +54,7 @@ FILES =  \
 	MonoDevelop.Core.Gui.WebBrowser/TitleChangedEventArgs.cs \
 	MonoDevelop.Core.Gui/AlertDialog.cs \
 	MonoDevelop.Core.Gui/AsyncDispatchAttribute.cs \
+	MonoDevelop.Core.Gui/CellRendererPixbuf.cs \
 	MonoDevelop.Core.Gui/DefaultPlatformService.cs \
 	MonoDevelop.Core.Gui/DesktopApplication.cs \
 	MonoDevelop.Core.Gui/DesktopService.cs \

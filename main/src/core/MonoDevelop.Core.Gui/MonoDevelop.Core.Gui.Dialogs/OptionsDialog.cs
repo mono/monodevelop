@@ -33,6 +33,7 @@ using MonoDevelop.Core.Gui.Codons;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
+	
 	public partial class OptionsDialog : Gtk.Dialog
 	{
 		protected TreeStore store;

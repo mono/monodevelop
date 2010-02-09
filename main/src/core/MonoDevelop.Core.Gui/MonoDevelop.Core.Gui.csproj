@@ -609,6 +609,7 @@
     <Compile Include="MonoDevelop.Core.Gui\DesktopService.cs" />
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\InstrumentationViewerDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs" />
+    <Compile Include="MonoDevelop.Core.Gui\CellRendererPixbuf.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
