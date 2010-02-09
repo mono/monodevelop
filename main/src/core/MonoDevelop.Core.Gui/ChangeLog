@@ -1,5 +1,10 @@
 2010-02-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui/ImageService.cs: disabled lazy loading
+	  for now.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.Gui.csproj:
 	* MonoDevelop.Core.Gui/ImageService.cs:
