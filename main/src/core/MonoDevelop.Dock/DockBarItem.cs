@@ -81,8 +81,8 @@ namespace MonoDevelop.Components.Docking
 			else
 				box = new VBox ();
 			
-			if (!string.IsNullOrEmpty (it.Icon))
-				box.PackStart (new Gtk.Image (it.Icon, IconSize.Menu), false, false, 0);
+			if (it.Icon != null)
+				box.PackStart (new Gtk.Image (it.Icon), false, false, 0);
 				
 			if (!string.IsNullOrEmpty (it.Label)) {
 				Label lab = new Gtk.Label (it.Label);

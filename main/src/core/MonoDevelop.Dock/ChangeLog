@@ -1,3 +1,9 @@
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* DockItem.cs:
+	* TabStrip.cs:
+	* DockBarItem.cs: Track API changes for lazy loading images.
+
 2010-01-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DockFrame.cs: Increase delay for autoshow. Fixes bug #571268
