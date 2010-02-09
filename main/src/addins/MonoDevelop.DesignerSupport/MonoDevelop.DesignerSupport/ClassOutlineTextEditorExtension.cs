@@ -82,7 +82,7 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeStore = new TreeStore (typeof(object));
 			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
 
-			CellRendererPixbuf pixRenderer = new CellRendererPixbuf ();
+			var pixRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			pixRenderer.Xpad = 0;
 			pixRenderer.Ypad = 0;
 
@@ -129,7 +129,7 @@ namespace MonoDevelop.DesignerSupport
 
 		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			CellRendererPixbuf pixRenderer = (CellRendererPixbuf)cell;
+			var pixRenderer = (MonoDevelop.Core.Gui.CellRendererPixbuf)cell;
 			object o = model.GetValue (iter, 0);
 			if (o is IMember) {
 				pixRenderer.Pixbuf = ImageService.GetPixbuf (((IMember)o).StockIcon, IconSize.Menu);
