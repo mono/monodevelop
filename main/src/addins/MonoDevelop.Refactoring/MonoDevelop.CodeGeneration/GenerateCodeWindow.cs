@@ -109,7 +109,7 @@ namespace MonoDevelop.CodeGeneration
 			treeviewGenerateActions.HeadersVisible = false;
 			treeviewGenerateActions.Model = generateActionsStore;
 			TreeViewColumn column = new TreeViewColumn ();
-			CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
+			var pixbufRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			column.PackStart (pixbufRenderer, false);
 			column.AddAttribute (pixbufRenderer, "pixbuf", 0);
 			

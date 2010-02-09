@@ -1,3 +1,11 @@
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Track API changes for lazy loading images.
+
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CodeGeneration/CodeGenerationCommands.cs: Only
