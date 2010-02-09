@@ -73,10 +73,7 @@ namespace MonoDevelop.Core.Gui
 						buffer = new byte [stream.Length];
 						stream.Read (buffer, 0, (int)stream.Length);
 					}
-					using (Stream ms = new MemoryStream (buffer)) {
-						AddToIconFactory (iconCodon.StockId, new Gdk.Pixbuf (ms), iconCodon.IconSize);
-					}
-					
+					AddToIconFactory (iconCodon.StockId, new Gdk.Pixbuf (buffer), iconCodon.IconSize);
 				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
 					pixbuf = GetPixbuf (InternalGetStockId (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize), iconCodon.IconSize);
 					AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
