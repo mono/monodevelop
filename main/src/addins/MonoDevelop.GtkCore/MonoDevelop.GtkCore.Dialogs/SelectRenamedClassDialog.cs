@@ -53,7 +53,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			
 			TreeViewColumn column = new TreeViewColumn ();
 		
-			CellRendererPixbuf pr = new CellRendererPixbuf ();
+			var pr = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			column.PackStart (pr, false);
 			column.AddAttribute (pr, "pixbuf", 0);
 			
