@@ -53,9 +53,10 @@ namespace MonoDevelop.Core.Gui
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					if (!iconStock.ContainsKey (iconCodon.StockId))
+					LoadStockIcon (iconCodon);
+/*					if (!iconStock.ContainsKey (iconCodon.StockId))
 						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
-					iconStock[iconCodon.StockId].Add (iconCodon);
+					iconStock[iconCodon.StockId].Add (iconCodon);*/
 					break;
 				}
 			});
@@ -67,17 +68,23 @@ namespace MonoDevelop.Core.Gui
 			Gdk.Pixbuf pixbuf = null;
 			try {
 				if (!string.IsNullOrEmpty (iconCodon.Resource)) {
+					// using the stream directly produces a gdk warning.
+					byte[] buffer;
 					using (Stream stream = iconCodon.Addin.GetResource (iconCodon.Resource)) {
-						pixbuf = new Gdk.Pixbuf (stream);
+						buffer = new byte [stream.Length];
+						stream.Read (buffer, 0, (int)stream.Length);
 					}
+					using (Stream ms = new MemoryStream (buffer)) {
+						AddToIconFactory (iconCodon.StockId, new Gdk.Pixbuf (ms), iconCodon.IconSize);
+					}
+					
 				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
 					pixbuf = GetPixbuf (InternalGetStockId (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize), iconCodon.IconSize);
+					AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
 				}
 			} catch (Exception) {
 				pixbuf = CreateColorBlock ("red", iconCodon.IconSize);
 			}
-			if (pixbuf != null)
-				AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
 		}
 
 		public static void Initialize ()
