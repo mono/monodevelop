@@ -61,7 +61,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			store = new ListStore (typeof(ChangeLogEntry), typeof(Gdk.Pixbuf), typeof(string));
 			fileList.Model = store;
 			
-			fileList.AppendColumn (string.Empty, new CellRendererPixbuf (), "pixbuf", 1);
+			fileList.AppendColumn (string.Empty, new MonoDevelop.Core.Gui.CellRendererPixbuf (), "pixbuf", 1);
 			fileList.AppendColumn (string.Empty, new CellRendererText (), "text", 2);
 			
 			foreach (ChangeLogEntry ce in entries.Values) {
