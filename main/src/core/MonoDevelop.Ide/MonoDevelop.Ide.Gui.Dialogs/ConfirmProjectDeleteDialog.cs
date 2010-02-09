@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			col.PackStart (crt, false);
 			col.AddAttribute (crt, "active", 0);
 			
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			MonoDevelop.Core.Gui.CellRendererPixbuf crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "pixbuf", 1);
 			

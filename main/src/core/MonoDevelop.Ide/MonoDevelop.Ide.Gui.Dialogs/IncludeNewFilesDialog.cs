@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			textColumn.AddAttribute (toggleRender, "active", Columns.IsToggled);
 			
 			textColumn.Title = "Name";
-			CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
+			var pixbufRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			textColumn.PackStart (pixbufRenderer, false);
 			textColumn.AddAttribute (pixbufRenderer, "pixbuf", Columns.IconOpened);
 			textColumn.AddAttribute (pixbufRenderer, "pixbuf-expander-open", Columns.IconOpened);

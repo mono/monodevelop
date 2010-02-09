@@ -485,7 +485,7 @@ namespace MonoDevelop.Ide.Gui
 			string windowTitle = GettextCatalog.GetString (padCodon.Label);
 			DockItem item = dock.AddItem (padCodon.PadId);
 			item.Label = windowTitle;
-			item.Icon = window.Icon;
+			item.Icon = ImageService.GetPixbuf (window.Icon, IconSize.Menu);
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
 			
@@ -527,7 +527,7 @@ namespace MonoDevelop.Ide.Gui
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
 				item.Label = windowTitle;
-				item.Icon  = window.Icon;
+				item.Icon  = ImageService.GetPixbuf (window.Icon, IconSize.Menu);
 			}
 		}
 

@@ -1849,7 +1849,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				Gdk.Pixbuf icon = icons [id] as Gdk.Pixbuf;
 				if (icon == null) {
-					icon = pad.tree.RenderIcon (id, Gtk.IconSize.Menu, "");
+					icon = ImageService.GetPixbuf (id, Gtk.IconSize.Menu);
 					icons [id] = icon;
 				}
 				return icon;

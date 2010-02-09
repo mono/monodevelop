@@ -732,7 +732,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				Model = templateStore;
 				
 				TreeViewColumn col = new TreeViewColumn ();
-				CellRendererPixbuf crp = new CellRendererPixbuf ();
+				MonoDevelop.Core.Gui.CellRendererPixbuf crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 				crp.StockSize = (uint) Gtk.IconSize.Dnd;
 				crp.Ypad = 2;
 				col.PackStart (crp, false);

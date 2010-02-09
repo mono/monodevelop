@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		List<CodeTemplate> templates;
 		Gtk.TreeStore templateStore;
 		CellRendererText   templateCellRenderer;
-		CellRendererPixbuf pixbufCellRenderer;
+		MonoDevelop.Core.Gui.CellRendererPixbuf pixbufCellRenderer;
 		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
 		Mono.TextEditor.TextEditorOptions options;
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			TreeViewColumn column = new TreeViewColumn ();
 			column.Title = GettextCatalog.GetString ("Key");
 			
-			pixbufCellRenderer = new CellRendererPixbuf ();
+			pixbufCellRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetCellDataFunc (pixbufCellRenderer, new Gtk.TreeCellDataFunc (RenderIcon));
 			
