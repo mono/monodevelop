@@ -32,9 +32,9 @@ namespace MonoDevelop.Core.Gui
 	/// Replaces the Gtk.CellRendererPixbuf with a version that loads it's stock icons from the ImageService to
 	/// support lazy loading of images.
 	/// </summary>
-	public class CellRendererPixbuf : CellRenderer
+	public class CellRendererPixbuf : Gtk.CellRendererPixbuf
 	{
-		public CellRendererPixbuf ()
+/*		public CellRendererPixbuf ()
 		{
 			StockSize = (uint)Gtk.IconSize.Menu;
 		}
@@ -128,7 +128,7 @@ namespace MonoDevelop.Core.Gui
 			get;
 			set;
 		}
-		
+*/		
 	}
 }
 

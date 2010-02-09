@@ -1,5 +1,11 @@
 2010-02-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs: turned lazy
+	  loading off.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Core.Gui/ImageService.cs: passed the buffer
 	  directly.
 
