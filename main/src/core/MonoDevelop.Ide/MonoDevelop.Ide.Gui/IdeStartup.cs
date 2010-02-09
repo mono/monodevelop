@@ -36,6 +36,7 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
 
 using Mono.Unix;
@@ -58,7 +59,6 @@ namespace MonoDevelop.Ide.Gui
 	public class IdeStartup: IApplication
 	{
 		Socket listen_socket   = null;
-		static string fileToOpen = String.Empty;
 		ArrayList errorsList = new ArrayList ();
 		bool initialized;
 		internal static string DefaultTheme;
@@ -266,31 +266,42 @@ namespace MonoDevelop.Ide.Gui
 						continue;
 					file += c;
 				}
-				fileToOpen = file;
-				GLib.Idle.Add (new GLib.IdleHandler (openFile));
+				GLib.Idle.Add (delegate(){ return openFile (file); });
 			}
 		}
 
-		bool openFile () 
+		bool openFile (string file) 
 		{
-			lock (fileToOpen) {
-				string file = fileToOpen;
-				if (file == null || file.Length == 0)
-					return false;
-				if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file)) {
-					try {
-						IdeApp.Workspace.OpenWorkspaceItem (file);
-					} catch {
-					}
-				} else {
-					try {
-						IdeApp.Workbench.OpenDocument (file);
-					} catch {
-					}
-				}
-				IdeApp.Workbench.Present ();
+			if (string.IsNullOrEmpty (file))
 				return false;
+			
+			Match fileMatch = StartupInfo.fileExpression.Match (file);
+			if (null == fileMatch || !fileMatch.Success)
+				return false;
+				
+			int line = 1,
+			    column = 1;
+			
+			file = fileMatch.Groups["filename"].Value;
+			if (fileMatch.Groups["line"].Success)
+				int.TryParse (fileMatch.Groups["line"].Value, out line);
+			if (fileMatch.Groups["column"].Success)
+				int.TryParse (fileMatch.Groups["column"].Value, out column);
+				
+			if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file)) {
+				try {
+					IdeApp.Workspace.OpenWorkspaceItem (file);
+				} catch {
+				}
+			} else {
+				try {
+					LoggingService.LogError ("Opening {0} at {1}:{2}", file, line, column);
+					IdeApp.Workbench.OpenDocument (file, line, column, true);
+				} catch {
+				}
 			}
+			IdeApp.Workbench.Present ();
+			return false;
 		}
 		
 		bool CheckQtCurve ()
