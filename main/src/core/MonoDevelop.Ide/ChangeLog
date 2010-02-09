@@ -1,3 +1,7 @@
+2010-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Add startup trace calls.
+
 2010-02-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:

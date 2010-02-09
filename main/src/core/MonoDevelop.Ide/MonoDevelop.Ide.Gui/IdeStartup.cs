@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Run (string[] args)
 		{
+			LoggingService.Trace ("IdeStartup", "Initializing GTK");
 			Counters.Initialization++;
 			SetupExceptionManager ();
 			
@@ -90,6 +91,7 @@ namespace MonoDevelop.Ide.Gui
 			// If a combine was specified, force --newwindow.
 			
 			if(!options.newwindow && StartupInfo.HasFiles) {
+				LoggingService.Trace ("IdeStartup", "Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
 				foreach (string file in StartupInfo.GetRequestedFileList ()) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file))
@@ -116,12 +118,14 @@ namespace MonoDevelop.Ide.Gui
 				monitor = SplashScreenForm.SplashScreen;
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
-
-			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
+			
+			LoggingService.Trace ("IdeStartup", "Initializing Runtime");
 			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
 			monitor.Step (1);
 			Runtime.Initialize (true);
+			
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
+			LoggingService.Trace ("IdeStartup", "Initializing Platform Service");
 			DesktopService.Initialize ();
 			monitor.Step (1);
 			monitor.EndTask ();
@@ -146,6 +150,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
+			LoggingService.Trace ("IdeStartup", "Checking System");
 			string version = Assembly.GetEntryAssembly ().GetName ().Version.Major + "." + Assembly.GetEntryAssembly ().GetName ().Version.Minor;
 			
 			if (Assembly.GetEntryAssembly ().GetName ().Version.Build != 0)
@@ -166,6 +171,7 @@ namespace MonoDevelop.Ide.Gui
 			int reportedFailures = 0;
 			
 			try {
+				LoggingService.Trace ("IdeStartup", "Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				MonoDevelop.Core.Gui.ImageService.Initialize ();
 				
@@ -183,6 +189,7 @@ namespace MonoDevelop.Ide.Gui
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
+				LoggingService.Trace ("IdeStartup", "Initializing IdeApp");
 				IdeApp.Initialize (monitor);
 				monitor.Step (1);
 			
@@ -220,6 +227,8 @@ namespace MonoDevelop.Ide.Gui
 			initialized = true;
 			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
 			Counters.Initialization--;
+			
+			LoggingService.Trace ("IdeStartup", "Running IdeApp");
 			IdeApp.Run ();
 			
 			// unloading services

@@ -95,6 +95,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static ProjectDomService ()
 		{
+			LoggingService.Trace ("ProjectDomService", "Initializing");
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
 			// for unit tests it may not have been initialized.
 			if (AddinManager.IsInitialized) {
@@ -110,6 +111,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				});
 			}
 			parserDatabase.Initialize ();
+			LoggingService.Trace ("ProjectDomService", "Initialized");
 		}
 
 		public static RootTree HelpTree {

@@ -1,3 +1,8 @@
+2010-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Add
+	  startup trace calls.
+
 2010-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/HelpService.cs: Add startup trace

@@ -1,3 +1,9 @@
+2010-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core/PropertyService.cs: Add startup trace
+	  calls.
+
 2010-02-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core/Runtime.cs:

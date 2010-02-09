@@ -112,6 +112,7 @@ namespace MonoDevelop.Core
 		
 		static bool LoadProperties (string fileName)
 		{
+			LoggingService.Trace ("CorePropertyService", "Loading");
 			properties = null;
 			if (File.Exists (fileName)) {
 				try {
@@ -130,7 +131,7 @@ namespace MonoDevelop.Core
 					LoggingService.LogError ("Error loading properties from backup file '{0}':\n{1}", backupFile, ex);
 				}
 			}
-			
+			LoggingService.Trace ("CorePropertyService", "Loaded");
 			return properties != null;
 		}
 		
