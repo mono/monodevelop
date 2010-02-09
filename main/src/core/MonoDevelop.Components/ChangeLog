@@ -1,3 +1,11 @@
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs:
+	* MonoDevelop.Components.Commands/CommandToolButton.cs:
+	* MonoDevelop.Components.Commands/CommandToggleToolButton.cs:
+	  Added an icon request callback to support lazy loading of
+	  icons.
+
 2010-02-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/PathBar.cs: Fix build.

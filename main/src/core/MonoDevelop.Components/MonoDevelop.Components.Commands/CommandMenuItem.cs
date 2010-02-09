@@ -131,6 +131,10 @@ namespace MonoDevelop.Components.Commands
 			base.OnDeselected ();
 		}
 		
+		public delegate void RequestStockIcon (string stockId);
+		
+		public static RequestStockIcon IconRequested;
+		
 		void Update (CommandInfo cmdInfo)
 		{
 			lastCmdInfo = cmdInfo;
@@ -211,6 +215,8 @@ namespace MonoDevelop.Components.Commands
 				this.Visible = cmdInfo.Visible && (disabledVisible || cmdInfo.Enabled);
 				
 				if (cmdInfo.Icon != null && cmdInfo.Icon != "" && cmdInfo.Icon != lastIcon) {
+					if (IconRequested != null)
+						IconRequested (cmdInfo.Icon);
 					Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
 					lastIcon = cmdInfo.Icon;
 				}
