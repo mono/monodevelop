@@ -45,15 +45,17 @@ namespace MonoDevelop.Core.Gui
 		static ImageService ()
 		{
 			iconFactory.AddDefault ();
+			MonoDevelop.Components.Commands.CommandMenuItem.IconRequested = delegate (string stockId) {
+				EnsureStockIconIsLoaded (stockId, Gtk.IconSize.Menu);
+			};
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/StockIcons", delegate(object sender, ExtensionNodeEventArgs args) {
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					LoadStockIcon (iconCodon);
-/*					if (!iconStock.ContainsKey (iconCodon.StockId))
+					if (!iconStock.ContainsKey (iconCodon.StockId))
 						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
-					iconStock[iconCodon.StockId].Add (iconCodon);*/
+					iconStock[iconCodon.StockId].Add (iconCodon);
 					break;
 				}
 			});
