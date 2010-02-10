@@ -1,5 +1,10 @@
 2010-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: re-implemented int ptr
+	  constructor
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: fixed
 	  'https://bugzilla.novell.com/show_bug.cgi?id=577848'.
 
