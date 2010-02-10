@@ -248,10 +248,6 @@ namespace Mono.TextEditor
 			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 		}
 		
-		protected TextEditor (IntPtr raw) : base(raw)
-		{
-		}
-
 		public TextEditor (Document doc)
 			: this (doc, null)
 		{
@@ -262,7 +258,7 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode) : base()
+		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			textEditorData = new TextEditorData (doc);
 			textEditorData.RecenterEditor += delegate {
@@ -522,8 +518,13 @@ namespace Mono.TextEditor
 			imContext.ClientWindow = null;
 			DisposeTooltip ();
 			if (showTipScheduled || hideTipScheduled) {
-				GLib.Source.Remove (tipTimeoutId);
+				RemoveTipTimer ();
 				showTipScheduled = hideTipScheduled = false;
+			}
+			if (this.GdkWindow != null) {
+				this.GdkWindow.UserData = IntPtr.Zero;
+				this.GdkWindow.Destroy ();
+				this.WidgetFlags |= WidgetFlags.NoWindow;
 			}
 			base.OnUnrealized ();
 		}
@@ -588,6 +589,7 @@ namespace Mono.TextEditor
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
@@ -633,6 +635,7 @@ namespace Mono.TextEditor
 			textViewMargin = null;
 			this.textEditorData = this.textEditorData.Kill (x => x.SelectionChanged -= TextEditorDataSelectionChanged);
 			this.Realized -= OptionsChanged;
+			
 		}
 		
 		internal void RedrawMargin (Margin margin)
@@ -990,6 +993,7 @@ namespace Mono.TextEditor
 			} else {
 				FireMotionEvent (x, y, mod);
 				if (mouseButtonPressed != 0) {
+					RemoveScrollWindowTimer ();
 					scrollWindowTimer = GLib.Timeout.Add (50, delegate {
 						FireMotionEvent (x, y, mod);
 						return true;
@@ -1004,6 +1008,14 @@ namespace Mono.TextEditor
 			if (scrollWindowTimer != 0) {
 				GLib.Source.Remove (scrollWindowTimer);
 				scrollWindowTimer = 0;
+			}
+		}
+		
+		void RemoveTipTimer ()
+		{
+			if (tipTimeoutId != 0) {
+				GLib.Source.Remove (tipTimeoutId);
+				tipTimeoutId = 0;
 			}
 		}
 		
@@ -2094,6 +2106,7 @@ namespace Mono.TextEditor
 		{
 			CancelScheduledHide ();
 			hideTipScheduled = true;
+			RemoveTipTimer ();
 			tipTimeoutId = GLib.Timeout.Add (300, delegate {
 				HideTooltip ();
 				return false;

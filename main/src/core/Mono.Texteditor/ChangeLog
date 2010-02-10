@@ -1,5 +1,10 @@
 2010-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: fixed
+	  'https://bugzilla.novell.com/show_bug.cgi?id=577848'.
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Now creating an own gdk
 	  window - no longer using the Gtk.EventBox 'hack'/should fix
 	  'Bug 577848 - MissingIntPtrCtorException appears randomly'.
