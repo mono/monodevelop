@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Gtk.EventBox, ITextEditorDataProvider
+	public class TextEditor : Gtk.Container, ITextEditorDataProvider
 	{
 		TextEditorData textEditorData;
 		
@@ -126,14 +126,10 @@ namespace Mono.TextEditor
 			}
 		}
 		Dictionary<int, int> lineHeights = new Dictionary<int, int> ();
+		
 		public TextEditor () : this(new Document ())
 		{
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
-		}
-		
-		protected TextEditor (IntPtr ptr) : base (ptr)
-		{
-			
 		}
 		
 		Gdk.Pixmap buffer = null, flipBuffer = null;
@@ -252,6 +248,10 @@ namespace Mono.TextEditor
 			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 		}
 		
+		protected TextEditor (IntPtr raw) : base(raw)
+		{
+		}
+
 		public TextEditor (Document doc)
 			: this (doc, null)
 		{
@@ -262,7 +262,7 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
+		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode) : base()
 		{
 			textEditorData = new TextEditorData (doc);
 			textEditorData.RecenterEditor += delegate {
@@ -277,9 +277,9 @@ namespace Mono.TextEditor
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			this.DoubleBuffered = false;
-			this.AppPaintable = true;
+			this.AppPaintable = false;
 			base.CanFocus = true;
-			
+			WidgetFlags |= WidgetFlags.NoWindow;
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
 			dashedLineMargin = new DashedLineMargin (this);
@@ -323,11 +323,6 @@ namespace Mono.TextEditor
 					this.textViewMargin.ForceInvalidateLine (Caret.Line);
 					this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 				}
-			};
-			
-			this.Realized += delegate {
-				OptionsChanged (this, EventArgs.Empty);
-				Caret.PositionChanged += CaretPositionChanged;
 			};
 			
 			using (Pixmap inv = new Pixmap (null, 1, 1, 1)) {
@@ -496,15 +491,30 @@ namespace Mono.TextEditor
 		
 		protected override void OnRealized ()
 		{
-/*			WidgetFlags |= WidgetFlags.Realized;
+			WidgetFlags |= WidgetFlags.Realized;
 			WindowAttr attributes = new WindowAttr ();
+			attributes.WindowType = Gdk.WindowType.Child;
+			attributes.X = Allocation.X;
+			attributes.Y = Allocation.Y;
+			attributes.Width = Allocation.Width;
+			attributes.Height = Allocation.Height;
+			attributes.Wclass = WindowClass.InputOutput;
+			attributes.Visual = this.Visual;
+			attributes.Colormap = this.Colormap;
+			attributes.EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask);
+			attributes.Mask = this.Events | Gdk.EventMask.ExposureMask;
+//			attributes.Mask = EventMask;
 			
 			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
-			GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
-			Style = Style.Attach (GdkWindow);
-			*/
-			base.OnRealized ();
+			this.GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
+			this.GdkWindow.UserData = this.Raw;
+			this.Style = Style.Attach (this.GdkWindow);
+			this.WidgetFlags &= ~WidgetFlags.NoWindow;
+			
+			//base.OnRealized ();
 			imContext.ClientWindow = this.GdkWindow;
+			OptionsChanged (this, EventArgs.Empty);
+			Caret.PositionChanged += CaretPositionChanged;
 		}
 		
 		protected override void OnUnrealized ()
@@ -557,8 +567,9 @@ namespace Mono.TextEditor
 			// This is a hack around a problem with repainting the drag widget.
 			// When this is not set a white square is drawn when the drag widget is moved
 			// when the bg color is differs from the color style bg color (e.g. oblivion style)
-			if (this.textEditorData.ColorStyle != null) {
+			if (this.textEditorData.ColorStyle != null && GdkWindow != null) {
 				settingWidgetBg = true; //prevent infinite recusion
+				
 				this.ModifyBg (StateType.Normal, this.textEditorData.ColorStyle.Default.BackgroundColor);
 				settingWidgetBg = false;
 			}
@@ -1186,6 +1197,9 @@ namespace Mono.TextEditor
 			}*/
 			if (IsRealized)
 				AllocateWindowBuffer (Allocation);
+			if (this.GdkWindow != null) {
+				this.GdkWindow.MoveResize (allocation);
+			}
 			SetAdjustments (Allocation);
 			Repaint ();
 			textViewMargin.SetClip ();

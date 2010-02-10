@@ -1,3 +1,9 @@
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Now creating an own gdk
+	  window - no longer using the Gtk.EventBox 'hack'/should fix
+	  'Bug 577848 - MissingIntPtrCtorException appears randomly'.
+
 2010-02-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: added intprt constructor.
