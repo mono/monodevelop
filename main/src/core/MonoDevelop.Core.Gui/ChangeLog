@@ -1,3 +1,8 @@
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Remove registration of
+	  nonexistent icon.
+
 2010-02-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs: Fix lazy loading
