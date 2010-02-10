@@ -49,14 +49,14 @@ namespace MonoDevelop.Core.Gui
 				EnsureStockIconIsLoaded (stockId, Gtk.IconSize.Menu);
 			};
 			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/StockIcons", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/StockIcons", delegate (object sender, ExtensionNodeEventArgs args) {
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					LoadStockIcon (iconCodon);
-/*					if (!iconStock.ContainsKey (iconCodon.StockId))
+					//LoadStockIcon (iconCodon);
+					if (!iconStock.ContainsKey (iconCodon.StockId))
 						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
-					iconStock[iconCodon.StockId].Add (iconCodon);*/
+					iconStock[iconCodon.StockId].Add (iconCodon);
 					break;
 				}
 			});
@@ -65,22 +65,28 @@ namespace MonoDevelop.Core.Gui
 		static void LoadStockIcon (StockIconCodon iconCodon)
 		{
 			Gui.DispatchService.AssertGuiThread ();
-			Gdk.Pixbuf pixbuf = null;
 			try {
+				Gdk.Pixbuf pixbuf = null;
 				if (!string.IsNullOrEmpty (iconCodon.Resource)) {
 					// using the stream directly produces a gdk warning.
 					byte[] buffer;
-					using (Stream stream = iconCodon.Addin.GetResource (iconCodon.Resource)) {
+					using (var stream = iconCodon.Addin.GetResource (iconCodon.Resource)) {
+						if (stream == null || stream.Length < 0) {
+							LoggingService.LogError ("Did not find resource '{0}' in addin '{1}' for icon '{2}'", 
+							                         iconCodon.Resource, iconCodon.Addin.Id, iconCodon.StockId);
+							return;
+						}
 						buffer = new byte [stream.Length];
 						stream.Read (buffer, 0, (int)stream.Length);
 					}
-					AddToIconFactory (iconCodon.StockId, new Gdk.Pixbuf (buffer), iconCodon.IconSize);
+					pixbuf = new Gdk.Pixbuf (buffer);
 				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
 					pixbuf = GetPixbuf (InternalGetStockId (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize), iconCodon.IconSize);
-					AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
 				}
-			} catch (Exception) {
-				pixbuf = CreateColorBlock ("red", iconCodon.IconSize);
+				if (pixbuf != null)
+					AddToIconFactory (iconCodon.StockId, pixbuf, iconCodon.IconSize);
+			} catch (Exception ex) {
+				LoggingService.LogError (string.Format ("Error loading icon '{0}'", iconCodon.StockId), ex);
 			}
 		}
 
@@ -107,14 +113,12 @@ namespace MonoDevelop.Core.Gui
 		{
 			return GetPixbuf (name, size, true);
 		}
-		static Gdk.Pixbuf emptyIcon = null;
+		
 		public static Gdk.Pixbuf GetPixbuf (string name, Gtk.IconSize size, bool generateDefaultIcon)
 		{
 			if (string.IsNullOrEmpty (name)) {
 				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
-				if (emptyIcon == null)
-					emptyIcon = CreateColorBlock ("#FF0000", size);
-				return emptyIcon;
+				return CreateColorBlock ("#FF0000", size);
 			}
 			
 			EnsureStockIconIsLoaded (name, size);
@@ -145,7 +149,7 @@ namespace MonoDevelop.Core.Gui
 			return null;
 		}
 		
-		static void EnsureStockIconIsLoaded (string stockId, Gtk.IconSize size)
+		internal static void EnsureStockIconIsLoaded (string stockId, Gtk.IconSize size)
 		{
 			if (string.IsNullOrEmpty (stockId))
 				return;
