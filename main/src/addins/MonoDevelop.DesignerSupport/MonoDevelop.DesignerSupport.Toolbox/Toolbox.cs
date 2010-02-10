@@ -75,12 +75,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolbar.Insert (filterToggleButton, 0);
 			
 			catToggleButton = new ToggleToolButton ();
-			catToggleButton.IconWidget = new Image ("md-design-categorise", IconSize.Menu);
+			catToggleButton.IconWidget = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			toolbar.Insert (catToggleButton, 1);
 			
 			compactModeToggleButton = new ToggleToolButton ();
-			compactModeToggleButton.IconWidget = new Image ("md-design-listboxtoggle", IconSize.Menu);
+			compactModeToggleButton.IconWidget = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-listboxtoggle", IconSize.Menu));
 			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
 			toolbar.Insert (compactModeToggleButton, 2);
 	
