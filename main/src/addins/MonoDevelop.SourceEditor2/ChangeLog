@@ -1,5 +1,10 @@
 2010-02-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	  re-implemented intptr constructor.
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed 'Bug
 	  577848 - MissingIntPtrCtorException appears randomly'.
 
