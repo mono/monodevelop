@@ -14,6 +14,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Dialogs/VersionControlPolicyPanel.cs \
 	MonoDevelop.VersionControl.Views/AnnotateView.cs \
 	MonoDevelop.VersionControl.Views/CellRendererDiff.cs \
+	MonoDevelop.VersionControl.Views/DiffParser.cs \
 	MonoDevelop.VersionControl.Views/DiffView.cs \
 	MonoDevelop.VersionControl.Views/LogView.cs \
 	MonoDevelop.VersionControl.Views/StatusView.cs \

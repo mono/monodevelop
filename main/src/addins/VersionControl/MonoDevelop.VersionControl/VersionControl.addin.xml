@@ -214,5 +214,9 @@
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="Policies.xml"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
+		<Class class = "MonoDevelop.VersionControl.Views.DiffParser" id = "DiffParser" />
+	</Extension>
 </Addin>
 	
