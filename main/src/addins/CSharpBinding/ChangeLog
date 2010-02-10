@@ -1,3 +1,9 @@
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	  worked on c# parser.
+
 2010-02-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

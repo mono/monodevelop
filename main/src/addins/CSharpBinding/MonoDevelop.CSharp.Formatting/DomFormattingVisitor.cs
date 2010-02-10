@@ -1,5 +1,3 @@
-
-/*
 // 
 // DomFormattingVisitor.cs
 //  
@@ -311,4 +309,4 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.Add (new MyTextReplaceChange (data, rbraceLineSegment.Offset + firstNonWsChar + 1, rbrace.Location.Column - firstNonWsChar - 1, firstNonWsChar > 0 ? data.EolMarker + indent : indent));
 		}
 	}
-}*/
+}
