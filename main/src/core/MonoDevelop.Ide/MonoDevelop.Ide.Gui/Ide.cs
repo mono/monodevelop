@@ -184,6 +184,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			LoggingService.Trace ("IdeApp", "Flushing GUI events");
 			DispatchService.RunPendingEvents ();
+			LoggingService.Trace ("IdeApp", "Flushed GUI events");
 			
 			MessageService.RootWindow = workbench.RootWindow;
 		
@@ -197,9 +198,6 @@ namespace MonoDevelop.Ide.Gui
 			};
 
 			// Perser service initialization
-
-			MonoDevelop.Projects.HelpService.AsyncInitialize ();
-			
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.TrackFileChanges = true;
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
@@ -264,6 +262,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			commandService.CommandSelected += OnCommandSelected;
 			commandService.CommandDeselected += OnCommandDeselected;
+			
+			GLib.Timeout.Add (2000, delegate {
+				//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
+				MonoDevelop.Projects.HelpService.AsyncInitialize ();
+				return false;
+			});
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
