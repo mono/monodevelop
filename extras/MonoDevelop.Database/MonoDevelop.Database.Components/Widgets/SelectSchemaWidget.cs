@@ -53,7 +53,7 @@ namespace MonoDevelop.Database.Components
 			toggleRenderer.Toggled += new ToggledHandler (ItemToggled);
 			col.PackStart (toggleRenderer, false);
 			
-			CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
+			MonoDevelop.Core.Gui.CellRendererPixbuf pixbufRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			col.PackStart (pixbufRenderer, false);
 
 			CellRendererText textRenderer = new CellRendererText ();
@@ -149,7 +149,7 @@ namespace MonoDevelop.Database.Components
 		
 		private void PixbufDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			CellRendererPixbuf pixbufRenderer = cell as CellRendererPixbuf;
+			MonoDevelop.Core.Gui.CellRendererPixbuf pixbufRenderer = cell as MonoDevelop.Core.Gui.CellRendererPixbuf;
 			ISchemaContainer schema = model.GetValue (iter, columnObj) as ISchemaContainer;
 			
 			string iconString = null;
