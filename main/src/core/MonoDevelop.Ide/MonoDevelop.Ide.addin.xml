@@ -183,7 +183,7 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorExtensions" name = "Text editor extensions">
 		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
-		<ExtensionNode name="Class"/>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.TextEditorExtensionNode"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFeatures" name = "Project feature editors">

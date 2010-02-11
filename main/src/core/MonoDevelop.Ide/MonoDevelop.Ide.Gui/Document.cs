@@ -46,6 +46,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Tasks;
 using Mono.Addins;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -467,12 +468,15 @@ namespace MonoDevelop.Ide.Gui
 
 			// If the new document is a text editor, attach the extensions
 			
-			TextEditorExtension[] extensions = (TextEditorExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtension), false);
+			ExtensionNodeList extensions = AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			
 			editorExtension = null;
 			TextEditorExtension last = null;
 			
-			foreach (TextEditorExtension ext in extensions) {
+			foreach (TextEditorExtensionNode extNode in extensions) {
+				if (!extNode.Supports (FileName))
+					continue;
+				TextEditorExtension ext = (TextEditorExtension) extNode.GetInstance ();
 				if (ext.ExtendsEditor (this, editor)) {
 					if (editorExtension == null)
 						editorExtension = ext;
