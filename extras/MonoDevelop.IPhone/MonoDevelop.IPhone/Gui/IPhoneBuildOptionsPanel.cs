@@ -88,9 +88,8 @@ namespace MonoDevelop.IPhone.Gui
 			linkCombo.AppendText ("Link SDK assemblies only"); //MtouchLinkMode.SdkOnly
 			linkCombo.AppendText ("Link all assemblies"); //MtouchLinkMode.All
 			
-			sdkComboEntry.AppendText ("3.0");
-			sdkComboEntry.AppendText ("3.1");
-			sdkComboEntry.AppendText ("3.2");
+			foreach (var dir in IPhoneFramework.GetInstalledSdkVersions ())
+				sdkComboEntry.AppendText (dir);
 			
 			store = new ListStore (typeof (string), typeof (bool));
 			i18nTreeView.Model = store;

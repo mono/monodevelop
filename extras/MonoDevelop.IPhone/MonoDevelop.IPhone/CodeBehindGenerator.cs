@@ -120,6 +120,9 @@ namespace MonoDevelop.IPhone
 					if (!ibApprovedPartialClassNames.Contains (name))
 						continue;
 					
+					//HACK to avoid duplicate class definitions, which is not compilable
+					ibApprovedPartialClassNames.Remove (name);
+					
 					var type = new CodeTypeDeclaration (name) {
 						IsPartial = true
 					};
