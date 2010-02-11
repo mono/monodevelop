@@ -342,6 +342,10 @@ namespace MonoDevelop.Components.Commands
 		
 		public Command GetCommand (object cmdId)
 		{
+			// Include the type name when converting enum members to ids.
+			if (cmdId.GetType ().IsEnum)
+				cmdId = cmdId.GetType ().FullName + "." + cmdId;
+			
 			Command cmd;
 			if (cmds.TryGetValue (cmdId, out cmd))
 				return cmd;
@@ -356,11 +360,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public ActionCommand GetActionCommand (object cmdId)
 		{
-			Command cmd;
-			if (cmds.TryGetValue (cmdId, out cmd))
-				return cmd as ActionCommand;
-			else
-				return null;
+			return GetCommand (cmdId) as ActionCommand;
 		}
 		
 		public Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
