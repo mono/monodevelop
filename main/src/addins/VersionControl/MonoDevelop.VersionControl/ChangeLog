@@ -1,3 +1,11 @@
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* VersionControl.addin.xml:
+	* MonoDevelop.VersionControl.csproj: Move the icon resources
+	  into files, which can be loaded without loading the whole
+	  add-in.
+
 2010-02-10  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Makefile.am:

@@ -98,6 +98,7 @@
     <ProjectReference Include="..\..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -143,18 +144,6 @@
     <EmbeddedResource Include="overlay_locked.png">
       <LogicalName>overlay_locked.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_log.png">
-      <LogicalName>menu_log.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_diff.png">
-      <LogicalName>menu_diff.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_update.png">
-      <LogicalName>menu_update.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_status.png">
-      <LogicalName>menu_status.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="VersionControl.addin.xml">
       <LogicalName>VersionControl.addin.xml</LogicalName>
     </EmbeddedResource>
@@ -167,29 +156,8 @@
     <EmbeddedResource Include="overlay_controled.png">
       <LogicalName>overlay_controled.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_commit.png">
-      <LogicalName>menu_commit.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_remote_status.png">
-      <LogicalName>menu_remote_status.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="overlay_unversioned.png">
       <LogicalName>overlay_unversioned.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_add.png">
-      <LogicalName>menu_add.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_remove.png">
-      <LogicalName>menu_remove.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_resolve.png">
-      <LogicalName>menu_resolve.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="comment.png">
-      <LogicalName>comment.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="menu_revert.png">
-      <LogicalName>menu_revert.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="overlay_lock_required.png">
       <LogicalName>overlay_lock_required.png</LogicalName>
@@ -200,9 +168,9 @@
     <EmbeddedResource Include="Policies.xml">
       <LogicalName>Policies.xml</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="gtk-gui\gui.stetic" />
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -270,7 +238,7 @@
       <Properties>
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
-          <DeployFilesVar />
+          <DeployFilesVar Sync="true" Name="DATA_FILES" />
           <ResourcesVar Sync="true" Name="RES" />
           <OthersVar />
           <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
@@ -280,4 +248,39 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Content Include="menu_log.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_diff.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_update.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_status.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_commit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_remote_status.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_add.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_remove.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_resolve.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="comment.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="menu_revert.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
