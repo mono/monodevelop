@@ -1,3 +1,9 @@
+2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui.Codons/StockIconCodon.cs: Add support
+	  for loading icons from files.
+
 2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Remove registration of
