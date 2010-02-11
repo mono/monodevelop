@@ -1,5 +1,9 @@
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/objects.xml: Flush.
+
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:
 	* gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:

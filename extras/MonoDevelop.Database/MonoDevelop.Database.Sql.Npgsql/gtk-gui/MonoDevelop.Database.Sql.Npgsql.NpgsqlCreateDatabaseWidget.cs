@@ -77,7 +77,7 @@ namespace MonoDevelop.Database.Sql.Npgsql
 			// Container child table1.Gtk.Table+TableChild
 			this.labelEncoding = new global::Gtk.Label ();
 			this.labelEncoding.Name = "labelEncoding";
-			this.labelEncoding.LabelProp = global::AddinCatalog.GetString ("Encoding");
+			this.labelEncoding.LabelProp = global::MonoDevelop.Database.AddinCatalog.GetString ("Encoding");
 			this.table1.Add (this.labelEncoding);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.labelEncoding]));
 			w5.TopAttach = ((uint)(2));
@@ -87,7 +87,7 @@ namespace MonoDevelop.Database.Sql.Npgsql
 			// Container child table1.Gtk.Table+TableChild
 			this.labelOwner = new global::Gtk.Label ();
 			this.labelOwner.Name = "labelOwner";
-			this.labelOwner.LabelProp = global::AddinCatalog.GetString ("Owner");
+			this.labelOwner.LabelProp = global::MonoDevelop.Database.AddinCatalog.GetString ("Owner");
 			this.table1.Add (this.labelOwner);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.labelOwner]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -95,7 +95,7 @@ namespace MonoDevelop.Database.Sql.Npgsql
 			// Container child table1.Gtk.Table+TableChild
 			this.labelTablespace = new global::Gtk.Label ();
 			this.labelTablespace.Name = "labelTablespace";
-			this.labelTablespace.LabelProp = global::AddinCatalog.GetString ("Tablespace");
+			this.labelTablespace.LabelProp = global::MonoDevelop.Database.AddinCatalog.GetString ("Tablespace");
 			this.table1.Add (this.labelTablespace);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.labelTablespace]));
 			w7.TopAttach = ((uint)(3));
@@ -105,7 +105,7 @@ namespace MonoDevelop.Database.Sql.Npgsql
 			// Container child table1.Gtk.Table+TableChild
 			this.labelTemplate = new global::Gtk.Label ();
 			this.labelTemplate.Name = "labelTemplate";
-			this.labelTemplate.LabelProp = global::AddinCatalog.GetString ("Template");
+			this.labelTemplate.LabelProp = global::MonoDevelop.Database.AddinCatalog.GetString ("Template");
 			this.table1.Add (this.labelTemplate);
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.labelTemplate]));
 			w8.TopAttach = ((uint)(1));
