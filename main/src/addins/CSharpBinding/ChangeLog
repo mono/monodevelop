@@ -1,3 +1,13 @@
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	  handle collection initalizers.
+
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	  fixed intellisense bug found by Marek.
+
 2010-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed bug

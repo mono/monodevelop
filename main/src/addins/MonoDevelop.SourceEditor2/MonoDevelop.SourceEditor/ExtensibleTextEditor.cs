@@ -330,7 +330,9 @@ namespace MonoDevelop.SourceEditor
 			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 			Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
 			foreach (Span span in stack) {
-				if (span.Color == "string.single" || span.Color == "string.double") {
+				if (string.IsNullOrEmpty (span.Color))
+					continue;
+				if (span.Color == "string.single" || span.Color == "string.double" || span.Color.StartsWith ("comment")) {
 					inStringOrComment = true;
 					inChar |= span.Color == "string.single";
 					//escape = span.Escape;
