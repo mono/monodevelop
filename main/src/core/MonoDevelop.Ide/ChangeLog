@@ -1,3 +1,9 @@
+2010-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Don't share text editor
+	  extension instance between editors or things end up in the
+	  wrong editor.
+
 2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -476,7 +476,7 @@ namespace MonoDevelop.Ide.Gui
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName))
 					continue;
-				TextEditorExtension ext = (TextEditorExtension) extNode.GetInstance ();
+				TextEditorExtension ext = (TextEditorExtension) extNode.CreateInstance ();
 				if (ext.ExtendsEditor (this, editor)) {
 					if (editorExtension == null)
 						editorExtension = ext;
