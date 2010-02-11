@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-04 10:46:11-0500\n"
-"PO-Revision-Date: 2010-02-04 10:03:14-0500\n"
+"POT-Creation-Date: 2010-02-11 01:16:07+0100\n"
+"PO-Revision-Date: 2010-02-11 01:24:23+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -123,7 +123,7 @@ msgstr "_Kategorien:"
 
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:334
 #: ../src/core/MonoDevelop.Core.Gui/Base.glade:2606
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1654
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1659
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:558
 #: ../src/addins/MonoDevelop.Gettext/templates/TranslationProject.xpt.xml:6
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:41
@@ -251,58 +251,58 @@ msgstr "MonoDevelop-Paket"
 msgid "Loading..."
 msgstr "Lade..."
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:258
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:261
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:256
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:259
 msgid ".NET resource"
 msgstr ".NET-Ressource"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:264
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:262
 msgid "Add-in manifest"
 msgstr "Erweiterungs-Manifest"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:268
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:266
 msgid "XML document"
 msgstr "XML-Dokument"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:271
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:269
 msgid "Configuration File"
 msgstr "Konfigurationsdatei"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:274
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:272
 msgid "Glade File"
 msgstr "Glade-Datei"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:277
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:275
 msgid "ChangeLog document"
 msgstr "ChangeLog-Dokument"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:280
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:278
 msgid ".NET program"
 msgstr ".NET-Progamm"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:284
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:282
 msgid "MonoDevelop/MSBuild Solution"
 msgstr "MonoDevelop-/MSBuild-Projektmappe"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:287
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:285
 msgid "MonoDevelop 1.0 Solution"
 msgstr "MonoDevelop-1.0-Projektmappe"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:291
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:289
 msgid "diff files"
 msgstr "diff-Dateien"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:296
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:294
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:61
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:425
 msgid "Makefile"
 msgstr "Makefile"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:300
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:298
 msgid "lua files"
 msgstr "Lua-Dateien"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:304
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.addin.xml:302
 msgid "il files"
 msgstr "IL-Dateien"
 
@@ -437,7 +437,7 @@ msgid "_Proceed"
 msgstr "_Fortfahren"
 
 #: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui/MessageService.cs:55
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:139
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:141
 msgid "_Replace"
 msgstr "E_rsetzen"
 
@@ -445,7 +445,7 @@ msgstr "E_rsetzen"
 msgid "_Overwrite file"
 msgstr "_Datei überschreiben"
 
-#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs:459
+#: ../src/core/MonoDevelop.Core.Gui/MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs:460
 #: ../src/core/MonoDevelop.Ide/templates/EmptyClass.xft.xml:6
 #: ../src/core/MonoDevelop.Ide/templates/EmptyEnum.xft.xml:6
 #: ../src/core/MonoDevelop.Ide/templates/EmptyInterface.xft.xml:6
@@ -506,7 +506,7 @@ msgid "Could not open the url {0}"
 msgstr "Konnte die URL {0} nicht öffnen"
 
 #: ../src/core/MonoDevelop.Components/MonoDevelop.Components.Commands/LinkCommandEntry.cs:87
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:251
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:277
 #: ../src/addins/WelcomePage/WelcomePageView.cs:246
 msgid "Open {0}"
 msgstr "Öffne {0}"
@@ -676,7 +676,7 @@ msgid "Blank Solution"
 msgstr "Leere Projektmappe"
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:8
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1321
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1326
 #: ../src/core/MonoDevelop.Ide/templates/GenericProject.xpt.xml:8
 #: ../src/core/MonoDevelop.Ide/templates/Workspace.xpt.xml:6
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:224
@@ -1111,7 +1111,7 @@ msgid "Run"
 msgstr "Ausführen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:440
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1619
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1624
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:262
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:150
 msgid "_Run"
@@ -1167,7 +1167,7 @@ msgstr "_Stop"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:479
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:494
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1598
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1603
 msgid "Active Configuration"
 msgstr "Aktive Konfiguration"
 
@@ -1193,7 +1193,7 @@ msgid "_Export..."
 msgstr "_Exportiere..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:498
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1601
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1606
 msgid "Active Runtime"
 msgstr "Aktive Runtime"
 
@@ -1272,7 +1272,7 @@ msgid "Close All Files"
 msgstr "Alle Dateien schliessen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:557
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:201
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:202
 msgid "C_lose Workspace"
 msgstr "_Arbeitsbereich schließen"
 
@@ -1321,773 +1321,781 @@ msgstr "Druck_vorschau"
 msgid "Show print preview"
 msgstr "Druckvorschau"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:591
+msgid "Page Set_up"
+msgstr "Seiteneinstell_ungen"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:592
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1468
+msgid "Show page setup"
+msgstr "Seiteneinstellungen anzeigen"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:597
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1474
 msgid "Recent _Files"
 msgstr "Letzte Da_teien"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:595
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:604
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:600
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:609
 msgid "_Clear"
 msgstr "_Löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:597
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:271
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:602
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:297
 msgid "Clear recent files"
 msgstr "Liste der zuletzt genutzten Dateien löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:601
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:606
 msgid "Recent Pro_jects"
 msgstr "Letzte  _Projekte"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:606
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:611
 msgid "Clear recent solutions"
 msgstr "Liste der zuletzt genutzten Projektmappen löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:609
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:614
 msgid "_Quit"
 msgstr "_Beenden"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:611
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:616
 msgid "Quit MonoDevelop"
 msgstr "MonoDevelop beenden"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:615
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:620
 msgid "_Open in Terminal"
 msgstr "_Im Terminal öffnen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:616
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:621
 msgid "Opens a terminal in this folder"
 msgstr "Öffnet ein Terminal in diesem Ordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:618
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:623
 msgid "_Open Folder"
 msgstr "_Ordner öffnen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:619
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:624
 msgid "Opens the folder in a file manager."
 msgstr "Öffnet einen Ordner im Dateimanager."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:621
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:626
 msgid "O_pen Containing Folder"
 msgstr "Ö_ffne beinhaltenden Ordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:622
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:627
 msgid "Opens the folder that contains this file."
-msgstr "Öffne Ordner der diese Datei enthält."
+msgstr "Öffne den Ordner, der diese Datei enthält."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:625
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:630
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:71
 msgid "Build action"
 msgstr "Erstellungsaktion"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:628
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:633
 msgid "_Properties"
 msgstr "_Eigenschaften"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:631
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:636
 msgid "_Copy to Output Directory"
 msgstr "_Kopiere in Ausgabeordner "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:634
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:639
 msgid "Require Specific Version"
-msgstr "Spezifische Version vorraussetzen"
+msgstr "Spezifische Version voraussetzen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:637
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:642
 msgid "C_lose all but this"
 msgstr "_Andere Fenster schließen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:638
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:643
 msgid "Closes all opened files except for the active file"
 msgstr "Schließt alle geöffneten Dateien außer der aktiven Datei"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:641
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:646
 msgid "Copy the file path to the clipboard"
 msgstr "Dateinamen in die Zwischenablage kopieren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:642
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:647
 msgid "C_opy file path/name"
 msgstr "Datei_pfad/-namen kopieren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:645
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:650
 msgid "S_witch maximize/normal view"
 msgstr "_Wechsle maximierte/normale Ansicht"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:649
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:654
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:365
 msgid "View"
 msgstr "Ansicht"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:654
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:659
 msgid "View List"
 msgstr "Ansichtsliste"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:658
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:663
 msgid "Layout List"
 msgstr "Layout-Liste"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:661
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:666
 msgid "_New Layout..."
 msgstr "_Neues Layout..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:663
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:668
 msgid "Create new layout"
 msgstr "Neues Layout erstellen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:666
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:671
 msgid "_Delete Current Layout"
 msgstr "_Lösche aktuelles Layout"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:668
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:673
 msgid "Delete current layout"
 msgstr "Lösche aktuelles Layout"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:672
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:677
 msgid "Active Layout"
 msgstr "Aktives Layout"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:673
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:678
 msgid "Switch active layout"
 msgstr "Wechsle aktuelles Layout"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:676
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:681
 msgid "_Full Screen"
 msgstr "_Vollbild"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:678
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:683
 msgid "Set full screen mode"
 msgstr "Zum Vollbildmodus wechseln"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:680
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:685
 msgid "Open selected document"
 msgstr "Ausgewähltes Dokument öffnen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:681
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:686
 msgid "_Open"
 msgstr "Ö_ffnen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:684
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:689
 msgid "Display Options List"
 msgstr "Zeige Optionsliste"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:686
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:691
 msgid "Reset Options"
 msgstr "Einstellungen zurücksetzen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:688
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:693
 msgid "Refresh the tree"
 msgstr "Den Baum aktualisieren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:689
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:694
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:119
 msgid "Refresh"
 msgstr "Aktualisieren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:691
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:696
 msgid "Collapse All Nodes"
 msgstr "Alle Knoten zusammenklappen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:694
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:699
 msgid "List of programs to open with"
 msgstr "Liste der Programme, die beim Start mitgeladen werden"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:697
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:702
 msgid "Browse Next"
 msgstr "Gehe zum nächsten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:698
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:703
 msgid "Move cursor to next error or search match"
 msgstr "Cursor zum nächsten Fehler oder Suchergebnis bewegen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:703
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:708
 msgid "Browse Previous"
 msgstr "Gehe zum vorherigen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:704
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:709
 msgid "Move cursor to previous error or search match"
 msgstr "Cursor zum vorherigen Fehler oder Suchergebnis bewegen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:709
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:714
 msgid "Navigate _Back"
 msgstr "Navigiere _zurück"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:714
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:719
 msgid "Move to previous point in code navigation history"
 msgstr "Cursor zur vorherigen Position im Navigationsprotokoll bewegen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:716
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:721
 msgid "Navigate _Forward"
 msgstr "Navigiere _vorwärts"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:721
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:726
 msgid "Move to next point in code navigation history"
 msgstr "Cursor zur nächsten Position im Navigationsprotokoll bewegen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:724
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:729
 msgid "Navigate _History"
 msgstr "Navigations_protokoll"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:726
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1580
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:731
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1585
 msgid "Select a point from the navigation history"
 msgstr "Cursor zur einer ausgewählten Position im Navigationsprotokoll bewegen"
 
 #
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:728
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:733
 msgid "_Clear Navigation History"
 msgstr "N_avigationsprokokoll löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:730
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:735
 msgid "Clear the navigation history"
 msgstr "Navigationsprotokoll löschen"
 
 #
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:734
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:739
 msgid "_Zoom In"
 msgstr "Hin_einzoomen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:737
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:742
 msgid "Zooms view in"
 msgstr "Vergrößert eine Sicht"
 
 #
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:740
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:745
 msgid "Zoom _Out"
 msgstr "Her_auszoomen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:743
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:748
 msgid "Zooms view out"
 msgstr "Verkleinert eine Sicht"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:746
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:751
 msgid "_Normal Size"
 msgstr "_Normale Größe"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:749
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:754
 msgid "Resets zoom to default"
 msgstr "Setzt die Vergrößerung einer Sicht auf Standard"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:752
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:757
 msgid "_Focus Document"
 msgstr "_Dokument fokussieren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:754
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:759
 msgid "Focus current document"
 msgstr "Aktuelles Dokument fokussieren"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:758
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:763
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:138
 msgid "Tools"
 msgstr "Werkzeuge"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:763
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:768
 msgid "Manage add-ins"
 msgstr "Erweiterungen verwalten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:764
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:769
 msgid "_Add-in Manager"
 msgstr "_Erweiterungs-Manager"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:768
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:773
 msgid "Tool List"
 msgstr "Werkzeugliste"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:772
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:777
 msgid "Instrumentation Monitor"
 msgstr "Instrumenten-Monitor"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:778
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:783
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:4
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:4
 msgid "Window"
 msgstr "Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:782
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:787
 msgid "_Next Window"
 msgstr "_Nächstes Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:784
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:789
 msgid "Show next window"
 msgstr "Zeige nächstes Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:789
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:794
 msgid "_Previous Window"
 msgstr "_Vorheriges Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:791
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:796
 msgid "Show previous window"
 msgstr "Zeige vorheriges Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:797
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:802
 msgid "Window List"
 msgstr "Fensterliste"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:801
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:806
 msgid "Split _Vertically"
 msgstr "V_ertikal teilen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:804
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:809
 msgid "Split _Horizontally"
 msgstr "_Horizontal teilen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:807
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:812
 msgid "_Unsplit"
 msgstr "_Teilung aufheben"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:811
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:816
 msgid "_Switch Between Splits"
 msgstr "_Zur nächsten Teilung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:816
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:817
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:821
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:822
 msgid "Switch to next document"
 msgstr "Nächstes Dokument"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:822
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:823
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:827
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:828
 msgid "Switch to previous document"
 msgstr "Vorheriges Dokument"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:827
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:830
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1231
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:832
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:835
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1236
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:49
 msgid "Help"
 msgstr "Hilfe"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:832
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:837
 msgid "Show help"
 msgstr "Hilfe anzeigen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:838
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:843
 msgid "_Tip of the Day"
 msgstr "_Tipp des Tages"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:840
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:845
 msgid "Show tip of the day"
 msgstr "Tipp des Tages anzeigen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:843
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:848
 msgid "_About"
 msgstr "_Info"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:845
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:850
 msgid "Show about dialog"
 msgstr "Info Dialog anzeigen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:849
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1412
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:854
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1417
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:177
 msgid "Search"
 msgstr "Suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:852
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:857
 msgid "_Find..."
 msgstr "_Suchen..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:854
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:859
 msgid "Search for text"
 msgstr "Nach Text suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:858
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:863
 msgid "_Replace..."
 msgstr "E_rsetzen..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:860
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:865
 msgid "Search for and replace text"
 msgstr "Text suchen und ersetzen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:864
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:869
 msgid "Find _Next"
 msgstr "_Weitersuchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:866
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:871
 msgid "Search forwards for the same text"
 msgstr "Vorwärts nach dem gleichen Text suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:870
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:875
 msgid "Find _Previous"
 msgstr "Suche _vorheriges"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:871
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:876
 msgid "Search backwards for the same text"
 msgstr "Den selben Text rückwärts suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:876
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:881
 msgid "Find _Next (Emacs behavior)"
 msgstr "_Weitersuchen (Emacs-Verhalten)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:878
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:883
 msgid "Search forwards for the same text with emacs behavior"
 msgstr "Vorwärts nach dem gleichen Text suchen (nach Emacs-Art)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:880
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:885
 msgid "Find _Previous (Emacs behavior)"
 msgstr "_Vorheriges suchen (Emacs-Verhalten)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:881
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:886
 msgid "Search backwards for the same text with emacs behavior"
 msgstr "Rückwärts im selben Text suchen (nach Emacs-Art)."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:884
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:889
 msgid "Find Next Selection"
 msgstr "Suche nächste Auswahl"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:885
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:890
 msgid "Search forwards for the selected text"
 msgstr "Vorwärts im ausgewählten Text suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:889
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:894
 msgid "Find _Previous Selection"
 msgstr "_Suche vorherige Auswahl"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:890
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:895
 msgid "Search backwards for the selected text"
 msgstr "Rückwärts im ausgewählten Text suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:895
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:900
 msgid "F_ind in Files..."
 msgstr "_In Dateien suchen..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:899
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:904
 msgid "Search for text in all files of a directory"
 msgstr "Nach Text in allen Dateien eines Ordners suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:902
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:907
 msgid "R_eplace in Files..."
 msgstr "In Dateien ers_etzen..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:905
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:910
 msgid "Search for and replace text in all files of a directory"
 msgstr "Suchen und Ersetzen in allen Dateien eines Ordners"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:909
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:914
 msgid "Go to Type..."
 msgstr "Gehe zum Typ..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:910
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:915
 msgid "Jump to the declaration of type in the current workspace"
 msgstr "Zur Typdeklaration im aktuellen Arbeitsbereich springen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:915
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:920
 msgid "Go to File..."
 msgstr "Gehe zur Datei..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:918
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:923
 msgid "Jump to a file in the current workspace"
 msgstr "Zu einer geöffneten Datei springen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:923
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:928
 msgid "Toggle bookmark"
 msgstr "Lesezeichen an-/ausschalten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:924
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:929
 msgid "_Toggle Bookmark"
 msgstr "_Lesezeichen umschalten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:928
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:933
 msgid "Go to previous bookmark"
 msgstr "Zum vorherigen Lesezeichen gehen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:929
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:934
 msgid "Pre_vious Bookmark"
 msgstr "_Vorheriges Lesezeichen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:933
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:938
 msgid "Go to next bookmark"
 msgstr "Zum nächsten Lesezeichen gehen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:934
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:939
 msgid "Ne_xt Bookmark"
 msgstr "_Nächstes Lesezeichen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:937
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:942
 msgid "Clear bookmarks"
 msgstr "Lesezeichen löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:938
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:943
 msgid "_Clear Bookmarks"
 msgstr "Le_sezeichen löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:940
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:945
 msgid "_Go to Line..."
 msgstr "_Gehe zur Zeile..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:941
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:946
 msgid "Go to a specific line"
 msgstr "Gehe zu einer bestimmten Zeile"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:950
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1314
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:955
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1319
 msgid "Text Editor"
 msgstr "Texteditor"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:953
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:958
 msgid "Show Completion Window"
 msgstr "Zeige Completion-Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:957
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:962
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:230
 msgid "I_nsert Template..."
 msgstr "Vorlage ei_nfügen..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:960
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:965
 msgid "Go to end of line"
 msgstr "Gehe zum Zeilenende"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:962
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:967
 msgid "Go to beginning of line"
 msgstr "Gehe zum Anfang der Zeile"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:964
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:969
 msgid "Delete left character"
 msgstr "Lösche linkes Zeichen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:966
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:971
 msgid "Delete right character"
 msgstr "Lösche rechtes Zeichen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:968
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:973
 msgid "Go left one character"
 msgstr "Gehe ein Zeichen nach links"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:970
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:975
 msgid "Go right one character"
 msgstr "Gehe ein Zeichen nach rechts"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:972
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:977
 msgid "Go to previous line"
 msgstr "Gehe zur vorherigen Zeile"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:974
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:979
 msgid "Go to next line"
 msgstr "Gehe zur nächsten Zeile"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:976
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:981
 msgid "Go to beginning of document"
 msgstr "Gehe zum Anfang des Dokuments"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:978
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:983
 msgid "Go to end of document"
 msgstr "Gehe zum Ende des Dokuments"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:980
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:985
 msgid "Go up one page"
 msgstr "Gehe eine Seite weiter"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:982
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:987
 msgid "Go down one page"
 msgstr "Gehe eine Seite herrunter"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:984
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:989
 msgid "Scroll line up"
 msgstr "Scrolle eine Zeile hoch"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:987
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:992
 msgid "Scroll line down"
 msgstr "Scrolle eine Zeile runter"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:990
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:995
 msgid "Scroll page up"
 msgstr "Scrolle Seite hoch"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:993
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:998
 msgid "Scroll page down"
 msgstr "Scrolle Seite runter"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:996
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1001
 msgid "Delete entire line"
 msgstr "Lösche ganze Zeile"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:998
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1003
 msgid "Delete to end of line"
 msgstr "Lösche bis Zeilenende"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1001
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1006
 msgid "Move the line or highlighted selection up"
 msgstr "Bewege die Zeile oder den markierten Block hoch"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1004
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1009
 msgid "Move the line or highlighted selection down"
 msgstr "Bewege die Zeile oder den markierten Block runter"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1007
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1012
 msgid "Show Parameter List"
 msgstr "Parameter"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1011
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1016
 msgid "Go to Matching _Brace"
 msgstr "Zur passender _Klammer gehen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1015
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1020
 msgid "Expand selection to the left"
 msgstr "Auswahl nach links erweitern"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1017
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1022
 msgid "Expand selection to the right"
 msgstr "Auswahl nach rechts erweitern"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1019
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1024
 msgid "Go to previous word"
 msgstr "Gehe Wort zurück"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1021
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1026
 msgid "Go to next word"
 msgstr "Gehe Wort vor"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1023
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1028
 msgid "Expand selection to previous word"
 msgstr "Auswahl zum vorherigen Wort ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1025
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1030
 msgid "Expand selection to next word"
 msgstr "Auswahl zum nächsten Wort ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1027
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1032
 msgid "Go to previous subword"
 msgstr "Zum vorherigen Teilwort gehen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1029
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1034
 msgid "Go to next subword"
 msgstr "Zum nächsten Teilwort gehen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1031
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1036
 msgid "Expand selection to previous subword"
 msgstr "Auswahl zum vorherigen Teilwort ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1033
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1038
 msgid "Expand selection to next subword"
 msgstr "Auswahl zum nächsten Teilwort ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1035
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1040
 msgid "Expand selection to previous line"
 msgstr "Auswahl zur vorherigen Zeile ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1037
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1042
 msgid "Expand selection to next line"
 msgstr "Auswahl zur nächsten Zeile ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1039
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1044
 msgid "Expand selection to line start"
 msgstr "Auswahl zum Zeilenanfang ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1041
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1046
 msgid "Expand selection to line end"
 msgstr "Auswahl zum Zeilenende ausweiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1043
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1048
 msgid "Expand selection to document start"
 msgstr "Auswahl zum Dokumentanfang erweitern"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1045
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1050
 msgid "Expand selection to document end"
 msgstr "Auswahl zum Dokumentende erweitern"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1047
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1052
 msgid "Switch caret mode"
 msgstr "Caretmodus umschalten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1050
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1055
 msgid "Insert tab"
 msgstr "Tabulator einfügen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1052
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1057
 msgid "Remove tab"
 msgstr "Tabulator entfernen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1054
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1059
 msgid "Insert new line"
 msgstr "Neue Zeile einfügen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1056
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1061
 msgid "Insert new line and don't move caret'"
 msgstr "Neue Zeile einfügen, ohne Cursor zu bewegen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1058
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1063
 msgid "Move caret to EOL and insert new line"
 msgstr "Caret an das Zeilenende verschieben und neue Zeile einfügen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1060
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1065
 msgid "Completes the current statement"
 msgstr "Vervollständigt die aktuelle Anweisung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1063
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1068
 msgid "Delete previous word"
 msgstr "Vorheriges Wort löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1065
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1070
 msgid "Delete next word"
 msgstr "Nächstes Wort löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1067
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1072
 msgid "Delete previous subword"
 msgstr "Vorheriges Teilwort löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1069
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1074
 msgid "Delete next subword"
 msgstr "Nächstes Teilwort löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1071
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1076
 msgid "Expand selection to page down"
 msgstr "Auswahl zu nächsten Seite erweitern."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1073
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1078
 msgid "Expand selection to page up"
 msgstr "Auswahl zur vorherigen Seite erweitern"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1079
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1084
 msgid "GNU/Emacs"
 msgstr "GNU/Emacs"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1080
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1085
 msgid "Visual Studio"
 msgstr "MS Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1081
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1086
 msgid "MonoDevelop 1.0"
 msgstr "MonoDevelop 1.0"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1082
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1087
 msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop 2.0"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1104
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1109
 msgid "Open _With"
 msgstr "Öffne _mit"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1119
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1621
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1124
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1626
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:107
 msgid "Run With"
 msgstr "Starten mit"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1131
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1136
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:73
 msgid "_Add"
 msgstr "_Hinzufügen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1158
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1628
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1163
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1633
 msgid "_Tools"
 msgstr "_Werkzeuge"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1195
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1200
 msgid "Build Action"
 msgstr "Erstellungsaktion"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1198
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1203
 msgid "_Quick Properties"
 msgstr "_Schnelleigenschaften"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1223
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1228
 msgid "Comments"
 msgstr "Kommentare"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1224
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1229
 msgid "User Tasks"
 msgstr "Benutzerdefinierte Aufgaben"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1228
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1233
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/FileList.cs:57
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:87
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:470
@@ -2096,81 +2104,81 @@ msgstr "Benutzerdefinierte Aufgaben"
 msgid "Files"
 msgstr "Dateien"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1234
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:98
 msgid "Error List"
 msgstr "Fehler"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1230
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1308
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1235
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1313
 msgid "Task List"
 msgstr "Aufgaben"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1233
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1238
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:48
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:11
 msgid "Solution"
 msgstr "Projektmappe"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1235
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1240
 msgid "Show All Files"
 msgstr "Alle Dateien anzeigen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1251
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1256
 msgid "Classes"
 msgstr "Klassen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1252
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1257
 msgid "Nested namespaces"
 msgstr "Verschachtelte Namensräume"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1253
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1258
 msgid "Show project structure"
 msgstr "Projekt-Struktur anzeigen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1254
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1259
 msgid "Group members by access"
 msgstr "Gruppiere Member nach Zugriff"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1255
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1260
 msgid "Group members by member type"
 msgstr "Gruppiere Member nach Typ"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1256
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1261
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:94
 msgid "Show public members only"
 msgstr "Zeige nur öffentliche Member"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1262
 msgid "Show public and protected members only"
 msgstr "Zeige nur öffentliche und geschützte Member"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1272
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1277
 msgid "Other Windows"
 msgstr "Andere Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1273
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1278
 msgid "Message Log"
 msgstr "Nachrichtenprotokoll"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1299
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1304
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1300
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1305
 msgid "Visual Style"
 msgstr "Optischer Stil"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1301
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1306
 msgid "Key Bindings"
 msgstr "Tastenkombinationen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1302
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1307
 msgid "Load/Save"
 msgstr "Laden/Speichern"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1303
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1423
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1308
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1428
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:85
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:72
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:62
@@ -2186,181 +2194,181 @@ msgstr "Laden/Speichern"
 msgid "Build"
 msgstr "Erstellen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1304
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1309
 msgid "Errors and Warnings"
 msgstr "Fehler und Warnungen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1310
 msgid "Assembly Folders"
 msgstr "Assembly-Ordner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1307
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1312
 msgid "Add-ins"
 msgstr "Erweiterungen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1309
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1314
 msgid "External Tools"
 msgstr "Externe Werkzeuge"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1310
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1328
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1315
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1333
 msgid "Author Information"
 msgstr "Autoren-Informationen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1311
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1316
 msgid ".NET Runtimes"
 msgstr ".NET-Runtimes"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1315
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1320
 msgid "Formatting"
 msgstr "Formatierung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1316
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1321
 msgid "Code Templates"
 msgstr "Code-Vorlagen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1319
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1324
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:71
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:192
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:204
 msgid "Version Control"
 msgstr "Versionskontrolle"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1322
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1327
 msgid "MonoDevelop Maintenance"
 msgstr "MonoDevelop-Wartung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1333
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1337
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1338
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1342
 msgid "Standard Header"
 msgstr "Standard-Kopf"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1341
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1346
 msgid "Text Style"
 msgstr "Text-Stil"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1360
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1365
 msgid "MIT/X11 License"
 msgstr "MIT/X11-Lizenz"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1368
 msgid "New BSD License"
 msgstr "Neue BSD-Lizenz"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1366
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1371
 msgid "Apache 2.0 License"
 msgstr "Apache-2.0-Lizenz"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1369
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1374
 msgid "LGPL 2.1 License"
 msgstr "LGPL 2.1"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1372
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1377
 msgid "GPL 2 License"
 msgstr "GPL 2"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1375
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1380
 msgid "GPL 3 License"
 msgstr "GPL 3"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1378
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1383
 msgid "LGPL 3 License"
 msgstr "LGPL 3"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1385
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1390
 msgid "MonoDevelop Solution Files"
 msgstr "MonoDevelop-Projektmappen-Dateien"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1388
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1393
 msgid "MonoDevelop Project Files"
 msgstr "MonoDevelop-Projektdateien"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1398
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1403
 msgid "Standard"
 msgstr "Standard"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1431
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1436
 msgid "Layout"
 msgstr "Layout"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1437
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1442
 msgid "Navigation"
 msgstr "Navigation"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1451
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1456
 msgid "_File"
 msgstr "_Datei"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1452
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1457
 msgid "_New"
 msgstr "_Neu"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1474
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1480
 msgid "Recent Solu_tions"
 msgstr "Letzte _Projekte"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1482
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1488
 msgid "_Close"
 msgstr "_Schließen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1486
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1492
 msgid "_Edit"
 msgstr "B_earbeiten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1500
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1506
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.addin.xml:84
 msgid "_Format"
 msgstr "_Format"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1514
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1520
 msgid "F_olding"
 msgstr "_Quelltext-Ausblendung"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1533
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1538
 msgid "_View"
 msgstr "_Ansicht"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1534
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1539
 msgid "Toolbars"
 msgstr "Werkzeugeleisten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1540
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1545
 msgid "_Layouts"
 msgstr "_Layouts"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1555
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1560
 msgid "_Search"
 msgstr "_Suchen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1579
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1584
 msgid "Navigation _History"
 msgstr "_Navigationsprotokoll"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1592
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1597
 msgid "_Project"
 msgstr "_Projekt"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1609
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1614
 msgid "_Build"
 msgstr "_Erstellen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1635
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1640
 msgid "_Window"
 msgstr "_Fenster"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1649
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1654
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1653
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1658
 msgid "_Web"
 msgstr "_Web"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1655
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1660
 msgid "Mono Project"
 msgstr "Mono-Projekt"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1656
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1661
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:4
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:25
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:113
@@ -2410,32 +2418,32 @@ msgstr "Mono-Projekt"
 msgid "C#"
 msgstr "C#"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1657
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1662
 msgid "C# Help"
 msgstr "C#-Hilfe"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1658
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1663
 msgid "C# Corner"
 msgstr "C# Corner"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1659
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1664
 msgid "CodePlex"
 msgstr "CodePlex"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1660
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1665
 msgid "MSDN Code Gallery"
 msgstr "MSDN Quelltext-Galerie"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1664
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1669
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:19
 msgid "Report a Bug"
 msgstr "Einen Fehler melden"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1743
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1748
 msgid "Arguments"
 msgstr "Argumente"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1744
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1749
 msgid "Mono Options"
 msgstr "Mono-Einstellungen"
 
@@ -2534,8 +2542,8 @@ msgstr "Eigenschaftsname"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:337
 msgid "Template for a short property with private set."
 msgstr ""
-"Vorlage für eine automatisch implementierte Eigenschaft mit privatem set-"
-"Zugriff."
+"Vorlage für eine automatisch implementierte Eigenschaft mit privatem "
+"set-Zugriff."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:362
 msgid "Template for event arguments"
@@ -2841,49 +2849,49 @@ msgstr "Verzeichnes der UI-Beschreibungs-Datei (widgets.ui)"
 msgid "The top-most child of the window within the gtk.Builder file."
 msgstr "Das oberste Kind des Fensters innerhalb der gtk.Builder-Datei."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:80
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:81
 msgid "File to Open"
 msgstr "Zu öffnende Datei"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:92
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:93
 msgid "Only local files can be opened."
 msgstr "Nur lokale Dateien können geöffnet werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:94
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:95
 msgid "The provided file could not be loaded."
 msgstr "Die bereitgestellte Datei konnte nicht geladen werden."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:199
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:200
 msgid "C_lose Solution"
 msgstr "P_rojektmappe schließen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:203
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:204
 msgid "C_lose Project"
 msgstr "_Projekt schließen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:205
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:206
 msgid "C_lose All Solutions"
 msgstr "_Alle Projektmappen schließen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:271
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:297
 msgid "Are you sure you want to clear recent files list?"
 msgstr ""
 "Sind Sie sicher, dass Sie die Liste der zulezt genutzten Dateien löschen "
 "wollen?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:320
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:346
 msgid "Load solution {0}"
 msgstr "Lade Projektmappe {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:322
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:348
 msgid "Hold Control to open in current workspace."
 msgstr "Control gedrückt halten, um im aktuellen Arbeitsbereich zu öffnen."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:342
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:368
 msgid "Clear recent projects"
 msgstr "Liste der zuletzt genutzten Projekte löschen"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:342
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:368
 msgid "Are you sure you want to clear recent projects list?"
 msgstr ""
 "Sind Sie sicher, dass Sie die Liste der zuletzt genutzten Projekte löschen "
@@ -3043,8 +3051,8 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:116
 msgid "All changes made to the document will be permanently lost."
 msgstr ""
-"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen "
-"unwiderruflich verloren."
+"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwiderruflich "
+"verloren."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:169
 msgid ""
@@ -3488,16 +3496,16 @@ msgid ""
 "Are you sure you want to remove the file {0} and its code-behind children "
 "from project {1}?"
 msgstr ""
-"Sind Sie sich sicher, dass Sie die Datei {0} und dessen CodeBehind-Kinder "
-"aus dem Projekt {1} entfernen wollen?"
+"Sind Sie sich sicher, dass Sie die Datei {0} und dessen CodeBehind-Kinder aus "
+"dem Projekt {1} entfernen wollen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:209
 msgid ""
 "Are you sure you want to remove the selected files and their code-behind "
 "children from the project?"
 msgstr ""
-"Sind Sie sich sicher, dass Sie die ausgewählten Dateien und deren CodeBehind-"
-"Kinder aus dem Projekt entfernen wollen?"
+"Sind Sie sich sicher, dass Sie die ausgewählten Dateien und deren "
+"CodeBehind-Kinder aus dem Projekt entfernen wollen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:213
 msgid "Are you sure you want to remove file {0} from project {1}?"
@@ -3507,8 +3515,8 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:216
 msgid "Are you sure you want to remove the selected files from the project?"
 msgstr ""
-"Sind Sie sich sicher, dass Sie die ausgewählten Dateien vom Projekt "
-"entfernen möchten?"
+"Sind Sie sich sicher, dass Sie die ausgewählten Dateien vom Projekt entfernen "
+"möchten?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:258
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/WorkspaceNodeBuilder.cs:214
@@ -3616,7 +3624,7 @@ msgstr ""
 "Sie benötigen ein neueres monodoc, um es außerhalb von MonoDevelop zu "
 "benutzen. Benutze nun den integrierten Hilfe-Betrachter."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:160
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Ide.cs:163
 msgid "Loading Workbench"
 msgstr "Lade Arbeitsfläche"
 
@@ -3651,8 +3659,8 @@ msgstr "Element gespeichert."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:439
 msgid ""
-"Some project files have been changed from outside MonoDevelop. Do you want "
-"to overwrite them?"
+"Some project files have been changed from outside MonoDevelop. Do you want to "
+"overwrite them?"
 msgstr ""
 "Einige Projektdateien wurden außerhalb von MonoDevelop verändert. Sollen sie "
 "überschrieben werden?"
@@ -3742,11 +3750,11 @@ msgstr "{0} ist ist außerhalb des Projektordners, was soll ich machen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1141
 msgid "Use the same action for all selected files."
-msgstr "Benutze die selbe Aktion für alle ausgewählten Dateien."
+msgstr "Verwende dieselbe Aktion für alle ausgewählten Dateien."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1149
 msgid "_Link"
-msgstr "_Link"
+msgstr "Verk_nüpfung"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1171
 msgid ""
@@ -3781,7 +3789,7 @@ msgid ""
 "The project '{0}' is currently running. It will have to be stopped. Do you "
 "want to continue?"
 msgstr ""
-"Das Projekt '{0}' läuft bereits. Es wird gestoppt. Soll fortgefahren werden?"
+"Das Projekt '{0}' läuft bereits. Es wird angehalten. Wollen Sie fortfahren?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectOperations.cs:1429
 msgid "Code completion database generation"
@@ -3818,8 +3826,8 @@ msgstr "Änderungen am Dokument '{0}' vor dem Schließen speichern?"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:640
 msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
-"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen "
-"unwiderruflich verloren."
+"Falls Sie nicht speichern, gehen alle vorgenommenen Änderungen unwiderruflich "
+"verloren."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:655
 msgid "The document could not be saved."
@@ -3870,34 +3878,33 @@ msgstr "Speichern..."
 msgid "Search Results"
 msgstr "Suchergebnisse"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:119
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:120
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:122
 msgid "Starting MonoDevelop"
 msgstr "MonoDevelop starten"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:196
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:203
 msgid "MonoDevelop failed to start. The following error has been reported: "
 msgstr ""
 "MonoDevelop konnte nicht gestartet werden. Der folgende Fehler wurde "
 "gemeldet: "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:359
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:379
 msgid ""
 "Some packages installed in your system are not compatible with MonoDevelop:\n"
 msgstr ""
-"Einige Pakete, die in Ihrem System installiert sind, sind nicht kompatibel "
-"zu MonoDevelop:\n"
+"Einige Pakete, die in Ihrem System installiert sind, sind nicht kompatibel zu "
+"MonoDevelop:\n"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:361
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:363
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:381
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:383
 msgid "version required: {0}"
 msgstr "Version benötigt: {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:365
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/IdeStartup.cs:385
 msgid "You need to upgrade the previous packages to start using MonoDevelop."
 msgstr ""
-"Sie müssen die vorherigen Pakete aktualisieren bevor Sie MonoDevelop "
-"benutzen können."
+"Sie müssen die vorherigen Pakete aktualisieren bevor Sie MonoDevelop benutzen "
+"können."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:111
 msgid "New add-in updates are available:"
@@ -4186,7 +4193,7 @@ msgid ""
 "Project Options dialog, or by adding new projects to the solution.</small>"
 msgstr ""
 "<small>Diese Liste zeigt eine Reihe von Funktionen die Sie in diesem Projekt "
-"aktivieren können. Nach dem erstellen eines Projekts können Sie die "
+"aktivieren können. Nach dem Erstellen eines Projekts können Sie die "
 "Funktionen in den Projekteinstellungen ändern.</small>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs:21
@@ -4479,8 +4486,7 @@ msgid ""
 "provide will be missing. Do you wish to continue?"
 msgstr ""
 "Sie können MonoDevelop ohne diese Erweiterungen starten, aber die "
-"Funktionalität die Sie bereitstellen wird nicht verfügbar sein. Möchten Sie "
-"fortfahren?"
+"Funktionalität die Sie bereitstellen wird nicht verfügbar sein. Möchten Sie fortfahren?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:105
 msgid "MonoDevelop cannot start because a fatal error has been detected."
@@ -4490,8 +4496,8 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:116
 msgid ""
-"MonoDevelop can run without these add-ins, but the functionality they "
-"provide will be missing."
+"MonoDevelop can run without these add-ins, but the functionality they provide "
+"will be missing."
 msgstr ""
 "MonoDevelop kann ohne diese Erweiterungen gestartet werden, aber die "
 "Funktionalität, die sie bereitstellen, werden fehlen."
@@ -4787,8 +4793,8 @@ msgstr "Projektmappe geladen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:967
 msgid ""
-"WARNING: Some documents may need to be closed, and unsaved data will be "
-"lost. You will be asked to save the unsaved documents."
+"WARNING: Some documents may need to be closed, and unsaved data will be lost. "
+"You will be asked to save the unsaved documents."
 msgstr ""
 "WARUNG: Einige Dokumente könnten geschlossen werden und ungespeicherte Daten "
 "gehen verloren. Vor dem Schließen wird nochmal nachgefragt, ob die Dokumente "
@@ -4800,8 +4806,8 @@ msgid ""
 "will be lost. You will be asked to save the unsaved documents."
 msgstr ""
 "WARUNG: Einige Dokumente könnten neu geladen oder geschlossen werden und "
-"ungespeicherte Daten gehen verloren. Vor dem Schließen wird nochmal "
-"nachgefragt, ob die Dokumente gespeichert werden sollen."
+"ungespeicherte Daten gehen verloren. Vor dem Schließen wird nochmal nachgefragt, "
+"ob die Dokumente gespeichert werden sollen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/RootWorkspace.cs:971
 msgid ""
@@ -5031,8 +5037,8 @@ msgid ""
 "Whether the variable is an identifier, and should only accept valid "
 "identifiers as input."
 msgstr ""
-"Bestimmt, ob die Variable ein Bezeichner ist. Bezeichner können nur "
-"bestimmte Zeichen enthalten."
+"Bestimmt, ob die Variable ein Bezeichner ist. Bezeichner können nur bestimmte "
+"Zeichen enthalten."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:74
 msgid "A list of values for the user to choose from."
@@ -5052,8 +5058,8 @@ msgstr "Mono-Laufzeitumgebung nicht gefunden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:127
 msgid ""
-"Please provide a valid directory prefix where mono is installed (for "
-"example, /usr)"
+"Please provide a valid directory prefix where mono is installed (for example, "
+"/usr)"
 msgstr ""
 "Bitte geben Sie einen gültigen Verzeichnispräfix an, unter dem Mono "
 "installiert ist. (z.B. /usr)"
@@ -5062,14 +5068,13 @@ msgstr ""
 msgid ""
 "If you have a parallel installation of Mono you can register it here, so you "
 "can use it for building and running projects. The <b>default runtime</b> is "
-"the .NET runtime to be used for building and running applications when none "
-"is specifically selected."
+"the .NET runtime to be used for building and running applications when none is "
+"specifically selected."
 msgstr ""
 "Wenn mehrere Installationen von Mono parallel installiert sind, können diese "
-"hier registriert werden, damit sie zum Erstellen und Ausführen benutzt "
-"werden können. Die <b>voreingestellte Runtime</b> ist diejenige "
-"Laufzeitumgebung, die benutzt wird wenn keine andere Laufzeitumgebung "
-"spezifiziert wurde."
+"hier registriert werden, damit sie zum Erstellen und Ausführen benutzt werden "
+"können. Die <b>voreingestellte Runtime</b> ist diejenige Laufzeitumgebung, "
+"die benutzt wird wenn keine andere Laufzeitumgebung spezifiziert wurde."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:74
 msgid "Set as Default"
@@ -5526,12 +5531,12 @@ msgstr "Ausführliche InvalidCastException einschalten."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:173
 msgid ""
 "Disable some JIT optimizations which are normally disabled when running "
-"inside the debugger. This is useful if you plan to attach to the running "
-"process with the debugger."
+"inside the debugger. This is useful if you plan to attach to the running process "
+"with the debugger."
 msgstr ""
 "Einige JIT-Optimierungen deaktivieren, die normalerweise im Debugger "
-"ausgeschaltet sind. Dies ist sinnvoll, wenn während des Ausführens ein "
-"Debugger an den Prozess angehängt werden soll."
+"ausgeschaltet sind. Dies ist sinnvoll, wenn während des Ausführens ein Debugger an "
+"den Prozess angehängt werden soll."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:181
 msgid "Runs in profiling mode with the specified profiler module."
@@ -5557,76 +5562,75 @@ msgid ""
 "Verifies mscorlib and assemblies in the global assembly cache for valid IL, "
 "and all user code for IL verifiability."
 msgstr ""
-"Verifiziert die mscorlib, Assemblies im GAC und allen User-Code nach "
-"gültigem IL."
+"Verifiziert die mscorlib, Assemblies im GAC und allen User-Code nach gültigem "
+"IL."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:216
 msgid ""
 "Comma separated list of expressions to trace. 'all' all assemlies, 'none' no "
-"assemblies, 'program' entry point assembly, 'assembly' specifies an "
-"assembly, 'T:Type' specifies a type, 'M:Type:Method'  a method, 'N:"
-"Namespace' a namespace. 'disabled' don't print any output until toggled via "
-"SIGUSR2. Prefix with '-' to exclude and expression."
+"assemblies, 'program' entry point assembly, 'assembly' specifies an assembly, "
+"'T:Type' specifies a type, 'M:Type:Method'  a method, 'N:Namespace' a "
+"namespace. 'disabled' don't print any output until toggled via SIGUSR2. Prefix with "
+"'-' to exclude and expression."
 msgstr ""
 "Komma-getrennte Liste von Ausdrücken zum Überwachen. 'all' Alle Assemblies, "
 "'none' keine Assemblies, 'program' Einstiegspunkt Assembly, 'assembly' "
 "bestimmte Assembly, 'T:Type' bestimmter Typ. 'M:Type:Method' eine Methode, "
-"'N:Namespace' einen Namensraum, 'disabled' keine Ausgabe erzeugen bis "
-"SIGUSR2 gegeben wird. Prefix mit '-', um einen Ausdruck auszuschließen."
+"'N:Namespace' einen Namensraum, 'disabled' keine Ausgabe erzeugen bis SIGUSR2 gegeben "
+"wird. Prefix mit '-', um einen Ausdruck auszuschließen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:232
 msgid ""
 "Possible values are 'error', 'critical', 'warning', 'message', 'info', "
-"'debug'. The default  value  is  'error'. Messages with a logging level "
-"greater then or equal to the log level will be printed to stdout/stderr."
+"'debug'. The default  value  is  'error'. Messages with a logging level greater "
+"then or equal to the log level will be printed to stdout/stderr."
 msgstr ""
 "Mögliche Werte sind 'error', 'critical', 'warning', 'message', 'info', "
-"'debug'. Der Standardwert ist 'error'. Nachrichten mit einem Logwert größer "
-"oder gleich dem Log-Level werden nach stdout/stderr ausgegeben."
+"'debug'. Der Standardwert ist 'error'. Nachrichten mit einem Logwert größer oder "
+"gleich dem Log-Level werden nach stdout/stderr ausgegeben."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:242
 msgid ""
 "Possible values are 'asm'  (assembly  loader),  'type',  'dll'  (native "
-"library  loader), 'gc' (garbage collector), 'cfg' (config file loader), "
-"'aot' (precompiler) and 'all'. The default value is 'all'. Changing the mask "
-"value allows you to display only messages for a certain component. You can "
-"use multiple masks by comma separating them. For example to  see config file "
-"messages and assembly loader messages set you mask to 'asm,cfg'."
+"library  loader), 'gc' (garbage collector), 'cfg' (config file loader), 'aot' "
+"(precompiler) and 'all'. The default value is 'all'. Changing the mask value "
+"allows you to display only messages for a certain component. You can use multiple "
+"masks by comma separating them. For example to  see config file messages and "
+"assembly loader messages set you mask to 'asm,cfg'."
 msgstr ""
-"Mögliche Werte sind 'asm' (Assembly-Loader), 'type', 'dll' (Bibliotheks-"
-"Loader), 'gc' (garbage collector), 'cfg' (config file loader), "
-"'aot' (Precompiler) und 'all'. Der Standardwert ist 'all'. Änderungen dieser "
-"Maske erlauben das nur Nachrichten für eine bestimmte Komponente angezeigt "
-"werden. Mehrere Werte können durch Komma getrennt angegeben werden. z.B. um "
-"Konfigurations- und Assembly-Loader-Nachrichten anzuzeigen muss die Maske "
-"auf 'asm,cfg' gesetzt werden."
+"Mögliche Werte sind 'asm' (Assembly-Loader), 'type', 'dll' "
+"(Bibliotheks-Loader), 'gc' (garbage collector), 'cfg' (config file loader), 'aot' (Precompiler) "
+"und 'all'. Der Standardwert ist 'all'. Änderungen dieser Maske erlauben das "
+"nur Nachrichten für eine bestimmte Komponente angezeigt werden. Mehrere Werte "
+"können durch Komma getrennt angegeben werden. z.B. um Konfigurations- und "
+"Assembly-Loader-Nachrichten anzuzeigen muss die Maske auf 'asm,cfg' gesetzt "
+"werden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:256
 msgid ""
 "The  possible values are `no' to disable the use of a C# customized "
-"serializer, or an integer that is the minimum number of uses before the "
-"runtime will produce a custom serializer (0 will produce a custom serializer "
-"on the first access, 50 will produce a serializer on the 50th use). Mono "
-"will fallback to an interpreted serializer if the serializer generation "
-"somehow fails. This behavior can be disabled by setting the option "
-"`nofallback' (for example: '0,nofallback')."
+"serializer, or an integer that is the minimum number of uses before the runtime will "
+"produce a custom serializer (0 will produce a custom serializer on the first "
+"access, 50 will produce a serializer on the 50th use). Mono will fallback to "
+"an interpreted serializer if the serializer generation somehow fails. This "
+"behavior can be disabled by setting the option `nofallback' (for example: "
+"'0,nofallback')."
 msgstr ""
-"Die möglichen Werte sind `no' - schaltet den benutzerdefinierten C#-"
-"Serializer aus oder ein Integer der die minimale Zahl von Benutzungen angibt "
-"bevor die Runtime einen benutzerdefinierten Serializer benutzt (0 wird einen "
-"benutzerdefinierten Serialisierer beim ersten Zugriff erzeugen, 50 wird "
-"einen Serialisierer beim 50. Zugriff erzeugen). Mono wird einen "
-"interpretierten Serializer benutzen, falls die Serializer-Erzeugung "
-"fehlschlägt. Dieses Verhalten kann mit der Option `nofallback' abgestellt "
-"werden (z.B: '0,nofallback')."
+"Die möglichen Werte sind `no' - schaltet den benutzerdefinierten "
+"C#-Serializer aus oder ein Integer der die minimale Zahl von Benutzungen angibt bevor die "
+"Runtime einen benutzerdefinierten Serializer benutzt (0 wird einen "
+"benutzerdefinierten Serialisierer beim ersten Zugriff erzeugen, 50 wird einen "
+"Serialisierer beim 50. Zugriff erzeugen). Mono wird einen interpretierten Serializer "
+"benutzen, falls die Serializer-Erzeugung fehlschlägt. Dieses Verhalten kann "
+"mit der Option `nofallback' abgestellt werden (z.B: '0,nofallback')."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:269
 msgid ""
-"Overrides the default system configuration directory ($PREFIX/etc). It's "
-"used to locate machine.config file."
+"Overrides the default system configuration directory ($PREFIX/etc). It's used "
+"to locate machine.config file."
 msgstr ""
-"Überschreibt das voreingestellte Systemkonfigurationsverzeichnis ($PREFIX/"
-"etc). Es wird benutzt, um die machine.config-Datei zu finden."
+"Überschreibt das voreingestellte Systemkonfigurationsverzeichnis "
+"($PREFIX/etc). Es wird benutzt, um die machine.config-Datei zu finden."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:277
 msgid ""
@@ -5635,30 +5639,29 @@ msgstr "Definiert die Standard-Konfigurationsdatei ($PREFIX/etc/mono/config)."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:284
 msgid ""
-"If  set, tells mono NOT to attempt using native asynchronous I/O services. "
-"In that case, a default select/poll implementation is used. Currently only "
+"If  set, tells mono NOT to attempt using native asynchronous I/O services. In "
+"that case, a default select/poll implementation is used. Currently only "
 "epoll() is supported."
 msgstr ""
-"Wenn gesetzt wird Mono KEINE systemeigenen asynchronen I/O Dienste nutzen. "
-"In diesem fall wird die normale select/poll Implementation benutzt. Im "
+"Wenn gesetzt wird Mono KEINE systemeigenen asynchronen I/O Dienste nutzen. In "
+"diesem fall wird die normale select/poll Implementation benutzt. Im "
 "augenblick wird nur epoll() benutzt."
 
 # anglicisms
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:293
 msgid ""
 "If set, the runtime uses unmanaged collation (which actually means no "
-"culture-sensitive collation). It internally disables managed collation "
-"functionality invoked via the members of System.Globalization.CompareInfo "
-"class."
+"culture-sensitive collation). It internally disables managed collation functionality "
+"invoked via the members of System.Globalization.CompareInfo class."
 msgstr ""
 "Wenn gesetzt benutzt die Runtime unmanaged Collation (d.h. keine "
-"kulturabhängige Collation). Intern wird die Managed-Collation-Funktionalität "
-"mit System.Globalization.CompareInfo aufgerufen."
+"kulturabhängige Collation). Intern wird die Managed-Collation-Funktionalität mit "
+"System.Globalization.CompareInfo aufgerufen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:303
 msgid ""
-"A colon-separated list of text encodings to try when turning externally-"
-"generated text (e.g. command-line arguments or filenames) into Unicode."
+"A colon-separated list of text encodings to try when turning "
+"externally-generated text (e.g. command-line arguments or filenames) into Unicode."
 msgstr ""
 "Eine durch Doppelpunkte getrennte Liste von Zeichenkodierungen, die versucht "
 "werden, wenn extern generierter Text nach Unicode transformiert wird."
@@ -5667,15 +5670,15 @@ msgstr ""
 msgid ""
 "Provides a prefix the runtime uses to look for Global Assembly Caches. "
 "Directories are separated by the platform path separator (colons on unix). "
-"MONO_GAC_PREFIX should point to the top directory of a prefixed install. Or "
-"to the directory provided in the gacutil /gacdir command. Example: /home/"
-"username/.mono:/usr/local/mono/"
+"MONO_GAC_PREFIX should point to the top directory of a prefixed install. Or to the "
+"directory provided in the gacutil /gacdir command. Example: "
+"/home/username/.mono:/usr/local/mono/"
 msgstr ""
 "Spezifiziert einen Präfix in denen die Runtime nach dem GAC sucht. "
-"Verzeichnisse werden mit dem Platformeigenen Pfadseparator getrennt (':' in "
-"Unix). MONO_GAC_PREFIX sollte auf das Wurzelverzeichnis einer gepräfixten "
-"Installation zeigen oder zu dem Verzeichnis das von den gacutil/gacdir "
-"Kommandos angegeben wird. z.B. /home/username/.mono:/usr/local/mono/"
+"Verzeichnisse werden mit dem Platformeigenen Pfadseparator getrennt (':' in Unix). "
+"MONO_GAC_PREFIX sollte auf das Wurzelverzeichnis einer gepräfixten Installation "
+"zeigen oder zu dem Verzeichnis das von den gacutil/gacdir Kommandos angegeben "
+"wird. z.B. /home/username/.mono:/usr/local/mono/"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:323
 msgid "When enabled, Mono removes the drive letter from Windows paths."
@@ -5686,8 +5689,8 @@ msgid ""
 "When enabled, Mono does case-insensitive file matching in every directory in "
 "a path."
 msgstr ""
-"Wenn gesetzt, vergleicht Mono-Dateinamen ohne Berücksichtigung der Groß-/"
-"Kleinschreibung."
+"Wenn gesetzt, vergleicht Mono-Dateinamen ohne Berücksichtigung der "
+"Groß-/Kleinschreibung."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:335
 msgid ""
@@ -5710,14 +5713,13 @@ msgid ""
 "Provides a search path to the runtime where to look for library files. This "
 "is a tool convenient for debugging applications, but should not be used by "
 "deployed applications as it breaks the assembly loader in subtle ways. "
-"Directories are separated by the platform path separator (colons on unix). "
-"Example: /home/username/lib:/usr/local/mono/lib"
+"Directories are separated by the platform path separator (colons on unix). Example: "
+"/home/username/lib:/usr/local/mono/lib"
 msgstr ""
 "Spezifiziert einen Suchpfad, in dem die Runtime nach Bibliotheken sucht. "
 "Dieses Werkzeug wird zum Debuggen benutzt, sollte aber nicht für eingesetzte "
 "Anwendungen benutzt werden. Verzeichnisse werden mit dem plattformeigenen "
-"Pfadseparator getrennt (':' in Unix). z.B. /home/username/lib:/usr/local/"
-"mono/lib"
+"Pfadseparator getrennt (':' in Unix). z.B. /home/username/lib:/usr/local/mono/lib"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:363
 msgid ""
@@ -5733,8 +5735,8 @@ msgid ""
 "(ThreadsPerCpu * number of CPUs). The default valuefor this variable is 10."
 msgstr ""
 "Die maximale Anzahl von Threads im generellen Threadpool wird auf 20 + "
-"(ThreadsProCPU * Anzahl der CPUs) gesetzt. Der Standardwert dieser Variable "
-"beträgt 10."
+"(ThreadsProCPU * Anzahl der CPUs) gesetzt. Der Standardwert dieser Variable beträgt "
+"10."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:380
 msgid ""
@@ -5746,19 +5748,19 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:389
 msgid ""
-"If set, enables the System.Diagnostics.DefaultTraceListener, which will "
-"print the output of the System.Diagnostics Trace and Debug classes. It can "
-"be set to a filename, and to Console.Out or Console.Error to display output "
-"to standard output or standard error, respectively. If it's set to Console."
-"Out or Console.Error you can append an optional prefix that will be used "
-"when writing messages like this: Console.Error:MyProgramName."
+"If set, enables the System.Diagnostics.DefaultTraceListener, which will print "
+"the output of the System.Diagnostics Trace and Debug classes. It can be set "
+"to a filename, and to Console.Out or Console.Error to display output to "
+"standard output or standard error, respectively. If it's set to Console.Out or "
+"Console.Error you can append an optional prefix that will be used when writing "
+"messages like this: Console.Error:MyProgramName."
 msgstr ""
-"Wenn gesetzt wird der System.Diagnostics.DefaultTraceListener aktiviert. "
-"Alle Ausgaben von den System.Diagnostics Trace und Debug Klassen wird "
-"ausgegeben. Es kann ein Dateiname angegeben werden, Console.Out oder Console."
-"Error, um die Ausgabe zur Standardausgabe oder -fehlerausgabe umzuleiten. "
-"Wenn Console.Out oder Console.Error gesetzt ist kann ein optionaler Prefix "
-"für die Nachrichten angegeben werden. z.B. 'Console.Error:MeinProgramm'."
+"Wenn gesetzt wird der System.Diagnostics.DefaultTraceListener aktiviert. Alle "
+"Ausgaben von den System.Diagnostics Trace und Debug Klassen wird ausgegeben. "
+"Es kann ein Dateiname angegeben werden, Console.Out oder Console.Error, um "
+"die Ausgabe zur Standardausgabe oder -fehlerausgabe umzuleiten. Wenn "
+"Console.Out oder Console.Error gesetzt ist kann ein optionaler Prefix für die "
+"Nachrichten angegeben werden. z.B. 'Console.Error:MeinProgramm'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:402
 msgid ""
@@ -5772,12 +5774,12 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:410
 msgid ""
 "When the the MONO_XDEBUG env var is set, debugging info for JITted code is "
-"emitted into a shared library, loadable into gdb. This enables, for example, "
-"to see managed frame names on gdb backtraces."
+"emitted into a shared library, loadable into gdb. This enables, for example, to "
+"see managed frame names on gdb backtraces."
 msgstr ""
-"Wenn die MONO_XDEBUG-Umgebungsvariable gesetzt ist wird die Debuginfo für "
-"JIT code in eine Bibliothek ausgeben die gdb laden kann. Das erlaubt z.B. "
-"das Managed Namen in gdb Backtraces gesehen werden können."
+"Wenn die MONO_XDEBUG-Umgebungsvariable gesetzt ist wird die Debuginfo für JIT "
+"code in eine Bibliothek ausgeben die gdb laden kann. Das erlaubt z.B. das "
+"Managed Namen in gdb Backtraces gesehen werden können."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:447
 msgid "Disabled"
@@ -6284,8 +6286,8 @@ msgid ""
 "reference is required to build the project you may get compilation errors."
 msgstr ""
 "Assembly '{0}' nicht gefunden. Stellen Sie sicher, dass die Assembly "
-"existiert. Falls die Referenz im Projekt gebraucht wird, sind Compiler-"
-"Fehlermeldungen möglich."
+"existiert. Falls die Referenz im Projekt gebraucht wird, sind "
+"Compiler-Fehlermeldungen möglich."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:163
 msgid ""
@@ -6514,7 +6516,7 @@ msgstr "Projekt mit guid '{0}' nicht gefunden."
 msgid "Item with guid '{0}' is not a folder."
 msgstr "Element mit guid '{0}' ist kein Ordner."
 
-#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:847
+#: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:850
 msgid "Generating database"
 msgstr "Generiere Datenbank"
 
@@ -6539,7 +6541,6 @@ msgid "Application definition"
 msgstr "Applikations-Definition"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:89
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1442
 msgid "Page"
 msgstr "Seite"
 
@@ -6578,11 +6579,11 @@ msgstr "Starte {0}..."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:958
 msgid ""
-"Can not execute \"{0}\". The selected execution mode is not supported for ."
-"NET projects."
+"Can not execute \"{0}\". The selected execution mode is not supported for "
+".NET projects."
 msgstr ""
-"Konnte \"{0}\" nicht ausführen. Der ausgewählte Ausführungsmodus ist für ."
-"NET-Projekte nicht vorgesehen."
+"Konnte \"{0}\" nicht ausführen. Der ausgewählte Ausführungsmodus ist für "
+".NET-Projekte nicht vorgesehen."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/DotNetProject.cs:972
 msgid "Cannot execute \"{0}\""
@@ -6660,7 +6661,7 @@ msgstr "Ungültiger Ausgabeordner: {0}"
 msgid "Solution Options"
 msgstr "Projekt-Einstellungen"
 
-#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:499
+#: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:503
 msgid "Gathering class information..."
 msgstr "Sammle Klasseninformationen..."
 
@@ -6962,8 +6963,8 @@ msgid ""
 msgstr ""
 "Alle Ressourcen-Bezeichner entsprechend neuer Richtlinie aktualisieren. Dazu "
 "werden Änderungen im Quellcode (der die alten Richtlinien benutzt) der die "
-"Ressourcen referenziert benötigt. Bezeichner die Explizit im Datei-"
-"Eigenschaftsfenster gesetzt wurden werden nicht geändert.\n"
+"Ressourcen referenziert benötigt. Bezeichner die Explizit im "
+"Datei-Eigenschaftsfenster gesetzt wurden werden nicht geändert.\n"
 "\n"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:149
@@ -7044,8 +7045,8 @@ msgstr "(Übergeordnete Richtlinie)"
 msgid ""
 "Are you sure you want to remove the formatting policy for the type '{0}'?"
 msgstr ""
-"Sind Sie sicher, dass die Formatierungs-Richtlinie für den Typ '{0}' "
-"entfernt werden soll? "
+"Sind Sie sicher, dass die Formatierungs-Richtlinie für den Typ '{0}' entfernt "
+"werden soll? "
 
 #: ../src/core/MonoDevelop.Projects.Gui/gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs:38
 msgid "This is a summary of all file types used in the project or solution:"
@@ -7359,49 +7360,49 @@ msgstr "Versionskontroll-Kommando fehlgeschlagen."
 msgid "View Changes"
 msgstr "Zeige Änderungen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:102
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:106
 msgid "View File"
 msgstr "Zeige Datei"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:108
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:113
 msgid "Revert changes from this revision"
 msgstr "Änderungen dieser Revision zurücknehmen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:114
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:119
 msgid "Revert to this revision"
 msgstr "Zu dieser Revision zurückkehren"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:153
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:158
 msgid "Revision"
 msgstr "Revision"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:154
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:159
 msgid "Date"
 msgstr "Datum"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:155
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:160
 msgid "Author"
 msgstr "Autor"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:156
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:161
 msgid "Message"
 msgstr "Meldung"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:171
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:176
 msgid "(No message)"
 msgstr "(Keine Meldung)"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:182
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:187
 msgid "Operation"
 msgstr "Operation"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:192
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:197
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:57
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:54
 msgid "File Path"
 msgstr "Datei-Pfad"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:237
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:242
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:160
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs:38
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:404
@@ -7410,33 +7411,37 @@ msgstr "Datei-Pfad"
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:241
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:246
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:162
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:54
 msgid "Delete"
 msgstr "Löschen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:245
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:250
 msgid "Modify"
 msgstr "Ändern"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:249
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:352
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:254
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:354
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:70
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:398
 msgid "Replace"
 msgstr "Ersetzen"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:322
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:334
 msgid "Retrieving changes in {0} at revision {1}..."
 msgstr "Rufe Änderungen in {0} zur Revision {1} ab..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:326
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:334
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:338
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:346
 msgid "Getting text of {0} at revision {1}..."
 msgstr "Erhalte Text von {0} zur Revision {1}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:378
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:375
+msgid "Retrieving changes in {0} ..."
+msgstr "Rufe Änderungen in {0} ab ..."
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:426
 msgid "Retreiving content of {0} at revision {1}..."
 msgstr "Rufe den Inhalt von {0} in Revision {1} ab..."
 
@@ -7643,8 +7648,8 @@ msgid ""
 "There isn't any supported version control system installed. You may need to "
 "install additional add-ins or packages."
 msgstr ""
-"Es ist kein unterstütztes Versionskontrollsystem installiert. Es könnte "
-"sein, dass Sie zusätzliche Erweiterungen oder Pakete installieren müssen."
+"Es ist kein unterstütztes Versionskontrollsystem installiert. Es könnte sein, "
+"dass Sie zusätzliche Erweiterungen oder Pakete installieren müssen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:76
 msgid "Select Repository"
@@ -7718,7 +7723,7 @@ msgstr "Die folgende Dateien werden übertragen:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:144
 msgid "Commit"
-msgstr "Übertrage"
+msgstr "Übertragen"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:61
 msgid ""
@@ -7805,7 +7810,7 @@ msgstr "Die Datei '{0}' muss vor dem Editieren gesperrt werden."
 msgid "The file '{0}' could not be unlocked"
 msgstr "Die Datei '{0}' konnte nicht entsperrt werden."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:470
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:476
 msgid "working copy"
 msgstr "Arbeitskopie"
 
@@ -7959,7 +7964,6 @@ msgid "Please provide a path to the required certificate:"
 msgstr "Bitte geben Sie einen Pfad zum benötigten Zertifikat an:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog.cs:82
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1427
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SourcesZipEditorWidget.cs:106
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:140
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:149
@@ -8044,8 +8048,8 @@ msgstr "Subversion"
 msgid ""
 "<b>User credentials are required to access the Subversion repository.</b>"
 msgstr ""
-"<b>Benutzer-Beglaubigungen werden benötigt um auf dieses Subversion-"
-"Repository zuzugreifen.</b>"
+"<b>Benutzer-Beglaubigungen werden benötigt um auf dieses "
+"Subversion-Repository zuzugreifen.</b>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.addin.xml:30
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:186
@@ -8148,8 +8152,8 @@ msgid ""
 "The class that was bound to the design currently edited could not be found. "
 "Please select the class you want to bind to the design:"
 msgstr ""
-"Die Klasse, die mit dem aktuell editierten Design verknüpft war, konnte "
-"nicht gefunden werden. Bitte wählen Sie die Klasse, die Sie mit dem Design "
+"Die Klasse, die mit dem aktuell editierten Design verknüpft war, konnte nicht "
+"gefunden werden. Bitte wählen Sie die Klasse, die Sie mit dem Design "
 "verknüpfen wollen:"
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:143
@@ -8212,11 +8216,11 @@ msgstr "GUI-Ersteller"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:217
 msgid ""
 "ERROR: MonoDevelop could not find the Gtk# 2.0 development package. "
-"Compilation of projects depending on Gtk# libraries will fail. You may need "
-"to install development packages for gtk-sharp-2.0."
+"Compilation of projects depending on Gtk# libraries will fail. You may need to install "
+"development packages for gtk-sharp-2.0."
 msgstr ""
-"FEHLER: MonoDevelop konnte das Gtk#-2.0-Entwicklungspaket nicht nicht "
-"finden. Kompilation von Projekten die von Gtk#-Bibliotheken abhängen wird "
+"FEHLER: MonoDevelop konnte das Gtk#-2.0-Entwicklungspaket nicht nicht finden. "
+"Kompilation von Projekten die von Gtk#-Bibliotheken abhängen wird "
 "fehlschlagen. Es könnte sein, dass Sie Entwicklungspakete für gtk-sharp-2.0 "
 "installieren müssen."
 
@@ -8239,15 +8243,14 @@ msgstr "_Als Quelle benutzen"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:507
 msgid ""
-"You are requesting the file '{0}' to be used as source for an image. "
-"However, this file is already added to the project as a resource. Are you "
-"sure you want to continue (the file will have to be removed from the "
-"resource list)?"
+"You are requesting the file '{0}' to be used as source for an image. However, "
+"this file is already added to the project as a resource. Are you sure you "
+"want to continue (the file will have to be removed from the resource list)?"
 msgstr ""
 "Sie verlangen die Datei '{0}' als Quelle für ein Bild zu verwenden. "
-"Allerdings ist diese Datei dem Projekt bereits als Ressource hinzugefügt. "
-"Sind Sie sicher, dass Sie fortfahren wollen (die Datei wird aus der "
-"Ressourcen-Liste entfernt werden müssen)?"
+"Allerdings ist diese Datei dem Projekt bereits als Ressource hinzugefügt. Sind Sie "
+"sicher, dass Sie fortfahren wollen (die Datei wird aus der Ressourcen-Liste "
+"entfernt werden müssen)?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:72
 msgid "Designer"
@@ -8303,8 +8306,8 @@ msgstr "Sind Sie sicher, dass Sie '{0}' löschen wollen?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:304
 msgid ""
-"The class bound to the component '{0}' could not be found. This may be due "
-"to syntax errors in the source code file."
+"The class bound to the component '{0}' could not be found. This may be due to "
+"syntax errors in the source code file."
 msgstr ""
 "Die Klasse, die an die Komponente '{0}' gebunden ist, konnte nicht gefunden "
 "werden. Dies könnte an Syntax-Fehlern in der Quelltext-Datei liegen."
@@ -8343,7 +8346,7 @@ msgid "The minimum GTK# version required to use this component."
 msgstr "Die minimale Gtk#-Version, die für die Komponente benötigt wird."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs:104
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:216
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:220
 msgid "GTK# Widgets"
 msgstr "Gtk#-Widgets"
 
@@ -8381,16 +8384,16 @@ msgid ""
 "Enables support for GTK# in the project. Allows the visual design of GTK# "
 "windows, and the creation of a GTK# widget library."
 msgstr ""
-"Aktiviert Unterstützung für Gtk# im Projekt. Ermöglicht den visuellen "
-"Entwurf von Gtk#-Fenstern, und die Erstellung einer Gtk#-Widget-Bibliothek."
+"Aktiviert Unterstützung für Gtk# im Projekt. Ermöglicht den visuellen Entwurf "
+"von Gtk#-Fenstern, und die Erstellung einer Gtk#-Widget-Bibliothek."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore/ReferenceManager.cs:217
 msgid ""
 "The Gtk# User Interface designer will be disabled by removing the gtk-sharp "
 "reference."
 msgstr ""
-"Der Gtk#-Benutzerinterface-Designer wird deaktiviert, wenn die gtk-sharp-"
-"Referenz gelöscht wird."
+"Der Gtk#-Benutzerinterface-Designer wird deaktiviert, wenn die "
+"gtk-sharp-Referenz gelöscht wird."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore/ReferenceManager.cs:217
 msgid "Disable Designer"
@@ -8424,11 +8427,11 @@ msgstr "Klicken um Aktion zu erstellen"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionGroupEditor.cs:390
 msgid ""
-"Are you sure you want to delete the action '{0}'? It will be removed from "
-"all menus and toolbars."
+"Are you sure you want to delete the action '{0}'? It will be removed from all "
+"menus and toolbars."
 msgstr ""
-"Sind Sie sicher, dass Sie die Aktion '{0}' löschen wollen? Sie wird aus "
-"allen Menüs und Werkzeugleisten entfernt."
+"Sind Sie sicher, dass Sie die Aktion '{0}' löschen wollen? Sie wird aus allen "
+"Menüs und Werkzeugleisten entfernt."
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionMenu.cs:533
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionMenuBar.cs:495
@@ -8647,8 +8650,8 @@ msgid ""
 "The selected icon may not show at run time if the required icon factory is "
 "not properly initialized."
 msgstr ""
-"Das gewählte Symbol wird zur Laufzeit möglicherweise nicht angezeigt wenn "
-"die benötigte Symbol-Fabrik nicht richtig initialisiert ist."
+"Das gewählte Symbol wird zur Laufzeit möglicherweise nicht angezeigt wenn die "
+"benötigte Symbol-Fabrik nicht richtig initialisiert ist."
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:1270
 msgid "Project Icons"
@@ -8689,16 +8692,16 @@ msgstr "Widget-Designer"
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:1993
 msgid ""
 "You are trying to add a non-container widget into the main window. In "
-"<b>GTK#</b>, widget positioning is controlled by a special type of widgets "
-"called <b>Container</b> widgets. If you don't place the widget into a "
-"container, it will fill the all the available space in the window. Are you "
-"sure you want to continue?"
+"<b>GTK#</b>, widget positioning is controlled by a special type of widgets called "
+"<b>Container</b> widgets. If you don't place the widget into a container, it "
+"will fill the all the available space in the window. Are you sure you want to "
+"continue?"
 msgstr ""
 "Sie versuchen ein Nicht-Container-Widget in das Hauptfenster einzufügen. In "
-"<b>GTK#</b> kontrollieren spezielle Widgets, genannt <b>Container</b>-"
-"Widgets, die Platzierung von Widgets. Wenn Sie das Widget nicht in einen "
-"Container platzieren wird es den gesamten verfügbaren Platz des Fensters "
-"ausfüllen. Sind Sie sicher, dass Sie fortfahren möchten?"
+"<b>GTK#</b> kontrollieren spezielle Widgets, genannt <b>Container</b>-Widgets, "
+"die Platzierung von Widgets. Wenn Sie das Widget nicht in einen Container "
+"platzieren wird es den gesamten verfügbaren Platz des Fensters ausfüllen. Sind "
+"Sie sicher, dass Sie fortfahren möchten?"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:2024
 msgid "To know more about this topic see the article:"
@@ -8957,8 +8960,8 @@ msgstr ""
 
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:270
 msgid ""
-"The project file {0} is a Visual Studio 2003 project. It must be converted "
-"to either a MonoDevelop or a Visual Studio 2005 project."
+"The project file {0} is a Visual Studio 2003 project. It must be converted to "
+"either a MonoDevelop or a Visual Studio 2005 project."
 msgstr ""
 "Die Projektdatei {0} ist ein VS2003-Projekt. Es muss entweder in ein "
 "MonoDevelop- oder ein VS2005-Projekt konvertiert werden."
@@ -9243,13 +9246,13 @@ msgstr "Die ChangeLog-Datei existiert nicht und wird <b>nicht</b> erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:225
 msgid ""
-"To change the ChangeLog creation and update policies, open the options "
-"dialog of the project or solution and click on the 'ChangeLog Integration\" "
+"To change the ChangeLog creation and update policies, open the options dialog "
+"of the project or solution and click on the 'ChangeLog Integration\" "
 "section."
 msgstr ""
 "Um die ChangeLog-Erzeugungs und -Aktualisierungs-Richtlinien zu ändern, "
-"öffnen Sie den Dialog für das Projekt oder die Projektmappe und klicken Sie "
-"auf die Sektion 'ChangeLog-Integration'."
+"öffnen Sie den Dialog für das Projekt oder die Projektmappe und klicken Sie auf "
+"die Sektion 'ChangeLog-Integration'."
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:57
 msgid "ChangeLog _Policy"
@@ -9276,8 +9279,8 @@ msgid ""
 msgstr ""
 "<b>Aktualisiere nächstes ChangeLog</b>\n"
 "Die nächste ChangeLog-Datei in der Ordnerebene wird erneuert (unter dem "
-"Übertragungsordner). Wenn keine gefunden wird, wird einen Warnmeldung "
-"angezeigt. ChangeLog-Dateien werden niemals automatisch erstellt."
+"Übertragungsordner). Wenn keine gefunden wird, wird einen Warnmeldung angezeigt. "
+"ChangeLog-Dateien werden niemals automatisch erstellt."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:102
 msgid "One ChangeLog in the project root directory"
@@ -9292,8 +9295,8 @@ msgid ""
 msgstr ""
 "<b>Einzelnes Projekt-ChangeLog</b>\n"
 "Alle Änderungen in diesem Projekt werden in einer einzelnen Datei "
-"protokolliert, die im Wurzelordner des Projekts liegt. Die Datei wird "
-"erstellt wenn sie noch nicht existiert."
+"protokolliert, die im Wurzelordner des Projekts liegt. Die Datei wird erstellt wenn sie "
+"noch nicht existiert."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:123
 msgid "One ChangeLog in each directory"
@@ -9352,11 +9355,27 @@ msgstr "Der Text der in das Dokument eingefügt wird."
 msgid "Text Snippets"
 msgstr "Text-Baustein"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:202
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:74
+msgid "Show search box"
+msgstr "Suchbox anzeigen"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:80
+msgid "Show categories"
+msgstr "Kategorien anzeigen"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:86
+msgid "Use compact display"
+msgstr "Kompakte Anzeige verwenden"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:94
+msgid "Add toolbox items"
+msgstr "Toolbox-Elemente hinzufügen"
+
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:206
 msgid "Are you sure you want to remove the selected Item?"
 msgstr "Sind Sie sicher, dass Sie das ausgewählte Elemente löschen wollen?"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:240
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:244
 msgid "Initializing..."
 msgstr "Initialisiere..."
 
@@ -9371,16 +9390,16 @@ msgstr "Schaue nach Komponenten..."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:109
 msgid ""
-"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
-"that name with an incompatible return type."
+"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
+"name with an incompatible return type."
 msgstr ""
 "Kann {0} '{1}' nicht zur Klasse '{2}' hinzufügen, da unter diesem Namen "
 "bereits ein {3} mit inkompatiblem Rückgabewert existiert."
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:112
 msgid ""
-"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
-"that name."
+"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
+"name."
 msgstr ""
 "Kann {0} '{1}' nicht zur Klasse '{2}' hinzufügen, da unter diesem Namen "
 "bereits ein {3} existiert."
@@ -9681,8 +9700,8 @@ msgstr "Erstelle {0} für Projektmappe {1}"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:101
 msgid ""
-"MonoDevelop does not currently support generating {0} for one (or more) "
-"child projects."
+"MonoDevelop does not currently support generating {0} for one (or more) child "
+"projects."
 msgstr ""
 "MonoDevelop unterstützt {0} momentan nicht das Erstellen für ein (oder mehr) "
 "Kindprojekte."
@@ -9788,8 +9807,10 @@ msgid "Loading solution file {0}"
 msgstr "Lade Projektmappen-Datei {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
-msgid "Error: Makefile generation supported only for solutions.\n"
-msgstr "Fehler: Makefile-Generierung nur für Projektmappen unterstützt.\n"
+msgid ""
+"Error: Makefile generation supported only for solutions.\n"
+msgstr ""
+"Fehler: Makefile-Generierung nur für Projektmappen unterstützt.\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -9814,22 +9835,22 @@ msgstr ""
 msgid ""
 " --simple-makefiles -s\n"
 "\tGenerates set of Makefiles with the most common targets, and a "
-"configuration script that does a basic check of package dependencies. "
-"Default is to generate Makefile structure based on Autotools with the "
-"standard targets and configuration scripts."
+"configuration script that does a basic check of package dependencies. Default is to "
+"generate Makefile structure based on Autotools with the standard targets and "
+"configuration scripts."
 msgstr ""
 " --simple-makefiles -s\n"
 "\tGeneriere eine Menge von Makefiles mit den häufigsten Zielen, und ein "
-"Konfigurationsskript das eine grundlegende Überprüfung von Paket-"
-"Abhängigkeiten vornimmt. Standard ist eine auf Autotools basierende Makefile-"
-"Struktur mit den Standard-Zielen und -Konfigurationsskripten zu erzeugen."
+"Konfigurationsskript das eine grundlegende Überprüfung von Paket-Abhängigkeiten "
+"vornimmt. Standard ist eine auf Autotools basierende Makefile-Struktur mit den "
+"Standard-Zielen und -Konfigurationsskripten zu erzeugen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:133
 msgid ""
 " -d:default-config\n"
 "\tConfiguration that the Makefile will build by default. Other "
-"configurations can be selected via the '--config' or '--enable-*' option of "
-"the generated configure script."
+"configurations can be selected via the '--config' or '--enable-*' option of the generated "
+"configure script."
 msgstr ""
 " -d: default-config\n"
 "\tKonfiguration die das Makefile standardmäßig erstellen wird. Andere "
@@ -9906,16 +9927,16 @@ msgid ""
 "Unable to find the specified Makefile. You need to specify the path to an "
 "existing Makefile for use with the 'Makefile Integration' feature."
 msgstr ""
-"Kann das angegebene Makfile nicht finden. Sie müssen für den Gebrauch mit "
-"dem 'Makefile-Integration'-Feature den Pfad zu einem existierenden Makefile "
+"Kann das angegebene Makfile nicht finden. Sie müssen für den Gebrauch mit dem "
+"'Makefile-Integration'-Feature den Pfad zu einem existierenden Makefile "
 "angeben."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:55
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:57
 msgid "Error resolving Makefile based project references for solution {0}"
 msgstr ""
-"Fehler beim Auflösen der Makefile-basierten Projekt-Verweise für "
-"Projektmappe {0}"
+"Fehler beim Auflösen der Makefile-basierten Projekt-Verweise für Projektmappe "
+"{0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:81
 msgid "Updating project from Makefile"
@@ -9969,13 +9990,12 @@ msgstr "Ungültiges Makefile '{0}'. Deaktiviere Makefile-Integration."
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:669
 msgid ""
 "Enabling Makefile integration. You can choose to have either the Project or "
-"the Makefile be used as the master copy. This is done only when enabling "
-"this feature. After this, the Makefile will be taken as the master copy."
+"the Makefile be used as the master copy. This is done only when enabling this "
+"feature. After this, the Makefile will be taken as the master copy."
 msgstr ""
-"Aktiviere Makefile-Integration. Sie können wählen ob Sie entweder das "
-"Projekt oder das Makefile als Hauptkopie benutzen möchten. Dies wird nur "
-"beim Aktivieren des Features gemacht. Danach wird das Makefile als "
-"Hauptkopie genommen."
+"Aktiviere Makefile-Integration. Sie können wählen ob Sie entweder das Projekt "
+"oder das Makefile als Hauptkopie benutzen möchten. Dies wird nur beim "
+"Aktivieren des Features gemacht. Danach wird das Makefile als Hauptkopie genommen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:711
 msgid ""
@@ -10000,13 +10020,13 @@ msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of '{1}' file list for "
 "project '{2}'."
 msgstr ""
-"Makefile-Variable '{0}' nicht gefunden. Überspringe Synchronisation von "
-"'{1}' Dateiliste für Projekt {2}."
+"Makefile-Variable '{0}' nicht gefunden. Überspringe Synchronisation von '{1}' "
+"Dateiliste für Projekt {2}."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:868
 msgid ""
-"Files in variable '{0}' contains variables which cannot be parsed without "
-"the path to configure.in being set. Ignoring such files."
+"Files in variable '{0}' contains variables which cannot be parsed without the "
+"path to configure.in being set. Ignoring such files."
 msgstr ""
 "Dateien in Variable '{0}' enthalten Variablen die nicht ohne gesetzten Pfad "
 "zu configure.in geparst werden können. Ignoriere solche Dateien."
@@ -10020,8 +10040,8 @@ msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of all '{1}' references "
 "for project {2}."
 msgstr ""
-"Makefile-Variable '{0}' nicht gefunden. Überspringe Synchronisation von "
-"allen '{1}' Verweisen für Projekt {2}."
+"Makefile-Variable '{0}' nicht gefunden. Überspringe Synchronisation von allen "
+"'{1}' Verweisen für Projekt {2}."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:951
 msgid "Unable to parse reference '{0}' for project '{1}'. Ignoring."
@@ -10039,21 +10059,21 @@ msgstr ""
 msgid ""
 "Makefile variable '{0}' not found. Skipping syncing of '{1}' references."
 msgstr ""
-"Makefile-Variable '{0}' nicht gefunden. Überspringe Synchronisation von "
-"'{1}' Verweisen."
+"Makefile-Variable '{0}' nicht gefunden. Überspringe Synchronisation von '{1}' "
+"Verweisen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1533
 msgid ""
-"A reference to the pkg-config package '{0}' is being emitted to the "
-"Makefile, because at least one assembly from the package is used in the "
-"project '{1}'. However, this dependency is not specified in the configure.in "
-"file, so you might need to add it to ensure that the project builds "
-"successfully on other systems."
+"A reference to the pkg-config package '{0}' is being emitted to the Makefile, "
+"because at least one assembly from the package is used in the project '{1}'. "
+"However, this dependency is not specified in the configure.in file, so you "
+"might need to add it to ensure that the project builds successfully on other "
+"systems."
 msgstr ""
 "Ein Verweis zum pkg-config-Paket '{0}' wird ins Makefile ausgegeben, da "
 "mindestens ein Assembly aus dem Paket im Projekt '{1}' benutzt wird. Diese "
-"Abhängigkeit ist jedoch nicht in der configure.in angegeben, dementsprechend "
-"könnte es nötig sein, sie hinzuzufügen, um auf anderen System erfolgreich "
+"Abhängigkeit ist jedoch nicht in der configure.in angegeben, dementsprechend könnte "
+"es nötig sein, sie hinzuzufügen, um auf anderen System erfolgreich "
 "herzustellen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1666
@@ -10145,9 +10165,8 @@ msgid ""
 "optionally a prefix to be prepended to each file name."
 msgstr ""
 "Wählen Sie die Dateitypen, die Sie mit dem Makefile synchronisieren wollen. "
-"Bitte geben Sie für jeden Dateityp die Makefile-Variable an, die die Liste "
-"und optional einen Präfix, der vor jeden Dateinamen vorangestellt wird, "
-"enthält."
+"Bitte geben Sie für jeden Dateityp die Makefile-Variable an, die die Liste und "
+"optional einen Präfix, der vor jeden Dateinamen vorangestellt wird, enthält."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:627
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:828
@@ -10170,15 +10189,15 @@ msgstr "Suche in configure.in nach Paketen"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:805
 msgid ""
 "Select the kind of references you want to synchronize with the makefile. For "
-"each reference type please specify the makefile variable that holds the "
-"list, and optionally a prefix to be prepended to each reference name. You "
-"can specify the same variable name for several types of references."
+"each reference type please specify the makefile variable that holds the list, "
+"and optionally a prefix to be prepended to each reference name. You can "
+"specify the same variable name for several types of references."
 msgstr ""
 "Wählen Sie die Art von Verweisen, die Sie mit dem Makefile synchronisieren "
-"wollen. Bitte geben Sie für jeden Verweistyp die Makefile-Variable an, die "
-"die Liste und optional einen Präfix, der vor jeden Dateinamen vorangestellt "
-"wird, enthält. Sie können den selben Variablen-Namen für mehrere "
-"Verweistypen angeben."
+"wollen. Bitte geben Sie für jeden Verweistyp die Makefile-Variable an, die die "
+"Liste und optional einen Präfix, der vor jeden Dateinamen vorangestellt wird, "
+"enthält. Sie können den selben Variablen-Namen für mehrere Verweistypen "
+"angeben."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:817
 msgid "Assembly References"
@@ -10199,16 +10218,16 @@ msgstr "Projekt-Verweise"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:906
 msgid ""
 "Select the Compiler message format for parsing the compiler errors and "
-"warnings. You can either select one of the built-in options, or specify "
-"custom regular expressions for errors and warnings. The regex must be the ."
-"net style regex. The following named groups are relevant : file, line, "
-"column, number (error number) and message."
+"warnings. You can either select one of the built-in options, or specify custom "
+"regular expressions for errors and warnings. The regex must be the .net style "
+"regex. The following named groups are relevant : file, line, column, number "
+"(error number) and message."
 msgstr ""
-"Wählen Sie das Meldungs-Format zum Parsen der Compiler-Fehler und -"
-"Warnungen. Sie können entweder eine der eingebauten Optionen wählen, oder "
-"einen eigenen regulären Ausdruck für Fehler und Warnungen angeben. Der "
-"reguläre Ausdruck muss ein .NET-RegEx sein. Die folgenden Gruppen sind "
-"relevant : Datei, Zeile, Spalte, Nummer (Fehler-Nummer) und Nachricht."
+"Wählen Sie das Meldungs-Format zum Parsen der Compiler-Fehler und -Warnungen. "
+"Sie können entweder eine der eingebauten Optionen wählen, oder einen eigenen "
+"regulären Ausdruck für Fehler und Warnungen angeben. Der reguläre Ausdruck "
+"muss ein .NET-RegEx sein. Die folgenden Gruppen sind relevant : Datei, Zeile, "
+"Spalte, Nummer (Fehler-Nummer) und Nachricht."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:972
 msgid "Error regex :"
@@ -10277,8 +10296,8 @@ msgid ""
 msgstr ""
 "<b>Einfaches Makefile</b>\n"
 "Generiert eine Menge von Makefiles mit den häufigsten Zielen, und ein "
-"Konfigurationsskript das eine grundlegende Überprüfung von Paket-"
-"Abhängigkeiten vornimmt."
+"Konfigurationsskript das eine grundlegende Überprüfung von Paket-Abhängigkeiten "
+"vornimmt."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.TarballBuilderEditorWidget.cs:270
 msgid "Edit configure switches"
@@ -10316,13 +10335,13 @@ msgstr "<b>Schalterliste</b>"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs:68
 msgid ""
-"Use the following list to define new switches usable with autotools "
-"configure script. Each switch is mapped to a define that you can use to do "
-"conditional compilation in your source files."
+"Use the following list to define new switches usable with autotools configure "
+"script. Each switch is mapped to a define that you can use to do conditional "
+"compilation in your source files."
 msgstr ""
-"Folgende Liste dient dazu neue Optionen für das Autotools-Konfigurations-"
-"Skript zu setzen. Jede Option ist entspricht einem define das als "
-"Conditional in den Quelldateien verwendet werden kann."
+"Folgende Liste dient dazu neue Optionen für das "
+"Autotools-Konfigurations-Skript zu setzen. Jede Option ist entspricht einem define das als Conditional in "
+"den Quelldateien verwendet werden kann."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs:17
 msgid "Switch editor"
@@ -11519,11 +11538,11 @@ msgstr "Gettext-Übersetzung"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:45
 msgid ""
-"Add a Translation Project to the solution that will use gettext to generate "
-"a set of PO files for the new project."
+"Add a Translation Project to the solution that will use gettext to generate a "
+"set of PO files for the new project."
 msgstr ""
-"Füge ein Überstzungsprojekt zur Projektmappe hinzu, das gettext benutzen "
-"wird um eine Anzahl an PO-Dateien für das neue Projekt zu generieren."
+"Füge ein Überstzungsprojekt zur Projektmappe hinzu, das gettext benutzen wird "
+"um eine Anzahl an PO-Dateien für das neue Projekt zu generieren."
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.GettextFeatureWidget.cs:39
 msgid ""
@@ -11587,8 +11606,8 @@ msgid "Creates a translation project."
 msgstr "Ein Übersetzungs-Projekt erstellen."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:71
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:363
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:180
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:371
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:182
 msgid "_Start Regular Expression"
 msgstr "RegEx _starten"
 
@@ -11596,71 +11615,75 @@ msgstr "RegEx _starten"
 msgid "_Stop execution"
 msgstr "Au_sführung anhalten:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:337
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:338
 msgid "Match '{0}'"
 msgstr "Übereinstimmung '{0}'"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:343
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:344
 msgid "Group '{0}':'{1}'"
 msgstr "Gruppe '{0}':'{1}'"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:345
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:346
 msgid "Capture '{0}'"
 msgstr "Erfasse '{0}'"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:348
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:349
 msgid "Group '{0}' not found"
 msgstr "Gruppe '{0}' nicht gefunden"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:421
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:366
+msgid "Invalid expression"
+msgstr "Ungültiger Ausdruck"
+
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:427
 msgid "Ignore Whitespace"
 msgstr "Ignoriere Leerzeichen"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:422
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:428
 msgid "Ignore case"
 msgstr "Ignoriere Groß-/Kleinschreibung "
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:423
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:429
 msgid "Single line"
 msgstr "Einzeillig"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:424
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:430
 msgid "Multi line"
 msgstr "Mehrzeilig"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:425
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:431
 msgid "Explicit Capture"
 msgstr "Explizite Erfassung"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:426
+#: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:432
 msgid "Right to left"
 msgstr "Rechts nach Links"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:81
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:83
 msgid "Regular Expression Toolkit"
 msgstr "Werkzeuge für reguläre Ausdrücke"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:113
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:115
 msgid "_Regular Expression"
 msgstr "_Regulärer Ausdruck"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:220
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:222
 msgid "_Options:"
 msgstr "_Einstellungen:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:240
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:242
 msgid "_Elements:"
 msgstr "_Elemente:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:274
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:276
 msgid "_Input:"
 msgstr "_Eingabe:"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:331
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:333
 msgid "Matches"
 msgstr "Übereinstimmungen"
 
-#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:386
+#: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:399
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:73
 msgid "Regex Library"
 msgstr "Regex-Bibliothek"
@@ -11727,8 +11750,8 @@ msgstr "\\b"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:4
 msgid "Matches a backspace \\u0008 if in a [] character class."
 msgstr ""
-"Entspricht einem Rücktastenzeichen \\u0008 überein, wenn in einer [] Zeichen-"
-"Klasse."
+"Entspricht einem Rücktastenzeichen \\u0008 überein, wenn in einer [] "
+"Zeichen-Klasse."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
 msgid "\\t"
@@ -11763,8 +11786,10 @@ msgid "Matches a form feed \\u000C."
 msgstr "Entspricht einem Seitenvorschubzeichen \\u000C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
-msgid "\\n"
-msgstr "\\n"
+msgid ""
+"\\n"
+msgstr ""
+"\\n"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
 msgid "Matches a new line \\u000A."
@@ -12118,8 +12143,7 @@ msgid ""
 msgstr ""
 "Schreibt vor, dass die Übereinstimmung an dem Punkt wo die vorherige\n"
 "Übereinstimmung geendet hat auftreten muss. Wenn mit Match.NextMatch() "
-"benutzt \\nsichert dies, dass die Übereinstimmungen alle zusammenhängend "
-"sind."
+"benutzt \\nsichert dies, dass die Übereinstimmungen alle zusammenhängend sind."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:82
 msgid ""
@@ -12144,8 +12168,8 @@ msgstr "\\B"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:89
 msgid "Specifies that the match must not occur on a \\b boundary."
 msgstr ""
-"Schreibt vor, dass eine Übereinstimmung nicht auf einer \\b Grenze "
-"auftauchen darf."
+"Schreibt vor, dass eine Übereinstimmung nicht auf einer \\b Grenze auftauchen "
+"darf."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:92
 msgid "Quantifiers"
@@ -12230,8 +12254,7 @@ msgid ""
 "Specifies the first match that consumes as few repeats \n"
 "as possible (equivalent to lazy *)."
 msgstr ""
-"Schreibt die erste Übereinstimmung vor, die so wenige Wiederholungen "
-"benötigt\n"
+"Schreibt die erste Übereinstimmung vor, die so wenige Wiederholungen benötigt\n"
 "wie möglich (gleichbedeutend mit verzögertem *)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:112
@@ -12441,16 +12464,16 @@ msgstr ""
 "Nicht zurückverfolgender Teilausdruck (auch bekannt als ein 'gieriger' "
 "Teilausdruck.)\n"
 "Der Teilausdruck wird einmal voll verglichen und nimmt dann allmählich "
-"\\nnicht am Rückverfolgen teil. (Das heißt, der Teilausdruck stimmt nur mit"
-"\\nZeichenketten überein, die mit dem Teilausdruck allein übereinstimmen "
-"würden.)"
+"\\nnicht am Rückverfolgen teil. (Das heißt, der Teilausdruck stimmt nur "
+"mit\\nZeichenketten überein, die mit dem Teilausdruck allein übereinstimmen würden.)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:171
 msgid "Backreference Constructs"
 msgstr "Rückverweiskonstrukte"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
-msgid "\\number"
+msgid ""
+"\\number"
 msgstr "\\Nummer"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
@@ -12474,9 +12497,8 @@ msgid ""
 msgstr ""
 "Benannte Rückwärtsreferenz. \n"
 "Zum Beispiel, (?<char>\\w)\\k<char> findet doppelte Wort-Zeichen. \\nDer "
-"Ausdruck (?<43>\\\\w)\\\\43 macht das gleiche. Sie können einfache"
-"\\nAnführungszeichen anstelle von spitzen Klammern verwenden;\\nzum Beispiel "
-"\\k'Zeichen'."
+"Ausdruck (?<43>\\\\w)\\\\43 macht das gleiche. Sie können "
+"einfache\\nAnführungszeichen anstelle von spitzen Klammern verwenden;\\nzum Beispiel \\k'Zeichen'."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:182
 msgid "Alternation Constructs"
@@ -12491,8 +12513,8 @@ msgid ""
 "Matches any one of the terms separated by the | (vertical bar) character; \n"
 "for example, cat|dog|tiger. The leftmost successful match wins."
 msgstr ""
-"Stimmt mit jedem der durch | (vertikaler Balken) getrennten Begriffe "
-"überein; \n"
+"Stimmt mit jedem der durch | (vertikaler Balken) getrennten Begriffe überein; "
+"\n"
 "zum Beispiel katze|hund|tiger. Die am weitesten links liegende "
 "Übereinstimmung wird verwendet."
 
@@ -12520,12 +12542,11 @@ msgid ""
 "capturing group used in this expression, the alternation construct \n"
 "is interpreted as an expression test."
 msgstr ""
-"Stimmt mit dem 'ja'-Teil überein wenn die genannte Erfassungs-Zeichenkette"
-"\\neine Übereinstimmung hat; \n"
+"Stimmt mit dem 'ja'-Teil überein wenn die genannte "
+"Erfassungs-Zeichenkette\\neine Übereinstimmung hat; \n"
 "sonst stimmt der 'nein'-Teil überein. Der 'nein'-Teil kann weggelassen "
 "werden.\\nWenn der angegebene Name keinem Namen oder einer Nummer einer in "
-"diesem\\nAusdruck benutzten Erfassungs-Gruppe entspricht, wird das Wechsel-"
-"Konstrukt\n"
+"diesem\\nAusdruck benutzten Erfassungs-Gruppe entspricht, wird das Wechsel-Konstrukt\n"
 "als Ausdruck-Test interpretiert."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:195
@@ -12734,7 +12755,12 @@ msgstr "Erstellen fehlgeschlagen"
 msgid "warning"
 msgstr "Warnung"
 
-#: ../src/addins/CBinding/Compiler/GNUCompiler.cs:802
+# not too sure ...
+#: ../src/addins/CBinding/Compiler/GNUCompiler.cs:678
+msgid "note"
+msgstr "Anmerkung"
+
+#: ../src/addins/CBinding/Compiler/GNUCompiler.cs:805
 msgid "Build failed - check build output for details"
 msgstr "Erstellen fehlgeschlagen - siehe Ausgabe für Details"
 
@@ -12899,16 +12925,16 @@ msgstr "CFlags:"
 msgid "(Global Scope)"
 msgstr "(Globaler Rahmen)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:428
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:431
 msgid "<b>Parser Warning</b>: {0}"
 msgstr "<b>Parser-Warnungen</b>: {0}"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:431
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:434
 msgid "<b>Parser Error</b>: {0}"
 msgstr "<b>Parse-Fehler</b>: {0}"
 
 #
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:715
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:718
 msgid "_Input Methods"
 msgstr "_Eingabemethode"
 
@@ -12934,11 +12960,11 @@ msgstr[1] "(+{0} Überladungen)"
 msgid "Source Code Editor"
 msgstr "Quelltext-Editor"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:139
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:133
 msgid "Source"
 msgstr "Quelle"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:321
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:315
 msgid ""
 "This file {0} has been changed outside of MonoDevelop. Are you sure you want "
 "to overwrite the file?"
@@ -12946,23 +12972,15 @@ msgstr ""
 "Die Datei {0} wurde außerhalb von MonoDevelop verändert. Sind Sie sicher, "
 "dass Sie die Datei überschreiben wollen?"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1366
-msgid "Print Source Code"
-msgstr "Quelltext drucken"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1385
-msgid "Print Preview - Source Code"
-msgstr "Druckvorschau - Quelltext"
-
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1400
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1392
 msgid "Print operation failed."
 msgstr "Druckoperation fehlgeschlagen."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1537
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1403
 msgid "Press F3 to scroll"
 msgstr "Zum Scrollen F3 drücken"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1557
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:1423
 msgid "Clipboard ring"
 msgstr "Zwischenablagering"
 
@@ -13276,6 +13294,10 @@ msgstr "Der Name '{0}' existiert im aktuellen Kontext nicht."
 msgid "Evaluating..."
 msgstr "Werte aus..."
 
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs:289
+msgid "Page %N of %Q"
+msgstr "Seite %N von %Q"
+
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:85
 msgid "Dynamic abbrev"
 msgstr "Dynamische abkürzung"
@@ -13568,8 +13590,8 @@ msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:67
 msgid ""
-"Use the relative path of the file in the project when deploying to the "
-"target directory."
+"Use the relative path of the file in the project when deploying to the target "
+"directory."
 msgstr ""
 "Relative Pfade der Datei im Projekt benutzen, beim Verteilen in das "
 "Zielverzeichnis."
@@ -13832,8 +13854,8 @@ msgstr "Paket-Einstellungen"
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:119
 msgid "Select the projects and solutions you want to include in the package:"
 msgstr ""
-"Wählen Sie die Projekte und Projektmappen die Sie in dieses Paket "
-"einbeziehen möchten:"
+"Wählen Sie die Projekte und Projektmappen die Sie in dieses Paket einbeziehen "
+"möchten:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:138
 msgid "Projects/Solutions"
@@ -13867,14 +13889,14 @@ msgstr "Bestehende Datei ersetzen?"
 msgid ""
 "<b><big>Deploy file already exists. Do you want to replace it?</big></b>"
 msgstr ""
-"<b><big>Verteilungsdatei existiert bereits Wollen Sie dieses ersetzen?</"
-"big></b>"
+"<b><big>Verteilungsdatei existiert bereits Wollen Sie dieses "
+"ersetzen?</big></b>"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:142
 msgid ""
-"There is already a file in the target directory that has the same name as "
-"the source file. You can keep the existing target file, or overwrite it with "
-"the source file."
+"There is already a file in the target directory that has the same name as the "
+"source file. You can keep the existing target file, or overwrite it with the "
+"source file."
 msgstr ""
 "Es existiert bereits eine Datei im Zielordner, die den selben Namen hat wie "
 "die Quelldatei. Sie können die aktuelle Datei beibehalten oder diese mit der "
@@ -13887,11 +13909,11 @@ msgstr "Geändert:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:378
 msgid ""
-"The source file will replace the existing target file if it has been "
-"modified more recently."
+"The source file will replace the existing target file if it has been modified "
+"more recently."
 msgstr ""
-"Die Quelldatei wird die existierende Zieldatei ersetzen wenn Sie vor "
-"kürzerer Zeit geändert wurde."
+"Die Quelldatei wird die existierende Zieldatei ersetzen wenn Sie vor kürzerer "
+"Zeit geändert wurde."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:396
 msgid "Apply this decision to _all files in this operation"
@@ -13932,8 +13954,8 @@ msgid ""
 "authentication daemon, such as <i>ssh-agent</i> or <i>seahorse-agent</i>."
 msgstr ""
 "Anmerkung: Der SSH-Schlüssel für diesen Host muss auf Ihrem System abgelegt "
-"sein. Wenn er passwortgeschützt ist muss das Passwort in einen laufenden SSH-"
-"Authentifizierungs-Daemon, wie <i>ssh-agent</i> oder <i>seahorse-agent</i>, "
+"sein. Wenn er passwortgeschützt ist muss das Passwort in einen laufenden "
+"SSH-Authentifizierungs-Daemon, wie <i>ssh-agent</i> oder <i>seahorse-agent</i>, "
 "geladen werden."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:5
@@ -14593,15 +14615,15 @@ msgstr "pkg-config-Datei für {0}"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:12
 msgid "Unix Integration"
-msgstr "Unix Integration"
+msgstr "Unix-Integration"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxIntegrationProjectFeature.cs:16
 msgid ""
 "Set options for generating files to better integrate the application or "
 "library in a Unix system."
 msgstr ""
-"Setze Optionen zum Generieren von Dateien zum besseren integrieren con "
-"Anwendungen oder Bibliotheken in einem Unix-System."
+"Setze Optionen zum Generieren von Dateien zur besseren Integration von "
+"Anwendungen oder Bibliotheken in Unix-Systemen."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:47
 msgid "Generate launch script"
@@ -15316,8 +15338,8 @@ msgid ""
 "Could not get a valid path to the assembly. There may be a conflict in the "
 "project configurations."
 msgstr ""
-"Konnte keinen gültigen Pfad zu der Assembly finden. Es könnte ein Konflikt "
-"in der Projektkonfiguration bestehen."
+"Konnte keinen gültigen Pfad zu der Assembly finden. Es könnte ein Konflikt in "
+"der Projektkonfiguration bestehen."
 
 #: ../src/addins/NUnit/Services/NUnitOptions.cs:79
 msgid "Exclude the following categories: "
@@ -16143,7 +16165,7 @@ msgid ""
 "Skipping updating of CodeBehind partial classes, because this feature is "
 "disabled."
 msgstr ""
-"Aktualisieren der CodeBehind partiellen Klasse wird übersprungen, da diese "
+"Aktualisieren der partiellen CodeBehind-Klasse wird übersprungen, da diese "
 "Funktion deaktiviert wurde."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:74
@@ -16152,7 +16174,7 @@ msgid ""
 "CodeBehind member generation."
 msgstr ""
 "Der Code-Generator für '{0}' unterstützt keine partiellen Klassen. "
-"CodeBehind Member-Erstellung wird ausgesetzt."
+"CodeBehind-Member-Erstellung wird übersprungen."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:86
 msgid "Generating CodeBehind members..."
@@ -16301,8 +16323,10 @@ msgid "Certificate location:"
 msgstr "Zertifikat-Ort:"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:388
-msgid "Required for ASP.NET controls.\n"
-msgstr "Benötigt für ASP.NET-Kontrollen\n"
+msgid ""
+"Required for ASP.NET controls.\n"
+msgstr ""
+"Benötigt für ASP.NET-Kontrollen\n"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:389
 msgid ""
@@ -16313,8 +16337,10 @@ msgstr ""
 "kann."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:395
-msgid "Unique identifier.\n"
-msgstr "Einzigartiger Bezeichner.\n"
+msgid ""
+"Unique identifier.\n"
+msgstr ""
+"Einzigartiger Bezeichner.\n"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:396
 msgid ""
@@ -16359,8 +16385,10 @@ msgid "Error launching web browser"
 msgstr "Fehler während des Startens des Webbrowsers"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:70
-msgid "A suggested event handler method name.\n"
-msgstr "Ein vorgeschagener Eventhandler-Methodenname.\n"
+msgid ""
+"A suggested event handler method name.\n"
+msgstr ""
+"Ein vorgeschagener Eventhandler-Methodenname.\n"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:71
 msgid ""
@@ -16622,9 +16650,8 @@ msgid ""
 "The project you are executing has changes done after the last time it was "
 "compiled. The debug information may be outdated. Do you want to continue?"
 msgstr ""
-"Das Projekt, das sie ausführen wurde seit der letzten Kompilierung "
-"verändert. Die Debug-Informationen könnten veraltet sein. Wollen Sie "
-"fortfahren?"
+"Das Projekt, das sie ausführen wurde seit der letzten Kompilierung verändert. "
+"Die Debug-Informationen könnten veraltet sein. Wollen Sie fortfahren?"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:233
 msgid "Application to Debug"
@@ -16835,8 +16862,8 @@ msgstr "Bedingung:"
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs:100
 msgid ""
 "<small>Expressions to be evaluated by the debugger can be included in the "
-"text by surrounding them with curly braces, for example: \"Value is {n}\".</"
-"small>"
+"text by surrounding them with curly braces, for example: \"Value is "
+"{n}\".</small>"
 msgstr ""
 "<small>Durch den Debugger auszuwertende Ausdrücke können mit geschweiften "
 "Klammern in den Text eingefügt werden, z.B.: \"Wert ist {n}\".</small>"
@@ -16846,8 +16873,8 @@ msgid ""
 "<small>When set, the text will be printed only when this condition evaluates "
 "to true.</small>"
 msgstr ""
-"<small>Wenn gesetzt wird der Text nur ausgegeben wenn diese Bedingung "
-"erfüllt ist.</small>"
+"<small>Wenn gesetzt wird der Text nur ausgegeben wenn diese Bedingung erfüllt "
+"ist.</small>"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:25
 msgid "Debug Windows"
@@ -16953,6 +16980,12 @@ msgstr "Aktuelle Ausführungszeile anzeigen"
 msgid "Debugger"
 msgstr "Debugger"
 
+#~ msgid "Print Source Code"
+#~ msgstr "Quelltext drucken"
+
+#~ msgid "Print Preview - Source Code"
+#~ msgstr "Druckvorschau - Quelltext"
+
 #~ msgid "Include unstable/beta versions"
 #~ msgstr "Instabile/Beta-Versionen einbeziehen"
 
@@ -17001,7 +17034,6 @@ msgstr "Debugger"
 #
 #~ msgid "_in:"
 #~ msgstr "_in:"
-
 #~ msgid "Failed to open test page in browser."
 #~ msgstr "Konnte Testseite in Browser nicht öffnen."
 
@@ -18006,7 +18038,6 @@ msgstr "Debugger"
 # b
 #~ msgid "_Previous"
 #~ msgstr "Ab_wärts"
-
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
 
@@ -18069,3 +18100,4 @@ msgstr "Debugger"
 
 #~ msgid "Comments:"
 #~ msgstr "Kommentare:"
+
