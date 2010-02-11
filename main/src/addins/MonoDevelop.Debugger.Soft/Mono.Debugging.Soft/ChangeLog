@@ -1,3 +1,14 @@
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs: Force-load System.Exception to work
+	  around sdb currently not giving a type load for this. Warn
+	  on duplicate type loads - they could cause problems because
+	  we can't handle them and they currently might happen e.g.
+	  with appdomains. Shorten stupidly long lines.
+
+	* LoggingService.cs: Only insert newline if exception is not
+	  null.
+
 2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerSession.cs: Dont print the expression when a
