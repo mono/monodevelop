@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 
 using MonoDevelop.Core.Gui;
 using Gnome;
-using Gnome.Vfs;
+using System.Collections.Generic;
 
 
 namespace MonoDevelop.Platform
@@ -54,6 +54,7 @@ namespace MonoDevelop.Platform
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
+			//apparently Gnome.Icon needs GnomeVFS initialized even when we're using GIO.
 			Gnome.Vfs.Vfs.Initialize ();
 		}
 
@@ -63,7 +64,7 @@ namespace MonoDevelop.Platform
 			if (useGio)
 				return Gio.GetDefaultForType (mimeType);
 
-			MimeApplication app = Mime.GetDefaultApplication (mimeType);
+			var app = Gnome.Vfs.Mime.GetDefaultApplication (mimeType);
 			if (app != null)
 				return (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
 			else
@@ -75,13 +76,13 @@ namespace MonoDevelop.Platform
 			if (useGio)
 				return Gio.GetAllForType (mimeType);
 
-			ArrayList list = new ArrayList ();
-			MimeApplication[] apps = Mime.GetAllApplications (mimeType);
-			foreach (MimeApplication app in apps) {
-				DesktopApplication dap = (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
+			var list = new List<DesktopApplication> ();
+			var apps = Gnome.Vfs.Mime.GetAllApplications (mimeType);
+			foreach (var app in apps) {
+				var dap = (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
 				list.Add (dap);
 			}
-			return (DesktopApplication[]) list.ToArray (typeof(DesktopApplication));
+			return list.ToArray ();
 		}
 
 		protected override string OnGetMimeTypeDescription (string mt)
@@ -89,17 +90,18 @@ namespace MonoDevelop.Platform
 			if (useGio)
 				return Gio.GetMimeTypeDescription (mt);
 			else
-				return Mime.GetDescription (mt);
+				return Gnome.Vfs.Mime.GetDescription (mt);
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			if (useGio) {
-				string mt = Gio.GetMimeTypeForUri (uri);
-				if (mt != null)
-					return mt;
-			}
-			return uri != null ? Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri)) : null;
+			if (uri == null)
+				return null;
+			
+			if (useGio)
+				return Gio.GetMimeTypeForUri (uri);
+			else
+				return Gnome.Vfs.MimeType.GetMimeTypeForUri (ConvertFileNameToVFS (uri));
 		}
 		
 		protected override bool OnGetMimeTypeIsText (string mimeType)
