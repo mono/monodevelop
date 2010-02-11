@@ -1,3 +1,12 @@
+2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/ActionCommand.cs:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs:
+	  Don't force to match command ids with enum members anymore.
+	  Improves lazy loading of add-ins. Add support for lazy
+	  loading command handlers.
+
 2010-02-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandMenuItem.cs:

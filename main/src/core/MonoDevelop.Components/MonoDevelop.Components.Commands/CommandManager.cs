@@ -1121,13 +1121,20 @@ namespace MonoDevelop.Components.Commands
 			// Don't assign the method if there is already one assigned (maybe from a subclass)
 			if (this.Method == null) {
 				this.Method = method;
-				CommandId = attr.CommandId;
+				if (attr.CommandId.GetType ().IsEnum)
+					CommandId = attr.CommandId.GetType ().FullName + "." + attr.CommandId;
+				else
+					CommandId = attr.CommandId;
 			}
 		}
 		
 		public CommandMethodInfo (object commandId)
 		{
-			CommandId = commandId;
+			// Include the type name when converting enum members to ids.
+			if (commandId.GetType ().IsEnum)
+				CommandId = commandId.GetType ().FullName + "." + commandId;
+			else
+				CommandId = commandId;
 		}
 	}
 	
