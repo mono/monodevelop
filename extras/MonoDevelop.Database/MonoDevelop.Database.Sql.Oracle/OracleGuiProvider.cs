@@ -42,7 +42,7 @@ using MonoDevelop.Database.Components;
 			throw new NotImplementedException ();
 		}
 		
-		public bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings)
+		public bool ShowEditConnectionDialog (IDbFactory factory, DatabaseConnectionSettings settings, out DatabaseConnectionSettings newSettings)
 		{
 			throw new NotImplementedException ();
 		}

@@ -5,11 +5,11 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Components, Version=2.1.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Core.Gui, Version=2.1.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=2.1.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Projects.Gui, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" />
     <widget-library name="../../build/MonoDevelop.Database.Designer.dll" internal="true" />
   </import>

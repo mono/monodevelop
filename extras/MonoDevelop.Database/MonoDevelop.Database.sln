@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Query"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Sql.Sybase", "MonoDevelop.Database.Sql.Sybase\MonoDevelop.Database.Sql.Sybase.csproj", "{3058BC46-070F-4492-BDC9-40E0ED0D53D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Sql.MySql", "MonoDevelop.Database.Sql.MySql\MonoDevelop.Database.Sql.MySql.csproj", "{1EAB54C2-4F9D-421F-A362-CCE28496820C}"
+Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "MonoDevelop.Database.Sql.MySql", "MonoDevelop.Database.Sql.MySql\MonoDevelop.Database.Sql.MySql.csproj", "{0AC86EC9-1B08-40DD-830B-EA8C61712570}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Sql.Firebird", "MonoDevelop.Database.Sql.Firebird\MonoDevelop.Database.Sql.Firebird.csproj", "{DF9EC79D-A4EF-4C63-9A2F-15B4F36C98A3}"
 EndProject
@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Sql.Sq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Sql.Oracle", "MonoDevelop.Database.Sql.Oracle\MonoDevelop.Database.Sql.Oracle.csproj", "{E63B005C-852C-4D06-A49D-37838EA5A2B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Sql.Npgsql", "MonoDevelop.Database.Sql.Npgsql\MonoDevelop.Database.Sql.Npgsql.csproj", "{854F4CC1-BFDF-457E-89E0-0B7E20F1FDA3}"
+Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "MonoDevelop.Database.Sql.Npgsql", "MonoDevelop.Database.Sql.Npgsql\MonoDevelop.Database.Sql.Npgsql.csproj", "{7A29D417-2F9A-41F7-A470-90B519847A0E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Database.Sql.Odbc", "MonoDevelop.Database.Sql.Odbc\MonoDevelop.Database.Sql.Odbc.csproj", "{38607664-F006-4187-A139-F0786BA33D2E}"
 EndProject
@@ -43,14 +43,12 @@ Global
 		{04CA279D-CDAB-4A90-A78C-75EF8367AFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04CA279D-CDAB-4A90-A78C-75EF8367AFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04CA279D-CDAB-4A90-A78C-75EF8367AFD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AC86EC9-1B08-40DD-830B-EA8C61712570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AC86EC9-1B08-40DD-830B-EA8C61712570}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CC523C2-CCB4-4BE6-8050-A20050521093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0CC523C2-CCB4-4BE6-8050-A20050521093}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CC523C2-CCB4-4BE6-8050-A20050521093}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CC523C2-CCB4-4BE6-8050-A20050521093}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EAB54C2-4F9D-421F-A362-CCE28496820C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EAB54C2-4F9D-421F-A362-CCE28496820C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EAB54C2-4F9D-421F-A362-CCE28496820C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EAB54C2-4F9D-421F-A362-CCE28496820C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{27294C4B-C55B-4A18-94A7-96A701F08613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{27294C4B-C55B-4A18-94A7-96A701F08613}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27294C4B-C55B-4A18-94A7-96A701F08613}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,10 +76,8 @@ Global
 		{70E5F8DB-FB9B-41BE-A4D5-4075056C6D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70E5F8DB-FB9B-41BE-A4D5-4075056C6D04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70E5F8DB-FB9B-41BE-A4D5-4075056C6D04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{854F4CC1-BFDF-457E-89E0-0B7E20F1FDA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{854F4CC1-BFDF-457E-89E0-0B7E20F1FDA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{854F4CC1-BFDF-457E-89E0-0B7E20F1FDA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{854F4CC1-BFDF-457E-89E0-0B7E20F1FDA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A29D417-2F9A-41F7-A470-90B519847A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A29D417-2F9A-41F7-A470-90B519847A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,7 +98,6 @@ Global
 		{E63B005C-852C-4D06-A49D-37838EA5A2B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		outputpath = build\bin\
 		StartupItem = MonoDevelop.Database.Sql.Tests\MonoDevelop.Database.Sql.Tests.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
@@ -111,14 +106,14 @@ Global
 		$0.StandardHeader = $2
 		$2.inheritsSet = MITX11License
 		$0.TextStylePolicy = $3
-		$3.FileWidth = 120
-		$3.TabWidth = 4
-		$3.inheritsSet = Mono
+		$3.EolMarker = Native
+		$3.inheritsSet = Invariant
 		$3.inheritsScope = text/plain
 		$0.VersionControlPolicy = $4
 		$4.inheritsSet = Mono
 		$0.ChangeLogPolicy = $5
 		$5.UpdateMode = ProjectRoot
 		$5.inheritsSet = Mono
+		outputpath = build\bin\
 	EndGlobalSection
 EndGlobal

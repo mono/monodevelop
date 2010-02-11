@@ -1,3 +1,14 @@
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerColumnEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:
+	  Flush.
+
+	* MonoDevelop.Database.Sql.SqlServer.csproj: Fix gettext
+	  class.
+
 2010-02-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Collections:

@@ -1,3 +1,10 @@
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlColumnEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Sql.Npgsql.NpgsqlCreateDatabaseWidget.cs:
+	  Flush.
+
 2010-02-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* gtk-gui/gui.stetic:

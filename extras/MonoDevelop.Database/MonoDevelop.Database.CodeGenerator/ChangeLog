@@ -1,3 +1,13 @@
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:
+	  Flush.
+
+	* MonoDevelop.Database.CodeGenerator.csproj: Fix gettext
+	  class.
+
 2009-11-11  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* gtk-gui/gui.stetic:
