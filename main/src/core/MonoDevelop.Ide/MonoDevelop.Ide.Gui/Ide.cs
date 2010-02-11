@@ -263,11 +263,8 @@ namespace MonoDevelop.Ide.Gui
 			commandService.CommandSelected += OnCommandSelected;
 			commandService.CommandDeselected += OnCommandDeselected;
 			
-			GLib.Timeout.Add (2000, delegate {
-				//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
-				MonoDevelop.Projects.HelpService.AsyncInitialize ();
-				return false;
-			});
+			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
+			MonoDevelop.Projects.HelpService.AsyncInitialize ();
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell

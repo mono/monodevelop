@@ -1,5 +1,12 @@
 2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs: More tracing.
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Don't put help service init in a
+	  timeout, it stops MD from being closed before timeout runs.
+
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs: Delay help service
 	  initialization.
 
