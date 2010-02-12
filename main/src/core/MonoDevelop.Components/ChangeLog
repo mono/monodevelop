@@ -1,3 +1,19 @@
+2010-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components.Theming:
+	* MonoDevelop.Components/SearchEntry.cs:
+	* MonoDevelop.Components/RoundedFrame.cs:
+	* MonoDevelop.Components.Theming/Theme.cs:
+	* MonoDevelop.Components/CairoExtensions.cs:
+	* MonoDevelop.Components.Theming/GtkTheme.cs:
+	* MonoDevelop.Components/PangoCairoHelper.cs:
+	* MonoDevelop.Components.Theming/GtkColors.cs:
+	* MonoDevelop.Components.Theming/ThemeEngine.cs:
+	* MonoDevelop.Components.Theming/ThemeContext.cs: Added some
+	  theming & cairo helpers from banshee.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands/Command.cs:
