@@ -30,13 +30,50 @@ using System;
 using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Serialization
 {
 	public class DataContext
 	{
 		Dictionary<Type,DataType> configurationTypes = new Dictionary<Type,DataType> ();
+		Dictionary<string,DataType> configurationTypesByName = new Dictionary<string,DataType> ();
+		Dictionary<string, TypeRef> pendingTypes = new Dictionary<string, TypeRef> ();
+		Dictionary<string, TypeRef> pendingTypesByTypeName = new Dictionary<string, TypeRef> ();
 		ISerializationAttributeProvider attributeProvider;
+		
+		class TypeRef
+		{
+			public string TypeName;
+			public RuntimeAddin Addin;
+			public PropertyRef Properties;
+			public DataType DataType;
+			
+			public TypeRef (RuntimeAddin addin, string typeName)
+			{
+				this.TypeName = typeName;
+				this.Addin = addin;
+			}
+		}
+		
+		class PropertyRef
+		{
+			public string TargetType;
+			public string Name;
+			public string PropertyType;
+			public bool IsExternal;
+			public bool SkipEmpty;
+			public PropertyRef Next;
+		
+			public PropertyRef (string targetType, string name, string propertyType, bool isExternal, bool skipEmpty)
+			{
+				this.TargetType = targetType;
+				this.Name = name;
+				this.PropertyType = propertyType;
+				this.IsExternal = isExternal;
+				this.SkipEmpty = skipEmpty;
+			}
+		}
 		
 		public DataContext ()
 		{
@@ -105,10 +142,54 @@ namespace MonoDevelop.Core.Serialization
 			ctype.AddProperty (prop);
 		}
 		
+		public void RegisterProperty (RuntimeAddin addin, string targetType, string name, string propertyType, bool isExternal, bool skipEmpty)
+		{
+			TypeRef tr;
+			if (!pendingTypesByTypeName.TryGetValue (targetType, out tr)) {
+				tr = new TypeRef (addin, targetType);
+				pendingTypesByTypeName [targetType] = tr;
+			}
+			if (tr.DataType != null) {
+				RegisterProperty (addin.GetType (targetType, true), name, addin.GetType (propertyType, true), isExternal, skipEmpty);
+				return;
+			}
+			PropertyRef prop = new PropertyRef (targetType, name, propertyType, isExternal, skipEmpty);
+			if (tr.Properties == null)
+				tr.Properties = prop;
+			else
+				tr.Properties.Next = prop;
+		}
+		
 		public void UnregisterProperty (Type targetType, string name)
 		{
 			ClassDataType ctype = (ClassDataType) GetConfigurationDataType (targetType);
 			ctype.RemoveProperty (name);
+		}
+		
+		public void UnregisterProperty (RuntimeAddin addin, string targetType, string name)
+		{
+			TypeRef tr;
+			if (!pendingTypesByTypeName.TryGetValue (targetType, out tr))
+				return;
+
+			if (tr.DataType != null) {
+				UnregisterProperty (addin.GetType (targetType, true), name);
+				return;
+			}
+			
+			PropertyRef prop = tr.Properties;
+			PropertyRef prev = null;
+			while (prop != null) {
+				if (prop.Name == name) {
+					if (prev != null)
+						prev.Next = prop.Next;
+					else
+						tr.Properties = null;
+					break;
+				}
+				prev = prop;
+				prop = prop.Next;
+			}
 		}
 		
 		public IEnumerable<ItemProperty> GetProperties (SerializationContext serCtx, object instance)
@@ -120,6 +201,23 @@ namespace MonoDevelop.Core.Serialization
 		public void IncludeType (Type type)
 		{
 			GetConfigurationDataType (type);
+		}
+		
+		public void IncludeType (RuntimeAddin addin, string typeName, string itemName)
+		{
+			if (string.IsNullOrEmpty (itemName)) {
+				int i = typeName.LastIndexOf ('.');
+				if (i >= 0)
+					itemName = typeName.Substring (i + 1);
+				else
+					itemName = typeName;
+			}
+			TypeRef tr;
+			if (!pendingTypesByTypeName.TryGetValue (typeName, out tr)) {
+				tr = new TypeRef (addin, typeName);
+				pendingTypesByTypeName [typeName] = tr;
+			}
+			pendingTypes [itemName] = tr;
 		}
 		
 		public void SetTypeInfo (DataItem item, Type type)
@@ -142,9 +240,18 @@ namespace MonoDevelop.Core.Serialization
 		
 		public virtual DataType GetConfigurationDataType (string typeName)
 		{
-			foreach (DataType dt in configurationTypes.Values)
-				if (dt.Name == typeName)
-					return dt;
+			DataType dt;
+			if (configurationTypesByName.TryGetValue (typeName, out dt))
+				return dt;
+			
+			TypeRef tr;
+			if (pendingTypes.TryGetValue (typeName, out tr)) {
+				Type at = tr.Addin.GetType (tr.TypeName, true);
+				dt = GetConfigurationDataType (at);
+				tr.DataType = dt;
+				return dt;
+			}
+			
 			Type t = Type.GetType ("System." + typeName);
 			if (t != null)
 				return GetConfigurationDataType (t);
@@ -159,7 +266,9 @@ namespace MonoDevelop.Core.Serialization
 					if (itemType != null) return itemType;
 					itemType = CreateConfigurationDataType (type);
 					configurationTypes [type] = itemType;
+					configurationTypesByName [itemType.Name] = itemType;
 					itemType.SetContext (this);
+					pendingTypes.Remove (itemType.Name);
 				}
 				return itemType;
 			}
