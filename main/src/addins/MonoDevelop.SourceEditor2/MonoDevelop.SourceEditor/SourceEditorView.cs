@@ -1141,6 +1141,7 @@ namespace MonoDevelop.SourceEditor
 		public void ToggleAllFoldings ()
 		{
 			FoldActions.ToggleAllFolds (TextEditor.GetTextEditorData ());
+			widget.TextEditor.ScrollToCaret ();
 		}
 		
 		public void FoldDefinitions ()
@@ -1155,11 +1156,13 @@ namespace MonoDevelop.SourceEditor
 			Document.RequestUpdate (new UpdateAll ());
 			Document.CommitDocumentUpdate ();
 			widget.TextEditor.GetTextEditorData ().RaiseUpdateAdjustmentsRequested ();
+			widget.TextEditor.ScrollToCaret ();
 		}
 		
 		public void ToggleFolding ()
 		{
 			FoldActions.ToggleFold (TextEditor.GetTextEditorData ());
+			widget.TextEditor.ScrollToCaret ();
 		}
 		#endregion
 		

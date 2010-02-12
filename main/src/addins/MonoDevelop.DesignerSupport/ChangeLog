@@ -1,3 +1,8 @@
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Add tooltips
+	  to toolbar items.
+
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:

@@ -72,16 +72,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			filterToggleButton = new ToggleToolButton ();
 			filterToggleButton.IconWidget = new Image (Stock.Find, IconSize.Menu);
 			filterToggleButton.Toggled += new EventHandler (toggleFiltering);
+			filterToggleButton.TooltipText = GettextCatalog.GetString ("Show search box");
 			toolbar.Insert (filterToggleButton, 0);
 			
 			catToggleButton = new ToggleToolButton ();
 			catToggleButton.IconWidget = new Image ("md-design-categorise", IconSize.Menu);
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
+			catToggleButton.TooltipText = GettextCatalog.GetString ("Show categories");
 			toolbar.Insert (catToggleButton, 1);
 			
 			compactModeToggleButton = new ToggleToolButton ();
 			compactModeToggleButton.IconWidget = new Image ("md-design-listboxtoggle", IconSize.Menu);
 			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
+			compactModeToggleButton.TooltipText = GettextCatalog.GetString ("Use compact display");
 			toolbar.Insert (compactModeToggleButton, 2);
 	
 			SeparatorToolItem sep = new SeparatorToolItem();
@@ -89,6 +92,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			ToolButton toolboxAddButton = new ToolButton (Stock.Add);
 			toolbar.Insert (toolboxAddButton, 4);
+			toolboxAddButton.TooltipText = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
 			
 			filterEntry = new Entry();

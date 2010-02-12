@@ -1,3 +1,11 @@
+2010-02-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: 
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added scroll
+	  to caret call for all folding commands to fix "Bug 577933 -
+	  Text editor cannot be scrolled and no text is in view".
+
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track print
