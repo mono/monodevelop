@@ -276,7 +276,7 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated (object sender, EventArgs e)
 		{
-			UpdateSearchEntry ();
+			UpdateResultInformLabel ();
 		}
 		
 		Gtk.Label resultInformLabel = new Gtk.Label ();
@@ -527,6 +527,21 @@ But I leave it in in the case I've missed something. Mike
 				result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
 			}
 			
+			if (string.IsNullOrEmpty (SearchPattern))
+				UpdateResultInformLabel ();
+			
+			GotoResult (result);
+		}
+		
+		void UpdateResultInformLabel ()
+		{
+			if (string.IsNullOrEmpty (SearchPattern)) {
+				resultInformLabel.Text = "";
+				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
+				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
+				return;
+			}
+			
 			bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
 			string errorMsg;
 			bool valid = widget.TextEditor.SearchEngine.IsValidPattern (searchPattern, out errorMsg);
@@ -544,16 +559,10 @@ But I leave it in in the case I've missed something. Mike
 				resultInformLabelEventBox.ModifyBg (StateType.Normal, GotoLineNumberWidget.errorColor);
 				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Normal));
 			} else {
-				if (string.IsNullOrEmpty (SearchPattern)) {
-					resultInformLabel.Text = "";
-				} else {
-					resultInformLabel.Text = String.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", widget.TextEditor.TextViewMargin.SearchResultMatchCount), widget.TextEditor.TextViewMargin.SearchResultMatchCount);
-				}
+				resultInformLabel.Text = String.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", widget.TextEditor.TextViewMargin.SearchResultMatchCount), widget.TextEditor.TextViewMargin.SearchResultMatchCount);
 				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
 				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
 			}
-			resultInformLabel.ShowAll ();
-			GotoResult (result);
 		}
 		
 		void UpdateReplaceHistory (string item)
