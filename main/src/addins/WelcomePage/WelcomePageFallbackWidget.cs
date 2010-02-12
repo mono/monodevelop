@@ -56,6 +56,7 @@ namespace MonoDevelop.WelcomePage
 			widget = new WelcomePageFallbackWidget (this);
 			scroller.AddWithViewport (widget);
 			scroller.ShadowType = ShadowType.None;
+			scroller.FocusChain = new Widget[] { widget };
 			scroller.Show ();
 		}
 		
@@ -79,7 +80,7 @@ namespace MonoDevelop.WelcomePage
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class WelcomePageFallbackWidget : Gtk.EventBox
 	{
-		Gdk.Pixbuf bgPixbuf;
+		Gdk.Pixbuf bgPixbuf, logoPixbuf;
 		
 		WelcomePageView parentView;
 		
@@ -89,7 +90,8 @@ namespace MonoDevelop.WelcomePage
 		static readonly string tableHeaderFormat = "<span size=\"" + textSize + "\" weight=\"bold\" foreground=\"#4e6d9f\">{0}</span>";
 		static readonly string textFormat = "<span size=\"" + textSize + "\">{0}</span>";
 		
-		readonly int logoOffset = 20;
+		const uint spacing = 20;
+		const uint logoHeight = 90;
 		
 		//keep ref to delegates, as we're going to use them a lot
 		Gtk.LeaveNotifyEventHandler linkHoverLeaveEventHandler;
@@ -105,12 +107,12 @@ namespace MonoDevelop.WelcomePage
 			linkHoverEnterEventHandler = new Gtk.EnterNotifyEventHandler (handleHoverEnter);
 			linkClickedEventHandler = new EventHandler (HandleLink);
 
-			string bgPath = AddinManager.CurrentAddin.GetFilePath ("mono-bg.png");
-			using (FileStream fst = new FileStream (bgPath, FileMode.Open, FileAccess.Read)) {
-				bgPixbuf = new Gdk.Pixbuf (fst);
-			}
+			string logoPath = AddinManager.CurrentAddin.GetFilePath ("md-logo.png");
+			logoPixbuf = new Gdk.Pixbuf (logoPath);
+			string bgPath = AddinManager.CurrentAddin.GetFilePath ("md-bg.png");
+			bgPixbuf = new Gdk.Pixbuf (bgPath);
 			
-			alignment1.SetPadding ((uint) (logoOffset + 70 + logoOffset), 0, (uint) logoOffset, 0);
+			alignment1.SetPadding (logoHeight + spacing, 0, spacing, 0);
 			ModifyBg (StateType.Normal, Style.White);
 			
 			BuildFromXml ();
@@ -262,10 +264,17 @@ namespace MonoDevelop.WelcomePage
 		//draw the background
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			GdkWindow.DrawPixbuf (Style.BackgroundGC (StateType.Normal), 
-			                      bgPixbuf, 0, 0, 0, 0, 
-			                      bgPixbuf.Width, bgPixbuf.Height, 
-			                      RgbDither.Normal, 0, 0);
+			if (logoPixbuf != null) {
+				var gc = Style.BackgroundGC (State);
+				var lRect = new Rectangle (Allocation.X, Allocation.Y, logoPixbuf.Width, logoPixbuf.Height);
+				if (evnt.Region.RectIn (lRect) != OverlapType.Out)
+					GdkWindow.DrawPixbuf (gc, logoPixbuf, 0, 0, lRect.X, lRect.Y, lRect.Width, lRect.Height, RgbDither.None, 0, 0);
+				
+				var bgRect = new Rectangle (Allocation.X + logoPixbuf.Width, Allocation.Y, Allocation.Width - logoPixbuf.Width, bgPixbuf.Height);
+				if (evnt.Region.RectIn (bgRect) != OverlapType.Out)
+					for (int x = bgRect.X; x < bgRect.Right; x += bgPixbuf.Width)
+						GdkWindow.DrawPixbuf (gc, bgPixbuf, 0, 0, x, bgRect.Y, bgPixbuf.Width, bgRect.Height, RgbDither.None, 0, 0);
+			}
 			
 			foreach (Widget widget in Children)
 				PropagateExpose (widget, evnt);

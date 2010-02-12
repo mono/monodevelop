@@ -35,9 +35,8 @@ RES =  \
 	WelcomePageContent.xml
  
 DATA_FILES =  \
-	mono-bg.png \
-	mono-decoration.png \
-	mono-logo.png \
+	md-bg.png \
+	md-logo.png \
 	WelcomePage.css
 
 
