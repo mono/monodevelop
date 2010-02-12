@@ -375,11 +375,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public SerializationCodeCompletionDatabase GetDatabase (string uri)
 		{
-			DatabaseProjectDom dom = ProjectDomService.GetDomForUri (uri) as DatabaseProjectDom;
-			if (dom != null)
-				return dom.Database;
-			else
-				return null;
+			try {
+				DatabaseProjectDom dom = ProjectDomService.GetDomForUri (uri) as DatabaseProjectDom;
+				if (dom != null)
+					return dom.Database;
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't load assembly: " + uri, e);
+			}
+			return null;
 		}
 		
 #endregion

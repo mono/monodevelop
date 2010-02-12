@@ -1,3 +1,9 @@
+2010-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:
+	  fixed crash on Mono.Cecil.Binary.ImageFormatException: The
+	  image is not a managed assembly.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionItem.cs: Fix NeedsBuilding
