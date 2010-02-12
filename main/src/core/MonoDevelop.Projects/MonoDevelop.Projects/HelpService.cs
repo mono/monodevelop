@@ -50,6 +50,10 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public static void AsyncInitialize ()
 		{
+			lock (helpTreeLock) {
+				if (helpTreeInitialized)
+					return;
+			}
 			ThreadPool.QueueUserWorkItem (delegate {
 				// Load the help tree asynchronously. Reduces startup time.
 				LoggingService.Trace ("Ide.HelpService", "[ASYNC] Initializing Help Service");

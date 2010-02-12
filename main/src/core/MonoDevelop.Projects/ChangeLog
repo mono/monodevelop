@@ -1,3 +1,18 @@
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects.Extensions/DataTypeCodon.cs:
+	* MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs: Use
+	  the new api which allows lazy loading serializable types and
+	  properties.
+
+	* MonoDevelop.Projects/HelpService.cs: Added missing
+	  initialization check.
+
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Delay
+	  initialization of parser list.
+
 2010-02-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs:

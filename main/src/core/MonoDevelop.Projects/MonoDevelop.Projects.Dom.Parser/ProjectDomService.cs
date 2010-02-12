@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public static class ProjectDomService
 	{
-		static List<IParser> parsers = new List<IParser>();
+		static List<IParser> parsers;
 		
 		//static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
 		
@@ -95,22 +95,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static ProjectDomService ()
 		{
-			LoggingService.Trace ("ProjectDomService", "Initializing");
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
 			// for unit tests it may not have been initialized.
-			if (AddinManager.IsInitialized) {
-				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
-					switch (args.Change) {
-					case ExtensionChange.Add:
-						parsers.Add ((IParser) args.ExtensionObject);
-						break;
-					case ExtensionChange.Remove:
-						parsers.Remove ((IParser) args.ExtensionObject);
-						break;
-					}
-				});
-			}
-			LoggingService.Trace ("ProjectDomService", "Initialized");
 		}
 
 		public static RootTree HelpTree {
@@ -144,13 +130,28 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		public static List<IParser> Parsers {
 			get {
+				if (parsers == null) {
+					LoggingService.Trace ("ProjectDomService", "Initializing");
+					parsers = new List<IParser>();
+					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
+						switch (args.Change) {
+						case ExtensionChange.Add:
+							parsers.Add ((IParser) args.ExtensionObject);
+							break;
+						case ExtensionChange.Remove:
+							parsers.Remove ((IParser) args.ExtensionObject);
+							break;
+						}
+					});
+					LoggingService.Trace ("ProjectDomService", "Initialized");
+				}
 				return parsers;
 			}
 		}
 		
 		public static IParser GetParserByMime (string mimeType)
 		{
-			foreach (IParser parser in parsers) {
+			foreach (IParser parser in Parsers) {
 				if (parser.CanParseMimeType (mimeType))
 					return parser;
 			}
@@ -159,7 +160,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static IParser GetParserByFileName (string fileName)
 		{
-			foreach (IParser parser in parsers) {
+			foreach (IParser parser in Parsers) {
 				if (parser.CanParse (fileName)) {
 					return parser;
 				}

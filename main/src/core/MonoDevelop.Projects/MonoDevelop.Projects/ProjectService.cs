@@ -490,14 +490,10 @@ namespace MonoDevelop.Projects
 		internal void InitializeDataContext (DataContext ctx)
 		{
 			foreach (DataTypeCodon dtc in AddinManager.GetExtensionNodes (SerializableClassesExtensionPath)) {
-				Type t = dtc.Class;
-				if (t == null)
-					throw new UserException ("Type '" + dtc.TypeName + "' not found. It could not be registered as a serializable type.");
-				ctx.IncludeType (t);
+				ctx.IncludeType (dtc.Addin, dtc.TypeName, dtc.ItemName);
 			}
 			foreach (ItemPropertyCodon cls in AddinManager.GetExtensionNodes (ExtendedPropertiesExtensionPath)) {
-				if (cls.Class != null && cls.PropertyType != null)
-					ctx.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType, cls.External, cls.SkipEmpty);
+				ctx.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
 			}
 		}
 
@@ -513,11 +509,8 @@ namespace MonoDevelop.Projects
 		void OnSerializableExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				Type t = ((DataTypeCodon)args.ExtensionNode).Class;
-				if (t == null) {
-					throw new UserException ("Type '" + ((DataTypeCodon)args.ExtensionNode).TypeName + "' not found. It could not be registered as a serializable type.");
-				}
-				DataContext.IncludeType (t);
+				DataTypeCodon t = (DataTypeCodon) args.ExtensionNode;
+				DataContext.IncludeType (t.Addin, t.TypeName, t.ItemName);
 			}
 			// Types can't be excluded from a DataContext, but that's not a big problem anyway
 			
@@ -529,13 +522,11 @@ namespace MonoDevelop.Projects
 		{
 			if (args.Change == ExtensionChange.Add) {
 				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				if (cls.Class != null && cls.PropertyType != null)
-					DataContext.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType);
+				DataContext.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
 			}
 			else {
 				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				if (cls.Class != null && cls.PropertyType != null)
-					DataContext.UnregisterProperty (cls.Class, cls.PropertyName);
+				DataContext.UnregisterProperty (cls.Addin, cls.TypeName, cls.PropertyName);
 			}
 			
 			if (DataContextChanged != null)
