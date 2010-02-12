@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugger;
+using Mono.Debugger.Soft;
 using Mono.Debugging;
 using Mono.Debugging.Client;
 using System.Threading;
