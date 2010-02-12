@@ -45,40 +45,7 @@ using Gdk;
 
 namespace MonoDevelop.WelcomePage
 {
-	public class WelcomePageFallbackView : WelcomePageView
-	{
-		WelcomePageFallbackWidget widget;
-		ScrolledWindow scroller;
-		
-		public WelcomePageFallbackView () : base ()
-		{
-			scroller = new ScrolledWindow ();
-			widget = new WelcomePageFallbackWidget (this);
-			scroller.AddWithViewport (widget);
-			scroller.ShadowType = ShadowType.None;
-			scroller.FocusChain = new Widget[] { widget };
-			scroller.Show ();
-		}
-		
-		public override Widget Control {
-			get { return scroller;  }
-		}
-		
-		protected override void RecentChangesHandler (object sender, EventArgs e)
-		{
-			widget.LoadRecent ();
-		}
-		
-		protected override void HandleNewsUpdate (object sender, EventArgs args)
-		{
-			widget.Rebuild ();
-		}
-
-	}
-	
-	[System.ComponentModel.Category("WelcomePage")]
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class WelcomePageFallbackWidget : Gtk.EventBox
+	partial class WelcomePageWidget : Gtk.EventBox
 	{
 		Gdk.Pixbuf bgPixbuf, logoPixbuf;
 		
@@ -98,7 +65,7 @@ namespace MonoDevelop.WelcomePage
 		Gtk.EnterNotifyEventHandler linkHoverEnterEventHandler;
 		EventHandler linkClickedEventHandler;
 		
-		public WelcomePageFallbackWidget (WelcomePageView parentView) : base ()
+		public WelcomePageWidget (WelcomePageView parentView) : base ()
 		{
 			this.Build ();
 			this.parentView = parentView;

@@ -89,17 +89,13 @@
     <Compile Include="WelcomePageOptionPanel.cs" />
     <Compile Include="WelcomePageView.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="WelcomePageFallbackWidget.cs" />
-    <Compile Include="XslGettextCatalog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="WelcomePageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.WelcomePage.WelcomePageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WelcomePage.addin.xml">
       <LogicalName>WelcomePage.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WelcomePage.xsl">
-      <LogicalName>WelcomePage.xsl</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="WelcomePageContent.xml">
       <LogicalName>WelcomePageContent.xml</LogicalName>
@@ -112,9 +108,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="WelcomePage.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="md-bg.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

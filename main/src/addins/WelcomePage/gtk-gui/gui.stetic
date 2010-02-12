@@ -10,8 +10,9 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/AddIns/WelcomePage/WelcomePage.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.WelcomePage.WelcomePageFallbackWidget" design-size="658 421">
+  <widget class="Gtk.Bin" id="MonoDevelop.WelcomePage.WelcomePageWidget" design-size="658 421">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.Alignment" id="alignment1">
         <property name="MemberName" />

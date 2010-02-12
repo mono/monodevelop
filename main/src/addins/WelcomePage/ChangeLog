@@ -1,5 +1,22 @@
 2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* WelcomePage.xsl:
+	* WelcomePage.css:
+	* gtk-gui/gui.stetic:
+	* WelcomePageView.cs:
+	* WelcomePage.csproj:
+	* gtk-gui/objects.xml:
+	* WelcomePageWidget.cs:
+	* XslGettextCatalog.cs:
+	* WelcomePageCommands.cs:
+	* WelcomePageFallbackWidget.cs:
+	* gtk-gui/MonoDevelop.WelcomePage.WelcomePageWidget.cs:
+	* gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs:
+	  Remove the dead HTML abstraction.
+
+2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* md-bg.png:
 	* md-logo.png:
 	* Makefile.am:

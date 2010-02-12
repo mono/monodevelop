@@ -20,24 +20,21 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs \
+	gtk-gui/MonoDevelop.WelcomePage.WelcomePageWidget.cs \
 	WelcomePageCommands.cs \
-	WelcomePageFallbackWidget.cs \
+	WelcomePageWidget.cs \
 	WelcomePageOptionPanel.cs \
-	WelcomePageView.cs \
-	XslGettextCatalog.cs
+	WelcomePageView.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	WelcomePage.addin.xml \
-	WelcomePage.xsl \
 	WelcomePageContent.xml
  
 DATA_FILES =  \
 	md-bg.png \
-	md-logo.png \
-	WelcomePage.css
+	md-logo.png
 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
