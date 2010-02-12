@@ -2,6 +2,17 @@
 
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/IAnimation.cs:
+	* Mono.TextEditor/IAnimationDrawer.cs:
+	* Mono.TextEditor.Theatrics/Animation.cs: now using the
+	  theatrics framework for animations (text editor now supports
+	  multiple animations as well).
+
+2010-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
 	* Mono.TextEditor.Theatrics:
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/TextViewMargin.cs:

@@ -144,7 +144,6 @@
     <Compile Include="Mono.TextEditor\FoldingScreenbackgroundRenderer.cs" />
     <Compile Include="Mono.TextEditor\HslColor.cs" />
     <Compile Include="Mono.TextEditor\IBackgroundRenderer.cs" />
-    <Compile Include="Mono.TextEditor\IAnimation.cs" />
     <Compile Include="Mono.TextEditor\CodeSegmentEditorWindow.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Actor.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Choreographer.cs" />
@@ -152,6 +151,8 @@
     <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\AnimatedWidget.cs" />
+    <Compile Include="Mono.TextEditor\IAnimationDrawer.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Animation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

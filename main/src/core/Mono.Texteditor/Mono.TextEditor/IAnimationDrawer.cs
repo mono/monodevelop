@@ -29,13 +29,9 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public interface IAnimation
+	public interface IAnimationDrawer
 	{
-		int LifeTime {
-			get;
-			set;
-		}
-		
+		double Percent { get; set; }
 		void Draw (Drawable drawable);
 	}
 }

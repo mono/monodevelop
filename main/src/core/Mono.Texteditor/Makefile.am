@@ -39,6 +39,7 @@ FILES =  \
 	Mono.TextEditor.PopupWindow/TooltipWindow.cs \
 	Mono.TextEditor.Theatrics/Actor.cs \
 	Mono.TextEditor.Theatrics/AnimatedWidget.cs \
+	Mono.TextEditor.Theatrics/Animation.cs \
 	Mono.TextEditor.Theatrics/Choreographer.cs \
 	Mono.TextEditor.Theatrics/Pulsator.cs \
 	Mono.TextEditor.Theatrics/SingleActorStage.cs \
@@ -72,7 +73,7 @@ FILES =  \
 	Mono.TextEditor/GutterMargin.cs \
 	Mono.TextEditor/HelperMethods.cs \
 	Mono.TextEditor/HslColor.cs \
-	Mono.TextEditor/IAnimation.cs \
+	Mono.TextEditor/IAnimationDrawer.cs \
 	Mono.TextEditor/IBackgroundRenderer.cs \
 	Mono.TextEditor/IBracketMatcher.cs \
 	Mono.TextEditor/IBuffer.cs \

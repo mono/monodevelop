@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 		List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
 		ITooltipProvider currentTooltipProvider;
 		double mx, my;
-		System.Timers.Timer animationTimer;
+		
 		public Document Document {
 			get {
 				return textEditorData.Document;
@@ -329,9 +329,8 @@ namespace Mono.TextEditor
 			using (Pixmap inv = new Pixmap (null, 1, 1, 1)) {
 				invisibleCursor = new Cursor (inv, inv, Gdk.Color.Zero, Gdk.Color.Zero, 0, 0);
 			}
-			animationTimer = new System.Timers.Timer (50);
-			animationTimer.Elapsed += AnimationTimer;
 			
+			InitAnimations ();
 			InitAnimatedWidgets ();
 		}
 
@@ -1450,8 +1449,10 @@ namespace Mono.TextEditor
 				textViewMargin.ResetCaretBlink ();
 				requestResetCaretBlink = false;
 			}
-			if (animation != null)
-				animation.Draw (e.Window);
+			foreach (Animation animation in actors) {
+				animation.Drawer.Draw (e.Window);
+			}
+			
 			if (e.Area.Contains (TextViewMargin.caretX, TextViewMargin.caretY))
 				textViewMargin.DrawCaret (e.Window);
 			return true;
@@ -1711,21 +1712,15 @@ namespace Mono.TextEditor
 			return textEditorData.SearchBackward (fromOffset);
 		}
 		
-		IAnimation animation = null;
-		class HighlightSearchResultAnimation : IAnimation
+		class HighlightSearchResultAnimation : IAnimationDrawer
 		{
-			const int MaxLifeTime = 8;
 			TextEditor editor;
 			SearchResult result;
 			
-			public int LifeTime {
-				get;
-				set;
-			}
+			public double Percent { get; set; }
 			
 			public HighlightSearchResultAnimation (TextEditor editor, SearchResult result)
 			{
-				LifeTime = MaxLifeTime;
 				this.editor = editor;
 				this.result = result;
 			}
@@ -1747,36 +1742,50 @@ namespace Mono.TextEditor
 				int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
-					color.A = 0.8;
+					color.A = .8;
 					cr.Color = color;
 					cr.LineWidth = editor.Options.Zoom * 2;
-					int width = (int)(x2 - x1 + 2 * LifeTime * editor.Options.Zoom);
+					double extend = Percent * 10;
+					int width = (int)(x2 - x1 + 2 * extend * editor.Options.Zoom);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-					                                                    (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - LifeTime * editor.Options.Zoom), 
-					                                                    (int)(y - LifeTime * editor.Options.Zoom), 
+					                                                    (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - extend * editor.Options.Zoom), 
+					                                                    (int)(y - extend * editor.Options.Zoom), 
 					                                                    System.Math.Min (10, width), 
 					                                                    width, 
-					                                                    (int)(editor.LineHeight + 2 * LifeTime * editor.Options.Zoom));
-					cr.Stroke ();
+					                                                    (int)(editor.LineHeight + 2 * extend * editor.Options.Zoom));
+					cr.Stroke (); 
+					
+					/*
+					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.Color);
+					cr.MoveTo ((int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - extend * editor.Options.Zoom), 
+					           (int)(y ));
+					double zoom = 1 + Percent;
+					cr.ShowText (editor.Document.GetTextAt (result));
+					cr.Fill ();
+					
+					Pango.Layout layout = new Pango.Layout (editor.PangoContext);
+					layout.FontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
+					layout.FontDescription.Size = (int)(layout.FontDescription.Size + Percent * 100 * editor.Options.Zoom);
+					layout.SetText (editor.Document.GetTextAt (result));
+					Gdk.GC gc = new Gdk.GC (drawable);
+					gc.RgbFgColor = editor.ColorStyle.Selection.Color;
+					drawable.DrawLayout (gc, (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - extend * editor.Options.Zoom), y, layout);
+					gc.Dispose ();
+					layout.Dispose ();*/
 				}
 				if (lineLayout.IsUncached) 
 					lineLayout.Dispose ();
 			}
 		}
 		
-		class CaretPulseAnimation : IAnimation
+		class CaretPulseAnimation : IAnimationDrawer
 		{
-			const int MaxLifeTime = 8;
 			TextEditor editor;
 			
-			public int LifeTime {
-				get;
-				set;
-			}
+			public double Percent { get; set; }
 			
 			public CaretPulseAnimation (TextEditor editor)
 			{
-				LifeTime = MaxLifeTime;
 				this.editor = editor;
 			}
 			
@@ -1787,13 +1796,14 @@ namespace Mono.TextEditor
 				if (editor.Caret.Mode != CaretMode.Block)
 					x -= editor.TextViewMargin.charWidth / 2;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
-					int width = (int)(editor.TextViewMargin.charWidth + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2);
+					double extend = Percent * 5;
+					int width = (int)(editor.TextViewMargin.charWidth + 2 * extend * editor.Options.Zoom / 2);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-					                                                    (int)(x - (MaxLifeTime - LifeTime) * editor.Options.Zoom / 2), 
-					                                                    (int)(y - (MaxLifeTime - LifeTime) * editor.Options.Zoom), 
+					                                                    (int)(x - extend * editor.Options.Zoom / 2), 
+					                                                    (int)(y - extend * editor.Options.Zoom), 
 					                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
 					                                                    width,
-					                                                    (int)(editor.LineHeight + 2 * (MaxLifeTime - LifeTime) * editor.Options.Zoom));
+					                                                    (int)(editor.LineHeight + 2 * extend * editor.Options.Zoom));
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
 					color.A = 0.8;
 					cr.LineWidth = editor.Options.Zoom;
@@ -1807,13 +1817,12 @@ namespace Mono.TextEditor
 			In, Out, Bounce
 		}
 		
-		public class RegionPulseAnimation : IAnimation
+		public class RegionPulseAnimation : IAnimationDrawer
 		{
-			const int MaxLifeTime = 8;
 			TextEditor editor;
 			
 			public PulseKind Kind { get; set; }
-			public int LifeTime { get; set; }
+			public double Percent { get; set; }
 			
 			Gdk.Rectangle region;
 			
@@ -1825,7 +1834,6 @@ namespace Mono.TextEditor
 				if (region.X < 0 || region.Y < 0 || region.Width < 0 || region.Height < 0)
 					throw new ArgumentException ("region is invalid");
 				
-				LifeTime = MaxLifeTime;
 				this.editor = editor;
 				this.region = region;
 			}
@@ -1834,25 +1842,8 @@ namespace Mono.TextEditor
 			{
 				int x = region.X;
 				int y = region.Y;
-				int animationPosition;
+				int animationPosition = (int)(Percent * 100);
 				
-				switch (Kind) {
-				case PulseKind.In:
-					animationPosition = MaxLifeTime - LifeTime;
-					break;
-				case PulseKind.Bounce:
-					if (LifeTime > (MaxLifeTime / 2))
-						animationPosition = MaxLifeTime - LifeTime;
-					else
-						animationPosition = LifeTime;
-					animationPosition /= 2;
-					break;
-				case PulseKind.Out:
-				default:
-					animationPosition = LifeTime;
-					break;
-				}
-					
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
 					int width = (int)(region.Width + 2 * animationPosition * editor.Options.Zoom / 2);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
@@ -1896,7 +1887,7 @@ namespace Mono.TextEditor
 			return new Gdk.Rectangle (startPt.X, startPt.Y, width, this.textViewMargin.LineHeight);
 		}
 		
-		void AnimationTimer (object sender, EventArgs args)
+	/*	void AnimationTimer (object sender, EventArgs args)
 		{
 			if (animation != null) {
 				animation.LifeTime--;
@@ -1908,7 +1899,7 @@ namespace Mono.TextEditor
 			} else {
 				animationTimer.Stop ();
 			}
-		}
+		}*/
 		
 		/// <summary>
 		/// Initiate a pulse at the specified document location
@@ -1928,14 +1919,6 @@ namespace Mono.TextEditor
 			});
 		}
 
-		void StartAnimation (IAnimation animation)
-		{
-			if (!Options.EnableAnimations)
-				return;
-			animationTimer.Stop ();
-			this.animation = animation;
-			animationTimer.Start ();
-		}
 		
 		public SearchResult FindNext ()
 		{
@@ -2257,28 +2240,80 @@ namespace Mono.TextEditor
 		}
 #endregion
 		
+		#region Animation
+		Stage<Animation> animationStage = new Stage<Animation> ();
+		List<Animation> actors = new List<Animation> ();
+		
+		protected void InitAnimations ()
+		{
+			animationStage.ActorStep += OnAnimationActorStep;
+			animationStage.Iteration += OnAnimationIteration;
+		}
+		
+		void StartAnimation (IAnimationDrawer drawer)
+		{
+			StartAnimation (drawer, 300);
+		}
+		
+		void StartAnimation (IAnimationDrawer drawer, uint duration)
+		{
+			if (!Options.EnableAnimations)
+				return;
+			Animation animation = new Animation (drawer, duration, Easing.Linear, Blocking.Upstage);
+			animationStage.Add (animation, duration);
+			actors.Add (animation);
+		}
+		
+		bool OnAnimationActorStep (Actor<Animation> actor)
+		{
+			switch (actor.Target.AnimationState) {
+			case AnimationState.Coming:
+				actor.Target.Drawer.Percent = actor.Percent;
+				if (actor.Expired) {
+					actor.Target.AnimationState = AnimationState.Going;
+					actor.Reset ();
+					return true;
+				}
+				break;
+			case AnimationState.Going:
+				if (actor.Expired) {
+					actors.Remove (actor.Target);
+					return false;
+				}
+				actor.Target.Drawer.Percent = 1.0 - actor.Percent;
+				break;
+			}
+			return true;
+		}
+		
+		void OnAnimationIteration (object sender, EventArgs args)
+		{
+			QueueDraw ();
+		}
+		#endregion
+		
 		#region Animated Widgets
 		Stage<AnimatedWidget> stage = new Stage<AnimatedWidget> ();
 		SingleActorStage border_stage = new SingleActorStage ();
 		
-		uint duration = 500;
+/*		uint duration = 500;
 		Easing easing = Easing.Linear;
 		Blocking blocking = Blocking.Upstage;
 		int start_padding;
 		int end_padding;
 		int spacing;
 		int start_spacing;
-		int end_spacing;
+		int end_spacing;*/
 		int active_count;
 		
-		int start_border;
-		int end_border;
+//		int start_border;
+//		int end_border;
 		double border_bias;
-		Easing border_easing;
+//		Easing border_easing;
 		AnimationState border_state;
 		
 		double Percent {
-			get { return border_stage.Actor.Percent * border_bias + (1.0 - border_bias); }
+			get { return border_stage.Actor == null ? 0 : border_stage.Actor.Percent * border_bias + (1.0 - border_bias); }
 		}
 		
 		protected void InitAnimatedWidgets ()
@@ -2290,117 +2325,109 @@ namespace Mono.TextEditor
 		bool OnActorStep (Actor<AnimatedWidget> actor)
 		{
 			switch (actor.Target.AnimationState) {
-            case AnimationState.Coming:
-                actor.Target.Percent = actor.Percent;
-                if (actor.Expired) {
-                    actor.Target.AnimationState = AnimationState.Idle;
-                    return false;
-                }
-                break;
-            case AnimationState.IntendingToGo:
-                actor.Target.AnimationState = AnimationState.Going;
-                actor.Target.Bias = actor.Percent;
-                actor.Reset ((uint)(actor.Target.Duration * actor.Percent));
-                break;
-            case AnimationState.Going:
-                if (actor.Expired) {
+			case AnimationState.Coming:
+				actor.Target.Percent = actor.Percent;
+				if (actor.Expired) {
+					actor.Target.AnimationState = AnimationState.Idle;
+					return false;
+				}
+				break;
+			case AnimationState.IntendingToGo:
+				actor.Target.AnimationState = AnimationState.Going;
+				actor.Target.Bias = actor.Percent;
+				actor.Reset ((uint)(actor.Target.Duration * actor.Percent));
+				break;
+			case AnimationState.Going:
+				if (actor.Expired) {
 					this.Remove (actor.Target);
-                    return false;
-                } else {
-                    actor.Target.Percent = 1.0 - actor.Percent;
-                }
-                break;
-            }
+					return false;
+				}
+				actor.Target.Percent = 1.0 - actor.Percent;
+				break;
+			}
+			return true;
+		}
+		
+		void OnBorderIteration (object sender, EventArgs args)
+		{
+	/*		if (border_stage.Actor == null) {
+				if (border_state == AnimationState.Coming) {
+					start_border = start_padding;
+					end_border = end_padding;
+				} else {
+					start_border = end_border = 0;
+				}
+				border_state = AnimationState.Idle;
+			} else {
+				double percent = border_state == AnimationState.Coming ? Percent : 1.0 - Percent;
+				start_border = Choreographer.PixelCompose (percent, start_padding, border_easing);
+				end_border = Choreographer.PixelCompose (percent, end_padding, border_easing);
+			}*/
+			QueueResizeNoRedraw ();
+		}
+		
+		void OnWidgetDestroyed (object sender, EventArgs args)
+		{
+			RemoveCore ((AnimatedWidget)sender);
+		}
+		
+		void RemoveCore (AnimatedWidget widget)
+		{
+			RemoveCore (widget, widget.Duration, 0, 0, false, false);
+		}
 
-            return true;
-        }
-
-        void OnBorderIteration (object sender, EventArgs args)
-        {
-//				MoveTopLevelWidget (actor.Target, ((EditorContainerChild)this[actor.Target]).X, (int)(actor.Target.Allocation.Height * actor.Percent));
+		void RemoveCore (AnimatedWidget widget, uint duration, Easing easing, Blocking blocking, bool use_easing, bool use_blocking)
+		{
+			if (duration > 0)
+				widget.Duration = duration;
 			
-            if (border_stage.Actor == null) {
-                if (border_state == AnimationState.Coming) {
-                    start_border = start_padding;
-                    end_border = end_padding;
-                } else {
-                    start_border = end_border = 0;
-                }
-                border_state = AnimationState.Idle;
-            } else {
-                double percent = border_state == AnimationState.Coming ? Percent : 1.0 - Percent;
-                start_border = Choreographer.PixelCompose (percent, start_padding, border_easing);
-                end_border = Choreographer.PixelCompose (percent, end_padding, border_easing);
-            }
-            QueueResizeNoRedraw ();
-        }
-		
-		
-        private void OnWidgetDestroyed (object sender, EventArgs args)
-        {
-            RemoveCore ((AnimatedWidget)sender);
-        }
-		
-		 private void RemoveCore (AnimatedWidget widget)
-        {
-            RemoveCore (widget, widget.Duration, 0, 0, false, false);
-        }
-
-        private void RemoveCore (AnimatedWidget widget, uint duration, Easing easing, Blocking blocking, bool use_easing, bool use_blocking)
-        {
-            if (duration > 0) {
-                widget.Duration = duration;
-            }
-
-            if (use_easing) {
-                widget.Easing = easing;
-            }
-
-            if (use_blocking) {
-                widget.Blocking = blocking;
-            }
-
-            if (widget.AnimationState == AnimationState.Coming) {
-                widget.AnimationState = AnimationState.IntendingToGo;
-            } else {
-                if (widget.Easing == Easing.QuadraticIn) {
-                    widget.Easing = Easing.QuadraticOut;
-                } else if (widget.Easing == Easing.QuadraticOut) {
-                    widget.Easing = Easing.QuadraticIn;
-                } else if (widget.Easing == Easing.ExponentialIn) {
-                    widget.Easing = Easing.ExponentialOut;
-                } else if (widget.Easing == Easing.ExponentialOut) {
-                    widget.Easing = Easing.ExponentialIn;
-                }
-                widget.AnimationState = AnimationState.Going;
-                stage.Add (widget, widget.Duration);
-            }
-
-            duration = widget.Duration;
-            easing = widget.Easing;
-
-            active_count--;
-            if (active_count == 0) {
-                if (border_state == AnimationState.Coming) {
-                    border_bias = Percent;
-                } else {
-                    border_easing = easing;
-                    border_bias = 1.0;
-                }
-                border_state = AnimationState.Going;
-                border_stage.Reset ((uint)(duration * border_bias));
-            }
-        }
+			if (use_easing)
+				widget.Easing = easing;
+			
+			if (use_blocking)
+				widget.Blocking = blocking;
+			
+			if (widget.AnimationState == AnimationState.Coming) {
+				widget.AnimationState = AnimationState.IntendingToGo;
+			} else {
+				if (widget.Easing == Easing.QuadraticIn) {
+					widget.Easing = Easing.QuadraticOut;
+				} else if (widget.Easing == Easing.QuadraticOut) {
+					widget.Easing = Easing.QuadraticIn;
+				} else if (widget.Easing == Easing.ExponentialIn) {
+					widget.Easing = Easing.ExponentialOut;
+				} else if (widget.Easing == Easing.ExponentialOut) {
+					widget.Easing = Easing.ExponentialIn;
+				}
+				widget.AnimationState = AnimationState.Going;
+				stage.Add (widget, widget.Duration);
+			}
+			
+			duration = widget.Duration;
+			easing = widget.Easing;
+			
+			active_count--;
+			if (active_count == 0) {
+				if (border_state == AnimationState.Coming) {
+					border_bias = Percent;
+				} else {
+//					border_easing = easing;
+					border_bias = 1.0;
+				}
+				border_state = AnimationState.Going;
+				border_stage.Reset ((uint)(duration * border_bias));
+			}
+		}
 
 		public void AddAnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, int x, int y)
 		{
 			AnimatedWidget animated_widget = new AnimatedWidget (widget, duration, easing, blocking, false);
 			animated_widget.Parent = this;
-            animated_widget.WidgetDestroyed += OnWidgetDestroyed;
-            stage.Add (animated_widget, duration);
+			animated_widget.WidgetDestroyed += OnWidgetDestroyed;
+			stage.Add (animated_widget, duration);
 			animated_widget.StartPadding = 0;
 			animated_widget.EndPadding = widget.Allocation.Height;
-//            animated_widget.Node = animated_widget;
+//			animated_widget.Node = animated_widget;
 			
 			EditorContainerChild info = new EditorContainerChild (this, animated_widget);
 			info.X = x;
@@ -2408,18 +2435,18 @@ namespace Mono.TextEditor
 			info.FixedPosition = true;
 			containerChildren.Add (info);
 
-//            RecalculateSpacings ();
-            if (active_count == 0) {
-                if (border_state == AnimationState.Going) {
-                    border_bias = Percent;
-                } else {
-                    border_easing = easing;
-                    border_bias = 1.0;
-                }
-                border_state = AnimationState.Coming;
-                border_stage.Reset ((uint)(duration * border_bias));
-            }
-            active_count++;
+//			RecalculateSpacings ();
+			if (active_count == 0) {
+				if (border_state == AnimationState.Going) {
+					border_bias = Percent;
+				} else {
+//					border_easing = easing;
+					border_bias = 1.0;
+				}
+				border_state = AnimationState.Coming;
+				border_stage.Reset ((uint)(duration * border_bias));
+			}
+			active_count++;
 		}
 		
 		#endregion
