@@ -773,6 +773,11 @@ namespace MonoDevelop.SourceEditor
 		}
 		public event EventHandler CaretPositionSet;
 		public event EventHandler<TextChangedEventArgs> TextChanged;
+		
+		public bool HasInputFocus {
+			get { return TextEditor.HasFocus; }
+		}
+		
 		#endregion
 		
 		#region ITextBuffer

@@ -3,6 +3,9 @@ AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 
+#capture aclocal flags for autoreconf
+AC_SUBST(ACLOCAL_FLAGS)
+
 ASSEMBLY_VERSION=2.2.0.0
 PACKAGE_VERSION_LABEL="2.2.1"
 

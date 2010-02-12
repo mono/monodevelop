@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				ShowEncodingSelector = false;
 				
 			if (action != Gtk.FileChooserAction.Open)
-				ShowViewerSelector = false;
+				closeWorkspaceCheck.Visible = ShowViewerSelector = false;
 		}
 		
 		public string Encoding {

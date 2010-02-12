@@ -1,5 +1,8 @@
 SUBDIRS = contrib src po man theme-icons build tests
 
+#capture aclocal flags for autoreconf
+ACLOCAL_AMFLAGS=$(ACLOCAL_FLAGS)
+
 bin_SCRIPTS = monodevelop mdtool
 
 buildinfo = $(top_builddir)/build/bin/buildinfo

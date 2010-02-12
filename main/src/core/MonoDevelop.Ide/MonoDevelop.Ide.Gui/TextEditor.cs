@@ -57,6 +57,10 @@ namespace MonoDevelop.Ide.Gui
 			return ed;
 		}
 		
+		public bool HasInputFocus {
+			get { return textBuffer.HasInputFocus; }
+		}
+		
 		public bool SupportsBookmarks {
 			get { return bookmarkBuffer != null; }
 		}

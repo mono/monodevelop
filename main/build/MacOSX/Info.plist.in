@@ -67,5 +67,7 @@
 	<string>@BUNDLE_VERSION@</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>NO</string>
+	<key>QuartzGLEnable</key>
+	<false/>
 </dict>
 </plist>

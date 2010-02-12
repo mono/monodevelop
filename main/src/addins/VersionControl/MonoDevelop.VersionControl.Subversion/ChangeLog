@@ -1,3 +1,8 @@
+2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Prevent
+	  occasional NRE.
+
 2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion.addin.xml: Don't

@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		int LineCount { get; }
 		void SetCaretTo (int line, int column);
 		void SetCaretTo (int line, int column, bool highlightLine);
+		bool HasInputFocus { get; }
 		
 		event EventHandler CaretPositionSet;
 		event EventHandler<TextChangedEventArgs> TextChanged;

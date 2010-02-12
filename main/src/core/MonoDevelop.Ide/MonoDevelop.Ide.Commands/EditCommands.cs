@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.Name != null && doc.TextEditor != null) {
+			if (doc != null && doc.Name != null && doc.TextEditor != null && doc.TextEditor.HasInputFocus) {
 				ILanguageBinding lang = LanguageBindingService.GetBindingPerFileName (doc.Name);
 				info.Enabled = lang != null;
 			} else

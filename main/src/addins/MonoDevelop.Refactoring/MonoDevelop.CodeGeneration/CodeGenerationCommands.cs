@@ -44,11 +44,18 @@ namespace MonoDevelop.CodeGeneration
 			Document document = IdeApp.Workbench.ActiveDocument;
 			if (document == null)
 				return;
-			ICompletionWidget completionWidget = (ICompletionWidget)document.GetContent (typeof(ICompletionWidget));
+			var completionWidget = document.GetContent<ICompletionWidget> ();
 			if (completionWidget == null)
 				return;
 			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (document.TextEditor.CursorPosition);
 			GenerateCodeWindow.ShowIfValid (document, completionContext);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			Document document = IdeApp.Workbench.ActiveDocument;
+			info.Enabled = document != null && document.TextEditor != null
+				&& document.TextEditor.HasInputFocus && document.GetContent<ICompletionWidget> () != null;
 		}
 	}
 }
