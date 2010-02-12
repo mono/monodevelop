@@ -9,6 +9,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs \
 	gtk-gui/MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs \
+	gtk-gui/MonoDevelop.SourceEditor.PrintSettingsWidget.cs \
 	gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs \
 	MonoDevelop.SourceEditor.Extension/TemplateCodon.cs \
 	MonoDevelop.SourceEditor.Extension/TemplateExtensionNodeLoader.cs \
@@ -34,10 +35,12 @@ FILES =  \
 	MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
+	MonoDevelop.SourceEditor/PrintSettingsWidget.cs \
 	MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs \
 	MonoDevelop.SourceEditor/SourceEditorCommands.cs \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \
 	MonoDevelop.SourceEditor/SourceEditorOptions.cs \
+	MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs \
 	MonoDevelop.SourceEditor/SourceEditorView.cs \
 	MonoDevelop.SourceEditor/SourceEditorWidget.cs \
 	MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs \

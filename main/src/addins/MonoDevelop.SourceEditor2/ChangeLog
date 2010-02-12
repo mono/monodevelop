@@ -1,5 +1,40 @@
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track print
+	  API.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/PrintSettingsWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.PrintSettingsWidget.cs:
+	  Stub out a widget for editing custom print settings.
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs:
+	  Unify and expand the custom print settings in a settings
+	  class. Fix warnings.
+
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs: Fix warning.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs: Use
+	  mm units instead of px.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs:
+	  Replace the Gnome printing code with a new GTK 2.10
+	  implementation.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added method
 	  to check whether text editor has input focus.
 

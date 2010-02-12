@@ -30,9 +30,6 @@ using System.Text;
 using System.Threading;
 
 using Gtk;
-#if GNOME_PRINT
-using Gnome;
-#endif
 
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
@@ -58,10 +55,7 @@ namespace MonoDevelop.SourceEditor
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
-		ICodeTemplateWidget, ITemplateWidget, ISupportsProjectReload
-#if GNOME_PRINT
-		, IPrintable
-#endif
+		ICodeTemplateWidget, ITemplateWidget, ISupportsProjectReload, IPrintable
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -1169,181 +1163,45 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
-#if GNOME_PRINT
 		#region IPrintable
-		PrintDialog    printDialog;
-		Gnome.PrintJob printJob;
 		
-		public void PrintDocument ()
+		public bool CanPrint {
+			get { return true; }
+		}
+		
+		public void PrintDocument (PrintingSettings settings)
 		{
-			if (printDialog != null) 
-				return;
-			CreatePrintJob ();
+			RunPrintOperation (PrintOperationAction.PrintDialog, settings);
+		}
+		
+		public void PrintPreviewDocument (PrintingSettings settings)
+		{
+			RunPrintOperation (PrintOperationAction.Preview, settings);
+		}
+		
+		void RunPrintOperation (PrintOperationAction action, PrintingSettings settings)
+		{
+			var op = new SourceEditorPrintOperation (TextEditor.Document, Name);
 			
-			printDialog = new PrintDialog (printJob, GettextCatalog.GetString ("Print Source Code"));
-			printDialog.SkipTaskbarHint = true;
-			printDialog.Modal = true;
-//			printDialog.IconName = "gtk-print";
-			printDialog.SetPosition (WindowPosition.CenterOnParent);
-			printDialog.Gravity = Gdk.Gravity.Center;
-			printDialog.TypeHint = Gdk.WindowTypeHint.Dialog;
-			printDialog.TransientFor = IdeApp.Workbench.RootWindow;
-			printDialog.KeepAbove = false;
-			printDialog.Response += OnPrintDialogResponse;
-			printDialog.Close += delegate {
-				printDialog = null;
-			};
-			printDialog.Run ();
-		}
-		
-		public void PrintPreviewDocument ()
-		{
-			CreatePrintJob ();
-			PrintJobPreview preview = new PrintJobPreview (printJob, GettextCatalog.GetString ("Print Preview - Source Code"));
-			preview.Modal = true;
-			preview.SetPosition (WindowPosition.CenterOnParent);
-			preview.Gravity = Gdk.Gravity.Center;
-			preview.TransientFor = printDialog != null ? printDialog : IdeApp.Workbench.RootWindow;
-//			preview.IconName = "gtk-print-preview";
-			preview.ShowAll ();
-		}
-		
-		void OnPrintDialogResponse (object sender, Gtk.ResponseArgs args)
-		{
-			switch ((int)args.ResponseId) {
-			case (int)PrintButtons.Print:
-				int result = printJob.Print ();
-				if (result != 0)
-					MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));
-				goto default;
-			case (int)PrintButtons.Preview:
-				PrintPreviewDocument ();
-				break;
-			default:
-				printDialog.HideAll ();
-				printDialog.Destroy ();
-				break;
-			}
-		}
-		
-		const int marginTop    = 50;
-		const int marginBottom = 50;
-		const int marginLeft   = 30;
-		const int marginRight  = 30;
-		
-		int yPos = 0;
-		int xPos = 0;
-		int page = 0;
-		int totalPages = 0;
-		
-		double pageWidth, pageHeight;
-		
-		void PrintHeader (Gnome.PrintContext gpc, Gnome.PrintConfig config)
-		{
-			gpc.SetRgbColor (0, 0, 0);
-			string header = GettextCatalog.GetString ("File:") +  " " + StrMiddleTruncate (IdeApp.Workbench.ActiveDocument.FileName, 60);
-			yPos = marginTop;
-			gpc.MoveTo (xPos, pageHeight - yPos);
-			gpc.Show (header);
-			xPos = marginLeft;
-			gpc.RectFilled (marginLeft, pageHeight - (marginTop + 5), pageWidth - marginRight - marginLeft, 2);
-			yPos += widget.TextEditor.LineHeight;
-		}
-		
-		void PrintFooter (Gnome.PrintContext gpc, Gnome.PrintConfig config)
-		{
-			gpc.SetRgbColor (0, 0, 0);
-			gpc.MoveTo (xPos, marginBottom);
-			gpc.Show ("MonoDevelop");
-			gpc.MoveTo (xPos + 200, marginBottom);
-			string footer = GettextCatalog.GetString ("Page") + " " + page + "/" + (totalPages + 1);
-			gpc.Show (footer);
-			gpc.RectFilled (marginLeft, marginBottom - 3 + widget.TextEditor.LineHeight, pageWidth - marginRight - marginLeft, 2);
-		}
-		
-		void MyPrint (Gnome.PrintContext gpc, Gnome.PrintConfig config)
-		{
-			config.GetPageSize (out pageWidth, out pageHeight);
-			int linesPerPage = (int)((pageHeight - marginBottom - marginTop - 10) / widget.TextEditor.LineHeight);
-			linesPerPage -= 2;
-			totalPages = Document.LineCount / linesPerPage;
-			xPos = marginLeft;
-			string fontName = this.TextEditor.Options.FontName;
-			Gnome.Font font =  Gnome.Font.FindClosestFromFullName (fontName);
-			if (font == null) {
-				LoggingService.LogError ("Can't find font: '" + fontName + "', trying default." );
-				font = Gnome.Font.FindClosestFromFullName (DesktopService.DefaultMonospaceFont);
-			}
-			if (font == null) {
-				LoggingService.LogError ("Unable to load font." );
-				MessageService.ShowError ("Unable to initialize Font, aborting.");
-				return;
-			}
-			Gnome.Font boldFont   =  Gnome.Font.FindFromFullName (font.FontName + " Bold " + ((int)font.Size));
-			Gnome.Font italicFont =  Gnome.Font.FindFromFullName (font.FontName + " Italic " + ((int)font.Size));
+			if (settings.PrintSettings != null)
+				op.PrintSettings = settings.PrintSettings;
+			if (settings.PageSetup != null)
+				op.DefaultPageSetup = settings.PageSetup;
 			
-			gpc.BeginPage ("page " + page++);
-			PrintHeader (gpc, config);
-			foreach (LineSegment line in Document.Lines) {
-				if (yPos >= pageHeight - marginBottom - 5 - widget.TextEditor.LineHeight) {
-					gpc.SetFont (font);
-					yPos = marginTop;
-					PrintFooter (gpc, config);
-					gpc.ShowPage ();
-					gpc.BeginPage ("page " + page++);
-					PrintHeader (gpc, config);
-				}
-				Chunk[] chunks = Document.SyntaxMode.GetChunks (Document, TextEditor.ColorStyle, line, line.Offset, line.Length);
-				foreach (Chunk chunk in chunks) {
-					string text = Document.GetTextAt (chunk);
-					text = text.Replace ("\t", new string (' ', this.TextEditor.Options.TabSize));
-					gpc.SetRgbColor (chunk.Style.Color.Red / (double)ushort.MaxValue, 
-					                 chunk.Style.Color.Green / (double)ushort.MaxValue, 
-					                 chunk.Style.Color.Blue / (double)ushort.MaxValue);
-					
-					gpc.MoveTo (xPos, pageHeight - yPos);
-					if (chunk.Style.Bold) {
-						gpc.SetFont (boldFont);
-					} else if (chunk.Style.Italic) {
-						gpc.SetFont (italicFont);
-					} else {
-						gpc.SetFont (font);
-					}
-					gpc.Show (text);
-					xPos += widget.TextEditor.TextViewMargin.GetWidth (text);
-				}
-				xPos = marginLeft;
-				yPos += widget.TextEditor.LineHeight;
-			}
+			//FIXME: implement in-place preview
+			//op.Preview += HandleOpPreview;
 			
-			gpc.SetFont (font);
-			PrintFooter (gpc, config);
-			gpc.ShowPage ();
-			gpc.EndDoc ();
+			//FIXME: implement async on platforms that support it
+			var result = op.Run (action, IdeApp.Workbench.RootWindow);
+			
+			if (result == PrintOperationResult.Apply)
+				settings.PrintSettings = op.PrintSettings;
+			else if (result == PrintOperationResult.Error)
+				//FIXME: can't show more details, GTK# GetError binding is bad
+				MessageService.ShowError (GettextCatalog.GetString ("Print operation failed."));
 		}
-		
-		void CreatePrintJob ()
-		{
-			if (printDialog != null  || printJob != null)
-				return;/*
-			PrintConfig config = ;
-			PrintJob sourcePrintJob = new SourcePrintJob (config, Buffer);
-			sourcePrintJob.upFromView = View;
-			sourcePrintJob.PrintHeader = true;
-			sourcePrintJob.PrintFooter = true;
-			sourcePrintJob.SetHeaderFormat (GettextCatalog.GetString ("File:") +  " " +
-									  StrMiddleTruncate (IdeApp.Workbench.ActiveDocument.FileName, 60), null, null, true);
-			sourcePrintJob.SetFooterFormat (GettextCatalog.GetString ("MonoDevelop"), null, GettextCatalog.GetString ("Page") + " %N/%Q", true);
-			sourcePrintJob.WrapMode = WrapMode.Word; */
-			printJob = new Gnome.PrintJob (Gnome.PrintConfig.Default ());
-			Gnome.PrintContext ctx = printJob.Context;
-			MyPrint (ctx, printJob.Config); 
-			printJob.Close ();
-		}
-		
 		
 		#endregion
-#endif
 	
 		#region Toolbox
 		static List<TextToolboxNode> clipboardRing = new List<TextToolboxNode> ();
