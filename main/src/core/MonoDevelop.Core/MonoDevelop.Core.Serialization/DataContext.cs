@@ -58,6 +58,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		class PropertyRef
 		{
+			public RuntimeAddin Addin;
 			public string TargetType;
 			public string Name;
 			public string PropertyType;
@@ -65,8 +66,9 @@ namespace MonoDevelop.Core.Serialization
 			public bool SkipEmpty;
 			public PropertyRef Next;
 		
-			public PropertyRef (string targetType, string name, string propertyType, bool isExternal, bool skipEmpty)
+			public PropertyRef (RuntimeAddin addin, string targetType, string name, string propertyType, bool isExternal, bool skipEmpty)
 			{
+				this.Addin = addin;
 				this.TargetType = targetType;
 				this.Name = name;
 				this.PropertyType = propertyType;
@@ -153,7 +155,7 @@ namespace MonoDevelop.Core.Serialization
 				RegisterProperty (addin.GetType (targetType, true), name, addin.GetType (propertyType, true), isExternal, skipEmpty);
 				return;
 			}
-			PropertyRef prop = new PropertyRef (targetType, name, propertyType, isExternal, skipEmpty);
+			PropertyRef prop = new PropertyRef (addin, targetType, name, propertyType, isExternal, skipEmpty);
 			if (tr.Properties == null)
 				tr.Properties = prop;
 			else
@@ -216,6 +218,8 @@ namespace MonoDevelop.Core.Serialization
 			if (!pendingTypesByTypeName.TryGetValue (typeName, out tr)) {
 				tr = new TypeRef (addin, typeName);
 				pendingTypesByTypeName [typeName] = tr;
+			} else {
+				tr.Addin = addin;
 			}
 			pendingTypes [itemName] = tr;
 		}
@@ -249,6 +253,14 @@ namespace MonoDevelop.Core.Serialization
 				Type at = tr.Addin.GetType (tr.TypeName, true);
 				dt = GetConfigurationDataType (at);
 				tr.DataType = dt;
+				var ctype = (ClassDataType) dt;
+				var pRef = tr.Properties;
+				while (pRef != null) {
+					ctype.AddProperty (new ItemProperty (pRef.Name, pRef.Addin.GetType (pRef.PropertyType)) {
+						Unsorted = true, IsExternal = pRef.IsExternal, SkipEmpty = pRef.SkipEmpty}
+					);
+					pRef = pRef.Next;
+				}
 				return dt;
 			}
 			
@@ -268,7 +280,19 @@ namespace MonoDevelop.Core.Serialization
 					configurationTypes [type] = itemType;
 					configurationTypesByName [itemType.Name] = itemType;
 					itemType.SetContext (this);
-					pendingTypes.Remove (itemType.Name);
+					TypeRef pending;
+					if (pendingTypes.TryGetValue (itemType.Name, out pending)) {
+						pending.DataType = itemType;
+						var ctype = (ClassDataType) itemType;
+						var pRef = pending.Properties;
+						while (pRef != null) {
+							ctype.AddProperty (new ItemProperty (pRef.Name, pRef.Addin.GetType (pRef.PropertyType)) {
+								Unsorted = true, IsExternal = pRef.IsExternal, SkipEmpty = pRef.SkipEmpty}
+							);
+							pRef = pRef.Next;
+						}
+						pendingTypes.Remove (itemType.Name);
+					}
 				}
 				return itemType;
 			}
