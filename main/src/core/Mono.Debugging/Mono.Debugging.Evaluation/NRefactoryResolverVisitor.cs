@@ -72,16 +72,28 @@ namespace Mono.Debugging.Evaluation
 			return sb.ToString ();
 		}
 		
-		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+		void ResolveType (string typeName, ICSharpCode.NRefactory.Location loc)
 		{
-			string type = session.ResolveIdentifierAsType (identifierExpression.Identifier, location);
+			string type = session.ResolveIdentifierAsType (typeName, location);
 			if (!string.IsNullOrEmpty (type)) {
 				type = "global::" + type;
-				Replacement r = new Replacement () { Offset = identifierExpression.StartLocation.Column - 1, Length=identifierExpression.Identifier.Length, NewText = type };
+				Replacement r = new Replacement () { Offset = loc.Column - 1, Length=typeName.Length, NewText = type };
 				replacements.Add (r);
 			}
+		}
+		
+		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
+		{
+			ResolveType (identifierExpression.Identifier, identifierExpression.StartLocation);
 			return null;
 		}
+		
+		public override object VisitTypeReference (ICSharpCode.NRefactory.Ast.TypeReference typeReference, object data)
+		{
+			ResolveType (typeReference.Type, typeReference.StartLocation);
+			return base.VisitTypeReference (typeReference, data);
+		}
+
 	}
 }
 
