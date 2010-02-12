@@ -27,7 +27,7 @@
 using System;
 using System.Reflection;
 using Mono.Debugging.Evaluation;
-using Mono.Debugger;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Soft

@@ -26,7 +26,7 @@
 
 using System;
 using System.Diagnostics;
-using Mono.Debugger;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Client;
 using System.Collections.Generic;

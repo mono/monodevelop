@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
-using MDB = Mono.Debugger;
+using MDB = Mono.Debugger.Soft;
 using DC = Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 

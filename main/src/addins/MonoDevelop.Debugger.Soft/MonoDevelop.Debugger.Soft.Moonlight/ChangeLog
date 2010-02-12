@@ -1,3 +1,8 @@
+2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MoonlightSoftDebuggerSession.cs: Use the new namespace for
+	  the soft debugger. Updated the sdb client library.
+
 2009-12-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MoonlightSoftDebuggerSession.cs: Create the

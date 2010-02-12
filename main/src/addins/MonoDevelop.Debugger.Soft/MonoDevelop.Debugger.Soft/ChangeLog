@@ -1,3 +1,22 @@
+2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* RemoteSoftDebuggerSession.cs: Use the new namespace for the
+	  soft debugger. Updated the sdb client library.
+
+2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ArrayAdaptor.cs:
+	* Mono.Debugger.Soft.dll:
+	* SoftDebuggerAdaptor.cs:
+	* FieldValueReference.cs:
+	* SoftDebuggerSession.cs:
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs:
+	* VariableValueReference.cs:
+	* PropertyValueReference.cs:
+	* Mono.Debugger.Soft.dll.mdb: Use the new namespace for the
+	  soft debugger. Updated the sdb client library.
+
 2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: Write a message to the debugger
