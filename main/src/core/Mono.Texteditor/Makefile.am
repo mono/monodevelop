@@ -37,6 +37,12 @@ FILES =  \
 	Mono.TextEditor.PopupWindow/ListWidget.cs \
 	Mono.TextEditor.PopupWindow/ListWindow.cs \
 	Mono.TextEditor.PopupWindow/TooltipWindow.cs \
+	Mono.TextEditor.Theatrics/Actor.cs \
+	Mono.TextEditor.Theatrics/AnimatedWidget.cs \
+	Mono.TextEditor.Theatrics/Choreographer.cs \
+	Mono.TextEditor.Theatrics/Pulsator.cs \
+	Mono.TextEditor.Theatrics/SingleActorStage.cs \
+	Mono.TextEditor.Theatrics/Stage.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
 	Mono.TextEditor.Vi/ViMode.cs \

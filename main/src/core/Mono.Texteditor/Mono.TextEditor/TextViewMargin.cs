@@ -123,7 +123,9 @@ namespace Mono.TextEditor
 				}
 			};
 			base.cursor = xtermCursor;
-			textEditor.HighlightSearchPatternChanged += delegate { selectedRegions.Clear (); };
+			textEditor.HighlightSearchPatternChanged += delegate { 
+				selectedRegions.Clear (); 
+			};
 			//			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
 				if (selectedRegions.Count == 0)
@@ -216,11 +218,23 @@ namespace Mono.TextEditor
 			} while (true);
 			Application.Invoke (delegate {
 				this.selectedRegions = newRegions;
+				
 				DisposeLayoutDict ();
 				textEditor.RedrawMargin (this);
+				OnSearchRegionsUpdated (EventArgs.Empty);
 			});
 		}
-
+		
+		protected virtual void OnSearchRegionsUpdated (EventArgs e)
+		{
+			EventHandler handler = this.SearchRegionsUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler SearchRegionsUpdated;
+		
+		
 		void DisposeSearchPatternWorker ()
 		{
 			if (searchPatternWorker == null)
@@ -1836,6 +1850,11 @@ namespace Mono.TextEditor
 		}
 		
 		List<ISegment> selectedRegions = new List<ISegment> ();
+		public int SearchResultMatchCount {
+			get {
+				return selectedRegions.Count;
+			}
+		}
 		Gdk.Color defaultBgColor;
 		Gdk.Rectangle clipRectangle;
 		

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextEditor</AssemblyName>
     <RootNamespace>Mono.TextEditor</RootNamespace>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -145,6 +146,12 @@
     <Compile Include="Mono.TextEditor\IBackgroundRenderer.cs" />
     <Compile Include="Mono.TextEditor\IAnimation.cs" />
     <Compile Include="Mono.TextEditor\CodeSegmentEditorWindow.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Actor.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Choreographer.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Pulsator.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -232,7 +239,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties InternalTargetFrameworkVersion="3.5">
+      <Properties>
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
