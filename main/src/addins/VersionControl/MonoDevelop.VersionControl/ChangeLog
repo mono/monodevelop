@@ -1,5 +1,10 @@
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Fix parsing
+	  of command id. We are not using enums as ids anymore.
+
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* VersionControl.addin.xml:
 	* MonoDevelop.VersionControl.csproj: Move the icon resources
