@@ -123,7 +123,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		internal static readonly Gdk.Color warningColor = new Gdk.Color (210, 210, 32);
-		internal static readonly Gdk.Color errorColor   = new Gdk.Color (210, 32, 32);
+		internal static readonly Gdk.Color errorColor   = new Gdk.Color (255, 102, 102);
 		
 		void PreviewLine ()
 		{

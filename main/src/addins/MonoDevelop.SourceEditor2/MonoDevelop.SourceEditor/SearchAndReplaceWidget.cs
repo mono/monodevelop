@@ -39,7 +39,7 @@ using Mono.TextEditor;
 namespace MonoDevelop.SourceEditor
 {
 	
-	partial class SearchAndReplaceWidget : Gtk.Bin
+	partial class SearchAndReplaceWidget : MonoDevelop.Components.RoundedFrame
 	{
 		const char historySeparator = '\n';
 		const int  historyLimit = 20;
@@ -77,27 +77,48 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public string ReplacePattern {
-			get { return entryReplace.Entry.Text; }
+			get { return entryReplace.Text; }
 		}
 		
 		public string SearchPattern {
-			get { return entrySearch.Entry.Text; }
-			set { entrySearch.Entry.Text = value; }
+			get { return searchEntry.Query; }
+			set { searchEntry.Query = value; }
 		}
 		
 		public bool SearchFocused {
 			get {
-				return entrySearch.Entry.HasFocus;
+				return searchEntry.HasFocus;
+			}
+		}
+		
+		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
+			if (newX != ((Mono.TextEditor.TextEditor.EditorContainerChild)widget.TextEditor[this]).X) {
+				((Mono.TextEditor.TextEditor.EditorContainerChild)widget.TextEditor[this]).X = newX;
+				widget.TextEditor.QueueResize ();
 			}
 		}
 		
 		public SearchAndReplaceWidget (SourceEditorWidget widget)
 		{
+			widget.TextEditor.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
+			widget.TextEditor.TextViewMargin.SearchRegionsUpdated += HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
+			this.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
+			this.Name = "SearchAndReplaceWidget";
+			this.Events = Gdk.EventMask.AllEventsMask;
 			widget.DisableAutomaticSearchPatternCaseMatch = false;
 			Build();
+			this.buttonReplace.TooltipText = GettextCatalog.GetString ("Replace");
+			this.buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next");
+			this.buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous");
+			this.buttonSearchMode.TooltipText = GettextCatalog.GetString ("Toggle between search and replace mode");
 			
+			this.searchEntry.Ready = true;
+			this.searchEntry.Visible = true;
+			this.searchEntry.WidthRequest = 220;
 			replaceWidgets = new Widget [] {
-				labelReplace,
+		//		labelReplace,
 				entryReplace,
 				buttonReplace,
 				buttonReplaceAll
@@ -113,9 +134,16 @@ namespace MonoDevelop.SourceEditor
 			}
 			UpdateSearchPattern ();
 			
-			entrySearch.Model = searchHistory;
-			entrySearch.KeyReleaseEvent += delegate {
+			//searchEntry.Model = searchHistory;
+			
+			searchEntry.Entry.KeyReleaseEvent += delegate {
 				widget.CheckSearchPatternCasing (SearchPattern);
+/*				widget.SetSearchPattern (SearchPattern);
+				searchPattern = SearchPattern;
+				UpdateSearchEntry ();*/
+			};
+			
+			searchEntry.Entry.Changed += delegate {
 				widget.SetSearchPattern (SearchPattern);
 				searchPattern = SearchPattern;
 				UpdateSearchEntry ();
@@ -123,9 +151,9 @@ namespace MonoDevelop.SourceEditor
 			
 			RestoreSearchHistory ();
 			
-			entryReplace.Entry.Text = replacePattern;
-			entryReplace.Model = replaceHistory;
-			RestoreReplaceHistory ();
+			entryReplace.Text = replacePattern;
+//			entryReplace.Model = replaceHistory;
+//			RestoreReplaceHistory ();
 			
 			foreach (Gtk.Widget child in Children) {
 				child.KeyPressEvent += delegate (object sender, Gtk.KeyPressEventArgs args) {
@@ -151,17 +179,9 @@ namespace MonoDevelop.SourceEditor
 			FocusChildSet += delegate {
 				StoreWidgetState ();
 			};
-			/*
-			entrySearch.Changed += delegate {
-				widget.SetSearchPattern (SearchPattern);
-				// if (!inSearchUpdate) {
-					searchPattern = SearchPattern;
-				// 	FireSearchPatternChanged ();
-				// }
-				UpdateSearchEntry ();
-			};*/
-			entrySearch.Entry.Activated += delegate {
-				UpdateSearchHistory (SearchPattern);
+			
+			searchEntry.Entry.Activated += delegate {
+//				UpdateSearchHistory (SearchPattern);
 				buttonSearchForward.GrabFocus ();
 			};
 			
@@ -175,56 +195,46 @@ namespace MonoDevelop.SourceEditor
 				widget.FindPrevious (false);
 			};
 			
-			optionsButton.Label = MonoDevelop.Core.GettextCatalog.GetString ("Options");
-			optionsButton.MenuCreator =  delegate {
-				Gtk.Menu menu = new Gtk.Menu ();
-				
-				Gtk.CheckMenuItem caseSensitive = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Case sensitive"));
-				caseSensitive.Active = IsCaseSensitive;
-				caseSensitive.Toggled += delegate {
-					SetIsCaseSensitive (caseSensitive.Active);
-					UpdateSearchEntry ();
-				};
-				
-				caseSensitive.ButtonPressEvent += delegate {
-					caseSensitive.Toggle ();
-					widget.DisableAutomaticSearchPatternCaseMatch = true;
-				};
-				
-				menu.Append (caseSensitive);
-				
-				Gtk.CheckMenuItem wholeWordsOnly = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Whole words only"));
-				wholeWordsOnly.Active = IsWholeWordOnly;
-				wholeWordsOnly.Toggled += delegate {
-					SetIsWholeWordOnly (wholeWordsOnly.Active);
-					UpdateSearchEntry ();
-				};
-				
-				wholeWordsOnly.ButtonPressEvent += delegate {
-					wholeWordsOnly.Toggle ();
-				};
-				
-				menu.Append (wholeWordsOnly);
-				Gtk.CheckMenuItem regexSearch = new Gtk.CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Regex search"));
-				regexSearch.Active = SearchEngine == RegexSearchEngine;
-				regexSearch.Toggled += delegate {
-					SetIsRegexSearch (regexSearch.Active);
-					UpdateSearchEntry ();
-				};
-				
-				regexSearch.ButtonPressEvent += delegate {
-					regexSearch.Toggle ();
-				};
-				
-				menu.Append (regexSearch);
-				menu.Hidden += delegate {
-					menu.Destroy ();
-				};
-				
-				menu.ShowAll ();
-				return menu;
+//			optionsButton.Label = MonoDevelop.Core.GettextCatalog.GetString ("Options");
+			
+			this.searchEntry.IsCheckMenu = true;
+			
+			CheckMenuItem caseSensitive = searchEntry.AddFilterOption (0, MonoDevelop.Core.GettextCatalog.GetString ("_Case sensitive"));
+			caseSensitive.Active = IsCaseSensitive;
+			caseSensitive.DrawAsRadio = false;
+			caseSensitive.Toggled += delegate {
+				SetIsCaseSensitive (caseSensitive.Active);
+				UpdateSearchEntry ();
 			};
-			optionsButton.ShowAll ();
+			/*
+			caseSensitive.ButtonPressEvent += delegate {
+				caseSensitive.Toggle ();
+				widget.DisableAutomaticSearchPatternCaseMatch = true;
+			};*/
+			
+			CheckMenuItem wholeWordsOnly = searchEntry.AddFilterOption (1, MonoDevelop.Core.GettextCatalog.GetString ("_Whole words only"));
+			wholeWordsOnly.Active = IsWholeWordOnly;
+			wholeWordsOnly.DrawAsRadio = false;
+			wholeWordsOnly.Toggled += delegate {
+				SetIsWholeWordOnly (wholeWordsOnly.Active);
+				UpdateSearchEntry ();
+			};
+			/*wholeWordsOnly.ButtonPressEvent += delegate {
+				wholeWordsOnly.Toggle ();
+			};*/
+				
+			
+			CheckMenuItem regexSearch = searchEntry.AddFilterOption (2, MonoDevelop.Core.GettextCatalog.GetString ("_Regex search"));
+			regexSearch.Active = SearchEngine == RegexSearchEngine;
+			regexSearch.DrawAsRadio = false;
+			regexSearch.Toggled += delegate {
+				SetIsRegexSearch (regexSearch.Active);
+				UpdateSearchEntry ();
+			};
+			/*
+			regexSearch.ButtonPressEvent += delegate {
+				regexSearch.Toggle ();
+			};*/
 			
 			entryReplace.Changed += delegate {
 				replacePattern = ReplacePattern;
@@ -232,11 +242,11 @@ namespace MonoDevelop.SourceEditor
 					FireReplacePatternChanged ();
 			};
 			
-			entryReplace.Entry.Activated += delegate {
+			entryReplace.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
 				UpdateReplaceHistory (ReplacePattern);
 				widget.Replace ();
-				entryReplace.Entry.GrabFocus ();
+				entryReplace.GrabFocus ();
 			};
 			
 			buttonReplace.Clicked += delegate {
@@ -253,14 +263,35 @@ namespace MonoDevelop.SourceEditor
 			
 			buttonSearchForward.KeyPressEvent += OnNavigateKeyPressEvent;
 			buttonSearchBackward.KeyPressEvent += OnNavigateKeyPressEvent;
-			entrySearch.KeyPressEvent += OnNavigateKeyPressEvent;
+			searchEntry.Entry.KeyPressEvent += OnNavigateKeyPressEvent;
 			entryReplace.KeyPressEvent += OnNavigateKeyPressEvent;
 			buttonReplace.KeyPressEvent += OnNavigateKeyPressEvent;
+			
+			resultInformLabelEventBox = this.searchEntry.AddLabelWidget (resultInformLabel);
+			resultInformLabelEventBox.BorderWidth = 2;
+			resultInformLabel.Xpad = 2;
+			resultInformLabel.Show ();
+			this.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+		}
+
+		void HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated (object sender, EventArgs e)
+		{
+			UpdateSearchEntry ();
 		}
 		
+		Gtk.Label resultInformLabel = new Gtk.Label ();
+		Gtk.EventBox resultInformLabelEventBox;
+		
+		static Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
+		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			GdkWindow.Cursor = arrowCursor;
+			return base.OnEnterNotifyEvent (evnt);
+		}
+
 		public void UpdateSearchPattern ()
 		{
-			entrySearch.Entry.Text = widget.TextEditor.SearchPattern;
+			searchEntry.Query = widget.TextEditor.SearchPattern;
 			widget.SetSearchPattern (widget.TextEditor.SearchPattern);
 			searchPattern = widget.TextEditor.SearchPattern;
 //			UpdateSearchEntry ();
@@ -296,16 +327,16 @@ But I leave it in in the case I've missed something. Mike
 					widget.TextEditor.GrabFocus ();
 					break;
 				case Gdk.Key.slash:
-					entrySearch.Entry.GrabFocus ();
+					searchEntry.GrabFocus ();
 					break;
 				case Gdk.Key.ISO_Left_Tab:
 					if (this.IsReplaceMode) {
-						if (o == entrySearch) {
+						if (o == searchEntry) {
 							buttonSearchForward.GrabFocus ();
 						} else if (o == entryReplace) {
-							entrySearch.Entry.GrabFocus ();
+							searchEntry.GrabFocus ();
 						} else if (o == buttonReplace) {
-							entryReplace.Entry.GrabFocus ();
+							entryReplace.GrabFocus ();
 						} else if (o == buttonSearchBackward) {
 							buttonReplace.GrabFocus ();
 						} else if (o == buttonSearchForward) {
@@ -313,10 +344,10 @@ But I leave it in in the case I've missed something. Mike
 						}
 						args.RetVal = true;
 					} else {
-						if (o == entrySearch) {
+						if (o == searchEntry) {
 							buttonSearchForward.GrabFocus ();
 						} else if (o == buttonSearchBackward) {
-							entrySearch.Entry.GrabFocus ();
+							searchEntry.GrabFocus ();
 							args.RetVal = true;
 						} else if (o == buttonSearchForward) {
 							buttonSearchBackward.GrabFocus ();
@@ -325,8 +356,8 @@ But I leave it in in the case I've missed something. Mike
 					break;
 				case Gdk.Key.Tab: 
 					if (this.IsReplaceMode) {
-						if (o == entrySearch) {
-							entryReplace.Entry.GrabFocus ();
+						if (o == searchEntry) {
+							entryReplace.GrabFocus ();
 						} if (o == entryReplace) {
 							buttonReplace.GrabFocus ();
 						} else if (o == buttonReplace) {
@@ -338,7 +369,7 @@ But I leave it in in the case I've missed something. Mike
 						}
 						args.RetVal = true;
 					} else {
-						if (o == entrySearch) {
+						if (o == searchEntry) {
 							buttonSearchBackward.GrabFocus ();
 						} else if (o == buttonSearchBackward) {
 							buttonSearchForward.GrabFocus ();
@@ -371,6 +402,9 @@ But I leave it in in the case I've missed something. Mike
 		
 		protected override void OnDestroyed ()
 		{
+			widget.TextEditor.TextViewMargin.SearchRegionsUpdated -= HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
+			widget.TextEditor.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
+			
 			// SearchPatternChanged -= UpdateSearchPattern;
 			ReplacePatternChanged -= UpdateReplacePattern;
 			
@@ -390,7 +424,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		public void Focus ()
 		{
-			entrySearch.GrabFocus ();
+			searchEntry.GrabFocusEntry ();
 		}
 		
 		// double vSave, hSave;
@@ -480,18 +514,19 @@ But I leave it in in the case I've missed something. Mike
 		
 //		void UpdateSearchPattern (object sender, EventArgs args)
 //		{
-//			entrySearch.Entry.Text = searchPattern;
+//			searchEntry.Entry.Text = searchPattern;
 //		}
 		
 		string oldPattern;
+		SearchResult result;
 		void UpdateSearchEntry ()
 		{
-			if (oldPattern == SearchPattern)
-				return;
-				
-			oldPattern = SearchPattern;
-			widget.SetSearchOptions ();
-			SearchResult result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
+			if (oldPattern != SearchPattern) {
+				oldPattern = SearchPattern;
+				widget.SetSearchOptions ();
+				result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
+			}
+			
 			bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
 			string errorMsg;
 			bool valid = widget.TextEditor.SearchEngine.IsValidPattern (searchPattern, out errorMsg);
@@ -503,12 +538,21 @@ But I leave it in in the case I've missed something. Mike
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
 			
-			if (error) {
-				entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, GotoLineNumberWidget.errorColor);
+			if (error || widget.TextEditor.TextViewMargin.SearchResultMatchCount == 0) {
+				//resultInformLabel.Markup = "<span foreground=\"#000000\" background=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (GotoLineNumberWidget.errorColor) + "\">" + GettextCatalog.GetString ("Not found") + "</span>";
+				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
+				resultInformLabelEventBox.ModifyBg (StateType.Normal, GotoLineNumberWidget.errorColor);
+				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Normal));
 			} else {
-				entrySearch.Entry.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+				if (string.IsNullOrEmpty (SearchPattern)) {
+					resultInformLabel.Text = "";
+				} else {
+					resultInformLabel.Text = String.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", widget.TextEditor.TextViewMargin.SearchResultMatchCount), widget.TextEditor.TextViewMargin.SearchResultMatchCount);
+				}
+				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
+				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
 			}
-			
+			resultInformLabel.ShowAll ();
 			GotoResult (result);
 		}
 		
@@ -528,7 +572,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		void UpdateReplacePattern (object sender, EventArgs args)
 		{
-			entryReplace.Entry.Text = replacePattern;
+			entryReplace.Text = replacePattern;
 		}
 		
 		internal static bool inReplaceUpdate = false;
@@ -541,5 +585,6 @@ But I leave it in in the case I've missed something. Mike
 		}
 		
 		internal static event EventHandler ReplacePatternChanged;
+
 	}
 }

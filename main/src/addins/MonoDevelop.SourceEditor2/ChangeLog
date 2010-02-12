@@ -1,3 +1,12 @@
+2010-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/GotoLineNumberWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	  Overworked the search & replace widget.
+
 2010-02-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:

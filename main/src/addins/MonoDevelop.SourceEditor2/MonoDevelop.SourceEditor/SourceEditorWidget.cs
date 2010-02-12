@@ -178,7 +178,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public SourceEditorWidget (SourceEditorView view)
 		{
-			
 			this.view = view;
 			this.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
@@ -840,8 +839,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = false;
 			if (searchAndReplaceWidget != null) {
-				if (searchAndReplaceWidget.Parent != null)
-					this.Remove (searchAndReplaceWidget);
 				searchAndReplaceWidget.Destroy ();
 				searchAndReplaceWidget = null;
 				result = true;
@@ -937,11 +934,12 @@ namespace MonoDevelop.SourceEditor
 			if (searchAndReplaceWidget == null) {
 				if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true))
 					SearchAndReplaceWidget.IsCaseSensitive = TextEditor.IsSomethingSelected;
-				
 				KillWidgets ();
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
-				this.PackEnd (searchAndReplaceWidget);
-				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
+				searchAndReplaceWidget.Show ();
+				this.TextEditor.AddAnimatedWidget (searchAndReplaceWidget, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+//				this.PackEnd (searchAndReplaceWidget);
+//				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 		//		searchAndReplaceWidget.ShowAll ();
 				this.textEditor.HighlightSearchPattern = true;
 				if (this.splittedTextEditor != null) 
