@@ -97,6 +97,11 @@ namespace MonoDevelop.Ide.Gui
 			window.Activate (grabFocus);
 		}
 		
+		public bool AutoHide {
+			get { return window.AutoHide; }
+			set { window.AutoHide = value; }
+		}
+		
 		public bool Visible {
 			get {
 				return window.Visible;

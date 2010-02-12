@@ -1063,8 +1063,11 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (WorkspaceItemOpened != null)
 				WorkspaceItemOpened (this, args);
-			if (Items.Count == 1 && FirstWorkspaceItemOpened != null)
-				FirstWorkspaceItemOpened (this, args);
+			if (Items.Count == 1) {
+				IdeApp.Workbench.CurrentLayout = "Solution";
+				if (FirstWorkspaceItemOpened != null)
+					FirstWorkspaceItemOpened (this, args);
+			}
 		}
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
@@ -1086,8 +1089,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 			item.ConfigurationsChanged -= configurationsChanged;
 			
-			if (Items.Count == 0 && LastWorkspaceItemClosed != null)
-				LastWorkspaceItemClosed (this, EventArgs.Empty);
+			if (Items.Count == 0) {
+				IdeApp.Workbench.CurrentLayout = "Default";
+				if (LastWorkspaceItemClosed != null)
+					LastWorkspaceItemClosed (this, EventArgs.Empty);
+			}
 			
 			WorkspaceItemEventArgs args = new WorkspaceItemEventArgs (item);
 			NotifyConfigurationsChanged (null, args);

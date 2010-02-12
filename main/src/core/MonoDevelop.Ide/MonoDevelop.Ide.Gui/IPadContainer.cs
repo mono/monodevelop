@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -42,6 +43,7 @@ namespace MonoDevelop.Ide.Gui
 		string Title { get; set; }
 		string Icon { get; set; }
 		bool Visible { get; set; }
+		bool AutoHide { get; set; }
 		bool ContentVisible { get; }
 		bool Sticky { get; set; }
 		IPadContent Content { get; }
@@ -65,6 +67,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		static IPadWindow lastWindow;
 		static IPadWindow lastLocationList;
+		
+		internal DockItem Item { get; set; }
 		
 		internal PadWindow (IWorkbenchLayout layout, PadCodon codon)
 		{
@@ -120,17 +124,25 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool Visible {
 			get {
-				return layout.IsVisible (codon);
+				return Item.Visible;
 			}
 			set {
-				if (value) {
-					layout.ShowPad (codon);
-				}
-				else {
-					layout.HidePad (codon);
-				}
+				Item.Visible = value;
 			}
 		}
+		
+		public bool AutoHide {
+			get {
+				return Item.Status == DockItemStatus.AutoHide;
+			}
+			set {
+				if (value)
+					Item.Status = DockItemStatus.AutoHide;
+				else
+					Item.Status = DockItemStatus.Dockable;
+			}
+		}
+
 
 		public bool ContentVisible {
 			get { return layout.IsContentVisible (codon); }

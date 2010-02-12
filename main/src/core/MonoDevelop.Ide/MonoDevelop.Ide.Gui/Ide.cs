@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -61,9 +62,11 @@ namespace MonoDevelop.Ide.Gui
 		static RootWorkspace workspace;
 		static IdePreferences preferences;
 
+		public const int CurrentRevision = 5;
+		
 		static bool isInitialRun;
 		static bool isInitialRunAfterUpgrade;
-		static Version upgradedFromVersion;
+		static int upgradedFromRevision;
 		
 		public static event ExitEventHandler Exiting;
 		public static event EventHandler Exited;
@@ -129,8 +132,8 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		// If IsInitialRunAfterUpgrade is true, returns the previous version
-		public static Version UpgradedFromVersion {
-			get { return upgradedFromVersion; }
+		public static int UpgradedFromRevision {
+			get { return upgradedFromRevision; }
 		}
 		
 		public static Version Version {
@@ -214,14 +217,26 @@ namespace MonoDevelop.Ide.Gui
 				isInitialRun = true;
 				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
 				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildVariables.PackageVersion);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", CurrentRevision);
 				PropertyService.SaveProperties ();
 			}
 
 			string lastVersion = PropertyService.Get ("MonoDevelop.Core.LastRunVersion", "1.9.1");
-			if (lastVersion != BuildVariables.PackageVersion && !isInitialRun) {
+			int lastRevision = PropertyService.Get ("MonoDevelop.Core.LastRunRevision", 0);
+			if (lastRevision != CurrentRevision && !isInitialRun) {
 				isInitialRunAfterUpgrade = true;
-				upgradedFromVersion = new Version (lastVersion);
+				if (lastRevision == 0) {
+					switch (lastVersion) {
+						case "1.0": lastRevision = 1; break;
+						case "2.0": lastRevision = 2; break;
+						case "2.2": lastRevision = 3; break;
+						case "2.2.1": lastRevision = 4; break;
+					}
+				}
+				upgradedFromRevision = lastRevision;
 				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildVariables.PackageVersion);
+				PropertyService.Set ("MonoDevelop.Core.LastRunRevision", CurrentRevision);
+				PropertyService.SaveProperties ();
 			}
 			
 			// The ide is now initialized
@@ -238,7 +253,7 @@ namespace MonoDevelop.Ide.Gui
 
 			if (isInitialRunAfterUpgrade) {
 				try {
-					OnUpgraded (upgradedFromVersion);
+					OnUpgraded (upgradedFromRevision);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error found while initializing the IDE", e);
 				}
@@ -387,20 +402,40 @@ namespace MonoDevelop.Ide.Gui
 		static void OnInitialRun ()
 		{
 			Workbench.ResetToolbars ();
+			SetInitialLayout ();
 		}
 
-		static void OnUpgraded (Version previousVersion)
+		static void OnUpgraded (int previousRevision)
 		{
 			// Upgrade to latest msbuild version
 			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
 				IdeApp.Preferences.DefaultProjectFileFormat = MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat;
 			
-			if (previousVersion <= new Version ("2.2")) {
+			if (previousRevision <= 3) {
 				// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
 				IdeApp.Preferences.DefaultTargetRuntime = Runtime.SystemAssemblyService.CurrentRuntime;
 				
 				if (PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false))
 					IdeApp.Preferences.CustomPadFont = PropertyService.Get<string> ("MonoDevelop.Core.Gui.Pads.CustomFont", null);
+			}
+			if (previousRevision < 5)
+				SetInitialLayout ();
+		}
+		
+		static void SetInitialLayout ()
+		{
+			if (!IdeApp.Workbench.Layouts.Contains ("Solution")) {
+				// Create the Solution layout, based on Default
+				IdeApp.Workbench.CurrentLayout = "Default";
+				IdeApp.Workbench.CurrentLayout = "Solution";
+				IdeApp.Workbench.CurrentLayout = "Default";
+				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad> ().Visible = false;
+				IdeApp.Workbench.GetPad<FileScout> ().Visible = false;
+				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad> ().Visible = false;
+				foreach (Pad p in IdeApp.Workbench.Pads) {
+					if (p.Visible)
+						p.AutoHide = true;
+				}
 			}
 		}
 

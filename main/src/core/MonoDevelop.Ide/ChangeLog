@@ -1,3 +1,16 @@
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: MD now creates a new
+	  layout by default: 'Solution'. This layout is enabled when a
+	  solution is opened. The old 'Default' layout is shown when
+	  MD is started, and has all pads minimized.
+
+	* MonoDevelop.Ide.Gui/Pad.cs:
+	* MonoDevelop.Ide.Gui/IPadContainer.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added AutoHide
+	  property to Pad.
+
 2010-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: Don't share text editor

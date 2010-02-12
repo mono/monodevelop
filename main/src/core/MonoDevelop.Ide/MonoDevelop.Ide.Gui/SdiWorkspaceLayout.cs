@@ -488,6 +488,7 @@ namespace MonoDevelop.Ide.Gui
 			item.Icon = ImageService.GetPixbuf (window.Icon, IconSize.Menu);
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
+			window.Item = item;
 			
 			if (padCodon.Initialized) {
 				CreatePadContent (true, padCodon, window, item);
