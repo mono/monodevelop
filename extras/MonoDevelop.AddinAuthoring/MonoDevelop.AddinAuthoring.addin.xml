@@ -124,7 +124,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.AddinAuthoring.AddinProjectReference" />
+		<DataType class = "MonoDevelop.AddinAuthoring.AddinProjectReference" name = "AddinReference"/>
 		<DataType class = "MonoDevelop.AddinAuthoring.ExtensionDomain" />
 	</Extension>
 	
