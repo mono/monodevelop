@@ -746,6 +746,8 @@ namespace Mono.Debugging.Evaluation
 
 			int i = data.ProxyType.IndexOf ('`');
 			if (i != -1) {
+				// The proxy type is an uninstantiated generic type.
+				// The number of type args of the proxy must match the args of the target object
 				int j = i + 1;
 				for (; j < data.ProxyType.Length && char.IsDigit (data.ProxyType[j]); j++);
 				int np = int.Parse (data.ProxyType.Substring (i + 1, j - i - 1));

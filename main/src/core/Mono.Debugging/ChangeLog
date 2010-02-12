@@ -1,3 +1,10 @@
+2010-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Added the
+	  SetBreakEventStatus method, which can be used by subclasses
+	  to set a breakpoint as invalid. Added some docs.
+
 2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/NRefactoryResolverVisitor.cs:
