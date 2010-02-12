@@ -55,7 +55,7 @@
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ToolboxItemToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.TextToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.TypeToolboxNode" />
-		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ItemToolboxNode" />
+		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ItemToolboxNode" name = "item" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">
