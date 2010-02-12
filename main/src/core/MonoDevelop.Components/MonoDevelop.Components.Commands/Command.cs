@@ -52,13 +52,13 @@ namespace MonoDevelop.Components.Commands
 		
 		public Command (object id, string text)
 		{
-			this.id = id;
+			this.id = CommandManager.ToCommandId (id);
 			this.text = text;
 		}
 		
 		public object Id {
 			get { return id; }
-			set { id = value; }
+			set { id = CommandManager.ToCommandId (value); }
 		}
 		
 		public string Text {

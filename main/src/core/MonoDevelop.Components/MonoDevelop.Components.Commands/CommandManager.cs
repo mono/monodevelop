@@ -343,8 +343,7 @@ namespace MonoDevelop.Components.Commands
 		public Command GetCommand (object cmdId)
 		{
 			// Include the type name when converting enum members to ids.
-			if (cmdId.GetType ().IsEnum)
-				cmdId = cmdId.GetType ().FullName + "." + cmdId;
+			cmdId = ToCommandId (cmdId);
 			
 			Command cmd;
 			if (cmds.TryGetValue (cmdId, out cmd))
@@ -1060,6 +1059,15 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		internal static object ToCommandId (object ob)
+		{
+			// Include the type name when converting enum members to ids.
+			if (ob.GetType ().IsEnum)
+				return ob.GetType ().FullName + "." + ob;
+			else
+				return ob;
+		}
+		
 		void NotifyCommandTargetScanStarted ()
 		{
 			if (CommandTargetScanStarted != null)
@@ -1121,20 +1129,13 @@ namespace MonoDevelop.Components.Commands
 			// Don't assign the method if there is already one assigned (maybe from a subclass)
 			if (this.Method == null) {
 				this.Method = method;
-				if (attr.CommandId.GetType ().IsEnum)
-					CommandId = attr.CommandId.GetType ().FullName + "." + attr.CommandId;
-				else
-					CommandId = attr.CommandId;
+				CommandId = CommandManager.ToCommandId (attr.CommandId);
 			}
 		}
 		
 		public CommandMethodInfo (object commandId)
 		{
-			// Include the type name when converting enum members to ids.
-			if (commandId.GetType ().IsEnum)
-				CommandId = commandId.GetType ().FullName + "." + commandId;
-			else
-				CommandId = commandId;
+			CommandId = CommandManager.ToCommandId (commandId);
 		}
 	}
 	
