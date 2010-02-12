@@ -1,3 +1,8 @@
+2010-01-28  Scott Willeke  <scott@willeke.com>
+	* MonoDevelop.Ide.Commands/FileCommands.cs
+	Catching exception to prevent lock on load due to no permission 
+	to recently used file.
+	  
 2010-01-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/HelpOperations.cs: Use the HelpService's

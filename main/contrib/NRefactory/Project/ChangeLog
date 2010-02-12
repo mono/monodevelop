@@ -1,3 +1,8 @@
+2010-02-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed
+	  verbatim string output.
+
 2010-01-20  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:

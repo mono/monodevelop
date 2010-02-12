@@ -302,6 +302,10 @@ namespace MonoDevelop.Ide.Commands
 							? "md-solution"
 							: "md-workspace";
 				}
+				catch (UnauthorizedAccessException exAccess) {
+					LoggingService.LogWarning ("Error building recent solutions list (Permissions)", exAccess);
+					continue;					
+				}
 				catch (IOException ex) {
 					LoggingService.LogWarning ("Error building recent solutions list", ex);
 					continue;

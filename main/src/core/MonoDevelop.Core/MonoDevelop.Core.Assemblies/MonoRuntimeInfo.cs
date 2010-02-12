@@ -97,6 +97,9 @@ namespace MonoDevelop.Core.Assemblies
 			envVars ["PATH"] = libDir + Path.PathSeparator + binDir + Path.PathSeparator + Environment.GetEnvironmentVariable ("PATH");
 			envVars ["LD_LIBRARY_PATH"] = libDir + Path.PathSeparator + Environment.GetEnvironmentVariable ("LD_LIBRARY_PATH");
 			
+			// Avoid inheriting this var from the current process environment
+			envVars ["MONO_PATH"] = string.Empty;
+			
 			StringWriter output = new StringWriter ();
 			try {
 				string monoPath = Path.Combine (prefix, "bin");
