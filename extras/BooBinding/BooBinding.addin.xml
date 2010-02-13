@@ -80,7 +80,7 @@
   </Extension>
 -->
   <Extension path = "/MonoDevelop/Ide/Pads">
-	<Pad id = "BooBinding.Pads.BooShellPadContent" _label="Boo Shell" icon="boo-project-icon" class = "BooBinding.Pads.BooShellPadContent" defaultPlacement = "Bottom"/>
+	<Pad id = "BooBinding.Pads.BooShellPadContent" _label="Boo Shell" icon="boo-icon" class = "BooBinding.Pads.BooShellPadContent" defaultPlacement = "Bottom"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
