@@ -1,3 +1,8 @@
+2010-02-13  lluis  <${AuthorEmail}>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: (Revert
+	  revision 151674)
+
 2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs: First attempt
