@@ -487,6 +487,8 @@ namespace MonoDevelop.Ide.Gui
 				} else {
 					toolbarBox.Remove (pathBar);
 					toolbarBox.Destroy ();
+					pathBar = null;
+					toolbarBox = null;
 				}
 				EnsureToolbarBoxSeparator ();
 			}
