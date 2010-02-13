@@ -25,7 +25,6 @@ FILES =  \
 	MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueWindow.cs \
 	MonoDevelop.SourceEditor/DefaultFormatter.cs \
-	MonoDevelop.SourceEditor/DropDownBox.cs \
 	MonoDevelop.SourceEditor/DropDownBoxListWindow.cs \
 	MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \

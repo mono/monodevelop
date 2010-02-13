@@ -1,3 +1,11 @@
+2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Remove
+	  dead code.
+
 2010-02-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: fixed

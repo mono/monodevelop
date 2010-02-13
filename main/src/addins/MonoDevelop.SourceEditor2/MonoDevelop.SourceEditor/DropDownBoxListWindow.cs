@@ -212,7 +212,6 @@ namespace MonoDevelop.SourceEditor
 			
 			protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 			{
-			
 				selection = -1;
 				QueueDraw ();
 				return base.OnLeaveNotifyEvent (evnt);

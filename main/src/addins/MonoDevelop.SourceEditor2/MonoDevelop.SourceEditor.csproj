@@ -167,7 +167,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\DropDownBox.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DropDownBoxListWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
