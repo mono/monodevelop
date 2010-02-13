@@ -221,7 +221,7 @@ namespace MonoDevelop.Core.Serialization
 				tr = new TypeRef (addin, typeName);
 				pendingTypesByTypeName [typeName] = tr;
 			} else
-				tr.Addin = Addin;
+				tr.Addin = addin;
 			pendingTypes [itemName] = tr;
 		}
 		

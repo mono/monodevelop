@@ -1,5 +1,9 @@
 2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Serialization/DataContext.cs: Fix build.
+
+2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Serialization/DataContext.cs: Fix
 	  registering of extended properties.
 
