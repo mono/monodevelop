@@ -1,6 +1,11 @@
 2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
+	* WelcomePage.csproj: Restore makefile integration.
+
+2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
 	* WelcomePage.xsl:
 	* WelcomePage.css:
 	* gtk-gui/gui.stetic:

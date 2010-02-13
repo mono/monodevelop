@@ -22,9 +22,9 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.WelcomePage.WelcomePageWidget.cs \
 	WelcomePageCommands.cs \
-	WelcomePageWidget.cs \
 	WelcomePageOptionPanel.cs \
-	WelcomePageView.cs
+	WelcomePageView.cs \
+	WelcomePageWidget.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
