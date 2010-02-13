@@ -1,4 +1,9 @@
-2010-02-13  lluis  <${AuthorEmail}>
+2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: Fix
+	  registering of extended properties.
+
+2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs: (Revert
 	  revision 151674)

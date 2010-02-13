@@ -64,9 +64,11 @@ namespace MonoDevelop.Core.Serialization
 			public bool IsExternal;
 			public bool SkipEmpty;
 			public PropertyRef Next;
+			public RuntimeAddin Addin;
 		
-			public PropertyRef (string targetType, string name, string propertyType, bool isExternal, bool skipEmpty)
+			public PropertyRef (RuntimeAddin addin, string targetType, string name, string propertyType, bool isExternal, bool skipEmpty)
 			{
+				this.Addin = addin;
 				this.TargetType = targetType;
 				this.Name = name;
 				this.PropertyType = propertyType;
@@ -153,7 +155,7 @@ namespace MonoDevelop.Core.Serialization
 				RegisterProperty (addin.GetType (targetType, true), name, addin.GetType (propertyType, true), isExternal, skipEmpty);
 				return;
 			}
-			PropertyRef prop = new PropertyRef (targetType, name, propertyType, isExternal, skipEmpty);
+			PropertyRef prop = new PropertyRef (addin, targetType, name, propertyType, isExternal, skipEmpty);
 			if (tr.Properties == null)
 				tr.Properties = prop;
 			else
@@ -173,7 +175,9 @@ namespace MonoDevelop.Core.Serialization
 				return;
 
 			if (tr.DataType != null) {
-				UnregisterProperty (addin.GetType (targetType, true), name);
+				Type t = addin.GetType (targetType, false);
+				if (t != null)
+					UnregisterProperty (t, name);
 				return;
 			}
 			
@@ -216,7 +220,8 @@ namespace MonoDevelop.Core.Serialization
 			if (!pendingTypesByTypeName.TryGetValue (typeName, out tr)) {
 				tr = new TypeRef (addin, typeName);
 				pendingTypesByTypeName [typeName] = tr;
-			}
+			} else
+				tr.Addin = Addin;
 			pendingTypes [itemName] = tr;
 		}
 		
@@ -268,7 +273,18 @@ namespace MonoDevelop.Core.Serialization
 					configurationTypes [type] = itemType;
 					configurationTypesByName [itemType.Name] = itemType;
 					itemType.SetContext (this);
-					pendingTypes.Remove (itemType.Name);
+					
+					TypeRef tr;
+					if (pendingTypesByTypeName.TryGetValue (type.FullName, out tr)) {
+						tr.DataType = itemType;
+						pendingTypes.Remove (itemType.Name);
+						PropertyRef pr = tr.Properties;
+						while (pr != null) {
+							RegisterProperty (pr.Addin, tr.TypeName, pr.Name, pr.PropertyType, pr.IsExternal, pr.SkipEmpty);
+							pr = pr.Next;
+						}
+						tr.Properties = null;
+					}
 				}
 				return itemType;
 			}
