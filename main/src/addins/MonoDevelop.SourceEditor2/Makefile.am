@@ -53,7 +53,9 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
-	MonoDevelop.SourceEditor.addin.xml  
+	MonoDevelop.SourceEditor.addin.xml \
+	MonoDevelop.SourceEditor/searchoptions.png
+
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \

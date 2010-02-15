@@ -194,6 +194,9 @@
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">
       <LogicalName>MonoDevelop.SourceEditor.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.SourceEditor\searchoptions.png">
+      <LogicalName>searchoptions.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

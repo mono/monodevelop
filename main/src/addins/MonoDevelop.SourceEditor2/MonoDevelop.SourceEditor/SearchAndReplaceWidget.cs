@@ -95,6 +95,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
 			if (newX != ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[this]).X) {
+				this.searchEntry.WidthRequest = widget.Allocation.Width / 3;
 				((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[this]).X = newX;
 				widget.TextEditorContainer.QueueResize ();
 			}
@@ -116,7 +117,7 @@ namespace MonoDevelop.SourceEditor
 			
 			this.searchEntry.Ready = true;
 			this.searchEntry.Visible = true;
-			this.searchEntry.WidthRequest = 220;
+			this.searchEntry.WidthRequest = widget.Allocation.Width / 3;
 			replaceWidgets = new Widget [] {
 		//		labelReplace,
 				entryReplace,
@@ -275,6 +276,7 @@ namespace MonoDevelop.SourceEditor
 			this.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.Style.Background (StateType.Normal)));
 			this.DoubleBuffered = true;
 			this.AppPaintable = false;
+			searchEntry.FilterButtonPixbuf = new Gdk.Pixbuf (typeof(SearchAndReplaceWidget).Assembly, "searchoptions.png");
 		}
 
 		void HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated (object sender, EventArgs e)

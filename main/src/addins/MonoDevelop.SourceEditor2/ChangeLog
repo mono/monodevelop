@@ -1,5 +1,14 @@
 2010-02-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/searchoptions.png:
+	* MonoDevelop.SourceEditor/searchoptions.svg:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Added
+	  search options icon.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs:
