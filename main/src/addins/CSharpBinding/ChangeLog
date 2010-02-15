@@ -1,5 +1,11 @@
 2010-02-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
+	  Fixed 'Bug 576336 - Parameter tooltip window stops working'.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
 	  'Bug 577225 - Inconsistent autocomplete on returned value of

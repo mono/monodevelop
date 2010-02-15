@@ -138,9 +138,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (PropertyService.Get ("EnableParameterInsight", true) && keyChar == ',' && CanRunParameterCompletionCommand ()) 
-				base.RunParameterCompletionCommand ();
 			bool result = base.KeyPress (key, keyChar, modifier);
+			
+			if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+				base.RunParameterCompletionCommand ();
 			
 			if (stateTracker.Engine.IsInsideComment) {
 				ParameterInformationWindowManager.HideWindow ();
@@ -603,11 +604,15 @@ namespace MonoDevelop.CSharp.Completion
 			if (mem == null || (mem is IType))
 				return false;
 			int startPos = GetMemberStartPosition (mem);
-			
+			int bracketDepth = 0;
+			int chevronDepth = 0;
 			while (cpos > startPos) {
 				char c = Editor.GetCharAt (cpos);
-				
-				if (c == '(' || c == '<') {
+				if (c == ')')
+					bracketDepth++;
+				if (c == '>')
+					chevronDepth++;
+				if (bracketDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
 					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
 					if (p != -1) {
 						cpos++;
@@ -616,6 +621,10 @@ namespace MonoDevelop.CSharp.Completion
 						return false;
 					}
 				}
+				if (c == '(')
+					bracketDepth--;
+				if (c == '<')
+					chevronDepth--;
 				cpos--;
 			}
 			return false;
