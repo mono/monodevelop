@@ -94,15 +94,15 @@ namespace MonoDevelop.SourceEditor
 		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
-			if (newX != ((Mono.TextEditor.TextEditor.EditorContainerChild)widget.TextEditor[this]).X) {
-				((Mono.TextEditor.TextEditor.EditorContainerChild)widget.TextEditor[this]).X = newX;
-				widget.TextEditor.QueueResize ();
+			if (newX != ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[this]).X) {
+				((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[this]).X = newX;
+				widget.TextEditorContainer.QueueResize ();
 			}
 		}
 		
 		public SearchAndReplaceWidget (SourceEditorWidget widget)
 		{
-			widget.TextEditor.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
+			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			widget.TextEditor.TextViewMargin.SearchRegionsUpdated += HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
 			this.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			this.Name = "SearchAndReplaceWidget";
@@ -271,7 +271,10 @@ namespace MonoDevelop.SourceEditor
 			resultInformLabelEventBox.BorderWidth = 2;
 			resultInformLabel.Xpad = 2;
 			resultInformLabel.Show ();
-			this.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+			//this.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+			this.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.Style.Background (StateType.Normal)));
+			this.DoubleBuffered = true;
+			this.AppPaintable = false;
 		}
 
 		void HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated (object sender, EventArgs e)
@@ -402,8 +405,9 @@ But I leave it in in the case I've missed something. Mike
 		
 		protected override void OnDestroyed ()
 		{
+			
 			widget.TextEditor.TextViewMargin.SearchRegionsUpdated -= HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
-			widget.TextEditor.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
+			widget.TextEditorContainer.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
 			
 			// SearchPatternChanged -= UpdateSearchPattern;
 			ReplacePatternChanged -= UpdateReplacePattern;
@@ -563,7 +567,7 @@ But I leave it in in the case I've missed something. Mike
 				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
 				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
 			}
-		}
+		} 
 		
 		void UpdateReplaceHistory (string item)
 		{

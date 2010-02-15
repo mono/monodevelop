@@ -70,7 +70,15 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		ObjectValue objectValue;
-		TextEditor editor;
+		
+		TextEditorContainer container;
+		
+		TextEditor Editor {
+			get {
+				return container.TextEditorWidget;
+			}
+		}
+		
 		class Divider : Gtk.Widget
 		{
 			public Divider ()
@@ -91,9 +99,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		Gtk.Image unpinImage;
-		public PinnedWatchWidget (TextEditor editor, PinnedWatch watch)
+		public PinnedWatchWidget (TextEditorContainer container, PinnedWatch watch)
 		{
-			this.editor = editor;
+			this.container = container;
 			this.watch = watch;
 			this.ObjectValue = watch.Value;
 			
@@ -115,15 +123,15 @@ namespace MonoDevelop.SourceEditor
 			HandleEditorOptionsChanged (null, null);
 			ShowAll ();
 			//unpin.Hide ();
-			editor.EditorOptionsChanged += HandleEditorOptionsChanged;
+			Editor.EditorOptionsChanged += HandleEditorOptionsChanged;
 		}
 
 		void HandleEditorOptionsChanged (object sender, EventArgs e)
 		{
-			this.HeightRequest = editor.LineHeight;
-			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
+			this.HeightRequest = Editor.LineHeight;
+			fontDescription = Pango.FontDescription.FromString (Editor.Options.FontName);
 			fontDescription.Family = "Sans";
-			fontDescription.Size = (int)(fontDescription.Size * editor.Options.Zoom);
+			fontDescription.Size = (int)(fontDescription.Size * Editor.Options.Zoom);
 			label.ModifyFont (fontDescription);
 			valueLabel.ModifyFont (fontDescription);
 		}
@@ -132,7 +140,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			editor.EditorOptionsChanged -= HandleEditorOptionsChanged;
+			Editor.EditorOptionsChanged -= HandleEditorOptionsChanged;
 			
 		}
 
@@ -160,7 +168,7 @@ namespace MonoDevelop.SourceEditor
 			
 			if (!mousePressed) {
 				mousePressed = true;
-				editor.MoveToTop (this);
+				container.MoveToTop (this);
 				Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
 				Gtk.Grab.Add (this);
 			}

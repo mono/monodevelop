@@ -650,7 +650,7 @@ namespace MonoDevelop.SourceEditor
 		void UpdatePinnedWatches ()
 		{
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
-				widget.TextEditor.Remove (wi.Widget);
+				widget.TextEditorContainer.Remove (wi.Widget);
 				wi.Widget.Destroy ();
 			}
 			pinnedWatches.Clear ();
@@ -675,7 +675,7 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
 				w.OffsetX = widget.TextEditor.TextViewMargin.XOffset + lw + 4;
 			}
-			wi.Widget = new PinnedWatchWidget (widget.TextEditor, w);
+			wi.Widget = new PinnedWatchWidget (widget.TextEditorContainer, w);
 			
 //			wi.Marker = new DebugValueMarker (widget.TextEditor, line, w);
 			wi.Watch = w;
@@ -683,7 +683,7 @@ namespace MonoDevelop.SourceEditor
 //			if (w.Value != null)
 //				wi.Marker.AddValue (w.Value);
 
-			widget.TextEditor.AddTopLevelWidget (wi.Widget, w.OffsetX, w.OffsetY);
+			widget.TextEditorContainer.AddTopLevelWidget (wi.Widget, w.OffsetX, w.OffsetY);
 			
 //			widget.TextEditor.QueueDraw ();
 		}
@@ -704,7 +704,7 @@ namespace MonoDevelop.SourceEditor
 			Console.WriteLine ("Remove watch !!!");
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
-					widget.TextEditor.Remove (wi.Widget);
+					widget.TextEditorContainer.Remove (wi.Widget);
 					wi.Widget.Destroy ();
 					break;
 				}
@@ -716,8 +716,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
 					wi.Widget.ObjectValue = wi.Watch.Value;
-					Console.WriteLine (args.Watch.OffsetX +"x" + args.Watch.OffsetY);
-					TextEditor.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
+					widget.TextEditorContainer.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
 //					widget.TextEditor.Document.CommitLineUpdate (wi.Line);
 					break;
 				}
@@ -1205,8 +1204,8 @@ namespace MonoDevelop.SourceEditor
 			int tx, ty;
 			
 			widget.ParentWindow.GetOrigin (out tx, out ty);
-			tx += TextEditor.Allocation.X;
-			ty += TextEditor.Allocation.Y;
+			tx += widget.TextEditorContainer.Allocation.X;
+			ty += widget.TextEditorContainer.Allocation.Y;
 			result.TriggerXCoord = tx + p.X + TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;
 			result.TriggerYCoord = ty + p.Y - (int)TextEditor.VAdjustment.Value + TextEditor.LineHeight;
 			result.TriggerTextHeight = TextEditor.LineHeight;

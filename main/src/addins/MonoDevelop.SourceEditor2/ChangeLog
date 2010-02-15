@@ -1,3 +1,13 @@
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Worked
+	  on search & replace widget.
+
 2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

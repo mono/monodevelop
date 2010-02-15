@@ -54,11 +54,11 @@ namespace MonoDevelop.SourceEditor
 		DropDownBox membersCombo = new DropDownBox ();
 		DropDownBox regionCombo = new DropDownBox ();
 		
-		SourceEditorWidget editor;
+		SourceEditorWidget Editor;
 		
 		public ClassQuickFinder (SourceEditorWidget editor): base (false, 0)
 		{
-			this.editor = editor;
+			this.Editor = editor;
 			this.BorderWidth = 0;
 			this.Spacing = 0;
 			typeCombo.DataProvider = new TypeDataProvider (this);
@@ -139,7 +139,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!this.IsRealized)
 				return false;
-			UpdatePosition (editor.TextEditor.Caret.Line + 1, editor.TextEditor.Caret.Column + 1);
+			UpdatePosition (Editor.TextEditor.Caret.Line + 1, Editor.TextEditor.Caret.Column + 1);
 			handlingParseEvent = false;
 			// return false to stop the GLib.Timeout
 			return false;
@@ -253,7 +253,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public string GetText (int n)
 			{
-				return parent.editor.Ambience.GetString (memberList[n], OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
+				return parent.Editor.Ambience.GetString (memberList[n], OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
 			}
 			
 			public Gdk.Pixbuf GetIcon (int n)
@@ -268,8 +268,8 @@ namespace MonoDevelop.SourceEditor
 			
 			int System.Collections.Generic.IComparer<IMember>.Compare (IMember x, IMember y)
 			{
-				string nameX = parent.editor.Ambience.GetString (x, OutputFlags.None);
-				string nameY = parent.editor.Ambience.GetString (y, OutputFlags.None);
+				string nameX = parent.Editor.Ambience.GetString (x, OutputFlags.None);
+				string nameY = parent.Editor.Ambience.GetString (y, OutputFlags.None);
 				return String.Compare (nameX, nameY, StringComparison.OrdinalIgnoreCase);
 			}
 		}
@@ -284,7 +284,7 @@ namespace MonoDevelop.SourceEditor
 			if (member == null) {
 				membersCombo.SetItem ("", null, null);
 			} else {
-				membersCombo.SetItem (editor.Ambience.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
+				membersCombo.SetItem (Editor.Ambience.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
 				                      MonoDevelop.Core.Gui.ImageService.GetPixbuf (member.StockIcon, IconSize.Menu),
 				                      member);
 			}
@@ -305,7 +305,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateMemberComboTip (IMember member)
 		{
-			membersCombo.TooltipText = member != null ? editor.Ambience.GetString (member, OutputFlags.ClassBrowserEntries) : GettextCatalog.GetString ("Member list");
+			membersCombo.TooltipText = member != null ? Editor.Ambience.GetString (member, OutputFlags.ClassBrowserEntries) : GettextCatalog.GetString ("Member list");
 		}
 		
 #endregion
@@ -364,7 +364,7 @@ namespace MonoDevelop.SourceEditor
 
 			string GetString (IType x)
 			{
-				return parent.editor.Ambience.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
+				return parent.Editor.Ambience.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
 			}
 		}
 		
@@ -378,7 +378,7 @@ namespace MonoDevelop.SourceEditor
 			if (result == null) {
 				typeCombo.SetItem ("", null, null);
 			} else {
-				typeCombo.SetItem (editor.Ambience.GetString (result, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName),
+				typeCombo.SetItem (Editor.Ambience.GetString (result, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName),
 				                   MonoDevelop.Core.Gui.ImageService.GetPixbuf (result.StockIcon, IconSize.Menu),
 				                   result);
 				
@@ -402,7 +402,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateTypeComboTip (IType type)
 		{
-			typeCombo.TooltipText = type != null ? editor.Ambience.GetString (type, OutputFlags.ClassBrowserEntries) : GettextCatalog.GetString ("Type list");
+			typeCombo.TooltipText = type != null ? Editor.Ambience.GetString (type, OutputFlags.ClassBrowserEntries) : GettextCatalog.GetString ("Type list");
 		}
 #endregion
 		void JumpTo (int line, int column)
@@ -438,8 +438,8 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
-			if (editor != null) 
-				editor = null;
+			if (Editor != null) 
+				Editor = null;
 			
 			base.OnDestroyed ();
 		}

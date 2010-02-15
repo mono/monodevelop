@@ -81,18 +81,28 @@ namespace MonoDevelop.SourceEditor
 		
 		public MonoDevelop.SourceEditor.ExtensibleTextEditor TextEditor {
 			get {
-				if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null
-				    && this.splittedTextEditor.HasFocus)
-				{
-					lastActiveEditor = this.splittedTextEditor;
-				}
-				if (this.textEditor != null && this.textEditor.Parent != null && this.textEditor.HasFocus)
-				{
-					lastActiveEditor = this.textEditor;
-				}
+				SetLastActiveEditor ();
 				return lastActiveEditor;
 			}
 		}
+		
+		public TextEditorContainer TextEditorContainer {
+			get {
+				SetLastActiveEditor ();
+				return lastActiveEditor == textEditor ? textEditorContainer : splittedTextEditorContainer;
+			}
+		}
+		
+		void SetLastActiveEditor ()
+		{
+			if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null && this.splittedTextEditor.HasFocus) {
+				lastActiveEditor = this.splittedTextEditor;
+			}
+			if (this.textEditor != null && this.textEditor.Parent != null && this.textEditor.HasFocus) {
+				lastActiveEditor = this.textEditor;
+			}
+		}
+		
 		
 		public bool ShowClassBrowser {
 			get { return shouldShowclassBrowser; }
@@ -176,6 +186,7 @@ namespace MonoDevelop.SourceEditor
 			args.RetVal = true;
 		}
 		
+		TextEditorContainer textEditorContainer;
 		public SourceEditorWidget (SourceEditorView view)
 		{
 			this.view = view;
@@ -184,7 +195,8 @@ namespace MonoDevelop.SourceEditor
 			mainsw = new ScrolledWindow ();
 			mainsw.BorderWidth = 0;
 			mainsw.ShadowType = ShadowType.In;
-			mainsw.Child = this.TextEditor;
+			this.textEditorContainer = new TextEditorContainer (textEditor);
+			mainsw.Child = textEditorContainer;
 			this.PackStart (mainsw, true, true, 0);
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			this.textEditor.Errors = errors;
@@ -558,7 +570,6 @@ namespace MonoDevelop.SourceEditor
 				this.mainsw = secondsw;
 				vadjustment = secondsw.Vadjustment.Value;
 				hadjustment = secondsw.Hadjustment.Value;
-
 				splitContainer.Remove (secondsw);
 				lastActiveEditor = this.textEditor = splittedTextEditor;
 				splittedTextEditor = null;
@@ -583,6 +594,8 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		ScrolledWindow secondsw;
+		TextEditorContainer splittedTextEditorContainer;
+		
 		public void Split (bool vSplit)
 		{
 			double vadjustment = this.mainsw.Vadjustment.Value;
@@ -616,8 +629,10 @@ namespace MonoDevelop.SourceEditor
 			};
 			this.splittedTextEditor.Caret.PositionChanged += CaretPositionChanged;
 			
-			secondsw.Child = splittedTextEditor;
+			this.splittedTextEditorContainer = new TextEditorContainer (this.splittedTextEditor);
+			secondsw.Child = this.splittedTextEditorContainer;
 			splitContainer.Add2 (secondsw);
+			
 			this.PackStart (splitContainer, true, true, 0);
 			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2 - 1;
 			
@@ -633,14 +648,14 @@ namespace MonoDevelop.SourceEditor
 			double vadjustment = this.mainsw.Vadjustment.Value;
 			double hadjustment = this.mainsw.Hadjustment.Value;
 			
-			this.mainsw.Remove (textEditor);
-			textEditor.Unparent ();
+			this.mainsw.Remove (textEditorContainer);
+			textEditorContainer.Unparent ();
 			this.mainsw.Destroy ();
 			
 			this.mainsw = new ScrolledWindow ();
 			this.mainsw.ShadowType = ShadowType.In;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
-			this.mainsw.Child = textEditor;
+			this.mainsw.Child = textEditorContainer;
 			this.mainsw.Vadjustment.Value = vadjustment; 
 			this.mainsw.Hadjustment.Value = hadjustment;
 		}
@@ -937,7 +952,7 @@ namespace MonoDevelop.SourceEditor
 				KillWidgets ();
 				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
 				searchAndReplaceWidget.Show ();
-				this.TextEditor.AddAnimatedWidget (searchAndReplaceWidget, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidget, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 //				this.PackEnd (searchAndReplaceWidget);
 //				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 		//		searchAndReplaceWidget.ShowAll ();
