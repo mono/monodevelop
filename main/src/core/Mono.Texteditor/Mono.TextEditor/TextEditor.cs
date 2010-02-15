@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Gtk.Container, ITextEditorDataProvider
+	public class TextEditor : Gtk.Widget, ITextEditorDataProvider
 	{
 		TextEditorData textEditorData;
 		
@@ -163,8 +163,8 @@ namespace Mono.TextEditor
 				this.textEditorData.HAdjustment.Value = System.Math.Ceiling (this.textEditorData.HAdjustment.Value);
 				return;
 			}
-			if (this.containerChildren.Count > 0)
-				QueueResize ();
+/*			if (this.containerChildren.Count > 0)
+				QueueResize ();*/
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			int curHAdjustment = (int)this.textEditorData.HAdjustment.Value;
@@ -186,8 +186,8 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
-			if (this.containerChildren.Count > 0)
-				QueueResize ();
+/*			if (this.containerChildren.Count > 0)
+				QueueResize ();*/
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			textViewMargin.VAdjustmentValueChanged ();
@@ -234,6 +234,8 @@ namespace Mono.TextEditor
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
+			if (textEditorData == null)
+				return;
 			if (textEditorData.HAdjustment != null)
 				textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (textEditorData.VAdjustment != null)
@@ -331,7 +333,6 @@ namespace Mono.TextEditor
 			}
 			
 			InitAnimations ();
-			InitAnimatedWidgets ();
 		}
 
 		void TextEditorDatahandleUpdateAdjustmentsRequested (object sender, EventArgs e)
@@ -1215,18 +1216,11 @@ namespace Mono.TextEditor
 			}*/
 			if (IsRealized)
 				AllocateWindowBuffer (Allocation);
-			if (this.GdkWindow != null) {
+			if (this.GdkWindow != null) 
 				this.GdkWindow.MoveResize (allocation);
-			}
 			SetAdjustments (Allocation);
 			Repaint ();
 			textViewMargin.SetClip ();
-			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
-				Requisition req = child.Child.SizeRequest ();
-				child.Child.SizeAllocate (new Gdk.Rectangle ((int)(child.FixedPosition ?  child.X : child.X * Options.Zoom - this.HAdjustment.Value), 
-				                                             (int)(child.FixedPosition ?  child.Y : child.Y * Options.Zoom - this.VAdjustment.Value), req.Width, req.Height));
-			}
-			
 		}
 		
 		protected override void OnMapped ()
@@ -2134,7 +2128,7 @@ namespace Mono.TextEditor
 		#endregion
 
 		
-#region Container
+/*#region Container
 		public override ContainerChild this [Widget w] {
 			get {
 				foreach (EditorContainerChild info in containerChildren.ToArray ()) {
@@ -2238,7 +2232,7 @@ namespace Mono.TextEditor
 				callback (child.Child);
 			}
 		}
-#endregion
+#endregion*/
 		
 		#region Animation
 		Stage<Animation> animationStage = new Stage<Animation> ();
@@ -2292,164 +2286,6 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
-		#region Animated Widgets
-		Stage<AnimatedWidget> stage = new Stage<AnimatedWidget> ();
-		SingleActorStage border_stage = new SingleActorStage ();
-		
-/*		uint duration = 500;
-		Easing easing = Easing.Linear;
-		Blocking blocking = Blocking.Upstage;
-		int start_padding;
-		int end_padding;
-		int spacing;
-		int start_spacing;
-		int end_spacing;*/
-		int active_count;
-		
-//		int start_border;
-//		int end_border;
-		double border_bias;
-//		Easing border_easing;
-		AnimationState border_state;
-		
-		double Percent {
-			get { return border_stage.Actor == null ? 0 : border_stage.Actor.Percent * border_bias + (1.0 - border_bias); }
-		}
-		
-		protected void InitAnimatedWidgets ()
-		{
-			stage.ActorStep += OnActorStep;
-			border_stage.Iteration += OnBorderIteration;
-		}
-		
-		bool OnActorStep (Actor<AnimatedWidget> actor)
-		{
-			switch (actor.Target.AnimationState) {
-			case AnimationState.Coming:
-				actor.Target.Percent = actor.Percent;
-				if (actor.Expired) {
-					actor.Target.AnimationState = AnimationState.Idle;
-					return false;
-				}
-				break;
-			case AnimationState.IntendingToGo:
-				actor.Target.AnimationState = AnimationState.Going;
-				actor.Target.Bias = actor.Percent;
-				actor.Reset ((uint)(actor.Target.Duration * actor.Percent));
-				break;
-			case AnimationState.Going:
-				if (actor.Expired) {
-					this.Remove (actor.Target);
-					return false;
-				}
-				actor.Target.Percent = 1.0 - actor.Percent;
-				break;
-			}
-			return true;
-		}
-		
-		void OnBorderIteration (object sender, EventArgs args)
-		{
-	/*		if (border_stage.Actor == null) {
-				if (border_state == AnimationState.Coming) {
-					start_border = start_padding;
-					end_border = end_padding;
-				} else {
-					start_border = end_border = 0;
-				}
-				border_state = AnimationState.Idle;
-			} else {
-				double percent = border_state == AnimationState.Coming ? Percent : 1.0 - Percent;
-				start_border = Choreographer.PixelCompose (percent, start_padding, border_easing);
-				end_border = Choreographer.PixelCompose (percent, end_padding, border_easing);
-			}*/
-			QueueResizeNoRedraw ();
-		}
-		
-		void OnWidgetDestroyed (object sender, EventArgs args)
-		{
-			RemoveCore ((AnimatedWidget)sender);
-		}
-		
-		void RemoveCore (AnimatedWidget widget)
-		{
-			RemoveCore (widget, widget.Duration, 0, 0, false, false);
-		}
-
-		void RemoveCore (AnimatedWidget widget, uint duration, Easing easing, Blocking blocking, bool use_easing, bool use_blocking)
-		{
-			if (duration > 0)
-				widget.Duration = duration;
-			
-			if (use_easing)
-				widget.Easing = easing;
-			
-			if (use_blocking)
-				widget.Blocking = blocking;
-			
-			if (widget.AnimationState == AnimationState.Coming) {
-				widget.AnimationState = AnimationState.IntendingToGo;
-			} else {
-				if (widget.Easing == Easing.QuadraticIn) {
-					widget.Easing = Easing.QuadraticOut;
-				} else if (widget.Easing == Easing.QuadraticOut) {
-					widget.Easing = Easing.QuadraticIn;
-				} else if (widget.Easing == Easing.ExponentialIn) {
-					widget.Easing = Easing.ExponentialOut;
-				} else if (widget.Easing == Easing.ExponentialOut) {
-					widget.Easing = Easing.ExponentialIn;
-				}
-				widget.AnimationState = AnimationState.Going;
-				stage.Add (widget, widget.Duration);
-			}
-			
-			duration = widget.Duration;
-			easing = widget.Easing;
-			
-			active_count--;
-			if (active_count == 0) {
-				if (border_state == AnimationState.Coming) {
-					border_bias = Percent;
-				} else {
-//					border_easing = easing;
-					border_bias = 1.0;
-				}
-				border_state = AnimationState.Going;
-				border_stage.Reset ((uint)(duration * border_bias));
-			}
-		}
-
-		public void AddAnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, int x, int y)
-		{
-			AnimatedWidget animated_widget = new AnimatedWidget (widget, duration, easing, blocking, false);
-			animated_widget.Parent = this;
-			animated_widget.WidgetDestroyed += OnWidgetDestroyed;
-			stage.Add (animated_widget, duration);
-			animated_widget.StartPadding = 0;
-			animated_widget.EndPadding = widget.Allocation.Height;
-//			animated_widget.Node = animated_widget;
-			
-			EditorContainerChild info = new EditorContainerChild (this, animated_widget);
-			info.X = x;
-			info.Y = y;
-			info.FixedPosition = true;
-			containerChildren.Add (info);
-
-//			RecalculateSpacings ();
-			if (active_count == 0) {
-				if (border_state == AnimationState.Going) {
-					border_bias = Percent;
-				} else {
-//					border_easing = easing;
-					border_bias = 1.0;
-				}
-				border_state = AnimationState.Coming;
-				border_stage.Reset ((uint)(duration * border_bias));
-			}
-			active_count++;
-		}
-		
-		#endregion
 		internal void FireLinkEvent (string link, int button, ModifierType modifierState)
 		{
 			if (LinkRequest != null)

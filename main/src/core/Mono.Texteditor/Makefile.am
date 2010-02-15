@@ -100,6 +100,7 @@ FILES =  \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
 	Mono.TextEditor/TextEditor.cs \
+	Mono.TextEditor/TextEditorContainer.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextLinkEditMode.cs \

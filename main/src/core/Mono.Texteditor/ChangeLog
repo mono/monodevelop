@@ -1,3 +1,11 @@
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorContainer.cs: Moved text editor
+	  container to own class.
+
 2010-02-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
