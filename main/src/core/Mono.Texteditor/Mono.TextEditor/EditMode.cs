@@ -80,6 +80,8 @@ namespace Mono.TextEditor
 		
 		protected void InsertCharacter (uint unicodeKey)
 		{
+			if (!Editor.GetTextEditorData ().CanEdit (Data.Caret.Line))
+				return;
 			Editor.HideMouseCursor ();
 			Document.BeginAtomicUndo ();
 			if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
