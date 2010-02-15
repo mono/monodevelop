@@ -161,8 +161,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int curItem = 0;
 			int yPos = 0;
 			Iterate (false, ref yPos, delegate (Category category, int ypos) {
-				if (countCategories)
+				if (countCategories) {
+					if (curItem == index)
+						result = category.Items[0];
 					curItem++;
+				}
 			}, delegate (Category curCategory, int item, int ypos) {
 				if (curItem == index)
 					result = item;

@@ -1,3 +1,9 @@
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  'Bug 576322 - Click in code completion list selects wrong
+	  item when categories enabled'.
+
 2010-02-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
