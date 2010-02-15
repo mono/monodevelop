@@ -110,7 +110,8 @@ namespace MonoDevelop.CSharp.Resolver
 						MethodResolveResult methodResolveResult = new MethodResolveResult (possibleMethod);
 						methodResolveResult.CallingType   = resolver.CallingType;
 						methodResolveResult.CallingMember = resolver.CallingMember;
-						identifierExpression.TypeArguments.ForEach (arg => methodResolveResult.AddGenericArgument (arg.ConvertToReturnType ()));
+						
+						identifierExpression.TypeArguments.ForEach (arg => methodResolveResult.AddGenericArgument (resolver.ResolveType (arg.ConvertToReturnType ())));
 						methodResolveResult.ResolveExtensionMethods ();
 						return methodResolveResult;
 					}
@@ -562,7 +563,7 @@ namespace MonoDevelop.CSharp.Resolver
 					//result.StaticResolve = isStatic;
 					//result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
 					foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
-						((MethodResolveResult)result).AddGenericArgument (typeReference.ConvertToReturnType ());
+						((MethodResolveResult)result).AddGenericArgument (resolver.ResolveType (typeReference.ConvertToReturnType ()));
 					}
 					((MethodResolveResult)result).ResolveExtensionMethods ();
 					if (nonMethodMembers.Count > 0) {
@@ -612,6 +613,7 @@ namespace MonoDevelop.CSharp.Resolver
 					return CreateResult ("System.Type");
 			}
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
+			
 			if (targetResult is CombinedMethodResolveResult)
 				targetResult = ((CombinedMethodResolveResult)targetResult).MethodResolveResult;
 			targetResult.StaticResolve = false; // invocation result is never static

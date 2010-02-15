@@ -1,3 +1,10 @@
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
+	  'Bug 577225 - Inconsistent autocomplete on returned value of
+	  generic method.'.
+
 2010-02-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
