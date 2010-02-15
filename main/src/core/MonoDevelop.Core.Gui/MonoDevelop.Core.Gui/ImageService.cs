@@ -134,6 +134,7 @@ namespace MonoDevelop.Core.Gui
 			//if an icon name begins with '#', we assume it's a hex colour
 			if (name[0] == '#')
 				return CreateColorBlock (name, size);
+			
 			string stockid = InternalGetStockId (name, size);
 			if (string.IsNullOrEmpty (stockid)) {
 				LoggingService.LogWarning ("Can't get stock id for " + name + " : " + Environment.NewLine + Environment.StackTrace);
@@ -142,8 +143,8 @@ namespace MonoDevelop.Core.Gui
 			
 			Gtk.IconSet iconset = Gtk.IconFactory.LookupDefault (stockid);
 			if (iconset != null) 
-				return iconset.RenderIcon (Gtk.Widget.DefaultStyle, Gtk.TextDirection.None, Gtk.StateType.Normal, size, null, null);
-
+				return iconset.RenderIcon (Gtk.Widget.DefaultStyle, Gtk.TextDirection.Ltr, Gtk.StateType.Normal, size, null, null);
+			
 			if (Gtk.IconTheme.Default.HasIcon (stockid)) {
 				int w, h;
 				Gtk.Icon.SizeLookup (size, out w, out h);

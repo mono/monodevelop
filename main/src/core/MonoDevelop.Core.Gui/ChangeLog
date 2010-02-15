@@ -1,3 +1,8 @@
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: Fixed 'Bug 578960 -
+	  Some stock icons not loading'.
+
 2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/ImageService.cs:
