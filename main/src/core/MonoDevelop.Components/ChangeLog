@@ -1,3 +1,9 @@
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/SearchEntry.cs:
+	* MonoDevelop.Components/HoverImageButton.cs: Added ability to
+	  set filter button images.
+
 2010-02-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

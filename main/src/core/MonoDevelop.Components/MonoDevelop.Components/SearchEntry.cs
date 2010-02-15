@@ -83,7 +83,15 @@ namespace MonoDevelop.Components
 			
 			NoShowAll = true;
 		}
-
+		public Gdk.Pixbuf FilterButtonPixbuf {
+			get {
+				return filter_button.Pixbuf;
+			}
+			set {
+				filter_button.Pixbuf = value;
+			}
+		}
+		
 		private void BuildWidget ()
 		{
 			box = new HBox ();
