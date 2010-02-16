@@ -1,5 +1,12 @@
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CodeBehindGenerator.cs: Remove the
+	  CompilerGeneratedAttribute, it's probably wrong. However,
+	  there are lots of other debugger-type attributes we should
+	  probably be adding.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CodeBehind.cs: Update designer files when project changes.
 
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>

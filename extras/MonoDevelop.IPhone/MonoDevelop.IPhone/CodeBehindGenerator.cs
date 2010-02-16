@@ -289,7 +289,6 @@ namespace MonoDevelop.IPhone
 		{
 			var fieldName = "__mt_" + name;
 			var field = new CodeMemberField (typeRef, fieldName);
-			field.CustomAttributes.Add (new CodeAttributeDeclaration ("System.Runtime.CompilerServices.CompilerGenerated"));
 			
 			var prop = new CodeMemberProperty () {
 				Name = name,
