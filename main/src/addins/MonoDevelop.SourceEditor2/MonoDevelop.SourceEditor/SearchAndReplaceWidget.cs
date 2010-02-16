@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Gtk;
 
@@ -108,6 +109,7 @@ namespace MonoDevelop.SourceEditor
 			this.container = container;
 			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			widget.TextEditor.TextViewMargin.SearchRegionsUpdated += HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
+			widget.TextEditor.Caret.PositionChanged += HandleWidgetTextEditorCaretPositionChanged;
 			this.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			this.Name = "SearchAndReplaceWidget";
 			this.Events = Gdk.EventMask.AllEventsMask;
@@ -277,6 +279,11 @@ namespace MonoDevelop.SourceEditor
 			searchEntry.FilterButtonPixbuf = new Gdk.Pixbuf (typeof(SearchAndReplaceWidget).Assembly, "searchoptions.png");
 		}
 
+		void HandleWidgetTextEditorCaretPositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			UpdateResultInformLabel ();
+		}
+
 		void HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated (object sender, EventArgs e)
 		{
 			UpdateResultInformLabel ();
@@ -395,7 +402,7 @@ But I leave it in in the case I've missed something. Mike
 					return;
 				
 				isReplaceMode = value;
-				searchButtonModeArrow.ArrowType = isReplaceMode ? ArrowType.Down : ArrowType.Up;
+				searchButtonModeArrow.ArrowType = isReplaceMode ? ArrowType.Up : ArrowType.Down;
 				table.RowSpacing = isReplaceMode ? 6u : 0u;
 				foreach (Widget widget in replaceWidgets) {
 					widget.Visible = isReplaceMode;
@@ -405,7 +412,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		protected override void OnDestroyed ()
 		{
-			
+			widget.TextEditor.Caret.PositionChanged -= HandleWidgetTextEditorCaretPositionChanged;
 			widget.TextEditor.TextViewMargin.SearchRegionsUpdated -= HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
 			widget.TextEditorContainer.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
 			
@@ -421,8 +428,10 @@ But I leave it in in the case I've missed something. Mike
 				replaceHistory.Dispose ();
 				replaceHistory = null;
 			}
-			
-			widget = null;
+			if (widget != null) {
+				widget.TextEditor.Repaint ();
+				widget = null;
+			}
 			base.OnDestroyed ();
 		}
 		
@@ -531,10 +540,8 @@ But I leave it in in the case I've missed something. Mike
 				result = widget.TextEditor.SearchForward (widget.TextEditor.Document.LocationToOffset (caretSave));
 			}
 			
-			if (string.IsNullOrEmpty (SearchPattern))
-				UpdateResultInformLabel ();
-			
 			GotoResult (result);
+			UpdateResultInformLabel ();
 		}
 		
 		void UpdateResultInformLabel ()
@@ -563,7 +570,21 @@ But I leave it in in the case I've missed something. Mike
 				resultInformLabelEventBox.ModifyBg (StateType.Normal, GotoLineNumberWidget.errorColor);
 				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Normal));
 			} else {
-				resultInformLabel.Text = String.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", widget.TextEditor.TextViewMargin.SearchResultMatchCount), widget.TextEditor.TextViewMargin.SearchResultMatchCount);
+				int resultIndex = 0;
+				int foundIndex = -1;
+				int caretOffset = widget.TextEditor.Caret.Offset;
+				foreach (ISegment searchResult in widget.TextEditor.TextViewMargin.SearchResults) {
+					if (searchResult.Offset <= caretOffset && caretOffset <= searchResult.EndOffset) {
+						foundIndex = resultIndex + 1;
+						break;
+					}
+					resultIndex++;
+				}
+				if (foundIndex != -1) {
+					resultInformLabel.Text = String.Format (GettextCatalog.GetString ("{0} of {1}"), foundIndex, widget.TextEditor.TextViewMargin.SearchResultMatchCount);
+				} else {
+					resultInformLabel.Text = String.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", widget.TextEditor.TextViewMargin.SearchResultMatchCount), widget.TextEditor.TextViewMargin.SearchResultMatchCount);
+				}
 				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
 				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
 			}

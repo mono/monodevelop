@@ -27,6 +27,8 @@
 //
 
 using System;
+using Gtk;
+
 using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
@@ -39,11 +41,26 @@ namespace MonoDevelop.SourceEditor
 		DocumentLocation caretSave;
 		bool cleanExit = false;
 		
-		public GotoLineNumberWidget (SourceEditorWidget widget)
+		Widget container;
+		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
+			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
+			TextEditorContainer.EditorContainerChild containerChild = ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[container]);
+			if (newX != containerChild.X) {
+				this.entryLineNumber.WidthRequest = widget.Allocation.Width / 4;
+				containerChild.X = newX;
+				widget.TextEditorContainer.QueueResize ();
+			}
+		}
+		
+		public GotoLineNumberWidget (SourceEditorWidget widget, Widget container)
+		{
+			this.container = container;
 			this.Build ();
+			
 			this.widget = widget;
 			StoreWidgetState ();
+			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			
 			this.closeButton.Clicked += delegate {
 				RestoreWidgetState ();
@@ -83,6 +100,14 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveSearchWidget ();
 			};
 		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			widget.TextEditorContainer.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
+			
+		}
+
 		
 		void StoreWidgetState ()
 		{

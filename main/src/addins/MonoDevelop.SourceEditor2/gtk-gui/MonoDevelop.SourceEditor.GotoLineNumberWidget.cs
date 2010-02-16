@@ -6,15 +6,13 @@ namespace MonoDevelop.SourceEditor
 	{
 		private global::Gtk.HBox hbox1;
 
-		private global::Gtk.Button closeButton;
-
-		private global::Gtk.Image image1;
-
-		private global::Gtk.Label label1;
-
 		private global::Gtk.Entry entryLineNumber;
 
 		private global::Gtk.Button buttonGoToLine;
+
+		private global::Gtk.Button closeButton;
+
+		private global::Gtk.Image image1;
 
 		protected virtual void Build ()
 		{
@@ -25,7 +23,42 @@ namespace MonoDevelop.SourceEditor
 			// Container child MonoDevelop.SourceEditor.GotoLineNumberWidget.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
-			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.entryLineNumber = new global::Gtk.Entry ();
+			this.entryLineNumber.CanFocus = true;
+			this.entryLineNumber.Name = "entryLineNumber";
+			this.entryLineNumber.IsEditable = true;
+			this.entryLineNumber.InvisibleChar = '●';
+			this.hbox1.Add (this.entryLineNumber);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.entryLineNumber]));
+			w1.Position = 0;
+			w1.Expand = false;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.buttonGoToLine = new global::Gtk.Button ();
+			this.buttonGoToLine.CanDefault = true;
+			this.buttonGoToLine.CanFocus = true;
+			this.buttonGoToLine.Name = "buttonGoToLine";
+			this.buttonGoToLine.UseUnderline = true;
+			this.buttonGoToLine.Relief = ((global::Gtk.ReliefStyle)(2));
+			// Container child buttonGoToLine.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w2 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w3 = new global::Gtk.HBox ();
+			w3.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w4 = new global::Gtk.Image ();
+			w4.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-jump-to", global::Gtk.IconSize.Menu);
+			w3.Add (w4);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w6 = new global::Gtk.Label ();
+			w3.Add (w6);
+			w2.Add (w3);
+			this.buttonGoToLine.Add (w2);
+			this.hbox1.Add (this.buttonGoToLine);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonGoToLine]));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.closeButton = new global::Gtk.Button ();
 			this.closeButton.CanFocus = true;
@@ -38,58 +71,10 @@ namespace MonoDevelop.SourceEditor
 			this.closeButton.Add (this.image1);
 			this.closeButton.Label = null;
 			this.hbox1.Add (this.closeButton);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
-			w2.Position = 0;
-			w2.Expand = false;
-			w2.Fill = false;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.label1 = new global::Gtk.Label ();
-			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Line Number:");
-			this.label1.UseUnderline = true;
-			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
-			w3.Position = 1;
-			w3.Expand = false;
-			w3.Fill = false;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.entryLineNumber = new global::Gtk.Entry ();
-			this.entryLineNumber.CanFocus = true;
-			this.entryLineNumber.Name = "entryLineNumber";
-			this.entryLineNumber.IsEditable = true;
-			this.entryLineNumber.InvisibleChar = '●';
-			this.hbox1.Add (this.entryLineNumber);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.entryLineNumber]));
-			w4.Position = 2;
-			w4.Expand = false;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.buttonGoToLine = new global::Gtk.Button ();
-			this.buttonGoToLine.CanDefault = true;
-			this.buttonGoToLine.CanFocus = true;
-			this.buttonGoToLine.Name = "buttonGoToLine";
-			this.buttonGoToLine.UseUnderline = true;
-			this.buttonGoToLine.Relief = ((global::Gtk.ReliefStyle)(2));
-			// Container child buttonGoToLine.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w5 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w6 = new global::Gtk.HBox ();
-			w6.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w7 = new global::Gtk.Image ();
-			w7.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-jump-to", global::Gtk.IconSize.Menu);
-			w6.Add (w7);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w9 = new global::Gtk.Label ();
-			w9.LabelProp = global::Mono.Unix.Catalog.GetString ("_Go to Line");
-			w9.UseUnderline = true;
-			w6.Add (w9);
-			w5.Add (w6);
-			this.buttonGoToLine.Add (w5);
-			this.hbox1.Add (this.buttonGoToLine);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonGoToLine]));
-			w13.Position = 3;
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
+			w12.Position = 2;
+			w12.Expand = false;
+			w12.Fill = false;
 			this.Add (this.hbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

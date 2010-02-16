@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 			this.buttonSearchMode.CanFocus = true;
 			this.buttonSearchMode.Name = "buttonSearchMode";
 			// Container child buttonSearchMode.Gtk.Container+ContainerChild
-			this.searchButtonModeArrow = new global::Gtk.Arrow (((global::Gtk.ArrowType)(1)), ((global::Gtk.ShadowType)(0)));
+			this.searchButtonModeArrow = new global::Gtk.Arrow (((global::Gtk.ArrowType)(0)), ((global::Gtk.ShadowType)(0)));
 			this.searchButtonModeArrow.Name = "searchButtonModeArrow";
 			this.buttonSearchMode.Add (this.searchButtonModeArrow);
 			this.buttonSearchMode.Label = null;
@@ -124,12 +124,10 @@ namespace MonoDevelop.SourceEditor
 			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table[this.hbox1]));
 			w10.LeftAttach = ((uint)(1));
 			w10.RightAttach = ((uint)(2));
-			w10.XPadding = ((uint)(6));
 			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table.Gtk.Table+TableChild
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
-			this.hbox2.Spacing = 6;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.entryReplace = new global::Gtk.Entry ();
 			this.entryReplace.CanFocus = true;
@@ -173,7 +171,6 @@ namespace MonoDevelop.SourceEditor
 			w15.BottomAttach = ((uint)(2));
 			w15.LeftAttach = ((uint)(1));
 			w15.RightAttach = ((uint)(2));
-			w15.XPadding = ((uint)(6));
 			w15.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table);
 			if ((this.Child != null)) {

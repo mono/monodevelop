@@ -838,6 +838,7 @@ namespace MonoDevelop.SourceEditor
 		#region Search and Replace
 		Components.RoundedFrame searchAndReplaceWidgetFrame = null;
 		SearchAndReplaceWidget searchAndReplaceWidget = null;
+		Components.RoundedFrame gotoLineNumberWidgetFrame = null;
 		GotoLineNumberWidget   gotoLineNumberWidget   = null;
 		
 		public void SetSearchPattern ()
@@ -861,13 +862,13 @@ namespace MonoDevelop.SourceEditor
 				result = true;
 			}
 			
-			if (gotoLineNumberWidget != null) {
-				if (gotoLineNumberWidget.Parent != null)
-					this.Remove (gotoLineNumberWidget);
-				gotoLineNumberWidget.Destroy ();
+			if (gotoLineNumberWidgetFrame != null) {
+				gotoLineNumberWidgetFrame.Destroy ();
+				gotoLineNumberWidgetFrame = null;
 				gotoLineNumberWidget = null;
 				result = true;
 			}
+			
 			if (this.textEditor != null) 
 				this.textEditor.HighlightSearchPattern = false;
 			if (this.splittedTextEditor != null) 
@@ -987,13 +988,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (gotoLineNumberWidget == null) {
 				KillWidgets ();
-				gotoLineNumberWidget = new GotoLineNumberWidget (this);
-				this.Add (gotoLineNumberWidget);
-				this.SetChildPacking(gotoLineNumberWidget, false, false, CHILD_PADDING, PackType.End);
-				gotoLineNumberWidget.ShowAll ();
-				ResetFocusChain ();
 				
+				
+				gotoLineNumberWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+				gotoLineNumberWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				
+				gotoLineNumberWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (this, gotoLineNumberWidgetFrame);
+				gotoLineNumberWidgetFrame.ShowAll ();
+				
+				this.TextEditorContainer.AddAnimatedWidget (gotoLineNumberWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+				
+				ResetFocusChain ();
 			}
+			
 			gotoLineNumberWidget.Focus ();
 		}
 		
