@@ -45,12 +45,6 @@ namespace MonoDevelop.Moonlight
 		{
 		}
 		
-		protected override IEnumerable<string> SupportedExtensions {
-			get {
-				yield return ".xaml";
-			}
-		}
-		
 		#region Code completion
 		
 //		static ProjectDom GetMLDom (MoonlightProject project)
