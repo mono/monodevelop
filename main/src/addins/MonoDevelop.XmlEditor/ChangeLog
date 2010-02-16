@@ -1,3 +1,9 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: File
+	  extensions are now declared in the node metadata.
+
 2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

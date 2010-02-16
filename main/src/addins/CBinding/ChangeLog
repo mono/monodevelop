@@ -1,3 +1,11 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CBinding.addin.xml: Added some conditions to avoid early
+	  loading of extensions.
+
+	* Gui/CTextEditorExtension.cs: File extensions are now
+	  declared in the node metadata.
+
 2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* Compiler/GNUCompiler.cs: Support gcc "note" errortype.

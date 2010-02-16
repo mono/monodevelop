@@ -61,14 +61,6 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region Setup and teardown
 		
-		protected override IEnumerable<string> SupportedExtensions {
-			get {
-				yield return ".aspx";
-				yield return ".ascx";
-				yield return ".master";
-			}
-		}
-		
 		protected override S.RootState CreateRootState ()
 		{
 			return new AspNetFreeState ();

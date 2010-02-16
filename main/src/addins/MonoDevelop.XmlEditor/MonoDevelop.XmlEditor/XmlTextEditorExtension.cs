@@ -69,11 +69,6 @@ namespace MonoDevelop.XmlEditor
 			return IsFileNameHandled (doc.Name);
 		}
 		
-		protected override IEnumerable<string> SupportedExtensions {
-			get { throw new System.InvalidOperationException (); }
-		}
- 
-		
 		public override void Initialize ()
 		{
 			base.Initialize ();

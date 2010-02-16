@@ -43,6 +43,6 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.TextTemplating.Gui.T4EditorExtension" />
+		<Class fileExtensions = ".tt" class = "MonoDevelop.TextTemplating.Gui.T4EditorExtension" />
 	</Extension>
 </Addin>

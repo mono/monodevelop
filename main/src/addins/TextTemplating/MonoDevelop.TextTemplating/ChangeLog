@@ -1,3 +1,11 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/T4EditorExtension.cs: File extensions are now declared
+	  in the node metadata.
+
+	* MonoDevelop.TextTemplating.addin.xml: Added some conditions
+	  to avoid early loading of extensions.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

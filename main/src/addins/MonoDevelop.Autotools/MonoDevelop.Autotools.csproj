@@ -124,7 +124,6 @@
     <Compile Include="MakefileVar.cs" />
     <Compile Include="ImportMakefileDialog.cs" />
     <Compile Include="MakefileProject.cs" />
-    <Compile Include="MakefileReaderExtension.cs" />
     <Compile Include="FileNodeBuilderExtension.cs" />
     <Compile Include="TarballBuilderEditorWidget.cs" />
     <Compile Include="MakefileIntegrationFeature.cs" />

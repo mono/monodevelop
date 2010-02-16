@@ -1,3 +1,9 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MakefileReaderExtension.cs:
+	* MonoDevelop.Autotools.csproj: Remove usnused extension.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MakefileIntegrationFeature.cs: Track api changes.
