@@ -55,12 +55,6 @@ namespace MonoDevelop.AddinAuthoring.CodeCompletion
 			return (doc.Project is DotNetProject) && (editor.Name.ToString ().EndsWith (".addin") || editor.Name.ToString ().EndsWith (".addin.xml"));
 		}
 
-		protected override IEnumerable<string> SupportedExtensions {
-			get {
-				throw new System.NotImplementedException ();
-			}
-		}
-
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
 			if ((Tracker.Engine.CurrentState is XmlDoubleQuotedAttributeValueState

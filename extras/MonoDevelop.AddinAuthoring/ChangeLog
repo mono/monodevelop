@@ -1,3 +1,33 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.AddinAuthoring.sln:
+	* MonoDevelop.AddinAuthoring.csproj:
+	* gtk-gui/MonoDevelop.AddinAuthoring.TypeSelector.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.RegistrySelector.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NewRegistryDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.AddinFeatureWidget.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NodeSetEditorDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NodeSetEditorWidget.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.SelectNodeSetDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NodeTypeEditorDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.ExtensionEditorWidget.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.AddinDescriptionWidget.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.AddinOptionPanelWidget.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.NewExtensionPointDialog.cs:
+	* gtk-gui/MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget.cs:
+	Flush.
+
+	* MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs:
+	* MonoDevelop.AddinAuthoring/ExtensionSelectorDialog.cs: Fix
+	build.
+
+	* MonoDevelop.AddinAuthoring.CodeCompletion/CodeCompletionExtension.cs:
+	Track api changes.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AddinAuthoring.addin.xml: Set correct
