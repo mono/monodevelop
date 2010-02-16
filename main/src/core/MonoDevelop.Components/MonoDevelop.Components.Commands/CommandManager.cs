@@ -1062,7 +1062,9 @@ namespace MonoDevelop.Components.Commands
 		internal static object ToCommandId (object ob)
 		{
 			// Include the type name when converting enum members to ids.
-			if (ob.GetType ().IsEnum)
+			if (ob == null)
+				return null;
+			else if (ob.GetType ().IsEnum)
 				return ob.GetType ().FullName + "." + ob;
 			else
 				return ob;
