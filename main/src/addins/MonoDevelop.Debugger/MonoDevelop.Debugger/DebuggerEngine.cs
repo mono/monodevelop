@@ -35,6 +35,7 @@ namespace MonoDevelop.Debugger
 	{
 		IDebuggerEngine engine;
 		DebuggerEngineExtensionNode node;
+		bool gotEngine;
 		
 		public string Id {
 			get { return node.Id; }
@@ -63,27 +64,36 @@ namespace MonoDevelop.Debugger
 		
 		void LoadEngine ()
 		{
-			if (engine == null)
+			if (!gotEngine) {
+				gotEngine = true;
 				engine = (IDebuggerEngine) node.GetInstance ();
+			}
 		}
 		
 		public bool CanDebugCommand (ExecutionCommand cmd)
 		{
-			return engine.CanDebugCommand (cmd);
+			LoadEngine ();
+			return engine != null && engine.CanDebugCommand (cmd);
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand cmd)
 		{
+			LoadEngine ();
 			return engine.CreateDebuggerStartInfo (cmd);
 		}
 		
 		public ProcessInfo[] GetAttachableProcesses ()
 		{
-			return engine.GetAttachableProcesses ();
+			LoadEngine ();
+			if (engine != null)
+				return engine.GetAttachableProcesses ();
+			else
+				return new ProcessInfo [0];
 		}
 		
 		public DebuggerSession CreateSession ()
 		{
+			LoadEngine ();
 			return engine.CreateSession ();
 		}
 	}

@@ -1,5 +1,10 @@
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/DebuggerEngine.cs: Properly initialize
+	  the engine.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Debugger.csproj:
