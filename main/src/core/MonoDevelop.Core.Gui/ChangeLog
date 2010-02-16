@@ -1,3 +1,8 @@
+2010-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: removed assert gui
+	  thread.
+
 2010-02-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui/ImageService.cs: Fixed 'Bug 578960 -

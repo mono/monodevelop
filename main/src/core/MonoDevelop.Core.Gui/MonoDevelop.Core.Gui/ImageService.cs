@@ -67,7 +67,6 @@ namespace MonoDevelop.Core.Gui
 		
 		static void LoadStockIcon (StockIconCodon iconCodon)
 		{
-			Gui.DispatchService.AssertGuiThread ();
 			try {
 				Gdk.Pixbuf pixbuf = null;
 				if (!string.IsNullOrEmpty (iconCodon.Resource) || !string.IsNullOrEmpty (iconCodon.File)) {
