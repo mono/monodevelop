@@ -159,19 +159,34 @@ namespace MonoDevelop.SourceEditor
 			this.buttonReplaceAll.Name = "buttonReplaceAll";
 			this.buttonReplaceAll.UseUnderline = true;
 			this.buttonReplaceAll.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.buttonReplaceAll.Label = global::Mono.Unix.Catalog.GetString ("Replace All");
+			// Container child buttonReplaceAll.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w14 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w15 = new global::Gtk.HBox ();
+			w15.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w16 = new global::Gtk.Image ();
+			w16.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find-and-replace", global::Gtk.IconSize.Menu);
+			w15.Add (w16);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w18 = new global::Gtk.Label ();
+			w18.LabelProp = global::Mono.Unix.Catalog.GetString ("All");
+			w18.UseUnderline = true;
+			w15.Add (w18);
+			w14.Add (w15);
+			this.buttonReplaceAll.Add (w14);
 			this.hbox2.Add (this.buttonReplaceAll);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonReplaceAll]));
-			w14.Position = 2;
-			w14.Expand = false;
-			w14.Fill = false;
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonReplaceAll]));
+			w22.Position = 2;
+			w22.Expand = false;
+			w22.Fill = false;
 			this.table.Add (this.hbox2);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table[this.hbox2]));
-			w15.TopAttach = ((uint)(1));
-			w15.BottomAttach = ((uint)(2));
-			w15.LeftAttach = ((uint)(1));
-			w15.RightAttach = ((uint)(2));
-			w15.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table[this.hbox2]));
+			w23.TopAttach = ((uint)(1));
+			w23.BottomAttach = ((uint)(2));
+			w23.LeftAttach = ((uint)(1));
+			w23.RightAttach = ((uint)(2));
+			w23.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

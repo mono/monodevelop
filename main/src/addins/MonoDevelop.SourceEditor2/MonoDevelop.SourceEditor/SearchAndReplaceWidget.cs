@@ -553,10 +553,10 @@ But I leave it in in the case I've missed something. Mike
 				return;
 			}
 			
-			bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
+		//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
 			string errorMsg;
 			bool valid = widget.TextEditor.SearchEngine.IsValidPattern (searchPattern, out errorMsg);
-			error |= !valid;
+		//	error |= !valid;
 			
 			if (!valid) {
 				IdeApp.Workbench.StatusBar.ShowError (errorMsg);
@@ -564,7 +564,7 @@ But I leave it in in the case I've missed something. Mike
 				IdeApp.Workbench.StatusBar.ShowReady ();
 			}
 			
-			if (error || widget.TextEditor.TextViewMargin.SearchResultMatchCount == 0) {
+			if (!valid || widget.TextEditor.TextViewMargin.SearchResultMatchCount == 0) {
 				//resultInformLabel.Markup = "<span foreground=\"#000000\" background=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (GotoLineNumberWidget.errorColor) + "\">" + GettextCatalog.GetString ("Not found") + "</span>";
 				resultInformLabel.Text = GettextCatalog.GetString ("Not found");
 				resultInformLabelEventBox.ModifyBg (StateType.Normal, GotoLineNumberWidget.errorColor);
