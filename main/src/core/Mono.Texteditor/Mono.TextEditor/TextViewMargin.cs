@@ -174,7 +174,7 @@ namespace Mono.TextEditor
 			textEditor.RequestResetCaretBlink ();
 		}
 		
-		internal void ClearSearchMaker ()
+		public void ClearSearchMaker ()
 		{
 			selectedRegions.Clear ();
 		}
@@ -1856,6 +1856,11 @@ namespace Mono.TextEditor
 		public int SearchResultMatchCount {
 			get {
 				return selectedRegions.Count;
+			}
+		}
+		public IEnumerable<ISegment> SearchResults {
+			get {
+				return selectedRegions;
 			}
 		}
 		Gdk.Color defaultBgColor;
