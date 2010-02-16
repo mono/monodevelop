@@ -179,7 +179,8 @@ namespace Mono.TextEditor
 			selectedRegions.Clear ();
 		}
 		
-		void HandleSearchChanged (object sender, EventArgs args)
+		
+		public void RefreshSearchMarker ()
 		{
 			if (textEditor.HighlightSearchPattern) {
 				DisposeSearchPatternWorker ();
@@ -194,6 +195,11 @@ namespace Mono.TextEditor
 				searchPatternWorker.DoWork += SearchPatternWorkerDoWork;
 				searchPatternWorker.RunWorkerAsync ();
 			}
+		}
+		
+		void HandleSearchChanged (object sender, EventArgs args)
+		{
+			RefreshSearchMarker ();
 		}
 
 		void SearchPatternWorkerDoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
