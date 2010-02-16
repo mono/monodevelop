@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -53,7 +53,7 @@ namespace MonoDevelop.Database.Components
 			toggleRenderer.Toggled += new ToggledHandler (ItemToggled);
 			col.PackStart (toggleRenderer, false);
 			
-			MonoDevelop.Core.Gui.CellRendererPixbuf pixbufRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRendererPixbuf pixbufRenderer = new CellRendererPixbuf ();
 			col.PackStart (pixbufRenderer, false);
 
 			CellRendererText textRenderer = new CellRendererText ();
@@ -149,7 +149,7 @@ namespace MonoDevelop.Database.Components
 		
 		private void PixbufDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			MonoDevelop.Core.Gui.CellRendererPixbuf pixbufRenderer = cell as MonoDevelop.Core.Gui.CellRendererPixbuf;
+			CellRendererPixbuf pixbufRenderer = cell as CellRendererPixbuf;
 			ISchemaContainer schema = model.GetValue (iter, columnObj) as ISchemaContainer;
 			
 			string iconString = null;

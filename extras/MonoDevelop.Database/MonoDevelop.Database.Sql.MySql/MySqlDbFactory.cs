@@ -32,7 +32,7 @@ using MonoDevelop.Database.Components;
 
 namespace MonoDevelop.Database.Sql.MySql
 {
-	public class MySqlDbFactory : IDbFactory
+	public class MySqlDbFactory : IDbFactory, IDbLinq
 	{
 		private ISqlDialect dialect;
 		private IConnectionProvider connectionProvider;
@@ -91,5 +91,41 @@ namespace MonoDevelop.Database.Sql.MySql
 			
 			return settings;
 		}
+		
+		#region IDbLinq implementation
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string language,
+		                      string style, string defaultNamespace, string entityBase, string entityAttr, 
+		                      string membersAttr, string generateTypes, string culture, bool generateSchema, 
+		                      bool generateTimestamp, bool overrideEqualAndHash, bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, language, style, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);
+		}
+		
+		
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string defaultNamespace, 
+		                      string entityBase, string entityAttr, string membersAttr, string generateTypes, 
+		                      string culture, bool generateSchema, bool generateTimestamp, bool overrideEqualAndHash, 
+		                      bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);		}
+		
+		public string Provider {
+			get {
+				 return "MySql";
+			}
+		}
+		
+		
+		public bool HasProcedures {
+			get {
+				return true;
+			}
+		}
+		
+		#endregion
 	}
 }

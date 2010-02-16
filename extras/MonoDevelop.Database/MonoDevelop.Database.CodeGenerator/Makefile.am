@@ -16,8 +16,10 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	Commands/ToolCommands.cs \
+	Dialogs/GenerateDataClass.cs \
 	Dialogs/GenerateDataClassesDialog.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClass.cs \
 	gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs
 
 RES =  \

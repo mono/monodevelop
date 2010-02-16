@@ -1,3 +1,11 @@
+2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Makefile.am:
+	* NpgsqlDbFactory.cs:
+	* MonoDevelop.Database.Sql.Npgsql.csproj: Implement IDbLinq
+	  interface for SqlMetal services.
+	Flush changes.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Sql.Npgsql.csproj: Fix gettext class.

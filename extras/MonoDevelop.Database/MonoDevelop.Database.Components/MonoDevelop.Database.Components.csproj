@@ -212,7 +212,6 @@
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb">
       <Package>monodevelop-core-addins</Package>
@@ -298,6 +297,10 @@
     <Compile Include="Codons\DataGridVisualizerCodon.cs" />
     <Compile Include="Widgets\DataGrid\Visualizers\DefaultVisualizers.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Widgets\DatabaseConnectionEditorWidget.cs" />
+    <Compile Include="Dialogs\DatabaseAvailableProvidersDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.DatabaseAvailableProvidersDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Database.Components.DatabaseConnectionEditorWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -309,7 +312,6 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData generatePcFile="false" />
-        <GtkDesignInfo gettextClass="MonoDevelop.Database.AddinCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />

@@ -25,6 +25,7 @@ FILES =  \
 	Containers/ParameterContainer.cs \
 	Containers/SchemaContainers.cs \
 	Containers/TableContainer.cs \
+	Dialogs/DatabaseAvailableProvidersDialog.cs \
 	Dialogs/DatabaseConnectionSettingsDialog.cs \
 	Dialogs/SelectColumnDialog.cs \
 	Dialogs/ShowImageDialog.cs \
@@ -32,6 +33,8 @@ FILES =  \
 	Dialogs/WaitDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs \
+	gtk-gui/MonoDevelop.Database.Components.DatabaseAvailableProvidersDialog.cs \
+	gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionEditorWidget.cs \
 	gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionSettingsDialog.cs \
 	gtk-gui/MonoDevelop.Database.Components.DataGrid.cs \
 	gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs \
@@ -43,6 +46,7 @@ FILES =  \
 	Widgets/ColumnMappingWidget.cs \
 	Widgets/ConnectionSettingsWidget.cs \
 	Widgets/DatabaseConnectionContextComboBox.cs \
+	Widgets/DatabaseConnectionEditorWidget.cs \
 	Widgets/DataGrid/DataGrid.cs \
 	Widgets/DataGrid/DataGridColumn.cs \
 	Widgets/DataGrid/Renderers/BlobContentRenderer.cs \

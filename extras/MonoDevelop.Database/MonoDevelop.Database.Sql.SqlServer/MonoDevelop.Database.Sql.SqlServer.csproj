@@ -39,33 +39,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
@@ -80,7 +53,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
@@ -135,11 +107,9 @@
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
@@ -153,6 +123,7 @@
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
       <Package>monodevelop</Package>
     </Reference>
+>>>>>>> .r151756
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Sql\MonoDevelop.Database.Sql.csproj">
@@ -218,7 +189,6 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData generatePcFile="false" />
-        <GtkDesignInfo gettextClass="MonoDevelop.Database.AddinCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />

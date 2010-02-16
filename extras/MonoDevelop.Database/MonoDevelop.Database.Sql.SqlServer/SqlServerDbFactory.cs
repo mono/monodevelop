@@ -28,10 +28,11 @@ using System.Data;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Database.Sql;
 using MonoDevelop.Database.Components;
 namespace MonoDevelop.Database.Sql.SqlServer
 {
-	public class SqlServerDbFactory : IDbFactory
+	public class SqlServerDbFactory : IDbFactory, IDbLinq
 	{
 		private ISqlDialect dialect;
 		private IConnectionProvider connectionProvider;
@@ -95,5 +96,41 @@ using MonoDevelop.Database.Components;
 				settings.UseIntegratedSecurity = true;
 			return settings;
 		}
+
+		#region IDbLinq implementation
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string language,
+		                      string style, string defaultNamespace, string entityBase, string entityAttr, 
+		                      string membersAttr, string generateTypes, string culture, bool generateSchema, 
+		                      bool generateTimestamp, bool overrideEqualAndHash, bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, language, style, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);
+		}
+		
+		
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string defaultNamespace, 
+		                      string entityBase, string entityAttr, string membersAttr, string generateTypes, 
+		                      string culture, bool generateSchema, bool generateTimestamp, bool overrideEqualAndHash, 
+		                      bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);		}
+		
+		public string Provider {
+			get {
+				 return "Sqlserver";
+			}
+		}
+		
+		
+		public bool HasProcedures {
+			get {
+				return true;
+			}
+		}
+		#endregion
+			
 	}
 }

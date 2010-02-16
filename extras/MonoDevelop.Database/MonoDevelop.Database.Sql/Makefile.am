@@ -5,7 +5,7 @@ REFS =  \
 	$(MONODEVELOP_LIBS) \
 	-r:System \
 	-r:System.Data \
-	-r:System.Xml
+	-r:System.Xml 
 
 FILES =  \
 	AddinCatalog.cs \
@@ -106,6 +106,7 @@ FILES =  \
 	Dialect/Statements/TruncateStatement.cs \
 	Dialect/Statements/UpdateStatement.cs \
 	IDbFactory.cs \
+	IDbLinq.cs \
 	Providers/AbstractConnectionProvider.cs \
 	Providers/AbstractEditSchemaProvider.cs \
 	Providers/AbstractSchemaProvider.cs \
@@ -151,7 +152,9 @@ FILES =  \
 	Schema/TriggerType.cs \
 	Schema/UniqueConstraintSchema.cs \
 	Schema/UserSchema.cs \
-	Schema/ViewSchema.cs
+	Schema/ViewSchema.cs \
+	SqlMetalExecException.cs \
+	SqlMetalServices.cs
 
 RES = MonoDevelop.Database.Sql.addin.xml
 

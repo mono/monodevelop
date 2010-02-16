@@ -1,3 +1,18 @@
+2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Commands/ToolCommands.cs: Implement Generate Linq Class.
+
+	* gtk-gui/gui.stetic:
+	* Dialogs/GenerateDataClass.cs:
+	* gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClass.cs:
+	  Linq GUI Interfase.
+
+	* MonoDevelop.Database.CodeGenerator.addin.xml: New menu under
+	  tools submenu on proyect/folders.
+
+	* Makefile.am:
+	* MonoDevelop.Database.CodeGenerator.csproj: Flush changes.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

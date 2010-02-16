@@ -1,3 +1,11 @@
+2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Makefile.am:
+	* SqliteDbFactory.cs:
+	* MonoDevelop.Database.Sql.Sqlite.csproj: Implement IDbLinq
+	  interface for SqlMetal services.
+	Flush changes.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

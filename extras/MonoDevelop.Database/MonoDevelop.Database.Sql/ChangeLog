@@ -1,3 +1,11 @@
+2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* IDbLinq.cs:
+	* Makefile.am:
+	* SqlMetalServices.cs:
+	* SqlMetalExecException.cs:
+	* MonoDevelop.Database.Sql.csproj: Implement SqlMetal Services
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Sql.csproj: Flush.

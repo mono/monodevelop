@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -23,15 +23,16 @@
 // THE SOFTWARE.
 //
 
-using System;
-using System.Data;
-using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Database.Components;
+using MonoDevelop.Database.Sql;
+using System;
+using System.Collections.Generic;
+using System.Data;
 namespace MonoDevelop.Database.Sql.Npgsql
 {
-	public class NpgsqlDbFactory : IDbFactory
+	public class NpgsqlDbFactory : IDbFactory, IDbLinq
 	{
 		private ISqlDialect dialect;
 		private IConnectionProvider connectionProvider;
@@ -90,5 +91,42 @@ using MonoDevelop.Database.Components;
 			
 			return settings;
 		}
+		
+		#region IDbLinq implementation
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string language,
+		                      string style, string defaultNamespace, string entityBase, string entityAttr, 
+		                      string membersAttr, string generateTypes, string culture, bool generateSchema, 
+		                      bool generateTimestamp, bool overrideEqualAndHash, bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, language, style, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);
+		}
+		
+		
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string defaultNamespace, 
+		                      string entityBase, string entityAttr, string membersAttr, string generateTypes, 
+		                      string culture, bool generateSchema, bool generateTimestamp, bool overrideEqualAndHash, 
+		                      bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);		}
+		
+		public string Provider {
+			get {
+				 return "PostgreSql";
+			}
+		}
+		
+		
+		public bool HasProcedures {
+			get {
+				return true;
+			}
+		}
+		
+		#endregion
+		
 	}
 }

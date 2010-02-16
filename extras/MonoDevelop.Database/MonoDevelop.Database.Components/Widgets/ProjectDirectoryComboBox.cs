@@ -45,7 +45,7 @@ namespace MonoDevelop.Database.Components
 		{
 			store = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Project), typeof (string));
 			
-			MonoDevelop.Core.Gui.CellRendererPixbuf pixbuf = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRendererPixbuf pixbuf = new CellRendererPixbuf ();
 			CellRendererText text = new CellRendererText ();
 
 			this.PackStart (pixbuf, false);
@@ -84,7 +84,7 @@ namespace MonoDevelop.Database.Components
 				TreeIter activeIter = TreeIter.Zero;
 
 				//TODO: add support for recursive combines
-				foreach (SolutionItem entry in cmb.Items) {
+				foreach (Project entry in IdeApp.Workspace.GetAllProjects ()) {
 					if (!(entry is DotNetProject))
 						continue;
 				
@@ -117,9 +117,11 @@ namespace MonoDevelop.Database.Components
 		{
 			foreach (string dir in Directory.GetDirectories (parentDir)) {
 				string name = System.IO.Path.GetFileName (dir);
+				DirectoryInfo info = new DirectoryInfo (dir);
+				
 				
 				//TODO: use the ProjectFile information
-				if (name == "gtk-gui" || name == "bin")
+				if (name == "gtk-gui" || name == "bin" || info.Attributes.ToString ().Contains ("Hidden"))
 					continue;
 				
 				Gdk.Pixbuf pixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (Gtk.Stock.Directory);

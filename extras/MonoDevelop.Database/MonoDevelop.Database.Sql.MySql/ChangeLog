@@ -1,3 +1,10 @@
+2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* MySqlDbFactory.cs:
+	* MonoDevelop.Database.Sql.MySql.csproj: Implement IDbLinq
+	  interface for SqlMetal services.
+	Flush changes.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.Sql.MySql.csproj: Fix gettext class.

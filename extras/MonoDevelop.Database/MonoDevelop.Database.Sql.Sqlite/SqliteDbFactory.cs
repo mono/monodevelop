@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -30,9 +30,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Database.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Database.Sql;
 namespace MonoDevelop.Database.Sql.Sqlite
 {
-	public class SqliteDbFactory : IDbFactory
+	public class SqliteDbFactory : IDbFactory, IDbLinq
 	{
 		private ISqlDialect dialect;
 		private IConnectionProvider connectionProvider;
@@ -88,5 +89,40 @@ using MonoDevelop.Ide.Gui.Dialogs;
 			
 			return settings;
 		}
+		
+		#region IDbLinq implementation
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string language,
+		                      string style, string defaultNamespace, string entityBase, string entityAttr, 
+		                      string membersAttr, string generateTypes, string culture, bool generateSchema, 
+		                      bool generateTimestamp, bool overrideEqualAndHash, bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, language, style, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);
+		}
+		
+		
+		public bool Generate (DatabaseConnectionSettings connection, string outputType, string outputFile, string defaultNamespace, 
+		                      string entityBase, string entityAttr, string membersAttr, string generateTypes, 
+		                      string culture, bool generateSchema, bool generateTimestamp, bool overrideEqualAndHash, 
+		                      bool extractProcedures, bool pluralize)
+		{
+			return SqlMetalServices.Generate (Provider, connection, outputType, outputFile, defaultNamespace,
+			                           entityBase, entityAttr, membersAttr, generateTypes, culture, generateSchema,
+			                           generateTimestamp, overrideEqualAndHash, extractProcedures, pluralize);		}
+		
+		public string Provider {
+			get {
+				 return "Sqlite";
+			}
+		}
+		
+		
+		public bool HasProcedures {
+			get {
+				return true;
+			}
+		}
+		#endregion
 	}
 }

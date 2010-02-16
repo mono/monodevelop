@@ -1,3 +1,23 @@
+2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
+
+	* Dialogs/DatabaseAvailableProvidersDialog.cs: Available
+	  providers selector.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Database.Components.csproj:
+	* Widgets/DatabaseConnectionEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Components.DatabaseAvailableProvidersDialog.cs:
+	  Flush Changes.
+	Available providers dialog.
+	Database Connection Editor Widget.
+
+	* Widgets/ProjectDirectoryComboBox.cs: Fix bug.
+
+	* Widgets/SelectSchemaWidget.cs: Use Gtk.CellRendererPixbuf
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/objects.xml: Flush.

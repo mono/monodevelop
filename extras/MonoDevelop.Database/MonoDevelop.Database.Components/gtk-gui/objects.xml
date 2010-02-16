@@ -86,4 +86,12 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.Database.Components.DatabaseConnectionEditorWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="DatabaseConnectionEditorWidget Signals">
+        <signal name="SelectedDatabaseChanged" />
+      </itemgroup>
+    </signals>
+  </object>
 </objects>

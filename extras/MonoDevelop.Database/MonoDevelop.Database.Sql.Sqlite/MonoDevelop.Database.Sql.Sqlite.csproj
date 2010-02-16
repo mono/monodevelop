@@ -152,6 +152,7 @@
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
       <Package>monodevelop</Package>
     </Reference>
+>>>>>>> .r151756
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Designer\MonoDevelop.Database.Designer.csproj">
@@ -200,6 +201,7 @@
     <None Include="Makefile.am" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -221,5 +223,6 @@
     <AddinReference Include="MonoDevelop.Core,2.2" />
     <AddinReference Include="MonoDevelop.Core.Gui,2.2" />
     <AddinReference Include="MonoDevelop.Ide,2.2" />
+    <AddinReference Include="MonoDevelop.SourceEditor2,2.2" />
   </ItemGroup>
 </Project>
