@@ -35,7 +35,7 @@ using MonoDevelop.Components.Theming;
 
 namespace MonoDevelop.Components
 {
-	public class RoundedFrame : EventBox
+	public class RoundedFrame : Bin
 	{
 		private Theme theme;
 		protected Theme Theme {
@@ -59,6 +59,9 @@ namespace MonoDevelop.Components
 		public RoundedFrame ()
 		{
 			this.Events =  Gdk.EventMask.AllEventsMask;
+			this.WidgetFlags |= WidgetFlags.NoWindow;
+			DoubleBuffered = true;
+			AppPaintable = false;
 		}
 
 		public void SetFillColor (Cairo.Color color)
@@ -119,21 +122,17 @@ namespace MonoDevelop.Components
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			base.OnSizeAllocated (allocation);
+			base.OnSizeAllocated (child_allocation);
 			
-			child_allocation = new Gdk.Rectangle ();
-			
-			if (child == null || !child.Visible) {
+			if (child == null || !child.Visible)
 				return;
-			}
 			
-			child_allocation.X = (int)BorderWidth + frame_width;
-			child_allocation.Y = (int)BorderWidth + frame_width;
-			child_allocation.Width = (int)Math.Max (1, Allocation.Width - child_allocation.X * 2);
-			child_allocation.Height = (int)Math.Max (1, Allocation.Height - child_allocation.Y - (int)BorderWidth - frame_width);
+			int border = (int)BorderWidth + frame_width;
 			
-			child_allocation.X += Allocation.X;
-			child_allocation.Y += Allocation.Y;
+			child_allocation = new Gdk.Rectangle (allocation.X + border,
+			                                      allocation.Y + border,
+			                                      (int)Math.Max (1, allocation.Width - border * 2),
+			                                      (int)Math.Max (1, allocation.Height - border * 2));
 			
 			child.SizeAllocate (child_allocation);
 		}
@@ -155,9 +154,8 @@ namespace MonoDevelop.Components
 			
 			try {
 				DrawFrame (cr, evnt.Area);
-				if (child != null) {
+				if (child != null) 
 					PropagateExpose (child, evnt);
-				}
 				return false;
 			} finally {
 				((IDisposable)cr.Target).Dispose ();
