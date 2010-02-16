@@ -1,3 +1,8 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Soft.csproj: Track api changes. Some engine
+	  info is now taken from extension node metadata.
+
 2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs: Force-load System.Exception to work

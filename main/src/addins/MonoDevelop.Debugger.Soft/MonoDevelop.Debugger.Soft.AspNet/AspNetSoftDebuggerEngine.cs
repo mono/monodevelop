@@ -41,12 +41,6 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 {
 	public class AspNetSoftDebuggerEngine: IDebuggerEngine
 	{
-		public string Id {
-			get {
-				return "Mono.Debugger.Soft.AspNet";
-			}
-		}
-
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			var cmd = command as AspNetExecutionCommand;
@@ -75,16 +69,6 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			return startInfo;
 		}
 
-		public DebuggerFeatures SupportedFeatures {
-			get {
-				return DebuggerFeatures.Breakpoints | 
-					   DebuggerFeatures.Pause | 
-					   DebuggerFeatures.Stepping | 
-					   DebuggerFeatures.DebugFile |
-					   DebuggerFeatures.Catchpoints;
-			}
-		}
-		
 		public DebuggerSession CreateSession ()
 		{
 			return new SoftDebuggerSession ();
@@ -93,12 +77,6 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			return new ProcessInfo[0];
-		}
-		
-		public string Name {
-			get {
-				return "Mono Soft Debugger for ASP.NET";
-			}
 		}
 	}
 }

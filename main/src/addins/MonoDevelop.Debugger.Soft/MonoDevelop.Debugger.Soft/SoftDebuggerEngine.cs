@@ -44,12 +44,6 @@ namespace MonoDevelop.Debugger.Soft
 			EnsureSdbLoggingService ();
 		}
 		
-		public string Id {
-			get {
-				return "Mono.Debugger.Soft";
-			}
-		}
-
 		public bool CanDebugCommand (ExecutionCommand cmd)
 		{
 			var netCmd = cmd as DotNetExecutionCommand;
@@ -95,12 +89,6 @@ namespace MonoDevelop.Debugger.Soft
 		public DebuggerSession CreateSession ()
 		{
 			return new SoftDebuggerSession ();
-		}
-		
-		public string Name {
-			get {
-				return "Mono Soft Debugger";
-			}
 		}
 		
 		public DebuggerFeatures SupportedFeatures {
