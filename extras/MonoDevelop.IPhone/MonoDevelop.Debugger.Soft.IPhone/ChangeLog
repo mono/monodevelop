@@ -1,3 +1,11 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Manifest.addin.xml:
+	* IPhoneSoftDebuggerEngine.cs: Track api changes. Some engine
+	  info is now taken from extension node metadata.
+
+	* MonoDevelop.Debugger.Soft.IPhone.csproj: Flush.
+
 2010-02-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneDebuggerSession.cs: Fix build.

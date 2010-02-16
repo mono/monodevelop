@@ -57,16 +57,6 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			return startInfo;
 		}
 
-		public DebuggerFeatures SupportedFeatures {
-			get {
-				return DebuggerFeatures.Breakpoints | 
-					   DebuggerFeatures.Pause | 
-					   DebuggerFeatures.Stepping | 
-					   DebuggerFeatures.DebugFile |
-					   DebuggerFeatures.Catchpoints;
-			}
-		}
-		
 		public DebuggerSession CreateSession ()
 		{
 			return new IPhoneDebuggerSession ();
@@ -75,18 +65,6 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			return new ProcessInfo[0];
-		}
-		
-		public string Name {
-			get {
-				return "Mono Soft Debugger for iPhone";
-			}
-		}
-		
-		public string Id {
-			get {
-				return "Mono.Debugger.Soft.IPhone";
-			}
 		}
 	}
 }
