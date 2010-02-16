@@ -60,6 +60,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		#region Statements
 		S VisitBlockStatement (BlockStatement blockStatement, T data);
+		S VisitExpressionStatement (ExpressionStatement expressionStatement, T data);
 		S VisitBreakStatement (BreakStatement breakStatement, T data);
 		S VisitCheckedStatement (CheckedStatement checkedStatement, T data);
 		S VisitContinueStatement (ContinueStatement continueStatement, T data);

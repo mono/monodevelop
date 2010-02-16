@@ -151,7 +151,12 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public virtual S VisitBlockStatement (BlockStatement blockStatement, T data) 
 		{
-			return VisitChildren(blockStatement, data);
+			return VisitChildren (blockStatement, data);
+		}
+		
+		public virtual S VisitExpressionStatement (ExpressionStatement expressionStatement, T data)
+		{
+			return VisitChildren (expressionStatement, data);
 		}
 		
 		public virtual S VisitBreakStatement (BreakStatement breakStatement, T data) 

@@ -1,3 +1,17 @@
+2010-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom/Identifier.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/Statements/GotoStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/WhileStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/IfElseStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/ExpressionStatement.cs:
+	  Worked on new C# DOM.
+
 2010-02-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

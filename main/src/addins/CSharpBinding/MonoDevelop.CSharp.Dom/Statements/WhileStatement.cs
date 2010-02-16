@@ -31,6 +31,9 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class WhileStatement : AbstractCSharpNode
 	{
+		public const int DoKeywordRole = 101;
+		public const int WhileKeywordRole = 102;
+		
 		public WhilePosition WhilePosition {
 			get;
 			set;
@@ -48,6 +51,13 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			return visitor.VisitWhileStatement (this, data);
 		}
+		
+		public WhileStatement (WhilePosition whilePosition)
+		{
+			this.WhilePosition = whilePosition;
+		}
+		
+		
 	}
 	
 	public enum WhilePosition {

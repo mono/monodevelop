@@ -1,10 +1,10 @@
 // 
-// GotoStatement.cs
+// ExpressionStatement.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,40 +29,11 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class GotoStatement : AbstractCSharpNode
+	public class ExpressionStatement : AbstractCSharpNode
 	{
-		public const int DefaultKeywordRole = 100;
-		public const int CaseKeywordRole = 101;
-		
-		public GotoType GotoType {
-			get;
-			set;
-		}
-		
-		public string Label {
-			get { return ((Identifier)LabelExpression).Name; }
-		}
-
-		public INode LabelExpression {
-			get { return GetChildByRole (Roles.Expression); }
-		}
-		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitGotoStatement (this, data);
+			return visitor.VisitExpressionStatement (this, data);
 		}
-		
-		public GotoStatement (GotoType gotoType)
-		{
-			this.GotoType = gotoType;
-		}
-		
-		
-	}
-	
-	public enum GotoType {
-		Label,
-		Case,
-		CaseDefault
 	}
 }

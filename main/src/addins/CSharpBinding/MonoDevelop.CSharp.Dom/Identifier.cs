@@ -51,5 +51,12 @@ namespace MonoDevelop.CSharp.Dom
 		public Identifier ()
 		{
 		}
+		public Identifier (string name, DomLocation location)
+		{
+			this.Name = name;
+			this.Location = location;
+		}
+		
+		
 	}
 }

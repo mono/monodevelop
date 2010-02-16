@@ -93,6 +93,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Statements/CheckedStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/ContinueStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/EmptyStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/ExpressionStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/FixedStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/ForStatement.cs \

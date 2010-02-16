@@ -299,6 +299,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\AbtractCSharpDomVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\CSharpTokenNode.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\FullTypeName.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ExpressionStatement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
