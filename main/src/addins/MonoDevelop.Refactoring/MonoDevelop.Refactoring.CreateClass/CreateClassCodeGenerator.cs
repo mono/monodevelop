@@ -165,7 +165,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 			}
 			newType.Children.Add (constructor);
 			string fileName = GetName (Path.Combine (Path.GetDirectoryName (options.Document.FileName), newType.Name + Path.GetExtension (options.Document.FileName)));
-			string header = options.Dom.Project is DotNetProject ? StandardHeaderService.GetHeader (options.Dom.Project, ((DotNetProject)options.Dom.Project).LanguageName, fileName, true) + Environment.NewLine : "";
+			string header = options.Dom.Project is DotNetProject ? StandardHeaderService.GetHeader (options.Dom.Project, fileName, true) + Environment.NewLine : "";
 			CreateFileChange createFile = new CreateFileChange (fileName, header + provider.OutputNode (options.Dom, node));
 			result.Add (createFile);
 			result.Add (new OpenFileChange (fileName));
