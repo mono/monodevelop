@@ -37,6 +37,10 @@ namespace MonoDevelop.Projects.Extensions
 		List<string> typeNames;
 		IDictionary<string,string> aliases;
 		
+		public ItemTypeCondition ()
+		{
+		}
+		
 		public ItemTypeCondition (Type objType): this (objType, null)
 		{
 		}
@@ -48,6 +52,25 @@ namespace MonoDevelop.Projects.Extensions
 				aliases = typeNameAliases;
 			else
 				aliases = new Dictionary<string, string> ();
+		}
+		
+		public Type ObjType {
+			get { return this.objType; }
+			set {
+				if (value != objType) {
+					objType = value;
+					typeNames = null;
+					NotifyChanged ();
+				}
+			}
+		}
+
+		public IDictionary<string, string> Aliases {
+			get { return this.aliases; }
+			set {
+				this.aliases = value;
+				NotifyChanged ();
+			}
 		}
 		
 		public override bool Evaluate (NodeElement conditionNode)

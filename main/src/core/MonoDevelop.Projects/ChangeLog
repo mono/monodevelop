@@ -1,5 +1,13 @@
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects.Extensions/ItemTypeCondition.cs:
+	* MonoDevelop.Projects.Extensions/ProjectLanguageCondition.cs:
+	  Cache the extension chain per-thread, to avoid recreating it
+	  at every call.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
 	* MonoDevelop.Projects.Extensions/ProjectLanguageCondition.cs:

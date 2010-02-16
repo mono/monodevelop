@@ -34,12 +34,26 @@ namespace MonoDevelop.Projects.Extensions
 	public class ProjectLanguageCondition: ConditionType
 	{
 		string language;
+		object target;
 		
 		public ProjectLanguageCondition (object obj)
 		{
-			DotNetProject dp = obj as DotNetProject;
-			if (dp != null)
-				language = dp.LanguageName;
+			TargetProject = obj;
+		}
+		
+		public object TargetProject {
+			get { return target; }
+			set {
+				if (target != value) {
+					target = value;
+					DotNetProject dp = target as DotNetProject;
+					if (dp != null)
+						language = dp.LanguageName;
+					else
+						language = null;
+					NotifyChanged ();
+				}
+			}
 		}
 		
 		public override bool Evaluate (NodeElement conditionNode)
