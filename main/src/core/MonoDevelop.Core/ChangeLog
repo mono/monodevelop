@@ -1,3 +1,9 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks/framework_NET_4_0.xml:
+	* frameworks/framework_NET_2_0.xml:
+	* frameworks/framework_NET_1_1.xml: Add missing assemblies.
+
 2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs: Fix build.
