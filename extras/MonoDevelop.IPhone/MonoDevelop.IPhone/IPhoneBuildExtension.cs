@@ -325,7 +325,7 @@ namespace MonoDevelop.IPhone
 			if (!Directory.Exists (conf.AppDirectory))
 				return true;
 			
-			if (!File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
+			if (!Directory.Exists (conf.AppDirectory.Combine ("PkgInfo")))
 				return true;
 			
 			// the mtouch output
