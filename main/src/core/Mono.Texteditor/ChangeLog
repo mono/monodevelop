@@ -1,3 +1,13 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs: Flush.
+
+	* SyntaxModes/ILSyntaxMode.xml:
+	* SyntaxModes/CPPSyntaxMode.xml:
+	* SyntaxModes/LuaSyntaxMode.xml:
+	* SyntaxModes/PythonSyntaxMode.xml: Added some missing
+	  properties.
+
 2010-02-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: made search results
