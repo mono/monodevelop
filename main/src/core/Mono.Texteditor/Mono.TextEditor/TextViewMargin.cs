@@ -1285,15 +1285,18 @@ namespace Mono.TextEditor
 
 			DocumentLocation docLocation = VisualToDocumentLocation (args.X, args.Y);
 			if (args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
+				ISegment selectionRange = null;
 				int offset = Document.LocationToOffset (docLocation);
+				if (selection != null) 
+					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
+				
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
 				if (selection != null) {
-					ISegment selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
 					if (newOffset < selectionRange.EndOffset) {
 						oldOffset += length;
 						anchor += length;
-						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length + 1), Document.OffsetToLocation (selectionRange.Offset + length + 1 + selectionRange.Length));
+						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length), Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
 					}
 					bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 					textEditor.Caret.AutoScrollToCaret = false;
@@ -1312,7 +1315,7 @@ namespace Mono.TextEditor
 
 		protected internal override void MouseReleased (MarginMouseEventArgs args)
 		{
-			if (!inSelectionDrag)
+			if (args.Button != 2 && !inSelectionDrag)
 				textEditor.ClearSelection ();
 			inSelectionDrag = false;
 			if (inDrag)
