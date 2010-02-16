@@ -1,3 +1,11 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ValaBinding.addin.xml: Load the project service extension
+	  only for the vala project.
+
+	* ValaBinding.sln:
+	* ValaBinding.csproj: Flush.
+
 2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ValaBinding.sln:

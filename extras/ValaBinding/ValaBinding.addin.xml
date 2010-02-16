@@ -136,7 +136,9 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class id = "ExtraSteps" class = "MonoDevelop.ValaBinding.ValaProjectServiceExtension"/>
+		<Condition id="ItemType" value="MonoDevelop.ValaBinding.ValaProject">
+			<Class id = "ExtraSteps" class = "MonoDevelop.ValaBinding.ValaProjectServiceExtension"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
