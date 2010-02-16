@@ -1,3 +1,13 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Implemented a new method for getting comment tags. It is
+	  going to replace some properties of ILanguageBinding.
+
 2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Fix path bar

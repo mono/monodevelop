@@ -247,7 +247,7 @@ namespace MonoDevelop.Ide.Templates
 			MemoryStream ms = new MemoryStream ();
 			byte[] data;
 			if (AddStandardHeader) {
-				string header = StandardHeaderService.GetHeader (policyParent, language, fileName, true);
+				string header = StandardHeaderService.GetHeader (policyParent, fileName, true);
 				data = System.Text.Encoding.UTF8.GetBytes (header);
 				ms.Write (data, 0, data.Length);
 			}
