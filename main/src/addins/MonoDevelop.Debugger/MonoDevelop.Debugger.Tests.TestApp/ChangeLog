@@ -1,0 +1,4 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.Tests.TestApp.csproj: Flush.
+

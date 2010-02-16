@@ -36,8 +36,8 @@ namespace MonoDevelop.Debugger
 {
 	public partial class AttachToProcessDialog : Gtk.Dialog
 	{
-		List<IDebuggerEngine> currentDebEngines;
-		Dictionary<long, List<IDebuggerEngine>> procEngines = new Dictionary<long,List<IDebuggerEngine>> ();
+		List<DebuggerEngine> currentDebEngines;
+		Dictionary<long, List<DebuggerEngine>> procEngines = new Dictionary<long,List<DebuggerEngine>> ();
 		List<ProcessInfo> procs = new List<ProcessInfo> ();
 		Gtk.ListStore store;
 		TreeViewState state;
@@ -51,15 +51,15 @@ namespace MonoDevelop.Debugger
 			tree.AppendColumn ("PID", new Gtk.CellRendererText (), "text", 1);
 			tree.AppendColumn ("Process Name", new Gtk.CellRendererText (), "text", 2);
 			
-			IDebuggerEngine[] debEngines = DebuggingService.GetDebuggerEngines ();
-			foreach (IDebuggerEngine de in debEngines) {
+			DebuggerEngine[] debEngines = DebuggingService.GetDebuggerEngines ();
+			foreach (DebuggerEngine de in debEngines) {
 				if ((de.SupportedFeatures & DebuggerFeatures.Attaching) == 0)
 					continue;
 				try {
 					foreach (ProcessInfo pi in de.GetAttachableProcesses ()) {
-						List<IDebuggerEngine> engs;
+						List<DebuggerEngine> engs;
 						if (!procEngines.TryGetValue (pi.Id, out engs)) {
-							engs = new List<IDebuggerEngine> ();
+							engs = new List<DebuggerEngine> ();
 							procEngines [pi.Id] = engs;
 							procs.Add (pi);
 						}
@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger
 			if (tree.Selection.GetSelected (out iter)) {
 				ProcessInfo pi = (ProcessInfo) store.GetValue (iter, 0);
 				currentDebEngines = procEngines [pi.Id];
-				foreach (IDebuggerEngine de in currentDebEngines) {
+				foreach (DebuggerEngine de in currentDebEngines) {
 					comboDebs.AppendText (de.Name);
 				}
 				comboDebs.Sensitive = true;
@@ -138,7 +138,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public IDebuggerEngine SelectedDebugger {
+		public DebuggerEngine SelectedDebugger {
 			get {
 				return currentDebEngines [comboDebs.Active];
 			}

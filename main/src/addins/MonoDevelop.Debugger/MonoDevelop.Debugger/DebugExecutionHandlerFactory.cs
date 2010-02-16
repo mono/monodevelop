@@ -57,9 +57,9 @@ namespace MonoDevelop.Debugger
 	{
 		bool done;
 		ManualResetEvent stopEvent;
-		IDebuggerEngine factory;
+		DebuggerEngine factory;
 		
-		public DebugExecutionHandler (IDebuggerEngine factory)
+		public DebugExecutionHandler (DebuggerEngine factory)
 		{
 			this.factory = factory;
 			DebuggingService.StoppedEvent += new EventHandler (OnStopDebug);

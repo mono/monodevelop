@@ -494,6 +494,8 @@
                     <property name="ShowScrollbars">True</property>
                     <property name="AllowAdding">False</property>
                     <property name="AllowEditing">False</property>
+                    <property name="AllowPinning">False</property>
+                    <property name="PinnedWatchLine">0</property>
                     <property name="CompactView">False</property>
                   </widget>
                 </child>

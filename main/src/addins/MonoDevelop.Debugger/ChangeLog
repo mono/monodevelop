@@ -1,3 +1,20 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/Extensions.cs:
+	* MonoDevelop.Debugger/DebuggerEngine.cs:
+	* MonoDevelop.Debugger/IDebuggerEngine.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/DebugExecutionModeSet.cs:
+	* MonoDevelop.Debugger/AttachToProcessDialog.cs:
+	* MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:
+	* MonoDevelop.Debugger/DebuggerEngineExtensionNode.cs:
+	* MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs: Added
+	  support for lazy loading of add-ins
+
 2010-02-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/ThreadsPad.cs:

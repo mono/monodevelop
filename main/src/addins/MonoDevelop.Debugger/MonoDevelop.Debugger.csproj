@@ -140,6 +140,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.AddTracePointDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatch.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatchStore.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerEngine.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerEngineExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

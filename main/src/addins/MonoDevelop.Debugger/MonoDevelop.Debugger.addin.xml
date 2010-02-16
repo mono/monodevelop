@@ -17,9 +17,9 @@
 		<Addin id="Components" version="2.2"/>
 	</Dependencies>
 	
-	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerFactories">
-		<Description>Debug session factories. Specified classes must implement Mono.Debugging.IDebuggerSessionFactory.</Description>
-		<ExtensionNode name="DebuggerFactory" />
+	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerEngines">
+		<Description>Debug session factories. Specified classes must implement MonoDevelop.Debugger.IDebuggerEngine</Description>
+		<ExtensionNode name="DebuggerEngine" type="MonoDevelop.Debugger.DebuggerEngineExtensionNode"/>
 	</ExtensionPoint>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">

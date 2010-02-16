@@ -40,6 +40,8 @@ FILES =  \
 	MonoDevelop.Debugger/DebugCommands.cs \
 	MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs \
 	MonoDevelop.Debugger/DebugExecutionModeSet.cs \
+	MonoDevelop.Debugger/DebuggerEngine.cs \
+	MonoDevelop.Debugger/DebuggerEngineExtensionNode.cs \
 	MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs \
 	MonoDevelop.Debugger/DebuggingService.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \

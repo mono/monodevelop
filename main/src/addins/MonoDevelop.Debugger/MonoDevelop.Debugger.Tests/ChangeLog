@@ -1,3 +1,9 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.Tests.csproj: Flush.
+
+	* DebugTests.cs: Added support for lazy loading of add-ins
+
 2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Tests.csproj: Add missing file.

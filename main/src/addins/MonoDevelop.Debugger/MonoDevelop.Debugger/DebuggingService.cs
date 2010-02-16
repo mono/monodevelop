@@ -56,8 +56,8 @@ namespace MonoDevelop.Debugger
 
 	public static class DebuggingService
 	{
-		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerFactories";
-		static IDebuggerEngine[] engines;
+		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerEngines";
+		static DebuggerEngine[] engines;
 		
 		static BreakpointStore breakpoints = new BreakpointStore ();
 		static PinnedWatchStore pinnedWatches = new PinnedWatchStore ();
@@ -65,7 +65,7 @@ namespace MonoDevelop.Debugger
 		static IConsole console;
 		static DebugExecutionHandlerFactory executionHandlerFactory;
 		
-		static IDebuggerEngine currentEngine;
+		static DebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
 		static int currentFrame;
@@ -149,7 +149,7 @@ namespace MonoDevelop.Debugger
 					// Set the initial priorities
 					List<string> prios = new List<string> ();
 					int i = 0;
-					foreach (IDebuggerEngine de in AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true)) {
+					foreach (DebuggerEngineExtensionNode de in AddinManager.GetExtensionNodes (FactoriesPath)) {
 						if (de.Id.StartsWith ("Mono.Debugger.Soft")) // Give priority to soft debugger by default
 							prios.Insert (i++, de.Id);
 						else
@@ -202,7 +202,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool IsDebuggingSupported {
 			get {
-				return GetDebuggerEngines ().Length > 0;
+				return AddinManager.GetExtensionNodes (FactoriesPath).Count > 0;
 			}
 		}
 
@@ -213,7 +213,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool IsFeatureSupported (DebuggerFeatures feature)
 		{
-			foreach (IDebuggerEngine engine in GetDebuggerEngines ())
+			foreach (DebuggerEngine engine in GetDebuggerEngines ())
 				if ((engine.SupportedFeatures & feature) == feature)
 					return true;
 			return false;
@@ -229,7 +229,7 @@ namespace MonoDevelop.Debugger
 
 		public static DebuggerFeatures GetSupportedFeaturesForCommand (ExecutionCommand command)
 		{
-			IDebuggerEngine engine = GetFactoryForCommand (command);
+			DebuggerEngine engine = GetFactoryForCommand (command);
 			if (engine != null)
 				return engine.SupportedFeatures;
 			else
@@ -318,7 +318,7 @@ namespace MonoDevelop.Debugger
 			return h.Execute (cmd, console);
 		}
 		
-		public static IAsyncOperation AttachToProcess (IDebuggerEngine debugger, ProcessInfo proc)
+		public static IAsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
 			currentEngine = debugger;
 			session = debugger.CreateSession ();
@@ -365,7 +365,7 @@ namespace MonoDevelop.Debugger
 				DisassemblyRequested (null, EventArgs.Empty);
 		}
 		
-		internal static void InternalRun (ExecutionCommand cmd, IDebuggerEngine factory, IConsole c)
+		internal static void InternalRun (ExecutionCommand cmd, DebuggerEngine factory, IConsole c)
 		{
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
@@ -651,34 +651,37 @@ namespace MonoDevelop.Debugger
 			return GetFactoryForCommand (command) != null;
 		}
 		
-		public static IDebuggerEngine[] GetDebuggerEngines ()
+		public static DebuggerEngine[] GetDebuggerEngines ()
 		{
 			if (engines == null) {
-				IDebuggerEngine[] engs = (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
+				List<DebuggerEngine> engs = new List<DebuggerEngine> ();
+				foreach (DebuggerEngineExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath))
+					engs.Add (new DebuggerEngine (node));
+				
 				string[] priorities = EnginePriority;
-				Array.Sort (engs, delegate (IDebuggerEngine d1, IDebuggerEngine d2) {
+				engs.Sort (delegate (DebuggerEngine d1, DebuggerEngine d2) {
 					int i1 = Array.IndexOf (priorities, d1.Id);
 					int i2 = Array.IndexOf (priorities, d2.Id);
 					
 					//ensure that soft debugger is prioritised over newly installed debuggers
 					if (i1 < 0 )
-						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Length;
+						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Count;
 					if (i2 < 0)
-						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Length;
+						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Count;
 					
 					if (i1 == i2)
 						return d1.Name.CompareTo (d2.Name);
 					else
 						return i1.CompareTo (i2);
 				});
-				engines = engs;
+				engines = engs.ToArray ();
 			}
 			return engines;
 		}		
 		
-		static IDebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
+		static DebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
-			foreach (IDebuggerEngine factory in GetDebuggerEngines ()) {
+			foreach (DebuggerEngine factory in GetDebuggerEngines ()) {
 				if (factory.CanDebugCommand (cmd))
 					return factory;
 			}
@@ -759,9 +762,9 @@ namespace MonoDevelop.Debugger
 	
 	internal class InternalDebugExecutionHandler: IExecutionHandler
 	{
-		IDebuggerEngine engine;
+		DebuggerEngine engine;
 		
-		public InternalDebugExecutionHandler (IDebuggerEngine engine)
+		public InternalDebugExecutionHandler (DebuggerEngine engine)
 		{
 			this.engine = engine;
 		}

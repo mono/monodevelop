@@ -33,12 +33,9 @@ namespace MonoDevelop.Debugger
 {
 	public interface IDebuggerEngine
 	{
-		string Id { get; }
-		string Name { get; }
 		bool CanDebugCommand (ExecutionCommand cmd);
 		DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand cmd);
 		ProcessInfo[] GetAttachableProcesses ();
 		DebuggerSession CreateSession ();
-		DebuggerFeatures SupportedFeatures { get; }
 	}
 }
