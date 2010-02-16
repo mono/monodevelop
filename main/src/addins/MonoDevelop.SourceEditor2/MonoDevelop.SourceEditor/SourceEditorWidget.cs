@@ -836,6 +836,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region Search and Replace
+		Components.RoundedFrame searchAndReplaceWidgetFrame = null;
 		SearchAndReplaceWidget searchAndReplaceWidget = null;
 		GotoLineNumberWidget   gotoLineNumberWidget   = null;
 		
@@ -853,8 +854,9 @@ namespace MonoDevelop.SourceEditor
 		bool KillWidgets ()
 		{
 			bool result = false;
-			if (searchAndReplaceWidget != null) {
-				searchAndReplaceWidget.Destroy ();
+			if (searchAndReplaceWidgetFrame != null) {
+				searchAndReplaceWidgetFrame.Destroy ();
+				searchAndReplaceWidgetFrame = null;
 				searchAndReplaceWidget = null;
 				result = true;
 			}
@@ -950,9 +952,14 @@ namespace MonoDevelop.SourceEditor
 				if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true))
 					SearchAndReplaceWidget.IsCaseSensitive = TextEditor.IsSomethingSelected;
 				KillWidgets ();
-				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
-				searchAndReplaceWidget.Show ();
-				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidget, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				searchAndReplaceWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+				searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				
+				searchAndReplaceWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (this, searchAndReplaceWidgetFrame);
+				
+				searchAndReplaceWidgetFrame.ShowAll ();
+				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 //				this.PackEnd (searchAndReplaceWidget);
 //				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 		//		searchAndReplaceWidget.ShowAll ();

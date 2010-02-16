@@ -39,7 +39,7 @@ using Mono.TextEditor;
 namespace MonoDevelop.SourceEditor
 {
 	
-	partial class SearchAndReplaceWidget : MonoDevelop.Components.RoundedFrame
+	partial class SearchAndReplaceWidget : Bin
 	{
 		const char historySeparator = '\n';
 		const int  historyLimit = 20;
@@ -91,18 +91,21 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		Widget container;
 		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
-			if (newX != ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[this]).X) {
+			TextEditorContainer.EditorContainerChild containerChild = ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[container]);
+			if (newX != containerChild.X) {
 				this.searchEntry.WidthRequest = widget.Allocation.Width / 3;
-				((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[this]).X = newX;
+				containerChild.X = newX;
 				widget.TextEditorContainer.QueueResize ();
 			}
 		}
 		
-		public SearchAndReplaceWidget (SourceEditorWidget widget)
+		public SearchAndReplaceWidget (SourceEditorWidget widget, Widget container)
 		{
+			this.container = container;
 			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			widget.TextEditor.TextViewMargin.SearchRegionsUpdated += HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
 			this.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
@@ -114,7 +117,6 @@ namespace MonoDevelop.SourceEditor
 			this.buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next");
 			this.buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous");
 			this.buttonSearchMode.TooltipText = GettextCatalog.GetString ("Toggle between search and replace mode");
-			
 			this.searchEntry.Ready = true;
 			this.searchEntry.Visible = true;
 			this.searchEntry.WidthRequest = widget.Allocation.Width / 3;
@@ -272,10 +274,6 @@ namespace MonoDevelop.SourceEditor
 			resultInformLabelEventBox.BorderWidth = 2;
 			resultInformLabel.Xpad = 2;
 			resultInformLabel.Show ();
-			//this.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
-			this.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.Style.Background (StateType.Normal)));
-			this.DoubleBuffered = true;
-			this.AppPaintable = false;
 			searchEntry.FilterButtonPixbuf = new Gdk.Pixbuf (typeof(SearchAndReplaceWidget).Assembly, "searchoptions.png");
 		}
 
