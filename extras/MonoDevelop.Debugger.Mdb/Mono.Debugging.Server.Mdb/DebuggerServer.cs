@@ -408,7 +408,6 @@ namespace DebuggerServer
 					if (val != null) {
 						string str = evaluator.TargetObjectToString (ctx, val);
 						DispatchEvent (delegate {
-							controller.OnTargetOutput (false, str + "\n");
 							NotifyBreakEventUpdate (eventHandle, -1, str);
 						});
 					}

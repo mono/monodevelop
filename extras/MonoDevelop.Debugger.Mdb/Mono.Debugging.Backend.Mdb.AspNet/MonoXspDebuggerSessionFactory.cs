@@ -40,14 +40,6 @@ namespace MonoDevelop.Debugger.Mdb
 {
 	public class MonoXspDebuggerSessionFactory: IDebuggerEngine
 	{
-		public string Name {
-			get { return "Mono Debugger for ASP.NET"; }
-		}
-		
-		public string Id {
-			get { return "Mono.Debugger.Mdb.AspNet"; }
-		}
-		
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			AspNetExecutionCommand cmd = command as AspNetExecutionCommand;
@@ -82,15 +74,6 @@ namespace MonoDevelop.Debugger.Mdb
 			return startInfo;
 		}
 
-		public DebuggerFeatures SupportedFeatures {
-			get {
-				return DebuggerFeatures.All & ~(
-				     DebuggerFeatures.ConditionalBreakpoints |
-				     DebuggerFeatures.Tracepoints |
-				     DebuggerFeatures.Attaching);
-			}
-		}
-		
 		public DebuggerSession CreateSession ()
 		{
 			MonoDebuggerSession ds = new MonoDebuggerSession ();

@@ -1,3 +1,11 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Backend.Mdb.AspNet.csproj: Flush.
+
+	* Manifest.addin.xml:
+	* MonoXspDebuggerSessionFactory.cs: Track api changes. Some
+	  engine info is now taken from extension node metadata.
+
 2009-11-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoXspDebuggerSessionFactory.cs: Implement Id property.

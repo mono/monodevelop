@@ -1,3 +1,10 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebuggerServer.cs: Tracepoints are now printed by the
+	  debugging engine.
+
+	* Mono.Debugging.Server.Mdb.csproj: Flush.
+
 2009-12-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MdbObjectValueAdaptor.cs: Improved ToString method for

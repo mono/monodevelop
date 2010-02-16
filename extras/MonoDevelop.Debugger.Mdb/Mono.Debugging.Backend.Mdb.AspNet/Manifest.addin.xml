@@ -15,8 +15,11 @@
 		<Addin id="MonoDevelop.AspNet" version="2.2"/>
 	</Dependencies>
 	
-	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
-		<DebuggerFactory type="MonoDevelop.Debugger.Mdb.MonoXspDebuggerSessionFactory" />
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine id="Mono.Debugger.Mdb.AspNet"
+			name="Mono Debugger for ASP.NET"
+			features="Catchpoints, DebugFile, Stepping, Pause, Breakpoints, Disassembly"
+			type="MonoDevelop.Debugger.Mdb.MonoXspDebuggerSessionFactory" />
 	</Extension>
 
 </Addin>

@@ -13,8 +13,11 @@
 		<Addin id="MonoDevelop.Debugger" version="2.2"/>
 	</Dependencies>
 	
-	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
-		<DebuggerFactory type="MonoDevelop.Debugger.Mdb.MonoDebuggerSessionFactory" />
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine id="Mono.Debugger.Mdb" 
+			name="Mono Debugger" 
+			features="Catchpoints, DebugFile, Stepping, Pause, Breakpoints, Disassembly"
+			type="MonoDevelop.Debugger.Mdb.MonoDebuggerSessionFactory" />
 	</Extension>
 
 </Addin>
