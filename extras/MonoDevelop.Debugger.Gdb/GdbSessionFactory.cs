@@ -43,14 +43,6 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		Dictionary<string,FileData> fileCheckCache = new Dictionary<string, FileData> ();
 		
-		public string Name {
-			get { return "GNU Debugger (GDB)"; }
-		}
-		
-		public string Id {
-			get { return "Mono.Debugger.Gdb"; }
-		}
-		
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			NativeExecutionCommand cmd = command as NativeExecutionCommand;
@@ -116,12 +108,6 @@ namespace MonoDevelop.Debugger.Gdb
 			return true;
 		}
 
-		public DebuggerFeatures SupportedFeatures {
-			get {
-				return DebuggerFeatures.All & ~DebuggerFeatures.Catchpoints;
-			}
-		}
-		
 		public DebuggerSession CreateSession ()
 		{
 			GdbSession ds = new GdbSession ();

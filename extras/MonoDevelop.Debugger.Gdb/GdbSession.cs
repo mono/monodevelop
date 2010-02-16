@@ -322,7 +322,6 @@ namespace MonoDevelop.Debugger.Gdb
 			if (bp.HitAction == HitAction.PrintExpression) {
 				GdbCommandResult res = RunCommand ("-data-evaluate-expression", Escape (bp.TraceExpression));
 				string val = res.GetValue ("value");
-				OnDebuggerOutput (false, val + "\n");
 				NotifyBreakEventUpdate (handle, 0, val);
 				return false;
 			}

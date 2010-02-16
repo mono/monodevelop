@@ -13,8 +13,11 @@
 		<Addin id="MonoDevelop.Debugger" version="2.2"/>
 	</Dependencies>
 	
-	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
-		<DebuggerFactory type="MonoDevelop.Debugger.Gdb.GdbSessionFactory" />
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine id="Mono.Debugger.Gdb" 
+			name="GNU Debugger (GDB)" 
+			features="ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching, DebugFile, Stepping, Pause, Breakpoints, Disassembly"
+			type="MonoDevelop.Debugger.Gdb.GdbSessionFactory" />
 	</Extension>
 
 </Addin>
