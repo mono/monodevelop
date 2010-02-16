@@ -94,8 +94,13 @@ namespace Mono.TextEditor.Theatrics
             }
 
             canvas = new Pixmap (GdkWindow, widget_alloc.Width, widget_alloc.Height);
-            canvas.DrawDrawable (Style.BackgroundGC (State), GdkWindow,
-                widget_alloc.X, widget_alloc.Y, 0, 0, widget_alloc.Width, widget_alloc.Height);
+            if (Platform.IsMac) {
+                //FIXME: quick hack to make less ugly on Mac, because Mac GTK doesn't yet support offscreen drawing
+                canvas.DrawRectangle (Style.BackgroundGC (State), true, 0, 0, widget_alloc.Width, widget_alloc.Height);
+            } else {
+                canvas.DrawDrawable (Style.BackgroundGC (State), GdkWindow,
+                    widget_alloc.X, widget_alloc.Y, 0, 0, widget_alloc.Width, widget_alloc.Height);
+            }
 
             if (AnimationState != AnimationState.Going) {
                 WidgetDestroyed (this, args);

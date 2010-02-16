@@ -1,3 +1,9 @@
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Theatrics/AnimatedWidget.cs: Quick hack to
+	  make less ugly on Mac, because Mac GTK doesn't yet support
+	  offscreen drawing.
+
 2010-02-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed search update bug.
