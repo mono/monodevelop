@@ -1,5 +1,11 @@
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj: ActiveLanguageCondition has
+	  been moved to MD.Projects.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs:
 	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ActiveLanguageCondition.cs:
 	  ActiveLanguageCondition has been replaced by
