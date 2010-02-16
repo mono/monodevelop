@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,23 +69,6 @@ namespace MonoDevelop.Debugger.Win32
 		public ProcessInfo[] GetAttachableProcesses ( )
 		{
 			return new ProcessInfo[0];
-		}
-
-		public string Name
-		{
-			get { return "Microsoft .NET Debugger"; }
-		}
-
-		public string Id
-		{
-			get { return "MonoDevelop.Debugger.Win32"; }
-		}
-
-		public DebuggerFeatures SupportedFeatures
-		{
-			get {
-				return DebuggerFeatures.All & ~(DebuggerFeatures.ConditionalBreakpoints | DebuggerFeatures.Disassembly);
-			}
 		}
 
 		#endregion

@@ -13,8 +13,12 @@
 		<Addin id="MonoDevelop.Debugger" version="2.2"/>
 	</Dependencies>
 
-	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
-		<DebuggerFactory type="MonoDevelop.Debugger.Win32.CorDebuggerEngine" />
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine
+			id="MonoDevelop.Debugger.Win32"
+			name="Microsoft .NET Debugger"
+			features="Tracepoints, Catchpoints, DebugFile, Stepping, Pause, Breakpoints"
+			type="MonoDevelop.Debugger.Win32.CorDebuggerEngine" />
 	</Extension>
 
 </Addin>
