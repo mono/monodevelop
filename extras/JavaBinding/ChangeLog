@@ -1,3 +1,12 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaBinding.sln:
+	* gtk-gui/gui.stetic:
+	* JavaBinding.csproj:
+	* gtk-gui/generated.cs:
+	* gtk-gui/JavaBinding.GlobalOptionsPanelWidget.cs:
+	* gtk-gui/JavaBinding.CodeGenerationPanelWidget.cs: Flush.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* IKVMCompilerManager.cs:
