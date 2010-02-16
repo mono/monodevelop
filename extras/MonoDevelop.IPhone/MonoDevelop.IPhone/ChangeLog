@@ -1,3 +1,8 @@
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs: In generated code, keep track of
+	  native wrappers in fields.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
