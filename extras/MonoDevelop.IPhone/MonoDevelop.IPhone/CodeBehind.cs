@@ -47,13 +47,16 @@ namespace MonoDevelop.IPhone
 		public static BuildResult UpdateXibCodebehind (CodeBehindWriter writer, IPhoneProject project, IEnumerable<ProjectFile> allFiles)
 		{
 			BuildResult result = null;
+			var projWrite = File.GetLastWriteTime (project.FileName);
+			
 			foreach (var xibFile in allFiles.Where (x => x.FilePath.Extension == ".xib" && x.BuildAction == BuildAction.Page)) {
 				var designerFile = GetDesignerFile (xibFile);
 				if (designerFile == null)
 					continue;
 				
 				try {
-					if (File.GetLastWriteTime (xibFile.FilePath) > File.GetLastWriteTime (designerFile.FilePath)) {
+					var designerWrite = File.GetLastWriteTime (designerFile.FilePath);
+					if (designerWrite < projWrite || designerWrite < File.GetLastWriteTime (xibFile.FilePath)) {
 						GenerateDesignerCode (writer, xibFile, designerFile);
 					}
 				} catch (Exception ex) {

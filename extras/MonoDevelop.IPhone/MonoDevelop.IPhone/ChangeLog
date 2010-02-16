@@ -1,5 +1,9 @@
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CodeBehind.cs: Update designer files when project changes.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CodeBehindGenerator.cs: In generated code, keep track of
 	  native wrappers in fields.
 
