@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -322,14 +323,35 @@ namespace MonoDevelop.WebReferences.Dialogs
 			
 			// Checks the availablity of any services
 			DiscoveryClientProtocol protocol = new DiscoveryClientProtocol ();
-			try
-			{
-				protocol.DiscoverAny (url);
-			}
-			catch (Exception)
-			{
-				protocol = null;
-			}
+			AskCredentials creds = new AskCredentials ();
+			protocol.Credentials = creds;
+			bool unauthorized;
+			
+			do {
+				unauthorized = false;
+				creds.Reset ();
+				
+				try
+				{
+					protocol.DiscoverAny (url);
+				}
+				catch (WebException wex) {
+					HttpWebResponse wr = wex.Response as HttpWebResponse;
+					if (!creds.Canceled && wr != null && wr.StatusCode == HttpStatusCode.Unauthorized) {
+						unauthorized = true;
+						continue;
+					}
+					protocol = null;
+					serviceUrl = null;
+				}
+				catch (Exception ex) {
+					protocol = null;
+					serviceUrl = null;
+				}
+			} while (unauthorized);
+			
+			if (protocol != null)
+				creds.Store ();
 			
 			Application.Invoke (delegate {
 				UpdateService (protocol, url);
@@ -374,4 +396,53 @@ namespace MonoDevelop.WebReferences.Dialogs
 		}
 	}
 	
+	class AskCredentials: GuiSyncObject, ICredentials
+	{
+		static Dictionary<string,NetworkCredential> credentials = new Dictionary<string, NetworkCredential> ();
+		
+		Dictionary<string,NetworkCredential> tempCredentials = new Dictionary<string, NetworkCredential> ();
+		
+		string user;
+		string password;
+		
+		public bool Canceled;
+		
+		public void Reset ()
+		{
+			tempCredentials.Clear ();
+		}
+		
+		public void Store ()
+		{
+			foreach (var creds in tempCredentials)
+				credentials [creds.Key] = creds.Value;
+		}
+		
+		public NetworkCredential GetCredential (Uri uri, string authType)
+		{
+			NetworkCredential nc;
+			if (tempCredentials.TryGetValue (uri.Host + uri.AbsolutePath, out nc))
+				return nc; // Exact match
+			
+			UserPasswordDialog dlg = new UserPasswordDialog (uri.Host);
+			if (tempCredentials.TryGetValue (uri.Host, out nc) || credentials.TryGetValue (uri.Host, out nc)) {
+				dlg.User = nc.UserName;
+				dlg.Password = nc.Password;
+			}
+			try {
+				if (dlg.Run () == (int) ResponseType.Ok) {
+					nc = new NetworkCredential (dlg.User, dlg.Password);
+					tempCredentials [uri.Host + uri.AbsolutePath] = nc;
+					tempCredentials [uri.Host] = nc;
+					return nc;
+				}
+				else {
+					Canceled = true;
+					return null;
+				}
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+	}
 }

@@ -1,3 +1,13 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.WebReferences.csproj:
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	* MonoDevelop.WebReferences.Dialogs/UserPasswordDialog.cs:
+	* gtk-gui/MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs:
+	  Add support for basic authentication.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
