@@ -29,13 +29,13 @@ using System;
 using MonoDevelop.Projects;
 using Mono.Addins;
 
-namespace MonoDevelop.Projects.Gui
+namespace MonoDevelop.Projects.Extensions
 {
-	public class ActiveLanguageCondition: ConditionType
+	public class ProjectLanguageCondition: ConditionType
 	{
 		string language;
 		
-		public ActiveLanguageCondition (object obj)
+		public ProjectLanguageCondition (object obj)
 		{
 			DotNetProject dp = obj as DotNetProject;
 			if (dp != null)

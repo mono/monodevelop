@@ -345,6 +345,7 @@
     <Compile Include="MonoDevelop.Projects.Text\Formatter.cs" />
     <Compile Include="MonoDevelop.Projects\HelpService.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\MonoDocSourceNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ProjectLanguageCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

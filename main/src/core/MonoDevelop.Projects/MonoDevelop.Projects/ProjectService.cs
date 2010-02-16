@@ -52,8 +52,8 @@ namespace MonoDevelop.Projects
 	{
 		DataContext dataContext = new DataContext ();
 		ArrayList projectBindings = new ArrayList ();
-		ProjectServiceExtension defaultExtension = new DefaultProjectServiceExtension ();
-		ProjectServiceExtension extensionChain = new CustomCommandExtension ();
+		ProjectServiceExtension defaultExtensionChain;
+		DefaultProjectServiceExtension extensionChainTerminator = new DefaultProjectServiceExtension ();
 		
 		FileFormatManager formatManager = new FileFormatManager ();
 		FileFormat defaultFormat;
@@ -78,7 +78,6 @@ namespace MonoDevelop.Projects
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (ExtendedPropertiesExtensionPath, OnPropertiesExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (ProjectBindingsExtensionPath, OnProjectsExtensionChanged);
-			UpdateExtensions ();
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			
 			defaultFormat = formatManager.GetFileFormat ("MSBuild05");
@@ -94,12 +93,46 @@ namespace MonoDevelop.Projects
 		
 		public ProjectServiceExtension GetExtensionChain (IBuildTarget target)
 		{
-			if (target == null)
+			ProjectServiceExtension chain;
+			if (target != null) {
+				ExtensionContext ctx = AddinManager.CreateExtensionContext ();
+				ctx.RegisterCondition ("ItemType", new ItemTypeCondition (target.GetType ()));
+				ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (target));
+				ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+				chain = CreateExtensionChain (extensions);
+			}
+			else {
+				if (defaultExtensionChain == null) {
+					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
+					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
+					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
+					ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+					defaultExtensionChain = CreateExtensionChain (extensions);
+				}
+				chain = defaultExtensionChain;
 				target = UnknownItem.Instance;
-			if (extensionChain.SupportsItem (target))
-				return extensionChain;
+			}
+			
+			if (chain.SupportsItem (target))
+				return chain;
 			else
-				return extensionChain.GetNext (target);
+				return chain.GetNext (target);
+		}
+		
+		ProjectServiceExtension CreateExtensionChain (ProjectServiceExtension[] extensions)
+		{
+			var first = new CustomCommandExtension ();
+			
+			for (int n=0; n<extensions.Length - 1; n++)
+				extensions [n].Next = extensions [n + 1];
+
+			if (extensions.Length > 0) {
+				extensions [extensions.Length - 1].Next = extensionChainTerminator;
+				first.Next = extensions [0];
+			} else {
+				first.Next = extensionChainTerminator;
+			}
+			return first;
 		}
 		
 		public string DefaultPlatformTarget {
@@ -142,7 +175,7 @@ namespace MonoDevelop.Projects
 		public SolutionEntityItem ReadSolutionItem (IProgressMonitor monitor, string file)
 		{
 			file = GetTargetFile (file);
-			SolutionEntityItem loadedItem = extensionChain.LoadSolutionItem (monitor, file, delegate {
+			SolutionEntityItem loadedItem = GetExtensionChain (null).LoadSolutionItem (monitor, file, delegate {
 				FileFormat format;
 				SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
 				if (item != null)
@@ -542,21 +575,7 @@ namespace MonoDevelop.Projects
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
 			if (args.PathChanged ("/MonoDevelop/ProjectModel/ProjectServiceExtensions"))
-				UpdateExtensions ();
-		}
-		
-		void UpdateExtensions ()
-		{
-			ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
-			for (int n=0; n<extensions.Length - 1; n++)
-				extensions [n].Next = extensions [n + 1];
-
-			if (extensions.Length > 0) {
-				extensions [extensions.Length - 1].Next = defaultExtension;
-				extensionChain.Next = extensions [0];
-			} else {
-				extensionChain.Next = defaultExtension;
-			}
+				defaultExtensionChain = null;
 		}
 		
 		string GetTargetFile (string file)

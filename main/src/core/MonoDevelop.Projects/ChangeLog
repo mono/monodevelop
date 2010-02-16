@@ -1,3 +1,19 @@
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.Extensions/ProjectLanguageCondition.cs:
+	  ActiveLanguageCondition has been replaced by
+	  ProjectLanguageCondition in MD.Projects.
+
+	* MonoDevelop.Projects.addin.xml: Allow using item type and
+	  languge name conditions when registering project service
+	  extensions.
+
+	* MonoDevelop.Projects/ProjectService.cs: Project service
+	  extensions now support some conditions, so we have to create
+	  a new context for every extension chain request.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectService.cs:
