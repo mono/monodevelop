@@ -35,14 +35,23 @@ namespace MonoDevelop.Core.AddIns
 {
 	public class TargetFrameworkNode: ExtensionNode
 	{
-		[NodeAttribute (Required=true)]
+		[NodeAttribute]
 		protected string resource;
+		
+		[NodeAttribute]
+		protected string file;
 		
 		public TargetFramework CreateFramework ()
 		{
 			Stream s;
-			if (SystemAssemblyService.UseExpandedFrameworksFile)
-				s = Addin.GetResource (resource);
+			if (SystemAssemblyService.UseExpandedFrameworksFile) {
+				if (resource != null)
+					s = Addin.GetResource (resource);
+				else if (file != null)
+					s = File.OpenRead (Addin.GetFilePath (file));
+				else
+					throw new InvalidOperationException ("Framework xml source not specified");
+			}
 			else {
 				string file = System.IO.Path.Combine (SystemAssemblyService.ReferenceFrameworksPath, resource);
 				Console.WriteLine ("Loading framework file: " + file);
