@@ -45,7 +45,7 @@ namespace MonoDevelop.Database.Components
 		{
 			store = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Project), typeof (string));
 			
-			CellRendererPixbuf pixbuf = new CellRendererPixbuf ();
+			var pixbuf = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
 			CellRendererText text = new CellRendererText ();
 
 			this.PackStart (pixbuf, false);
