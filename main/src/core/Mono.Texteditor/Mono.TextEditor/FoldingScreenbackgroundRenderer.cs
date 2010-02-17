@@ -134,7 +134,7 @@ namespace Mono.TextEditor
 			//		gc.Dispose ();
 		}
 
-		public static void DrawRoundRectangle (Cairo.Context cr, bool upperRound, bool lowerRound, int x, int y, int r, int w, int h)
+		public static void DrawRoundRectangle (Cairo.Context cr, bool upperRound, bool lowerRound, double x, double y, double r, double w, double h)
 		{
 			//  UA****BQ
 			//  H      C

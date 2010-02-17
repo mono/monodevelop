@@ -1729,44 +1729,67 @@ namespace Mono.TextEditor
 				if (lineLayout == null)
 					return;
 				int l, x1, x2;
-				lineLayout.Layout.IndexToLineX (result.Offset - line.Offset - 1, true, out l, out x1);
-				lineLayout.Layout.IndexToLineX (result.Offset - line.Offset + result.Length - 1, true, out l, out x2);
+				int index = result.Offset - line.Offset - 1;
+				if (index >= 0) {
+					lineLayout.Layout.IndexToLineX (index, true, out l, out x1);
+				} else {
+					l = x1 = 0;
+				}
+				index = result.Offset - line.Offset - 1 + result.Length;
+				if (index <= 0) 
+					index = 1;
+				lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
 				x1 /= (int)Pango.Scale.PangoScale;
 				x2 /= (int)Pango.Scale.PangoScale;
 				int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
-					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
-					color.A = .8;
-					cr.Color = color;
-					cr.LineWidth = editor.Options.Zoom * 2;
-					double extend = Percent * 10;
-					int width = (int)(x2 - x1 + 2 * extend * editor.Options.Zoom);
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-					                                                    (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - extend * editor.Options.Zoom), 
-					                                                    (int)(y - extend * editor.Options.Zoom), 
-					                                                    System.Math.Min (10, width), 
-					                                                    width, 
-					                                                    (int)(editor.LineHeight + 2 * extend * editor.Options.Zoom));
-					cr.Stroke (); 
+					int width = (int)(x2 - x1);
+					int border = 2;
+					int rx = (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - border);
+					int ry = (int)(y) - border;
+					int rw = width + border * 2;
+					int rh = (int)(editor.LineHeight) + border * 2;
 					
-					/*
-					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Selection.Color);
-					cr.MoveTo ((int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - extend * editor.Options.Zoom), 
-					           (int)(y ));
-					double zoom = 1 + Percent;
-					cr.ShowText (editor.Document.GetTextAt (result));
-					cr.Fill ();
+					cr.Translate (rx + rw / 2, ry + rh / 2);
+					/*cr.Save ();
+					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
+					cr.Color = color;
+					double scale2 = (1 + 1.1 * Percent / 6);
+					cr.Scale (scale2, scale2 * 1.2);
+					
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -rw / 2, -rh / 2, (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
+					cr.Fill (); 
+					cr.Restore ();*/
+					
+					double scale = 1 + Percent / 6;
+					cr.Scale (scale, scale);
+					double textx = -rw / 2;
+					double texty = -rh / 2;
+					cr.TransformPoint (ref textx, ref texty);
+					
+					double textr = +rw / 2;
+					double textb = +rh / 2;
+					cr.TransformPoint (ref textr, ref textb);
+					
+					cr.Color = new Cairo.Color (0, 0, 0, 0.3);
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, (int)(-rw / 2 + 2 * editor.Options.Zoom), (int)(-rh / 2 + 2 * editor.Options.Zoom), (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
+					cr.Fill (); 
+					
+					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -rw / 2, -rh / 2, (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
+					cr.Fill (); 
 					
 					Pango.Layout layout = new Pango.Layout (editor.PangoContext);
 					layout.FontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
-					layout.FontDescription.Size = (int)(layout.FontDescription.Size + Percent * 100 * editor.Options.Zoom);
-					layout.SetText (editor.Document.GetTextAt (result));
-					Gdk.GC gc = new Gdk.GC (drawable);
-					gc.RgbFgColor = editor.ColorStyle.Selection.Color;
-					drawable.DrawLayout (gc, (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - extend * editor.Options.Zoom), y, layout);
-					gc.Dispose ();
-					layout.Dispose ();*/
+					layout.FontDescription.Size = (int)(layout.FontDescription.Size * scale * editor.Options.Zoom);
+					layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
+					int layoutWidth, layoutHeight;
+					layout.GetPixelSize (out layoutWidth, out layoutHeight);
+					drawable.DrawLayout (editor.Style.BaseGC (StateType.Normal), (int)(textx + (textr - textx - layoutWidth) / 2), (int)(texty + (textb - texty - layoutHeight) / 2), layout);
+					layout.Dispose ();
+					
 				}
+				
 				if (lineLayout.IsUncached) 
 					lineLayout.Dispose ();
 			}
@@ -1926,10 +1949,14 @@ namespace Mono.TextEditor
 			StartAnimation (new TextEditor.CaretPulseAnimation (this));
 		}
 		
+		Animation searchResultAnimation;
 		public void AnimateSearchResult (SearchResult result)
 		{
-			if (result != null) 
-				StartAnimation (new TextEditor.HighlightSearchResultAnimation (this, result));
+			if (result != null) {
+				if (searchResultAnimation != null) 
+					actors.Remove (searchResultAnimation);
+				searchResultAnimation = StartAnimation (new TextEditor.HighlightSearchResultAnimation (this, result), 150);
+			}
 		}
 	
 		public SearchResult FindPrevious ()
@@ -2244,18 +2271,19 @@ namespace Mono.TextEditor
 			animationStage.Iteration += OnAnimationIteration;
 		}
 		
-		void StartAnimation (IAnimationDrawer drawer)
+		Animation StartAnimation (IAnimationDrawer drawer)
 		{
-			StartAnimation (drawer, 300);
+			return StartAnimation (drawer, 300);
 		}
 		
-		void StartAnimation (IAnimationDrawer drawer, uint duration)
+		Animation StartAnimation (IAnimationDrawer drawer, uint duration)
 		{
 			if (!Options.EnableAnimations)
-				return;
+				return null;
 			Animation animation = new Animation (drawer, duration, Easing.Linear, Blocking.Upstage);
 			animationStage.Add (animation, duration);
 			actors.Add (animation);
+			return animation;
 		}
 		
 		bool OnAnimationActorStep (Actor<Animation> actor)

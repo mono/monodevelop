@@ -1,3 +1,10 @@
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Worked
+	  on new search result animation.
+
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
