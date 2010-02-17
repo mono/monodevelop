@@ -1,5 +1,10 @@
 2010-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: Fixed
+	  'Bug 580427 - Exception, then crash while editing text.'.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Categories are now sorted.
 
