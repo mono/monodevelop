@@ -1,3 +1,40 @@
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs:
+	* Templates/IPadApplicationXib.xft.xml:
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneApplicationXib.xft.xml:
+	* Templates/IPhoneViewController.xft.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml: Track new MD
+	  codebehind APIs.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehind.cs:
+	* IPhoneBuildExtension.cs: Force-regen designer files after
+	  cleaning.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Fix NeedsBuilding check.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs: Remove the
+	  CompilerGeneratedAttribute, it's probably wrong. However,
+	  there are lots of other debugger-type attributes we should
+	  probably be adding.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehind.cs: Update designer files when project changes.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs: In generated code, keep track of
+	  native wrappers in fields.
+
 2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CodeBehindGenerator.cs: Hack to avoid generating duplicate

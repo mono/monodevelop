@@ -208,7 +208,7 @@ namespace MonoDevelop.IPhone
 					
 					if (type.Members.Count == 0)
 						AddWarningDisablePragmas (type, provider);
-					type.Members.Add (CreateOutletProperty (outlet.Label, outletType));
+					AddOutletProperty (type, outlet.Label, outletType);
 				}
 			}
 			
@@ -285,8 +285,11 @@ namespace MonoDevelop.IPhone
 			return null;
 		}
 		
-		public static CodeMemberProperty CreateOutletProperty (string name, CodeTypeReference typeRef)
+		public static void AddOutletProperty (CodeTypeDeclaration type, string name, CodeTypeReference typeRef)
 		{
+			var fieldName = "__mt_" + name;
+			var field = new CodeMemberField (typeRef, fieldName);
+			
 			var prop = new CodeMemberProperty () {
 				Name = name,
 				Type = typeRef
@@ -294,21 +297,25 @@ namespace MonoDevelop.IPhone
 			prop.CustomAttributes.Add (
 				new CodeAttributeDeclaration ("MonoTouch.Foundation.Connect",
 			    		new CodeAttributeArgument (new CodePrimitiveExpression (name))));
-			prop.SetStatements.Add (
-				new CodeMethodInvokeExpression (
-					new CodeMethodReferenceExpression (
-						new CodeThisReferenceExpression (), "SetNativeField"),
-						new CodePrimitiveExpression (name),
-						new CodePropertySetValueReferenceExpression ()));
-			prop.GetStatements.Add (
-				new CodeMethodReturnStatement (
-					new CodeCastExpression (typeRef,
-						new CodeMethodInvokeExpression (
-							new CodeMethodReferenceExpression (
-								new CodeThisReferenceExpression (), "GetNativeField"),
-								new CodePrimitiveExpression (name)))));
-			prop.Attributes = (prop.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
-			return prop;
+			
+			var setValue = new CodePropertySetValueReferenceExpression ();
+			var thisRef = new CodeThisReferenceExpression ();
+			var fieldRef = new CodeFieldReferenceExpression (thisRef, fieldName);
+			var setNativeRef = new CodeMethodReferenceExpression (thisRef, "SetInstanceVariable");
+			var getNativeRef = new CodeMethodReferenceExpression (thisRef, "GetInstanceVariable");
+			var namePrimitive = new CodePrimitiveExpression (name);
+			var invokeGetNative = new CodeMethodInvokeExpression (getNativeRef, namePrimitive);
+			
+			prop.SetStatements.Add (new CodeAssignStatement (fieldRef, setValue));
+			prop.SetStatements.Add (new CodeMethodInvokeExpression (setNativeRef, namePrimitive, setValue));
+			
+			prop.GetStatements.Add (new CodeAssignStatement (fieldRef, new CodeCastExpression (typeRef, invokeGetNative)));
+			prop.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
+			
+			prop.Attributes = field.Attributes = (prop.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+			
+			type.Members.Add (prop);
+			type.Members.Add (field);
 		}
 		
 		public static CodeTypeMember CreateEventMethod (string name, CodeTypeReference senderType)
