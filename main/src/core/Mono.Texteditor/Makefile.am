@@ -120,6 +120,7 @@ RES =  \
 	gtk-gui/gui.stetic \
 	Styles/BrownStyle.xml \
 	Styles/C64Style.xml \
+	Styles/IrBlackStyle.xml \
 	Styles/OblivionStyle.xml \
 	Styles/Styles.xsd \
 	Styles/TangoLightStyle.xml \

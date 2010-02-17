@@ -1,0 +1,188 @@
+<!-- IrBlackStyle.xml
+
+ Author:
+   Anirudh Sanjeev <anirudh@anirudhsanjeev.org>
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE. -->
+ 
+ <!-- This is based on the VIM scheme from http://blog.infinitered.com/entries/show/8 -->
+ <EditorStyle name="IrBlack" _description="IR Black style from Vim">
+	<!-- tango palette -->
+	<Color name="butter1" value="#fce94f"/>
+	<Color name="butter2" value="#edd400"/>
+	<Color name="butter3" value="#c4a000"/>
+	<Color name="orange1" value="#fcaf3e"/>
+	<Color name="orange2" value="#f57900"/>
+	<Color name="orange3" value="#ce5c00"/>
+	<Color name="chocolate1" value="#e9b96e"/>
+	<Color name="chocolate2" value="#c17d11"/>
+	<Color name="chocolate3" value="#8f5902"/>
+	<Color name="chameleon1" value="#8ae234"/>
+	<Color name="chameleon2" value="#73d216"/>
+	<Color name="chameleon3" value="#4e9a06"/>
+	<Color name="skyblue1" value="#729fcf"/>
+	<Color name="skyblue2" value="#3465a4"/>
+	<Color name="skyblue3" value="#204a87"/>
+	<Color name="plum1" value="#ad7fa8"/>
+	<Color name="plum2" value="#75507b"/>
+	<Color name="plum3" value="#5c3566"/>
+	<Color name="scarletred1" value="#ef2929"/>
+	<Color name="scarletred2" value="#cc0000"/>
+	<Color name="scarletred3" value="#a40000"/>
+	<Color name="aluminium1" value="#eeeeec"/>
+	<Color name="aluminium2" value="#d3d7cf"/>
+	<Color name="aluminium3" value="#babdb6"/>
+	<Color name="aluminium4" value="#888a85"/>
+	<Color name="aluminium5" value="#555753"/>
+	<Color name="aluminium6" value="#2e3436"/>
+	<Color name="aluminium7" value="#111111"/>
+
+	<!--Colors imported from Vim-->
+	<Color name="NormalVim" value="#f6f3e8"/>
+	<Color name="NonTextVim" value="#070707"/>
+	<Color name="CursorVim" value="#000000"/>
+	<Color name="CursorLineBGVim" value="#121212"/>
+	<Color name="MatchParenVim" value="#f6f3e8"/>
+	<Color name="SearchVim" value="#f6f3e8"/>
+	<Color name="CommentVim" value="#7C7C7C"/>
+	<Color name="StringVim" value="#A8FF60"/>
+	<Color name="StringSingleQuoteVim" value="#FF8080"/>
+	<Color name="NumberVim" value="#FF73FD"/>
+	<Color name="PreProcVim" value="#96CBFE"/>
+	<Color name="ConditionalVim" value="#6699CC"/>
+	<Color name="TodoVim" value="#8f8f8f"/>
+	<Color name="ConstantVim" value="#99CC99"/>
+	<Color name="IdentifierVim" value="#C6C5FE"/>
+	<Color name="FunctionVim" value="#FFD2A7"/>
+	<Color name="TypeVim" value="#FFFFB6"/>
+	<Color name="StatementVim" value="#6699CC"/>
+	<Color name="SpecialVim" value="#E18964"/>
+	<Color name="KeywordSemanticVim" value="#E18964"/>
+	<Color name="DelimiterVim" value="#00A0A0"/>
+	<Color name="OperatorVim" value="#ffffff"/>
+	<Color name="BlackVim" value="#000000"/>
+	<Color name="VisualBGVim" value="#262D51"/>
+	<Color name="LineNrVim" value="#3D3D3D"/>
+	
+	<!-- environment -->
+	<Style name="text" color="NormalVim" bgColor="BlackVim"/>
+	<Style name="text.selection" color="NormalVim" bgColor="VisualBGVim"/>
+	<Style name="text.background.searchresult" color="VisualBGVim"/>
+	<Style name="text.link" color="butter2"/>
+	
+	<Style name="caret" color="BlackVim" bgColor="CursorLineBGVim"/>
+	
+	<Style name="marker.line" color="CursorLineBGVim"/>
+	<Style name="marker.line.changed" color="StringVim"/>
+	<Style name="marker.line.dirty" color="butter2"/>
+	
+	<Style name="marker.template.primary_template" color="chocolate1" bgColor="chocolate3"/>
+	<Style name="marker.template.primary_highlighted_template" color="chocolate1" bgColor="chocolate2"/>
+	<Style name="marker.template.secondary_template" color="white" bgColor="aluminium6"/>
+	<Style name="marker.template.secondary_highlighted_template" color="aluminium1" bgColor="aluminium5"/>
+		
+	<Style name="marker.ruler" color="aluminium5"/>
+	<Style name="marker.whitespace" color="aluminium3"/>
+	<Style name="marker.invalidline" color="orange1"/>
+	<Style name="marker.bracket" color="aluminium4" bgColor="aluminium6"/>
+	
+	<Style name="marker.bookmark.color1" color="aluminium1"/>
+	<Style name="marker.bookmark.color2" color="aluminium4"/>
+	
+	<Style name="diff">
+		<Style name="line-added" color="butter2"/>
+		<Style name="line-removed" color="skyblue1"/>
+		<Style name="line-changed" color="plum1"/>
+		
+		<Style name="header" color="chameleon1" weight="bold"/>
+		<Style name="header-seperator" color="aluminium4"/>
+		<Style name="header-oldfile" color="chameleon1" weight="bold"/>
+		<Style name="header-newfile" color="chameleon1" weight="bold"/>
+		
+		<Style name="location" color="chameleon1"/>
+	</Style>
+	
+	<Style name="warning.light.color1" color="#444400"/>
+	<Style name="warning.light.color2" color="#333300"/>
+	<Style name="warning.dark.color1" color="#333300"/>
+	<Style name="warning.dark.color2" color="#222200"/>
+	<Style name="warning.line.top" color="#222200"/>
+	<Style name="warning.line.bottom" color="#222200"/>
+	<Style name="warning.text" color="aluminium3"/>
+	
+	<Style name="error.light.color1" color="#440000"/>
+	<Style name="error.light.color2" color="#330000"/>
+	<Style name="error.dark.color1" color="#330000"/>
+	<Style name="error.dark.color2" color="#220000"/>
+	<Style name="error.line.top" color="#220000"/>
+	<Style name="error.line.bottom" color="#220000"/>
+	<Style name="error.text" color="aluminium3"/>
+	<Style name="linenumber" color="LineNrVim" bgColor="BlackVim"/>
+	<Style name="linenumber.highlight" color="aluminium3"/>
+	
+	<Style name="iconbar" color="aluminium7"/>
+	<Style name="iconbar.separator" color="aluminium6"/>
+
+	<Style name="fold" color="aluminium3" bgColor="black"/>
+	<Style name="fold.highlight" color="aluminium2"/>
+	<Style name="fold.togglemarker" color="aluminium1"/>
+	
+	<!-- highlighting -->
+	<Style name="comment" color="CommentVim"/>
+	<Style name="comment.keyword.todo" color="TodoVim" bgColor="VisualBGVim" weight="bold" />
+	<Style name="comment.keyword" color="TodoVim" weight="bold" />
+	<Style name="comment.tag" color="TodoVim"/>
+	
+	<Style name="text.literal" color="StringVim"/>
+	<Style name="text.punctuation" color="StringVim"/>
+	<Style name="text.preprocessor" color="PreProcVim" weight="italic"/>
+	<Style name="text.preprocessor.keyword" color="PreProcVim" weight="bold"/>
+	<Style name="text.markup" color="PreProcVim"/>
+	<Style name="text.markup.tag" color="PreProcVim"/>
+	
+	<Style name="constant" color="ConstantVim"/>
+	<Style name="constant.digit" color="NumberVim"/>
+	<Style name="constant.language" color="SpecialVim"/>
+	<Style name="constant.language.void" color="SpecialVim" weight="bold"/>
+	
+	<Style name="string" color="StringVim"/>
+	<Style name="string.single" color="StringSingleQuoteVim"/>
+	<Style name="string.double" color="StringVim"/>
+	<Style name="string.other" color="StringVim"/>
+	
+	<Style name="keyword.access" color="TypeVim" weight="bold" />
+	<Style name="keyword.operator" color="ConstantVim" weight="bold"/>
+	<Style name="keyword.selection" color="StatementVim" weight="bold"/>
+	<Style name="keyword.iteration" color="StatementVim" weight="bold"/>
+	<Style name="keyword.jump" color="StatementVim" weight="bold"/>
+	<Style name="keyword.context" color="StatementVim" weight="bold"/>
+	<Style name="keyword.exceptions" color="StatementVim" weight="bold"/>
+	
+	<Style name="keyword.modifier" color="TypeVim" weight="bold"/>
+	<Style name="keyword.type" color="TypeVim" weight="bold"/>
+	<Style name="keyword.namespace" color="TypeVim" weight="bold"/>
+	<Style name="keyword.property" color="TypeVim" />
+	<Style name="keyword.declaration" color="TypeVim" weight="bold"/>
+	<Style name="keyword.parameter" color="TypeVim" />
+	<Style name="keyword.operator.declaration" color="TypeVim" weight="bold"/>
+	<Style name="keyword.misc" color="TypeVim"/>
+	
+	<Style name="keyword.semantic.type" color="IdentifierVim"/>
+	
+</EditorStyle>

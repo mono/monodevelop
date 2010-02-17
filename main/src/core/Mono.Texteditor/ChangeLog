@@ -1,5 +1,12 @@
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Styles/IrBlackStyle.xml: Added IR Black style from Anirudh
+	  Sanjeev.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Theatrics/AnimatedWidget.cs: Quick hack to
 	  make less ugly on Mac, because Mac GTK doesn't yet support
 	  offscreen drawing.
