@@ -301,8 +301,8 @@ namespace MonoDevelop.IPhone
 			var setValue = new CodePropertySetValueReferenceExpression ();
 			var thisRef = new CodeThisReferenceExpression ();
 			var fieldRef = new CodeFieldReferenceExpression (thisRef, fieldName);
-			var setNativeRef = new CodeMethodReferenceExpression (thisRef, "SetInstanceVariable");
-			var getNativeRef = new CodeMethodReferenceExpression (thisRef, "GetInstanceVariable");
+			var setNativeRef = new CodeMethodReferenceExpression (thisRef, "SetNativeField");
+			var getNativeRef = new CodeMethodReferenceExpression (thisRef, "GetNativeField");
 			var namePrimitive = new CodePrimitiveExpression (name);
 			var invokeGetNative = new CodeMethodInvokeExpression (getNativeRef, namePrimitive);
 			

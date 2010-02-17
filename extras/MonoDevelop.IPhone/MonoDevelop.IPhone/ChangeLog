@@ -1,3 +1,14 @@
+2010-02-17 Geoff Norton  <gnorton@novell.com>
+
+	* CodeBehindGenerator.cs:
+	* Templates/IPadApplicationXib.xft.xml:
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneApplicationXib.xft.xml:
+	* Templates/IPhoneViewController.xft.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml: Revert part
+	  of the previous commit.
+
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CodeBehindGenerator.cs:

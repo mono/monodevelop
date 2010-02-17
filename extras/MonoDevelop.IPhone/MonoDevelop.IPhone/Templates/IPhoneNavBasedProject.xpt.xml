@@ -97,12 +97,12 @@ namespace ${Namespace} {
 		[MonoTouch.Foundation.Connect("window")]
 		private MonoTouch.UIKit.UIWindow window {
 			get {
-				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetInstanceVariable("window")));
+				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetNativeField("window")));
 				return this.__mt_window;
 			}
 			set {
 				this.__mt_window = value;
-				this.SetInstanceVariable("window", value);
+				this.SetNativeField("window", value);
 			}
 		}
 		
@@ -111,12 +111,12 @@ namespace ${Namespace} {
 		[MonoTouch.Foundation.Connect("navigationController")]
 		private MonoTouch.UIKit.UINavigationController navigationController {
 			get {
-				this.__mt_navigationController = ((MonoTouch.UIKit.UINavigationController)(this.GetInstanceVariable("navigationController")));
+				this.__mt_navigationController = ((MonoTouch.UIKit.UINavigationController)(this.GetNativeField("navigationController")));
 				return this.__mt_navigationController;
 			}
 			set {
 				this.__mt_navigationController = value;
-				this.SetInstanceVariable("navigationController", value);
+				this.SetNativeField("navigationController", value);
 			}
 		}
 	}
@@ -750,12 +750,12 @@ namespace ${Namespace} {
 		[MonoTouch.Foundation.Connect("view")]
 		private MonoTouch.UIKit.UITableView view {
 			get {
-				this.__mt_view = ((MonoTouch.UIKit.UITableView)(this.GetInstanceVariable("view")));
+				this.__mt_view = ((MonoTouch.UIKit.UITableView)(this.GetNativeField("view")));
 				return this.__mt_view;
 			}
 			set {
 				this.__mt_view = value;
-				this.SetInstanceVariable("view", value);
+				this.SetNativeField("view", value);
 			}
 	}
 }

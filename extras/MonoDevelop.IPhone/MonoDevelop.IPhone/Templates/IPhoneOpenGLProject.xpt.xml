@@ -171,12 +171,12 @@ namespace ${Namespace} {
 		[MonoTouch.Foundation.Connect("window")]
 		private MonoTouch.UIKit.UIWindow window {
 			get {
-				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetInstanceVariable("window")));
+				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetNativeField("window")));
 				return this.__mt_window;
 			}
 			set {
 				this.__mt_window = value;
-				this.SetInstanceVariable("window", value);
+				this.SetNativeField("window", value);
 			}
 		}
 		
@@ -185,12 +185,12 @@ namespace ${Namespace} {
 		[MonoTouch.Foundation.Connect("glView")]
 		private EAGLView glView {
 			get {
-				this.__mt_glView = ((EAGLView)(this.GetInstanceVariable("glView")));
+				this.__mt_glView = ((EAGLView)(this.GetNativeField("glView")));
 				return this.__mt_glView;
 			}
 			set {
 				this.__mt_glView = value;
-				this.SetInstanceVariable("glView", value);
+				this.SetNativeField("glView", value);
 			}
 		}
 	}
