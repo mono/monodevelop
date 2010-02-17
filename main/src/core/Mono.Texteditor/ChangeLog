@@ -1,5 +1,10 @@
 2010-02-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/ClipboardActions.cs: Fixed 'Bug 580395 -
+	  Exception when deleting several lines in a C# file'.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
 	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Worked
