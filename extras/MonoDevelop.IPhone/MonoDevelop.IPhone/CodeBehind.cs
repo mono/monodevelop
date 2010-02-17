@@ -44,7 +44,8 @@ namespace MonoDevelop.IPhone
 	public static class CodeBehind
 	{
 		
-		public static BuildResult UpdateXibCodebehind (CodeBehindWriter writer, IPhoneProject project, IEnumerable<ProjectFile> allFiles)
+		public static BuildResult UpdateXibCodebehind (CodeBehindWriter writer, IPhoneProject project,
+		                                               IEnumerable<ProjectFile> allFiles, bool forceRegen)
 		{
 			BuildResult result = null;
 			var projWrite = File.GetLastWriteTime (project.FileName);
@@ -56,7 +57,7 @@ namespace MonoDevelop.IPhone
 				
 				try {
 					var designerWrite = File.GetLastWriteTime (designerFile.FilePath);
-					if (designerWrite < projWrite || designerWrite < File.GetLastWriteTime (xibFile.FilePath)) {
+					if (forceRegen || designerWrite < projWrite || designerWrite < File.GetLastWriteTime (xibFile.FilePath)) {
 						GenerateDesignerCode (writer, xibFile, designerFile);
 					}
 				} catch (Exception ex) {

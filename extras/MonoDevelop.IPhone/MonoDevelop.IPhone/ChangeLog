@@ -1,5 +1,11 @@
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CodeBehind.cs:
+	* IPhoneBuildExtension.cs: Force-regen designer files after
+	  cleaning.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Fix NeedsBuilding check.
 
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>

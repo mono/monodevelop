@@ -388,7 +388,8 @@ namespace MonoDevelop.IPhone
 			var cbWriter = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, proj);
 			BuildResult result = null;
 			if (cbWriter.SupportsPartialTypes) {
-				result = CodeBehind.UpdateXibCodebehind (cbWriter, proj, buildData.Items.OfType<ProjectFile> ());
+				bool forceRegen = !Directory.Exists (cfg.AppDirectory);
+				result = CodeBehind.UpdateXibCodebehind (cbWriter, proj, buildData.Items.OfType<ProjectFile> (), forceRegen);
 				cbWriter.WriteOpenFiles ();
 				if (cbWriter.WrittenCount > 0)
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updated {0} CodeBehind files", cbWriter.WrittenCount));
