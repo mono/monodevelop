@@ -1111,12 +1111,38 @@ namespace MonoDevelop.CSharp.Completion
 			
 			Dictionary<IType, CompletionCategory> completionCategories = new Dictionary<IType, CompletionCategory> ();
 			
+			class TypeCompletionCategory : CompletionCategory
+			{
+				public IType Type {
+					get;
+					private set;
+				}
+				
+				public TypeCompletionCategory (IType type) : base (type.FullName, type.StockIcon)
+				{
+					this.Type = type;
+				}
+				
+				public override int CompareTo (CompletionCategory other)
+				{
+					TypeCompletionCategory compareCategory = other as TypeCompletionCategory;
+					if (compareCategory == null)
+						return 1;
+					
+					if (Type.DecoratedFullName == compareCategory.Type.DecoratedFullName)
+						return 0;
+					if (Type.SourceProjectDom.GetInheritanceTree (Type).Any (t => t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
+						return 1;
+					return -1;
+				}
+			}
+			
 			CompletionCategory GetCompletionCategory (IType type)
 			{
 				if (type == null)
 					return null;
 				if (!completionCategories.ContainsKey (type)) {
-					completionCategories[type] = new CompletionCategory (type.FullName, type.StockIcon);
+					completionCategories[type] = new TypeCompletionCategory (type);
 				}
 				return completionCategories[type];
 			}
