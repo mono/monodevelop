@@ -1,3 +1,7 @@
+2010-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor.csproj: Fix file format issue.
+
 2010-02-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/ClipboardActions.cs: Fixed 'Bug 580395 -
