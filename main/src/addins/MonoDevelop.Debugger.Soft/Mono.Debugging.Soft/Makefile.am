@@ -8,8 +8,7 @@ DBG_MDB_SRC = $(DBG_ASM_SRC).mdb
 
 SIGNING_KEY=$(top_srcdir)/src/core/Mono.Debugging/mono.debugging.snk
 
-DEPS =  \
-	$(top_builddir)/build/bin/Mono.Debugging.dll
+DEPS = $(top_builddir)/build/bin/Mono.Debugging.dll
 
 REFS =  \
 	-r:$(top_srcdir)/src/addins/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft/Mono.Debugger.Soft.dll \
