@@ -74,18 +74,8 @@ namespace Mono.TextEditor
 			public static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
 			public static readonly Gdk.Atom MD_ATOM  = Gdk.Atom.Intern ("text/monotext", false);
 			
-			TextEditorData data;
-			Selection selection;
-			
 			public CopyOperation ()	
 			{
-			}
-			
-			public CopyOperation (TextEditorData data, Selection selection)	
-			{
-				this.data = data;
-				this.selection = selection;
-				isBlockMode = data.SelectionMode == SelectionMode.Block;
 			}
 			
 			public void SetData (SelectionData selection_data, uint info)
@@ -322,25 +312,15 @@ namespace Mono.TextEditor
 				if (Copy != null)
 					Copy (copiedDocument != null ? copiedDocument.Text : null);
 			}
-			
-			public void ClipboardGetFuncLazy (Clipboard clipboard, SelectionData selection_data, uint info)
-			{
-				// data may have disposed
-				if (data.Document == null)
-					return;
-				CopyData (data, selection);
-				ClipboardGetFunc (clipboard, selection_data, info);
-			}
-			
+		
 			public delegate void CopyDelegate (string text);
 			public static event CopyDelegate Copy;
 		}
 		
 		public static void CopyToPrimary (TextEditorData data)
 		{
-			CopyOperation operation = new CopyOperation (data, data.MainSelection);
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.targetList, operation.ClipboardGetFuncLazy, operation.ClipboardClearFunc);
+			clipboard.Text = data.SelectedText;
 		}
 		
 		public static void ClearPrimary ()

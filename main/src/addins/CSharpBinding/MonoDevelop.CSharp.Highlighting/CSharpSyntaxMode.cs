@@ -353,12 +353,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					bool end = i + 6 < doc.Length && doc.GetTextAt (i, 6) == "#endif";
 					if (end) {
 						OnFoundSpanEnd (cur, i, 0); // put empty end tag in
-						while (!(spanStack.Peek () is IfBlockSpan)) {
+						while (spanStack.Count > 0 && !(spanStack.Peek () is IfBlockSpan)) {
 							spanStack.Pop ();
 							if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 								ruleStack.Pop ();
 						}
-						spanStack.Pop ();
+						if (spanStack.Count > 0)
+							spanStack.Pop ();
 						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 							ruleStack.Pop ();
 						// put pre processor eol span on stack, so that '#endif' gets the correct highlight
