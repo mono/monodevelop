@@ -1054,12 +1054,14 @@ namespace MonoDevelop.Autotools
 				refname = ResolveBuildVars (refname, ref varFound);
 				EncodeValues [refVar.Name] |= varFound;
 
-				//if refname is part of a package then add as gac
-				if (refname.IndexOf (Path.DirectorySeparatorChar) < 0 &&
+				string fullpath = Path.GetFullPath (Path.Combine (BaseDirectory, refname));
+				
+				// if refname is part of a package then add as gac
+				// but don't do it if the refname exactly matches a file name in the project dir
+				if (refname.IndexOf (Path.DirectorySeparatorChar) < 0 && !File.Exists (fullpath) &&
 					ParseReferenceAsGac (refname, project) != null)
 					continue;
 				
-				string fullpath = Path.GetFullPath (Path.Combine (BaseDirectory, refname));
 				if (TryGetExistingGacRef (fullpath) != null)
 					continue;
 
