@@ -90,25 +90,33 @@ namespace ${Namespace} {
 	// Base type probably should be MonoTouch.Foundation.NSObject or subclass
 	[MonoTouch.Foundation.Register("AppDelegate")]
 	public partial class AppDelegate {
+			
+		private MonoTouch.UIKit.UIWindow __mt_window;
 		
 		#pragma warning disable 0169
 		[MonoTouch.Foundation.Connect("window")]
 		private MonoTouch.UIKit.UIWindow window {
 			get {
-				return ((MonoTouch.UIKit.UIWindow)(this.GetNativeField("window")));
+				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetInstanceVariable("window")));
+				return this.__mt_window;
 			}
 			set {
-				this.SetNativeField("window", value);
+				this.__mt_window = value;
+				this.SetInstanceVariable("window", value);
 			}
 		}
+		
+		private MonoTouch.UIKit.UINavigationController __mt_navigationController;
 		
 		[MonoTouch.Foundation.Connect("navigationController")]
 		private MonoTouch.UIKit.UINavigationController navigationController {
 			get {
-				return ((MonoTouch.UIKit.UINavigationController)(this.GetNativeField("navigationController")));
+				this.__mt_navigationController = ((MonoTouch.UIKit.UINavigationController)(this.GetInstanceVariable("navigationController")));
+				return this.__mt_navigationController;
 			}
 			set {
-				this.SetNativeField("navigationController", value);
+				this.__mt_navigationController = value;
+				this.SetInstanceVariable("navigationController", value);
 			}
 		}
 	}
@@ -736,16 +744,19 @@ namespace ${Namespace} {
 	[MonoTouch.Foundation.Register("RootViewController")]
 	public partial class RootViewController {
 		
+		private MonoTouch.UIKit.UITableView __mt_view;
+		
 		#pragma warning disable 0169
 		[MonoTouch.Foundation.Connect("view")]
 		private MonoTouch.UIKit.UITableView view {
 			get {
-				return ((MonoTouch.UIKit.UITableView)(this.GetNativeField("view")));
+				this.__mt_view = ((MonoTouch.UIKit.UITableView)(this.GetInstanceVariable("view")));
+				return this.__mt_view;
 			}
 			set {
-				this.SetNativeField("view", value);
+				this.__mt_view = value;
+				this.SetInstanceVariable("view", value);
 			}
-		}
 	}
 }
 ]]>

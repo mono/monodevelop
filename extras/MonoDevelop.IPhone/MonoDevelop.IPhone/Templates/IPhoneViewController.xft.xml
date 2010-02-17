@@ -78,17 +78,21 @@ namespace ${Namespace}
 	// Base type probably should be MonoTouch.UIKit.UIViewController or subclass
 	[MonoTouch.Foundation.Register("${Name}")]
 	public partial class ${Name} {
+	
+		private MonoTouch.UIKit.UIView __mt_view;
 	    
 	    [MonoTouch.Foundation.Connect("view")]
 	    private MonoTouch.UIKit.UIView view {
 	        get {
-	            return ((MonoTouch.UIKit.UIView)(this.GetNativeField("view")));
-	        }
-	        set {
-	            this.SetNativeField("view", value);
-	        }
-	    }
-	   }
+				this.__mt_view = ((MonoTouch.UIKit.UIView)(this.GetInstanceVariable("view")));
+				return this.__mt_view;
+			}
+			set {
+				this.__mt_view = value;
+				this.SetInstanceVariable("view", value);
+			}
+		}
+	}
 }
 ]]></File>
 		<File name="${Name}.xib" DefaultExtension=".xib" SuppressAutoOpen="True">

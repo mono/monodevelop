@@ -1,5 +1,16 @@
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* CodeBehindGenerator.cs:
+	* Templates/IPadApplicationXib.xft.xml:
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneApplicationXib.xft.xml:
+	* Templates/IPhoneViewController.xft.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml: Track new MD
+	  codebehind APIs.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CodeBehind.cs:
 	* IPhoneBuildExtension.cs: Force-regen designer files after
 	  cleaning.

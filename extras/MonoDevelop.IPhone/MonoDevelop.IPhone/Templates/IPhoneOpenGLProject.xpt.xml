@@ -164,25 +164,33 @@ namespace ${Namespace} {
 	// Base type probably should be MonoTouch.Foundation.NSObject or subclass
 	[MonoTouch.Foundation.Register("AppDelegate")]
 	public partial class AppDelegate {
+	
+		private MonoTouch.UIKit.UIWindow __mt_window;
 		
 		#pragma warning disable 0169
 		[MonoTouch.Foundation.Connect("window")]
 		private MonoTouch.UIKit.UIWindow window {
 			get {
-				return ((MonoTouch.UIKit.UIWindow)(this.GetNativeField("window")));
+				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetInstanceVariable("window")));
+				return this.__mt_window;
 			}
 			set {
-				this.SetNativeField("window", value);
+				this.__mt_window = value;
+				this.SetInstanceVariable("window", value);
 			}
 		}
+		
+		private EAGLView __mt_glView;
 		
 		[MonoTouch.Foundation.Connect("glView")]
 		private EAGLView glView {
 			get {
-				return ((EAGLView)(this.GetNativeField("glView")));
+				this.__mt_glView = ((EAGLView)(this.GetInstanceVariable("glView")));
+				return this.__mt_glView;
 			}
 			set {
-				this.SetNativeField("glView", value);
+				this.__mt_glView = value;
+				this.SetInstanceVariable("glView", value);
 			}
 		}
 	}
