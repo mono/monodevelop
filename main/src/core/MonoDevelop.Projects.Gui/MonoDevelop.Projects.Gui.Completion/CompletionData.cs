@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class CompletionCategory
+	public abstract class CompletionCategory : IComparable<CompletionCategory>
 	{
 		public string DisplayText { get; set; }
 		public string Icon { get; set; }
@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.Icon = icon;
 		}
 		
+		public abstract int CompareTo (CompletionCategory other);
 	}
 	
 	public class CompletionData : ICompletionData

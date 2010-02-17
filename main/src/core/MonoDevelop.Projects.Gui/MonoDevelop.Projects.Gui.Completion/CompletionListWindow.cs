@@ -74,6 +74,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		protected override void OnDestroyed ()
 		{
+			
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Destroy ();
 				declarationviewwindow = null;

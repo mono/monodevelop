@@ -183,6 +183,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Selection = newCategory.Items[0];
 			if (next == 0)
 				Page = 0;
+			UpdatePage ();
 		}
 		
 		int CurrentCategory ()
@@ -559,6 +560,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 					filteredItems.Add (newSelection);
 				}
 			}
+			categories.Sort (delegate (Category left, Category right) {
+				return right.CompletionCategory != null ? right.CompletionCategory.CompareTo (left.CompletionCategory) : -1;
+			});
 			CalcVisibleRows ();
 			UpdatePage ();
 		}

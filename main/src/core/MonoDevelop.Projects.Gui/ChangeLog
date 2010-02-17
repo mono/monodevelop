@@ -1,3 +1,10 @@
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Categories are now sorted.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
