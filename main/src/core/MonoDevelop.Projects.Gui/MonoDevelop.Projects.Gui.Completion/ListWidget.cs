@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set;
 		}
 		
-		bool inCategoryMode;
+		static bool inCategoryMode;
 		public bool InCategoryMode {
 			get { return inCategoryMode; }
 			set { inCategoryMode = value; this.CalcVisibleRows (); this.UpdatePage (); }

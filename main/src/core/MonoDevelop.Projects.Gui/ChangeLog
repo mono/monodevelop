@@ -1,6 +1,11 @@
 2010-02-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  completion window now remembers the operation mode.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Categories are now sorted.
