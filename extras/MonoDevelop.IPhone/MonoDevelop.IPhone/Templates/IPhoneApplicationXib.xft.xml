@@ -31,12 +31,12 @@ namespace ${Namespace}
 		[MonoTouch.Foundation.Connect("window")]
 		private MonoTouch.UIKit.UIWindow window {
 			get {
-				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetInstanceVariable("window")));
+				this.__mt_window = ((MonoTouch.UIKit.UIWindow)(this.GetNativeField("window")));
 				return this.__mt_window;
 			}
 			set {
 				this.__mt_window = value;
-				this.SetInstanceVariable("window", value);
+				this.SetNativeField("window", value);
 			}
 		}
 	}

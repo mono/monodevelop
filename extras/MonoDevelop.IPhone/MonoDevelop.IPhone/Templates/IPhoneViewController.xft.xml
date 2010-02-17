@@ -84,12 +84,12 @@ namespace ${Namespace}
 	    [MonoTouch.Foundation.Connect("view")]
 	    private MonoTouch.UIKit.UIView view {
 	        get {
-				this.__mt_view = ((MonoTouch.UIKit.UIView)(this.GetInstanceVariable("view")));
+				this.__mt_view = ((MonoTouch.UIKit.UIView)(this.GetNativeField("view")));
 				return this.__mt_view;
 			}
 			set {
 				this.__mt_view = value;
-				this.SetInstanceVariable("view", value);
+				this.SetNativeField("view", value);
 			}
 		}
 	}
