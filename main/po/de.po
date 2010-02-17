@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-02-11 01:16:07+0100\n"
-"PO-Revision-Date: 2010-02-11 01:24:23+0100\n"
+"PO-Revision-Date: 2010-02-17 14:38:20+0100\n"
 "Last-Translator: Mike Krüger <mkrueger@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15457,7 +15457,7 @@ msgstr "U_sings organisieren"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:230
 msgid "Refactor"
-msgstr "Refaktorisieren"
+msgstr "Umgestalten"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:448
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:79
@@ -15578,11 +15578,11 @@ msgstr "Speichere Projekt {0}"
 
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs:23
 msgid "Refactoring Preview"
-msgstr "Refaktorisierungs-Vorschau"
+msgstr "Vorschau der Änderungen"
 
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs:39
 msgid "List of changes for this refactoring:"
-msgstr "Liste der Änderungen für diese Refaktorisierung:"
+msgstr "Liste der Änderungen:"
 
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs:51
 msgid "Extract Method"
@@ -15855,7 +15855,7 @@ msgstr "Member _implementieren"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:76
 msgid "Refactory"
-msgstr "Neu anfertigen"
+msgstr "Umgestalten"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:84
 msgid "_Find references"
@@ -15867,7 +15867,7 @@ msgstr "_Umbenennen..."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:98
 msgid "Refactory Operations"
-msgstr "Neuanfertigung-Vorgänge"
+msgstr "Umgestaltungs-Operationen"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:106
 msgid "S_how Code Generation Window"
@@ -17036,10 +17036,8 @@ msgstr "Debugger"
 #~ msgstr "_in:"
 #~ msgid "Failed to open test page in browser."
 #~ msgstr "Konnte Testseite in Browser nicht öffnen."
-
 #~ msgid "Could not connect to webserver {0}"
 #~ msgstr "Kann nicht mit dem Webserver verbinden {0}"
-
 #~ msgid "Coding"
 #~ msgstr "Programmieren"
 
@@ -18040,10 +18038,8 @@ msgstr "Debugger"
 #~ msgstr "Ab_wärts"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Fehler aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Lösche Dateien"
 
