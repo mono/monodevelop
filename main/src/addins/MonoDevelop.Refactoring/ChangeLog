@@ -1,5 +1,10 @@
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/Change.cs: The file rename operation
+	  now saves the project.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:

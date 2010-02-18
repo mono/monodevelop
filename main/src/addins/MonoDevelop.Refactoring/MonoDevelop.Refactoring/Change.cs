@@ -214,6 +214,9 @@ namespace MonoDevelop.Refactoring
 		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
 		{
 			FileService.RenameFile (OldName, NewName);
+			
+			if (rctx.ParserContext.Project != null)
+				IdeApp.ProjectOperations.Save (rctx.ParserContext.Project);
 		}
 	}
 	
