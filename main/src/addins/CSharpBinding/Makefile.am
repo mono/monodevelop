@@ -1,4 +1,4 @@
-SUBDIRS = . Autotools
+SUBDIRS = . Autotools AspNet
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
@@ -6,7 +6,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
 PARSE = parse.exe
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
@@ -36,7 +35,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
-	MonoDevelop.CSharp.Completion/AspLanguageBuilder.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \

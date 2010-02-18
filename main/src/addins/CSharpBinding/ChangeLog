@@ -1,5 +1,18 @@
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AspNet:
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* MonoDevelop.CSharp.Completion/AspLanguageBuilder.cs: Moved
+	  AspLanguageBuilder to its own assembly and module. Dropped
+	  Asp.Net dependency.
+
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  Filtering by extension is now done by the document.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs: Track
 	  api changes.
 
