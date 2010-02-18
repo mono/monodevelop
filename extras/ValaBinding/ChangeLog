@@ -1,18 +1,22 @@
-2010-02-18  Levi Bard  <levi.bard@emhartglass.com>
+2010-02-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
-	* Makefile.am:
-	* Parser/Afrodite.cs:
-	* ValaBinding.csproj:
-	* Parser/Function.cs:
-	* Parser/CodeNode.cs:
-	* Gui/DataProvider.cs:
-	* Parser/ValaDocumentParser.cs:
-	* Parser/ProjectInformation.cs:
-	* Gui/ValaTextEditorExtension.cs:
-	* Navigation/LanguageItemEventArgs.cs:
-	* Navigation/LanguageItemNodeBuilder.cs:
-	* Navigation/LanguageItemCommandHandler.cs:
-	* Navigation/ProjectNodeBuilderExtension.cs: 
+	* Project/ValaProject.cs: Add project packages to parse list.
+
+2010-02-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* Makefile.am: 
+	* Parser/Afrodite.cs: 
+	* ValaBinding.csproj: 
+	* Parser/Function.cs: 
+	* Parser/CodeNode.cs: 
+	* Gui/DataProvider.cs: 
+	* Parser/ValaDocumentParser.cs: 
+	* Parser/ProjectInformation.cs: 
+	* Gui/ValaTextEditorExtension.cs: 
+	* Navigation/LanguageItemEventArgs.cs: 
+	* Navigation/LanguageItemNodeBuilder.cs: 
+	* Navigation/LanguageItemCommandHandler.cs: 
+	* Navigation/ProjectNodeBuilderExtension.cs: Rework code completion based on libafrodite.
 
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
