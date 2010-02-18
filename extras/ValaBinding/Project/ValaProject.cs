@@ -384,8 +384,16 @@ namespace MonoDevelop.ValaBinding
 				packages = value;
 				packages.Project = this;
 				ProjectInformation pi = ProjectInformationManager.Instance.Get (this);
+				ValaProjectConfiguration configuration = (ValaProjectConfiguration)DefaultConfiguration;
+				
 				foreach(ProjectPackage p in packages) {
-					if (!p.IsProject){ pi.AddPackage (p.Name); }
+					if (p.IsProject) {
+						string file = Path.GetFullPath (Path.Combine (configuration.OutputDirectory, p.File));
+						LoggingService.LogDebug ("Adding {0} for project package {1}", file, p.Name);
+						pi.AddFile (file);
+					} else {
+						pi.AddPackage (p.Name);
+					}
 				}
 			}
 		}
