@@ -1050,7 +1050,7 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindNext (bool focus)
 		{
 			SetSearchOptions ();
-			SearchResult result = TextEditor.FindNext ();
+			SearchResult result = TextEditor.FindNext (searchAndReplaceWidget == null);
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}
@@ -1074,7 +1074,7 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindPrevious (bool focus)
 		{
 			SetSearchOptions ();
-			SearchResult result = TextEditor.FindPrevious ();
+			SearchResult result = TextEditor.FindPrevious (searchAndReplaceWidget == null);
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}
