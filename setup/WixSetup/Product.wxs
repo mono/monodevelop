@@ -550,10 +550,8 @@
             </Directory>
             <Directory Id="WelcomePage" Name="WelcomePage">
               <Component Id="MonoDevelop_AddIns_WelcomePage" Guid="637d09c3-26f7-461c-b310-da92fb969c32">
-                <File Name="mono-bg.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\mono-bg.png" />
-                <File Name="mono-decoration.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\mono-decoration.png" />
-                <File Name="mono-logo.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\mono-logo.png" />
-                <File Name="WelcomePage.css" Source="$(var.BuildRoot)\AddIns\WelcomePage\WelcomePage.css" />
+                <File Name="md-bg.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\md-bg.png" />
+                <File Name="md-logo.png" Source="$(var.BuildRoot)\AddIns\WelcomePage\md-logo.png" />
                 <File Name="WelcomePage.dll" Source="$(var.BuildRoot)\AddIns\WelcomePage\WelcomePage.dll" />
               </Component>
             </Directory>
