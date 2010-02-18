@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
@@ -156,7 +157,7 @@ namespace PyBinding.Parser.Dom
 		class PackageDomType: DomType
 		{
 			
-			public override string StockIcon {
+			public override IconId StockIcon {
 				get { return "md-package"; }
 			}
 		}

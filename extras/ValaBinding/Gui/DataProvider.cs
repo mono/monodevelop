@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 
+using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
@@ -202,7 +203,7 @@ namespace MonoDevelop.ValaBinding
 			this.image = item.Icon;
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return image; }
 		}
 		

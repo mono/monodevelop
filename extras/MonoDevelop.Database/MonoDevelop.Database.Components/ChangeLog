@@ -1,3 +1,8 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Widgets/SelectSchemaWidget.cs:
+	* Widgets/ProjectDirectoryComboBox.cs: Track api changes.
+
 2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* Dialogs/DatabaseAvailableProvidersDialog.cs: Available
