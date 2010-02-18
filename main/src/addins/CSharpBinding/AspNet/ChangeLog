@@ -1,5 +1,9 @@
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am: Add missing file.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AspLanguageBuilder.cs:
 	* CSharpBinding.AspNet.csproj: Moved AspLanguageBuilder to its
 	  own assembly and module. Dropped Asp.Net dependency.
