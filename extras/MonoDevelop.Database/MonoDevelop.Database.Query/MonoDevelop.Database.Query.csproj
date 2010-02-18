@@ -161,83 +161,8 @@
     <EmbeddedResource Include="MonoDevelop.Database.Query.addin.xml">
       <LogicalName>MonoDevelop.Database.Query.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Column.Key.png">
-      <LogicalName>Icons.16x16.Database.Column.Key.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Column.png">
-      <LogicalName>Icons.16x16.Database.Column.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Connection.Error.png">
-      <LogicalName>Icons.16x16.Database.Connection.Error.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Connection.png">
-      <LogicalName>Icons.16x16.Database.Connection.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Connection.Remove.png">
-      <LogicalName>Icons.16x16.Database.Connection.Remove.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Constraints.png">
-      <LogicalName>Icons.16x16.Database.Constraints.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Database.Error.png">
-      <LogicalName>Icons.16x16.Database.Database.Error.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Database.Ok.png">
-      <LogicalName>Icons.16x16.Database.Database.Ok.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Database.png">
-      <LogicalName>Icons.16x16.Database.Database.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Execute.png">
-      <LogicalName>Icons.16x16.Database.Execute.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Parameter.png">
-      <LogicalName>Icons.16x16.Database.Parameter.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Procedure.Error.png">
-      <LogicalName>Icons.16x16.Database.Procedure.Error.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Procedure.png">
-      <LogicalName>Icons.16x16.Database.Procedure.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Procedure.Source.png">
-      <LogicalName>Icons.16x16.Database.Procedure.Source.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Relations.png">
-      <LogicalName>Icons.16x16.Database.Relations.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Table.Error.png">
-      <LogicalName>Icons.16x16.Database.Table.Error.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Table.png">
-      <LogicalName>Icons.16x16.Database.Table.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Tables.png">
-      <LogicalName>Icons.16x16.Database.Tables.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.User.png">
-      <LogicalName>Icons.16x16.Database.User.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Users.png">
-      <LogicalName>Icons.16x16.Database.Users.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.View.Error.png">
-      <LogicalName>Icons.16x16.Database.View.Error.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.View.png">
-      <LogicalName>Icons.16x16.Database.View.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.View.Source.png">
-      <LogicalName>Icons.16x16.Database.View.Source.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Views.png">
-      <LogicalName>Icons.16x16.Database.Views.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Database.Function.png">
-      <LogicalName>Icons.16x16.Database.Function.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -263,7 +188,7 @@
         <GtkDesignInfo gettextClass="AddinCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
           <BuildFilesVar Sync="true" Name="FILES" />
-          <DeployFilesVar />
+          <DeployFilesVar Sync="true" Name="DATA_FILES" />
           <ResourcesVar Sync="true" Name="RES" />
           <OthersVar />
           <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
@@ -274,10 +199,32 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <AddinReference Include="MonoDevelop.Core,2.2" />
-    <AddinReference Include="MonoDevelop.Core.Gui,2.2" />
-    <AddinReference Include="MonoDevelop.Ide,2.2" />
-    <AddinReference Include="MonoDevelop.Projects,2.2" />
-    <AddinReference Include="MonoDevelop.Projects.Gui,2.2" />
+    <Content Include="icons\Icons.16x16.Database.Column.Key.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\Icons.16x16.Database.Column.png" />
+    <Content Include="icons\Icons.16x16.Database.Connection.Error.png" />
+    <Content Include="icons\Icons.16x16.Database.Connection.png" />
+    <Content Include="icons\Icons.16x16.Database.Connection.Remove.png" />
+    <Content Include="icons\Icons.16x16.Database.Constraints.png" />
+    <Content Include="icons\Icons.16x16.Database.Database.Error.png" />
+    <Content Include="icons\Icons.16x16.Database.Database.Ok.png" />
+    <Content Include="icons\Icons.16x16.Database.Database.png" />
+    <Content Include="icons\Icons.16x16.Database.Execute.png" />
+    <Content Include="icons\Icons.16x16.Database.Parameter.png" />
+    <Content Include="icons\Icons.16x16.Database.Procedure.Error.png" />
+    <Content Include="icons\Icons.16x16.Database.Procedure.png" />
+    <Content Include="icons\Icons.16x16.Database.Procedure.Source.png" />
+    <Content Include="icons\Icons.16x16.Database.Relations.png" />
+    <Content Include="icons\Icons.16x16.Database.Table.Error.png" />
+    <Content Include="icons\Icons.16x16.Database.Table.png" />
+    <Content Include="icons\Icons.16x16.Database.Tables.png" />
+    <Content Include="icons\Icons.16x16.Database.User.png" />
+    <Content Include="icons\Icons.16x16.Database.Users.png" />
+    <Content Include="icons\Icons.16x16.Database.View.Error.png" />
+    <Content Include="icons\Icons.16x16.Database.View.png" />
+    <Content Include="icons\Icons.16x16.Database.View.Source.png" />
+    <Content Include="icons\Icons.16x16.Database.Views.png" />
+    <Content Include="icons\Icons.16x16.Database.Function.png" />
   </ItemGroup>
 </Project>

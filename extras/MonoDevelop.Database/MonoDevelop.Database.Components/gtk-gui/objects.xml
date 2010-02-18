@@ -73,6 +73,14 @@
       </itemgroup>
     </signals>
   </object>
+  <object type="MonoDevelop.Database.Components.DatabaseConnectionEditorWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="DatabaseConnectionEditorWidget Signals">
+        <signal name="SelectedDatabaseChanged" />
+      </itemgroup>
+    </signals>
+  </object>
   <object type="MonoDevelop.Database.Components.SqlEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="SqlEditorWidget Properties">
@@ -83,14 +91,6 @@
     <signals>
       <itemgroup label="SqlEditorWidget Signals">
         <signal name="TextChanged" />
-      </itemgroup>
-    </signals>
-  </object>
-  <object type="MonoDevelop.Database.Components.DatabaseConnectionEditorWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals>
-      <itemgroup label="DatabaseConnectionEditorWidget Signals">
-        <signal name="SelectedDatabaseChanged" />
       </itemgroup>
     </signals>
   </object>

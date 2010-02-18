@@ -19,7 +19,7 @@ namespace MonoDevelop.Database.Components
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Database.Components.DatabaseAvailableProvidersDialog
 			this.Name = "MonoDevelop.Database.Components.DatabaseAvailableProvidersDialog";
-			this.Title = global::Mono.Unix.Catalog.GetString ("Available Providers");
+			this.Title = global::MonoDevelop.Database.AddinCatalog.GetString ("Available Providers");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Database.Components.DatabaseAvailableProvidersDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -32,7 +32,7 @@ namespace MonoDevelop.Database.Components
 			// Container child hbox9.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Choose a Provider");
+			this.label3.LabelProp = global::MonoDevelop.Database.AddinCatalog.GetString ("Choose a Provider");
 			this.hbox9.Add (this.label3);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox9[this.label3]));
 			w2.Position = 0;

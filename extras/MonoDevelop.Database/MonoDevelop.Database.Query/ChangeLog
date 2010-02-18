@@ -1,3 +1,10 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Database.Query.csproj:
+	* MonoDevelop.Database.Query.addin.xml: Moved icons from
+	  resources to standalone files.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

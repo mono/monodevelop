@@ -136,10 +136,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>MonoDevelop.SourceEditor2</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>MonoDevelop.VBNetBinding</HintPath>
-    </Reference>
     <Reference Include="NRefactory">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>NRefactory</HintPath>
@@ -212,6 +208,7 @@
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb">
       <Package>monodevelop-core-addins</Package>
@@ -312,6 +309,7 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData generatePcFile="false" />
+        <GtkDesignInfo gettextClass="MonoDevelop.Database.AddinCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />

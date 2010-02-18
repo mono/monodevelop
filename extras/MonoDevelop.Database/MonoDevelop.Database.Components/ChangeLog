@@ -1,5 +1,15 @@
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml: Flush.
+
+	* MonoDevelop.Database.Components.csproj:
+	* gtk-gui/MonoDevelop.Database.Components.DatabaseConnectionEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Database.Components.DatabaseAvailableProvidersDialog.cs:
+	  Use correct gettext class.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Widgets/SelectSchemaWidget.cs:
 	* Widgets/ProjectDirectoryComboBox.cs: Track api changes.
 

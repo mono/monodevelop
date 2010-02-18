@@ -53,6 +53,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
@@ -123,7 +124,27 @@
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
       <Package>monodevelop</Package>
     </Reference>
->>>>>>> .r151756
+    <Reference Include="MonoDevelop.Core, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.6.9.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Sql\MonoDevelop.Database.Sql.csproj">
@@ -189,6 +210,7 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData generatePcFile="false" />
+        <GtkDesignInfo gettextClass="MonoDevelop.Database.AddinCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
@@ -203,11 +225,5 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="Collections\" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddinReference Include="MonoDevelop.Core,2.2" />
-    <AddinReference Include="MonoDevelop.Core.Gui,2.2" />
-    <AddinReference Include="MonoDevelop.Ide,2.2" />
-    <AddinReference Include="MonoDevelop.SourceEditor2,2.2" />
   </ItemGroup>
 </Project>

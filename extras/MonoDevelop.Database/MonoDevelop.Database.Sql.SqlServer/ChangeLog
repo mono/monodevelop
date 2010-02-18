@@ -1,3 +1,7 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Database.Sql.SqlServer.csproj: Update.
+
 2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* SqlServerDbFactory.cs:

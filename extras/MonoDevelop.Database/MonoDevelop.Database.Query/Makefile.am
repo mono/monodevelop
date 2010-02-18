@@ -14,6 +14,19 @@ REFS =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
+	MonoDevelop.Database.Query.addin.xml
+
+FILES =  \
+	AssemblyInfo.cs \
+	Commands/ToolCommands.cs \
+	gtk-gui/generated.cs \
+	ISqlQueryEditorView.cs \
+	QueryResultView.cs \
+	SqlQueryDisplayBinding.cs \
+	SqlQueryTextEditorExtension.cs \
+	SqlQueryView.cs
+
+DATA_FILES =  \
 	icons/Icons.16x16.Database.Column.Key.png \
 	icons/Icons.16x16.Database.Column.png \
 	icons/Icons.16x16.Database.Connection.Error.png \
@@ -38,18 +51,9 @@ RES =  \
 	icons/Icons.16x16.Database.View.Error.png \
 	icons/Icons.16x16.Database.View.png \
 	icons/Icons.16x16.Database.View.Source.png \
-	icons/Icons.16x16.Database.Views.png \
-	MonoDevelop.Database.Query.addin.xml
+	icons/Icons.16x16.Database.Views.png
 
-FILES =  \
-	AssemblyInfo.cs \
-	Commands/ToolCommands.cs \
-	gtk-gui/generated.cs \
-	ISqlQueryEditorView.cs \
-	QueryResultView.cs \
-	SqlQueryDisplayBinding.cs \
-	SqlQueryTextEditorExtension.cs \
-	SqlQueryView.cs
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
 all: $(ASSEMBLY)
 
@@ -57,11 +61,18 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(REFS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
+$(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
+	mkdir -p $(dir $@)
+	cp $(srcdir)/$(subst $(ADDIN_BUILD),,$@) $@
+
 
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+iconsdir = $(MD_ADDIN_DIR)/MonoDevelop.Database/icons
+icons_DATA = $(DATA_FILE_BUILD)
+
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include

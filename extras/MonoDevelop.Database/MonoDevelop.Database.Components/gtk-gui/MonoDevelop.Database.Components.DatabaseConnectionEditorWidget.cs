@@ -44,7 +44,7 @@ namespace MonoDevelop.Database.Components
 			w3.Add (w4);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w6 = new global::Gtk.Label ();
-			w6.LabelProp = global::Mono.Unix.Catalog.GetString ("_New");
+			w6.LabelProp = global::MonoDevelop.Database.AddinCatalog.GetString ("_New");
 			w6.UseUnderline = true;
 			w3.Add (w6);
 			w2.Add (w3);
@@ -70,7 +70,7 @@ namespace MonoDevelop.Database.Components
 			w12.Add (w13);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w15 = new global::Gtk.Label ();
-			w15.LabelProp = global::Mono.Unix.Catalog.GetString ("_Edit");
+			w15.LabelProp = global::MonoDevelop.Database.AddinCatalog.GetString ("_Edit");
 			w15.UseUnderline = true;
 			w12.Add (w15);
 			w11.Add (w12);
