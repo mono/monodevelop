@@ -27,7 +27,7 @@
 using System;
 using MonoDevelop.Core.Execution;
 
-namespace MonoDevelop.MeeGo.Execution
+namespace MonoDevelop.MeeGo
 {
 
 	public class MeeGoExecutionHandler : IExecutionHandler

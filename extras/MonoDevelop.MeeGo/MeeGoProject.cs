@@ -91,7 +91,8 @@ namespace MonoDevelop.MeeGo
 		
 		MeeGoDevice GetTargetDevice ()
 		{
-			throw new NotImplementedException ();
+			//FIXME: Implement
+			return new MeeGoDevice ();
 		}
 		
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)

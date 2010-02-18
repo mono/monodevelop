@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<Template originator   = "Michael Hutchinson"
+          created      = "2010/02/18"
+          lastModified = "2010/02/18">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>MeeGo Gtk# Project</_Name>
+		<_Category>C#/MeeGo</_Category>
+		<Icon>md-project-gui</Icon>
+		<LanguageName>C#</LanguageName>
+		<_Description>A GTK# based project for MeeGo.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Main.cs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "MeeGo">
+			<Options Target = "WinExe"/>
+			
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Xml" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Gac" SpecificVersion="false" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Gac" SpecificVersion="false" refto="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Gac" SpecificVersion="false" refto="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Gac" SpecificVersion="false" refto="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Gac" SpecificVersion="false" refto="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			</References>
+		
+			<Files>
+			
+			<!-- A window template -->
+			
+				<Widget>
+					<SteticTemplate>
+					  <widget class="Gtk.Window" id="MainWindow" design-size="1024 600">
+					    <property name="Title" translatable="yes">${Name}</property>
+					    <property name="WindowPosition">CenterOnParent</property>
+					    <signal name="DeleteEvent" handler="OnDeleteEvent" />
+				        <child>
+				          <placeholder />
+				        </child>
+					  </widget>			
+					</SteticTemplate>
+					
+					<!-- Class bound to the window -->
+				
+					<File name="MainWindow.cs" AddStandardHeader="True">
+<![CDATA[using System;
+using Gtk;
+
+namespace ${Namespace}
+{
+	
+	public partial class MainWindow: Gtk.Window
+	{	
+		public MainWindow (): base (Gtk.WindowType.Toplevel)
+		{
+			Build ();
+		}
+		
+		protected void OnDeleteEvent (object sender, DeleteEventArgs a)
+		{
+			Application.Quit ();
+			a.RetVal = true;
+		}
+	}
+}]]>
+					</File>
+				</Widget>
+				
+				<!-- The main class -->
+				
+				<File name="Main.cs" AddStandardHeader="True">
+<![CDATA[using System;
+using Gtk;
+
+namespace ${Namespace}
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			Application.Init ();
+			MainWindow win = new MainWindow ();
+			win.Show ();
+			Application.Run ();
+		}
+	}
+}]]>
+				</File>
+				
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>
