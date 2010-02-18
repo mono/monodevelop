@@ -1710,6 +1710,7 @@ namespace Mono.TextEditor
 		{
 			TextEditor editor;
 			SearchResult result;
+			Pixbuf textImage = null;
 			
 			public double Percent { get; set; }
 			
@@ -1750,6 +1751,15 @@ namespace Mono.TextEditor
 					int rw = width + border * 2;
 					int rh = (int)(editor.LineHeight) + border * 2;
 					
+					//GetFromDrawable is broken on Mac
+					bool usePixbufScaling = !Platform.IsMac;
+					
+					int iw = width, ih = editor.LineHeight;
+					if (usePixbufScaling && textImage == null) {
+						textImage = new Pixbuf (Colorspace.Rgb, false, 8, iw, ih);
+						textImage.GetFromDrawable (drawable, Colormap.System, rx + border, ry + border, 0, 0, iw, ih);
+					}
+					
 					cr.Translate (rx + rw / 2, ry + rh / 2);
 					/*cr.Save ();
 					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
@@ -1777,17 +1787,28 @@ namespace Mono.TextEditor
 					
 					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -rw / 2, -rh / 2, (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
-					cr.Fill (); 
+					cr.Fill ();
 					
-					Pango.Layout layout = new Pango.Layout (editor.PangoContext);
-					layout.FontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
-					layout.FontDescription.Size = (int)(layout.FontDescription.Size * scale * editor.Options.Zoom);
-					layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
-					int layoutWidth, layoutHeight;
-					layout.GetPixelSize (out layoutWidth, out layoutHeight);
-					drawable.DrawLayout (editor.Style.BaseGC (StateType.Normal), (int)(textx + (textr - textx - layoutWidth) / 2), (int)(texty + (textb - texty - layoutHeight) / 2), layout);
-					layout.Dispose ();
+					var gc = editor.Style.BaseGC (StateType.Normal);
 					
+					if (usePixbufScaling) {
+						int tx, ty, tw, th, ox, oy;
+						tw = (int) System.Math.Ceiling (iw * scale);
+						th = (int) System.Math.Ceiling (ih * scale);
+						tx = rx - (int) System.Math.Ceiling ((double)(tw - iw) / 2) + border;
+						ty = ry - (int) System.Math.Ceiling ((double)(th - ih) / 2) + border;
+						using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) 
+							scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
+					} else {
+						Pango.Layout layout = new Pango.Layout (editor.PangoContext);
+						layout.FontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
+						layout.FontDescription.Size = (int)(layout.FontDescription.Size * scale * editor.Options.Zoom);
+						layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
+						int layoutWidth, layoutHeight;
+						layout.GetPixelSize (out layoutWidth, out layoutHeight);
+						drawable.DrawLayout (gc, (int)(textx + (textr - textx - layoutWidth) / 2), (int)(texty + (textb - texty - layoutHeight) / 2), layout);
+						layout.Dispose ();
+					}
 				}
 				
 				if (lineLayout.IsUncached) 
@@ -1955,7 +1976,8 @@ namespace Mono.TextEditor
 			if (result != null) {
 				if (searchResultAnimation != null) 
 					actors.Remove (searchResultAnimation);
-				searchResultAnimation = StartAnimation (new TextEditor.HighlightSearchResultAnimation (this, result), 150);
+				var anim = new TextEditor.HighlightSearchResultAnimation (this, result);
+				searchResultAnimation = StartAnimation (anim, 120, Easing.QuadraticInOut);
 			}
 		}
 	
@@ -2278,9 +2300,14 @@ namespace Mono.TextEditor
 		
 		Animation StartAnimation (IAnimationDrawer drawer, uint duration)
 		{
+			return StartAnimation (drawer, duration, Easing.Linear);
+		}
+		
+		Animation StartAnimation (IAnimationDrawer drawer, uint duration, Easing easing)
+		{
 			if (!Options.EnableAnimations)
 				return null;
-			Animation animation = new Animation (drawer, duration, Easing.Linear, Blocking.Upstage);
+			Animation animation = new Animation (drawer, duration, easing, Blocking.Upstage);
 			animationStage.Add (animation, duration);
 			actors.Add (animation);
 			return animation;
