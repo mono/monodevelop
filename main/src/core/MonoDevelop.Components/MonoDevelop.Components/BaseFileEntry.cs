@@ -70,9 +70,15 @@ namespace MonoDevelop.Components {
 			set { default_path = value; }
 		}
 
+		
 		public virtual Gtk.Window TransientFor {
 			get;
 			set;
+		}
+		
+		protected Gtk.Window GetTransientFor ()
+		{
+			return TransientFor ?? Toplevel as Gtk.Window;
 		}
 
 		public new string Path {

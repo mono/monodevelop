@@ -1,3 +1,10 @@
+2010-02-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/FileEntry.cs:
+	* MonoDevelop.Components/FolderEntry.cs:
+	* MonoDevelop.Components/BaseFileEntry.cs: Use parent window
+	  as TransientFor if not set.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandEntry.cs:
