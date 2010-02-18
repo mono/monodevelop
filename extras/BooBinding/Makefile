@@ -5,6 +5,7 @@ all: all-recursive
 
 top_srcdir=.
 include $(top_srcdir)/config.make
+include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/rules.make
 
 #include $(top_srcdir)/custom-hooks.make
@@ -17,7 +18,6 @@ ifeq ($(CONFIG),RELEASE)
  SUBDIRS =  BooShell . po
 endif
 
-# Include project specific makefile
 include BooBinding.make
 
 CONFIG_MAKE=$(top_srcdir)/config.make
@@ -27,10 +27,10 @@ CONFIG_MAKE=$(top_srcdir)/config.make
 	case $$2 in --unix) shift ;; esac; \
 	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
 	make pre-$*-hook prefix=$(prefix) ; \
-	for dir in $(SUBDIRS); do \
-		case $$dir in \
+	for dir in $(call quote_each,$(SUBDIRS)); do \
+		case "$$dir" in \
 		.) make $*-local || { final_exit="exit 1"; $$dk; };;\
-		*) (cd $$dir && make $*) || { final_exit="exit 1"; $$dk; };;\
+		*) (cd "$$dir" && make $*) || { final_exit="exit 1"; $$dk; };;\
 		esac \
 	done; \
 	make post-$*-hook prefix=$(prefix) ; \
@@ -48,17 +48,17 @@ dist: $(CONFIG_MAKE)
 	rm -rf $(PACKAGE)-$(VERSION)
 	mkdir $(PACKAGE)-$(VERSION)
 	make pre-dist-hook distdir=$$distdir
-	for dir in $(SUBDIRS); do \
+	for dir in $(call quote_each,$(SUBDIRS)); do \
 		pkgdir=`pwd`/$(PACKAGE)-$(VERSION); \
-		mkdir $$pkgdir/$$dir || true; \
+		mkdir "$$pkgdir/$$dir" || true; \
 		case $$dir in \
-		.) make dist-local distdir=$$pkgdir || exit 1;; \
-		*) (cd $$dir; make dist-local distdir=$$pkgdir/$$dir) || exit 1;; \
+		.) make dist-local "distdir=$$pkgdir" || exit 1;; \
+		*) (cd "$$dir"; make dist-local "distdir=$$pkgdir/$$dir") || exit 1;; \
 		esac \
 	done
 	(make dist-local distdir=$(PACKAGE)-$(VERSION))
 	make
-	make post-dist-hook distsir=$$distdir
+	make post-dist-hook "distsir=$$distdir"
 	tar czvf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
 	rm -rf $(PACKAGE)-$(VERSION)
 	@echo "=========================================="

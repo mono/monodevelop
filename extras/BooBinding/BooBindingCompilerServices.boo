@@ -23,7 +23,6 @@ import System
 import System.IO
 import System.CodeDom.Compiler
 import System.Text
-import System.Text.RegularExpressions
 
 import MonoDevelop.Core
 import MonoDevelop.Core.ProgressMonitoring

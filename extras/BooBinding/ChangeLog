@@ -1,3 +1,18 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile:
+	* configure:
+	* rules.make:
+	* Makefile.include: Regenerated.
+
+	* BooBinding.sln:
+	* BooBinding.make:
+	* BooBinding.booproj:
+	* BooBinding.addin.xml: Moved stock icons to external files.
+
+	* BooLanguageBinding.boo:
+	* BooBindingCompilerServices.boo: Fix warnings.
+
 2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BooBinding.sln:

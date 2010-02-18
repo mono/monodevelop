@@ -114,17 +114,11 @@
     <EmbeddedResource Include="templates\EmptyBooProject.xpt.xml">
       <LogicalName>EmptyBooProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\BooBinding.Base">
-      <LogicalName>BooBinding.Base</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\Boo.File.EmptyFile">
       <LogicalName>Boo.File.EmptyFile</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\Boo.File.Form">
       <LogicalName>Boo.File.Form</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Boo.FileIcon">
-      <LogicalName>Boo.FileIcon</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="BooBinding.addin.xml">
       <LogicalName>BooBinding.addin.xml</LogicalName>
@@ -164,7 +158,7 @@
       <Properties>
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="BooBinding.make" RelativeConfigureInPath="../../">
           <BuildFilesVar Sync="true" Name="FILES" />
-          <DeployFilesVar />
+          <DeployFilesVar Sync="true" Name="DATA_FILES" />
           <ResourcesVar Sync="true" Name="RESOURCES" />
           <OthersVar />
           <GacRefVar Name="REFERENCES" />
@@ -175,4 +169,12 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Content Include="icons\BooBinding.Base">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\Boo.FileIcon">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

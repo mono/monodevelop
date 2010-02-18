@@ -92,8 +92,8 @@
   </Extension>
   
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-boo-file" resource = "Boo.FileIcon" />
-		<StockIcon stockid = "boo-icon" resource = "BooBinding.Base" />
+		<StockIcon stockid = "md-boo-file" file = "icons/Boo.FileIcon" />
+		<StockIcon stockid = "boo-icon" file = "icons/BooBinding.Base" />
 	</Extension>
 
 </Addin>

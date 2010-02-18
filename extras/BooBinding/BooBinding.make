@@ -70,14 +70,14 @@ FILES =  \
 	Properties/BooShellProperties.boo \
 	Properties/ShellProperties.boo 
 
-DATA_FILES = 
+DATA_FILES =  \
+	icons/Boo.FileIcon \
+	icons/BooBinding.Base 
 
 RESOURCES =  \
 	BooBinding.addin.xml \
 	icons/Boo.File.EmptyFile \
 	icons/Boo.File.Form \
-	icons/Boo.FileIcon \
-	icons/BooBinding.Base \
 	icons/boo-icon-32.png \
 	templates/BooGtkSharpProject.xpt.xml \
 	templates/BooGtkSharpWindow.xft.xml \
@@ -103,10 +103,13 @@ REFERENCES =  \
 
 DLL_REFERENCES = 
 
-CLEANFILES += $(LINUX_PKGCONFIG) 
+DATA_FILE_BUILD = $(addprefix $(BUILD_DIR)/, $(DATA_FILES))
+DATA_FILE_INSTALL = $(addprefix $(INSTALL_DIR)/, $(DATA_FILES))
+
+CLEANFILES += $(LINUX_PKGCONFIG) $(DATA_FILE_BUILD)
 
 #Targets
-all-local: $(ASSEMBLY) $(LINUX_PKGCONFIG)  $(top_srcdir)/config.make
+all-local: $(ASSEMBLY) $(LINUX_PKGCONFIG)  $(top_srcdir)/config.make $(DATA_FILE_BUILD)
 
 $(BOOBINDING_PC): monodevelop-boo.pc
 	mkdir -p $(BUILD_DIR)
@@ -134,8 +137,15 @@ $(ASSEMBLY) $(ASSEMBLY_MDB): $(build_sources) $(build_resources) $(build_datafil
 	make $(CONFIG)_AfterBuild
 	make post-all-local-hook prefix=$(prefix)
 
+$(DATA_FILE_BUILD): $(srcdir)$(subst $(BUILD_DIR),, $@)
+	mkdir -p $(dir $@)
+	cp $(srcdir)/$(subst $(BUILD_DIR),,$@) $@
 
-install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(BOOBINDING_PC)
+$(DATA_FILE_INSTALL): $(srcdir)$(subst $(INSTALL_DIR),, $@)
+	mkdir -p $(dir $@)
+	cp $(srcdir)/$(subst $(INSTALL_DIR),,$@) $@
+
+install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(BOOBINDING_PC) $(DATA_FILE_INSTALL)
 	make pre-install-local-hook prefix=$(prefix)
 	mkdir -p $(INSTALL_DIR)
 	cp $(ASSEMBLY) $(ASSEMBLY_MDB) $(INSTALL_DIR)
@@ -146,6 +156,7 @@ install-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(BOOBINDING_PC)
 uninstall-local: $(ASSEMBLY) $(ASSEMBLY_MDB) $(BOOBINDING_PC)
 	make pre-uninstall-local-hook prefix=$(prefix)
 	rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY))
+	rm -f $(DATA_FILE_INSTALL)
 	test -z '$(ASSEMBLY_MDB)' || rm -f $(INSTALL_DIR)/$(notdir $(ASSEMBLY_MDB))
 	test -z '$(BOOBINDING_PC)' || rm -f $(INSTALL_DIR)/$(notdir $(BOOBINDING_PC))
 	make post-uninstall-local-hook prefix=$(prefix)

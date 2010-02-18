@@ -22,7 +22,6 @@ namespace BooBinding
 import System
 import System.IO
 import System.Diagnostics
-import System.Collections
 import System.Reflection
 import System.Resources
 import System.Xml
