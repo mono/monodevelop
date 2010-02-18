@@ -1,3 +1,8 @@
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Added missing getstring call.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
