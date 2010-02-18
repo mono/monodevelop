@@ -279,7 +279,7 @@ namespace Mono.TextEditor
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
-			this.DoubleBuffered = false;
+			this.DoubleBuffered = true;
 			this.AppPaintable = false;
 			base.CanFocus = true;
 			WidgetFlags |= WidgetFlags.NoWindow;
@@ -1706,11 +1706,11 @@ namespace Mono.TextEditor
 			return textEditorData.SearchBackward (fromOffset);
 		}
 		
-		class HighlightSearchResultAnimation : IAnimationDrawer
+		class HighlightSearchResultAnimation : IAnimationDrawer, IDisposable
 		{
 			TextEditor editor;
 			SearchResult result;
-			Pixbuf textImage = null;
+			Gdk.Pixbuf textImage = null;
 			
 			public double Percent { get; set; }
 			
@@ -1744,6 +1744,8 @@ namespace Mono.TextEditor
 				x2 /= (int)Pango.Scale.PangoScale;
 				int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
+					var gc = editor.Style.BaseGC (StateType.Normal);
+					
 					int width = (int)(x2 - x1);
 					int border = 2;
 					int rx = (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - border);
@@ -1756,8 +1758,18 @@ namespace Mono.TextEditor
 					
 					int iw = width, ih = editor.LineHeight;
 					if (usePixbufScaling && textImage == null) {
-						textImage = new Pixbuf (Colorspace.Rgb, false, 8, iw, ih);
-						textImage.GetFromDrawable (drawable, Colormap.System, rx + border, ry + border, 0, 0, iw, ih);
+						using (Gdk.Pixmap pixmap = new Gdk.Pixmap (drawable, iw, ih)) {
+							using (var bgGc = new Gdk.GC(pixmap)) {
+								bgGc.RgbFgColor = editor.ColorStyle.SearchTextBg;
+								pixmap.DrawRectangle (bgGc, true, 0, 0, iw, ih);
+							}
+							using (Pango.Layout layout = new Pango.Layout (editor.PangoContext)) {
+								layout.FontDescription = editor.Options.Font;
+								layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
+								pixmap.DrawLayout (gc, 0, 0, layout);
+							}
+							textImage = Pixbuf.FromDrawable (pixmap, Colormap.System, 0, 0, 0, 0, iw, ih);
+						}
 					}
 					
 					cr.Translate (rx + rw / 2, ry + rh / 2);
@@ -1789,10 +1801,9 @@ namespace Mono.TextEditor
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -rw / 2, -rh / 2, (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
 					cr.Fill ();
 					
-					var gc = editor.Style.BaseGC (StateType.Normal);
 					
 					if (usePixbufScaling) {
-						int tx, ty, tw, th, ox, oy;
+						int tx, ty, tw, th;
 						tw = (int) System.Math.Ceiling (iw * scale);
 						th = (int) System.Math.Ceiling (ih * scale);
 						tx = rx - (int) System.Math.Ceiling ((double)(tw - iw) / 2) + border;
@@ -1814,6 +1825,15 @@ namespace Mono.TextEditor
 				if (lineLayout.IsUncached) 
 					lineLayout.Dispose ();
 			}
+			
+			public void Dispose ()
+			{
+				if (this.textImage != null) {
+					this.textImage.Dispose ();
+					this.textImage = null;
+				}
+			}
+			
 		}
 		
 		class CaretPulseAnimation : IAnimationDrawer
@@ -1975,7 +1995,7 @@ namespace Mono.TextEditor
 		{
 			if (result != null) {
 				if (searchResultAnimation != null) 
-					actors.Remove (searchResultAnimation);
+					RemoveAnimation (searchResultAnimation);
 				var anim = new TextEditor.HighlightSearchResultAnimation (this, result);
 				searchResultAnimation = StartAnimation (anim, 120, Easing.QuadraticInOut);
 			}
@@ -2326,13 +2346,22 @@ namespace Mono.TextEditor
 				break;
 			case AnimationState.Going:
 				if (actor.Expired) {
-					actors.Remove (actor.Target);
+					RemoveAnimation (actor.Target);
 					return false;
 				}
 				actor.Target.Drawer.Percent = 1.0 - actor.Percent;
 				break;
 			}
 			return true;
+		}
+		
+		void RemoveAnimation (Animation animation)
+		{
+			if (animation == null)
+				return;
+			actors.Remove (animation);
+			if (animation is IDisposable)
+				((IDisposable)animation).Dispose ();
 		}
 		
 		void OnAnimationIteration (object sender, EventArgs args)
