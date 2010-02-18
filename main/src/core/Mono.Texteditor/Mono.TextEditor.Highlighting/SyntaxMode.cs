@@ -90,7 +90,7 @@ namespace Mono.TextEditor.Highlighting
 					result.Offset = offset;
 					result.Length = endOffset - offset;
 				}
-				if (offset + length != line.Offset + line.EditableLength) {
+				if (result != null && offset + length != line.Offset + line.EditableLength) {
 					// crop to end
 					Chunk cur = result;
 					while (cur.EndOffset < offset + length) {
