@@ -1,0 +1,48 @@
+<Addin id          = "MeeGo"
+       namespace   = "MonoDevelop"
+       name        = "Mono MeeGo development"
+       author      = "Michael Hutchinson"
+       copyright   = "MIT X11"
+       url         = "http://monodevelop.com/"
+       description = "Support for developing and deploying MeeGo applications using Mono."
+       category    = "Mac Development"
+       version     = "2.2">
+	
+	<Runtime>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="2.2"/>
+		<Addin id="Core.Gui" version="2.2"/>
+		<Addin id="Projects" version="2.2"/>
+		<Addin id="Projects.Gui" version="2.2"/>
+		<Addin id="Ide" version="2.2"/>
+		<Addin id="Debugger" version="2.2"/>
+		<Addin id="Debugger.Soft" version="2.2"/>
+		<Addin id="GtkCore" version="2.2"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id       = "MeeGoProject"
+		                 resource = "MeeGoProjectProject.xpt.xml" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProjectSubtype
+			guid="{3fd4c4e6-4e66-4b72-9776-a9d37f06ace0}"
+			type="MonoDevelop.MeeGo.Project.MeeGoProject" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<ProjectBinding id = "MeeGo" class = "MonoDevelop.MeeGo.Project.MeeGoProjectBinding" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.MeeGo.Project.MeeGoProject" />
+		<DataType class = "MonoDevelop.MeeGo.Project.MeeGoProjectConfiguration" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="MeeGo" class = "MonoDevelop.MeeGo.Project.MeeGoExecutionHandler"/>
+	</Extension>
+</Addin>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.MeeGo", "MonoDevelop.MeeGo.csproj", "{E5B3216C-35F0-4CC2-9ECE-00C6311FD61A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E5B3216C-35F0-4CC2-9ECE-00C6311FD61A}.Debug|x86.ActiveCfg = Debug|x86
+		{E5B3216C-35F0-4CC2-9ECE-00C6311FD61A}.Debug|x86.Build.0 = Debug|x86
+		{E5B3216C-35F0-4CC2-9ECE-00C6311FD61A}.Release|x86.ActiveCfg = Release|x86
+		{E5B3216C-35F0-4CC2-9ECE-00C6311FD61A}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = MonoDevelop.MeeGo.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$1.ResourceNamePolicy = FileName
+		$0.StandardHeader = $2
+		$2.inheritsSet = MITX11License
+		$0.VersionControlPolicy = $3
+		$3.inheritsSet = Mono
+		$0.ChangeLogPolicy = $4
+		$4.UpdateMode = ProjectRoot
+		$4.inheritsSet = Mono
+	EndGlobalSection
+EndGlobal

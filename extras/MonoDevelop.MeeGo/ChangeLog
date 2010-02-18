@@ -1,0 +1,14 @@
+2010-02-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MeeGoProject.cs:
+	* MeeGoUtility.cs:
+	* MonoDevelop.MeeGo.sln:
+	* MeeGoProjectBinding.cs:
+	* MeeGoDebuggerSession.cs:
+	* MeeGoExecutionCommand.cs:
+	* MonoDevelop.MeeGo.csproj:
+	* MeeGoExecutionHandler.cs:
+	* MeeGoSoftDebuggerEngine.cs:
+	* MonoDevelop.MeeGo.addin.xml:
+	* MeeGoProjectConfiguration.cs: Stubbed out new MeeGo addin.
+
