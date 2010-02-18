@@ -1,3 +1,8 @@
+2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Don't explode
+	  on docs with no compilation unit.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:

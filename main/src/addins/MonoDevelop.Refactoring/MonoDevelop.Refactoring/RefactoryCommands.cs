@@ -253,6 +253,8 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 			ICompilationUnit pinfo = doc.CompilationUnit;
+			if (pinfo == null)
+				return;
 			
 			
 			Refactorer refactorer = new Refactorer (ctx, pinfo, eclass, realItem, null);
