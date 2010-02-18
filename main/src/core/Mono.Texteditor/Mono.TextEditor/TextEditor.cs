@@ -1792,7 +1792,6 @@ namespace Mono.TextEditor
 					
 					cr.Color = new Cairo.Color (0, 0, 0, 0.3);
 					//because the initial highlight is not rounded, so the rounding scales to make the transition smoother
-					Console.WriteLine (Percent);
 					int rounding = (int)(-rw / 2 + 2 * editor.Options.Zoom * Percent);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, rounding, (int)(-rh / 2 + 2 * editor.Options.Zoom), (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
 					cr.Fill (); 
