@@ -84,20 +84,24 @@ namespace Mono.TextEditor.Highlighting
 			if (result != null) {
 				// crop to begin
 				if (result.Offset != offset) {
-					while (result.EndOffset < offset)
+					while (result != null && result.EndOffset < offset)
 						result = result.Next;
-					int endOffset = result.EndOffset;
-					result.Offset = offset;
-					result.Length = endOffset - offset;
+					if (result != null) {
+						int endOffset = result.EndOffset;
+						result.Offset = offset;
+						result.Length = endOffset - offset;
+					}
 				}
 				if (result != null && offset + length != line.Offset + line.EditableLength) {
 					// crop to end
 					Chunk cur = result;
-					while (cur.EndOffset < offset + length) {
+					while (cur != null && cur.EndOffset < offset + length) {
 						cur = cur.Next;
 					}
-					cur.Length = offset + length - cur.Offset;
-					cur.Next = null;
+					if (cur != null) {
+						cur.Length = offset + length - cur.Offset;
+						cur.Next = null;
+					}
 				}
 			}
 			

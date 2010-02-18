@@ -1,5 +1,9 @@
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed null ref.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed possible
 	  null reference.
 
