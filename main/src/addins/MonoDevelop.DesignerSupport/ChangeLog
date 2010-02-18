@@ -1,5 +1,9 @@
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.DesignerSupport.csproj: Flush.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
 	* MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:
 	  Track api changes.
