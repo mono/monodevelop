@@ -318,7 +318,7 @@ namespace MonoDevelop.Ide.Commands
 			int i = 0;
 			foreach (RecentItem ri in recentOpen.RecentProjects) {
 				//getting the icon requires probing the file, so handle IO errors
-				string icon;
+				IconId icon;
 				try {
 					if (!File.Exists (ri.LocalPath))
 						continue;

@@ -32,6 +32,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Xml;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -143,9 +144,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		static readonly string[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
-		static readonly string[] extensionIconTable = {Stock.ExtensionMethod, Stock.PrivateExtensionMethod, Stock.ProtectedExtensionMethod, Stock.InternalExtensionMethod};
-		public override string StockIcon {
+		static readonly IconId[] iconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
+		static readonly IconId[] extensionIconTable = {Stock.ExtensionMethod, Stock.PrivateExtensionMethod, Stock.ProtectedExtensionMethod, Stock.InternalExtensionMethod};
+		public override IconId StockIcon {
 			get {
 				if (WasExtended)
 					return extensionIconTable [ModifierToOffset (Modifiers)];

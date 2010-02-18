@@ -58,7 +58,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			info.DataItem = dataItem;
 			if (info.Text == null) info.Text = defaultInfo.Text;
-			if (info.Icon == null) info.Icon = defaultInfo.Icon;
+			if (info.Icon.IsNull) info.Icon = defaultInfo.Icon;
 			list.Insert (index, info);
 		}
 
@@ -78,7 +78,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			info.DataItem = dataItem;
 			if (info.Text == null) info.Text = defaultInfo.Text;
-			if (info.Icon == null) info.Icon = defaultInfo.Icon;
+			if (info.Icon.IsNull) info.Icon = defaultInfo.Icon;
 			list.Add (info);
 		}
 

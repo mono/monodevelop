@@ -1,3 +1,14 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	  Use the new IconId type.
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Track api changes.
+
 2010-02-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:

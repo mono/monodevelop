@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
         }
 
         private string icon = String.Empty;
-        public string Icon
+        public IconId Icon
         {
             get { return icon; }
         }

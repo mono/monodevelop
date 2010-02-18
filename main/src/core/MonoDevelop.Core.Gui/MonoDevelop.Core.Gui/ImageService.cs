@@ -45,7 +45,7 @@ namespace MonoDevelop.Core.Gui
 		static ImageService ()
 		{
 			iconFactory.AddDefault ();
-			MonoDevelop.Components.Commands.CommandMenuItem.IconRequested = delegate (string stockId) {
+			IconId.IconNameRequestHandler = delegate (string stockId) {
 				EnsureStockIconIsLoaded (stockId, Gtk.IconSize.Menu);
 			};
 			

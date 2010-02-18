@@ -28,7 +28,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			oldMessage = changeSet.GlobalComment;
 
 			CellRendererText crt = new CellRendererText ();
-			var crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var crp = new CellRendererPixbuf ();
 			TreeViewColumn colStatus = new TreeViewColumn ();
 			colStatus.Title = GettextCatalog.GetString ("Status");
 			colStatus.PackStart (crp, false);

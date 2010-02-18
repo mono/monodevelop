@@ -165,7 +165,7 @@ namespace MonoDevelop.NUnit
 			failuresTreeView = new TreeView ();
 			failuresTreeView.HeadersVisible = false;
 			failuresStore = new TreeStore (typeof(Pixbuf), typeof (string), typeof(object));
-			var pr = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var pr = new CellRendererPixbuf ();
 			CellRendererText tr = new CellRendererText ();
 			TreeViewColumn col = new TreeViewColumn ();
 			col.PackStart (pr, false);

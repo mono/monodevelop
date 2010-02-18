@@ -38,7 +38,7 @@ namespace MonoDevelop.Components.Commands
 		static object Id = new object ();
 		string text;
 		string url;
-		string icon = Gtk.Stock.JumpTo;
+		IconId icon = Gtk.Stock.JumpTo;
 		
 		public LinkCommandEntry (string text, string url): base (Id)
 		{
@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.Commands
 			this.url = url;
 		}
 		
-		public LinkCommandEntry (string text, string url, string icon): base (Id)
+		public LinkCommandEntry (string text, string url, IconId icon): base (Id)
 		{
 			this.text = text;
 			this.url = url;

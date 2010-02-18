@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		TreeIter iter;
 		CodeFormatOption option;
 		
-		MonoDevelop.Core.Gui.CellRendererPixbuf pixbufCellRenderer;
+		CellRendererPixbuf pixbufCellRenderer;
 		
 		public TypedCodeFormattingPolicyPanelWidget ()
 		{
@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			TreeViewColumn column = new TreeViewColumn ();
 			
 			// pixbuf column
-			pixbufCellRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			pixbufCellRenderer = new CellRendererPixbuf ();
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetCellDataFunc (pixbufCellRenderer, new Gtk.TreeCellDataFunc (RenderIcon));
 			

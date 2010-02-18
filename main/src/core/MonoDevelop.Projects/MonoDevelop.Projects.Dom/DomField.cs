@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -44,9 +45,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		static readonly string[] iconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
+		static readonly IconId[] iconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
 		
-		public override string StockIcon {
+		public override IconId StockIcon {
 			get {
 				return iconTable [ModifierToOffset (Modifiers)];
 			}

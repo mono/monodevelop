@@ -1,3 +1,17 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/Command.cs:
+	* MonoDevelop.Components.Commands/CommandInfo.cs:
+	* MonoDevelop.Components.Commands/ActionCommand.cs:
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs:
+	* MonoDevelop.Components.Commands/CommandEntrySet.cs:
+	* MonoDevelop.Components.Commands/LinkCommandEntry.cs:
+	* MonoDevelop.Components.Commands/CommandArrayInfo.cs:
+	* MonoDevelop.Components.Commands/CommandToolButton.cs:
+	* MonoDevelop.Components.Commands/LocalCommandEntry.cs:
+	* MonoDevelop.Components.Commands/CommandToggleToolButton.cs:
+	  Use the new IconId type to represent icon names.
+
 2010-02-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components/FileEntry.cs:

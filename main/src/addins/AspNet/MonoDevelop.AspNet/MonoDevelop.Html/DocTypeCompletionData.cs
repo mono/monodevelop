@@ -52,7 +52,7 @@ namespace MonoDevelop.Html
 			this.name = name;
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return "md-literal"; }
 		}
 

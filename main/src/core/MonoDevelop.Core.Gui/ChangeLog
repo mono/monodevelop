@@ -1,3 +1,18 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs:
+	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs:
+	* MonoDevelop.Core.Gui.Codons/OptionsDialogSection.cs: Use the
+	  new IconId type to represent icon names.
+
+	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs: Renamed to
+	  CellRendererIcon to avoid conflicts with the Gtk class.
+	  Added support for rendering icons specified with IconId
+	  objects.
+
+	* MonoDevelop.Core.Gui/StockIcons.cs: Use new IconId type.
+
 2010-02-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui/ImageService.cs: removed assert gui

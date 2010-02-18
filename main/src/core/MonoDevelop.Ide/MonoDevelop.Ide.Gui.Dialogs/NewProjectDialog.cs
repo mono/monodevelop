@@ -732,7 +732,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				Model = templateStore;
 				
 				TreeViewColumn col = new TreeViewColumn ();
-				MonoDevelop.Core.Gui.CellRendererPixbuf crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+				CellRendererIcon crp = new CellRendererIcon ();
 				crp.StockSize = (uint) Gtk.IconSize.Dnd;
 				crp.Ypad = 2;
 				col.PackStart (crp, false);
@@ -772,7 +772,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				string name = GLib.Markup.EscapeText (templateItem.Name);
 				if (!string.IsNullOrEmpty (templateItem.Template.LanguageName))
 					name += "\n<span foreground='darkgrey'><small>" + templateItem.Template.LanguageName + "</small></span>";
-				templateStore.AppendValues (templateItem.Template.Icon ?? "md-project", name, templateItem.Template);
+				templateStore.AppendValues (templateItem.Template.Icon.IsNull ? "md-project" : templateItem.Template.Icon.ToString (), name, templateItem.Template);
 			}
 			
 			public void Clear ()

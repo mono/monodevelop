@@ -42,10 +42,10 @@ namespace MonoDevelop.Ide.Gui
 		string title;
 		MonoDevelopStatusBar.StatusIcon icon;
 		
-		public BackgroundProgressMonitor (string title, string iconName)
+		public BackgroundProgressMonitor (string title, IconId iconName)
 		{
 			this.title = title;
-			if (!string.IsNullOrEmpty (iconName)) {
+			if (!iconName.IsNull) {
 				Application.Invoke (delegate {
 					Gdk.Pixbuf img = ImageService.GetPixbuf (iconName, Gtk.IconSize.Menu);
 					icon = IdeApp.Workbench.StatusBar.ShowStatusIcon (img);

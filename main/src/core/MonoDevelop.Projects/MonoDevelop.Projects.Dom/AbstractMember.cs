@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.ObjectModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -209,7 +210,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		public abstract string StockIcon {
+		public abstract IconId StockIcon {
 			get;
 		}
 		

@@ -1,3 +1,11 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core/IconId.cs: Implemented new IconId class
+	  which can be used to represent icon names and supports lazy
+	  loading of pixbufs.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.AddIns/TargetFrameworkNode.cs: Allow

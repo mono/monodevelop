@@ -80,7 +80,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			col = new TreeViewColumn ();
 			col.Spacing = 3;
 			col.Title = GettextCatalog.GetString ("Name");
-			var crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var crp = new CellRendererPixbuf ();
 			CellRendererText crx = new CellRendererText ();
 			crx.Width = 150;
 			col.PackStart (crp, false);

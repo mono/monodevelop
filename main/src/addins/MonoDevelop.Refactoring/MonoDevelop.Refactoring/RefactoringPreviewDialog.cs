@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring
 			TreeViewColumn column = new TreeViewColumn ();
 
 			// pixbuf column
-			var pixbufCellRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var pixbufCellRenderer = new CellRendererPixbuf ();
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetAttributes (pixbufCellRenderer, "pixbuf", pixbufColumn);
 			column.AddAttribute (pixbufCellRenderer, "visible", statusVisibleColumn);

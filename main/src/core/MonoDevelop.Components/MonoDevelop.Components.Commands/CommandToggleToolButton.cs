@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -71,15 +72,14 @@ namespace MonoDevelop.Components.Commands
 			commandManager.DispatchCommand (commandId, null, initialTarget);
 		}
 		
-		string stockId = null;
+		IconId stockId = null;
+		
 		void Update (CommandInfo cmdInfo)
 		{
 			updating = true;
 			Label = cmdInfo.Text;
 			if (cmdInfo.Icon != stockId) {
 				stockId = cmdInfo.Icon;
-				if (CommandMenuItem.IconRequested != null)
-					CommandMenuItem.IconRequested (cmdInfo.Icon);
 				this.IconWidget = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
 			Sensitive = cmdInfo.Enabled;

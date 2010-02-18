@@ -60,9 +60,9 @@ namespace MonoDevelop.Debugger
 		CellRendererText crtExp;
 		CellRendererText crtValue;
 		CellRendererText crtType;
-		MonoDevelop.Core.Gui.CellRendererPixbuf crpButton;
-		MonoDevelop.Core.Gui.CellRendererPixbuf crpPin;
-		MonoDevelop.Core.Gui.CellRendererPixbuf crpLiveUpdate;
+		CellRendererIcon crpButton;
+		CellRendererIcon crpPin;
+		CellRendererIcon crpLiveUpdate;
 		Gtk.Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
@@ -107,7 +107,7 @@ namespace MonoDevelop.Debugger
 			
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Name");
-			MonoDevelop.Core.Gui.CellRendererPixbuf crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRendererIcon crp = new CellRendererIcon ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock_id", IconCol);
 			crtExp = new CellRendererText ();
@@ -126,7 +126,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crtValue, "text", ValueCol);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableCol);
 			valueCol.AddAttribute (crtValue, "foreground", ValueColorCol);
-			crpButton = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			crpButton = new CellRendererIcon ();
 			crpButton.StockSize = (uint) Gtk.IconSize.Menu;
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "stock_id", ValueButtonIconCol);
@@ -144,10 +144,10 @@ namespace MonoDevelop.Debugger
 			AppendColumn (typeCol);
 			
 			pinCol = new TreeViewColumn ();
-			crpPin = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			crpPin = new CellRendererIcon ();
 			pinCol.PackStart (crpPin, false);
 			pinCol.AddAttribute (crpPin, "stock_id", PinIconCol);
-			crpLiveUpdate = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			crpLiveUpdate = new CellRendererIcon ();
 			pinCol.PackStart (crpLiveUpdate, false);
 			pinCol.AddAttribute (crpLiveUpdate, "pixbuf", LiveUpdateIconCol);
 			pinCol.Resizable = false;
@@ -1058,7 +1058,7 @@ namespace MonoDevelop.Debugger
 			this.item = item;
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get {
 				return ObjectValueTreeView.GetIcon (item.Flags);
 			}

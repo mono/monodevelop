@@ -30,6 +30,7 @@ using System;
 
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.XmlEditor.Completion
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.XmlEditor.Completion
 			this.closing = closing;
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return closing? Gtk.Stock.GoBack : Gtk.Stock.GoForward; }
 		}
 

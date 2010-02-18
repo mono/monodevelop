@@ -77,7 +77,7 @@ namespace MonoDevelop.Debugger
 			treeViewState = new TreeViewState (tree, (int)Columns.Object);
 			
 			TreeViewColumn col = new TreeViewColumn ();
-			CellRenderer crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRenderer crp = new CellRendererIcon ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock_id", (int) Columns.Icon);
 			tree.AppendColumn (col);

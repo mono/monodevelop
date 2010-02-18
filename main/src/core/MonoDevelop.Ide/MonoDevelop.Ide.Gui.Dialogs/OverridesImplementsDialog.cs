@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide
 			nameCol.PackStart (cbRenderer, false);
 			nameCol.AddAttribute (cbRenderer, "active", colCheckedIndex);
 
-			MonoDevelop.Core.Gui.CellRendererPixbuf iconRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRendererPixbuf iconRenderer = new CellRendererPixbuf ();
 			nameCol.PackStart (iconRenderer, false);
 			nameCol.AddAttribute (iconRenderer, "pixbuf", colIconIndex);
 

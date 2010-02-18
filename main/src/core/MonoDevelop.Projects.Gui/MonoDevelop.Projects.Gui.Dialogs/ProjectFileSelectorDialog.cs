@@ -67,7 +67,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			
 			TreeViewColumn projectCol = new TreeViewColumn ();
 			projectCol.Title = GettextCatalog.GetString ("Project Folders");
-			var pixRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var pixRenderer = new CellRendererPixbuf ();
 			CellRendererText txtRenderer = new CellRendererText ();
 			projectCol.PackStart (pixRenderer, false);
 			projectCol.PackStart (txtRenderer, true);
@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			projectTree.KeyPressEvent += ProjectListKeyPressEvent;
 			
 			TreeViewColumn fileCol = new TreeViewColumn ();
-			var filePixRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var filePixRenderer = new CellRendererPixbuf ();
 			fileCol.Title = GettextCatalog.GetString ("Files");
 			fileCol.PackStart (filePixRenderer, false);
 			fileCol.PackStart (txtRenderer, true);
@@ -175,7 +175,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		
 		void PixDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
 		{
-			var pixRenderer = (MonoDevelop.Core.Gui.CellRendererPixbuf) cell;
+			var pixRenderer = (CellRendererPixbuf) cell;
 			string dirname = (string) tree_model.GetValue (iter, 0);
 			
 			if (dirname.Length == 0) {

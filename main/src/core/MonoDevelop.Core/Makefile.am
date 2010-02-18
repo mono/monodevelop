@@ -132,6 +132,7 @@ FILES =  \
 	MonoDevelop.Core/FileService.cs \
 	MonoDevelop.Core/Gettext.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \
+	MonoDevelop.Core/IconId.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/LoggingService.cs \

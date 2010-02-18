@@ -1,3 +1,34 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ConfirmProjectDeleteDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  Track api changes.
+
+	* MonoDevelop.Ide.Gui/Pad.cs:
+	* MonoDevelop.Ide.Codons/PadCodon.cs:
+	* MonoDevelop.Ide.Gui/IPadContainer.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Gui/AbstractPadContent.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Gui.Components/TreeViewItem.cs: Use the new
+	  IconId type.
+
 2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Avoid

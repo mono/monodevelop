@@ -98,8 +98,8 @@ namespace MonoDevelop.Projects
 			get;
 		}
 
-		string stockIcon = "md-project";
-		public virtual string StockIcon {
+		IconId stockIcon = "md-project";
+		public virtual IconId StockIcon {
 			get { return stockIcon; }
 			set { this.stockIcon = value; }
 		}

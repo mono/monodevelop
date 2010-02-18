@@ -27,13 +27,14 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core;
 namespace MonoDevelop.Projects.Dom
 {
 	public interface IBaseMember : INode
 	{
 		MemberType MemberType { get; }
 		string Name { get; }
-		string StockIcon { get; }
+		IconId StockIcon { get; }
 		DomLocation Location { get; }
 		IReturnType ReturnType { get; }
 	}

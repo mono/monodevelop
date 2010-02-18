@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -41,9 +42,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 
-		private string icon;
+		private IconId icon;
 		private string title;
-		public AbstractPadContent (string title, string icon)
+		public AbstractPadContent (string title, IconId icon)
 		{
 			this.Id = GetType ().FullName;
 			this.icon = icon;
@@ -64,7 +65,7 @@ namespace MonoDevelop.Ide.Gui
 			if (title != null)
 				container.Title = title;
 
-			if (icon != null)
+			if (icon != IconId.Null)
 				container.Icon = icon;
 
 			window = container;

@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
-		public string StockIcon {
+		public IconId StockIcon {
 			get {
 				return Stock.Field;
 			}

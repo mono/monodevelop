@@ -79,7 +79,7 @@ namespace MonoDevelop.Html
 				this.pathFunc = pathFunc;
 			}
 			
-			public string Icon {
+			public IconId Icon {
 				get { return null; }
 			}
 			
@@ -122,7 +122,7 @@ namespace MonoDevelop.Html
 				this.pathFunc = pathFunc;
 			}
 			
-			public string Icon {
+			public IconId Icon {
 				get { return null; }
 			}
 			

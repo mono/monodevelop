@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameColumn.Resizable = true;
 			fileNameColumn.SortColumnId  = 0;
 			fileNameColumn.Title = GettextCatalog.GetString ("File");
-			var fileNamePixbufRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var fileNamePixbufRenderer = new CellRendererPixbuf ();
 			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
 			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, new Gtk.TreeCellDataFunc (FileIconDataFunc));
 			
@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void FileIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			MonoDevelop.Core.Gui.CellRendererPixbuf fileNamePixbufRenderer = (MonoDevelop.Core.Gui.CellRendererPixbuf)cell;
+			CellRendererPixbuf fileNamePixbufRenderer = (CellRendererPixbuf) cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
 		}

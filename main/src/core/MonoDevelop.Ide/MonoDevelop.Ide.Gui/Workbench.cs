@@ -320,12 +320,12 @@ namespace MonoDevelop.Ide.Gui
 			return WrapPad (content);
 		}
 
-		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, string icon)
+		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
-		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, string icon)
+		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}

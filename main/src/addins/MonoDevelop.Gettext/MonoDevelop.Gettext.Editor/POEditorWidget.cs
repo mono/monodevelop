@@ -112,7 +112,7 @@ namespace MonoDevelop.Gettext
 			store = new ListStore (typeof (string), typeof (bool), typeof (string), typeof (string), typeof (CatalogEntry), typeof (Gdk.Color), typeof(int), typeof (Gdk.Color));
 			this.treeviewEntries.Model = store;
 			
-			treeviewEntries.AppendColumn (String.Empty, new MonoDevelop.Core.Gui.CellRendererPixbuf (), "stock_id", Columns.Stock, "cell-background-gdk", Columns.RowColor);
+			treeviewEntries.AppendColumn (String.Empty, new CellRendererIcon (), "stock_id", Columns.Stock, "cell-background-gdk", Columns.RowColor);
 			
 			CellRendererToggle cellRendFuzzy = new CellRendererToggle ();
 			cellRendFuzzy.Toggled += new ToggledHandler (FuzzyToggled);
@@ -148,7 +148,7 @@ namespace MonoDevelop.Gettext
 			this.treeviewFoundIn.Model = foundInStore;
 			
 			TreeViewColumn fileColumn = new TreeViewColumn ();
-			var pixbufRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var pixbufRenderer = new CellRendererPixbuf ();
 			fileColumn.PackStart (pixbufRenderer, false);
 			fileColumn.SetAttributes (pixbufRenderer, "pixbuf", FoundInColumns.Pixbuf);
 			

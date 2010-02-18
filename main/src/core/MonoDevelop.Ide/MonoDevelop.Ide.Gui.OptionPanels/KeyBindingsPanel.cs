@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Command");
 			col.Spacing = 4;
-			MonoDevelop.Core.Gui.CellRendererPixbuf crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRendererIcon crp = new CellRendererIcon ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock-id", iconCol);
 			col.AddAttribute (crp, "visible", iconVisibleCol);

@@ -32,9 +32,9 @@ namespace MonoDevelop.Core.Gui
 	/// Replaces the Gtk.CellRendererPixbuf with a version that loads its stock icons from the ImageService to
 	/// support lazy loading of images.
 	/// </summary>
-	public class CellRendererPixbuf : Gtk.CellRendererPixbuf
+	public class CellRendererIcon : Gtk.CellRendererPixbuf
 	{
-		public CellRendererPixbuf ()
+		public CellRendererIcon ()
 		{
 			AddNotification ("stock-id", EnsureIconLoaded);
 			AddNotification ("stock-size", EnsureIconLoaded);
@@ -43,6 +43,19 @@ namespace MonoDevelop.Core.Gui
 		void EnsureIconLoaded (object o, GLib.NotifyArgs args)
 		{
 			ImageService.EnsureStockIconIsLoaded (StockId, (IconSize)StockSize);
+		}
+		
+		IconId icon;
+		
+		[GLib.Property ("icon-id")]
+		public IconId IconId {
+			get {
+				return icon;
+			}
+			set {
+				icon = value;
+				StockId = IconId;
+			}
 		}
 	}
 }

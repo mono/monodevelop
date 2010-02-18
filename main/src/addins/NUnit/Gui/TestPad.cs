@@ -270,7 +270,7 @@ namespace MonoDevelop.NUnit
 			regressionStore = new ListStore (typeof(object), typeof(string), typeof (Pixbuf));
 			
 			CellRendererText trtest2 = new CellRendererText ();
-			var pr = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var pr = new CellRendererPixbuf ();
 			
 			TreeViewColumn col = new TreeViewColumn ();
 			col.PackStart (pr, false);
@@ -295,7 +295,7 @@ namespace MonoDevelop.NUnit
 			failedStore = new ListStore (typeof(object), typeof(string), typeof (Pixbuf));
 			
 			trtest2 = new CellRendererText ();
-			pr = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			pr = new CellRendererPixbuf ();
 			
 			col = new TreeViewColumn ();
 			col.PackStart (pr, false);

@@ -184,7 +184,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			TreeViewColumn colOperation = new TreeViewColumn ();
 			CellRendererText crt = new CellRendererText ();
-			var crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var crp = new CellRendererPixbuf ();
 			colOperation.Title = GettextCatalog.GetString ("Operation");
 			colOperation.PackStart (crp, false);
 			colOperation.PackStart (crt, true);
@@ -193,7 +193,7 @@ namespace MonoDevelop.VersionControl.Views
 			changedPaths.AppendColumn (colOperation);
 			
 			TreeViewColumn colChangedPath = new TreeViewColumn ();
-			crp = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			crp = new CellRendererPixbuf ();
 			crt = new CellRendererText ();
 			colChangedPath.Title = GettextCatalog.GetString ("File Path");
 			colChangedPath.PackStart (crp, false);

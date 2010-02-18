@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		private string icon;
-		public string Icon
+		public IconId Icon
 		{
 			get { return icon; }
 		}

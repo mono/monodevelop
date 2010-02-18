@@ -70,7 +70,6 @@
     <Compile Include="MonoDevelop.Core\IProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\LogTextWriter.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullAsyncOperation.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressTracker.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DefaultExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExternalConsoleFactory.cs" />
@@ -146,7 +145,6 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />
     <Compile Include="MonoDevelop.Core\ComponentModelLocalization.cs" />
-    <Compile Include="MonoDevelop.Core.ProgressMonitoring\SimpleProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\ITargetRuntimeFactory.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\SystemAssembly.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\SystemPackage.cs" />
@@ -193,6 +191,9 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AggregatedAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\BinaryDataSerializer.cs" />
     <Compile Include="MonoDevelop.Core.Execution\LocalConsole.cs" />
+    <Compile Include="MonoDevelop.Core\IconId.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.ProgressMonitoring\SimpleProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

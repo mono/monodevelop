@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -62,7 +63,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return window.Title; }
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return window.Icon; }
 		}
 		

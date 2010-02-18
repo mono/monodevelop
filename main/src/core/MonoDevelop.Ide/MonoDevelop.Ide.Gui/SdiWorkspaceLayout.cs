@@ -704,7 +704,7 @@ namespace MonoDevelop.Ide.Gui
 			Gtk.Image mimeimage = null;
 			
 			if (content.StockIconId != null ) {
-				mimeimage = new Gtk.Image (content.StockIconId, IconSize.Menu );
+				mimeimage = new Gtk.Image ((IconId) content.StockIconId, IconSize.Menu );
 			}
 			else if (content.IsUntitled && content.UntitledName == null) {
 				mimeimage = new Gtk.Image (DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu));

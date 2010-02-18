@@ -1,3 +1,11 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs:
+	* MonoDevelop.Debugger/BreakpointPad.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track api
+	  changes.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggerEngine.cs: Properly initialize

@@ -85,7 +85,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			tree.HeadersVisible = false;
 			
 			TreeViewColumn col = new TreeViewColumn ();
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			CellRendererIcon crp = new CellRendererIcon ();
 			crp.StockSize = (uint) IconSize.Menu;
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock-id", 1);
@@ -214,7 +214,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				it = store.AppendValues (section, null, sectionLabel, false, null);
 			}
 			else {
-				string icon = string.IsNullOrEmpty (section.Icon) ? "md-empty-category" : section.Icon;
+				string icon = section.Icon.IsNull ? "md-empty-category" : section.Icon.ToString ();
 				it = store.AppendValues (parentIter, section, icon, section.Label, true, null);
 			}
 			

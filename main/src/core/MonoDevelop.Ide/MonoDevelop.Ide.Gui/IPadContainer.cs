@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		string Id { get; }
 		string Title { get; set; }
-		string Icon { get; set; }
+		IconId Icon { get; set; }
 		bool Visible { get; set; }
 		bool AutoHide { get; set; }
 		bool ContentVisible { get; }
@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui
 	internal class PadWindow: IPadWindow
 	{
 		string title;
-		string icon;
+		IconId icon;
 		IPadContent content;
 		PadCodon codon;
 		IWorkbenchLayout layout;
@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public string Icon  {
+		public IconId Icon  {
 			get { return icon; }
 			set { 
 				icon = value;

@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide
 			Gtk.TreeIter iter;
 			if (treeviewPads.Selection.GetSelected (out iter)) {
 				MonoDevelop.Ide.Gui.Pad pad = padListStore.GetValue (iter, 2) as MonoDevelop.Ide.Gui.Pad;
-				ShowType (ImageService.GetPixbuf (!string.IsNullOrEmpty (pad.Icon) ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
+				ShowType (ImageService.GetPixbuf (!pad.Icon.IsNull ? pad.Icon : MonoDevelop.Core.Gui.Stock.MiscFiles, Gtk.IconSize.Dialog),
 				          pad.Title,
 				          "",
 				          "");
