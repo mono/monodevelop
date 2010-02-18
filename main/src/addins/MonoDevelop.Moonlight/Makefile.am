@@ -42,15 +42,15 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	MonoDevelop.Moonlight.addin.xml \
-	MonoDevelop.Moonlight/framework_SL_2_0.xml \
-	MonoDevelop.Moonlight/framework_SL_3_0.xml \
 	Templates/Moonlight-ApplicationProject.xpt.xml \
 	Templates/Moonlight-ApplicationXaml.xft.xml \
 	Templates/Moonlight-LibraryProject.xpt.xml \
 	Templates/Moonlight-UserControlXaml.xft.xml \
 	Templates/PreviewTemplate.html
 
-DATA_FILES = \
+DATA_FILES =  \
+	Templates/framework_SL_2_0.xml \
+	Templates/framework_SL_3_0.xml \
 	Templates/Silverlight.js
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/Templates/, $(notdir $(DATA_FILES)))

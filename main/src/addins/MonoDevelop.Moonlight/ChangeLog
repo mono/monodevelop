@@ -1,3 +1,15 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Moonlight.csproj:
+	* Templates/framework_SL_2_0.xml:
+	* Templates/framework_SL_3_0.xml:
+	* MonoDevelop.Moonlight.addin.xml:
+	* MonoDevelop.Moonlight/framework_SL_2_0.xml:
+	* MonoDevelop.Moonlight/framework_SL_3_0.xml: Moved framework
+	  declarations from resources to standalone files, so they can
+	  be loaded without loading the assembly.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Moonlight.addin.xml: Added some conditions to

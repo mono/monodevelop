@@ -129,12 +129,6 @@
     <EmbeddedResource Include="Templates\PreviewTemplate.html">
       <LogicalName>PreviewTemplate.html</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Moonlight\framework_SL_2_0.xml">
-      <LogicalName>framework_SL_2_0.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Moonlight\framework_SL_3_0.xml">
-      <LogicalName>framework_SL_3_0.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -155,9 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="Templates\Silverlight.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -165,7 +156,7 @@
       <Properties>
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
-          <DeployFilesVar Name="DATA_FILES" />
+          <DeployFilesVar Sync="true" Name="DATA_FILES" />
           <ResourcesVar Sync="true" Name="RES" />
           <OthersVar />
           <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
@@ -176,4 +167,15 @@
     </MonoDevelop>
     <VisualStudio />
   </ProjectExtensions>
+  <ItemGroup>
+    <Content Include="Templates\Silverlight.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\framework_SL_2_0.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\framework_SL_3_0.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

@@ -88,10 +88,10 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Frameworks">
-		<Framework id="SL2.0" resource="framework_SL_2_0.xml">
+		<Framework id="SL2.0" file="Templates/framework_SL_2_0.xml">
 			<Backend class="MonoDevelop.Moonlight.MoonlightFrameworkBackend" />
 		</Framework>
-		<Framework id="SL3.0" resource="framework_SL_3_0.xml">
+		<Framework id="SL3.0" file="Templates/framework_SL_3_0.xml">
 			<Backend class="MonoDevelop.Moonlight.MoonlightFrameworkBackend" />
 		</Framework>
 	</Extension>
