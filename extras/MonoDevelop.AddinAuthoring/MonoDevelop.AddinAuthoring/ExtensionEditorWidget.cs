@@ -52,7 +52,7 @@ namespace MonoDevelop.AddinAuthoring
 			state = new TreeViewState (tree, 0);
 
 			TreeViewColumn col = new TreeViewColumn ();
-			MonoDevelop.Core.Gui.CellRendererPixbuf cpix = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRendererPixbuf cpix = new CellRendererPixbuf ();
 			col.PackStart (cpix, false);
 			col.AddAttribute (cpix, "pixbuf", ColIcon);
 			col.AddAttribute (cpix, "visible", ColShowIcon);

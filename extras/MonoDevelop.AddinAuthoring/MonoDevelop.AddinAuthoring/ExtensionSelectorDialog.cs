@@ -56,7 +56,7 @@ namespace MonoDevelop.AddinAuthoring
 			store = new TreeStore (typeof(string), typeof(object), typeof(ExtensionPoint), typeof(bool), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool), typeof(bool));
 			
 			TreeViewColumn col = new TreeViewColumn ();
-			MonoDevelop.Core.Gui.CellRendererPixbuf cpix = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			CellRendererPixbuf cpix = new CellRendererPixbuf ();
 			col.PackStart (cpix, false);
 			col.AddAttribute (cpix, "pixbuf", ColIcon);
 			col.AddAttribute (cpix, "visible", ColShowIcon);
