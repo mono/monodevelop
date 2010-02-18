@@ -1,3 +1,26 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* dlls/Mono.Cecil.dll:
+	* dlls/Gendarme.Rules.Ui.dll:
+	* dlls/Gendarme.Framework.dll:
+	* dlls/Gendarme.Rules.Design.dll:
+	* dlls/Gendarme.Rules.Naming.dll:
+	* dlls/Gendarme.Rules.Smells.dll:
+	* dlls/Gendarme.Rules.Security.dll:
+	* dlls/Gendarme.Rules.Exceptions.dll:
+	* dlls/Gendarme.Rules.Concurrency.dll:
+	* dlls/Gendarme.Rules.Correctness.dll:
+	* dlls/Gendarme.Rules.Portability.dll:
+	* dlls/Gendarme.Rules.Performance.dll:
+	* dlls/Gendarme.Rules.BadPractice.dll:
+	* dlls/Gendarme.Rules.Serialization.dll:
+	* dlls/Gendarme.Rules.Maintainability.dll:
+	* dlls/Gendarme.Rules.Interoperability.dll: Upgraded to
+	  latest, since what we had was having problems with the
+	  latest cecil.
+
+	* MonoDevelop.CodeAnalysis.sln: Flush.
+
 2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CodeAnalysis.sln: Flush.

@@ -40,45 +40,63 @@
   <ItemGroup>
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Gendarme.Framework, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\dlls\Gendarme.Framework.dll</HintPath>
-    </Reference>
     <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Gendarme.Framework, Version=2.7.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\dlls\Gendarme.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
+      <Package>monodevelop</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.CodeAnalysis\MonoDevelop.CodeAnalysis.csproj">
