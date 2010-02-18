@@ -1,5 +1,9 @@
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: fix caret problem.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Only request caret blink on
 	  caret move when the text editor has the focus.
 

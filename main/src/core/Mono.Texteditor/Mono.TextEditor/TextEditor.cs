@@ -364,8 +364,7 @@ namespace Mono.TextEditor
 				ScrollToCaret ();
 			
 //			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
-			if (this.IsFocus)
-				RequestResetCaretBlink ();
+			RequestResetCaretBlink ();
 			
 			if (!IsSomethingSelected) {
 				if (/*Options.HighlightCaretLine && */args.Location.Line != Caret.Line) 
@@ -2394,7 +2393,8 @@ namespace Mono.TextEditor
 		bool requestResetCaretBlink = false;
 		public void RequestResetCaretBlink ()
 		{
-			requestResetCaretBlink = true;
+			if (this.IsFocus)
+				requestResetCaretBlink = true;
 		}
 
 		public int CalculateLineNumber (int yPos)
