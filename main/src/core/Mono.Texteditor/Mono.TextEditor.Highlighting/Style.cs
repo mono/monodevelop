@@ -184,6 +184,13 @@ namespace Mono.TextEditor.Highlighting
 				return GetColorFromDefinition (SearchTextBgString);
 			}
 		}
+		
+		public const string SearchTextMainBgString = "text.background.searchresult-main";
+		public Color SearchTextMainBg {
+			get {
+				return GetColorFromDefinition (SearchTextMainBgString);
+			}
+		}
 
 		public const string BreakpointString = "marker.breakpoint";
 		public Color BreakpointFg {
@@ -415,7 +422,8 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (InvalidBreakpointBgString, new ChunkStyle (new Gdk.Color (237, 220, 220)));
 			SetStyle (InvalidBreakpointMarkerColor1String, new ChunkStyle (new Gdk.Color (237, 220, 220)));
 			SetStyle (InvalidBreakpointMarkerBorderString, new ChunkStyle (new Gdk.Color (125, 0, 0)));
-			SetStyle (SearchTextBgString, new ChunkStyle (new Gdk.Color (250, 250, 0)));
+			SetStyle (SearchTextBgString, new ChunkStyle (new Gdk.Color (255, 226, 185)));
+			SetStyle (SearchTextMainBgString, new ChunkStyle (new Gdk.Color (243, 221, 72)));
 			
 			SetStyle (BracketHighlightRectangleString, new ChunkStyle (new Gdk.Color (128, 128, 128), new Gdk.Color (196, 196, 196)));
 			

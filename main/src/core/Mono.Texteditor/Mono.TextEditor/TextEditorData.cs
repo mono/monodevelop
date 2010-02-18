@@ -700,7 +700,7 @@ namespace Mono.TextEditor
 			return searchEngine.SearchBackward (fromOffset);
 		}
 		
-		public SearchResult FindNext ()
+		public SearchResult FindNext (bool setSelection)
 		{
 			int startOffset = Caret.Offset;
 			if (IsSomethingSelected && IsMatchAt (startOffset)) {
@@ -710,27 +710,29 @@ namespace Mono.TextEditor
 			SearchResult result = SearchForward (startOffset);
 			if (result != null) {
 				Caret.Offset = result.Offset + result.Length;
-				MainSelection = new Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
+				if (setSelection)
+					MainSelection = new Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
 			}
 			return result;
 		}
 		
-		public SearchResult FindPrevious ()
+		public SearchResult FindPrevious (bool setSelection)
 		{
-			int startOffset = Caret.Offset;
+			int startOffset = Caret.Offset - SearchEngine.SearchRequest.SearchPattern.Length;
 			if (IsSomethingSelected && IsMatchAt (MainSelection.GetAnchorOffset (this))) 
 				startOffset = MainSelection.GetAnchorOffset (this);
 			
 			SearchResult result = SearchBackward ((startOffset + Document.Length - 1) % Document.Length);
 			if (result != null) {
-				result.SearchWrapped = result.Offset > startOffset;
+				result.SearchWrapped = result.EndOffset > startOffset;
 				Caret.Offset  = result.Offset + result.Length;
-				MainSelection = new Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
+				if (setSelection)
+					MainSelection = new Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
 			}
 			return result;
 		}
 		
-		public bool SearchReplace (string withPattern)
+		public bool SearchReplace (string withPattern, bool setSelection)
 		{
 			bool result = false;
 			if (this.IsSomethingSelected) {
@@ -743,7 +745,7 @@ namespace Mono.TextEditor
 					result = true;
 				}
 			}
-			return FindNext () != null || result;
+			return FindNext (setSelection) != null || result;
 		}
 		
 		public int SearchReplaceAll (string withPattern)
