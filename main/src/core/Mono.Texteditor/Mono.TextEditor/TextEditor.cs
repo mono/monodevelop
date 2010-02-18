@@ -364,8 +364,8 @@ namespace Mono.TextEditor
 				ScrollToCaret ();
 			
 //			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
-			
-			RequestResetCaretBlink ();
+			if (this.IsFocus)
+				RequestResetCaretBlink ();
 			
 			if (!IsSomethingSelected) {
 				if (/*Options.HighlightCaretLine && */args.Location.Line != Caret.Line) 
@@ -1443,6 +1443,7 @@ namespace Mono.TextEditor
 				textViewMargin.ResetCaretBlink ();
 				requestResetCaretBlink = false;
 			}
+			
 			foreach (Animation animation in actors) {
 				animation.Drawer.Draw (e.Window);
 			}
