@@ -1753,11 +1753,8 @@ namespace Mono.TextEditor
 					int rw = width + border * 2;
 					int rh = (int)(editor.LineHeight) + border * 2;
 					
-					//GetFromDrawable is broken on Mac
-					bool usePixbufScaling = !Platform.IsMac;
-					
 					int iw = width, ih = editor.LineHeight;
-					if (usePixbufScaling && textImage == null) {
+					if (textImage == null) {
 						using (Gdk.Pixmap pixmap = new Gdk.Pixmap (drawable, iw, ih)) {
 							using (var bgGc = new Gdk.GC(pixmap)) {
 								bgGc.RgbFgColor = editor.ColorStyle.SearchTextBg;
@@ -1794,32 +1791,23 @@ namespace Mono.TextEditor
 					cr.TransformPoint (ref textr, ref textb);
 					
 					cr.Color = new Cairo.Color (0, 0, 0, 0.3);
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, (int)(-rw / 2 + 2 * editor.Options.Zoom), (int)(-rh / 2 + 2 * editor.Options.Zoom), (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
+					//because the initial highlight is not rounded, so the rounding scales to make the transition smoother
+					Console.WriteLine (Percent);
+					int rounding = (int)(-rw / 2 + 2 * editor.Options.Zoom * Percent);
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, rounding, (int)(-rh / 2 + 2 * editor.Options.Zoom), (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
 					cr.Fill (); 
 					
 					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -rw / 2, -rh / 2, (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
 					cr.Fill ();
 					
-					
-					if (usePixbufScaling) {
-						int tx, ty, tw, th;
-						tw = (int) System.Math.Ceiling (iw * scale);
-						th = (int) System.Math.Ceiling (ih * scale);
-						tx = rx - (int) System.Math.Ceiling ((double)(tw - iw) / 2) + border;
-						ty = ry - (int) System.Math.Ceiling ((double)(th - ih) / 2) + border;
-						using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) 
-							scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
-					} else {
-						Pango.Layout layout = new Pango.Layout (editor.PangoContext);
-						layout.FontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
-						layout.FontDescription.Size = (int)(layout.FontDescription.Size * scale * editor.Options.Zoom);
-						layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
-						int layoutWidth, layoutHeight;
-						layout.GetPixelSize (out layoutWidth, out layoutHeight);
-						drawable.DrawLayout (gc, (int)(textx + (textr - textx - layoutWidth) / 2), (int)(texty + (textb - texty - layoutHeight) / 2), layout);
-						layout.Dispose ();
-					}
+					int tx, ty, tw, th;
+					tw = (int) System.Math.Ceiling (iw * scale);
+					th = (int) System.Math.Ceiling (ih * scale);
+					tx = rx - (int) System.Math.Ceiling ((double)(tw - iw) / 2) + border;
+					ty = ry - (int) System.Math.Ceiling ((double)(th - ih) / 2) + border;
+					using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) 
+						scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
 				}
 				
 				if (lineLayout.IsUncached) 

@@ -1,3 +1,9 @@
+2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Enable pixbuf animation
+	  scaling on Mac since it seem to work now the drawable is a
+	  pixmap.
+
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: worked on search result
