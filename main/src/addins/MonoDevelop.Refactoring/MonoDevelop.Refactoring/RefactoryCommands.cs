@@ -60,7 +60,10 @@ namespace MonoDevelop.Refactoring
 		Rename,
 		RemoveUnusedImports,
 		SortImports,
-		RemoveSortImports
+		RemoveSortImports,
+		ExtractMethod,
+		CreateMethod,
+		IntroduceConstant
 	}
 	
 	public class CurrentRefactoryOperationsHandler: CommandHandler

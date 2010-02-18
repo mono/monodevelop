@@ -74,7 +74,7 @@
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
 	
-		<Category _name = "Refactory" id = "Refactory">
+		<Category _name = "Code Navigation" id = "CodeNavigation">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
 					defaultHandler = "MonoDevelop.Refactoring.GotoDeclarationHandler"
 					_label = "_Go to declaration" 
@@ -88,6 +88,9 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
 					defaultHandler = "MonoDevelop.Refactoring.FindDerivedClassesHandler"
 					_label = "Find _derived classes" />
+		</Category>
+		
+		<Category _name = "Refactoring" id = "Refactoring">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Rename"
 					defaultHandler = "MonoDevelop.Refactoring.Rename.RenameHandler"
 					_label = "_Rename..." 
@@ -120,6 +123,16 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports"
 					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.RemoveSortImportsHandler"
 					_label = "R_emove and Sort usings"/>
+		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ExtractMethod"
+					defaultHandler = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodHandler"
+					_label = "Extract Method"/>
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CreateMethod"
+					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.CreateMethodHandler"
+					_label = "Create Method"/>
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntroduceConstant"
+					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.IntroduceConstantHandler"
+					_label = "_Introduce Constant..."/>
 		</Category>
 	</Extension>
 	

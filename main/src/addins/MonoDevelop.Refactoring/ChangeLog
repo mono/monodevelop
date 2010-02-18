@@ -1,3 +1,18 @@
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodHandler.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodHandler.cs:
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantHandler.cs:
+	  Implemented 'Bug 580657 - Feature request: Key-binding to
+	  frequently used functionality'.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:

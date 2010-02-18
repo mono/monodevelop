@@ -51,11 +51,13 @@ FILES =  \
 	MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \
+	MonoDevelop.Refactoring.CreateMethod/CreateMethodHandler.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalHandler.cs \
 	MonoDevelop.Refactoring.DeclareLocal/GetContainingEmbeddedStatementVisitor.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodAstTransformer.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs \
+	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodHandler.cs \
 	MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.Refactoring.ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
@@ -63,6 +65,7 @@ FILES =  \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs \
 	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantDialog.cs \
+	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantHandler.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs \
 	MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs \
 	MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs \
