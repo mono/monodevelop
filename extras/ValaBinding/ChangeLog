@@ -1,5 +1,9 @@
 2010-02-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Parser/ProjectInformation.cs: Add sibling types.
+
+2010-02-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Parser/ValaDocumentParser.cs: Avoid occasional parser
 	  exceptions.
 

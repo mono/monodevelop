@@ -281,6 +281,21 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			if (!DepsInstalled){ return; }
 			
+			// Add contents of parents
+			ICollection<Afrodite.Symbol> containers = GetClassesForFile (filename);
+			AddResults (containers, results);
+			foreach (Afrodite.Symbol klass in containers) {
+				// TODO: check source references once afrodite reliably captures the entire range
+				for (Afrodite.Symbol parent = klass.Parent;
+				     parent != null;
+				     parent = parent.Parent)
+				{
+					AddResults (parent.Children.FindAll (delegate (Afrodite.Symbol sym){
+						return 0 <= Array.IndexOf (containerTypes, sym.SymbolType.ToLower ());
+					}), results);
+				}
+			}
+				
 			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
 				if (null == parseTree){ return; }
 				
@@ -292,7 +307,7 @@ namespace MonoDevelop.ValaBinding.Parser
 					foreach (Afrodite.Symbol directive in file.UsingDirectives) {
 						Afrodite.Symbol ns = parseTree.Lookup (directive.FullyQualifiedName, out parent);
 						if (null != ns) {
-							List<Afrodite.Symbol> containers = new List<Afrodite.Symbol> ();
+							containers = new List<Afrodite.Symbol> ();
 							AddResults (new Afrodite.Symbol[]{ ns }, results);
 							foreach (Afrodite.Symbol child in ns.Children) {
 								foreach (string containerType in containerTypes) {
