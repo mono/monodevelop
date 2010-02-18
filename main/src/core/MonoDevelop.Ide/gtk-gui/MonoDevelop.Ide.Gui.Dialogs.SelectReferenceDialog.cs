@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.WidthRequest = 640;
 			this.HeightRequest = 520;
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog";
-			this.Title = "Edit References";
+			this.Title = global::Mono.Unix.Catalog.GetString ("Edit References");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.Modal = true;
 			this.BorderWidth = ((uint)(6));

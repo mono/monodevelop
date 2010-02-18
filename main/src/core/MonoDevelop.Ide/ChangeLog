@@ -1,3 +1,9 @@
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:
+	  Edit references title is now translateable.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs:
