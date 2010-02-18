@@ -1,5 +1,10 @@
 2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Templates/MeeGoGtkProject.xpt.xml: Fix code binding to
+	  designer.
+
+2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Templates:
 	* MeeGoProject.cs:
 	* MeeGoExecutionHandler.cs:
