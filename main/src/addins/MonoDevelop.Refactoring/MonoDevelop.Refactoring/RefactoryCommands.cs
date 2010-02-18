@@ -177,7 +177,6 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
-				
 				IReturnType returnType = null; 
 				INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (doc.FileName));
 				if (astProvider != null) 
@@ -480,7 +479,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		class ResolveNameOperation
+		public class ResolveNameOperation
 		{
 			ProjectDom ctx;
 			Document doc;
@@ -793,7 +792,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}*/
 		
-		delegate void RefactoryOperation ();
+		public delegate void RefactoryOperation ();
 	}
 	
 	public class Refactorer

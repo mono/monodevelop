@@ -133,6 +133,11 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntroduceConstant"
 					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.IntroduceConstantHandler"
 					_label = "_Introduce Constant..."/>
+		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"
+					defaultHandler = "MonoDevelop.Refactoring.QuickFixHandler"
+					_label = "Quick fix..."
+					shortcut = "Alt|Return" />
 		</Category>
 	</Extension>
 	

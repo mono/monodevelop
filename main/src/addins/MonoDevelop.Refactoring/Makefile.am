@@ -85,6 +85,7 @@ FILES =  \
 	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
 	MonoDevelop.Refactoring/HelperMethods.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
+	MonoDevelop.Refactoring/QuickFixHandler.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
