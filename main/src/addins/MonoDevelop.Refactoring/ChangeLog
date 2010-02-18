@@ -1,3 +1,10 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs: Fix
+	  build.
+
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

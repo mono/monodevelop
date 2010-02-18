@@ -66,7 +66,7 @@ namespace MonoDevelop.CodeGeneration
 			column.PackStart (toggleRenderer, false);
 			column.AddAttribute (toggleRenderer, "active", 0);
 
-			var pixbufRenderer = new MonoDevelop.Core.Gui.CellRendererPixbuf ();
+			var pixbufRenderer = new CellRendererPixbuf ();
 			column.PackStart (pixbufRenderer, false);
 			column.AddAttribute (pixbufRenderer, "pixbuf", 1);
 
