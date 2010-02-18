@@ -340,7 +340,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			iconView.Clear ();
 			foreach (TemplateItem item in (List<TemplateItem>)(catStore.GetValue (iter, 2))) {
-				iconView.AddIcon (new Gtk.Image (ImageService.GetPixbuf (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
+				iconView.AddIcon (new Gtk.Image (ImageService.GetPixbuf (item.Template.Icon, Gtk.IconSize.Dnd)), GettextCatalog.GetString (item.Name), item);
 			}
 		}
 

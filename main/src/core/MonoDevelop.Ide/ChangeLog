@@ -1,5 +1,10 @@
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Added missing
+	  getstring call.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
 	  Added missing getstring call.
 
