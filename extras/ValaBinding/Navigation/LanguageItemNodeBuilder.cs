@@ -41,6 +41,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 
 using MonoDevelop.ValaBinding.Parser;
+using MonoDevelop.ValaBinding.Parser.Afrodite;
 
 namespace MonoDevelop.ValaBinding.Navigation
 {
@@ -50,17 +51,12 @@ namespace MonoDevelop.ValaBinding.Navigation
 	public class LanguageItemNodeBuilder: TypeNodeBuilder
 	{
 		//// <value>
-		/// Container types
-		/// </value>
-		private static string[] containers = { "namespaces", "class", "struct", "enums" };
-
-		//// <value>
 		/// Sort order for nodes
 		/// </value>
-		private static string[] types = { "namespaces", "class", "struct", "property", "method", "signal", "field", "constants", "enums", "other" };
+		private static string[] types = { "namespace", "class", "struct", "interface", "property", "method", "signal", "field", "constant", "enum", "other" };
 		
 		public override Type NodeDataType {
-			get { return typeof(CodeNode); }
+			get { return typeof(Symbol); }
 		}
 		
 		public override Type CommandHandlerType {
@@ -69,7 +65,7 @@ namespace MonoDevelop.ValaBinding.Navigation
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return ((CodeNode)dataObject).Name;
+			return ((Symbol)dataObject).Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
@@ -78,49 +74,36 @@ namespace MonoDevelop.ValaBinding.Navigation
 		                                ref Gdk.Pixbuf icon,
 		                                ref Gdk.Pixbuf closedIcon)
 		{
-			CodeNode c = (CodeNode)dataObject;
-			label = c.Name;
+			Symbol c = (Symbol)dataObject;
+			label = c.DisplayText;
 			icon = Context.GetIcon (c.Icon);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			ValaProject p = treeBuilder.GetParentDataItem (typeof(ValaProject), false) as ValaProject;
-			if (p == null){ return; }
-			
-			ProjectInformation info = ProjectInformationManager.Instance.Get (p);
-			
-			bool publicOnly = treeBuilder.Options["PublicApiOnly"];
-			CodeNode thisCodeNode = (CodeNode)dataObject;
+			// bool publicOnly = treeBuilder.Options["PublicApiOnly"];
+			Symbol thisSymbol = (Symbol)dataObject;
 
-			ThreadPool.QueueUserWorkItem (delegate (object o) {
-				foreach (CodeNode child in info.GetChildren (thisCodeNode)) {
-					CodeNode clone = child.Clone ();
-					Gtk.Application.Invoke (delegate (object ob, EventArgs ea) {
-						treeBuilder.AddChild (clone);
-					});
-				}
-			});
+			foreach (Symbol child in thisSymbol.Children) {
+				treeBuilder.AddChild (child);
+			}
 		}
 
-		/// <summary>
-		/// Show all container types as having child nodes; 
-		/// only check on expansion
-		/// </summary>
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return (0 <= Array.IndexOf<string> (containers, ((CodeNode)dataObject).NodeType));
+			Symbol symbol = (Symbol)dataObject;
+			return (null != symbol.Children && 0 < symbol.Children.Count);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			if (null != thisNode && null != otherNode) {
-				CodeNode thisCN = thisNode.DataItem as CodeNode,
-				         otherCN = otherNode.DataItem as CodeNode;
+				Symbol thisCN = thisNode.DataItem as Symbol,
+				         otherCN = otherNode.DataItem as Symbol;
 	
 				if (null != thisCN && null != otherCN) {
-					return Array.IndexOf<string>(types, thisCN.NodeType) - 
-					       Array.IndexOf<string>(types, otherCN.NodeType);
+					return Array.IndexOf<string>(types, thisCN.SymbolType) - 
+					       Array.IndexOf<string>(types, otherCN.SymbolType);
 				}
 			}
 

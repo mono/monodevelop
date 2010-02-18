@@ -40,6 +40,7 @@ using System.Text.RegularExpressions;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Gui.Completion;
 
@@ -50,18 +51,15 @@ namespace MonoDevelop.ValaBinding.Parser
 	/// </summary>
 	public class ProjectInformation
 	{
-		private ProcessWrapper p;
 		private bool vtgInstalled = false;
 		private bool checkedVtgInstalled = false;
-		private Dictionary<string,List<Function>> methods;
-		private Dictionary<string,List<CodeNode>> cache;
-		private HashSet<string> files;
-		private HashSet<string> packages;
-		private DateTime lastRestarted;
-		string lockme = "lockme";
+		
+		private Afrodite.CompletionEngine engine;
+		
+		static readonly string[] containerTypes = new string[]{ "class", "struct", "interface" };
 
 		public Project Project{ get; set; }
-
+		
 		//// <value>
 		/// Checks whether <see cref="http://code.google.com/p/vtg/">Vala Toys for GEdit</see> 
 		/// is installed.
@@ -70,14 +68,16 @@ namespace MonoDevelop.ValaBinding.Parser
 			get {
 				if (!checkedVtgInstalled) {
 					checkedVtgInstalled = true;
+					vtgInstalled = false;
 					try {
-						Runtime.ProcessService.StartProcess ("vsc-shell", "--help", null, null).WaitForOutput ();
-					} catch {
-						LoggingService.LogWarning ("Cannot update Vala parser database because vsc-shell is not installed: {0}{1}", 
+						Afrodite.Utils.GetPackagePaths ("glib-2.0");
+						return (vtgInstalled = true);
+					} catch (DllNotFoundException) {
+						LoggingService.LogWarning ("Cannot update Vala parser database because libafrodite (VTG) is not installed: {0}{1}", 
 						                           Environment.NewLine, "http://code.google.com/p/vtg/");
-						return false;
+					} catch (Exception ex) {
+						LoggingService.LogError ("ValaBinding: Error while checking for libafrodite", ex);
 					}
-					vtgInstalled = true;
 				}
 				return vtgInstalled;
 			}
@@ -90,221 +90,35 @@ namespace MonoDevelop.ValaBinding.Parser
 			}
 		}
 
-		private void RestartParser ()
-		{
-			// Don't restart more often than once/five seconds
-			lock (lockme) {
-				if (0 > DateTime.Now.AddSeconds (-5).CompareTo (lastRestarted)){ return; }
-				lastRestarted = DateTime.Now;
-			}
-            
-			if (null != p) {
-				try {
-					if (!p.HasExited){ p.Kill (); }
-					p.Dispose ();
-				} catch {
-					// We don't care about anything that happens here.
-				}
-			}
-			
-			// Don't destroy old cached results
-			// cache = new Dictionary<string,List<CodeNode>> ();
-			
-			if (DepsInstalled) {
-				p = Runtime.ProcessService.StartProcess ("vsc-shell", string.Empty, ".", (ProcessEventHandler)null, null, null, true);
-				p.StandardError.Close ();
-				foreach (string package in packages) {
-					AddPackage (package);
-				}
-				foreach (string file in files) {
-					AddFile (file);
-				}
-			}
-			
-			lock(lockme){ lastRestarted = DateTime.Now; }
-		}// RestartParser
-		
-		private static Regex endOutputRegex = new Regex (@"^(\s*vsc-shell -\s*$|^\s*>)", RegexOptions.Compiled);
-		/// <summary>
-		/// Reads process output
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String[]"/>: The lines output by the parser process
-		/// </returns>
-		private string[] ReadOutput ()
-		{
-			List<string> result = new List<string> ();
-			int count = 0;
-			
-			DataReceivedEventHandler gotdata = delegate(object sender, DataReceivedEventArgs e) {
-				// Console.WriteLine(e.Data);
-				lock(result){ result.Add(e.Data); }
-			};
-			
-			p.OutputDataReceived += gotdata;
-
-			// for (int i=0; i<100; ++i) {
-			for (;;) {
-				p.BeginOutputReadLine ();
-				Thread.Sleep (50);
-				p.CancelOutputRead ();
-				lock (result) {
-					// if (count < result.Count){ i = 0; }
-					if (0 < result.Count && null != result[result.Count-1] && endOutputRegex.Match(result[result.Count-1]).Success) {
-						break;
-					}
-					count = result.Count;
-				}
-				p.StandardInput.WriteLine(string.Empty);
-			}
-			p.OutputDataReceived -= gotdata;
-			
-			return result.ToArray();
-		}// ReadOutput
-
-		/// <summary>
-		/// Sends a command to the parser
-		/// </summary>
-		/// <param name="command">
-		/// A <see cref="System.String"/>: The command to be sent to the parser
-		/// </param>
-		/// <param name="args">
-		/// A <see cref="System.Object[]"/>: string.Format-style arguments for command
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.String[]"/>: The output from the command
-		/// </returns>
-		private string[] ParseCommand (string command, params object[] args)
-		{
-			string[] output = new string[0];
-			if (null == p){ return output; }
-
-			try {
-			lock (p) {
-				// Console.WriteLine (command, args);
-				p.StandardInput.WriteLine (string.Format (command, args));
-				output =  ReadOutput ();
-				// foreach (string line in output){ Console.WriteLine (line); }
-			}
-			} catch (Exception e) { 
-				Console.WriteLine("{0}{1}{2}", e.Message, Environment.NewLine, e.StackTrace); 
-			}
-			
-			if (0 == output.Length) { RestartParser (); }
-			
-			return output;
-		}// ParseCommand
-
-		private ProjectInformation ()
-		{
-			files = new HashSet<string> ();
-			packages = new HashSet<string> ();
-			methods = new Dictionary<string,List<Function>> ();
-			cache = new Dictionary<string, List<CodeNode>> ();
-			lastRestarted = DateTime.Now.AddSeconds(-6);
-			RestartParser ();
-		}
-
-		public ProjectInformation (Project project): this ()
+		public ProjectInformation (Project project)
 		{
 			this.Project = project;
-		}
-
-		~ProjectInformation ()
-		{
-			lock (p) {
-				try {
-					p.StandardInput.WriteLine("quit");
-					p.WaitForExit (100);
-					if (!p.HasExited) {
-						p.Kill ();
-					}
-					p.Dispose ();
-				} catch {
-				}
+			string projectName = (null == project)? "NoExistingProject": project.Name;
+			
+			if (DepsInstalled) {
+				engine = new Afrodite.CompletionEngine (projectName);
 			}
 		}
-
-		/// <summary>
-		/// Gets the children of a given code node
-		/// </summary>
-		public IList<CodeNode> GetChildren (CodeNode parent)
-		{
-			IList<CodeNode> children = new List<CodeNode> ();
-			
-			if (null == parent) {
-				string[] output = ParseCommand ("get-namespaces");
-				Match match;
-				CodeNode child;
-	
-				foreach (string line in output) {
-					if (null != (child = ParseType (string.Empty, line))) {
-						children.Add (child);
-					}
-				}
-			} else if ("namespaces" != parent.NodeType) {
-				children = CacheCompleteType (parent.FullName, parent.File, parent.FirstLine, 0, null);
-			} else {
-				children = CacheCompleteType (parent.FullName, string.Empty, 0, 0, null);
-			}
-
-			return children;
-		}// GetChildren
-
-		private List<CodeNode> CacheCompleteType (string typename, string filename, int linenum, int column, ValaCompletionDataList results) 
-		{
-			bool cached;
-			List<CodeNode> completion;
-			
-			lock (cache){ cached = cache.TryGetValue (typename, out completion); }
-			
-			if (cached) {
-				AddResults (completion, results);
-				ThreadPool.QueueUserWorkItem (delegate{
-					List<CodeNode> newcompletion = CompleteType (typename, filename, linenum, column, null);
-					if (null != newcompletion && 0 != newcompletion.Count) {
-						lock (cache){ cache[typename] = newcompletion; }
-					}
-				});
-			} else {
-				completion = CompleteType (typename, filename, linenum, column, results);
-					if (null != completion && 0 != completion.Count) {
-						lock (cache){ cache[typename] = completion; }
-					}
-			}
-			
-			return completion;
-		}// CacheCompleteType
 		
 		/// <summary>
 		/// Gets the completion list for a given type name in a given file
 		/// </summary>
-		internal List<CodeNode> CompleteType (string typename, string filename, int linenum, int column, ValaCompletionDataList results)
+		internal List<Afrodite.Symbol> CompleteType (string typename, string filename, int linenum, int column, ValaCompletionDataList results)
 		{
-			string[] output = ParseCommand ("complete {0} {1}", typename, filename);
-			List<CodeNode> children = new List<CodeNode> ();
-			CodeNode child;
-
-			foreach (string line in output) {
-				if (null != (child = ParseType (typename, line))) {
-					children.Add (child);
-					if (null != results) {
-						CompletionData datum = new CompletionData (child);
-						Gtk.Application.Invoke (delegate(object sender, EventArgs args){
-							results.Add (datum);
-							results.IsChanging = true;
-						});
-					}
+			List<Afrodite.Symbol> nodes = new List<Afrodite.Symbol> ();
+			if (!DepsInstalled){ return nodes; }
+			
+			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+				if (null != parseTree) {
+					Afrodite.Symbol symbol = parseTree.GetSymbolForNameAndPath (typename, filename, linenum, column);
+					if (null == symbol){ LoggingService.LogDebug ("CompleteType: Unable to lookup {0} in {1} at {2}:{3}", typename, filename, linenum, column); }
+					else{ nodes = symbol.Children; }
+				} else {
+					LoggingService.LogDebug ("CompleteType: Unable to acquire ast");
 				}
 			}
 			
-			if (null != results) {
-				Gtk.Application.Invoke (delegate(object sender, EventArgs args){
-					results.IsChanging = false;
-				});
-			}
-
-			return children;
+			return nodes;
 		}
 
 		/// <summary>
@@ -312,13 +126,10 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void AddFile (string filename)
 		{
-			lock (files) {
-				// if (files.Contains (filename)){ return; }
-				files.Add (filename);
+			if (vtgInstalled) {
+				LoggingService.LogDebug ("Adding file {0}", filename);
+				engine.QueueSourcefile (filename, filename.EndsWith (".vapi", StringComparison.OrdinalIgnoreCase), false);
 			}
-			ThreadPool.QueueUserWorkItem (delegate {
-				ParseCommand ("add-source {0}", filename);
-			});
 		}// AddFile
 
 		/// <summary>
@@ -326,10 +137,7 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void RemoveFile (string filename)
 		{
-			lock (files) { files.Remove (filename); }
-			ThreadPool.QueueUserWorkItem (delegate {
-				ParseCommand ("remove-source {0}", filename);
-			});
+			// Not currently possible with Afrodite completion engine
 		}// RemoveFile
 
 		/// <summary>
@@ -337,50 +145,82 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// </summary>
 		public void AddPackage (string packagename)
 		{
-			lock (packages) { 
-				// if (packages.Contains (packagename)){ return; }
-				packages.Add (packagename);
+			if (!DepsInstalled){ return; }
+			
+			if ("glib-2.0".Equals (packagename, StringComparison.Ordinal)) {
+				LoggingService.LogDebug ("AddPackage: Skipping {0}", packagename);
+				return;
+			} else {
+				LoggingService.LogDebug ("AddPackage: Adding package {0}", packagename);
 			}
-			ThreadPool.QueueUserWorkItem (delegate {
-				ParseCommand ("add-package {0}", packagename);
-			});
+			
+			foreach (string path in Afrodite.Utils.GetPackagePaths (packagename)) {
+				LoggingService.LogDebug ("AddPackage: Queueing {0} for package {1}", path, packagename);
+				engine.QueueSourcefile (path, true, false);
+			}
 		}// AddPackage
 
 		/// <summary>
-		/// Tells the parser to reparse
-		/// </summary>
-		public void Reparse ()
-		{
-			//ParseCommand ("reparse");
-			RestartParser ();
-		}// Reparse
-
-		private static Regex typeNameRegex = new Regex (@"vsc-shell - typename for [^:]+: (?<type>[^\s]+)\s*$", RegexOptions.Compiled);
-		/// <summary>
 		/// Gets the completion list for a given symbol at a given location
 		/// </summary>
-		public void Complete (string symbol, string filename, int line, int column, ValaCompletionDataList results)
+		internal List<Afrodite.Symbol> Complete (string symbol, string filename, int line, int column, ValaCompletionDataList results)
 		{
-			if (cache.ContainsKey (symbol)){ CacheCompleteType (symbol, filename, line, column, results); }
-			else ThreadPool.QueueUserWorkItem (delegate{
-				string expressionType = GetExpressionType (symbol, filename, line, column);
-				CacheCompleteType (expressionType, filename, line, column, results);
-			});
+			List<Afrodite.Symbol> nodes = new List<Afrodite.Symbol> ();
+			if (!DepsInstalled){ return nodes; }
+			
+			
+			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+				if (null != parseTree) {
+					LoggingService.LogDebug ("Complete: Looking up symbol at {0}:{1}:{2}", filename, line, column);
+					Afrodite.Symbol sym = parseTree.GetSymbolForNameAndPath (symbol, filename, line, column);
+					LoggingService.LogDebug ("Complete: Got {0}", (null == sym)? "null": sym.Name);
+					if (null != sym) {
+						nodes = sym.Children;
+						AddResults (nodes, results);
+					}
+				} else {
+					LoggingService.LogDebug ("Complete: Unable to acquire ast");
+				}
+			}
+			
+			return nodes;
 		}// Complete
+		
+		internal Afrodite.Symbol GetFunction (string name, string filename, int line, int column)
+		{
+			if (!DepsInstalled){ return null; }
+			
+			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+				if (null != parseTree) {
+					LoggingService.LogDebug ("GetFunction: Looking up symbol at {0}:{1}:{2}", filename, line, column);
+					Afrodite.Symbol symbol = parseTree.GetSymbolForNameAndPath (name, filename, line, column);
+					LoggingService.LogDebug ("GetFunction: Got {0}", (null == symbol)? "null": symbol.Name);
+					return symbol;
+				} else {
+					LoggingService.LogDebug ("GetFunction: Unable to acquire ast");
+				}
+			}
+
+			return null;
+		}
 
 		/// <summary>
 		/// Get the type of a given expression
 		/// </summary>
 		public string GetExpressionType (string symbol, string filename, int line, int column)
 		{
-			AddFile (filename);
-			string[] responses = ParseCommand ("type-name {0} {1} {2} {3}", symbol, filename, line, column);
-			Match match;
+			if (!DepsInstalled){ return symbol; }
 			
-			foreach (string response in responses) {
-				match = typeNameRegex.Match (response);
-				if (match.Success) {
-					return match.Groups["type"].Value;
+			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+				if (null != parseTree) {
+					LoggingService.LogDebug ("GetExpressionType: Looking up symbol at {0}:{1}:{2}", filename, line, column);
+					Afrodite.Symbol sym = parseTree.LookupSymbolAt (filename, line, column);
+					if (null != sym) {
+						LoggingService.LogDebug ("Got {0}", sym.DataType.TypeName);
+						return sym.DataType.TypeName;
+					}
+				} else {
+					LoggingService.LogDebug ("GetExpressionType: Unable to acquire ast");
 				}
 			}
 
@@ -390,65 +230,45 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// <summary>
 		/// Get overloads for a method
 		/// </summary>
-		public List<Function> GetOverloads (string name)
+		internal List<Afrodite.Symbol> GetOverloads (string name, string filename, int line, int column)
 		{
-			lock (methods) {
-				return (methods.ContainsKey (name))? methods[name]: new List<Function> ();
+			List<Afrodite.Symbol> overloads = new List<Afrodite.Symbol> ();
+			if (!DepsInstalled){ return overloads; }
+			
+			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+				if (null != parseTree) {
+					Afrodite.Symbol symbol = parseTree.GetSymbolForNameAndPath (name, filename, line, column);
+					overloads = new List<Afrodite.Symbol> (){ symbol };
+				} else {
+					LoggingService.LogDebug ("GetOverloads: Unable to acquire ast");
+				}
 			}
+			
+			return overloads;
 		}// GetOverloads
 		
 		/// <summary>
 		/// Get constructors for a given type
 		/// </summary>
-		public List<Function> GetConstructorsForType (string typename, string filename, int line, int column, ValaCompletionDataList results)
+		internal List<Afrodite.Symbol> GetConstructorsForType (string typename, string filename, int line, int column, ValaCompletionDataList results)
 		{
-			string[] tokens = typename.Split ('.');
-			string baseTypeName = tokens[tokens.Length-1];
-			List<Function> constructors = new List<Function> ();
-			List<CodeNode> cachedNode = null;
-			
-			if (cache.ContainsKey (typename)) {
-				cachedNode = cache[typename];
-			} else {
-				foreach (string cachedType in cache.Keys) {
-					if (cachedType.EndsWith (typename)) { 
-						cachedNode = cache[cachedType];
-						break;
-					}
+			List<Afrodite.Symbol> functions = new List<Afrodite.Symbol> ();
+			foreach (Afrodite.Symbol node in CompleteType (typename, filename, line, column, null)) {
+				if ("constructor".Equals (node.SymbolType, StringComparison.OrdinalIgnoreCase) || 
+				      "creationmethod".Equals (node.SymbolType, StringComparison.OrdinalIgnoreCase)) {
+					functions.Add (node);
 				}
 			}
 			
-			if (null != cachedNode) {
-				constructors = cachedNode.FindAll (delegate (CodeNode node){ 
-					return ("method" == node.NodeType && 
-					    (baseTypeName == node.Name || node.Name.StartsWith (baseTypeName + ".")));
-				}).ConvertAll<Function> (delegate (CodeNode node){ 
-					if (null != results) {
-						CompletionData datum = new CompletionData (node);
-						Gtk.Application.Invoke (delegate (object sender, EventArgs args){
-							results.Add (datum);
-							results.IsChanging = true;
-						});
-					}
-					return node as Function; 
-				});
-			} else {
-				ThreadPool.QueueUserWorkItem (delegate (object o){ CacheCompleteType (typename, filename, line, column, null); });
-			}
+			AddResults ((IList<Afrodite.Symbol>)functions, results);
 			
-			if (null != results) {
-				Gtk.Application.Invoke (delegate (object sender, EventArgs args){
-					results.IsChanging = false;
-				});
-			}
-			
-			return constructors;
+			return functions;
 		}// GetConstructorsForType
 		
 		/// <summary>
 		/// Get constructors for a given expression
 		/// </summary>
-		public List<Function> GetConstructorsForExpression (string expression, string filename, int line, int column, ValaCompletionDataList results)
+		internal List<Afrodite.Symbol> GetConstructorsForExpression (string expression, string filename, int line, int column, ValaCompletionDataList results)
 		{
 			string typename = GetExpressionType (expression, filename, line, column);
 			return GetConstructorsForType (typename, filename, line, column, results);
@@ -457,154 +277,116 @@ namespace MonoDevelop.ValaBinding.Parser
 		/// <summary>
 		/// Get types visible from a given source location
 		/// </summary>
-		public void GetTypesVisibleFrom (string filename, int line, int column, ValaCompletionDataList results)
+		internal void GetTypesVisibleFrom (string filename, int line, int column, ValaCompletionDataList results)
 		{
-			results.IsChanging = true;
+			if (!DepsInstalled){ return; }
 			
-			ThreadPool.QueueUserWorkItem (delegate{
-				string[] output = ParseCommand ("visible-types {0} {1} {2}", filename, line, column);
-				CodeNode child;
+			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+				if (null == parseTree){ return; }
 				
-				foreach (string outputline in output) {
-					if (null != (child = ParseType (string.Empty, outputline))) {
-						CompletionData datum = new CompletionData (child);
-						Gtk.Application.Invoke (delegate (object sender, EventArgs args){
-							results.Add (datum);
-							results.IsChanging = true;
-						});
+				AddResults (GetNamespacesForFile (filename), results);
+				AddResults (GetClassesForFile (filename), results);
+				Afrodite.SourceFile file = parseTree.LookupSourceFile (filename);
+				if (null != file) {
+					Afrodite.Symbol parent;
+					foreach (Afrodite.Symbol directive in file.UsingDirectives) {
+						Afrodite.Symbol ns = parseTree.Lookup (directive.FullyQualifiedName, out parent);
+						if (null != ns) {
+							List<Afrodite.Symbol> containers = new List<Afrodite.Symbol> ();
+							AddResults (new Afrodite.Symbol[]{ ns }, results);
+							foreach (Afrodite.Symbol child in ns.Children) {
+								foreach (string containerType in containerTypes) {
+									if (containerType.Equals (child.SymbolType, StringComparison.OrdinalIgnoreCase))
+										containers.Add (child);
+								}
+							}
+							AddResults (containers, results);
+						}
 					}
 				}
-				Gtk.Application.Invoke (delegate (object sender, EventArgs args){
-					results.IsChanging = false;
-				});
-			});
+			}
 		}// GetTypesVisibleFrom
 		
 		/// <summary>
 		/// Get symbols visible from a given source location
 		/// </summary>
-		public void GetSymbolsVisibleFrom (string filename, int line, int column, ValaCompletionDataList results) 
+		internal void GetSymbolsVisibleFrom (string filename, int line, int column, ValaCompletionDataList results) 
 		{
-			results.IsChanging = true;
-			
-			ThreadPool.QueueUserWorkItem (delegate{
-				string[] output = ParseCommand ("visible-symbols {0} {1} {2}", filename, line, column);
-				CodeNode child;
-				
-				foreach (string outputline in output) {
-					if (null != (child = ParseType (string.Empty, outputline))) {
-						CompletionData datum = new CompletionData (child);
-						Gtk.Application.Invoke (delegate (object sender, EventArgs args){
-							results.Add (datum);
-							results.IsChanging = true;
-						});
-					}
-				}
-				Gtk.Application.Invoke (delegate (object sender, EventArgs args){
-					results.IsChanging = false;
-				});
-			});
+			GetTypesVisibleFrom (filename, line, column, results);
+			Complete ("this", filename, line, column, results);
 		}// GetSymbolsVisibleFrom
-		
-		private static Regex completionRegex = new Regex (@"^\s*vsc-shell - (?<type>[^:]+):(?<name>[^\s:]+)(:(?<modifier>[^;]*);(?<static>[^:]*))?(:(?<returntype>[^;]*);(?<ownership>[^:]*))?(:(?<args>[^:]*);)?((?<file>[^:]*):(?<first_line>\d+);((?<last_line>\d+);)?)?", RegexOptions.Compiled);
-		/// <summary>
-		/// Parse out a CodeNode from a vsc-shell description string
-		/// </summary>
-		private CodeNode ParseType (string typename, string typeDescription)
-		{
-			Match match = completionRegex.Match (typeDescription);
-			
-			if (match.Success) {
-				string childType = match.Groups["type"].Value;
-				string name = match.Groups["name"].Value;
-				AccessModifier access = AccessModifier.Public;
-				string[] argtokens = typename.Split ('.');
-				string baseTypeName = argtokens[argtokens.Length-1];
-				string file = match.Groups["file"].Success? match.Groups["file"].Value: string.Empty;
-				int first_line = match.Groups["first_line"].Success? int.Parse(match.Groups["first_line"].Value): 0;
-				int last_line = match.Groups["last_line"].Success? int.Parse(match.Groups["last_line"].Value): first_line;
-				
-				switch (match.Groups["modifier"].Value) {
-				case "private":
-					access = AccessModifier.Private;
-					break;
-				case "protected":
-					access = AccessModifier.Protected;
-					break;
-				case "internal":
-					access = AccessModifier.Internal;
-					break;
-				default:
-					access = AccessModifier.Public;
-					break;
-				}
-				
-				switch (childType) {
-				case "method":
-					List<KeyValuePair<string,string>> paramlist = new List<KeyValuePair<string,string>>();
-					string returnType = (match.Groups["returntype"].Success)? match.Groups["returntype"].Value: string.Empty;
-					if (name == baseTypeName || name.StartsWith (baseTypeName + ".")) {
-						returnType = string.Empty;
-					}
-					
-					if (match.Groups["args"].Success) {
-						StringBuilder args = new StringBuilder ();
-						foreach (string arg in match.Groups["args"].Value.Split (';')) {
-							argtokens = arg.Split (',');
-							if (3 == argtokens.Length) {
-								paramlist.Add (new KeyValuePair<string,string> (argtokens[0], string.Format("{0} {1}", argtokens[2], argtokens[1])));
-							}
-						}
-					}
-					Function function = new Function (childType, name, typename, file, first_line, last_line, access, returnType, paramlist.ToArray ());
-					if (!methods.ContainsKey (function.Name)){ methods[function.Name] = new List<Function> (); }
-					methods[function.Name].Add (function);
-					return function;
-					break;
-				default:
-					return new CodeNode (childType, name, typename, file, first_line, last_line, access);
-					break;
-				}
-			}
-			
-			return null;
-		}// ParseType
 		
 		/// <summary>
 		/// Add results to a ValaCompletionDataList on the GUI thread
 		/// </summary>
-		private static void AddResults (IList<CodeNode> list, ValaCompletionDataList results) 
+		private static void AddResults (IEnumerable<Afrodite.Symbol> list, ValaCompletionDataList results) 
 		{
-			if (null == results){ return; }
+			if (null == list || null == results)
+			{
+				LoggingService.LogDebug ("AddResults: null list or results!");
+				return;
+			}
 			
-			Gtk.Application.Invoke (delegate(object sender, EventArgs args){
-				results.IsChanging = true;
-				foreach (CodeNode node in list) {
-					results.Add (new CompletionData (node));
-					// results.IsChanging = true;
-				}
-				results.IsChanging = false;
-			});
+			foreach (Afrodite.Symbol node in list) {
+				results.Add (new CompletionData (node));
+			}
 		}// AddResults
 		
-		public List<CodeNode> GetClassesForFile (string file)
+		/// <summary>
+		/// Get a list of classes declared in a given file
+		/// </summary>
+		internal List<Afrodite.Symbol> GetClassesForFile (string file)
 		{
-			List<CodeNode> classes = new List<CodeNode> ();
-			if (null != p) {
-				AddFile (file);
-				CodeNode node = null;
-				
-				lock(p){ p.StandardInput.WriteLine ("reparse both"); }
-				
-				foreach (string result in ParseCommand ("get-classes {0}", file)) {
-					node = ParseType (string.Empty, result);
-					if(null != node && node.IsContainerType) { 
-						classes.Add (node); 
+			return GetSymbolsForFile (file, containerTypes);
+		}// GetClassesForFile
+		
+		/// <summary>
+		/// Get a list of namespaces declared in a given file
+		/// </summary>
+		internal List<Afrodite.Symbol> GetNamespacesForFile (string file)
+		{
+			return GetSymbolsForFile (file, new string[]{ "namespace" });
+		}
+		
+		/// <summary>
+		/// Get a list of symbols declared in a given file
+		/// </summary>
+		/// <param name="file">
+		/// A <see cref="System.String"/>: The file to check
+		/// </param>
+		/// <param name="desiredTypes">
+		/// A <see cref="IEnumerable<System.String>"/>: The types of symbols to allow
+		/// </param>
+		List<Afrodite.Symbol> GetSymbolsForFile (string file, IEnumerable<string> desiredTypes)
+		{
+			List<Afrodite.Symbol> symbols = null;
+			List<Afrodite.Symbol> classes = new List<Afrodite.Symbol> ();
+			
+			if (!DepsInstalled){ return classes; }
+			
+			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+				if (null != parseTree){
+					Afrodite.SourceFile sourceFile = parseTree.LookupSourceFile (file);
+					if (null != sourceFile) {
+						symbols = sourceFile.Symbols;
+						if (null != symbols) {
+							foreach (Afrodite.Symbol symbol in symbols) {
+								foreach (string containerType in desiredTypes) {
+									if (containerType.Equals (symbol.SymbolType, StringComparison.OrdinalIgnoreCase))
+										classes.Add (symbol);
+								}
+							}
+						}
+					} else {
+						LoggingService.LogDebug ("GetClassesForFile: Unable to lookup source file {0}", file);
 					}
+				} else {
+					LoggingService.LogDebug ("GetClassesForFile: Unable to acquire ast");
 				}
+				
 			}
 			
 			return classes;
-		}// GetClassesForFile
+		}
 	}
 }

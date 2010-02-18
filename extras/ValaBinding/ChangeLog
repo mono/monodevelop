@@ -1,3 +1,19 @@
+2010-02-18  Levi Bard  <levi.bard@emhartglass.com>
+
+	* Makefile.am:
+	* Parser/Afrodite.cs:
+	* ValaBinding.csproj:
+	* Parser/Function.cs:
+	* Parser/CodeNode.cs:
+	* Gui/DataProvider.cs:
+	* Parser/ValaDocumentParser.cs:
+	* Parser/ProjectInformation.cs:
+	* Gui/ValaTextEditorExtension.cs:
+	* Navigation/LanguageItemEventArgs.cs:
+	* Navigation/LanguageItemNodeBuilder.cs:
+	* Navigation/LanguageItemCommandHandler.cs:
+	* Navigation/ProjectNodeBuilderExtension.cs: 
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/DataProvider.cs: Track api changes.

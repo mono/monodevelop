@@ -38,8 +38,7 @@ FILES =  \
 	Navigation/LanguageItemEventArgs.cs \
 	Navigation/LanguageItemNodeBuilder.cs \
 	Navigation/ProjectNodeBuilderExtension.cs \
-	Parser/CodeNode.cs \
-	Parser/Function.cs \
+	Parser/Afrodite.cs \
 	Parser/ProjectInformation.cs \
 	Parser/ProjectInformationManager.cs \
 	Parser/ValaDocumentParser.cs \

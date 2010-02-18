@@ -97,32 +97,27 @@ namespace MonoDevelop.ValaBinding
 			return base.KeyPress (key, keyChar, modifier);
 		}
 		
+		/// <summary>
+		/// Expression to match instance construction/initialization
+		/// </summary>
 		private static Regex initializationRegex = new Regex (@"(((?<typename>\w[\w\d\.<>]*)\s+)?(?<variable>\w[\w\d]*)\s*=\s*)?new\s*(?<constructor>\w[\w\d\.<>]*)?", RegexOptions.Compiled);
+		
 		public override ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, char completionChar)
 		{
 			int line, column;
 			string lineText = null;
 			ProjectInformation parser = Parser;
-			// Console.WriteLine ("({0},{1}): {2}", line, column, lineText);
 
 			Editor.GetLineColumnFromPosition (completionContext.TriggerOffset, out line, out column);
 			
 			switch (completionChar) {
-			case '.':
+			case '.': // foo.[complete]
 				lineText = Editor.GetLineText (line);
 				if (column > lineText.Length){ column = lineText.Length; }
 				lineText = lineText.Substring (0, column - 1);
-				// remove the trailing '.'
-				if (lineText.EndsWith (".", StringComparison.Ordinal)) {
-					lineText = lineText.Substring (0, lineText.Length-1);
-				}
 				
-				int nameStart = lineText.LastIndexOfAny (allowedChars);
-
-				nameStart++;
-				
-				string itemName = lineText.Substring (nameStart).Trim ();
+				string itemName = GetTrailingSymbol (lineText);
 				
 				if (string.IsNullOrEmpty (itemName))
 					return null;
@@ -159,29 +154,38 @@ namespace MonoDevelop.ValaBinding
 			return null;
 		}
 		
+		static string GetTrailingSymbol (string text)
+		{
+				// remove the trailing '.'
+				if (text.EndsWith (".", StringComparison.Ordinal))
+					text = text.Substring (0, text.Length-1);
+				
+				int nameStart = text.LastIndexOfAny (allowedChars);
+				return text.Substring (nameStart+1).Trim ();
+		}
+		
+		/// <summary>
+		/// Perform constructor-specific completion
+		/// </summary>
 		private ValaCompletionDataList CompleteConstructor (string lineText, int line, int column)
 		{
 			ProjectInformation parser = Parser;
 			Match match = initializationRegex.Match (lineText);
 			ValaCompletionDataList list = new ValaCompletionDataList ();
-			list.IsChanging = true;
 			
 			if (match.Success) {
-				ThreadPool.QueueUserWorkItem (delegate{
-					// variable initialization
-					if (match.Groups["typename"].Success || "var" != match.Groups["typename"].Value) {
-						// simultaneous declaration and initialization
-						parser.GetConstructorsForType (match.Groups["typename"].Value, Document.FileName, line, column, list);
-					} else if (match.Groups["variable"].Success) {
-						// initialization of previously declared variable
-						parser.GetConstructorsForExpression (match.Groups["variable"].Value, Document.FileName, line, column, list);
-					}
-					if (0 == list.Count) { 
-						// Fallback to known types
-						list.IsChanging = true;
-						parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
-					}
-				});
+				// variable initialization
+				if (match.Groups["typename"].Success || "var" != match.Groups["typename"].Value) {
+					// simultaneous declaration and initialization
+					parser.GetConstructorsForType (match.Groups["typename"].Value, Document.FileName, line, column, list);
+				} else if (match.Groups["variable"].Success) {
+					// initialization of previously declared variable
+					parser.GetConstructorsForExpression (match.Groups["variable"].Value, Document.FileName, line, column, list);
+				}
+				if (0 == list.Count) { 
+					// Fallback to known types
+					parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
+				}
 			}
 			return list;
 		}// CompleteConstructor
@@ -200,17 +204,22 @@ namespace MonoDevelop.ValaBinding
 			return list;
 		}
 		
+		/// <summary>
+		/// Get the members of a symbol
+		/// </summary>
 		private ValaCompletionDataList GetMembersOfItem (string itemFullName, int line, int column)
 		{
 			ProjectInformation info = Parser;
 			if (null == info){ return null; }
 			
 			ValaCompletionDataList list = new ValaCompletionDataList ();
-			list.IsChanging = true;
 			info.Complete (itemFullName, Document.FileName, line, column, list);
 			return list;
 		}
 		
+		/// <summary>
+		/// Complete all symbols visible from a given location
+		/// </summary>
 		private ValaCompletionDataList GlobalComplete (CodeCompletionContext context)
 		{
 			ProjectInformation info = Parser;
@@ -226,7 +235,6 @@ namespace MonoDevelop.ValaBinding
 		public override  IParameterDataProvider HandleParameterCompletion (
 		    CodeCompletionContext completionContext, char completionChar)
 		{
-            //System.Console.WriteLine("ValaTextEditorExtension.HandleParameterCompletion({0})", completionChar);
 			if (completionChar != '(')
 				return null;
 			
@@ -255,8 +263,8 @@ namespace MonoDevelop.ValaBinding
 					typename = match.Groups["constructor"].Value;
 				} else {
 					// Foo.Bar bar = new Foo.Bar.blah( ...
-					for (string[] typeTokens = typename.Split ('.'); 0 < typeTokens.Length && 0 < tokens.Length; ++index) {
-						if (!typeTokens[0].Equals (tokens[0], StringComparison.Ordinal)) {
+					for (string[] typeTokens = typename.Split ('.'); index < typeTokens.Length && index < tokens.Length; ++index) {
+						if (!typeTokens[index].Equals (tokens[index], StringComparison.Ordinal)) {
 							break;
 						}
 					}

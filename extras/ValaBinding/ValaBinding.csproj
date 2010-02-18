@@ -238,10 +238,9 @@
     <Compile Include="ProjectPad\ProjectNodeExtension.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Project\MakefileHandler.cs" />
-    <Compile Include="Parser\CodeNode.cs" />
+    <Compile Include="Parser\Afrodite.cs" />
     <Compile Include="Navigation\LanguageItemNodeBuilder.cs" />
     <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />
-    <Compile Include="Parser\Function.cs" />
     <Compile Include="Parser\ValaDocumentParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

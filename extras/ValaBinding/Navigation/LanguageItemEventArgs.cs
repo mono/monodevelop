@@ -32,6 +32,7 @@
 using System;
 
 using MonoDevelop.ValaBinding.Parser;
+using MonoDevelop.ValaBinding.Parser.Afrodite;
 
 namespace MonoDevelop.ValaBinding.Navigation
 {
@@ -39,14 +40,14 @@ namespace MonoDevelop.ValaBinding.Navigation
 	
 	public class LanguageItemEventArgs : EventArgs
 	{
-		CodeNode item;
+		Symbol item;
 		
-		public LanguageItemEventArgs (CodeNode item)
+		internal LanguageItemEventArgs (Symbol item)
 		{
 			this.item = item;
 		}
 		
-		public CodeNode Item {
+		internal Symbol Item {
 			get { return item; }
 		}
 	}

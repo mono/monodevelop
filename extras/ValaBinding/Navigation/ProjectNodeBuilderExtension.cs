@@ -46,6 +46,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 using MonoDevelop.ValaBinding;
 using MonoDevelop.ValaBinding.Parser;
+using MonoDevelop.ValaBinding.Parser.Afrodite;
 
 namespace MonoDevelop.ValaBinding.Navigation
 {
@@ -77,19 +78,17 @@ namespace MonoDevelop.ValaBinding.Navigation
 			if (o == null) return;
 			ProjectInformation pi = ProjectInformationManager.Instance.Get (p);
 			
-			ThreadPool.QueueUserWorkItem (delegate (object ob) {
-				try {
-					foreach (ProjectFile f in p.Files) {
-						if (f.BuildAction == BuildAction.Compile)
-							pi.AddFile (f.FilePath);
-					}
-					foreach (ProjectPackage package in p.Packages) {
-						if(!package.IsProject){ pi.AddPackage (p.Name); }
-					}
-				} catch (IOException) {
-					return;
+			try {
+				foreach (ProjectFile f in p.Files) {
+					if (f.BuildAction == BuildAction.Compile)
+						pi.AddFile (f.FilePath);
 				}
-			});
+				foreach (ProjectPackage package in p.Packages) {
+					if(!package.IsProject){ pi.AddPackage (p.Name); }
+				}
+			} catch (IOException) {
+				return;
+			}
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
@@ -106,19 +105,16 @@ namespace MonoDevelop.ValaBinding.Navigation
 			ValaProject p = dataObject as ValaProject;
 			if (p == null) return;
 			
-			bool nestedNamespaces = builder.Options["NestedNamespaces"];
+			// bool nestedNamespaces = builder.Options["NestedNamespaces"];
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (p);
 			
 			// Namespaces
-			ThreadPool.QueueUserWorkItem (delegate (object o) {
-				foreach (CodeNode child in info.GetChildren (null)) {
-					CodeNode clone = child.Clone ();
-					Gtk.Application.Invoke (delegate (object ob, EventArgs ea) {
-						builder.AddChild (clone);
-					});
+			foreach (ProjectFile file in p.Files) {
+				foreach (Symbol child in info.GetNamespacesForFile (file.FilePath.FullPath)) {
+					builder.AddChild (child);
 				}
-			});
+			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

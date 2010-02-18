@@ -32,6 +32,8 @@ using System.Threading;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
+using MonoDevelop.ValaBinding.Parser.Afrodite;
+
 namespace MonoDevelop.ValaBinding.Parser
 {
 	/// <summary>
@@ -39,6 +41,8 @@ namespace MonoDevelop.ValaBinding.Parser
 	/// </summary>
 	public class ValaDocumentParser: AbstractParser
 	{
+		private ParsedDocument lastGood;
+		
 		public ValaDocumentParser(): base("Vala", "text/x-vala")
 		{
 		}
@@ -61,51 +65,63 @@ namespace MonoDevelop.ValaBinding.Parser
 			if(null == doc.CompilationUnit){ doc.CompilationUnit = new CompilationUnit (fileName); }
 			CompilationUnit cu = (CompilationUnit)doc.CompilationUnit;
 			int lastLine = 0;
+			List<Symbol> classes = pi.GetClassesForFile (fileName); 
 			
-			foreach (CodeNode node in pi.GetClassesForFile (fileName)) {
+			if (null == classes || 0 == classes.Count) {
+				return lastGood;
+			}
+			
+			foreach (Symbol node in classes) {
 				if (null == node){ continue; }
 				List<IMember> members = new List<IMember> ();
-				lastLine = node.LastLine;
+				lastLine = node.SourceReferences[0].LastLine;
                 
-				foreach (CodeNode child in pi.CompleteType (node.FullName, fileName, node.FirstLine, 0, null)) {
-					if (child.File != node.File){ continue; }
-					lastLine = Math.Max (lastLine, child.LastLine+1);
+				foreach (Symbol child in node.Children) {
+					if (child.SourceReferences[0].File != node.SourceReferences[0].File){ continue; }
+					lastLine = Math.Max (lastLine, child.SourceReferences[0].LastLine+1);
 					
-					switch (child.NodeType) {
+					switch (child.SymbolType.ToLower ()) {
 					case "class":
-						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Class, child.Name, new DomLocation (child.FirstLine, 1), string.Empty, new DomRegion (child.FirstLine+1, child.LastLine+1), new List<IMember> ()));
+						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Class, child.Name, new DomLocation (child.SourceReferences[0].FirstLine, 1), string.Empty, new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new List<IMember> ()));
+						break;
+					case "interface":
+						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Interface, child.Name, new DomLocation (child.SourceReferences[0].FirstLine, 1), string.Empty, new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new List<IMember> ()));
 						break;
 					case "delegate":
-						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Delegate, child.Name, new DomLocation (child.FirstLine, 1), string.Empty, new DomRegion (child.FirstLine+1, child.LastLine+1), new List<IMember> ()));
+						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Delegate, child.Name, new DomLocation (child.SourceReferences[0].FirstLine, 1), string.Empty, new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new List<IMember> ()));
 						break;
 					case "struct":
-						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Struct, child.Name, new DomLocation (child.FirstLine, 1), string.Empty, new DomRegion (child.FirstLine+1, child.LastLine+1), new List<IMember> ()));
+						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Struct, child.Name, new DomLocation (child.SourceReferences[0].FirstLine, 1), string.Empty, new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new List<IMember> ()));
 						break;
-					case "enums":
-						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Enum, child.Name, new DomLocation (child.FirstLine, 1), string.Empty, new DomRegion (child.FirstLine+1, child.LastLine+1), new List<IMember> ()));
+					case "enum":
+						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Enum, child.Name, new DomLocation (child.SourceReferences[0].FirstLine, 1), string.Empty, new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new List<IMember> ()));
 						break;
 					case "method":
-						members.Add (new DomMethod (child.Name, Modifiers.None, MethodModifier.None, new DomLocation (child.FirstLine, 1), new DomRegion (child.FirstLine+1, child.LastLine+1), new DomReturnType (((Function)child).ReturnType)));
+					case "creationmethod":
+					case "constructor":
+						members.Add (new DomMethod (child.Name, Modifiers.None, MethodModifier.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new DomReturnType (child.ReturnType.TypeName)));
 						break;
 					case "property":
-						members.Add (new DomProperty (child.Name, Modifiers.None, new DomLocation (child.FirstLine, 1), new DomRegion (child.FirstLine+1, child.LastLine+1), new DomReturnType ()));
+						members.Add (new DomProperty (child.Name, Modifiers.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new DomReturnType ()));
 						break;
 					case "field":
-						members.Add (new DomField (child.Name, Modifiers.None, new DomLocation (child.FirstLine, 1), new DomReturnType ()));
+					case "constant":
+					case "errorcode":
+						members.Add (new DomField (child.Name, Modifiers.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomReturnType ()));
 						break;
 					case "signal":
-						members.Add (new DomEvent (child.Name, Modifiers.None, new DomLocation (child.FirstLine, 1), new DomReturnType ()));
+						members.Add (new DomEvent (child.Name, Modifiers.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomReturnType ()));
 						break;
 					default:
-						Console.WriteLine("Unsupported member type: {0}", child.NodeType);
+						MonoDevelop.Core.LoggingService.LogDebug ("ValaDocumentParser: Unsupported member type: {0}", child.SymbolType);
 						break;
 					}// Switch on node type
 				}// Collect members
 				
-				cu.Add (new DomType (new CompilationUnit (fileName), ClassType.Class, node.Name, new DomLocation (node.FirstLine, 1), string.Empty, new DomRegion (node.FirstLine+1, lastLine+1), members));
+				cu.Add (new DomType (new CompilationUnit (fileName), ClassType.Class, node.Name, new DomLocation (node.SourceReferences[0].FirstLine, 1), string.Empty, new DomRegion (node.SourceReferences[0].FirstLine, int.MaxValue, lastLine, int.MaxValue), members));
 			}// Add each class in file
 			
-			return doc;
+			return (lastGood = doc);
 		}// Parse
 	}// ValaDocumentParser
 }

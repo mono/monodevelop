@@ -41,20 +41,22 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 
 using MonoDevelop.ValaBinding.Parser;
+using MonoDevelop.ValaBinding.Parser.Afrodite;
 
 namespace MonoDevelop.ValaBinding.Navigation
 {
 	public class LanguageItemCommandHandler : NodeCommandHandler
 	{
+		/// <summary>
+		/// Jump to a node's declaration when it's activated
+		/// </summary>
 		public override void ActivateItem ()
 		{
-			CodeNode item = (CodeNode)CurrentNode.DataItem;
+			Symbol item = (Symbol)CurrentNode.DataItem;
 			
-			if (null != item && !string.IsNullOrEmpty (item.File) && File.Exists (item.File)) {
-				Document doc = IdeApp.Workbench.OpenDocument (item.File);
-				if(null != doc && null != doc.TextEditor) {
-					doc.TextEditor.JumpTo (item.FirstLine, 0);
-				}
+			if (null != item && 0 < item.SourceReferences.Count) {
+				SourceReference reference = item.SourceReferences[0];
+				IdeApp.Workbench.OpenDocument (reference.File, reference.FirstLine, reference.FirstColumn, true);
 			}
 		}
 	}

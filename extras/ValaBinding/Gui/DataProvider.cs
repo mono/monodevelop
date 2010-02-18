@@ -42,13 +42,14 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 
 using MonoDevelop.ValaBinding.Parser;
+using MonoDevelop.ValaBinding.Parser.Afrodite;
 
 namespace MonoDevelop.ValaBinding
 {
 	public class ParameterDataProvider : IParameterDataProvider
 	{
 		private TextEditor editor;
-		private IList<Function> functions;
+		private IList<Symbol> functions;
 		private string functionName;
 		private string returnType;
 		private ProjectInformation info;
@@ -60,51 +61,28 @@ namespace MonoDevelop.ValaBinding
 			this.functionName = functionName;
 			this.info = info;
 
-			int lastDot = functionName.LastIndexOf (".", StringComparison.OrdinalIgnoreCase);
-			string instancename = (0 <= lastDot)? functionName.Substring (0, lastDot): "this";
-			
-			Match match = identifierRegex.Match (instancename);
-			if (match.Success && match.Groups["identifier"].Success) {
-				instancename = match.Groups["identifier"].Value;
-			}
-			
-			string typename = null;
-			
-			ThreadPool.QueueUserWorkItem (delegate(object o) {
-				typename = info.GetExpressionType (instancename, document.FileName, editor.CursorLine, editor.CursorColumn); // bottleneck
-				info.Complete(typename, document.FileName, editor.CursorLine, editor.CursorColumn, null);
-			});
-			string functionBaseName = (0 <= lastDot)? functionName.Substring (lastDot+1): functionName;
-			
-			match = identifierRegex.Match (functionBaseName);
-			if (match.Success && match.Groups["identifier"].Success) {
-				functionBaseName = match.Groups["identifier"].Value;
-			}
-			IList<Function> myfunctions = info.GetOverloads (functionBaseName); // bottleneck
-			
-			if (null != typename) {
-				foreach (Function function in myfunctions) {
-					if (string.Format("{0}.{1}", typename, functionBaseName).Equals (function.FullName, StringComparison.Ordinal)) {
-						functions = new List<Function>(new Function[]{function});
-						break;
-					}
-				}
-			}
-			
-			if (null == functions){ functions = myfunctions; }
+			functions = new List<Symbol> ();
+			Symbol function = info.GetFunction (functionName, document.FileName, editor.CursorLine, editor.CursorColumn);
+			if (null != function){ functions.Add (function); }
 		}// member function constructor
 		
+		/// <summary>
+		/// Create a ParameterDataProvider for a constructor
+		/// </summary>
+		/// <param name="constructorOverload">
+		/// A <see cref="System.String"/>: The named of the pertinent constructor overload
+		/// </param>
 		public ParameterDataProvider (Document document, ProjectInformation info, string typename, string constructorOverload)
 		{
 			this.functionName = constructorOverload;
 			this.editor = document.TextEditor;
 			this.info = info;
 			
-			List<Function> myfunctions = info.GetConstructorsForType (typename, document.FileName, editor.CursorLine, editor.CursorColumn, null); // bottleneck
-			if (0 < myfunctions.Count) {
-				foreach (Function function in myfunctions) {
+			List<Symbol> myfunctions = info.GetConstructorsForType (typename, document.FileName, editor.CursorLine, editor.CursorColumn, null); // bottleneck
+			if (1 < myfunctions.Count) {
+				foreach (Symbol function in myfunctions) {
 					if (functionName.Equals (function.Name, StringComparison.Ordinal)) {
-						functions = new List<Function>(new Function[]{function});
+						functions = new List<Symbol> () {function};
 						return;
 					}
 				}
@@ -113,22 +91,28 @@ namespace MonoDevelop.ValaBinding
 			functions = myfunctions;
 		}// constructor constructor
 		
-		// Returns the number of methods
+		/// <summary>
+		/// The number of overloads for this method
+		/// </summary>
 		public int OverloadCount {
 			get { return functions.Count; }
 		}
 		
-		// Returns the index of the parameter where the cursor is currently positioned.
-		// -1 means the cursor is outside the method parameter list
-		// 0 means no parameter entered
-		// > 0 is the index of the parameter (1-based)
+		/// <summary>
+		/// Get the index of the parameter where the cursor is currently positioned.
+		/// </summary>
+		/// <param name="ctx">
+		/// A <see cref="CodeCompletionContext"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Int32"/>: The index of the parameter, 
+		/// 0 for no parameter entered, 
+		/// -1 for outside the list
+		/// </returns>
 		public int GetCurrentParameterIndex (CodeCompletionContext ctx)
 		{
 			int cursor = editor.CursorPosition;
 			int i = ctx.TriggerOffset;
-			
-//			if (editor.GetCharAt (i) == ')')
-//				return -1;
 			
 			if (i > cursor)
 				return -1;
@@ -148,59 +132,79 @@ namespace MonoDevelop.ValaBinding
 			return parameterIndex;
 		}
 		
-		// Returns the markup to use to represent the specified method overload
-		// in the parameter information window.
+		/// <summary>
+		/// Get the markup to use to represent the specified method overload
+		/// in the parameter information window.
+		/// </summary>
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			string paramTxt = string.Join (", ", parameterMarkup);
-			Function function = functions[overload];
+			Symbol function = functions[overload];
 			
-			int len = function.FullName.LastIndexOf (".");
+			int len = function.FullyQualifiedName.LastIndexOf (".");
 			string prename = null;
 			
 			if (len > 0)
-				prename = function.FullName.Substring (0, len + 1);
+				prename = function.FullyQualifiedName.Substring (0, len + 1);
 			
-			string cons = string.Empty;
+//			string cons = string.Empty;
 			
 //			if (function.IsConst)
 //				cons = " const";
 
 			return string.Format ("{2} {3}<b>{0}</b>({1})", GLib.Markup.EscapeText (function.Name), 
 			                                                paramTxt, 
-			                                                GLib.Markup.EscapeText (function.ReturnType), 
+			                                                GLib.Markup.EscapeText (function.ReturnType.TypeName), 
 			                                                GLib.Markup.EscapeText (prename));
 			// return prename + "<b>" + function.Name + "</b>" + " (" + paramTxt + ")" + cons;
 		}
 		
-		// Returns the text to use to represent the specified parameter
+		/// <summary>
+		/// Get the text to use to represent the specified parameter
+		/// </summary>
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			Function function = functions[overload];
+			Symbol function = functions[overload];
 			
-			return GLib.Markup.EscapeText (string.Format ("{1} {0}", function.Parameters[paramIndex].Key, function.Parameters[paramIndex].Value));
+			if (null != function && null != function.Parameters[paramIndex]) {
+				string name = function.Parameters[paramIndex].Name;
+				string type = function.Parameters[paramIndex].TypeName;
+				return GLib.Markup.EscapeText (string.Format ("{1} {0}", name, type));
+			}
+			
+			return string.Empty;
 		}
 		
-		// Returns the number of parameters of the specified method
+		/// <summary>
+		/// Get the number of parameters of the specified method
+		/// </summary>
 		public int GetParameterCount (int overload)
 		{
-			return functions[overload].Parameters.Length;
+			if (null != functions && null != functions[overload] && null != functions[overload].Parameters) {
+				return functions[overload].Parameters.Count;
+			}
+			return 0;
 		}
 	}
 	
-	public class CompletionData : ICompletionData
+	/// <summary>
+	/// Data for Vala completion
+	/// </summary>
+	internal class CompletionData : ICompletionData
 	{
 		private string image;
 		private string text;
 		private string description;
 		private string completion_string;
 		
-		public CompletionData (CodeNode item)
+		public CompletionData (Symbol item)
 		{
 			this.text = item.Name;
 			this.completion_string = item.Name;
-			this.description = item.Description;
+			this.description = item.DisplayText;
 			this.image = item.Icon;
+			DisplayFlags = DisplayFlags.None;
+			CompletionCategory = new ValaCompletionCategory (text, image);
 		}
 		
 		public IconId Icon {
@@ -220,56 +224,37 @@ namespace MonoDevelop.ValaBinding
 		}
 		
 		public DisplayFlags DisplayFlags {
-			get { return DisplayFlags.None; }
+			get; set;
 		}
 		
 		public CompletionCategory CompletionCategory  {
-			get {
-				return null;
-			}
+			get; set; 
 		}
 	}
 
-	/// <summary>
-	/// Mutable completion data list for asynchronous parsing
-	/// </summary>
-	public class ValaCompletionDataList: CompletionDataList, IMutableCompletionDataList
+	internal class ValaCompletionDataList: CompletionDataList
 	{
 		public ValaCompletionDataList (): base ()
 		{
 		}
 		
-		#region IMutableCompletionDataList implementation 
-		
-		public event EventHandler Changed;
-		public event EventHandler Changing;
-		
-		protected virtual void OnChanged (object sender, EventArgs args)
+		internal virtual void AddRange (IEnumerable<CompletionData> vals)
 		{
-			if (null != Changed){ Changed (sender, args); }
-		}// OnChanged
-		
-		protected virtual void OnChanging (object sender, EventArgs args)
-		{
-			if (null != Changing){ Changing (sender, args); }
-		}// OnChanging
-		
-		public virtual bool IsChanging
-		{
-			get{ return isChanging; }
-			internal set {
-				isChanging = value;
-				OnChanged (this, new EventArgs ());
+			foreach (CompletionData item in vals) {
+				Add (item);
 			}
 		}
-		protected bool isChanging;
-		
-		public void Dispose ()
+	}// ValaCompletionDataList
+	
+	internal class ValaCompletionCategory: CompletionCategory
+	{
+		public ValaCompletionCategory (string text, string image): base (text, image)
 		{
 		}
 		
-		#endregion 
-		
-
-	}// ValaCompletionDataList
+		public override int CompareTo (CompletionCategory other)
+		{
+			return DisplayText.CompareTo (other.DisplayText);
+		}
+	}
 }
