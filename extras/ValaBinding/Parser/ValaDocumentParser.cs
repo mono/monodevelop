@@ -65,7 +65,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			if(null == doc.CompilationUnit){ doc.CompilationUnit = new CompilationUnit (fileName); }
 			CompilationUnit cu = (CompilationUnit)doc.CompilationUnit;
 			int lastLine = 0;
-			List<Symbol> classes = pi.GetClassesForFile (fileName); 
+			ICollection<Symbol> classes = pi.GetClassesForFile (fileName); 
 			
 			if (null == classes || 0 == classes.Count) {
 				return lastGood;
@@ -77,7 +77,8 @@ namespace MonoDevelop.ValaBinding.Parser
 				lastLine = node.SourceReferences[0].LastLine;
                 
 				foreach (Symbol child in node.Children) {
-					if (child.SourceReferences[0].File != node.SourceReferences[0].File){ continue; }
+					if (1 > child.SourceReferences.Count || 
+					    child.SourceReferences[0].File != node.SourceReferences[0].File){ continue; }
 					lastLine = Math.Max (lastLine, child.SourceReferences[0].LastLine+1);
 					
 					switch (child.SymbolType.ToLower ()) {

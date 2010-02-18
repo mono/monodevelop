@@ -1,5 +1,10 @@
 2010-02-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
+	* Parser/ValaDocumentParser.cs: Avoid occasional parser
+	  exceptions.
+
+2010-02-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
 	* Project/ValaProject.cs: Add project packages to parse list.
 
 2010-02-18  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
