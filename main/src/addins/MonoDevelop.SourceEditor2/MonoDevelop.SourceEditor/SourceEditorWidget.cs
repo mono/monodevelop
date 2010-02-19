@@ -226,7 +226,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateLineCol ();
 			return res;
 		}
-
+		
 		
 		void ResetFocusChain ()
 		{
@@ -946,8 +946,10 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.SearchPattern = SearchAndReplaceWidget.searchPattern = "";
 			// reset pattern, to force an update
 			
-			if (TextEditor.IsSomethingSelected)
+			if (TextEditor.IsSomethingSelected) {
 				TextEditor.SearchPattern = TextEditor.SelectedText;
+				TextEditor.TextViewMargin.MainSearchResult = TextEditor.SelectionRange;
+			}
 			
 			if (searchAndReplaceWidget == null) {
 				if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true))
@@ -1050,7 +1052,7 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindNext (bool focus)
 		{
 			SetSearchOptions ();
-			SearchResult result = TextEditor.FindNext (searchAndReplaceWidget == null);
+			SearchResult result = TextEditor.FindNext (true);
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}
@@ -1074,7 +1076,7 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindPrevious (bool focus)
 		{
 			SetSearchOptions ();
-			SearchResult result = TextEditor.FindPrevious (searchAndReplaceWidget == null);
+			SearchResult result = TextEditor.FindPrevious (true);
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}

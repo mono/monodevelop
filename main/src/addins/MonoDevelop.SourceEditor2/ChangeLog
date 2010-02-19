@@ -1,3 +1,9 @@
+2010-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Worked
+	  on search & replace.
+
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
