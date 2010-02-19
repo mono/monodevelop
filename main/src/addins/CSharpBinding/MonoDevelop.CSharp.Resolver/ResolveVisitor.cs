@@ -211,8 +211,11 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			ResolveResult result = Resolve (indexerExpression.TargetObject);
 			
-			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0)
-				return CreateResult (result.ResolvedType.FullName);
+			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0) {
+				((DomReturnType)result.ResolvedType).ArrayDimensions--;
+				return CreateResult (result.ResolvedType);
+			}
+			
 			IType resolvedType = resolver.Dom.GetType (result.ResolvedType);
 			if (resolvedType != null) {
 				foreach (IType curType in resolver.Dom.GetInheritanceTree (resolvedType)) {
@@ -225,7 +228,6 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 			if (result.ResolvedType != null && result.ResolvedType.GenericArguments.Count > 0) {
-				//System.Console.WriteLine("genArg:" + result.ResolvedType.GenericArguments[0]);
 				return CreateResult (result.ResolvedType.GenericArguments[0]);
 			}
 			return result;
