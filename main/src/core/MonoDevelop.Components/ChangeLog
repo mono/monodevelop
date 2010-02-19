@@ -1,3 +1,9 @@
+2010-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Components/SearchEntry.cs: Added the ability to
+	  make more smart "find" menus.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands/Command.cs:

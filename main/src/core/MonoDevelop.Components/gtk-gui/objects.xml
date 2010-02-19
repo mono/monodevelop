@@ -111,6 +111,7 @@
         <signal name="Changed" />
         <signal name="Activated" />
         <signal name="FilterChanged" />
+        <signal name="RequestMenu" />
       </itemgroup>
     </signals>
   </object>

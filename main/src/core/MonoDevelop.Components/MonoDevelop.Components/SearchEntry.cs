@@ -68,6 +68,7 @@ namespace MonoDevelop.Components
 
 		public Menu Menu {
 			get { return menu; }
+			set { menu = value; }
 		}
 
 		public Entry Entry {
@@ -147,6 +148,7 @@ namespace MonoDevelop.Components
 
 		private void ShowMenu (uint time)
 		{
+			OnRequestMenu (EventArgs.Empty);
 			if (menu.Children.Length > 0) {
 				menu.Popup (null, null, OnPositionMenu, 0, time);
 				menu.ShowAll ();
@@ -255,9 +257,20 @@ namespace MonoDevelop.Components
 			entry.HasFocus = true;
 			
 			if (o == filter_button) {
+				
 				ShowMenu (args.Event.Time);
 			}
 		}
+		
+		protected virtual void OnRequestMenu (EventArgs e)
+		{
+			EventHandler handler = this.RequestMenu;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler RequestMenu;
+		
 		public void GrabFocusEntry ()
 		{
 			this.entry.GrabFocus ();
