@@ -89,11 +89,38 @@ namespace Mono.Debugging.Evaluation
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
 			if (expObj == null)
-				throw new EvaluatorException ("Could not parse expression '{0}'", exp);
+				return exp;
 			NRefactoryResolverVisitor ev = new NRefactoryResolverVisitor (session, location, exp);
 			expObj.AcceptVisitor (ev, null);
 			return ev.GetResolvedExpression ();
 		}
+		
+		public override ValidationResult ValidateExpression (EvaluationContext ctx, string exp)
+		{
+			if (exp.StartsWith ("?"))
+				exp = exp.Substring (1).Trim ();
+			
+			// Required as a workaround for a bug in the parser (it won't parse simple expressions like numbers)
+			if (!exp.EndsWith (";"))
+				exp += ";";
+				
+			StringReader codeStream = new StringReader (exp);
+			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
+			
+			string errorMsg = null;
+			parser.Errors.Error = delegate (int line, int col, string msg) {
+				if (errorMsg == null)
+					errorMsg = msg;
+			};
+			
+			parser.ParseExpression ();
+			
+			if (errorMsg != null)
+				return new ValidationResult (false, errorMsg);
+			else
+				return new ValidationResult (true, null);
+		}
+
 	}
 
 	class EvaluatorVisitor: AbstractAstVisitor

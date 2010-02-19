@@ -154,6 +154,12 @@ namespace Mono.Debugging.Evaluation
 			throw new System.NotImplementedException();
 		}
 		
+		public virtual ValidationResult ValidateExpression (int frameIndex, string expression, EvaluationOptions options)
+		{
+			EvaluationContext ctx = GetEvaluationContext (frameIndex, options);
+			return Adaptor.ValidateExpression (ctx, expression);
+		}
+		
 		FrameInfo GetFrameInfo (int frameIndex, EvaluationOptions options, bool ignoreEvalStatus)
 		{
 			FrameInfo finfo;

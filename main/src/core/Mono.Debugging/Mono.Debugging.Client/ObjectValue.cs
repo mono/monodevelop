@@ -29,6 +29,7 @@ using System;
 using System.Text;
 using Mono.Debugging.Backend;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Mono.Debugging.Client
 {
@@ -46,6 +47,7 @@ namespace Mono.Debugging.Client
 		IObjectValueSource source;
 		IObjectValueUpdater updater;
 		List<ObjectValue> children;
+		ManualResetEvent evaluatedEvent;
 
 		[NonSerialized]
 		UpdateCallback updateCallback;
@@ -185,11 +187,22 @@ namespace Mono.Debugging.Client
 			set {
 				if (IsReadOnly || source == null)
 					throw new InvalidOperationException ("Value is not editable");
-				EvaluationResult res = source.SetValue (path, value);
+				EvaluationResult res = source.SetValue (path, value, null);
 				if (res != null) {
 					this.value = res.Value;
 					displayValue = res.DisplayValue;
 				}
+			}
+		}
+		
+		public void SetValue (string value, EvaluationOptions options)
+		{
+			if (IsReadOnly || source == null)
+				throw new InvalidOperationException ("Value is not editable");
+			EvaluationResult res = source.SetValue (path, value, options);
+			if (res != null) {
+				this.value = res.Value;
+				displayValue = res.DisplayValue;
 			}
 		}
 		
@@ -379,6 +392,16 @@ namespace Mono.Debugging.Client
 			ObjectValue val = source.GetValue (path, options);
 			UpdateFrom (val, false);
 		}
+		
+		public WaitHandle WaitHandle {
+			get {
+				lock (this) {
+					if (evaluatedEvent == null)
+						evaluatedEvent = new ManualResetEvent (!IsEvaluating);
+					return evaluatedEvent;
+				}
+			}
+		}
 
 		internal IObjectValueUpdater Updater {
 			get { return updater; }
@@ -399,6 +422,8 @@ namespace Mono.Debugging.Client
 				path = val.path;
 				updater = val.updater;
 				ConnectCallbacks (this);
+				if (evaluatedEvent != null)
+					evaluatedEvent.Set ();
 				if (notify && valueChanged != null)
 					valueChanged (this, EventArgs.Empty);
 			}

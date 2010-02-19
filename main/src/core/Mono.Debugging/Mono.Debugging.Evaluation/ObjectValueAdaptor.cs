@@ -898,6 +898,11 @@ namespace Mono.Debugging.Evaluation
 		{
 			return null;
 		}
+		
+		public virtual ValidationResult ValidateExpression (EvaluationContext ctx, string expression)
+		{
+			return ctx.Evaluator.ValidateExpression (ctx, expression);
+		}
 	}
 
 	public class TypeDisplayData

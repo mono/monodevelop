@@ -1,3 +1,26 @@
+2010-02-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/StackFrame.cs:
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Backend/IBacktrace.cs:
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Evaluation/BaseBacktrace.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Client/EvaluationOptions.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Backend/IObjectValueSource.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/BaseTypeViewSource.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Add
+	  support for evaluating expressions. Allow specifying
+	  evaluation options when setting a value. Added option for
+	  displaying integers using hex format. Added wait handle for
+	  waiting for async evaluation completion on ObjectValue.
+
 2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs: Added delegate

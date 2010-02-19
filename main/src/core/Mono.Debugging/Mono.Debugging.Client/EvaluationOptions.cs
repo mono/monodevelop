@@ -29,7 +29,7 @@ using System;
 namespace Mono.Debugging.Client
 {
 	[Serializable]
-	public struct EvaluationOptions
+	public class EvaluationOptions
 	{
 		bool allowMethodEvaluation;
 		bool allowToStringCalls;
@@ -48,6 +48,7 @@ namespace Mono.Debugging.Client
 				ops.GroupUserPrivateMembers = false;
 				ops.AllowImplicitTypeLoading = true;
 				ops.UseExternalTypeResolver = true;
+				ops.IntegerDisplayFormat = IntegerDisplayFormat.Decimal;
 				return ops;
 			}
 		}
@@ -85,5 +86,13 @@ namespace Mono.Debugging.Client
 		public bool UseExternalTypeResolver { get; set; }
 		
 		public bool AllowImplicitTypeLoading { get; set; }
+		
+		public IntegerDisplayFormat IntegerDisplayFormat { get; set; }
+	}
+	
+	public enum IntegerDisplayFormat
+	{
+		Decimal,
+		Hexadecimal
 	}
 }
