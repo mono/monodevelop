@@ -206,20 +206,24 @@ namespace Mono.Debugging.Client
 		}
 	}
 	
+	[Serializable]
 	public struct ValidationResult
 	{
+		bool isValid;
+		string message;
+		
 		public ValidationResult (bool isValid, string message)
 		{
-			IsValid = isValid;
-			Message = message;
+			this.isValid = isValid;
+			this.message = message;
 		}
 		
-		public bool IsValid { get; private set; }
-		public string Message { get; private set; }
+		public bool IsValid { get { return isValid; } }
+		public string Message { get { return message; } }
 		
 		public static implicit operator bool (ValidationResult result)
 		{
-			return result.IsValid;
+			return result.isValid;
 		}
 	}
 }

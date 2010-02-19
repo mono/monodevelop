@@ -1,5 +1,9 @@
 2010-02-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/StackFrame.cs: Fix win32 build.
+
+2010-02-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Client/StackFrame.cs:
 	* Mono.Debugging.Client/ObjectValue.cs:
 	* Mono.Debugging.Backend/IBacktrace.cs:
