@@ -85,6 +85,11 @@ namespace Mono.TextEditor
 				Document.CommitLineUpdate (Caret.Line);
 			}
 		}
+		
+		public bool HideSelection {
+			get;
+			set;
+		}
 
 		Caret Caret {
 			get { return textEditor.Caret; }
@@ -1012,6 +1017,7 @@ namespace Mono.TextEditor
 							if (textEditor.preeditOffset < endOffset)
 								endIndex += preeditLength;
 						}
+						
 						HandleSelection (line, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 							
 							Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
@@ -1033,18 +1039,7 @@ namespace Mono.TextEditor
 							if (!wrapper.StartSet) 
 								wrapper.SelectionStartIndex = (int)selectedForeground.StartIndex;
 							wrapper.SelectionEndIndex   = (int)selectedForeground.EndIndex;
-							/*Console.WriteLine (wrapper.SelectionStartIndex + " -- " + wrapper.SelectionEndIndex);
-							Color bgColor;
-							int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
-							if (!textEditor.Options.ShowRuler || start - line.Offset < logicalRulerColumn) {
-								bgColor = this.ColorStyle.Selection.BackgroundColor;
-							} else {
-								bgColor = DimColor (this.ColorStyle.Selection.BackgroundColor);
-							}
-							Pango.AttrBackground attrBackground = new Pango.AttrBackground (bgColor.Red, bgColor.Green, bgColor.Blue);
-							attrBackground.StartIndex = selectedForeground.StartIndex;
-							attrBackground.EndIndex = selectedForeground.EndIndex;
-							wrapper.Add (attrBackground);*/
+						
 						});
 
 						if (chunkStyle.Bold) {
@@ -1139,7 +1134,7 @@ namespace Mono.TextEditor
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
 			int selectionEnd;
-			if (BackgroundRenderer != null) {
+			if (BackgroundRenderer != null || this.HideSelection) {
 				selectionStart = selectionEnd = -1;
 			} else {
 				GetSelectionOffsets (line, out selectionStart, out selectionEnd);

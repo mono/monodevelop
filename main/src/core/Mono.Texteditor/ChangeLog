@@ -1,3 +1,8 @@
+2010-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Worked on search &
+	  replace.
+
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: fix caret problem.
