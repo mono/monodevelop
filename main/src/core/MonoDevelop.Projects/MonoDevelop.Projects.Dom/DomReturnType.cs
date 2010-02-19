@@ -292,7 +292,7 @@ namespace MonoDevelop.Projects.Dom
 			set {
 				List<int> curDimensions = new List<int> (dimensions ?? zeroDimensions);
 				if (curDimensions.Count > value) 
-					curDimensions.RemoveRange (value, value - curDimensions.Count);
+					curDimensions.RemoveRange (value, curDimensions.Count - value);
 				while (curDimensions.Count < value)
 					curDimensions.Add (0);
 				SetDimensions (curDimensions.ToArray ());
