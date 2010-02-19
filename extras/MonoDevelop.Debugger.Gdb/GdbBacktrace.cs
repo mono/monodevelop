@@ -252,7 +252,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return children.ToArray ();
 		}
 		
-		public EvaluationResult SetValue (ObjectPath path, string value)
+		public EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options)
 		{
 			session.SelectThread (threadId);
 			session.RunCommand ("-var-assign", path.Join ("."), value);
