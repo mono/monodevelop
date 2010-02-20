@@ -115,6 +115,7 @@
     <Compile Include="MeeGoDevicePicker.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MeeGo.MeeGoDevicePicker.cs" />
     <Compile Include="SshOperation.cs" />
+    <Compile Include="MeeGoExecutionModeSet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

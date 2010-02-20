@@ -43,7 +43,7 @@ namespace MonoDevelop.MeeGo
 			var scp = new Tamir.SharpSsh.Scp (targetDevice.Address, targetDevice.Username, targetDevice.Password) {
 				Recursive = true
 			};
-			var scop = new SshActionOperation<Scp> (scp, delegate (Scp s) {
+			var scop = new SshTransferOperation<Scp> (scp, delegate (Scp s) {
 				s.Put (conf.OutputDirectory, conf.ParentItem.Name);
 			});
 			scop.Run ();

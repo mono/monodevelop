@@ -1,5 +1,13 @@
 2010-02-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* SshOperation.cs:
+	* MeeGoUtility.cs:
+	* MeeGoExecutionModeSet.cs:
+	* MonoDevelop.MeeGo.csproj:
+	* MeeGoExecutionHandler.cs: Reorganize execution code.
+
+2010-02-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MeeGoUtility.cs:
 	* MeeGoProject.cs:
 	* SshOperation.cs:

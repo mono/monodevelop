@@ -30,6 +30,8 @@ using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
 using Tamir.SharpSsh;
 using System.IO;
+using MonoDevelop.Core;
+using System.Text;
 
 namespace MonoDevelop.MeeGo
 {
@@ -50,28 +52,66 @@ namespace MonoDevelop.MeeGo
 				return new NullProcessAsyncOperation (false);
 			}
 			
-			MeeGoUtility.Upload (targetDevice, cmd.Config, console.Out, console.Error).WaitForCompleted ();
+			if (MeeGoUtility.NeedsUploading (cmd.Config)) {
+				MeeGoUtility.Upload (targetDevice, cmd.Config, console.Out, console.Error).WaitForCompleted ();
+			}
 			
-			Sftp sftp = new Sftp (targetDevice.Address, targetDevice.Username, targetDevice.Password);
-			sftp.Connect ();
-			var files = sftp.GetFileList ("/var/run/gdm/auth-for-" + targetDevice.Username + "*");
-			sftp.Close ();
-			if (files.Count != 1) {
+			var auth = GetGdmXAuth (targetDevice);
+			if (auth == null) {
 				console.Error.WriteLine ("Could not obtain single X authority for user '" + targetDevice.Username +"'");
 				return new NullProcessAsyncOperation (false);
 			}
 			
+			string exec = GetCommandString (cmd, auth);
+			
 			var ssh = new SshExec (targetDevice.Address, targetDevice.Username, targetDevice.Password);
 			
-			string targetPath = cmd.Config.ParentItem.Name + "/" + Path.GetFileName (cmd.Config.CompiledOutputName);
-			var proc = new SshRemoteProcess (ssh, string.Format (
-				"XAUTHLOCALHOSTNAME=localhost " +
-				"DISPLAY=:0.0 " +
-				"XAUTHORITY=/var/run/gdm/" + files[0] +"/database " +
-				"mono '{0}'", targetPath));
+			var proc = new SshRemoteProcess (ssh, exec.ToString ());
 			proc.Run ();
+			return proc;
+		}
+		
+		string GetCommandString (MeeGoExecutionCommand cmd, Dictionary<string,string> auth)
+		{
+			string runtimeArgs = string.IsNullOrEmpty (cmd.RuntimeArguments) ? "--debug" : cmd.RuntimeArguments;
+			string executable = cmd.Config.ParentItem.Name + "/" + Path.GetFileName (cmd.Config.CompiledOutputName);
 			
-			return new NullProcessAsyncOperation (true);// proc;
+			var sb = new StringBuilder ();
+			foreach (var arg in cmd.EnvironmentVariables)
+				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
+			foreach (var arg in auth)
+				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
+			sb.AppendFormat ("mono {0} '{1}' {2}", runtimeArgs, executable, cmd.Arguments);
+			
+			return sb.ToString ();
+		}
+		
+		Dictionary<string,string> GetGdmXAuth (MeeGoDevice targetDevice)
+		{
+			Sftp sftp = null;
+			try {
+				sftp = new Sftp (targetDevice.Address, targetDevice.Username, targetDevice.Password);
+				sftp.Connect ();
+				var files = sftp.GetFileList ("/var/run/gdm/auth-for-" + targetDevice.Username + "*");
+				sftp.Close ();
+				if (files.Count == 1) {
+					return new Dictionary<string, string> () {
+						{ "XAUTHLOCALHOSTNAME", "localhost" },
+						{ "DISPLAY", ":0.0"}, 
+						{ "XAUTHORITY", "/var/run/gdm/" + files[0] +"/database"}
+					};
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error getting xauth via sftp", ex);
+				if (sftp != null) {
+					try {
+						sftp.Close ();
+					} catch (Exception ex2) {
+						LoggingService.LogError ("Error closing sftp connection", ex2);
+					}
+				}
+			}
+			return null;
 		}
 	}
 	
@@ -86,39 +126,15 @@ namespace MonoDevelop.MeeGo
 		
 		protected override void RunOperations ()
 		{
-			Console.WriteLine (command);
 			Console.WriteLine (Ssh.RunCommand (command));
 		}
 		
 		public int ExitCode { get; private set; }
 		public int ProcessId { get; private set; }
-	}
-	
-	public class MeeGoExecutionModeSet : IExecutionModeSet
-	{
-		MeeGoExecutionMode mode;
 		
-		public string Name { get { return "MeeGo";  } }
-		
-		public IEnumerable<IExecutionMode> ExecutionModes {
-			get {
-				yield return mode ?? (mode = new MeeGoExecutionMode ());
-			}
-		}
-	}
-	
-	class MeeGoExecutionMode : IExecutionMode
-	{
-		MeeGoExecutionHandler handler;
-		
-		public string Name { get { return "MeeGo Device"; } }
-		
-		public string Id { get { return "MeeGoExecutionMode"; } }
-		
-		public IExecutionHandler ExecutionHandler {
-			get {
-				return handler ?? (handler = new MeeGoExecutionHandler ());
-			}
+		public override void Cancel ()
+		{
+			Ssh.Close ();
 		}
 	}
 }

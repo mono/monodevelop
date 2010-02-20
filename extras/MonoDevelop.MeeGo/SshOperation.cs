@@ -44,6 +44,7 @@ namespace MonoDevelop.MeeGo
 		protected T Ssh { get { return ssh; } }
 		
 		protected abstract void RunOperations ();
+		public abstract void Cancel ();
 		
 		public void Run ()
 		{
@@ -71,11 +72,6 @@ namespace MonoDevelop.MeeGo
 			});
 		}
 		
-		public void Cancel ()
-		{
-			ssh.Close ();
-		}
-		
 		public void WaitForCompleted ()
 		{
 			WaitHandle.WaitAll (new WaitHandle [] { wait });
@@ -88,11 +84,11 @@ namespace MonoDevelop.MeeGo
 		public bool SuccessWithWarnings { get; private set; }
 	}
 	
-	class SshActionOperation<T> : SshOperation<T> where T : SshBase
+	class SshTransferOperation<T> : SshOperation<T> where T : SshTransferProtocolBase
 	{
 		Action<T> action;
 		
-		public SshActionOperation (T ssh, Action<T> action) : base (ssh)
+		public SshTransferOperation (T ssh, Action<T> action) : base (ssh)
 		{
 			this.action = action;
 		}
@@ -100,6 +96,11 @@ namespace MonoDevelop.MeeGo
 		protected override void RunOperations ()
 		{
 			action (Ssh);
+		}
+		
+		public override void Cancel ()
+		{
+			Ssh.Cancel ();
 		}
 	}
 }
