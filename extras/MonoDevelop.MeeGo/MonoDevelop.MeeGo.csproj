@@ -58,12 +58,6 @@
     <Reference Include="MonoDevelop.Projects.Gui, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=889ced0135e7a3f3">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=777769bbe9a538f6">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System" />
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
@@ -89,6 +83,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Tamir.SharpSSH.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6f41c46557cec84f">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=8817f797d73c2b6f">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MeeGo.addin.xml">
@@ -97,9 +97,6 @@
     <EmbeddedResource Include="Templates\MeeGoGtkProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <LogicalName>MeeGoGtkProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -111,9 +108,7 @@
     <Compile Include="MeeGoProjectBinding.cs" />
     <Compile Include="MeeGoProjectConfiguration.cs" />
     <Compile Include="MeeGoUtility.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MeeGoDevicePicker.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.MeeGo.MeeGoDevicePicker.cs" />
     <Compile Include="SshOperation.cs" />
     <Compile Include="MeeGoExecutionModeSet.cs" />
   </ItemGroup>

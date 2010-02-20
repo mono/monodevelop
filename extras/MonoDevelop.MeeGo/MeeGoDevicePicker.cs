@@ -31,22 +31,80 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.MeeGo
 {
-	partial class MeeGoDevicePicker : Dialog
+	class MeeGoDevicePicker : Dialog
 	{
+		Entry userEntry, passwordEntry, addressEntry;
+		Button okButton, cancelButton;
+		
 		public MeeGoDevicePicker (Window parentWindow)
 		{
 			TransientFor = parentWindow;
 			Modal = true;
-			this.Build ();
+			Build ();
 			
 			userEntry.Text = PropertyService.Get<string> ("MeeGoDevice.User") ?? "";
 			passwordEntry.Text = PropertyService.Get<string> ("MeeGoDevice.Password") ?? "";
 			addressEntry.Text = PropertyService.Get<string> ("MeeGoDevice.Address") ?? "";
 			
 			addressEntry.Changed += delegate {
-				buttonOk.Sensitive = !string.IsNullOrEmpty (addressEntry.Text);
+				okButton.Sensitive = !string.IsNullOrEmpty (addressEntry.Text);
 			};
-			buttonOk.Sensitive = !string.IsNullOrEmpty (addressEntry.Text);
+			okButton.Sensitive = !string.IsNullOrEmpty (addressEntry.Text);
+		}
+
+		void Build ()
+		{
+			Title = "MeeGo Device";
+			BorderWidth = 6;
+			
+			addressEntry = new Entry () { ActivatesDefault = true };
+			userEntry = new Entry () { ActivatesDefault = true };
+			passwordEntry = new Entry () { Visibility = false, ActivatesDefault = true };
+			
+			var addressLabel = new Label ("_Address:") {
+				Xalign = 0,
+				Justify = Justification.Left,
+				UseUnderline = true,
+				MnemonicWidget = addressEntry
+			};
+			var userLabel = new Label ("_Username:") {
+				Xalign = 0,
+				Justify = Justification.Left,
+				UseUnderline = true,
+				MnemonicWidget = userEntry
+			};
+			var passwordLabel = new Label ("_Password:") {
+				Xalign = 0,
+				Justify = Justification.Left,
+				UseUnderline = true,
+				MnemonicWidget = passwordEntry
+			};
+			
+			var table = new Table (2, 3, false);
+			var fill = AttachOptions.Expand | AttachOptions.Fill;
+			var none = AttachOptions.Shrink;
+			var expand = AttachOptions.Expand;
+			
+			table.Attach (addressLabel,  0, 1, 0, 1, expand, none, 2, 2);
+			table.Attach (addressEntry,  1, 2, 0, 1, fill,    none, 2, 2);
+			table.Attach (userLabel,     0, 1, 1, 2, expand, none, 2, 2);
+			table.Attach (userEntry,     1, 2, 1, 2, fill,    none, 2, 2);
+			table.Attach (passwordLabel, 0, 1, 2, 3, expand, none, 2, 2);
+			table.Attach (passwordEntry, 1, 2, 2, 3, fill,    none, 2, 2);
+			
+			VBox.PackStart (new Label ("Enter details of the MeeGo device:"), true, false, 6);
+			VBox.PackStart (table, true, false, 6);
+			
+			cancelButton = new Button (Gtk.Stock.Cancel);
+			this.AddActionWidget (cancelButton, ResponseType.Cancel);
+			okButton = new Button (Gtk.Stock.Ok) { CanDefault = true };
+			this.AddActionWidget (okButton, ResponseType.Ok);
+			okButton.HasDefault = true;
+			
+			ShowAll ();
+			
+			Resize (400, 80);
+			Resizable = false;
 		}
 		
 		MeeGoDevice GetDevice ()

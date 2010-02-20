@@ -1,3 +1,10 @@
+2010-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MeeGoDevicePicker.cs:
+	* MonoDevelop.MeeGo.csproj: Recreate the device picker GUI by
+	  hand since stetic seems not to have svn added the stetic
+	  files from my other machine :/
+
 2010-02-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SshOperation.cs:
