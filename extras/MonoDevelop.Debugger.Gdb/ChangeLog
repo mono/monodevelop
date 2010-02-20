@@ -1,3 +1,7 @@
+2010-02-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbBacktrace.cs: Add missing method.
+
 2010-02-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GdbBacktrace.cs: Track api changes.
