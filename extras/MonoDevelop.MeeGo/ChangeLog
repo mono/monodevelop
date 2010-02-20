@@ -1,3 +1,16 @@
+2010-02-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MeeGoUtility.cs:
+	* MeeGoProject.cs:
+	* SshOperation.cs:
+	* MeeGoDevicePicker.cs:
+	* MonoDevelop.MeeGo.csproj:
+	* MeeGoExecutionCommand.cs:
+	* MeeGoExecutionHandler.cs:
+	* MeeGoSoftDebuggerEngine.cs:
+	* MonoDevelop.MeeGo.addin.xml: Add support for launching over
+	  ssh.
+
 2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Templates/MeeGoGtkProject.xpt.xml: Fix code binding to

@@ -31,7 +31,7 @@ using System.Net;
 
 namespace MonoDevelop.MeeGo
 {
-	public class MeeGoDebuggerEngine: IDebuggerEngine
+	public class MeeGoSoftDebuggerEngine: IDebuggerEngine
 	{
 		public bool CanDebugCommand (ExecutionCommand command)
 		{

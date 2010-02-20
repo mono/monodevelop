@@ -43,8 +43,7 @@ namespace MonoDevelop.MeeGo
 			Init ();
 		}
 		
-		public MeeGoProject (string languageName)
-			: base (languageName)
+		public MeeGoProject (string language) : base (language)
 		{
 			Init ();
 		}
@@ -84,17 +83,12 @@ namespace MonoDevelop.MeeGo
 		                                                            DotNetProjectConfiguration configuration)
 		{
 			var conf = (MeeGoProjectConfiguration) configuration;
-			return new MeeGoExecutionCommand (GetTargetDevice (), conf.OutputAssembly) {
+			return new MeeGoExecutionCommand (conf) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel),
 			};
 		}
 		
-		MeeGoDevice GetTargetDevice ()
-		{
-			//FIXME: Implement
-			return new MeeGoDevice ();
-		}
-		
+		/*
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (MeeGoProjectConfiguration) GetConfiguration (configSel);
@@ -126,7 +120,7 @@ namespace MonoDevelop.MeeGo
 						console.Dispose ();
 				}
 			}
-		}
+		}*/
 		
 		#endregion
 	}

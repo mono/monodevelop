@@ -29,24 +29,22 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MonoDevelop.MeeGo
 {
-	public class MeeGoExecutionCommand: ExecutionCommand
+	public class MeeGoExecutionCommand: DotNetExecutionCommand
 	{
-		public MeeGoExecutionCommand (MeeGoDevice device, string appExe)
+		public MeeGoExecutionCommand (MeeGoProjectConfiguration config) : base (config.CompiledOutputName)
 		{
-			this.Device = device;
-			this.AppExe = appExe;
-		}		
+			this.Config = config;
+		}
 		
-		public IList<string> UserAssemblyPaths { get; set; }
-		public MeeGoDevice Device { get; private set; }
-		public FilePath AppExe { get; set; }
+		public MeeGoProjectConfiguration Config { get; private set; }
 		
 		public string Name {
 			get {
-				return AppExe.FileNameWithoutExtension;
+				return Path.GetFileNameWithoutExtension (Config.OutputAssembly);
 			}
 		}
 		

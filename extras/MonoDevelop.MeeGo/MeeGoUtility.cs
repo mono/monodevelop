@@ -28,14 +28,26 @@ using System;
 using System.IO;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using System.Diagnostics;
+using Tamir.SharpSsh;
+using System.Threading;
 
 namespace MonoDevelop.MeeGo
 {
 	static class MeeGoUtility
 	{
-		public static ProcessWrapper Upload (MeeGoDevice targetDevice, FilePath appExe)
+		public static IAsyncOperation Upload (MeeGoDevice targetDevice, MeeGoProjectConfiguration conf, 
+		                                     TextWriter outWriter, TextWriter errorWriter)
 		{
-			throw new NotImplementedException ();
+			var scp = new Tamir.SharpSsh.Scp (targetDevice.Address, targetDevice.Username, targetDevice.Password) {
+				Recursive = true
+			};
+			var scop = new SshActionOperation<Scp> (scp, delegate (Scp s) {
+				s.Put (conf.OutputDirectory, conf.ParentItem.Name);
+			});
+			scop.Run ();
+			return scop;
 		}
 		
 		public static bool NeedsUploading (MeeGoProjectConfiguration conf)
@@ -55,8 +67,37 @@ namespace MonoDevelop.MeeGo
 		}
 	}
 	
-	public class MeeGoDevice
+	class MeeGoDevice
 	{
+		public MeeGoDevice (string address, string username, string password)
+		{
+			this.Address = address;
+			this.Username = username;
+			this.Password = password;
+		}		
+		
+		public string Address  { get; set; }
+		public string Username { get; set; }
+		public string Password { get; set; }
+		
+		
+		
+		static MeeGoDevice chosenDevice;
+		
+		public static MeeGoDevice GetChosenDevice ()
+		{
+			if (chosenDevice == null) {
+				DispatchService.GuiSyncDispatch (delegate {
+					chosenDevice = MeeGoDevicePicker.GetDevice (null);
+				});
+			}
+			return chosenDevice;
+		}
+		
+		public static void ResetChosenDevice ()
+		{
+			chosenDevice = null;
+		}
 	}
 }
 

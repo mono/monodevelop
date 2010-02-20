@@ -25,7 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Core.Execution;
+using System.Collections.Generic;
+using Tamir.SharpSsh;
+using System.IO;
 
 namespace MonoDevelop.MeeGo
 {
@@ -40,9 +44,81 @@ namespace MonoDevelop.MeeGo
 		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			//var cmd = (MeeGoExecutionCommand) command;
+			var cmd = (MeeGoExecutionCommand) command;
+			var targetDevice = MeeGoDevice.GetChosenDevice ();
+			if (targetDevice == null) {
+				return new NullProcessAsyncOperation (false);
+			}
 			
-			throw new NotImplementedException ();
+			MeeGoUtility.Upload (targetDevice, cmd.Config, console.Out, console.Error).WaitForCompleted ();
+			
+			Sftp sftp = new Sftp (targetDevice.Address, targetDevice.Username, targetDevice.Password);
+			sftp.Connect ();
+			var files = sftp.GetFileList ("/var/run/gdm/auth-for-" + targetDevice.Username + "*");
+			sftp.Close ();
+			if (files.Count != 1) {
+				console.Error.WriteLine ("Could not obtain single X authority for user '" + targetDevice.Username +"'");
+				return new NullProcessAsyncOperation (false);
+			}
+			
+			var ssh = new SshExec (targetDevice.Address, targetDevice.Username, targetDevice.Password);
+			
+			string targetPath = cmd.Config.ParentItem.Name + "/" + Path.GetFileName (cmd.Config.CompiledOutputName);
+			var proc = new SshRemoteProcess (ssh, string.Format (
+				"XAUTHLOCALHOSTNAME=localhost " +
+				"DISPLAY=:0.0 " +
+				"XAUTHORITY=/var/run/gdm/" + files[0] +"/database " +
+				"mono '{0}'", targetPath));
+			proc.Run ();
+			
+			return new NullProcessAsyncOperation (true);// proc;
+		}
+	}
+	
+	class SshRemoteProcess : SshOperation<SshExec>, IProcessAsyncOperation
+	{
+		string command;
+		
+		public SshRemoteProcess (SshExec ssh, string command) : base (ssh)
+		{
+			this.command = command;
+		}
+		
+		protected override void RunOperations ()
+		{
+			Console.WriteLine (command);
+			Console.WriteLine (Ssh.RunCommand (command));
+		}
+		
+		public int ExitCode { get; private set; }
+		public int ProcessId { get; private set; }
+	}
+	
+	public class MeeGoExecutionModeSet : IExecutionModeSet
+	{
+		MeeGoExecutionMode mode;
+		
+		public string Name { get { return "MeeGo";  } }
+		
+		public IEnumerable<IExecutionMode> ExecutionModes {
+			get {
+				yield return mode ?? (mode = new MeeGoExecutionMode ());
+			}
+		}
+	}
+	
+	class MeeGoExecutionMode : IExecutionMode
+	{
+		MeeGoExecutionHandler handler;
+		
+		public string Name { get { return "MeeGo Device"; } }
+		
+		public string Id { get { return "MeeGoExecutionMode"; } }
+		
+		public IExecutionHandler ExecutionHandler {
+			get {
+				return handler ?? (handler = new MeeGoExecutionHandler ());
+			}
 		}
 	}
 }

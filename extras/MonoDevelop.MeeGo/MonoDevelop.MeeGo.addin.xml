@@ -44,7 +44,15 @@
 		<DataType class = "MonoDevelop.MeeGo.MeeGoProjectConfiguration" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
-		<ExecutionHandler id="MeeGo" class = "MonoDevelop.MeeGo.MeeGoExecutionHandler"/>
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<ModeSetType class="MonoDevelop.MeeGo.MeeGoExecutionModeSet"/>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine
+			id="MonoDevelop.MeeGo.SoftDebugger"
+			name="Mono Soft Debugger for MeeGo"
+			features="Breakpoints, Pause, Stepping, DebugFile, Catchpoints"
+			type="MonoDevelop.MeeGo.MeeGoSoftDebuggerEngine" />
 	</Extension>
 </Addin>
