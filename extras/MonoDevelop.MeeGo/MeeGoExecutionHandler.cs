@@ -64,38 +64,48 @@ namespace MonoDevelop.MeeGo
 				return new NullProcessAsyncOperation (false);
 			}
 			
-			string exec = GetCommandString (cmd, auth);
-			
-			var ssh = new LiveSshExec (targetDevice.Address, targetDevice.Username, targetDevice.Password);			
-			var killExec = new SshExec (targetDevice.Address, targetDevice.Username, targetDevice.Password);
-			
-			//hacky but openssh seems to ignore signals
-			Action kill = delegate {
-				killExec.Connect ();
-				killExec.RunCommand ("ps x | grep monodevelop_remote | " +
-					"grep -v 'grep monodevelop_remote' | awk '{ print $1 }' | xargs kill ");
-				killExec.Close ();
-			};
-			
-			Console.WriteLine (exec);
-			
-			var proc = new SshRemoteProcess (ssh, exec, console, kill);
+			var stdOut = new TextWriterStream (console.Out, Encoding.UTF8);
+			var stdErr = new TextWriterStream (console.Error, Encoding.UTF8);
+			var proc = CreateProcess (cmd, null, targetDevice, auth, stdOut, stdErr);
 			proc.Run ();
 			return proc;
 		}
 		
-		public static string GetCommandString (MeeGoExecutionCommand cmd, Dictionary<string,string> auth)
+		public static SshRemoteProcess CreateProcess (MeeGoExecutionCommand cmd, string sdbOptions, MeeGoDevice device,
+		                                              Dictionary<string,string> xauth, Stream stdOut, Stream stdErr)
 		{
-			string runtimeArgs = string.IsNullOrEmpty (cmd.RuntimeArguments) ? "--debug" : cmd.RuntimeArguments;
-			string executable = cmd.Config.ParentItem.Name + "/" + Path.GetFileName (cmd.Config.CompiledOutputName);
+			string exec = GetCommandString (cmd, sdbOptions, xauth);
+			
+			var ssh = new LiveSshExec (device.Address, device.Username, device.Password);
+			
+			//hacky but openssh seems to ignore signals
+			Action kill = delegate {
+				var killExec = new SshExec (device.Address, device.Username, device.Password);
+				killExec.Connect ();
+				killExec.RunCommand ("ps x | grep '" + cmd.DeviceExePath + "' | " +
+					"grep -v 'grep \\'" + cmd.DeviceExePath + "\\' | awk '{ print $1 }' | xargs kill ");
+				killExec.Close ();
+			};
+			
+			return new SshRemoteProcess (ssh, exec, stdOut, stdErr, kill);
+		}
+		
+		public static string GetCommandString (MeeGoExecutionCommand cmd, string sdbOptions, Dictionary<string,string> auth)
+		{
+			string runtimeArgs = string.IsNullOrEmpty (cmd.RuntimeArguments)
+				? (string.IsNullOrEmpty (sdbOptions)? "--debug" : "")
+				: cmd.RuntimeArguments;
 			
 			var sb = new StringBuilder ();
 			foreach (var arg in cmd.EnvironmentVariables)
 				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
 			foreach (var arg in auth)
 				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
-			sb.Append ("exec -a monodevelop_remote ");
-			sb.AppendFormat ("mono {0} '{1}' {2}", runtimeArgs, executable, cmd.Arguments);
+			sb.Append ("mono");
+			if (!string.IsNullOrEmpty (sdbOptions))
+				sb.AppendFormat (" --debug --debugger-agent={0}", sdbOptions);
+			
+			sb.AppendFormat (" {0} '{1}' {2}", runtimeArgs, cmd.DeviceExePath, cmd.Arguments);
 			
 			return sb.ToString ();
 		}
@@ -132,23 +142,22 @@ namespace MonoDevelop.MeeGo
 	class SshRemoteProcess : SshOperation<LiveSshExec>, IProcessAsyncOperation
 	{
 		string command;
-		IConsole console;
 		ChannelExec channel;
 		Action kill;
+		Stream stdOut, stdErr;
 		
-		public SshRemoteProcess (LiveSshExec ssh, string command, IConsole console, Action kill) : base (ssh)
+		public SshRemoteProcess (LiveSshExec ssh, string command, Stream stdOut, Stream stdErr, Action kill) : base (ssh)
 		{
 			this.command = command;
-			this.console = console;
 			this.kill = kill;
+			this.stdErr = stdErr;
+			this.stdOut = stdOut;
 		}
 		
 		protected override void RunOperations ()
 		{
 			try {
-				channel = Ssh.GetChannel (command);
-				var stdOut = new TextWriterStream (console.Out, Encoding.ASCII);
-				var stdErr = new TextWriterStream (console.Error, Encoding.ASCII);
+				channel = Ssh.GetChannel (command);;
 				channel.setErrStream (stdErr);
 				channel.setOutputStream (stdOut);
 				channel.connect ();

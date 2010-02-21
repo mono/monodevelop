@@ -100,7 +100,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MeeGoDebuggerSession.cs" />
     <Compile Include="MeeGoSoftDebuggerEngine.cs" />
     <Compile Include="MeeGoExecutionCommand.cs" />
     <Compile Include="MeeGoExecutionHandler.cs" />
@@ -111,6 +110,7 @@
     <Compile Include="MeeGoDevicePicker.cs" />
     <Compile Include="SshOperation.cs" />
     <Compile Include="MeeGoExecutionModeSet.cs" />
+    <Compile Include="MeeGoSoftDebuggerSession.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

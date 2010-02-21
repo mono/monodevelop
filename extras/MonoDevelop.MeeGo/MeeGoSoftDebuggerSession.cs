@@ -26,98 +26,87 @@
 
 using System.Net;
 using MonoDevelop.Debugger.Soft;
+using Mono.Debugging.Client;
+using MonoDevelop.Core.Execution;
+using System.IO;
 
 namespace MonoDevelop.MeeGo
 {
-	public class MeeGoDebuggerSession : RemoteSoftDebuggerSession
-	{/*
-		System.Diagnostics.Process simProcess;
+	public class MeeGoSoftDebuggerSession : RemoteSoftDebuggerSession
+	{
+		SshRemoteProcess process;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			var dsi = (IPhoneDebuggerStartInfo) startInfo;
-			var cmd = dsi.ExecutionCommand;
-			if (cmd.Simulator)
-				StartSimulatorProcess (cmd);
+			var dsi = (MeeGoSoftDebuggerStartInfo) startInfo;
+			StartProcess (dsi);
 			StartListening (dsi);
 		}
 		
 		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
 		{
-			var cmd = ((IPhoneDebuggerStartInfo)dsi).ExecutionCommand;
-			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
-			if (!cmd.Simulator)
-				message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
-			return message;
+			return string.Format ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
 		}
 		
 		protected override void EndSession ()
 		{
 			base.EndSession ();
-			EndSimProcess ();
+			EndProcess ();
 		}
 
 		//FIXME: hook up the app's stdin and stdout, and mtouch's stdin and stdout
-		void StartSimulatorProcess (IPhoneExecutionCommand cmd)
+		void StartProcess (MeeGoSoftDebuggerStartInfo dsi)
 		{
-			var psi = IPhoneExecutionHandler.CreateMtouchSimStartInfo (cmd, false);
-			psi.RedirectStandardInput = true;
-			simProcess = System.Diagnostics.Process.Start (psi);
+			MeeGoUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null).WaitForCompleted ();
+			var auth = MeeGoExecutionHandler.GetGdmXAuth (dsi.Device);
+			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort);
 			
-			simProcess.Exited += delegate {
-				EndSession ();
-				simProcess = null;
+			var stdOut = new MemoryStream ();
+			var stdErr = new MemoryStream ();
+			ConnectOutput (new StreamReader (stdOut), true);
+			ConnectOutput (new StreamReader (stdErr), true);
+			
+			process = MeeGoExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device, auth, stdOut, stdErr);
+			
+			process.Completed += delegate {
+				process = null;
 			};
 			
 			TargetExited += delegate {
-				EndSimProcess ();
+				EndProcess ();
 			};
+			
+			process.Run ();
 		}
 		
-		void EndSimProcess ()
+		void EndProcess ()
 		{
-			if (simProcess == null)
+			if (process == null)
 				return;
-			if (!simProcess.HasExited) {
+			if (!process.IsCompleted) {
 				try {
-					simProcess.StandardInput.WriteLine ();
+					process.Cancel ();
 				} catch {}
 			}
-			GLib.Timeout.Add (10000, delegate {
-				if (!simProcess.HasExited)
-					simProcess.Kill ();
-				return false;
-			});
-		}
-		
-		protected override void OnConnected ()
-		{
-			if (simProcess != null)
-				IPhoneUtility.MakeSimulatorGrabFocus ();
-		}
-		
-		protected override void OnContinue ()
-		{
-			base.OnContinue ();
-			if (simProcess != null)
-				IPhoneUtility.MakeSimulatorGrabFocus ();
 		}
 		
 		protected override void OnExit ()
 		{
 			base.OnExit ();
-			EndSimProcess ();
-		}*/
+			EndProcess ();
+		}
 	}
 	
-	class MeeGoDebuggerStartInfo : RemoteDebuggerStartInfo
+	class MeeGoSoftDebuggerStartInfo : RemoteDebuggerStartInfo
 	{
 		public MeeGoExecutionCommand ExecutionCommand { get; private set; }
+		public MeeGoDevice Device { get; private set; }
 		
-		public MeeGoDebuggerStartInfo (IPAddress address, int debugPort, MeeGoExecutionCommand cmd)
+		public MeeGoSoftDebuggerStartInfo (IPAddress address, int debugPort, MeeGoExecutionCommand cmd, MeeGoDevice device)
 			: base (cmd.Name, address, debugPort)
 		{
 			ExecutionCommand = cmd;
+			Device = device;
 		}
 	}
 }

@@ -1,3 +1,12 @@
+2010-02-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MeeGoDebuggerSession.cs:
+	* MeeGoExecutionCommand.cs:
+	* MonoDevelop.MeeGo.csproj:
+	* MeeGoExecutionHandler.cs:
+	* MeeGoSoftDebuggerEngine.cs:
+	* MeeGoSoftDebuggerSession.cs: Implemented remote debugging.
+
 2010-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MeeGoExecutionHandler.cs: Implement support for capturing

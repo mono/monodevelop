@@ -42,17 +42,18 @@ namespace MonoDevelop.MeeGo
 		{
 			var cmd = (MeeGoExecutionCommand) command;
 			
-			IPAddress debuggerAddress = IPAddress.Loopback;
+			var debuggerAddress = Dns.GetHostEntry (Dns.GetHostName ()).AddressList[0];
 			int debuggerPort = 10000;
 			
-			var startInfo = new MeeGoDebuggerStartInfo (debuggerAddress, debuggerPort, cmd);
+			var dev = MeeGoDevice.GetChosenDevice ();
+			var startInfo = new MeeGoSoftDebuggerStartInfo (debuggerAddress, debuggerPort, cmd, dev);
 			startInfo.SetUserAssemblies (cmd.UserAssemblyPaths);
 			return startInfo;
 		}
 
 		public DebuggerSession CreateSession ()
 		{
-			return new MeeGoDebuggerSession ();
+			return new MeeGoSoftDebuggerSession ();
 		}
 		
 		public ProcessInfo[] GetAttachableProcesses ()
