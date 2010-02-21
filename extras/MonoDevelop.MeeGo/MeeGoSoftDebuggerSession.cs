@@ -53,20 +53,16 @@ namespace MonoDevelop.MeeGo
 			base.EndSession ();
 			EndProcess ();
 		}
-
-		//FIXME: hook up the app's stdin and stdout, and mtouch's stdin and stdout
+		
 		void StartProcess (MeeGoSoftDebuggerStartInfo dsi)
 		{
 			MeeGoUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null).WaitForCompleted ();
 			var auth = MeeGoExecutionHandler.GetGdmXAuth (dsi.Device);
 			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort);
 			
-			var stdOut = new MemoryStream ();
-			var stdErr = new MemoryStream ();
-			ConnectOutput (new StreamReader (stdOut), true);
-			ConnectOutput (new StreamReader (stdErr), true);
-			
-			process = MeeGoExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device, auth, stdOut, stdErr);
+			process = MeeGoExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device, auth,
+			                                               x => OnTargetOutput (false, x),
+			                                               x => OnTargetOutput (true, x));
 			
 			process.Completed += delegate {
 				process = null;

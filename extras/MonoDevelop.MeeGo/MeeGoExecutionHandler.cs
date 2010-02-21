@@ -64,15 +64,14 @@ namespace MonoDevelop.MeeGo
 				return new NullProcessAsyncOperation (false);
 			}
 			
-			var stdOut = new TextWriterStream (console.Out, Encoding.UTF8);
-			var stdErr = new TextWriterStream (console.Error, Encoding.UTF8);
-			var proc = CreateProcess (cmd, null, targetDevice, auth, stdOut, stdErr);
+			var proc = CreateProcess (cmd, null, targetDevice, auth, console.Out.Write, console.Error.Write);
 			proc.Run ();
 			return proc;
 		}
 		
 		public static SshRemoteProcess CreateProcess (MeeGoExecutionCommand cmd, string sdbOptions, MeeGoDevice device,
-		                                              Dictionary<string,string> xauth, Stream stdOut, Stream stdErr)
+		                                              Dictionary<string,string> xauth, 
+		                                              Action<string> stdOut, Action<string> stdErr)
 		{
 			string exec = GetCommandString (cmd, sdbOptions, xauth);
 			
@@ -144,9 +143,11 @@ namespace MonoDevelop.MeeGo
 		string command;
 		ChannelExec channel;
 		Action kill;
-		Stream stdOut, stdErr;
+		Action<string> stdOut, stdErr;
 		
-		public SshRemoteProcess (LiveSshExec ssh, string command, Stream stdOut, Stream stdErr, Action kill) : base (ssh)
+		public SshRemoteProcess (LiveSshExec ssh, string command,
+		                         Action<string> stdOut, Action<string> stdErr, Action kill) 
+			: base (ssh)
 		{
 			this.command = command;
 			this.kill = kill;
@@ -157,9 +158,9 @@ namespace MonoDevelop.MeeGo
 		protected override void RunOperations ()
 		{
 			try {
-				channel = Ssh.GetChannel (command);;
-				channel.setErrStream (stdErr);
-				channel.setOutputStream (stdOut);
+				channel = Ssh.GetChannel (command);
+				channel.setErrStream (new TextStream (stdErr));
+				channel.setOutputStream (new TextStream (stdOut));
 				channel.connect ();
 				while (!channel.isEOF ())
 					Thread.Sleep (200);
@@ -197,20 +198,24 @@ namespace MonoDevelop.MeeGo
 		}
 	}
 	
-	class TextWriterStream : Stream
+	class TextStream : Stream
 	{
-		TextWriter writer;
+		Action<string> onWrite;
 		Encoding encoding;
 		
-		public TextWriterStream (TextWriter writer, Encoding incomingEncoding)
+		public TextStream (Action<string> onWrite) : this (onWrite, Encoding.UTF8)
 		{
-			this.writer = writer;
+		}
+		
+		public TextStream (Action<string> onWrite, Encoding incomingEncoding)
+		{
+			this.onWrite = onWrite;
 			this.encoding = incomingEncoding;
 		}
 		
 		public override void Write (byte[] buffer, int offset, int count)
 		{
-			writer.Write (encoding.GetString (buffer, offset, count));
+			onWrite (encoding.GetString (buffer, offset, count));
 		}
 		
 		public override bool CanRead { get { return false; } }

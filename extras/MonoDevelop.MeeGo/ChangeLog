@@ -1,5 +1,10 @@
 2010-02-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MeeGoExecutionHandler.cs:
+	* MeeGoSoftDebuggerSession.cs: Fix debugger stdout/stderr.
+
+2010-02-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MeeGoDebuggerSession.cs:
 	* MeeGoExecutionCommand.cs:
 	* MonoDevelop.MeeGo.csproj:
