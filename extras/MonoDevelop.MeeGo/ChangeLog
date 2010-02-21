@@ -1,5 +1,13 @@
 2010-02-20  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MeeGoExecutionHandler.cs: Implement support for capturing
+	  output of remote process and for killing the process.
+
+	* MeeGoUtility.cs: Fix copies after the first one so they
+	  don't get copied into subdirectory.
+
+2010-02-20  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MeeGoDevicePicker.cs:
 	* MonoDevelop.MeeGo.csproj: Recreate the device picker GUI by
 	  hand since stetic seems not to have svn added the stetic

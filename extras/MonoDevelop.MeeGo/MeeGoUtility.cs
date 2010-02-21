@@ -37,14 +37,23 @@ namespace MonoDevelop.MeeGo
 {
 	static class MeeGoUtility
 	{
+		//FIXME: needs better file list and handling of subdirectories
 		public static IAsyncOperation Upload (MeeGoDevice targetDevice, MeeGoProjectConfiguration conf, 
 		                                     TextWriter outWriter, TextWriter errorWriter)
 		{
-			var scp = new Tamir.SharpSsh.Scp (targetDevice.Address, targetDevice.Username, targetDevice.Password) {
-				Recursive = true
-			};
-			var scop = new SshTransferOperation<Scp> (scp, delegate (Scp s) {
-				s.Put (conf.OutputDirectory, conf.ParentItem.Name);
+			var sftp = new Sftp (targetDevice.Address, targetDevice.Username, targetDevice.Password);
+			
+			var files = Directory.GetFiles (conf.OutputDirectory, "*", SearchOption.TopDirectoryOnly);
+			var op = conf.OutputDirectory.ParentDirectory;
+			for (int i = 0; i < files.Length; i++)
+				files[i] = op.Combine (files[i]);
+			
+			var scop = new SshTransferOperation<Sftp> (sftp, delegate (Sftp s) {
+				var dir = conf.ParentItem.Name;
+				try {
+					s.Mkdir (dir);
+				} catch {}
+				s.Put (files, dir);
 			});
 			scop.Run ();
 			return scop;
@@ -53,7 +62,7 @@ namespace MonoDevelop.MeeGo
 		public static bool NeedsUploading (MeeGoProjectConfiguration conf)
 		{
 			var markerFile = conf.OutputDirectory.Combine (".meego_last_uploaded");
-			return File.Exists (conf.OutputAssembly) && (!File.Exists (markerFile) 
+			return File.Exists (conf.CompiledOutputName) && (!File.Exists (markerFile) 
 				|| File.GetLastWriteTime (markerFile) < File.GetLastWriteTime (conf.OutputAssembly));
 		}
 				

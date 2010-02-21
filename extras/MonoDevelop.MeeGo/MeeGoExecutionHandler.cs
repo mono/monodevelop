@@ -29,14 +29,16 @@ using System.Linq;
 using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
 using Tamir.SharpSsh;
+using Tamir.SharpSsh.jsch;
 using System.IO;
 using MonoDevelop.Core;
 using System.Text;
+using System.Threading;
 
 namespace MonoDevelop.MeeGo
 {
 
-	public class MeeGoExecutionHandler : IExecutionHandler
+	class MeeGoExecutionHandler : IExecutionHandler
 	{
 
 		public bool CanExecute (ExecutionCommand command)
@@ -52,9 +54,9 @@ namespace MonoDevelop.MeeGo
 				return new NullProcessAsyncOperation (false);
 			}
 			
-			if (MeeGoUtility.NeedsUploading (cmd.Config)) {
+			//if (MeeGoUtility.NeedsUploading (cmd.Config)) {
 				MeeGoUtility.Upload (targetDevice, cmd.Config, console.Out, console.Error).WaitForCompleted ();
-			}
+			//}
 			
 			var auth = GetGdmXAuth (targetDevice);
 			if (auth == null) {
@@ -64,14 +66,25 @@ namespace MonoDevelop.MeeGo
 			
 			string exec = GetCommandString (cmd, auth);
 			
-			var ssh = new SshExec (targetDevice.Address, targetDevice.Username, targetDevice.Password);
+			var ssh = new LiveSshExec (targetDevice.Address, targetDevice.Username, targetDevice.Password);			
+			var killExec = new SshExec (targetDevice.Address, targetDevice.Username, targetDevice.Password);
 			
-			var proc = new SshRemoteProcess (ssh, exec.ToString ());
+			//hacky but openssh seems to ignore signals
+			Action kill = delegate {
+				killExec.Connect ();
+				killExec.RunCommand ("ps x | grep monodevelop_remote | " +
+					"grep -v 'grep monodevelop_remote' | awk '{ print $1 }' | xargs kill ");
+				killExec.Close ();
+			};
+			
+			Console.WriteLine (exec);
+			
+			var proc = new SshRemoteProcess (ssh, exec, console, kill);
 			proc.Run ();
 			return proc;
 		}
 		
-		string GetCommandString (MeeGoExecutionCommand cmd, Dictionary<string,string> auth)
+		public static string GetCommandString (MeeGoExecutionCommand cmd, Dictionary<string,string> auth)
 		{
 			string runtimeArgs = string.IsNullOrEmpty (cmd.RuntimeArguments) ? "--debug" : cmd.RuntimeArguments;
 			string executable = cmd.Config.ParentItem.Name + "/" + Path.GetFileName (cmd.Config.CompiledOutputName);
@@ -81,12 +94,13 @@ namespace MonoDevelop.MeeGo
 				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
 			foreach (var arg in auth)
 				sb.AppendFormat ("{0}='{1}' ", arg.Key, arg.Value);
+			sb.Append ("exec -a monodevelop_remote ");
 			sb.AppendFormat ("mono {0} '{1}' {2}", runtimeArgs, executable, cmd.Arguments);
 			
 			return sb.ToString ();
 		}
 		
-		Dictionary<string,string> GetGdmXAuth (MeeGoDevice targetDevice)
+		public static Dictionary<string,string> GetGdmXAuth (MeeGoDevice targetDevice)
 		{
 			Sftp sftp = null;
 			try {
@@ -115,18 +129,35 @@ namespace MonoDevelop.MeeGo
 		}
 	}
 	
-	class SshRemoteProcess : SshOperation<SshExec>, IProcessAsyncOperation
+	class SshRemoteProcess : SshOperation<LiveSshExec>, IProcessAsyncOperation
 	{
 		string command;
+		IConsole console;
+		ChannelExec channel;
+		Action kill;
 		
-		public SshRemoteProcess (SshExec ssh, string command) : base (ssh)
+		public SshRemoteProcess (LiveSshExec ssh, string command, IConsole console, Action kill) : base (ssh)
 		{
 			this.command = command;
+			this.console = console;
+			this.kill = kill;
 		}
 		
 		protected override void RunOperations ()
 		{
-			Console.WriteLine (Ssh.RunCommand (command));
+			try {
+				channel = Ssh.GetChannel (command);
+				var stdOut = new TextWriterStream (console.Out, Encoding.ASCII);
+				var stdErr = new TextWriterStream (console.Error, Encoding.ASCII);
+				channel.setErrStream (stdErr);
+				channel.setOutputStream (stdOut);
+				channel.connect ();
+				while (!channel.isEOF ())
+					Thread.Sleep (200);
+				channel.disconnect ();
+			} finally {
+				ExitCode = channel.getExitStatus ();
+			}
 		}
 		
 		public int ExitCode { get; private set; }
@@ -134,7 +165,72 @@ namespace MonoDevelop.MeeGo
 		
 		public override void Cancel ()
 		{
-			Ssh.Close ();
+			kill ();
+			
+			channel.sendSignal ("TERM");
+			channel.disconnect ();
+		}
+	}
+	
+	class LiveSshExec : SshExec
+	{
+		public LiveSshExec (string address, string username, string password) : base (address, username, password)
+		{
+		}
+		
+		public ChannelExec GetChannel (string command)
+		{
+			return (ChannelExec) (m_channel = GetChannelExec (command));
+		}
+		
+		public ChannelExec Channel {
+			get { return (ChannelExec)m_channel; }
+		}
+	}
+	
+	class TextWriterStream : Stream
+	{
+		TextWriter writer;
+		Encoding encoding;
+		
+		public TextWriterStream (TextWriter writer, Encoding incomingEncoding)
+		{
+			this.writer = writer;
+			this.encoding = incomingEncoding;
+		}
+		
+		public override void Write (byte[] buffer, int offset, int count)
+		{
+			writer.Write (encoding.GetString (buffer, offset, count));
+		}
+		
+		public override bool CanRead { get { return false; } }
+		public override bool CanWrite { get { return false; } }
+		public override bool CanSeek { get { return false; } }
+		public override long Length { get { return -1; } }
+		
+		public override long Position {
+			get { return -1; }
+			set { throw new InvalidOperationException (); }
+		}
+		
+		public override long Seek (long offset, SeekOrigin origin)
+		{
+			throw new InvalidOperationException ();
+		}
+		
+		public override void SetLength (long value)
+		{
+			throw new InvalidOperationException ();
+		}
+		
+		public override int Read (byte[] buffer, int offset, int count)
+		{
+			throw new InvalidOperationException ();
+		}
+		
+		public override void Flush ()
+		{
 		}
 	}
 }
