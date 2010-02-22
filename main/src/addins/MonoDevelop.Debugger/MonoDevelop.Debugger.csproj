@@ -142,6 +142,8 @@
     <Compile Include="MonoDevelop.Debugger\PinnedWatchStore.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngine.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ExceptionCaughtDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionCaughtDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

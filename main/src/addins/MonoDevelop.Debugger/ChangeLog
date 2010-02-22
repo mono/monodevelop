@@ -1,3 +1,16 @@
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ExceptionCaughtDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs: Added
+	  new dialog which is shown when an exception is caught.
+
+	* MonoDevelop.Debugger/ImmediatePad.cs: Use new expression
+	  validation method.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ThreadsPad.cs:

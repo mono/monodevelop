@@ -469,6 +469,7 @@ namespace MonoDevelop.Debugger
 					case TargetEventType.UnhandledException:
 					case TargetEventType.ExceptionThrown:
 						NotifyPaused ();
+						NotifyException (args);
 						break;
 					default:
 						break;
@@ -493,6 +494,21 @@ namespace MonoDevelop.Debugger
 				NotifyLocationChanged ();
 				IdeApp.Workbench.Present ();
 			});
+		}
+		
+		static void NotifyException (TargetEventArgs args)
+		{
+			if (args.Type == TargetEventType.UnhandledException || args.Type == TargetEventType.ExceptionThrown) {
+				DispatchService.GuiDispatch (delegate {
+					if (CurrentFrame != null) {
+						ObjectValue val = CurrentFrame.GetException ();
+						if (val != null) {
+							ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
+							dlg.Show ();
+						}
+					}
+				});
+			}
 		}
 		
 		static void NotifyLocationChanged ()

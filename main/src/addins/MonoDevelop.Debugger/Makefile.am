@@ -30,6 +30,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/AddTracePointDialog.cs \
@@ -46,6 +47,7 @@ FILES =  \
 	MonoDevelop.Debugger/DebuggingService.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisassemblyView.cs \
+	MonoDevelop.Debugger/ExceptionCaughtDialog.cs \
 	MonoDevelop.Debugger/ExceptionsDialog.cs \
 	MonoDevelop.Debugger/ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/Extensions.cs \
