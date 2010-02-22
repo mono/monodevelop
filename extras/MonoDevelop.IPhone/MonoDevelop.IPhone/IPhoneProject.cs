@@ -264,7 +264,7 @@ namespace MonoDevelop.IPhone
 		{
 			var markerFile = conf.OutputDirectory.Combine (".monotouch_last_uploaded");
 			return Directory.Exists (conf.AppDirectory) && (!File.Exists (markerFile) 
-				|| File.GetLastWriteTime (markerFile) < File.GetLastWriteTime (conf.AppDirectory));
+				|| File.GetLastWriteTime (markerFile) < Directory.GetLastWriteTime (conf.AppDirectory));
 		}
 				
 		static void TouchUploadMarker (IPhoneProjectConfiguration conf)

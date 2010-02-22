@@ -1,3 +1,7 @@
+2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Fix the NeedsUploading check.
+
 2010-02-17 Geoff Norton  <gnorton@novell.com>
 
 	* CodeBehindGenerator.cs:
