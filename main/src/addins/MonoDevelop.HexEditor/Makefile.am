@@ -34,6 +34,7 @@ FILES =  \
 	Mono.MHex/SelectionActions.cs \
 	Mono.MHex/SimpleEditMode.cs \
 	MonoDevelop.HexEditor/DisplayBinding.cs \
+	MonoDevelop.HexEditor/HexEditorNodeExtension.cs \
 	MonoDevelop.HexEditor/HexEditorView.cs \
 	MonoDevelop.HexEditor/MonoDevelopHexEditorStyle.cs 
 
@@ -61,9 +62,11 @@ REFS =  \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../build/AddIns/MonoDevelop.SourceEditor2.dll \
 	-r:../../../build/bin/Mono.TextEditor.dll \
+	-r:../../../build/bin/MonoDevelop.Components.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
+	-r:../../../build/bin/MonoDevelop.Projects.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \

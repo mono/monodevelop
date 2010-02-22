@@ -1,3 +1,11 @@
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.HexEditor.csproj:
+	* MonoDevelop.HexEditor.addin.xml:
+	* MonoDevelop.HexEditor/HexEditorNodeExtension.cs: Added open
+	  with hex editor command in the project pad.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs: Flush.
