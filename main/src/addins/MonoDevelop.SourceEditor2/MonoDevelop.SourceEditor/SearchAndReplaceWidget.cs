@@ -246,6 +246,7 @@ namespace MonoDevelop.SourceEditor
 			searchEntry.Entry.KeyPressEvent += OnNavigateKeyPressEvent;
 			entryReplace.KeyPressEvent += OnNavigateKeyPressEvent;
 			buttonReplace.KeyPressEvent += OnNavigateKeyPressEvent;
+			buttonReplaceAll.KeyPressEvent += OnNavigateKeyPressEvent;
 			
 			resultInformLabelEventBox = this.searchEntry.AddLabelWidget (resultInformLabel);
 			resultInformLabelEventBox.BorderWidth = 2;
@@ -355,6 +356,15 @@ But I leave it in in the case I've missed something. Mike
 							((Button)o).Click ();
 					}*/
 					break;
+				case Gdk.Key.Down:
+				case Gdk.Key.Up:
+					if ((args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask && o == searchEntry.Entry) {
+						searchEntry.PopupFilterMenu ();
+						args.RetVal = true;
+					} else {
+//						widget.TextEditor.GrabFocus ();
+					}
+					break;
 				case Gdk.Key.N:
 				case Gdk.Key.n:
 					buttonSearchForward.GrabFocus ();
@@ -368,22 +378,21 @@ But I leave it in in the case I've missed something. Mike
 				case Gdk.Key.Escape:
 					widget.RemoveSearchWidget ();
 					break;
-				case Gdk.Key.Up:
-					widget.TextEditor.GrabFocus ();
-					break;
 				case Gdk.Key.slash:
 					searchEntry.GrabFocus ();
 					break;
 				case Gdk.Key.ISO_Left_Tab:
 					if (this.IsReplaceMode) {
 						if (o == entryReplace) {
-							searchEntry.GrabFocus ();
+							searchEntry.Entry.GrabFocus ();
 						} else if (o == buttonReplace) {
 							entryReplace.GrabFocus ();
+						} else if (o == buttonReplaceAll) {
+							buttonReplace.GrabFocus ();
 						} else if (o == buttonSearchBackward) {
-							buttonReplace.GrabFocus ();
+							buttonReplaceAll.GrabFocus ();
 						} else if (o == buttonSearchForward) {
-							buttonReplace.GrabFocus ();
+							buttonSearchBackward.GrabFocus ();
 						} else {
 							buttonSearchForward.GrabFocus ();
 						}
@@ -404,11 +413,14 @@ But I leave it in in the case I've missed something. Mike
 						if (o == entryReplace) {
 							buttonReplace.GrabFocus ();
 						} else if (o == buttonReplace) {
-							buttonSearchForward.GrabFocus ();
+							buttonReplaceAll.GrabFocus ();
+						} else if (o == buttonReplaceAll) {
+							buttonSearchBackward.GrabFocus ();
 						} else if (o == buttonSearchBackward) {
 							buttonSearchForward.GrabFocus ();
 						} else if (o == buttonSearchForward) {
-							widget.TextEditor.GrabFocus ();
+//							widget.TextEditor.GrabFocus ();
+							searchEntry.Entry.GrabFocus ();
 						} else {
 							entryReplace.GrabFocus ();
 						}
@@ -417,7 +429,8 @@ But I leave it in in the case I've missed something. Mike
 						if (o == buttonSearchBackward) {
 							buttonSearchForward.GrabFocus ();
 						} else if (o == buttonSearchForward) {
-							widget.TextEditor.GrabFocus ();
+							searchEntry.Entry.GrabFocus ();
+//							widget.TextEditor.GrabFocus ();
 						} else {
 							buttonSearchBackward.GrabFocus ();
 						}

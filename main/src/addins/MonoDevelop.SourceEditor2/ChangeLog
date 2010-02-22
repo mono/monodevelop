@@ -1,5 +1,10 @@
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Improved
+	  keyboard navigation in search & replace widget.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
