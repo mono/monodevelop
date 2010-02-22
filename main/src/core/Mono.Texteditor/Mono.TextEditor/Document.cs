@@ -1293,6 +1293,16 @@ namespace Mono.TextEditor
 				   (offset + length == Length || IsWordSeparator (GetCharAt (offset + length)));
 		}
 		
+		public bool IsEmptyLine (LineSegment line)
+		{
+			for (int i = 0; i < line.EditableLength; i++) {
+				char ch = GetCharAt (line.Offset + i);
+				if (!Char.IsWhiteSpace (ch)) 
+					return false;
+			}
+			return true;
+		}
+		
 		public int GetMatchingBracketOffset (int offset)
 		{
 			return GetMatchingBracketOffset (null, offset);
