@@ -1,3 +1,7 @@
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MdbObjectValueAdaptor.cs: fixed build.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* DebuggerServer.cs: Tracepoints are now printed by the

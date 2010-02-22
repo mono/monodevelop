@@ -525,7 +525,7 @@ namespace DebuggerServer
 				return ObjectValue.CreateObject (null, path, "", "", flags | ObjectValueFlags.ReadOnly, null);
 
 			if (obj.HasAddress && obj.GetAddress (ctx.Thread).IsNull)
-				return ObjectValue.CreateObject (null, path, obj.TypeName, ctx.Evaluator.ToExpression (null), flags, null);
+				return ObjectValue.CreateObject (null, path, obj.TypeName, ctx.Evaluator.ToExpression (ctx, null), flags, null);
 			
 			switch (obj.Kind) {
 				
@@ -556,7 +556,7 @@ namespace DebuggerServer
 					}
 					else {
 						flags |= ObjectValueFlags.Primitive;
-						return ObjectValue.CreateObject (source, path, obj.TypeName, ctx.Evaluator.ToExpression (null), flags, new ObjectValue [0]);
+						return ObjectValue.CreateObject (source, path, obj.TypeName, ctx.Evaluator.ToExpression (ctx, null), flags, new ObjectValue [0]);
 					}
 				default:
 					return ObjectValue.CreateFatalError (path.LastName, "Unknown value type: " + obj.Kind, flags);
