@@ -151,7 +151,12 @@ namespace MonoDevelop.Components
 			menu.Deactivated += OnMenuDeactivated;
 		}
 
-		private void ShowMenu (uint time)
+		public void PopupFilterMenu ()
+		{
+			ShowMenu (0);
+		}
+		
+		void ShowMenu (uint time)
 		{
 			OnRequestMenu (EventArgs.Empty);
 			if (menu.Children.Length > 0) {
