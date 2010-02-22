@@ -337,7 +337,11 @@ namespace Mono.Debugging.Soft
 		public override ValueReference GetCurrentException (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, cx.Session.GetExceptionObject (cx.Thread));
+			ObjectMirror exc = cx.Session.GetExceptionObject (cx.Thread);
+			if (exc != null)
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, exc);
+			else
+				return null;
 		}
 
 

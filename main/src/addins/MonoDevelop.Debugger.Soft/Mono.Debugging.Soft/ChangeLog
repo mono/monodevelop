@@ -1,5 +1,12 @@
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated.
+
+	* SoftDebuggerAdaptor.cs: Add missing null check.
+
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerAdaptor.cs:
 	* SoftDebuggerSession.cs: Implement GetCurrentException.
 
