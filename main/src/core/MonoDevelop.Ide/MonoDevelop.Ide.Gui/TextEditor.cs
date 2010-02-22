@@ -375,8 +375,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static string[] GetCommentTags (string fileName)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			string loadedMimeType = DesktopService.GetMimeTypeForUri (doc.Name);
+			//Document doc = IdeApp.Workbench.ActiveDocument;
+			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
 			
 			SyntaxMode mode = null;
 			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
