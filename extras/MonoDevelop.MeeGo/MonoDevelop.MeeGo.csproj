@@ -116,4 +116,8 @@
   <ItemGroup>
     <Folder Include="Templates\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.txt" />
+    <None Include="ChangeLog" />
+  </ItemGroup>
 </Project>
