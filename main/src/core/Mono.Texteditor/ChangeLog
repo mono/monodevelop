@@ -1,5 +1,10 @@
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Styles/OblivionStyle.xml: changed main search result color
+	  in oblivion.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs: Added helper function.
 
 2010-02-19  Mike Krüger  <mkrueger@novell.com>
