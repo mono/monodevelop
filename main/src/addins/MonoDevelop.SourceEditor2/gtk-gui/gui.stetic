@@ -1110,6 +1110,7 @@
                 <property name="Ready">False</property>
                 <property name="HasFocus">False</property>
                 <property name="IsCheckMenu">False</property>
+                <property name="ForceFilterButtonVisible">False</property>
               </widget>
               <packing>
                 <property name="Position">0</property>

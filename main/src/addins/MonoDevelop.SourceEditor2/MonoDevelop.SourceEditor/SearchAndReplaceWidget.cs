@@ -82,8 +82,8 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public string SearchPattern {
-			get { return searchEntry.Query; }
-			set { searchEntry.Query = value; }
+			get { return searchEntry.Entry.Text; }
+			set { searchEntry.Entry.Text = value; }
 		}
 		
 		public bool SearchFocused {
@@ -122,6 +122,7 @@ namespace MonoDevelop.SourceEditor
 			this.searchEntry.Ready = true;
 			this.searchEntry.Visible = true;
 			this.searchEntry.WidthRequest = widget.Allocation.Width / 3;
+			this.searchEntry.ForceFilterButtonVisible = true;
 			replaceWidgets = new Widget [] {
 		//		labelReplace,
 				entryReplace,
@@ -288,26 +289,29 @@ namespace MonoDevelop.SourceEditor
 				UpdateSearchEntry ();
 			};
 			searchEntry.Menu.Add (regexSearch);
-			searchEntry.Menu.Add (new SeparatorMenuItem ());
-			MenuItem recentSearches = new MenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Recent Searches"));
-			recentSearches.Sensitive = false;
-			searchEntry.Menu.Add (recentSearches);
-			
-			foreach (string item in GetHistory (seachHistoryProperty)) {
-				MenuItem recentItem = new MenuItem (item);
-				recentItem.Name = item;
-				recentItem.Activated += delegate (object mySender, EventArgs myE) {
-					MenuItem cur = (MenuItem)mySender;
-					searchEntry.Query = cur.Name;
+			List<string> history = GetHistory (seachHistoryProperty);
+			if (history.Count > 0) {
+				searchEntry.Menu.Add (new SeparatorMenuItem ());
+				MenuItem recentSearches = new MenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Recent Searches"));
+				recentSearches.Sensitive = false;
+				searchEntry.Menu.Add (recentSearches);
+				
+				foreach (string item in history) {
+					MenuItem recentItem = new MenuItem (item);
+					recentItem.Name = item;
+					recentItem.Activated += delegate (object mySender, EventArgs myE) {
+						MenuItem cur = (MenuItem)mySender;
+						searchEntry.Entry.Text = cur.Name;
+					};
+					searchEntry.Menu.Add (recentItem);
+				}
+				searchEntry.Menu.Add (new SeparatorMenuItem ());
+				MenuItem clearRecentSearches = new MenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Clear Recent Searches"));
+				clearRecentSearches.Activated += delegate {
+					StoreHistory (seachHistoryProperty, null);
 				};
-				searchEntry.Menu.Add (recentItem);
+				searchEntry.Menu.Add (clearRecentSearches);
 			}
-			searchEntry.Menu.Add (new SeparatorMenuItem ());
-			MenuItem clearRecentSearches = new MenuItem (MonoDevelop.Core.GettextCatalog.GetString ("Clear Recent Searches"));
-			clearRecentSearches.Activated += delegate {
-				StoreHistory (seachHistoryProperty, null);
-			};
-			searchEntry.Menu.Add (clearRecentSearches);
 		}
 
 		void HandleWidgetTextEditorCaretPositionChanged (object sender, DocumentLocationEventArgs e)
@@ -332,7 +336,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void UpdateSearchPattern ()
 		{
-			searchEntry.Query = widget.TextEditor.SearchPattern;
+			searchEntry.Entry.Text = widget.TextEditor.SearchPattern;
 			widget.SetSearchPattern (widget.TextEditor.SearchPattern);
 			searchPattern = widget.TextEditor.SearchPattern;
 //			UpdateSearchEntry ();

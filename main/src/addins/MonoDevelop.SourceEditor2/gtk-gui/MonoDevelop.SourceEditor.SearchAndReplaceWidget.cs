@@ -69,6 +69,7 @@ namespace MonoDevelop.SourceEditor
 			this.searchEntry.Ready = false;
 			this.searchEntry.HasFocus = false;
 			this.searchEntry.IsCheckMenu = false;
+			this.searchEntry.ForceFilterButtonVisible = false;
 			this.hbox1.Add (this.searchEntry);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.searchEntry]));
 			w3.Position = 0;
