@@ -1,5 +1,10 @@
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/ExceptionsDialog.cs: Fix bug #579754 -
+	  Duplicate exception names in debugger exception dialog
+
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Debugger.csproj:

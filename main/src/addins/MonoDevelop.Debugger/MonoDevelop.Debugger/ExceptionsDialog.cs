@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 		ListStore storeExceptions;
 		ListStore storeSelection;
 		bool systemLoaded;
-		List<string> classes = new List<string> ();
+		HashSet<string> classes = new HashSet<string> ();
 		TreeViewState tstateExc;
 		TreeViewState tstateSel;
 		bool updateScheduled;
