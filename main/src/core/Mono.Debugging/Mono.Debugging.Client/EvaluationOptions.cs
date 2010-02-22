@@ -49,6 +49,7 @@ namespace Mono.Debugging.Client
 				ops.AllowImplicitTypeLoading = true;
 				ops.UseExternalTypeResolver = true;
 				ops.IntegerDisplayFormat = IntegerDisplayFormat.Decimal;
+				ops.CurrentExceptionTag = "$exception";
 				return ops;
 			}
 		}
@@ -88,6 +89,8 @@ namespace Mono.Debugging.Client
 		public bool AllowImplicitTypeLoading { get; set; }
 		
 		public IntegerDisplayFormat IntegerDisplayFormat { get; set; }
+		
+		public string CurrentExceptionTag { get; set; }
 	}
 	
 	public enum IntegerDisplayFormat

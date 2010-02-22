@@ -108,9 +108,33 @@ namespace Mono.Debugging.Evaluation
 				return null;
 		}
 		
+		public virtual ObjectValue GetException (int frameIndex, EvaluationOptions options)
+		{
+			FrameInfo frame = GetFrameInfo (frameIndex, options, false);
+			if (frame == null) {
+				return Adaptor.CreateObjectValueAsync (options.CurrentExceptionTag, ObjectValueFlags.EvaluatingGroup, delegate {
+					frame = GetFrameInfo (frameIndex, options, true);
+					ObjectValue[] vals;
+					if (frame.Exception != null)
+						vals = new ObjectValue[] { frame.Exception.CreateObjectValue (false, options) };
+					else
+						vals = new ObjectValue [0];
+					return ObjectValue.CreateArray (null, new ObjectPath (options.CurrentExceptionTag), "", vals.Length, ObjectValueFlags.EvaluatingGroup, vals);
+				});
+			}
+			if (frame.Exception != null)
+				return frame.Exception.CreateObjectValue ();
+			else
+				return null;
+		}
+		
 		public virtual ObjectValue[] GetAllLocals (int frameIndex, EvaluationOptions options)
 		{
 			List<ObjectValue> locals = new List<ObjectValue> ();
+			
+			ObjectValue excObj = GetException (frameIndex, options);
+			if (excObj != null)
+				locals.Insert (0, excObj);
 			
 			locals.AddRange (GetLocalVariables (frameIndex, options));
 			locals.AddRange (GetParameters (frameIndex, options));
@@ -175,6 +199,7 @@ namespace Mono.Debugging.Evaluation
 			finfo.LocalVariables.AddRange (ctx.Adapter.GetLocalVariables (ctx));
 			finfo.Parameters.AddRange (ctx.Adapter.GetParameters (ctx));
 			finfo.This = ctx.Adapter.GetThisReference (ctx);
+			finfo.Exception = ctx.Adapter.GetCurrentException (ctx);
 			frameInfo [frameIndex] = finfo;
 			return finfo;
 		}
@@ -186,5 +211,6 @@ namespace Mono.Debugging.Evaluation
 		public List<ValueReference> LocalVariables = new List<ValueReference> ();
 		public List<ValueReference> Parameters = new List<ValueReference> ();
 		public ValueReference This;
+		public ValueReference Exception;
 	}
 }

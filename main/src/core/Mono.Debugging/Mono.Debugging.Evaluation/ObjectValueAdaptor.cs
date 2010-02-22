@@ -490,6 +490,11 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
+		public virtual ValueReference GetCurrentException (EvaluationContext ctx)
+		{
+			return null;
+		}
+
 		public virtual object GetEnclosingType (EvaluationContext ctx)
 		{
 			return null;

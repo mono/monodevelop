@@ -122,6 +122,18 @@ namespace Mono.Debugging.Client
 			return value;
 		}
 		
+		public ObjectValue GetException ()
+		{
+			return GetException (session.EvaluationOptions);
+		}
+		
+		public ObjectValue GetException (EvaluationOptions options)
+		{
+			ObjectValue value = sourceBacktrace.GetException (index, options);
+			ObjectValue.ConnectCallbacks (value);
+			return value;
+		}
+		
 		public string ResolveExpression (string exp)
 		{
 			return session.ResolveExpression (exp, location);

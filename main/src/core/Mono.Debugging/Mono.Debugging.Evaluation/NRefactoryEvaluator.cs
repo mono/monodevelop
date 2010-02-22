@@ -69,6 +69,9 @@ namespace Mono.Debugging.Evaluation
 				if (exp == null)
 					return null;
 			}
+			
+			exp = ReplaceExceptionTag (exp, ctx.Options.CurrentExceptionTag);
+			
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
@@ -85,6 +88,8 @@ namespace Mono.Debugging.Evaluation
 			if (exp.StartsWith ("var "))
 				return "var " + Resolve (session, location, exp.Substring (4).Trim (' ','\t'));
 
+			exp = ReplaceExceptionTag (exp, session.Options.EvaluationOptions.CurrentExceptionTag);
+
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
@@ -99,6 +104,8 @@ namespace Mono.Debugging.Evaluation
 		{
 			if (exp.StartsWith ("?"))
 				exp = exp.Substring (1).Trim ();
+			
+			exp = ReplaceExceptionTag (exp, ctx.Options.CurrentExceptionTag);
 			
 			// Required as a workaround for a bug in the parser (it won't parse simple expressions like numbers)
 			if (!exp.EndsWith (";"))
@@ -119,6 +126,12 @@ namespace Mono.Debugging.Evaluation
 				return new ValidationResult (false, errorMsg);
 			else
 				return new ValidationResult (true, null);
+		}
+		
+		string ReplaceExceptionTag (string exp, string tag)
+		{
+			// FIXME: Don't replace inside string literals
+			return exp.Replace (tag, "__EXCEPTION_OBJECT__");
 		}
 
 	}
@@ -336,6 +349,11 @@ namespace Mono.Debugging.Evaluation
 		
 		object VisitIdentifier (string name)
 		{
+			// Exception tag
+			
+			if (name == "__EXCEPTION_OBJECT__")
+				return ctx.Adapter.GetCurrentException (ctx);
+			
 			// Look in user defined variables
 			
 			ValueReference userVar;
