@@ -197,7 +197,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		public void MoveCursor (int relative)
 		{
-			int newSelection = GetItem (false, System.Math.Min (filteredItems.Count - 1, System.Math.Max (0, GetIndex (false, Selection) + relative)));
+			int newIndex = GetIndex (false, Selection) + relative;
+			if (Math.Abs (relative) == 1) {
+				if (newIndex < 0)
+					newIndex = filteredItems.Count - 1;
+				if (newIndex >= filteredItems.Count)
+					newIndex = 0;
+			}
+			int newSelection = GetItem (false, System.Math.Min (filteredItems.Count - 1, System.Math.Max (0, newIndex)));
 			if (newSelection < 0) 
 				return;
 			if (Selection == newSelection && relative < 0) {
