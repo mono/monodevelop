@@ -1,3 +1,8 @@
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs:
+	* SoftDebuggerSession.cs: Implement GetCurrentException.
+
 2010-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

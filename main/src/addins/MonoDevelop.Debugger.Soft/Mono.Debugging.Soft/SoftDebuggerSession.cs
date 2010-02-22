@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+//#define DEBUG_EVENT_QUEUEING
+
 using System;
 using System.Linq;
 using System.Threading;
@@ -54,6 +56,8 @@ namespace Mono.Debugging.Soft
 		bool started;
 		internal int StackVersion;
 		StepEventRequest currentStepRequest;
+		
+		Dictionary<long,ObjectMirror> activeExceptionsByThread = new Dictionary<long, ObjectMirror> ();
 		
 		Thread outputReader;
 		Thread errorReader;
@@ -261,6 +265,7 @@ namespace Mono.Debugging.Soft
 			current_threads = null;
 			current_thread = null;
 			procs = null;
+			activeExceptionsByThread.Clear ();
 		}
 		
 		public VirtualMachine VirtualMachine {
@@ -592,6 +597,7 @@ namespace Mono.Debugging.Soft
 				return;
 
 			bool resume = true;
+			ObjectMirror exception = null;
 			
 			TargetEventType etype = TargetEventType.TargetStopped;
 
@@ -637,9 +643,8 @@ namespace Mono.Debugging.Soft
 			
 			if (e is ExceptionEvent) {
 				etype = TargetEventType.ExceptionThrown;
-				//FIXME: we should do something with the exception object 
-				//var ev = (ExceptionEvent)e;
-				//ev.Exception
+				var ev = (ExceptionEvent)e;
+				exception = ev.Exception;
 				resume = false;
 			}
 			
@@ -665,14 +670,27 @@ namespace Mono.Debugging.Soft
 				args.Process = OnGetProcesses () [0];
 				args.Thread = GetThread (args.Process, current_thread);
 				args.Backtrace = GetThreadBacktrace (current_thread);
+				
+				if (exception != null)
+					activeExceptionsByThread [current_thread.Id] = exception;
+				
 				OnTargetEvent (args);
 			}
+		}
+		
+		public ObjectMirror GetExceptionObject (ThreadMirror thread)
+		{
+			ObjectMirror obj;
+			if (activeExceptionsByThread.TryGetValue (thread.Id, out obj))
+				return obj;
+			else
+				return null;
 		}
 		
 		void QueueEvent (Event ev)
 		{
 #if DEBUG_EVENT_QUEUEING
-			Console.WriteLine ("qq event: " + e);
+			Console.WriteLine ("qq event: " + ev);
 #endif
 			lock (queuedEvents) {
 				queuedEvents.AddLast (ev);

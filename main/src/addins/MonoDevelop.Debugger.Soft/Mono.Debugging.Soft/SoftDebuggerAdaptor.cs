@@ -333,6 +333,13 @@ namespace Mono.Debugging.Soft
 			Value val = cx.Frame.GetThis ();
 			return LiteralValueReference.CreateTargetObjectLiteral (ctx, "this", val);
 		}
+		
+		public override ValueReference GetCurrentException (EvaluationContext ctx)
+		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, cx.Session.GetExceptionObject (cx.Thread));
+		}
+
 
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
