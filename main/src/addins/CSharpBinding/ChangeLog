@@ -1,5 +1,13 @@
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/Statements/FixedStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/TryCatchStatement.cs:
+	  Worked on dom.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed 'Bug
 	  578439 - Return key acts crazy in MonoDevelop'.

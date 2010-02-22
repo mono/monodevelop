@@ -32,6 +32,8 @@ namespace MonoDevelop.CSharp.Dom
 	public class FixedStatement : AbstractCSharpNode
 	{
 		public const int PointerDeclarationRole = 100;
+		public const int FixedKeywordRole = 101;
+		public const int DeclaratorRole = 102;
 		
 		public INode EmbeddedStatement {
 			get { return GetChildByRole (Roles.EmbeddedStatement); }

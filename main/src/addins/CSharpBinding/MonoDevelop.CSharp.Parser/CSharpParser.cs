@@ -1,4 +1,3 @@
-
 /*
 // 
 // CSharpParser.cs
@@ -396,7 +395,22 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (For forStatement)
 			{
-				return null;
+				var result = new ForStatement ();
+				
+				KeywordWithParanthesisLocation location = LocationStorage.Get<KeywordWithParanthesisLocation> (forStatement);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), ForStatement.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open)), ForStatement.Roles.LPar);
+				result.AddChild ((INode)forStatement.InitStatement.Accept (this), ForStatement.Roles.Initializer);
+				result.AddChild (new CSharpTokenNode (Convert (location[1])), ForStatement.Roles.Semicolon);
+				result.AddChild ((INode)forStatement.Test.Accept (this), ForStatement.Roles.Condition);
+				result.AddChild (new CSharpTokenNode (Convert (location[2])), ForStatement.Roles.Semicolon);
+				result.AddChild ((INode)forStatement.Increment.Accept (this), ForStatement.Roles.Iterator);
+				result.AddChild (new CSharpTokenNode (Convert (location.Close)), ForStatement.Roles.RPar);
+				
+				result.AddChild ((INode)forStatement.Statement.Accept (this), ForStatement.Roles.EmbeddedStatement);
+				
+				return result;
 			}
 			
 			public override object Visit (StatementExpression statementExpression)
@@ -435,7 +449,9 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (LabeledStatement labeledStatement)
 			{
-				return null;
+				var result = new LabelStatement ();
+				result.AddChild (new Identifier (labeledStatement.Name, Convert (labeledStatement.loc)), LabelStatement.Roles.Identifier);
+				return result;
 			}
 			
 			public override object Visit (GotoDefault gotoDefault)
@@ -554,28 +570,128 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (Fixed fixedStatement)
 			{
-				return null;
+				var result = new FixedStatement ();
+				KeywordWithParanthesisLocation location = LocationStorage.Get<KeywordWithParanthesisLocation> (fixedStatement);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), FixedStatement.FixedKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open)), FixedStatement.Roles.LPar);
+				
+				result.AddChild ((INode)fixedStatement.type.Accept (this), FixedStatement.PointerDeclarationRole);
+				
+				foreach (KeyValuePair<LocalInfo, Expression> declarator in fixedStatement.declarators) {
+					result.AddChild ((INode)declarator.Value.Accept (this), FixedStatement.DeclaratorRole);
+				}
+				result.AddChild (new CSharpTokenNode (Convert (location.Close)), FixedStatement.Roles.RPar);
+				result.AddChild ((INode)fixedStatement.Statement.Accept (this), FixedStatement.Roles.EmbeddedStatement);
+				return result;
 			}
 			
 			public override object Visit (TryFinally tryFinallyStatement)
 			{
-				return null;
+				TryCatchStatement result;
+				KeywordLocation location = LocationStorage.Get<KeywordLocation> (tryFinallyStatement);
+				
+				if (tryFinallyStatement.stmt is TryCatch) {
+					result = (TryCatchStatement)tryFinallyStatement.stmt.Accept (this);
+				} else {
+					result = new TryCatchStatement ();
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), TryCatchStatement.TryKeywordRole);
+					result.AddChild ((INode)tryFinallyStatement.stmt.Accept (this), TryCatchStatement.TryBlockRole);
+				}
+				
+				result.AddChild (new CSharpTokenNode (Convert (location[1])), TryCatchStatement.FinallyKeywordRole);
+				result.AddChild ((INode)tryFinallyStatement.fini.Accept (this), TryCatchStatement.FinallyBlockRole);
+				
+				return result;
+			}
+			
+			CatchClause ConvertCatch (Catch ctch) 
+			{
+				CatchClause result = new CatchClause ();
+				KeywordLocation location = LocationStorage.Get<KeywordLocation> (ctch);
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), CatchClause.Roles.Keyword);
+				
+				if (ctch.type_expr != null) {
+					result.AddChild ((INode)ctch.type_expr.Accept (this), CatchClause.Roles.ReturnType);
+					if (!string.IsNullOrEmpty (ctch.Name))
+						result.AddChild (new Identifier (ctch.Name, Convert (location[1])), CatchClause.Roles.Identifier);
+				}
+				
+				result.AddChild ((INode)ctch.Block.Accept (this), CatchClause.Roles.Body);
+				
+				return result;
 			}
 			
 			public override object Visit (TryCatch tryCatchStatement)
 			{
-				return null;
+				var result = new TryCatchStatement ();
+				KeywordLocation location = LocationStorage.Get<KeywordLocation> (tryCatchStatement);
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), TryCatchStatement.TryKeywordRole);
+				result.AddChild ((INode)tryCatchStatement.Block.Accept (this), TryCatchStatement.TryBlockRole);
+				foreach (Catch ctch in tryCatchStatement.Specific) {
+					result.AddChild (ConvertCatch (ctch), TryCatchStatement.CatchClauseRole);
+				}
+				if (tryCatchStatement.General != null)
+					result.AddChild (ConvertCatch (tryCatchStatement.General), TryCatchStatement.CatchClauseRole);
+				
+				return result;
 			}
 			
 			public override object Visit (Using usingStatement)
 			{
-				return null;
+				var result = new UsingStatement ();
+				KeywordWithParanthesisLocation location = LocationStorage.Get<KeywordWithParanthesisLocation> (usingStatement);
+				// TODO: Usings with more than 1 variable are compiled differently using (a) { using (b) { using (c) ...}}
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), UsingStatement.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open)), UsingStatement.Roles.LPar);
+				
+				result.AddChild ((INode)usingStatement.var.Accept (this), UsingStatement.Roles.Identifier);
+				result.AddChild ((INode)usingStatement.init.Accept (this), UsingStatement.Roles.Initializer);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location.Close)), UsingStatement.Roles.RPar);
+				
+				result.AddChild ((INode)usingStatement.EmbeddedStatement.Accept (this), UsingStatement.Roles.EmbeddedStatement);
+				return result;
+			}
+			
+			public override object Visit (UsingTemporary usingTemporary)
+			{
+				var result = new UsingStatement ();
+				KeywordWithParanthesisLocation location = LocationStorage.Get<KeywordWithParanthesisLocation> (usingTemporary);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), UsingStatement.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open)), UsingStatement.Roles.LPar);
+				
+				result.AddChild ((INode)usingTemporary.expr.Accept (this), UsingStatement.Roles.Initializer);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location.Close)), UsingStatement.Roles.RPar);
+				
+				result.AddChild ((INode)usingTemporary.Statement.Accept (this), UsingStatement.Roles.EmbeddedStatement);
+				return result;
 			}
 			
 			
 			public override object Visit (Foreach foreachStatement)
 			{
-				return null;
+				var result = new ForeachStatement ();
+				
+				KeywordWithParanthesisLocation location = LocationStorage.Get<KeywordWithParanthesisLocation> (foreachStatement);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), ForeachStatement.ForEachKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open)), ForeachStatement.Roles.LPar);
+				
+				result.AddChild ((INode)foreachStatement.type.Accept (this), ForeachStatement.Roles.ReturnType);
+				result.AddChild ((INode)foreachStatement.variable.Accept (this), ForeachStatement.Roles.Identifier);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location[1])), ForeachStatement.InKeywordRole);
+				
+				result.AddChild ((INode)foreachStatement.expr.Accept (this), ForeachStatement.Roles.Initializer);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location.Close)), ForeachStatement.Roles.RPar);
+				
+				result.AddChild ((INode)foreachStatement.Statement.Accept (this), ForeachStatement.Roles.EmbeddedStatement);
+				
+				return result;
 			}
 			#endregion
 			
@@ -913,4 +1029,4 @@ namespace MonoDevelop.CSharp.Parser
 			return conversionVisitor.Unit;
 		}
 	}
-}*/
+} */
