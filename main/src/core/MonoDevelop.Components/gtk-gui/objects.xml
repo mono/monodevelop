@@ -104,6 +104,7 @@
         <property name="Ready" />
         <property name="HasFocus" />
         <property name="IsCheckMenu" />
+        <property name="ForceFilterButtonVisible" />
       </itemgroup>
     </itemgroups>
     <signals>

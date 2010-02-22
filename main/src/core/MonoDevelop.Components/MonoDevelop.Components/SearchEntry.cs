@@ -65,10 +65,15 @@ namespace MonoDevelop.Components
 			add { filter_changed += value; }
 			remove { filter_changed -= value; }
 		}
-
+		
+		public bool ForceFilterButtonVisible {
+			get;
+			set;
+		}
+		
 		public Menu Menu {
 			get { return menu; }
-			set { menu = value; }
+			set { menu = value; menu.Deactivated += OnMenuDeactivated; }
 		}
 
 		public Entry Entry {
@@ -158,7 +163,7 @@ namespace MonoDevelop.Components
 		private void ShowHideButtons ()
 		{
 			clear_button.Visible = entry.Text.Length > 0;
-			filter_button.Visible = menu != null && menu.Children.Length > 0;
+			filter_button.Visible = ForceFilterButtonVisible || (menu != null && menu.Children.Length > 0);
 		}
 
 		private void OnPositionMenu (Menu menu, out int x, out int y, out bool push_in)
@@ -257,7 +262,6 @@ namespace MonoDevelop.Components
 			entry.HasFocus = true;
 			
 			if (o == filter_button) {
-				
 				ShowMenu (args.Event.Time);
 			}
 		}
