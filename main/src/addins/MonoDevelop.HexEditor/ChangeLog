@@ -1,5 +1,10 @@
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.HexEditor.addin.xml: disabled open with hex
+	  editor command (is already in 'Open with'...)
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.HexEditor.csproj:
 	* MonoDevelop.HexEditor.addin.xml:

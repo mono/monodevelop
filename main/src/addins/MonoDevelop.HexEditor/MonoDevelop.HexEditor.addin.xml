@@ -18,10 +18,10 @@
 		<Addin id="Ide" version="2.2"/>
 		<Addin id="AssemblyBrowser" version="2.2"/>
 	</Dependencies>
-	
+	<!--
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.HexEditor.Commands.ShowHexEditor" _label = "Open with _hex editor" />
-	</Extension>
+	</Extension> -->
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding 
@@ -29,7 +29,7 @@
 			insertafter ="AssemblyBrowser"
 			class = "MonoDevelop.HexEditor.HexEditorDisplayBinding" />
 	</Extension>
-	
+	<!--
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "HexEditorNodeExtension" class = "MonoDevelop.HexEditor.HexEditorNodeExtension"/>
 	</Extension>
@@ -39,5 +39,5 @@
 			<CommandItem id = "MonoDevelop.HexEditor.Commands.ShowHexEditor" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
 		</Condition>
 	</Extension>
-	
+	-->
 </Addin>
