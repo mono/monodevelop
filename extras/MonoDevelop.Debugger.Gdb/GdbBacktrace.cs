@@ -128,6 +128,11 @@ namespace MonoDevelop.Debugger.Gdb
 			return values.ToArray ();
 		}
 		
+		public ObjectValue GetException (int frameIndex, EvaluationOptions options)
+		{
+			return null;
+		}
+		
 		public ValidationResult ValidateExpression (int frameIndex, string expression, EvaluationOptions options)
 		{
 			return new ValidationResult (true, null);
