@@ -797,7 +797,7 @@ namespace DebuggerServer
 
 				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
 					MdbEvaluationContext ctx = new MdbEvaluationContext (args.Frame.Thread, args.Frame, SessionOptions.EvaluationOptions);
-					targetArgs.Exception = LiteralValueReference.CreateTargetObjectLiteral (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
+					//targetArgs.Exception = LiteralValueReference.CreateTargetObjectLiteral (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
 				}
 
 				running = false;
