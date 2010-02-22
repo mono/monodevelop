@@ -842,7 +842,7 @@ namespace MonoDevelop.Components.Commands
 		void AddUpdater (List<CommandUpdaterInfo> methodUpdaters, MethodInfo method, CommandUpdateHandlerAttribute attr)
 		{
 			foreach (CommandUpdaterInfo ci in methodUpdaters) {
-				if (ci.CommandId.Equals (attr.CommandId)) {
+				if (ci.CommandId.Equals (CommandManager.ToCommandId (attr.CommandId))) {
 					ci.Init (method, attr);
 					return;
 				}

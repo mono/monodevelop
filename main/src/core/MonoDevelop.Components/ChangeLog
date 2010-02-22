@@ -1,3 +1,9 @@
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Add
+	  missing command id conversion. Fixes bug #581700 - "Build
+	  Action" menu for files is empty.
+
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/SearchEntry.cs: Added popup filter
