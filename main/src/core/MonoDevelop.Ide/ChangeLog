@@ -1,3 +1,7 @@
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Fix nullref.
+
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/TextEditor.cs: Fixed new file template
