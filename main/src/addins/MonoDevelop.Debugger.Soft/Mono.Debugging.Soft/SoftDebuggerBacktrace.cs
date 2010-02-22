@@ -45,13 +45,16 @@ namespace Mono.Debugging.Soft
 		{
 			this.session = session;
 			this.thread = thread;
-			this.frames = thread.GetFrames ();
 			stackVersion = session.StackVersion;
+			if (thread != null)
+				this.frames = thread.GetFrames ();
+			else
+				this.frames = new MDB.StackFrame[0];
 		}
 		
 		void ValidateStack ()
 		{
-			if (stackVersion != session.StackVersion)
+			if (stackVersion != session.StackVersion && thread != null)
 				frames = thread.GetFrames ();
 		}
 
