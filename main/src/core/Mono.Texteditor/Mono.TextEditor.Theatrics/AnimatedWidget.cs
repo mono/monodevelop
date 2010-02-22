@@ -55,6 +55,8 @@ namespace Mono.TextEditor.Theatrics
         public int Height;
         public int StartPadding;
         public int EndPadding;
+		
+		public LinkedListNode <AnimatedWidget> Node;
 
         private readonly bool horizontal;
         private double percent;

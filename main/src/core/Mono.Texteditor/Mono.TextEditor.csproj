@@ -154,6 +154,8 @@
     <Compile Include="Mono.TextEditor\IAnimationDrawer.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Animation.cs" />
     <Compile Include="Mono.TextEditor\TextEditorContainer.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedBox.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedVBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

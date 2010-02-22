@@ -1,5 +1,14 @@
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.Theatrics/AnimatedBox.cs:
+	* Mono.TextEditor.Theatrics/AnimatedVBox.cs:
+	* Mono.TextEditor.Theatrics/AnimatedWidget.cs: Added animated
+	  box.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/OblivionStyle.xml: changed main search result color
 	  in oblivion.
 

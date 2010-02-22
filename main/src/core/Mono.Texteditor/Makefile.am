@@ -38,6 +38,8 @@ FILES =  \
 	Mono.TextEditor.PopupWindow/ListWindow.cs \
 	Mono.TextEditor.PopupWindow/TooltipWindow.cs \
 	Mono.TextEditor.Theatrics/Actor.cs \
+	Mono.TextEditor.Theatrics/AnimatedBox.cs \
+	Mono.TextEditor.Theatrics/AnimatedVBox.cs \
 	Mono.TextEditor.Theatrics/AnimatedWidget.cs \
 	Mono.TextEditor.Theatrics/Animation.cs \
 	Mono.TextEditor.Theatrics/Choreographer.cs \
