@@ -48,13 +48,16 @@ namespace DebuggerServer
 				return frame;
 			}
 		}
+		
+		public TargetObject Exception { get; private set; }
 
-		public MdbEvaluationContext (Thread thread, StackFrame frame, Mono.Debugging.Client.EvaluationOptions options): base (options)
+		public MdbEvaluationContext (Thread thread, StackFrame frame, TargetObject exception, Mono.Debugging.Client.EvaluationOptions options): base (options)
 		{
 			Evaluator = Server.Instance.Evaluator;
 			Adapter = Server.Instance.MdbObjectValueAdaptor;
 			this.thread = thread;
 			this.frame = frame;
+			this.Exception = exception;
 		}
 		
 		public TargetObject GetRealObject (object ob)

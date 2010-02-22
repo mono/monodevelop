@@ -298,6 +298,15 @@ namespace DebuggerServer
 			else
 				return null;
 		}
+		
+		public override ValueReference GetCurrentException (EvaluationContext gctx)
+		{
+			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
+			if (ctx.Exception != null)
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, ctx.Exception);
+			else
+				return null;
+		}
 
 
 		public override IEnumerable<ValueReference> GetParameters (EvaluationContext gctx)

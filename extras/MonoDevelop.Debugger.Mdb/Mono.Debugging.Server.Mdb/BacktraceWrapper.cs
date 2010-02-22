@@ -17,10 +17,12 @@ namespace DebuggerServer
 		MD.StackFrame[] frames;
 		DissassemblyBuffer[] disBuffers;
 		bool disposed;
+		TargetObject exception;
 	       
-		public BacktraceWrapper (MD.StackFrame[] frames): base (Server.Instance.MdbObjectValueAdaptor)
+		public BacktraceWrapper (MD.StackFrame[] frames, TargetObject exception): base (Server.Instance.MdbObjectValueAdaptor)
 		{
 			this.frames = frames;
+			this.exception = exception;
 			Connect ();
 		}
 
@@ -76,7 +78,7 @@ namespace DebuggerServer
 		{
 			CheckDisposed ();
 			MD.StackFrame frame = frames [frameIndex];
-			return new MdbEvaluationContext (frame.Thread, frame, options);
+			return new MdbEvaluationContext (frame.Thread, frame, exception, options);
 		}
 	
 		public override AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)

@@ -295,16 +295,23 @@ namespace DebuggerServer
 				ev = sbp;
 			}
 			else if (be is Catchpoint) {
-				Catchpoint cp = (Catchpoint) be;
-				ML.TargetType exc = null;
-				foreach (Module mod in process.Modules) {
-					exc = mod.Language.LookupType (cp.ExceptionName);
+				lock (pendingCatchpoints) {
+					Catchpoint cp = (Catchpoint) be;
+					ML.TargetType exc = null;
+					if (process != null) {
+						foreach (Module mod in process.Modules) {
+							exc = mod.Language.LookupType (cp.ExceptionName);
+							if (exc != null)
+								break;
+						}
+					}
 					if (exc != null)
-						break;
+						ev = session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc);
+					else {
+						pendingCatchpoints.Add (cp);
+						return -1;
+					}
 				}
-				if (exc == null)
-					throw new Exception ("Unknown exception type.");
-				ev = session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc);
 			}
 			
 			ev.IsEnabled = enable;
@@ -317,7 +324,7 @@ namespace DebuggerServer
 						                    
 			if (bp != null && !running && !initializing && activeThread.CurrentFrame != null && !string.IsNullOrEmpty (bp.ConditionExpression) && bp.BreakIfConditionChanges) {
 				// Initial expression evaluation
-				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, SessionOptions.EvaluationOptions);
+				MdbEvaluationContext ctx = new MdbEvaluationContext (activeThread, activeThread.CurrentFrame, null, SessionOptions.EvaluationOptions);
 				ML.TargetObject ob = EvaluateExp (ctx, bp.ConditionExpression);
 				if (ob != null)
 					lastConditionValue [ev.Index] = evaluator.TargetObjectToExpression (ctx, ob).Value;
@@ -373,7 +380,7 @@ namespace DebuggerServer
 				return false;
 			}
 
-			MdbEvaluationContext ctx = new MdbEvaluationContext (frame.Thread, frame, SessionOptions.EvaluationOptions);
+			MdbEvaluationContext ctx = new MdbEvaluationContext (frame.Thread, frame, null, SessionOptions.EvaluationOptions);
 			DL.Breakpoint bp = be as DL.Breakpoint;
 			if (bp != null && !string.IsNullOrEmpty (bp.ConditionExpression)) {
 				ML.TargetObject val = EvaluateExp (ctx, bp.ConditionExpression);
@@ -505,7 +512,7 @@ namespace DebuggerServer
 		{
 			MD.Thread t = GetThread (processId, threadId);
 			if (t != null && t.IsStopped)
-				return CreateBacktrace (t);
+				return CreateBacktrace (t, null);
 			else
 				return null;
 		}
@@ -601,7 +608,7 @@ namespace DebuggerServer
 			return mc.ReturnValue;
 		}
 
-		DL.Backtrace CreateBacktrace (MD.Thread thread)
+		DL.Backtrace CreateBacktrace (MD.Thread thread, ML.TargetObject exception)
 		{
 			List<MD.StackFrame> frames = new List<MD.StackFrame> ();
 			DateTime t = DateTime.Now;
@@ -620,10 +627,10 @@ namespace DebuggerServer
 				}
 			}
 			if (frames.Count > 0) {
-				BacktraceWrapper wrapper = new BacktraceWrapper (frames.ToArray ());
+				BacktraceWrapper wrapper = new BacktraceWrapper (frames.ToArray (), exception);
 				return new DL.Backtrace (wrapper);
 			} else if (thread.CurrentBacktrace != null) {
-				BacktraceWrapper wrapper = new BacktraceWrapper (thread.CurrentBacktrace.Frames);
+				BacktraceWrapper wrapper = new BacktraceWrapper (thread.CurrentBacktrace.Frames, exception);
 				return new DL.Backtrace (wrapper);
 			}
 			return null;
@@ -791,14 +798,13 @@ namespace DebuggerServer
 				DL.TargetEventArgs targetArgs = new DL.TargetEventArgs (type);
 
 				if (args.Type != MD.TargetEventType.TargetExited) {
-					targetArgs.Backtrace = CreateBacktrace (thread);
+					ML.TargetObject exception = null;
+					if (args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception)
+						exception = args.Frame.ExceptionObject;
+					targetArgs.Backtrace = CreateBacktrace (thread, exception);
 					targetArgs.Thread = CreateThreadInfo (activeThread);
 				}
 
-				if ((args.Type == MD.TargetEventType.UnhandledException || args.Type == MD.TargetEventType.Exception) && (args.Data is TargetAddress)) {
-					MdbEvaluationContext ctx = new MdbEvaluationContext (args.Frame.Thread, args.Frame, SessionOptions.EvaluationOptions);
-					//targetArgs.Exception = LiteralValueReference.CreateTargetObjectLiteral (ctx, "Exception", args.Frame.ExceptionObject).CreateObjectValue ();
-				}
 
 				running = false;
 
@@ -858,6 +864,8 @@ namespace DebuggerServer
 			WriteDebuggerOutput (string.Format ("Thread {0} exited.\n", thread.ID));
 		}
 		
+		List<Catchpoint> pendingCatchpoints = new List<Catchpoint> ();
+		
 		private void OnModuleLoadedEvent (Module module)
 		{
 			SourceFile[] sfiles = module.Sources;
@@ -866,6 +874,19 @@ namespace DebuggerServer
 				files [n] = sfiles [n].FileName;
 			controller.NotifySourceFileLoaded (files);
 			WriteDebuggerOutput (string.Format ("Module loaded: {0}.\n", module.Name));
+
+			if (process == null)
+				return;
+			
+			lock (pendingCatchpoints) {
+				foreach (Catchpoint cp in pendingCatchpoints.ToArray ()) {
+					ML.TargetType exc = module.Language.LookupType (cp.ExceptionName);
+					if (exc != null) {
+						session.InsertExceptionCatchPoint (process.MainThread, ThreadGroup.Global, exc);
+						pendingCatchpoints.Remove (cp);
+					}
+				}
+			}
 		}
 
 		private void OnModuleUnLoadedEvent (Module module)
