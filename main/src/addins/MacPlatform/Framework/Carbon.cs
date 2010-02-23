@@ -253,9 +253,14 @@ namespace OSXIntegration.Framework
 		
 		public static void CheckReturn (int osErr)
 		{
-			if (osErr != 0)
-				throw new SystemException ("Unexpected OS error code " + osErr + "");
+			if (osErr != 0) {
+				string s = GetMacOSStatusCommentString (osErr);
+				throw new SystemException ("Unexpected OS error code " + osErr + ": " + s);
+			}
 		}
+		
+		[DllImport (CarbonLib)]
+		static extern string GetMacOSStatusCommentString (int osErr);
 		
 		#endregion
 		
