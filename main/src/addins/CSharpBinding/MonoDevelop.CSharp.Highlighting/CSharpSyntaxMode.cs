@@ -288,8 +288,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					i += length - 1;
 					return;
 				}
-				
-				if (i + 3 < doc.Length && doc.GetTextAt (i, 3) == "#if") {
+				if (CurRule.Name == "<root>" &&  i + 3 < doc.Length && doc.GetTextAt (i, 3) == "#if") {
 					LineSegment line = doc.GetLineByOffset (i);
 					int length = line.Offset + line.EditableLength - i;
 					string parameter = doc.GetTextAt (i + 3, length - 3);
@@ -360,6 +359,18 @@ namespace MonoDevelop.CSharp.Highlighting
 					//i += length - 1;
 					return;
 				}
+				if (CurRule.Name == "<root>" &&  doc.GetCharAt (i) == '#') {
+					Span preprocessorSpan = new Span ();
+					
+					preprocessorSpan.TagColor = "text.preprocessor";
+					preprocessorSpan.Color = "text.preprocessor";
+					preprocessorSpan.Rule = "String";
+					preprocessorSpan.StopAtEol = true;
+					OnFoundSpanBegin (preprocessorSpan, i, 1);
+					spanStack.Push (preprocessorSpan);
+					ruleStack.Push (GetRule (preprocessorSpan));
+				}
+
 				base.ScanSpan (ref i);
 			}
 			
