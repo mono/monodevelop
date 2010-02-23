@@ -61,8 +61,7 @@ namespace MonoDevelop.Components
             Add(image);
         }
 
-        public HoverImageButton(IconSize size, string icon_name) :
-            this(size, new string [] { icon_name })
+        public HoverImageButton(IconSize size, string icon_name) : this(size, new string [] { icon_name })
         {
         }
 
@@ -88,7 +87,8 @@ namespace MonoDevelop.Components
             }
 
             changing_style = true;
-            LoadPixbufs();
+			if (normal_pixbuf == null)
+	            LoadPixbufs();
             changing_style = false;
         }
 
@@ -194,6 +194,16 @@ namespace MonoDevelop.Components
 
             UpdateImage();
         }
+		
+		public Gdk.Pixbuf Pixbuf {
+			get { return this.normal_pixbuf; }
+			set { 
+				this.normal_pixbuf = value; 
+				active_pixbuf = ColorShiftPixbuf(normal_pixbuf, 30); 
+				UpdateImage();
+			}
+		}
+		
 
         private static byte PixelClamp(int val)
         {

@@ -1,9 +1,10 @@
-// ActiveLanguageCondition.cs
+//
+// ThemeEngine.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//     Aaron Bockover <abockover@novell.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright 2009 Aaron Bockover
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
 using System;
-using MonoDevelop.Projects;
-using Mono.Addins;
 
-namespace MonoDevelop.Projects.Gui
+namespace MonoDevelop.Components.Theming
 {
-	public class ActiveLanguageCondition: ConditionType
+	public static class ThemeEngine
 	{
-		string language;
-		
-		public ActiveLanguageCondition (object obj)
+		private static Type theme_type;
+
+		public static void SetCurrentTheme<T> () where T : Theme
 		{
-			DotNetProject dp = obj as DotNetProject;
-			if (dp != null)
-				language = dp.LanguageName;
+			theme_type = typeof(T);
 		}
-		
-		public override bool Evaluate (NodeElement conditionNode)
+
+		public static Theme CreateTheme (Gtk.Widget widget)
 		{
-			if (string.IsNullOrEmpty (language))
-				return false;
-			return language == conditionNode.GetAttribute ("value");
+			return theme_type == null ? new GtkTheme (widget) : (Theme)Activator.CreateInstance (theme_type, new object[] { widget });
 		}
 	}
 }

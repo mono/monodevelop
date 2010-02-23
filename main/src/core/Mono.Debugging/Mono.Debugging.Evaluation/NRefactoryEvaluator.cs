@@ -69,6 +69,9 @@ namespace Mono.Debugging.Evaluation
 				if (exp == null)
 					return null;
 			}
+			
+			exp = ReplaceExceptionTag (exp, ctx.Options.CurrentExceptionTag);
+			
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
@@ -85,15 +88,52 @@ namespace Mono.Debugging.Evaluation
 			if (exp.StartsWith ("var "))
 				return "var " + Resolve (session, location, exp.Substring (4).Trim (' ','\t'));
 
+			exp = ReplaceExceptionTag (exp, session.Options.EvaluationOptions.CurrentExceptionTag);
+
 			StringReader codeStream = new StringReader (exp);
 			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
 			Expression expObj = parser.ParseExpression ();
 			if (expObj == null)
-				throw new EvaluatorException ("Could not parse expression '{0}'", exp);
+				return exp;
 			NRefactoryResolverVisitor ev = new NRefactoryResolverVisitor (session, location, exp);
 			expObj.AcceptVisitor (ev, null);
 			return ev.GetResolvedExpression ();
 		}
+		
+		public override ValidationResult ValidateExpression (EvaluationContext ctx, string exp)
+		{
+			if (exp.StartsWith ("?"))
+				exp = exp.Substring (1).Trim ();
+			
+			exp = ReplaceExceptionTag (exp, ctx.Options.CurrentExceptionTag);
+			
+			// Required as a workaround for a bug in the parser (it won't parse simple expressions like numbers)
+			if (!exp.EndsWith (";"))
+				exp += ";";
+				
+			StringReader codeStream = new StringReader (exp);
+			IParser parser = ParserFactory.CreateParser (SupportedLanguage.CSharp, codeStream);
+			
+			string errorMsg = null;
+			parser.Errors.Error = delegate (int line, int col, string msg) {
+				if (errorMsg == null)
+					errorMsg = msg;
+			};
+			
+			parser.ParseExpression ();
+			
+			if (errorMsg != null)
+				return new ValidationResult (false, errorMsg);
+			else
+				return new ValidationResult (true, null);
+		}
+		
+		string ReplaceExceptionTag (string exp, string tag)
+		{
+			// FIXME: Don't replace inside string literals
+			return exp.Replace (tag, "__EXCEPTION_OBJECT__");
+		}
+
 	}
 
 	class EvaluatorVisitor: AbstractAstVisitor
@@ -309,6 +349,11 @@ namespace Mono.Debugging.Evaluation
 		
 		object VisitIdentifier (string name)
 		{
+			// Exception tag
+			
+			if (name == "__EXCEPTION_OBJECT__")
+				return ctx.Adapter.GetCurrentException (ctx);
+			
 			// Look in user defined variables
 			
 			ValueReference userVar;

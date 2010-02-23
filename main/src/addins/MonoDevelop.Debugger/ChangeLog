@@ -1,3 +1,86 @@
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ExceptionsDialog.cs: Fix bug #579754 -
+	  Duplicate exception names in debugger exception dialog
+
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ExceptionCaughtDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs: Added
+	  new dialog which is shown when an exception is caught.
+
+	* MonoDevelop.Debugger/ImmediatePad.cs: Use new expression
+	  validation method.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs:
+	* MonoDevelop.Debugger/BreakpointPad.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track api
+	  changes.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebuggerEngine.cs: Properly initialize
+	  the engine.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/Extensions.cs:
+	* MonoDevelop.Debugger/DebuggerEngine.cs:
+	* MonoDevelop.Debugger/IDebuggerEngine.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/DebugExecutionModeSet.cs:
+	* MonoDevelop.Debugger/AttachToProcessDialog.cs:
+	* MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:
+	* MonoDevelop.Debugger/DebuggerEngineExtensionNode.cs:
+	* MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs: Added
+	  support for lazy loading of add-ins
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs:
+	* MonoDevelop.Debugger/BreakpointPad.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API
+	  changes for lazy loading images.
+
+2010-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/ExceptionsDialog.cs: Include
+	  System.Exception in exceptions list.
+
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: init pinned
+	  watch coordinates to -1.
+
+2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/PinnedWatch.cs:
+	* MonoDevelop.Debugger/PinnedWatchStore.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:
+	  Implemented infrastructure for supporting persistent pinned
+	  watches.
+
+2010-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebugCommands.cs: Warn the user when
+	  trying to debug an outdated exe. Fixes bug #540979.
+
 2010-01-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API

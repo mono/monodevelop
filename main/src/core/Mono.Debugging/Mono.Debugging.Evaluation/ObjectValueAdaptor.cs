@@ -490,6 +490,11 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
+		public virtual ValueReference GetCurrentException (EvaluationContext ctx)
+		{
+			return null;
+		}
+
 		public virtual object GetEnclosingType (EvaluationContext ctx)
 		{
 			return null;
@@ -746,7 +751,11 @@ namespace Mono.Debugging.Evaluation
 
 			int i = data.ProxyType.IndexOf ('`');
 			if (i != -1) {
-				int np = int.Parse (data.ProxyType.Substring (i + 1));
+				// The proxy type is an uninstantiated generic type.
+				// The number of type args of the proxy must match the args of the target object
+				int j = i + 1;
+				for (; j < data.ProxyType.Length && char.IsDigit (data.ProxyType[j]); j++);
+				int np = int.Parse (data.ProxyType.Substring (i + 1, j - i - 1));
 				typeArgs = GetTypeArgs (ctx, GetValueType (ctx, obj));
 				if (typeArgs.Length != np)
 					return obj;
@@ -893,6 +902,11 @@ namespace Mono.Debugging.Evaluation
 		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;
+		}
+		
+		public virtual ValidationResult ValidateExpression (EvaluationContext ctx, string expression)
+		{
+			return ctx.Evaluator.ValidateExpression (ctx, expression);
 		}
 	}
 

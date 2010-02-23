@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set;
 		}
 		
-		bool inCategoryMode;
+		static bool inCategoryMode;
 		public bool InCategoryMode {
 			get { return inCategoryMode; }
 			set { inCategoryMode = value; this.CalcVisibleRows (); this.UpdatePage (); }
@@ -161,8 +161,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int curItem = 0;
 			int yPos = 0;
 			Iterate (false, ref yPos, delegate (Category category, int ypos) {
-				if (countCategories)
+				if (countCategories) {
+					if (curItem == index)
+						result = category.Items[0];
 					curItem++;
+				}
 			}, delegate (Category curCategory, int item, int ypos) {
 				if (curItem == index)
 					result = item;
@@ -171,13 +174,44 @@ namespace MonoDevelop.Projects.Gui.Completion
 			
 			return result;
 		}
+		public void MoveToCategory (int relative)
+		{
+			int current = CurrentCategory ();
+			int next = System.Math.Min (categories.Count - 1, System.Math.Max (0, current + relative));
+				
+			Category newCategory = categories[next];
+			Selection = newCategory.Items[0];
+			if (next == 0)
+				Page = 0;
+			UpdatePage ();
+		}
+		
+		int CurrentCategory ()
+		{
+			for (int i = 0; i < categories.Count; i++) {
+				if (categories[i].Items.Contains (Selection)) 
+					return i;
+			}
+			return -1;
+		}
 		
 		public void MoveCursor (int relative)
 		{
-			int newSelection = GetItem (false, System.Math.Min (filteredItems.Count - 1, System.Math.Max (0, GetIndex (false, Selection) + relative)));
-			if (newSelection < 0)
+			int newIndex = GetIndex (false, Selection) + relative;
+			if (Math.Abs (relative) == 1) {
+				if (newIndex < 0)
+					newIndex = filteredItems.Count - 1;
+				if (newIndex >= filteredItems.Count)
+					newIndex = 0;
+			}
+			int newSelection = GetItem (false, System.Math.Min (filteredItems.Count - 1, System.Math.Max (0, newIndex)));
+			if (newSelection < 0) 
 				return;
-			Selection = newSelection;
+			if (Selection == newSelection && relative < 0) {
+				Page = 0;
+			} else {
+				Selection = newSelection;
+			}
 			this.UpdatePage ();
 		}
 		
@@ -218,6 +252,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 			set {
 				page = value;
 				this.QueueDraw ();
+				if (SelectionChanged != null)
+					SelectionChanged (this, EventArgs.Empty);
 			}
 		}
 		
@@ -283,11 +319,14 @@ namespace MonoDevelop.Projects.Gui.Completion
 			Iterate (true, ref yPos, delegate (Category category, int ypos) {
 				if (ypos >= winHeight - margin)
 					return;
+				
+			//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, Allocation.Width, rowHeight);
+				
 				Gdk.Pixbuf icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
 				window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
 				
-				layout.SetMarkup ("<span style='italic' foreground='#CCCCCC'>" + category.CompletionCategory.DisplayText + "</span>");
-				window.DrawLayout (this.Style.TextGC (StateType.Normal), icon.Width + 4, ypos, layout);
+				layout.SetMarkup ("<span weight='bold'>" + category.CompletionCategory.DisplayText + "</span>");
+				window.DrawLayout (this.Style.TextGC (StateType.Insensitive), icon.Width + 4, ypos, layout);
 				layout.SetMarkup ("");
 			}, delegate (Category curCategory, int item, int ypos) {
 				if (ypos >= winHeight - margin)
@@ -528,6 +567,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 					filteredItems.Add (newSelection);
 				}
 			}
+			categories.Sort (delegate (Category left, Category right) {
+				return right.CompletionCategory != null ? right.CompletionCategory.CompareTo (left.CompletionCategory) : -1;
+			});
 			CalcVisibleRows ();
 			UpdatePage ();
 		}
@@ -536,7 +578,8 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			if (visibleRows == -1)
 				CalcVisibleRows ();
-			return page + (ypos - margin) / rowHeight - (PreviewCompletionString ? 1 : 0);
+			
+			return GetItem (true, page + (ypos - margin) / rowHeight - (PreviewCompletionString ? 1 : 0));
 		}
 		
 		public Gdk.Rectangle GetRowArea (int row)

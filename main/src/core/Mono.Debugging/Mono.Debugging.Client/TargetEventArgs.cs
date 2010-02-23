@@ -1,4 +1,5 @@
 using System;
+using Mono.Debugging.Backend;
 
 namespace Mono.Debugging.Client
 {
@@ -9,7 +10,6 @@ namespace Mono.Debugging.Client
 		Backtrace backtrace;
 		ProcessInfo process;
 		ThreadInfo thread;
-		ObjectValue exception;
 
 		public TargetEventArgs (TargetEventType type)
 		{
@@ -43,15 +43,6 @@ namespace Mono.Debugging.Client
 			}
 			set {
 				process = value;
-			}
-		}
-
-		public ObjectValue Exception {
-			get {
-				return exception;
-			}
-			set {
-				exception = value;
 			}
 		}
 	}

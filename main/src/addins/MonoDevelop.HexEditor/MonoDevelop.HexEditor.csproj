@@ -104,6 +104,7 @@
     <Compile Include="MonoDevelop.HexEditor\DisplayBinding.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorView.cs" />
     <Compile Include="MonoDevelop.HexEditor\MonoDevelopHexEditorStyle.cs" />
+    <Compile Include="MonoDevelop.HexEditor\HexEditorNodeExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -138,6 +139,14 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
+      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
+      <Name>MonoDevelop.Projects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
+      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
+      <Name>MonoDevelop.Components</Name>
+    </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -154,4 +163,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+  </ItemGroup>
 </Project>

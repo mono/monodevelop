@@ -1,3 +1,12 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AddLogEntryDialog.cs: Track api changes.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* AddLogEntryDialog.cs: Track API changes for lazy loading
+	  images.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

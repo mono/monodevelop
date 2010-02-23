@@ -30,6 +30,8 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public interface ICSharpDomVisitor<T, S>
 	{
+		S VisitCompilationUnit (CompilationUnit unit, T data);
+		
 		#region General scope
 		S VisitAttribute (Attribute attribute, T data);
 		S VisitAttributeSection (AttributeSection attributeSection, T data);
@@ -58,6 +60,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		#region Statements
 		S VisitBlockStatement (BlockStatement blockStatement, T data);
+		S VisitExpressionStatement (ExpressionStatement expressionStatement, T data);
 		S VisitBreakStatement (BreakStatement breakStatement, T data);
 		S VisitCheckedStatement (CheckedStatement checkedStatement, T data);
 		S VisitContinueStatement (ContinueStatement continueStatement, T data);
@@ -110,6 +113,9 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitTypeOfExpression (TypeOfExpression typeOfExpression, T data);
 		S VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, T data);
 		S VisitUncheckedExpression (UncheckedExpression uncheckedExpression, T data);
+		S VisitAsExpression (AsExpression asExpression, T data);
+		S VisitIsExpression (IsExpression isExpression, T data);
+		S VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, T data);
 		#endregion
 		
 		#region Query Expressions

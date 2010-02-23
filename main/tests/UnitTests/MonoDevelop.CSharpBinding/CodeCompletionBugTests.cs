@@ -2214,7 +2214,45 @@ public class Foo
 			Assert.IsNotNull (provider.Find ("Print"), "method 'Print' not found.");
 		}
 		
-		
+		/// <summary>
+		/// Bug 577225 - Inconsistent autocomplete on returned value of generic method.
+		/// </summary>
+		[Test()]
+		public void TestBug577225 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+using Foo;
+	
+namespace Foo 
+{
+	public class FooBar
+	{
+		public void Bar ()
+		{
+		}
+	}
+}
+
+namespace Other 
+{
+	public class MainClass
+	{
+		public static T Test<T> ()
+		{
+			return default (T);
+		}
+			
+		public static void Main (string[] args)
+		{
+			$Test<FooBar> ().$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
+		}
 		
 	}
 }

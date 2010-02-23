@@ -56,6 +56,10 @@ namespace MonoDevelop.Ide.Gui
 			set;
 		}
 		
+		public bool HasInputFocus {
+			get { return false; }
+		}
+		
 		public int LineCount {
 			get {
 				return document.LineCount;

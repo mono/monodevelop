@@ -230,6 +230,7 @@ namespace MonoDevelop.RegexToolkit
 		void UpdateStartButtonSensitivity (object sender, EventArgs args)
 		{
 			this.buttonStart.Sensitive = this.entryRegEx.Text.Length > 0 && inputTextview.Buffer.CharCount > 0;
+			labelStatus.Text = string.Empty;
 		}
 		
 		void ShowTooltipForSelectedEntry ()
@@ -359,12 +360,17 @@ namespace MonoDevelop.RegexToolkit
 						this.replaceResultTextview.Buffer.Text = regex.Replace (input, replacement);
 					});
 				}
+			} catch (ThreadAbortException) {
+				Thread.ResetAbort ();
+			} catch (ArgumentException) {
+				Application.Invoke (delegate {
+					labelStatus.Text = GettextCatalog.GetString ("Invalid expression");
+				});
+			} finally {
 				regexThread = null;
 				Application.Invoke (delegate {
 					SetButtonStart (GettextCatalog.GetString ("_Start Regular Expression"), "gtk-media-play");
 				});
-			} catch (ThreadAbortException) {
-				Thread.ResetAbort ();
 			}
 		}
 		

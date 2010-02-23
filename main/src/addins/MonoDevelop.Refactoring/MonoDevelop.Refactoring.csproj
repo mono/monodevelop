@@ -118,6 +118,11 @@
     <Compile Include="MonoDevelop.Refactoring.DeclareLocal\GetContainingEmbeddedStatementVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeSearchVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.CreateMethod\CreateMethodHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

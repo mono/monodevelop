@@ -26,7 +26,7 @@
 
 using System;
 using System.Diagnostics;
-using Mono.Debugger;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Client;
 using System.Collections.Generic;
@@ -333,10 +333,49 @@ namespace Mono.Debugging.Soft
 			Value val = cx.Frame.GetThis ();
 			return LiteralValueReference.CreateTargetObjectLiteral (ctx, "this", val);
 		}
+		
+		public override ValueReference GetCurrentException (EvaluationContext ctx)
+		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			ObjectMirror exc = cx.Session.GetExceptionObject (cx.Thread);
+			if (exc != null)
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, exc);
+			else
+				return null;
+		}
+
 
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
-			// TODO
+			string s = ((TypeMirror)type).FullName;
+			int i = s.IndexOf ('`');
+			List<string> names = new List<string> ();
+			if (i != -1) {
+				i = s.IndexOf ('[', i);
+				if (i == -1)
+					return new object [0];
+				int si = ++i;
+				int nt = 0;
+				for (; i < s.Length && (nt > 0 || s[i] != ']'); i++) {
+					if (s[i] == '[')
+						nt++;
+					else if (s[i] == ']')
+						nt--;
+					else if (s[i] == ',' && nt == 0)
+						names.Add (s.Substring (si, i - si));
+				}
+				names.Add (s.Substring (si, i - si));
+				object[] types = new object [names.Count];
+				for (int n=0; n<names.Count; n++) {
+					string tn = names [n];
+					if (tn.StartsWith ("["))
+						tn = tn.Substring (1, tn.Length - 2);
+					types [n] = GetType (ctx, tn);
+					if (types [n] == null)
+						return new object [0];
+				}
+				return types;
+			}
 			return new object [0];
 		}
 
@@ -804,6 +843,17 @@ namespace Mono.Debugging.Soft
 				else
 					result = ((StructMirror)obj).EndInvokeMethod (handle);
 			} catch (InvocationException ex) {
+				if (ex.Exception != null) {
+					string ename = ctx.Adapter.GetValueTypeName (ctx, ex.Exception);
+					ValueReference vref = ctx.Adapter.GetMember (ctx, null, ex.Exception, "Message");
+					if (vref != null) {
+						exception = new Exception (ename + ": " + (string)vref.ObjectValue);
+						return;
+					} else {
+						exception = new Exception (ename);
+						return;
+					}
+				}
 				exception = ex;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error in soft debugger method call thread on " + GetInfo (), ex);

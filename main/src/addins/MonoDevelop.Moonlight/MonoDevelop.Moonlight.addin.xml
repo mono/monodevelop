@@ -70,7 +70,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.Moonlight.MoonlightEditorExtension" />
+		<Class fileExtensions = ".xaml" class = "MonoDevelop.Moonlight.MoonlightEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
@@ -82,14 +82,16 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.Moonlight.MoonlightBuildExtension" insertafter="MidStep" />
+		<Condition id="ItemType" value="MonoDevelop.Moonlight.MoonlightProject">
+			<Class class = "MonoDevelop.Moonlight.MoonlightBuildExtension" insertafter="MidStep" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Frameworks">
-		<Framework id="SL2.0" resource="framework_SL_2_0.xml">
+		<Framework id="SL2.0" file="Templates/framework_SL_2_0.xml">
 			<Backend class="MonoDevelop.Moonlight.MoonlightFrameworkBackend" />
 		</Framework>
-		<Framework id="SL3.0" resource="framework_SL_3_0.xml">
+		<Framework id="SL3.0" file="Templates/framework_SL_3_0.xml">
 			<Backend class="MonoDevelop.Moonlight.MoonlightFrameworkBackend" />
 		</Framework>
 	</Extension>

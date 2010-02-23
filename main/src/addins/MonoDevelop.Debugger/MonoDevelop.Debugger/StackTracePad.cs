@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger
 			tree.HeadersVisible = true;
 
 			TreeViewColumn col = new TreeViewColumn ();
-			CellRenderer crp = new CellRendererPixbuf ();
+			CellRenderer crp = new CellRendererIcon ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock_id", 0);
 			tree.AppendColumn (col);

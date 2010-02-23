@@ -122,6 +122,18 @@ namespace Mono.Debugging.Client
 			return value;
 		}
 		
+		public ObjectValue GetException ()
+		{
+			return GetException (session.EvaluationOptions);
+		}
+		
+		public ObjectValue GetException (EvaluationOptions options)
+		{
+			ObjectValue value = sourceBacktrace.GetException (index, options);
+			ObjectValue.ConnectCallbacks (value);
+			return value;
+		}
+		
 		public string ResolveExpression (string exp)
 		{
 			return session.ResolveExpression (exp, location);
@@ -163,6 +175,24 @@ namespace Mono.Debugging.Client
 			return values [0];
 		}
 		
+		/// <summary>
+		/// Returns True if the expression is valid and can be evaluated for this frame.
+		/// </summary>
+		public bool ValidateExpression (string expression)
+		{
+			return ValidateExpression (expression, session.EvaluationOptions);
+		}
+		
+		/// <summary>
+		/// Returns True if the expression is valid and can be evaluated for this frame.
+		/// </summary>
+		public ValidationResult ValidateExpression (string expression, EvaluationOptions options)
+		{
+			if (options.UseExternalTypeResolver)
+				expression = ResolveExpression (expression);
+			return sourceBacktrace.ValidateExpression (index, expression, options);
+		}
+		
 		public CompletionData GetExpressionCompletionData (string exp)
 		{
 			return sourceBacktrace.GetExpressionCompletionData (index, exp);
@@ -185,6 +215,27 @@ namespace Mono.Debugging.Client
 			else
 				loc = "";
 			return String.Format("0x{0:X} in {1}{2}", address, location.Method, loc);
+		}
+	}
+	
+	[Serializable]
+	public struct ValidationResult
+	{
+		bool isValid;
+		string message;
+		
+		public ValidationResult (bool isValid, string message)
+		{
+			this.isValid = isValid;
+			this.message = message;
+		}
+		
+		public bool IsValid { get { return isValid; } }
+		public string Message { get { return message; } }
+		
+		public static implicit operator bool (ValidationResult result)
+		{
+			return result.isValid;
 		}
 	}
 }

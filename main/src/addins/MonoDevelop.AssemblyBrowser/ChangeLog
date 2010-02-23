@@ -1,3 +1,9 @@
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AssemblyBrowser.addin.xml:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserView.cs: Added
+	  FindDerivedClasses command.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

@@ -74,6 +74,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		
 		protected override void OnDestroyed ()
 		{
+			
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Destroy ();
 				declarationviewwindow = null;
@@ -102,7 +103,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ka = ProcessKey (key, keyChar, modifier);
 			}
 			
-			if (key == Gdk.Key.ISO_Next_Group || key == Gdk.Key.ISO_Prev_Group) {
+			if (key == Gdk.Key.space && (modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
 				this.List.InCategoryMode = !this.List.InCategoryMode;
 				this.ResetSizes ();
 				this.List.QueueDraw ();
@@ -117,18 +118,22 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 			if ((ka & KeyActions.Ignore) != 0)
 				return true;
-
+			
 			if ((ka & KeyActions.Process) != 0) {
 				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
 					// Close if there's a modifier active EXCEPT lock keys and Modifiers
 					// Makes an exception for Mod1Mask (usually alt), shift, control, meta and super
 					// This prevents the window from closing if the num/scroll/caps lock are active
 					// FIXME: modifier mappings depend on X server settings
-					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)))) != 0) {
+					
+//					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)))) != 0) {
+					// this version doesn't work for my system - seems that I've a modifier active
+					// that gdk doesn't know about. How about the 2nd version - should close on left/rigt + shift/mod1/control/meta/super
+					if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)) != 0) {
 						CompletionWindowManager.HideWindow ();
 						return false;
 					}
-
+					
 					if (declarationviewwindow.Multiple) {
 						if (key == Gdk.Key.Left)
 							declarationviewwindow.OverloadLeft ();

@@ -44,11 +44,6 @@ namespace MonoDevelop.TextTemplating.Gui
 		{
 		}
 		
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, MonoDevelop.Ide.Gui.Content.IEditableTextBuffer editor)
-		{
-			return doc.Name.EndsWith (".tt");
-		}
-		
 		public override void Initialize ()
 		{
 			base.Initialize ();

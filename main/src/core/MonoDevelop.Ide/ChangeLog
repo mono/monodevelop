@@ -1,3 +1,200 @@
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Fix nullref.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs: Fixed new file template
+	  creation bug.
+
+2010-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: set
+	  default for find in files to case insensitive.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs: Added missing
+	  getstring call.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
+	  Added missing getstring call.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:
+	  Edit references title is now translateable.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ConfirmProjectDeleteDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  Track api changes.
+
+	* MonoDevelop.Ide.Gui/Pad.cs:
+	* MonoDevelop.Ide.Codons/PadCodon.cs:
+	* MonoDevelop.Ide.Gui/IPadContainer.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Templates/FileTemplate.cs:
+	* MonoDevelop.Ide.Gui/AbstractPadContent.cs:
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Gui.Components/TreeViewItem.cs: Use the new
+	  IconId type.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs: Avoid
+	  stack overflow when there's a cyclic project dependency in
+	  the sln.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Implemented a new method for getting comment tags. It is
+	  going to replace some properties of ILanguageBinding.
+
+2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Fix path bar
+	  detaching.
+
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: MD now creates a new
+	  layout by default: 'Solution'. This layout is enabled when a
+	  solution is opened. The old 'Default' layout is shown when
+	  MD is started, and has all pads minimized.
+
+	* MonoDevelop.Ide.Gui/Pad.cs:
+	* MonoDevelop.Ide.Gui/IPadContainer.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Added AutoHide
+	  property to Pad.
+
+2010-02-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Don't share text editor
+	  extension instance between editors or things end up in the
+	  wrong editor.
+
+2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Extensions/TextEditorExtensionNode.cs: Allow
+	  specifyings the file extensions to which a
+	  TextEditorExtension applies in the add-in manifest. In this
+	  way we can delay the loading of such extensions.
+
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: More tracing.
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Don't put help service init in a
+	  timeout, it stops MD from being closed before timeout runs.
+
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Delay help service
+	  initialization.
+
+2010-02-09  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/StartupInfo.cs: Allow users to specify
+	  file line and column at launch.
+
+2010-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/IdeStartup.cs: Add startup trace calls.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/ConfirmProjectDeleteDialog.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs:
+	  Track API changes for lazy loading images.
+
+2010-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs: Add startup trace calls.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Gui.Content/IPrintable.cs: Implement a Page
+	  Setup command.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Gui.Content/IPrintable.cs: Add CanPrint
+	  method to IPrintable.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Gui.Content/IEditableTextBuffer.cs:
+	* MonoDevelop.Ide.Gui/HiddenTextEditorViewContent.cs: Added
+	  method to check whether text editor has input focus.
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs: Only enable
+	  "Insert standard header" command when text editor has input
+	  focus. 
+
+	* MonoDevelop.Ide.addin.xml: Improve ordering of edit menu.
+
+2010-02-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs: Don't
+	  show Close Workspace checkbox on save.
+
+2010-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	  Make sure the Run With menu is hidden when there are no
+	  handlers that can run a project. Fixes bug #575657 - Crash
+	  is custom execution modes.
+
+2010-01-28  Scott Willeke  <scott@willeke.com>
+	* MonoDevelop.Ide.Commands/FileCommands.cs
+	Catching exception to prevent lock on load due to no permission 
+	to recently used file.
+	  
+	
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/ISolutionItemFeature.cs:

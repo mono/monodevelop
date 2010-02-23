@@ -79,6 +79,14 @@ namespace MonoDevelop.Debugger
 				ops.AllowMethodEvaluation = true;
 				ops.AllowTargetInvoke = true;
 				ops.EvaluationTimeout = 20000;
+				var ff = DebuggingService.CurrentFrame;
+				string tt = e.Text;
+				ValidationResult vres = ff.ValidateExpression (tt, ops);
+				if (!vres) {
+					view.WriteOutput (vres.Message);
+					view.Prompt (true);
+					return;
+				}
 				ObjectValue val = DebuggingService.CurrentFrame.GetExpressionValue (e.Text, ops);
 				if (val.IsEvaluating) {
 					WaitForCompleted (val);

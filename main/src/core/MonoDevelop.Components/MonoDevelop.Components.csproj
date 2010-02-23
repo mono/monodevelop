@@ -238,6 +238,14 @@
     <Compile Include="MonoDevelop.Components.Extensions\ISelectFileDialog.cs" />
     <Compile Include="MonoDevelop.Components\SelectFileDialog.cs" />
     <Compile Include="MonoDevelop.Components\SelectFolderDialog.cs" />
+    <Compile Include="MonoDevelop.Components\RoundedFrame.cs" />
+    <Compile Include="MonoDevelop.Components.Theming\GtkColors.cs" />
+    <Compile Include="MonoDevelop.Components.Theming\GtkTheme.cs" />
+    <Compile Include="MonoDevelop.Components.Theming\Theme.cs" />
+    <Compile Include="MonoDevelop.Components.Theming\ThemeContext.cs" />
+    <Compile Include="MonoDevelop.Components.Theming\ThemeEngine.cs" />
+    <Compile Include="MonoDevelop.Components\CairoExtensions.cs" />
+    <Compile Include="MonoDevelop.Components\PangoCairoHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -262,5 +270,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.Extensions\" />
+    <Folder Include="MonoDevelop.Components.Theming\" />
   </ItemGroup>
 </Project>

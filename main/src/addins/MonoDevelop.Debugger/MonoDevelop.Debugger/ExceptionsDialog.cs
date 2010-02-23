@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 		ListStore storeExceptions;
 		ListStore storeSelection;
 		bool systemLoaded;
-		List<string> classes = new List<string> ();
+		HashSet<string> classes = new HashSet<string> ();
 		TreeViewState tstateExc;
 		TreeViewState tstateSel;
 		bool updateScheduled;
@@ -89,6 +89,7 @@ namespace MonoDevelop.Debugger
 				}
 				dom = ProjectDomService.GetAssemblyDom (Runtime.SystemAssemblyService.CurrentRuntime, asm);
 			}
+			classes.Add ("System.Exception");
 			foreach (IType t in dom.GetSubclasses (dom.GetType ("System.Exception", true)))
 				classes.Add (t.FullName);
 		}

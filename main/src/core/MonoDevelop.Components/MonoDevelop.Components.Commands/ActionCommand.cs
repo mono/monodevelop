@@ -28,6 +28,8 @@
 
 
 using System;
+using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -38,16 +40,19 @@ namespace MonoDevelop.Components.Commands
 		Type defaultHandlerType;
 		CommandHandler defaultHandler;
 		
+		RuntimeAddin defaultHandlerAddin;
+		string defaultHandlerTypeName;
+		
 		public ActionCommand ()
 		{
 		}
 		
-		public ActionCommand (object id, string text, string icon): base (id, text)
+		public ActionCommand (object id, string text, IconId icon): base (id, text)
 		{
 			Icon = icon;
 		}
 		
-		public ActionCommand (object id, string text, string icon, string accelKey, ActionType type): base (id, text)
+		public ActionCommand (object id, string text, IconId icon, string accelKey, ActionType type): base (id, text)
 		{
 			Icon = icon;
 			AccelKey = accelKey;
@@ -65,13 +70,25 @@ namespace MonoDevelop.Components.Commands
 		}
 
 		public Type DefaultHandlerType {
-			get { return defaultHandlerType; }
+			get {
+				if (defaultHandlerType != null)
+					return defaultHandlerType;
+				if (defaultHandlerAddin != null)
+					return defaultHandlerType = defaultHandlerAddin.GetType (defaultHandlerTypeName, true);
+				return null;
+			}
 			set {
 				if (!typeof (CommandHandler).IsAssignableFrom (value))
 					throw new ArgumentException ("Value must be a subclass of CommandHandler (" + value + ")");
 
 				defaultHandlerType = value;
 			}
+		}
+		
+		public void SetDefaultHandlerTypeInfo (RuntimeAddin addin, string typeName)
+		{
+			defaultHandlerAddin = addin;
+			defaultHandlerTypeName = typeName;
 		}
 
 		public CommandHandler DefaultHandler {
@@ -82,9 +99,9 @@ namespace MonoDevelop.Components.Commands
 		public virtual bool DispatchCommand (object dataItem)
 		{
 			if (defaultHandler == null) {
-				if (defaultHandlerType == null)
+				if (DefaultHandlerType == null)
 					return false;
-				defaultHandler = (CommandHandler) Activator.CreateInstance (defaultHandlerType);
+				defaultHandler = (CommandHandler) Activator.CreateInstance (DefaultHandlerType);
 			}			
 			defaultHandler.Run (dataItem);
 			return true;
@@ -93,13 +110,13 @@ namespace MonoDevelop.Components.Commands
 		public virtual void UpdateCommandInfo (CommandInfo info)
 		{
 			if (defaultHandler == null) {
-				if (defaultHandlerType == null) {
+				if (DefaultHandlerType == null) {
 					info.Enabled = false;
 					if (!DisabledVisible)
 						info.Visible = false;
 					return;
 				}
-				defaultHandler = (CommandHandler) Activator.CreateInstance (defaultHandlerType);
+				defaultHandler = (CommandHandler) Activator.CreateInstance (DefaultHandlerType);
 			}
 			if (commandArray) {
 				info.ArrayInfo = new CommandArrayInfo (info);

@@ -1,3 +1,14 @@
+2010-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MakefileData.cs: Fix assembly resolution issue when loading
+	  a project.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MakefileReaderExtension.cs:
+	* MonoDevelop.Autotools.csproj: Remove usnused extension.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MakefileIntegrationFeature.cs: Track api changes.

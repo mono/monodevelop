@@ -29,6 +29,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Text;
 using Mono.Debugging.Backend;
+using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -59,6 +60,11 @@ namespace Mono.Debugging.Evaluation
 			}
 			throw new EvaluatorException ("Invalid Expression: '{0}'", exp);
 		}
+		
+		public virtual ValidationResult ValidateExpression (EvaluationContext ctx, string expression)
+		{
+			return new ValidationResult (true, null);
+		}
 
 		public string TargetObjectToString (EvaluationContext ctx, object obj)
 		{
@@ -71,10 +77,10 @@ namespace Mono.Debugging.Evaluation
 
 		public EvaluationResult TargetObjectToExpression (EvaluationContext ctx, object obj)
 		{
-			return ToExpression (ctx.Adapter.TargetObjectToObject (ctx, obj));
+			return ToExpression (ctx, ctx.Adapter.TargetObjectToObject (ctx, obj));
 		}
 		
-		public virtual EvaluationResult ToExpression (object obj)
+		public virtual EvaluationResult ToExpression (EvaluationContext ctx, object obj)
 		{
 			if (obj == null)
 				return new EvaluationResult ("null");
@@ -100,6 +106,30 @@ namespace Mono.Debugging.Evaluation
 				return new EvaluationResult (((decimal)obj).ToString (System.Globalization.CultureInfo.InvariantCulture));
 			else if (obj is EvaluationResult)
 				return (EvaluationResult) obj;
+			
+			if (ctx.Options.IntegerDisplayFormat == IntegerDisplayFormat.Hexadecimal) {
+				string fval = null;
+				if (obj is sbyte)
+					fval = ((sbyte)obj).ToString ("x2");
+				else if (obj is int)
+					fval = ((int)obj).ToString ("x4");
+				else if (obj is short)
+					fval = ((short)obj).ToString ("x8");
+				else if (obj is long)
+					fval = ((long)obj).ToString ("x16");
+				else if (obj is byte)
+					fval = ((byte)obj).ToString ("x2");
+				else if (obj is uint)
+					fval = ((uint)obj).ToString ("x4");
+				else if (obj is ushort)
+					fval = ((ushort)obj).ToString ("x8");
+				else if (obj is ulong)
+					fval = ((ulong)obj).ToString ("x16");
+				
+				if (fval != null)
+					return new EvaluationResult ("0x" + fval);
+			}
+			
 			return new EvaluationResult (obj.ToString ());
 		}
 

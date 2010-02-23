@@ -184,7 +184,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			CellRendererToggle cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
-			CellRendererPixbuf crc = new CellRendererPixbuf();
+			var crc = new CellRendererIcon ();
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
 			colCommit.Spacing = 2;
@@ -197,7 +197,7 @@ namespace MonoDevelop.VersionControl.Views
 			colCommit.AddAttribute (crc, "visible", ColShowComment);
 			
 			CellRendererText crt = new CellRendererText();
-			CellRendererPixbuf crp = new CellRendererPixbuf();
+			var crp = new CellRendererPixbuf ();
 			TreeViewColumn colStatus = new TreeViewColumn ();
 			colStatus.Title = GettextCatalog.GetString ("Status");
 			colStatus.PackStart (crp, false);
@@ -210,7 +210,7 @@ namespace MonoDevelop.VersionControl.Views
 			TreeViewColumn colFile = new TreeViewColumn ();
 			colFile.Title = GettextCatalog.GetString ("File");
 			colFile.Spacing = 2;
-			crp = new CellRendererPixbuf();
+			crp = new CellRendererPixbuf ();
 			diffRenderer = new CellRendererDiff ();
 			colFile.PackStart (crp, false);
 			colFile.PackStart (diffRenderer, true);
@@ -219,7 +219,7 @@ namespace MonoDevelop.VersionControl.Views
 			colFile.SetCellDataFunc (diffRenderer, new TreeCellDataFunc (SetDiffCellData));
 			
 			crt = new CellRendererText();
-			crp = new CellRendererPixbuf();
+			crp = new CellRendererPixbuf ();
 			colRemote = new TreeViewColumn ();
 			colRemote.Title = GettextCatalog.GetString ("Remote Status");
 			colRemote.PackStart (crp, false);
@@ -695,30 +695,8 @@ namespace MonoDevelop.VersionControl.Views
 			string id = codon.Id;
 			if (id.StartsWith ("@"))
 				return id.Substring (1);
-
-			Type enumType = null;
-			string typeName = id;
-			
-			int i = id.LastIndexOf (".");
-			if (i != -1)
-				typeName = id.Substring (0,i);
-				
-			enumType = codon.Addin.GetType (typeName);
-				
-			if (enumType == null)
-				enumType = Type.GetType (typeName);
-
-			if (enumType == null)
-				enumType = typeof(Command).Assembly.GetType (typeName);
-
-			if (enumType == null || !enumType.IsEnum)
-				throw new InvalidOperationException ("Could not find an enum type for the command '" + id + "'.");
-				
-			try {
-				return Enum.Parse (enumType, id.Substring (i+1));
-			} catch {
-				throw new InvalidOperationException ("Could not find an enum value for the command '" + id + "'.");
-			}
+			else
+				return id;
 		}
 		
 		void OnExpandAll (object s, EventArgs args)

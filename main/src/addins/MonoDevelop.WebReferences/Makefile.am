@@ -23,9 +23,11 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs \
 	gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs \
 	MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs \
 	MonoDevelop.WebReferences.Commands/WebReferenceCommands.cs \
+	MonoDevelop.WebReferences.Dialogs/UserPasswordDialog.cs \
 	MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs \
 	MonoDevelop.WebReferences.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
 	MonoDevelop.WebReferences.NodeBuilders/ProjectNodeBuilder.cs \

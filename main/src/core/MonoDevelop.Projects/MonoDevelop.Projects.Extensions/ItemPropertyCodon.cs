@@ -33,8 +33,11 @@ using Mono.Addins;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	internal class ItemPropertyCodon: DataTypeCodon
+	internal class ItemPropertyCodon: ExtensionNode
 	{
+		[NodeAttribute ("class", true)]
+		string typeName;
+		
 		[NodeAttribute("name", true, Description="Name of the property")]
 		string propName;
 		
@@ -48,6 +51,12 @@ namespace MonoDevelop.Projects.Extensions
 		bool skipEmpty;
 		
 		Type type;
+
+		public string TypeName {
+			get {
+				return typeName;
+			}
+		}
 		
 		public Type PropertyType {
 			get {
@@ -55,6 +64,10 @@ namespace MonoDevelop.Projects.Extensions
 					type = Addin.GetType (propType);
 				return type; 
 			}
+		}
+		
+		public string PropertyTypeName {
+			get { return propType; }
 		}
 		
 		public string PropertyName {

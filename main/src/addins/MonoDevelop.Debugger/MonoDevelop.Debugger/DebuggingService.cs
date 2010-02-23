@@ -56,22 +56,23 @@ namespace MonoDevelop.Debugger
 
 	public static class DebuggingService
 	{
-		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerFactories";
-		static IDebuggerEngine[] engines;
+		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerEngines";
+		static DebuggerEngine[] engines;
 		
 		static BreakpointStore breakpoints = new BreakpointStore ();
+		static PinnedWatchStore pinnedWatches = new PinnedWatchStore ();
 		
 		static IConsole console;
 		static DebugExecutionHandlerFactory executionHandlerFactory;
 		
-		static IDebuggerEngine currentEngine;
+		static DebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
 		static int currentFrame;
 
 		static BusyEvaluatorDialog busyDialog;
 
-			
+		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
 		static public event EventHandler ResumedEvent;
 		static public event EventHandler StoppedEvent;
@@ -86,11 +87,11 @@ namespace MonoDevelop.Debugger
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
-			if (IdeApp.IsInitialized) {
+			IdeApp.Initialized += delegate {
 				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 				busyDialog = new BusyEvaluatorDialog ();
-			}
+			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list
 				engines = null;
@@ -110,6 +111,37 @@ namespace MonoDevelop.Debugger
 			get { return breakpoints; }
 		}
 		
+		public static PinnedWatchStore PinnedWatches {
+			get { return pinnedWatches; }
+		}
+		
+		public static void SetLiveUpdateMode (PinnedWatch watch, bool liveUpdate)
+		{
+			if (watch.LiveUpdate == liveUpdate)
+				return;
+			
+			watch.LiveUpdate = liveUpdate;
+			if (liveUpdate) {
+				Breakpoint bp = new Breakpoint (watch.File, watch.Line);
+				bp.TraceExpression = "{" + watch.Expression + "}";
+				bp.HitAction = HitAction.PrintExpression;
+				breakpoints.Add (bp);
+				pinnedWatches.Bind (watch, bp);
+			} else {
+				pinnedWatches.Bind (watch, null);
+				breakpoints.Remove (watch.BoundTracer);
+			}
+		}
+		
+		static void BreakpointTraceHandler (BreakEvent be, string trace)
+		{
+			if (be is Breakpoint) {
+				if (pinnedWatches.UpdateLiveWatch ((Breakpoint) be, trace))
+					return; // No need to log the value. It is shown in the watch.
+			}
+			console.Log.Write (trace + "\n");
+		}
+		
 		public static string[] EnginePriority {
 			get {
 				string s = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
@@ -117,7 +149,7 @@ namespace MonoDevelop.Debugger
 					// Set the initial priorities
 					List<string> prios = new List<string> ();
 					int i = 0;
-					foreach (IDebuggerEngine de in AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true)) {
+					foreach (DebuggerEngineExtensionNode de in AddinManager.GetExtensionNodes (FactoriesPath)) {
 						if (de.Id.StartsWith ("Mono.Debugger.Soft")) // Give priority to soft debugger by default
 							prios.Insert (i++, de.Id);
 						else
@@ -170,7 +202,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool IsDebuggingSupported {
 			get {
-				return GetDebuggerEngines ().Length > 0;
+				return AddinManager.GetExtensionNodes (FactoriesPath).Count > 0;
 			}
 		}
 
@@ -181,7 +213,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool IsFeatureSupported (DebuggerFeatures feature)
 		{
-			foreach (IDebuggerEngine engine in GetDebuggerEngines ())
+			foreach (DebuggerEngine engine in GetDebuggerEngines ())
 				if ((engine.SupportedFeatures & feature) == feature)
 					return true;
 			return false;
@@ -197,7 +229,7 @@ namespace MonoDevelop.Debugger
 
 		public static DebuggerFeatures GetSupportedFeaturesForCommand (ExecutionCommand command)
 		{
-			IDebuggerEngine engine = GetFactoryForCommand (command);
+			DebuggerEngine engine = GetFactoryForCommand (command);
 			if (engine != null)
 				return engine.SupportedFeatures;
 			else
@@ -286,7 +318,7 @@ namespace MonoDevelop.Debugger
 			return h.Execute (cmd, console);
 		}
 		
-		public static IAsyncOperation AttachToProcess (IDebuggerEngine debugger, ProcessInfo proc)
+		public static IAsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
 			currentEngine = debugger;
 			session = debugger.CreateSession ();
@@ -333,7 +365,7 @@ namespace MonoDevelop.Debugger
 				DisassemblyRequested (null, EventArgs.Empty);
 		}
 		
-		internal static void InternalRun (ExecutionCommand cmd, IDebuggerEngine factory, IConsole c)
+		internal static void InternalRun (ExecutionCommand cmd, DebuggerEngine factory, IConsole c)
 		{
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
@@ -388,8 +420,13 @@ namespace MonoDevelop.Debugger
 			session.BusyStateChanged += OnBusyStateChanged;
 			
 			session.TypeResolverHandler = ResolveType;
+			session.BreakpointTraceHandler = BreakpointTraceHandler;
 
 			console.CancelRequested += new EventHandler (OnCancelRequested);
+			
+			if (DebugSessionStarted != null)
+				DebugSessionStarted (null, EventArgs.Empty);
+			
 			NotifyLocationChanged ();
 		}
 		
@@ -432,6 +469,7 @@ namespace MonoDevelop.Debugger
 					case TargetEventType.UnhandledException:
 					case TargetEventType.ExceptionThrown:
 						NotifyPaused ();
+						NotifyException (args);
 						break;
 					default:
 						break;
@@ -458,6 +496,21 @@ namespace MonoDevelop.Debugger
 			});
 		}
 		
+		static void NotifyException (TargetEventArgs args)
+		{
+			if (args.Type == TargetEventType.UnhandledException || args.Type == TargetEventType.ExceptionThrown) {
+				DispatchService.GuiDispatch (delegate {
+					if (CurrentFrame != null) {
+						ObjectValue val = CurrentFrame.GetException ();
+						if (val != null) {
+							ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
+							dlg.Show ();
+						}
+					}
+				});
+			}
+		}
+		
 		static void NotifyLocationChanged ()
 		{
 			if (ExecutionLocationChanged != null)
@@ -466,6 +519,7 @@ namespace MonoDevelop.Debugger
 		
 		static void NotifyCurrentFrameChanged ()
 		{
+			pinnedWatches.InvalidateAll ();
 			if (CurrentFrameChanged != null)
 				CurrentFrameChanged (null, EventArgs.Empty);
 		}
@@ -613,34 +667,37 @@ namespace MonoDevelop.Debugger
 			return GetFactoryForCommand (command) != null;
 		}
 		
-		public static IDebuggerEngine[] GetDebuggerEngines ()
+		public static DebuggerEngine[] GetDebuggerEngines ()
 		{
 			if (engines == null) {
-				IDebuggerEngine[] engs = (IDebuggerEngine[]) AddinManager.GetExtensionObjects (FactoriesPath, typeof(IDebuggerEngine), true);
+				List<DebuggerEngine> engs = new List<DebuggerEngine> ();
+				foreach (DebuggerEngineExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath))
+					engs.Add (new DebuggerEngine (node));
+				
 				string[] priorities = EnginePriority;
-				Array.Sort (engs, delegate (IDebuggerEngine d1, IDebuggerEngine d2) {
+				engs.Sort (delegate (DebuggerEngine d1, DebuggerEngine d2) {
 					int i1 = Array.IndexOf (priorities, d1.Id);
 					int i2 = Array.IndexOf (priorities, d2.Id);
 					
 					//ensure that soft debugger is prioritised over newly installed debuggers
 					if (i1 < 0 )
-						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Length;
+						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Count;
 					if (i2 < 0)
-						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Length;
+						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Count;
 					
 					if (i1 == i2)
 						return d1.Name.CompareTo (d2.Name);
 					else
 						return i1.CompareTo (i2);
 				});
-				engines = engs;
+				engines = engs.ToArray ();
 			}
 			return engines;
 		}		
 		
-		static IDebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
+		static DebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
-			foreach (IDebuggerEngine factory in GetDebuggerEngines ()) {
+			foreach (DebuggerEngine factory in GetDebuggerEngines ()) {
 				if (factory.CanDebugCommand (cmd))
 					return factory;
 			}
@@ -666,14 +723,21 @@ namespace MonoDevelop.Debugger
 		
 		static void OnStoreUserPrefs (object s, UserPreferencesEventArgs args)
 		{
-			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService", breakpoints.Save ());
+			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.Breakpoints", breakpoints.Save ());
+			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.PinnedWatches", pinnedWatches);
 		}
 		
 		static void OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
 		{
-			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
+			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints");
+			if (elem == null)
+				elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 			if (elem != null)
 				breakpoints.Load (elem);
+			PinnedWatchStore wstore = args.Properties.GetValue<PinnedWatchStore> ("MonoDevelop.Ide.DebuggingService.PinnedWatches");
+			if (wstore != null)
+				pinnedWatches.LoadFrom (wstore);
+			pinnedWatches.BindAll (breakpoints);
 		}
 		
 		static string ResolveType (string identifier, SourceLocation location)
@@ -714,9 +778,9 @@ namespace MonoDevelop.Debugger
 	
 	internal class InternalDebugExecutionHandler: IExecutionHandler
 	{
-		IDebuggerEngine engine;
+		DebuggerEngine engine;
 		
-		public InternalDebugExecutionHandler (IDebuggerEngine engine)
+		public InternalDebugExecutionHandler (DebuggerEngine engine)
 		{
 			this.engine = engine;
 		}

@@ -31,8 +31,10 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class IfElseStatement : AbstractCSharpNode
 	{
-		const int TrueEmbeddedStatementRole = 100;
-		const int FalseEmbeddedStatementRole = 101;
+		public const int TrueEmbeddedStatementRole = 100;
+		public const int FalseEmbeddedStatementRole = 101;
+		public const int IfKeywordRole = 102;
+		public const int ElseKeywordRole = 103;
 		
 		public INode TrueEmbeddedStatement {
 			get { return GetChildByRole (TrueEmbeddedStatementRole); }

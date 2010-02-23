@@ -138,9 +138,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (PropertyService.Get ("EnableParameterInsight", true) && keyChar == ',' && CanRunParameterCompletionCommand ()) 
-				base.RunParameterCompletionCommand ();
 			bool result = base.KeyPress (key, keyChar, modifier);
+			
+			if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+				base.RunParameterCompletionCommand ();
 			
 			if (stateTracker.Engine.IsInsideComment) {
 				ParameterInformationWindowManager.HideWindow ();
@@ -362,7 +363,9 @@ namespace MonoDevelop.CSharp.Completion
 					resolveResult = resolver.Resolve (result, location);
 					if (resolveResult != null) {
 						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
-						if (resolvedType != null && resolvedType.ClassType == ClassType.Enum) {
+						if (resolvedType == null) 
+							return null;
+						if (resolvedType.ClassType == ClassType.Enum) {
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
 							CompletionDataCollector cdc = new CompletionDataCollector (completionList, Document.CompilationUnit, location);
 							IReturnType returnType = new DomReturnType (resolvedType);
@@ -392,6 +395,29 @@ namespace MonoDevelop.CSharp.Completion
 									completionList.Add (memberData);
 							}
 							completionList.AutoCompleteEmptyMatch = false;
+							return completionList;
+						} else if (resolvedType.FullName == DomReturnType.Bool.FullName) {
+							CompletionDataList completionList = new ProjectDomCompletionDataList ();
+							CompletionDataCollector cdc = new CompletionDataCollector (completionList, Document.CompilationUnit, location);
+							completionList.AutoCompleteEmptyMatch = false;
+							cdc.Add ("true", "md-keyword");
+							cdc.Add ("false", "md-keyword");
+							
+							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
+								MemberCompletionData memberData = o as MemberCompletionData;
+								if (memberData == null || memberData.Member == null)
+									continue;
+								IReturnType returnType = null;
+								if (memberData.Member is IMember) {
+									returnType = ((IMember)memberData.Member).ReturnType;
+								} else if (memberData.Member is IParameter) {
+									returnType = ((IParameter)memberData.Member).ReturnType;
+								} else {
+									returnType = ((LocalVariable)memberData.Member).ReturnType;
+								}
+								if (returnType != null && returnType.FullName == DomReturnType.Bool.FullName)
+									completionList.Add (memberData);
+							}
 							return completionList;
 						}
 					}
@@ -483,7 +509,7 @@ namespace MonoDevelop.CSharp.Completion
 					char nextCh = completionContext.TriggerOffset < Editor.TextLength
 							? Editor.GetCharAt (completionContext.TriggerOffset)
 							: ' ';
-					const string allowedChars = ";[(){}+-*/%^?:&|~!<>=";
+					const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
 					if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
 						return null;
 					if (Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0)
@@ -578,11 +604,15 @@ namespace MonoDevelop.CSharp.Completion
 			if (mem == null || (mem is IType))
 				return false;
 			int startPos = GetMemberStartPosition (mem);
-			
+			int bracketDepth = 0;
+			int chevronDepth = 0;
 			while (cpos > startPos) {
 				char c = Editor.GetCharAt (cpos);
-				
-				if (c == '(' || c == '<') {
+				if (c == ')')
+					bracketDepth++;
+				if (c == '>')
+					chevronDepth++;
+				if (bracketDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
 					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
 					if (p != -1) {
 						cpos++;
@@ -591,6 +621,10 @@ namespace MonoDevelop.CSharp.Completion
 						return false;
 					}
 				}
+				if (c == '(')
+					bracketDepth--;
+				if (c == '<')
+					chevronDepth--;
 				cpos--;
 			}
 			return false;
@@ -1077,12 +1111,38 @@ namespace MonoDevelop.CSharp.Completion
 			
 			Dictionary<IType, CompletionCategory> completionCategories = new Dictionary<IType, CompletionCategory> ();
 			
+			class TypeCompletionCategory : CompletionCategory
+			{
+				public IType Type {
+					get;
+					private set;
+				}
+				
+				public TypeCompletionCategory (IType type) : base (type.FullName, type.StockIcon)
+				{
+					this.Type = type;
+				}
+				
+				public override int CompareTo (CompletionCategory other)
+				{
+					TypeCompletionCategory compareCategory = other as TypeCompletionCategory;
+					if (compareCategory == null)
+						return 1;
+					
+					if (Type.DecoratedFullName == compareCategory.Type.DecoratedFullName)
+						return 0;
+					if (Type.SourceProjectDom.GetInheritanceTree (Type).Any (t => t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
+						return 1;
+					return -1;
+				}
+			}
+			
 			CompletionCategory GetCompletionCategory (IType type)
 			{
 				if (type == null)
 					return null;
 				if (!completionCategories.ContainsKey (type)) {
-					completionCategories[type] = new CompletionCategory (type.FullName, type.StockIcon);
+					completionCategories[type] = new TypeCompletionCategory (type);
 				}
 				return completionCategories[type];
 			}

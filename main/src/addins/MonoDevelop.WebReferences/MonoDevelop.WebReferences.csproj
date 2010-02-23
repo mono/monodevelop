@@ -111,6 +111,8 @@
     <Compile Include="MonoDevelop.WebReferences\DiscoveryProtocol.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs" />
+    <Compile Include="MonoDevelop.WebReferences.Dialogs\UserPasswordDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml">

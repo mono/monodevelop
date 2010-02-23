@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -48,7 +49,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.CompletionText = "test";
 			this.Icon        = template.Icon;
 			this.DisplayText = template.Shortcut;
-			this.Description = template.Shortcut + Environment.NewLine + template.Description;
+			this.Description = template.Shortcut + Environment.NewLine + GettextCatalog.GetString (template.Description);
 		}
 		
 		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)

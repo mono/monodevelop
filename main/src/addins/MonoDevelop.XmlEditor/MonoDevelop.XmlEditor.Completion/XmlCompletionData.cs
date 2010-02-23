@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using System;
 using MonoDevelop.XmlEditor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.XmlEditor.Completion
 {
@@ -77,7 +78,7 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return dataType; }
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return Gtk.Stock.GoForward; }
 		}
 		

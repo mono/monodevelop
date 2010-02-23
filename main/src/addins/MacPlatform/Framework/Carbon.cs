@@ -36,7 +36,7 @@ namespace OSXIntegration.Framework
 	
 	internal static class Carbon
 	{
-		const string CarbonLib = "/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon";
+		public const string CarbonLib = "/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon";
 		
 		[DllImport (CarbonLib)]
 		public static extern IntPtr GetApplicationEventTarget ();
@@ -253,9 +253,14 @@ namespace OSXIntegration.Framework
 		
 		public static void CheckReturn (int osErr)
 		{
-			if (osErr != 0)
-				throw new SystemException ("Unexpected OS error code " + osErr + "");
+			if (osErr != 0) {
+				string s = GetMacOSStatusCommentString (osErr);
+				throw new SystemException ("Unexpected OS error code " + osErr + ": " + s);
+			}
 		}
+		
+		[DllImport (CarbonLib)]
+		static extern string GetMacOSStatusCommentString (int osErr);
 		
 		#endregion
 		
@@ -279,32 +284,6 @@ namespace OSXIntegration.Framework
 		#endregion
 		
 		#region Navigation services
-		
-		[DllImport (CarbonLib)]
-		static extern NavStatus NavGetDefaultDialogCreationOptions (out NavDialogCreationOptions options);
-		
-		public static NavDialogCreationOptions NavGetDefaultDialogCreationOptions ()
-		{
-			NavDialogCreationOptions options;
-			CheckReturn ((int)NavGetDefaultDialogCreationOptions (out options));
-			return options;
-		}
-		
-		[DllImport (CarbonLib)]
-		static extern NavStatus NavCreateChooseFileDialog (ref NavDialogCreationOptions options, IntPtr inTypeList, 
-		                                                   NavEventUPP inEventProc, NavPreviewUPP inPreviewProc, 
-		                                                   NavObjectFilterUPP inFilterProc, ref IntPtr inClientData, out IntPtr navDialogRef);
-		//intTypeList is a NavTypeListHandle, which apparently is a pointer to  NavTypeListPtr, which is a pointer to a NavTypeList
-
-		
-		[DllImport (CarbonLib)]
-		static extern NavStatus NavDialogRun (IntPtr navDialogRef);
-		
-		[DllImport (CarbonLib)]
-		static extern NavStatus NavDialogGetReply (IntPtr navDialogRef, out NavReplyRecord outReply );
-		
-		[DllImport (CarbonLib)]
-		static extern void NavDialogDispose (IntPtr navDialogRef);
 		
 		[DllImport (CarbonLib)]
 		static extern NavStatus NavDialogSetFilterTypeIdentifiers (IntPtr getFileDialogRef, IntPtr typeIdentifiersCFArray);
@@ -390,9 +369,6 @@ namespace OSXIntegration.Framework
 		}
 	}
 	
-	struct NavEventUPP { IntPtr ptr; }
-	struct NavObjectFilterUPP { IntPtr ptr; }
-	struct NavPreviewUPP { IntPtr ptr; }
 	
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	struct AEDesc
@@ -691,254 +667,7 @@ namespace OSXIntegration.Framework
 		FromControl = 1 << 1,
 		FromWindow  = 1 << 2,
 	}
-	
-	//[StructLayout(LayoutKind.Sequential, Pack = 2, Size = 66)]
-	struct NavDialogCreationOptions
-	{
-		ushort version;
-		NavDialogOptionFlags optionFlags;
-		Point location;
-		IntPtr clientName; //CFStringRef
-		IntPtr windowTitle; //CFStringRef
-		IntPtr actionButtonLabel; // CFStringRef
-		IntPtr cancelButtonLabel; // CFStringRef
-		IntPtr saveFileName; // CFStringRef
-		IntPtr message; // CFStringRef
-		uint preferenceKey;
-		IntPtr popupExtension; //CFArrayRef
-		WindowModality modality;
-		IntPtr parentWindow; //WindowRef
-		char reserved; //char[16]
-		
-		public NavDialogOptionFlags OptionFlags {
-			get { return optionFlags; }
-			set { optionFlags = value; }
-		}
-		
-		public Point Location {
-			get { return location; }
-			set { location = value; }
-		}
-		
-		public IntPtr ClientName {
-			get { return clientName; }
-			set { clientName = value; }
-		}
-		
-		public IntPtr WindowTitle {
-			get { return windowTitle; }
-			set { windowTitle = value; }
-		}
-		
-		public IntPtr ActionButtonLabel {
-			get { return actionButtonLabel; }
-			set { actionButtonLabel = value; }
-		}
-		
-		public IntPtr CancelButtonLabel {
-			get { return cancelButtonLabel; }
-			set { cancelButtonLabel = value; }
-		}
-		
-		public IntPtr SaveFileName {
-			get { return saveFileName; }
-			set { saveFileName = value; }
-		}
-		
-		public IntPtr Message {
-			get { return message; }
-			set { message = value; }
-		}
-		
-		public uint PreferenceKey {
-			get { return preferenceKey; }
-			set { preferenceKey = value; }
-		}
-		
-		public WindowModality Modality {
-			get { return modality; }
-			set { modality = value; }
-		}
-		
-		public IntPtr ParentWindow {
-			get { return parentWindow; }
-			set { parentWindow = value; }
-		}
-	}
-	
-	[Flags]
-	enum NavDialogOptionFlags : uint
-	{
-		Default = DontAddTranslateItems & AllowStationery & AllowPreviews & AllowMultipleFiles,
-		NoTypePopup = 1,
-		DontAutoTranslate = 1 << 1,
-		DontAddTranslateItems = 1 << 2,
-		AllFilesInPopup = 1 << 4,
-		AllowStationery = 1 << 5,
-		AllowPreviews = 1 << 6,
-		AllowMultipleFiles = 1 << 7,
-		AllowInvisibleFiles = 1 << 8,
-		DontResolveAliases = 1 << 9,
- 		SelectDefaultLocation = 1 << 10,
-		SelectAllReadableItem = 1 << 11,
-		SupportPackages = 1 << 12,
-		AllowOpenPackages = 1 << 13,
-		DontAddRecents = 1 << 14,
-		DontUseCustomFrame = 1 << 15,
-		DontConfirmReplacement = 1 << 16,
-		PreserveSaveFileExtension = 1 << 17
-	}
-	
-	[StructLayout(LayoutKind.Sequential, Pack = 2)]
-	struct Point
-	{
-		short v;
-		short h;
-		
-		public Point (short v, short h)
-		{
-			this.v = v;
-			this.h = h;
-		}
-		
-		public short V { get { return v; } }
-		public short H { get { return h; } }
-	}
-	
-	[StructLayout(LayoutKind.Sequential, Pack = 2)]
-	struct Rect
-	{
-		short top;
-		short left;
-		short bottom;
-		short right;
-		
-		public short Top { get { return top; } }
-		public short Left { get { return left; } }
-		public short Bottom { get { return bottom; } }
-		public short Right { get { return right; } }
-	}
-	
-	enum WindowModality : uint
-	{
-		None = 0,
-		SystemModal = 1,
-		AppModal = 2,
-		WindowModal = 3,
-	}
-	
-	enum WindowPositionMethod : uint
-	{
-		CenterOnMainScreen = 1,
-		CenterOnParentWindow = 2,
-		CenterOnParentWindowScreen = 3,
-		CascadeOnMainScreen = 4,
-		CascadeOnParentWindow = 5,
-		CascadeOnParentWindowScreen = 6,
-		CascadeStartAtParentWindowScreen = 10,
-		AlertPositionOnMainScreen = 7,
-		AlertPositionOnParentWindow = 8,
-		AlertPositionOnParentWindowScreen = 9,
-	}
-	
-	enum NavStatus : int
-	{
-		Ok = 0,
-		WrongDialogStateErr = -5694,
-		WrongDialogClassErr = -5695,
-		InvalidSystemConfigErr = -5696,
-		CustomControlMessageFailedErr = -5697,
-		InvalidCustomControlMessageErr = -5698,
-		MissingKindStringErr = -5699,
-	}
-	
-	enum NavEventCallbackMessage : int
-	{
-		Event = 0,
-		Customize = 1,
-		Start = 2,
-		Terminate = 3,
-		AdjustRect = 4,
-		NewLocation = 5,
-		ShowDesktop = 6,
-		SelectEntry = 7,
-		PopupMenuSelect = 8,
-		Accept = 9,
-		Cancel = 10,
-		AdjustPreview = 11,
-		UserAction = 12,
-		OpenSelection = -2147483648, // unchecked 0x80000000
-	}
-	
-	[StructLayout(LayoutKind.Sequential, Pack = 2, Size=254)]
-	struct NavCBRec
-	{
-		ushort version;
-		IntPtr context; // NavDialogRef
-		IntPtr window; // WindowRef
-		Rect customRect;
-		Rect previewRect;
-		NavEventData eventData;
-		NavUserAction userAction;
-		char reserved; //[218];
-	}
-	
-	[StructLayout(LayoutKind.Sequential, Pack = 2)]
-	struct NavEventData
-	{
-		IntPtr eventDataParms; // NavEventDataInfo union, usually a pointer to either a EventRecord or an AEDescList
-		short itemHit;
-	}
-	
-	enum NavUserAction : uint
-	{
-		None = 0,
-		Cancel = 1,
-		Open = 2,
-		SaveAs = 3,
-		Choose = 4,
-		NewFolder = 5,
-		SaveChanges = 6,
-		DontSaveChanges = 7,
-		DiscardChanges = 8,
-		ReviewDocuments = 9,
-		DiscardDocuments = 10
-	}
-	
-	enum NavFilterModes : short
-	{
-		BrowserList = 0,
-		Favorites = 1,
-		Recents = 2,
-		ShortCutVolumes = 3,
-		LocationPopup = 4
-	}
-	
-	[StructLayout(LayoutKind.Sequential, Pack = 2, Size=255)]
-	struct NavReplyRecord
-	{
-		ushort version;
-		[MarshalAs(UnmanagedType.U1)]
-		bool validRecord;
-		[MarshalAs(UnmanagedType.U1)]
-		bool replacing;
-		[MarshalAs(UnmanagedType.U1)]
-		bool isStationery;
-		[MarshalAs(UnmanagedType.U1)]
-		bool translationNeeded;
-		AEDesc selection; //actually an AEDescList
-		short keyScript;
-		//fileTranslation is a FileTranslationSpecArrayHandle, which apparently is a pointer to a FileTranslationSpecArrayPtr,
-		//which is a pointer to a FileTranslationSpec
-		IntPtr fileTranslation;
-		uint reserved1;
-		IntPtr saveFileName; //CFStringRef
-		[MarshalAs(UnmanagedType.U1)]
-		bool saveFileExtensionHidden;
-		byte reserved2;
-		char reserved; //size [225];
-	}
-	
+
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	struct FileTranslationSpec
 	{

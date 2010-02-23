@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -264,7 +265,7 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		
-		static string[,] iconTable = new string[,] {
+		static IconId[,] iconTable = new IconId[,] {
 			{Stock.Error,     Stock.Error,            Stock.Error,              Stock.Error},             // unknown
 			{Stock.Class,     Stock.PrivateClass,     Stock.ProtectedClass,     Stock.InternalClass},     // class
 			{Stock.Enum,      Stock.PrivateEnum,      Stock.ProtectedEnum,      Stock.InternalEnum},      // enum
@@ -279,7 +280,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public override string StockIcon {
+		public override IconId StockIcon {
 			get {
 				return iconTable[(int)ClassType, ModifierToOffset (Modifiers)];
 			}
@@ -859,51 +860,51 @@ namespace MonoDevelop.Projects.Dom
 	
 	internal sealed class Stock 
 	{
-		public static readonly string Error = "gtk-dialog-error";
-		public static readonly string Class = "md-class";
-		public static readonly string Enum = "md-enum";
-		public static readonly string Event = "md-event";
-		public static readonly string Field = "md-field";
-		public static readonly string Interface = "md-interface";
-		public static readonly string Method = "md-method";
-		public static readonly string ExtensionMethod = "md-extensionmethod";
-		public static readonly string Property = "md-property";
-		public static readonly string Struct = "md-struct";
-		public static readonly string Delegate = "md-delegate";
-		public static readonly string Namespace = "md-name-space";
+		public static readonly IconId Error = "gtk-dialog-error";
+		public static readonly IconId Class = "md-class";
+		public static readonly IconId Enum = "md-enum";
+		public static readonly IconId Event = "md-event";
+		public static readonly IconId Field = "md-field";
+		public static readonly IconId Interface = "md-interface";
+		public static readonly IconId Method = "md-method";
+		public static readonly IconId ExtensionMethod = "md-extensionmethod";
+		public static readonly IconId Property = "md-property";
+		public static readonly IconId Struct = "md-struct";
+		public static readonly IconId Delegate = "md-delegate";
+		public static readonly IconId Namespace = "md-name-space";
 		
-		public static readonly string InternalClass = "md-internal-class";
-		public static readonly string InternalDelegate = "md-internal-delegate";
-		public static readonly string InternalEnum = "md-internal-enum";
-		public static readonly string InternalEvent = "md-internal-event";
-		public static readonly string InternalField = "md-internal-field";
-		public static readonly string InternalInterface = "md-internal-interface";
-		public static readonly string InternalMethod = "md-internal-method";
-		public static readonly string InternalExtensionMethod = "md-internal-extensionmethod";
-		public static readonly string InternalProperty = "md-internal-property";
-		public static readonly string InternalStruct = "md-internal-struct";
+		public static readonly IconId InternalClass = "md-internal-class";
+		public static readonly IconId InternalDelegate = "md-internal-delegate";
+		public static readonly IconId InternalEnum = "md-internal-enum";
+		public static readonly IconId InternalEvent = "md-internal-event";
+		public static readonly IconId InternalField = "md-internal-field";
+		public static readonly IconId InternalInterface = "md-internal-interface";
+		public static readonly IconId InternalMethod = "md-internal-method";
+		public static readonly IconId InternalExtensionMethod = "md-internal-extensionmethod";
+		public static readonly IconId InternalProperty = "md-internal-property";
+		public static readonly IconId InternalStruct = "md-internal-struct";
 		
-		public static readonly string PrivateClass = "md-private-class";
-		public static readonly string PrivateDelegate = "md-private-delegate";
-		public static readonly string PrivateEnum = "md-private-enum";
-		public static readonly string PrivateEvent = "md-private-event";
-		public static readonly string PrivateField = "md-private-field";
-		public static readonly string PrivateInterface = "md-private-interface";
-		public static readonly string PrivateMethod = "md-private-method";
-		public static readonly string PrivateExtensionMethod = "md-private-extensionmethod";
-		public static readonly string PrivateProperty = "md-private-property";
-		public static readonly string PrivateStruct = "md-private-struct";
+		public static readonly IconId PrivateClass = "md-private-class";
+		public static readonly IconId PrivateDelegate = "md-private-delegate";
+		public static readonly IconId PrivateEnum = "md-private-enum";
+		public static readonly IconId PrivateEvent = "md-private-event";
+		public static readonly IconId PrivateField = "md-private-field";
+		public static readonly IconId PrivateInterface = "md-private-interface";
+		public static readonly IconId PrivateMethod = "md-private-method";
+		public static readonly IconId PrivateExtensionMethod = "md-private-extensionmethod";
+		public static readonly IconId PrivateProperty = "md-private-property";
+		public static readonly IconId PrivateStruct = "md-private-struct";
 		
-		public static readonly string ProtectedClass = "md-protected-class";
-		public static readonly string ProtectedDelegate = "md-protected-delegate";
-		public static readonly string ProtectedEnum = "md-protected-enum";
-		public static readonly string ProtectedEvent = "md-protected-event";
-		public static readonly string ProtectedField = "md-protected-field";
-		public static readonly string ProtectedInterface = "md-protected-interface";
-		public static readonly string ProtectedMethod = "md-protected-method";
-		public static readonly string ProtectedExtensionMethod = "md-protected-extensionmethod";
-		public static readonly string ProtectedProperty = "md-protected-property";
-		public static readonly string ProtectedStruct = "md-protected-struct";
+		public static readonly IconId ProtectedClass = "md-protected-class";
+		public static readonly IconId ProtectedDelegate = "md-protected-delegate";
+		public static readonly IconId ProtectedEnum = "md-protected-enum";
+		public static readonly IconId ProtectedEvent = "md-protected-event";
+		public static readonly IconId ProtectedField = "md-protected-field";
+		public static readonly IconId ProtectedInterface = "md-protected-interface";
+		public static readonly IconId ProtectedMethod = "md-protected-method";
+		public static readonly IconId ProtectedExtensionMethod = "md-protected-extensionmethod";
+		public static readonly IconId ProtectedProperty = "md-protected-property";
+		public static readonly IconId ProtectedStruct = "md-protected-struct";
 		
 	}
 }	

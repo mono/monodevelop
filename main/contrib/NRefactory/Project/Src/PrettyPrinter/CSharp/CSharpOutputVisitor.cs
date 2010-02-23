@@ -2080,6 +2080,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			if (val is string) {
+				if (primitiveExpression.LiteralFormat == LiteralFormat.VerbatimStringLiteral)
+					return "@\"" + val.ToString() + "\"";
 				return "\"" + ConvertString(val.ToString()) + "\"";
 			}
 			

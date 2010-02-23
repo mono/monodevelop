@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects.Gui.Dialogs.OptionPanels
 			
 			TreeViewColumn dirCol = new TreeViewColumn ();
 			dirCol.Title = GettextCatalog.GetString ("Directory");
-			CellRendererPixbuf iconRenderer = new CellRendererPixbuf ();
+			var iconRenderer = new CellRendererPixbuf ();
 			CellRendererText textRenderer = new CellRendererText ();
 			dirCol.PackStart (iconRenderer, false);
 			dirCol.PackStart (textRenderer, false);

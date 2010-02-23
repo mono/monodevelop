@@ -61,8 +61,6 @@ namespace MonoDevelop.XmlEditor.Gui
 			return new XmlFreeState ();
 		}
 		
-		protected abstract IEnumerable<string> SupportedExtensions { get; }
-
 		public override void Initialize ()
 		{
 			base.Initialize ();
@@ -74,15 +72,6 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (lastCU != null) {
 				RefreshOutline ();
 			}
-		}
-
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
-		{
-			string title = doc.Name;
-			foreach (string ext in SupportedExtensions )
-				if (title.EndsWith (ext))
-					return true;
-			return false;
 		}
 
 		public override void Dispose ()

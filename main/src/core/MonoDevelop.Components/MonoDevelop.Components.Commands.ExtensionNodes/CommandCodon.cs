@@ -136,11 +136,8 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 				acmd.ActionType = ct;
 				acmd.CommandArray = isArray;
 				
-				if (defaultHandler != null) {
-					acmd.DefaultHandlerType = Addin.GetType (defaultHandler);
-					if (acmd.DefaultHandlerType == null)
-						throw new InvalidOperationException ("Could not find handler type '" + defaultHandler + "' for command " + Id);
-				}
+				if (defaultHandler != null)
+					acmd.SetDefaultHandlerTypeInfo (Addin, defaultHandler);
 				
 				cmd = acmd;
 			}
@@ -173,7 +170,8 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			if (id.StartsWith ("@"))
 				return id.Substring (1);
 
-			Type enumType = null;
+			return id;
+/*			Type enumType = null;
 			string typeName = id;
 			
 			int i = id.LastIndexOf (".");
@@ -195,7 +193,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 				return Enum.Parse (enumType, id.Substring (i+1));
 			} catch {
 				throw new InvalidOperationException ("Could not find an enum value for the command '" + id + "'.");
-			}
+			}*/
 		}
 		
 		internal static string GetStockId (RuntimeAddin addin, string icon)

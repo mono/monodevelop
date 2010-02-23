@@ -197,15 +197,27 @@ namespace MonoDevelop.CSharp.Completion
 				return 1; // parameters are 1 based
 			CSharpIndentEngine engine = new CSharpIndentEngine ();
 			int index = memberStart + 1;
+			int bracket = 0;
 			do {
 				char c = editor.GetCharAt (i - 1);
 				engine.Push (c);
-				if (c == ',' && engine.StackDepth == 1)
-					index++;
+				switch (c) {
+				case '(':
+					if (!engine.IsInsideOrdinaryCommentOrString)
+						bracket++;
+					break;
+				case ')':
+					if (!engine.IsInsideOrdinaryCommentOrString)
+						bracket--;
+					break;
+				case ',':
+					if (!engine.IsInsideOrdinaryCommentOrString && bracket == 1)
+						index++;
+					break;
+				}
 				i++;
-			} while (i <= cursor && engine.StackDepth > 0);
-			
-			return engine.StackDepth != 1 ? -1 : index;
+			} while (i <= cursor && bracket >= 0);
+			return bracket != 1 ? -1 : index;
 		}
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)

@@ -1,3 +1,20 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Track api
+	  changes.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Gettext.addin.xml:
+	* templates/TranslationProject.xpt.xml:
+	* MonoDevelop.Gettext/TranslationService.cs: Removed useless
+	  startup handler.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Track API
+	  changes for lazy loading images.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Gettext/GettextFeature.cs: Track api changes.

@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			//checkbuttonRecursively.Active    = properties.Get ("SearchPathRecursively", true);
 			//		checkbuttonFileMask.Active       = properties.Get ("UseFileMask", false);
-			checkbuttonCaseSensitive.Active = properties.Get ("CaseSensitive", true);
+			checkbuttonCaseSensitive.Active = properties.Get ("CaseSensitive", false);
 			checkbuttonWholeWordsOnly.Active = properties.Get ("WholeWordsOnly", false);
 			checkbuttonRegexSearch.Active = properties.Get ("RegexSearch", false);
 

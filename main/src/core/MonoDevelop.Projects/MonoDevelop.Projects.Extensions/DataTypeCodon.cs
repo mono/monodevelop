@@ -41,6 +41,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute ("class", true)]
 		string typeName;
 		
+		[NodeAttribute ("name")]
+		string itemName;
+		
 		public Type Class {
 			get { return Addin.GetType (typeName, true); }
 		}
@@ -49,6 +52,11 @@ namespace MonoDevelop.Projects.Extensions
 			get {
 				return typeName;
 			}
+		}
+		
+		public string ItemName {
+			get {
+				return itemName; }
 		}
 	}
 }

@@ -1,3 +1,108 @@
+2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Don't explode
+	  on docs with no compilation unit.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs: Fix
+	  build.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/QuickFixHandler.cs:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Added quick
+	  fix handler (currently only namespace resolving is
+	  supported).
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs: The file rename operation
+	  now saves the project.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodHandler.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodHandler.cs:
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantHandler.cs:
+	  Implemented 'Bug 580657 - Feature request: Key-binding to
+	  frequently used functionality'.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs: Track
+	  api changes.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Re-worked the
+	  refactoring submenu.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
+	* MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:
+	  Track api changes.
+
+2010-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs: moved
+	  method.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs:
+	* MonoDevelop.Refactoring/RefactoringPreviewDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  Track API changes for lazy loading images.
+
+2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CodeGeneration/CodeGenerationCommands.cs: Only
+	  enable command when text editor has input focus. 
+
+	* MonoDevelop.Refactoring.addin.xml: Insert the Code
+	  Generation command into edit menu and editor context menu.
+
+2010-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/Change.cs: TextReplace change is now
+	  re-usable by the formatting visitor.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	  fixed some bugs in the declare local code generator.
+
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/FindDerivedClassesHandler.cs: Added
+	  FindDerivedClasses command.
+
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: fixed
+	  'Bug 574924 - Find references doesn't work for constructor'.
+
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Refactoring.csproj: Don't use makefiles for

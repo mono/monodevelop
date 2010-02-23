@@ -41,7 +41,7 @@ namespace Mono.Debugging.Soft
 			if (CustomLogger != null)
 				CustomLogger.LogError (message, ex);
 			else
-				Console.WriteLine (message + System.Environment.NewLine + (ex != null? ex.ToString () : string.Empty));
+				Console.WriteLine (message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
 		}
 
 		//this is meant to show a GUI if possible

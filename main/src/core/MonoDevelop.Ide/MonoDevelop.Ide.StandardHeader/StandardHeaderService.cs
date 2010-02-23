@@ -42,32 +42,19 @@ namespace MonoDevelop.Ide.StandardHeader
 {
 	public static class StandardHeaderService
 	{
-	
-		static string[] GetComment (string language)
-		{
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language);
-			if (binding != null) {
-				if (!String.IsNullOrEmpty (binding.SingleLineCommentTag))
-					return new string[] { binding.SingleLineCommentTag };
-				if (!String.IsNullOrEmpty (binding.BlockCommentStartTag) && !String.IsNullOrEmpty (binding.BlockCommentEndTag))
-					return new string[] { binding.BlockCommentStartTag, binding.BlockCommentEndTag };
-			}
-			return null;
-		}
-		
-		public static string GetHeader (SolutionItem policyParent, string language, string fileName, bool newFile)
+		public static string GetHeader (SolutionItem policyParent, string fileName, bool newFile)
 		{
 			StandardHeaderPolicy headerPolicy = policyParent != null ? policyParent.Policies.Get<StandardHeaderPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<StandardHeaderPolicy> ();
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain") : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
 			AuthorInformation authorInfo = IdeApp.Workspace.GetAuthorInformation (policyParent);
 			
-			return GetHeader (authorInfo, headerPolicy, textPolicy, language, fileName, newFile);
+			return GetHeader (authorInfo, headerPolicy, textPolicy, fileName, newFile);
 		}
 		
 		public static string GetHeader (AuthorInformation authorInfo, StandardHeaderPolicy policy, TextStylePolicy textPolicy,
-		                                string language, string fileName, bool newFile)
+		                                string fileName, bool newFile)
 		{
-			string[] comment = GetComment (language);
+			string[] comment = TextEditor.GetCommentTags (fileName);
 			if (comment == null)
 				return "";
 			

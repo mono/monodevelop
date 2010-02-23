@@ -238,6 +238,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		void BackgroundInitialize ()
 		{
+			LoggingService.Trace ("Core.TargetRuntime." + Id, "[ASYNC] Initializing target runtime'");
 			lock (initLock) {
 				try {
 					Counters.TargetRuntimesLoading++;
@@ -252,6 +253,7 @@ namespace MonoDevelop.Core.Assemblies
 							initializedEvent (this, EventArgs.Empty);
 					}
 					Counters.TargetRuntimesLoading--;
+					LoggingService.Trace ("Core.TargetRuntime." + Id, "[ASYNC] Initialized target runtime'");
 				}
 			}
 		}

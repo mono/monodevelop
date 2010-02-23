@@ -32,7 +32,35 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface IPrintable
 	{
-		void PrintDocument ();
-		void PrintPreviewDocument ();
+		void PrintDocument (PrintingSettings settings);
+		void PrintPreviewDocument (PrintingSettings settings);
+		bool CanPrint { get; }
+	}
+	
+	/// <summary>
+	/// Encapsulates printer settings shared by IPrintables. IPrintables may alter it if the user changes 
+	/// and applies settings in the Print dialog.
+	/// </summary>
+	public class PrintingSettings
+	{
+		/// <summary>May be null</summary>
+		public Gtk.PrintSettings PrintSettings { get; set; }
+		
+		/// <summary>May be null</summary>
+		public Gtk.PageSetup PageSetup { get; set; }
+		
+		//FIXME: persist PrintingSettings. maybe also add a property bag for custom printer settings, e.g. source editor font.
+		static PrintingSettings instance;
+		internal static PrintingSettings Instance {
+			get {
+				if (instance == null)
+					instance = new PrintingSettings ();
+				return instance;
+			}
+		}
+		
+		PrintingSettings ()
+		{
+		}
 	}
 }

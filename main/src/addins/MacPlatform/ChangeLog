@@ -1,3 +1,23 @@
+2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.addin.xml: Fix extensions.
+
+	* MacSelectFileDialogHandler.cs: Stub other dialog handlers.
+
+2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/Carbon.cs: Better errors in exceptions.
+
+2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacPlatform.csproj:
+	* Framework/Carbon.cs:
+	* MacPlatform.addin.xml:
+	* Framework/NavDialog.cs:
+	* MacSelectFileDialogHandler.cs: First shot at implementing
+	  Mac native dialogs.
+
 2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateDialog.cs: Colorize betas and alphas in the

@@ -1,3 +1,22 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlMultipleClosingTagCompletionData.cs:
+	  Track api changes.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: File
+	  extensions are now declared in the node metadata.
+
+2010-02-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.XmlEditor.csproj: Add missing indirect
+	  reference.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

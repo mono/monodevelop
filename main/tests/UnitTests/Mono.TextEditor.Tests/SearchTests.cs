@@ -91,7 +91,7 @@ namespace Mono.TextEditor.Tests
 			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			
 			data.Caret.Offset = 0;
-			SearchResult result = data.FindNext ();
+			SearchResult result = data.FindNext (true);
 			Assert.AreEqual (0, result.Offset);
 			Assert.AreEqual (2, result.EndOffset);
 			Assert.IsFalse (result.SearchWrapped);
@@ -99,7 +99,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (result.Length, data.SelectionRange.Length);
 			Assert.AreEqual (result.EndOffset, data.Caret.Offset);
 			
-			result = data.FindNext ();
+			result = data.FindNext (true);
 			Assert.AreEqual (2, result.Offset);
 			Assert.AreEqual (4, result.EndOffset);
 			Assert.IsFalse (result.SearchWrapped);
@@ -107,7 +107,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (result.Length, data.SelectionRange.Length);
 			Assert.AreEqual (result.EndOffset, data.Caret.Offset);
 			
-			result = data.FindNext ();
+			result = data.FindNext (true);
 			Assert.AreEqual (4, result.Offset);
 			Assert.AreEqual (6, result.EndOffset);
 			Assert.IsFalse (result.SearchWrapped);
@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (result.Length, data.SelectionRange.Length);
 			Assert.AreEqual (result.EndOffset, data.Caret.Offset);
 			
-			result = data.FindNext ();
+			result = data.FindNext (true);
 			Assert.AreEqual (0, result.Offset);
 			Assert.AreEqual (2, result.EndOffset);
 			Assert.IsTrue (result.SearchWrapped);
@@ -132,7 +132,7 @@ namespace Mono.TextEditor.Tests
 			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			
 			data.Caret.Offset = 0;
-			SearchResult result = data.FindPrevious ();
+			SearchResult result = data.FindPrevious (true);
 			Assert.AreEqual (4, result.Offset);
 			Assert.AreEqual (6, result.EndOffset);
 			Assert.IsTrue (result.SearchWrapped);
@@ -140,7 +140,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (result.Length, data.SelectionRange.Length);
 			Assert.AreEqual (result.EndOffset, data.Caret.Offset);
 			
-			result = data.FindPrevious ();
+			result = data.FindPrevious (true);
 			Assert.AreEqual (2, result.Offset);
 			Assert.AreEqual (4, result.EndOffset);
 			Assert.IsFalse (result.SearchWrapped);
@@ -148,7 +148,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (result.Length, data.SelectionRange.Length);
 			Assert.AreEqual (result.EndOffset, data.Caret.Offset);
 			
-			result = data.FindPrevious ();
+			result = data.FindPrevious (true);
 			Assert.AreEqual (0, result.Offset);
 			Assert.AreEqual (2, result.EndOffset);
 			Assert.IsFalse (result.SearchWrapped);

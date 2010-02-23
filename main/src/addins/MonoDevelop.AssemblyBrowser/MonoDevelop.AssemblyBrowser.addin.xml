@@ -30,6 +30,7 @@
 	
 	<Extension path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses" />
 	</Extension>
 	
 </Addin>

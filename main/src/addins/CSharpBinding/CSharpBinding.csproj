@@ -85,10 +85,6 @@
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AspNet\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj">
-      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
-      <Name>MonoDevelop.AspNet</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
@@ -241,6 +237,9 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\TypeOfExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\UnaryOperatorExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\BinaryOperatorExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\AsExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\IsExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DefaultValueExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ICSharpNode.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ICSharpDomVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\AbstractCSharpNode.cs" />
@@ -290,7 +289,12 @@
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\AspLanguageBuilder.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\CompilationUnit.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\DomFormattingVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\AbtractCSharpDomVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\CSharpTokenNode.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\FullTypeName.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ExpressionStatement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -29,8 +29,38 @@ using System;
 namespace MonoDevelop.CSharp.Dom
 {
 	public enum OperatorType {
-		Unary,
-		Binary,
+		// Unary operators
+		LogicalNot,
+		OnesComplement,
+		Increment,
+		Decrement,
+		True,
+		False,
+
+		// Unary and Binary operators
+		Addition,
+		Subtraction,
+
+		UnaryPlus,
+		UnaryNegation,
+		
+		// Binary operators
+		Multiply,
+		Division,
+		Modulus,
+		BitwiseAnd,
+		BitwiseOr,
+		ExclusiveOr,
+		LeftShift,
+		RightShift,
+		Equality,
+		Inequality,
+		GreaterThan,
+		LessThan,
+		GreaterThanOrEqual,
+		LessThanOrEqual,
+
+		// Implicit and Explicit
 		Implicit,
 		Explicit
 	}

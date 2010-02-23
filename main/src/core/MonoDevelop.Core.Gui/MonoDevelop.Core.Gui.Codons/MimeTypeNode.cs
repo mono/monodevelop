@@ -50,7 +50,7 @@ namespace MonoDevelop.Core.Gui.Codons
 		
 		Regex regex;
 		
-		public string Icon {
+		public IconId Icon {
 			get {
 				return icon;
 			}

@@ -42,26 +42,9 @@ namespace MonoDevelop.Gettext
 {
 	public class TranslationService
 	{
-		static bool isInitialized = false;
-		internal static void InitializeTranslationService ()
-		{
-			Debug.Assert (!isInitialized);
-			if (isInitialized)
-				return;
-			isInitialized = true;
-		}
-		
 		public static IFileScanner[] GetFileScanners ()
 		{
 			return (IFileScanner[]) AddinManager.GetExtensionObjects ("/MonoDevelop/Gettext/FileScanners", typeof(IFileScanner), true);
-		}
-	}
-	
-	public class TranslationServiceStartupCommand : CommandHandler
-	{
-		protected override void Run ()
-		{
-			TranslationService.InitializeTranslationService ();
 		}
 	}
 }

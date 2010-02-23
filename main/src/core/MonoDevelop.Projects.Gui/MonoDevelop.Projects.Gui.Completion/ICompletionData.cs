@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -39,7 +40,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 	
 	public interface ICompletionData
 	{
-		string Icon { get; }
+		IconId Icon { get; }
 		string DisplayText { get; }
 		string Description { get; }
 		string CompletionText { get; }

@@ -55,7 +55,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		List<TemplateItem> alltemplates = new List<TemplateItem> ();
 		List<Category> categories = new List<Category> ();
-		Hashtable icons = new Hashtable ();
 		Dictionary<string, bool> activeLangs = new Dictionary<string, bool> ();
 
 		PixbufList cat_imglist;
@@ -148,7 +147,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				alltemplates.Clear ();
 				categories.Clear ();
 				catStore.Clear ();
-				icons.Clear ();
 				activeLangs.Clear ();
 			}
 
@@ -271,10 +269,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				project = parentProject;
 
 			foreach (FileTemplate template in FileTemplate.GetFileTemplates (project, basePath)) {
-				if (template.Icon != null) {
-					icons[template.Icon] = 0;
-					// "create template icon"
-				}
 				List<string> langs = template.GetCompatibleLanguages (project, basePath);
 				if (langs != null) {
 					foreach (string language in langs) {
@@ -346,7 +340,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			iconView.Clear ();
 			foreach (TemplateItem item in (List<TemplateItem>)(catStore.GetValue (iter, 2))) {
-				iconView.AddIcon (new Gtk.Image (ImageService.GetPixbuf (item.Template.Icon, Gtk.IconSize.Dnd)), item.Name, item);
+				iconView.AddIcon (new Gtk.Image (ImageService.GetPixbuf (item.Template.Icon, Gtk.IconSize.Dnd)), GettextCatalog.GetString (item.Name), item);
 			}
 		}
 

@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				bool allowSelecting = true;
 				DotNetProject netProject = projectEntry as DotNetProject;
 				if (netProject != null) {
-					if (ProjectReferencesProject (references, netProject, configureProject.Name)) {
+					if (ProjectReferencesProject (references, null, netProject, configureProject.Name)) {
 						txt += " " + GettextCatalog.GetString ("(Cyclic dependencies not allowed)");
 						allowSelecting = false;
 					}
@@ -175,7 +175,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 		}
 		
-		bool ProjectReferencesProject (Dictionary<DotNetProject,bool> references, DotNetProject project, string targetProject)
+		bool ProjectReferencesProject (Dictionary<DotNetProject,bool> references, HashSet<string> parentDeps,
+		                               DotNetProject project, string targetProject)
 		{
 			bool res;
 			if (references.TryGetValue (project, out res))
@@ -187,9 +188,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				}
 				
 				DotNetProject pref = project.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
-				if (pref != null && ProjectReferencesProject (references, pref, targetProject)) {
-					references [project] = true;
-					return true;
+				if (pref != null) {
+					if (parentDeps == null) {
+						parentDeps = new HashSet<string> ();
+					} else if (parentDeps.Contains (pref.Name)) {
+						LoggingService.LogWarning ("Cyclic dependency detected between projects '{0}' and '{1}'", project.Name, pref.Name);
+						references [project] = true;
+						return true;
+					}
+					parentDeps.Add (pref.Name);
+					bool referencesTarget = ProjectReferencesProject (references, parentDeps, pref, targetProject);
+					parentDeps.Remove (pref.Name);
+					
+					if (referencesTarget) {
+						references [project] = true;
+						return true;
+					}
 				}
 			}
 			references [project] = false;

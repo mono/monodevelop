@@ -207,6 +207,8 @@ namespace MonoDevelop.Projects
 			}
 			internal set {
 				parentFolder = value;
+				if (internalChildren != null)
+					internalChildren.ParentFolder = value;
 			}
 		}
 		
@@ -332,6 +334,11 @@ namespace MonoDevelop.Projects
 		
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
+			if (ParentSolution != null && this is SolutionEntityItem) {
+				SolutionConfiguration sconf = ParentSolution.GetConfiguration (configuration);
+				if (sconf != null && !sconf.BuildEnabledForItem ((SolutionEntityItem) this))
+					return false;
+			}
 			return Services.ProjectService.GetExtensionChain (this).GetNeedsBuilding (this, configuration);
 		}
 		

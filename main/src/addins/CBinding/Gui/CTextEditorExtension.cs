@@ -72,12 +72,6 @@ namespace CBinding
 			new KeyValuePair<string, GetMembersForExtension>(".", GetInstanceMembers)
 		};
 		
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
-		{
-			return (CProject.IsHeaderFile (doc.Name) || 
-			        (0 <= Array.IndexOf(CProject.SourceExtensions, Path.GetExtension(doc.Name).ToUpper ())));
-		}
-		
 		static bool IsOpenBrace (char c)
 		{
 			return c == '(' || c == '{' || c == '<' || c == '[';

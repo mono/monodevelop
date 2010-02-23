@@ -20,25 +20,21 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs \
+	gtk-gui/MonoDevelop.WelcomePage.WelcomePageWidget.cs \
 	WelcomePageCommands.cs \
-	WelcomePageFallbackWidget.cs \
 	WelcomePageOptionPanel.cs \
 	WelcomePageView.cs \
-	XslGettextCatalog.cs
+	WelcomePageWidget.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	WelcomePage.addin.xml \
-	WelcomePage.xsl \
 	WelcomePageContent.xml
  
 DATA_FILES =  \
-	mono-bg.png \
-	mono-decoration.png \
-	mono-logo.png \
-	WelcomePage.css
+	md-bg.png \
+	md-logo.png
 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))

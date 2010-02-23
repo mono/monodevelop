@@ -31,6 +31,9 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class GotoStatement : AbstractCSharpNode
 	{
+		public const int DefaultKeywordRole = 100;
+		public const int CaseKeywordRole = 101;
+		
 		public GotoType GotoType {
 			get;
 			set;
@@ -48,6 +51,13 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			return visitor.VisitGotoStatement (this, data);
 		}
+		
+		public GotoStatement (GotoType gotoType)
+		{
+			this.GotoType = gotoType;
+		}
+		
+		
 	}
 	
 	public enum GotoType {

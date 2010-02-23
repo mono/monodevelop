@@ -141,12 +141,12 @@ namespace Mono.Debugging.Evaluation
 			return CreateObjectValue (true);
 		}
 		
-		EvaluationResult IObjectValueSource.SetValue (ObjectPath path, string value)
+		EvaluationResult IObjectValueSource.SetValue (ObjectPath path, string value, EvaluationOptions options)
 		{
 			try {
 				ctx.WaitRuntimeInvokes ();
 				EvaluationContext cctx = ctx.Clone ();
-				EvaluationOptions ops = cctx.Options;
+				EvaluationOptions ops = options ?? cctx.Options;
 				ops.AllowMethodEvaluation = true;
 				ops.AllowTargetInvoke = true;
 				cctx.Options = ops;

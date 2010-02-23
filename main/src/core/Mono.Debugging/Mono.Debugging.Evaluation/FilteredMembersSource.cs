@@ -75,7 +75,7 @@ namespace Mono.Debugging.Evaluation
 			throw new NotSupportedException ();
 		}
 
-		public EvaluationResult SetValue (ObjectPath path, string value)
+		public EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options)
 		{
 			throw new NotSupportedException ();
 		}

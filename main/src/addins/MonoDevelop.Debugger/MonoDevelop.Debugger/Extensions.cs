@@ -97,7 +97,7 @@ namespace MonoDevelop.Debugger
 			return opers.CurrentRunOperation;
 		}
 		
-		public static IAsyncOperation AttachToProcess (this ProjectOperations opers, IDebuggerEngine debugger, ProcessInfo proc)
+		public static IAsyncOperation AttachToProcess (this ProjectOperations opers, DebuggerEngine debugger, ProcessInfo proc)
 		{
 			if (opers.CurrentRunOperation != null && !opers.CurrentRunOperation.IsCompleted)
 				return opers.CurrentRunOperation;

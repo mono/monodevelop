@@ -47,8 +47,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public static class ProjectDomService
 	{
-		static List<IParser> parsers = new List<IParser>();
-		static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
+		static List<IParser> parsers;
+		
 		//static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
 		
 		static bool threadRunning;
@@ -97,19 +97,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			codeCompletionPath = GetDefaultCompletionFileLocation ();
 			// for unit tests it may not have been initialized.
-			if (AddinManager.IsInitialized) {
-				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
-					switch (args.Change) {
-					case ExtensionChange.Add:
-						parsers.Add ((IParser) args.ExtensionObject);
-						break;
-					case ExtensionChange.Remove:
-						parsers.Remove ((IParser) args.ExtensionObject);
-						break;
-					}
-				});
-			}
-			parserDatabase.Initialize ();
 		}
 
 		public static RootTree HelpTree {
@@ -143,13 +130,28 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		public static List<IParser> Parsers {
 			get {
+				if (parsers == null) {
+					LoggingService.Trace ("ProjectDomService", "Initializing");
+					parsers = new List<IParser>();
+					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/DomParser", delegate(object sender, ExtensionNodeEventArgs args) {
+						switch (args.Change) {
+						case ExtensionChange.Add:
+							parsers.Add ((IParser) args.ExtensionObject);
+							break;
+						case ExtensionChange.Remove:
+							parsers.Remove ((IParser) args.ExtensionObject);
+							break;
+						}
+					});
+					LoggingService.Trace ("ProjectDomService", "Initialized");
+				}
 				return parsers;
 			}
 		}
 		
 		public static IParser GetParserByMime (string mimeType)
 		{
-			foreach (IParser parser in parsers) {
+			foreach (IParser parser in Parsers) {
 				if (parser.CanParseMimeType (mimeType))
 					return parser;
 			}
@@ -158,7 +160,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static IParser GetParserByFileName (string fileName)
 		{
-			foreach (IParser parser in parsers) {
+			foreach (IParser parser in Parsers) {
 				if (parser.CanParse (fileName)) {
 					return parser;
 				}
@@ -337,7 +339,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 
 					
-					ProjectDom db = parserDatabase.LoadSingleFileDom (file);
+					ProjectDom db = ParserDatabase.LoadSingleFileDom (file);
 					db.Uri = "File:" + file;
 					db.UpdateReferences ();
 					entry = new SingleFileCacheEntry ();
@@ -460,7 +462,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				string uri = "Project:" + project.FileName;
 				if (databases.ContainsKey (uri)) return;
 				
-				ProjectDom db = parserDatabase.LoadProjectDom (project);
+				ProjectDom db = ParserDatabase.LoadProjectDom (project);
 				RegisterDom (db, uri);
 				
 				if (project is DotNetProject) {
@@ -500,7 +502,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					string file;
 					
 					if (ParseAssemblyUri (uri, out tr, out fx, out file)) {
-						db = parserDatabase.LoadAssemblyDom (tr, fx, file);
+						db = ParserDatabase.LoadAssemblyDom (tr, fx, file);
 						RegisterDom (db, uri);
 					}
 				}
@@ -661,12 +663,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
+		static IParserDatabase parserDatabase = null;
 		public static IParserDatabase ParserDatabase {
 			get {
+				if (parserDatabase == null) {
+					parserDatabase = new MonoDevelop.Projects.Dom.Serialization.ParserDatabase ();
+					parserDatabase.Initialize ();
+				}
 				return parserDatabase;
-			}
-			set {
-				parserDatabase = value;
 			}
 		}
 		

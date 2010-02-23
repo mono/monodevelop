@@ -26,9 +26,11 @@ FILES =  \
 	Framework/Carbon.cs \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
+	Framework/NavDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs \
 	MacPlatform.cs \
+	MacSelectFileDialogHandler.cs \
 	Menus/OSXMenu.cs \
 	Updater/Commands.cs \
 	Updater/UpdateDialog.cs \

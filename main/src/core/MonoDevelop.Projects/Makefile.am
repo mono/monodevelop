@@ -150,6 +150,7 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/PolicySetNode.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/ProjectExtensionUtil.cs \
+	MonoDevelop.Projects.Extensions/ProjectLanguageCondition.cs \
 	MonoDevelop.Projects.Extensions/SerlializationMapNode.cs \
 	MonoDevelop.Projects.Extensions/SolutionItemHandler.cs \
 	MonoDevelop.Projects.Extensions/SolutionItemNode.cs \

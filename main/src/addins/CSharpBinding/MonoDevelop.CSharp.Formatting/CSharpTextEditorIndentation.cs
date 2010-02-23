@@ -141,11 +141,6 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
-		{
-			return System.IO.Path.GetExtension (doc.Name) == ".cs";
-		}
-		
 		#region Sharing the tracker
 		
 		void InitTracker ()

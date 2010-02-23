@@ -25,6 +25,10 @@
  
 <SyntaxMode name = "IL" mimeTypes="text/x-ilasm">
 	
+	<Property name="LineComment">//</Property>
+	<Property name="BlockCommentStart">/*</Property>
+	<Property name="BlockCommentEnd">*/</Property>
+	
 	<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	?</Delimiters>
 	
 	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>

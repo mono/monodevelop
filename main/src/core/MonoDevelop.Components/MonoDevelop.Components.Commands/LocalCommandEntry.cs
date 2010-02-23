@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 		
-		public LocalCommandEntry (object id, string text, string icon): base (id)
+		public LocalCommandEntry (object id, string text, IconId icon): base (id)
 		{
 			cmd = new ActionCommand ();
 			cmd.Id = id;

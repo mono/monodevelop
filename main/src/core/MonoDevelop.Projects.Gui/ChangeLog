@@ -1,3 +1,98 @@
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  Implemented 'Bug 580660 - Feature request: Make popup-lists
+	  "continuous"'.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Added missing getstring call.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	  Use the new IconId type.
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Track api changes.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  completion window now remembers the operation mode.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Categories are now sorted.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj: ActiveLanguageCondition has
+	  been moved to MD.Projects.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ActiveLanguageCondition.cs:
+	  ActiveLanguageCondition has been replaced by
+	  ProjectLanguageCondition in MD.Projects.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  'Bug 576322 - Click in code completion list selects wrong
+	  item when categories enabled'.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Track API changes for lazy loading images.
+
+2010-02-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  Completion categories are now easier to read.
+
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  fixed a bug where left/right didn't go through the overloads
+	  in the cc list.
+
+2010-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Shift+up/down now selects next/prev category or enables
+	  category mode.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  parameter info window no longer takes the up/down keys when
+	  there are no overloads.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  changed categorized window toggle key to shift+space since
+	  F3 may be bound to commands.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Changed the category mode hotkey for code completion to F3.
+
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:

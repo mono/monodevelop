@@ -89,17 +89,13 @@
     <Compile Include="WelcomePageOptionPanel.cs" />
     <Compile Include="WelcomePageView.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="WelcomePageFallbackWidget.cs" />
-    <Compile Include="XslGettextCatalog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.WelcomePage.WelcomePageFallbackWidget.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="WelcomePageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.WelcomePage.WelcomePageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WelcomePage.addin.xml">
       <LogicalName>WelcomePage.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WelcomePage.xsl">
-      <LogicalName>WelcomePage.xsl</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="WelcomePageContent.xml">
       <LogicalName>WelcomePageContent.xml</LogicalName>
@@ -112,17 +108,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="mono-bg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="md-bg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="mono-logo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="mono-decoration.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="WelcomePage.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="md-logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -133,7 +123,7 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar Sync="true" Name="DATA_FILES" />
           <ResourcesVar Sync="true" Name="RES" />

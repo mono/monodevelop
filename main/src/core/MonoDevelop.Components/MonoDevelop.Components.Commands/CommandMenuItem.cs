@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -39,7 +40,7 @@ namespace MonoDevelop.Components.Commands
 		bool isArrayItem;
 		object arrayDataItem;
 		ArrayList itemArray;
-		string lastIcon;
+		IconId lastIcon;
 		string overrideLabel;
 		bool wasButtonActivation;
 		object initialTarget;
@@ -210,7 +211,7 @@ namespace MonoDevelop.Components.Commands
 				this.Sensitive = cmdInfo.Enabled;
 				this.Visible = cmdInfo.Visible && (disabledVisible || cmdInfo.Enabled);
 				
-				if (cmdInfo.Icon != null && cmdInfo.Icon != "" && cmdInfo.Icon != lastIcon) {
+				if (!cmdInfo.Icon.IsNull && cmdInfo.Icon != lastIcon) {
 					Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
 					lastIcon = cmdInfo.Icon;
 				}

@@ -26,7 +26,7 @@
 
 using System;
 using Mono.Debugging.Evaluation;
-using Mono.Debugger;
+using Mono.Debugger.Soft;
 using DC = Mono.Debugging.Client;
 
 namespace Mono.Debugging.Soft

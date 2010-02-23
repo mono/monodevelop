@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public virtual ClassType ClassType {
 			get;
-			protected set;
+			set;
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

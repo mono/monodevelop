@@ -95,16 +95,21 @@ namespace MonoDevelop.VersionControl.Views
 			commandbar.IconSize = Gtk.IconSize.Menu;
 			box.PackStart (commandbar, false, false, 0);
 				
-			if (!isDirectory && vinfo != null) {
+			if (vinfo != null) {
 				Gtk.ToolButton button = new Gtk.ToolButton (new Gtk.Image ("vc-diff", Gtk.IconSize.Menu), GettextCatalog.GetString ("View Changes"));
 				button.IsImportant = true;
-				button.Clicked += new EventHandler (DiffButtonClicked);
-				commandbar.Insert (button, -1);
-				
-				button = new Gtk.ToolButton (new Gtk.Image (Gtk.Stock.Open, Gtk.IconSize.Menu), GettextCatalog.GetString ("View File"));
-				button.IsImportant = true;
-				button.Clicked += new EventHandler (ViewTextButtonClicked);
-				commandbar.Insert (button, -1);
+				if (isDirectory) {
+					button.Clicked += new EventHandler (DirDiffButtonClicked);
+					commandbar.Insert (button, -1);
+				} else {
+					button.Clicked += new EventHandler (DiffButtonClicked);
+					commandbar.Insert (button, -1);
+					
+					button = new Gtk.ToolButton (new Gtk.Image (Gtk.Stock.Open, Gtk.IconSize.Menu), GettextCatalog.GetString ("View File"));
+					button.IsImportant = true;
+					button.Clicked += new EventHandler (ViewTextButtonClicked);
+					commandbar.Insert (button, -1);
+				}
 			}
 			
 			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
@@ -180,7 +185,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			TreeViewColumn colOperation = new TreeViewColumn ();
 			CellRendererText crt = new CellRendererText ();
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			var crp = new CellRendererPixbuf ();
 			colOperation.Title = GettextCatalog.GetString ("Operation");
 			colOperation.PackStart (crp, false);
 			colOperation.PackStart (crt, true);
@@ -267,6 +272,13 @@ namespace MonoDevelop.VersionControl.Views
 			new DiffWorker (Path.GetFileName (filepath), vc, vinfo.RepositoryPath, d).Run ();
 		}
 		
+		void DirDiffButtonClicked (object src, EventArgs args) {
+			Revision d = GetSelectedRev ();
+			if (d == null)
+				return;
+			new DirectoryDiffWorker (filepath, vc, d).Run ();
+		}
+		
 		void ViewTextButtonClicked (object src, EventArgs args) {
 			Revision d = GetSelectedRev ();
 			if (d == null)
@@ -341,6 +353,42 @@ namespace MonoDevelop.VersionControl.Views
 			protected override void Finished () {
 				if (text1 == null || text2 == null) return;
 				DiffView.Show (name + " (revision " + revision.ToString () + ")", text1, text2);
+			}
+		}
+		
+		/// Background worker to create a revision-specific diff for a directory
+		internal class DirectoryDiffWorker: Task
+		{
+			FilePath path;
+			Repository repo;
+			Revision revision;
+			string name;
+			string patch;
+			
+			public DirectoryDiffWorker (FilePath path, Repository repo, Revision revision)
+			{
+				this.path = path;
+				name = string.Format ("{0} (revision {1})", path.FileName, revision);
+				this.repo = repo;
+				this.revision = revision;
+			}
+			
+			protected override string GetDescription ()
+			{
+				return GettextCatalog.GetString ("Retrieving changes in {0} ...", name, revision);
+			}
+			
+			
+			protected override void RunTask ()
+			{
+				DiffInfo[] diffs = repo.PathDiff (path, revision.GetPrevious (), revision);
+				patch = repo.CreatePatch (diffs);
+			}
+			
+			protected override void Finished ()
+			{
+				if (patch != null)
+					IdeApp.Workbench.NewDocument (name, "text/x-diff", patch);
 			}
 		}
 		

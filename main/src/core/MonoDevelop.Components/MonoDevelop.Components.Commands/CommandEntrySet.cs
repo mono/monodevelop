@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -35,14 +36,14 @@ namespace MonoDevelop.Components.Commands
 	{
 		ArrayList cmds = new ArrayList ();
 		string name;
-		string icon;
+		IconId icon;
 		bool autoHide;
 		
 		public CommandEntrySet (): base (null)
 		{
 		}
 		
-		public CommandEntrySet (string name, string icon): base (null)
+		public CommandEntrySet (string name, IconId icon): base (null)
 		{
 			this.name = name;
 			this.icon = icon;
@@ -53,7 +54,7 @@ namespace MonoDevelop.Components.Commands
 			set { name = value; }
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return icon; }
 			set { icon = value; }
 		}
@@ -85,7 +86,7 @@ namespace MonoDevelop.Components.Commands
 			return AddItemSet (name, "");
 		}
 		
-		public CommandEntrySet AddItemSet (string name, string icon)
+		public CommandEntrySet AddItemSet (string name, IconId icon)
 		{
 			CommandEntrySet cmdset = new CommandEntrySet (name, icon);
 			cmds.Add (cmdset);

@@ -8,8 +8,8 @@
     <ProjectGuid>{A2329308-3751-4DBD-9A75-5F7B8B024625}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextEditor</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>Mono.TextEditor</RootNamespace>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -144,8 +144,18 @@
     <Compile Include="Mono.TextEditor\FoldingScreenbackgroundRenderer.cs" />
     <Compile Include="Mono.TextEditor\HslColor.cs" />
     <Compile Include="Mono.TextEditor\IBackgroundRenderer.cs" />
-    <Compile Include="Mono.TextEditor\IAnimation.cs" />
     <Compile Include="Mono.TextEditor\CodeSegmentEditorWindow.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Actor.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Choreographer.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Pulsator.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\SingleActorStage.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Stage.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedWidget.cs" />
+    <Compile Include="Mono.TextEditor\IAnimationDrawer.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\Animation.cs" />
+    <Compile Include="Mono.TextEditor\TextEditorContainer.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedBox.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\AnimatedVBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -204,6 +214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Styles\VisualStudioStyle.xml">
       <LogicalName>VisualStudioStyle.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\IrBlackStyle.xml">
+      <LogicalName>IrBlackStyle.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>

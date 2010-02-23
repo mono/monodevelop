@@ -1,3 +1,191 @@
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.Theatrics/AnimatedBox.cs:
+	* Mono.TextEditor.Theatrics/AnimatedVBox.cs:
+	* Mono.TextEditor.Theatrics/AnimatedWidget.cs: Added animated
+	  box.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Styles/OblivionStyle.xml: changed main search result color
+	  in oblivion.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: Added helper function.
+
+2010-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Worked on search &
+	  replace.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: fix caret problem.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Only request caret blink on
+	  caret move when the text editor has the focus.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Styles/TangoLightStyle.xml:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor.Highlighting/Style.cs: Worked on search &
+	  replace.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed null ref.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: fixed possible
+	  null reference.
+
+2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Remove debug code.
+
+2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Enable pixbuf animation
+	  scaling on Mac since it seem to work now the drawable is a
+	  pixmap.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: worked on search result
+	  animation.
+
+2010-02-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Tweak search result animation
+	  a bit. Use pixbuf scaling instead of re-rendering text
+	  larger - avoid jarring from snapping. Disabled on Mac
+	  because drawable-to-pixmap rendering broken there.
+
+2010-02-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor.csproj: Fix file format issue.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/ClipboardActions.cs: Fixed 'Bug 580395 -
+	  Exception when deleting several lines in a C# file'.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Worked
+	  on new search result animation.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Styles/IrBlackStyle.xml: Added IR Black style from Anirudh
+	  Sanjeev.
+
+2010-02-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Theatrics/AnimatedWidget.cs: Quick hack to
+	  make less ugly on Mac, because Mac GTK doesn't yet support
+	  offscreen drawing.
+
+2010-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed search update bug.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs: Flush.
+
+	* SyntaxModes/ILSyntaxMode.xml:
+	* SyntaxModes/CPPSyntaxMode.xml:
+	* SyntaxModes/LuaSyntaxMode.xml:
+	* SyntaxModes/PythonSyntaxMode.xml: Added some missing
+	  properties.
+
+2010-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: made search results
+	  public.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorContainer.cs: Moved text editor
+	  container to own class.
+
+2010-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/IAnimation.cs:
+	* Mono.TextEditor/IAnimationDrawer.cs:
+	* Mono.TextEditor.Theatrics/Animation.cs: now using the
+	  theatrics framework for animations (text editor now supports
+	  multiple animations as well).
+
+2010-02-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.Theatrics:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Theatrics/Actor.cs:
+	* Mono.TextEditor.Theatrics/Stage.cs:
+	* Mono.TextEditor.Theatrics/Pulsator.cs:
+	* Mono.TextEditor.Theatrics/Choreographer.cs:
+	* Mono.TextEditor.Theatrics/AnimatedWidget.cs:
+	* Mono.TextEditor.Theatrics/SingleActorStage.cs: Added banshee
+	  Theatrics framework & text editor can now contain animated
+	  widgets.
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: re-implemented int ptr
+	  constructor
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: fixed
+	  'https://bugzilla.novell.com/show_bug.cgi?id=577848'.
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Now creating an own gdk
+	  window - no longer using the Gtk.EventBox 'hack'/should fix
+	  'Bug 577848 - MissingIntPtrCtorException appears randomly'.
+
+2010-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: added intprt constructor.
+
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Added some changes for
+	  container childs.
+
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: some refactorings.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs: Added OpenStream method.
+
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Added hovered line

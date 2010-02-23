@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Codons
 			get { return label; }
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return icon; }
 		}
 		

@@ -37,6 +37,15 @@ FILES =  \
 	Mono.TextEditor.PopupWindow/ListWidget.cs \
 	Mono.TextEditor.PopupWindow/ListWindow.cs \
 	Mono.TextEditor.PopupWindow/TooltipWindow.cs \
+	Mono.TextEditor.Theatrics/Actor.cs \
+	Mono.TextEditor.Theatrics/AnimatedBox.cs \
+	Mono.TextEditor.Theatrics/AnimatedVBox.cs \
+	Mono.TextEditor.Theatrics/AnimatedWidget.cs \
+	Mono.TextEditor.Theatrics/Animation.cs \
+	Mono.TextEditor.Theatrics/Choreographer.cs \
+	Mono.TextEditor.Theatrics/Pulsator.cs \
+	Mono.TextEditor.Theatrics/SingleActorStage.cs \
+	Mono.TextEditor.Theatrics/Stage.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
 	Mono.TextEditor.Vi/ViMode.cs \
@@ -66,7 +75,7 @@ FILES =  \
 	Mono.TextEditor/GutterMargin.cs \
 	Mono.TextEditor/HelperMethods.cs \
 	Mono.TextEditor/HslColor.cs \
-	Mono.TextEditor/IAnimation.cs \
+	Mono.TextEditor/IAnimationDrawer.cs \
 	Mono.TextEditor/IBackgroundRenderer.cs \
 	Mono.TextEditor/IBracketMatcher.cs \
 	Mono.TextEditor/IBuffer.cs \
@@ -93,6 +102,7 @@ FILES =  \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
 	Mono.TextEditor/TextEditor.cs \
+	Mono.TextEditor/TextEditorContainer.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextLinkEditMode.cs \
@@ -112,6 +122,7 @@ RES =  \
 	gtk-gui/gui.stetic \
 	Styles/BrownStyle.xml \
 	Styles/C64Style.xml \
+	Styles/IrBlackStyle.xml \
 	Styles/OblivionStyle.xml \
 	Styles/Styles.xsd \
 	Styles/TangoLightStyle.xml \

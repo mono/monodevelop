@@ -1,4 +1,4 @@
-SUBDIRS = . Autotools
+SUBDIRS = . Autotools AspNet
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
@@ -6,7 +6,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.dll
 PARSE = parse.exe
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
@@ -36,7 +35,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
-	MonoDevelop.CSharp.Completion/AspLanguageBuilder.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
@@ -45,17 +43,23 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
 	MonoDevelop.CSharp.Dom/AbstractCSharpNode.cs \
+	MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs \
+	MonoDevelop.CSharp.Dom/CompilationUnit.cs \
 	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
+	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/AsExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/BaseReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/BinaryOperatorExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/CastExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/CheckedExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ConditionalExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/DefaultValueExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/IdentifierExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/IndexerExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/InvocationExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/IsExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/MemberReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/NullReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ObjectCreateExpression.cs \
@@ -69,6 +73,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Expressions/TypeOfExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/UnaryOperatorExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/UncheckedExpression.cs \
+	MonoDevelop.CSharp.Dom/FullTypeName.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/Attribute.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/DelegateDeclaration.cs \
@@ -86,6 +91,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Statements/CheckedStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/ContinueStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/EmptyStatement.cs \
+	MonoDevelop.CSharp.Dom/Statements/ExpressionStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/FixedStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/ForStatement.cs \
@@ -122,6 +128,7 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngineStack.cs \
 	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
+	MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs \
 	MonoDevelop.CSharp.Formatting/FormattingPanel.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \

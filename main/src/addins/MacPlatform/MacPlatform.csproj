@@ -93,6 +93,8 @@
     <Compile Include="Updater\UpdateResult.cs" />
     <Compile Include="Updater\Commands.cs" />
     <Compile Include="Framework\ApplicationEvents.cs" />
+    <Compile Include="MacSelectFileDialogHandler.cs" />
+    <Compile Include="Framework\NavDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

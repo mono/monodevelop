@@ -30,9 +30,9 @@ using MonoDevelop.AspNet.Gui;
 using System.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Ide.Gui;
-using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Completion
 {

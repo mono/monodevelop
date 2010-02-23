@@ -183,7 +183,7 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorExtensions" name = "Text editor extensions">
 		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
-		<ExtensionNode name="Class"/>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.TextEditorExtensionNode"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFeatures" name = "Project feature editors">
@@ -592,6 +592,11 @@
 				_description = "Show print preview" 
 				icon  = "gtk-print-preview"
 				shortcut = "Shift|Control|P" />
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup"
+				defaultHandler = "MonoDevelop.Ide.Commands.PrintPageSetupHandler"
+				_label = "Page Set_up" 
+				_description = "Show page setup" 
+				icon  = "gtk-page-setup" />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList"
 				defaultHandler = "MonoDevelop.Ide.Commands.RecentFileListHandler"
 				type="array"
@@ -1468,6 +1473,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile" />
 			<SeparatorItem id = "SaveSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
 			<SeparatorItem id = "RecentSeparator" />
@@ -1524,9 +1530,8 @@
 			</ItemSet>
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
-			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 			<SeparatorItem id = "Separator5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />

@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.Docking
 		int defaultWidth = -1;
 		int defaultHeight = -1;
 		string label;
-		string icon;
+		Gdk.Pixbuf icon;
 		bool expand;
 		bool drawFrame = true;
 		DockItemBehavior behavior;
@@ -202,7 +202,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public string Icon {
+		public Gdk.Pixbuf Icon {
 			get {
 				return icon;
 			}

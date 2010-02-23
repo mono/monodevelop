@@ -120,7 +120,13 @@ FILES =  \
 	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventArgs.cs \
 	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventHandler.cs \
 	MonoDevelop.Components.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
+	MonoDevelop.Components.Theming/GtkColors.cs \
+	MonoDevelop.Components.Theming/GtkTheme.cs \
+	MonoDevelop.Components.Theming/Theme.cs \
+	MonoDevelop.Components.Theming/ThemeContext.cs \
+	MonoDevelop.Components.Theming/ThemeEngine.cs \
 	MonoDevelop.Components/BaseFileEntry.cs \
+	MonoDevelop.Components/CairoExtensions.cs \
 	MonoDevelop.Components/CellRendererComboBox.cs \
 	MonoDevelop.Components/ConsoleView.cs \
 	MonoDevelop.Components/DataGrid.cs \
@@ -142,7 +148,9 @@ FILES =  \
 	MonoDevelop.Components/MiniButton.cs \
 	MonoDevelop.Components/Navbar.cs \
 	MonoDevelop.Components/NotebookButtonBar.cs \
+	MonoDevelop.Components/PangoCairoHelper.cs \
 	MonoDevelop.Components/PathBar.cs \
+	MonoDevelop.Components/RoundedFrame.cs \
 	MonoDevelop.Components/SearchEntry.cs \
 	MonoDevelop.Components/SelectFileDialog.cs \
 	MonoDevelop.Components/SelectFolderDialog.cs \

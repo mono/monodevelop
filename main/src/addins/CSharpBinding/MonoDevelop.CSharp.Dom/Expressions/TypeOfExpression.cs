@@ -31,9 +31,9 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class TypeOfExpression : AbstractCSharpNode
 	{
-		public IReturnType Type {
+		public FullTypeName Type {
 			get {
-				return (IReturnType)GetChildByRole (Roles.ReturnType);
+				return (FullTypeName)GetChildByRole (Roles.ReturnType);
 			}
 		}
 		

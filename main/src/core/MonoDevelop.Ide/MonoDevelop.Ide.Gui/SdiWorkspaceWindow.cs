@@ -487,6 +487,8 @@ namespace MonoDevelop.Ide.Gui
 				} else {
 					toolbarBox.Remove (pathBar);
 					toolbarBox.Destroy ();
+					pathBar = null;
+					toolbarBox = null;
 				}
 				EnsureToolbarBoxSeparator ();
 			}
@@ -587,7 +589,7 @@ namespace MonoDevelop.Ide.Gui
 
 			try {
 				if (content.StockIconId != null ) {
-					tabLabel.Icon = new Gtk.Image ( content.StockIconId, IconSize.Menu );
+					tabLabel.Icon = new Gtk.Image ((IconId) content.StockIconId, IconSize.Menu );
 				}
 				else if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
 					tabLabel.Icon.Pixbuf = DesktopService.GetPixbufForFile (content.ContentName, Gtk.IconSize.Menu);

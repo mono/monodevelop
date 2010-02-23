@@ -39,12 +39,6 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 {
 	public class MoonlightSoftDebuggerEngine: IDebuggerEngine
 	{
-		public string Id {
-			get {
-				return "Mono.Debugger.Soft.Moonlight";
-			}
-		}
-
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			if (PropertyService.IsMac || PropertyService.IsWindows)
@@ -62,16 +56,6 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			return msi;
 		}
 
-		public DebuggerFeatures SupportedFeatures {
-			get {
-				return DebuggerFeatures.Breakpoints | 
-					   DebuggerFeatures.Pause | 
-					   DebuggerFeatures.Stepping | 
-					   DebuggerFeatures.DebugFile |
-					   DebuggerFeatures.Catchpoints;
-			}
-		}
-		
 		public DebuggerSession CreateSession ()
 		{
 			return new MoonlightSoftDebuggerSession ();
@@ -80,12 +64,6 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			return new ProcessInfo[0];
-		}
-		
-		public string Name {
-			get {
-				return "Mono Soft Debugger for Moonlight";
-			}
 		}
 	}
 	

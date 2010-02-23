@@ -38,37 +38,41 @@ namespace MonoDevelop.Core
 	{
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
+		static bool trace;
 		
 		static LoggingService ()
 		{
 			ConsoleLogger consoleLogger = new ConsoleLogger ();
 			loggers.Add (consoleLogger);
 			
-			string consoleLogLevelEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL");
+			string consoleLogLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL");
 			if (!string.IsNullOrEmpty (consoleLogLevelEnv)) {
 				try {
 					consoleLogger.EnabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), consoleLogLevelEnv, true);
 				} catch {}
 			}
 			
-			string consoleLogUseColourEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_USE_COLOUR");
+			string consoleLogUseColourEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_USE_COLOUR");
 			if (!string.IsNullOrEmpty (consoleLogUseColourEnv) && consoleLogUseColourEnv.ToLower () == "false") {
 				consoleLogger.UseColour = false;
 			} else {
 				consoleLogger.UseColour = true;
 			}
 			
-			string logFileEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE");
+			string logFileEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE");
 			if (!string.IsNullOrEmpty (logFileEnv)) {
 				try {
 					FileLogger fileLogger = new FileLogger (logFileEnv);
 					loggers.Add (fileLogger);
-					string logFileLevelEnv = System.Environment.GetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL");
+					string logFileLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL");
 					fileLogger.EnabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), logFileLevelEnv, true);
 				} catch (Exception e) {
 					LogError (e.ToString ());
 				}
 			}
+			
+			var traceEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_TRACE");
+			trace = !string.IsNullOrEmpty (traceEnv);
 		}
 		
 		internal static RemoteLogger RemoteLogger {
@@ -214,6 +218,13 @@ namespace MonoDevelop.Core
 		
 #endregion		
 		
-		
+		public static void Trace (string group, string format, params object[] args)
+		{
+			if (!trace || PropertyService.IsWindows)
+				return;
+			string message = String.Format (format, args);
+			string str = String.Format ("MARK: {0}: {1}", group, message);
+			Mono.Unix.Native.Syscall.access(str, Mono.Unix.Native.AccessModes.F_OK);
+		}
 	}
 }

@@ -1,3 +1,34 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.csproj: Flush.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
+	* MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:
+	  Track api changes.
+
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.addin.xml: Set correct
+	  serializable type name.
+
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Add tooltips
+	  to toolbar items.
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Use the
+	  image service to get icons.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
+	  Track API changes for lazy loading images.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.Commands
 		SaveAs,
 		PrintDocument,
 		PrintPreviewDocument,
+		PrintPageSetup,
 		RecentFileList,
 		ClearRecentFiles,
 		RecentProjectList,
@@ -212,14 +213,20 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IPrintable print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ();
-			print.PrintDocument ();
+			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintDocument (PrintingSettings.Instance);
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
-				IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> () != null;
+			info.Enabled = CanPrint ();
+		}
+		
+		internal static bool CanPrint ()
+		{
+			IPrintable print;
+			return IdeApp.Workbench.ActiveDocument != null
+				&& (print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ()) != null
+				&& print.CanPrint;
 		}
 	}
 	// MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument
@@ -227,16 +234,35 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IPrintable print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ();
-			print.PrintPreviewDocument ();
+			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintPreviewDocument (PrintingSettings.Instance);
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null &&
-				IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> () != null;
+			info.Enabled = PrintHandler.CanPrint ();
 		}
 	}
+	
+	//FIXME: on GTK 2.18.x there is an option to integrate print preview with the print dialog, which makes this unnecessary
+	// ideally we could only conditionally show it - this is why we handle the PrintingSettings here
+	// MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup
+	public class PrintPageSetupHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var settings = PrintingSettings.Instance;
+			settings.PageSetup = Gtk.Print.RunPageSetupDialog (IdeApp.Workbench.RootWindow, settings.PageSetup, 
+			                                                   settings.PrintSettings);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = PrintHandler.CanPrint ();
+		}
+	}
+	
+	
+	
 	// MonoDevelop.Ide.Commands.FileCommands.RecentFileList
 	public class RecentFileListHandler : CommandHandler
 	{
@@ -292,7 +318,7 @@ namespace MonoDevelop.Ide.Commands
 			int i = 0;
 			foreach (RecentItem ri in recentOpen.RecentProjects) {
 				//getting the icon requires probing the file, so handle IO errors
-				string icon;
+				IconId icon;
 				try {
 					if (!File.Exists (ri.LocalPath))
 						continue;
@@ -301,6 +327,10 @@ namespace MonoDevelop.Ide.Commands
 						(ri.LocalPath, typeof(Solution)).Length > 0
 							? "md-solution"
 							: "md-workspace";
+				}
+				catch (UnauthorizedAccessException exAccess) {
+					LoggingService.LogWarning ("Error building recent solutions list (Permissions)", exAccess);
+					continue;					
 				}
 				catch (IOException ex) {
 					LoggingService.LogWarning ("Error building recent solutions list", ex);

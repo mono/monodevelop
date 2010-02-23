@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get {
 				if (Member is IMember)
 					return ((IMember)Member).StockIcon;

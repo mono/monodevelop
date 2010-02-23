@@ -195,11 +195,13 @@
 	</Extension>	
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class id = "ExtraSteps" class = "CBinding.CProjectServiceExtension"/>
+		<Condition id="ItemType" value="CBinding.CProject">
+			<Class id = "ExtraSteps" class = "CBinding.CProjectServiceExtension"/>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "CBinding.CTextEditorExtension" />
+		<Class mimeTypes="text/x-csrc, text/x-chdr, text/x-c++src, text/x-c++hdr" class = "CBinding.CTextEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

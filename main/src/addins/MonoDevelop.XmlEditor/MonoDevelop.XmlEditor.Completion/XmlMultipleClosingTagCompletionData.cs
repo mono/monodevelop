@@ -55,7 +55,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		#region ICompletionData implementation 
 				
-		public string Icon {
+		public IconId Icon {
 			get { return Gtk.Stock.GoBack; }
 		}
 		

@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get {
 				return Code.Contains ("$selected$") ? "md-template-surroundwith" : "md-template";
 			}

@@ -469,7 +469,7 @@ namespace MonoDevelop.CSharp.Resolver
 			return typeRef.ConvertToReturnType ();
 		}
 		
-		IReturnType ResolveType (IReturnType type)
+		public IReturnType ResolveType (IReturnType type)
 		{
 			return ResolveType (unit, type);
 		}

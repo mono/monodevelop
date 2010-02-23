@@ -52,8 +52,8 @@ namespace MonoDevelop.Projects
 	{
 		DataContext dataContext = new DataContext ();
 		ArrayList projectBindings = new ArrayList ();
-		ProjectServiceExtension defaultExtension = new DefaultProjectServiceExtension ();
-		ProjectServiceExtension extensionChain = new CustomCommandExtension ();
+		ProjectServiceExtension defaultExtensionChain;
+		DefaultProjectServiceExtension extensionChainTerminator = new DefaultProjectServiceExtension ();
 		
 		FileFormatManager formatManager = new FileFormatManager ();
 		FileFormat defaultFormat;
@@ -72,13 +72,22 @@ namespace MonoDevelop.Projects
 		
 		internal event EventHandler DataContextChanged;
 		
+		LocalDataStoreSlot extensionChainSlot;
+		
+		class ExtensionChainInfo
+		{
+			public ExtensionContext ExtensionContext;
+			public ItemTypeCondition ItemTypeCondition;
+			public ProjectLanguageCondition ProjectLanguageCondition;
+		}
+		
 		internal ProjectService ()
 		{
+			extensionChainSlot = Thread.AllocateDataSlot ();
 			AddinManager.AddExtensionNodeHandler (FileFormatsExtensionPath, OnFormatExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (ExtendedPropertiesExtensionPath, OnPropertiesExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (ProjectBindingsExtensionPath, OnProjectsExtensionChanged);
-			UpdateExtensions ();
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			
 			defaultFormat = formatManager.GetFileFormat ("MSBuild05");
@@ -94,12 +103,57 @@ namespace MonoDevelop.Projects
 		
 		public ProjectServiceExtension GetExtensionChain (IBuildTarget target)
 		{
-			if (target == null)
+			ProjectServiceExtension chain;
+			if (target != null) {
+				ExtensionChainInfo einfo = (ExtensionChainInfo) Thread.GetData (extensionChainSlot);
+				if (einfo == null) {
+					einfo = new ExtensionChainInfo ();
+					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
+					einfo.ExtensionContext = ctx;
+					einfo.ItemTypeCondition = new ItemTypeCondition (target.GetType ());
+					einfo.ProjectLanguageCondition = new ProjectLanguageCondition (target);
+					ctx.RegisterCondition ("ItemType", einfo.ItemTypeCondition);
+					ctx.RegisterCondition ("ProjectLanguage", einfo.ProjectLanguageCondition);
+					Thread.SetData (extensionChainSlot, einfo);
+				} else {
+					einfo.ItemTypeCondition.ObjType = target.GetType ();
+					einfo.ProjectLanguageCondition.TargetProject = target;
+				}
+				ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+				chain = CreateExtensionChain (extensions);
+			}
+			else {
+				if (defaultExtensionChain == null) {
+					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
+					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
+					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
+					ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+					defaultExtensionChain = CreateExtensionChain (extensions);
+				}
+				chain = defaultExtensionChain;
 				target = UnknownItem.Instance;
-			if (extensionChain.SupportsItem (target))
-				return extensionChain;
+			}
+			
+			if (chain.SupportsItem (target))
+				return chain;
 			else
-				return extensionChain.GetNext (target);
+				return chain.GetNext (target);
+		}
+		
+		ProjectServiceExtension CreateExtensionChain (ProjectServiceExtension[] extensions)
+		{
+			var first = new CustomCommandExtension ();
+			
+			for (int n=0; n<extensions.Length - 1; n++)
+				extensions [n].Next = extensions [n + 1];
+
+			if (extensions.Length > 0) {
+				extensions [extensions.Length - 1].Next = extensionChainTerminator;
+				first.Next = extensions [0];
+			} else {
+				first.Next = extensionChainTerminator;
+			}
+			return first;
 		}
 		
 		public string DefaultPlatformTarget {
@@ -142,7 +196,7 @@ namespace MonoDevelop.Projects
 		public SolutionEntityItem ReadSolutionItem (IProgressMonitor monitor, string file)
 		{
 			file = GetTargetFile (file);
-			SolutionEntityItem loadedItem = extensionChain.LoadSolutionItem (monitor, file, delegate {
+			SolutionEntityItem loadedItem = GetExtensionChain (null).LoadSolutionItem (monitor, file, delegate {
 				FileFormat format;
 				SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
 				if (item != null)
@@ -490,14 +544,10 @@ namespace MonoDevelop.Projects
 		internal void InitializeDataContext (DataContext ctx)
 		{
 			foreach (DataTypeCodon dtc in AddinManager.GetExtensionNodes (SerializableClassesExtensionPath)) {
-				Type t = dtc.Class;
-				if (t == null)
-					throw new UserException ("Type '" + dtc.TypeName + "' not found. It could not be registered as a serializable type.");
-				ctx.IncludeType (t);
+				ctx.IncludeType (dtc.Addin, dtc.TypeName, dtc.ItemName);
 			}
 			foreach (ItemPropertyCodon cls in AddinManager.GetExtensionNodes (ExtendedPropertiesExtensionPath)) {
-				if (cls.Class != null && cls.PropertyType != null)
-					ctx.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType, cls.External, cls.SkipEmpty);
+				ctx.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
 			}
 		}
 
@@ -513,11 +563,8 @@ namespace MonoDevelop.Projects
 		void OnSerializableExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				Type t = ((DataTypeCodon)args.ExtensionNode).Class;
-				if (t == null) {
-					throw new UserException ("Type '" + ((DataTypeCodon)args.ExtensionNode).TypeName + "' not found. It could not be registered as a serializable type.");
-				}
-				DataContext.IncludeType (t);
+				DataTypeCodon t = (DataTypeCodon) args.ExtensionNode;
+				DataContext.IncludeType (t.Addin, t.TypeName, t.ItemName);
 			}
 			// Types can't be excluded from a DataContext, but that's not a big problem anyway
 			
@@ -529,13 +576,11 @@ namespace MonoDevelop.Projects
 		{
 			if (args.Change == ExtensionChange.Add) {
 				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				if (cls.Class != null && cls.PropertyType != null)
-					DataContext.RegisterProperty (cls.Class, cls.PropertyName, cls.PropertyType);
+				DataContext.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
 			}
 			else {
 				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				if (cls.Class != null && cls.PropertyType != null)
-					DataContext.UnregisterProperty (cls.Class, cls.PropertyName);
+				DataContext.UnregisterProperty (cls.Addin, cls.TypeName, cls.PropertyName);
 			}
 			
 			if (DataContextChanged != null)
@@ -551,21 +596,7 @@ namespace MonoDevelop.Projects
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
 			if (args.PathChanged ("/MonoDevelop/ProjectModel/ProjectServiceExtensions"))
-				UpdateExtensions ();
-		}
-		
-		void UpdateExtensions ()
-		{
-			ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
-			for (int n=0; n<extensions.Length - 1; n++)
-				extensions [n].Next = extensions [n + 1];
-
-			if (extensions.Length > 0) {
-				extensions [extensions.Length - 1].Next = defaultExtension;
-				extensionChain.Next = extensions [0];
-			} else {
-				extensionChain.Next = defaultExtension;
-			}
+				defaultExtensionChain = null;
 		}
 		
 		string GetTargetFile (string file)

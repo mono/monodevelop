@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -81,7 +82,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public override string StockIcon {
+		public override IconId StockIcon {
 			get {
 				return Stock.Namespace;
 			}

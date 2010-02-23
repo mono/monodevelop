@@ -33,9 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class TryCatchStatement : AbstractCSharpNode
 	{
-		public const int TryBlockRole     = 100;
-		public const int FinallyBlockRole = 101;
-		public const int CatchClauseRole  = 102;
+		public const int TryKeywordRole     = 100;
+		public const int FinallyKeywordRole = 101;
+		public const int TryBlockRole       = 102;
+		public const int FinallyBlockRole   = 103;
+		public const int CatchClauseRole    = 104;
+		
 		
 		public BlockStatement TryBlock {
 			get { return (BlockStatement)GetChildByRole (TryBlockRole); }

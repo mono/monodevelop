@@ -44,10 +44,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.WelcomePage
 {	
-	public abstract class WelcomePageView : AbstractViewContent
+	class WelcomePageView : AbstractViewContent
 	{
 		bool loadingProject;
 		EventHandler recentChangesHandler;
+		
+		WelcomePageWidget widget;
+		ScrolledWindow scroller;
 		
 		// netNewsXml is where online the news.xml file can be found
 		static string netNewsXml {
@@ -69,6 +72,10 @@ namespace MonoDevelop.WelcomePage
 			get { return false; }
 		}
 		
+		public override Widget Control {
+			get { return scroller;  }
+		}
+		
 		public WelcomePageView () : base ()
 		{
 			this.ContentName = GettextCatalog.GetString ("Welcome");
@@ -79,6 +86,18 @@ namespace MonoDevelop.WelcomePage
 			NewsUpdated += (EventHandler) DispatchService.GuiDispatch (new EventHandler (HandleNewsUpdate));
 			
 			UpdateNews ();
+			
+			Build ();
+		}
+		
+		void Build ()
+		{
+			scroller = new ScrolledWindow ();
+			widget = new WelcomePageWidget (this);
+			scroller.AddWithViewport (widget);
+			scroller.ShadowType = ShadowType.None;
+			scroller.FocusChain = new Widget[] { widget };
+			scroller.Show ();
 		}
 		
 		public XmlDocument GetUpdatedXmlDocument ()
@@ -175,7 +194,11 @@ namespace MonoDevelop.WelcomePage
 		static object updateLock = new object ();
 		static bool isUpdating;
 		static event EventHandler NewsUpdated;
-		protected abstract void HandleNewsUpdate (object sender, EventArgs args);
+		
+		void HandleNewsUpdate (object sender, EventArgs args)
+		{
+			widget.Rebuild ();
+		}
 		
 		public void HandleLinkAction (string uri)
 		{
@@ -249,13 +272,9 @@ namespace MonoDevelop.WelcomePage
 			}
 		}
 
-		public static WelcomePageView GetWelcomePage ()
+		void RecentChangesHandler (object sender, EventArgs e)
 		{
-			return new WelcomePageFallbackView ();
-		}
-
-		protected virtual void RecentChangesHandler (object sender, EventArgs e)
-		{
+			widget.LoadRecent ();
 		}
 
 		public override void Dispose ()
@@ -287,16 +306,6 @@ namespace MonoDevelop.WelcomePage
 			get {
 				return IdeApp.Workbench.RecentOpen.RecentProjectsCount;
 			}
-		}
-	}
-	
-	class WelcomePageWidget: Gtk.VBox
-	{
-		public WelcomePageWidget ()
-		{
-			WelcomePageView wpv = WelcomePageView.GetWelcomePage ();
-			PackStart (wpv.Control);
-			ShowAll ();
 		}
 	}
 }

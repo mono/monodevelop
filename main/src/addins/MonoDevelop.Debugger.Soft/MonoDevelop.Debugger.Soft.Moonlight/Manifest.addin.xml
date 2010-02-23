@@ -14,7 +14,11 @@
 		<Addin id="MonoDevelop.Debugger.Soft" version="2.2"/>
 	</Dependencies>
 	
-	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
-		<DebuggerFactory type="MonoDevelop.Debugger.Soft.Moonlight.MoonlightSoftDebuggerEngine" />
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine
+			id="Mono.Debugger.Soft.Moonlight"
+			name="Mono Soft Debugger for Moonlight"
+			features="Breakpoints, Pause, Stepping, DebugFile, Catchpoints"
+			type="MonoDevelop.Debugger.Soft.Moonlight.MoonlightSoftDebuggerEngine" />
 	</Extension>
 </Addin>

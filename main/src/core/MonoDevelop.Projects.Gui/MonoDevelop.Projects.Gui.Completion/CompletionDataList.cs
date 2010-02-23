@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
@@ -94,21 +95,21 @@ namespace MonoDevelop.Projects.Gui.Completion
 			return datum;
 		}
 			
-		public CompletionData Add (string text, string icon)
+		public CompletionData Add (string text, IconId icon)
 		{
 			CompletionData datum = new CompletionData (text, icon);
 			Add (datum);
 			return datum;
 		}
 		
-		public CompletionData Add (string text, string icon, string description)
+		public CompletionData Add (string text, IconId icon, string description)
 		{
 			CompletionData datum = new CompletionData (text, icon, description);
 			Add (datum);
 			return datum;
 		}
 		
-		public CompletionData Add (string displayText, string icon, string description, string completionText)
+		public CompletionData Add (string displayText, IconId icon, string description, string completionText)
 		{
 			CompletionData datum = new CompletionData (displayText, icon, description, completionText);
 			Add (datum);

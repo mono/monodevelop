@@ -67,12 +67,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Initializing Main Window"), 4);
 			try {
+				LoggingService.Trace ("Workbench", "Creating DefaultWorkbench");
 				workbench = new DefaultWorkbench ();
 				monitor.Step (1);
 				
+				LoggingService.Trace ("Workbench", "Initializing Workspace");
 				workbench.InitializeWorkspace();
 				monitor.Step (1);
 				
+				LoggingService.Trace ("Workbench", "Initializing Layout");
 				workbench.InitializeLayout (new SdiWorkbenchLayout ());
 				monitor.Step (1);
 				
@@ -115,15 +118,22 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void Show (string workbenchMemento)
 		{
+			LoggingService.Trace ("Workbench", "Realizing Root Window");
 			RootWindow.Realize ();
-			workbench.Memento = PropertyService.Get (workbenchMemento, new Properties ());
+			LoggingService.Trace ("Workbench", "Loading memento");
+			var memento = PropertyService.Get (workbenchMemento, new Properties ());
+			LoggingService.Trace ("Workbench", "Setting memento");
+			workbench.Memento = memento;
+			LoggingService.Trace ("Workbench", "Making Visible");
 			RootWindow.Visible = true;
 			workbench.Context = WorkbenchContext.Edit;
 			
 			// now we have an layout set notify it
+			LoggingService.Trace ("Workbench", "Setting layout");
 			if (LayoutChanged != null)
 				LayoutChanged (this, EventArgs.Empty);
 			
+			LoggingService.Trace ("Workbench", "Initializing monitors");
 			monitors.Initialize ();
 			
 			Present ();
@@ -310,12 +320,12 @@ namespace MonoDevelop.Ide.Gui
 			return WrapPad (content);
 		}
 
-		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, string icon)
+		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
-		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, string icon)
+		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}

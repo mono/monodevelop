@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.ObjectModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -132,7 +133,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public virtual string StockIcon {
+		public virtual IconId StockIcon {
 			get {
 				return member.StockIcon;
 			}

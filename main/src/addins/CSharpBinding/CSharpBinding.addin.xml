@@ -16,7 +16,6 @@
 		<Addin id="Ide" version="2.2"/>
 		<Addin id="SourceEditor2" version="2.2"/>
 		<Addin id="Refactoring" version="2.2"/>
-		<Addin id="AspNet" version="2.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -100,8 +99,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
-		<Class class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
@@ -152,10 +151,6 @@
 		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
-		<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />
-	</Extension>
-	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
@@ -165,6 +160,18 @@
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
+		</Extension>
+	</Module>
+	
+	<Module>
+		<Runtime>
+			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
+		</Runtime>
+		<Dependencies>
+			<Addin id="AspNet" version="2.2"/>
+		</Dependencies>
+		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
+			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />
 		</Extension>
 	</Module>
 </Addin>

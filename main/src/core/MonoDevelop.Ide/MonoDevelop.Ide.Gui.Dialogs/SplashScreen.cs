@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
 			try {
-				bitmap = new Gdk.Pixbuf(Assembly.GetCallingAssembly(), "SplashScreen.png");
+				bitmap = new Gdk.Pixbuf (Assembly.GetCallingAssembly(), "SplashScreen.png");
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't load splash screen pixbuf 'SplashScreen.png'.", e);
 			}

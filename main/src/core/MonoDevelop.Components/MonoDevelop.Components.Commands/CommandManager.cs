@@ -342,6 +342,9 @@ namespace MonoDevelop.Components.Commands
 		
 		public Command GetCommand (object cmdId)
 		{
+			// Include the type name when converting enum members to ids.
+			cmdId = ToCommandId (cmdId);
+			
 			Command cmd;
 			if (cmds.TryGetValue (cmdId, out cmd))
 				return cmd;
@@ -356,11 +359,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public ActionCommand GetActionCommand (object cmdId)
 		{
-			Command cmd;
-			if (cmds.TryGetValue (cmdId, out cmd))
-				return cmd as ActionCommand;
-			else
-				return null;
+			return GetCommand (cmdId) as ActionCommand;
 		}
 		
 		public Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
@@ -843,7 +842,7 @@ namespace MonoDevelop.Components.Commands
 		void AddUpdater (List<CommandUpdaterInfo> methodUpdaters, MethodInfo method, CommandUpdateHandlerAttribute attr)
 		{
 			foreach (CommandUpdaterInfo ci in methodUpdaters) {
-				if (ci.CommandId.Equals (attr.CommandId)) {
+				if (ci.CommandId.Equals (CommandManager.ToCommandId (attr.CommandId))) {
 					ci.Init (method, attr);
 					return;
 				}
@@ -1060,6 +1059,17 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		internal static object ToCommandId (object ob)
+		{
+			// Include the type name when converting enum members to ids.
+			if (ob == null)
+				return null;
+			else if (ob.GetType ().IsEnum)
+				return ob.GetType ().FullName + "." + ob;
+			else
+				return ob;
+		}
+		
 		void NotifyCommandTargetScanStarted ()
 		{
 			if (CommandTargetScanStarted != null)
@@ -1121,13 +1131,13 @@ namespace MonoDevelop.Components.Commands
 			// Don't assign the method if there is already one assigned (maybe from a subclass)
 			if (this.Method == null) {
 				this.Method = method;
-				CommandId = attr.CommandId;
+				CommandId = CommandManager.ToCommandId (attr.CommandId);
 			}
 		}
 		
 		public CommandMethodInfo (object commandId)
 		{
-			CommandId = commandId;
+			CommandId = CommandManager.ToCommandId (commandId);
 		}
 	}
 	

@@ -30,6 +30,7 @@ using System;
 using System.Linq;
 using System.CodeDom;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -95,7 +96,7 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
-		public virtual string StockIcon {
+		public virtual IconId StockIcon {
 			get {
 				return Stock.Field;
 			}

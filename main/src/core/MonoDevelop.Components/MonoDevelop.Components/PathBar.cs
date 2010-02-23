@@ -112,6 +112,9 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
+			if (widths == null)
+				return true;
+			
 			//FIXME use event area
 			//FIXME: why don't we need to use the allocation.x and allocation.y here?
 			int xpos = padding, ypos = padding;
@@ -236,7 +239,7 @@ namespace MonoDevelop.Components
 		int GetItemAt (int x, int y)
 		{
 			int xpos = padding;
-			if (x < xpos)
+			if (widths == null || x < xpos)
 				return -1;
 			//could do a binary search, but probably not worth it
 			for (int i = 0; i < path.Length; i++) {

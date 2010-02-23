@@ -58,6 +58,7 @@
 	<Style name="text" color="aluminium2" bgColor="aluminium6"/>
 	<Style name="text.selection" color="aluminium1" bgColor="aluminium4"/>
 	<Style name="text.background.searchresult" color="aluminium5"/>
+	<Style name="text.background.searchresult-main" color="chocolate3"/>
 	<Style name="text.link" color="butter2"/>
 	
 	<Style name="caret" color="aluminium2" bgColor="aluminium6"/>

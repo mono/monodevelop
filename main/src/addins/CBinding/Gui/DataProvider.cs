@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 
 using CBinding.Parser;
+using MonoDevelop.Core;
 
 namespace CBinding
 {
@@ -143,7 +144,7 @@ namespace CBinding
 	
 	public class CompletionData : ICompletionData
 	{
-		private string image;
+		private IconId image;
 		private string text;
 		private string description;
 		private string completion_string;
@@ -180,7 +181,7 @@ namespace CBinding
 			this.description = string.Empty;
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return image; }
 		}
 		

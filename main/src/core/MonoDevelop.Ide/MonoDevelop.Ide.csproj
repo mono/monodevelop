@@ -603,6 +603,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SideBar.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\TextEditorExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

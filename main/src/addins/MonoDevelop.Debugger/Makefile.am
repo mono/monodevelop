@@ -30,6 +30,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.BusyEvaluatorDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/AddTracePointDialog.cs \
@@ -40,10 +41,13 @@ FILES =  \
 	MonoDevelop.Debugger/DebugCommands.cs \
 	MonoDevelop.Debugger/DebugExecutionHandlerFactory.cs \
 	MonoDevelop.Debugger/DebugExecutionModeSet.cs \
+	MonoDevelop.Debugger/DebuggerEngine.cs \
+	MonoDevelop.Debugger/DebuggerEngineExtensionNode.cs \
 	MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs \
 	MonoDevelop.Debugger/DebuggingService.cs \
 	MonoDevelop.Debugger/DebugTextMarker.cs \
 	MonoDevelop.Debugger/DisassemblyView.cs \
+	MonoDevelop.Debugger/ExceptionCaughtDialog.cs \
 	MonoDevelop.Debugger/ExceptionsDialog.cs \
 	MonoDevelop.Debugger/ExpressionEvaluatorDialog.cs \
 	MonoDevelop.Debugger/Extensions.cs \
@@ -53,6 +57,8 @@ FILES =  \
 	MonoDevelop.Debugger/LocalsPad.cs \
 	MonoDevelop.Debugger/ObjectValuePad.cs \
 	MonoDevelop.Debugger/ObjectValueTreeView.cs \
+	MonoDevelop.Debugger/PinnedWatch.cs \
+	MonoDevelop.Debugger/PinnedWatchStore.cs \
 	MonoDevelop.Debugger/StackTracePad.cs \
 	MonoDevelop.Debugger/ThreadsPad.cs \
 	MonoDevelop.Debugger/WatchPad.cs

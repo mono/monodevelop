@@ -27,6 +27,7 @@
 
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		string label;
 		Gdk.Pixbuf icon;
 		
-		public TreeViewItem (string label, string stockIcon)
+		public TreeViewItem (string label, IconId stockIcon)
 		{
 			this.stockIcon = stockIcon;
 			this.label = label;
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.label = label;
 		}
 		
-		public string StockIcon {
+		public IconId StockIcon {
 			get { return stockIcon; }
 		}
 		
@@ -82,7 +83,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			TreeViewItem it = (TreeViewItem) dataObject;
 			label = it.Label;
-			if (it.StockIcon != null)
+			if (!it.StockIcon.IsNull)
 				icon = closedIcon = Context.GetIcon (it.StockIcon);
 			else if (it.Icon != null)
 				icon = closedIcon = it.Icon;

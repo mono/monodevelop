@@ -70,6 +70,8 @@ namespace MonoDevelop.RegexToolkit
 
 		private global::Gtk.HBox hbox1;
 
+		private global::Gtk.Label labelStatus;
+
 		private global::Gtk.Button buttonCancel;
 
 		private global::Gtk.Button buttonLibrary;
@@ -365,6 +367,17 @@ namespace MonoDevelop.RegexToolkit
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
+			this.labelStatus = new global::Gtk.Label ();
+			this.labelStatus.Name = "labelStatus";
+			this.labelStatus.Xalign = 0f;
+			this.labelStatus.UseMarkup = true;
+			this.labelStatus.UseUnderline = true;
+			this.hbox1.Add (this.labelStatus);
+			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.labelStatus]));
+			w38.Position = 0;
+			w38.Expand = false;
+			w38.Fill = false;
+			// Container child hbox1.Gtk.Box+BoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
 			this.buttonCancel.CanFocus = true;
@@ -373,11 +386,11 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-close";
 			this.hbox1.Add (this.buttonCancel);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonCancel]));
-			w38.PackType = ((global::Gtk.PackType)(1));
-			w38.Position = 0;
-			w38.Expand = false;
-			w38.Fill = false;
+			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonCancel]));
+			w39.PackType = ((global::Gtk.PackType)(1));
+			w39.Position = 1;
+			w39.Expand = false;
+			w39.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.buttonLibrary = new global::Gtk.Button ();
 			this.buttonLibrary.CanDefault = true;
@@ -386,16 +399,16 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonLibrary.UseUnderline = true;
 			this.buttonLibrary.Label = global::Mono.Unix.Catalog.GetString ("Regex Library");
 			this.hbox1.Add (this.buttonLibrary);
-			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonLibrary]));
-			w39.PackType = ((global::Gtk.PackType)(1));
-			w39.Position = 1;
-			w39.Expand = false;
-			w39.Fill = false;
-			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-			w40.Position = 1;
+			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonLibrary]));
+			w40.PackType = ((global::Gtk.PackType)(1));
+			w40.Position = 2;
 			w40.Expand = false;
 			w40.Fill = false;
+			this.vbox2.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			w41.Position = 1;
+			w41.Expand = false;
+			w41.Fill = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
@@ -406,6 +419,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label10.MnemonicWidget = this.optionsTreeview;
 			this.label11.MnemonicWidget = this.elementsTreeview;
 			this.label9.MnemonicWidget = this.inputTextview;
+			this.labelStatus.MnemonicWidget = this.inputTextview;
 			this.Show ();
 		}
 	}

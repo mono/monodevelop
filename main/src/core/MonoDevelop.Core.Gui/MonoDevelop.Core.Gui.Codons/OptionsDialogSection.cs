@@ -46,7 +46,7 @@ namespace MonoDevelop.Core.Gui.Codons
 		{
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get {
 				return icon;
 			}

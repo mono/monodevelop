@@ -75,12 +75,36 @@ namespace Mono.TextEditor.Highlighting
 		{
 			SpanParser spanParser = CreateSpanParser (doc, this, line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, doc, style, this, line);
-			Chunk result = chunkParser.GetChunks (offset, length);
+			Chunk result = chunkParser.GetChunks (line.Offset, line.EditableLength);
 			if (SemanticRules != null) {
 				foreach (SemanticRule sematicRule in SemanticRules) {
 					sematicRule.Analyze (doc, line, result, offset, offset + length);
 				}
 			}
+			if (result != null) {
+				// crop to begin
+				if (result.Offset != offset) {
+					while (result != null && result.EndOffset < offset)
+						result = result.Next;
+					if (result != null) {
+						int endOffset = result.EndOffset;
+						result.Offset = offset;
+						result.Length = endOffset - offset;
+					}
+				}
+				if (result != null && offset + length != line.Offset + line.EditableLength) {
+					// crop to end
+					Chunk cur = result;
+					while (cur != null && cur.EndOffset < offset + length) {
+						cur = cur.Next;
+					}
+					if (cur != null) {
+						cur.Length = offset + length - cur.Offset;
+						cur.Next = null;
+					}
+				}
+			}
+			
 			return result;
 		}
 		

@@ -1,3 +1,67 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core/IconId.cs: Implemented new IconId class
+	  which can be used to represent icon names and supports lazy
+	  loading of pixbufs.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.AddIns/TargetFrameworkNode.cs: Allow
+	  loading a framework description from a file.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks/framework_NET_4_0.xml:
+	* frameworks/framework_NET_2_0.xml:
+	* frameworks/framework_NET_1_1.xml: Add missing assemblies.
+
+2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: Fix build.
+
+2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: Fix
+	  registering of extended properties.
+
+2010-02-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: (Revert
+	  revision 151674)
+
+2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: First attempt
+	  at fixing losing extended properties.
+
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: Add support
+	  for delayed loading of serializable types.
+
+2010-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core/PropertyService.cs: Add startup trace
+	  calls.
+
+2010-02-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Add startup
+	  trace calls.
+
+	* MonoDevelop.Core/LoggingService.cs: Add startup trace
+	  method.
+
+2010-02-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Assemblies/MonoRuntimeInfo.cs: Don't
+	  inherit the MONO_PATH var from the current process
+	  environment.
+
 2010-01-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs:

@@ -39,7 +39,7 @@ namespace MonoDevelop.Debugger.Tests
 	public abstract class DebugTests: TestBase
 	{
 		string eid;
-		IDebuggerEngine engine;
+		DebuggerEngine engine;
 		
 		public DebugTests (string engineId)
 		{
@@ -49,7 +49,7 @@ namespace MonoDevelop.Debugger.Tests
 		public override void Setup ()
 		{
 			base.Setup ();
-			foreach (IDebuggerEngine e in DebuggingService.GetDebuggerEngines ()) {
+			foreach (DebuggerEngine e in DebuggingService.GetDebuggerEngines ()) {
 				if (e.Id == eid) {
 					engine = e;
 					break;

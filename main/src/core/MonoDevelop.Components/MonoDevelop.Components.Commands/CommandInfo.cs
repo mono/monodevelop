@@ -27,13 +27,14 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
 	public class CommandInfo
 	{
 		string text;
-		string icon;
+		IconId icon;
 		string accelKey;
 		string description;
 		bool enabled = true;
@@ -73,7 +74,7 @@ namespace MonoDevelop.Components.Commands
 			set { text = value; }
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return icon; }
 			set { icon = value; }
 		}

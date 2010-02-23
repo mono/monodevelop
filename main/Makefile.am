@@ -1,5 +1,8 @@
 SUBDIRS = contrib src po man theme-icons build tests
 
+#capture aclocal flags for autoreconf
+ACLOCAL_AMFLAGS=$(ACLOCAL_FLAGS)
+
 bin_SCRIPTS = monodevelop mdtool
 
 buildinfo = $(top_builddir)/build/bin/buildinfo
@@ -119,6 +122,13 @@ run-profile: $(PROGRAM)
 
 run-profile-stat: $(PROGRAM)
 	$(MD_LAUNCH) --profile=logging:stat $(MD_BIN_PATH)/MonoDevelop.exe
+
+run-trace: $(PROGRAM)
+	$(MD_LAUNCH_SETUP) MONODEVELOP_TRACE=1 exec strace -ttt -f -o md.strace mono $(MD_BIN_PATH)/MonoDevelop.exe
+
+plot-trace:
+	if [ ! -e 'plot-timeline.py' ]; then wget http://gitorious.org/performance-scripts/mainline/blobs/raw/master/plot-timeline.py; fi
+	python plot-timeline.py -o md-trace.png  md.strace
 
 run-profile-heap: $(PROGRAM)
 	$(MD_LAUNCH) -O=inline --profile=heap:heaplog $(MD_BIN_PATH)/MonoDevelop.exe

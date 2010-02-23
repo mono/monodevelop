@@ -1,3 +1,161 @@
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/Statements/FixedStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/TryCatchStatement.cs:
+	  Worked on dom.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed 'Bug
+	  578439 - Return key acts crazy in MonoDevelop'.
+
+2010-02-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed bug in
+	  array item lookup.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AspNet:
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* MonoDevelop.CSharp.Completion/AspLanguageBuilder.cs: Moved
+	  AspLanguageBuilder to its own assembly and module. Dropped
+	  Asp.Net dependency.
+
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  Filtering by extension is now done by the document.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs: Track
+	  api changes.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: Fixed
+	  'Bug 580427 - Exception, then crash while editing text.'.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Categories are now sorted.
+
+2010-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom/Identifier.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/Statements/GotoStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/WhileStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/IfElseStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/ExpressionStatement.cs:
+	  Worked on new C# DOM.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
+	  Fixed 'Bug 576336 - Parameter tooltip window stops working'.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
+	  'Bug 577225 - Inconsistent autocomplete on returned value of
+	  generic method.'.
+
+2010-02-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	  worked on c# parser.
+
+2010-02-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/IsExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/AsExpression.cs:
+	* MonoDevelop.CSharp.Dom/Statements/EmptyStatement.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/TypeOfExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/SizeOfExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ConditionalExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/DefaultValueExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/UnaryOperatorExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ThisReferenceExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/BinaryOperatorExpression.cs:
+	  Worked on parser/new dom.
+
+2010-02-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom/FullTypeName.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/OperatorDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/PropertyDeclaration.cs:
+	  worked on mcs based parser/new dom.
+
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	  Worked on DOM visitor.
+
+2010-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Dom/ICSharpNode.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/CompilationUnit.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	  Worked on mcs parser/dom.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom/Identifier.cs:
+	* MonoDevelop.CSharp.Dom/CSharpTokenNode.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/CompilationUnit.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs:
+	  Worked on new dom/gmcs based parser.
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  fixed code completion activation in some cases.
+
+2010-02-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  added completion context for boolean variables (case:
+	  "varName = ").
+
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	  handle collection initalizers.
+
+2010-01-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	  fixed intellisense bug found by Marek.
+
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

@@ -327,7 +327,7 @@ namespace MonoDevelop.Ide.Gui
 					IPadWindow win = WorkbenchLayout.GetPadWindow (pad);
 					if (pad.Label != null)
 						win.Title = pad.Label;
-					if (pad.Icon != null)
+					if (!pad.Icon.IsNull)
 						win.Icon = pad.Icon;
 				}
 			}

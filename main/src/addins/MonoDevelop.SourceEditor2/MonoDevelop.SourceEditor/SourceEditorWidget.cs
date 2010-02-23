@@ -81,18 +81,28 @@ namespace MonoDevelop.SourceEditor
 		
 		public MonoDevelop.SourceEditor.ExtensibleTextEditor TextEditor {
 			get {
-				if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null
-				    && this.splittedTextEditor.HasFocus)
-				{
-					lastActiveEditor = this.splittedTextEditor;
-				}
-				if (this.textEditor != null && this.textEditor.Parent != null && this.textEditor.HasFocus)
-				{
-					lastActiveEditor = this.textEditor;
-				}
+				SetLastActiveEditor ();
 				return lastActiveEditor;
 			}
 		}
+		
+		public TextEditorContainer TextEditorContainer {
+			get {
+				SetLastActiveEditor ();
+				return lastActiveEditor == textEditor ? textEditorContainer : splittedTextEditorContainer;
+			}
+		}
+		
+		void SetLastActiveEditor ()
+		{
+			if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null && this.splittedTextEditor.HasFocus) {
+				lastActiveEditor = this.splittedTextEditor;
+			}
+			if (this.textEditor != null && this.textEditor.Parent != null && this.textEditor.HasFocus) {
+				lastActiveEditor = this.textEditor;
+			}
+		}
+		
 		
 		public bool ShowClassBrowser {
 			get { return shouldShowclassBrowser; }
@@ -176,16 +186,17 @@ namespace MonoDevelop.SourceEditor
 			args.RetVal = true;
 		}
 		
+		TextEditorContainer textEditorContainer;
 		public SourceEditorWidget (SourceEditorView view)
 		{
-			
 			this.view = view;
 			this.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
 			mainsw = new ScrolledWindow ();
 			mainsw.BorderWidth = 0;
 			mainsw.ShadowType = ShadowType.In;
-			mainsw.Child = this.TextEditor;
+			this.textEditorContainer = new TextEditorContainer (textEditor);
+			mainsw.Child = textEditorContainer;
 			this.PackStart (mainsw, true, true, 0);
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			this.textEditor.Errors = errors;
@@ -215,7 +226,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateLineCol ();
 			return res;
 		}
-
+		
 		
 		void ResetFocusChain ()
 		{
@@ -559,7 +570,6 @@ namespace MonoDevelop.SourceEditor
 				this.mainsw = secondsw;
 				vadjustment = secondsw.Vadjustment.Value;
 				hadjustment = secondsw.Hadjustment.Value;
-
 				splitContainer.Remove (secondsw);
 				lastActiveEditor = this.textEditor = splittedTextEditor;
 				splittedTextEditor = null;
@@ -584,6 +594,8 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		ScrolledWindow secondsw;
+		TextEditorContainer splittedTextEditorContainer;
+		
 		public void Split (bool vSplit)
 		{
 			double vadjustment = this.mainsw.Vadjustment.Value;
@@ -617,8 +629,10 @@ namespace MonoDevelop.SourceEditor
 			};
 			this.splittedTextEditor.Caret.PositionChanged += CaretPositionChanged;
 			
-			secondsw.Child = splittedTextEditor;
+			this.splittedTextEditorContainer = new TextEditorContainer (this.splittedTextEditor);
+			secondsw.Child = this.splittedTextEditorContainer;
 			splitContainer.Add2 (secondsw);
+			
 			this.PackStart (splitContainer, true, true, 0);
 			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2 - 1;
 			
@@ -634,14 +648,14 @@ namespace MonoDevelop.SourceEditor
 			double vadjustment = this.mainsw.Vadjustment.Value;
 			double hadjustment = this.mainsw.Hadjustment.Value;
 			
-			this.mainsw.Remove (textEditor);
-			textEditor.Unparent ();
+			this.mainsw.Remove (textEditorContainer);
+			textEditorContainer.Unparent ();
 			this.mainsw.Destroy ();
 			
 			this.mainsw = new ScrolledWindow ();
 			this.mainsw.ShadowType = ShadowType.In;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
-			this.mainsw.Child = textEditor;
+			this.mainsw.Child = textEditorContainer;
 			this.mainsw.Vadjustment.Value = vadjustment; 
 			this.mainsw.Hadjustment.Value = hadjustment;
 		}
@@ -822,7 +836,9 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region Search and Replace
+		Components.RoundedFrame searchAndReplaceWidgetFrame = null;
 		SearchAndReplaceWidget searchAndReplaceWidget = null;
+		Components.RoundedFrame gotoLineNumberWidgetFrame = null;
 		GotoLineNumberWidget   gotoLineNumberWidget   = null;
 		
 		public void SetSearchPattern ()
@@ -839,21 +855,20 @@ namespace MonoDevelop.SourceEditor
 		bool KillWidgets ()
 		{
 			bool result = false;
-			if (searchAndReplaceWidget != null) {
-				if (searchAndReplaceWidget.Parent != null)
-					this.Remove (searchAndReplaceWidget);
-				searchAndReplaceWidget.Destroy ();
+			if (searchAndReplaceWidgetFrame != null) {
+				searchAndReplaceWidgetFrame.Destroy ();
+				searchAndReplaceWidgetFrame = null;
 				searchAndReplaceWidget = null;
 				result = true;
 			}
 			
-			if (gotoLineNumberWidget != null) {
-				if (gotoLineNumberWidget.Parent != null)
-					this.Remove (gotoLineNumberWidget);
-				gotoLineNumberWidget.Destroy ();
+			if (gotoLineNumberWidgetFrame != null) {
+				gotoLineNumberWidgetFrame.Destroy ();
+				gotoLineNumberWidgetFrame = null;
 				gotoLineNumberWidget = null;
 				result = true;
 			}
+			
 			if (this.textEditor != null) 
 				this.textEditor.HighlightSearchPattern = false;
 			if (this.splittedTextEditor != null) 
@@ -931,21 +946,32 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.SearchPattern = SearchAndReplaceWidget.searchPattern = "";
 			// reset pattern, to force an update
 			
-			if (TextEditor.IsSomethingSelected)
+			if (TextEditor.IsSomethingSelected) {
 				TextEditor.SearchPattern = TextEditor.SelectedText;
+				TextEditor.TextViewMargin.MainSearchResult = TextEditor.SelectionRange;
+			}
 			
 			if (searchAndReplaceWidget == null) {
 				if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true))
 					SearchAndReplaceWidget.IsCaseSensitive = TextEditor.IsSomethingSelected;
-				
 				KillWidgets ();
-				searchAndReplaceWidget = new SearchAndReplaceWidget (this);
-				this.PackEnd (searchAndReplaceWidget);
-				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
+				searchAndReplaceWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+				searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				
+				searchAndReplaceWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (this, searchAndReplaceWidgetFrame);
+				
+				searchAndReplaceWidgetFrame.ShowAll ();
+				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+//				this.PackEnd (searchAndReplaceWidget);
+//				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 		//		searchAndReplaceWidget.ShowAll ();
 				this.textEditor.HighlightSearchPattern = true;
-				if (this.splittedTextEditor != null) 
+				this.textEditor.TextViewMargin.RefreshSearchMarker ();
+				if (this.splittedTextEditor != null) {
 					this.splittedTextEditor.HighlightSearchPattern = true;
+					this.splittedTextEditor.TextViewMargin.RefreshSearchMarker ();
+				}
 				
 				ResetFocusChain ();
 			}
@@ -967,13 +993,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (gotoLineNumberWidget == null) {
 				KillWidgets ();
-				gotoLineNumberWidget = new GotoLineNumberWidget (this);
-				this.Add (gotoLineNumberWidget);
-				this.SetChildPacking(gotoLineNumberWidget, false, false, CHILD_PADDING, PackType.End);
-				gotoLineNumberWidget.ShowAll ();
-				ResetFocusChain ();
 				
+				
+				gotoLineNumberWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+				gotoLineNumberWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				
+				gotoLineNumberWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (this, gotoLineNumberWidgetFrame);
+				gotoLineNumberWidgetFrame.ShowAll ();
+				
+				this.TextEditorContainer.AddAnimatedWidget (gotoLineNumberWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+				
+				ResetFocusChain ();
 			}
+			
 			gotoLineNumberWidget.Focus ();
 		}
 		
@@ -1019,7 +1052,7 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindNext (bool focus)
 		{
 			SetSearchOptions ();
-			SearchResult result = TextEditor.FindNext ();
+			SearchResult result = TextEditor.FindNext (true);
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}
@@ -1043,7 +1076,7 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindPrevious (bool focus)
 		{
 			SetSearchOptions ();
-			SearchResult result = TextEditor.FindPrevious ();
+			SearchResult result = TextEditor.FindPrevious (true);
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}

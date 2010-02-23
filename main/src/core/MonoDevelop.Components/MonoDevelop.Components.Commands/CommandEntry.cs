@@ -38,7 +38,7 @@ namespace MonoDevelop.Components.Commands
 
 		public CommandEntry (object cmdId, string overrideLabel, bool disabledVisible)
 		{
-			this.cmdId         = cmdId;
+			this.cmdId         = CommandManager.ToCommandId (cmdId);
 			this.overrideLabel = overrideLabel;
 			this.disabledVisible = disabledVisible;
 		}
@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public object CommandId {
 			get { return cmdId; }
-			set { cmdId = value; }
+			set { cmdId = CommandManager.ToCommandId (value); }
 		}
 		
 		public bool DisabledVisible {
@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.Commands
 		
 		internal protected virtual Gtk.ToolItem CreateToolItem (CommandManager manager)
 		{
-			if (cmdId == Command.Separator)
+			if (cmdId == CommandManager.ToCommandId (Command.Separator))
 				return new Gtk.SeparatorToolItem ();
 
 			Command cmd = manager.GetCommand (cmdId);
@@ -121,7 +121,8 @@ namespace MonoDevelop.Components.Commands
 
 		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster, string overrideLabel, bool disabledVisible)
 		{
-			if (cmdId == Command.Separator)
+			cmdId = CommandManager.ToCommandId (cmdId);
+			if (cmdId == CommandManager.ToCommandId (Command.Separator))
 				return new Gtk.SeparatorMenuItem ();
 				
 			Command cmd = manager.GetCommand (cmdId);

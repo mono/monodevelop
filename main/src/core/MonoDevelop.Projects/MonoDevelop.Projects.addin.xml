@@ -51,6 +51,12 @@
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions" name = "Project service extensions">
 		<Description>Project service extensions. Specified classes must be a subclass of ProjectServiceExtension</Description>
+		<ConditionType id="ItemType" type="MonoDevelop.Core.Gui.Dialogs.OptionPanels.ItemTypeCondition">
+			<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
+		</ConditionType>
+		<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
+			<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
+		</ConditionType>
 		<ExtensionNode name="Class">
 			<Description>A subclass of ProjectServiceExtension.</Description>
 		</ExtensionNode>
@@ -137,8 +143,8 @@
 		<DataType class = "MonoDevelop.Projects.SolutionEntityItem" />
 		<DataType class = "MonoDevelop.Projects.Project" />
 		<DataType class = "MonoDevelop.Projects.Workspace" />
-		<DataType class = "MonoDevelop.Projects.DotNetProject" />
-		<DataType class = "MonoDevelop.Projects.DotNetAssemblyProject" />
+		<DataType class = "MonoDevelop.Projects.DotNetProject" name = "AbstractDotNetProject"/>
+		<DataType class = "MonoDevelop.Projects.DotNetAssemblyProject" name = "DotNetProject"/>
 		<DataType class = "MonoDevelop.Projects.GenericProject" />
 		<DataType class = "MonoDevelop.Projects.GenericProjectConfiguration" />
 	</Extension>

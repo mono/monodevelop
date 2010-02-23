@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
-using MDB = Mono.Debugger;
+using MDB = Mono.Debugger.Soft;
 using DC = Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
@@ -45,13 +45,16 @@ namespace Mono.Debugging.Soft
 		{
 			this.session = session;
 			this.thread = thread;
-			this.frames = thread.GetFrames ();
 			stackVersion = session.StackVersion;
+			if (thread != null)
+				this.frames = thread.GetFrames ();
+			else
+				this.frames = new MDB.StackFrame[0];
 		}
 		
 		void ValidateStack ()
 		{
-			if (stackVersion != session.StackVersion)
+			if (stackVersion != session.StackVersion && thread != null)
 				frames = thread.GetFrames ();
 		}
 

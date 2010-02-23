@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -105,9 +106,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		static readonly string[] iconTable = {Stock.Property, Stock.PrivateProperty, Stock.ProtectedProperty, Stock.InternalProperty};
+		static readonly IconId[] iconTable = {Stock.Property, Stock.PrivateProperty, Stock.ProtectedProperty, Stock.InternalProperty};
 		
-		public override string StockIcon {
+		public override IconId StockIcon {
 			get {
 				return iconTable [ModifierToOffset (Modifiers)];
 			}

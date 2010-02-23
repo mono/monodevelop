@@ -270,7 +270,7 @@ namespace MonoDevelop.NUnit
 			regressionStore = new ListStore (typeof(object), typeof(string), typeof (Pixbuf));
 			
 			CellRendererText trtest2 = new CellRendererText ();
-			CellRendererPixbuf pr = new CellRendererPixbuf ();
+			var pr = new CellRendererPixbuf ();
 			
 			TreeViewColumn col = new TreeViewColumn ();
 			col.PackStart (pr, false);

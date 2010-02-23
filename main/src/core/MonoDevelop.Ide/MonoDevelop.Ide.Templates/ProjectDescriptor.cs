@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			if ((projectOptions.Attributes["language"] == null) || String.IsNullOrEmpty (projectOptions.Attributes["language"].Value))
+			if (string.IsNullOrEmpty (projectOptions.GetAttribute ("language")) && !string.IsNullOrEmpty (defaultLanguage))
 				projectOptions.SetAttribute ("language", defaultLanguage);
 
 			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);

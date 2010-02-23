@@ -124,7 +124,7 @@ namespace MonoDevelop.Debugger
 			treeState = new TreeViewState (tree, (int) Columns.Breakpoint);
 							
 			TreeViewColumn col = new TreeViewColumn ();
-			CellRenderer crp = new CellRendererPixbuf ();
+			CellRenderer crp = new CellRendererIcon ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock_id", (int) Columns.Icon);
 			tree.AppendColumn (col);

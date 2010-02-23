@@ -256,7 +256,7 @@ namespace Mono.Debugging.Evaluation
 			return sb.ToString ();
 		}
 		
-		public EvaluationResult SetValue (ObjectPath path, string value)
+		public EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options)
 		{
 			if (path.Length != 2)
 				throw new NotSupportedException ();
@@ -266,7 +266,7 @@ namespace Mono.Debugging.Evaluation
 			object val;
 			try {
 				EvaluationContext cctx = ctx.Clone ();
-				EvaluationOptions ops = cctx.Options;
+				EvaluationOptions ops = options ?? cctx.Options;
 				ops.AllowMethodEvaluation = true;
 				ops.AllowTargetInvoke = true;
 				cctx.Options = ops;

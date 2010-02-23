@@ -131,10 +131,6 @@
 		<NodeBuilder class = "MonoDevelop.Gettext.NodeBuilders.ProjectFileNodeBuilderExtension"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class = "MonoDevelop.Gettext.TranslationServiceStartupCommand"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class = "MonoDevelop.Gettext.PropertyProvider"/>
 	</Extension>

@@ -167,7 +167,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\DropDownBox.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DropDownBoxListWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
@@ -180,6 +179,10 @@
     <Compile Include="MonoDevelop.SourceEditor\ErrorTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TinyDropDownBox.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\PrintSettingsWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -190,6 +193,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">
       <LogicalName>MonoDevelop.SourceEditor.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.SourceEditor\searchoptions.png">
+      <LogicalName>searchoptions.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

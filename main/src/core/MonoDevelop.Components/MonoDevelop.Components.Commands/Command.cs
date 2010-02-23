@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -39,7 +40,7 @@ namespace MonoDevelop.Components.Commands
 		object id;
 		string text;
 		string description;
-		string icon;
+		IconId icon;
 		string accelKey;
 		string category;
 		bool disabledVisible;
@@ -52,13 +53,13 @@ namespace MonoDevelop.Components.Commands
 		
 		public Command (object id, string text)
 		{
-			this.id = id;
+			this.id = CommandManager.ToCommandId (id);
 			this.text = text;
 		}
 		
 		public object Id {
 			get { return id; }
-			set { id = value; }
+			set { id = CommandManager.ToCommandId (value); }
 		}
 		
 		public string Text {
@@ -66,7 +67,7 @@ namespace MonoDevelop.Components.Commands
 			set { text = value; }
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return icon; }
 			set { icon = value; }
 		}

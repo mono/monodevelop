@@ -498,9 +498,10 @@ namespace MonoDevelop.Ide.Gui
 			string windowTitle = GettextCatalog.GetString (padCodon.Label);
 			DockItem item = dock.AddItem (padCodon.PadId);
 			item.Label = windowTitle;
-			item.Icon = window.Icon;
+			item.Icon = ImageService.GetPixbuf (window.Icon, IconSize.Menu);
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
+			window.Item = item;
 			
 			if (padCodon.Initialized) {
 				CreatePadContent (true, padCodon, window, item);
@@ -542,7 +543,7 @@ namespace MonoDevelop.Ide.Gui
 				if (window.IsWorking)
 					windowTitle = "<span foreground='blue'>" + windowTitle + "</span>";
 				item.Label = windowTitle;
-				item.Icon  = window.Icon;
+				item.Icon  = ImageService.GetPixbuf (window.Icon, IconSize.Menu);
 			}
 		}
 
@@ -720,7 +721,7 @@ namespace MonoDevelop.Ide.Gui
 			Gtk.Image mimeimage = null;
 			
 			if (content.StockIconId != null ) {
-				mimeimage = new Gtk.Image (content.StockIconId, IconSize.Menu );
+				mimeimage = new Gtk.Image ((IconId) content.StockIconId, IconSize.Menu );
 			}
 			else if (content.IsUntitled && content.UntitledName == null) {
 				mimeimage = new Gtk.Image (DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu));

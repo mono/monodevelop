@@ -75,7 +75,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				StringBuilder content = new StringBuilder ();
 				
 				if (options.Dom.Project is DotNetProject)
-					content.Append (StandardHeaderService.GetHeader (options.Dom.Project, ((DotNetProject)options.Dom.Project).LanguageName, type.CompilationUnit.FileName, true) + Environment.NewLine);
+					content.Append (StandardHeaderService.GetHeader (options.Dom.Project, type.CompilationUnit.FileName, true) + Environment.NewLine);
 				
 				INRefactoryASTProvider provider = options.GetASTProvider ();
 				Mono.TextEditor.TextEditorData data = options.GetTextEditorData ();

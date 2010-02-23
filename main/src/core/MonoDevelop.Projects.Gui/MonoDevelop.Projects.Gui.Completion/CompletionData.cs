@@ -29,34 +29,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Gui.Completion
 {
-	public class CompletionCategory
+	public abstract class CompletionCategory : IComparable<CompletionCategory>
 	{
 		public string DisplayText { get; set; }
-		public string Icon { get; set; }
+		public IconId Icon { get; set; }
 		
 		public CompletionCategory ()
 		{
 		}
 		
-		public CompletionCategory (string displayText, string icon)
+		public CompletionCategory (string displayText, IconId icon)
 		{
 			this.DisplayText = displayText;
 			this.Icon = icon;
 		}
 		
+		public abstract int CompareTo (CompletionCategory other);
 	}
 	
 	public class CompletionData : ICompletionData
 	{
 		protected CompletionData () {}
 		public CompletionData (string text) : this (text, null, null) {}
-		public CompletionData (string text, string icon) : this (text, icon, null) {}
-		public CompletionData (string text, string icon, string description) : this (text, icon, description, text) {}
+		public CompletionData (string text, IconId icon) : this (text, icon, null) {}
+		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) {}
 		
-		public CompletionData (string displayText, string icon, string description, string completionText)
+		public CompletionData (string displayText, IconId icon, string description, string completionText)
 		{
 			this.DisplayText = displayText;
 			this.Icon = icon;
@@ -64,7 +66,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			this.CompletionText = completionText;
 		}
 		
-		public virtual string Icon { get; set; }
+		public virtual IconId Icon { get; set; }
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }

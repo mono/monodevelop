@@ -1,3 +1,87 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs:
+	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs:
+	* MonoDevelop.Core.Gui.Codons/OptionsDialogSection.cs: Use the
+	  new IconId type to represent icon names.
+
+	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs: Renamed to
+	  CellRendererIcon to avoid conflicts with the Gtk class.
+	  Added support for rendering icons specified with IconId
+	  objects.
+
+	* MonoDevelop.Core.Gui/StockIcons.cs: Use new IconId type.
+
+2010-02-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: removed assert gui
+	  thread.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: Fixed 'Bug 578960 -
+	  Some stock icons not loading'.
+
+2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui.Codons/StockIconCodon.cs: Add support
+	  for loading icons from files.
+
+2010-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Remove registration of
+	  nonexistent icon.
+
+2010-02-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs: Fix lazy loading
+	  of pixbuf handler.
+
+	* MonoDevelop.Core.Gui/ImageService.cs: Tidy up error handling
+	  a bit. Re-enable lazy loading.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs: turned lazy
+	  loading off.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: passed the buffer
+	  directly.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: re-enabled lazy
+	  loading.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: fixed gdk warning.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: re-enabled icon on
+	  demand loading.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui/ImageService.cs: disabled lazy loading
+	  for now.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui/ImageService.cs:
+	* MonoDevelop.Core.Gui/CellRendererPixbuf.cs:
+	* MonoDevelop.Core.Gui.Dialogs/OptionsDialog.cs: Implemented a
+	  lazy loading image service/implemented custom
+	  cellrendererpixbuf.
+
 2010-01-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

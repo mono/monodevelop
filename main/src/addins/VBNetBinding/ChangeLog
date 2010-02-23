@@ -1,3 +1,7 @@
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VBNetBinding.csproj: Flush.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/objects.xml:

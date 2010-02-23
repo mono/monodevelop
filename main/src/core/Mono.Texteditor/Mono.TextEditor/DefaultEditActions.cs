@@ -298,11 +298,15 @@ namespace Mono.TextEditor
 		
 		public static void Undo (TextEditorData data)
 		{
+			if (data.Document.ReadOnly)
+				return;
 			data.Document.Undo ();
 		}
 		
 		public static void Redo (TextEditorData data)
 		{
+			if (data.Document.ReadOnly)
+				return;
 			data.Document.Redo ();
 		}
 		

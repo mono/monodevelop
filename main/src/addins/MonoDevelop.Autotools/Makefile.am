@@ -47,7 +47,6 @@ FILES =  \
 	MakefileOptionPanelWidget.cs \
 	MakefileProject.cs \
 	MakefileProjectServiceExtension.cs \
-	MakefileReaderExtension.cs \
 	MakefileSwitchEditor.cs \
 	MakefileSwitchEditorWidget.cs \
 	MakefileVar.cs \

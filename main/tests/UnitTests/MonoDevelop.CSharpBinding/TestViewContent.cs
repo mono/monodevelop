@@ -186,6 +186,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 			return data;
 		}
+		#region IEditableTextBuffer implementation
+		public bool HasInputFocus {
+			get {
+				return false;
+			}
+		}
+		
+		#endregion
 		public event EventHandler CaretPositionSet;
 		public event EventHandler<TextChangedEventArgs> TextChanged;
 	}

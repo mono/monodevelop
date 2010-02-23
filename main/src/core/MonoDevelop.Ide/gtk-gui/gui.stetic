@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -3457,7 +3457,7 @@ Months</property>
     <property name="WidthRequest">640</property>
     <property name="HeightRequest">520</property>
     <property name="GeneratePublic">False</property>
-    <property name="Title">Edit References</property>
+    <property name="Title" translatable="yes">Edit References</property>
     <property name="TypeHint">Dialog</property>
     <property name="Modal">True</property>
     <property name="BorderWidth">6</property>

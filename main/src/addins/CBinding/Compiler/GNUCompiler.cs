@@ -675,7 +675,8 @@ namespace CBinding
 		private CompilerError CreateErrorFromErrorString (string errorString, TextReader reader)
 		{
 			CompilerError error = new CompilerError ();
-			string warning = GettextCatalog.GetString("warning");
+			string warning = GettextCatalog.GetString ("warning");
+			string note = GettextCatalog.GetString ("note");
 			
 			Match match = withColRegex.Match (errorString);
 			
@@ -684,7 +685,8 @@ namespace CBinding
 				error.FileName = match.Groups["file"].Value;
 				error.Line = int.Parse (match.Groups["line"].Value);
 				error.Column = int.Parse (match.Groups["column"].Value);
-				error.IsWarning = match.Groups["level"].Value.Equals (warning, StringComparison.Ordinal);
+				error.IsWarning = (match.Groups["level"].Value.Equals (warning, StringComparison.Ordinal) ||
+				                   match.Groups["level"].Value.Equals (note, StringComparison.Ordinal));
 				error.ErrorText = match.Groups["message"].Value;
 				
 				return error;
@@ -696,7 +698,8 @@ namespace CBinding
 			{
 				error.FileName = match.Groups["file"].Value;
 				error.Line = int.Parse (match.Groups["line"].Value);
-				error.IsWarning = match.Groups["level"].Value.Equals (warning, StringComparison.Ordinal);
+				error.IsWarning = (match.Groups["level"].Value.Equals (warning, StringComparison.Ordinal) ||
+				                   match.Groups["level"].Value.Equals (note, StringComparison.Ordinal));
 				error.ErrorText = match.Groups["message"].Value;
 				
 				// Multi-line error message? attempt to parse it into a single error.

@@ -18,7 +18,7 @@ clean-local:
 	rm -f MonoDevelop.dmg
 	rm -f MonoDevelop.app.zip
 
-MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* ../locale/*/*/* mdtool monodevelop 
+MonoDevelop.app: 
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
 	mkdir -p $(MAC_APP_LIB_DIR)
@@ -57,22 +57,22 @@ MonoDevelop.app: ../AddIns/* ../AddIns/*/* ../AddIns/*/*/* ../bin/* ../data/*/* 
 	  $(MACOS)/lib/monodevelop/bin/addin-db* \
 	  $(MACOS)/lib/monodevelop/bin/repository-cache* \
 	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
-	
-#emit the update marker file
-	if test -d ../.git/svn; then svn_info="git log --no-color --first-parent -n1 --grep=git-svn-id: --pretty=format:%b | sed -n -e 's,git-svn-id: \(.*\)@\(.*\) .*,URL: \1 Revision: \2,p'"; fi; \
-	if test -d ./.svn; then svn_info='svn info'; fi; \
+
+# update revision in updateinfo
+	if test -d ../../.git/svn; then svn_info="git log --no-color --first-parent -n1 --grep=git-svn-id: --pretty=format:%b | sed -n -e 's,git-svn-id: \(.*\)@\(.*\) .*,URL: \1 Revision: \2,p'"; fi; \
+	if test -d ./../../.svn; then svn_info='svn info'; fi; \
 	if test -n "$$svn_info"; then \
-		version=$$(cd ..; \
+		version=$$(cd ../..; \
 			LANG=C; export LANG; \
 			eval $$svn_info | sed -n -e '/Last Changed Rev/ s/.*: //p'; \
 		); \
 		echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $$version" > "$(MACOS)/updateinfo"; \
 	fi;
-	
+
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app
-
 
 MonoDevelop.app.zip: MonoDevelop.app
 	zip -r9uq MonoDevelop.app.zip MonoDevelop.app
 
+.PHONY: MonoDevelop.app

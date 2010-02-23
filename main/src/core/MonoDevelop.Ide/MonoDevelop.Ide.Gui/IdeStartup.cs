@@ -36,6 +36,7 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
 
 using Mono.Unix;
@@ -58,13 +59,13 @@ namespace MonoDevelop.Ide.Gui
 	public class IdeStartup: IApplication
 	{
 		Socket listen_socket   = null;
-		static string fileToOpen = String.Empty;
 		ArrayList errorsList = new ArrayList ();
 		bool initialized;
 		internal static string DefaultTheme;
 		
 		public int Run (string[] args)
 		{
+			LoggingService.Trace ("IdeStartup", "Initializing GTK");
 			Counters.Initialization++;
 			SetupExceptionManager ();
 			
@@ -90,6 +91,7 @@ namespace MonoDevelop.Ide.Gui
 			// If a combine was specified, force --newwindow.
 			
 			if(!options.newwindow && StartupInfo.HasFiles) {
+				LoggingService.Trace ("IdeStartup", "Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
 				foreach (string file in StartupInfo.GetRequestedFileList ()) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file))
@@ -116,12 +118,14 @@ namespace MonoDevelop.Ide.Gui
 				monitor = SplashScreenForm.SplashScreen;
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
-
-			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
+			
+			LoggingService.Trace ("IdeStartup", "Initializing Runtime");
 			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
 			monitor.Step (1);
 			Runtime.Initialize (true);
+			
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
+			LoggingService.Trace ("IdeStartup", "Initializing Platform Service");
 			DesktopService.Initialize ();
 			monitor.Step (1);
 			monitor.EndTask ();
@@ -146,6 +150,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
+			LoggingService.Trace ("IdeStartup", "Checking System");
 			string version = Assembly.GetEntryAssembly ().GetName ().Version.Major + "." + Assembly.GetEntryAssembly ().GetName ().Version.Minor;
 			
 			if (Assembly.GetEntryAssembly ().GetName ().Version.Build != 0)
@@ -166,6 +171,7 @@ namespace MonoDevelop.Ide.Gui
 			int reportedFailures = 0;
 			
 			try {
+				LoggingService.Trace ("IdeStartup", "Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				MonoDevelop.Core.Gui.ImageService.Initialize ();
 				
@@ -183,6 +189,7 @@ namespace MonoDevelop.Ide.Gui
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
+				LoggingService.Trace ("IdeStartup", "Initializing IdeApp");
 				IdeApp.Initialize (monitor);
 				monitor.Step (1);
 			
@@ -220,6 +227,8 @@ namespace MonoDevelop.Ide.Gui
 			initialized = true;
 			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
 			Counters.Initialization--;
+			
+			LoggingService.Trace ("IdeStartup", "Running IdeApp");
 			IdeApp.Run ();
 			
 			// unloading services
@@ -257,31 +266,42 @@ namespace MonoDevelop.Ide.Gui
 						continue;
 					file += c;
 				}
-				fileToOpen = file;
-				GLib.Idle.Add (new GLib.IdleHandler (openFile));
+				GLib.Idle.Add (delegate(){ return openFile (file); });
 			}
 		}
 
-		bool openFile () 
+		bool openFile (string file) 
 		{
-			lock (fileToOpen) {
-				string file = fileToOpen;
-				if (file == null || file.Length == 0)
-					return false;
-				if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file)) {
-					try {
-						IdeApp.Workspace.OpenWorkspaceItem (file);
-					} catch {
-					}
-				} else {
-					try {
-						IdeApp.Workbench.OpenDocument (file);
-					} catch {
-					}
-				}
-				IdeApp.Workbench.Present ();
+			if (string.IsNullOrEmpty (file))
 				return false;
+			
+			Match fileMatch = StartupInfo.fileExpression.Match (file);
+			if (null == fileMatch || !fileMatch.Success)
+				return false;
+				
+			int line = 1,
+			    column = 1;
+			
+			file = fileMatch.Groups["filename"].Value;
+			if (fileMatch.Groups["line"].Success)
+				int.TryParse (fileMatch.Groups["line"].Value, out line);
+			if (fileMatch.Groups["column"].Success)
+				int.TryParse (fileMatch.Groups["column"].Value, out column);
+				
+			if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file)) {
+				try {
+					IdeApp.Workspace.OpenWorkspaceItem (file);
+				} catch {
+				}
+			} else {
+				try {
+					LoggingService.LogError ("Opening {0} at {1}:{2}", file, line, column);
+					IdeApp.Workbench.OpenDocument (file, line, column, true);
+				} catch {
+				}
 			}
+			IdeApp.Workbench.Present ();
+			return false;
 		}
 		
 		bool CheckQtCurve ()

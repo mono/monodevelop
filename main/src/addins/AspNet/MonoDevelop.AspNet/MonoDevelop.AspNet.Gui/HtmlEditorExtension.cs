@@ -37,13 +37,6 @@ namespace MonoDevelop.AspNet.Gui
 	
 	sealed class HtmlEditorExtension : BaseHtmlEditorExtension
 	{
-		protected override IEnumerable<string> SupportedExtensions {
-			get {
-				yield return ".html";
-				yield return ".htm";
-			}
-		}
-		
 		//copied from MoonlightEditorExtension
 		#region Document outline
 		

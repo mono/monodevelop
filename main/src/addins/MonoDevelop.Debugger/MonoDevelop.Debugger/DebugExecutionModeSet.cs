@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 		
 		public System.Collections.Generic.IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				foreach (IDebuggerEngine engine in DebuggingService.GetDebuggerEngines ())
+				foreach (DebuggerEngine engine in DebuggingService.GetDebuggerEngines ())
 					yield return new ExecutionMode (engine.Name, engine.Name, new InternalDebugExecutionHandler (engine));
 			}
 		}

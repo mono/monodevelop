@@ -53,7 +53,7 @@ namespace MonoDevelop.AspNet.Parser
 			this.codeBehindClassPart = codeBehindClassPart;
 		}
 		
-		public string Icon {
+		public IconId Icon {
 			get { return "md-method"; }
 		}
 

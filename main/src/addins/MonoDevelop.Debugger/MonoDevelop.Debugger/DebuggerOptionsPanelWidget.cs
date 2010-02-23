@@ -70,7 +70,7 @@ namespace MonoDevelop.Debugger
 			engineList.Model = engineStore;
 			engineList.AppendColumn ("", new Gtk.CellRendererText (), "text", 1);
 			
-			foreach (IDebuggerEngine engine in DebuggingService.GetDebuggerEngines ()) {
+			foreach (DebuggerEngine engine in DebuggingService.GetDebuggerEngines ()) {
 				engineStore.AppendValues (engine.Id, engine.Name);
 			}
 			UpdatePriorityButtons ();

@@ -238,6 +238,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			switch (key) {
 			case Gdk.Key.Up:
+				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+					if (!SelectionEnabled)
+						AutoCompleteEmptyMatch = AutoSelect = true;
+					if (!List.InCategoryMode) {
+						List.InCategoryMode = true;
+						return KeyActions.Ignore;
+					}
+					List.MoveToCategory (-1);
+					return KeyActions.Ignore;
+				}
 				if (SelectionEnabled && list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
 				if (!SelectionEnabled) {
@@ -248,6 +258,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Down:
+				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+					if (!SelectionEnabled)
+						AutoCompleteEmptyMatch = AutoSelect = true;
+					if (!List.InCategoryMode) {
+						List.InCategoryMode = true;
+						return KeyActions.Ignore;
+					}
+					List.MoveToCategory (1);
+					return KeyActions.Ignore;
+				}
 				if (SelectionEnabled && list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
 				if (!SelectionEnabled) {

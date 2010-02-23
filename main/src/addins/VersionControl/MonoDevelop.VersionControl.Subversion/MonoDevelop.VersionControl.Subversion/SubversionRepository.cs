@@ -440,6 +440,12 @@ namespace MonoDevelop.VersionControl.Subversion
 					Directory.Delete (path, true);
 			}
 		}
+		
+		public override DiffInfo[] PathDiff (FilePath localPath, Revision fromRevision, Revision toRevision)
+		{
+			string diff = Svn.GetUnifiedDiff (localPath, (SvnRevision)fromRevision, localPath, (SvnRevision)toRevision, true);
+			return GenerateUnifiedDiffInfo (diff, localPath, null);
+		}
 
 		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{

@@ -16,8 +16,12 @@
 		<Import assembly="Mono.Debugger.Soft.dll" />
 	</Runtime>
 	
-	<Extension path="/MonoDevelop/Debugging/DebuggerFactories">
-		<DebuggerFactory type="MonoDevelop.Debugger.Soft.SoftDebuggerEngine" />
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine
+			id="Mono.Debugger.Soft"
+			name="Mono Soft Debugger"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+			type="MonoDevelop.Debugger.Soft.SoftDebuggerEngine" />
 	</Extension>
 
 </Addin>

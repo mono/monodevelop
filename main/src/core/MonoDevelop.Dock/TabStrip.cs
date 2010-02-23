@@ -66,7 +66,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void AddTab (Gtk.Widget page, string icon, string label)
+		public void AddTab (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
 			Tab tab = new Tab ();
 			tab.SetLabel (page, icon, label);
@@ -82,7 +82,7 @@ namespace MonoDevelop.Components.Docking
 			tab.ButtonPressEvent += OnTabPress;
 		}
 		
-		public void SetTabLabel (Gtk.Widget page, string icon, string label)
+		public void SetTabLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
 			foreach (Tab tab in box.Children) {
 				if (tab.Page == page) {
@@ -307,7 +307,7 @@ namespace MonoDevelop.Components.Docking
 			this.VisibleWindow = false;
 		}
 		
-		public void SetLabel (Gtk.Widget page, string icon, string label)
+		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
 			Pango.EllipsizeMode oldMode = Pango.EllipsizeMode.End;
 			
@@ -323,8 +323,8 @@ namespace MonoDevelop.Components.Docking
 			Gtk.HBox box = new HBox ();
 			box.Spacing = 2;
 			
-			if (!string.IsNullOrEmpty (icon))
-				box.PackStart (new Gtk.Image (icon, IconSize.Menu), false, false, 0);
+			if (icon != null)
+				box.PackStart (new Gtk.Image (icon), false, false, 0);
 
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new Gtk.Label (label);

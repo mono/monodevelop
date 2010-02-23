@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Client;
-using Mono.Debugger;
+using Mono.Debugger.Soft;
 
 namespace Mono.Debugging.Soft
 {

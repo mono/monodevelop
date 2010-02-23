@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -94,8 +95,8 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		static readonly string[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
-		public override string StockIcon {
+		static readonly IconId[] iconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
+		public override IconId StockIcon {
 			get {
 				return iconTable [ModifierToOffset (Modifiers)];
 			}

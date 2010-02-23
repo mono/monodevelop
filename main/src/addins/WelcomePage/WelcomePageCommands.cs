@@ -37,19 +37,18 @@ namespace MonoDevelop.WelcomePage
 		ShowWelcomePage
 	}
 	
-	public class ShowWelcomePageOnStartUpHandler : CommandHandler
+	class ShowWelcomePageOnStartUpHandler : CommandHandler
 	{
 		protected override void Run()
 		{
 			if (!PropertyService.Get("WelcomePage.ShowOnStartup", true))
 				return;
 			
-			WelcomePageView wpv = WelcomePageView.GetWelcomePage ();
-			IdeApp.Workbench.OpenDocument (wpv, true);
+			IdeApp.Workbench.OpenDocument (new WelcomePageView (), true);
 		}
 	}
 
-	public class ShowWelcomePageHandler : CommandHandler
+	class ShowWelcomePageHandler : CommandHandler
 	{
 		protected override void Run()
 		{
@@ -59,8 +58,7 @@ namespace MonoDevelop.WelcomePage
 					return;
 				}
 			}
-			WelcomePageView wpv = WelcomePageView.GetWelcomePage ();
-			IdeApp.Workbench.OpenDocument(wpv, true);
+			IdeApp.Workbench.OpenDocument (new WelcomePageView (), true);
 		}
 		
 		protected override void Update (CommandInfo info)

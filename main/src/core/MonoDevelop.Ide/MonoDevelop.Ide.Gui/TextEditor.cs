@@ -29,6 +29,9 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Gui.Completion;
+using Mono.TextEditor.Highlighting;
+using System.Collections.Generic;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -55,6 +58,10 @@ namespace MonoDevelop.Ide.Gui
 			ed.completionWidget = (ICompletionWidget) content.GetContent (typeof(ICompletionWidget));
 			ed.clipboardHandler = (IClipboardHandler) content.GetContent (typeof(IClipboardHandler));
 			return ed;
+		}
+		
+		public bool HasInputFocus {
+			get { return textBuffer.HasInputFocus; }
 		}
 		
 		public bool SupportsBookmarks {
@@ -365,6 +372,37 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return -1;
 		}
+		
+		public static string[] GetCommentTags (string fileName)
+		{
+			//Document doc = IdeApp.Workbench.ActiveDocument;
+			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
+			
+			SyntaxMode mode = null;
+			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
+				mode = SyntaxModeService.GetSyntaxMode (mt);
+				if (mode != null)
+					break;
+			}
+			
+			if (mode == null)
+				return null;
+			
+			List<string> ctags;
+			if (mode.Properties.TryGetValue ("LineComment", out ctags) && ctags.Count > 0) {
+				return new string [] { ctags [0] };
+			}
+			List<string> tags = new List<string> ();
+			if (mode.Properties.TryGetValue ("BlockCommentStart", out ctags))
+				tags.Add (ctags [0]);
+			if (mode.Properties.TryGetValue ("BlockCommentEnd", out ctags))
+				tags.Add (ctags [0]);
+			if (tags.Count == 2)
+				return tags.ToArray ();
+			else
+				return null;
+		}
+		
 		/*
 		public void GotoMatchingBrace ()
 		{

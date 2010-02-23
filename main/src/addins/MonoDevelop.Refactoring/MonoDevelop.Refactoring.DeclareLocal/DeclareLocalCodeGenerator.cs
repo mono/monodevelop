@@ -137,8 +137,10 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		int selectionStart;
 		int selectionEnd;
 		string varName;
+		int varCount;
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
+			varCount = 0;
 			selectionStart = selectionEnd = -1;
 			List<Change> result = new List<Change> ();
 			IResolver resolver = options.GetResolver ();
@@ -152,7 +154,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			LineSegment lineSegment;
 			ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
 			
-			MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor visitor = new MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor (resolver, new DomLocation (data.Caret.Line + 1, data.Caret.Column + 1));
+			MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor visitor = new MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor (resolver, new DomLocation (data.Caret.Line, data.Caret.Column));
 			visitor.MemberLocation = new Location (options.ResolveResult.CallingMember.Location.Column, options.ResolveResult.CallingMember.Location.Line);
 			unit.AcceptVisitor (visitor, null);
 			
@@ -177,7 +179,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				options.ParseMember (resolveResult.CallingMember);
 				
 				TextReplaceChange insert = new TextReplaceChange ();
-				insert.FileName = options.Document.FileName;
+				string str = insert.FileName = options.Document.FileName;
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 				
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);
@@ -241,10 +243,11 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 					replace.RemovedChars = data.SelectionRange.Length;
 					replace.InsertedText = varName;
 					result.Add (replace);
+					varCount++;
 				}
 				result.Add (insert);
+				varCount++;
 				selectionStart = insert.Offset;
-				
 				return result;
 			}
 
@@ -269,8 +272,17 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				insert.RemovedChars = expression.EndLocation.Column - 1;
 				insert.InsertedText = provider.OutputNode (options.Dom, varDecl);
 				result.Add (insert);
-				selectionStart = insert.Offset + insert.InsertedText.IndexOf (varName);
-				selectionEnd = selectionStart + varName.Length;
+				varCount++;
+				
+				int idx = 0;
+				while (idx < insert.InsertedText.Length - varName.Length) {
+					if (insert.InsertedText.Substring (idx, varName.Length) == varName && (idx == 0 || insert.InsertedText[idx - 1] == ' ') && (idx == insert.InsertedText.Length - varName.Length - 1 || insert.InsertedText[idx + varName.Length] == ' ')) {
+						selectionStart = insert.Offset + idx;
+						selectionEnd = selectionStart + varName.Length;
+						break;
+					}
+					idx++;
+				}
 			}
 			
 			return result;
