@@ -855,6 +855,19 @@ namespace MonoDevelop.CSharp.Formatting
 			cursor++;
 		}
 		
+		static string[] preProcessorIndents = new string[] {
+			"if",
+			"else",
+			"elif",
+			"endif",
+			"define",
+			"undef",
+			"warning",
+			"error",
+			"pragma",
+			"line"
+		};
+		
 		// This is the main logic of this class...
 		public void Push (char c)
 		{
@@ -901,6 +914,7 @@ namespace MonoDevelop.CSharp.Formatting
 			switch (c) {
 			case '#':
 				PushHash (inside);
+				lastChar = '#';
 				break;
 			case '/':
 				PushSlash (inside);
@@ -958,6 +972,20 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			
 			after = stack.PeekInside (0);
+			if ((after & Inside.PreProcessor) == Inside.PreProcessor) {
+				for (int i = 0; i < preProcessorIndents.Length; i++) {
+					int len = preProcessorIndents[i].Length - 1;
+					if (linebuf.Length < len)
+						continue;
+					
+					string str = linebuf.ToString (linebuf.Length - len, len) + c;
+					if (str == preProcessorIndents[i]) {
+						needsReindent = true;
+						break;
+					}
+				}
+			}
+			
 			if ((after & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0) {
 				if (!Char.IsWhiteSpace (c)) {
 					if (firstNonLwsp == -1)

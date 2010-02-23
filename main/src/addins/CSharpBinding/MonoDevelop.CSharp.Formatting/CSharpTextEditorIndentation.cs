@@ -56,9 +56,24 @@ namespace MonoDevelop.CSharp.Formatting
 		int cursorPositionBeforeKeyPress;
 		TextEditorData textEditorData;
 		
+		static CSharpTextEditorIndentation ()
+		{
+			CompletionWindowManager.WordCompleted += delegate(object sender, CodeCompletionContextEventArgs e) {
+				ITextEditorExtension textEditorExtension = ((IExtensibleTextEditor)e.Widget).Extension;
+				while (textEditorExtension != null && !(textEditorExtension is CSharpTextEditorIndentation)) {
+					textEditorExtension = textEditorExtension.Next;
+				}
+				CSharpTextEditorIndentation extension = textEditorExtension as CSharpTextEditorIndentation;
+				if (extension == null)
+					return;
+				extension.stateTracker.UpdateEngine ();
+				if (extension.stateTracker.Engine.NeedsReindent)
+					extension.DoReSmartIndent ();
+			};
+		}
+		
 		public CSharpTextEditorIndentation ()
 		{
-			
 		}
 		
 		public override void Initialize ()
@@ -420,6 +435,11 @@ namespace MonoDevelop.CSharp.Formatting
 					} else {
 						Editor.DeleteText (pos, nlwsp);
 					}
+					if (CompletionWindowManager.IsVisible) {
+						if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
+							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
+					}
+					
 					newIndentLength = Editor.InsertText (pos, newIndent);
 					// Engine state is now invalid
 					stateTracker.ResetEngineToPosition (pos);
@@ -435,6 +455,7 @@ namespace MonoDevelop.CSharp.Formatting
 				Editor.CursorPosition = pos;
 				Editor.Select (pos, pos);
 			}
+			
 		}
 	}
 }
