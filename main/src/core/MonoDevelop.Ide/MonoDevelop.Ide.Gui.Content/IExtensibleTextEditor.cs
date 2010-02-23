@@ -32,6 +32,9 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface IExtensibleTextEditor: IEditableTextBuffer
 	{
+		ITextEditorExtension Extension {
+			get;
+		}
 		// The provided parameter is the first object of the extension chain
 		// This method should return the terminator ITextEditorExtension that
 		// will execute the default behavior (if any)

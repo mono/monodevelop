@@ -40,13 +40,17 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public class TextEditorExtension : ITextEditorExtension, ICommandRouter, IDisposable
 	{
-		internal ITextEditorExtension Next;
 		internal Document document;
 		
 		internal protected void Initialize (Document document)
 		{
 			this.document = document;
 			Initialize ();
+		}
+		
+		public ITextEditorExtension Next {
+			get;
+			set;
 		}
 		
 		protected Document Document {
@@ -160,6 +164,10 @@ namespace MonoDevelop.Ide.Gui.Content
 	
 	public interface ITextEditorExtension
 	{
+		ITextEditorExtension Next {
+			get;
+		}
+		
 		bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier);
 		void CursorPositionChanged ();
 		void TextChanged (int startIndex, int endIndex);
