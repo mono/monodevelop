@@ -61,4 +61,9 @@
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class="MonoDevelop.Platform.Updater.CheckForUpdatesOnStartUpHandler" />
 	</Extension>
+	<!--
+	<Extension path = "/MonoDevelop/Components/DialogHandler">
+		<Class class="MonoDevelop.Platform.Mac.MacSelectFileDialogHandler" />
+	</Extension>
+	-->
 </Addin>

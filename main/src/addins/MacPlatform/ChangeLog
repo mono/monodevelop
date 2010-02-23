@@ -1,3 +1,13 @@
+2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacPlatform.csproj:
+	* Framework/Carbon.cs:
+	* MacPlatform.addin.xml:
+	* Framework/NavDialog.cs:
+	* MacSelectFileDialogHandler.cs: First shot at implementing
+	  Mac native dialogs.
+
 2010-01-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Updater/UpdateService.cs: Send env flags to the update
