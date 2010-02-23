@@ -1,3 +1,10 @@
+2010-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated.
+
+	* SoftDebuggerSession.cs: Report unhandled exceptions.
+
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerBacktrace.cs: Don't crash if the debugger

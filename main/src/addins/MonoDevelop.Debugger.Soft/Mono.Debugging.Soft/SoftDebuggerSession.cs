@@ -205,6 +205,8 @@ namespace Mono.Debugging.Soft
 			OnConnected ();
 			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
+			var req = vm.CreateExceptionRequest (null, false, true);
+			req.Enable ();
 			
 			OnStarted ();
 			started = true;
@@ -507,7 +509,7 @@ namespace Mono.Debugging.Soft
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
 		{
-			var request = bi.Req = vm.CreateExceptionRequest (excType);
+			var request = bi.Req = vm.CreateExceptionRequest (excType, true, true);
 			request.Count = cp.HitCount;
 			bi.Req.Enabled = bi.Enabled;
 		}
