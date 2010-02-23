@@ -27,12 +27,41 @@
 using System;
 using MonoDevelop.Components.Extensions;
 using OSXIntegration.Framework;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Platform.Mac
 {
-	public class MacSelectFileDialogHandler : ISelectFileDialogHandler
+	class MacSelectFileDialogHandler : ISelectFileDialogHandler
 	{
 		public bool Run (SelectFileDialogData data)
+		{
+			var options = NavDialogCreationOptions.NewFromDefaults ();
+			options.Modality = WindowModality.AppModal;
+			using (var dialog = NavDialog.CreateChooseFileDialog (options)) {
+				dialog.Run ();
+				var reply = dialog.GetReply ();
+			}
+			return false;
+		}
+	}
+	
+	class MacAddFileDialogHandler : IAddFileDialogHandler
+	{
+		public bool Run (AddFileDialogData data)
+		{
+			var options = NavDialogCreationOptions.NewFromDefaults ();
+			options.Modality = WindowModality.AppModal;
+			using (var dialog = NavDialog.CreateChooseFileDialog (options)) {
+				dialog.Run ();
+				var reply = dialog.GetReply ();
+			}
+			return false;
+		}
+	}
+	
+	class MacOpenFileDialogHandler : IOpenFileDialogHandler
+	{
+		public bool Run (OpenFileDialogData data)
 		{
 			var options = NavDialogCreationOptions.NewFromDefaults ();
 			options.Modality = WindowModality.AppModal;

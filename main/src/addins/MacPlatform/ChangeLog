@@ -1,5 +1,11 @@
 2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacPlatform.addin.xml: Fix extensions.
+
+	* MacSelectFileDialogHandler.cs: Stub other dialog handlers.
+
+2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Framework/Carbon.cs: Better errors in exceptions.
 
 2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
