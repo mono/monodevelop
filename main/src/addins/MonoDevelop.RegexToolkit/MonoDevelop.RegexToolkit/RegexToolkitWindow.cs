@@ -177,6 +177,7 @@ namespace MonoDevelop.RegexToolkit
 				this.entryReplace.Sensitive = this.checkbuttonReplace.Active;
 			};
 			FillElementsBox ();
+			this.vbox4.Hide ();
 		}
 
 		void SetButtonStart (string text, string icon)

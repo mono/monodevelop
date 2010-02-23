@@ -1,3 +1,8 @@
+2010-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: disabled
+	  elements list.
+
 2010-02-05  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* gtk-gui/gui.stetic:
