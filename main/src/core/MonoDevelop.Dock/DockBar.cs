@@ -35,14 +35,15 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockBar: Gtk.EventBox
+	public class DockBar: Gtk.EventBox
 	{
 		Gtk.PositionType position;
 		Box box;
 		DockFrame frame;
 		Label filler;
+		bool alwaysVisible;
 		
-		public DockBar (DockFrame frame, Gtk.PositionType position)
+		internal DockBar (DockFrame frame, Gtk.PositionType position)
 		{
 			frame.ShadedContainer.Add (this);
 			VisibleWindow = false;
@@ -79,27 +80,34 @@ namespace MonoDevelop.Components.Docking
 			box.PackEnd (filler);
 			
 			ShowAll ();
+			UpdateVisibility ();
 		}
 		
-		public Gtk.Orientation Orientation {
+		public bool AlwaysVisible {
+			get { return this.alwaysVisible; }
+			set { this.alwaysVisible = value; UpdateVisibility (); }
+		}
+		
+		
+		internal Gtk.Orientation Orientation {
 			get {
 				return (position == PositionType.Left || position == PositionType.Right) ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
 			}
 		}
 		
-		public Gtk.PositionType Position {
+		internal Gtk.PositionType Position {
 			get {
 				return position;
 			}
 		}
 
-		public DockFrame Frame {
+		internal DockFrame Frame {
 			get {
 				return frame;
 			}
 		}
 		
-		public DockBarItem AddItem (DockItem item, int size)
+		internal DockBarItem AddItem (DockItem item, int size)
 		{
 			DockBarItem it = new DockBarItem (this, item, size);
 			box.PackStart (it, false, false, 0);
@@ -110,8 +118,13 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void UpdateVisibility ()
 		{
-			filler.Visible = ((Frame.CompactGuiLevel == 3 && position == PositionType.Top) || Frame.CompactGuiLevel < 3);
-			Visible = filler.Visible || box.Children.Length > 1;
+			filler.Visible = (Frame.CompactGuiLevel < 3);
+			int visibleCount = 0;
+			foreach (Gtk.Widget w in box.Children) {
+				if (w.Visible)
+					visibleCount++;
+			}
+			Visible = alwaysVisible || filler.Visible || visibleCount > 0;
 		}
 		
 		internal void RemoveItem (DockBarItem it)
@@ -120,7 +133,7 @@ namespace MonoDevelop.Components.Docking
 			UpdateVisibility ();
 		}
 		
-		public void UpdateTitle (DockItem item)
+		internal void UpdateTitle (DockItem item)
 		{
 			foreach (Widget w in box.Children) {
 				DockBarItem it = w as DockBarItem;

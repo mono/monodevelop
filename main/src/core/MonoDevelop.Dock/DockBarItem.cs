@@ -119,6 +119,7 @@ namespace MonoDevelop.Components.Docking
 			UnscheduleAutoShow ();
 			UnscheduleAutoHide ();
 			AutoHide (false);
+			bar.UpdateVisibility ();
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)

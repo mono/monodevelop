@@ -82,6 +82,10 @@ namespace MonoDevelop.Components.Docking
 			mainBox.ShowAll ();
 			mainBox.NoShowAll = true;
 			CompactGuiLevel = 3;
+			dockBarTop.UpdateVisibility ();
+			dockBarBottom.UpdateVisibility ();
+			dockBarLeft.UpdateVisibility ();
+			dockBarRight.UpdateVisibility ();
 		}
 		
 		/// <summary>
@@ -107,7 +111,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public Gtk.Widget ExtractDockBar (PositionType pos)
+		public DockBar ExtractDockBar (PositionType pos)
 		{
 			DockBar db = new DockBar (this, pos);
 			switch (pos) {

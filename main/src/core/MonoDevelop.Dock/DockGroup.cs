@@ -804,7 +804,7 @@ namespace MonoDevelop.Components.Docking
 			int y = Allocation.Y;
 			int hw = horiz ? Frame.HandleSize : Allocation.Width;
 			int hh = horiz ? Allocation.Height : Frame.HandleSize;
-//			Gtk.Orientation or = horiz ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
+			Gtk.Orientation or = horiz ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
 
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
@@ -818,15 +818,15 @@ namespace MonoDevelop.Components.Docking
 						y += ob.Allocation.Height + Frame.HandlePadding;
 					
 					if (areasList != null) {
-						areasList.Add (new Gdk.Rectangle (x, y, hw, hh));
+						//areasList.Add (new Gdk.Rectangle (x, y, hw, hh));
 					} else if (invalidateOnly) {
 						Frame.Container.QueueDrawArea (x, y, hw, hh);
 					}
 					else {
-						Frame.ShadedContainer.DrawBackground (Frame.Container, new Gdk.Rectangle (x, y, hw, hh));
-//						StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
-//						if (!DockFrame.IsWindows)
-//							Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
+//						Frame.ShadedContainer.DrawBackground (Frame.Container, new Gdk.Rectangle (x, y, hw, hh));
+						StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
+						if (!DockFrame.IsWindows)
+							Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
 					}
 					
 					if (horiz)
