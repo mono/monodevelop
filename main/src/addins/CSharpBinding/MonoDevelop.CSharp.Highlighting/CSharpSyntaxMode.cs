@@ -50,6 +50,16 @@ namespace MonoDevelop.CSharp.Highlighting
 		static CSharpSyntaxMode ()
 		{
 			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += (EventHandler<MonoDevelop.Ide.Gui.DocumentEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<MonoDevelop.Ide.Gui.DocumentEventArgs> (OnDisableConditionalCompilation));
+			MonoDevelop.Ide.Gui.IdeApp.Workspace.ActiveConfigurationChanged += delegate {
+				foreach (var doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents) {
+					ITextEditorDataProvider provider = doc.GetContent<ITextEditorDataProvider> ();
+					if (provider == null)
+						continue;
+					Document document = provider.GetTextEditorData ().Document;
+					document.UpdateHighlighting ();
+					document.CommitUpdateAll ();
+				}
+			};
 		}
 		
 		static void OnDisableConditionalCompilation (object s, MonoDevelop.Ide.Gui.DocumentEventArgs e)
@@ -184,7 +194,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				{
 					var project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentSelectedProject;
 					if (project != null) {
-						DotNetProjectConfiguration configuration = project.GetConfiguration (project.ParentSolution.DefaultConfigurationSelector) as DotNetProjectConfiguration;
+						DotNetProjectConfiguration configuration = project.GetConfiguration (MonoDevelop.Ide.Gui.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 						if (configuration != null) {
 							CSharpCompilerParameters cparams = configuration.CompilationParameters as CSharpCompilerParameters;
 							if (cparams != null) {
@@ -195,6 +205,8 @@ namespace MonoDevelop.CSharp.Highlighting
 										symbols.Add (ss);
 								}
 							}
+						} else {
+							Console.WriteLine ("NO CONFIGURATION");
 						}
 					}
 					

@@ -1,5 +1,11 @@
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: fixed
+	  'Bug 582016 – Switching build configuration does not
+	  re-highlight conditional comments'.
+
+2010-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs: fixed
 	  'Bug 429265 - #region reindentation does not work with
 	  autocompletion'.
