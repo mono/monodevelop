@@ -38,23 +38,56 @@ namespace OSXIntegration.Framework
 		public static NavDialog CreateChooseFileDialog (NavDialogCreationOptions options)	
 		{
 			NavDialog dialog = new NavDialog ();
-			Carbon.CheckReturn ((int)NavCreateChooseFileDialog (ref options.data, IntPtr.Zero, new NavEventUPP (), new NavPreviewUPP (),
+			CheckReturn (NavCreateChooseFileDialog (ref options.data, IntPtr.Zero, new NavEventUPP (), new NavPreviewUPP (),
 			                                                    new NavObjectFilterUPP (), IntPtr.Zero, out dialog.ptr));
 			return dialog;
 		}
 		
-		public void Run ()
+		public static NavDialog CreateChooseFolderDialog (NavDialogCreationOptions options)	
 		{
-			CheckDispose ();
-			Carbon.CheckReturn ((int)NavDialogRun (ptr));
+			NavDialog dialog = new NavDialog ();
+			CheckReturn (NavCreateChooseFolderDialog (ref options.data, new NavEventUPP (),
+			                                                    new NavObjectFilterUPP (), IntPtr.Zero, out dialog.ptr));
+			return dialog;
 		}
 		
-		public NavReplyRecord GetReply ()
+		public static NavDialog CreatePutFileDialog (NavDialogCreationOptions options)	
+		{
+			NavDialog dialog = new NavDialog ();
+			CheckReturn (NavCreatePutFileDialog (ref options.data, new OSType (), new OSType (),
+			                                                 new NavEventUPP (), IntPtr.Zero, out dialog.ptr));
+			return dialog;
+		}
+		
+		public static NavDialog CreateNewFolderDialog (NavDialogCreationOptions options)	
+		{
+			NavDialog dialog = new NavDialog ();
+			CheckReturn (NavCreateNewFolderDialog (ref options.data, new NavEventUPP (),
+			                                                   IntPtr.Zero, out dialog.ptr));
+			return dialog;
+		}
+		
+		public NavUserAction Run ()
 		{
 			CheckDispose ();
-			NavReplyRecord record;
-			Carbon.CheckReturn ((int)NavDialogGetReply (ptr, out record));
+			CheckReturn (NavDialogRun (ptr));
+			return NavDialogGetUserAction (ptr);
+		}
+		
+		public NavReplyRecordRef GetReply ()
+		{
+			CheckDispose ();
+			var record = new NavReplyRecordRef ();
+			CheckReturn (NavDialogGetReply (ptr, out record.value));
 			return record;
+		}
+		
+		public void SetLocation (string location)
+		{
+			CheckDispose ();
+			throw new NotImplementedException ();
+		//	AEDesc desc = new AEDesc ();
+		//	CheckReturn (NavCustomControl (ptr, NavCustomControlMessage.SetLocation, ref desc)); 
 		}
 		
 		void CheckDispose ()
@@ -82,7 +115,21 @@ namespace OSXIntegration.Framework
 		                                                   NavEventUPP inEventProc, NavPreviewUPP inPreviewProc, 
 		                                                   NavObjectFilterUPP inFilterProc, IntPtr inClientData, out IntPtr navDialogRef);
 		//intTypeList is a NavTypeListHandle, which apparently is a pointer to  NavTypeListPtr, which is a pointer to a NavTypeList
+		
+		[DllImport (Carbon.CarbonLib)]
+		static extern NavStatus NavCreateChooseFolderDialog (ref NavDialogCreationOptionsData options, 
+		                                                     NavEventUPP inEventProc, NavObjectFilterUPP inFilterProc,
+		                                                     IntPtr inClientData, out IntPtr navDialogRef);
+		
+		[DllImport (Carbon.CarbonLib)]
+		static extern NavStatus NavCreatePutFileDialog (ref NavDialogCreationOptionsData options, OSType inFileType,
+		                                                OSType inFileCreator, NavEventUPP inEventProc,
+		                                                IntPtr inClientData, out IntPtr navDialogRef);
 
+		[DllImport (Carbon.CarbonLib)]
+		static extern NavStatus NavCreateNewFolderDialog (ref NavDialogCreationOptionsData options, 
+		                                                  NavEventUPP inEventProc, IntPtr inClientData, 
+		                                                  out IntPtr navDialogRef);
 		
 		[DllImport (Carbon.CarbonLib)]
 		public static extern NavStatus NavDialogRun (IntPtr navDialogRef);
@@ -91,21 +138,36 @@ namespace OSXIntegration.Framework
 		static extern NavStatus NavDialogGetReply (IntPtr navDialogRef, out NavReplyRecord outReply);
 		
 		[DllImport (Carbon.CarbonLib)]
+		static extern NavUserAction NavDialogGetUserAction (IntPtr navDialogRef);
+		
+		[DllImport (Carbon.CarbonLib)]
 		static extern void NavDialogDispose (IntPtr navDialogRef);
+		
+		[DllImport (Carbon.CarbonLib)]
+		static extern NavStatus NavCustomControl (IntPtr dialog, NavCustomControlMessage selector, IntPtr parms);
+		
+		[DllImport (Carbon.CarbonLib)]
+		static extern NavStatus NavCustomControl (IntPtr dialog, NavCustomControlMessage selector, ref AEDesc parm);
+		
+		public static void CheckReturn (NavStatus status)
+		{
+			CheckReturn (status);
+		}
 	}
 	
 	struct NavEventUPP { IntPtr ptr; }
 	struct NavObjectFilterUPP { IntPtr ptr; }
 	struct NavPreviewUPP { IntPtr ptr; }
+	struct OSType { int value; }
 	
-	class NavDialogCreationOptions
+	class NavDialogCreationOptions : IDisposable
 	{
 		internal NavDialogCreationOptionsData data;
 		
 		public static NavDialogCreationOptions NewFromDefaults ()
 		{
 			var options = new NavDialogCreationOptions ();
-			Carbon.CheckReturn ((int)NavGetDefaultDialogCreationOptions (out options.data));
+			NavDialog.CheckReturn (NavGetDefaultDialogCreationOptions (out options.data));
 			return options;
 		}
 		
@@ -122,39 +184,44 @@ namespace OSXIntegration.Framework
 			set { data.location = value; }
 		}
 		
-		public IntPtr ClientName {
-			get { return data.clientName; }
-			set { data.clientName = value; }
+		public string ClientName {
+			get { return CoreFoundation.FetchString (data.clientName); }
+			set { data.clientName = AddCFString (value); }
 		}
 		
-		public IntPtr WindowTitle {
-			get { return data.windowTitle; }
-			set { data.windowTitle = value; }
+		public string WindowTitle {
+			get { return CoreFoundation.FetchString (data.windowTitle); }
+			set { data.windowTitle = AddCFString (value); }
 		}
 		
-		public IntPtr ActionButtonLabel {
-			get { return data.actionButtonLabel; }
-			set { data.actionButtonLabel = value; }
+		public string ActionButtonLabel {
+			get { return CoreFoundation.FetchString (data.actionButtonLabel); }
+			set { data.actionButtonLabel = AddCFString (value); }
 		}
 		
-		public IntPtr CancelButtonLabel {
-			get { return data.cancelButtonLabel; }
-			set { data.cancelButtonLabel = value; }
+		public string CancelButtonLabel {
+			get { return CoreFoundation.FetchString (data.cancelButtonLabel); }
+			set { data.cancelButtonLabel = AddCFString (value); }
 		}
 		
-		public IntPtr SaveFileName {
-			get { return data.saveFileName; }
-			set { data.saveFileName = value; }
+		public string SaveFileName {
+			get { return CoreFoundation.FetchString (data.saveFileName); }
+			set { data.saveFileName = AddCFString (value); }
 		}
 		
-		public IntPtr Message {
-			get { return data.message; }
-			set { data.message = value; }
+		public string Message {
+			get { return CoreFoundation.FetchString (data.message); }
+			set { data.message = AddCFString (value); }
 		}
 		
 		public uint PreferenceKey {
 			get { return data.preferenceKey; }
 			set { data.preferenceKey = value; }
+		}
+		
+		public IntPtr PopupExtension {
+			get { return data.popupExtension; }
+			set { data.popupExtension = value; }
 		}
 		
 		public WindowModality Modality {
@@ -165,6 +232,31 @@ namespace OSXIntegration.Framework
 		public IntPtr ParentWindow {
 			get { return data.parentWindow; }
 			set { data.parentWindow = value; }
+		}
+		
+		List<IntPtr> toDispose;
+		IntPtr AddCFString (string value)
+		{
+			var ptr = CoreFoundation.CreateString (value);
+			if (toDispose == null)
+				toDispose = new List<IntPtr> ();
+			toDispose.Add (ptr);
+			return ptr;
+		}
+		
+		public void Dispose ()
+		{
+			if (toDispose != null) {
+				foreach (IntPtr ptr in toDispose)
+					CoreFoundation.Release (ptr);
+				toDispose = null;
+				GC.SuppressFinalize (this);
+			}
+		}
+		
+		~NavDialogCreationOptions ()
+		{
+			Console.WriteLine ("WARNING: Did not dispose NavDialogCreationOptions");
 		}
 	}
 	
@@ -360,4 +452,61 @@ namespace OSXIntegration.Framework
 		char reserved; //size [225];
 	}
 	
+	class NavReplyRecordRef : IDisposable
+	{
+		bool disposed;
+		internal NavReplyRecord value;
+		
+		public void Dispose ()
+		{
+			if (!disposed) {
+				disposed = true;
+				NavDisposeReply (ref value);
+				GC.SuppressFinalize (this);
+			}
+		}
+		
+		~NavReplyRecordRef ()
+		{
+			Console.WriteLine ("WARNING: NavReplyRecordRef not disposed");
+		}
+		
+		[DllImport (Carbon.CarbonLib)]
+		static extern NavStatus NavDisposeReply (ref NavReplyRecord record);
+	}
+	
+	enum NavCustomControlMessage : int
+	{
+		ShowDesktop = 0,
+		SortBy = 1,
+		SortOrder = 2,
+		ScrollHome = 3,
+		ScrollEnd = 4,
+		PageUp = 5,
+		PageDown = 6,
+		GetLocation = 7,
+		SetLocation = 8,
+		GetSelection = 9,
+		SetSelection = 10,
+		ShowSelection = 11,
+		OpenSelection = 12,
+		EjectVolume = 13,
+		NewFolder = 14,
+		Cancel = 15,
+		Accept = 16,
+		IsPreviewShowing = 17,
+		AddControl = 18,
+		AddControlList = 19,
+		GetFirstControlID = 20,
+		SelectCustomType = 21,
+		SelectAllType = 22,
+		GetEditFileName = 23,
+		SetEditFileName = 24,
+		SelectEditFileName = 25,
+		BrowserSelectAll = 26,
+		GotoParent = 27,
+		SetActionState = 28,
+		BrowserRedraw = 29,
+		Terminate = 30
+	}
 }

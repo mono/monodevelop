@@ -20,6 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -28,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -95,6 +97,7 @@
     <Compile Include="Framework\ApplicationEvents.cs" />
     <Compile Include="MacSelectFileDialogHandler.cs" />
     <Compile Include="Framework\NavDialog.cs" />
+    <Compile Include="Framework\AppleEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

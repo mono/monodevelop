@@ -47,5 +47,49 @@ namespace OSXIntegration.Framework
 		
 		[DllImport (CFLib, EntryPoint="CFRelease")]
 		public static extern void Release (IntPtr cfRef);
+		
+				struct CFRange {
+			public int Location, Length;
+			public CFRange (int l, int len)
+			{
+				Location = l;
+				Length = len;
+			}
+		}
+		
+		[DllImport (CFLib, CharSet=CharSet.Unicode)]
+		extern static int CFStringGetLength (IntPtr handle);
+
+		[DllImport (CFLib, CharSet=CharSet.Unicode)]
+		extern static IntPtr CFStringGetCharactersPtr (IntPtr handle);
+		
+		[DllImport (CFLib, CharSet=CharSet.Unicode)]
+		extern static IntPtr CFStringGetCharacters (IntPtr handle, CFRange range, IntPtr buffer);
+		
+		public static string FetchString (IntPtr handle)
+		{
+			if (handle == IntPtr.Zero)
+				return null;
+			
+			string str;
+			
+			int l = CFStringGetLength (handle);
+			IntPtr u = CFStringGetCharactersPtr (handle);
+			IntPtr buffer = IntPtr.Zero;
+			if (u == IntPtr.Zero){
+				CFRange r = new CFRange (0, l);
+				buffer = Marshal.AllocCoTaskMem (l * 2);
+				CFStringGetCharacters (handle, r, buffer);
+				u = buffer;
+			}
+			unsafe {
+				str = new string ((char *) u, 0, l);
+			}
+			
+			if (buffer != IntPtr.Zero)
+				Marshal.FreeCoTaskMem (buffer);
+			
+			return str;
+		}
 	}
 }

@@ -148,6 +148,17 @@ namespace OSXIntegration.Framework
 		}
 
 		[DllImport (hiToolboxLib)]
+		static extern CarbonMenuStatus SetMenuItemTextWithCFString (IntPtr menuRef, ushort index, IntPtr cfstring);
+		
+		public static void SetMenuItemText (IntPtr menuRef, ushort index, string title)
+		{
+			IntPtr str = CoreFoundation.CreateString (title);
+			CarbonMenuStatus result = SetMenuItemTextWithCFString (menuRef, index, str);
+			CoreFoundation.Release (str);
+			CheckResult (result);
+		}
+
+		[DllImport (hiToolboxLib)]
 		internal static extern CarbonMenuStatus SetMenuItemKeyGlyph (IntPtr menuRef, ushort index, short glyph);
 
 		[DllImport (hiToolboxLib)]

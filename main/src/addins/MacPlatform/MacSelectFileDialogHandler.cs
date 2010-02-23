@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Components.Extensions;
 using OSXIntegration.Framework;
 using MonoDevelop.Ide.Extensions;
+using Gtk;
 
 namespace MonoDevelop.Platform.Mac
 {
@@ -36,12 +37,57 @@ namespace MonoDevelop.Platform.Mac
 		public bool Run (SelectFileDialogData data)
 		{
 			var options = NavDialogCreationOptions.NewFromDefaults ();
-			options.Modality = WindowModality.AppModal;
-			using (var dialog = NavDialog.CreateChooseFileDialog (options)) {
-				dialog.Run ();
-				var reply = dialog.GetReply ();
+			NavDialog dialog = null;
+			
+			try {
+				options.Modality = WindowModality.AppModal;
+				
+				if (!string.IsNullOrEmpty (data.Title))
+					options.WindowTitle = data.Title;
+				
+				options.OptionFlags |= NavDialogOptionFlags.DontAddTranslateItems
+					& NavDialogOptionFlags.DontAutoTranslate & NavDialogOptionFlags.DontConfirmReplacement;
+				
+				if (data.SelectMultiple)
+					options.OptionFlags |= NavDialogOptionFlags.AllowMultipleFiles;
+				else
+					options.OptionFlags ^= NavDialogOptionFlags.AllowMultipleFiles;
+				
+				//data.SelectedFiles
+				
+				switch (data.Action) {
+				case FileChooserAction.CreateFolder:
+					dialog = NavDialog.CreateNewFolderDialog (options);
+					break;
+				case FileChooserAction.Save:
+					options.SaveFileName = data.InitialFileName;
+					dialog = NavDialog.CreatePutFileDialog (options);
+					break;
+				case FileChooserAction.Open:
+					dialog = NavDialog.CreateChooseFileDialog (options);
+					break;
+				case FileChooserAction.SelectFolder:
+					dialog = NavDialog.CreateChooseFolderDialog (options);
+					break;
+				default:
+					throw new InvalidOperationException ("Unknown action " + data.Action.ToString ());
+				}
+				
+				if (!string.IsNullOrEmpty (data.CurrentFolder))
+					dialog.SetLocation (data.CurrentFolder);
+				
+				var action = dialog.Run ();
+				if (action == NavUserAction.Cancel || action == NavUserAction.None)
+					return false;
+				using (var reply = dialog.GetReply ()) {
+				}
+			} finally {
+				if (dialog != null)
+					dialog.Dispose ();
+				if (options != null)
+					options.Dispose ();
 			}
-			return false;
+			return true;
 		}
 	}
 	
@@ -49,13 +95,7 @@ namespace MonoDevelop.Platform.Mac
 	{
 		public bool Run (AddFileDialogData data)
 		{
-			var options = NavDialogCreationOptions.NewFromDefaults ();
-			options.Modality = WindowModality.AppModal;
-			using (var dialog = NavDialog.CreateChooseFileDialog (options)) {
-				dialog.Run ();
-				var reply = dialog.GetReply ();
-			}
-			return false;
+			throw new NotImplementedException ();
 		}
 	}
 	
@@ -63,13 +103,7 @@ namespace MonoDevelop.Platform.Mac
 	{
 		public bool Run (OpenFileDialogData data)
 		{
-			var options = NavDialogCreationOptions.NewFromDefaults ();
-			options.Modality = WindowModality.AppModal;
-			using (var dialog = NavDialog.CreateChooseFileDialog (options)) {
-				dialog.Run ();
-				var reply = dialog.GetReply ();
-			}
-			return false;
+			throw new NotImplementedException ();
 		}
 	}
 }

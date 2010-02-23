@@ -22,6 +22,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	Commands.cs \
+	Framework/AppleEvent.cs \
 	Framework/ApplicationEvents.cs \
 	Framework/Carbon.cs \
 	Framework/CoreFoundation.cs \
@@ -49,7 +50,7 @@ endif
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
+	$(CSC) $(CSC_FLAGS) -unsafe $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 

@@ -1,3 +1,13 @@
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacPlatform.csproj:
+	* Framework/NavDialog.cs:
+	* Framework/HIToolbox.cs:
+	* Framework/AppleEvent.cs:
+	* Framework/CoreFoundation.cs:
+	* MacSelectFileDialogHandler.cs: More work on native dialogs.
+
 2010-02-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.addin.xml: Fix extensions.
