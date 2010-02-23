@@ -325,6 +325,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/RootWorkspace.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
+	MonoDevelop.Ide.Gui/SideBar.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \

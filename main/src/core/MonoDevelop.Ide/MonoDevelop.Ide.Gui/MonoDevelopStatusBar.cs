@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide
 			
 			DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
 			Gtk.Widget dockBar = wb.WorkbenchLayout.DockFrame.ExtractDockBar (PositionType.Bottom);
+			dockBar.NoShowAll = true;
 			PackStart (dockBar, false, false, 0);
 
 			mainBox = new EventBox ();

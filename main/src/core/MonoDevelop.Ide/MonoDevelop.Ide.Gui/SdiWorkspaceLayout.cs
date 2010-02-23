@@ -136,7 +136,19 @@ namespace MonoDevelop.Ide.Gui
 			
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
-			toolbarFrame.AddContent (dock);
+			
+			HBox hbox = new HBox ();
+			VBox sideBox = new VBox ();
+			sideBox.PackStart (new SideBar (workbench, Orientation.Vertical), false, false, 0);
+			hbox.PackStart (sideBox, false, false, 0);
+			hbox.ShowAll ();
+			sideBox.NoShowAll = true;
+			hbox.PackStart (dock, true, true, 0);
+			DockBar bar = dock.ExtractDockBar (PositionType.Left);
+			bar.AlwaysVisible = true;
+			sideBox.PackStart (bar, true, true, 0);
+			
+			toolbarFrame.AddContent (hbox);
 
 			// Create the notebook for the various documents.
 			tabControl = new SdiDragNotebook (dock.ShadedContainer);
@@ -374,7 +386,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		DockItem GetDockItem (PadCodon content)
+		internal DockItem GetDockItem (PadCodon content)
 		{
 			if (activePadCollection.Contains (content))
 			{
