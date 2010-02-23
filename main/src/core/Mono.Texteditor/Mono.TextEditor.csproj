@@ -156,6 +156,8 @@
     <Compile Include="Mono.TextEditor\TextEditorContainer.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\AnimatedBox.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\AnimatedVBox.cs" />
+    <Compile Include="Mono.TextEditor.Vi\ViMacro.cs" />
+    <Compile Include="Mono.TextEditor.Vi\ViMark.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

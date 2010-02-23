@@ -1,3 +1,16 @@
+2010-02-23  Sanjoy Das   <sanjoy@playingwithpointers.com>
+
+	* MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/IdeViMode.cs:
+	* Mono.Texteditor/Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.Texteditor/Mono.TextEditor.Vi/ViMacro.cs: Macro support for Vi 
+	  mode.
+
+2010-02-23  Sanjoy Das   <sanjoy@playingwithpointers.com>
+
+	* Mono.Texteditor/Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.Texteditor/Mono.TextEditor.Vi/ViMark.cs: Added support 
+	  for marks in Vi mode.
+
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/Span.cs: made span property

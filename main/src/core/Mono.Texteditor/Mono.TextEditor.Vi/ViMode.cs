@@ -33,8 +33,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor.Vi
 {
-	
-	
+
 	public class ViEditMode : EditMode
 	{
 		bool searchBackward;
@@ -43,8 +42,30 @@ namespace Mono.TextEditor.Vi
 		State state;
 		const string substMatch = @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$";
 		StringBuilder commandBuffer = new StringBuilder ();
+		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark>();
+		Dictionary<char,ViMacro> macros = new Dictionary<char, ViMacro>();
+		string statusText = "";
 		
-		public virtual string Status { get; protected set; }
+		/// <summary>
+		/// The macro currently being implemented. Will be set to null and checked as a flag when required.
+		/// </summary>
+		ViMacro currentMacro;
+		
+		public virtual string Status {
+		
+			get {
+				return statusText;
+			}
+			
+			protected set {
+				if (currentMacro == null) {
+					statusText = value;
+				} else {
+					statusText = value + " recording";
+				}
+			}
+		
+		}
 		
 		protected virtual string RunExCommand (string command)
 		{
@@ -91,7 +112,7 @@ namespace Mono.TextEditor.Vi
 					break;	
 				}
 				break;
-
+				
 			case '?':
 			case '/':
 				searchBackward = ('?' == command[0]);
@@ -102,7 +123,7 @@ namespace Mono.TextEditor.Vi
 				}
 				return Search ();
 			}
-
+			
 			return "Command not recognised";
 		}
 		
@@ -157,14 +178,36 @@ namespace Mono.TextEditor.Vi
 			return ViActionMaps.GetInsertKeyAction (key, modifier) ??
 				ViActionMaps.GetDirectionKeyAction (key, modifier);
 		}
-		
+
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
+		
 			// Reset on Esc, Ctrl-C, Ctrl-[
-			if (key == Gdk.Key.Escape || 
-			    ((key == Gdk.Key.c || key == Gdk.Key.bracketleft) && (modifier & Gdk.ModifierType.ControlMask) != 0)) {
-				Reset (string.Empty);
+			if (key == Gdk.Key.Escape) {
+				if (currentMacro != null) {
+					// Record Escapes into the macro since it actually does something
+					ViMacro.KeySet toAdd = new ViMacro.KeySet();
+					toAdd.Key = key;
+					toAdd.Modifiers = modifier;
+					toAdd.UnicodeKey = unicodeKey;
+					currentMacro.KeysPressed.Enqueue(toAdd);
+				}
+				Reset(string.Empty);
 				return;
+			} else if (((key == Gdk.Key.c || key == Gdk.Key.bracketleft) && (modifier & Gdk.ModifierType.ControlMask) != 0)) {
+				Reset (string.Empty);
+				if (currentMacro != null) {
+					// Otherwise remove the macro from the pool
+					macros.Remove(currentMacro.MacroCharacter);
+					currentMacro = null;
+				}
+				return;
+			} else if (currentMacro != null && !((char)unicodeKey == 'q' && modifier == Gdk.ModifierType.None)) {
+				ViMacro.KeySet toAdd = new ViMacro.KeySet();
+				toAdd.Key = key;
+				toAdd.Modifiers = modifier;
+				toAdd.UnicodeKey = unicodeKey;
+				currentMacro.KeysPressed.Enqueue(toAdd);
 			}
 			
 			Action<TextEditorData> action = null;
@@ -349,8 +392,35 @@ namespace Mono.TextEditor.Vi
 						Status = "z";
 						state = State.Fold;
 						return;
+						
+					case 'm':
+						Status = "m";
+						state = State.Mark;
+						return;
+						
+					case '`':
+						Status = "`";
+						state = State.GoToMark;
+						return;
+						
+					case '@':
+						Status = "@";
+						state = State.PlayMacro;
+						return;
+	
+					case 'q':
+						if (currentMacro == null) {
+							Status = "q";
+							state = State.NameMacro;
+							return;
+						} else {
+							currentMacro = null;
+							Reset("Macro Recorded");
+							return;
+						}
+						break;
+						
 					}
-					
 					
 				}
 				
@@ -598,6 +668,65 @@ namespace Mono.TextEditor.Vi
 				}
 				Reset ("Unknown command");
 				return;
+				
+			case State.Mark: {
+				char k = (char)unicodeKey;
+				ViMark mark = null;
+				if (!char.IsLetterOrDigit(k)) {
+					Reset ("Invalid Mark");
+					return;
+				}
+				if (marks.ContainsKey(k)) {
+					mark = marks [k];
+				} else {
+					mark = new ViMark(k);
+					marks [k] = mark;
+				}
+				RunAction(mark.SaveMark);
+				Reset("");
+				return;
+			}
+			
+			case State.NameMacro: {
+				char k = (char) unicodeKey;
+				if(!char.IsLetterOrDigit(k)) {
+					Reset("Invalid Macro Name");
+					return;
+				}
+				currentMacro = new ViMacro (k);
+				currentMacro.KeysPressed = new Queue<ViMacro.KeySet> ();
+				macros [k] = currentMacro;
+				Reset("");
+				return;
+			}
+			
+			case State.PlayMacro: {
+				char k = (char) unicodeKey;
+				if (macros.ContainsKey(k)) {
+					Reset ("");
+					ViMacro macroToPlay = macros [k];
+					foreach (ViMacro.KeySet keySet in macroToPlay.KeysPressed) {
+						HandleKeypress(keySet.Key, keySet.UnicodeKey, keySet.Modifiers);
+					}
+					/* Once all the keys have been played back, quickly exit. */
+					return;
+				} else {
+					Reset ("Invalid Macro Name");
+					return;
+				}
+			}
+			
+			case State.GoToMark: {
+				char k = (char)unicodeKey;
+				if (marks.ContainsKey(k)) {
+					RunAction(marks [k].LoadMark);
+					Reset ("");
+				} else {
+					Reset ("Unknown Mark");
+				}
+				return;
+			}
+				
 			case State.Fold:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0)) {
 					switch ((char)unicodeKey) {
@@ -863,7 +992,11 @@ namespace Mono.TextEditor.Vi
 			Indent,
 			Unindent,
 			G,
-			Fold
+			Fold,
+			Mark,
+			GoToMark,
+			NameMacro,
+			PlayMacro
 		}
 	}
 }

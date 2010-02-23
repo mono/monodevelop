@@ -48,6 +48,8 @@ FILES =  \
 	Mono.TextEditor.Theatrics/Stage.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
+	Mono.TextEditor.Vi/ViMacro.cs \
+	Mono.TextEditor.Vi/ViMark.cs \
 	Mono.TextEditor.Vi/ViMode.cs \
 	Mono.TextEditor.Vi/ViWordFindStrategy.cs \
 	Mono.TextEditor/BookmarkActions.cs \
