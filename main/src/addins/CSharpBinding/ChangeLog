@@ -1,3 +1,10 @@
+2010-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: fixed
+	  'Bug 582021 - parsing of nested conditional comments is
+	  broken'.
+
+
 2010-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
