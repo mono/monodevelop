@@ -387,7 +387,7 @@ namespace MonoDevelop.CSharp.Formatting
 			stack.Push (Inside.PreProcessor, null, curLineNr, 0);
 			
 			curIndent = String.Empty;
-			needsReindent = true;
+			needsReindent = false;
 		}
 		
 		void PushSlash (Inside inside)
