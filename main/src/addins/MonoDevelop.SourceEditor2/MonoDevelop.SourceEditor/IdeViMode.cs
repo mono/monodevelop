@@ -50,7 +50,8 @@ namespace MonoDevelop.SourceEditor
 			get { return base.Status; }
 			protected set {
 				base.Status = value;
-				IdeApp.Workbench.StatusBar.ShowMessage (value);
+				// For the (recording) display.
+				IdeApp.Workbench.StatusBar.ShowMessage (base.Status);
 			}
 		}
 		
