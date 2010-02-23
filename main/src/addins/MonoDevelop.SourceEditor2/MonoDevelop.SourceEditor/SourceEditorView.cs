@@ -821,8 +821,14 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region IExtensibleTextEditor
+		public ITextEditorExtension Extension {
+			get;
+			set;
+		}
+		
 		ITextEditorExtension IExtensibleTextEditor.AttachExtension (ITextEditorExtension extension)
 		{
+			Extension = extension;
 			this.widget.TextEditor.Extension = extension;
 			return this.widget;
 		}

@@ -157,8 +157,14 @@ namespace MonoDevelop.SourceEditor
 				return AmbienceService.GetAmbienceForFile (fileName);
 			}
 		}
-		
 		#region ITextEditorExtension
+		
+		ITextEditorExtension ITextEditorExtension.Next {
+			get {
+				return null;
+			}
+		}
+		
 		object ITextEditorExtension.GetExtensionCommandTarget ()
 		{
 			return null;
