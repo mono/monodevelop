@@ -519,7 +519,7 @@ namespace MonoDevelop.ValaBinding
 			error.Line = int.Parse (errorMatch.Groups["line"].Value);
 			if (errorMatch.Groups["column"].Success)
 				error.Column = int.Parse (errorMatch.Groups["column"].Value);
-			error.IsWarning = errorMatch.Groups["level"].Value.Equals ("warning");
+			error.IsWarning = !errorMatch.Groups["level"].Value.Equals (GettextCatalog.GetString ("error"), StringComparison.Ordinal);
 			error.ErrorText = errorMatch.Groups["message"].Value;
 			
 			return error;
