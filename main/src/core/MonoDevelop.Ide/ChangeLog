@@ -1,3 +1,11 @@
+2010-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:
+	  Added some error messages for 'Bug 540891 - NRE when
+	  launching Find In Files search (whole solution)'.
+
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/ProjectDescriptor.cs: Fix nullref.

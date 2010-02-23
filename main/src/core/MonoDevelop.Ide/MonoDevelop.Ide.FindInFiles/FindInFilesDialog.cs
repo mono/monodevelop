@@ -447,12 +447,25 @@ namespace MonoDevelop.Ide.FindInFiles
 			case ScopeSelection:
 				return new SelectionScope ();
 			case ScopeWholeSolution:
+				if (IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
+					return null;
+				}
 				return new WholeSolutionScope ();
 			case ScopeCurrentProject:
 				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
-				if (currentSelectedProject != null)
+				if (currentSelectedProject != null) {
 					return new WholeProjectScope (currentSelectedProject);
-				return new WholeSolutionScope ();
+				} else {
+					if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+						AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
+						if (alertButton == AlertButton.Yes)
+							return new WholeSolutionScope ();
+					} else {
+						MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
+					}
+				}
+				return null;
 			case ScopeAllOpenFiles:
 				return new AllOpenFilesScope ();
 			case ScopeDirectories: 
@@ -514,13 +527,17 @@ namespace MonoDevelop.Ide.FindInFiles
 					return;
 				CancelSearch ();
 			}
+			Scope scope = GetScope ();
+			if (scope == null)
+				return;
+			
 			ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
 			searchMonitor.CancelRequested += (MonitorHandler)DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
 			lock (searchesInProgress)
 				searchesInProgress.Add (searchMonitor);
 			UpdateStopButton ();
 			find = new FindReplace ();
-			Scope scope = GetScope ();
+			
 			string pattern = comboboxentryFind.Entry.Text;
 			FilterOptions options = GetFilterOptions ();
 			searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));

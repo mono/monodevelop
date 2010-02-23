@@ -139,6 +139,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.searchentry1.Ready = false;
 			this.searchentry1.HasFocus = false;
 			this.searchentry1.IsCheckMenu = false;
+			this.searchentry1.ForceFilterButtonVisible = false;
 			this.tableFindAndReplace.Add (this.searchentry1);
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.searchentry1]));
 			w8.TopAttach = ((uint)(2));

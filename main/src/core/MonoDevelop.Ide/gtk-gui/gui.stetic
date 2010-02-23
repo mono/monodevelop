@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="Mono.Addins.Gui, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <widget-library name="Mono.Addins.Gui, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <widget-library name="../../../../build/bin/MonoDevelop.Dock.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
@@ -6344,6 +6344,7 @@ Large</property>
                         <property name="Ready">False</property>
                         <property name="HasFocus">False</property>
                         <property name="IsCheckMenu">False</property>
+                        <property name="ForceFilterButtonVisible">False</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">2</property>
