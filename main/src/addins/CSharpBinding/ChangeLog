@@ -1,3 +1,8 @@
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Fix
+	  skipping duplicate refs.
+
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs:

@@ -82,8 +82,7 @@ namespace MonoDevelop.CSharp
 							continue;
 						}
 						string referencedName = pkg.IsCorePackage ? Path.GetFileName (fileName) : fileName;
-						if (!alreadyAddedReference.Contains (referencedName)) {
-							alreadyAddedReference.Add (referencedName);
+						if (alreadyAddedReference.Add (referencedName)) {
 							AppendQuoted (sb, "/r:", referencedName);
 						}
 						
@@ -95,16 +94,15 @@ namespace MonoDevelop.CSharp
 								if (rpkg == null)
 									continue;
 								foreach (SystemAssembly assembly in rpkg.Assemblies) {
-									if (alreadyAddedReference.Contains (assembly.Location))
-										continue;
-									alreadyAddedReference.Add (assembly.Location);
-									AppendQuoted (sb, "/r:", assembly.Location);
+									if (alreadyAddedReference.Add (assembly.Location))
+										AppendQuoted (sb, "/r:", assembly.Location);
 								}
 							}
 						}
 						break;
 					default:
-						AppendQuoted (sb, "/r:", fileName);
+						if (alreadyAddedReference.Add (fileName))
+							AppendQuoted (sb, "/r:", fileName);
 						break;
 					}
 				}
