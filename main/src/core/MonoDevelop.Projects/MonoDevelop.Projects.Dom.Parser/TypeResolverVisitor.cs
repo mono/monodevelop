@@ -38,6 +38,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		int unresolvedCount;
 		IMethod currentMethod;
 		
+		public void SetCurrentMember (IMember currentMember)
+		{
+			currentMethod = currentMember as IMethod;
+		}
+		
 		public TypeResolverVisitor (ProjectDom db, ICompilationUnit unit)
 		{
 			this.db = db;
@@ -72,9 +77,26 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			if (currentMethod != null) {
 				foreach (ITypeParameter t in currentMethod.TypeParameters) {
-					
 					if (t.Name == type.Name) {
-						return type;
+						DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
+						DomType constructedType = new DomType (type.FullName);
+						
+						foreach (IReturnType constraintType in t.Constraints) {
+							if (constructedType.BaseType == null) {
+								constructedType.BaseType = constraintType;
+							} else {
+								constructedType.AddInterfaceImplementation (constraintType);
+							}
+						}
+						
+						if (constructedType.BaseType == null) 
+							constructedType.BaseType = DomReturnType.Object;
+						
+						constructedType.SourceProjectDom = db;
+						
+						typeParameterReturnType.Type = constructedType;
+						
+						return typeParameterReturnType;
 					}
 				}
 			}
