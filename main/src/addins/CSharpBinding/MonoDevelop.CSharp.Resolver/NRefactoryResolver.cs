@@ -481,8 +481,11 @@ namespace MonoDevelop.CSharp.Resolver
 			if (type.Type != null) // type known (possible anonymous type), no resolving needed
 				return type;
 			
-			return (IReturnType)new TypeResolverVisitor (dom, unit).Visit (type, this.CallingType);
+			TypeResolverVisitor typeResolverVisitor = new TypeResolverVisitor (dom, unit);
+			typeResolverVisitor.SetCurrentMember (this.CallingMember);
+			return (IReturnType)typeResolverVisitor.Visit (type, this.CallingType);
 		}
+		
 		
 		ResolveResult GetFunctionParameterType (ResolveResult resolveResult)
 		{
@@ -639,7 +642,7 @@ namespace MonoDevelop.CSharp.Resolver
  			if (resultTable.TryGetValue (identifier, out result))
  				return result;
  			resultTable[identifier] = result;
- 		
+ 			
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
  				if (identifier == pair.Key) {
  					LocalLookupVariable var = null;
