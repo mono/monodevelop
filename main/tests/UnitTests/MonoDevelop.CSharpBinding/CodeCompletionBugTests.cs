@@ -2254,5 +2254,34 @@ namespace Other
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
+		
+		
+		/// <summary>
+		/// Bug 582017 - C# Generic Type Constraints
+		/// </summary>
+		[Test()]
+		public void TestBug582017 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class Bar
+{
+	public void MyMethod ()
+	{
+	}
+}
+
+class Foo
+{
+	public static void Test<T> (T theObject) where T : Bar
+	{
+		$theObject.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("MyMethod"), "method 'MyMethod' not found.");
+		}
+		
 	}
 }

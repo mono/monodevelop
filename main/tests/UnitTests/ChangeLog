@@ -1,3 +1,8 @@
+2010-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for 'Bug 582017 - C# Generic Type Constraints'.
+
 2010-02-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Tests/SearchTests.cs: Track API changes.
