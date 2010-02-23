@@ -1,5 +1,10 @@
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/Span.cs: made span property
+	  setter public.
+
+2010-02-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/OblivionStyle.xml: changed oblivion color.
 
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
