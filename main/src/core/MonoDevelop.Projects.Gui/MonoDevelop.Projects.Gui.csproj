@@ -156,6 +156,7 @@
     <Compile Include="MonoDevelop.Projects.Gui.Completion\CodeCompletionContext.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Projects.Gui.Completion\CodeCompletionContextEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

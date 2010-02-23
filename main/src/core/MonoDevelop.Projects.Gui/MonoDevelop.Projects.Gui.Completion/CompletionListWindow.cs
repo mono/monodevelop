@@ -311,7 +311,17 @@ namespace MonoDevelop.Projects.Gui.Completion
 			string completedWord = item.CompletionText;
 			AddWordToHistory (completedWord);
 			CompletionWidget.SetCompletionText (CodeCompletionContext, currentWord, completedWord);
+			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, completedWord));
 		}
+		
+		protected virtual void OnWordCompleted (CodeCompletionContextEventArgs e)
+		{
+			EventHandler<CodeCompletionContextEventArgs> handler = this.WordCompleted;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
 		
 		public override void Destroy ()
 		{

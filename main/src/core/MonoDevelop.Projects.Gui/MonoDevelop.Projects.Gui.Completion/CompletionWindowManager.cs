@@ -44,6 +44,12 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		public static CodeCompletionContext CodeCompletionContext {
+			get {
+				return wnd.CodeCompletionContext;
+			}
+		} 
+		
 		static CompletionWindowManager ()
 		{
 		}
@@ -51,8 +57,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public static bool ShowWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
 		{
 			try {
-				if (wnd == null)
+				if (wnd == null) {
 					wnd = new CompletionListWindow ();
+					wnd.WordCompleted += HandleWndWordCompleted;
+				}
 				try {
 					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext, closedDelegate)) {
 						if (list is IDisposable)
@@ -69,6 +77,16 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ParameterInformationWindowManager.UpdateWindow ();
 			}
 		}
+
+		static void HandleWndWordCompleted (object sender, CodeCompletionContextEventArgs e)
+		{
+			EventHandler<CodeCompletionContextEventArgs> handler = WordCompleted;
+			if (handler != null)
+				handler (sender, e);
+		}
+		
+		public static event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
+		
 		
 		static void DestroyWindow ()
 		{
