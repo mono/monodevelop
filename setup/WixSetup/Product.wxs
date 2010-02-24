@@ -542,8 +542,6 @@
             </Directory>
             <Directory Id="VersionControl" Name="VersionControl">
               <Component Id="MonoDevelop_AddIns_VersionControl" Guid="185a74d4-17c2-4e94-9dbc-4c391026eb1e">
-                <File Name="Diff.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\Diff.dll" />
-                <File Name="DiffWidget.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\DiffWidget.dll" />
                 <File Name="MonoDevelop.VersionControl.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.dll" />
                 <File Name="MonoDevelop.VersionControl.Subversion.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll" />
               </Component>
