@@ -30,7 +30,7 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
-using Algorithm.Diff;
+using MonoDevelop.Components.Diff;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
