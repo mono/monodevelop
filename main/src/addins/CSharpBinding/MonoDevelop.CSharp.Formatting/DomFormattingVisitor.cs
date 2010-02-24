@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using MonoDevelop.CSharp.Dom;
 using System.Text;
@@ -115,6 +116,81 @@ namespace MonoDevelop.CSharp.Formatting
 			                   (CSharpTokenNode)indexerDeclaration.GetChildByRole (IndexerDeclaration.Roles.RBrace));
 			return base.VisitIndexerDeclaration (indexerDeclaration, data);
 		}
+		public override object VisitBlockStatement (BlockStatement blockStatement, object data)
+		{
+			return base.VisitBlockStatement (blockStatement, data);
+		}
+
+		public override object VisitAssignmentExpression (AssignmentExpression assignmentExpression, object data)
+		{
+			return base.VisitAssignmentExpression (assignmentExpression, data);
+		}
+
+		public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
+		{
+			bool forceSpaces = false;
+			switch (binaryOperatorExpression.BinaryOperatorType) {
+			case BinaryOperatorType.Equality:
+			case BinaryOperatorType.InEquality:
+				forceSpaces = policy.AroundEqualityOperatorParentheses;
+				break;
+			case BinaryOperatorType.GreaterThan:
+			case BinaryOperatorType.GreaterThanOrEqual:
+			case BinaryOperatorType.LessThan:
+			case BinaryOperatorType.LessThanOrEqual:
+				forceSpaces = policy.AroundRelationalOperatorParentheses;
+				break;
+			case BinaryOperatorType.LogicalAnd:
+			case BinaryOperatorType.LogicalOr:
+				forceSpaces = policy.AroundLogicalOperatorParentheses;
+				break;
+			case BinaryOperatorType.BitwiseAnd:
+			case BinaryOperatorType.BitwiseOr:
+			case BinaryOperatorType.ExclusiveOr:
+				forceSpaces = policy.AroundBitwiseOperatorParentheses;
+				break;
+			case BinaryOperatorType.Add:
+			case BinaryOperatorType.Subtract:
+				forceSpaces = policy.AroundAdditiveOperatorParentheses;
+				break;
+			case BinaryOperatorType.Multiply:
+			case BinaryOperatorType.Divide:
+			case BinaryOperatorType.Modulus:
+				forceSpaces = policy.AroundMultiplicativeOperatorParentheses;
+				break;
+			case BinaryOperatorType.ShiftLeft:
+			case BinaryOperatorType.ShiftRight:
+				forceSpaces = policy.AroundShiftOperatorParentheses;
+				break;
+			}
+			ForceSpacesAround (binaryOperatorExpression.Operator.Location, forceSpaces);
+			
+			return base.VisitBinaryOperatorExpression (binaryOperatorExpression, data);
+		}
+
+		void ForceSpacesAround (DomLocation location, bool forceSpaces)
+		{
+			int offset = data.Document.LocationToOffset (location.Line, location.Column);
+			int i = offset - 1;
+			
+			while (i >= 0 && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
+				i--;
+			}
+			ForceSpace (i, offset, forceSpaces);
+			
+			while (offset + 1 < data.Document.Length) {
+				char ch = data.Document.GetCharAt (offset + 1);
+				if (char.IsWhiteSpace (ch) || char.IsLetterOrDigit (ch))
+					break;
+				
+				offset++;
+			}
+			i = offset + 1;
+			while (i < data.Document.Length && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
+				i++;
+			}
+			ForceSpace (offset, i, forceSpaces);
+		}
 
 
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
@@ -126,7 +202,7 @@ namespace MonoDevelop.CSharp.Formatting
 					int offset      = this.data.Document.LocationToOffset (initializer.NameIdentifier.Location.Line, initializer.NameIdentifier.Location.Column);
 					int commaOffset = this.data.Document.LocationToOffset (commaToken.Location.Line, commaToken.Location.Column);
 					ForceSpace (offset, commaOffset, policy.SpacesAfterComma);
-					Console.WriteLine (initializer.Name +"/" + initializer.NameIdentifier.Location + "/" + commaToken.Location);
+					//Console.WriteLine (initializer.Name +"/" + initializer.NameIdentifier.Location + "/" + commaToken.Location);
 					
 					if (node.NextSibling.NextSibling is VariableInitializer) {
 						DomLocation location = ((VariableInitializer)node.NextSibling.NextSibling).NameIdentifier.Location;
@@ -151,6 +227,7 @@ namespace MonoDevelop.CSharp.Formatting
 			CSharpTokenNode lParen = (CSharpTokenNode)methodDeclaration.GetChildByRole (MethodDeclaration.Roles.LPar);
 			int offset = this.data.Document.LocationToOffset (lParen.Location.Line, lParen.Location.Column);
 			ForceSpaceBefore (offset, policy.BeforeMethodDeclarationParentheses);
+			
 			return base.VisitMethodDeclaration (methodDeclaration, data);
 		}
 		
@@ -176,7 +253,7 @@ namespace MonoDevelop.CSharp.Formatting
 			bool insertedSpace = false;
 			do {
 				char ch = data.Document.GetCharAt (offset);
-				Console.WriteLine (ch);
+				//Console.WriteLine (ch);
 				if (!Char.IsWhiteSpace (ch) && (insertedSpace || !forceSpace))
 					break;
 				if (ch == ' ' && forceSpace) {
@@ -203,7 +280,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int lastNonWs = SearchLastNonWsChar (startOffset, endOffset);
 			changes.Add (new MyTextReplaceChange (data, lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), spaceBefore ? " " : ""));
 		}
-		
+		/*
 		int GetLastNonWsChar (LineSegment line, int lastColumn)
 		{
 			int result = -1;
@@ -229,17 +306,17 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			return result;
 		}
-		
+		*/
 		int SearchLastNonWsChar (int startOffset, int endOffset)
 		{
 			if (startOffset >= endOffset)
 				return startOffset;
 			int result = -1;
 			bool inComment = false;
-			Console.WriteLine ("----");
+			//Console.WriteLine ("----");
 			for (int i = startOffset; i < endOffset; i++) {
 				char ch = data.Document.GetCharAt (i);
-				Console.WriteLine (ch);
+				//Console.WriteLine (ch);
 				if (Char.IsWhiteSpace (ch))
 					continue;
 				if (ch == '/' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '/')
@@ -274,7 +351,7 @@ namespace MonoDevelop.CSharp.Formatting
 			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.Location.Line);
 			
 			int lbraceOffset = data.Document.LocationToOffset (lbrace.Location.Line, lbrace.Location.Column);
-			Console.WriteLine ("lbraceOffset={0}/" + data.Document.Length, lbraceOffset);
+			
 			int lastNonWsChar = SearchLastNonWsChar (data.Document.LocationToOffset (startLocation.Line, startLocation.Column), lbraceOffset);
 			
 			switch (braceStyle) {
@@ -301,7 +378,6 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			for (; firstNonWsChar >= 0; firstNonWsChar--) {
 				char ch = data.Document.GetCharAt (rbraceLineSegment.Offset + firstNonWsChar);
-				Console.WriteLine (ch);
 				if (!Char.IsWhiteSpace (ch))
 					break;
 			}

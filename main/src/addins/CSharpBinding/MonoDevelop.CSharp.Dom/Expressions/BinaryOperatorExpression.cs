@@ -40,6 +40,10 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
+		public CSharpTokenNode Operator {
+			get { return (CSharpTokenNode)GetChildByRole (OperatorRole); }
+		}
+		
 		public INode Left {
 			get { return GetChildByRole (LeftExpressionRole); }
 		}

@@ -1,4 +1,3 @@
-/*
 // 
 // CSharpParser.cs
 //  
@@ -25,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/*
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,6 +65,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				return new DomLocation (loc.Row - 1, loc.Column - 1);
 			}
+			
 			public static FullTypeName ConvertToReturnType (FullNamedExpression typeName)
 			{
 				return new FullTypeName (typeName.ToString (), Convert (typeName.Location));
@@ -262,9 +263,8 @@ namespace MonoDevelop.CSharp.Parser
 				newMethod.AddChild (new CSharpTokenNode (Convert (location.Open)), MethodDeclaration.Roles.LPar);
 				newMethod.AddChild (new CSharpTokenNode (Convert (location.Close)), MethodDeclaration.Roles.RPar);
 				
-				if (m.Block == null) {
-					
-				}
+				if (m.Block != null)
+					newMethod.AddChild ((INode)m.Block.Accept (this), MethodDeclaration.Roles.Body);
 				
 				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.Roles.Member);
 			}
@@ -702,6 +702,15 @@ namespace MonoDevelop.CSharp.Parser
 				return null;
 			}
 			
+			public override object Visit (SimpleName simpleName)
+			{
+				var result = new Identifier ();
+				result.Name = simpleName.Name;
+				result.Location = Convert (simpleName.Location);
+				return result;
+			}
+
+			
 			public override object Visit (Mono.CSharp.ParenthesizedExpression parenthesizedExpression)
 			{
 				var result = new MonoDevelop.CSharp.Dom.ParenthesizedExpression ();
@@ -1011,6 +1020,62 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				return null;
 			}
+			
+			public override object Visit (SimpleAssign simpleAssign)
+			{
+				var result = new AssignmentExpression ();
+				KeywordLocation location = LocationStorage.Get<KeywordLocation> (simpleAssign);
+				result.AssignmentOperatorType = AssignmentOperatorType.Assign;
+				result.AddChild ((INode)simpleAssign.Target.Accept (this), AssignmentExpression.LeftExpressionRole);
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), AssignmentExpression.Roles.Keyword);
+				result.AddChild ((INode)simpleAssign.Source.Accept (this), AssignmentExpression.RightExpressionRole);
+				return result;
+			}
+			
+			public override object Visit (CompoundAssign compoundAssign)
+			{
+				var result = new AssignmentExpression ();
+				KeywordLocation location = LocationStorage.Get<KeywordLocation> (compoundAssign);
+				
+				switch (compoundAssign.op) {
+				case Binary.Operator.Multiply:
+					result.AssignmentOperatorType = AssignmentOperatorType.Multiply;
+					break;
+				case Binary.Operator.Division:
+					result.AssignmentOperatorType = AssignmentOperatorType.Divide;
+					break;
+				case Binary.Operator.Modulus:
+					result.AssignmentOperatorType = AssignmentOperatorType.Modulus;
+					break;
+				case Binary.Operator.Addition:
+					result.AssignmentOperatorType = AssignmentOperatorType.Add;
+					break;
+				case Binary.Operator.Subtraction:
+					result.AssignmentOperatorType = AssignmentOperatorType.Subtract;
+					break;
+				case Binary.Operator.LeftShift:
+					result.AssignmentOperatorType = AssignmentOperatorType.ShiftLeft;
+					break;
+				case Binary.Operator.RightShift:
+					result.AssignmentOperatorType = AssignmentOperatorType.ShiftRight;
+					break;
+				case Binary.Operator.BitwiseAnd:
+					result.AssignmentOperatorType = AssignmentOperatorType.BitwiseAnd;
+					break;
+				case Binary.Operator.BitwiseOr:
+					result.AssignmentOperatorType = AssignmentOperatorType.BitwiseOr;
+					break;
+				case Binary.Operator.ExclusiveOr:
+					result.AssignmentOperatorType = AssignmentOperatorType.ExclusiveOr;
+					break;
+				}
+				
+				result.AddChild ((INode)compoundAssign.Target.Accept (this), AssignmentExpression.LeftExpressionRole);
+				result.AddChild (new CSharpTokenNode (Convert (location[0])), AssignmentExpression.Roles.Keyword);
+				result.AddChild ((INode)compoundAssign.Source.Accept (this), AssignmentExpression.RightExpressionRole);
+				return result;
+			}
+
 			#endregion
 		}
 
@@ -1029,4 +1094,4 @@ namespace MonoDevelop.CSharp.Parser
 			return conversionVisitor.Unit;
 		}
 	}
-} */
+}*/

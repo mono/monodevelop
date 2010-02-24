@@ -42,6 +42,8 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data);
 		S VisitUsingDeclaration (UsingDeclaration usingDeclaration, T data);
 		S VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, T data);
+		S VisitFullTypeName (FullTypeName fullTypeName, T data);
+		S VisitIdentifier (Identifier identifier, T data);
 		#endregion
 		
 		#region Type members

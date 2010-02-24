@@ -1,3 +1,14 @@
+2010-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Dom/Identifier.cs:
+	* MonoDevelop.CSharp.Dom/FullTypeName.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/BinaryOperatorExpression.cs:
+	  Worked on c# formatter & dom.
+
 2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Fix

@@ -28,7 +28,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class FullTypeName : AbstractNode
+	public class FullTypeName : AbstractCSharpNode
 	{
 		public string Name {
 			get;
@@ -53,6 +53,11 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			this.Name = name;
 			this.Location = location;
+		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitFullTypeName (this, data);
 		}
 		
 	}
