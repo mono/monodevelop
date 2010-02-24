@@ -332,7 +332,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 
-				TextFile.WriteFile (fileName, Document.Text, encoding);
+				TextFile.WriteFile (fileName, Document.Text, encoding, hadBom);
 				lastSaveTime = File.GetLastWriteTime (fileName);
 				try {
 					if (attributes != null)
@@ -384,6 +384,7 @@ namespace MonoDevelop.SourceEditor
 				Document.Text = file.Text;
 				inLoad = false;
 				this.encoding = file.SourceEncoding;
+				this.hadBom = file.HadBOM;
 			}
 			ContentName = fileName;
 			widget.SetParsedDocument (ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (Project), fileName), false);
@@ -398,6 +399,7 @@ namespace MonoDevelop.SourceEditor
 		bool warnOverwrite = false;
 		bool inLoad = false;
 		string encoding = null;
+		bool hadBom = false;
 		public void Load (string fileName, string content, string encoding)
 		{
 			autoSave.FileName = fileName;

@@ -1,3 +1,8 @@
+2010-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: BOM is now
+	  remembered.
+
 2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Add
