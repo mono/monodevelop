@@ -116,16 +116,10 @@ DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
 DLL = $(ADDIN_BUILD)/MonoDevelop.VersionControl.dll
 
-if ENABLE_VERSIONCONTROL
 all: $(DLL) $(DLL).mdb $(DATA_FILE_BUILD)
-else
-all:
-endif
 
-if ENABLE_VERSIONCONTROL
 addindir = $(MD_ADDIN_DIR)/VersionControl
 addin_DATA = $(DLL) $(DLL).mdb $(DATA_FILES)
-endif
 
 $(DATA_FILE_BUILD): $(srcdir)/$(notdir $@)
 	mkdir -p $(ADDIN_BUILD)

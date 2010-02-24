@@ -138,11 +138,7 @@ RES =  \
 	templates/StaticLibraryCppProject.xpt.xml \
 	templates/StaticLibraryCProject.xpt.xml
 
-if ENABLE_C
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
-else
-all:
-endif
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
@@ -151,10 +147,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-if ENABLE_C
 cbindinglibdir = $(MD_ADDIN_DIR)/BackendBindings
 cbindinglib_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
-endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 

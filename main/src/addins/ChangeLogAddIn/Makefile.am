@@ -35,11 +35,7 @@ RES =  \
 	gtk-gui/gui.stetic \
 	Policies.xml
 
-if ENABLE_VERSIONCONTROL
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
-else
-  all:
-endif
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
@@ -47,10 +43,8 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-if ENABLE_VERSIONCONTROL
 assemblydir = $(MD_ADDIN_DIR)/ChangeLogAddIn
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
-endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)

@@ -158,21 +158,10 @@ AC_ARG_ENABLE(monoextensions,
 
 AM_CONDITIONAL(ENABLE_MONOEXTENSIONS, test x$enable_monoextensions = xyes)
 
-AC_ARG_ENABLE(versioncontrol,
-	AC_HELP_STRING([--enable-versioncontrol],
-		[enable version control support [default=yes]]),
-		enable_versioncontrol=${enableval}, enable_versioncontrol=yes)
-
-AM_CONDITIONAL(ENABLE_VERSIONCONTROL, test x$enable_versioncontrol = xyes)
-
 AC_ARG_ENABLE(subversion,
 	AC_HELP_STRING([--enable-subversion],
 		[enable Subversion support [default=yes]]),
 		enable_subversion=${enableval}, enable_subversion=${enable_versioncontrol})
-
-if test x$enable_versioncontrol = xno && test x$enable_subversion = xyes; then
-	AC_MSG_ERROR([Subversion addin cannot be built without Version Control addin])
-fi
 
 AM_CONDITIONAL(ENABLE_SUBVERSION, test x$enable_subversion = xyes)
 
@@ -229,10 +218,6 @@ if test x$enable_windowsplatform = xyes; then
 fi
 
 AM_CONDITIONAL(ENABLE_WINDOWSPLATFORM, [test x$enable_windowsplatform = xyes])
-
-# C/C++ project addin
-AC_ARG_ENABLE(c, AC_HELP_STRING([--enable-c], [enable C/C++ project support [default=yes]]), enable_c=${enableval}, enable_c=yes)
-AM_CONDITIONAL(ENABLE_C, [test x$enable_c = xyes])
 
 ############BEGIN UGLINESS#####################################################
 # MonoDevelop doesn't depend on Mozilla, but some addins do. However, 
@@ -416,10 +401,8 @@ echo ""
 echo "   * Installation prefix = $prefix"
 echo "   * C# compiler = $CSC"
 echo "   * Mono class library development extensions: $enable_monoextensions"
-echo "   * Version control support: $enable_versioncontrol"
-echo "   *   Providers:"
-echo "   *     Subversion: $enable_subversion"
-echo "   * C/C++ project support: $enable_c"
+echo "   * Version control providers:"
+echo "   *     Subversion (Unix): $enable_subversion"
 echo "   * Platform bindings: $platform_bindings"
 echo "   * Unit tests: $enable_tests"
 echo "   * Mozilla location: $MOZILLA_HOME"
