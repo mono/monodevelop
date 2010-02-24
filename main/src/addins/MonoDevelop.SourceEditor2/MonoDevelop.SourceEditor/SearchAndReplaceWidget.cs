@@ -253,7 +253,6 @@ namespace MonoDevelop.SourceEditor
 			resultInformLabel.Xpad = 2;
 			resultInformLabel.Show ();
 			searchEntry.FilterButtonPixbuf = new Gdk.Pixbuf (typeof(SearchAndReplaceWidget).Assembly, "searchoptions.png");
-			this.widget.TextEditor.TextViewMargin.HideSelection = true;
 		}
 
 		void HandleSearchEntryhandleRequestMenu (object sender, EventArgs e)
@@ -457,6 +456,15 @@ But I leave it in in the case I've missed something. Mike
 				}
 			}
 		}
+		protected override void OnFocusChildSet (Widget widget)
+		{
+			base.OnFocusChildSet (widget);
+			ISegment mainResult = this.widget.TextEditor.TextViewMargin.MainSearchResult;
+			this.widget.TextEditor.TextViewMargin.HideSelection = FocusChild == table && mainResult != null &&
+				this.widget.TextEditor.SelectionRange.Offset == mainResult.Offset && this.widget.TextEditor.SelectionRange.EndOffset == mainResult.EndOffset;
+			this.widget.TextEditor.Repaint ();
+			this.widget.TextEditor.QueueDraw ();
+		}
 		
 		protected override void OnDestroyed ()
 		{
@@ -635,8 +643,10 @@ But I leave it in in the case I've missed something. Mike
 				}
 				resultInformLabelEventBox.ModifyBg (StateType.Normal, searchEntry.Entry.Style.Base (searchEntry.Entry.State));
 				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
-				
+				widget.TextEditor.TextViewMargin.HideSelection = FocusChild == this.table;
 				widget.TextEditor.TextViewMargin.MainSearchResult = foundSegment;
+				if (foundSegment != null)
+					widget.TextEditor.SetSelection (foundSegment.Offset, foundSegment.EndOffset);
 			}
 		} 
 		
