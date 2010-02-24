@@ -134,7 +134,6 @@ namespace MonoDevelop.Projects.Text
 			}
 			else {
 				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
-				Console.WriteLine ("enc:" +enc);
 				if (!string.IsNullOrEmpty (enc)) {
 					// remove the BOM (see bug Bug 538827 – Pango crash when opening a specific file)
 					byte[] bomBytes = (from bom in bomTable where enc == bom.Enc select bom.Bytes).FirstOrDefault ();
@@ -146,7 +145,6 @@ namespace MonoDevelop.Projects.Text
 					string s = ConvertFromEncoding (content, enc);
 				
 					if (s != null) {
-						Console.WriteLine ("had BOM !!!");
 						HadBOM = true;
 						sourceEncoding = enc;
 						text = new StringBuilder (s);
