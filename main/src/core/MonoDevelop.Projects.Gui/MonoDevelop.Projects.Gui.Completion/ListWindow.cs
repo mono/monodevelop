@@ -123,6 +123,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 		public void ResetSizes ()
 		{
 			list.CompletionString = PartialWord;
+			
 			if (list.filteredItems.Count == 0 && !list.PreviewCompletionString) {
 				Hide ();
 			} else {
@@ -362,7 +363,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				curPos++;
 				return KeyActions.Process;
 			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
-				
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 
@@ -377,6 +377,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				} else {
 					word.Remove (curPos, 1);
 				}
+				
 				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled)
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				return KeyActions.CloseWindow | KeyActions.Process;
@@ -392,27 +393,70 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		//note: finds the full match, or the best partial match
 		//returns -1 if there is no match at all
-		protected int FindMatchedEntry (string partialWord, out bool hasMismatches)
+		
+		class WordComparer : IComparer <KeyValuePair<int, string>>
 		{
-			// Search for exact matches.
-			for (int i = 0; i < list.filteredItems.Count; i++) {
-				if (DataProvider.GetText (list.filteredItems[i]) == partialWord) {
-					hasMismatches = false;
-					return i;
-				}
+			string filterWord;
+			List<int> filteredItems;
+			public WordComparer (List<int> filteredItems, string filterWord)
+			{
+				this.filteredItems = filteredItems;
+				this.filterWord = filterWord ?? "";
 			}
 			
+			public int Compare (KeyValuePair<int, string> xpair, KeyValuePair<int, string> ypair)
+			{
+				string x = xpair.Value;
+				string y = ypair.Value;
+				int[] xMatches = ListWidget.Match (filterWord, x) ?? new int[0];
+				int[] yMatches = ListWidget.Match (filterWord, y) ?? new int[0];
+				if (xMatches.Length < yMatches.Length) 
+					return 1;
+				if (xMatches.Length > yMatches.Length) 
+					return -1;
+				
+				int xExact = 0;
+				int yExact = 0;
+				for (int i = 0; i < filterWord.Length; i++) {
+					if (i < xMatches.Length && filterWord[i] == x[xMatches[i]])
+						xExact++;
+					if (i < yMatches.Length && filterWord[i] == y[yMatches[i]])
+						yExact++;
+				}
+				
+				if (xExact < yExact)
+					return 1;
+				if (xExact > yExact)
+					return -1;
+//				if (x.Length != y.Length)
+//					return x.Length.CompareTo (y.Length);
+				int xIndex = xpair.Key;
+				int yIndex = ypair.Key;
+				
+				return xIndex.CompareTo (yIndex);
+			}
+		}
+		
+		protected int FindMatchedEntry (string partialWord, out bool hasMismatches)
+		{
 			// default - word with highest match rating in the list.
 			hasMismatches = true;
 			int idx = -1;
-			int curRating = -1;
+			
+			List<KeyValuePair<int, string>> words = new List<KeyValuePair<int, string>> ();
 			for (int i = 0; i < list.filteredItems.Count; i++) {
-				int rating = ListWidget.MatchRating (partialWord, DataProvider.GetText (list.filteredItems[i]));
-				if (curRating < rating) {
-					curRating = rating;
-					idx = i;
-					hasMismatches = false;
-				}
+				int index = list.filteredItems[i];
+				string text = DataProvider.GetText (index);
+				if (!ListWidget.Matches (partialWord, text))
+					continue;
+				words.Add (new KeyValuePair <int,string> (i, text));
+			}
+			
+			ListWindow.WordComparer comparer = new WordComparer (list.filteredItems, partialWord);
+			if (words.Count > 0) {
+				words.Sort (comparer);
+				idx = words[0].Key;
+				hasMismatches = false;
 			}
 			
 			// Search for history matches.
@@ -420,10 +464,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				string historyWord = wordHistory[i];
 				
 				if (ListWidget.Matches (partialWord, historyWord)) {
-					for (int j = 0; j < list.filteredItems.Count; j++) {
-						string currentWord = DataProvider.GetText (list.filteredItems[j]);
+					for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
+						string currentWord = DataProvider.GetText (list.filteredItems[xIndex]);
 						if (currentWord == historyWord) {
-							idx = j;
+							idx = xIndex;
 							break;
 						}
 					}
@@ -446,6 +490,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 				wordHistory.Add (word);
 			}
 		}
+		public static void ClearHistory ()
+		{
+			wordHistory.Clear ();
+		}
 
 		void SelectEntry (int n)
 		{
@@ -465,6 +513,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				return;
 			}*/
 			bool hasMismatches;
+			
 			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
 			ResetSizes ();
 			SelectEntry (matchedIndex);

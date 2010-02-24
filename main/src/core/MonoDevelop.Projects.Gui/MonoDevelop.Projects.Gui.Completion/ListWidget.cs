@@ -466,8 +466,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		
 		internal List<int> filteredItems = new List<int> ();
-		public static int MatchRating (string filterText, string text)
+/*		public static int MatchRating (string filterText, string text)
 		{
 			int[] indices = Match (filterText, text);
 			if (indices == null)
@@ -487,9 +488,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				lastIndex = idx;
 			}
 			return result;
-		}
+		}*/
 		
-		static int[] Match (string filterText, string text)
+		internal static int[] Match (string filterText, string text)
 		{
 			if (string.IsNullOrEmpty (filterText))
 				return new int[0];
@@ -510,7 +511,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 					continue;
 				}
 				
-				if (char.IsPunctuation (ch2) || char.IsWhiteSpace (ch2)) {
+				if ((char.IsPunctuation (ch2) || char.IsWhiteSpace (ch2))) {
 					wasMatch = false;
 					break;
 				}
