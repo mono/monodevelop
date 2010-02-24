@@ -1,3 +1,25 @@
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Diff:
+	* DiffWidget:
+	* Diff/README:
+	* Makefile.am:
+	* Diff/Diff.cs:
+	* Diff/Patch.cs:
+	* Diff/Merge.cs:
+	* Diff/ChangeLog:
+	* Diff/TextDiff.cs:
+	* Diff/Diff.csproj:
+	* Diff/Makefile.am:
+	* DiffWidget/README:
+	* Diff/UnifiedDiff.cs:
+	* DiffWidget/widget.cs:
+	* DiffWidget/ChangeLog:
+	* Diff/StructuredDiff.cs:
+	* DiffWidget/Makefile.am:
+	* DiffWidget/DiffWidget.csproj: Moved diff widget and
+	  algorithm to MonoDevelop.Components.
+
 2009-06-23  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl/MonoDevelop.VersionControl/Repository.cs:

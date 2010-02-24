@@ -1,3 +1,9 @@
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.VersionControl.Subversion.csproj: Moved diff
+	  widget and algorithm to MonoDevelop.Components.
+
 2010-02-04  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:

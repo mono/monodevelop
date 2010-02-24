@@ -1,3 +1,8 @@
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Moved diff widget and algorithm to
+	  MonoDevelop.Components.
+
 2009-11-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am: Added hex editor display binding.

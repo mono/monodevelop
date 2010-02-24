@@ -1,2 +1,2 @@
 
-SUBDIRS = Diff DiffWidget MonoDevelop.VersionControl MonoDevelop.VersionControl.Subversion
+SUBDIRS = MonoDevelop.VersionControl MonoDevelop.VersionControl.Subversion
