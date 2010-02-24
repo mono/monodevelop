@@ -1,4 +1,3 @@
-/*
 // 
 // TestFormattingVisitor.cs
 //  
@@ -24,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+/*
 using System;
 using NUnit.Framework;
 using MonoDevelop.Ide.Gui;
@@ -330,5 +329,30 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }", data.Document.Text);
 		}
+		
+		
+		[Test()]
+		public void TestSpacesAroundMultiplicativeOperator ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		result = left*right;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundMultiplicativeOperatorParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("left");
+			int i2 = data.Document.Text.IndexOf ("right") + "right".Length;
+			Assert.AreEqual (@"left * right", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		
 	}
 }*/
