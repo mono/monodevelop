@@ -9,7 +9,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.VersionControl.Subversion.Gui;
 using MonoDevelop.Core.Collections;
-using Algorithm.Diff;
+using MonoDevelop.Components.Diff;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
