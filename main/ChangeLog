@@ -1,5 +1,9 @@
 2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* main: Remove stray folder.
+
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Main.sln:
 	* configure.in: Moved diff widget and algorithm to
 	  MonoDevelop.Components.
