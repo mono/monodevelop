@@ -52,6 +52,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public override IconId StockIcon {
+			get {
+				return "md-assembly-project";
+			}
+		}
+
+		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			return new ProjectConfiguration (name);
