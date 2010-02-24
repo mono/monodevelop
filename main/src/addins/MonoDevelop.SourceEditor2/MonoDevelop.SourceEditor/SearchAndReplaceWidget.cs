@@ -461,7 +461,7 @@ But I leave it in in the case I've missed something. Mike
 			base.OnFocusChildSet (widget);
 			ISegment mainResult = this.widget.TextEditor.TextViewMargin.MainSearchResult;
 			this.widget.TextEditor.TextViewMargin.HideSelection = FocusChild == table && mainResult != null &&
-				this.widget.TextEditor.SelectionRange.Offset == mainResult.Offset && this.widget.TextEditor.SelectionRange.EndOffset == mainResult.EndOffset;
+				this.widget.TextEditor.IsSomethingSelected && this.widget.TextEditor.SelectionRange.Offset == mainResult.Offset && this.widget.TextEditor.SelectionRange.EndOffset == mainResult.EndOffset;
 			this.widget.TextEditor.Repaint ();
 			this.widget.TextEditor.QueueDraw ();
 		}

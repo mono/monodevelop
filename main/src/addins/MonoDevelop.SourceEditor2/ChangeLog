@@ -1,5 +1,10 @@
 2010-02-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: added
+	  selection check.
+
+2010-02-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
 	  'Bug 582050 - Cannot see selection while search box is
 	  visible, even if editor has focus'
