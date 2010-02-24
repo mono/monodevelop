@@ -1,3 +1,13 @@
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs: Add Mac
+	  bindings for Ctrl-{T,L,O,K} and corresponding command
+	  definitions.
+
+	* MonoDevelop.Ide.addin.xml: Add Mac bindings for
+	  Ctrl-{T,L,O,K} and corresponding commands definitions if
+	  needed.
+
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs:

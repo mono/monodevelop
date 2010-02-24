@@ -84,5 +84,7 @@ namespace MonoDevelop.Ide.Commands
 		SelectionMoveNextSubword,
 		DeletePrevSubword,
 		DeleteNextSubword,
+		TransposeCharacters,
+		RecenterEditor,
 	}
 }

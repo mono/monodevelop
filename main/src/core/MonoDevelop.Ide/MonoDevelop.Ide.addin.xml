@@ -1002,7 +1002,9 @@
 				_label = "Delete entire line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd"
 				_label = "Delete to end of line"
-				shortcut="Control|K" />
+				_description="Deletes to end of line, or if at end, deletes line ending"
+				shortcut="Control|K"
+				macShortcut = "Control|K" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp"
 				_label = "Move the line or highlighted selection up"
 				shortcut="Alt|Up" />
@@ -1059,7 +1061,8 @@
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLine"
 				_label = "Insert new line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLinePreserveCaretPosition"
-				_label = "Insert new line and don't move caret'" />
+				_label = "Insert line break after the caret"
+				macShortcut = "Control|O" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLineAtEnd"
 				_label = "Move caret to EOL and insert new line" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement"
@@ -1077,6 +1080,14 @@
 				_label = "Expand selection to page down" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageUpAction"
 				_label = "Expand selection to page up" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.TransposeCharacters"
+				_label = "Transpose characters"
+				_description = "Swaps the characters on either side of the caret"
+				macShortcut="Control|T" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.RecenterEditor"
+				_label = "Recenter editor"
+				_description = "Scrolls the editor so that the caret is centered"
+				macShortcut = "Control|L" />
 		</Category>
 		
 	</Extension>
