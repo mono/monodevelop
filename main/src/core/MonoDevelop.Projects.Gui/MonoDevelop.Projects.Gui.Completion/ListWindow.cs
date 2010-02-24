@@ -459,21 +459,22 @@ namespace MonoDevelop.Projects.Gui.Completion
 				hasMismatches = false;
 			}
 			
-			// Search for history matches.
-			for (int i = 0; i < wordHistory.Count; i++) {
-				string historyWord = wordHistory[i];
-				
-				if (ListWidget.Matches (partialWord, historyWord)) {
-					for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
-						string currentWord = DataProvider.GetText (list.filteredItems[xIndex]);
-						if (currentWord == historyWord) {
-							idx = xIndex;
-							break;
+			if (partialWord.Length < 2) {
+				// Search for history matches.
+				for (int i = 0; i < wordHistory.Count; i++) {
+					string historyWord = wordHistory[i];
+					
+					if (ListWidget.Matches (partialWord, historyWord)) {
+						for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
+							string currentWord = DataProvider.GetText (list.filteredItems[xIndex]);
+							if (currentWord == historyWord) {
+								idx = xIndex;
+								break;
+							}
 						}
 					}
 				}
 			}
-			
 			return idx;
 		}
 
