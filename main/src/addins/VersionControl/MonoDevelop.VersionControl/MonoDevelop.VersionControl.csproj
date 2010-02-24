@@ -35,16 +35,6 @@
     </Execution>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Diff\Diff.csproj">
-      <Project>{7FF7B14D-BFE7-493A-9B52-B5F4CA71A2DC}</Project>
-      <Name>Diff</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\DiffWidget\DiffWidget.csproj">
-      <Project>{F0F81D55-6265-474F-BE08-CE71818181B5}</Project>
-      <Name>DiffWidget</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
       <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
       <Name>MonoDevelop.Projects</Name>

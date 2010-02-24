@@ -9,14 +9,14 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 
-using Algorithm.Diff.Gtk;
+using MonoDevelop.Components.Diff;
 
 namespace MonoDevelop.VersionControl.Views
 {
 	internal class DiffView : BaseView 
 	{
 		object left, right;
-		Algorithm.Diff.Diff diff;
+		Diff diff;
 		HBox box = new HBox(true, 0);
 		DiffWidget widget;
 		ThreadNotify threadnotify;
@@ -114,9 +114,9 @@ namespace MonoDevelop.VersionControl.Views
 			
 			try {
 				if (left is string)
-					diff = new Algorithm.Diff.Diff((string)left, (string)right, true, true);
+					diff = new Diff((string)left, (string)right, true, true);
 				else if (left is string[])
-					diff = new Algorithm.Diff.Diff((string[])left, (string[])right, null, null);
+					diff = new Diff((string[])left, (string[])right, null, null);
 			} catch (Exception e) {
 				Console.Error.WriteLine(e.ToString());
 				return;
@@ -150,7 +150,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!(left is string)) return;
 		
 			using (StreamWriter writer = new StreamWriter(fileName)) {
-				Algorithm.Diff.UnifiedDiff.WriteUnifiedDiff(
+				UnifiedDiff.WriteUnifiedDiff(
 					diff,
 					writer,
 					Path.GetFileName((string)right) + "    (repository)",

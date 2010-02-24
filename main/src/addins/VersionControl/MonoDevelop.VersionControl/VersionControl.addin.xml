@@ -10,8 +10,6 @@
        version   = "2.2">
  
 	<Runtime>
-		<Import assembly="Diff.dll"/>
-		<Import assembly="DiffWidget.dll"/>
 	</Runtime>
 
 	<Dependencies>
