@@ -57,8 +57,8 @@
 	<!-- environment -->
 	<Style name="text" color="aluminium2" bgColor="aluminium6"/>
 	<Style name="text.selection" color="aluminium1" bgColor="aluminium4"/>
-	<Style name="text.background.searchresult" color="aluminium7"/>
-	<Style name="text.background.searchresult-main" color="aluminium5"/>
+	<Style name="text.background.searchresult" color="#006060"/>
+	<Style name="text.background.searchresult-main" color="#008080"/>
 	<Style name="text.link" color="butter2"/>
 	
 	<Style name="caret" color="aluminium2" bgColor="aluminium6"/>
