@@ -1,5 +1,10 @@
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: New
+	  public method.
+
+2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Serialization/ClassDataType.cs: When a
 	  derived type is not found, try a direct type query before
 	  returning the fallback type. Fixes issue with .mdp loading.

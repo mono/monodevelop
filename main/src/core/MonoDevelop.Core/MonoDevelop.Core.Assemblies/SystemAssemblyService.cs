@@ -334,7 +334,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		internal string GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
+		public string GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			try {
 				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
