@@ -72,6 +72,41 @@ namespace MonoDevelop.Projects.Text
 			tf.Read (fileName, encoding);
 			return tf;
 		}
+		class BOM 
+		{
+			public string Enc {
+				get;
+				private set;
+			}
+			
+			public byte[] Bytes {
+				get;
+				private set;
+			}
+			
+			public BOM (string enc, byte[] bytes)
+			{
+				this.Enc = enc;
+				this.Bytes = bytes;
+			}
+		}
+		
+		static readonly BOM[] bomTable = new [] {
+			new BOM ("UTF-8", new byte[] {0xEF, 0xBB, 0xBF}),
+			new BOM ("UTF-32BE", new byte[] {0x00, 0x00, 0xFE, 0xFF}),
+			new BOM ("UTF-32LE", new byte[] {0xFF, 0xFE, 0x00, 0x00}),
+			new BOM ("UTF-16BE", new byte[] {0xFE, 0xFF}),
+			new BOM ("UTF-16LE", new byte[] {0xFF, 0xFE}),
+			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x38}),
+			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x39}),
+			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x2B}),
+			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x2F}),
+			new BOM ("UTF-1", new byte[] {0xF7, 0x64, 0x4C}),
+			new BOM ("UTF-EBCDIC", new byte[] {0xDD, 0x73, 0x66, 073}),
+			new BOM ("SCSU", new byte[] {0x0E, 0xFE, 0xFF}),
+			new BOM ("BOCU-1", new byte[] {0xFB, 0xEE, 0x28}),
+			new BOM ("GB18030",new byte[] {0x84, 0x31, 0x95, 0x33}),
+		};
 
 		public void Read (FilePath fileName, string encoding)
 		{
@@ -98,24 +133,8 @@ namespace MonoDevelop.Projects.Text
 				sourceEncoding = encoding;
 			}
 			else {
-				var bomTable = new [] {
-					new { Enc = "UTF-8", Bytes = new byte[] {0xEF, 0xBB, 0xBF} },
-					new { Enc = "UTF-32BE", Bytes = new byte[] {0x00, 0x00, 0xFE, 0xFF} },
-					new { Enc = "UTF-32LE", Bytes = new byte[] {0xFF, 0xFE, 0x00, 0x00} },
-					new { Enc = "UTF-16BE", Bytes = new byte[] {0xFE, 0xFF} },
-					new { Enc = "UTF-16LE", Bytes = new byte[] {0xFF, 0xFE} },
-					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x38} },
-					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x39} },
-					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x2B} },
-					new { Enc = "UTF-7", Bytes = new byte[] {0x2B, 0x2F, 0x76, 0x2F} },
-					new { Enc = "UTF-1", Bytes = new byte[] {0xF7, 0x64, 0x4C} },
-					new { Enc = "UTF-EBCDIC", Bytes = new byte[] {0xDD, 0x73, 0x66, 073} },
-					new { Enc = "SCSU", Bytes = new byte[] {0x0E, 0xFE, 0xFF} },
-					new { Enc = "BOCU-1", Bytes = new byte[] {0xFB, 0xEE, 0x28} },
-					new { Enc = "GB18030", Bytes = new byte[] {0x84, 0x31, 0x95, 0x33} },
-				};
 				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
-				
+				Console.WriteLine ("enc:" +enc);
 				if (!string.IsNullOrEmpty (enc)) {
 					// remove the BOM (see bug Bug 538827 – Pango crash when opening a specific file)
 					byte[] bomBytes = (from bom in bomTable where enc == bom.Enc select bom.Bytes).FirstOrDefault ();
@@ -127,11 +146,14 @@ namespace MonoDevelop.Projects.Text
 					string s = ConvertFromEncoding (content, enc);
 				
 					if (s != null) {
+						Console.WriteLine ("had BOM !!!");
+						HadBOM = true;
 						sourceEncoding = enc;
 						text = new StringBuilder (s);
 						return;
 					}
 				}
+				HadBOM = false;
 				
 				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
 					string s = ConvertFromEncoding (content, co.Id);
@@ -213,7 +235,12 @@ namespace MonoDevelop.Projects.Text
 		public FilePath Name {
 			get { return name; } 
 		}
-
+		
+		public bool HadBOM {
+			get;
+			set;
+		}
+		
 		public bool Modified {
 			get { return modified; }
 		}
@@ -309,11 +336,16 @@ namespace MonoDevelop.Projects.Text
 		
 		public void Save ()
 		{
-			WriteFile (name, text.ToString (), sourceEncoding);
+			WriteFile (name, text.ToString (), sourceEncoding, HadBOM);
 			modified = false;
 		}
 
 		public static void WriteFile (FilePath fileName, string content, string encoding)
+		{
+			WriteFile (fileName, content, encoding, false);
+		}
+		
+		public static void WriteFile (FilePath fileName, string content, string encoding, bool saveBOM)
 		{
 			byte[] buf = Encoding.UTF8.GetBytes (content);
 			
@@ -326,6 +358,13 @@ namespace MonoDevelop.Projects.Text
 			string tempName = Path.GetDirectoryName (fileName) + 
 				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
 			FileStream fs = new FileStream (tempName, FileMode.Create, FileAccess.Write);
+			
+			if (saveBOM) {
+				byte[] bytes = (from bom in bomTable where bom.Enc == encoding select bom.Bytes).FirstOrDefault ();
+				if (bytes != null)
+					fs.Write (bytes, 0, bytes.Length);
+			}
+			
 			fs.Write (buf, 0, buf.Length);
 			fs.Flush ();
 			fs.Close ();

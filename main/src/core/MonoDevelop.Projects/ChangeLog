@@ -1,3 +1,8 @@
+2010-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/TextFile.cs: Added the ability to
+	  determine if a BOM was used or not.
+
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
