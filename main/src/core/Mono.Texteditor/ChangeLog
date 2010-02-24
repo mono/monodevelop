@@ -1,3 +1,7 @@
+2010-02-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: fixed hideselection bug.
+
 2010-02-24  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Highlighting/WorkerThread.cs: Actually write
