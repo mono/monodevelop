@@ -557,14 +557,21 @@ namespace MonoDevelop.Core.Serialization
 					}
 				}
 			}
-			if (mapData != null) {
-				isFallbackType = true;
-				return Context.GetConfigurationDataType ((Type)mapData);
-			}
+			
+			// Try a direct type name query
 			DataType dt = Context.GetConfigurationDataType (name);
 			if (dt != null && ValueType.IsAssignableFrom (dt.ValueType))
 				return dt;
 			
+			// The type could not be found. Use the fallback type if available.
+			
+			// Properties can specify a specific fallback type. It is provided in the custom map data.
+			if (mapData != null) {
+				isFallbackType = true;
+				return Context.GetConfigurationDataType ((Type)mapData);
+			}
+			
+			// A type can have a default fallback type.
 			if (fallbackType != null) {
 				isFallbackType = true;
 				return Context.GetConfigurationDataType (fallbackType);
