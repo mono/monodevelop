@@ -937,23 +937,27 @@ namespace MonoDevelop.Ide.Gui
 			Clean (entry);
 			return Build (entry);
 		}
-		bool errorPadInitialized = false;
+//		bool errorPadInitialized = false;
 		public IAsyncOperation Build (IBuildTarget entry)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
-			
+			/*
 			if (!errorPadInitialized) {
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					MonoDevelop.Ide.Gui.Pads.ErrorListPad content = (MonoDevelop.Ide.Gui.Pads.ErrorListPad)errorsPad.Content;
 					errorsPad.Window.PadHidden += delegate {
 						content.IsOpenedAutomatically = false;
+					};
+					
+					Pad monitorPad = IdeApp.Workbench.Pads.FirstOrDefault (pad => pad.Content == ((OutputProgressMonitor)((AggregatedProgressMonitor)monitor).MasterMonitor).OutputPad);
+					monitorPad.Window.PadHidden += delegate {
+						monitorPad.IsOpenedAutomatically = false;
 					};
 				} finally {
 					errorPadInitialized = true;
 				}
 			}
-
+			*/
 			
 			DoBeforeCompileAction ();
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
@@ -1064,11 +1068,14 @@ namespace MonoDevelop.Ide.Gui
 					Pad monitorPad = IdeApp.Workbench.Pads.FirstOrDefault (pad => pad.Content == ((OutputProgressMonitor)((AggregatedProgressMonitor)monitor).MasterMonitor).OutputPad);
 					switch (IdeApp.Preferences.ShowOutputPadAfterBuild) {
 					case BuildResultStates.Always:
+						if (!monitorPad.Visible)
+							monitorPad.IsOpenedAutomatically = true;
 						monitorPad.Visible = true;
 						monitorPad.BringToFront ();
 						break;
 					case BuildResultStates.Never:
-						monitorPad.Visible = false;
+						if (monitorPad.IsOpenedAutomatically)
+							monitorPad.Visible = false;
 						break;
 					case BuildResultStates.OnErrors:
 						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
@@ -1087,12 +1094,12 @@ namespace MonoDevelop.Ide.Gui
 					switch (IdeApp.Preferences.ShowErrorPadAfterBuild) {
 					case BuildResultStates.Always:
 						if (!errorsPad.Visible)
-							content.IsOpenedAutomatically = true;
+							errorsPad.IsOpenedAutomatically = true;
 						errorsPad.Visible = true;
 						errorsPad.BringToFront ();
 						break;
 					case BuildResultStates.Never:
-						if (content.IsOpenedAutomatically)
+						if (errorsPad.IsOpenedAutomatically)
 							errorsPad.Visible = false;
 						break;
 					case BuildResultStates.OnErrors:

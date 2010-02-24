@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Gui
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.BuildBeforeExecuting", value); }
 		}
 		
-		public BuildResultStates ShowOutputPadDuringBuild {
+		/*public BuildResultStates ShowOutputPadDuringBuild {
 			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadDuringBuild", BuildResultStates.Never); }
 			set { PropertyService.Set ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
 		}
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler<PropertyChangedEventArgs> ShowOutputPadShowOutputPadDuringBuildChanged {
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputPadDuringBuild", value); }
-		}
+		}*/
 		
 		public BuildResultStates ShowOutputPadAfterBuild {
 			get { return PropertyService.Get ("MonoDevelop.Ide.ShowOutputPadAfterBuild", BuildResultStates.Never); }
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowOutputPadAfterBuild", value); }
 		}
-		
+		/*
 		public BuildResultStates ShowErrorPadDuringBuild {
 			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadDuringBuild", BuildResultStates.Never); }
 			set { PropertyService.Set ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler<PropertyChangedEventArgs> ShowErrorPadDuringBuildChanged {
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowErrorPadDuringBuild", value); }
-		}
+		}*/
 		
 		public BuildResultStates ShowErrorPadAfterBuild {
 			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadAfterBuild", BuildResultStates.OnErrorsOrWarnings); }

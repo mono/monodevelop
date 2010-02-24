@@ -59,24 +59,24 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			comboboxJumpToFirst.AppendText (GettextCatalog.GetString ("Error or Warning"));
 			comboboxJumpToFirst.Active = (int)IdeApp.Preferences.JumpToFirstErrorOrWarning;
 			
-			//comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("Never"));
+	/*		//comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("On Errors"));
 			comboboxBuildResultsDuring.AppendText (GettextCatalog.GetString ("On Errors or Warnings"));
 			comboboxBuildResultsDuring.Active = (int)IdeApp.Preferences.ShowOutputPadDuringBuild;
-			
+			*/
 			//comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("On Errors"));
 			comboboxBuildResultsAfter.AppendText (GettextCatalog.GetString ("On Errors or Warnings"));
 			comboboxBuildResultsAfter.Active = (int)IdeApp.Preferences.ShowOutputPadAfterBuild;
 			
-			//comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("Never"));
+		/*	//comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("On Errors"));
 			comboboxErrorPadDuring.AppendText (GettextCatalog.GetString ("On Errors or Warnings"));
 			comboboxErrorPadDuring.Active = (int)IdeApp.Preferences.ShowErrorPadDuringBuild;
-			
+			*/
 			//comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("Never"));
 			comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("Always"));
 			comboboxErrorPadAfter.AppendText (GettextCatalog.GetString ("On Errors"));
@@ -93,9 +93,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Store ()
 		{
 			IdeApp.Preferences.JumpToFirstErrorOrWarning = (JumpToFirst)comboboxJumpToFirst.Active;
-			IdeApp.Preferences.ShowOutputPadDuringBuild = (BuildResultStates)comboboxBuildResultsDuring.Active;
+//			IdeApp.Preferences.ShowErrorPadDuringBuild = (BuildResultStates)comboboxErrorPadDuring.Active;
+//			IdeApp.Preferences.ShowOutputPadDuringBuild = (BuildResultStates)comboboxBuildResultsDuring.Active;
+			
 			IdeApp.Preferences.ShowOutputPadAfterBuild = (BuildResultStates)comboboxBuildResultsAfter.Active;
-			IdeApp.Preferences.ShowErrorPadDuringBuild = (BuildResultStates)comboboxErrorPadDuring.Active;
 			IdeApp.Preferences.ShowErrorPadAfterBuild = (BuildResultStates)comboboxErrorPadAfter.Active;
 			IdeApp.Preferences.ShowMessageBubbles = (ShowMessageBubbles)comboboxMessageBubbles.Active;
 		}

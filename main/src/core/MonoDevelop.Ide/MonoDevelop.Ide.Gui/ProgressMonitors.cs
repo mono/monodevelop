@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
-			bool front = IdeApp.Preferences.ShowOutputPadDuringBuild == BuildResultStates.Always;
+			bool front = IdeApp.Preferences.ShowErrorPadAfterBuild == BuildResultStates.Always;
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (GetOutputProgressMonitor (GettextCatalog.GetString ("Build Output"), Stock.BuildCombine, front, true));
 			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), Stock.BuildCombine, false));
 			return mon;

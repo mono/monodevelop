@@ -47,6 +47,9 @@ namespace MonoDevelop.Ide.Gui
 		internal Pad (IWorkbench workbench, PadCodon content)
 		{
 			this.window    = workbench.WorkbenchLayout.GetPadWindow (content);
+			this.window.PadHidden += delegate {
+				IsOpenedAutomatically = false;
+			};
 			this.content   = content;
 			this.workbench = workbench;
 		}
@@ -69,6 +72,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public string Id {
 			get { return window.Id; }
+		}
+		
+		public bool IsOpenedAutomatically {
+			get;
+			set;
 		}
 		
 		public string[] Categories {

@@ -117,11 +117,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			// FIXME
 		}
 		
-		public bool IsOpenedAutomatically {
-			get;
-			set;
-		}
-		
 		public ErrorListPad ()
 		{
 		}
