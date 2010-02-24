@@ -32,6 +32,8 @@ using Mono.Cecil;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Collections.Generic;
+using Mono.Cecil.Mdb;
+using Mono.Cecil.Cil;
 
 namespace MonoDevelop.Projects
 {
@@ -69,7 +71,38 @@ namespace MonoDevelop.Projects
 			if (tid != null)
 				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (tid);
 			
-/*			AssemblyDefinition adef = AssemblyFactory.GetAssemblyManifest (assemblyPath);
+			AssemblyDefinition adef = AssemblyFactory.GetAssembly (assemblyPath);
+			MdbFactory mdbFactory = new MdbFactory ();
+			try {
+				ISymbolReader reader = mdbFactory.CreateReader (adef.MainModule, assemblyPath);
+				adef.MainModule.LoadSymbols (reader);
+			} catch {
+				// Ignore
+			}
+			var files = new HashSet<FilePath> ();
+			
+			foreach (TypeDefinition type in adef.MainModule.Types) {
+				foreach (MethodDefinition met in type.Methods) {
+					if (met.HasBody && met.Body.Instructions != null && met.Body.Instructions.Count > 0) {
+						SequencePoint sp = met.Body.Instructions[0].SequencePoint;
+						if (sp != null)
+							files.Add (sp.Document.Url);
+					}
+				}
+			}
+			
+			FilePath rootPath = FilePath.Empty;
+			foreach (FilePath file in files) {
+				AddFile (file, BuildAction.Compile);
+				if (rootPath.IsNullOrEmpty)
+					rootPath = file.ParentDirectory;
+				else if (!file.IsChildPathOf (rootPath))
+					rootPath = FindCommonRoot (rootPath, file);
+			}
+			
+			if (!rootPath.IsNullOrEmpty)
+				BaseDirectory = rootPath;
+/*
 			foreach (AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
 				if (aref.Name == "mscorlib")
 					continue;
@@ -81,6 +114,16 @@ namespace MonoDevelop.Projects
 				else
 					References.Add (new ProjectReference (ReferenceType.Gac, aref.FullName));
 			}*/
+		}
+		
+		FilePath FindCommonRoot (FilePath p1, FilePath p2)
+		{
+			string[] s1 = p1.ToString ().Split (Path.DirectorySeparatorChar);
+			string[] s2 = p2.ToString ().Split (Path.DirectorySeparatorChar);
+			
+			int n;
+			for (n=0; n<s1.Length && n<s2.Length && s1[n] == s2[n]; n++);
+			return string.Join (Path.DirectorySeparatorChar.ToString (), s1, 0, n);
 		}
 		
 		internal protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

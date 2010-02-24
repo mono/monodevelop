@@ -1,5 +1,10 @@
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/CompiledAssemblyProject.cs: Read
+	  project files from debug info.
+
+2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Projects.csproj:
 	* MonoDevelop.Projects.addin.xml:
