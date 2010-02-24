@@ -99,7 +99,7 @@ namespace Mono.TextEditor
 					InnerRun ();
 				}
 			} catch (Exception ex) {
-				System.Console.WriteLine ("Exception in highlighting worker thread:", ex);
+				System.Console.WriteLine ("Exception in highlighting worker thread:\n{0}", ex);
 			} finally {
 				SetStopped ();
 			}
