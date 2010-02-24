@@ -1,3 +1,11 @@
+2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.Gui.csproj:
+	* icons/assembly-project-16.png:
+	* MonoDevelop.Core.Gui.addin.xml: New icon for compiled
+	  assembly projects.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui/ImageService.cs:

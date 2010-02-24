@@ -81,6 +81,7 @@ RES =  \
 	Base.glade \
 	gtk-gui/gui.stetic \
 	icons/add-namespace-16.png \
+	icons/assembly-project-16.png \
 	icons/author-information-16.png \
 	icons/author-information-24.png \
 	icons/breakpoint-16.png \

@@ -553,6 +553,9 @@
     <EmbeddedResource Include="icons\hicolor_status_16x16_pin-up.png">
       <LogicalName>hicolor_status_16x16_pin-up.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\assembly-project-16.png">
+      <LogicalName>assembly-project-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Gui.Components\FileBrowser.cs" />
