@@ -130,7 +130,8 @@ namespace Mono.Debugging.Client
 		public ObjectValue GetException (EvaluationOptions options)
 		{
 			ObjectValue value = sourceBacktrace.GetException (index, options);
-			ObjectValue.ConnectCallbacks (value);
+			if (value != null)
+				ObjectValue.ConnectCallbacks (value);
 			return value;
 		}
 		
