@@ -93,9 +93,11 @@
 			</Condition>
 		</Section>
 		<Section id="SourceCode" _label="Source Code">
-			<Section id="DotNetNamingPolicies" _label=".NET Naming Policies">
-				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
-			</Section>
+			<Condition id="ItemType" value="DotNetProject">
+				<Section id="DotNetNamingPolicies" _label=".NET Naming Policies">
+					<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanel" />
+				</Section>
+			</Condition>
 			<Condition id="ItemType" value="Solution">
 				<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanel" />
 			</Condition>

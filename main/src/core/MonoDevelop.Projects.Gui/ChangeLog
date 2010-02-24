@@ -1,3 +1,8 @@
+2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Show the .NET naming
+	  policies options panel only for .NET projects.
+
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
