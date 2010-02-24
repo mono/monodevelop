@@ -246,6 +246,13 @@
     <Compile Include="MonoDevelop.Components.Theming\ThemeEngine.cs" />
     <Compile Include="MonoDevelop.Components\CairoExtensions.cs" />
     <Compile Include="MonoDevelop.Components\PangoCairoHelper.cs" />
+    <Compile Include="MonoDevelop.Components.Diff\DiffWidget.cs" />
+    <Compile Include="MonoDevelop.Components.Diff\Diff.cs" />
+    <Compile Include="MonoDevelop.Components.Diff\Merge.cs" />
+    <Compile Include="MonoDevelop.Components.Diff\Patch.cs" />
+    <Compile Include="MonoDevelop.Components.Diff\StructuredDiff.cs" />
+    <Compile Include="MonoDevelop.Components.Diff\TextDiff.cs" />
+    <Compile Include="MonoDevelop.Components.Diff\UnifiedDiff.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -271,5 +278,6 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Components.Extensions\" />
     <Folder Include="MonoDevelop.Components.Theming\" />
+    <Folder Include="MonoDevelop.Components.Diff\" />
   </ItemGroup>
 </Project>

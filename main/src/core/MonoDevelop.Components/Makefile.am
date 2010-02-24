@@ -77,6 +77,13 @@ FILES =  \
 	MonoDevelop.Components.Commands/LinkCommandEntry.cs \
 	MonoDevelop.Components.Commands/LocalCommandEntry.cs \
 	MonoDevelop.Components.Commands/MenuToolButton.cs \
+	MonoDevelop.Components.Diff/Diff.cs \
+	MonoDevelop.Components.Diff/DiffWidget.cs \
+	MonoDevelop.Components.Diff/Merge.cs \
+	MonoDevelop.Components.Diff/Patch.cs \
+	MonoDevelop.Components.Diff/StructuredDiff.cs \
+	MonoDevelop.Components.Diff/TextDiff.cs \
+	MonoDevelop.Components.Diff/UnifiedDiff.cs \
 	MonoDevelop.Components.DockToolbars/ArrowWindow.cs \
 	MonoDevelop.Components.DockToolbars/DockedPosition.cs \
 	MonoDevelop.Components.DockToolbars/DockGrip.cs \

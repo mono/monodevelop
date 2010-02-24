@@ -1,3 +1,18 @@
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.Diff:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components.Diff/Diff.cs:
+	* MonoDevelop.Components.Diff/Merge.cs:
+	* MonoDevelop.Components.Diff/Patch.cs:
+	* MonoDevelop.Components.Diff/TextDiff.cs:
+	* MonoDevelop.Components.Diff/DiffWidget.cs:
+	* MonoDevelop.Components.Diff/UnifiedDiff.cs:
+	* MonoDevelop.Components.Diff/StructuredDiff.cs: Moved diff
+	  code from VersionControl since it's also used by refactoring
+	  addin.
+
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandManager.cs: Add
