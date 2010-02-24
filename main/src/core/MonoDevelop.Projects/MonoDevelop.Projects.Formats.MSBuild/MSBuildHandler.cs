@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 
@@ -43,12 +44,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string id;
 		string[] slnProjectContent;
 		MSBuildFileFormat targetFormat;
+		DataItem customSlnData;
+		
+		internal protected MSBuildHandler ()
+		{
+		}
 		
 		public MSBuildHandler (string typeGuid, string itemId)
+		{
+			Initialize (typeGuid, itemId);
+		}
+		
+		internal void Initialize (string typeGuid, string itemId)
 		{
 			this.typeGuid = typeGuid;
 			this.id = itemId;
 		}
+		
+		// When set, it means this item is saved as part of a global solution save operation
+		internal bool SavingSolution { get; set; }
 		
 		internal protected SolutionItem Item {
 			get { return item; }
@@ -64,7 +78,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return typeGuid;
 			}
 		}
-
+		
 		internal string[] SlnProjectContent {
 			get {
 				return slnProjectContent;
@@ -99,13 +113,42 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new NotSupportedException ();
 		}
 		
-		public virtual void Save (MonoDevelop.Core.IProgressMonitor monitor)
+		public void Save (MonoDevelop.Core.IProgressMonitor monitor)
+		{
+			if (HasSlnData && !SavingSolution && Item.ParentSolution != null) {
+				// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
+				monitor.BeginTask (null, 2);
+				SaveItem (monitor);
+				monitor.Step (1);
+				Solution sol = Item.ParentSolution;
+				targetFormat.SlnFileFormat.WriteFile (sol.FileName, sol, targetFormat, false, monitor);
+				sol.NeedsReload = false;
+				monitor.EndTask ();
+			} else
+				SaveItem (monitor);
+		}
+		
+		protected virtual void SaveItem (MonoDevelop.Core.IProgressMonitor monitor)
 		{
 			throw new NotSupportedException ();
 		}
 		
 		public virtual void Dispose ()
 		{
+		}
+		
+		public virtual bool HasSlnData {
+			get { return false; }
+		}
+
+		public virtual DataItem WriteSlnData ()
+		{
+			return customSlnData;
+		}
+		
+		public virtual void ReadSlnData (DataItem item)
+		{
+			customSlnData = item;
 		}
 	}
 }

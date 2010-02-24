@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string Unspecified = null;
 		RemoteProjectBuilder projectBuilder;
 		
-		SolutionEntityItem EntityItem {
+		protected SolutionEntityItem EntityItem {
 			get { return (SolutionEntityItem) Item; }
 		}
 		
@@ -75,8 +75,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public MSBuildProjectHandler (string typeGuid, string import, string itemId): base (typeGuid, itemId)
+		public MSBuildProjectHandler ()
 		{
+		}
+		
+		public MSBuildProjectHandler (string typeGuid, string import, string itemId)
+		{
+			Initialize (typeGuid, import, itemId);
+		}
+		
+		internal void Initialize (string typeGuid, string import, string itemId)
+		{
+			base.Initialize (typeGuid, itemId);
 			if (import != null && import.Trim().Length > 0)
 				this.targetImports.AddRange (import.Split (':'));
 			
@@ -505,7 +515,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 
-		public override void Save (MonoDevelop.Core.IProgressMonitor monitor)
+		protected override void SaveItem (MonoDevelop.Core.IProgressMonitor monitor)
 		{
 			if (Item is UnknownProject || Item is UnknownSolutionItem)
 				return;
@@ -658,7 +668,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					DataItem ditem = (DataItem) ser.Serialize (conf);
 					
-					if (netConfig != null) {
+					if (netConfig != null && netConfig.CompilationParameters != null) {
 						// Remove all compilation parameters properties from the data item, since we are going to write them again.
 						ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (netConfig.CompilationParameters.GetType ());
 						foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, netConfig.CompilationParameters)) {
@@ -1302,6 +1312,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return prop.IsExtendedProperty (typeof(ProjectReference)) || prop.Name == "Package";
 			if (instance is DotNetProjectConfiguration)
 				if (prop.Name == "CodeGeneration")
+					return false;
+			if (instance is ItemConfiguration)
+				if (prop.Name == "name")
 					return false;
 			return true;
 		}

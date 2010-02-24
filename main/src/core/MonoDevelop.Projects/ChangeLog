@@ -1,3 +1,30 @@
+2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.addin.xml:
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/IAssemblyProject.cs:
+	* MonoDevelop.Projects/ItemConfiguration.cs:
+	* MonoDevelop.Projects/ProjectConfiguration.cs:
+	* MonoDevelop.Projects/CompiledAssemblyProject.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/CompiledAssemblyProjectMSBuildHandler.cs:
+	  Added support for standalone assembly projects.
+
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Added new api which allows projects to store data in the
+	  solution file.
+
+	* MonoDevelop.Projects.Extensions/ItemTypeNode.cs:
+	* MonoDevelop.Projects.Extensions/SolutionItemNode.cs:
+	* MonoDevelop.Projects.Extensions/DotNetProjectNode.cs: Allow
+	  specifying a custom solution item handler.
+
 2010-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Added the ability to

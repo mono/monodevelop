@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 		
-		public void WriteFile (string file, object obj, MSBuildFileFormat format, IProgressMonitor monitor)
+		public void WriteFile (string file, object obj, MSBuildFileFormat format, bool saveProjects, IProgressMonitor monitor)
 		{
 			Solution sol = (Solution) obj;
 
@@ -86,9 +86,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				string baseDir = Path.GetDirectoryName (file);
 				if (tmpfilename == String.Empty) {
-					WriteFileInternal (file, sol, baseDir, format, monitor);
+					WriteFileInternal (file, sol, baseDir, format, saveProjects, monitor);
 				} else {
-					WriteFileInternal (tmpfilename, sol, baseDir, format, monitor);
+					WriteFileInternal (tmpfilename, sol, baseDir, format, saveProjects, monitor);
 					File.Delete (file);
 					File.Move (tmpfilename, file);
 				}
@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void WriteFileInternal (string file, Solution solution, string baseDir, MSBuildFileFormat format, IProgressMonitor monitor)
+		void WriteFileInternal (string file, Solution solution, string baseDir, MSBuildFileFormat format, bool saveProjects, IProgressMonitor monitor)
 		{
 			SolutionFolder c = solution.RootFolder;
 			
@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				//Write the projects
 				monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1);
-				WriteProjects (c, baseDir, sw, monitor);
+				WriteProjects (c, baseDir, sw, saveProjects, monitor);
 				monitor.EndTask ();
 
 				//Write the lines for unknownProjects
@@ -207,17 +207,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void WriteProjects (SolutionFolder folder, string baseDirectory, StreamWriter writer, IProgressMonitor monitor)
+		void WriteProjects (SolutionFolder folder, string baseDirectory, StreamWriter writer, bool saveProjects, IProgressMonitor monitor)
 		{
 			monitor.BeginStepTask (GettextCatalog.GetString ("Saving projects"), folder.Items.Count, 1); 
 			foreach (SolutionItem ce in folder.Items)
 			{
 				string[] l = null;
 				if (ce is SolutionEntityItem) {
+					
 					SolutionEntityItem item = (SolutionEntityItem) ce;
-					item.Save (monitor);
+					MSBuildHandler handler = MSBuildProjectService.GetItemHandler (item);
+					
+					if (saveProjects) {
+						try {
+							handler.SavingSolution = true;
+							item.Save (monitor);
+						} finally {
+							handler.SavingSolution = false;
+						}
+					}
 
-					MSBuildProjectHandler handler = MSBuildProjectService.GetItemHandler (item);
 					l = handler.SlnProjectContent;
 
 					writer.WriteLine (@"Project(""{0}"") = ""{1}"", ""{2}"", ""{3}""",
@@ -226,6 +235,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (
 							baseDirectory, item.FileName)).Replace ('/', '\\'),
 						ce.ItemId);
+					DataItem data = handler.WriteSlnData ();
+					if (data != null && data.HasItemData) {
+						writer.WriteLine ("\tProjectSection(MonoDevelopProperties) = preProject");
+						WriteDataItem (writer, data);
+						writer.WriteLine ("\tEndProjectSection");
+					}
 				} else if (ce is SolutionFolder) {
 					//Solution
 					SlnData slnData = GetSlnData (ce);
@@ -260,7 +275,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				writer.WriteLine ("EndProject");
 				if (ce is SolutionFolder)
-					WriteProjects (ce as SolutionFolder, baseDirectory, writer, monitor);
+					WriteProjects (ce as SolutionFolder, baseDirectory, writer, saveProjects, monitor);
 				monitor.Step (1);
 			}
 			monitor.EndTask ();
@@ -288,7 +303,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				writer.WriteLine (@"{0}{1} = {2}", "\t\t", ce.ItemId, folder.ItemId);
 		}
 		
-		void DeserializeSolutionItem (Solution sln, SolutionItem item, List<string> lines)
+		DataItem GetSolutionItemData (List<string> lines)
 		{
 			// Find a project section of type MonoDevelopProperties
 
@@ -299,7 +314,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					start = n;
 			}
 			if (start == -1)
-				return;
+				return null;
 
 			int end = -1;
 
@@ -310,16 +325,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			if (end == -1)
-				return;
+				return null;
 			
 			// Deserialize the object
 			DataItem it = ReadDataItem (start, end - start + 1, lines);
-			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
-			ser.SerializationContext.BaseFile = sln.FileName;
-			ser.Deserialize (item, it);
 			
 			// Remove the lines, since they have already been preocessed
 			lines.RemoveRange (start, end - start + 1);
+			return it;
+		}
+		
+		void DeserializeSolutionItem (Solution sln, SolutionItem item, List<string> lines)
+		{
+			// Deserialize the object
+			DataItem it = GetSolutionItemData (lines);
+			if (it == null)
+				return;
+			
+			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
+			ser.SerializationContext.BaseFile = sln.FileName;
+			ser.Deserialize (item, it);
 		}
 		
 		void WriteDataItem (StreamWriter sw, DataItem item)
@@ -674,7 +699,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 
 					MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
-					handler.SlnProjectContent = lines.GetRange (sec.Start + 1, sec.Count - 2).ToArray ();
+					List<string> projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
+					DataItem it = GetSolutionItemData (projLines);
+					handler.SlnProjectContent = projLines.ToArray ();
+					handler.ReadSlnData (it);
+					
 				} catch (Exception e) {
 					LoggingService.LogError (GettextCatalog.GetString (
 								"Error while trying to load the project {0}. Exception : {1}",

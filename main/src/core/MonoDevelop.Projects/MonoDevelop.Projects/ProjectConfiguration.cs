@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class ProjectConfiguration : SolutionItemConfiguration
+	public class ProjectConfiguration : SolutionItemConfiguration
 	{
 
 		public ProjectConfiguration ()

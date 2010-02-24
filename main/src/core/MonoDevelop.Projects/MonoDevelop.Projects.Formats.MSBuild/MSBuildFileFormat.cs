@@ -62,6 +62,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		public SlnFileFormat SlnFileFormat {
+			get { return this.slnFileFormat; }
+		}
+		
+		
 		bool SupportsFramework (TargetFramework fx)
 		{
 			return ((IList)frameworkVersions).Contains (fx.Id) || 
@@ -75,7 +80,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return slnFileFormat.GetValidFormatName (obj, fileName, this);
 			else {
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForItem ((SolutionEntityItem)obj);
-				return fileName.ChangeExtension ("." + node.Extension);
+				if (!string.IsNullOrEmpty (node.Extension))
+					return fileName.ChangeExtension ("." + node.Extension);
+				else
+					return fileName;
 			}
 		}
 
@@ -135,7 +143,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void WriteFile (FilePath file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
-				slnFileFormat.WriteFile (file, obj, this, monitor);
+				slnFileFormat.WriteFile (file, obj, this, true, monitor);
 			} else {
 				SolutionEntityItem item = (SolutionEntityItem) obj;
 				if (!(item.ItemHandler is MSBuildProjectHandler))

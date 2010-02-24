@@ -183,6 +183,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public FileFormat DefaultFileFormat {
+			get { return defaultFormat; }
+		}
+
 		internal FileFormat GetDefaultFormat (object ob)
 		{
 			if (defaultFormat.Format.CanWriteFile (ob))
@@ -488,7 +492,7 @@ namespace MonoDevelop.Projects
 			
 			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormats (filename, typeof(SolutionEntityItem));
 			if (formats.Length == 0)
-				throw new InvalidOperationException ("Unknown file format: " + filename);
+				formats = new FileFormat [] { DefaultFileFormat };
 			
 			Solution tempSolution = new Solution ();
 			

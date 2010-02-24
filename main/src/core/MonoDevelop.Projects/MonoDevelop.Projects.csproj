@@ -346,6 +346,9 @@
     <Compile Include="MonoDevelop.Projects\HelpService.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\MonoDocSourceNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ProjectLanguageCondition.cs" />
+    <Compile Include="MonoDevelop.Projects\CompiledAssemblyProject.cs" />
+    <Compile Include="MonoDevelop.Projects\IAssemblyProject.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\CompiledAssemblyProjectMSBuildHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

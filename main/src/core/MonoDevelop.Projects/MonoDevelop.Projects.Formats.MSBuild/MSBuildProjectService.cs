@@ -95,9 +95,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new MSBuildResourceHandler ();
 		}
 		
-		internal static MSBuildProjectHandler GetItemHandler (SolutionEntityItem item)
+		internal static MSBuildHandler GetItemHandler (SolutionEntityItem item)
 		{
-			MSBuildProjectHandler handler = item.ItemHandler as MSBuildProjectHandler;
+			MSBuildHandler handler = item.ItemHandler as MSBuildHandler;
 			if (handler != null)
 				return handler;
 			else

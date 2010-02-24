@@ -45,6 +45,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string import;
 		
+		[NodeAttribute]
+		string handlerType;
+		
 		public ItemTypeNode ()
 		{
 		}
@@ -76,7 +79,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public virtual void InitializeHandler (SolutionEntityItem item)
 		{
-			MSBuildProjectHandler h = new MSBuildProjectHandler (Guid, import, null);
+			MSBuildHandler h = CreateHandler<MSBuildHandler> (null, null);
 			h.Item = item;
 			item.SetItemHandler (h);
 		}
@@ -88,6 +91,31 @@ namespace MonoDevelop.Projects.Extensions
 			if (!string.IsNullOrEmpty (extension) && System.IO.Path.GetExtension (fileName) == "." + extension)
 				return true;
 			return false;
+		}
+		
+		protected T CreateHandler<T> (string fileName, string itemGuid) where T:MSBuildHandler
+		{
+			MSBuildHandler h = OnCreateHandler (fileName, itemGuid);
+			if (!(h is T))
+				throw new InvalidOperationException ("Error while creating a MSBuildHandler. Expected an object of type '" + typeof(T).FullName + ", found type '" + h.GetType ());
+			return (T)h;
+		}
+		
+		protected virtual MSBuildHandler OnCreateHandler (string fileName, string itemGuid)
+		{
+			MSBuildHandler h;
+			if (!string.IsNullOrEmpty (handlerType)) {
+				h = Addin.CreateInstance (handlerType, true) as MSBuildHandler;
+				if (h == null)
+					throw new InvalidOperationException ("Type '" + handlerType + "' must be a subclass of 'MonoDevelop.Projects.Formats.MSBuild.MSBuildHandler'");
+				if (h is MSBuildProjectHandler)
+					((MSBuildProjectHandler)h).Initialize (Guid, Import, itemGuid);
+				else
+					h.Initialize (Guid, itemGuid);
+			} else {
+				h = new MSBuildProjectHandler (Guid, Import, itemGuid);
+			}
+			return h;
 		}
 		
 		public abstract SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid);

@@ -178,6 +178,7 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/ConditionTokenizer.cs \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/ExpressionParseException.cs \
 	MonoDevelop.Projects.Formats.MSBuild.Conditions/Token.cs \
+	MonoDevelop.Projects.Formats.MSBuild/CompiledAssemblyProjectMSBuildHandler.cs \
 	MonoDevelop.Projects.Formats.MSBuild/IMSBuildImportProvider.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MergeToProjectAttribute.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs \
@@ -217,6 +218,7 @@ FILES =  \
 	MonoDevelop.Projects/BuildResult.cs \
 	MonoDevelop.Projects/BuildTool.cs \
 	MonoDevelop.Projects/CombineEntryRenamedEventArgs.cs \
+	MonoDevelop.Projects/CompiledAssemblyProject.cs \
 	MonoDevelop.Projects/ConfigurationEventHandler.cs \
 	MonoDevelop.Projects/ConfigurationParameters.cs \
 	MonoDevelop.Projects/ConfigurationSelector.cs \
@@ -239,6 +241,7 @@ FILES =  \
 	MonoDevelop.Projects/GenericProject.cs \
 	MonoDevelop.Projects/GenericProjectBinding.cs \
 	MonoDevelop.Projects/HelpService.cs \
+	MonoDevelop.Projects/IAssemblyProject.cs \
 	MonoDevelop.Projects/IBuildTarget.cs \
 	MonoDevelop.Projects/IConfigurationTarget.cs \
 	MonoDevelop.Projects/IDotNetLanguageBinding.cs \

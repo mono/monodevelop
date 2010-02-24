@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid)
 		{
-			MSBuildProjectHandler handler = new MSBuildProjectHandler (Guid, Import, itemGuid);
+			MSBuildProjectHandler handler = CreateHandler<MSBuildProjectHandler> (fileName, itemGuid);
 			handler.SetCustomResourceHandler (GetResourceHandler ());
 			return handler.Load (monitor, fileName, language, null);
 		}
