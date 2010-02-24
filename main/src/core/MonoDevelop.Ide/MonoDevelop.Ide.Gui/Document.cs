@@ -270,9 +270,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 			// detect preexisting file
 			if(File.Exists(filename)){
-				if(MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", filename), AlertButton.OverwriteFile)) {
+				if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", filename), AlertButton.OverwriteFile))
 					return;
-				}
 			}
 			
 			// save backup first
