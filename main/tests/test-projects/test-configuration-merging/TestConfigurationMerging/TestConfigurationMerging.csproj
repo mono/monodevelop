@@ -7,6 +7,7 @@
     <ProjectGuid>{8E25B644-45CA-457C-A08B-0F1C9AA51E71}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>TestConfigurationMerging</AssemblyName>
+    <RootNamespace>TestConfigurationMerging</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
