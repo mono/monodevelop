@@ -1,5 +1,10 @@
 2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Add
+	  command handlers for RecenterEditor and TransposeCharacters.
+
+2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/IdeViMode.cs: Missed file in
 	  previous commit.
 

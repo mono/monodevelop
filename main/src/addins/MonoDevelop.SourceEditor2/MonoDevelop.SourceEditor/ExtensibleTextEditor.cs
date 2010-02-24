@@ -1157,6 +1157,18 @@ namespace MonoDevelop.SourceEditor
 			foldMarkerMargin.IsInCodeFocusMode = !foldMarkerMargin.IsInCodeFocusMode;
 		}
 		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.TransposeCharacters)]
+		internal void TransposeCharacters ()
+		{
+			RunAction (MiscActions.TransposeCharacters);
+		}
+		
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.RecenterEditor)]
+		internal void RecenterEditor ()
+		{
+			RunAction (MiscActions.RecenterEditor);
+		}
+		
 #endregion
 		
 	}
