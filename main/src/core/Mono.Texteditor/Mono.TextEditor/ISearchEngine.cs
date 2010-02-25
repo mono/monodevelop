@@ -175,7 +175,7 @@ namespace Mono.TextEditor
 		{
 			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
 				for (int i = 0; i < this.textEditorData.Document.Length; i++) {
-					int offset = (fromOffset + this.textEditorData.Document.Length * 2 - 1- i) % this.textEditorData.Document.Length;
+					int offset = (fromOffset + this.textEditorData.Document.Length * 2 - 1 - i) % this.textEditorData.Document.Length;
 					if (IsMatchAt (offset))
 						return new SearchResult (offset, searchRequest.SearchPattern.Length, offset > fromOffset);
 				}

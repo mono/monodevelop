@@ -170,7 +170,7 @@ namespace Mono.TextEditor.Highlighting
 						styleStack.Push (chunkStyle);
 					}
 					
-					for (int i = 0; i < chunk.Length; i++) {
+					for (int i = 0; i < chunk.Length && chunk.Offset + i < doc.Length; i++) {
 						char ch = chunk.GetCharAt (doc, chunk.Offset + i);
 						switch (ch) {
 						case '&':

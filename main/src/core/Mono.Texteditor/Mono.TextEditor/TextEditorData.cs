@@ -722,7 +722,13 @@ namespace Mono.TextEditor
 			if (IsSomethingSelected && IsMatchAt (MainSelection.GetAnchorOffset (this))) 
 				startOffset = MainSelection.GetAnchorOffset (this);
 			
-			SearchResult result = SearchBackward ((startOffset + Document.Length - 1) % Document.Length);
+			int searchOffset;
+			if (startOffset < 0) {
+				searchOffset = Document.Length - 1;
+			} else {
+				searchOffset = (startOffset + Document.Length - 1) % Document.Length;
+			}
+			SearchResult result = SearchBackward (searchOffset);
 			if (result != null) {
 				result.SearchWrapped = result.EndOffset > startOffset;
 				Caret.Offset  = result.Offset + result.Length;

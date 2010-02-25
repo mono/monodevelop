@@ -24,7 +24,7 @@ namespace Mono.TextEditor.Highlighting
 				bool match = true;
 				for (int i = 0; i < pattern.Length; i++) {
 					if (curOffset >= doc.Length) {
-						match = i + 1 == pattern.Length;
+						match = false;
 						break;
 					}
 					
@@ -35,7 +35,7 @@ namespace Mono.TextEditor.Highlighting
 					curOffset++;
 					
 				}
-				if (match)
+				if (match) 
 					return new RegexMatch (pattern.Length);
 			}
 			return RegexMatch.NoMatch;

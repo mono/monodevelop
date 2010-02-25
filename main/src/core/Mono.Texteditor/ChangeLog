@@ -1,3 +1,11 @@
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/ISearchEngine.cs:
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting.Regex/Regex.cs: Fixed text
+	  editor unit tests.
+
 2010-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Styles/OblivionStyle.xml: changed color style
