@@ -128,8 +128,7 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleEditorOptionsChanged (object sender, EventArgs e)
 		{
-			HeightRequest = Math.Max (Editor.LineHeight, image.HeightRequest);
-			
+			HeightRequest = Math.Max (Math.Max (Editor.LineHeight, image.HeightRequest), 18);
 			/*
 			Pango.FontDescription fontDescription = Pango.FontDescription.FromString (Editor.Options.FontName);
 			fontDescription.Family = "Sans";

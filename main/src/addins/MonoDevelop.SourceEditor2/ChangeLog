@@ -1,5 +1,10 @@
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs: setting
+	  minimum height to 18.
+
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs: Fixed 'Bug
 	  583026 - Font and aligning issues with the
 	  PinnedWatchWidget'/Applied patch from Alexander Cherniuk
