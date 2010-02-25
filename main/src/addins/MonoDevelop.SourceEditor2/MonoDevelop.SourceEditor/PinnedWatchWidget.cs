@@ -128,15 +128,19 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleEditorOptionsChanged (object sender, EventArgs e)
 		{
-			this.HeightRequest = Editor.LineHeight;
-			fontDescription = Pango.FontDescription.FromString (Editor.Options.FontName);
+			HeightRequest = Math.Max (Editor.LineHeight, image.HeightRequest);
+			
+			/*
+			Pango.FontDescription fontDescription = Pango.FontDescription.FromString (Editor.Options.FontName);
 			fontDescription.Family = "Sans";
 			fontDescription.Size = (int)(fontDescription.Size * Editor.Options.Zoom);
 			label.ModifyFont (fontDescription);
-			valueLabel.ModifyFont (fontDescription);
+			valueLabel.ModifyFont (fontDescription);*/
+			
+			label.ModifyFont (Editor.Options.Font);
+			valueLabel.ModifyFont (Editor.Options.Font);
 		}
 		
-		Pango.FontDescription fontDescription;
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();

@@ -1,3 +1,10 @@
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs: Fixed 'Bug
+	  583026 - Font and aligning issues with the
+	  PinnedWatchWidget'/Applied patch from Alexander Cherniuk
+	  <ts33kr@gmail.com>
+
 2010-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: added
