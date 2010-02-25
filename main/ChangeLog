@@ -1,3 +1,7 @@
+2010-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Properly initialize the subversion build switch.
+
 2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* main: Remove stray folder.
