@@ -291,7 +291,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
 				m = mMethod;
-
+				bool dontCallBase = method.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
 				foreach (ITypeParameter param in method.TypeParameters)
 					mMethod.TypeParameters.Add (param.Name);
 
@@ -299,7 +299,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.Attributes = MemberAttributes.Override;
 				
 				mMethod.ReturnType = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
-				if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+				if (dontCallBase || member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 					CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
 					CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
 					mMethod.Statements.Add (throwExpression);
@@ -326,6 +326,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 			} else if (member is IProperty) {
 				IProperty property = (IProperty) member;
+				bool dontCallBase = property.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
 				if (!property.IsIndexer) {
 					CodeMemberProperty mProperty = new CodeMemberProperty ();
 					m = mProperty;
@@ -337,14 +338,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mProperty.HasGet = property.HasGet;
 					mProperty.HasSet = property.HasSet;
 					if (property.HasGet) {
-						if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+						if (dontCallBase || member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 							mProperty.GetStatements.Add (throwExpression);
 						} else {
 							mProperty.GetStatements.Add (new CodeMethodReturnStatement (new CodePropertyReferenceExpression(new CodeBaseReferenceExpression(), property.Name)));
 						}
 					}
 					if (property.HasSet) {
-						if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+						if (dontCallBase || member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 							mProperty.SetStatements.Add (throwExpression);
 						} else {
 							mProperty.SetStatements.Add (new CodeAssignStatement (new CodePropertyReferenceExpression(new CodeBaseReferenceExpression(), property.Name), new CodePropertySetValueReferenceExpression ()));

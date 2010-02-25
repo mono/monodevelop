@@ -1,3 +1,9 @@
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs: Fixed
+	  'Bug 583014 - Need a way to stop override generating base
+	  call'
+
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Text/TextFile.cs: Remove annoying debug
