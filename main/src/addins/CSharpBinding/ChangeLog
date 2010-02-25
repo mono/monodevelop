@@ -1,5 +1,11 @@
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	  Fixed 'Bug 583014 - Need a way to stop override generating
+	  base call'.
+
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: Fixed 'Bug 583006
 	  - Enum members are prefixed with an enum name, in the
 	  Document Outline pad' / applied patch from Alexander

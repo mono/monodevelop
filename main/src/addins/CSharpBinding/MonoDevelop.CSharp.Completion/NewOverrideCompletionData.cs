@@ -25,6 +25,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Text;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
@@ -165,9 +166,11 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			}
 			
-			if (!method.IsAbstract && method.DeclaringType.ClassType != ClassType.Interface) {
+			bool dontCallBase = method.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
+			if (!dontCallBase && !method.IsAbstract && method.DeclaringType.ClassType != ClassType.Interface) {
 				if (method.ReturnType != null && method.ReturnType.FullName != "System.Void")
 					sb.Append ("return ");
+				
 				sb.Append ("base.");
 				sb.Append (method.Name);
 				sb.Append (" (");
@@ -208,8 +211,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		void InsertMethod (StringBuilder sb, IMethod method)
 		{
-			sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.CursorLine, editor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
-			sb.Append (" ");
+			if (returnType != null) {
+				sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.CursorLine, editor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
+				sb.Append (" ");
+			}
 			sb.Append (method.Name);
 			sb.Append (" (");
 			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeModifiers | OutputFlags.IncludeKeywords;
@@ -246,6 +251,8 @@ namespace MonoDevelop.CSharp.Completion
 			
 		void GeneratePropertyBody (StringBuilder sb, IProperty property)
 		{
+			bool dontCallBase = property.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
+			
 			if (property.HasGet) {
 				sb.Append (this.indent);
 				sb.Append (SingleIndent);
@@ -253,7 +260,8 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (this.indent);
 				sb.Append (SingleIndent);
 				sb.Append (SingleIndent);
-				if (!property.IsAbstract) {
+
+				if (!dontCallBase && !property.IsAbstract) {
 					sb.Append ("return base.");
 					sb.Append (property.Name);
 					sb.Append (";");
@@ -273,12 +281,11 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (this.indent);
 				sb.Append (SingleIndent);
 				sb.Append (SingleIndent);
-				if (!property.IsAbstract) {
+				if (!dontCallBase && !property.IsAbstract) {
 					sb.Append ("base.");
 					sb.Append (property.Name);
 					sb.AppendLine (" = value;");
 				} else {
-				
 					sb.AppendLine ("throw new System.NotImplementedException ();");
 				}
 				sb.Append (this.indent);
