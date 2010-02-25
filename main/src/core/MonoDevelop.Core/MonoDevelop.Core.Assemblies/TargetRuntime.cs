@@ -54,12 +54,18 @@ namespace MonoDevelop.Core.Assemblies
 		RuntimeAssemblyContext assemblyContext;
 		ComposedAssemblyContext composedAssemblyContext;
 		
+		protected bool ShuttingDown { get; private set; }
+		
 		public TargetRuntime ()
 		{
 			assemblyContext = new RuntimeAssemblyContext (this);
 			composedAssemblyContext = new ComposedAssemblyContext ();
 			composedAssemblyContext.Add (Runtime.SystemAssemblyService.UserAssemblyContext);
 			composedAssemblyContext.Add (assemblyContext);
+			
+			Runtime.ShuttingDown += delegate {
+				ShuttingDown = true;
+			};
 		}
 		
 		internal void StartInitialization ()
@@ -214,8 +220,10 @@ namespace MonoDevelop.Core.Assemblies
 		public event EventHandler Initialized {
 			add {
 				lock (initEventLock) {
-					if (initialized)
-						value (this, EventArgs.Empty);
+					if (initialized) {
+						if (!ShuttingDown)
+							value (this, EventArgs.Empty);
+					}
 					else
 						initializedEvent += value;
 				}
@@ -249,7 +257,7 @@ namespace MonoDevelop.Core.Assemblies
 					Monitor.PulseAll (initLock);
 					lock (initEventLock) {
 						initialized = true;
-						if (initializedEvent != null)
+						if (initializedEvent != null && !ShuttingDown)
 							initializedEvent (this, EventArgs.Empty);
 					}
 					Counters.TargetRuntimesLoading--;
@@ -260,8 +268,18 @@ namespace MonoDevelop.Core.Assemblies
 		
 		void RunInitialization ()
 		{
+			if (ShuttingDown)
+				return;
+			
 			CreateFrameworks ();
+			
+			if (ShuttingDown)
+				return;
+			
 			OnInitialize ();
+			
+			if (ShuttingDown)
+				return;
 			
 			// Get assemblies registered using the extension point
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/SupportPackages", OnPackagesChanged);

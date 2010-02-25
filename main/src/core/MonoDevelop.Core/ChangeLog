@@ -1,3 +1,13 @@
+2010-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MonoTargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/MsNetTargetRuntime.cs: If the
+	  runtime is shutting down, stop the initialization of the
+	  system assembly service. Should fix bug #582511 - NRE in
+	  DirectoryAssemblyContext.OnUpdatePackage.
+
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/SystemAssemblyService.cs: New

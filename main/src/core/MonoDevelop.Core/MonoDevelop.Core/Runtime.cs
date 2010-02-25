@@ -130,10 +130,8 @@ namespace MonoDevelop.Core
 		
 		public static void Shutdown ()
 		{
-			if (systemAssemblyService == null)
+			if (!initialized)
 				return;
-			
-			systemAssemblyService = null;
 			
 			if (ShuttingDown != null)
 				ShuttingDown (null, EventArgs.Empty);
@@ -144,6 +142,7 @@ namespace MonoDevelop.Core
 				processService.Dispose ();
 				processService = null;
 			}
+			initialized = false;
 		}
 		
 		public static ProcessService ProcessService {

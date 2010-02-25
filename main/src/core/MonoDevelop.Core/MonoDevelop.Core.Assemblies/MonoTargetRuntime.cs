@@ -172,6 +172,8 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (string pcfile in GetAllPkgConfigFiles ()) {
 				try {
 					ParsePCFile (pcfile);
+					if (ShuttingDown)
+						return;
 				}
 				catch (Exception ex) {
 					LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);

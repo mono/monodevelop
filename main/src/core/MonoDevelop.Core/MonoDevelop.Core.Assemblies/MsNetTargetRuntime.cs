@@ -83,6 +83,8 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			RegistryKey foldersKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders", false);
 			foreach (string key in foldersKey.GetSubKeyNames ()) {
+				if (ShuttingDown)
+					return;
 				if (key.StartsWith ("Microsoft .NET Framework"))
 					continue; // Framework assemblies
 				RegistryKey fk = foldersKey.OpenSubKey (key, false);
@@ -97,6 +99,8 @@ namespace MonoDevelop.Core.Assemblies
 			// Extended assembly folders
 
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+				if (ShuttingDown)
+					return;
 				RegistryKey fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\v" + fx.Id + @"\AssemblyFoldersEx", false);
 				if (fxKey != null) {
 					AddPackages (fx, fxKey);
@@ -118,6 +122,8 @@ namespace MonoDevelop.Core.Assemblies
 		void AddPackages (TargetFramework fx, RegistryKey fxKey)
 		{
 			foreach (string key in fxKey.GetSubKeyNames ()) {
+				if (ShuttingDown)
+					return;
 				RegistryKey fk = fxKey.OpenSubKey (key, false);
 				string folder = fk.GetValue ("") as string;
 				string version = fk.GetValue ("version") as string ?? "";
