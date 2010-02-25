@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false, true);
 				}
 				string label = cmd.Text.Replace ("_", String.Empty);
-				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, cmd.Icon, true, true);
+				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, (string)cmd.Icon, true, true);
 			}
 			UpdateGlobalWarningLabel ();
 			Refilter ();

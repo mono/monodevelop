@@ -1,3 +1,8 @@
+2010-02-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Fix
+	  Gtk type warnings by converting icon id to string for store.
+
 2010-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: Overwrite question buttons
