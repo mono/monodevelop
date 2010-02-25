@@ -153,8 +153,11 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
 			ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
-			
 			MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor visitor = new MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor (resolver, new DomLocation (data.Caret.Line, data.Caret.Column));
+			if (options.ResolveResult == null || options.ResolveResult.CallingMember == null) {
+				LoggingService.LogError ("resolve result == null or calling member == null:" + options.ResolveResult);
+				return result;
+			}
 			visitor.MemberLocation = new Location (options.ResolveResult.CallingMember.Location.Column, options.ResolveResult.CallingMember.Location.Line);
 			unit.AcceptVisitor (visitor, null);
 			
