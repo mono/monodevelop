@@ -196,8 +196,8 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			StringBuilder result = new StringBuilder ();
 			result.Append (settings.EmitModifiers (base.GetString (field.Modifiers)));
-			
-			if (settings.IncludeReturnType && !(field.IsLiteral && field.DeclaringType != null && field.DeclaringType.ClassType == ClassType.Enum)) {
+			bool isEnum = field.DeclaringType != null && field.DeclaringType.ClassType == ClassType.Enum;
+			if (settings.IncludeReturnType && !field.IsLiteral && !isEnum) {
 				result.Append (GetString (field.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
