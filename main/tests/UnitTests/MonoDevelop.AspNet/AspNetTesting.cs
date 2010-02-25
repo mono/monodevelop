@@ -58,9 +58,9 @@ namespace MonoDevelop.AspNet.Tests
 			var tww = new MonoDevelop.CSharpBinding.Tests.TestWorkbenchWindow ();
 			var sev = new MonoDevelop.CSharpBinding.Tests.TestViewContent ();
 			var project = new AspNetAppProject ("C#");
-			project.FileName = "/tmp/a" + pcount + ".csproj";
+			project.FileName = UnitTests.TestBase.GetTempFile (".csproj");
 			
-			string file = "/tmp/test-file-" + (pcount++) + extension;
+			string file = UnitTests.TestBase.GetTempFile (extension);
 			project.AddFile (file);
 			
 			ProjectDomService.Load (project);

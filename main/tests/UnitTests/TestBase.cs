@@ -78,5 +78,12 @@ namespace UnitTests
 		{
 			//Util.ClearTmpDir ();
 		}
+		
+		static int pcount = 0;
+		
+		public static string GetTempFile (string extension)
+		{
+			return Path.Combine (Path.GetTempPath (), "test-file-" + (pcount++) + extension);
+		}
 	}
 }

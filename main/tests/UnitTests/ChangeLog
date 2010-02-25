@@ -1,3 +1,15 @@
+2010-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DomPersistenceTests.cs: Added attribute
+	  persistence test.
+
+	* TestBase.cs:
+	* MonoDevelop.AspNet/AspNetTesting.cs:
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Make
+	  sure temp file names are unique in all test fixtures.
+
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs:

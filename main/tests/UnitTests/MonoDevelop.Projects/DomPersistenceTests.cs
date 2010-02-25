@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
@@ -273,6 +274,57 @@ namespace MonoDevelop.Projects.DomTests
 			Assert.AreEqual (1, result.PropertyCount);
 			Assert.AreEqual (1, result.EventCount);
 			
+		}
+		
+		[Test()]
+		public void ReadWriteAttributeTest ()
+		{
+			DomAttribute attr = new DomAttribute ();
+			
+			CodePropertyReferenceExpression exp1 = new CodePropertyReferenceExpression ();
+			exp1.TargetObject = new CodeTypeReferenceExpression ("SomeType");
+			exp1.PropertyName = "SomeProperty";
+			
+			CodeTypeOfExpression exp2 = new CodeTypeOfExpression ("SomeTypeOf");
+			
+			CodeBinaryOperatorExpression exp3 = new CodeBinaryOperatorExpression ();
+			exp3.Left = new CodePrimitiveExpression ("one");
+			exp3.Right = new CodePrimitiveExpression ("two");
+			exp3.Operator = CodeBinaryOperatorType.Add;
+			
+			CodePrimitiveExpression exp4 = new CodePrimitiveExpression (37);
+			
+			attr.AddPositionalArgument (exp1);
+			attr.AddPositionalArgument (exp2);
+			attr.AddPositionalArgument (exp3);
+			attr.AddPositionalArgument (exp4);
+			
+			MemoryStream ms = new MemoryStream ();
+			BinaryWriter writer = new BinaryWriter (ms);
+			DomPersistence.Write (writer, DefaultNameEncoder, attr);
+			byte[] bytes = ms.ToArray ();
+			DomAttribute result = DomPersistence.ReadAttribute (CreateReader (bytes), DefaultNameDecoder);
+			
+			Assert.AreEqual (4, result.PositionalArguments.Count);
+			
+			Assert.AreEqual (typeof(CodePropertyReferenceExpression), result.PositionalArguments [0].GetType ());
+			CodePropertyReferenceExpression rexp1 = (CodePropertyReferenceExpression) result.PositionalArguments [0];
+			Assert.AreEqual (typeof(CodeTypeReferenceExpression), rexp1.TargetObject.GetType ());
+			Assert.AreEqual ("SomeType", ((CodeTypeReferenceExpression)rexp1.TargetObject).Type.BaseType);
+			Assert.AreEqual ("SomeProperty", rexp1.PropertyName);
+			
+			Assert.AreEqual (typeof(CodeTypeOfExpression), result.PositionalArguments [1].GetType ());
+			Assert.AreEqual ("SomeTypeOf", ((CodeTypeOfExpression)result.PositionalArguments [1]).Type.BaseType);
+			
+			Assert.AreEqual (typeof(CodeBinaryOperatorExpression), result.PositionalArguments [2].GetType ());
+			CodeBinaryOperatorExpression rexp3 = (CodeBinaryOperatorExpression) result.PositionalArguments [2];
+			Assert.AreEqual (typeof(CodePrimitiveExpression), rexp3.Left.GetType ());
+			Assert.AreEqual ("one", ((CodePrimitiveExpression)rexp3.Left).Value);
+			Assert.AreEqual (typeof(CodePrimitiveExpression), rexp3.Right.GetType ());
+			Assert.AreEqual ("two", ((CodePrimitiveExpression)rexp3.Right).Value);
+			
+			Assert.AreEqual (typeof(CodePrimitiveExpression), result.PositionalArguments [3].GetType ());
+			Assert.AreEqual (37, ((CodePrimitiveExpression)result.PositionalArguments [3]).Value);
 		}
 		
 		static BinaryReader CreateReader (byte[] bytes)

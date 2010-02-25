@@ -76,8 +76,8 @@ namespace MonoDevelop.Refactoring.Tests
 			DotNetProject project = new DotNetAssemblyProject ("C#");
 			Solution solution = new Solution ();
 			solution.RootFolder.Items.Add (project);
-			project.FileName = "/tmp/a" + pcount + ".csproj";
-			string file = "/tmp/test-file-" + (pcount++) + ".cs";
+			project.FileName = GetTempFile (".csproj");
+			string file = GetTempFile (".cs");
 			project.AddFile (file);
 			string parsedText = text;
 			string editorText = text;
