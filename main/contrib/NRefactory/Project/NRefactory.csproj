@@ -140,21 +140,14 @@
     <Folder Include="Src\" />
     <Folder Include="Src\Parser\" />
     <Content Include="Src\Parser\CSharp\cs.ATG" />
-    <Folder Include="Src\Parser\" />
     <Content Include="Src\Parser\Frames\Parser.frame" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
     <Content Include="Src\Parser\Frames\trace.txt" />
-    <Folder Include="Src\Parser\" />
     <Content Include="Src\Parser\VBNet\VBNET.ATG" />
     <Content Include="Src\Parser\gen.bat" />
-    <Folder Include="Src\" />
     <Folder Include="Src\PrettyPrinter\" />
-    <Folder Include="Src\PrettyPrinter\" />
-    <Folder Include="Src\" />
-    <Folder Include="Src\" />
     <Folder Include="Src\Ast\" />
-    <Folder Include="Src\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

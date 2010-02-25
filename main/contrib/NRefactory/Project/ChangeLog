@@ -1,3 +1,7 @@
+2010-02-25  lluis  <${AuthorEmail}>
+
+	* NRefactory.csproj: Remove duplicates.
+
 2010-02-01  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed
