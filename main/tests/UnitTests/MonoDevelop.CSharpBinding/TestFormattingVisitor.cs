@@ -637,5 +637,92 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( var o in list )", data.Document.GetTextBetween (i1, i2));
 		}
+		
+		[Test()]
+		public void TestBeforeCatchParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+  try {} catch(Exception) {}
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.CatchParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("catch");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"catch (Exception)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinCatchParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		try {} catch(Exception) {}
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinCatchParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( Exception )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBeforeLockParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		lock(this) {}
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.LockParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("lock");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"lock (this)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinLockParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		lock(this) {}
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinLockParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( this )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		
+		
 	}
 }*/
