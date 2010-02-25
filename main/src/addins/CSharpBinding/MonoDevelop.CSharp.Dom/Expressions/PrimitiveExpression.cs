@@ -31,6 +31,11 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class PrimitiveExpression : AbstractCSharpNode
 	{
+		public DomLocation Location {
+			get;
+			set;
+		}
+		
 		public object Value {
 			get;
 			set;

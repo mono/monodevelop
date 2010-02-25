@@ -48,6 +48,14 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildrenByRole (Roles.Iterator); }
 		}
 		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitForStatement (this, data);

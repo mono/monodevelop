@@ -47,6 +47,14 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildByRole (Roles.Condition); }
 		}
 		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitWhileStatement (this, data);
@@ -56,8 +64,6 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			this.WhilePosition = whilePosition;
 		}
-		
-		
 	}
 	
 	public enum WhilePosition {

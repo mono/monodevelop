@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 /*
 using System;
 using System.Collections.Generic;
@@ -401,11 +400,15 @@ namespace MonoDevelop.CSharp.Parser
 				
 				result.AddChild (new CSharpTokenNode (Convert (location[0])), ForStatement.Roles.Keyword);
 				result.AddChild (new CSharpTokenNode (Convert (location.Open)), ForStatement.Roles.LPar);
-				result.AddChild ((INode)forStatement.InitStatement.Accept (this), ForStatement.Roles.Initializer);
+				if (forStatement.InitStatement != null)
+					result.AddChild ((INode)forStatement.InitStatement.Accept (this), ForStatement.Roles.Initializer);
+				
 				result.AddChild (new CSharpTokenNode (Convert (location[1])), ForStatement.Roles.Semicolon);
-				result.AddChild ((INode)forStatement.Test.Accept (this), ForStatement.Roles.Condition);
+				if (forStatement.Test != null)
+					result.AddChild ((INode)forStatement.Test.Accept (this), ForStatement.Roles.Condition);
 				result.AddChild (new CSharpTokenNode (Convert (location[2])), ForStatement.Roles.Semicolon);
-				result.AddChild ((INode)forStatement.Increment.Accept (this), ForStatement.Roles.Iterator);
+				if (forStatement.Increment != null)
+					result.AddChild ((INode)forStatement.Increment.Accept (this), ForStatement.Roles.Iterator);
 				result.AddChild (new CSharpTokenNode (Convert (location.Close)), ForStatement.Roles.RPar);
 				
 				result.AddChild ((INode)forStatement.Statement.Accept (this), ForStatement.Roles.EmbeddedStatement);
@@ -680,12 +683,15 @@ namespace MonoDevelop.CSharp.Parser
 				result.AddChild (new CSharpTokenNode (Convert (location[0])), ForeachStatement.ForEachKeywordRole);
 				result.AddChild (new CSharpTokenNode (Convert (location.Open)), ForeachStatement.Roles.LPar);
 				
-				result.AddChild ((INode)foreachStatement.type.Accept (this), ForeachStatement.Roles.ReturnType);
-				result.AddChild ((INode)foreachStatement.variable.Accept (this), ForeachStatement.Roles.Identifier);
+				if (foreachStatement.type != null)
+					result.AddChild ((INode)foreachStatement.type.Accept (this), ForeachStatement.Roles.ReturnType);
+				if (foreachStatement.variable != null)
+					result.AddChild ((INode)foreachStatement.variable.Accept (this), ForeachStatement.Roles.Identifier);
 				
 				result.AddChild (new CSharpTokenNode (Convert (location[1])), ForeachStatement.InKeywordRole);
 				
-				result.AddChild ((INode)foreachStatement.expr.Accept (this), ForeachStatement.Roles.Initializer);
+				if (foreachStatement.expr != null)
+					result.AddChild ((INode)foreachStatement.expr.Accept (this), ForeachStatement.Roles.Initializer);
 				
 				result.AddChild (new CSharpTokenNode (Convert (location.Close)), ForeachStatement.Roles.RPar);
 				
@@ -702,12 +708,33 @@ namespace MonoDevelop.CSharp.Parser
 				return null;
 			}
 			
+			public override object Visit (LocalVariableReference localVariableReference)
+			{
+				var result = new Identifier ();
+				result.Name = localVariableReference.Name;
+				result.Location = Convert (localVariableReference.Location);
+				return result;
+			}
+
+			public override object Visit (Constant constant)
+			{
+				var result = new PrimitiveExpression ();
+				result.Location = Convert (constant.Location);
+				result.Value = constant.GetValue ();
+				return result;
+			}
+
 			public override object Visit (SimpleName simpleName)
 			{
 				var result = new Identifier ();
 				result.Name = simpleName.Name;
 				result.Location = Convert (simpleName.Location);
 				return result;
+			}
+			
+			public override object Visit (BooleanExpression booleanExpression)
+			{
+				return booleanExpression.Expr.Accept (this);
 			}
 
 			
@@ -911,8 +938,10 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (Conditional conditionalExpression)
 			{
 				var result = new ConditionalExpression ();
+				
 				result.AddChild ((INode)conditionalExpression.Expr.Accept (this), ConditionalExpression.Roles.Condition);
 				ConditionalLocation location = LocationStorage.Get<ConditionalLocation> (conditionalExpression);
+				Console.WriteLine (Convert (location.QuestionMark) + "/" + Convert (location.Colon));
 				result.AddChild (new CSharpTokenNode (Convert (location.QuestionMark)), ConditionalExpression.Roles.QuestionMark);
 				result.AddChild ((INode)conditionalExpression.TrueExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
 				result.AddChild (new CSharpTokenNode (Convert (location.Colon)), ConditionalExpression.Roles.Colon);
@@ -925,11 +954,13 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new InvocationExpression ();
 				ParanthesisLocation location = LocationStorage.Get<ParanthesisLocation> (invocationExpression);
 				result.AddChild ((INode)invocationExpression.Expr.Accept (this), InvocationExpression.Roles.TargetExpression);
-				result.AddChild (new CSharpTokenNode (Convert (location.Open)), InvocationExpression.Roles.RPar);
-				for (int i = 0 ;i < invocationExpression.Arguments.Count; i++) {
-					if (i > 0)
-						result.AddChild (new CSharpTokenNode (Convert (invocationExpression.Arguments[i].SeparatingCommaLocation)), InvocationExpression.Roles.Comma);
-					result.AddChild ((INode)invocationExpression.Arguments[i].Expr.Accept (this), InvocationExpression.Roles.Argument);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open)), InvocationExpression.Roles.LPar);
+				if (invocationExpression.Arguments != null) {
+					for (int i = 0 ;i < invocationExpression.Arguments.Count; i++) {
+						if (i > 0)
+							result.AddChild (new CSharpTokenNode (Convert (invocationExpression.Arguments[i].SeparatingCommaLocation)), InvocationExpression.Roles.Comma);
+						result.AddChild ((INode)invocationExpression.Arguments[i].Expr.Accept (this), InvocationExpression.Roles.Argument);
+					}
 				}
 				result.AddChild (new CSharpTokenNode (Convert (location.Close)), InvocationExpression.Roles.RPar);
 				return result;

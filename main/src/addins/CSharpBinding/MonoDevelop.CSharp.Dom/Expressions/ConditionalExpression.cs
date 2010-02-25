@@ -49,6 +49,14 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildByRole (Roles.Condition); }
 		}
 		
+		public CSharpTokenNode QuestionMark {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.QuestionMark); }
+		}
+		
+		public CSharpTokenNode Colon {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon); }
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConditionalExpression (this, data);

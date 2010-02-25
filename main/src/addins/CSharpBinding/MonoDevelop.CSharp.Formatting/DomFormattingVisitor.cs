@@ -168,7 +168,43 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitBinaryOperatorExpression (binaryOperatorExpression, data);
 		}
 
+		public override object VisitConditionalExpression (ConditionalExpression conditionalExpression, object data)
+		{
+			ForceSpacesBefore (conditionalExpression.QuestionMark.Location, policy.ConditionalOperatorBeforeConditionSpace);
+			ForceSpacesAfter (conditionalExpression.QuestionMark.Location, policy.ConditionalOperatorAfterConditionSpace);
+			ForceSpacesBefore (conditionalExpression.Colon.Location, policy.ConditionalOperatorBeforeSeparatorSpace);
+			ForceSpacesAfter (conditionalExpression.Colon.Location, policy.ConditionalOperatorAfterSeparatorSpace);
+			return base.VisitConditionalExpression (conditionalExpression, data);
+		}
+		
 		void ForceSpacesAround (DomLocation location, bool forceSpaces)
+		{
+			ForceSpacesBefore (location, forceSpaces);
+			ForceSpacesAfter (location, forceSpaces);
+		}
+		
+		void ForceSpacesAfter (DomLocation location, bool forceSpaces)
+		{
+			int offset = data.Document.LocationToOffset (location.Line, location.Column);
+			char ch = data.Document.GetCharAt (offset);
+			if (ch != '(') {
+				while (offset + 1 < data.Document.Length) {
+					ch = data.Document.GetCharAt (offset + 1);
+					if (char.IsWhiteSpace (ch) || char.IsLetterOrDigit (ch))
+						break;
+					
+					offset++;
+				}
+			}
+			int i = offset + 1;
+			while (i < data.Document.Length && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
+				i++;
+			}
+			
+			ForceSpace (offset, i, forceSpaces);
+		}
+		
+		int ForceSpacesBefore (DomLocation location, bool forceSpaces)
 		{
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			int i = offset - 1;
@@ -177,22 +213,9 @@ namespace MonoDevelop.CSharp.Formatting
 				i--;
 			}
 			ForceSpace (i, offset, forceSpaces);
-			
-			while (offset + 1 < data.Document.Length) {
-				char ch = data.Document.GetCharAt (offset + 1);
-				if (char.IsWhiteSpace (ch) || char.IsLetterOrDigit (ch))
-					break;
-				
-				offset++;
-			}
-			i = offset + 1;
-			while (i < data.Document.Length && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
-				i++;
-			}
-			ForceSpace (offset, i, forceSpaces);
+			return i;
 		}
-
-
+		
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			foreach (INode node in fieldDeclaration.Children) {
@@ -275,10 +298,10 @@ namespace MonoDevelop.CSharp.Formatting
 			} while (offset >= 0);
 		}
 
-		void ForceSpace (int startOffset, int endOffset, bool spaceBefore)
+		void ForceSpace (int startOffset, int endOffset, bool forceSpace)
 		{
 			int lastNonWs = SearchLastNonWsChar (startOffset, endOffset);
-			changes.Add (new MyTextReplaceChange (data, lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), spaceBefore ? " " : ""));
+			changes.Add (new MyTextReplaceChange (data, lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), forceSpace ? " " : ""));
 		}
 		/*
 		int GetLastNonWsChar (LineSegment line, int lastColumn)
@@ -384,5 +407,57 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			changes.Add (new MyTextReplaceChange (data, rbraceLineSegment.Offset + firstNonWsChar + 1, rbrace.Location.Column - firstNonWsChar - 1, firstNonWsChar > 0 ? data.EolMarker + indent : indent));
 		}
+		
+		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
+		{
+			ForceSpacesBefore (invocationExpression.LPar.Location, policy.BeforeMethodCallParentheses);
+			
+			ForceSpacesAfter (invocationExpression.LPar.Location, policy.WithinMethodCallParentheses);
+			ForceSpacesBefore (invocationExpression.RPar.Location, policy.WithinMethodCallParentheses);
+			
+			return base.VisitInvocationExpression (invocationExpression, data);
+		}
+		
+		public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
+		{
+			ForceSpacesBefore (ifElseStatement.LPar.Location, policy.IfParentheses);
+			
+			ForceSpacesAfter (ifElseStatement.LPar.Location, policy.WithinIfParentheses);
+			ForceSpacesBefore (ifElseStatement.RPar.Location, policy.WithinIfParentheses);
+			
+			return base.VisitIfElseStatement (ifElseStatement, data);
+		}
+		
+		public override object VisitWhileStatement (WhileStatement whileStatement, object data)
+		{
+			ForceSpacesBefore (whileStatement.LPar.Location, policy.WhileParentheses);
+			
+			ForceSpacesAfter (whileStatement.LPar.Location, policy.WithinWhileParentheses);
+			ForceSpacesBefore (whileStatement.RPar.Location, policy.WithinWhileParentheses);
+			
+			return base.VisitWhileStatement (whileStatement, data);
+		}
+		
+		public override object VisitForStatement (ForStatement forStatement, object data)
+		{
+			ForceSpacesBefore (forStatement.LPar.Location, policy.ForParentheses);
+			
+			ForceSpacesAfter (forStatement.LPar.Location, policy.WithinForParentheses);
+			ForceSpacesBefore (forStatement.RPar.Location, policy.WithinForParentheses);
+			
+			return base.VisitForStatement (forStatement, data);
+		}
+		
+		public override object VisitForeachStatement (ForeachStatement foreachStatement, object data)
+		{
+			ForceSpacesBefore (foreachStatement.LPar.Location, policy.ForeachParentheses);
+			
+			ForceSpacesAfter (foreachStatement.LPar.Location, policy.WithinForEachParentheses);
+			ForceSpacesBefore (foreachStatement.RPar.Location, policy.WithinForEachParentheses);
+			
+			return base.VisitForeachStatement (foreachStatement, data);
+		}
+
+		
 	}
 }

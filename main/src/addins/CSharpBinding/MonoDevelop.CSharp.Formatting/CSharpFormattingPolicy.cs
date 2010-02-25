@@ -332,25 +332,25 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#region Spaces
 		[ItemProperty]
-		public bool BeforeMethodCallParentheses {
+		public bool BeforeMethodCallParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool BeforeMethodDeclarationParentheses {
+		public bool BeforeMethodDeclarationParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool BeforeConstructorDeclarationParentheses {
+		public bool BeforeConstructorDeclarationParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool BeforeDelegateDeclarationParentheses {
+		public bool BeforeDelegateDeclarationParentheses { // tested
 			get;
 			set;
 		}
@@ -362,25 +362,25 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool IfParentheses {
+		public bool IfParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WhileParentheses {
+		public bool WhileParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool ForParentheses {
+		public bool ForParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool ForeachParentheses {
+		public bool ForeachParentheses { // tested
 			get;
 			set;
 		}
@@ -464,7 +464,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinMethodCallParentheses {
+		public bool WithinMethodCallParentheses { // tested
 			get;
 			set;
 		}
@@ -476,25 +476,25 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinIfParentheses {
+		public bool WithinIfParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WithinWhileParentheses {
+		public bool WithinWhileParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WithinForParentheses {
+		public bool WithinForParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WithinForEachParentheses {
+		public bool WithinForEachParentheses { // tested
 			get;
 			set;
 		}

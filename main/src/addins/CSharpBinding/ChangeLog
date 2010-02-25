@@ -1,5 +1,19 @@
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/Statements/ForStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/WhileStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/IfElseStatement.cs:
+	* MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/PrimitiveExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/InvocationExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ConditionalExpression.cs:
+	  Worked on DOM & formatting visitor.
+
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
 	  Fixed 'Bug 583014 - Need a way to stop override generating
 	  base call'.
