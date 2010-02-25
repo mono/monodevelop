@@ -148,6 +148,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchentry1.Ready = false;
 			this.searchentry1.HasFocus = false;
 			this.searchentry1.IsCheckMenu = false;
+			this.searchentry1.ForceFilterButtonVisible = false;
 			this.hbox2.Add (this.searchentry1);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.searchentry1]));
 			w8.PackType = ((global::Gtk.PackType)(1));

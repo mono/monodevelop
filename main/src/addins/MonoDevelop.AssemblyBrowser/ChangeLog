@@ -1,3 +1,13 @@
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.AssemblyBrowser/DocumentationPanel.cs:
+	* MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:
+	* gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:
+	  Fixed 'Bug 583017 - Wrong font in the Assembly Browser.' /
+	  applied patch from Alexander Cherniuk <ts33kr@gmail.com>
+
+
 2010-01-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser.addin.xml:

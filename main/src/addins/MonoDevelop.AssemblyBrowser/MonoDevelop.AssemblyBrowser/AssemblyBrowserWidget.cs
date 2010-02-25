@@ -107,7 +107,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.documentationLabel.Wrap = true;
 			
 			Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
-			options.FontName = "Monospace 10";
+			options.FontName = PropertyService.Get<string> ("FontName");
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
 			options.ShowInvalidLines = false;
