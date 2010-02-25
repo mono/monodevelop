@@ -1,3 +1,11 @@
+2010-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Set
+	  the queueEmptied event in the ConsumeParsingQueue method,
+	  when there is nothing left to parse. In this way the event
+	  is set not when the queue is emptied, but after the last
+	  dequeued job has been completed.
+
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:

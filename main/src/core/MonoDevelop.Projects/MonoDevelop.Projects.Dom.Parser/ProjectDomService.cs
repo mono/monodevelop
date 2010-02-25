@@ -705,10 +705,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					ParsingJob job = parseQueue.Dequeue ();
 					if (job.ParseCallback != null) {
 						parseQueueIndex.Remove (job.File);
-						
-						if (parseQueueIndex.Count == 0)
-							queueEmptied.Set ();
-						
 						return job;
 					}
 				}
@@ -729,9 +725,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (parseQueueIndex.TryGetValue (file, out job)) {
 					job.ParseCallback = null;
 					parseQueueIndex.Remove (file);
-					
-					if (parseQueueIndex.Count == 0)
-						queueEmptied.Set ();
 				}
 			}
 		}
@@ -744,9 +737,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					if (pj.Database == dom) {
 						pj.ParseCallback = null;
 						parseQueueIndex.Remove (pj.File);
-						
-						if (parseQueueIndex.Count == 0)
-							queueEmptied.Set ();
 					}
 				}
 			}
@@ -870,6 +860,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 					
 				}
 				while (pending > 0);
+				
+				queueEmptied.Set ();
 				
 				// Flush the parsed databases
 				foreach (ProjectDom db in dbsToFlush)
