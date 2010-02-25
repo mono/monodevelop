@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 			string markup = doc.SyntaxMode.GetMarkup (doc, TextEditorOptions.DefaultOptions, SyntaxModeService.GetColorStyle (null, "TangoLight"), 0, doc.Length, false);
 			Assert.AreEqual (expectedMarkup, markup, "expected:" + expectedMarkup + Environment.NewLine + "But got:" + markup);
 		}
-		
+		 
 		[Test]
 		public void TestSpans ()
 		{

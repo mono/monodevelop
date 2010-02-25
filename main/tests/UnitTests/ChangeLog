@@ -1,3 +1,11 @@
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs:
+	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs:
+	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Fixed
+	  some unit tests.
+
 2010-02-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: added

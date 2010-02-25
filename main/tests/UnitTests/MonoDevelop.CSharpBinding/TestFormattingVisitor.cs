@@ -272,6 +272,8 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 }", data.Document.Text);
 		}
 		
+		
+		
 		[Test()]
 		public void TestBeforeConstructorDeclarationParenthesesDestructorCase ()
 		{
@@ -353,6 +355,287 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			Assert.AreEqual (@"left * right", data.Document.GetTextBetween (i1, i2));
 		}
 		
+		[Test()]
+		public void TestConditionalOperator ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		result = condition?trueexpr:falseexpr;
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ConditionalOperatorAfterConditionSpace = true;
+			policy.ConditionalOperatorAfterSeparatorSpace = true;
+			policy.ConditionalOperatorBeforeConditionSpace = true;
+			policy.ConditionalOperatorBeforeSeparatorSpace = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("condition");
+			int i2 = data.Document.Text.IndexOf ("falseexpr") + "falseexpr".Length;
+			Assert.AreEqual (@"condition ? trueexpr : falseexpr", data.Document.GetTextBetween (i1, i2));
+			
+			
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		result = true ? trueexpr : falseexpr;
+	}
+}";
+			policy.ConditionalOperatorAfterConditionSpace = false;
+			policy.ConditionalOperatorAfterSeparatorSpace = false;
+			policy.ConditionalOperatorBeforeConditionSpace = false;
+			policy.ConditionalOperatorBeforeSeparatorSpace = false;
+			
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			i1 = data.Document.Text.IndexOf ("true");
+			i2 = data.Document.Text.IndexOf ("falseexpr") + "falseexpr".Length;
+			Assert.AreEqual (@"condition?trueexpr:falseexpr", data.Document.GetTextBetween (i1, i2));
+		}
 		
+		[Test()]
+		public void TestBeforeMethodCallParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		MethodCall();
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeMethodCallParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("MethodCall");
+			int i2 = data.Document.Text.IndexOf (";") + ";".Length;
+			Assert.AreEqual (@"MethodCall ();", data.Document.GetTextBetween (i1, i2));
+			
+			
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		MethodCall                         				();
+	}
+}";
+			policy.BeforeMethodCallParentheses = false;
+			
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			i1 = data.Document.Text.IndexOf ("MethodCall");
+			i2 = data.Document.Text.IndexOf (";") + ";".Length;
+			Assert.AreEqual (@"MethodCall();", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinMethodCallParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		MethodCall(true);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinMethodCallParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( true )", data.Document.GetTextBetween (i1, i2));
+			
+			
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		MethodCall( true );
+	}
+}";
+			policy.WithinMethodCallParentheses = false;
+			
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			i1 = data.Document.Text.LastIndexOf ("(");
+			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"(true)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBeforeIfParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		if(true);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.IfParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("if");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"if (true)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinIfParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		if (true);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinIfParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( true )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBeforeWhileParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		while(true);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WhileParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("while");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"while (true)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinWhileParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		while (true);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinWhileParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( true )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBeforeForParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		for(;;);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ForParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("for");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"for (;;)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinForParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		for(;;);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinForParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( ;; )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBeforeForeachParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		foreach(var o in list);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ForeachParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("foreach");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"foreach (var o in list)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinForeachParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		foreach(var o in list);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinForEachParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( var o in list )", data.Document.GetTextBetween (i1, i2));
+		}
 	}
 }*/
