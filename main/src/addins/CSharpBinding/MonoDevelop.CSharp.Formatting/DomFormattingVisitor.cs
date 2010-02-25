@@ -457,6 +457,30 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			return base.VisitForeachStatement (foreachStatement, data);
 		}
+		
+		public override object VisitCatchClause (CatchClause catchClause, object data)
+		{
+			if (catchClause.LPar != null) {
+				ForceSpacesBefore (catchClause.LPar.Location, policy.CatchParentheses);
+				
+				ForceSpacesAfter (catchClause.LPar.Location, policy.WithinCatchParentheses);
+				ForceSpacesBefore (catchClause.RPar.Location, policy.WithinCatchParentheses);
+			}
+			
+			return base.VisitCatchClause (catchClause, data);
+		}
+		
+		public override object VisitLockStatement (LockStatement lockStatement, object data)
+		{
+			ForceSpacesBefore (lockStatement.LPar.Location, policy.LockParentheses);
+			
+			ForceSpacesAfter (lockStatement.LPar.Location, policy.WithinLockParentheses);
+			ForceSpacesBefore (lockStatement.RPar.Location, policy.WithinLockParentheses);
+			
+
+			return base.VisitLockStatement (lockStatement, data);
+		}
+
 
 		
 	}

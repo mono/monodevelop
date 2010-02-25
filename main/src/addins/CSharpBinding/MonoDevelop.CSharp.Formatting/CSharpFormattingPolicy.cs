@@ -386,7 +386,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool CatchParentheses {
+		public bool CatchParentheses { // tested
 			get;
 			set;
 		}
@@ -500,7 +500,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinCatchParentheses {
+		public bool WithinCatchParentheses { // tested
 			get;
 			set;
 		}

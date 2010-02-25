@@ -615,9 +615,15 @@ namespace MonoDevelop.CSharp.Parser
 				result.AddChild (new CSharpTokenNode (Convert (location[0])), CatchClause.Roles.Keyword);
 				
 				if (ctch.type_expr != null) {
+					result.AddChild (new CSharpTokenNode (Convert (location[2])), CatchClause.Roles.LPar);
+					
 					result.AddChild ((INode)ctch.type_expr.Accept (this), CatchClause.Roles.ReturnType);
 					if (!string.IsNullOrEmpty (ctch.Name))
 						result.AddChild (new Identifier (ctch.Name, Convert (location[1])), CatchClause.Roles.Identifier);
+					
+					result.AddChild (new CSharpTokenNode (Convert (location[3])), CatchClause.Roles.RPar);
+					Console.WriteLine (location[2]);
+					Console.WriteLine (location[3]);
 				}
 				
 				result.AddChild ((INode)ctch.Block.Accept (this), CatchClause.Roles.Body);
