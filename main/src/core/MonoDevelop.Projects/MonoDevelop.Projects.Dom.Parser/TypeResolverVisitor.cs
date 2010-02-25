@@ -95,7 +95,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 						constructedType.SourceProjectDom = db;
 						
 						typeParameterReturnType.Type = constructedType;
-						
+						typeParameterReturnType.ArrayDimensions = type.ArrayDimensions;
+						typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
+						for (int i = 0; i < type.ArrayDimensions; i++)
+							typeParameterReturnType.SetDimension (i, type.GetDimension (i));
 						return typeParameterReturnType;
 					}
 				}
