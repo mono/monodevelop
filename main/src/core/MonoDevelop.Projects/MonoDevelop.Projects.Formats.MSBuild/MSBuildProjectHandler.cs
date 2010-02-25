@@ -51,6 +51,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string Unspecified = null;
 		RemoteProjectBuilder projectBuilder;
 		
+		struct ItemInfo {
+			public MSBuildItem Item;
+			public bool Added;
+		}
+		
 		protected SolutionEntityItem EntityItem {
 			get { return (SolutionEntityItem) Item; }
 		}
@@ -706,16 +711,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			// Remove old items
-			Dictionary<string,MSBuildItem> oldItems = new Dictionary<string, MSBuildItem> ();
+			Dictionary<string,ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
 			foreach (MSBuildItem item in msproject.GetAllItems ())
-				oldItems [item.Name + "<" + item.Include] = item;
+				oldItems [item.Name + "<" + item.Include] = new ItemInfo () { Item=item };
 			
 			// Add the new items
 			foreach (object ob in ((SolutionEntityItem)Item).Items)
 				SaveItem (monitor, ser, msproject, ob, oldItems);
 			
-			foreach (MSBuildItem buildItem in oldItems.Values)
-				msproject.RemoveItem (buildItem);
+			foreach (ItemInfo itemInfo in oldItems.Values) {
+				if (!itemInfo.Added)
+					msproject.RemoveItem (itemInfo.Item);
+			}
 		
 			if (dotNetProject != null) {
 
@@ -785,7 +792,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		
-		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,MSBuildItem> oldItems)
+		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,ItemInfo> oldItems)
 		{
 			if (ob is ProjectReference) {
 				SaveReference (monitor, ser, msproject, (ProjectReference) ob, oldItems);
@@ -801,7 +808,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file, Dictionary<string,MSBuildItem> oldItems)
+		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file, Dictionary<string,ItemInfo> oldItems)
 		{
 			string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
 
@@ -847,7 +854,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void SaveReference (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, ProjectReference pref, Dictionary<string,MSBuildItem> oldItems)
+		void SaveReference (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, ProjectReference pref, Dictionary<string,ItemInfo> oldItems)
 		{
 			MSBuildItem buildItem;
 			if (pref.ReferenceType == ReferenceType.Assembly) {
@@ -985,7 +992,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.Deserialize (dataItem, ditem);
 		}
 		
-		void WriteBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Dictionary<string,MSBuildItem> oldItems)
+		void WriteBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Dictionary<string,ItemInfo> oldItems)
 		{
 			var notWrittenProps = new HashSet<string> ();
 			foreach (ItemProperty prop in ser.GetProperties (dataItem))
@@ -1007,13 +1014,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				buildItem.UnsetMetadata (prop);
 		}
 		
-		MSBuildItem AddOrGetBuildItem (MSBuildProject msproject, Dictionary<string,MSBuildItem> oldItems, string name, string include)
+		MSBuildItem AddOrGetBuildItem (MSBuildProject msproject, Dictionary<string,ItemInfo> oldItems, string name, string include)
 		{
-			MSBuildItem buildItem;
+			ItemInfo itemInfo;
 			string key = name + "<" + include;
-			if (oldItems.TryGetValue (key, out buildItem)) {
-				oldItems.Remove (key);
-				return buildItem;
+			if (oldItems.TryGetValue (key, out itemInfo)) {
+				if (!itemInfo.Added) {
+					itemInfo.Added = true;
+					oldItems [key] = itemInfo;
+				}
+				return itemInfo.Item;
 			} else
 				return msproject.AddNewItem (name, include);
 		}
