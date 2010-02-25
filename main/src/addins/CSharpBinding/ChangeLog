@@ -1,5 +1,10 @@
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: fixed failing
+	  unit test.
+
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
 	* MonoDevelop.CSharp.Dom/Statements/ForStatement.cs:
 	* MonoDevelop.CSharp.Dom/Statements/WhileStatement.cs:

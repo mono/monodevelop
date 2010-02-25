@@ -213,6 +213,7 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0) {
 				((DomReturnType)result.ResolvedType).ArrayDimensions--;
+				((DomReturnType)result.ResolvedType).Type = null; // underlying type has >always< changed
 				return CreateResult (result.ResolvedType);
 			}
 			
