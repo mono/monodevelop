@@ -1,3 +1,8 @@
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: added
+	  null check.
+
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Gui.addin.xml: Show the .NET naming

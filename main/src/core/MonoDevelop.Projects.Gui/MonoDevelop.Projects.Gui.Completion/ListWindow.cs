@@ -459,7 +459,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				hasMismatches = false;
 			}
 			
-			if (partialWord.Length < 2) {
+			if (partialWord != null && partialWord.Length < 2) {
 				// Search for history matches.
 				for (int i = 0; i < wordHistory.Count; i++) {
 					string historyWord = wordHistory[i];
