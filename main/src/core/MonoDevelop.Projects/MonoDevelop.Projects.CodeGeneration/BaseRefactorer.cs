@@ -292,7 +292,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
 				m = mMethod;
-				bool isMonoTouchModelAttribute = method.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
+				
 				foreach (ITypeParameter param in method.TypeParameters)
 					mMethod.TypeParameters.Add (param.Name);
 
@@ -300,7 +300,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.Attributes = MemberAttributes.Override;
 				
 				mMethod.ReturnType = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
-				if (isMonoTouchModelAttribute) {
+				if (IsMonoTouchModelMember (method)) {
 					mMethod.Statements.Add (monoTouchModelStatement);
 				} else if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 					CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
@@ -329,7 +329,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 			} else if (member is IProperty) {
 				IProperty property = (IProperty) member;
-				bool isMonoTouchModelAttribute = property.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
+				
 				if (!property.IsIndexer) {
 					CodeMemberProperty mProperty = new CodeMemberProperty ();
 					m = mProperty;
@@ -342,7 +342,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mProperty.HasGet = property.HasGet;
 					mProperty.HasSet = property.HasSet;
 					if (property.HasGet) {
-						if (isMonoTouchModelAttribute) {
+						if (IsMonoTouchModelMember (property)) {
 							mProperty.SetStatements.Add (monoTouchModelStatement);
 						} else if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 							mProperty.GetStatements.Add (throwExpression);
@@ -351,7 +351,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 						}
 					}
 					if (property.HasSet) {
-						if (isMonoTouchModelAttribute) {
+						if (IsMonoTouchModelMember (property)) {
 							mProperty.SetStatements.Add (monoTouchModelStatement);
 						} else if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 							mProperty.SetStatements.Add (throwExpression);
@@ -431,6 +431,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 				}
 			}
 			return m;
+		}
+		
+		public static bool IsMonoTouchModelMember (IMember member)
+		{
+			if (member == null || member.DeclaringType == null)
+				return false;
+			return member.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
 		}
 		
 		public virtual void RemoveMember (RefactorerContext ctx, IType cls, IMember member)

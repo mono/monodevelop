@@ -1,6 +1,11 @@
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	  Refactored monotouch model attribute lookup to a method.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
 	  Worked on 'Bug 583014 - Need a way to stop override
 	  generating base call'.
 
