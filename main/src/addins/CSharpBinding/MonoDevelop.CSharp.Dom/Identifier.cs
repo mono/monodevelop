@@ -37,10 +37,19 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public DomLocation Location {
-			get;
-			set;
+		DomLocation startLocation;
+		public override DomLocation StartLocation {
+			get {
+				return startLocation;
+			}
 		}
+		
+		public override DomLocation EndLocation {
+			get {
+				return new DomLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+			}
+		}
+		
 		/*
 		public ISegment Segment {
 			get {
@@ -54,7 +63,7 @@ namespace MonoDevelop.CSharp.Dom
 		public Identifier (string name, DomLocation location)
 		{
 			this.Name = name;
-			this.Location = location;
+			this.startLocation = location;
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

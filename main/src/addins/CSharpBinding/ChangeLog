@@ -1,5 +1,22 @@
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom/Identifier.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpNode.cs:
+	* MonoDevelop.CSharp.Dom/FullTypeName.cs:
+	* MonoDevelop.CSharp.Dom/CSharpTokenNode.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/AbstractCSharpNode.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/CastExpression.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/PrimitiveExpression.cs:
+	  Worked on formatting visitor/dom.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
 	  Now using the BaseRefactorer.IsMonoTouchModelMember method.
 

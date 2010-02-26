@@ -129,6 +129,7 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngineStack.cs \
 	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
 	MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs \
+	MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs \
 	MonoDevelop.CSharp.Formatting/FormattingPanel.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \

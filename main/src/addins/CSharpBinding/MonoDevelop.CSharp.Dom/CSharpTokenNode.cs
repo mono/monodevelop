@@ -29,14 +29,25 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CSharpTokenNode : AbstractCSharpNode
 	{
-		public DomLocation Location {
-			get;
-			set;
+		DomLocation startLocation;
+		public override DomLocation StartLocation {
+			get {
+				return startLocation;
+			}
 		}
 		
-		public CSharpTokenNode (DomLocation location)
+		int tokenLength;
+		public override DomLocation EndLocation {
+			get {
+				return new DomLocation (StartLocation.Line, StartLocation.Column + tokenLength);
+			}
+		}
+		
+		
+		public CSharpTokenNode (DomLocation location, int tokenLength)
 		{
-			this.Location = location;
+			this.startLocation = location;
+			this.tokenLength = tokenLength;
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

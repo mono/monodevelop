@@ -31,15 +31,32 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class PrimitiveExpression : AbstractCSharpNode
 	{
-		public DomLocation Location {
-			get;
-			set;
+		DomLocation startLocation;
+		public override DomLocation StartLocation {
+			get {
+				return startLocation;
+			}
+		}
+		
+		int length;
+		public override DomLocation EndLocation {
+			get {
+				return new DomLocation (StartLocation.Line, StartLocation.Column + length);
+			}
 		}
 		
 		public object Value {
 			get;
-			set;
+			private set;
 		}
+		
+		public PrimitiveExpression (object value, DomLocation startLocation, int length)
+		{
+			this.Value = value;
+			this.startLocation = startLocation;
+			this.length = length;
+		}
+		
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{

@@ -31,6 +31,24 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public abstract class AbstractCSharpNode : AbstractNode, ICSharpNode
 	{
+		public virtual DomLocation StartLocation {
+			get { 
+				ICSharpNode child = (ICSharpNode)FirstChild;
+				if (child == null)
+					return DomLocation.Empty;
+				return child.StartLocation;
+			}
+		}
+		
+		public virtual DomLocation EndLocation {
+			get { 
+				ICSharpNode child = (ICSharpNode)LastChild;
+				if (child == null)
+					return DomLocation.Empty;
+				return child.EndLocation;
+			}
+		}
+		
 		public abstract S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data);
 	}
 }

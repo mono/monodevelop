@@ -398,7 +398,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool LockParentheses {
+		public bool LockParentheses { // tested
 			get;
 			set;
 		}
@@ -416,43 +416,43 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool AroundLogicalOperatorParentheses {
+		public bool AroundLogicalOperatorParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AroundEqualityOperatorParentheses {
+		public bool AroundEqualityOperatorParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AroundRelationalOperatorParentheses {
+		public bool AroundRelationalOperatorParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AroundBitwiseOperatorParentheses {
+		public bool AroundBitwiseOperatorParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AroundAdditiveOperatorParentheses {
+		public bool AroundAdditiveOperatorParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AroundMultiplicativeOperatorParentheses {
+		public bool AroundMultiplicativeOperatorParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AroundShiftOperatorParentheses {
+		public bool AroundShiftOperatorParentheses { // tested
 			get;
 			set;
 		}
@@ -512,7 +512,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinLockParentheses {
+		public bool WithinLockParentheses { // tested
 			get;
 			set;
 		}
@@ -590,7 +590,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool SpacesAfterSemicolon {
+		public bool SpacesAfterSemicolon { // tested
 			get;
 			set;
 		}
