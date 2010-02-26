@@ -40,7 +40,9 @@ namespace Mono.Debugging.Evaluation
 		{
 			FilteredMembersSource src = new FilteredMembersSource (ctx, objectSource, type, obj, bindingFlags);
 			src.Connect ();
-			return ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			ObjectValue val = ObjectValue.CreateObject (src, new ObjectPath (label), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			val.ChildSelector = "";
+			return val;
 		}
 
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)

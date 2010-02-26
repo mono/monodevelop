@@ -54,6 +54,11 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public EvaluationOptions Clone ()
+		{
+			return (EvaluationOptions) MemberwiseClone ();
+		}
+		
 		public int EvaluationTimeout { get; set; }
 		public int MemberEvaluationTimeout { get; set; }
 		public bool AllowTargetInvoke { get; set; }

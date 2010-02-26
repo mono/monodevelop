@@ -1,3 +1,17 @@
+2010-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/EvaluationOptions.cs: Added clone
+	  method.
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Fix crash
+	  when parsing enums.
+
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Evaluation/BaseTypeViewSource.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Reset
+	  the child selector for values which are only visual group of
+	  members.
+
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/StackFrame.cs: Add null check.

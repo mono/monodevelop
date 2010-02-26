@@ -48,7 +48,9 @@ namespace Mono.Debugging.Evaluation
 		{
 			RawViewSource src = new RawViewSource (ctx, objectSource, obj);
 			src.Connect ();
-			return ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			ObjectValue val = ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			val.ChildSelector = "";
+			return val;
 		}
 		
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)

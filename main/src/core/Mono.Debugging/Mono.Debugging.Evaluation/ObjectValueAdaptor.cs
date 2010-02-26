@@ -211,7 +211,9 @@ namespace Mono.Debugging.Evaluation
 			object longType = GetType (ctx, "System.Int64");
 			TypeValueReference tref = new TypeValueReference (ctx, type);
 			foreach (ValueReference cr in tref.GetChildReferences ()) {
-				object c = Cast (ctx, cr.Value, longType);
+				object c = TryCast (ctx, cr.Value, longType);
+				if (c == null)
+					continue;
 				long val = (long) TargetObjectToObject (ctx, c);
 				EnumMember em = new EnumMember () { Name = cr.Name, Value = val };
 				yield return em;

@@ -50,7 +50,9 @@ namespace Mono.Debugging.Evaluation
 			BaseTypeViewSource src = new BaseTypeViewSource (ctx, objectSource, type, obj);
 			src.Connect ();
 			string tname = ctx.Adapter.GetDisplayTypeName (ctx, type);
-			return ObjectValue.CreateObject (src, new ObjectPath ("base"), tname, "{" + tname + "}", ObjectValueFlags.Type|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			ObjectValue val = ObjectValue.CreateObject (src, new ObjectPath ("base"), tname, "{" + tname + "}", ObjectValueFlags.Type|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			val.ChildSelector = "";
+			return val;
 		}
 		
 		#region IObjectValueSource implementation
