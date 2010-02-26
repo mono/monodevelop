@@ -166,8 +166,11 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			}
 			
-			bool dontCallBase = method.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
-			if (!dontCallBase && !method.IsAbstract && method.DeclaringType.ClassType != ClassType.Interface) {
+			bool isMonoTouchModelAttribute = method.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
+			
+			if (isMonoTouchModelAttribute) {
+				sb.Append ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+			} else if (!method.IsAbstract && method.DeclaringType.ClassType != ClassType.Interface) {
 				if (method.ReturnType != null && method.ReturnType.FullName != "System.Void")
 					sb.Append ("return ");
 				
@@ -251,7 +254,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 		void GeneratePropertyBody (StringBuilder sb, IProperty property)
 		{
-			bool dontCallBase = property.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
+			bool isMonoTouchModelAttribute = property.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
 			
 			if (property.HasGet) {
 				sb.Append (this.indent);
@@ -261,7 +264,9 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (SingleIndent);
 				sb.Append (SingleIndent);
 
-				if (!dontCallBase && !property.IsAbstract) {
+				if (isMonoTouchModelAttribute) {
+					sb.Append ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+				} else if (!property.IsAbstract) {
 					sb.Append ("return base.");
 					sb.Append (property.Name);
 					sb.Append (";");
@@ -281,7 +286,9 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (this.indent);
 				sb.Append (SingleIndent);
 				sb.Append (SingleIndent);
-				if (!dontCallBase && !property.IsAbstract) {
+				if (isMonoTouchModelAttribute) {
+					sb.Append ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+				} else if (!property.IsAbstract) {
 					sb.Append ("base.");
 					sb.Append (property.Name);
 					sb.AppendLine (" = value;");

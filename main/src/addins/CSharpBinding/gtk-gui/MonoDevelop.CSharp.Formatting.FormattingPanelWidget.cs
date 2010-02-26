@@ -120,6 +120,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.indentGotoLabelsLeftJustify = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Place goto labels in leftmost column"));
 			this.indentGotoLabelsLeftJustify.CanFocus = true;
 			this.indentGotoLabelsLeftJustify.Name = "indentGotoLabelsLeftJustify";
+			this.indentGotoLabelsLeftJustify.Active = true;
 			this.indentGotoLabelsLeftJustify.DrawIndicator = true;
 			this.indentGotoLabelsLeftJustify.UseUnderline = true;
 			this.indentGotoLabelsLeftJustify.Group = new global::GLib.SList (global::System.IntPtr.Zero);

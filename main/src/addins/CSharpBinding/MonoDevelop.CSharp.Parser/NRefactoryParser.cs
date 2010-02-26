@@ -315,6 +315,7 @@ namespace MonoDevelop.CSharp.Parser
 						DomAttribute domAttribute = new DomAttribute ();
 						domAttribute.Name = attribute.Name;
 						domAttribute.Region = ConvertRegion (attribute.StartLocation, attribute.EndLocation);
+						domAttribute.AttributeType = new DomReturnType (attribute.Name);
 						member.Add (domAttribute);
 						foreach (ICSharpCode.NRefactory.Ast.Expression exp in attribute.PositionalArguments)
 							domAttribute.AddPositionalArgument ((CodeExpression)exp.AcceptVisitor (domVisitor, null));
