@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 /*
 using System;
 using NUnit.Framework;
@@ -333,26 +334,91 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		
-		[Test()]
-		public void TestSpacesAroundMultiplicativeOperator ()
+		static void TestBinaryOperator (CSharpFormattingPolicy policy, string op)
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
-	void TestMe ()
-	{
-		result = left*right;
-	}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundMultiplicativeOperatorParentheses = true;
+			data.Document.Text = "class Test { void TestMe () { result = left" +op+"right; } }";
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("left");
 			int i2 = data.Document.Text.IndexOf ("right") + "right".Length;
-			Assert.AreEqual (@"left * right", data.Document.GetTextBetween (i1, i2));
+			if (i1 < 0 || i2 < 0)
+				Assert.Fail ("text invalid:" + data.Document.Text);
+			Assert.AreEqual ("left " + op + " right", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestSpacesAroundMultiplicativeOperator ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundMultiplicativeOperatorParentheses = true;
+			
+			TestBinaryOperator (policy, "*");
+			TestBinaryOperator (policy, "/");
+		}
+		
+		[Test()]
+		public void TestSpacesAroundShiftOperator ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundShiftOperatorParentheses = true;
+			TestBinaryOperator (policy, "<<");
+			TestBinaryOperator (policy, ">>");
+		}
+		
+		[Test()]
+		public void TestSpacesAroundAdditiveOperator ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundAdditiveOperatorParentheses = true;
+			
+			TestBinaryOperator (policy, "+");
+			TestBinaryOperator (policy, "-");
+		}
+		
+		[Test()]
+		public void TestSpacesAroundBitwiseOperator ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundBitwiseOperatorParentheses = true;
+			
+			TestBinaryOperator (policy, "&");
+			TestBinaryOperator (policy, "|");
+			TestBinaryOperator (policy, "^");
+		}
+		
+		[Test()]
+		public void TestSpacesAroundRelationalOperator ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundRelationalOperatorParentheses = true;
+			
+			TestBinaryOperator (policy, "<");
+			TestBinaryOperator (policy, "<=");
+			TestBinaryOperator (policy, ">");
+			TestBinaryOperator (policy, ">=");
+		}
+		
+		[Test()]
+		public void TestSpacesAroundEqualityOperator ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundEqualityOperatorParentheses = true;
+			
+			TestBinaryOperator (policy, "==");
+			TestBinaryOperator (policy, "!=");
+		}
+		
+		[Test()]
+		public void TestSpacesAroundLogicalOperator ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AroundLogicalOperatorParentheses = true;
+			
+			TestBinaryOperator (policy, "&&");
+			TestBinaryOperator (policy, "||");
 		}
 		
 		[Test()]
@@ -723,6 +789,49 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		
+		[Test()]
+		public void TestSpacesAfterSemicolon ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		for (int i;true;i++) ;
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.SpacesAfterSemicolon = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("for");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			
+			Assert.AreEqual (@"for (int i; true; i++)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestSpacesAfterTypecast ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMe ()
+	{
+return (Test)null;
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.SpacesAfterTypecast = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("return");
+			int i2 = data.Document.Text.LastIndexOf ("null") + "null".Length;
+			Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"return (Test) null", data.Document.GetTextBetween (i1, i2));
+		}
 		
 	}
 }*/
