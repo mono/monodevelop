@@ -458,6 +458,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 				words.Sort (comparer);
 				idx = words[0].Key;
 				hasMismatches = false;
+				// exact match found.
+				if (words[0].Value.ToUpper () == (partialWord ?? "").ToUpper ()) 
+					return idx;
 			}
 			
 			if (partialWord != null && partialWord.Length < 2) {
