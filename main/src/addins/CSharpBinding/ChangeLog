@@ -1,5 +1,10 @@
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	  Now using the BaseRefactorer.IsMonoTouchModelMember method.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs:
 	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
 	* gtk-gui/MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs:
