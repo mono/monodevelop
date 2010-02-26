@@ -1408,7 +1408,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorView ()
 		{
-			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press F3 to scroll");
+			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press 'shift+space' for focus");
 			ClipboardActions.CopyOperation.Copy += delegate (string text) {
 				if (String.IsNullOrEmpty (text))
 					return;
