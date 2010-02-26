@@ -1,5 +1,11 @@
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor.Highlighting/SemanticRule.cs: Re-activated
+	  url marker.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 583459 - When
 	  the fold marker very wide, preview shows offscrre'.
 
