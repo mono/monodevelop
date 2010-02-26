@@ -1473,7 +1473,21 @@ namespace Mono.TextEditor
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);
 			codeSegmentEditorWindow.SyntaxMode = Document.SyntaxMode;
-			codeSegmentEditorWindow.Text       = this.Document.GetTextAt (previewSegment);
+			
+			int indentLength = SyntaxMode.GetIndentLength (Document, previewSegment.Offset, previewSegment.Length, false);
+			
+			StringBuilder textBuilder = new StringBuilder ();
+			int curOffset = previewSegment.Offset;
+			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
+				LineSegment line = Document.GetLineByOffset (curOffset);
+				string lineText = Document.GetTextAt (curOffset, line.Offset + line.EditableLength - curOffset);
+				textBuilder.Append (lineText);
+				textBuilder.AppendLine ();
+				curOffset = line.EndOffset + indentLength;
+			}
+			
+			codeSegmentEditorWindow.Text = textBuilder.ToString ();
+			
 			HideCodeSegmentPreviewWindow ();
 			codeSegmentEditorWindow.ShowAll ();
 			
@@ -1490,7 +1504,7 @@ namespace Mono.TextEditor
 			if (segment == null) {
 				return;
 			}
-			previewWindow = new CodeSegmentPreviewWindow (this.textEditor, segment);
+			previewWindow = new CodeSegmentPreviewWindow (this.textEditor, false, segment);
 			int ox = 0, oy = 0;
 			this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
 			

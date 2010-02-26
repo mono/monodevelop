@@ -125,14 +125,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string GetMarkup (Document doc, ITextEditorOptions options, Style style, int offset, int length, bool removeIndent, bool useColors, bool replaceTabs)
 		{
+			int indentLength = GetIndentLength (doc, offset, length, false);
 			int curOffset = offset;
-			int indentLength = int.MaxValue;
-			while (curOffset < offset + length) {
-				LineSegment line = doc.GetLineByOffset (curOffset);
-				indentLength = System.Math.Min (indentLength, line.GetIndentation (doc).Length);
-				curOffset = line.EndOffset + 1;
-			}
-			curOffset = offset;
 			
 			StringBuilder result = new StringBuilder ();
 			while (curOffset < offset + length && curOffset < doc.Length) {
@@ -207,6 +201,22 @@ namespace Mono.TextEditor.Highlighting
 					result.AppendLine ();
 			}
 			return result.ToString ();
+		}
+		
+		public static int GetIndentLength (Document doc, int offset, int length, bool skipFirstLine)
+		{
+			int curOffset = offset;
+			int indentLength = int.MaxValue;
+			while (curOffset < offset + length) {
+				LineSegment line = doc.GetLineByOffset (curOffset);
+				if (!skipFirstLine) {
+					indentLength = System.Math.Min (indentLength, line.GetIndentation (doc).Length);
+				} else {
+					skipFirstLine = false;
+				}
+				curOffset = line.EndOffset + 1;
+			}
+			return indentLength == int.MaxValue ? 0 : indentLength;
 		}
 		
 		public virtual SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)

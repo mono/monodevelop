@@ -46,6 +46,8 @@ namespace Mono.TextEditor
 			}
 			set {
 				codeSegmentEditor.Document.Text = value;
+				codeSegmentEditor.Document.UpdateHighlighting ();
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (codeSegmentEditor.Document);
 			}
 		}
 		

@@ -41,31 +41,31 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		Pango.FontDescription fontDescription;
 		Pango.Layout layout;
+		Pango.Layout informLayout;
 		
-		static string codeSegmentPreviewInformString = "Press F3 to scroll";
 		public static string CodeSegmentPreviewInformString {
-			get {
-				return codeSegmentPreviewInformString;
-			}
-			set {
-				codeSegmentPreviewInformString = value;
-			}
-		}
-		
-		public bool HideCodeSegmentPreviewInformString {
 			get;
 			set;
 		}
 		
-		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment) : this(editor, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
+		public bool HideCodeSegmentPreviewInformString {
+			get;
+			private set;
+		}
+		
+		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight)
 		{
 		}
 		
-		public CodeSegmentPreviewWindow (TextEditor editor, ISegment segment, int width, int height) : base (Gtk.WindowType.Popup)
+		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, int width, int height) : base (Gtk.WindowType.Popup)
 		{
+			this.HideCodeSegmentPreviewInformString = hideCodeSegmentPreviewInformString;
 			this.editor = editor;
 			this.AppPaintable = true;
-			layout = new Pango.Layout (this.PangoContext);
+			layout = new Pango.Layout (PangoContext);
+			informLayout = new Pango.Layout (PangoContext);
+			informLayout.SetText (CodeSegmentPreviewInformString);
+			
 			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
 			fontDescription.Size = (int)(fontDescription.Size * 0.8f);
 			layout.FontDescription = fontDescription;
@@ -93,6 +93,13 @@ namespace Mono.TextEditor
 			int w, h;
 			layout.GetPixelSize (out w, out h);
 			
+			if (!HideCodeSegmentPreviewInformString) {
+				int w2, h2;
+				informLayout.GetPixelSize (out w2, out h2); 
+				w = System.Math.Max (w, w2);
+				h = System.Math.Max (h, h2);
+			}
+			
 			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 3, Screen.Width * 2 / 5)), 
 			                     System.Math.Max (1, System.Math.Min (h + 3, Screen.Height * 2 / 5)));
 		}
@@ -100,6 +107,7 @@ namespace Mono.TextEditor
 		protected override void OnDestroyed ()
 		{
 			layout = layout.Kill ();
+			informLayout = informLayout.Kill ();
 			fontDescription = fontDescription.Kill ();
 			gc = gc.Kill ();
 			base.OnDestroyed ();
@@ -129,16 +137,14 @@ namespace Mono.TextEditor
 			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
 			
 			if (!HideCodeSegmentPreviewInformString) {
-				using (Pango.Layout informLayout = new Pango.Layout (PangoContext)) {
-					informLayout.SetText (CodeSegmentPreviewInformString);
-					int w, h;
-					informLayout.GetPixelSize (out w, out h); 
-					
-					gc.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
-					ev.Window.DrawRectangle (gc, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
-					gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
-					ev.Window.DrawLayout (gc, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
-				}
+				informLayout.SetText (CodeSegmentPreviewInformString);
+				int w, h;
+				informLayout.GetPixelSize (out w, out h); 
+				
+				gc.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
+				ev.Window.DrawRectangle (gc, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
+				gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
+				ev.Window.DrawLayout (gc, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
 			}
 			return true;
 		}
