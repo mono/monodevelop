@@ -1,5 +1,11 @@
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
+	  'Bug 583495 - Clicking on search result briefly selects
+	  result'.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
 	  583461 - Fold preview scrolling is strange'.
 
