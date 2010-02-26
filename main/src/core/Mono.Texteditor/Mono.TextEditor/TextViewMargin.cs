@@ -1517,7 +1517,9 @@ namespace Mono.TextEditor
 				x = hintRectangle.Left - w;
 			if (y + oy + h > this.textEditor.GdkWindow.Screen.Height)
 				y = hintRectangle.Top - h;
-			previewWindow.Move (ox + x, oy + y);
+			int destX = System.Math.Max (0, ox + x);
+			int destY = System.Math.Max (0, oy + y);
+			previewWindow.Move (destX, destY);
 			previewWindow.ShowAll ();
 		}
 
