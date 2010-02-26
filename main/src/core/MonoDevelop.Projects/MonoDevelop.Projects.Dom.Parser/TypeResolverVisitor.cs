@@ -62,6 +62,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return res;
 		}
 		
+		bool visitAttribute = false;
+		public override INode Visit (IAttribute attribute, IType data)
+		{
+			visitAttribute = true;
+			var result = base.Visit (attribute, data);
+			visitAttribute = false;
+			return result;
+		}
+
+		
 		public override INode Visit (IReturnType type, IType contextType)
 		{
 			if (type.GenericArguments.Count == 0 && unit != null) { 
@@ -109,7 +119,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 //			if (firstPart.GenericArguments.Count > 0)
 //				name += "`" + firstPart.GenericArguments.Count;
 			IType lookupType = db.SearchType (new SearchTypeRequest (unit, contextType, name));
-			
+			if (visitAttribute && lookupType == null) {
+				name += "Attribute";
+				lookupType = db.SearchType (new SearchTypeRequest (unit, contextType, name));
+			}
 			if (lookupType == null) {
 				unresolvedCount++;
 				return db.GetSharedReturnType (type);

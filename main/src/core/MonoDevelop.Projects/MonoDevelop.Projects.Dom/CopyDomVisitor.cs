@@ -53,7 +53,8 @@ namespace MonoDevelop.Projects.Dom
 			newAttr.Name = attribute.Name;
 			newAttr.Region = attribute.Region;
 			newAttr.AttributeTarget = attribute.AttributeTarget;
-			newAttr.AttributeType = attribute.AttributeType;
+			if (attribute.AttributeType != null)
+				newAttr.AttributeType = (IReturnType)attribute.AttributeType.AcceptVisitor (this, data);
 			
 			foreach (CodeExpression exp in attribute.PositionalArguments)
 				newAttr.AddPositionalArgument (exp);

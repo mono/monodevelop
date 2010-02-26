@@ -1,3 +1,9 @@
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
+	  Fixed attribute type lookup.
+
 2010-02-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
