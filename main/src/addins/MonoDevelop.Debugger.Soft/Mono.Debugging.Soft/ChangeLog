@@ -1,3 +1,7 @@
+2010-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Implement enum conversions.
+
 2010-02-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugger.Soft.dll:

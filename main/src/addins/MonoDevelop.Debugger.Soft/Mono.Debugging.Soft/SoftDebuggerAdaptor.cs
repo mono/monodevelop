@@ -109,6 +109,7 @@ namespace Mono.Debugging.Soft
 
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
 		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			if (obj == null)
 				return null;
 			object otype = GetValueType (ctx, obj);
@@ -123,7 +124,10 @@ namespace Mono.Debugging.Soft
 				if (targetType is TypeMirror) {
 					TypeMirror tm = (TypeMirror) targetType;
 					if (tm.IsEnum) {
-						// TODO: convert to enum
+						PrimitiveValue casted = TryCast (ctx, obj, tm.EnumUnderlyingType) as PrimitiveValue;
+						if (casted == null)
+							return null;
+						return cx.Session.VirtualMachine.CreateEnumMirror (tm, casted);
 					}
 					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
 				}
@@ -757,10 +761,6 @@ namespace Mono.Debugging.Soft
 		{
 			if (obj is StringMirror)
 				return ((StringMirror)obj).Value;
-			else if (obj is EnumMirror) {
-				EnumMirror eob = (EnumMirror) obj;
-				return new EvaluationResult (eob.Type.FullName + "." + eob.StringValue, eob.StringValue);
-			}
 			else if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value;
 			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
