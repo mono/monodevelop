@@ -270,7 +270,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			foreach (KeyValuePair<IMember,IReturnType> mem in members)
 				yield return CreateImplementation (ctx, cls, mem.Key, mem.Value);
 		}
-		
+		static CodeCommentStatement monoTouchModelStatement = new CodeCommentStatement ("TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+
 		protected CodeTypeMember CreateImplementation (RefactorerContext ctx, IType cls, IMember member, 
 		                                               IReturnType privateImplementationType)
 		{
@@ -291,7 +292,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				CodeMemberMethod mMethod = new CodeMemberMethod ();
 				IMethod method = (IMethod) member;
 				m = mMethod;
-				bool dontCallBase = method.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
+				bool isMonoTouchModelAttribute = method.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
 				foreach (ITypeParameter param in method.TypeParameters)
 					mMethod.TypeParameters.Add (param.Name);
 
@@ -299,7 +300,9 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.Attributes = MemberAttributes.Override;
 				
 				mMethod.ReturnType = ReturnTypeToDom (ctx, cls.CompilationUnit, member.ReturnType);
-				if (dontCallBase || member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+				if (isMonoTouchModelAttribute) {
+					mMethod.Statements.Add (monoTouchModelStatement);
+				} else if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 					CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
 					CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
 					mMethod.Statements.Add (throwExpression);
@@ -326,7 +329,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 					mMethod.PrivateImplementationType = ReturnTypeToDom (ctx, cls.CompilationUnit, privateImplementationType);
 			} else if (member is IProperty) {
 				IProperty property = (IProperty) member;
-				bool dontCallBase = property.DeclaringType.Attributes.Any (attr => attr.Name == "ModelAttribute" || attr.Name == "Model");
+				bool isMonoTouchModelAttribute = property.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
 				if (!property.IsIndexer) {
 					CodeMemberProperty mProperty = new CodeMemberProperty ();
 					m = mProperty;
@@ -334,18 +337,23 @@ namespace MonoDevelop.Projects.CodeGeneration
 						mProperty.Attributes = MemberAttributes.Override;
 				
 					CodeExpression nieReference = new CodeObjectCreateExpression (TypeToDom (ctx, typeof (NotImplementedException)));
+					
 					CodeStatement throwExpression = new CodeThrowExceptionStatement (nieReference);
 					mProperty.HasGet = property.HasGet;
 					mProperty.HasSet = property.HasSet;
 					if (property.HasGet) {
-						if (dontCallBase || member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+						if (isMonoTouchModelAttribute) {
+							mProperty.SetStatements.Add (monoTouchModelStatement);
+						} else if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 							mProperty.GetStatements.Add (throwExpression);
 						} else {
 							mProperty.GetStatements.Add (new CodeMethodReturnStatement (new CodePropertyReferenceExpression(new CodeBaseReferenceExpression(), property.Name)));
 						}
 					}
 					if (property.HasSet) {
-						if (dontCallBase || member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
+						if (isMonoTouchModelAttribute) {
+							mProperty.SetStatements.Add (monoTouchModelStatement);
+						} else if (member.IsAbstract || member.DeclaringType.ClassType == ClassType.Interface) {
 							mProperty.SetStatements.Add (throwExpression);
 						} else {
 							mProperty.SetStatements.Add (new CodeAssignStatement (new CodePropertyReferenceExpression(new CodeBaseReferenceExpression(), property.Name), new CodePropertySetValueReferenceExpression ()));

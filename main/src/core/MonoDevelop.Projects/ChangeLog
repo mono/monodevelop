@@ -1,5 +1,11 @@
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	  Worked on 'Bug 583014 - Need a way to stop override
+	  generating base call'.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
 	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
 	  Fixed attribute type lookup.
