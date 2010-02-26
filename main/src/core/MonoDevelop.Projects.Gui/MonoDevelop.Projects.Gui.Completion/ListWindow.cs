@@ -428,12 +428,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 					return 1;
 				if (xExact > yExact)
 					return -1;
-//				if (x.Length != y.Length)
-//					return x.Length.CompareTo (y.Length);
 				int xIndex = xpair.Key;
 				int yIndex = ypair.Key;
 				
-				return xIndex.CompareTo (yIndex);
+				if (x.Length == y.Length)
+					return xIndex.CompareTo (yIndex);
+				
+				return x.Length.CompareTo (y.Length);
 			}
 		}
 		

@@ -1,3 +1,10 @@
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  'Bug 583396 - Exact completion matches should always
+	  override history/fuzzy'.
+
+
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: added
