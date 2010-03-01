@@ -11,7 +11,7 @@ namespace Mono.Debugging.Evaluation
 {
 	public abstract class ObjectValueAdaptor: IDisposable
 	{
-		static Dictionary<string, TypeDisplayData> typeDisplayData = new Dictionary<string, TypeDisplayData> ();
+		Dictionary<string, TypeDisplayData> typeDisplayData = new Dictionary<string, TypeDisplayData> ();
 
 		// Time to wait while evaluating before switching to async mode
 		public int DefaultEvaluationWaitTime = 100;

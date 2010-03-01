@@ -653,7 +653,7 @@ namespace Mono.Debugging.Client
 					}
 					resolvedExpressionCache [key] = resolved;
 				}
-				return resolved;
+				return resolved ?? expression;
 			}
 		}
 		

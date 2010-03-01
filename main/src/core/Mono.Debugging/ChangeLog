@@ -1,5 +1,15 @@
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/DebuggerSession.cs: Fix null ref.
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Type data
+	  should not be static.
+
+	* Mono.Debugging.Evaluation/NRefactoryResolverVisitor.cs:
+	  Improved resolution of generic types.
+
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
 	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Add
 	  support for indexer with more than one parameter.

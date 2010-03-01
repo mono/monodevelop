@@ -72,27 +72,35 @@ namespace Mono.Debugging.Evaluation
 			return sb.ToString ();
 		}
 		
-		void ResolveType (string typeName, ICSharpCode.NRefactory.Location loc)
+		void ResolveType (string typeName, int genericArgCout, int offset, int length)
 		{
-			if (loc.IsEmpty)
-				return;
+			if (genericArgCout > 0)
+				typeName += "<" + new string (',', genericArgCout - 1) + ">";
 			string type = session.ResolveIdentifierAsType (typeName, location);
 			if (!string.IsNullOrEmpty (type)) {
 				type = "global::" + type;
-				Replacement r = new Replacement () { Offset = loc.Column - 1, Length=typeName.Length, NewText = type };
+				Replacement r = new Replacement () { Offset = offset, Length=length, NewText = type };
 				replacements.Add (r);
 			}
 		}
 		
 		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.Ast.IdentifierExpression identifierExpression, object data)
 		{
-			ResolveType (identifierExpression.Identifier, identifierExpression.StartLocation);
+			if (!identifierExpression.StartLocation.IsEmpty)
+				ResolveType (identifierExpression.Identifier, 0, identifierExpression.StartLocation.Column - 1, identifierExpression.EndLocation.Column - identifierExpression.StartLocation.Column);
 			return null;
 		}
 		
 		public override object VisitTypeReference (ICSharpCode.NRefactory.Ast.TypeReference typeReference, object data)
 		{
-			ResolveType (typeReference.Type, typeReference.StartLocation);
+			if (!typeReference.StartLocation.IsEmpty) {
+				int offset = typeReference.StartLocation.Column - 1;
+				int len = typeReference.EndLocation.Column - typeReference.StartLocation.Column;
+				int i = expression.IndexOf ('<', offset);
+				if (i != -1 && i < offset + len)
+					len = i - offset;
+				ResolveType (typeReference.Type, typeReference.GenericTypes.Count, offset, len);
+			}
 			return base.VisitTypeReference (typeReference, data);
 		}
 
