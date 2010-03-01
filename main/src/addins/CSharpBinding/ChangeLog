@@ -1,3 +1,8 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs: Fix indexer
+	  assignment that caused failing unit tests.
+
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs: Fixed 'Bug

@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharp.Parser
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 
 				parser.Errors.Error += delegate(int line, int col, string message) { result.Add (new Error (ErrorType.Error, line, col, message)); };
-				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
+				parser.Lexer.SpecialCommentTags = LexerTags;
 				parser.Lexer.EvaluateConditionalCompilation = true;
 				if (dom != null && dom.Project != null) {
 					DotNetProjectConfiguration conf = dom.Project.DefaultConfiguration as DotNetProjectConfiguration;
@@ -721,7 +721,7 @@ namespace MonoDevelop.CSharp.Parser
 				indexer.PropertyModifier |= PropertyModifier.IsIndexer;
 				indexer.Location = ConvertLocation (indexerDeclaration.StartLocation);
 				indexer.BodyRegion = ConvertRegion (indexerDeclaration.EndLocation, indexerDeclaration.BodyEnd);
-				indexer.Modifiers = ConvertModifiers (indexerDeclaration.Modifier);
+				indexer.GetterModifier = indexer.SetterModifier = ConvertModifiers (indexerDeclaration.Modifier);
 				indexer.ReturnType = ConvertReturnType (indexerDeclaration.TypeReference);
 				indexer.Add (ConvertParameterList (indexer, indexerDeclaration.Parameters));
 
@@ -730,10 +730,14 @@ namespace MonoDevelop.CSharp.Parser
 
 				if (indexerDeclaration.HasGetRegion) {
 					indexer.PropertyModifier |= PropertyModifier.HasGet;
+					if (indexerDeclaration.GetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+						indexer.GetterModifier = ConvertModifiers (indexerDeclaration.GetRegion.Modifier);
 					indexer.GetRegion = ConvertRegion (indexerDeclaration.GetRegion.StartLocation, indexerDeclaration.GetRegion.EndLocation);
 				}
 				if (indexerDeclaration.HasSetRegion) {
 					indexer.PropertyModifier |= PropertyModifier.HasSet;
+					if (indexerDeclaration.SetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+						indexer.SetterModifier = ConvertModifiers (indexerDeclaration.SetRegion.Modifier);
 					indexer.SetRegion = ConvertRegion (indexerDeclaration.SetRegion.StartLocation, indexerDeclaration.SetRegion.EndLocation);
 				}
 				indexer.DeclaringType = typeStack.Peek ();
