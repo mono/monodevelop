@@ -291,10 +291,22 @@ namespace MonoDevelop.AssemblyBrowser
 				result.Append ("\t");
 				result.Append (Ambience.GetString (property, settings));
 				result.Append (" <span style=\"text\">{</span>");
-				if (property.HasGet)
+				if (property.HasGet) {
+					if (property.GetterModifier != property.Modifiers) {
+						result.Append (" <span style=\"keyword.modifier\">");
+						result.Append (Ambience.GetString (property.GetterModifier));
+						result.Append ("</span>");
+					}
 					result.Append (" <span style=\"keyword.property\">get</span><span style=\"text\">;</span>");
-				if (property.HasSet)
+				}
+				if (property.HasSet) {
+					if (property.SetterModifier != property.Modifiers) {
+						result.Append (" <span style=\"keyword.modifier\">");
+						result.Append (Ambience.GetString (property.SetterModifier));
+						result.Append ("</span>");
+					}
 					result.Append (" <span style=\"keyword.property\">set</span><span style=\"text\">;</span>");
+				}
 				result.Append (" <span style=\"text\">}</span>");
 				result.AppendLine ();
 			}

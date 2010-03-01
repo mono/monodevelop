@@ -1,5 +1,11 @@
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
+	* MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs: Fixed
+	  'Bug 583515 - No code completion for set-only properties'.
+
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs: Delegates
 	  are now formatted like c# in c# mode.
 
