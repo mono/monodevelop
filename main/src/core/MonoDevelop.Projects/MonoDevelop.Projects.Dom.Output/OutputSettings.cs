@@ -26,12 +26,19 @@
 
 using System;
 using System.Text;
+using MonoDevelop.Projects.Policies;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom.Output
 {
 	public class OutputSettings
 	{
 		public OutputFlags OutputFlags {
+			get;
+			set;
+		}
+		
+		public PolicyContainer PolicyParent {
 			get;
 			set;
 		}
@@ -205,6 +212,12 @@ namespace MonoDevelop.Projects.Dom.Output
 		public bool UseNETTypeNames {
 			get {
 				return (OutputFlags & OutputFlags.UseNETTypeNames) != 0;
+			}
+		}
+		
+		public bool ReformatDelegates {
+			get {
+				return (OutputFlags & OutputFlags.ReformatDelegates) != 0;
 			}
 		}
 		

@@ -1,3 +1,9 @@
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs:
+	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Ambiences
+	  can now format delegates & take formatting policies.
+
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
