@@ -454,7 +454,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		public virtual ValueReference GetIndexerReference (EvaluationContext ctx, object target, object index)
+		public virtual ValueReference GetIndexerReference (EvaluationContext ctx, object target, object[] indices)
 		{
 			return null;
 		}
