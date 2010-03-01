@@ -303,8 +303,16 @@ namespace MonoDevelop.AssemblyBrowser
 			result.AppendLine ();
 			return result.ToString ();
 		}
+		
 		public string GetDecompiledCode (ITreeNavigator navigator)
 		{
+			IType type = (IType)navigator.DataItem;
+			if (type.ClassType == ClassType.Delegate) {
+				settings.OutputFlags |= OutputFlags.ReformatDelegates;
+				string result =  Ambience.GetString (type, settings);
+				settings.OutputFlags &= ~OutputFlags.ReformatDelegates;
+				return result;
+			}
 			return GetDisassembly (navigator);
 		}
 		
