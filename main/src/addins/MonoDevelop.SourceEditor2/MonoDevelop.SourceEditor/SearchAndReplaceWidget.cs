@@ -341,7 +341,8 @@ namespace MonoDevelop.SourceEditor
 			searchPattern = widget.TextEditor.SearchPattern;
 //			UpdateSearchEntry ();
 		}
-		
+		int curSearchResult = -1;
+		string curSearchPattern = null;
 		private void OnNavigateKeyPressEvent (object o, KeyPressEventArgs args)
 		{
 			args.RetVal = false;
@@ -359,10 +360,27 @@ But I leave it in in the case I've missed something. Mike
 				case Gdk.Key.Up:
 					if ((args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask && o == searchEntry.Entry) {
 						searchEntry.PopupFilterMenu ();
-						args.RetVal = true;
 					} else {
-//						widget.TextEditor.GrabFocus ();
+						if (curSearchResult == -1)
+							curSearchPattern = searchEntry.Entry.Text;
+						
+						List<string> history = GetHistory (seachHistoryProperty);
+						if (history.Count > 0) {
+							curSearchResult += args.Event.Key == Gdk.Key.Up ? -1 : 1;
+							if (curSearchResult >= history.Count)
+								curSearchResult = -1;
+							if (curSearchResult == -1) {
+								searchEntry.Entry.Text = curSearchPattern;
+							} else {
+								if (curSearchResult < -1)
+									curSearchResult = history.Count - 1;
+								
+								searchEntry.Entry.Text = history[curSearchResult];
+							}
+							searchEntry.Entry.Position = -1;
+						}
 					}
+					args.RetVal = true;
 					break;
 				case Gdk.Key.N:
 				case Gdk.Key.n:
