@@ -692,16 +692,20 @@ namespace MonoDevelop.CSharp.Parser
 				property.Documentation = RetrieveDocumentation (propertyDeclaration.StartLocation.Line);
 				property.Location = ConvertLocation (propertyDeclaration.StartLocation);
 				property.BodyRegion = ConvertRegion (propertyDeclaration.EndLocation, propertyDeclaration.BodyEnd);
-				property.Modifiers = ConvertModifiers (propertyDeclaration.Modifier);
+				property.GetterModifier = property.SetterModifier = ConvertModifiers (propertyDeclaration.Modifier);
 				property.ReturnType = ConvertReturnType (propertyDeclaration.TypeReference);
 				AddAttributes (property, propertyDeclaration.Attributes);
 				AddExplicitInterfaces (property, propertyDeclaration.InterfaceImplementations);
 				if (propertyDeclaration.HasGetRegion) {
 					property.PropertyModifier |= PropertyModifier.HasGet;
+					if (propertyDeclaration.GetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+						property.GetterModifier = ConvertModifiers (propertyDeclaration.GetRegion.Modifier);
 					property.GetRegion = ConvertRegion (propertyDeclaration.GetRegion.StartLocation, propertyDeclaration.GetRegion.EndLocation);
 				}
 				if (propertyDeclaration.HasSetRegion) {
 					property.PropertyModifier |= PropertyModifier.HasSet;
+					if (propertyDeclaration.SetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+						property.SetterModifier = ConvertModifiers (propertyDeclaration.SetRegion.Modifier);
 					property.SetRegion = ConvertRegion (propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
 				}
 				property.DeclaringType = typeStack.Peek ();
