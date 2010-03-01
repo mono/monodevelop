@@ -32,6 +32,7 @@ using Mono.Debugger.Languages;
 using Mono.Debugging.Client;
 using System.Collections.Generic;
 using Mono.Debugging.Evaluation;
+using System.Text;
 
 namespace DebuggerServer
 {
@@ -114,7 +115,14 @@ namespace DebuggerServer
 		
 		public override string Name {
 			get {
-				return "[" + Server.Instance.Evaluator.TargetObjectToExpression (Context, index) + "]";
+				StringBuilder sb = new StringBuilder ("[");
+				for (int n=0; n<index.Length; n++) {
+					if (n > 0)
+						sb.Append (',');
+					sb.Append (Server.Instance.Evaluator.TargetObjectToExpression (Context, index[n]));
+				}
+				sb.Append (']');
+				return sb.ToString ();
 			}
 		}
 

@@ -1,6 +1,11 @@
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* IndexerValueReference.cs:
+	* MdbObjectValueAdaptor.cs: Fixed indexer issues.
+
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IndexerValueReference.cs:
 	* MdbObjectValueAdaptor.cs: Track api changes.
 
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>

@@ -465,7 +465,9 @@ namespace DebuggerServer
 		public override ValueReference GetIndexerReference (EvaluationContext gctx, object target, object[] indices)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
-			return IndexerValueReference.CreateIndexerValueReference (ctx, (TargetObject) target, (TargetObject[]) indices);
+			TargetObject[] indexArray = new TargetObject [indices.Length];
+			Array.Copy (indices, indexArray, indices.Length);
+			return IndexerValueReference.CreateIndexerValueReference (ctx, (TargetObject) target, indexArray);
 		}
 
 
