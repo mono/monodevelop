@@ -1,3 +1,10 @@
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/QuickFixHandler.cs:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Implemented
+	  'Bug 582410 - Feature request: Resolve using for extension
+	  methods'.
+
 2010-02-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:

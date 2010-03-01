@@ -176,36 +176,6 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			
-			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
-				IReturnType returnType = null; 
-				INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (doc.FileName));
-				if (astProvider != null) 
-					returnType = astProvider.ParseTypeReference (resolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
-				if (returnType == null)
-					returnType = DomReturnType.FromInvariantString (resolveResult.ResolvedExpression.Expression);
-				List<string> namespaces = new List<string> (ctx.ResolvePossibleNamespaces (returnType));
-				if (item == null || namespaces.Count > 1) {
-					CommandInfoSet resolveMenu = new CommandInfoSet ();
-					resolveMenu.Text = GettextCatalog.GetString ("Resolve");
-					if (item == null) {
-						foreach (string ns in namespaces) {
-							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
-							info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
-						}
-						resolveMenu.CommandInfos.AddSeparator ();
-					} else {
-						// remove all unused namespaces (for resolving conflicts)
-						namespaces.RemoveAll (ns => !doc.CompilationUnit.IsNamespaceUsedAt (ns, resolveResult.ResolvedExpression.Region.Start));
-					}
-					
-					foreach (string ns in namespaces) {
-						resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).ResolveName));
-					}
-					if (namespaces.Count > (item == null ? 0 : 1))
-						ainfo.Add (resolveMenu, null);
-				}
-			}
-			
 			INode realItem = item;
 			if (item is InstantiatedType)
 				realItem = ((InstantiatedType)item).UninstantiatedType;
@@ -221,6 +191,40 @@ namespace MonoDevelop.Refactoring
 				ResolveResult = resolveResult,
 				SelectedItem = realItem
 			};
+			
+			if (resolveResult != null  && resolveResult.ResolvedExpression != null && !string.IsNullOrEmpty (resolveResult.ResolvedExpression.Expression)) {
+				bool resolveDirect;
+				List<string> namespaces = QuickFixHandler.GetResolveableNamespaces (options, out resolveDirect);
+			
+				if (item == null || namespaces.Count > 1) {
+					CommandInfoSet resolveMenu = new CommandInfoSet ();
+					resolveMenu.Text = GettextCatalog.GetString ("Resolve");
+					if (item == null) {
+						foreach (string ns in namespaces) {
+							// remove used namespaces for conflict resolving. 
+							if (options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start))
+								continue;
+							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
+							info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
+						}
+						if (!(resolveResult is UnresolvedMemberResolveResult))
+							resolveMenu.CommandInfos.AddSeparator ();
+					} else {
+						// remove all unused namespaces (for resolving conflicts)
+						namespaces.RemoveAll (ns => !doc.CompilationUnit.IsNamespaceUsedAt (ns, resolveResult.ResolvedExpression.Region.Start));
+					}
+					
+					if (resolveDirect) {
+						foreach (string ns in namespaces) {
+							resolveMenu.CommandInfos.Add (ns, new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).ResolveName));
+						}
+					}
+					if (namespaces.Count > (item == null ? 0 : 1))
+						ainfo.Add (resolveMenu, null);
+				}
+			}
+			
+			
 			
 			if (doc.CompilationUnit != null && doc.CompilationUnit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (line, column))) {
 				CommandInfoSet organizeUsingsMenu = new CommandInfoSet ();
@@ -292,7 +296,7 @@ namespace MonoDevelop.Refactoring
 			} else {
 				canRename = false;
 			}
-			Console.WriteLine ("eitem : " + eitem  +"/" + resolveResult);
+			
 			// case: clicked on base in "constructor" - so pointing to the base constructor using argument count
 			// not 100% correct, but it's the fastest thing to do.
 			if (resolveResult is BaseResolveResult && eitem is IMethod && ((IMethod)eitem).IsConstructor) {
@@ -970,8 +974,6 @@ namespace MonoDevelop.Refactoring
 				editor.BeginAtomicUndo ();
 				
 			try {
-				Console.WriteLine ("klass:" + klass);
-				Console.WriteLine ("item:"+ item);
 				refactorer.ImplementInterface (pinfo, klass, iface, explicitly, iface, this.hintReturnType);
 			} finally {
 				if (editor != null)

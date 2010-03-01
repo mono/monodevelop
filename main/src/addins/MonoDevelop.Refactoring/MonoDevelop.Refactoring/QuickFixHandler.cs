@@ -51,32 +51,58 @@ namespace MonoDevelop.Refactoring
 {
 	public class QuickFixHandler : AbstractRefactoringCommandHandler
 	{
-		protected override void Run (RefactoringOptions options)
+		public static List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
 		{
-			Gtk.Menu menu = new Gtk.Menu ();
 			IReturnType returnType = null; 
 			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (options.Document.FileName));
 			if (astProvider != null) 
 				returnType = astProvider.ParseTypeReference (options.ResolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
 			if (returnType == null)
 				returnType = DomReturnType.FromInvariantString (options.ResolveResult.ResolvedExpression.Expression);
-			List<string> namespaces = new List<string> (options.Dom.ResolvePossibleNamespaces (returnType));
-			if (options.SelectedItem == null || namespaces.Count > 1) {
-//					resolveMenu.Text = GettextCatalog.GetString ("Resolve");
-				if (options.SelectedItem == null) {
-					foreach (string ns in namespaces) {
-						Gtk.MenuItem menuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Add using '{0}'"), ns));
-//						info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
-						menuItem.Activated += delegate {
-							new CurrentRefactoryOperationsHandler.ResolveNameOperation (options.Dom, options.Document, options.ResolveResult, ns).AddImport ();
-						};
-						menu.Add (menuItem);
+			
+			List<string> namespaces;
+			if (options.ResolveResult is UnresolvedMemberResolveResult) {
+				namespaces = new List<string> ();
+				UnresolvedMemberResolveResult unresolvedMemberResolveResult = options.ResolveResult as UnresolvedMemberResolveResult;
+				IType type = unresolvedMemberResolveResult.TargetResolveResult != null ? options.Dom.GetType (unresolvedMemberResolveResult.TargetResolveResult.ResolvedType) : null;
+				if (type != null) {
+					List<IType> allExtTypes = DomType.GetAccessibleExtensionTypes (options.Dom, null);
+					List<IMethod> extensionMethods = type.GetExtensionMethods (allExtTypes);
+					foreach (ExtensionMethod method in extensionMethods) {
+						if (method.Name == unresolvedMemberResolveResult.MemberName) {
+							string ns = method.OriginalMethod.DeclaringType.Namespace;
+							if (!namespaces.Contains (ns) && !options.Document.CompilationUnit.Usings.Any (u => u.Namespaces.Contains (ns)))
+								namespaces.Add (ns);
+						}
 					}
-				} else {
-					// remove all unused namespaces (for resolving conflicts)
-					namespaces.RemoveAll (ns => !options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start));
 				}
-				
+				resolveDirect = false;
+			} else {
+				namespaces = new List<string> (options.Dom.ResolvePossibleNamespaces (returnType));
+				resolveDirect = true;
+			}
+			
+			return namespaces;
+		}
+		
+		protected override void Run (RefactoringOptions options)
+		{
+			Gtk.Menu menu = new Gtk.Menu ();
+			
+			bool resolveDirect;
+			List<string> namespaces = GetResolveableNamespaces (options, out resolveDirect);
+			
+			foreach (string ns in namespaces) {
+				// remove used namespaces for conflict resolving.
+				if (options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start))
+					continue;
+				Gtk.MenuItem menuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Add using '{0}'"), ns));
+				menuItem.Activated += delegate {
+					new CurrentRefactoryOperationsHandler.ResolveNameOperation (options.Dom, options.Document, options.ResolveResult, ns).AddImport ();
+				};
+				menu.Add (menuItem);
+			}
+			if (resolveDirect) {
 				foreach (string ns in namespaces) {
 					Gtk.MenuItem menuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Add '{0}'"), ns));
 					menuItem.Activated += delegate {
@@ -85,6 +111,7 @@ namespace MonoDevelop.Refactoring
 					menu.Add (menuItem);
 				}
 			}
+			
 			if (menu.Children != null && menu.Children.Length > 0) {
 				menu.ShowAll ();
 				
