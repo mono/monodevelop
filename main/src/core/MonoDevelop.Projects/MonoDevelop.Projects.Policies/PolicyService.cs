@@ -279,6 +279,8 @@ namespace MonoDevelop.Projects.Policies
 			if (policy != null) {
 				//find the policy with the fewest differences
 				foreach (PolicySet set in sets) {
+					if (set.Id == "Invariant")
+						continue;
 					foreach (ScopedPolicy sp in set.GetScoped (policyType)) {
 						DataNode baseline = RawSerialize (policyType, sp.Policy);
 						int size = 0;

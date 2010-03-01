@@ -1,5 +1,11 @@
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Policies/PolicyService.cs: When saving
+	  don't diff agains the Invariant policy, since it is not
+	  available in old MDs.
+
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/IAssemblyProject.cs:
 	* MonoDevelop.Projects/CompiledAssemblyProject.cs:
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
