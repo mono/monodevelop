@@ -1,3 +1,9 @@
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Improved support for indexers.
+	  Improved GetType implementation, so that it can now properly
+	  instantiate generic types.
+
 2010-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: Implement enum conversions.

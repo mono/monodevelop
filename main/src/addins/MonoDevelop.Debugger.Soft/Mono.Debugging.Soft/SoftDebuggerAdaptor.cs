@@ -174,7 +174,7 @@ namespace Mono.Debugging.Soft
 			
 			TypeMirror[] types = new TypeMirror [args.Length];
 			for (int n=0; n<args.Length; n++)
-				types [n] = (TypeMirror) GetValueType (ctx, args [n]);
+				types [n] = ToTypeMirror (ctx, GetValueType (ctx, args [n]));
 			
 			Value[] values = new Value[args.Length];
 			for (int n=0; n<args.Length; n++)
@@ -216,18 +216,34 @@ namespace Mono.Debugging.Soft
 			return nss;
 		}
 
-		public override ValueReference GetIndexerReference (EvaluationContext ctx, object target, object index)
+		public override ValueReference GetIndexerReference (EvaluationContext ctx, object target, object[] indices)
 		{
-			TypeMirror type = GetValueType (ctx, target) as TypeMirror;
+			TypeMirror targetType = GetValueType (ctx, target) as TypeMirror;
+			
+			Value[] values = new Value [indices.Length];
+			TypeMirror[] types = new TypeMirror [indices.Length];
+			for (int n=0; n<indices.Length; n++) {
+				types [n] = ToTypeMirror (ctx, GetValueType (ctx, indices [n]));
+				values [n] = (Value) indices [n];
+			}
+			
+			List<MethodMirror> candidates = new List<MethodMirror> ();
+			List<PropertyInfoMirror> props = new List<PropertyInfoMirror> ();
+			
+			TypeMirror type = targetType;
 			while (type != null) {
 				foreach (PropertyInfoMirror prop in type.GetProperties ()) {
 					MethodMirror met = prop.GetGetMethod (true);
-					if (met != null && !met.IsStatic && met.GetParameters ().Length > 0)
-						return new PropertyValueReference (ctx, prop, target, null, new Value[] { (Value) index});
+					if (met != null && !met.IsStatic && met.GetParameters ().Length > 0) {
+						candidates.Add (met);
+						props.Add (prop);
+					}
 				}
 				type = type.BaseType;
 			}
-			return null;
+			MethodMirror idx = OverloadResolve ((SoftEvaluationContext) ctx, targetType.Name, null, types, candidates, true);
+			int i = candidates.IndexOf (idx);
+			return new PropertyValueReference (ctx, props[i], target, null, values);
 		}
 
 		public override ValueReference GetLocalVariable (EvaluationContext ctx, string name)
@@ -365,8 +381,10 @@ namespace Mono.Debugging.Soft
 						nt++;
 					else if (s[i] == ']')
 						nt--;
-					else if (s[i] == ',' && nt == 0)
+					else if (s[i] == ',' && nt == 0) {
 						names.Add (s.Substring (si, i - si));
+						si = i + 1;
+					}
 				}
 				names.Add (s.Substring (si, i - si));
 				object[] types = new object [names.Count];
@@ -387,8 +405,42 @@ namespace Mono.Debugging.Soft
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			int i = name.IndexOf (',');
-			if (i != -1)
-				name = name.Substring (0, i).Trim ();
+			if (i != -1) {
+				// Find first comma outside brackets
+				int nest = 0;
+				for (int n=0; n<name.Length; n++) {
+					char c = name [n];
+					if (c == '[')
+						nest++;
+					else if (c == ']')
+						nest--;
+					else if (c == ',' && nest == 0) {
+						name = name.Substring (0, n).Trim ();
+						break;
+					}
+				}
+			}
+			
+			if (typeArgs != null && typeArgs.Length > 0){
+				string args = "";
+				foreach (object t in typeArgs) {
+					if (args.Length > 0)
+						args += ",";
+					string tn;
+					if (t is TypeMirror) {
+						TypeMirror atm = (TypeMirror) t;
+						tn = atm.FullName + "," + atm.Assembly.GetName ();
+					} else {
+						Type atm = (Type) t;
+						tn = atm.FullName + "," + atm.Assembly.GetName ();
+					}
+					if (tn.IndexOf (',') != -1)
+						tn = "[" + tn + "]";
+					args += tn;
+				}
+				name += "[" +args + "]";
+			}
+			
 			TypeMirror tm = cx.Session.GetType (name);
 			if (tm != null)
 				return tm;
@@ -658,29 +710,13 @@ namespace Mono.Debugging.Soft
 							candidates.Add (met);
 					}
 				}
+				if (methodName == ".ctor")
+					break; // Can't create objects using constructor from base classes
 				currentType = currentType.BaseType;
 			}
 			
-			if (candidates.Count == 1) {
-				string error;
-				int matchCount;
-				if (IsApplicable (ctx, candidates[0], argtypes, out error, out matchCount))
-					return candidates [0];
 
-				if (throwIfNotFound)
-					throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
-				else
-					return null;
-			}
-
-			if (candidates.Count == 0) {
-				if (throwIfNotFound)
-					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, type.Name);
-				else
-					return null;
-			}
-
-			return OverloadResolve (ctx, methodName, argtypes, candidates, throwIfNotFound);
+			return OverloadResolve (ctx, type.Name, methodName, argtypes, candidates, throwIfNotFound);
 		}
 
 		static bool IsApplicable (SoftEvaluationContext ctx, MethodMirror method, TypeMirror[] types, out string error, out int matchCount)
@@ -710,9 +746,28 @@ namespace Mono.Debugging.Soft
 			return true;
 		}
 
-		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string methodName, TypeMirror[] argtypes, List<MethodMirror> candidates, bool throwIfNotFound)
+		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string typeName, string methodName, TypeMirror[] argtypes, List<MethodMirror> candidates, bool throwIfNotFound)
 		{
-			// Ok, no we need to find an exact match.
+			if (candidates.Count == 1) {
+				string error;
+				int matchCount;
+				if (IsApplicable (ctx, candidates[0], argtypes, out error, out matchCount))
+					return candidates [0];
+
+				if (throwIfNotFound)
+					throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
+				else
+					return null;
+			}
+
+			if (candidates.Count == 0) {
+				if (throwIfNotFound)
+					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
+				else
+					return null;
+			}
+			
+			// Ok, now we need to find an exact match.
 			MethodMirror match = null;
 			int bestCount = -1;
 			bool repeatedBestCount = false;
