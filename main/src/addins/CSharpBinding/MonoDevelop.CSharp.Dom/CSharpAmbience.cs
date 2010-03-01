@@ -31,6 +31,7 @@ using System.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using System.CodeDom;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Dom
 {
@@ -165,16 +166,23 @@ namespace MonoDevelop.CSharp.Dom
 			result.Append (settings.EmitName (property, Format (property.Name)));
 			if (settings.IncludeParameters && property.Parameters.Count > 0) {
 				result.Append (settings.Markup ("["));
-				bool first = true;
-				foreach (IParameter parameter in property.Parameters) {
-					if (!first)
-						result.Append (settings.Markup (", "));
-					AppendParameter (settings, result, parameter);
-					first = false;
-				}
+				AppendParameterList (result, settings, property.Parameters);
 				result.Append (settings.Markup ("]"));
 			}
 			return result.ToString ();
+		}
+		
+		void AppendParameterList (StringBuilder result, OutputSettings settings, IEnumerable<IParameter> parameterList)
+		{
+			if (parameterList == null)
+				return;
+			bool first = true;
+			foreach (IParameter parameter in parameterList) {
+				if (!first)
+					result.Append (settings.Markup (", "));
+				AppendParameter (settings, result, parameter);
+				first = false;
+			}
 		}
 		
 		void AppendParameter (OutputSettings settings, StringBuilder result, IParameter parameter)
@@ -303,9 +311,12 @@ namespace MonoDevelop.CSharp.Dom
 			}
 			
 			if (settings.IncludeParameters) {
+				CSharpFormattingPolicy policy = GetPolicy (settings);
+				if (policy.BeforeMethodCallParentheses)
+					result.Append (settings.Markup (" "));
+				
 				result.Append (settings.Markup ("("));
 				bool first = true;
-				
 				if (method.Parameters != null) {
 					foreach (IParameter parameter in method.Parameters) {
 						if (settings.HideExtensionsParameter && method.IsExtension && parameter == method.Parameters[0])
@@ -354,6 +365,13 @@ namespace MonoDevelop.CSharp.Dom
 			return result.ToString ();
 		}
 		
+		
+		public CSharpFormattingPolicy GetPolicy (OutputSettings settings)
+		{
+			IEnumerable<string> types = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			return settings.PolicyParent != null ? settings.PolicyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+		}
+		
 		public string Visit (IType type, OutputSettings settings)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -371,6 +389,7 @@ namespace MonoDevelop.CSharp.Dom
 				result.Append ("}");
 				return result.ToString ();
 			}
+			
 			
 			InstantiatedType instantiatedType = type as InstantiatedType;
 			string modStr = base.GetString (type.ClassType == ClassType.Enum ? (type.Modifiers & ~Modifiers.Sealed) :  type.Modifiers);
@@ -405,6 +424,16 @@ namespace MonoDevelop.CSharp.Dom
 			result.Append (keyword);
 			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
 				result.Append (settings.Markup (" "));
+			
+			
+			if (type.ClassType == ClassType.Delegate && settings.ReformatDelegates) {
+				IMethod invoke = type.SearchMember ("Invoke", true).FirstOrDefault () as IMethod;
+				if (invoke != null) {
+					result.Append (this.GetString (invoke.ReturnType, settings));
+					result.Append (settings.Markup (" "));
+				}
+			}
+			
 			if (settings.UseFullName && type.DeclaringType != null) {
 				result.Append (GetString (type.DeclaringType, OutputFlags.UseFullName));
 				result.Append (settings.Markup ("."));
@@ -426,6 +455,19 @@ namespace MonoDevelop.CSharp.Dom
 					}
 				}
 				result.Append (settings.Markup (">"));
+			}
+			
+			
+			if (type.ClassType == ClassType.Delegate && settings.ReformatDelegates) {
+				CSharpFormattingPolicy policy = GetPolicy (settings);
+				if (policy.BeforeMethodCallParentheses)
+					result.Append (settings.Markup (" "));
+				result.Append (settings.Markup ("("));
+				IMethod invoke = type.SearchMember ("Invoke", true).FirstOrDefault () as IMethod;
+				if (invoke != null) 
+					AppendParameterList (result, settings, invoke.Parameters);
+				result.Append (settings.Markup (");"));
+				return result.ToString ();
 			}
 			
 			if (settings.IncludeBaseTypes && type.BaseTypes.Any ()) {
@@ -468,6 +510,9 @@ namespace MonoDevelop.CSharp.Dom
 			if (attrName.EndsWith ("Attribute"))
 				attrName = attrName.Substring (0, attrName.Length - "Attribute".Length);
 			result.Append (attrName);
+			CSharpFormattingPolicy policy = GetPolicy (settings);
+			if (policy.BeforeMethodCallParentheses)
+				result.Append (settings.Markup (" "));
 			result.Append (settings.Markup ("("));
 			bool first = true;
 			if (attribute.PositionalArguments != null) {
