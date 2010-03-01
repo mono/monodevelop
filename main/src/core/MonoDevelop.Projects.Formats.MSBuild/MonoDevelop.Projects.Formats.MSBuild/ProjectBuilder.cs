@@ -43,9 +43,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			doneEvent.Set ();
 		}
 		
-		internal void WaitForDone ()
-		{
-			doneEvent.WaitOne ();
+		internal WaitHandle WaitHandle {
+			get { return doneEvent; }
 		}
 		
 		public MSBuildResult[] RunTarget (string file, string target, string configuration, string platform, string binPath, ILogWriter logWriter)

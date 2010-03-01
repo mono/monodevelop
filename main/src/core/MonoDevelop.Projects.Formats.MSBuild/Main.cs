@@ -30,18 +30,21 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
+using System.Threading;
+using System.Diagnostics;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	class MainClass
 	{
 		static string unixRemotingFile;
+		static ManualResetEvent exitEvent = new ManualResetEvent (false);
 		
 		public static void Main (string[] args)
 		{
-			Console.WriteLine ("pp1:");
 			try {
 				RegisterRemotingChannel ();
+				WatchProcess (Console.ReadLine ());
 				
 				ProjectBuilder builder = new ProjectBuilder ();
 				BinaryFormatter bf = new BinaryFormatter ();
@@ -49,16 +52,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				MemoryStream ms = new MemoryStream ();
 				bf.Serialize (ms, oref);
 				Console.Error.WriteLine (Convert.ToBase64String (ms.ToArray ()));
-				Console.WriteLine ("pp2:");
-				builder.WaitForDone ();
-				// Wait before exiting, so that the remote call that disposed the builder can be completed
-				System.Threading.Thread.Sleep (400);
-				Console.WriteLine ("pp3:");
+				
+				if (WaitHandle.WaitAny (new [] { builder.WaitHandle, exitEvent }) == 0) {
+					// Wait before exiting, so that the remote call that disposed the builder can be completed
+					System.Threading.Thread.Sleep (400);
+				}
 				
 				if (unixRemotingFile != null && File.Exists (unixRemotingFile))
 					File.Delete (unixRemotingFile);
 			} catch (Exception ex) {
-				Console.WriteLine ("pp2:" + ex);
+				Console.WriteLine (ex);
 			}
 		}
 		
@@ -70,8 +73,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			unixRemotingFile = Path.GetTempFileName ();
 			dict ["portName"] = Path.GetFileName (unixRemotingFile);
 			serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-			Console.WriteLine ("pp22:" + dict ["portName"]);
 			ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
+		}
+		
+		public static void WatchProcess (string procId)
+		{
+			int id = int.Parse (procId);
+			Thread t = new Thread (delegate () {
+				while (true) {
+					Thread.Sleep (1000);
+					if (Process.GetProcessById (id) == null) {
+						exitEvent.Set ();
+						break;
+					}
+				}
+			});
+			t.IsBackground = true;
+			t.Start ();
 		}
 	}
 }

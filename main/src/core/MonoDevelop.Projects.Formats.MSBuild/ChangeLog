@@ -1,3 +1,9 @@
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/ProjectBuilder.cs: Exit
+	  the process if the parent dies. Removed some debug code.
+
 2009-11-19  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildResult.cs: Fix
