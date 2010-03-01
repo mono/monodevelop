@@ -37,6 +37,7 @@ using System.Text;
 using System.Diagnostics;
 using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.IPhone
@@ -48,8 +49,7 @@ namespace MonoDevelop.IPhone
 
 		public bool CanExecute (ExecutionCommand command)
 		{
-			IPhoneExecutionCommand cmd = command as IPhoneExecutionCommand;
-			return cmd != null && cmd.Simulator;
+			return command is IPhoneExecutionCommand;
 		}
 		
 		public static ProcessStartInfo CreateMtouchSimStartInfo (IPhoneExecutionCommand cmd, bool logSimOutput)
@@ -85,6 +85,19 @@ namespace MonoDevelop.IPhone
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			IPhoneExecutionCommand cmd = (IPhoneExecutionCommand) command;
+			if (!cmd.Simulator) {
+				Gtk.Application.Invoke (delegate {
+					MessageService.GenericAlert (
+						"phone-apple-iphone", 
+						GettextCatalog.GetString ("Please Start Application"),
+						GettextCatalog.GetString (
+							"The application has been built and uploaded, or is already up to date.\n" +
+							"Please start it on the device by tapping on the application icon."),
+						AlertButton.Ok);
+				});
+				return NullProcessAsyncOperation.Success;
+			}
+			
 			var psi = CreateMtouchSimStartInfo (cmd, true);
 			psi.RedirectStandardOutput = true;
 			psi.RedirectStandardError = true;
