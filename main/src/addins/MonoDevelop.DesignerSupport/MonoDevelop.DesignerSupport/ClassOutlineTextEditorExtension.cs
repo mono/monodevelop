@@ -119,6 +119,7 @@ namespace MonoDevelop.DesignerSupport
 			};
 
 			this.lastCU = Document.ParsedDocument;
+			
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 
 			ScrolledWindow sw = new ScrolledWindow ();
@@ -168,11 +169,16 @@ namespace MonoDevelop.DesignerSupport
 
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
+			bool refreshNow = lastCU == null;
 			lastCU = Document.ParsedDocument;
-			//limit update rate to 5s
 			if (!refreshingOutline) {
 				refreshingOutline = true;
-				GLib.Timeout.Add (5000, new GLib.TimeoutHandler (RefillOutlineStore));
+				if (refreshNow) {
+					RefillOutlineStore (); 
+				} else {
+					//limit update rate to 5s
+					GLib.Timeout.Add (5000, new GLib.TimeoutHandler (RefillOutlineStore));
+				}
 			}
 		}
 

@@ -1,3 +1,9 @@
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
+	  Refresh sooner than the 5sec timer, if the document wasn't
+	  parsed at the start.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.DesignerSupport.csproj: Flush.
