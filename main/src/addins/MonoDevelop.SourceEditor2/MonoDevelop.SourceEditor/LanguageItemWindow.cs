@@ -107,6 +107,8 @@ namespace MonoDevelop.SourceEditor
 					s.Append (ambience.GetString (((LocalVariableResolveResult)result).ResolvedType, settings));
 					s.Append (" ");
 					s.Append (((LocalVariableResolveResult)result).LocalVariable.Name);
+				} else if (result is UnresolvedMemberResolveResult) {
+					s.Append (String.Format (GettextCatalog.GetString ("Unresolved member '{0}'"), ((UnresolvedMemberResolveResult)result).MemberName));
 				} else if (result is MemberResolveResult) {
 					IMember member = ((MemberResolveResult)result).ResolvedMember;
 					if (member == null) {
