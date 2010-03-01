@@ -176,8 +176,8 @@ namespace MonoDevelop.DesignerSupport
 				if (refreshNow) {
 					RefillOutlineStore (); 
 				} else {
-					//limit update rate to 5s
-					GLib.Timeout.Add (5000, new GLib.TimeoutHandler (RefillOutlineStore));
+					//limit update rate to 1s
+					GLib.Timeout.Add (1000, new GLib.TimeoutHandler (RefillOutlineStore));
 				}
 			}
 		}

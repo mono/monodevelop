@@ -1,6 +1,11 @@
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
+	  changed update delay to 1s.
+
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
 	  Refresh sooner than the 5sec timer, if the document wasn't
 	  parsed at the start.
 
