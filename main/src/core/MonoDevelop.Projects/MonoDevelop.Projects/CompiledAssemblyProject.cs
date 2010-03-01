@@ -70,6 +70,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public MonoDevelop.Core.Assemblies.TargetRuntime TargetRuntime {
+			get {
+				return Runtime.SystemAssemblyService.DefaultRuntime;
+			}
+		}
+		
 		public void LoadFrom (FilePath assemblyPath)
 		{
 			FileName = assemblyPath;
@@ -131,6 +137,16 @@ namespace MonoDevelop.Projects
 			int n;
 			for (n=0; n<s1.Length && n<s2.Length && s1[n] == s2[n]; n++);
 			return string.Join (Path.DirectorySeparatorChar.ToString (), s1, 0, n);
+		}
+		
+		internal protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return new BuildResult ();
+		}
+		
+		internal protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		{
+			return false;
 		}
 		
 		internal protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

@@ -32,6 +32,7 @@ namespace MonoDevelop.Projects
 	public interface IAssemblyProject
 	{
 		TargetFramework TargetFramework { get; }
+		TargetRuntime TargetRuntime { get; }
 	}
 }
 

@@ -111,7 +111,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteProjectBuilder ProjectBuilder {
 			get {
 				if (projectBuilder == null)
-					projectBuilder = MSBuildProjectService.GetProjectBuilder (((DotNetProject)Item).TargetRuntime);
+					projectBuilder = MSBuildProjectService.GetProjectBuilder (((IAssemblyProject)Item).TargetRuntime);
 				return projectBuilder;
 			}
 		}

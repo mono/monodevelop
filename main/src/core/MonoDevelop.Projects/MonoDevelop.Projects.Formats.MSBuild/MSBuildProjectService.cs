@@ -379,10 +379,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						pinfo.EnvironmentVariables [evar.Key] = evar.Value;
 					pinfo.UseShellExecute = false;
 					pinfo.RedirectStandardError = true;
+					pinfo.RedirectStandardInput = true;
 					
 					Process p = null;
 					try {
 						p = runtime.ExecuteAssembly (pinfo, fx);
+						p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
 						string sref = p.StandardError.ReadLine ();
 						byte[] data = Convert.FromBase64String (sref);
 						MemoryStream ms = new MemoryStream (data);
