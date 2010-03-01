@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 				LineSegment line = args.LineSegment;
 				if (args.Type == EventType.TwoButtonPress) {
 					if (line != null)
-						editor.MainSelection = new Selection (loc, new DocumentLocation (lineNumber, line.EditableLength));
+						editor.MainSelection = new Selection (loc, GetLineEndLocation (editor.GetTextEditorData (), lineNumber));
 				} else if (extendSelection) {
 					if (!editor.IsSomethingSelected) {
 						editor.MainSelection = new Selection (loc, loc);
@@ -108,6 +108,24 @@ namespace Mono.TextEditor
 				editor.Caret.Location = loc;
 				editor.Caret.PreserveSelection = false;
 			}
+		}
+		
+		public static DocumentLocation GetLineEndLocation (TextEditorData data, int lineNumber)
+		{
+			LineSegment line = data.Document.GetLine (lineNumber);
+			
+			DocumentLocation result = new DocumentLocation (lineNumber, line.EditableLength);
+			
+			FoldSegment segment = null;
+			foreach (FoldSegment folding in data.Document.GetStartFoldings (line)) {
+				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (result))) {
+					segment = folding;
+					break;
+				}
+			}
+			if (segment != null) 
+				result = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
+			return result;
 		}
 		
 		internal protected override void MouseHover (MarginMouseEventArgs args)

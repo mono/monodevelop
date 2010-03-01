@@ -1,3 +1,9 @@
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/GutterMargin.cs: Fixed 'Bug 571337 - if a
+	  section of code is collapsed in monodevelop, when you select
+	  and copy, it only gets the top line'.
+
 2010-02-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextMarker.cs:
