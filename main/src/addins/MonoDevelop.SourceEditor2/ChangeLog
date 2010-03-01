@@ -1,5 +1,10 @@
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: up/down
+	  only reacts when search entry has the focus.
+
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
 	  Implemented 'Bug 584244 - key binding (up/down arrow) to
 	  cycle through recent searches'.

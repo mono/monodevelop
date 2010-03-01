@@ -358,6 +358,10 @@ But I leave it in in the case I've missed something. Mike
 					break;
 				case Gdk.Key.Down:
 				case Gdk.Key.Up:
+					if (o != searchEntry.Entry) {
+						args.RetVal = true;
+						return;
+					}
 					if ((args.Event.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask && o == searchEntry.Entry) {
 						searchEntry.PopupFilterMenu ();
 					} else {
