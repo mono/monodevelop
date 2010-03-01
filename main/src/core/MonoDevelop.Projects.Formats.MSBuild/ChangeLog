@@ -1,5 +1,10 @@
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/ProjectBuilder.cs:
+	  Don't set the Platform property if no value is provided.
+
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Main.cs:
 	* MonoDevelop.Projects.Formats.MSBuild/ProjectBuilder.cs: Exit
 	  the process if the parent dies. Removed some debug code.

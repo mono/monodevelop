@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			project.Load (file);
 			engine.GlobalProperties.SetProperty ("BuildingInsideVisualStudio", "true");
 			engine.GlobalProperties.SetProperty ("Configuration", configuration);
-			if (platform != null)
+			if (!string.IsNullOrEmpty (platform))
 				engine.GlobalProperties.SetProperty ("Platform", platform);
 			project.Build (target);
 			
