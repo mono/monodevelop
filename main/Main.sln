@@ -1056,8 +1056,9 @@ Global
 		$0.StandardHeader = $1
 		$1.inheritsSet = MITX11License
 		$0.TextStylePolicy = $2
-		$2.EolMarker = Native
-		$2.inheritsSet = Invariant
+		$2.FileWidth = 120
+		$2.TabWidth = 4
+		$2.inheritsSet = Mono
 		$2.inheritsScope = text/plain
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
@@ -1068,8 +1069,9 @@ Global
 		$5.UpdateMode = ProjectRoot
 		$5.inheritsSet = Mono
 		$0.TextStylePolicy = $6
-		$6.EolMarker = Native
-		$6.inheritsSet = Invariant
+		$6.FileWidth = 120
+		$6.TabWidth = 4
+		$6.inheritsSet = Mono
 		$6.inheritsScope = text/plain
 		$6.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $7

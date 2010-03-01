@@ -1,3 +1,8 @@
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.sln: The invariant policy can't be used anymore as base
+	  policy set.
+
 2010-02-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Properly initialize the subversion build switch.

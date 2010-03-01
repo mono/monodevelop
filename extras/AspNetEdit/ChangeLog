@@ -1,3 +1,8 @@
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AspNetEdit.sln: The invariant policy can't be used anymore
+	  as base policy set.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:

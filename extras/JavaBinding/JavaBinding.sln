@@ -29,8 +29,9 @@ Global
 		$0.StandardHeader = $2
 		$2.inheritsSet = MITX11License
 		$0.TextStylePolicy = $3
-		$3.EolMarker = Native
-		$3.inheritsSet = Invariant
+		$3.FileWidth = 120
+		$3.TabWidth = 4
+		$3.inheritsSet = Mono
 		$3.inheritsScope = text/plain
 		$0.VersionControlPolicy = $4
 		$4.inheritsSet = Mono
