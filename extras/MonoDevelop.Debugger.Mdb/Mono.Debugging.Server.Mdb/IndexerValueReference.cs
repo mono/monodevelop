@@ -39,23 +39,23 @@ namespace DebuggerServer
 	{
 		TargetPropertyInfo indexer;
 		TargetStructObject target;
-		TargetObject index;
+		TargetObject[] index;
 		
-		public IndexerValueReference (EvaluationContext ctx, TargetStructObject target, TargetObject index, TargetPropertyInfo indexerProp): base (ctx)
+		public IndexerValueReference (EvaluationContext ctx, TargetStructObject target, TargetObject[] index, TargetPropertyInfo indexerProp): base (ctx)
 		{
 			this.indexer = indexerProp;
 			this.target = target;
 			this.index = index;
 		}
 		
-		public static ValueReference CreateIndexerValueReference (MdbEvaluationContext ctx, TargetObject target, TargetObject index)
+		public static ValueReference CreateIndexerValueReference (MdbEvaluationContext ctx, TargetObject target, TargetObject[] index)
 		{
 			TargetFundamentalObject mstr = target as TargetFundamentalObject;
 			if (mstr != null && mstr.TypeName == "string") {
 				// Special case for strings
-				string name = "[" + ctx.Evaluator.TargetObjectToExpression (ctx, index) + "]";
+				string name = "[" + ctx.Evaluator.TargetObjectToExpression (ctx, index[0]) + "]";
 				string val = (string) mstr.GetObject (ctx.Thread);
-				object oo = ctx.Adapter.TargetObjectToObject (ctx, index);
+				object oo = ctx.Adapter.TargetObjectToObject (ctx, index[0]);
 				int idx = (int) Convert.ChangeType (oo, typeof(int));
 				return LiteralValueReference.CreateObjectLiteral (ctx, name, val [idx]);
 			}
@@ -85,13 +85,15 @@ namespace DebuggerServer
 		public override object Value {
 			get {
 				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
-				return ObjectUtil.GetRealObject (ctx, Server.Instance.RuntimeInvoke (ctx, indexer.Getter, target, new TargetObject [] {index}));
+				return ObjectUtil.GetRealObject (ctx, Server.Instance.RuntimeInvoke (ctx, indexer.Getter, target, index));
 			}
 			set {
 				MdbEvaluationContext ctx = (MdbEvaluationContext) Context;
-				TargetObject cindex = TargetObjectConvert.Cast (ctx, index, indexer.Setter.ParameterTypes [0]);
-				TargetObject cvalue = TargetObjectConvert.Cast (ctx, (TargetObject) value, indexer.Setter.ParameterTypes [1]);
-				Server.Instance.RuntimeInvoke (ctx, indexer.Setter, target, new TargetObject [] {cindex, cvalue});
+				TargetObject[] cparams = new TargetObject [index.Length + 1];
+				for (int n=0; n<index.Length; n++)
+					cparams[n] = TargetObjectConvert.Cast (ctx, index[n], indexer.Setter.ParameterTypes [n]);
+				cparams [cparams.Length - 1] = TargetObjectConvert.Cast (ctx, (TargetObject) value, indexer.Setter.ParameterTypes [cparams.Length - 1]);
+				Server.Instance.RuntimeInvoke (ctx, indexer.Setter, target, cparams);
 			}
 		}
 		

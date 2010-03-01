@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections;
 using ST = System.Threading;
@@ -461,10 +462,10 @@ namespace DebuggerServer
 		}
 
 
-		public override ValueReference GetIndexerReference (EvaluationContext gctx, object target, object index)
+		public override ValueReference GetIndexerReference (EvaluationContext gctx, object target, object[] indices)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
-			return IndexerValueReference.CreateIndexerValueReference (ctx, (TargetObject) target, (TargetObject) index);
+			return IndexerValueReference.CreateIndexerValueReference (ctx, (TargetObject) target, (TargetObject[]) indices);
 		}
 
 
