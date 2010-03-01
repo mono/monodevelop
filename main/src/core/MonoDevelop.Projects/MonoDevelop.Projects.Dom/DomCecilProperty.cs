@@ -67,6 +67,8 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		
+		
 		public DomCecilProperty (PropertyDefinition propertyDefinition)
 		{
 			this.propertyDefinition = propertyDefinition;
@@ -77,14 +79,20 @@ namespace MonoDevelop.Projects.Dom
 					Add (new DomCecilParameter (paramDef));
 				}
 			}
-			if (propertyDefinition.GetMethod != null) 
+			if (propertyDefinition.GetMethod != null) {
 				this.PropertyModifier |= PropertyModifier.HasGet;
-			if (propertyDefinition.SetMethod != null) 
-				this.PropertyModifier |= PropertyModifier.HasSet;
+				this.GetterModifier = DomCecilType.GetModifiers (propertyDefinition.GetMethod);
+			}
 			
-			base.Modifiers          = DomCecilType.GetModifiers ((propertyDefinition.GetMethod != null ? propertyDefinition.GetMethod : propertyDefinition.SetMethod));
-			if (!propertyDefinition.IsSpecialName)
-				base.Modifiers &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
+			if (propertyDefinition.SetMethod != null) {
+				this.PropertyModifier |= PropertyModifier.HasSet;
+				this.SetterModifier = DomCecilType.GetModifiers (propertyDefinition.SetMethod);
+			}
+			
+			if (!propertyDefinition.IsSpecialName) {
+				base.GetterModifier &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
+				base.SetterModifier &= ~MonoDevelop.Projects.Dom.Modifiers.SpecialName;
+			}
 			base.ReturnType         = DomCecilMethod.GetReturnType (propertyDefinition.PropertyType);
 			DomCecilMethod.AddAttributes (this, propertyDefinition.CustomAttributes);
 			
@@ -98,5 +106,6 @@ namespace MonoDevelop.Projects.Dom
 				}
 			}
 		}
+
 	}
 }

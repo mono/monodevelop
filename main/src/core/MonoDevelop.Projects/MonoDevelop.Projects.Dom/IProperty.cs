@@ -58,6 +58,14 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		Modifiers GetterModifier {
+			get;
+		}
+		
+		Modifiers SetterModifier {
+			get;
+		}
+		
 		DomRegion GetRegion {
 			get;
 		}

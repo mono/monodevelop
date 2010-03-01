@@ -1,3 +1,15 @@
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/IProperty.cs:
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs:
+	* MonoDevelop.Projects.Dom.Output/Ambience.cs:
+	* MonoDevelop.Projects.Dom/DomCecilProperty.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Fixed 'Bug 583515 - No code completion for set-only
+	  properties'.
+
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyService.cs: When saving

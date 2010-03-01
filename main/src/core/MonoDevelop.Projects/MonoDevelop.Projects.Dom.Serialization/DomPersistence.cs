@@ -238,7 +238,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public static DomProperty ReadProperty (BinaryReader reader, INameDecoder nameTable)
 		{
 			DomProperty result = new DomProperty ();
-			ReadMemberInformation (reader, nameTable, result);
+			// ReadMemeberInformation (changed for storing getter & setter modifiers)
+			result.Name          = ReadString (reader, nameTable);
+			result.Documentation = ReadString (reader, nameTable);
+			result.GetterModifier = (Modifiers)reader.ReadUInt32();
+			result.SetterModifier = (Modifiers)reader.ReadUInt32();
+			result.Location      = ReadLocation (reader, nameTable);
+			
+			uint count = ReadUInt (reader, 1000);
+			while (count-- > 0)
+				result.Add (ReadAttribute (reader, nameTable));
+			// End
+			
+			
 			uint explicitInterfaces = ReadUInt (reader, 500);
 			while (explicitInterfaces-- > 0) {
 				result.AddExplicitInterface (ReadReturnType (reader, nameTable));
@@ -259,7 +271,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IProperty property)
 		{
 			Debug.Assert (property != null);
-			WriteMemberInformation (writer, nameTable, property);
+			
+			// WriteMemberInformation (changed for storing getter & setter modifiers)
+			WriteString (property.Name, writer, nameTable);
+			WriteString (property.Documentation, writer, nameTable);
+			writer.Write ((uint)property.GetterModifier);
+			writer.Write ((uint)property.SetterModifier);
+			Write (writer, nameTable, property.Location);
+			
+			writer.Write (property.Attributes.Count ());
+			foreach (IAttribute attr in property.Attributes)
+				Write (writer, nameTable, attr);
+			// End
+			
 			writer.Write (property.ExplicitInterfaces.Count ());
 			foreach (IReturnType returnType in property.ExplicitInterfaces) {
 				Write (writer, nameTable, returnType);

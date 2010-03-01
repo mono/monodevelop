@@ -74,10 +74,29 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public Modifiers GetterModifier {
+			get;
+			set;
+		}
+		
+		public Modifiers SetterModifier {
+			get;
+			set;
+		}
+		
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
 		public override ReadOnlyCollection<IParameter> Parameters {
 			get {
 				return parameters != null ? parameters.AsReadOnly () : emptyParameters;
+			}
+		}
+		
+		public override Modifiers Modifiers {
+			get {
+				return GetLessRestrictive (GetterModifier, SetterModifier);
+			}
+			set {
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -89,6 +108,15 @@ namespace MonoDevelop.Projects.Dom
 		public DomRegion SetRegion {
 			get;
 			set;
+		}
+		
+		static Modifiers GetLessRestrictive (Modifiers getModifier, Modifiers setModifier)
+		{
+			if ((getModifier & Modifiers.Public) == Modifiers.Public)
+				return getModifier;
+			if ((setModifier & Modifiers.Public) == Modifiers.Public)
+				return setModifier;
+			return getModifier | setModifier;
 		}
 		
 		public override string HelpUrl {

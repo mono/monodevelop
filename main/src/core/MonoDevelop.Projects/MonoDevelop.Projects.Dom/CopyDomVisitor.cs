@@ -133,7 +133,22 @@ namespace MonoDevelop.Projects.Dom
 		public virtual INode Visit (IProperty source, T data)
 		{
 			DomProperty result = CreateInstance (source, data);
-			Visit (source, result, data);
+			
+			// changed Visit (source, result, data) to support getter/setter modifiers
+			result.Name           = source.Name;
+			result.Documentation  = source.Documentation;
+			result.GetterModifier = source.GetterModifier;
+			result.SetterModifier = source.SetterModifier;
+			result.Location       = source.Location;
+			result.BodyRegion     = source.BodyRegion;
+			if (source.ReturnType != null)
+				result.ReturnType = (IReturnType) source.ReturnType.AcceptVisitor (this, data);
+			foreach (IReturnType rt in source.ExplicitInterfaces)
+				result.AddExplicitInterface ((IReturnType) rt.AcceptVisitor (this, data));
+			foreach (IAttribute attr in source.Attributes)
+				result.Add ((IAttribute) attr.AcceptVisitor (this, data));
+			// End
+			
 			result.PropertyModifier = source.PropertyModifier;
 			result.GetRegion = source.GetRegion;
 			result.SetRegion = source.SetRegion;

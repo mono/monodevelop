@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			return false;
 		}
 		
-		protected string GetString (Modifiers m)
+		public string GetString (Modifiers m)
 		{
 			string res;
 			if (cachedModifiers.TryGetValue (m, out res))
