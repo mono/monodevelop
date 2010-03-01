@@ -232,10 +232,12 @@ namespace MonoDevelop.ValaBinding
 		}
 	}
 
-	internal class ValaCompletionDataList: CompletionDataList
+	internal class ValaCompletionDataList: CompletionDataList, IMutableCompletionDataList
 	{
 		public ValaCompletionDataList (): base ()
 		{
+			IsChanging = true;
+			Add (string.Empty);
 		}
 		
 		internal virtual void AddRange (IEnumerable<CompletionData> vals)
@@ -243,6 +245,42 @@ namespace MonoDevelop.ValaBinding
 			foreach (CompletionData item in vals) {
 				Add (item);
 			}
+		}
+		
+		#region IMutableCompletionDataList implementation
+		
+		public event EventHandler Changed;
+		public event EventHandler Changing;
+		
+		
+		public bool IsChanging {
+			get { return isChanging; }
+			set {
+				isChanging = value;
+				if (value){ OnChanging (this, null); }
+				else{ OnChanged (this, null); }
+			}
+		}
+		private bool isChanging;
+		
+		#endregion
+		
+		protected virtual void OnChanging (object sender, EventArgs args)
+		{
+			if (null != Changing) {
+				Changing (sender, args);
+			}
+		}
+		
+		protected virtual void OnChanged (object sender, EventArgs args)
+		{
+			if (null != Changed) {
+				Changed (sender, args);
+			}
+		}
+		
+		public void Dispose ()
+		{
 		}
 	}// ValaCompletionDataList
 	

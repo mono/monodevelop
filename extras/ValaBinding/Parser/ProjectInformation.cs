@@ -342,9 +342,16 @@ namespace MonoDevelop.ValaBinding.Parser
 				return;
 			}
 			
-			foreach (Afrodite.Symbol node in list) {
-				results.Add (new CompletionData (node));
+			List<CompletionData> data = new List<CompletionData> ();
+			foreach (Afrodite.Symbol symbol in list) {
+				data.Add (new CompletionData (symbol));
 			}
+			
+			DispatchService.GuiDispatch (delegate {
+				results.IsChanging = true;
+				results.AddRange (data);
+				results.IsChanging = false;
+			});
 		}// AddResults
 		
 		/// <summary>

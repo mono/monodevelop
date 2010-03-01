@@ -133,7 +133,9 @@ namespace MonoDevelop.ValaBinding
 					return CompleteConstructor (lineText, line, column);
 				} else if (lineText.EndsWith ("is")) {
 					ValaCompletionDataList list = new ValaCompletionDataList ();
-					parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
+					ThreadPool.QueueUserWorkItem (delegate {
+						parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
+					});
 					return list;
 				} else if (0 < lineText.Length) {
 					char lastNonWS = lineText[lineText.Length-1];
@@ -173,20 +175,23 @@ namespace MonoDevelop.ValaBinding
 			Match match = initializationRegex.Match (lineText);
 			ValaCompletionDataList list = new ValaCompletionDataList ();
 			
-			if (match.Success) {
-				// variable initialization
-				if (match.Groups["typename"].Success || "var" != match.Groups["typename"].Value) {
-					// simultaneous declaration and initialization
-					parser.GetConstructorsForType (match.Groups["typename"].Value, Document.FileName, line, column, list);
-				} else if (match.Groups["variable"].Success) {
-					// initialization of previously declared variable
-					parser.GetConstructorsForExpression (match.Groups["variable"].Value, Document.FileName, line, column, list);
+			ThreadPool.QueueUserWorkItem (delegate {
+				if (match.Success) {
+					// variable initialization
+					if (match.Groups["typename"].Success || "var" != match.Groups["typename"].Value) {
+						// simultaneous declaration and initialization
+						parser.GetConstructorsForType (match.Groups["typename"].Value, Document.FileName, line, column, list);
+					} else if (match.Groups["variable"].Success) {
+						// initialization of previously declared variable
+						parser.GetConstructorsForExpression (match.Groups["variable"].Value, Document.FileName, line, column, list);
+					}
+					if (0 == list.Count) { 
+						// Fallback to known types
+						parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
+					}
 				}
-				if (0 == list.Count) { 
-					// Fallback to known types
-					parser.GetTypesVisibleFrom (Document.FileName, line, column, list);
-				}
-			}
+			});
+			
 			return list;
 		}// CompleteConstructor
 		
@@ -213,7 +218,9 @@ namespace MonoDevelop.ValaBinding
 			if (null == info){ return null; }
 			
 			ValaCompletionDataList list = new ValaCompletionDataList ();
-			info.Complete (itemFullName, Document.FileName, line, column, list);
+			ThreadPool.QueueUserWorkItem (delegate {
+				info.Complete (itemFullName, Document.FileName, line, column, list);
+			});
 			return list;
 		}
 		
@@ -228,7 +235,9 @@ namespace MonoDevelop.ValaBinding
 			ValaCompletionDataList list = new ValaCompletionDataList ();
 			int line, column;
 			Editor.GetLineColumnFromPosition (context.TriggerOffset, out line, out column);
-			info.GetSymbolsVisibleFrom (Document.FileName, line, column, list);
+			ThreadPool.QueueUserWorkItem (delegate {
+				info.GetSymbolsVisibleFrom (Document.FileName, line, column, list);
+			});
 			return list;
 		}
 		
