@@ -235,6 +235,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 			set;
 		}
+		
 		protected MemberResolveResult ()
 		{
 		}
@@ -332,6 +333,30 @@ namespace MonoDevelop.Projects.Dom
 			                      CallingMember,
 			                      ResolvedMember,
 			                      ResolvedType);
+		}
+	}
+	
+	public class UnresolvedMemberResolveResult : ResolveResult
+	{
+		public ResolveResult TargetResolveResult {
+			get;
+			private set;
+		}
+		
+		public string MemberName {
+			get;
+			private set;
+		}
+		
+		public UnresolvedMemberResolveResult (ResolveResult targetResolveResult, string memberName)
+		{
+			this.TargetResolveResult = targetResolveResult;
+			this.MemberName = memberName;
+		}
+		
+		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
+		{
+			return null;
 		}
 	}
 	

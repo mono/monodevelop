@@ -1,5 +1,11 @@
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Added unresolved
+	  member resolve result.
+
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/OutputFlags.cs:
 	* MonoDevelop.Projects.Dom.Output/OutputSettings.cs: Ambiences
 	  can now format delegates & take formatting policies.

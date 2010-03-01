@@ -744,21 +744,36 @@ namespace MonoDevelop.Projects.Dom
 		public static List<IType> GetAccessibleExtensionTypes (ProjectDom dom, ICompilationUnit unit)
 		{
 			List<IType> result = new List<IType> ();
-			List<string> namespaceList = new List<string> ();
-			namespaceList.Add ("");
-			if (unit != null && unit.Usings != null) {
-				foreach (IUsing u in unit.Usings) {
-					if (u.Namespaces == null)
-						continue;
-					foreach (string ns in u.Namespaces) {
-						namespaceList.Add (ns);
+			
+			if (unit != null) {
+				List<string> namespaceList = new List<string> ();
+				namespaceList.Add ("");
+				if (unit != null && unit.Usings != null) {
+					foreach (IUsing u in unit.Usings) {
+						if (u.Namespaces == null)
+							continue;
+						foreach (string ns in u.Namespaces) {
+							namespaceList.Add (ns);
+						}
 					}
 				}
-			}
-			foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
-				IType type = o as IType;
-				if (type != null && type.ClassType == ClassType.Class && type.HasExtensionMethods) {
-					result.Add (type);
+				
+				foreach (object o in dom.GetNamespaceContents (namespaceList, true, true)) {
+					IType type = o as IType;
+					if (type != null && type.ClassType == ClassType.Class && type.HasExtensionMethods) {
+						result.Add (type);
+					}
+				}
+			} else {
+				foreach (IType type in dom.Types) {
+					if (type.ClassType == ClassType.Class && type.HasExtensionMethods) 
+						result.Add (type);
+				}
+				foreach (var refDom in dom.References) {
+					foreach (IType type in refDom.Types) {
+						if (type.ClassType == ClassType.Class && type.HasExtensionMethods) 
+							result.Add (type);
+					}
 				}
 			}
 			return result;
