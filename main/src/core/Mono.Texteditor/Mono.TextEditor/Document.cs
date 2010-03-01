@@ -125,6 +125,7 @@ namespace Mono.TextEditor
 		public void UpdateHighlighting ()
 		{
 			if (this.syntaxMode != null) {
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
 			//	Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
 			}
@@ -185,8 +186,10 @@ namespace Mono.TextEditor
 			if (operation != null)
 				operation.Setup (this, args);
 			
-			if (this.syntaxMode != null)
+			if (this.syntaxMode != null) {
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, value != null ? offset + value.Length : offset + count);
+			}
 			if (oldLineCount != LineCount)
 				this.CommitLineToEndUpdate (this.OffsetToLocation (offset).Line);
 		}
