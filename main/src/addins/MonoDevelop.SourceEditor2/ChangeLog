@@ -1,5 +1,11 @@
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
+	  'Bug 584235 - New search widget causes text to be
+	  overrwritten when it shouldn't'.
+
+2010-03-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Handled
 	  unresolved member resolve result.
 

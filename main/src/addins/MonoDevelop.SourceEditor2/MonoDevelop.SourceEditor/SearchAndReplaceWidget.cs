@@ -515,8 +515,8 @@ But I leave it in in the case I've missed something. Mike
 					widget.TextEditor.ClearSelection ();
 					return;
 				}
-				widget.TextEditor.SetSelection (result.Offset, result.EndOffset);
 				widget.TextEditor.Caret.Offset = result.EndOffset;
+				widget.TextEditor.SetSelection (result.Offset, result.EndOffset);
 				widget.TextEditor.CenterToCaret ();
 				widget.TextEditor.AnimateSearchResult (result);
 			} catch (System.Exception) { 
@@ -646,8 +646,6 @@ But I leave it in in the case I've missed something. Mike
 				resultInformLabel.ModifyFg (StateType.Normal, searchEntry.Entry.Style.Foreground (StateType.Insensitive));
 				widget.TextEditor.TextViewMargin.HideSelection = FocusChild == this.table;
 				widget.TextEditor.TextViewMargin.MainSearchResult = foundSegment;
-				if (foundSegment != null)
-					widget.TextEditor.SetSelection (foundSegment.Offset, foundSegment.EndOffset);
 			}
 		} 
 		
