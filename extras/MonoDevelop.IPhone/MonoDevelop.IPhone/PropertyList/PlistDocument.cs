@@ -52,7 +52,7 @@ namespace PropertyList
 		{
 			//allow DTD but not try to resolve it from web
 			var settings = new XmlReaderSettings () {
-				ProhibitDtd = true,
+				ProhibitDtd = false,
 				XmlResolver = null,
 			};
 			using (var reader = XmlReader.Create (path, settings))
@@ -64,7 +64,7 @@ namespace PropertyList
 			//allow DTD but not try to resolve it from web
 			var settings = new XmlReaderSettings () {
 				CloseInput = true,
-				ProhibitDtd = true,
+				ProhibitDtd = false,
 				XmlResolver = null,
 			};
 			using (var reader = XmlReader.Create (new StringReader (data), settings)) {

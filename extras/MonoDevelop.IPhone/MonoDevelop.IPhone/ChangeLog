@@ -1,3 +1,8 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PropertyList/PlistDocument.cs: Forgot to commit second part
+	  of DTD fix.
+
 2010-02-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PropertyList/PlistDocument.cs: Null the XmlResolver from the
