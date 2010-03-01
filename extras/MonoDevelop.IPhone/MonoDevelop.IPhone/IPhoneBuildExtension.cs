@@ -443,7 +443,7 @@ namespace MonoDevelop.IPhone
 				if (!File.Exists (proj.BundleIcon)) {
 					result.AddError (null, 0, 0, null, String.Format ("Application icon '{0}' is missing.", proj.BundleIcon));
 					return result;
-				} else {
+				} else if (icon.NeedsBuilding ()) {
 					contentFiles.Add (icon);
 				}
 			}
