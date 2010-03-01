@@ -514,6 +514,7 @@ namespace MonoDevelop.CSharp.Resolver
 				if (result != null)
 					MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result.ResolvedType);
 			}
+			
 			return null;
 		}
 		
@@ -522,6 +523,8 @@ namespace MonoDevelop.CSharp.Resolver
 			IType type = resolver.Dom.GetType (result.ResolvedType);
 			if (type == null) 
 				return null;
+			//Console.WriteLine ("Resolve member: " + memberReferenceExpression.MemberName + " on " + type);
+			
 			List<IMember> member = new List<IMember> ();
 			List<IType> accessibleExtTypes = DomType.GetAccessibleExtensionTypes (resolver.Dom, resolver.Unit);
 			// Inheritance of extension methods is handled in DomType
@@ -589,7 +592,10 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				return result;
 			}
-			return null;
+			return new UnresolvedMemberResolveResult (result, memberReferenceExpression.MemberName) {
+				CallingType   = resolver.CallingType,
+				CallingMember = resolver.CallingMember
+			};
 		}
 		
 		Dictionary<InvocationExpression, ResolveResult> invocationDictionary = new Dictionary<InvocationExpression, ResolveResult> ();
