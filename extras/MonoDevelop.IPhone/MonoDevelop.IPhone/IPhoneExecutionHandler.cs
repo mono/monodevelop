@@ -92,7 +92,7 @@ namespace MonoDevelop.IPhone
 						GettextCatalog.GetString ("Please Start Application"),
 						GettextCatalog.GetString (
 							"The application has been built and uploaded, or is already up to date.\n" +
-							"Please start it on the device by tapping on the application icon."),
+							"Please start it by tapping the application icon on the device."),
 						AlertButton.Ok);
 				});
 				return NullProcessAsyncOperation.Success;

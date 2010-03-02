@@ -1,5 +1,12 @@
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneExecutionHandler.cs: Better message.
+
+	* IPhoneProject.cs: Don't try to run the app if the app bundle
+	  does not exist.
+
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneExecutionHandler.cs: Enable "run" command in device
 	  mode. It uploads then shows a dialog.
 

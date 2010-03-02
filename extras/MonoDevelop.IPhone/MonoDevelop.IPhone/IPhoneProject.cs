@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.IPhone
 {
@@ -243,6 +244,14 @@ namespace MonoDevelop.IPhone
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (IPhoneProjectConfiguration) GetConfiguration (configSel);
+			
+			if (!Directory.Exists (conf.AppDirectory)) {
+				Gtk.Application.Invoke (delegate {
+					MessageService.ShowError (GettextCatalog.GetString ("The application has not been built."));
+				});
+				return;
+			}
+			
 			if (conf.Platform == PLAT_IPHONE) {
 				if (NeedsUploading (conf)) {
 					using (var opMon = new AggregatedOperationMonitor (monitor)) {
