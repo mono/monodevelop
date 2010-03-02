@@ -1,3 +1,8 @@
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Moved find
+	  expression code into the language binding.
+
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: up/down

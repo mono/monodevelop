@@ -474,14 +474,13 @@ namespace MonoDevelop.SourceEditor
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
 			if (resolver == null || expressionFinder == null) 
 				return null;
-			int wordEnd = offset;
-			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
-				wordEnd++;
-			ExpressionResult expressionResult = expressionFinder.FindExpression (txt, wordEnd);
+			ExpressionResult expressionResult = expressionFinder.FindExpression (txt, offset);
 			if (expressionResult == null)
 				return null;
+			
 			DocumentLocation loc = Document.OffsetToLocation (offset);
 			string savedExpression = null;
+			
 			// special handling for 'var' "keyword"
 			if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected && expressionResult.Expression != null && expressionResult.Expression.Trim () == "var") {
 				int endOffset = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
