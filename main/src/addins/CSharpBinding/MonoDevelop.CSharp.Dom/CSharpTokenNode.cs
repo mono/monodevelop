@@ -43,7 +43,6 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		
 		public CSharpTokenNode (DomLocation location, int tokenLength)
 		{
 			this.startLocation = location;
@@ -53,6 +52,11 @@ namespace MonoDevelop.CSharp.Dom
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return default (S);
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[CSharpTokenNode: StartLocation={0}, EndLocation={1}, Role={2}]", StartLocation, EndLocation, Role);
 		}
 	}
 }

@@ -180,7 +180,6 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitCastExpression (CastExpression castExpression, object data)
 		{
-			Console.WriteLine (castExpression.RPar);
 			if (castExpression.RPar != null)
 				ForceSpacesAfter (castExpression.RPar, 1, policy.SpacesAfterTypecast);
 			return base.VisitCastExpression (castExpression, data);
@@ -194,23 +193,12 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		void ForceSpacesAfter (INode node, bool forceSpaces)
 		{
-			DomLocation location = ((ICSharpNode)node).StartLocation;
-			int offset = data.Document.LocationToOffset (location.Line, location.Column) + 1;
-			char ch = data.Document.GetCharAt (offset);
-			if (ch != '(') {
-				while (offset + 1 < data.Document.Length) {
-					ch = data.Document.GetCharAt (offset + 1);
-					if (char.IsWhiteSpace (ch) || char.IsLetterOrDigit (ch))
-						break;
-					
-					offset++;
-				}
-			}
+			DomLocation location = ((ICSharpNode)node).EndLocation;
+			int offset = data.Document.LocationToOffset (location.Line, location.Column) - 1;
 			int i = offset + 1;
 			while (i < data.Document.Length && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
 				i++;
 			}
-			
 			ForceSpace (offset, i, forceSpaces);
 		}
 		
@@ -466,10 +454,9 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitForStatement (ForStatement forStatement, object data)
 		{
-			if (policy.SpacesAfterSemicolon) {
-				foreach (INode node in forStatement.Children) {
-					if (node.Role == ForStatement.Roles.Semicolon)
-						ForceSpacesAfter (((CSharpTokenNode)node), 1, true);
+			foreach (INode node in forStatement.Children) {
+				if (node.Role == ForStatement.Roles.Semicolon) {
+					ForceSpacesAfter (node, policy.SpacesAfterSemicolon);
 				}
 			}
 			
@@ -512,6 +499,16 @@ namespace MonoDevelop.CSharp.Formatting
 			
 
 			return base.VisitLockStatement (lockStatement, data);
+		}
+		
+		public override object VisitUsingStatement (UsingStatement usingStatement, object data)
+		{
+			ForceSpacesBefore (usingStatement.LPar, policy.UsingParentheses);
+			
+			ForceSpacesAfter (usingStatement.LPar, policy.WithinUsingParentheses);
+			ForceSpacesBefore (usingStatement.RPar, policy.WithinUsingParentheses);
+			
+			return base.VisitUsingStatement (usingStatement, data);
 		}
 	}
 }
