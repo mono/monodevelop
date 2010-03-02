@@ -1,5 +1,10 @@
 2010-03-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Worked on 'Bug 584479 -
+	  Exception while undoing'.
+
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: added
 	  some debug code.
 

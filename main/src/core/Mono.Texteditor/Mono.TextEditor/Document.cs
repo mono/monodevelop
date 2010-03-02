@@ -107,6 +107,7 @@ namespace Mono.TextEditor
 				return this.buffer.Text;
 			}
 			set {
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 				splitter.Clear ();
 				int oldLength = Length;
 				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, value);
@@ -125,9 +126,7 @@ namespace Mono.TextEditor
 		public void UpdateHighlighting ()
 		{
 			if (this.syntaxMode != null) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
-			//	Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate ();
 			}
 		}
 		
@@ -148,9 +147,10 @@ namespace Mono.TextEditor
 		
 		void IBuffer.Replace (int offset, int count, string value)
 		{
-			if (this.syntaxMode != null)
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
-			
+			if (atomicUndoLevel == 0) {
+				if (this.syntaxMode != null)
+					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
+			}
 			InterruptFoldWorker ();
 			//			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
 		//			Debug.Assert (count >= 0);
@@ -187,7 +187,6 @@ namespace Mono.TextEditor
 				operation.Setup (this, args);
 			
 			if (this.syntaxMode != null) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, value != null ? offset + value.Length : offset + count);
 			}
 			if (oldLineCount != LineCount)
@@ -667,6 +666,7 @@ namespace Mono.TextEditor
 		public void BeginAtomicUndo ()
 		{
 			if (currentAtomicOperation == null) {
+				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 				Debug.Assert (atomicUndoLevel == 0); 
 				currentAtomicOperation = new AtomicUndoOperation ();
 				OnBeginUndo ();
