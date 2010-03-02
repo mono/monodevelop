@@ -1,3 +1,10 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/FolderNodeBuilderExtension.cs: Fix "Bug 584067 - ASP.NET
+	  MVC: cannot add a View, uncaught exception" by marshalling
+	  assembly resolves from the templating AppDomain to the MD
+	  AppDomain.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:
