@@ -31,49 +31,76 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Framework;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
-		ManualResetEvent doneEvent = new ManualResetEvent (false);
+		Project project;
+		Engine engine;
+		string file;
 		
-		public void Dispose ()
+		public ProjectBuilder (string file, string binDir)
 		{
-			doneEvent.Set ();
-		}
-		
-		internal WaitHandle WaitHandle {
-			get { return doneEvent; }
-		}
-		
-		public MSBuildResult[] RunTarget (string file, string target, string configuration, string platform, string binPath, ILogWriter logWriter)
-		{
-			Engine engine = new Engine (binPath);
-			Environment.CurrentDirectory = Path.GetDirectoryName (file);
-			
-			LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
-			engine.RegisterLogger (logger);
-			
-			ConsoleLogger consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, logWriter.WriteLine, null, null);
-			engine.RegisterLogger (consoleLogger);
-			
-			Project project = new Project (engine);
-			project.Load (file);
+			this.file = file;
+			engine = new Engine (binDir);
 			engine.GlobalProperties.SetProperty ("BuildingInsideVisualStudio", "true");
+			Refresh ();
+		}
+		
+		public void Refresh ()
+		{
+			project = new Project (engine);
+			project.Load (file);
+		}
+		
+		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter)
+		{
+			try {
+				SetupEngine (configuration, platform);
+				
+				LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
+				engine.RegisterLogger (logger);
+				
+				ConsoleLogger consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, logWriter.WriteLine, null, null);
+				engine.RegisterLogger (consoleLogger);
+				
+				project.Build (target);
+				return logger.BuildResult.ToArray ();
+				
+			} finally {
+				engine.UnregisterAllLoggers ();
+			}
+		}
+		
+		public string[] GetAssemblyReferences (string configuration, string platform)
+		{
+			SetupEngine (configuration, platform);
+			
+			project.Build ("ResolveReferences");
+			BuildItemGroup grp = project.GetEvaluatedItemsByName ("ReferencePath");
+			List<string> refs = new List<string> ();
+			foreach (BuildItem item in grp)
+				refs.Add (item.Include);
+			return refs.ToArray ();
+		}
+		
+		void SetupEngine (string configuration, string platform)
+		{
+			Environment.CurrentDirectory = Path.GetDirectoryName (file);
 			engine.GlobalProperties.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
 				engine.GlobalProperties.SetProperty ("Platform", platform);
-			project.Build (target);
-			
-			return logger.BuildResult.ToArray ();
+			else
+				engine.GlobalProperties.RemoveProperty ("Platform");
 		}
 		
 		public override object InitializeLifetimeService ()
 		{
 			return null;
 		}
-
 	}
 }
 

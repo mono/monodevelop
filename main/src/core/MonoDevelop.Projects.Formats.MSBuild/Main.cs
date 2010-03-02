@@ -46,14 +46,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				RegisterRemotingChannel ();
 				WatchProcess (Console.ReadLine ());
 				
-				ProjectBuilder builder = new ProjectBuilder ();
+				BuildEngine builderEngine = new BuildEngine ();
 				BinaryFormatter bf = new BinaryFormatter ();
-				ObjRef oref = RemotingServices.Marshal (builder);
+				ObjRef oref = RemotingServices.Marshal (builderEngine);
 				MemoryStream ms = new MemoryStream ();
 				bf.Serialize (ms, oref);
 				Console.Error.WriteLine (Convert.ToBase64String (ms.ToArray ()));
 				
-				if (WaitHandle.WaitAny (new [] { builder.WaitHandle, exitEvent }) == 0) {
+				if (WaitHandle.WaitAny (new [] { builderEngine.WaitHandle, exitEvent }) == 0) {
 					// Wait before exiting, so that the remote call that disposed the builder can be completed
 					System.Threading.Thread.Sleep (400);
 				}

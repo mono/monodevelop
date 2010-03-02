@@ -1,10 +1,10 @@
 // 
-// IProjectBuilder.cs
+// ProjectBuilder.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,43 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Remoting;
+using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Framework;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public interface IProjectBuilder
+	public class BuildEngine: MarshalByRefObject, IBuildEngine
 	{
-		MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter);
-		string[] GetAssemblyReferences (string configuration, string platform);
+		ManualResetEvent doneEvent = new ManualResetEvent (false);
+		
+		public void Dispose ()
+		{
+			doneEvent.Set ();
+		}
+		
+		internal WaitHandle WaitHandle {
+			get { return doneEvent; }
+		}
+		
+		public IProjectBuilder LoadProject (string file, string binDir)
+		{
+			return new ProjectBuilder (file, binDir);
+		}
+		
+		public void UnloadProject (IProjectBuilder pb)
+		{
+			RemotingServices.Disconnect ((MarshalByRefObject) pb);
+		}
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
+		}
 	}
 }

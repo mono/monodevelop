@@ -8,7 +8,7 @@
     <ProjectGuid>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -42,6 +42,8 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\LocalLogger.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ILogWriter.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IProjectBuilder.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

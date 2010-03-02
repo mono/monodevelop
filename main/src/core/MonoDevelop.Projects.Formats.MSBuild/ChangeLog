@@ -1,3 +1,16 @@
+2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.cs:
+	* Makefile.am:
+	* MonoDevelop.Projects.Formats.MSBuild.csproj:
+	* MonoDevelop.Projects.Formats.MSBuild/BuildEngine.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/IBuildEngine.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/ProjectBuilder.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/IProjectBuilder.cs:
+	  Projects now have to be explicitly loaded and unloaded.
+	  Added support for getting the list of assembly references of
+	  a project.
+
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/ProjectBuilder.cs:

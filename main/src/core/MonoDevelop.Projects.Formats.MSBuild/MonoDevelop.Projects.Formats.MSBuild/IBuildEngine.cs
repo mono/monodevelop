@@ -4,7 +4,7 @@
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,9 @@ using System;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public interface IProjectBuilder
+	public interface IBuildEngine: IDisposable
 	{
-		MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter);
-		string[] GetAssemblyReferences (string configuration, string platform);
+		IProjectBuilder LoadProject (string file, string binPath);
+		void UnloadProject (IProjectBuilder pb);
 	}
 }
