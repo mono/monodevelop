@@ -1,3 +1,11 @@
+2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Renamed variable to improve
+	  readability.
+
+	* SoftEvaluationContext.cs: When calling a method, make sure
+	  value type arguments are properly boxed when required.
+
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* SoftDebuggerSession.cs:

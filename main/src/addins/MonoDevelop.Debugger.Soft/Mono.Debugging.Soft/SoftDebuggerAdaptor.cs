@@ -112,15 +112,15 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			if (obj == null)
 				return null;
-			object otype = GetValueType (ctx, obj);
-			if (otype is TypeMirror) {
-				if ((targetType is TypeMirror) && ((TypeMirror)targetType).IsAssignableFrom ((TypeMirror)otype))
+			object valueType = GetValueType (ctx, obj);
+			if (valueType is TypeMirror) {
+				if ((targetType is TypeMirror) && ((TypeMirror)targetType).IsAssignableFrom ((TypeMirror)valueType))
 					return obj;
 				// Try casting the primitive type of the enum
 				EnumMirror em = obj as EnumMirror;
 				if (em != null)
 					return TryCast (ctx, CreateValue (ctx, em.Value), targetType);
-			} else if (otype is Type) {
+			} else if (valueType is Type) {
 				if (targetType is TypeMirror) {
 					TypeMirror tm = (TypeMirror) targetType;
 					if (tm.IsEnum) {
@@ -133,7 +133,7 @@ namespace Mono.Debugging.Soft
 				}
 				Type tt = targetType as Type;
 				if (tt != null) {
-					if (tt.IsAssignableFrom ((Type)otype))
+					if (tt.IsAssignableFrom ((Type)valueType))
 						return obj;
 					if (obj is PrimitiveValue)
 						obj = ((PrimitiveValue)obj).Value;
@@ -693,7 +693,7 @@ namespace Mono.Debugging.Soft
 			Value[] values = new Value[argValues.Length];
 			for (int n=0; n<argValues.Length; n++)
 				values[n] = (Value) argValues [n];
-			
+
 			MethodMirror method = OverloadResolve (ctx, methodName, type, types, target != null, target == null, true);
 			return ctx.RuntimeInvoke (method, target ?? targetType, values);
 		}
