@@ -1,3 +1,8 @@
+2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs: Clean the
+	  breakpoint list when closing the solution.
+
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ExceptionsDialog.cs: Fix bug #579754 -

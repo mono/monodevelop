@@ -90,6 +90,7 @@ namespace MonoDevelop.Debugger
 			IdeApp.Initialized += delegate {
 				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
+				IdeApp.Workspace.LastWorkspaceItemClosed += OnSolutionClosed;
 				busyDialog = new BusyEvaluatorDialog ();
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
@@ -738,6 +739,11 @@ namespace MonoDevelop.Debugger
 			if (wstore != null)
 				pinnedWatches.LoadFrom (wstore);
 			pinnedWatches.BindAll (breakpoints);
+		}
+		
+		static void OnSolutionClosed (object s, EventArgs args)
+		{
+			breakpoints.Clear ();
 		}
 		
 		static string ResolveType (string identifier, SourceLocation location)
