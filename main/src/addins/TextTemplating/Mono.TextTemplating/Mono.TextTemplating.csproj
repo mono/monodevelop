@@ -51,6 +51,7 @@
     <Compile Include="Mono.TextTemplating\TemplateGenerator.cs" />
     <Compile Include="Mono.TextTemplating\TemplatingEngine.cs" />
     <Compile Include="Mono.TextTemplating\TemplateSettings.cs" />
+    <Compile Include="Mono.TextTemplating\CrossAppDomainAssemblyResolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
