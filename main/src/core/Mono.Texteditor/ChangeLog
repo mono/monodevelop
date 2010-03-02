@@ -1,3 +1,8 @@
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: added
+	  some debug code.
+
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs: Finishing old parser thread

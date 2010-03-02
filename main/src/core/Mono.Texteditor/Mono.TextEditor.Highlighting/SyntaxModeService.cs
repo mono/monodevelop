@@ -207,10 +207,12 @@ namespace Mono.TextEditor.Highlighting
 			SyntaxMode mode;
 			int startOffset;
 			int endOffset;
+			
 			public ManualResetEvent ManualResetEvent {
 				get;
-				set;
+				private set;
 			}
+			
 			public Document Doc {
 				get { return this.doc; }
 			}
@@ -338,8 +340,18 @@ namespace Mono.TextEditor.Highlighting
 		public static void WaitUpdate (Document doc)
 		{
 			foreach (UpdateWorker worker in updateQueue.ToArray ()) {
-				if (worker != null && worker.Doc == doc)
-					worker.ManualResetEvent.WaitOne ();
+				try {
+					if (worker != null && worker.Doc == doc)
+						worker.ManualResetEvent.WaitOne ();
+				} catch (Exception e) {
+					Console.WriteLine ("Worker:" + worker);
+					Console.WriteLine ("------");
+					Console.WriteLine (e);
+					Console.WriteLine ("------");
+					Console.WriteLine ("worker.Doc:" + worker.Doc);
+					Console.WriteLine ("worker.IsFinished:" + worker.IsFinished);
+					Console.WriteLine ("worker.ManualResetEvent:" + worker.ManualResetEvent);
+				}
 			}
 		}
 		
