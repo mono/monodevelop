@@ -139,7 +139,10 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/DotNetProjectNode.cs \
 	MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs \
 	MonoDevelop.Projects.Extensions/FileFormatNode.cs \
+	MonoDevelop.Projects.Extensions/IAssemblyReferenceHandler.cs \
 	MonoDevelop.Projects.Extensions/IFileFormat.cs \
+	MonoDevelop.Projects.Extensions/IPathHandler.cs \
+	MonoDevelop.Projects.Extensions/IResourceHandler.cs \
 	MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs \
 	MonoDevelop.Projects.Extensions/ItemPropertyCodon.cs \
 	MonoDevelop.Projects.Extensions/ItemTypeCondition.cs \

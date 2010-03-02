@@ -1,10 +1,10 @@
 // 
-// ProjectItem.cs
+// ISolutionItemHandler.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,37 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
-using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Projects.Extensions
 {
-	public class ProjectItem: IExtendedDataItem
+	/// <summary>
+	/// This interface can be implemented by a ISolutionItemHandler class to provide
+	/// custom rules for encoding and decoding paths
+	/// </summary>
+	public interface IPathHandler
 	{
-		Hashtable extendedProperties;
-		
-		public IDictionary ExtendedProperties {
-			get {
-				if (extendedProperties == null)
-					extendedProperties = new Hashtable ();
-				return extendedProperties;
-			}
-		}
-		
-		internal string Condition { get; set; }
-	}
-	
-	public class UnknownProjectItem: ProjectItem
-	{
-		public string ItemName { get; private set; }
-		
-		[ItemProperty ("Include")]
-		public string Include { get; private set; }
-		
-		public UnknownProjectItem (string name, string include)
-		{
-			this.ItemName = name;
-			this.Include = include;
-		}
+		string EncodePath (string path, string oldPath);
+		string DecodePath (string path);
 	}
 }

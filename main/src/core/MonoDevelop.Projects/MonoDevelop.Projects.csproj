@@ -349,6 +349,9 @@
     <Compile Include="MonoDevelop.Projects\CompiledAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects\IAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\CompiledAssemblyProjectMSBuildHandler.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\IResourceHandler.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\IPathHandler.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\IAssemblyReferenceHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

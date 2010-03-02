@@ -29,23 +29,28 @@ using System.Diagnostics;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class RemoteProjectBuilder: IProjectBuilder
+	class RemoteBuildEngine: IBuildEngine
 	{
-		IProjectBuilder builder;
+		IBuildEngine engine;
 		Process proc;
 		
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
 		
-		public RemoteProjectBuilder (Process proc, IProjectBuilder builder)
+		public RemoteBuildEngine (Process proc, IBuildEngine engine)
 		{
 			this.proc = proc;
-			this.builder = builder;
+			this.engine = engine;
+		}
+
+		public IProjectBuilder LoadProject (string file, string binPath)
+		{
+			return engine.LoadProject (file, binPath);
 		}
 		
-		public MSBuildResult[] RunTarget (string file, string target, string configuration, string platform, string binPath, ILogWriter logWriter)
+		public void UnloadProject (IProjectBuilder pb)
 		{
-			return builder.RunTarget (file, target, configuration, platform, binPath, logWriter);
+			engine.UnloadProject (pb);
 		}
 		
 		public void Dispose ()
@@ -57,7 +62,46 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			else
-				builder.Dispose ();
+				engine.Dispose ();
+		}
+	}
+	
+	public class RemoteProjectBuilder: IDisposable
+	{
+		RemoteBuildEngine engine;
+		IProjectBuilder builder;
+		
+		internal RemoteProjectBuilder (string file, string binPath, RemoteBuildEngine engine)
+		{
+			this.engine = engine;
+			builder = engine.LoadProject (file, binPath);
+		}
+		
+		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter)
+		{
+			return builder.RunTarget (target, configuration, platform, logWriter);
+		}
+		
+		public string[] GetAssemblyReferences (string configuration, string platform)
+		{
+			return builder.GetAssemblyReferences (configuration, platform);
+		}
+		
+		public void Dispose ()
+		{
+			if (engine != null) {
+				if (builder != null)
+					engine.UnloadProject (builder);
+				MSBuildProjectService.ReleaseProjectBuilder (engine);
+				GC.SuppressFinalize (this);
+				engine = null;
+				builder = null;
+			}
+		}
+		
+		~RemoteProjectBuilder ()
+		{
+			Dispose ();
 		}
 	}
 }

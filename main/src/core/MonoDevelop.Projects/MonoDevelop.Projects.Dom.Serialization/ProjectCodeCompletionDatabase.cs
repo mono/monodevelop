@@ -148,15 +148,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			fs.Clear ();
 			if (project is DotNetProject) {
 				DotNetProject netProject = (DotNetProject) project;
-				foreach (ProjectReference pr in netProject.References)
-				{
-					foreach (string refId in GetReferenceKeys (pr)) {
+				foreach (SolutionItem pr in netProject.GetReferencedItems (ConfigurationSelector.Default)) {
+					if (pr is Project) {
+						string refId = "Project:" + ((Project)pr).FileName;
 						fs[refId] = null;
 						if (!HasReference (refId))
 							AddReference (refId);
 					}
 				}
+				
+				// Get the assembly references throught the project, since it may have custom references
+				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+					string refId = "Assembly:" + netProject.TargetRuntime.Id + ":" + Path.GetFullPath (file);
+					fs[refId] = null;
+					if (!HasReference (refId))
+						AddReference (refId);
+				}
 			}
+			
 			keys.Clear();
 			keys.AddRange (references);
 			foreach (ReferenceEntry re in keys)
@@ -221,18 +230,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return Path.GetFileNameWithoutExtension (file) == "mscorlib";
 			else
 				return false;
-		}
-		
-		IEnumerable<string> GetReferenceKeys (ProjectReference pr)
-		{
-			if (pr.ReferenceType == ReferenceType.Project) {
-				Project referencedProject = project.ParentSolution.FindProjectByName (pr.Reference);
-				yield return "Project:" + (referencedProject != null ? referencedProject.FileName : (FilePath) "null");
-			} else {
-				string runtimeId = ((DotNetProject)project).TargetRuntime.Id;
-				foreach (string s in pr.GetReferencedFileNames (ConfigurationSelector.Default))
-					yield return "Assembly:" + runtimeId + ":" + Path.GetFullPath (s);
-			}
 		}
 		
 		protected override void ParseFile (string fileName, IProgressMonitor monitor)

@@ -1,3 +1,33 @@
+2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectItem.cs: When reading a project
+	  store unknown project items, and write them back when
+	  saving.
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects.Extensions/IAssemblyReferenceHandler.cs:
+	  Allow overriding the list of assemblies that a project is
+	  referencing. By default this list is generated from the
+	  references list, but custom projects or project handlers can
+	  inject references to assemblies which are not in the
+	  references list.
+
+	* MonoDevelop.Projects.Formats.MSBuild/RemoteProjectBuilder.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Updated to allow getting the list of assembly references
+	  from the msbuild project.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.Extensions/IPathHandler.cs:
+	* MonoDevelop.Projects.Extensions/IResourceHandler.cs:
+	* MonoDevelop.Projects.Extensions/ISolutionItemHandler.cs:
+	  Moved some interfaces to its own file.
+
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Use GetReferencedAssemblies to get the list of assemblies.
+
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects.Dom/DomProperty.cs:

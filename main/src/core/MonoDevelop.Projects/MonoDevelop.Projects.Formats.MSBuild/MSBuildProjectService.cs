@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static DataContext dataContext;
 		
-		static Dictionary<TargetRuntime,RemoteProjectBuilder> builders = new Dictionary<TargetRuntime, RemoteProjectBuilder> ();
+		static Dictionary<TargetRuntime,RemoteBuildEngine> builders = new Dictionary<TargetRuntime, RemoteBuildEngine> ();
 		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
 		
 		public static DataContext DataContext {
@@ -358,21 +358,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime)
+		static RemoteBuildEngine currentBuildEngine;
+		
+		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, TargetFramework fx, string file)
 		{
 			lock (builders) {
-				RemoteProjectBuilder builder;
+				string binDir = runtime.GetMSBuildBinPath (fx);
+				
+				RemoteBuildEngine builder;
 				if (builders.TryGetValue (runtime, out builder)) {
 					builder.ReferenceCount++;
-					return builder;
+					return new RemoteProjectBuilder (file, binDir, builder);
 				}
 				
 				if (runtime.IsRunning) {
-					builder = new RemoteProjectBuilder (null, new ProjectBuilder ());
+					if (currentBuildEngine == null)
+						currentBuildEngine = new RemoteBuildEngine (null, new BuildEngine ());
+					return new RemoteProjectBuilder (file, binDir, currentBuildEngine);
 				}
 				else {
 					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
-					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
 					string exe = typeof(ProjectBuilder).Assembly.Location;
 					ProcessStartInfo pinfo = new ProcessStartInfo (exe);
 					foreach (KeyValuePair<string,string> evar in runtime.GetToolsEnvironmentVariables (fx))
@@ -389,7 +394,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						byte[] data = Convert.FromBase64String (sref);
 						MemoryStream ms = new MemoryStream (data);
 						BinaryFormatter bf = new BinaryFormatter ();
-						builder = new RemoteProjectBuilder (p, (ProjectBuilder) bf.Deserialize (ms));
+						builder = new RemoteBuildEngine (p, (IBuildEngine) bf.Deserialize (ms));
 					} catch {
 						if (p != null) {
 							try {
@@ -401,17 +406,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				builders [runtime] = builder;
 				builder.ReferenceCount = 1;
-				return builder;
+				return new RemoteProjectBuilder (file, binDir, builder);
 			}
 		}
 
-		public static void ReleaseProjectBuilder (RemoteProjectBuilder builder)
+		internal static void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
 			lock (builders) {
-				if (builder.ReferenceCount > 0) {
-					if (--builder.ReferenceCount == 0) {
-						builder.ReleaseTime = DateTime.Now.AddSeconds (3);
-						ScheduleProjectBuilderCleanup (builder.ReleaseTime.AddMilliseconds (500));
+				if (engine.ReferenceCount > 0) {
+					if (--engine.ReferenceCount == 0) {
+						engine.ReleaseTime = DateTime.Now.AddSeconds (3);
+						ScheduleProjectBuilderCleanup (engine.ReleaseTime.AddMilliseconds (500));
 					}
 				}
 			}
@@ -440,7 +445,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			lock (builders) {
 				DateTime tnow = DateTime.Now;
-				foreach (KeyValuePair<TargetRuntime,RemoteProjectBuilder> val in new Dictionary<TargetRuntime,RemoteProjectBuilder> (builders)) {
+				foreach (var val in new Dictionary<TargetRuntime,RemoteBuildEngine> (builders)) {
 					if (val.Value.ReferenceCount == 0 && val.Value.ReleaseTime <= tnow) {
 						builders.Remove (val.Key);
 						val.Value.Dispose ();

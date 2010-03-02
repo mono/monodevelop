@@ -38,24 +38,5 @@ namespace MonoDevelop.Projects.Extensions
 		string ItemId { get; }
 	}
 	
-	public interface IResourceHandler
-	{
-		string GetDefaultResourceId (ProjectFile file);
-	}
 	
-	internal class DefaultResourceHandler : IResourceHandler
-	{
-		public string GetDefaultResourceId (ProjectFile file)
-		{
-			return System.IO.Path.GetFileName (file.Name);
-		}
-		
-		public static readonly DefaultResourceHandler Instance = new DefaultResourceHandler ();
-	}
-	
-	public interface IPathHandler
-	{
-		string EncodePath (string path, string oldPath);
-		string DecodePath (string path);
-	}
 }

@@ -39,10 +39,11 @@ using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildProjectHandler: MSBuildHandler, IResourceHandler, IPathHandler
+	public class MSBuildProjectHandler: MSBuildHandler, IResourceHandler, IPathHandler, IAssemblyReferenceHandler
 	{
 		string fileContent;
 		List<string> targetImports = new List<string> ();
@@ -50,6 +51,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<string> subtypeGuids = new List<string> ();
 		const string Unspecified = null;
 		RemoteProjectBuilder projectBuilder;
+		TargetFramework lastBuildFx;
 		
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -103,50 +105,77 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// If the default runtime changes, the project builder for this project may change
 			// so it has to be created again.
 			if (projectBuilder != null) {
-				MSBuildProjectService.ReleaseProjectBuilder (projectBuilder);
+				projectBuilder.Dispose ();
 				projectBuilder = null;
 			}
 		}
 		
-		RemoteProjectBuilder ProjectBuilder {
-			get {
-				if (projectBuilder == null)
-					projectBuilder = MSBuildProjectService.GetProjectBuilder (((IAssemblyProject)Item).TargetRuntime);
-				return projectBuilder;
+		RemoteProjectBuilder GetProjectBuilder ()
+		{
+			SolutionEntityItem item = (SolutionEntityItem) Item;
+			TargetRuntime runtime = null;
+			TargetFramework fx;
+			if (item is IAssemblyProject) {
+				runtime = ((IAssemblyProject) item).TargetRuntime;
+				fx = ((IAssemblyProject) item).TargetFramework;
 			}
+			else {
+				runtime = Runtime.SystemAssemblyService.CurrentRuntime;
+				fx = Services.ProjectService.DefaultTargetFramework;
+			}
+			if (projectBuilder == null || lastBuildFx != fx) {
+				if (projectBuilder != null) {
+					projectBuilder.Dispose ();
+					projectBuilder = null;
+				}
+				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, fx, item.FileName);
+				lastBuildFx = fx;
+			}
+			return projectBuilder;
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
 			if (projectBuilder != null) {
-				MSBuildProjectService.ReleaseProjectBuilder (projectBuilder);
+				projectBuilder.Dispose ();
 				projectBuilder = null;
 			}
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 		}
-
+		
+		IEnumerable<string> IAssemblyReferenceHandler.GetAssemblyReferences (ConfigurationSelector configuration)
+		{
+			if (PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false)) {
+				// Get the references list from the msbuild project
+				SolutionEntityItem item = (SolutionEntityItem) Item;
+				RemoteProjectBuilder builder = GetProjectBuilder ();
+				SolutionItemConfiguration configObject = item.GetConfiguration (configuration);
+				foreach (string s in builder.GetAssemblyReferences (configObject.Name, configObject.Platform))
+					yield return s;
+			}
+			else {
+				DotNetProject item = Item as DotNetProject;
+				if (item == null)
+					yield break;
+				foreach (ProjectReference pref in item.References.Where (pr => pr.ReferenceType != ReferenceType.Project)) {
+					foreach (string asm in pref.GetReferencedFileNames (configuration))
+						yield return asm;
+				}
+			}
+		}
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false)) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
-					TargetRuntime runtime = null;
-					TargetFramework fx;
-					if (item is DotNetProject) {
-						runtime = ((DotNetProject) item).TargetRuntime;
-						fx = ((DotNetProject) item).TargetFramework;
-					}
-					else {
-						runtime = Runtime.SystemAssemblyService.CurrentRuntime;
-						fx = Services.ProjectService.DefaultTargetFramework;
-					}
 					
 					SolutionItemConfiguration configObject = item.GetConfiguration (configuration);
 				
 					LogWriter logWriter = new LogWriter (monitor.Log);
-					MSBuildResult[] results = ProjectBuilder.RunTarget (item.FileName, target, configObject.Name, configObject.Platform, runtime.GetMSBuildBinPath (fx), logWriter);
+					RemoteProjectBuilder builder = GetProjectBuilder ();
+					MSBuildResult[] results = builder.RunTarget (target, configObject.Name, configObject.Platform, logWriter);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					BuildResult br = new BuildResult ();
@@ -467,7 +496,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return obj;
 			}
 			
-			return null;
+			UnknownProjectItem uitem = new UnknownProjectItem (buildItem.Name, "");
+			ReadBuildItemMetadata (ser, buildItem, uitem, typeof(UnknownProjectItem));
+			
+			return uitem;
 		}
 
 		bool IsValidFile (string path)
@@ -801,8 +833,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SaveProjectFile (ser, msproject, (ProjectFile) ob, oldItems);
 			}
 			else {
-				DataType dt = ser.DataContext.GetConfigurationDataType (ob.GetType ());
-				string itemName = dt.Name;
+				string itemName;
+				if (ob is UnknownProjectItem)
+					itemName = ((UnknownProjectItem)ob).ItemName;
+				else {
+					DataType dt = ser.DataContext.GetConfigurationDataType (ob.GetType ());
+					itemName = dt.Name;
+				}
 				MSBuildItem buildItem = msproject.AddNewItem (itemName, "");
 				WriteBuildItemMetadata (ser, buildItem, ob, oldItems);
 			}
