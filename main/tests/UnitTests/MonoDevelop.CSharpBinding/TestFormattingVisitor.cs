@@ -23,8 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 /*
+
 using System;
 using NUnit.Framework;
 using MonoDevelop.Ide.Gui;
@@ -440,6 +440,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			Console.WriteLine (data.Document.Text);
 			int i1 = data.Document.Text.IndexOf ("condition");
 			int i2 = data.Document.Text.IndexOf ("falseexpr") + "falseexpr".Length;
 			Assert.AreEqual (@"condition ? trueexpr : falseexpr", data.Document.GetTextBetween (i1, i2));
@@ -460,7 +461,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.IndexOf ("true");
 			i2 = data.Document.Text.IndexOf ("falseexpr") + "falseexpr".Length;
-			Assert.AreEqual (@"condition?trueexpr:falseexpr", data.Document.GetTextBetween (i1, i2));
+			Assert.AreEqual (@"true?trueexpr:falseexpr", data.Document.GetTextBetween (i1, i2));
 		}
 		
 		[Test()]
@@ -637,8 +638,8 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("for");
-			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
-			Assert.AreEqual (@"for (;;)", data.Document.GetTextBetween (i1, i2));
+			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
+			Assert.AreEqual (@"for (", data.Document.GetTextBetween (i1, i2));
 		}
 		
 		[Test()]
@@ -833,5 +834,46 @@ return (Test)null;
 			Assert.AreEqual (@"return (Test) null", data.Document.GetTextBetween (i1, i2));
 		}
 		
+		[Test()]
+		public void TestBeforeUsingParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		using(a) {}
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.UsingParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("using");
+			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
+			Assert.AreEqual (@"using (", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinUsingParenthesesSpace ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		using(a) {}
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinUsingParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomFormattingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( a )", data.Document.GetTextBetween (i1, i2));
+		}
 	}
 }*/
