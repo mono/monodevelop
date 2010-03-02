@@ -1,6 +1,13 @@
 2010-03-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Toggle code completion category is now toggled by the
+	  ShowCompletionWindow command, when the window is visible.
+
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
 	  Changed mode toggeling to ctrl+space.
 
 2010-02-26  Mike Krüger  <mkrueger@novell.com>

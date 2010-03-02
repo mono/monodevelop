@@ -44,6 +44,10 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		public static CompletionListWindow Wnd {
+			get { return wnd; }
+		}
+		
 		public static CodeCompletionContext CodeCompletionContext {
 			get {
 				return wnd.CodeCompletionContext;

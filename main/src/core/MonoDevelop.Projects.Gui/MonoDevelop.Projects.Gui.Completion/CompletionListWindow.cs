@@ -88,6 +88,13 @@ namespace MonoDevelop.Projects.Gui.Completion
 				CompleteWord ();
 		}
 		
+		public void ToggleCategoryMode ()
+		{
+			this.List.InCategoryMode = !this.List.InCategoryMode;
+			this.ResetSizes ();
+			this.List.QueueDraw ();
+		}
+		
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
 		{
 			ka = KeyActions.None;
@@ -103,12 +110,6 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ka = ProcessKey (key, keyChar, modifier);
 			}
 			
-			if (key == Gdk.Key.space && (modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
-				this.List.InCategoryMode = !this.List.InCategoryMode;
-				this.ResetSizes ();
-				this.List.QueueDraw ();
-				return true;
-			}
 			if ((ka & KeyActions.Complete) != 0) {
 				CompleteWord ();
 			}
