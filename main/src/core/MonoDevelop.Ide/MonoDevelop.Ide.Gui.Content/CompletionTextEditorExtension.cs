@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandUpdateHandler (TextEditorCommands.ShowCompletionWindow)]
 		internal void OnUpdateCompletionCommand (CommandInfo info)
 		{
-			info.Bypass = !CanRunCompletionCommand ();
+			info.Bypass = !CanRunCompletionCommand () && !CompletionWindowManager.IsVisible;
 		}
 		
 		[CommandUpdateHandler (TextEditorCommands.ShowParameterCompletionWindow)]
@@ -187,6 +187,11 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual void RunCompletionCommand ()
 		{
+			if (CompletionWindowManager.IsVisible) {
+				CompletionWindowManager.Wnd.ToggleCategoryMode ();
+				return;
+			}
+			
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {

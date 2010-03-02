@@ -1,3 +1,10 @@
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Toggle code completion category is now toggled by the
+	  ShowCompletionWindow command, when the window is visible.
+
 2010-02-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Fix
