@@ -205,8 +205,12 @@ namespace Mono.Debugging.Soft
 			OnConnected ();
 			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
-			var req = vm.CreateExceptionRequest (null, false, true);
-			req.Enable ();
+			try {
+				var req = vm.CreateExceptionRequest (null, false, true);
+				req.Enable ();
+			} catch (NotSupportedException) {
+				//Mono < 2.6.3 doesn't support catching unhandled exceptions
+			}
 			
 			OnStarted ();
 			started = true;

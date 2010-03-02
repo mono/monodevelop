@@ -1,3 +1,11 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerSession.cs:
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated SDB dll, stops uncaught
+	  exception handler getting all caught exceptions on older
+	  Monos, and updates protocol.
+
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: Improved support for indexers.
