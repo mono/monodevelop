@@ -46,6 +46,11 @@ namespace Mono.Debugging.Evaluation
 		
 		public override ValueReference Evaluate (EvaluationContext ctx, string exp, object expectedType)
 		{
+			return Evaluate (ctx, exp, expectedType, false);
+		}
+		
+		ValueReference Evaluate (EvaluationContext ctx, string exp, object expectedType, bool tryTypeOf)
+		{
 			if (exp.StartsWith ("?"))
 				exp = exp.Substring (1).Trim ();
 			if (exp.StartsWith ("var ")) {
@@ -77,11 +82,27 @@ namespace Mono.Debugging.Evaluation
 			Expression expObj = parser.ParseExpression ();
 			if (expObj == null)
 				throw new EvaluatorException ("Could not parse expression '{0}'", exp);
-			EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, expectedType, userVariables);
-			return (ValueReference) expObj.AcceptVisitor (ev, null);
+			
+			try {
+				EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, expectedType, userVariables, tryTypeOf);
+				return (ValueReference) expObj.AcceptVisitor (ev, null);
+			} catch {
+				if (!tryTypeOf && (expObj is BinaryOperatorExpression)) {
+					// This is a hack to be able to parse expressions such as "List<string>". The NRefactory parser
+					// can parse a single type name, so a solution is to wrap it around a typeof(). We do it if
+					// the evaluation fails.
+					return Evaluate (ctx, "typeof(" + exp + ")", expectedType, true);
+				} else
+					throw;
+			}
 		}
 		
 		public string Resolve (DebuggerSession session, SourceLocation location, string exp)
+		{
+			return Resolve (session, location, exp, false);
+		}
+		
+		string Resolve (DebuggerSession session, SourceLocation location, string exp, bool tryTypeOf)
 		{
 			if (exp.StartsWith ("?"))
 				return "?" + Resolve (session, location, exp.Substring (1).Trim ());
@@ -97,7 +118,15 @@ namespace Mono.Debugging.Evaluation
 				return exp;
 			NRefactoryResolverVisitor ev = new NRefactoryResolverVisitor (session, location, exp);
 			expObj.AcceptVisitor (ev, null);
-			return ev.GetResolvedExpression ();
+			string r = ev.GetResolvedExpression ();
+			if (r == exp && !tryTypeOf && (expObj is BinaryOperatorExpression)) {
+				// This is a hack to be able to parse expressions such as "List<string>". The NRefactory parser
+				// can parse a single type name, so a solution is to wrap it around a typeof(). We do it if
+				// the evaluation fails.
+				string res = Resolve (session, location, "typeof(" + exp + ")", true);
+				return res.Substring (7, res.Length - 8);
+			}
+			return r;
 		}
 		
 		public override ValidationResult ValidateExpression (EvaluationContext ctx, string exp)
@@ -142,15 +171,17 @@ namespace Mono.Debugging.Evaluation
 		EvaluationOptions options;
 		string name;
 		object expectedType;
+		bool tryTypeOf;
 		Dictionary<string,ValueReference> userVariables;
 
-		public EvaluatorVisitor (EvaluationContext ctx, string name, object expectedType, Dictionary<string,ValueReference> userVariables)
+		public EvaluatorVisitor (EvaluationContext ctx, string name, object expectedType, Dictionary<string,ValueReference> userVariables, bool tryTypeOf)
 		{
 			this.ctx = ctx;
 			this.name = name;
 			this.expectedType = expectedType;
 			this.userVariables = userVariables;
 			this.options = ctx.Options;
+			this.tryTypeOf = tryTypeOf;
 		}
 		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -185,7 +216,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitTypeReference (ICSharpCode.NRefactory.Ast.TypeReference typeReference, object data)
 		{
-			object type = ctx.Adapter.GetType (ctx, typeReference.Type);
+			object type = ToTargetType (typeReference);
 			if (type != null)
 				return new TypeValueReference (ctx, type);
 			else
@@ -216,10 +247,34 @@ namespace Mono.Debugging.Evaluation
 			}			
 			throw CreateNotSupportedError ();
 		}
+		
+		object ToTargetType (TypeReference type)
+		{
+			if (type.GenericTypes.Count == 0)
+				return ctx.Adapter.GetType (ctx, type.Type);
+			else {
+				object[] args = new object [type.GenericTypes.Count];
+				for (int n=0; n<args.Length; n++) {
+					object t = ToTargetType (type.GenericTypes [n]);
+					if (t == null)
+						return null;
+					args [n] = t;
+				}
+				return ctx.Adapter.GetType (ctx, type.Type + "`" + args.Length, args);
+			}
+		}
 
 		public override object VisitTypeOfExpression (ICSharpCode.NRefactory.Ast.TypeOfExpression typeOfExpression, object data)
 		{
-			object type = ctx.Adapter.GetType (ctx, typeOfExpression.TypeReference.Type);
+			if (tryTypeOf) {
+				// The parser is trying to evaluate a type name, but since NRefactory has problems parsing generic types,
+				// it has to do it by wrapping it with a typeof(). In this case, it sets tryTypeOf=true, meaning that
+				// typeof in this case has to be evaluated in a special way: as a type reference.
+				return typeOfExpression.TypeReference.AcceptVisitor (this, data);
+			}
+			object type = ToTargetType (typeOfExpression.TypeReference);
+			if (type == null)
+				throw CreateParseError ("Unknown type: " + typeOfExpression.TypeReference.Type);
 			object ob = ctx.Adapter.CreateTypeObject (ctx, type);
 			if (ob != null)
 				return LiteralValueReference.CreateTargetObjectLiteral (ctx, typeOfExpression.TypeReference.Type, ob);

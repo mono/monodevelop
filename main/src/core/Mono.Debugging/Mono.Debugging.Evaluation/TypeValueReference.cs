@@ -42,7 +42,7 @@ namespace Mono.Debugging.Evaluation
 			: base (ctx)
 		{
 			this.type = type;
-			name = GetTypeName (ctx.Adapter.GetTypeName (ctx, type));
+			name = ctx.Adapter.GetDisplayTypeName (ctx, type);
 		}
 		
 		internal static string GetTypeName (string tname)

@@ -1,3 +1,12 @@
+2010-03-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/TypeValueReference.cs: Set the
+	  correct type name for the type reference.
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Added hack
+	  which allows parsing single generic type names (that is,
+	  when the expression is a type name).
+
 2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Add a
