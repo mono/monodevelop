@@ -210,12 +210,11 @@ namespace MonoDevelop.CSharp.Parser
 				
 				newOperator.AddChild (ConvertToReturnType (o.TypeName), AbstractNode.Roles.ReturnType);
 				ParanthesisLocation location = LocationStorage.Get<ParanthesisLocation> (o);
-				newOperator.AddChild (new CSharpTokenNode (Convert (location.Open), 1), MethodDeclaration.Roles.LPar);
-				newOperator.AddChild (new CSharpTokenNode (Convert (location.Close), 1), MethodDeclaration.Roles.RPar);
+				newOperator.AddChild (new CSharpTokenNode (Convert (location.Open), 1), OperatorDeclaration.Roles.LPar);
+				newOperator.AddChild (new CSharpTokenNode (Convert (location.Close), 1), OperatorDeclaration.Roles.RPar);
 				
-				if (o.Block == null) {
-					
-				}
+				if (o.Block != null)
+					newOperator.AddChild ((INode)o.Block.Accept (this), OperatorDeclaration.Roles.Body);
 				
 				typeStack.Peek ().AddChild (newOperator, TypeDeclaration.Roles.Member);
 			}
