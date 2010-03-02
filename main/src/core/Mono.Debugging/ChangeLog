@@ -1,3 +1,8 @@
+2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Add a
+	  better default implementation for ForceLoadType.
+
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs: Fix null ref.

@@ -259,7 +259,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public virtual object ForceLoadType (EvaluationContext ctx, string typeName)
 		{
-			return null;
+			return GetType (ctx, typeName);
 		}
 
 		public abstract object CreateValue (EvaluationContext ctx, object value);
