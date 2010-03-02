@@ -1,3 +1,8 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Nicer
+	  error message and kill console spew.
+
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs:
