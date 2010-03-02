@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				ka = ProcessKey (key, keyChar, modifier);
 			}
 			
-			if (key == Gdk.Key.space && (modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+			if (key == Gdk.Key.space && (modifier & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
 				this.List.InCategoryMode = !this.List.InCategoryMode;
 				this.ResetSizes ();
 				this.List.QueueDraw ();
