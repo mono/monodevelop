@@ -56,6 +56,7 @@ namespace Mono.Debugging.Soft
 		bool started;
 		internal int StackVersion;
 		StepEventRequest currentStepRequest;
+		ExceptionEventRequest unhandledExceptionRequest;
 		
 		Dictionary<long,ObjectMirror> activeExceptionsByThread = new Dictionary<long, ObjectMirror> ();
 		
@@ -206,8 +207,8 @@ namespace Mono.Debugging.Soft
 			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
 			try {
-				var req = vm.CreateExceptionRequest (null, false, true);
-				req.Enable ();
+				unhandledExceptionRequest = vm.CreateExceptionRequest (null, false, true);
+				unhandledExceptionRequest.Enable ();
 			} catch (NotSupportedException) {
 				//Mono < 2.6.3 doesn't support catching unhandled exceptions
 			}
@@ -651,7 +652,8 @@ namespace Mono.Debugging.Soft
 				etype = TargetEventType.ExceptionThrown;
 				var ev = (ExceptionEvent)e;
 				exception = ev.Exception;
-				resume = false;
+				if (ev.Request != unhandledExceptionRequest || exception.Type.FullName != "System.Threading.ThreadAbortException")
+					resume = false;
 			}
 			
 			if (e is StepEvent) {

@@ -1,3 +1,9 @@
+2010-03-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Don't catch the thread abort
+	  exception, unless there is a catchpoint for it. Based on a
+	  patch by Levi Bard.
+
 2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: Renamed variable to improve
