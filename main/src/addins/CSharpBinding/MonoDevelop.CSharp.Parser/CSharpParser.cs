@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 /*
 using System;
 using System.Collections.Generic;
@@ -884,11 +885,9 @@ namespace MonoDevelop.CSharp.Parser
 						break;
 					case Binary.Operator.LessThan:
 						result.BinaryOperatorType = BinaryOperatorType.LessThan;
-						opLength = 2;
 						break;
 					case Binary.Operator.GreaterThan:
 						result.BinaryOperatorType = BinaryOperatorType.GreaterThan;
-						opLength = 2;
 						break;
 					case Binary.Operator.LessThanOrEqual:
 						result.BinaryOperatorType = BinaryOperatorType.LessThanOrEqual;

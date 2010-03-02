@@ -1,5 +1,12 @@
 2010-03-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	  Fixed 'FindExpression' in expression finder.
+
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/CSharpTokenNode.cs:
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
 	* MonoDevelop.CSharp.Dom/Statements/UsingStatement.cs:

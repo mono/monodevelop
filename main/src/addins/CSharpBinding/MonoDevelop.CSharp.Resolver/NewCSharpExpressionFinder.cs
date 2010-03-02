@@ -689,6 +689,14 @@ namespace MonoDevelop.CSharp.Resolver
 
 		public ExpressionResult FindExpression (string text, int offset)
 		{
+			int wordEnd = offset;
+			while (wordEnd < text.Length && (Char.IsLetterOrDigit (text[wordEnd]) || text[wordEnd] == '_'))
+				wordEnd++;
+			return InternalFindExpression (text, wordEnd);
+		}
+		
+		ExpressionResult InternalFindExpression (string text, int offset)
+		{
 			Init (text, offset);
 			Token token;
 			Location lastError = Location.Empty;
@@ -1072,7 +1080,7 @@ namespace MonoDevelop.CSharp.Resolver
 			return FindFullExpression (text, offset, methodBody);
 		}
 
-		ExpressionResult FindFullExpression (string text, int offset, Frame initialFrame)
+ 		ExpressionResult FindFullExpression (string text, int offset, Frame initialFrame)
 		{
 			Init (text, offset);
 			
@@ -1125,7 +1133,7 @@ namespace MonoDevelop.CSharp.Resolver
 					if (lastExpressionStartOffset == alternateResultStartOffset && alternateResultStartOffset >= 0)
 						resultStartOffset = lastExpressionStartOffset;
 					if (resultFrame.type == FrameType.Popped || lastExpressionStartOffset != resultStartOffset || token.Kind == Tokens.Dot || token.Kind == Tokens.DoubleColon) {
-						
+						Console.WriteLine (resultFrame.bracketType);
 						// now we can change the context based on the next token
 						if (frame == resultFrame && Tokens.IdentifierTokens[token.Kind]) {
 							// the expression got aborted because of an identifier. This means the

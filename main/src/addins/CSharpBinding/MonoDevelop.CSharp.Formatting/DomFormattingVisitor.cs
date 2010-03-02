@@ -194,6 +194,8 @@ namespace MonoDevelop.CSharp.Formatting
 		void ForceSpacesAfter (INode node, bool forceSpaces)
 		{
 			DomLocation location = ((ICSharpNode)node).EndLocation;
+			Console.WriteLine (((ICSharpNode)node).StartLocation + "/" + ((ICSharpNode)node).EndLocation);
+			Console.WriteLine (node + ":" + location);
 			int offset = data.Document.LocationToOffset (location.Line, location.Column) - 1;
 			int i = offset + 1;
 			while (i < data.Document.Length && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
