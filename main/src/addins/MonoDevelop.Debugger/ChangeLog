@@ -1,5 +1,9 @@
 2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am: Added target for running the tests.
+
+2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/DebuggingService.cs: Clean the
 	  breakpoint list when closing the solution.
 

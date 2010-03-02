@@ -1,6 +1,8 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Debugger
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Debugger.dll
+NUNIT_CONSOLE = `pkg-config --variable=libdir mono-nunit`/mono/2.0/nunit-console.exe
+FIXTURE = /fixture=$(fixture)
 
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
@@ -89,6 +91,12 @@ DATA_FILES =
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(notdir $(DATA_FILES)))
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
+
+test: all
+	if test -n "$(fixture)"; then \
+		fp="-fixture=$(fixture)"; \
+	fi; \
+	$(MD_LAUNCH_SETUP) MONO_PATH=../AddIns/MonoDevelop.Debugger mono --debug $(NUNIT_CONSOLE) -noshadow $(top_builddir)/build/bin/MonoDevelop.Debugger.Tests.dll $$fp
 
 $(DATA_FILE_BUILD): $(srcdir)$(subst $(ADDIN_BUILD),, $@)
 	mkdir -p $(ADDIN_BUILD)

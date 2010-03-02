@@ -68,6 +68,7 @@ namespace MonoDevelop.Debugger.Tests
 			DebuggerSession session = engine.CreateSession ();
 			DebuggerSessionOptions ops = new DebuggerSessionOptions ();
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
+			ops.EvaluationOptions.EvaluationTimeout = 100000;
 
 			FilePath path = Util.TestsRootDir;
 			path = path.ParentDirectory.Combine ("src","addins","MonoDevelop.Debugger","MonoDevelop.Debugger.Tests.TestApp","Main.cs").FullPath;

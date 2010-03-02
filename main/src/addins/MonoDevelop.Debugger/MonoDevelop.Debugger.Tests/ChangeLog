@@ -1,3 +1,10 @@
+2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DebugTests.cs:
+	* EvaluationTests.cs:
+	* MdbEvaluationTests.cs: Added boxing tests. Disable
+	  assignment tests for MDB only, they now work with SDB.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Tests.csproj: Flush.

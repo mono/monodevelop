@@ -35,5 +35,17 @@ namespace MonoDevelop.Debugger.Tests
 		public MdbEvaluationTests (): base ("Mono.Debugger.Mdb")
 		{
 		}
+		
+		[Test()]
+		[Ignore ("Not working due to bug #584306")]
+		public override void Assignment ()
+		{
+		}
+		
+		[Test()]
+		[Ignore ("Not working due to bug #584306")]
+		public override void AssignmentStatic ()
+		{
+		}
 	}
 }

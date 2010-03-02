@@ -94,6 +94,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			return b ? 1 : 2;
 		}
 		
+		public string BoxingTestMethod (object a)
+		{
+			return a.ToString ();
+		}
+		
 		public string EscapedStrings {
 			get { return " \" \\ \a \b \f \v \n \r \t"; }
 		}

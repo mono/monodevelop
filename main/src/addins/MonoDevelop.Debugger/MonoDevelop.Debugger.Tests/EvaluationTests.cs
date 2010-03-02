@@ -111,7 +111,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 		
 		[Test()]
-		public void Typeof ()
+		public virtual void Typeof ()
 		{
 			ObjectValue val = Eval ("typeof(System.Console)");
 			Assert.AreEqual ("System.MonoType", val.TypeName);
@@ -152,6 +152,10 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("System.Int32.Parse (\"67\")");
 			Assert.AreEqual ("67", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
+			
+			val = Eval ("this.BoxingTestMethod (43)");
+			Assert.AreEqual ("\"43\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
 		}
 		
 		[Test()]
@@ -443,8 +447,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 		
 		[Test()]
-		[Ignore ("Static var assignment makes debugger crash")]
-		public void Assignment ()
+		public virtual void Assignment ()
 		{
 			ObjectValue val;
 			Eval ("n = 6");
@@ -463,14 +466,6 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("someString");
 			Assert.AreEqual ("\"hi\"", val.Value);
 			
-			Eval ("staticString = \"test\"");
-			val = Eval ("staticString");
-			Assert.AreEqual ("\"test\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			Eval ("staticString = \"some static\"");
-			val = Eval ("staticString");
-			Assert.AreEqual ("\"some static\"", val.Value);
-
 			Eval ("numbers[0] = \"test\"");
 			val = Eval ("numbers[0]");
 			Assert.AreEqual ("\"test\"", val.Value);
@@ -486,6 +481,20 @@ namespace MonoDevelop.Debugger.Tests
 			Eval ("alist[0] = 1");
 			val = Eval ("alist[0]");
 			Assert.AreEqual ("1", val.Value);
+		}
+		
+		[Test()]
+		public virtual void AssignmentStatic ()
+		{
+			ObjectValue val;
+			
+			Eval ("staticString = \"test\"");
+			val = Eval ("staticString");
+			Assert.AreEqual ("\"test\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+			Eval ("staticString = \"some static\"");
+			val = Eval ("staticString");
+			Assert.AreEqual ("\"some static\"", val.Value);
 		}
 		
 		[Test()]
