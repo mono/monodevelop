@@ -1,3 +1,9 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomProperty.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fix the rest
+	  of the failing DomProperty tests.
+
 2010-03-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/IProperty.cs:

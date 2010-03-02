@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects.Dom
 				return GetLessRestrictive (GetterModifier, SetterModifier);
 			}
 			set {
-				throw new NotSupportedException ();
+				throw new NotSupportedException ("Use GetModifier and SetModifier");
 			}
 		}
 
@@ -209,10 +209,16 @@ namespace MonoDevelop.Projects.Dom
 			base.Name = name;
 		}
 		
-		public DomProperty (string name, Modifiers modifiers, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
+		public DomProperty (string name, Modifiers modifier, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
+		 : this (name, modifier, modifier, location, bodyRegion, returnType)
+		{
+		}
+		
+		public DomProperty (string name, Modifiers getterModifier, Modifiers setterModifier, DomLocation location, DomRegion bodyRegion, IReturnType returnType)
 		{
 			base.Name       = name;
-			this.Modifiers  = modifiers;
+			this.GetterModifier = getterModifier;
+			this.SetterModifier = setterModifier;
 			this.Location   = location;
 			this.BodyRegion = bodyRegion;
 			base.ReturnType = returnType;

@@ -81,8 +81,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		public virtual IList<Tag> GetSpecialComments (FilePath fileName)
 		{
-			return new List<Tag> ();
+			return new Tag[0];
 		}
+		
 		public virtual void UpdateTagComments (FilePath fileName, IList<Tag> tags)
 		{
 		
@@ -475,7 +476,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			t.SourceProjectDom = this;
 			DomProperty indexer = new DomProperty ();
 			indexer.Name = "Item";
-			indexer.Modifiers = Modifiers.Public;
+			indexer.SetterModifier = indexer.GetterModifier = Modifiers.Public;
 			indexer.PropertyModifier |= PropertyModifier.IsIndexer;
 			indexer.Add (new DomParameter(indexer, "index", DomReturnType.Int32));
 			indexer.ReturnType = elementType;

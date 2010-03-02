@@ -1,5 +1,10 @@
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fix the rest
+	  of the failing DomProperty tests.
+
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs: Fix indexer
 	  assignment that caused failing unit tests.
 
