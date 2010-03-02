@@ -1,3 +1,7 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Parser/DomParser.cs: Use getter and setter modifiers.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBNetBinding.csproj: Flush.

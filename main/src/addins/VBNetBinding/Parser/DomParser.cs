@@ -221,8 +221,15 @@ namespace MonoDevelop.VBNetBinding
 				Debug.Assert (currentType.Count > 0);
 				DomType type = currentType.Peek ();
 				
+				var getterModifier = (Modifiers)propertyDeclaration.Modifier;
+				var setterModifier = (Modifiers)propertyDeclaration.Modifier;
+				if (propertyDeclaration.HasGetRegion && propertyDeclaration.GetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+					getterModifier = (Modifiers) propertyDeclaration.GetRegion.Modifier;
+				if (propertyDeclaration.HasSetRegion && propertyDeclaration.SetRegion.Modifier != ICSharpCode.NRefactory.Ast.Modifiers.None)
+					setterModifier = (Modifiers) propertyDeclaration.SetRegion.Modifier;
+				
 				type.Add (new DomProperty (propertyDeclaration.Name,
-				                           (Modifiers)propertyDeclaration.Modifier,
+				                           getterModifier, setterModifier,
 				                           new DomLocation (propertyDeclaration.StartLocation.Line, propertyDeclaration.StartLocation.Column),
 				                           TranslateRegion (propertyDeclaration.BodyStart, propertyDeclaration.BodyEnd),
 				                           TranslateTypeReference (propertyDeclaration.TypeReference)));
