@@ -147,6 +147,7 @@ FILES =  \
 	MonoDevelop.CSharp.Resolver/NRefactoryDocumentMetaInformation.cs \
 	MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs \
 	MonoDevelop.CSharp.Resolver/ResolveVisitor.cs \
+	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \
 	MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs \
 	MonoDevelop.CSharp/CSharpLanguageBinding.cs

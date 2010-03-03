@@ -151,6 +151,10 @@
 		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
+		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
+	</Extension>
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
