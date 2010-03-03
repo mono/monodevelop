@@ -1,5 +1,12 @@
 2010-03-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/NavigationBar.cs: Navigation bar
+	  now controls the visibility of the containing panels.
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: 
+
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.SourceEditor.csproj:
 	* MonoDevelop.SourceEditor.addin.xml:

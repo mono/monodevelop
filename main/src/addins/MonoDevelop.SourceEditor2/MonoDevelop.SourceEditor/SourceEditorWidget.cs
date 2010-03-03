@@ -133,7 +133,6 @@ namespace MonoDevelop.SourceEditor
 					this.UpdateLineCol ();
 					this.PackStart (classBrowser, false, false, CHILD_PADDING);
 					this.ReorderChild (classBrowser, 0);
-					classBrowser.ShowAll ();
 					PopulateClassCombo (threaded);
 				}
 			} else {

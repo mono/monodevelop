@@ -99,7 +99,6 @@ namespace MonoDevelop.SourceEditor
 			
 			statusBox = new StatusBox (editor);
 			this.PackStart (statusBox, false, false, 0);
-			regionCombo.DrawRightBorder = statusBox.Visible = !HideStatusBox;
 			
 			int w, h;
 			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
@@ -107,6 +106,8 @@ namespace MonoDevelop.SourceEditor
 			typeCombo.DefaultIconWidth = membersCombo.DefaultIconWidth = regionCombo.DefaultIconWidth = Math.Max (w, 16);
 			
 			this.FocusChain = new Widget[] { typeCombo, membersCombo, regionCombo };
+			this.ShowAll ();
+			regionCombo.DrawRightBorder = statusBox.Visible = !HideStatusBox;
 		}
 		
 		void PropertyHandler (object sender, MonoDevelop.Core.PropertyChangedEventArgs e) 
