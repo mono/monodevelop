@@ -28,6 +28,12 @@
 
 using System;
 using MonoDevelop.Projects.Dom;
+using System.Collections.Generic;
+using System.Linq;
+using Mono.TextEditor;
+using Mono.Addins;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -35,5 +41,59 @@ namespace MonoDevelop.Ide.Gui.Content
 	{
 		ResolveResult GetLanguageItem (int offset);
 		ResolveResult GetLanguageItem (int offset, string expression);
+	}
+	
+	public interface ITextEditorResolverProvider
+	{
+		ResolveResult GetLanguageItem (ProjectDom dom, TextEditorData data, int offset);
+		ResolveResult GetLanguageItem (ProjectDom dom, TextEditorData data, int offset, string expression);
+		
+		string CreateTooltip (ProjectDom dom, ICompilationUnit unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
+	}
+	
+	public static class TextEditorResolverService
+	{
+		static List<TextEditorResolverProviderCodon> providers = new List<TextEditorResolverProviderCodon> ();
+		
+		static TextEditorResolverService ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/TextEditorResolver", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					providers.Add ((TextEditorResolverProviderCodon) args.ExtensionNode);
+					break;
+				case ExtensionChange.Remove:
+					providers.Remove ((TextEditorResolverProviderCodon) args.ExtensionNode);
+					break;
+				}
+			});
+		}
+		
+		public static ITextEditorResolverProvider GetProvider (string mimeType)
+		{
+			TextEditorResolverProviderCodon codon = providers.FirstOrDefault (p => p.MimeType == mimeType);
+			if (codon == null)
+				return null;
+			return codon.CreateResolver ();
+		}
+	}
+	
+	[ExtensionNode (Description="A codon for text editor providers.")]
+	public class TextEditorResolverProviderCodon : ExtensionNode
+	{
+		[NodeAttribute("mimeType", "Mime type for this text editor provider")]
+		string mimeType = null;
+		
+		[NodeAttribute("class", "Class name.")]
+		string className = null;
+		
+		public string MimeType {
+			get { return this.mimeType; }
+		}
+		
+		public ITextEditorResolverProvider CreateResolver ()
+		{
+			return (ITextEditorResolverProvider) Addin.CreateInstance (className, true);
+		}
 	}
 }

@@ -205,6 +205,11 @@
 		<ExtensionNode name="CodeTemplate" type="MonoDevelop.Ide.CodeTemplates.CodeTemplateCodon"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorResolver" name = "Text Editor Resolver">
+		<Description>Text editor resolvers are responsible for getting resolve results inside text editor locations.</Description>
+		<ExtensionNode name="Resolver" type="MonoDevelop.Ide.Gui.Content.TextEditorResolverProviderCodon"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
