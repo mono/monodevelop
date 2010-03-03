@@ -276,7 +276,7 @@ namespace MonoDevelop.AspNet.Parser
 			case "masterpagefile":
 				return project != null
 					? MonoDevelop.Html.PathCompletion.GetPathCompletion (project, "*.master", fromFile,
-						x => "~/" + x.RelativePath.ToString ().Replace (System.IO.Path.PathSeparator, '/')) 
+						x => "~/" + x.ProjectVirtualPath.ToString ().Replace (System.IO.Path.PathSeparator, '/')) 
 					: null;
 			
 			//
@@ -340,7 +340,7 @@ namespace MonoDevelop.AspNet.Parser
 			case "src":
 				return project != null
 					? MonoDevelop.Html.PathCompletion.GetPathCompletion (project, "*.ascx", fromFile,
-						x => "~/" + x.RelativePath.ToString ().Replace (System.IO.Path.PathSeparator, '/')) 
+						x => "~/" + x.ProjectVirtualPath.ToString ().Replace (System.IO.Path.PathSeparator, '/')) 
 					: null;
 			}
 			return null;

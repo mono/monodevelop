@@ -359,8 +359,7 @@ namespace MonoDevelop.Projects
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;
-				FilePath outpath = pf.IsExternalToProject ? (FilePath)pf.FilePath.FileName : pf.RelativePath;
-				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, outpath);
+				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, pf.ProjectVirtualPath);
 			}
 		}
 

@@ -252,8 +252,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FileOperationsBuilderExtension.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs \
-	MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs \
 	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs \

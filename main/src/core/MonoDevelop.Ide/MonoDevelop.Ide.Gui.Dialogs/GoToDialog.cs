@@ -440,7 +440,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		string GetRelProjectPath (ProjectFile file)
 		{
 			if (file.Project != null)
-				return System.IO.Path.Combine (System.IO.Path.GetFileName (file.Project.BaseDirectory), file.RelativePath);
+				return System.IO.Path.Combine (System.IO.Path.GetFileName (file.Project.BaseDirectory), file.ProjectVirtualPath);
 			else
 				return file.FilePath;
 		}
@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					if (toMatch.Length == 1)
 						return matchLanes[0];
 					if (char.IsUpper (ct) || lastWasSeparator)
-						matchLanes.Add (new MatchLane (MatchMode.Acronim, tn, text.Length - tn));
+						matchLanes.Add (new MatchLane (MatchMode.Acronym, tn, text.Length - tn));
 				}
 					
 				for (int n=0; n<laneCount; n++) {
@@ -535,7 +535,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						if (wordStartMatch) {
 							// Possible acronym match after a substring. Start a new lane.
 							MatchLane newLane = lane.Clone ();
-							newLane.MatchMode = MatchMode.Acronim;
+							newLane.MatchMode = MatchMode.Acronym;
 							newLane.Index++;
 							newLane.Positions [newLane.Index] = tn;
 							newLane.Lengths [newLane.Index] = 1;
@@ -546,7 +546,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 							// Maybe it is a false substring start, so add a new lane to keep
 							// track of the old lane
 							MatchLane newLane = lane.Clone ();
-							newLane.MatchMode = MatchMode.Acronim;
+							newLane.MatchMode = MatchMode.Acronym;
 							matchLanes.Add (newLane);
 	
 							// Update the current lane
@@ -554,12 +554,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 							lane.MatchIndex++;
 						} else {
 							if (lane.Lengths [lane.Index] > 1)
-								lane.MatchMode = MatchMode.Acronim;
+								lane.MatchMode = MatchMode.Acronym;
 							else
 								matchLanes [n] = null; // Kill the lane
 						}
 					}
-					else if (lane.MatchMode == MatchMode.Acronim) {
+					else if (lane.MatchMode == MatchMode.Acronym) {
 						if (match && lane.Positions [lane.Index] == tn - 1) {
 							// Possible substring match after an acronim. Start a new lane.
 							MatchLane newLane = lane.Clone ();
@@ -597,7 +597,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		enum MatchMode
 		{
 			Substring,
-			Acronim
+			Acronym
 		}
 
 		class MatchLane

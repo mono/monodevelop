@@ -156,7 +156,7 @@ namespace MonoDevelop.Autotools
 				string pfpath = null;
 				foreach (ProjectFile projectFile in project.Files) 
 				{
-					pfpath = FileService.NormalizeRelativePath (projectFile.RelativePath);
+					pfpath = FileService.NormalizeRelativePath (projectFile.FilePath.ToRelative (project.BaseDirectory));
 					switch ( projectFile.BuildAction )
 					{
 						case BuildAction.Compile:

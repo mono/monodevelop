@@ -1,3 +1,7 @@
+2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Project/CProject.cs: Track ProjectFile Link API.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/DataProvider.cs: Track api changes.

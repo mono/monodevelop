@@ -1,3 +1,8 @@
+2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Project/VBNetResourceIdBuilder.cs: Track ProjectFile Link
+	  API.
+
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Parser/DomParser.cs: Use getter and setter modifiers.

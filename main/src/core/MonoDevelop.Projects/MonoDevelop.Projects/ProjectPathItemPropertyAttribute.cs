@@ -80,6 +80,51 @@ namespace MonoDevelop.Projects
 				return (FilePath) file;
 		}
 	}
+	
+	public class RelativeProjectPathItemProperty: ItemPropertyAttribute
+	{
+		public RelativeProjectPathItemProperty ()
+		{
+			SerializationDataType = typeof (RelativePathDataType);
+		}
+		
+		public RelativeProjectPathItemProperty (string name): base (name)
+		{
+			SerializationDataType = typeof (RelativePathDataType);
+		}
+	}
+	
+	public class RelativePathDataType : PrimitiveDataType
+	{
+		public RelativePathDataType (Type type): base (type)
+		{
+			if (type != typeof (string) && type != typeof (FilePath))
+				throw new InvalidOperationException ("ProjectPathItemProperty can only be applied to fields of type string and FilePath");
+		}
+
+		protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
+		{
+			FilePath path = value is string ? new FilePath ((string) value) : (FilePath) value;
+			if (path.IsNullOrEmpty) return null;
+			string file = path;
+			if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
+				file = file.Replace (Path.DirectorySeparatorChar, serCtx.DirectorySeparatorChar);
+			return new DataValue (Name, file);
+		}
+		
+		protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
+		{
+			string file = ((DataValue)data).Value;
+			if (!string.IsNullOrEmpty (file)) {
+				if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
+					file = file.Replace (serCtx.DirectorySeparatorChar, Path.DirectorySeparatorChar);
+			}
+			if (ValueType == typeof (string))
+				return file;
+			else
+				return (FilePath) file;
+		}
+	}
 }
 
 

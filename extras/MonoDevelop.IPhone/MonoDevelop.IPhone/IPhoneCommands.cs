@@ -143,8 +143,8 @@ namespace MonoDevelop.IPhone
 			args.AppendFormat ("-xcode=\"{0}\" -v", xcodeDir);
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.BuildAction == BuildAction.Content) {
-					FilePath rel = pf.IsExternalToProject? pf.FilePath.FileName : (string)pf.RelativePath;
-					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, (string)rel);
+					var rel = pf.ProjectVirtualPath;
+					args.AppendFormat (" -res=\"{0}\",\"{1}\"", pf.FilePath, rel);
 					
 					//hack around mtouch 1.0 bug. create resource directories
 					string subdir = rel.ParentDirectory;

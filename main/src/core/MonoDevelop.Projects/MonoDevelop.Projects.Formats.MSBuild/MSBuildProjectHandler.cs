@@ -870,6 +870,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				buildItem.UnsetMetadata ("Generator");
 			
+			if (!string.IsNullOrEmpty (file.CustomToolNamespace))
+				buildItem.SetMetadata ("CustomToolNamespace", file.CustomToolNamespace);
+			else
+				buildItem.UnsetMetadata ("CustomToolNamespace");
+			
+			if (!string.IsNullOrEmpty (file.LastGenOutput))
+				buildItem.SetMetadata ("LastGenOutput", file.LastGenOutput);
+			else
+				buildItem.UnsetMetadata ("LastGenOutput");
+			
+			if (!string.IsNullOrEmpty (file.Link))
+				buildItem.SetMetadata ("Link", MSBuildProjectService.ToMSBuildPathRelative (Item.ItemDirectory, file.Link));
+			else
+				buildItem.UnsetMetadata ("Link");
+			
 			buildItem.Condition = file.Condition;
 			
 			if (file.CopyToOutputDirectory == FileCopyMode.None) {
@@ -1204,6 +1219,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string generator = buildItem.GetMetadata ("Generator");
 			if (!string.IsNullOrEmpty (generator))
 				file.Generator = generator;
+			
+			string customToolNamespace = buildItem.GetMetadata ("CustomToolNamespace");
+			if (!string.IsNullOrEmpty (customToolNamespace))
+				file.CustomToolNamespace = customToolNamespace;
+			
+			string lastGenOutput = buildItem.GetMetadata ("LastGenOutput");
+			if (!string.IsNullOrEmpty (lastGenOutput))
+				file.LastGenOutput = lastGenOutput;
+			
+			string link = buildItem.GetMetadata ("Link");
+			if (!string.IsNullOrEmpty (link))
+				file.Link = MSBuildProjectService.FromMSBuildPathRelative (project.ItemDirectory, link);
 			
 			file.Condition = buildItem.Condition;
 			return file;

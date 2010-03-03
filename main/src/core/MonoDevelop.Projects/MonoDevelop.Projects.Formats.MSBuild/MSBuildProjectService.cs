@@ -227,6 +227,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return absPath.Replace ('/', '\\');
 		}
+		
+		internal static string ToMSBuildPathRelative (string baseDirectory, string relPath)
+		{
+			FilePath file = ToMSBuildPath (baseDirectory, relPath);
+			return file.ToRelative (baseDirectory);
+		}
+
+		
+		internal static string FromMSBuildPathRelative (string basePath, string relPath)
+		{
+			FilePath file = FromMSBuildPath (basePath, relPath);
+			return file.ToRelative (basePath);
+		}
 
 		internal static string FromMSBuildPath (string basePath, string relPath)
 		{
@@ -502,13 +515,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public virtual string GetDefaultResourceId (ProjectFile file)
 		{
-			string fname = file.RelativePath;
-			if (file.IsExternalToProject)
-				fname = Path.GetFileName (fname);
-			else {
-				fname = FileService.NormalizeRelativePath (fname);
-				fname = Path.Combine (Path.GetDirectoryName (fname).Replace (' ','_'), Path.GetFileName (fname));
-			}
+			string fname = file.ProjectVirtualPath;
+			fname = FileService.NormalizeRelativePath (fname);
+			fname = Path.Combine (Path.GetDirectoryName (fname).Replace (' ','_'), Path.GetFileName (fname));
 
 			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
 				fname = Path.ChangeExtension (fname, ".resources");

@@ -1,3 +1,28 @@
+2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Handle Link files
+	  in TransferFiles.
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	  Handle Link files.
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/LinkedFilesFolderNodeBuilder.cs:
+	  Not needed now we have proper Link file support.
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Handle Link
+	  files, fix spelling.
+
+	* MonoDevelop.Ide.addin.xml: Remove LinkedFilesNodesBuilder
+	  now links are in the main directory tree.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Removed files.
+
 2010-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Added message

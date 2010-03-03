@@ -52,6 +52,33 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
+		public ProjectFile GetFileWithVirtualPath (string virtualPath)
+		{
+			if (String.IsNullOrEmpty (virtualPath))
+				return null;
+			
+			foreach (ProjectFile file in this) {
+				if (file.ProjectVirtualPath == virtualPath)
+					return file;
+			}
+			return null;
+		}
+		
+		public IEnumerable<ProjectFile> GetFilesInVirtualPath (string virtualPath)
+		{
+			if (String.IsNullOrEmpty (virtualPath))
+				yield break;
+			
+			if (virtualPath[virtualPath.Length -1] != Path.DirectorySeparatorChar)
+				virtualPath = virtualPath + Path.DirectorySeparatorChar;
+			
+			foreach (ProjectFile file in this) {
+				if ((file.ProjectVirtualPath.ToString () + Path.DirectorySeparatorChar).StartsWith (virtualPath))
+					yield return file;
+			}
+		}
+		
+		
 		public ProjectFile[] GetFilesInPath (string path)
 		{
 			path = path + Path.DirectorySeparatorChar;

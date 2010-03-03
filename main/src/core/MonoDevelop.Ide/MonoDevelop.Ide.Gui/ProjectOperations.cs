@@ -1211,7 +1211,7 @@ namespace MonoDevelop.Ide.Gui
 			project.AddFile (newfilename);
 			return newfilename;
 		}		
-
+		
 		public void TransferFiles (IProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject, FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
 			// When transfering directories, targetPath is the directory where the source
@@ -1239,14 +1239,25 @@ namespace MonoDevelop.Ide.Gui
 
 			// Get the list of files to copy
 
-			ICollection<ProjectFile> filesToMove;
+			List<ProjectFile> filesToMove = null;
 			try {
-				if (copyOnlyProjectFiles) {
-					filesToMove = sourceProject.Files.GetFilesInPath (sourcePath);
-				} else {
-					ProjectFileCollection col = new ProjectFileCollection ();
+				//get the real ProjectFiles
+				if (sourceProject != null) {
+					var virtualPath = sourcePath.ToRelative (sourceProject.BaseDirectory);
+					filesToMove = sourceProject.Files.GetFilesInVirtualPath (virtualPath).ToList ();
+				}
+				//get all the non-project files and create fake ProjectFiles
+				if (!copyOnlyProjectFiles || sourceProject == null) {
+					var col = new List<ProjectFile> ();
 					GetAllFilesRecursive (sourcePath, col);
-					filesToMove = col;
+					if (sourceProject != null) {
+						var names = new HashSet<string> (filesToMove.Select (f => sourceProject.BaseDirectory.Combine (f.ProjectVirtualPath).ToString ()));
+						foreach (var f in col)
+							if (names.Add (f.Name))
+							    filesToMove.Add (f);
+					} else {
+						filesToMove = col;
+					}
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not get any file from '{0}'.", sourcePath), ex);
@@ -1255,21 +1266,10 @@ namespace MonoDevelop.Ide.Gui
 			
 			// If copying a single file, bring any grouped children along
 			if (filesToMove.Count == 1 && sourceProject != null) {
-				//Make sure the list is a type to which we can append files
-				IList<ProjectFile> list = filesToMove as IList<ProjectFile>;
-				if (list == null)
-					filesToMove = list = new List<ProjectFile> (filesToMove);
-				
-				// if file's nor parented on the project, it won't have its children resolved
-				// So get the 'real' ProjectFile from the project
-				ProjectFile pf = list[0];
-				if (pf.Project == null)
-					pf = sourceProject.Files.GetFile (pf.Name);
-				
-				// If it resolved, get the children
-				if (pf != null)
+				var pf = filesToMove[0];
+				if (pf != null && pf.HasChildren)
 					foreach (ProjectFile child in pf.DependentChildren)
-						list.Add (child);
+						filesToMove.Add (child);
 			}
 			
 			// Ensure that the destination folder is created, even if no files
@@ -1281,15 +1281,6 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not create directory '{0}'.", targetPath), ex);
 				return;
-			}
-
-			// Make a copy of the original project files, since MoveDirectory will
-			// automatically remove them from the project
-			
-			ProjectFileCollection oldProjectFiles = null;
-			if (sourceProject != null) {
-				oldProjectFiles = new ProjectFileCollection ();
-				oldProjectFiles.AddRange (sourceProject.Files);
 			}
 
 			// Transfer files
@@ -1307,15 +1298,17 @@ namespace MonoDevelop.Ide.Gui
 			monitor.BeginTask (GettextCatalog.GetString ("Copying files..."), filesToMove.Count);
 			
 			foreach (ProjectFile file in filesToMove) {
-				FilePath sourceFile = file.FilePath;
-				FilePath newFile = sourceIsFolder ? targetPath.Combine (sourceFile.ToRelative (sourcePath)) : targetPath;
+				bool fileIsLink = file.Project != null && file.IsLink;
 				
-				ProjectFile oldProjectFile = oldProjectFiles != null ? oldProjectFiles.GetFile (sourceFile) : null;
+				var sourceFile = fileIsLink
+					? file.Project.BaseDirectory.Combine (file.ProjectVirtualPath)
+					: file.FilePath;
+				var newFile = sourceIsFolder ? targetPath.Combine (sourceFile.ToRelative (sourcePath)) : targetPath;
 				
-				if (!movingFolder) {
+				if (!movingFolder && !fileIsLink) {
 					try {
 						FilePath fileDir = newFile.ParentDirectory;
-						if (!Directory.Exists (fileDir))
+						if (!Directory.Exists (fileDir) && !file.IsLink)
 							FileService.CreateDirectory (fileDir);
 						if (removeFromSource)
 							FileService.MoveFile (sourceFile, newFile);
@@ -1328,11 +1321,22 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
-				if (oldProjectFile != null) {
-					if (removeFromSource && sourceProject.Files.Contains (oldProjectFile))
-						sourceProject.Files.Remove (oldProjectFile);
-					if (targetProject.Files.GetFile (newFile) == null) {
-						ProjectFile projectFile = (ProjectFile) oldProjectFile.Clone ();
+				if (sourceProject != null) {
+					if (removeFromSource && sourceProject.Files.Contains (file))
+						sourceProject.Files.Remove (file);
+					if (fileIsLink) {
+						var linkFile = (sourceProject == targetProject)? file : (ProjectFile) file.Clone ();
+						if (movingFolder) {
+							var abs = linkFile.Link.ToAbsolute (sourceProject.BaseDirectory);
+							var relSrc = abs.ToRelative (sourcePath);
+							var absTarg = relSrc.ToAbsolute (targetPath);
+							linkFile.Link = absTarg.ToRelative (targetProject.BaseDirectory);
+						} else {
+							linkFile.Link = newFile.ToRelative (targetProject.BaseDirectory);
+						}
+						targetProject.Files.Add (linkFile);
+					} else if (targetProject.Files.GetFile (newFile) == null) {
+						ProjectFile projectFile = (ProjectFile) file.Clone ();
 						projectFile.Name = newFile;
 						targetProject.Files.Add (projectFile);
 					}
@@ -1341,21 +1345,34 @@ namespace MonoDevelop.Ide.Gui
 				monitor.Step (1);
 			}
 			
+			// If this was the last item in the folder, make sure we keep
+			// a reference to the folder, so it is not deleted from the tree.
+			if (removeFromSource && sourceProject != null) {
+				var folder = sourcePath.ParentDirectory;
+				if (!sourceProject.Files.GetFilesInVirtualPath (folder).Any ()) {
+					var folderFile = new ProjectFile (sourceProject.BaseDirectory.Combine (folder));
+					folderFile.Subtype = Subtype.Directory;
+					sourceProject.Files.Add (folderFile);
+				}
+			}
+			
 			monitor.EndTask ();
 		}
 		
-		void GetAllFilesRecursive (string path, ProjectFileCollection files)
+		void GetAllFilesRecursive (string path, List<ProjectFile> files)
 		{
 			if (File.Exists (path)) {
 				files.Add (new ProjectFile (path));
 				return;
 			}
 			
-			foreach (string file in Directory.GetFiles (path))
-				files.Add (new ProjectFile (file));
-			
-			foreach (string dir in Directory.GetDirectories (path))
-				GetAllFilesRecursive (dir, files);
+			if (Directory.Exists (path)) {
+				foreach (string file in Directory.GetFiles (path))
+					files.Add (new ProjectFile (file));
+				
+				foreach (string dir in Directory.GetDirectories (path))
+					GetAllFilesRecursive (dir, files);
+			}
 		}
 		
 		bool IsDirectoryHierarchyEmpty (string path)

@@ -385,8 +385,6 @@
     <Compile Include="MonoDevelop.Ide.Codons\TaskListViewCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksView.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\UserTasksView.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\LinkedFilesFolder.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\LinkedFilesFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\LayoutComboBox.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AddEntryEventHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IExtensibleTextEditor.cs" />

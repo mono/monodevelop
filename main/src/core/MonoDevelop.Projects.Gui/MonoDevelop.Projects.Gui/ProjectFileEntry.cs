@@ -72,7 +72,10 @@ namespace MonoDevelop.Projects.Gui
 				string txt = entry.Text;
 				if (String.IsNullOrEmpty (txt))
 					return FilePath.Null;
-				return new FilePath (entry.Text).ToAbsolute (Project.BaseDirectory);
+				var pf = Project.Files.GetFileWithVirtualPath (txt);
+				if (pf != null)
+					return pf.FilePath;
+				return FilePath.Null;
 			}
 			set {
 				CheckProject ();
@@ -99,7 +102,7 @@ namespace MonoDevelop.Projects.Gui
 					dialog.Title = DialogTitle;
 				int response = MonoDevelop.Core.Gui.MessageService.ShowCustomDialog (dialog);
 				if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
-					entry.Text = dialog.SelectedFile.RelativePath;
+					entry.Text = dialog.SelectedFile.ProjectVirtualPath;
 				}
 			}
 		}

@@ -1399,7 +1399,7 @@ namespace MonoDevelop.Autotools
 						//Files are relative to the Makefile
 						str = GetRelativePath (pf.FilePath);
 					else
-						str = pf.RelativePath;
+						str = pf.FilePath.ToRelative (pf.Project.BaseDirectory);
 
 					string unescapedFileName = Path.GetFileName (str);
 

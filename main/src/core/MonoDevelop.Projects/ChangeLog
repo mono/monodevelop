@@ -1,3 +1,27 @@
+2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/ProjectFile.cs: Add
+	  CustomToolNamespace, LastGenOutput, Link standard MSBuild
+	  properties. Add ProjectVirtualPath and IsLink properties to
+	  facilitate using the Link path.
+
+	* MonoDevelop.Projects/ProjectFileCollection.cs:
+	  GetFileWithVirtualPath and GetFilesInVirtualPath methods,
+	  for getting files while taking Link paths into account.
+
+	* MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs:
+	  Added new class for handling serialization of relative
+	  paths, needed for Link property.
+
+	* MonoDevelop.Projects/Project.cs: Track ProjectFile Link API.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Added utility methods ToMSBuildPathRelative and
+	  FromMSBuildPathRelative, needed for Link property.
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Handle CustomToolNamespace, LastGenOutput, Link properties
+
 2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectItem.cs: When reading a project

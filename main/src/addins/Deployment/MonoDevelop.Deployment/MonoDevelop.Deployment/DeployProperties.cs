@@ -58,7 +58,7 @@ namespace MonoDevelop.Deployment
 					return Path.GetFileName (file.Name);
 				
 				if (UseProjectRelativePath)
-					return file.RelativePath;
+					return file.ProjectVirtualPath;
 				string s = file.ExtendedProperties ["DeployService.RelativeDeployPath"] as string;
 				if (string.IsNullOrEmpty (s))
 					return Path.GetFileName (file.Name);

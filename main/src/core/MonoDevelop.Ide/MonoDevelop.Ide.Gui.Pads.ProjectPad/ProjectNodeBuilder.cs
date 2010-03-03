@@ -39,6 +39,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -147,13 +148,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			
-			foreach (ProjectFile file in project.Files) {
-				if (file.IsExternalToProject) {
-					builder.AddChild (new LinkedFilesFolder (project));
-					break;
-				}
-			}
-			
 			base.BuildChildNodes (builder, dataObject);
 		}
 		
@@ -192,44 +186,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return;
 			}
 			
-			if (file.IsExternalToProject) {
-				// Files from outside the project folder are added in a special folder
-				if (!tb.MoveToObject (new LinkedFilesFolder (project))) {
-					// This will fill the folder, so there is no need to add the file again
-					if (tb.MoveToObject (project))
-						tb.AddChild (new LinkedFilesFolder (project));
-					return;
-				}
-				tb.AddChild (file);
-			}
-			else {
-				// It's a regular file, add it to the correct folder
-				string filePath = Path.GetDirectoryName (file.Name);
+			string filePath = file.IsLink
+				? project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory
+				: file.FilePath.ParentDirectory;
 				
-				object data;
-				if (file.Subtype == Subtype.Directory)
-					data = new ProjectFolder (file.Name, project);
-				else
-					data = file;
-					
-				// Already there?
-				if (tb.MoveToObject (data))
-					return;
+			object data;
+			if (file.Subtype == Subtype.Directory)
+				data = new ProjectFolder (file.Name, project);
+			else
+				data = file;
 				
-				if (filePath != project.BaseDirectory) {
-					if (tb.MoveToObject (new ProjectFolder (filePath, project)))
-						tb.AddChild (data);
-					else {
-						// Make sure there is a path to that folder
-						tb = FindParentFolderNode (filePath, project);
-						if (tb != null)
-							tb.UpdateChildren ();
-					}
-				} else {
-					if (tb.MoveToObject (project))
-						tb.AddChild (data);
-					tb.UpdateChildren ();
+			// Already there?
+			if (tb.MoveToObject (data))
+				return;
+			
+			if (filePath != project.BaseDirectory) {
+				if (tb.MoveToObject (new ProjectFolder (filePath, project)))
+					tb.AddChild (data);
+				else {
+					// Make sure there is a path to that folder
+					tb = FindParentFolderNode (filePath, project);
+					if (tb != null)
+						tb.UpdateChildren ();
 				}
+			} else {
+				if (tb.MoveToObject (project))
+					tb.AddChild (data);
+				tb.UpdateChildren ();
 			}
 		}
 		
@@ -253,17 +236,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
 			
-			// We can't use IsExternalToProject here since the ProjectFile has
-			// already been removed from the project
-			
-			if (!file.Name.StartsWith (project.BaseDirectory)) {
-				// This ensures that the linked files folder is deleted if there are
-				// no more external files
-				if (tb.MoveToObject (project))
-					tb.UpdateAll ();
-				return;
-			}
-			
 			if (file.Subtype == Subtype.Directory) {
 				if (!tb.MoveToObject (new ProjectFolder (file.Name, project)))
 					return;
@@ -274,7 +246,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (tb.MoveToObject (file)) {
 					tb.Remove (true);
 				} else {
-					string parentPath = Path.GetDirectoryName (file.Name);
+					// We can't use IsExternalToProject here since the ProjectFile has
+					// already been removed from the project
+					bool isLink = !file.Link.IsNullOrEmpty || !file.Name.StartsWith (project.BaseDirectory);
+					string parentPath = file.IsLink
+						? project.BaseDirectory.Combine (file.Link.IsNullOrEmpty? file.FilePath.FileName : file.Link.ToString ()).ParentDirectory
+						: file.FilePath.ParentDirectory;
+					
 					if (!tb.MoveToObject (new ProjectFolder (parentPath, project)))
 						return;
 				}
@@ -282,7 +260,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			while (tb.DataItem is ProjectFolder) {
 				ProjectFolder f = (ProjectFolder) tb.DataItem;
-				if (!Directory.Exists (f.Path) || project.Files.GetFilesInPath (f.Path).Length == 0)
+				if (!Directory.Exists (f.Path) && !project.Files.GetFilesInVirtualPath (f.Path.ToRelative (project.BaseDirectory)).Any ())
 					tb.Remove (true);
 				else
 					break;

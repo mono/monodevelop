@@ -38,6 +38,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Gui.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -53,7 +54,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return Path.GetFileName (((ProjectFile)dataObject).Name);
+			var file = (ProjectFile) dataObject;
+			return file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName;
 		}
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
@@ -72,12 +74,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFile file = (ProjectFile) dataObject;
 
-			label = Path.GetFileName (file.FilePath);
+			label = file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName;
 			if (!File.Exists (file.FilePath)) {
 				label = "<span foreground='red'>" + label + "</span>";
 			}
 			
 			icon = DesktopService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
+			
+			if (file.IsLink && icon != null) {
+				icon = icon.Copy ();
+				using (Gdk.Pixbuf overlay = Gdk.Pixbuf.LoadFromResource ("Icons.16x16.LinkOverlay.png")) {
+					overlay.Composite (icon,
+						0,  0,
+						icon.Width, icon.Width,
+						0, 0,
+						1, 1, Gdk.InterpType.Bilinear, 255); 
+				}
+			}
 		}
 		
 		public override object GetParentObject (object dataObject)
@@ -93,8 +106,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (dir == file.Project.BaseDirectory)
 				return file.Project;
-			else if (file.IsExternalToProject)
-				return new LinkedFilesFolder (file.Project);
 			else
 			    return new ProjectFolder (dir, file.Project, null);
 		}
@@ -130,17 +141,31 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void RenameItem (string newName)
 		{
 			ProjectFile file = (ProjectFile) CurrentNode.DataItem;
-			string oldPath = file.Name;
-			string newPath = Path.Combine (Path.GetDirectoryName (oldPath), newName);
+			
+			FilePath oldPath, newPath, newLink = FilePath.Null, oldLink = FilePath.Null;
+			if (file.IsLink) {
+				oldLink = file.ProjectVirtualPath;
+				newLink = oldLink.ParentDirectory.Combine (newName);
+				oldPath = file.Project.BaseDirectory.Combine (oldLink);
+				newPath = file.Project.BaseDirectory.Combine (newLink);
+			} else {
+				oldPath = file.Name;
+				newPath = oldPath.ParentDirectory.Combine (newName);	
+			}
 			
 			if (oldPath != newPath) {
 				try {
 					if (!FileService.IsValidPath (newPath)) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-					} else if (File.Exists (newPath) || Directory.Exists (newPath)) {
+					} else if (File.Exists (newPath) || Directory.Exists (newPath) ||
+					           (file.Project != null && file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory)) != null)) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 					} else {
-						FileService.RenameFile (oldPath, newName);
+						if (file.IsLink) {
+							file.Link = newLink;
+						} else {
+							FileService.RenameFile (oldPath, newName);
+						}
 						if (file.Project != null)
 							IdeApp.ProjectOperations.Save (file.Project);
 					}
@@ -224,15 +249,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			   
 			foreach (ProjectFile file in files) {
 				Project project = file.Project;
-				if (!file.IsExternalToProject) {
-					ProjectFile[] inFolder = project.Files.GetFilesInPath (Path.GetDirectoryName (file.Name));
-					if (inFolder.Length == 1 && inFolder [0] == file) {
-						// This is the last project file in the folder. Make sure we keep
-						// a reference to the folder, so it is not deleted from the tree.
-						ProjectFile folderFile = new ProjectFile (Path.GetDirectoryName (file.Name));
-						folderFile.Subtype = Subtype.Directory;
-						project.Files.Add (folderFile);
-					}
+				var inFolder = project.Files.GetFilesInVirtualPath (file.ProjectVirtualPath.ParentDirectory).ToList ();
+				if (inFolder.Count == 1 && inFolder [0] == file) {
+					// This is the last project file in the folder. Make sure we keep
+					// a reference to the folder, so it is not deleted from the tree.
+					ProjectFile folderFile = new ProjectFile (project.BaseDirectory.Combine (file.ProjectVirtualPath.ParentDirectory));
+					folderFile.Subtype = Subtype.Directory;
+					project.Files.Add (folderFile);
 				}
 				
 				if (file.HasChildren) {
@@ -244,7 +267,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			
 				project.Files.Remove (file);
-				if (result == AlertButton.Delete)
+				if (result == AlertButton.Delete && !file.IsLink)
 					FileService.DeleteFile (file.Name);
 			}
 

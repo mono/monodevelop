@@ -473,7 +473,7 @@ namespace CBinding
 					string targetDirectory =
 						(IsHeaderFile (f.Name) ? TargetDirectory.Include : TargetDirectory.ProgramFiles);
 					
-					deployFiles.Add (new DeployFile (this, f.FilePath, f.RelativePath, targetDirectory));
+					deployFiles.Add (new DeployFile (this, f.FilePath, f.ProjectVirtualPath, targetDirectory));
 				}
 			}
 			

@@ -1,3 +1,8 @@
+2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MakefileData.cs:
+	* SimpleProjectMakefileHandler.cs: Track ProjectFile Link API.
+
 2010-03-03  Levi Bard  <levi@unity3d.com>
 
 	* MakefileData.cs:

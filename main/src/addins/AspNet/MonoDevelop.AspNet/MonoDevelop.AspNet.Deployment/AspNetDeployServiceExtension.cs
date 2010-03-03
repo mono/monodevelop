@@ -61,7 +61,7 @@ namespace MonoDevelop.AspNet.Deployment
 			//add all ASP.NET files marked as content. They go relative to the application root, which we assume to be ProgramFiles
 			foreach (ProjectFile pf in aspProj.Files) {
 				if (pf.BuildAction == BuildAction.Content)
-					files.Add (new DeployFile (aspProj, pf.FilePath, pf.RelativePath, TargetDirectory.ProgramFiles));
+					files.Add (new DeployFile (aspProj, pf.FilePath, pf.ProjectVirtualPath, TargetDirectory.ProgramFiles));
 			}
 			
 			return files;

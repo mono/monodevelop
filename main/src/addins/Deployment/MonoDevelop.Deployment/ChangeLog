@@ -1,3 +1,8 @@
+2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Deployment/DeployProperties.cs: Track
+	  ProjectFile Link API.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment.Gui/PackagingFeature.cs: Track api

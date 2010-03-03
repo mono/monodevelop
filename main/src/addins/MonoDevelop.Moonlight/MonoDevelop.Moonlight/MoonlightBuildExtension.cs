@@ -68,7 +68,7 @@ namespace MonoDevelop.Moonlight
 					var outFile = objDir.Combine (proj.LanguageBinding.GetFileName (pf.FilePath.FileName + ".g"));
 					buildData.Items.Add (new ProjectFile (outFile, BuildAction.Compile));
 					if (!File.Exists (outFile) || File.GetLastWriteTime (outFile) < File.GetLastWriteTime (pf.FilePath)) {
-						string rel = pf.RelativePath;
+						string rel = pf.ProjectVirtualPath;
 						monitor.Log.WriteLine ("Generating codebehind accessors for {0}...", rel);
 						BuildResult result = XamlG.GenerateFile (codeDomProvider, appName, pf.FilePath, rel, outFile);
 						if (result.Failed)
@@ -505,7 +505,7 @@ namespace MonoDevelop.Moonlight
 			foreach (ProjectFile pf in proj.Files) {
 				if (pf.BuildAction == BuildAction.Content) {
 					src.Add (pf.FilePath);
-					targ.Add (pf.RelativePath);
+					targ.Add (pf.ProjectVirtualPath);
 				}
 			}
 			

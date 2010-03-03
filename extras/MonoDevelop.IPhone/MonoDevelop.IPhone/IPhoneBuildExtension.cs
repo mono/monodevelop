@@ -896,7 +896,7 @@ namespace MonoDevelop.IPhone
 			return allItems.OfType<ProjectFile> ()
 				.Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
 				.Select (pf => {
-					string[] splits = ((string)pf.RelativePath).Split (Path.DirectorySeparatorChar);
+					string[] splits = ((string)pf.ProjectVirtualPath).Split (Path.DirectorySeparatorChar);
 					FilePath name = splits.Last ();
 					if (splits.Length > 1 && splits[0].EndsWith (".lproj"))
 						name = new FilePath (splits[0]).Combine (name);
@@ -907,7 +907,7 @@ namespace MonoDevelop.IPhone
 		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
 		{
 			return allItems.OfType<ProjectFile> ().Where (pf => pf.BuildAction == BuildAction.Content)
-				.Select (pf => new FilePair (pf.FilePath, pf.RelativePath.ToAbsolute (outputRoot)));
+				.Select (pf => new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (outputRoot)));
 		}
 		
 		struct FilePair

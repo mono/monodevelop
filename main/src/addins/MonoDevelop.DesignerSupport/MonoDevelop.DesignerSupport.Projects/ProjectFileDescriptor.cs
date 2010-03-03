@@ -94,11 +94,19 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		[LocalizedCategory ("Build")]
-		[LocalizedDisplayName ("Generator")]
-		[LocalizedDescription ("The ID of a MSBuild custom generator to process the file during the build.")]
+		[LocalizedDisplayName ("Custom Tool")]
+		[LocalizedDescription ("The ID of a custom code generator.")]
 		public string Generator {
 			get { return file.Generator; }
 			set { file.Generator = value; }
+		}
+		
+		[LocalizedCategory ("Build")]
+		[LocalizedDisplayName ("Custom Tool Namespace")]
+		[LocalizedDescription ("Overrides the namespace in which the custom code generator should generate code.")]
+		public string CustomToolNamespace {
+			get { return file.CustomToolNamespace; }
+			set { file.CustomToolNamespace = value; }
 		}
 		
 		protected override bool IsReadOnly (string propertyName)

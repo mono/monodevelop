@@ -122,7 +122,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFolder folder = (ProjectFolder) dataObject;
 
 			label = folder.Name;
-			if (!Directory.Exists (folder.Path)) {
+			
+			//show directory in red if doesn't exist and doesn't have virtual linked children
+			if (!Directory.Exists (folder.Path) && !treeBuilder.HasChildren ()) {
 				label = "<span foreground='red'>" + label + "</span>";
 			}
 

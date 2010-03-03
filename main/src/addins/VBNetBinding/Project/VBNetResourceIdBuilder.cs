@@ -73,7 +73,7 @@ namespace MonoDevelop.VBNetBinding
 					return base.GetDefaultResourceId (pf);
 
 				string culture, extn, only_filename;
-				if (MSBuildProjectService.TrySplitResourceName (pf.RelativePath, out only_filename, out culture, out extn))
+				if (MSBuildProjectService.TrySplitResourceName (pf.ProjectVirtualPath, out only_filename, out culture, out extn))
 					extn = "." + culture + ".resources";
 				else
 					extn = ".resources";

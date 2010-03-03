@@ -89,7 +89,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (file.Subtype != Subtype.Directory) {
 					if (file.DependsOnFile != null)
 						continue;
-					dir = Path.GetDirectoryName (file.Name);
+					
+					dir = file.IsLink
+						? project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory
+						: file.FilePath.ParentDirectory;
+						
 					if (dir == folder) {
 						files.Add (file);
 						continue;
@@ -140,7 +144,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
-				return (Path.GetDirectoryName (file.Name) != targetPath || operation == DragOperation.Copy) && file.DependsOnFile == null;
+				var srcDir = (file.Project != null && file.IsLink)
+					? file.Project.BaseDirectory.Combine (file.ProjectVirtualPath)
+					: file.FilePath.ParentDirectory;
+				
+				return (srcDir != targetPath || operation == DragOperation.Copy) && file.DependsOnFile == null;
 			}
 			else if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path != targetPath || operation == DragOperation.Copy;
@@ -169,6 +177,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			Project sourceProject;
 			System.Collections.Generic.IEnumerable<ProjectFile> groupedChildren = null;
+			bool isLink = false;
 			
 			bool ask;
 			
@@ -180,8 +189,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			else if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
-				source = file.FilePath;
 				sourceProject = file.Project;
+				if (sourceProject != null && file.IsLink) {
+					isLink = true;
+					source = sourceProject.BaseDirectory.Combine (file.ProjectVirtualPath);
+				} else {
+					source = file.FilePath;
+				}
 				groupedChildren = file.DependentChildren;
 				what = null;
 				ask = false;
@@ -216,7 +230,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (ask) {
 				string q;
 				if (operation == DragOperation.Move) {
-					if (targetPath == targetProject.BaseDirectory)
+					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);
@@ -224,7 +238,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						return;
 				}
 				else {
-					if (targetPath == targetProject.BaseDirectory)
+					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetPath.FileName);

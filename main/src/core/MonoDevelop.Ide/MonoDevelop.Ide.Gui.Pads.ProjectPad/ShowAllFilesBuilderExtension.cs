@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnAddFile (object sender, ProjectFileEventArgs e)
 		{
-			if (!e.ProjectFile.IsExternalToProject) {
+			if (!e.ProjectFile.IsLink) {
 				object target;
 				if (e.ProjectFile.Subtype == Subtype.Directory) {
 					target = new ProjectFolder (e.ProjectFile.FilePath, e.Project);
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void OnRemoveFile (object sender, ProjectFileEventArgs e)
 		{
 			if (e.ProjectFile.Subtype != Subtype.Directory && 
-				!e.ProjectFile.IsExternalToProject &&
+				!e.ProjectFile.IsLink &&
 				File.Exists (e.ProjectFile.Name)
 			) {
 				AddFile (e.ProjectFile.Name, e.Project);
