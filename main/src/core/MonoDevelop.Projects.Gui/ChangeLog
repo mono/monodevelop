@@ -1,3 +1,9 @@
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  'Bug 584881 - Completion list layout issue'.
+
 2010-03-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:

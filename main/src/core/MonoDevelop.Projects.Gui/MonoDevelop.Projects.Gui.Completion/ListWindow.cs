@@ -141,7 +141,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 
 		protected void SetScrollbarVisibilty ()
 		{
-			double pageSize = Math.Max (0, list.VisibleRows - 1);
+			double pageSize = Math.Max (0, list.VisibleRows);
 			double upper = Math.Max (0, list.filteredItems.Count - 1);
 			scrollbar.Adjustment.SetBounds (0, upper, 1, pageSize, pageSize);
 			if (pageSize >= upper) {

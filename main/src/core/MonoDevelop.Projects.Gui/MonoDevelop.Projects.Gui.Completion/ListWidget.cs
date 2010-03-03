@@ -224,7 +224,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int itemCount = filteredItems.Count;
 			if (InCategoryMode)
 				itemCount += categories.Count;
-			Page = System.Math.Max (0, System.Math.Min (page, itemCount - VisibleRows));
+			Page = System.Math.Max (0, System.Math.Min (page, itemCount - VisibleRows - 1));
 		}
 		
 		bool autoSelect;
@@ -599,21 +599,36 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			int rowWidth;
+			layout.GetPixelSize (out rowWidth, out rowHeight);
+			rowHeight += padding;
+			visibleRows = Allocation.Height / rowHeight;
+			UpdatePage ();
+		}
+		
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			requisition.Height += requisition.Height % rowHeight;
+		}
+
 		void CalcVisibleRows ()
 		{
 			int winHeight = 200;
 			int lvWidth, lvHeight;
-			int rowWidth;
 			this.GetSizeRequest (out lvWidth, out lvHeight);
 			
+			int rowWidth;
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += padding;
-			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
+			int requestedVisibleRows = (winHeight + padding - margin * 2) / rowHeight;
 			
 			int viewableCats = InCategoryMode ? categories.Count : 0;
-			int newHeight = (rowHeight * Math.Max (1, Math.Min (visibleRows, filteredItems.Count + viewableCats))) + margin * 2;
+			int newHeight = (rowHeight * Math.Max (1, Math.Min (requestedVisibleRows, filteredItems.Count + viewableCats))) + margin * 2;
 			if (PreviewCompletionString) {
-				visibleRows--;
 				newHeight += rowHeight;
 			}
 			if (lvWidth != listWidth || lvHeight != newHeight) 
