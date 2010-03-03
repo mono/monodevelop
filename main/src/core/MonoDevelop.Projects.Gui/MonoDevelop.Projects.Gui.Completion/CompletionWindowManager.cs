@@ -72,6 +72,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 						DestroyWindow ();
 						return false;
 					}
+					OnWindowShown (EventArgs.Empty);
 					return true;
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
@@ -99,6 +100,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 				wnd = null;
 			}
 			ParameterInformationWindowManager.UpdateWindow ();
+			OnWindowClosed (EventArgs.Empty);
 		}
 		
 		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
@@ -121,5 +123,24 @@ namespace MonoDevelop.Projects.Gui.Completion
 		{
 			DestroyWindow ();
 		}
+		
+		
+		static void OnWindowClosed (EventArgs e)
+		{
+			EventHandler handler = WindowClosed;
+			if (handler != null)
+				handler (null, e);
+		}
+
+		public static event EventHandler WindowClosed;
+		
+		static void OnWindowShown (EventArgs e)
+		{
+			EventHandler handler = WindowShown;
+			if (handler != null)
+				handler (null, e);
+		}
+		
+		public static event EventHandler WindowShown;
 	}
 }

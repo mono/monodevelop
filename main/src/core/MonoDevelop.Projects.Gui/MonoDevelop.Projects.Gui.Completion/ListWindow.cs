@@ -226,7 +226,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			}
 		}
 
-		protected ListWidget List {
+		public ListWidget List {
 			get { return list; }
 		}
 

@@ -91,6 +91,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			get { return inCategoryMode; }
 			set { inCategoryMode = value; this.CalcVisibleRows (); this.UpdatePage (); }
 		}
+		public int CategoryCount {
+			get { return this.categories.Count; }
+		}
 		
 		public ListWidget (ListWindow win)
 		{
