@@ -687,15 +687,15 @@ namespace MonoDevelop.CSharp.Resolver
 		Frame frame;
 		int lastToken;
 
-		public ExpressionResult FindExpression (string text, int offset)
+/*		public ExpressionResult FindExpression (string text, int offset)
 		{
 			int wordEnd = offset;
 			while (wordEnd < text.Length && (Char.IsLetterOrDigit (text[wordEnd]) || text[wordEnd] == '_'))
 				wordEnd++;
 			return InternalFindExpression (text, wordEnd);
-		}
+		}*/
 		
-		ExpressionResult InternalFindExpression (string text, int offset)
+		public ExpressionResult FindExpression (string text, int offset)
 		{
 			Init (text, offset);
 			Token token;

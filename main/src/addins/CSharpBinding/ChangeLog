@@ -1,5 +1,10 @@
 2010-03-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	  fix unit test.
+
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* CSharpBinding.addin.xml:
