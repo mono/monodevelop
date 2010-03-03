@@ -28,10 +28,13 @@ using System;
 using System.ComponentModel;
 using Gtk;
 using Mono.TextEditor;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class StatusBox : Gtk.Button
+	class StatusBox : Gtk.Button
 	{
 		Pango.Layout layout;
 		const int leftSpacing   = 2;
@@ -43,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				layout.SetText (value);
-				QueueResize ();
+				QueueResize (); 
 			}
 		}
 		
@@ -52,42 +55,105 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 		
-		public StatusBox ()
+		public static bool ShowRealColumns {
+			get {
+				return PropertyService.Get ("CaretStatusBoxShowRealColumns", true);
+			}
+			set {
+				PropertyService.Set ("CaretStatusBoxShowRealColumns", value);
+			}
+		}
+		SourceEditorWidget Editor {
+			get;
+			set;
+		}
+
+		public StatusBox (SourceEditorWidget editor)
 		{
+			this.Editor = editor;
+			PropertyService.AddPropertyHandler ("CaretStatusBoxShowRealColumns", PropertyHandler);
+			
 			WidgetFlags |= WidgetFlags.NoWindow;
 			
 			layout = new Pango.Layout (this.PangoContext);
 		}
+	
 		
-		int requestWidth = 200;
-		public void UpdateWidth (TextEditorData data)
+		void PropertyHandler (object sender, MonoDevelop.Core.PropertyChangedEventArgs e) 
 		{
-			Console.WriteLine ("UPDATE !!!");
+			Text = GetText (false);
+			UpdateWidth ();
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			PropertyService.RemovePropertyHandler ("CaretStatusBoxShowRealColumns", PropertyHandler);
+		}
+		public void CaretPositionChanged ()
+		{
+			UpdateWidth ();
+		}
+
+		int requestWidth = 200;
+		public void UpdateWidth ()
+		{
 			using (Pango.Layout layout2 = new Pango.Layout (this.PangoContext)) {
-				Console.WriteLine (GetText (data.Document.LineCount, 10000));
-				layout2.SetText (GetText (data.Document.LineCount, 10000));
+				layout2.SetText (GetText (true));
 				int h;
 				layout2.GetPixelSize (out this.requestWidth, out h);
+				
 				QueueResize ();
 			}
 		}
 		
-		string GetText (int line, int column)
+		string GetText (bool showMax)
 		{
-			return string.Format ("Line: {0}, Column: {1}", line, column);
+			int line = showMax ? Editor.Document.LineCount : Editor.TextEditor.Caret.Line + 1;
+			int column;
+			if (showMax) {
+				column = System.Math.Max (Editor.TextEditor.Caret.Column, 100);
+			} else if (ShowRealColumns) {
+				DocumentLocation location = Editor.TextEditor.LogicalToVisualLocation (Editor.TextEditor.Caret.Location);
+				column = location.Column + 1;
+			} else {
+				column = Editor.TextEditor.Caret.Column + 1;
+			}
+			
+			return string.Format (ShowRealColumns ? GettextCatalog.GetString ("Line: {0}, Column: {1}") : "{0} : {1}", line, column);
 		}
 		
-		public void ShowCaretState (int line, int column)
+		public void ShowCaretState ()
 		{
-			this.Text = GetText (line, column);
-			this.QueueResize ();
+			this.Text = GetText (false);
+			this.QueueDraw ();
+		}
+		
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			if (evnt.Button == 3) {
+				ShowNavigationBarContextMenu ();
+				return true;
+			}
+			return base.OnButtonPressEvent (evnt);
+		}
+		
+		internal static void ShowNavigationBarContextMenu ()
+		{
+			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar");
+			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+			IdeApp.CommandService.ShowContextMenu (menu);
 		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
-			requisition.Width = requestWidth + 50 + leftSpacing * 2;
+			requisition.Width = requestWidth + leftSpacing * 2;
 		}
-		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			Gdk.Drawable win = args.Window;

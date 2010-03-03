@@ -27,6 +27,11 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar" name = "Navigation bar context menu">
+		<Description>Context menu for the navigation bar.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor's icon margin.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
@@ -97,6 +102,17 @@
 				_description = "Activates code focus on caret move"
 				shortcut = "Ctrl|Shift|k"
 				macShortcut = "Meta|Shift|k" />
+		
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus"
+				_label = "Toggle code focus"
+				_description = "Activates code focus on caret move"
+				shortcut = "Ctrl|Shift|k"
+				macShortcut = "Meta|Shift|k" />
+				
+		<Command id = "MonoDevelop.SourceEditor.NavigationBarCommands.ToggleNavPanelViews"
+				defaultHandler = "MonoDevelop.SourceEditor.ToggleNavPanelViewsHandler"
+				_label = ""
+				type="array"/> 
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
@@ -121,6 +137,11 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar">
+		<CommandItem id = "MonoDevelop.SourceEditor.NavigationBarCommands.ToggleNavPanelViews" />
+	</Extension>
+	
+	
 	<Extension path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
@@ -133,6 +154,7 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpointProperties" />
 	</Extension>
+	
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
 		<Section id = "General" insertbefore="Formatting" _label = "General" icon="md-text-editor" fill="true" class = "MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel"/>

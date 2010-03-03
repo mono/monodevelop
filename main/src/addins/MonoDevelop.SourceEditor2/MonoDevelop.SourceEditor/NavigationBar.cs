@@ -34,6 +34,7 @@ using System.Linq;
 
 using Gtk;
 
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
@@ -43,7 +44,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
-	class ClassQuickFinder : HBox
+	class NavigationBar : HBox
 	{
 		bool loadingMembers = false;
 		bool handlingParseEvent = false;
@@ -52,16 +53,29 @@ namespace MonoDevelop.SourceEditor
 		DropDownBox typeCombo = new DropDownBox ();
 		DropDownBox membersCombo = new DropDownBox ();
 		DropDownBox regionCombo = new DropDownBox ();
-//		StatusBox statusBox = new StatusBox ();
+		StatusBox statusBox;
 		
-		SourceEditorWidget Editor;
-/*
+		SourceEditorWidget Editor {
+			get;
+			set;
+		}
+
+		public static bool HideStatusBox {
+			get {
+				return PropertyService.Get ("HideCaretStatusBox", true);
+			}
+			set {
+				PropertyService.Set ("HideCaretStatusBox", value);
+			}
+		}
+		
 		public StatusBox StatusBox {
 			get { return this.statusBox; }
-		}*/
+		}
 		
-		public ClassQuickFinder (SourceEditorWidget editor): base (false, 0)
+		public NavigationBar (SourceEditorWidget editor): base (false, 0)
 		{
+			PropertyService.AddPropertyHandler ("HideCaretStatusBox", PropertyHandler);
 			this.Editor = editor;
 			this.BorderWidth = 0;
 			this.Spacing = 0;
@@ -79,11 +93,13 @@ namespace MonoDevelop.SourceEditor
 			
 			regionCombo.DataProvider = new RegionDataProvider (this);
 			regionCombo.ItemSet += RegionChanged;
-//			regionCombo.DrawRightBorder = true;
+			regionCombo.DrawRightBorder = true;
 			UpdateRegionComboTip (null);
 			this.PackStart (regionCombo);
 			
-//			this.PackStart (statusBox, true, true, 0);
+			statusBox = new StatusBox (editor);
+			this.PackStart (statusBox, false, false, 0);
+			regionCombo.DrawRightBorder = statusBox.Visible = !HideStatusBox;
 			
 			int w, h;
 			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
@@ -91,6 +107,12 @@ namespace MonoDevelop.SourceEditor
 			typeCombo.DefaultIconWidth = membersCombo.DefaultIconWidth = regionCombo.DefaultIconWidth = Math.Max (w, 16);
 			
 			this.FocusChain = new Widget[] { typeCombo, membersCombo, regionCombo };
+		}
+		
+		void PropertyHandler (object sender, MonoDevelop.Core.PropertyChangedEventArgs e) 
+		{
+			regionCombo.DrawRightBorder = statusBox.Visible = !HideStatusBox;
+			Editor.UpdateLineCol ();
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -101,7 +123,7 @@ namespace MonoDevelop.SourceEditor
 			
 			base.OnSizeAllocated (allocation);
 		}
-		
+
 		
 		public void UpdatePosition (int line, int column)
 		{
@@ -155,9 +177,9 @@ namespace MonoDevelop.SourceEditor
 #region RegionDataProvider
 		class RegionDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			ClassQuickFinder parent;
+			NavigationBar parent;
 			
-			public RegionDataProvider (ClassQuickFinder parent)
+			public RegionDataProvider (NavigationBar parent)
 			{
 				this.parent = parent;
 			}
@@ -235,9 +257,9 @@ namespace MonoDevelop.SourceEditor
 #region MemberDataProvider
 		class MemberDataProvider : DropDownBoxListWindow.IListDataProvider, System.Collections.Generic.IComparer<IMember>
 		{
-			ClassQuickFinder parent;
+			NavigationBar parent;
 			List<IMember> memberList = new List<IMember> ();
-			public MemberDataProvider (ClassQuickFinder parent)
+			public MemberDataProvider (NavigationBar parent)
 			{
 				this.parent = parent;
 			}
@@ -320,10 +342,10 @@ namespace MonoDevelop.SourceEditor
 #region TypeDataProvider
 		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider, System.Collections.Generic.IComparer<IType>
 		{
-			ClassQuickFinder parent;
+			NavigationBar parent;
 			List<IType> typeList = new List<IType> ();
 			
-			public TypeDataProvider (ClassQuickFinder parent)
+			public TypeDataProvider (NavigationBar parent)
 			{
 				this.parent = parent;
 			}
@@ -421,33 +443,12 @@ namespace MonoDevelop.SourceEditor
 				extEditor.SetCaretTo (Math.Max (1, line), column);
 		}
 		
-		
-/*		bool IsMemberSelected (IMember mem, int line, int column)
-		{
-			if (mem is IMethod) {
-				IMethod method = (IMethod) mem;
-				return (method.BodyRegion.Start.Line <= line && line <= method.BodyRegion.End.Line || 
-				       (method.BodyRegion.Start.Line == line && 0 == method.BodyRegion.End.Line));
-			} else if (mem is IProperty) {
-				IProperty property = (IProperty) mem;
-				return (property.BodyRegion.Start.Line <= line && line <= property.BodyRegion.End.Line);
-			}
-			
-			return (mem.Location.Line <= line && line <= mem.Location.Line);
-		}*/
-		
-//		public void GetLineColumnFromPosition (int position, out int line, out int column)
-//		{
-//			DocumentLocation location = TextEditor.Document.OffsetToLocation (posititon);
-//			line = location.Line + 1;
-//			column = location.Column + 1;
-//		}
-		
 		protected override void OnDestroyed ()
 		{
 			if (Editor != null) 
 				Editor = null;
 			
+			PropertyService.RemovePropertyHandler ("HideCaretStatusBox", PropertyHandler);
 			base.OnDestroyed ();
 		}
 	}

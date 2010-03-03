@@ -157,7 +157,6 @@
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\ClassQuickFinder.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateCodon.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.SourceEditor\IdeViMode.cs" />
@@ -184,6 +183,8 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DropDownBox.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StatusBox.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\NavigationBar.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\NavigationBarCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

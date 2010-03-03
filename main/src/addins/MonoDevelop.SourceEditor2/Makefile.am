@@ -18,7 +18,6 @@ FILES =  \
 	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
 	MonoDevelop.SourceEditor/AutoSave.cs \
-	MonoDevelop.SourceEditor/ClassQuickFinder.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/Counters.cs \
 	MonoDevelop.SourceEditor/DebugValueMarker.cs \
@@ -37,6 +36,8 @@ FILES =  \
 	MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
+	MonoDevelop.SourceEditor/NavigationBar.cs \
+	MonoDevelop.SourceEditor/NavigationBarCommands.cs \
 	MonoDevelop.SourceEditor/PinnedWatchWidget.cs \
 	MonoDevelop.SourceEditor/PrintSettingsWidget.cs \
 	MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs \

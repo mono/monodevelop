@@ -148,6 +148,7 @@ namespace MonoDevelop.SourceEditor
 			base.OnDestroyed ();
 		}
 		
+		
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			int width, height;
@@ -205,6 +206,10 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
+			if (e.Button == 3) {
+				StatusBox.ShowNavigationBarContextMenu ();
+				return true;
+			}
 			if (e.Type == Gdk.EventType.ButtonPress) {
 				if (window != null) {
 					DestroyWindow ();

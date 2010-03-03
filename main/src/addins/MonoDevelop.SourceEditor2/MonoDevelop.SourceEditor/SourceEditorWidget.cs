@@ -68,7 +68,7 @@ namespace MonoDevelop.SourceEditor
 		
 		bool shouldShowclassBrowser;
 		bool canShowClassBrowser;
-		ClassQuickFinder classBrowser;
+		NavigationBar classBrowser;
 		ISourceEditorOptions options;
 		
 		bool isDisposed = false;
@@ -128,8 +128,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (shouldShowclassBrowser && canShowClassBrowser) {
 				if (classBrowser == null) {
-					classBrowser = new ClassQuickFinder (this);
-//					classBrowser.StatusBox.UpdateWidth (this.textEditor.GetTextEditorData ());
+					classBrowser = new NavigationBar (this);
+					classBrowser.StatusBox.UpdateWidth ();
 					this.UpdateLineCol ();
 					this.PackStart (classBrowser, false, false, CHILD_PADDING);
 					this.ReorderChild (classBrowser, 0);
@@ -217,12 +217,6 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.SelectionChanged += delegate {
 				this.UpdateLineCol ();
 			};
-			this.textEditor.Document.LineChanged += delegate {
-				UpdateStatusBarWidth ();
-			};
-			this.textEditor.Document.TextSet += delegate {
-				UpdateStatusBarWidth ();
-			}; 
 			
 			textEditorData = textEditor.GetTextEditorData ();
 			ResetFocusChain ();
@@ -233,14 +227,7 @@ namespace MonoDevelop.SourceEditor
 			this.BorderWidth = 0;
 			this.Spacing = 0;
 		}
-
-		void UpdateStatusBarWidth ()
-		{
-/*			if (classBrowser != null)
-				classBrowser.StatusBox.UpdateWidth (this.textEditor.GetTextEditorData ());*/
-		}
-
-
+		
 		protected override bool OnFocused (DirectionType direction)
 		{
 			bool res = base.OnFocused (direction);
@@ -831,8 +818,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			UpdateLineCol ();
 			
-			if (classBrowser != null)
+			if (classBrowser != null) {
 				classBrowser.UpdatePosition (TextEditor.Caret.Line + 1, TextEditor.Caret.Column + 1);
+				classBrowser.StatusBox.CaretPositionChanged ();
+			}
 		}
 		
 //		void OnChanged (object o, EventArgs e)
@@ -847,14 +836,16 @@ namespace MonoDevelop.SourceEditor
 			int offset = TextEditor.Caret.Offset;
 			if (offset < 0 || offset > TextEditor.Document.Length)
 				return;
-			DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line + 1,
-			                                           location.Column + 1,
-			                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
-			                                           TextEditor.Caret.IsInInsertMode);
-			
-/*			if (classBrowser != null)
-				classBrowser.StatusBox.ShowCaretState (TextEditor.Caret.Line + 1, location.Column + 1);*/
+			if (classBrowser == null || NavigationBar.HideStatusBox) {
+				DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
+				IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line + 1,
+				                                           location.Column + 1,
+				                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
+				                                           TextEditor.Caret.IsInInsertMode);
+			} else {
+				IdeApp.Workbench.StatusBar.ClearCaretState ();
+				classBrowser.StatusBox.ShowCaretState ();
+			}
 		}
 		
 		#endregion

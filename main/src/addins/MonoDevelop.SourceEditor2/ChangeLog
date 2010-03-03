@@ -2,6 +2,20 @@
 
 	* Makefile.am:
 	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/StatusBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/NavigationBar.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/NavigationBarCommands.cs: Worked on
+	  navigation panel (it's now possible to show the caret
+	  position there).
+
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
 	* MonoDevelop.SourceEditor/StatusBox.cs:
 	* MonoDevelop.SourceEditor/DropDownBox.cs:
 	* MonoDevelop.SourceEditor/TinyDropDownBox.cs:
