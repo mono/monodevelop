@@ -43,8 +43,10 @@ namespace MonoDevelop.MeeGo
 		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
-			var cfg = (MeeGoProjectConfiguration) configuration;
-			base.CopyFrom (cfg);
+			//var cfg = configuration as MeeGoProjectConfiguration;
+			//if (cfg != null) {
+			//}
+			base.CopyFrom (configuration);
 		}
 	}
 }

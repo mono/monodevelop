@@ -61,17 +61,7 @@ namespace MonoDevelop.MeeGo
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			var conf = new MeeGoProjectConfiguration (name);
-			
-			var dir = new FilePath ("bin");
-			if (!String.IsNullOrEmpty (conf.Platform))
-				dir.Combine (conf.Platform);
-			dir.Combine (conf.Name);
-			conf.OutputDirectory = BaseDirectory.IsNullOrEmpty? dir : BaseDirectory.Combine (dir);
-			
-			conf.OutputAssembly = Name;
-			
-			if (LanguageBinding != null)
-				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
+			conf.CopyFrom (base.CreateConfiguration (name));
 			return conf;
 		}
 		
