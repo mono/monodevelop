@@ -1,3 +1,9 @@
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 584884 - Find
+	  markers render over line numbers'.
+
 2010-03-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs: Worked on 'Bug 584479 -

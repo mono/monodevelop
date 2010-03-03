@@ -1744,7 +1744,9 @@ namespace Mono.TextEditor
 				x2 /= (int)Pango.Scale.PangoScale;
 				int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
-					var gc = editor.Style.BaseGC (StateType.Normal);
+					cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+					cr.Clip ();
+			
 					
 					int width = (int)(x2 - x1);
 					int border = 2;
@@ -1759,11 +1761,11 @@ namespace Mono.TextEditor
 							using (var bgGc = new Gdk.GC(pixmap)) {
 								bgGc.RgbFgColor = editor.ColorStyle.SearchTextMainBg;
 								pixmap.DrawRectangle (bgGc, true, 0, 0, iw, ih);
-							}
-							using (Pango.Layout layout = new Pango.Layout (editor.PangoContext)) {
-								layout.FontDescription = editor.Options.Font;
-								layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
-								pixmap.DrawLayout (gc, 0, 0, layout);
+								using (Pango.Layout layout = new Pango.Layout (editor.PangoContext)) {
+									layout.FontDescription = editor.Options.Font;
+									layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
+									pixmap.DrawLayout (bgGc, 0, 0, layout);
+								}
 							}
 							textImage = Pixbuf.FromDrawable (pixmap, Colormap.System, 0, 0, 0, 0, iw, ih);
 						}
@@ -1805,8 +1807,12 @@ namespace Mono.TextEditor
 					th = (int) System.Math.Ceiling (ih * scale);
 					tx = rx - (int) System.Math.Ceiling ((double)(tw - iw) / 2) + border;
 					ty = ry - (int) System.Math.Ceiling ((double)(th - ih) / 2) + border;
-					using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) 
-						scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
+					using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) {
+						using (var gc = new Gdk.GC (drawable)) {
+							gc.ClipRectangle = new Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+							scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
+						}
+					}
 				}
 				
 				if (lineLayout.IsUncached) 
@@ -1841,6 +1847,9 @@ namespace Mono.TextEditor
 				if (editor.Caret.Mode != CaretMode.Block)
 					x -= editor.TextViewMargin.charWidth / 2;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
+					cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+					cr.Clip ();
+
 					double extend = Percent * 5;
 					int width = (int)(editor.TextViewMargin.charWidth + 2 * extend * editor.Options.Zoom / 2);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
@@ -1890,6 +1899,9 @@ namespace Mono.TextEditor
 				int animationPosition = (int)(Percent * 100);
 				
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
+					cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+					cr.Clip ();
+
 					int width = (int)(region.Width + 2 * animationPosition * editor.Options.Zoom / 2);
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
 					                                                    (int)(x - animationPosition * editor.Options.Zoom / 2), 

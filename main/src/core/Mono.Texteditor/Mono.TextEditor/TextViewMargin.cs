@@ -1177,6 +1177,7 @@ namespace Mono.TextEditor
 			ISegment firstSearch;
 			int o = offset;
 			uint curIndex = 0, byteIndex = 0;
+			
 			while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
 				int x = xPos;
 				HandleSelection (line, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
@@ -1186,6 +1187,9 @@ namespace Mono.TextEditor
 						uint startTranslated = TranslateToUTF8Index (layout.LineChars, startIndex, ref curIndex, ref byteIndex);
 						uint endTranslated = TranslateToUTF8Index (layout.LineChars, endIndex, ref curIndex, ref byteIndex);
 						using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+							cr.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height);
+							cr.Clip ();
+							
 							int l, x1, x2;
 							layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
 							layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
