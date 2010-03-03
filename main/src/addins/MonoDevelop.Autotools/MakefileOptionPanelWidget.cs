@@ -98,6 +98,7 @@ namespace MonoDevelop.Autotools
 			this.BuildTargetName.Text = data.BuildTargetName;
 			this.ExecuteTargetName.Text = data.ExecuteTargetName;
 			this.CleanTargetName.Text = data.CleanTargetName;
+			spinProcesses.Value = data.ParallelProcesses;
 			
 			cbBuildTarget.Active = BuildTargetName.Sensitive = data.BuildTargetName != string.Empty;
 			cbRunTarget.Active = ExecuteTargetName.Sensitive = data.ExecuteTargetName != string.Empty;
@@ -194,6 +195,7 @@ namespace MonoDevelop.Autotools
 			data.BuildTargetName = this.BuildTargetName.Text.Trim ();
 			data.ExecuteTargetName = this.ExecuteTargetName.Text.Trim ();
 			data.CleanTargetName = this.CleanTargetName.Text.Trim ();
+			data.ParallelProcesses = this.spinProcesses.ValueAsInt;
 			
 			data.MessageRegexName = GetActiveVar (comboMessageType);
 			if (data.MessageRegexName == "Custom") {

@@ -68,6 +68,7 @@ namespace MonoDevelop.Autotools
 			buildTargetName = "all";
 			cleanTargetName = "clean";
 			executeTargetName = String.Empty;
+			ParallelProcesses = 1;
 			
 			assemblyContext = GetMonoRuntimeContext ();
 			if (assemblyContext == null)
@@ -195,6 +196,12 @@ namespace MonoDevelop.Autotools
 			get { return executeTargetName; }
 			set { executeTargetName = value;}
 		}
+		
+		/// <summary>
+		/// The number of parallel build processes to use
+		/// </summary>
+		[ItemProperty (DefaultValue = 1)]
+		public int ParallelProcesses { get; set; }
 
 		//Makefile variables
 		MakefileVar buildFilesVar;
@@ -480,6 +487,7 @@ namespace MonoDevelop.Autotools
 			data.BuildTargetName = this.BuildTargetName;
 			data.CleanTargetName = this.CleanTargetName;
 			data.ExecuteTargetName = this.ExecuteTargetName;
+			data.ParallelProcesses = this.ParallelProcesses;
 			
 			data.BuildFilesVar = new MakefileVar (this.BuildFilesVar);
 			data.DeployFilesVar = new MakefileVar (this.DeployFilesVar);

@@ -163,6 +163,7 @@ namespace MonoDevelop.Autotools
 			try
 			{
 				string baseDir = project.BaseDirectory;
+				string args = string.Format ("-j {0} {1}", data.ParallelProcesses, data.BuildTargetName);
 	
 				StringWriter swOutput = new StringWriter ();
 				LogTextWriter chainedOutput = new LogTextWriter ();
@@ -170,7 +171,7 @@ namespace MonoDevelop.Autotools
 				chainedOutput.ChainWriter (swOutput);
 
 				ProcessWrapper process = Runtime.ProcessService.StartProcess ("make",
-						data.BuildTargetName,
+						args,
 						baseDir, 
 						chainedOutput, 
 						chainedOutput,

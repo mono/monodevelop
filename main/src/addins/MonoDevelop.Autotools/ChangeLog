@@ -1,3 +1,12 @@
+2010-03-03  Levi Bard  <levi@unity3d.com>
+
+	* MakefileData.cs:
+	* gtk-gui/gui.stetic:
+	* MakefileOptionPanelWidget.cs:
+	* MakefileProjectServiceExtension.cs:
+	* gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:
+	  Add option for number of parallel build processes.
+
 2010-02-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MakefileData.cs: Fix assembly resolution issue when loading
