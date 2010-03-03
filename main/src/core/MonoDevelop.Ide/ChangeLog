@@ -1,5 +1,11 @@
 2010-03-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Added message
+	  for describing the category mode keyboard switch when the
+	  code completion window is shown.
+
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Gui.Content/ITextEditorResolver.cs:
 	  Refactored text editor resolve providers. Language bindings

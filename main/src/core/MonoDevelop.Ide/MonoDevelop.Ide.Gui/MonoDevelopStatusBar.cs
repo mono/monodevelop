@@ -30,6 +30,8 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using Gtk;
+using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide
 {
@@ -112,6 +114,16 @@ namespace MonoDevelop.Ide
 			// the Mac has a resize grip by default, and the GTK+ one breaks it
 			if (MonoDevelop.Core.PropertyService.IsMac)
 				HasResizeGrip = false;
+			
+			// todo: Move this to the CompletionWindowManager when it's possible.
+			CompletionWindowManager.WindowShown += delegate {
+				if (CompletionWindowManager.Wnd.List.CategoryCount > 1)
+					ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (Commands.TextEditorCommands.ShowCompletionWindow, null).AccelKey));
+			};
+			
+			CompletionWindowManager.WindowClosed += delegate {
+				ShowReady ();
+			};
 		}
 		
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
