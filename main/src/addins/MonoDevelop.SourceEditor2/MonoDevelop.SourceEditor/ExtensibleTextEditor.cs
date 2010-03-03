@@ -452,119 +452,16 @@ namespace MonoDevelop.SourceEditor
 		ResolveResult resolveResult = null;
 		public ResolveResult GetLanguageItem (int offset)
 		{
-			string txt = this.Document.Text;
-			string fileName = view.ContentName ?? view.UntitledName;
 			
 			// we'll cache old results.
 			if (offset == oldOffset)
 				return this.resolveResult;
 			oldOffset = offset;
 			
-			this.resolveResult = null;
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return null;
-			
-			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
-			if (parser == null)
-				return null;
-
-			ProjectDom        dom      = this.ProjectDom;
-			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
-			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
-			if (resolver == null || expressionFinder == null) 
-				return null;
-			int wordEnd = offset;
-			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
-				wordEnd++;
-			
-			ExpressionResult expressionResult = expressionFinder.FindExpression (txt, offset);
-			if (expressionResult == null)
-				return null;
-			
-			DocumentLocation loc = Document.OffsetToLocation (offset);
-			string savedExpression = null;
-			
-			// special handling for 'var' "keyword"
-			if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected && expressionResult.Expression != null && expressionResult.Expression.Trim () == "var") {
-				int endOffset = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
-				StringBuilder identifer = new StringBuilder ();
-				for (int i = endOffset; i >= 0 && i < Document.Length; i++) {
-					char ch = Document.GetCharAt (i);
-					if (Char.IsWhiteSpace (ch))
-						continue;
-					if (ch == '=')
-						break;
-					if (Char.IsLetterOrDigit (ch) || ch =='_') {
-						identifer.Append (ch);
-						continue;
-					}
-					identifer.Length = 0;
-					break;
-				}
-				if (identifer.Length > 0) {
-					expressionResult.Expression = identifer.ToString ();
-					this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-					if (this.resolveResult != null) {
-						this.resolveResult = new MemberResolveResult (dom.GetType (resolveResult.ResolvedType));
-						return this.resolveResult;
-					}
-				}
-			}
-			
-			if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
-				savedExpression = expressionResult.Expression;
-				expressionResult.Expression += "Attribute";
-				expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-			} 
-			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-			
-			if (savedExpression != null && this.resolveResult == null) {
-				expressionResult.Expression = savedExpression;
-				this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-			}
-			// Search for possible generic parameters.
-//			if (this.resolveResult == null || this.resolveResult.ResolvedType == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
-			if (!expressionResult.Region.IsEmpty) {
-				int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
-				int bracket = 0;
-				for (int i = j; i >= 0 && i < Document.Length; i++) {
-					char ch = Document.GetCharAt (i);
-					if (Char.IsWhiteSpace (ch))
-						continue;
-					if (ch == '<') {
-						bracket++;
-					} else if (ch == '>') {
-						bracket--;
-						if (bracket == 0) {
-							expressionResult.Expression += Document.GetTextBetween (j, i + 1);
-							expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-							this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-							break;
-						}
-					} else {
-						if (bracket == 0)
-							break;
-					}
-				}
-			}
-			
-			// To resolve method overloads the full expression must be parsed.
-			// ex.: Overload (1)/ Overload("one") - parsing "Overload" gives just a MethodResolveResult
-			// and for constructor initializers it's tried too to to resolve constructor overloads.
-			if (this.resolveResult is ThisResolveResult || 
-			    this.resolveResult is BaseResolveResult || 
-			    this.resolveResult is MethodResolveResult && ((MethodResolveResult)resolveResult).Methods.Count > 1) {
-				// put the search offset at the end of the invocation to be able to find the full expression
-				// the resolver finds it itself if spaces are between the method name and the argument opening parentheses.
-				if (txt[wordEnd] == '(') {
-					int matchingBracket = Document.GetMatchingBracketOffset (wordEnd);
-					if (matchingBracket > 0)
-						wordEnd = matchingBracket;
-				}
-				ResolveResult possibleResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? this.resolveResult;
-				if (possibleResult is MethodResolveResult)
-					this.resolveResult = possibleResult;
+			if (textEditorResolverProvider != null) {
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ProjectDom, GetTextEditorData (), offset);
+			} else {
+				this.resolveResult = null;
 			}
 			
 			return this.resolveResult;
@@ -587,76 +484,23 @@ namespace MonoDevelop.SourceEditor
 			return CodeTemplateContext.Standard;
 		}
 		
+		ITextEditorResolverProvider textEditorResolverProvider;
+		
+		public ITextEditorResolverProvider TextEditorResolverProvider {
+			get { return this.textEditorResolverProvider; }
+			internal set { this.textEditorResolverProvider = value; }
+		}
+		
 		public ResolveResult GetLanguageItem (int offset, string expression)
 		{
-			string txt = this.Document.Text;
-			string fileName = view.ContentName ?? view.UntitledName;
-			
 			oldOffset = offset;
 			
-			this.resolveResult = null;
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return null;
-			
-			IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
-			if (parser == null)
-				return null;
-
-			ProjectDom        dom      = this.ProjectDom;
-			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
-			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
-			if (resolver == null || expressionFinder == null) 
-				return null;
-			int wordEnd = offset;
-			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
-				wordEnd++;
-			ExpressionResult expressionResult = new ExpressionResult (expression);
-			expressionResult.ExpressionContext = ExpressionContext.MethodBody;
-			
-			DocumentLocation loc = Document.OffsetToLocation (offset);
-			string savedExpression = null;
-			
-			if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
-				savedExpression = expressionResult.Expression;
-				expressionResult.Expression += "Attribute";
-				expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-			} 
-			this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-			if (savedExpression != null && this.resolveResult == null) {
-				expressionResult.Expression = savedExpression;
-				this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
+			if (textEditorResolverProvider != null) {
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (this.ProjectDom, GetTextEditorData (), offset, expression);
+			} else {
+				this.resolveResult = null;
 			}
-			// Search for possible generic parameters.
-//			if (this.resolveResult == null || this.resolveResult.ResolvedType == null || String.IsNullOrEmpty (this.resolveResult.ResolvedType.Name)) {
-				int j = Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1);
-				int bracket = 0;
-				for (int i = j; i >= 0 && i < Document.Length; i++) {
-					char ch = Document.GetCharAt (i);
-					if (Char.IsWhiteSpace (ch))
-						continue;
-					if (ch == '<') {
-						bracket++;
-					} else if (ch == '>') {
-						bracket--;
-						if (bracket == 0) {
-							expressionResult.Expression += Document.GetTextBetween (j, i + 1);
-							expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
-							this.resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
-							break;
-						}
-					} else {
-						if (bracket == 0)
-							break;
-					}
-				}
-//			}
-			
-			// To resolve method overloads the full expression must be parsed.
-			// ex.: Overload (1)/ Overload("one") - parsing "Overload" gives just a MethodResolveResult
-			if (this.resolveResult is MethodResolveResult) 
-				this.resolveResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? this.resolveResult;
-			
+	
 			return this.resolveResult;
 		}
 

@@ -1,3 +1,20 @@
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/StatusBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/TinyDropDownBox.cs:
+	* MonoDevelop.SourceEditor/ClassQuickFinder.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
+	* MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs:
+	  Refactored text editor resolve providers. Language bindings
+	  now can provide own providers.
+
 2010-03-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fix build

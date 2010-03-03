@@ -177,12 +177,13 @@
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorTextMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\TinyDropDownBox.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PrintSettingsWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\DropDownBox.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\StatusBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

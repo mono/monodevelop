@@ -43,7 +43,6 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.SourceEditor
 {
-	
 	class ClassQuickFinder : HBox
 	{
 		bool loadingMembers = false;
@@ -53,8 +52,13 @@ namespace MonoDevelop.SourceEditor
 		DropDownBox typeCombo = new DropDownBox ();
 		DropDownBox membersCombo = new DropDownBox ();
 		DropDownBox regionCombo = new DropDownBox ();
+//		StatusBox statusBox = new StatusBox ();
 		
 		SourceEditorWidget Editor;
+/*
+		public StatusBox StatusBox {
+			get { return this.statusBox; }
+		}*/
 		
 		public ClassQuickFinder (SourceEditorWidget editor): base (false, 0)
 		{
@@ -75,8 +79,11 @@ namespace MonoDevelop.SourceEditor
 			
 			regionCombo.DataProvider = new RegionDataProvider (this);
 			regionCombo.ItemSet += RegionChanged;
+//			regionCombo.DrawRightBorder = true;
 			UpdateRegionComboTip (null);
 			this.PackStart (regionCombo);
+			
+//			this.PackStart (statusBox, true, true, 0);
 			
 			int w, h;
 			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);

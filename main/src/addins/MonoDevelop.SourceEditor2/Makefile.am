@@ -25,6 +25,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs \
 	MonoDevelop.SourceEditor/DebugValueWindow.cs \
 	MonoDevelop.SourceEditor/DefaultFormatter.cs \
+	MonoDevelop.SourceEditor/DropDownBox.cs \
 	MonoDevelop.SourceEditor/DropDownBoxListWindow.cs \
 	MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \
@@ -45,10 +46,10 @@ FILES =  \
 	MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs \
 	MonoDevelop.SourceEditor/SourceEditorView.cs \
 	MonoDevelop.SourceEditor/SourceEditorWidget.cs \
+	MonoDevelop.SourceEditor/StatusBox.cs \
 	MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs \
 	MonoDevelop.SourceEditor/SyntaxModeCodon.cs \
-	MonoDevelop.SourceEditor/SyntaxModeService.cs \
-	MonoDevelop.SourceEditor/TinyDropDownBox.cs 
+	MonoDevelop.SourceEditor/SyntaxModeService.cs 
 
 RES =  \
 	gtk-gui/gui.stetic \

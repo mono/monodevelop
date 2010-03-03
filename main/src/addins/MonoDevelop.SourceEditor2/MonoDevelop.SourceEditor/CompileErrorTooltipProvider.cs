@@ -49,7 +49,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, object item)
 		{
-			LanguageItemWindow result = new LanguageItemWindow (null, modifierState, null, null, (string)item, null);
+			LanguageItemWindow result = new LanguageItemWindow ((ExtensibleTextEditor) editor, modifierState, null, (string)item, null);
 			if (result.IsEmpty)
 				return null;
 			return result;

@@ -1,5 +1,5 @@
 // 
-// TinyDropDownBox.cs
+// DropDownBox.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -32,7 +32,7 @@ namespace MonoDevelop.SourceEditor
 {
 	[Category ("Widgets")]
 	[ToolboxItem (true)]
-	public class DropDownBox  : Gtk.Button
+	public class DropDownBox : Gtk.Button
 	{
 		Pango.Layout layout;
 		const int pixbufSpacing = 2;

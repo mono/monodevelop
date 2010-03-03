@@ -129,6 +129,8 @@ namespace MonoDevelop.SourceEditor
 			if (shouldShowclassBrowser && canShowClassBrowser) {
 				if (classBrowser == null) {
 					classBrowser = new ClassQuickFinder (this);
+//					classBrowser.StatusBox.UpdateWidth (this.textEditor.GetTextEditorData ());
+					this.UpdateLineCol ();
 					this.PackStart (classBrowser, false, false, CHILD_PADDING);
 					this.ReorderChild (classBrowser, 0);
 					classBrowser.ShowAll ();
@@ -215,7 +217,13 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor.SelectionChanged += delegate {
 				this.UpdateLineCol ();
 			};
-
+			this.textEditor.Document.LineChanged += delegate {
+				UpdateStatusBarWidth ();
+			};
+			this.textEditor.Document.TextSet += delegate {
+				UpdateStatusBarWidth ();
+			}; 
+			
 			textEditorData = textEditor.GetTextEditorData ();
 			ResetFocusChain ();
 			
@@ -225,6 +233,13 @@ namespace MonoDevelop.SourceEditor
 			this.BorderWidth = 0;
 			this.Spacing = 0;
 		}
+
+		void UpdateStatusBarWidth ()
+		{
+/*			if (classBrowser != null)
+				classBrowser.StatusBox.UpdateWidth (this.textEditor.GetTextEditorData ());*/
+		}
+
 
 		protected override bool OnFocused (DirectionType direction)
 		{
@@ -837,6 +852,9 @@ namespace MonoDevelop.SourceEditor
 			                                           location.Column + 1,
 			                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
 			                                           TextEditor.Caret.IsInInsertMode);
+			
+/*			if (classBrowser != null)
+				classBrowser.StatusBox.ShowCaretState (TextEditor.Caret.Line + 1, location.Column + 1);*/
 		}
 		
 		#endregion

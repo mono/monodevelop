@@ -53,7 +53,7 @@ namespace MonoDevelop.SourceEditor
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, ed.Document.FileName);
 			
-			LanguageItemWindow result = new LanguageItemWindow (ed.ProjectDom, modifierState, AmbienceService.GetAmbience (ed.Document.MimeType), (ResolveResult)item, null, doc != null ? doc.CompilationUnit : null);
+			LanguageItemWindow result = new LanguageItemWindow (ed, modifierState, (ResolveResult)item, null, doc != null ? doc.CompilationUnit : null);
 			if (result.IsEmpty)
 				return null;
 			return result;

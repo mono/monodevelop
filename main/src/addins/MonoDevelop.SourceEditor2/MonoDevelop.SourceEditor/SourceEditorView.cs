@@ -432,6 +432,7 @@ namespace MonoDevelop.SourceEditor
 					foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
 						if (Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt) != null) {
 							Document.MimeType = mt;
+							widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (mt);
 							break;
 						}
 					}
