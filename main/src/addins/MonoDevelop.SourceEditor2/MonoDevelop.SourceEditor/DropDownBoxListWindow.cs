@@ -65,7 +65,12 @@ namespace MonoDevelop.SourceEditor
 					vScrollbar.Value++;
 				}
 			};
-			
+			list.SizeAllocated += delegate {
+				ResetSizes ();
+			};
+			list.PageChanged += delegate {
+				vScrollbar.Value = list.Page;
+			};
 			hBox.PackStart (list, true, true, 0);
 			
 			vScrollbar = new VScrollbar (null);
@@ -76,7 +81,6 @@ namespace MonoDevelop.SourceEditor
 			hBox.PackStart (vScrollbar, false, false, 0);
 			Add (hBox);
 			
-			ResetSizes ();
 			this.Child.ShowAll ();
 		}
 		
@@ -85,7 +89,9 @@ namespace MonoDevelop.SourceEditor
 			for (int i = 0; i < DataProvider.IconCount; i++) {
 				if (DataProvider.GetTag (i) == item) {
 					list.Selection = i;
-					vScrollbar.Value = Math.Max (0, i - list.VisibleRows / 2);
+					list.Page = Math.Max (0, i - list.VisibleRows / 2);
+					vScrollbar.Value = list.Page;
+					QueueDraw ();
 					break;
 				}
 			}
@@ -160,9 +166,9 @@ namespace MonoDevelop.SourceEditor
 			var pageStep = list.VisibleRows;
 			vScrollbar.Adjustment.SetBounds (0, upper, 1, pageStep, pageStep);
 			
-			if (list.VisibleRows >= DataProvider.IconCount)
+			if (list.VisibleRows >= DataProvider.IconCount && vScrollbar.Parent == hBox)
 				hBox.Remove (vScrollbar);
-				//vScrollbar.Hide ();
+		
 			HeightRequest = this.list.HeightRequest + 2;
 			this.Resize (this.Allocation.Width, this.list.HeightRequest + 2);
 		}
@@ -196,7 +202,7 @@ namespace MonoDevelop.SourceEditor
 			DropDownBoxListWindow win;
 			int selection = 0;
 			int page = 0;
-			int visibleRows = -1;
+			
 			int rowHeight;
 		//	bool buttonPressed;
 			bool disableSelection;
@@ -208,6 +214,15 @@ namespace MonoDevelop.SourceEditor
 				this.win = win;
 				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 				layout = new Pango.Layout (this.PangoContext);
+				CalcRowHeight ();
+			}
+			
+			void CalcRowHeight ()
+			{
+				layout.SetText ("|");
+				int rowWidth;
+				layout.GetPixelSize (out rowWidth, out rowHeight);
+				rowHeight += padding;
 			}
 			
 			protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
@@ -260,8 +275,7 @@ namespace MonoDevelop.SourceEditor
 					if (value >= win.DataProvider.IconCount)
 						value = win.DataProvider.IconCount - 1;
 					
-					if (value != selection) 
-					{
+					if (value != selection) {
 						selection = value;
 						UpdatePage ();
 						
@@ -285,31 +299,42 @@ namespace MonoDevelop.SourceEditor
 				
 				if (selection < page || selection >= page + VisibleRows) {
 					page = selection - (VisibleRows / 2);
-					if (page < 0) page = 0;
+					if (page < 0) 
+						page = 0;
 				}
+				Page = System.Math.Max (0, System.Math.Min (page, win.DataProvider.IconCount - VisibleRows));
 			}
 			
-			public bool SelectionDisabled
-			{
+			public bool SelectionDisabled {
 				get { return disableSelection; }
-				
 				set {
 					disableSelection = value; 
 					this.QueueDraw ();
 				}
 			}
 			
-			public int Page
-			{
+			public int Page {
 				get { 
 					return page; 
 				}
-				
 				set {
-					page = value;
-					this.QueueDraw ();
+					if (page != value) {
+						page = value;
+						UpdatePage ();
+						OnPageChanged (EventArgs.Empty);
+						this.QueueDraw ();
+					}
 				}
 			}
+			
+			protected virtual void OnPageChanged (EventArgs e)
+			{
+				EventHandler handler = this.PageChanged;
+				if (handler != null)
+					handler (this, e);
+			}
+			
+			public event EventHandler PageChanged;
 			
 			protected override bool OnButtonPressEvent (Gdk.EventButton e)
 			{
@@ -351,7 +376,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				base.OnExposeEvent (args);
 				DrawList ();
-		  		return true;
+				return true;
 			}
 	
 			void DrawList ()
@@ -408,8 +433,6 @@ namespace MonoDevelop.SourceEditor
 			
 			int GetRowByPosition (int ypos)
 			{
-				if (visibleRows == -1)
-					CalcVisibleRows ();
 				return page + (ypos-margin) / rowHeight;
 			}
 			
@@ -424,9 +447,7 @@ namespace MonoDevelop.SourceEditor
 			
 			public int VisibleRows {
 				get {
-					if (visibleRows == -1)
-						CalcVisibleRows ();
-					return visibleRows;
+					return Allocation.Height / rowHeight;
 				}
 			}
 			
@@ -434,17 +455,14 @@ namespace MonoDevelop.SourceEditor
 			{
 				int winHeight = win.parent.GdkWindow.Screen.Height / 2;
 				int lvWidth, lvHeight;
-				int rowWidth;
-				
 				this.GetSizeRequest (out lvWidth, out lvHeight);
 				if (layout == null)
 					return;
-				layout.GetPixelSize (out rowWidth, out rowHeight);
-				rowHeight += padding;
-				visibleRows = (winHeight + padding - margin * 2) / rowHeight;
+				
+				int visibleRows = (winHeight + padding - margin * 2) / rowHeight;
 				int newHeight;
 	
-				if (this.win.DataProvider.IconCount > this.visibleRows)
+				if (this.win.DataProvider.IconCount > visibleRows)
 					newHeight = (rowHeight * visibleRows) + margin * 2;
 				else
 					newHeight = (rowHeight * this.win.DataProvider.IconCount) + margin * 2;
@@ -452,27 +470,32 @@ namespace MonoDevelop.SourceEditor
 				if (lvWidth != listWidth || lvHeight != newHeight) {
 					this.SetSizeRequest (listWidth, newHeight);
 				}
-				
-				visibleRows = (newHeight + padding - margin * 2) / rowHeight;
 			} 
-	
+			
+			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+			{
+				base.OnSizeAllocated (allocation);
+				UpdatePage ();
+			}
+			
 			protected override void OnRealized ()
 			{
 				base.OnRealized ();
 				UpdateStyle ();
-				UpdatePage ();
 			}
 			
 			void UpdateStyle ()
 			{
 				this.GdkWindow.Background = this.Style.Base (StateType.Normal);
+				if (layout != null)
+					layout.Dispose ();
 				layout = new Pango.Layout (this.PangoContext);
 				layout.Wrap = Pango.WrapMode.Char;
-				
-				Pango.FontDescription des = this.Style.FontDescription.Copy();
-				layout.FontDescription = des;
+				layout.FontDescription = this.Style.FontDescription.Copy();
+				CalcRowHeight ();
 				CalcVisibleRows ();
 			}
+			
 			internal virtual void OnSelectItem (EventArgs e)
 			{
 				if (SelectItem != null)
