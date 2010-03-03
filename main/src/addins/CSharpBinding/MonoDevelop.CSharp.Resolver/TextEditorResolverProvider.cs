@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Resolver
 			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
 				wordEnd++;
 			
-			ExpressionResult expressionResult = expressionFinder.FindExpression (txt, offset);
+			ExpressionResult expressionResult = expressionFinder.FindExpression (txt, wordEnd);
 			if (expressionResult == null)
 				return null;
 			ResolveResult resolveResult;
