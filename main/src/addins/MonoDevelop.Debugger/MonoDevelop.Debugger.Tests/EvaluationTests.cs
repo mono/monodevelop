@@ -95,17 +95,26 @@ namespace MonoDevelop.Debugger.Tests
 		public void TypeReference ()
 		{
 			ObjectValue val = Eval ("System.String");
-			Assert.AreEqual ("String", val.Value);
+			Assert.AreEqual ("string", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 			
 			val = Eval ("MainClass");
-			Assert.AreEqual ("MainClass", val.Value);
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.MainClass", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 			
 			val = Eval ("MonoDevelop.Debugger.Tests.TestApp.MainClass");
-			Assert.AreEqual ("MainClass", val.Value);
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.MainClass", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+		}
+		
+		[Test()]
+		public virtual void TypeReferenceGeneric ()
+		{
+			ObjectValue val = Eval ("System.Collections.Generic.Dictionary<string,int>");
+			Assert.AreEqual ("System.Collections.Generic.Dictionary<string,int>", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
@@ -208,7 +217,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("<namespace>", val.TypeName);
 			
 			val = Eval ("MonoDevelop.Debugger.Tests.TestApp.MainClass");
-			Assert.AreEqual ("MainClass", val.Value);
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.MainClass", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			
 			val = Eval ("MonoDevelop.Debugger.Tests.TestApp.MainClass.staticString");

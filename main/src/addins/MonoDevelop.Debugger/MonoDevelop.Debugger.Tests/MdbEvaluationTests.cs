@@ -47,5 +47,11 @@ namespace MonoDevelop.Debugger.Tests
 		public override void AssignmentStatic ()
 		{
 		}
+		
+		[Test()]
+		[Ignore ("Not yet implemented")]
+		public override void TypeReferenceGeneric ()
+		{
+		}
 	}
 }
