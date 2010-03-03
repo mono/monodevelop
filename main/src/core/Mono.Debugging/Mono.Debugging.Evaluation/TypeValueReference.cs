@@ -37,18 +37,26 @@ namespace Mono.Debugging.Evaluation
 	{
 		object type;
 		string name;
+		string fullName;
 
 		public TypeValueReference (EvaluationContext ctx, object type)
 			: base (ctx)
 		{
 			this.type = type;
-			name = ctx.Adapter.GetDisplayTypeName (ctx, type);
+			fullName = ctx.Adapter.GetDisplayTypeName (ctx, type);
+			name = GetTypeName (fullName);
 		}
 		
 		internal static string GetTypeName (string tname)
 		{
 			tname = tname.Replace ('+','.');
-			int i = tname.LastIndexOf ('.');
+			int sep1 = tname.IndexOf ('<');
+			int sep2 = tname.IndexOf ('[');
+			if (sep2 != -1 && (sep2 < sep1 || sep1 == -1))
+				sep1 = sep2;
+			if (sep1 == -1)
+				sep1 = tname.Length - 1;
+			int i = tname.LastIndexOf ('.', sep1);
 			if (i != -1)
 				return tname.Substring (i + 1);
 			else
@@ -93,7 +101,7 @@ namespace Mono.Debugging.Evaluation
 
 		protected override ObjectValue OnCreateObjectValue ()
 		{
-			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "<type>", Name, Flags, null);
+			return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "<type>", fullName, Flags, null);
 		}
 
 		public override ValueReference GetChild (string name)

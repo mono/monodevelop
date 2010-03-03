@@ -1,5 +1,13 @@
 2010-03-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/TypeValueReference.cs: Fixed type
+	  name formatting issue.
+
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Fixed
+	  parsing of generic type names.
+
+2010-03-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/TypeValueReference.cs: Set the
 	  correct type name for the type reference.
 

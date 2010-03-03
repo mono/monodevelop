@@ -87,7 +87,7 @@ namespace Mono.Debugging.Evaluation
 				EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, expectedType, userVariables, tryTypeOf);
 				return (ValueReference) expObj.AcceptVisitor (ev, null);
 			} catch {
-				if (!tryTypeOf && (expObj is BinaryOperatorExpression)) {
+				if (!tryTypeOf && (expObj is BinaryOperatorExpression) && IsTypeName (exp)) {
 					// This is a hack to be able to parse expressions such as "List<string>". The NRefactory parser
 					// can parse a single type name, so a solution is to wrap it around a typeof(). We do it if
 					// the evaluation fails.
@@ -119,7 +119,7 @@ namespace Mono.Debugging.Evaluation
 			NRefactoryResolverVisitor ev = new NRefactoryResolverVisitor (session, location, exp);
 			expObj.AcceptVisitor (ev, null);
 			string r = ev.GetResolvedExpression ();
-			if (r == exp && !tryTypeOf && (expObj is BinaryOperatorExpression)) {
+			if (r == exp && !tryTypeOf && (expObj is BinaryOperatorExpression) && IsTypeName (exp)) {
 				// This is a hack to be able to parse expressions such as "List<string>". The NRefactory parser
 				// can parse a single type name, so a solution is to wrap it around a typeof(). We do it if
 				// the evaluation fails.
@@ -162,7 +162,82 @@ namespace Mono.Debugging.Evaluation
 			// FIXME: Don't replace inside string literals
 			return exp.Replace (tag, "__EXCEPTION_OBJECT__");
 		}
-
+		
+		bool IsTypeName (string name)
+		{
+			int pos = 0;
+			bool res = ParseTypeName (name + "$", ref pos);
+			return res && pos >= name.Length;
+		}
+		
+		bool ParseTypeName (string name, ref int pos)
+		{
+			EatSpaces (name, ref pos);
+			if (!ParseName (name, ref pos))
+				return false;
+			EatSpaces (name, ref pos);
+			if (!ParseGenericArgs (name, ref pos))
+				return false;
+			EatSpaces (name, ref pos);
+			if (!ParseIndexer (name, ref pos))
+				return false;
+			EatSpaces (name, ref pos);
+			return true;
+		}
+		
+		void EatSpaces (string name, ref int pos)
+		{
+			while (char.IsWhiteSpace (name[pos]))
+				pos++;
+		}
+		
+		bool ParseName (string name, ref int pos)
+		{
+			if (name[0] == 'g' && pos < name.Length - 8 && name.Substring (pos, 8) == "global::")
+				pos += 8;
+			do {
+				int oldp = pos;
+				while (char.IsLetterOrDigit (name[pos]))
+					pos++;
+				if (oldp == pos)
+					return false;
+				if (name[pos] != '.')
+					return true;
+				pos++;
+			}
+			while (true);
+		}
+		
+		bool ParseGenericArgs (string name, ref int pos)
+		{
+			if (name [pos] != '<')
+				return true;
+			pos++;
+			EatSpaces (name, ref pos);
+			while (true) {
+				if (!ParseTypeName (name, ref pos))
+					return false;
+				EatSpaces (name, ref pos);
+				char c = name [pos++];
+				if (c == '>')
+					return true;
+				else if (c == ',')
+					continue;
+				else
+					return false;
+			}
+		}
+		
+		bool ParseIndexer (string name, ref int pos)
+		{
+			if (name [pos] != '[')
+				return true;
+			do {
+				pos++;
+				EatSpaces (name, ref pos);
+			} while (name [pos] == ',');
+			return name [pos++] == ']';
+		}
 	}
 
 	class EvaluatorVisitor: AbstractAstVisitor
@@ -250,6 +325,8 @@ namespace Mono.Debugging.Evaluation
 		
 		object ToTargetType (TypeReference type)
 		{
+			if (type.IsNull)
+				throw CreateParseError ("Invalid type reference");
 			if (type.GenericTypes.Count == 0)
 				return ctx.Adapter.GetType (ctx, type.Type);
 			else {
