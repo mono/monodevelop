@@ -1,3 +1,14 @@
+2010-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:
+	* MonoDevelop.Ide.Codons/SolutionPadCodon.cs: Delay the
+	  initialization of the pad until the padWindow has been
+	  attached to it. Propagate the pad Id.
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Added
+	  support for zooming with control+wheel. Implemented the Zoom
+	  in/out/reset commands.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Handle Link files

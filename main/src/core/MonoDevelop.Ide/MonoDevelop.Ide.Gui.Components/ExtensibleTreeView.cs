@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Gtk.TreeView tree = new Gtk.TreeView ();
 		Gtk.TreeStore store;
 		internal Gtk.TreeViewColumn complete_column;
-		internal Gtk.CellRendererPixbuf pix_render;
+		internal ZoomableCellRendererPixbuf pix_render;
 		internal Gtk.CellRendererText text_render;
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
@@ -112,6 +112,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				return tree;
 			}
 		}
+		
+		public string Id { get; set; }
 		
 		public ExtensibleTreeView ()
 		{
@@ -183,11 +185,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			complete_column = new Gtk.TreeViewColumn ();
 			complete_column.Title = "column";
 
-			pix_render = new Gtk.CellRendererPixbuf ();
+			pix_render = new ZoomableCellRendererPixbuf ();
 			complete_column.PackStart (pix_render, false);
-			complete_column.AddAttribute (pix_render, "pixbuf", OpenIconColumn);
-			complete_column.AddAttribute (pix_render, "pixbuf-expander-open", OpenIconColumn);
-			complete_column.AddAttribute (pix_render, "pixbuf-expander-closed", ClosedIconColumn);
+			complete_column.AddAttribute (pix_render, "image", OpenIconColumn);
+			complete_column.AddAttribute (pix_render, "image-expander-open", OpenIconColumn);
+			complete_column.AddAttribute (pix_render, "image-expander-closed", ClosedIconColumn);
 			
 			text_render = new Gtk.CellRendererText ();
 			if (PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false)) {
@@ -195,7 +197,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				name = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
 				text_render.FontDesc = Pango.FontDescription.FromString (name);
 			}
-			text_render.Ypad = 1;
+			text_render.Ypad = 0;
 			PropertyService.PropertyChanged += PropertyChanged;
 			text_render.Edited += HandleOnEdit;
 			text_render.EditingCanceled += HandleOnEditCancelled;
@@ -224,7 +226,15 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
-				
+
+			for (int n=3; n<16; n++) {
+				Gtk.Rc.ParseString ("style \"MonoDevelop.ExtensibleTreeView_" + n + "\" {\n GtkTreeView::expander-size = " + n + "\n }\n");
+				Gtk.Rc.ParseString ("widget \"*.MonoDevelop.ExtensibleTreeView_" + n + "\" style  \"MonoDevelop.ExtensibleTreeView_" + n + "\"\n");
+			}
+			
+			if (!string.IsNullOrEmpty (Id))
+				Zoom = PropertyService.Get<double> ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, 1d);
+			
 			this.Add (tree);
 			this.ShowAll ();
 		}
@@ -831,6 +841,53 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		public event EventHandler CurrentItemActivated;
+		
+		public double Zoom {
+			get {
+				return pix_render.Zoom;
+			}
+			set {
+				if (pix_render.Zoom != value) {
+					pix_render.Zoom = value;
+					Pango.FontDescription zfont = this.Style.FontDescription.Copy ();
+					if (value != 1)
+						zfont.Size = (int) (value * (double) zfont.Size);
+					text_render.FontDesc = zfont;
+					int expanderSize = (int) (12 * Zoom);
+					if (expanderSize < 3) expanderSize = 3;
+					if (expanderSize > 15) expanderSize = 15;
+					if (expanderSize != 12)
+						tree.Name = "MonoDevelop.ExtensibleTreeView_" + expanderSize;
+					else
+						tree.Name = "";
+					tree.ColumnsAutosize ();
+					if (!string.IsNullOrEmpty (Id)) {
+						PropertyService.Set ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, Zoom);
+						PropertyService.SaveProperties ();
+					}
+				}
+			}
+		}
+		
+		[CommandHandler (ViewCommands.ZoomIn)]
+		public void ZoomIn ()
+		{
+			double newZoom = Zoom * 1.1;
+			Zoom = System.Math.Min (8.0, System.Math.Max (0.3, newZoom));
+		}
+
+		[CommandHandler (ViewCommands.ZoomOut)]
+		public void ZoomOut ()
+		{
+			double newZoom = Zoom * 0.9;
+			Zoom = System.Math.Min (8.0, System.Math.Max (0.3, newZoom));
+		}
+		
+		[CommandHandler (ViewCommands.ZoomReset)]
+		public void ZoomReset ()
+		{
+			Zoom = 1;
+		}
 
 		[CommandHandler (EditCommands.Copy)]
 		public void CopyCurrentItem ()
@@ -1731,6 +1788,19 @@ namespace MonoDevelop.Ide.Gui.Components
 					tree.Selection.SelectPath (path);
 			}
 		}
+		
+		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+		{
+			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
+				if (evnt.Direction == Gdk.ScrollDirection.Down)
+					ZoomIn ();
+				else
+					ZoomOut ();
+				return true;
+			}
+			return base.OnScrollEvent (evnt);
+		}
+
 
 		bool IsClickedNodeSelected (int x, int y)
 		{
@@ -1938,6 +2008,78 @@ namespace MonoDevelop.Ide.Gui.Components
 				return 0;
 			else
 				return p.ToString ().GetHashCode ();
+		}
+	}
+	
+	class ZoomableCellRendererPixbuf: Gtk.CellRendererPixbuf
+	{
+		Gdk.Pixbuf image;
+		Gdk.Pixbuf imageOpen;
+		Gdk.Pixbuf imageClosed;
+		double zoom = 1f;
+		
+		Dictionary<Gdk.Pixbuf,Gdk.Pixbuf> resizedCache = new Dictionary<Gdk.Pixbuf, Gdk.Pixbuf> ();
+		
+		public double Zoom {
+			get { return zoom; }
+			set {
+				if (zoom != value) {
+					zoom = value;
+					resizedCache.Clear ();
+					Notify ("image");
+				}
+			}
+		}
+		
+		[GLib.Property ("image")]
+		public Gdk.Pixbuf Image {
+			get {
+				return image;
+			}
+			set {
+				image = value;
+				Pixbuf = GetResized (image);
+			}
+		}
+		
+		[GLib.Property ("image-expander-open")]
+		public Gdk.Pixbuf ImageExpanderOpen {
+			get {
+				return imageOpen;
+			}
+			set {
+				imageOpen = value;
+				PixbufExpanderOpen = GetResized (imageOpen);
+			}
+		}
+		
+		[GLib.Property ("image-expander-closed")]
+		public Gdk.Pixbuf ImageExpanderClosed {
+			get {
+				return imageClosed;
+			}
+			set {
+				imageClosed = value;
+				PixbufExpanderClosed = GetResized (imageClosed);
+			}
+		}
+		
+		Gdk.Pixbuf GetResized (Gdk.Pixbuf value)
+		{
+			if (zoom == 1)
+				return value;
+			
+			Gdk.Pixbuf resized;
+			if (resizedCache.TryGetValue (value, out resized))
+				return resized;
+			
+			int w = (int) (zoom * (double) value.Width);
+			int h = (int) (zoom * (double) value.Height);
+			if (w == 0) w = 1;
+			if (h == 0) h = 1;
+			resized = value.ScaleSimple (w, h, Gdk.InterpType.Hyper);
+			resizedCache [value] = resized;
+			return resized;
 		}
 	}
 }

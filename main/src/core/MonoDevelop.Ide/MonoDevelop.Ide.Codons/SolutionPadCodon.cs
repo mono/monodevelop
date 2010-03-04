@@ -89,8 +89,9 @@ namespace MonoDevelop.Ide.Codons
 			} else
 				pad = new SolutionPad ();
 
-			pad.Initialize (builders, options, contextMenuPath);
-//			pad.DefaultPlacement = placement;
+			pad.Initializer = delegate {
+				pad.Initialize (builders, options, contextMenuPath);
+			};
 			pad.Id = Id;
 			return pad;
 		}
