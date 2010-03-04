@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ToggleToolButton buttonPin;
 		TextMark endMark;
 		bool progressStarted;
+		FontDescription customFont;
 		
 		TextTag tag;
 		TextTag bold;
@@ -139,9 +140,36 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
 
+			UpdateCustomFont (IdeApp.Preferences.CustomOutputPadFont);
+			IdeApp.Preferences.CustomOutputPadFontChanged += HandleCustomFontChanged;
+			textEditorControl.Destroyed += delegate {
+				IdeApp.Preferences.CustomOutputPadFontChanged -= HandleCustomFontChanged;
+				if (customFont != null) {
+					customFont.Dispose ();
+					customFont = null;
+				}
+			};
+			
 			Control.ShowAll ();
 			
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
+		}
+
+		void HandleCustomFontChanged (object sender, PropertyChangedEventArgs e)
+		{
+			UpdateCustomFont ((string)e.NewValue);
+		}
+		
+		void UpdateCustomFont (string name)
+		{
+			if (customFont != null) {
+				customFont.Dispose ();
+				customFont = null;
+			}
+			if (!string.IsNullOrEmpty (name)) {
+				customFont = Pango.FontDescription.FromString (name);
+			}
+			textEditorControl.ModifyFont (customFont);
 		}
 		
 		//mechanism to to batch copy text when large amounts are being dumped
