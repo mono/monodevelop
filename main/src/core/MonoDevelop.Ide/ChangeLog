@@ -1,5 +1,12 @@
 2010-03-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: Remove duplicate
+	  CustomPadFont property key migration; there's already
+	  migration code in Ide.cs and only the actual usages were not
+	  updated.
+
+2010-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Handle
 	  style change events and respect both zoom and custom fonts.
 
