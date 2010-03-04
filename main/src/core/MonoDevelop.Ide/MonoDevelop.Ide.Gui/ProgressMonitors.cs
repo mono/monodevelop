@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.Gui
 			if (bringToFront)
 				pad.BringToFront ();
 
-			return monitorPad;
+			return (DefaultMonitorPad) pad.Content;
 		}
 		
 		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.Gui
 			if (bringToFront)
 				pad.BringToFront (focusPad);
 
-			return new SearchProgressMonitor (monitorPad, pad.Title);
+			return new SearchProgressMonitor ((SearchResultPad)pad.Content, pad.Title);
 		}
 	}
 }

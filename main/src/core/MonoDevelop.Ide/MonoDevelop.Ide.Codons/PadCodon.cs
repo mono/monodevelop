@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide.Codons
 		string defaultPlacement = "left";
 		
 		string[] contexts;
+		bool initializeCalled;
 		
 		public IPadContent PadContent {
 			get {
@@ -77,7 +78,10 @@ namespace MonoDevelop.Ide.Codons
 			if (content == null) {
 				content = CreatePad ();
 				content.Initialize (window);
-			}
+			} else if (!initializeCalled)
+				content.Initialize (window);
+			
+			initializeCalled = true;
 			return content;
 		}
 			

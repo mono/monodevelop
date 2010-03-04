@@ -1,6 +1,12 @@
 2010-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Codons/PadCodon.cs:
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: Fix pad
+	  initialization issue.
+
+2010-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Codons/PadCodon.cs:
 	* MonoDevelop.Ide.Gui/IPadContainer.cs:
 	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Make sure pads
 	  are properly initialized when accessing them through the Pad
