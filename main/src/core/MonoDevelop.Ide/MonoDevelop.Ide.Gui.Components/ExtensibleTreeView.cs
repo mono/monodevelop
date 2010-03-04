@@ -125,13 +125,27 @@ namespace MonoDevelop.Ide.Gui.Components
 			Initialize (builders, options);
 		}
 		
-		void PropertyChanged (object sender, MonoDevelop.Core.PropertyChangedEventArgs prop)
+		void CustomFontPropertyChanged (object sender, MonoDevelop.Core.PropertyChangedEventArgs prop)
 		{
 			string name = (string)prop.NewValue ?? tree.Style.FontDescription.ToString ();
+			UpdateCustomFont (name);
+		}
+		
+		void UpdateCustomFont (string name)
+		{
 			if (customFont != null)
 				customFont.Dispose ();
 			customFont = text_render.FontDesc = Pango.FontDescription.FromString (name);
+			if (Zoom != 1) {
+				customFont.Size = (int) (((double) customFont.Size) * Zoom);
+			}
 			tree.ColumnsAutosize ();
+		}
+		
+		protected override void OnStyleSet (Gtk.Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			UpdateCustomFont (IdeApp.Preferences.CustomPadFont ?? tree.Style.FontDescription.ToString ());
 		}
 		
 		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
@@ -184,7 +198,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				customFont = text_render.FontDesc = Pango.FontDescription.FromString (customFontName);
 			}
 			text_render.Ypad = 0;
-			IdeApp.Preferences.CustomPadFontChanged += PropertyChanged;
+			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
 			text_render.Edited += HandleOnEdit;
 			text_render.EditingCanceled += HandleOnEditCancelled;
 			
@@ -834,11 +848,17 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 			set {
 				if (pix_render.Zoom != value) {
+					var oldZoom = pix_render.Zoom;
 					pix_render.Zoom = value;
-					Pango.FontDescription zfont = this.Style.FontDescription.Copy ();
-					if (value != 1)
-						zfont.Size = (int) (value * (double) zfont.Size);
-					text_render.FontDesc = zfont;
+					if (customFont == null) {
+						customFont = this.Style.FontDescription.Copy ();
+					} else if (oldZoom != 1) {
+						customFont.Size = (int) (((double) customFont.Size) / oldZoom);
+					}
+					if (value != 1) {
+						customFont.Size = (int) (((double) customFont.Size) * value);
+					}
+					text_render.FontDesc = customFont;
 					int expanderSize = (int) (12 * Zoom);
 					if (expanderSize < 3) expanderSize = 3;
 					if (expanderSize > 15) expanderSize = 15;
@@ -1823,7 +1843,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		protected override void OnDestroyed ()
 		{
-			IdeApp.Preferences.CustomPadFontChanged -= PropertyChanged;
+			IdeApp.Preferences.CustomPadFontChanged -= CustomFontPropertyChanged;;
 			if (pix_render != null) {
 				pix_render.Destroy ();
 				pix_render = null;
