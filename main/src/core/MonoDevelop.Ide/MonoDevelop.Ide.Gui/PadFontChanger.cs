@@ -37,9 +37,7 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.Widget styleSource;
 		Action<FontDescription> updater;
 		Action resizer;
-		
-		const string USE_CUSTOM_FONT_KEY = "MonoDevelop.Core.Gui.Pads.UseCustomFont";
-		const string CUSTOM_FONT_KEY = "MonoDevelop.Core.Gui.Pads.CustomFont";
+		FontDescription desc;
 		
 		public PadFontChanger (Gtk.Widget styleSource, Action<FontDescription> updater)
 			: this (styleSource, updater, null)
@@ -53,42 +51,28 @@ namespace MonoDevelop.Ide.Gui
 			this.resizer = resizer;
 			
 			if (styleSource != null) {
-				PropertyService.PropertyChanged += PropertyChanged;
+				IdeApp.Preferences.CustomPadFontChanged += PropertyChanged;
 			}
 			
-			if (PropertyService.Get (USE_CUSTOM_FONT_KEY, false)) {
-				string name = styleSource.Style.FontDescription.ToString ();
-				Update (PropertyService.Get (CUSTOM_FONT_KEY, name));
+			var fontName = IdeApp.Preferences.CustomPadFont;
+			if (fontName != null) {
+				Update (fontName);
 			}
 		}
 		
 		void PropertyChanged (object sender, PropertyChangedEventArgs prop)
 		{
-			switch (prop.Key) {
-			case USE_CUSTOM_FONT_KEY:
-				string name = styleSource.Style.FontDescription.ToString ();
-				if ((bool) prop.NewValue)
-					name = PropertyService.Get (CUSTOM_FONT_KEY, name);
-				
-				Update (name);
-				if (resizer != null)
-					resizer ();
-				break;
-				
-			case CUSTOM_FONT_KEY:
-				if (!(PropertyService.Get<bool> (USE_CUSTOM_FONT_KEY)))
-					break;
-				
-				Update ((string) prop.NewValue);
-				if (resizer != null)
-					resizer ();
-				break;
-			}
+			var name = (string)prop.NewValue ?? styleSource.Style.FontDescription.ToString ();
+			Update (name);
+			if (resizer != null)
+				resizer ();
 		}
 		
 		void Update (string name)
 		{
-			FontDescription desc = Pango.FontDescription.FromString (name);
+			if (desc != null)
+				desc.Dispose ();
+			desc = Pango.FontDescription.FromString (name);
 				if (desc != null)
 					updater (desc);
 		}
@@ -96,8 +80,12 @@ namespace MonoDevelop.Ide.Gui
 		public void Dispose ()
 		{
 			if (styleSource != null) {
-				PropertyService.PropertyChanged -= PropertyChanged;
+				IdeApp.Preferences.CustomPadFontChanged -= PropertyChanged;
 				styleSource = null;
+			}
+			if (desc != null) {
+				desc.Dispose ();
+				desc = null;
 			}
 		}
 	}

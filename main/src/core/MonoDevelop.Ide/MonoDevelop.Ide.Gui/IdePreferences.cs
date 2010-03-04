@@ -226,7 +226,20 @@ namespace MonoDevelop.Ide.Gui
 		/// Font to use for treeview pads. Returns null if no custom font is set.
 		/// </summary>
 		public string CustomPadFont {
-			get { string res = PropertyService.Get<string> ("MonoDevelop.Ide.CustomPadFont", string.Empty); return string.IsNullOrEmpty (res) ? null : res; }
+			get {
+				string res = PropertyService.Get<string> ("MonoDevelop.Ide.CustomPadFont", string.Empty);
+				//try to migrate the old keys
+				if (string.IsNullOrEmpty (res) && PropertyService.Get<bool> ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false)) {
+					res = PropertyService.Get<string> ("MonoDevelop.Core.Gui.Pads.CustomFont", null);
+					if (!string.IsNullOrEmpty (res)) {
+						PropertyService.Set ("MonoDevelop.Ide.CustomPadFont", res);
+					}
+					//remove old keys
+					PropertyService.Set ("MonoDevelop.Core.Gui.Pads.CustomFont", null);
+					PropertyService.Set ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false);
+				}
+				return string.IsNullOrEmpty (res) ? null : res;
+			}
 			set { PropertyService.Set ("MonoDevelop.Ide.CustomPadFont", value ?? string.Empty); }
 		}
 

@@ -1,3 +1,13 @@
+2010-03-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/PadFontChanger.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fix
+	  the custom pad font support. Apparently someone changed the
+	  property key name without changing the things that used it.
+
+	* MonoDevelop.Ide.Gui/IdePreferences.cs: Migrate the old pad
+	  font size properties.
+
 2010-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Codons/PadCodon.cs:

@@ -71,6 +71,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
 		bool editingText = false;
+		Pango.FontDescription customFont;
 		
 		TreePadOption[] options;
 		TreeOptions globalOptions;
@@ -126,27 +127,11 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void PropertyChanged (object sender, MonoDevelop.Core.PropertyChangedEventArgs prop)
 		{
-			string name;
-			
-			switch (prop.Key) {
-			case "MonoDevelop.Core.Gui.Pads.UseCustomFont":
-				name = tree.Style.FontDescription.ToString ();
-				
-				if ((bool) prop.NewValue)
-					name = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
-				
-				text_render.FontDesc = Pango.FontDescription.FromString (name);
-				tree.ColumnsAutosize ();
-				break;
-			case "MonoDevelop.Core.Gui.Pads.CustomFont":
-				if (!(PropertyService.Get<bool> ("MonoDevelop.Core.Gui.Pads.UseCustomFont")))
-					break;
-				
-				name = (string) prop.NewValue;
-				text_render.FontDesc = Pango.FontDescription.FromString (name);
-				tree.ColumnsAutosize ();
-				break;
-			}
+			string name = (string)prop.NewValue ?? tree.Style.FontDescription.ToString ();
+			if (customFont != null)
+				customFont.Dispose ();
+			customFont = text_render.FontDesc = Pango.FontDescription.FromString (name);
+			tree.ColumnsAutosize ();
 		}
 		
 		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
@@ -192,13 +177,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			complete_column.AddAttribute (pix_render, "image-expander-closed", ClosedIconColumn);
 			
 			text_render = new Gtk.CellRendererText ();
-			if (PropertyService.Get ("MonoDevelop.Core.Gui.Pads.UseCustomFont", false)) {
-				string name = tree.Style.FontDescription.ToString ();
-				name = PropertyService.Get ("MonoDevelop.Core.Gui.Pads.CustomFont", name);
-				text_render.FontDesc = Pango.FontDescription.FromString (name);
+			var customFontName = IdeApp.Preferences.CustomPadFont;
+			if (customFontName != null) {
+				if (customFont != null)
+					customFont.Dispose ();
+				customFont = text_render.FontDesc = Pango.FontDescription.FromString (customFontName);
 			}
 			text_render.Ypad = 0;
-			PropertyService.PropertyChanged += PropertyChanged;
+			IdeApp.Preferences.CustomPadFontChanged += PropertyChanged;
 			text_render.Edited += HandleOnEdit;
 			text_render.EditingCanceled += HandleOnEditCancelled;
 			
@@ -1837,7 +1823,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		protected override void OnDestroyed ()
 		{
-			PropertyService.PropertyChanged -= PropertyChanged;
+			IdeApp.Preferences.CustomPadFontChanged -= PropertyChanged;
 			if (pix_render != null) {
 				pix_render.Destroy ();
 				pix_render = null;
@@ -1855,6 +1841,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				Clear ();
 				store.Dispose ();
 				store = null;
+			}
+			if (customFont != null) {
+				customFont.Dispose ();
+				customFont = null;
 			}
 			
 			if (builders != null) {
