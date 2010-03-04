@@ -1,3 +1,8 @@
+2010-03-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Fixed 'Bug
+	  585305 - NRE in text editor when hiding annotations'.
+
 2010-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Fixed

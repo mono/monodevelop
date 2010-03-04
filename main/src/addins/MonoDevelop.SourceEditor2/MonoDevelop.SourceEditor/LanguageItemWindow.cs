@@ -51,13 +51,16 @@ namespace MonoDevelop.SourceEditor
 			Ambience ambience = AmbienceService.GetAmbience (ed.Document.MimeType);
 			
 			string tooltip = null;
-			if (result != null && ed.TextEditorResolverProvider != null)
+			if (result != null && ed.TextEditorResolverProvider != null) {
 				tooltip = ed.TextEditorResolverProvider.CreateTooltip (dom, unit, result, errorInformations, ambience, modifierState);
+			} else {
+				tooltip = errorInformations;
+			}
 			if (string.IsNullOrEmpty (tooltip)) {
 				IsEmpty = true;
 				return;
 			}
-			
+
 			MonoDevelop.Components.FixedWidthWrapLabel lab = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			Pango.FontDescription font =  new Gtk.Label ("").Style.FontDescription;
 			font.Size = DefaultSourceEditorOptions.Instance.Font.Size;
@@ -76,7 +79,9 @@ namespace MonoDevelop.SourceEditor
 		//return the real width
 		public int SetMaxWidth (int maxWidth)
 		{
-			MonoDevelop.Components.FixedWidthWrapLabel l = (MonoDevelop.Components.FixedWidthWrapLabel)Child;
+			MonoDevelop.Components.FixedWidthWrapLabel l = Child as MonoDevelop.Components.FixedWidthWrapLabel;
+			if (l == null)
+				return Allocation.Width;
 			l.MaxWidth = maxWidth;
 			return l.RealWidth;
 		}
