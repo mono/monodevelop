@@ -442,8 +442,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 
 			if (force || item.Content == null) {
-				IPadContent newContent = padCodon.PadContent;
-				newContent.Initialize (window);
+				IPadContent newContent = padCodon.InitializePadContent (window);
 
 				Gtk.Widget pcontent;
 				if (newContent is Widget) {

@@ -1,5 +1,13 @@
 2010-03-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Codons/PadCodon.cs:
+	* MonoDevelop.Ide.Gui/IPadContainer.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Make sure pads
+	  are properly initialized when accessing them through the Pad
+	  wrapper object.
+
+2010-03-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/TreeViewPad.cs:
 	* MonoDevelop.Ide.Codons/SolutionPadCodon.cs: Delay the
 	  initialization of the pad until the padWindow has been

@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Gui
 		void CreateContent ()
 		{
 			if (this.content == null) {
-				this.content = codon.PadContent;
+				this.content = codon.InitializePadContent (this);
 			}
 		}
 		

@@ -68,12 +68,19 @@ namespace MonoDevelop.Ide.Codons
 		
 		public IPadContent PadContent {
 			get {
-				if (content == null)
-					content = CreatePad ();
 				return content; 
 			}
 		}
 		
+		public IPadContent InitializePadContent (IPadWindow window)
+		{
+			if (content == null) {
+				content = CreatePad ();
+				content.Initialize (window);
+			}
+			return content;
+		}
+			
 		public string PadId {
 			get { return id != null ? id : base.Id; }
 			set { id = value; }
