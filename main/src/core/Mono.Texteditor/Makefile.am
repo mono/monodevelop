@@ -45,6 +45,7 @@ FILES =  \
 	Mono.TextEditor.Theatrics/Choreographer.cs \
 	Mono.TextEditor.Theatrics/Pulsator.cs \
 	Mono.TextEditor.Theatrics/SingleActorStage.cs \
+	Mono.TextEditor.Theatrics/SmartScrolledWindow.cs \
 	Mono.TextEditor.Theatrics/Stage.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
