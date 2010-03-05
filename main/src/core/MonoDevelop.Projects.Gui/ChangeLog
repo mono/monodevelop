@@ -1,5 +1,10 @@
 2010-03-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: only
+	  subtract empty category when in category mode.
+
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
 	  'Bug 585673 - Completion list shows blank row in categorized
 	  mode'.

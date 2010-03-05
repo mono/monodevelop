@@ -633,7 +633,7 @@ namespace MonoDevelop.Projects.Gui.Completion
 			int requestedVisibleRows = (winHeight + padding - margin * 2) / rowHeight;
 			
 			int viewableCats = InCategoryMode ? categories.Count: 0;
-			if (categories.Any (cat => cat.CompletionCategory == null))
+			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
 			int newHeight = (rowHeight * Math.Max (1, Math.Min (requestedVisibleRows, filteredItems.Count + viewableCats))) + margin * 2;
 			if (PreviewCompletionString) {
