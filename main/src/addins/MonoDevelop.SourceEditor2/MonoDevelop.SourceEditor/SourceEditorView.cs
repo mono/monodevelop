@@ -260,6 +260,8 @@ namespace MonoDevelop.SourceEditor
 					if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
 						continue;
 					LineSegment lineSegment = widget.Document.GetLine (task.Line - 1);
+					if (lineSegment == null)
+						continue;
 					if (lineSegmentWithTasks.Contains (lineSegment)) {
 						foreach (var marker in lineSegment.Markers) {
 							if (marker is ErrorTextMarker) {

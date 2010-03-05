@@ -1,3 +1,9 @@
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Don't add
+	  tasks to invalid lines. May happen when the file is reloaded
+	  and changed from outside or when the task is invalid.
+
 2010-03-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Fixed 'Bug
