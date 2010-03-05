@@ -1133,7 +1133,6 @@ namespace MonoDevelop.CSharp.Resolver
 					if (lastExpressionStartOffset == alternateResultStartOffset && alternateResultStartOffset >= 0)
 						resultStartOffset = lastExpressionStartOffset;
 					if (resultFrame.type == FrameType.Popped || lastExpressionStartOffset != resultStartOffset || token.Kind == Tokens.Dot || token.Kind == Tokens.DoubleColon) {
-						Console.WriteLine (resultFrame.bracketType);
 						// now we can change the context based on the next token
 						if (frame == resultFrame && Tokens.IdentifierTokens[token.Kind]) {
 							// the expression got aborted because of an identifier. This means the

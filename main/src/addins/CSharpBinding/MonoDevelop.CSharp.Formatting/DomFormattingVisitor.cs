@@ -549,7 +549,6 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitTypeOfExpression (TypeOfExpression typeOfExpression, object data)
 		{
-			Console.WriteLine (typeOfExpression.LPar.StartLocation);
 			ForceSpacesAfter (typeOfExpression.LPar, policy.WithinTypeOfParentheses);
 			ForceSpacesBefore (typeOfExpression.RPar, policy.WithinTypeOfParentheses);
 			return base.VisitTypeOfExpression (typeOfExpression, data);
