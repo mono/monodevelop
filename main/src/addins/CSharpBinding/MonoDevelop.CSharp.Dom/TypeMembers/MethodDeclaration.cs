@@ -38,6 +38,14 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
 		public BlockStatement Body {
 			get {
 				return (BlockStatement)GetChildByRole (Roles.Body);

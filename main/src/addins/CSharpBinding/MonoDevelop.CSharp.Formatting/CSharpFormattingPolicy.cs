@@ -392,7 +392,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool SwitchParentheses {
+		public bool SwitchParentheses { // tested
 			get;
 			set;
 		}
@@ -404,13 +404,13 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool UsingParentheses {
+		public bool UsingParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AroundAssignmentParentheses {
+		public bool AroundAssignmentParentheses { // tested
 			get;
 			set;
 		}
@@ -458,7 +458,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinParentheses {
+		public bool WithinParentheses { // tested
 			get;
 			set;
 		}
@@ -470,7 +470,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinMethodDeclarationParentheses {
+		public bool WithinMethodDeclarationParentheses { // tested
 			get;
 			set;
 		}
@@ -506,7 +506,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinSwitchParentheses {
+		public bool WithinSwitchParentheses { // tested
 			get;
 			set;
 		}
@@ -518,55 +518,55 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool WithinUsingParentheses {
+		public bool WithinUsingParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WithinCastParentheses {
+		public bool WithinCastParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WithinSizeOfParentheses {
+		public bool WithinSizeOfParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WithinTypeOfParentheses {
+		public bool WithinTypeOfParentheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool WithinCheckedExpressionParantheses {
+		public bool WithinCheckedExpressionParantheses { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool ConditionalOperatorBeforeConditionSpace {
+		public bool ConditionalOperatorBeforeConditionSpace { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool ConditionalOperatorAfterConditionSpace {
+		public bool ConditionalOperatorAfterConditionSpace { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool ConditionalOperatorBeforeSeparatorSpace {
+		public bool ConditionalOperatorBeforeSeparatorSpace { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool ConditionalOperatorAfterSeparatorSpace {
+		public bool ConditionalOperatorAfterSeparatorSpace { // tested
 			get;
 			set;
 		}
@@ -596,7 +596,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool SpacesAfterTypecast {
+		public bool SpacesAfterTypecast { // tested
 			get;
 			set;
 		}

@@ -1,5 +1,21 @@
 2010-03-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/Statements/SwitchStatement.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/TypeOfExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/SizeOfExpression.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/MethodDeclaration.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/CheckedExpression.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:
+	* MonoDevelop.CSharp.Dom/Expressions/UncheckedExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ParenthesizedExpression.cs:
+	  Worked on dom/formatter/parser.
+
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
 	  Fixed 'Bug 585454 - Lacking one reference to an enum type'.
 

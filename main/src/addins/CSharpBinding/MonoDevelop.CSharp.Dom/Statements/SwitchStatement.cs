@@ -43,6 +43,14 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildrenByRole (SwitchSectionRole).Cast<SwitchSection> (); }
 		}
 		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchStatement (this, data);
@@ -56,6 +64,7 @@ namespace MonoDevelop.CSharp.Dom
 		public IEnumerable<CaseLabel> CaseLabels {
 			get { return GetChildrenByRole (CaseLabelRole).Cast<CaseLabel> (); }
 		}
+		
 		public IEnumerable<INode> Statements {
 			get { return GetChildrenByRole (Roles.Statement); }
 		}

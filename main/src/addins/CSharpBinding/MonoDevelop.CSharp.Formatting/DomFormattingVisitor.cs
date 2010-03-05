@@ -124,6 +124,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override object VisitAssignmentExpression (AssignmentExpression assignmentExpression, object data)
 		{
+			ForceSpacesAround (assignmentExpression.Operator, policy.AroundAssignmentParentheses);
 			return base.VisitAssignmentExpression (assignmentExpression, data);
 		}
 
@@ -180,8 +181,12 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitCastExpression (CastExpression castExpression, object data)
 		{
-			if (castExpression.RPar != null)
+			if (castExpression.RPar != null) {
+				ForceSpacesAfter (castExpression.LPar, policy.WithinCastParentheses);
+				ForceSpacesBefore (castExpression.RPar, policy.WithinCastParentheses);
+				
 				ForceSpacesAfter (castExpression.RPar, 1, policy.SpacesAfterTypecast);
+			}
 			return base.VisitCastExpression (castExpression, data);
 		}
 		
@@ -194,8 +199,7 @@ namespace MonoDevelop.CSharp.Formatting
 		void ForceSpacesAfter (INode node, bool forceSpaces)
 		{
 			DomLocation location = ((ICSharpNode)node).EndLocation;
-			Console.WriteLine (((ICSharpNode)node).StartLocation + "/" + ((ICSharpNode)node).EndLocation);
-			Console.WriteLine (node + ":" + location);
+			
 			int offset = data.Document.LocationToOffset (location.Line, location.Column) - 1;
 			int i = offset + 1;
 			while (i < data.Document.Length && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
@@ -218,6 +222,7 @@ namespace MonoDevelop.CSharp.Formatting
 		int ForceSpacesBefore (INode node, bool forceSpaces)
 		{
 			DomLocation location = ((ICSharpNode)node).StartLocation;
+			
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			int i = offset - 1;
 			
@@ -262,6 +267,9 @@ namespace MonoDevelop.CSharp.Formatting
 			CSharpTokenNode lParen = (CSharpTokenNode)methodDeclaration.GetChildByRole (MethodDeclaration.Roles.LPar);
 			int offset = this.data.Document.LocationToOffset (lParen.StartLocation.Line, lParen.StartLocation.Column);
 			ForceSpaceBefore (offset, policy.BeforeMethodDeclarationParentheses);
+			
+			ForceSpacesAfter (methodDeclaration.LPar, policy.WithinMethodDeclarationParentheses);
+			ForceSpacesBefore (methodDeclaration.RPar, policy.WithinMethodDeclarationParentheses);
 			
 			return base.VisitMethodDeclaration (methodDeclaration, data);
 		}
@@ -344,12 +352,14 @@ namespace MonoDevelop.CSharp.Formatting
 		*/
 		int SearchLastNonWsChar (int startOffset, int endOffset)
 		{
+			startOffset = System.Math.Max (0, startOffset);
+			endOffset = System.Math.Max (startOffset, endOffset);
 			if (startOffset >= endOffset)
 				return startOffset;
 			int result = -1;
 			bool inComment = false;
-			//Console.WriteLine ("----");
-			for (int i = startOffset; i < endOffset; i++) {
+			
+			for (int i = startOffset; i < endOffset && i < data.Document.Length; i++) {
 				char ch = data.Document.GetCharAt (i);
 				//Console.WriteLine (ch);
 				if (Char.IsWhiteSpace (ch))
@@ -512,5 +522,55 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			return base.VisitUsingStatement (usingStatement, data);
 		}
+		
+		public override object VisitSwitchStatement (MonoDevelop.CSharp.Dom.SwitchStatement switchStatement, object data)
+		{
+			ForceSpacesBefore (switchStatement.LPar, policy.SwitchParentheses);
+			
+			ForceSpacesAfter (switchStatement.LPar, policy.WithinSwitchParentheses);
+			ForceSpacesBefore (switchStatement.RPar, policy.WithinSwitchParentheses);
+			
+			return base.VisitSwitchStatement (switchStatement, data);
+		}
+		
+		public override object VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, object data)
+		{
+			ForceSpacesAfter (parenthesizedExpression.LPar, policy.WithinParentheses);
+			ForceSpacesBefore (parenthesizedExpression.RPar, policy.WithinParentheses);
+			return base.VisitParenthesizedExpression (parenthesizedExpression, data);
+		}
+		
+		public override object VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
+		{
+			ForceSpacesAfter (sizeOfExpression.LPar, policy.WithinSizeOfParentheses);
+			ForceSpacesBefore (sizeOfExpression.RPar, policy.WithinSizeOfParentheses);
+			return base.VisitSizeOfExpression (sizeOfExpression, data);
+		}
+		
+		public override object VisitTypeOfExpression (TypeOfExpression typeOfExpression, object data)
+		{
+			Console.WriteLine (typeOfExpression.LPar.StartLocation);
+			ForceSpacesAfter (typeOfExpression.LPar, policy.WithinTypeOfParentheses);
+			ForceSpacesBefore (typeOfExpression.RPar, policy.WithinTypeOfParentheses);
+			return base.VisitTypeOfExpression (typeOfExpression, data);
+		}
+		
+		public override object VisitCheckedExpression (CheckedExpression checkedExpression, object data)
+		{
+			ForceSpacesAfter (checkedExpression.LPar, policy.WithinCheckedExpressionParantheses);
+			ForceSpacesBefore (checkedExpression.RPar, policy.WithinCheckedExpressionParantheses);
+			return base.VisitCheckedExpression (checkedExpression, data);
+		}
+
+		public override object VisitUncheckedExpression (UncheckedExpression uncheckedExpression, object data)
+		{
+			ForceSpacesAfter (uncheckedExpression.LPar, policy.WithinCheckedExpressionParantheses);
+			ForceSpacesBefore (uncheckedExpression.RPar, policy.WithinCheckedExpressionParantheses);
+			return base.VisitUncheckedExpression (uncheckedExpression, data);
+		}
+
+		
+
+
 	}
 }

@@ -1,3 +1,4 @@
+/*
 // 
 // CSharpParser.cs
 //  
@@ -24,7 +25,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/*
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -524,7 +524,28 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (Switch switchStatement)
 			{
-				return null;
+				var result = new SwitchStatement ();
+				
+				KeywordWithParenthesisLocation location = LocationStorage.Get<KeywordWithParenthesisLocation> (switchStatement);
+				result.AddChild (new CSharpTokenNode (Convert (location[0]), "switch".Length), SwitchStatement.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), SwitchStatement.Roles.LPar);
+				result.AddChild ((INode)switchStatement.Expr.Accept (this), SwitchStatement.Roles.Expression);
+				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), SwitchStatement.Roles.RPar);
+				
+				foreach (var section in switchStatement.Sections) {
+					var newSection = new MonoDevelop.CSharp.Dom.SwitchSection ();
+					foreach (var caseLabel in section.Labels) {
+						var newLabel = new CaseLabel ();
+						newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "case".Length), SwitchStatement.Roles.Keyword);
+						if (caseLabel.Label != null)
+							newLabel.AddChild ((INode)caseLabel.Label.Accept (this), SwitchStatement.Roles.Expression);
+						
+						newSection.AddChild (newLabel, MonoDevelop.CSharp.Dom.SwitchSection.CaseLabelRole);
+					}
+					newSection.AddChild ((INode)section.Block.Accept (this), MonoDevelop.CSharp.Dom.SwitchSection.Roles.Body);
+					result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
+				}
+				return result;
 			}
 			
 			public override object Visit (Lock lockStatement)
@@ -713,6 +734,13 @@ namespace MonoDevelop.CSharp.Parser
 				return null;
 			}
 			
+			public override object Visit (TypeLookupExpression typeLookupExpression)
+			{
+				if (!string.IsNullOrEmpty (typeLookupExpression.Namespace))
+					return new FullTypeName (typeLookupExpression.Namespace + "." + typeLookupExpression.Name, Convert (typeLookupExpression.Location));
+				return new FullTypeName (typeLookupExpression.Name, Convert (typeLookupExpression.Location));
+			}
+
 			public override object Visit (LocalVariableReference localVariableReference)
 			{
 				return new Identifier (localVariableReference.Name, Convert (localVariableReference.Location));;
@@ -838,9 +866,11 @@ namespace MonoDevelop.CSharp.Parser
 				ParenthesisLocation location = LocationStorage.Get<ParenthesisLocation> (castExpression);
 				
 				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), CastExpression.Roles.LPar);
-				result.AddChild ((INode)castExpression.TargetType.Accept (this), CastExpression.Roles.ReturnType);
+				if (castExpression.TargetType != null)
+					result.AddChild ((INode)castExpression.TargetType.Accept (this), CastExpression.Roles.ReturnType);
 				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), CastExpression.Roles.RPar);
-				result.AddChild ((INode)castExpression.Expr.Accept (this), CastExpression.Roles.Expression);
+				if (castExpression.Expr != null)
+					result.AddChild ((INode)castExpression.Expr.Accept (this), CastExpression.Roles.Expression);
 				return result;
 			}
 			
@@ -925,7 +955,6 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				result.AddChild ((INode)binaryExpression.Left.Accept (this), BinaryOperatorExpression.LeftExpressionRole);
 				OperatorLocation location = LocationStorage.Get<OperatorLocation> (binaryExpression);
-				Console.WriteLine (Convert (location.Location));
 				result.AddChild (new CSharpTokenNode (Convert (location.Location), opLength), BinaryOperatorExpression.OperatorRole);
 				result.AddChild ((INode)binaryExpression.Left.Accept (this), BinaryOperatorExpression.RightExpressionRole);
 				return result;
@@ -1023,7 +1052,7 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new TypeOfExpression ();
 				ParenthesisLocation location = LocationStorage.Get<ParenthesisLocation> (typeOfExpression);
 				result.AddChild (new CSharpTokenNode (Convert (typeOfExpression.Location), "typeof".Length), TypeOfExpression.Roles.Keyword);
-				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.RPar);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.LPar);
 				result.AddChild ((INode)typeOfExpression.QueriedType.Accept (this), TypeOfExpression.Roles.ReturnType);
 				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), TypeOfExpression.Roles.RPar);
 				return result;
@@ -1034,7 +1063,7 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new SizeOfExpression ();
 				ParenthesisLocation location = LocationStorage.Get<ParenthesisLocation> (sizeOfExpression);
 				result.AddChild (new CSharpTokenNode (Convert (sizeOfExpression.Location), "sizeof".Length), TypeOfExpression.Roles.Keyword);
-				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.RPar);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.LPar);
 				result.AddChild ((INode)sizeOfExpression.QueriedType.Accept (this), TypeOfExpression.Roles.ReturnType);
 				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), TypeOfExpression.Roles.RPar);
 				return result;
@@ -1045,7 +1074,7 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new CheckedExpression ();
 				ParenthesisLocation location = LocationStorage.Get<ParenthesisLocation> (checkedExpression);
 				result.AddChild (new CSharpTokenNode (Convert (checkedExpression.Location), "checked".Length), TypeOfExpression.Roles.Keyword);
-				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.RPar);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.LPar);
 				result.AddChild ((INode)checkedExpression.Expr.Accept (this), TypeOfExpression.Roles.Expression);
 				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), TypeOfExpression.Roles.RPar);
 				return result;
@@ -1056,7 +1085,7 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new UncheckedExpression ();
 				ParenthesisLocation location = LocationStorage.Get<ParenthesisLocation> (uncheckedExpression);
 				result.AddChild (new CSharpTokenNode (Convert (uncheckedExpression.Location), "unchecked".Length), TypeOfExpression.Roles.Keyword);
-				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.RPar);
+				result.AddChild (new CSharpTokenNode (Convert (location.Open), 1), TypeOfExpression.Roles.LPar);
 				result.AddChild ((INode)uncheckedExpression.Expr.Accept (this), TypeOfExpression.Roles.Expression);
 				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), TypeOfExpression.Roles.RPar);
 				return result;
@@ -1080,10 +1109,12 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (SimpleAssign simpleAssign)
 			{
 				var result = new AssignmentExpression ();
+				
 				KeywordLocation location = LocationStorage.Get<KeywordLocation> (simpleAssign);
+				
 				result.AssignmentOperatorType = AssignmentOperatorType.Assign;
 				result.AddChild ((INode)simpleAssign.Target.Accept (this), AssignmentExpression.LeftExpressionRole);
-				result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AssignmentExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AssignmentExpression.OperatorRole);
 				result.AddChild ((INode)simpleAssign.Source.Accept (this), AssignmentExpression.RightExpressionRole);
 				return result;
 			}
@@ -1129,7 +1160,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				
 				result.AddChild ((INode)compoundAssign.Target.Accept (this), AssignmentExpression.LeftExpressionRole);
-				result.AddChild (new CSharpTokenNode (Convert (location[0]), opLength), AssignmentExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (location[0]), opLength), AssignmentExpression.OperatorRole);
 				result.AddChild ((INode)compoundAssign.Source.Accept (this), AssignmentExpression.RightExpressionRole);
 				return result;
 			}

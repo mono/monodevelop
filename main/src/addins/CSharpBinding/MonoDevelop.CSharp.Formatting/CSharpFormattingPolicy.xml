@@ -527,7 +527,7 @@ class ClassDeclaration {
 class ClassDeclaration { 
 		public void Test ()
 		{
-			int i =  checked(5 + 3);
+			int i = checked(5 + 3);
 			fixed (int* p1 = &i) {
 				*p1 = 5;
 			}
