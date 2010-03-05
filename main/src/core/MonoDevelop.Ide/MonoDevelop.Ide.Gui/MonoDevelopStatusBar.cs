@@ -117,7 +117,8 @@ namespace MonoDevelop.Ide
 			
 			// todo: Move this to the CompletionWindowManager when it's possible.
 			CompletionWindowManager.WindowShown += delegate {
-				if (CompletionWindowManager.Wnd.List.CategoryCount > 1)
+				CompletionListWindow wnd = CompletionWindowManager.Wnd;
+				if (wnd != null && wnd.List != null && wnd.List.CategoryCount > 1)
 					ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (Commands.TextEditorCommands.ShowCompletionWindow, null).AccelKey));
 			};
 			
