@@ -112,10 +112,12 @@
     <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Cecil.Decompiler\Cecil.Decompiler.csproj">
       <Project>{ED1BE103-1699-4116-A732-616BEB142EB2}</Project>
       <Name>Cecil.Decompiler</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

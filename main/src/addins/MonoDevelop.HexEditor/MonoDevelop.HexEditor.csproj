@@ -142,10 +142,12 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
       <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
       <Name>MonoDevelop.Projects</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
       <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
       <Name>MonoDevelop.Components</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>

@@ -1,3 +1,9 @@
+2010-03-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AssemblyBrowser.csproj: Don't local-copy project
+	  refs, as it duplicates assemblies and breaks running on
+	  .NET.
+
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs: Nicer

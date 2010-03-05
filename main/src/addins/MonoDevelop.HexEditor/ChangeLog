@@ -1,3 +1,8 @@
+2010-03-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.HexEditor.csproj: Don't local-copy project refs,
+	  as it duplicates assemblies and breaks running on .NET.
+
 2010-02-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.HexEditor.addin.xml: disabled open with hex
