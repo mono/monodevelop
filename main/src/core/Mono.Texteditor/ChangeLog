@@ -1,5 +1,9 @@
 2010-03-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Added some insanity checks.
+
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/LineSegment.cs: Added bounds check.
 
 2010-03-03  Mike Krüger  <mkrueger@novell.com>

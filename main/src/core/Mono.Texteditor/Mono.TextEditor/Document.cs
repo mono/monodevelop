@@ -1125,6 +1125,8 @@ namespace Mono.TextEditor
 		
 		public void AddMarker (LineSegment line, TextMarker marker)
 		{
+			if (line == null || marker == null)
+				return;
 			if (marker is IExtendingTextMarker) {
 				lock (linesWithExtendingTextMarkers) {
 					if (!linesWithExtendingTextMarkers.Contains (line))
@@ -1142,6 +1144,8 @@ namespace Mono.TextEditor
 		
 		public void RemoveMarker (LineSegment line, TextMarker marker)
 		{
+			if (line == null || marker == null)
+				return;
 			if (marker is IExtendingTextMarker) {
 				lock (linesWithExtendingTextMarkers) {
 					if (!linesWithExtendingTextMarkers.Contains (line)) {
@@ -1160,6 +1164,8 @@ namespace Mono.TextEditor
 		
 		public void RemoveMarker (LineSegment line, Type type)
 		{
+			if (line == null || type == null)
+				return;
 			if (typeof(IExtendingTextMarker).IsAssignableFrom (type)) {
 				lock (linesWithExtendingTextMarkers) {
 					if (!linesWithExtendingTextMarkers.Contains (line)) {
