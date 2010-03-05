@@ -225,8 +225,11 @@ namespace MonoDevelop.Projects.Gui.Completion
 			if (index < page || index >= page + VisibleRows)
 				page = index - (VisibleRows / 2);
 			int itemCount = filteredItems.Count;
-			if (InCategoryMode)
+			if (InCategoryMode) {
 				itemCount += categories.Count;
+				if (categories.Any (cat => cat.CompletionCategory == null))
+					itemCount--;
+			}
 			Page = System.Math.Max (0, System.Math.Min (page, itemCount - VisibleRows - 1));
 		}
 		
@@ -629,7 +632,9 @@ namespace MonoDevelop.Projects.Gui.Completion
 			rowHeight += padding;
 			int requestedVisibleRows = (winHeight + padding - margin * 2) / rowHeight;
 			
-			int viewableCats = InCategoryMode ? categories.Count : 0;
+			int viewableCats = InCategoryMode ? categories.Count: 0;
+			if (categories.Any (cat => cat.CompletionCategory == null))
+				viewableCats--;
 			int newHeight = (rowHeight * Math.Max (1, Math.Min (requestedVisibleRows, filteredItems.Count + viewableCats))) + margin * 2;
 			if (PreviewCompletionString) {
 				newHeight += rowHeight;
