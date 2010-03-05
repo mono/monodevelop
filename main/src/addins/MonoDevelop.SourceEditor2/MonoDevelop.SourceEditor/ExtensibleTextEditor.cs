@@ -324,6 +324,7 @@ namespace MonoDevelop.SourceEditor
 			if (line == null)
 				return true;
 			bool inChar = false;
+			bool inComment = false;
 //			string escape = "\"";
 			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 			Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
@@ -333,6 +334,7 @@ namespace MonoDevelop.SourceEditor
 				if (span.Color == "string.single" || span.Color == "string.double" || span.Color.StartsWith ("comment")) {
 					inStringOrComment = true;
 					inChar |= span.Color == "string.single";
+					inComment |= span.Color.StartsWith ("comment");
 					//escape = span.Escape;
 					break;
 				}
@@ -349,6 +351,7 @@ namespace MonoDevelop.SourceEditor
 			const string closingBrackets = "}])'\"";
 			int braceIndex = openBrackets.IndexOf ((char)ch);
 			SkipChar skipChar = skipChars.Find (sc => sc.Char == (char)ch && sc.Offset == Caret.Offset);
+			
 
 			// special handling for escape chars inside ' and "
 			if (Caret.Offset > 0) {
@@ -378,7 +381,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
-					if (!inChar && ch == '"' && charBefore != '\\') {
+					if (!inComment && !inChar && ch == '"' && charBefore != '\\') {
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						insertionChar = '"';
 						Insert (Caret.Offset, "\"");

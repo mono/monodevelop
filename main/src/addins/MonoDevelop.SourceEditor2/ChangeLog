@@ -1,5 +1,10 @@
 2010-03-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed 'Bug
+	  585770 - Matching brace should not be inserted in comments'.
+
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Don't add
 	  tasks to invalid lines. May happen when the file is reloaded
 	  and changed from outside or when the task is invalid.
