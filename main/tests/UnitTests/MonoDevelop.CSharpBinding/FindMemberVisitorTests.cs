@@ -638,6 +638,32 @@ class TestClass
 }
 ");
 		}
+		
+		/// <summary>
+		/// Bug 585454 - Lacking one reference to an enum type
+		/// </summary>
+		[Test()]
+		public void TestBug585454 ()
+		{
+			RunTest (
+@"
+internal enum $@EnumTest {
+	Value1,
+	Value2
+}
+class DemoMain
+{
+	@EnumTest innerEnum;
+
+	public DemoMain (@EnumTest theEnum) {
+		innerEnum = theEnum;
+
+		if (innerEnum == @EnumTest.Value1)
+			throw new Exception ();
+	}
+}
+");
+		}
 
 		
 		/*

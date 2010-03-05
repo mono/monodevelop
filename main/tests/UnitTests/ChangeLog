@@ -1,3 +1,9 @@
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
+	  test for 'Bug 585454 - Lacking one reference to an enum
+	  type'.
+
 2010-03-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: Fixed
