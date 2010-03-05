@@ -206,7 +206,8 @@ namespace Mono.TextEditor
 		{
 			int curVisualColumn = 0;
 			for (int i = 0; i < EditableLength; i++) {
-				if (editor.Document.GetCharAt (Offset + i) == '\t') {
+				int curOffset = Offset + i;
+				if (curOffset < editor.Document.Length && editor.Document.GetCharAt (curOffset) == '\t') {
 					curVisualColumn = TextViewMargin.GetNextTabstop (editor, curVisualColumn);
 				} else {
 					curVisualColumn++;
