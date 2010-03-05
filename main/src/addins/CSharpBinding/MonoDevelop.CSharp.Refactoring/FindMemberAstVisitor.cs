@@ -534,9 +534,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				int line = idExp.StartLocation.Y;
 				int col = idExp.StartLocation.X;
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, ConvertLocation (idExp.StartLocation));
-				//Console.WriteLine ("result:" + result);
+				
 				if (searchedMember is IType) {
 					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
+					if (item == null && result != null)
+						item = resolver.Dom.GetType (result.ResolvedType);
+					
 					if (item != null && item is IType && ((IType)item).FullName == ((IType)searchedMember).FullName) {
 					//	Debug ("adding IdentifierExpression class", idExp.Identifier, idExp);
 						AddUniqueReference (line, col, idExp.Identifier);

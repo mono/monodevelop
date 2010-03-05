@@ -1,3 +1,8 @@
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  Fixed 'Bug 585454 - Lacking one reference to an enum type'.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp.Project/CSharpResourceIdBuilder.cs: Track
