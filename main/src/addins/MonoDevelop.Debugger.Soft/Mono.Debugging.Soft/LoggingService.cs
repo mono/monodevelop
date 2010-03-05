@@ -44,11 +44,6 @@ namespace Mono.Debugging.Soft
 				Console.WriteLine (message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
 		}
 
-		internal static void LogMessage (string message, params object[] args)
-		{
-			Console.WriteLine (String.Format (message, args));
-		}
-
 		//this is meant to show a GUI if possible
 		internal static void LogAndShowException (string message, Exception ex)
 		{

@@ -837,7 +837,7 @@ namespace Mono.Debugging.Soft
 		object obj;
 		Value[] args;
 		Value result;
-		IInvokeAsyncResult handle;
+		IAsyncResult handle;
 		Exception exception;
 		ST.ManualResetEvent shutdownEvent = new ST.ManualResetEvent (false);
 		const InvokeOptions options = InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded;
@@ -879,11 +879,8 @@ namespace Mono.Debugging.Soft
 
 		public override void Abort ()
 		{
-			LoggingService.LogMessage ("Aborting Invocation !");
-			handle.Abort ();
-			LoggingService.LogMessage ("Aborted Invocation");
-			WaitForCompleted (-1);
-			LoggingService.LogMessage ("Aborted Invocation - Done");
+			// Not yet supported by the soft debugger
+			throw new NotSupportedException ();
 		}
 		
 		public override void Shutdown ()

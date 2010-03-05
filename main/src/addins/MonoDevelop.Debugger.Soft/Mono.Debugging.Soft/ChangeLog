@@ -1,12 +1,3 @@
-2010-03-05  Martin Baulig  <martin@ximian.com>
-
-	Use the new Soft Debugger API to abort invocations.
-
-	* SoftDebuggerAdaptor.cs (MethodCall.Abort): Implement this.
-
-	* Mono.Debugger.Soft.dll:
-	* Mono.Debugger.Soft.dll.mdb: Updated.
-
 2010-03-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerSession.cs: Don't catch the thread abort
