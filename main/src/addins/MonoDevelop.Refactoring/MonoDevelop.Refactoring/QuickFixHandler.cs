@@ -97,16 +97,18 @@ namespace MonoDevelop.Refactoring
 				if (options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start))
 					continue;
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Add using '{0}'"), ns));
+				CurrentRefactoryOperationsHandler.ResolveNameOperation resolveNameOperation = new CurrentRefactoryOperationsHandler.ResolveNameOperation (options.Dom, options.Document, options.ResolveResult, ns);
 				menuItem.Activated += delegate {
-					new CurrentRefactoryOperationsHandler.ResolveNameOperation (options.Dom, options.Document, options.ResolveResult, ns).AddImport ();
+					resolveNameOperation.AddImport ();
 				};
 				menu.Add (menuItem);
 			}
 			if (resolveDirect) {
 				foreach (string ns in namespaces) {
 					Gtk.MenuItem menuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Add '{0}'"), ns));
+					CurrentRefactoryOperationsHandler.ResolveNameOperation resolveNameOperation = new CurrentRefactoryOperationsHandler.ResolveNameOperation (options.Dom, options.Document, options.ResolveResult, ns);
 					menuItem.Activated += delegate {
-						new CurrentRefactoryOperationsHandler.ResolveNameOperation (options.Dom, options.Document, options.ResolveResult, ns).ResolveName ();
+						resolveNameOperation.ResolveName ();
 					};
 					menu.Add (menuItem);
 				}
