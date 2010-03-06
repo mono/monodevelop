@@ -40,7 +40,6 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 
 using Mono.Unix;
-using Mono.GetOptions;
 
 using Mono.Addins;
 using MonoDevelop.Core;
@@ -50,9 +49,6 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
-
-[assembly:Mono.About ("http://monodevelop.com")]
-[assembly:Mono.Author ("MonoDevelop Team")]
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -65,6 +61,21 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Run (string[] args)
 		{
+			var options = new MonoDevelopOptions ();
+			var optionsSet = new Mono.Options.OptionSet () {
+				{ "nologo", "Do not display splash screen.", s => options.NoLogo = true },
+				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => options.IpcTcp = true },
+				{ "newwindow", "Do not open in an existing instance of MonoDevelop", s => options.NewWindow = true },
+				{ "h|?|help", "Show help", s => options.ShowHelp = true },
+			};
+			var remainingArgs = optionsSet.Parse (args);
+			if (options.ShowHelp) {
+				Console.WriteLine ("MonoDevelop IDE " + MonoDevelop.Ide.BuildVariables.PackageVersionLabel);
+				Console.WriteLine ("Options:");
+				optionsSet.WriteOptionDescriptions (Console.Out);
+				return 0;
+			}
+			
 			LoggingService.Trace ("IdeStartup", "Initializing GTK");
 			Counters.Initialization++;
 			SetupExceptionManager ();
@@ -78,25 +89,22 @@ namespace MonoDevelop.Ide.Gui
 			//OSXFIXME
 			Gtk.Application.Init ("monodevelop", ref args);
 			InternalLog.Initialize ();
-			MonoDevelopOptions options = new MonoDevelopOptions ();
-			options.ProcessArgs (args);
-			string[] remainingArgs = options.RemainingArguments;
 			string socket_filename = null;
 			EndPoint ep = null;
 			
 			AddinManager.AddinLoadError += OnAddinError;
 			
-			StartupInfo.SetCommandLineArgs (remainingArgs);
+			StartupInfo.SetCommandLineArgs (remainingArgs.ToArray ());
 			
 			// If a combine was specified, force --newwindow.
 			
-			if(!options.newwindow && StartupInfo.HasFiles) {
+			if(!options.NewWindow && StartupInfo.HasFiles) {
 				LoggingService.Trace ("IdeStartup", "Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
 				foreach (string file in StartupInfo.GetRequestedFileList ()) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file))
 					{
-						options.newwindow = true;
+						options.NewWindow = true;
 						break;
 					}
 				}
@@ -109,10 +117,10 @@ namespace MonoDevelop.Ide.Gui
 			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
 			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.
 			if (PropertyService.IsMac)
-				options.nologo = true;
+				options.NoLogo = true;
 			
 			IProgressMonitor monitor;
-			if (options.nologo) {
+			if (options.NoLogo) {
 				monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			} else {
 				monitor = SplashScreenForm.SplashScreen;
@@ -132,13 +140,13 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitor.Step (1);
 
-			if(!options.ipc_tcp){
+			if(!options.IpcTcp){
 				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
 				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
 				ep = new UnixEndPoint (socket_filename);
 				
 				// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
-				if (!options.newwindow && StartupInfo.GetRequestedFileList ().Length > 0 && File.Exists (socket_filename)) {
+				if (!options.NewWindow && StartupInfo.GetRequestedFileList ().Length > 0 && File.Exists (socket_filename)) {
 					try {
 						listen_socket.Connect (ep);
 						listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", StartupInfo.GetRequestedFileList ())));
@@ -214,7 +222,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			// FIXME: we should probably track the last 'selected' one
 			// and do this more cleanly
-			if (!options.ipc_tcp) {
+			if (!options.IpcTcp) {
 				try {
 					listen_socket.Bind (ep);
 					listen_socket.Listen (5);
@@ -419,26 +427,19 @@ namespace MonoDevelop.Ide.Gui
 	}
 	
 #pragma warning disable 0618
-	public class MonoDevelopOptions : Options
+	public class MonoDevelopOptions
 	{
 		public MonoDevelopOptions ()
 		{
-			base.ParsingMode = OptionsParsingMode.Both;
+			IpcTcp = (PlatformID.Unix != Environment.OSVersion.Platform);
 		}
-
-		protected override void InitializeOtherDefaults () {
-			ipc_tcp = (PlatformID.Unix != Environment.OSVersion.Platform);
-		}
-
-		[Option ("Do not display splash screen.")]
-		public bool nologo;
 		
-		[Option ("Use the Tcp channel for inter-process comunication.", "ipc-tcp")]
-		public bool ipc_tcp;
-		
-		[Option ("Do not open in an existing instance of MonoDevelop")]
-		public bool newwindow;
-	}	
+		public bool NoLogo { get; set; }
+		public bool IpcTcp { get; set; }
+		public bool NewWindow { get; set; }
+		public bool ShowHelp { get; set; }
+	}
+	
 #pragma warning restore 0618
 	
 	public class AddinError

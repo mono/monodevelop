@@ -28,7 +28,6 @@
 
 using System;
 using System.IO;
-using Mono.GetOptions;
 using Gtk;
 using System.Reflection;
 

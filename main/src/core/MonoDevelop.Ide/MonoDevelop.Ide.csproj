@@ -41,7 +41,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Web.Services" />
     <Reference Include="Mono.Posix" />
-    <Reference Include="Mono.GetOptions" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Mono.Addins.Setup, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>

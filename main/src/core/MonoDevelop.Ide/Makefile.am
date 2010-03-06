@@ -17,7 +17,6 @@ REFS =  \
 	$(MONODOC_LIBS) \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Cairo \
-	-r:Mono.GetOptions \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

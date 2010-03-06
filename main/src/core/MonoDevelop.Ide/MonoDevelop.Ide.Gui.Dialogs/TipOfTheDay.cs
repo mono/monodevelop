@@ -1,5 +1,4 @@
 using System;
-using Mono.GetOptions;
 using Gtk;
 using System.Reflection;
 using System.Xml;
