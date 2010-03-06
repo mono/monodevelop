@@ -3,6 +3,7 @@ ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 FILES =  \
 	AssemblyInfo.cs \
+	Mono.Options.cs \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
