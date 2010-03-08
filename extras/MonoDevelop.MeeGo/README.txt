@@ -20,7 +20,7 @@ If you have a different setup, you will have to adapt them.
 2) Enable SSH Server
     a) (Re)start the SSH daemon:
         /etc/init.d/sshd restart
-    b) Set Avahi to run at startup:
+    b) Set SSH to run at startup:
         insserv sshd
     c) Check that you can ssh into the target from the dev machine, e.g.
         ssh monomo.local
