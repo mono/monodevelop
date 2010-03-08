@@ -257,18 +257,65 @@ namespace MonoDevelop.Components.Docking
 		void SetBarDocPosition ()
 		{
 			// Determine the best position for docking the item
+			
+			if (Allocation.IsEmpty) {
+				// If the item is in a group, use the dock location of other items
+				DockObject current = this;
+				do {
+					if (EstimateBarDocPosition (current.ParentGroup, current, out barDocPosition, out autoHideSize))
+						return;
+					current = current.ParentGroup;
+				} while (current.ParentGroup != null);
+				
+				// Can't find a good location. Just guess.
+				barDocPosition = PositionType.Bottom;
+				autoHideSize = 200;
+				return;
+			}
+			barDocPosition = CalcBarDocPosition ();
+		}
+		
+		bool EstimateBarDocPosition (DockGroup grp, DockObject ignoreChild, out PositionType pos, out int size)
+		{
+			foreach (DockObject ob in grp.Objects) {
+				if (ob == ignoreChild)
+					continue;
+				if (ob is DockGroup) {
+					if (EstimateBarDocPosition ((DockGroup)ob, null, out pos, out size))
+						return true;
+				} else if (ob is DockGroupItem) {
+					DockGroupItem it = (DockGroupItem) ob;
+					if (it.status == DockItemStatus.AutoHide) {
+						pos = it.barDocPosition;
+						size = it.autoHideSize;
+						return true;
+					}
+					if (!it.Allocation.IsEmpty) {
+						pos = it.CalcBarDocPosition ();
+						size = it.GetAutoHideSize (pos);
+						return true;
+					}
+				}
+			}
+			pos = PositionType.Bottom;
+			size = 0;
+			return false;
+		}
+		
+		PositionType CalcBarDocPosition ()
+		{
 			if (Allocation.Width < Allocation.Height) {
 				int mid = Allocation.Left + Allocation.Width / 2;
 				if (mid > Frame.Allocation.Left + Frame.Allocation.Width / 2)
-					barDocPosition = PositionType.Right;
+					return PositionType.Right;
 				else
-					barDocPosition = PositionType.Left;
+					return PositionType.Left;
 			} else {
 				int mid = Allocation.Top + Allocation.Height / 2;
 				if (mid > Frame.Allocation.Top + Frame.Allocation.Height / 2)
-					barDocPosition = PositionType.Bottom;
+					return PositionType.Bottom;
 				else
-					barDocPosition = PositionType.Top;
+					return PositionType.Top;
 			}
 		}
 

@@ -78,6 +78,9 @@
     <Compile Include="DockBarItem.cs" />
     <Compile Include="DockFrameTopLevel.cs" />
     <Compile Include="AutoHideBox.cs" />
+    <Compile Include="HslColor.cs" />
+    <Compile Include="ShadedContainer.cs" />
+    <Compile Include="DockItemToolbar.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="stock-close-12.png">

@@ -37,10 +37,13 @@ FILES =  \
 	DockItemBehavior.cs \
 	DockItemContainer.cs \
 	DockItemStatus.cs \
+	DockItemToolbar.cs \
 	DockLayout.cs \
 	DockObject.cs \
 	DockPosition.cs \
+	HslColor.cs \
 	PlaceholderWindow.cs \
+	ShadedContainer.cs \
 	TabStrip.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

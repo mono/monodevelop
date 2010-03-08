@@ -65,8 +65,16 @@ namespace MonoDevelop.Components.Docking
 			startPos = pos == PositionType.Top || pos == PositionType.Left;
 			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			
-			Box fr = new HBox ();
+			Box fr;
+			CustomFrame cframe = new CustomFrame ();
+			switch (pos) {
+				case PositionType.Left: cframe.SetMargins (1, 1, 0, 1); break;
+				case PositionType.Right: cframe.SetMargins (1, 1, 1, 0); break;
+				case PositionType.Top: cframe.SetMargins (0, 1, 1, 1); break;
+				case PositionType.Bottom: cframe.SetMargins (1, 0, 1, 1); break;
+			}
 			EventBox sepBox = new EventBox ();
+			cframe.Add (sepBox);
 			
 			if (horiz) {
 				fr = new HBox ();
@@ -81,18 +89,20 @@ namespace MonoDevelop.Components.Docking
 			sepBox.Events = EventMask.AllEventsMask;
 			
 			if (pos == PositionType.Left || pos == PositionType.Top)
-				fr.PackEnd (sepBox, false, false, 0);
+				fr.PackEnd (cframe, false, false, 0);
 			else
-				fr.PackStart (sepBox, false, false, 0);
-				
+				fr.PackStart (cframe, false, false, 0);
+
 			Add (fr);
 			ShowAll ();
+			Hide ();
 			
 			scrollable = new ScrollableContainer ();
 			scrollable.ScrollMode = false;
 			scrollable.Show ();
-			scrollable.Add (item.Widget);
+
 			item.Widget.Show ();
+			scrollable.Add (item.Widget);
 			fr.PackStart (scrollable, true, true, 0);
 			
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
@@ -130,8 +140,15 @@ namespace MonoDevelop.Components.Docking
 				HeightRequest = 0;
 				break;
 			}
+			Show ();
 			GLib.Timeout.Add (10, RunAnimateShow);
 		}
+		
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+		}
+
 		
 		public void AnimateHide ()
 		{
@@ -299,9 +316,10 @@ namespace MonoDevelop.Components.Docking
 		{
 			EventBox w = (EventBox) ob;
 			Gdk.Rectangle handleRect = w.Allocation;
+//			w.GdkWindow.DrawRectangle (w.Style.DarkGC (StateType.Normal), true, handleRect);
 			handleRect.X = handleRect.Y = 0;
 			
-			switch (position) {
+/*			switch (position) {
 			case PositionType.Top:
 				handleRect.Height -= 4; handleRect.Y += 1;
 				Gtk.Style.PaintHline (w.Style, w.GdkWindow, StateType.Normal, args.Event.Area, w, "", 0, w.Allocation.Width, gripSize - 2);
@@ -318,7 +336,7 @@ namespace MonoDevelop.Components.Docking
 				handleRect.Width -= 4; handleRect.X += 3;
 				Gtk.Style.PaintVline (w.Style, w.GdkWindow, StateType.Normal, args.Event.Area, w, "", 0, w.Allocation.Height, 0);
 				break;
-			}
+			}*/
 			
 			Orientation or = horiz ? Orientation.Vertical : Orientation.Horizontal;
 			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;

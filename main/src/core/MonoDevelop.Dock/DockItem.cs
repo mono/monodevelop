@@ -41,6 +41,7 @@ namespace MonoDevelop.Components.Docking
 		DockItemContainer widget;
 		string defaultLocation;
 		bool defaultVisible = true;
+		DockItemStatus defaultStatus = DockItemStatus.Dockable;
 		string id;
 		DockFrame frame;
 		int defaultWidth = -1;
@@ -57,6 +58,11 @@ namespace MonoDevelop.Components.Docking
 		bool gettingContent;
 		bool isPositionMarker;
 		bool stickyVisible;
+		IDockItemLabelProvider dockLabelProvider;
+		DockItemToolbar toolbarTop;
+		DockItemToolbar toolbarBottom;
+		DockItemToolbar toolbarLeft;
+		DockItemToolbar toolbarRight;
 		
 		public event EventHandler VisibleChanged;
 		public event EventHandler ContentVisibleChanged;
@@ -121,6 +127,11 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
+		public IDockItemLabelProvider DockLabelProvider {
+			get { return this.dockLabelProvider; }
+			set { this.dockLabelProvider = value; }
+		}
+		
 		internal DockItemContainer Widget {
 			get {
 				if (widget == null) {
@@ -170,6 +181,29 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
+		public DockItemToolbar GetToolbar (PositionType position)
+		{
+			switch (position) {
+				case PositionType.Top:
+					if (toolbarTop == null)
+						toolbarTop = new DockItemToolbar (this, PositionType.Top);
+					return toolbarTop;
+				case PositionType.Bottom:
+					if (toolbarBottom == null)
+						toolbarBottom = new DockItemToolbar (this, PositionType.Bottom);
+					return toolbarBottom;
+				case PositionType.Left:
+					if (toolbarLeft == null)
+						toolbarLeft = new DockItemToolbar (this, PositionType.Left);
+					return toolbarLeft;
+				case PositionType.Right:
+					if (toolbarRight == null)
+						toolbarRight = new DockItemToolbar (this, PositionType.Right);
+					return toolbarRight;
+				default: throw new ArgumentException ();
+			}
+		}
+		
 		internal bool HasWidget {
 			get { return widget != null; }
 		}
@@ -182,6 +216,11 @@ namespace MonoDevelop.Components.Docking
 		public bool DefaultVisible {
 			get { return defaultVisible; }
 			set { defaultVisible = value; }
+		}
+
+		public DockItemStatus DefaultStatus {
+			get { return defaultStatus; }
+			set { defaultStatus = value; }
 		}
 
 		public int DefaultWidth {
@@ -465,5 +504,10 @@ namespace MonoDevelop.Components.Docking
 			menu.ShowAll ();
 			menu.Popup (null, null, null, 3, time);
 		}
+	}
+	
+	public interface IDockItemLabelProvider
+	{
+		Gtk.Widget CreateLabel (Orientation orientation);
 	}
 }

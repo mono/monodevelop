@@ -52,6 +52,7 @@ namespace MonoDevelop.Components.Docking
 		Container borderFrame;
 		bool allowPlaceholderDocking;
 		bool pointerHover;
+		Box contentBox;
 		
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.Hand2);
@@ -123,6 +124,23 @@ namespace MonoDevelop.Components.Docking
 			
 			PackStart (header, false, false, 0);
 			ShowAll ();
+			
+			PackStart (item.GetToolbar (PositionType.Top).Container, false, false, 0);
+			
+			HBox hbox = new HBox ();
+			hbox.Show ();
+			hbox.PackStart (item.GetToolbar (PositionType.Left).Container, false, false, 0);
+			
+			contentBox = new HBox ();
+			contentBox.Show ();
+			hbox.PackStart (contentBox, true, true, 0);
+			
+			hbox.PackStart (item.GetToolbar (PositionType.Right).Container, false, false, 0);
+			
+			PackStart (hbox, true, true, 0);
+			
+			PackStart (item.GetToolbar (PositionType.Bottom).Container, false, false, 0);
+			
 			UpdateBehavior ();
 		}
 		
@@ -142,9 +160,9 @@ namespace MonoDevelop.Components.Docking
 			
 			if (item.DrawFrame) {
 				if (borderFrame == null) {
-					borderFrame = new CustomFrame (frame, item);
+					borderFrame = new CustomFrame (1, 1, 1, 1);
 					borderFrame.Show ();
-					PackStart (borderFrame, true, true, 0);
+					contentBox.Add (borderFrame);
 				}
 				if (widget != null) {
 					borderFrame.Add (widget);
@@ -153,10 +171,10 @@ namespace MonoDevelop.Components.Docking
 			}
 			else if (widget != null) {
 				if (borderFrame != null) {
-					Remove (borderFrame);
+					contentBox.Remove (borderFrame);
 					borderFrame = null;
 				}
-				PackStart (widget, true, true, 0);
+				contentBox.Add (widget);
 				widget.Show ();
 			}
 		}
@@ -235,10 +253,16 @@ namespace MonoDevelop.Components.Docking
 		private void HeaderExpose (object ob, Gtk.ExposeEventArgs a)
 		{
 			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, header.Allocation.Width - 1, header.Allocation.Height);
-			Gdk.Color gcol = pointerHover
-				? frame.Style.Mid (Gtk.StateType.Active)
-				: frame.Style.Mid (Gtk.StateType.Normal);
+			HslColor gcol = frame.Style.Background (Gtk.StateType.Normal);
 			
+			if (pointerHover)
+				gcol.L *= 1.1;
+			else
+				gcol.L *= 1;
+			
+			if (gcol.L > 1)
+				gcol.L = 1;
+				
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (a.Event.Window)) {
 				cr.NewPath ();
 				cr.MoveTo (0, 0);
@@ -248,7 +272,7 @@ namespace MonoDevelop.Components.Docking
 				cr.RelLineTo (0, -rect.Height);
 				cr.ClosePath ();
 				Cairo.Gradient pat = new Cairo.LinearGradient (0, 0, rect.Width, rect.Height);
-				Cairo.Color color1 = DockFrame.ToCairoColor (gcol);
+				Cairo.Color color1 = gcol;
 				pat.AddColorStop (0, color1);
 				color1.A = 0.3;
 				pat.AddColorStop (1, color1);
@@ -287,14 +311,42 @@ namespace MonoDevelop.Components.Docking
 	class CustomFrame: Bin
 	{
 		Gtk.Widget child;
-//		DockFrame frame;
-//		DockItem item;
-
-		public CustomFrame (DockFrame frame, DockItem item)
+		int topMargin;
+		int bottomMargin;
+		int leftMargin;
+		int rightMargin;
+		
+		int topPadding;
+		int bottomPadding;
+		int leftPadding;
+		int rightPadding;
+		
+		public CustomFrame ()
 		{
-//			this.frame = frame;
-//			this.item = item;
 		}
+		
+		public CustomFrame (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
+		{
+			SetMargins (topMargin, bottomMargin, leftMargin, rightMargin);
+		}
+		
+		public void SetMargins (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
+		{
+			this.topMargin = topMargin;
+			this.bottomMargin = bottomMargin;
+			this.leftMargin = leftMargin;
+			this.rightMargin = rightMargin;
+		}
+		
+		public void SetPadding (int topPadding, int bottomPadding, int leftPadding, int rightPadding)
+		{
+			this.topPadding = topPadding;
+			this.bottomPadding = bottomPadding;
+			this.leftPadding = leftPadding;
+			this.rightPadding = rightPadding;
+		}
+		
+		public bool GradientBackround { get; set; }
 
 		protected override void OnAdded (Widget widget)
 		{
@@ -305,23 +357,68 @@ namespace MonoDevelop.Components.Docking
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			requisition = child.SizeRequest ();
-			requisition.Width++;
-			requisition.Height++;
+			requisition.Width += leftMargin + rightMargin + leftPadding + rightPadding;
+			requisition.Height += topMargin + bottomMargin + topPadding + bottomPadding;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			if (allocation.Width > 1 && allocation.Height > 1)
-				allocation.Inflate (-1, -1);
-			child.Allocation = allocation;
+			if (allocation.Width > leftMargin + rightMargin + leftPadding + rightPadding) {
+				allocation.X += leftMargin + leftPadding;
+				allocation.Width -= leftMargin + rightMargin + leftPadding + rightPadding;
+			}
+			if (allocation.Height > topMargin + bottomMargin + topPadding + bottomPadding) {
+				allocation.Y += topMargin + topPadding;
+				allocation.Height -= topMargin + bottomMargin + topPadding + bottomPadding;
+			}
+			child.SizeAllocate (allocation);
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
+			Gdk.Rectangle rect;
+			
+			if (GradientBackround) {
+				rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+				HslColor gcol = Style.Background (Gtk.StateType.Normal);
+				
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
+					cr.NewPath ();
+					cr.MoveTo (rect.X, rect.Y);
+					cr.RelLineTo (rect.Width, 0);
+					cr.RelLineTo (0, rect.Height);
+					cr.RelLineTo (-rect.Width, 0);
+					cr.RelLineTo (0, -rect.Height);
+					cr.ClosePath ();
+					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Bottom);
+					Cairo.Color color1 = gcol;
+					pat.AddColorStop (0, color1);
+					gcol.L -= 0.1;
+					if (gcol.L < 0) gcol.L = 0;
+					pat.AddColorStop (1, gcol);
+					cr.Pattern = pat;
+					cr.FillPreserve ();
+				}
+			}
+			
 			bool res = base.OnExposeEvent (evnt);
-			Gdk.Rectangle rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width - 1, Allocation.Height - 1);
-			GdkWindow.DrawRectangle (Style.DarkGC (Gtk.StateType.Normal), false, rect);
+			
+			Gdk.GC borderColor = Style.DarkGC (Gtk.StateType.Normal);
+			
+			rect = Allocation;
+			for (int n=0; n<topMargin; n++)
+				GdkWindow.DrawLine (borderColor, rect.X, rect.Y + n, rect.Right - 1, rect.Y + n);
+			
+			for (int n=0; n<bottomMargin; n++)
+				GdkWindow.DrawLine (borderColor, rect.X, rect.Bottom - n - 1, rect.Right - 1, rect.Bottom - n - 1);
+			
+			for (int n=0; n<leftMargin; n++)
+				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Bottom - 1);
+			
+			for (int n=0; n<rightMargin; n++)
+				GdkWindow.DrawLine (borderColor, rect.Right - n - 1, rect.Y, rect.Right - n - 1, rect.Bottom - 1);
+			
 			return res;
 		}
 	}

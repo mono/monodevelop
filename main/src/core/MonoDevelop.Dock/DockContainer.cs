@@ -37,7 +37,7 @@ using Gdk;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockContainer: Container
+	class DockContainer: Container, IShadedWidget
 	{
 		DockLayout layout;
 		DockFrame frame;
@@ -62,6 +62,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			this.frame = frame;
+			frame.ShadedContainer.Add (this);
 		}
 
 		internal DockGroupItem FindDockGroupItem (string id)
@@ -194,7 +195,7 @@ namespace MonoDevelop.Components.Docking
 					ts = notebooks [n];
 				}
 				else {
-					ts = new TabStrip ();
+					ts = new TabStrip (frame);
 					ts.Show ();
 					notebooks.Add (ts);
 					ts.Parent = this;
@@ -214,6 +215,7 @@ namespace MonoDevelop.Components.Docking
 			// Add widgets to the container
 			
 			layout.LayoutWidgets ();
+			NotifySeparatorsChanged ();
 		}
 		
 		void GetTabbedGroups (DockGroup grp, List<DockGroup> tabbedGroups)
@@ -254,11 +256,12 @@ namespace MonoDevelop.Components.Docking
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
 			if (dragging) {
+				NotifySeparatorsChanged ();
 				int newpos = (currentHandleGrp.Type == DockGroupType.Horizontal) ? (int)e.X : (int)e.Y;
 				if (newpos != dragPos) {
 					int nsize = dragSize + (newpos - dragPos);
 					currentHandleGrp.ResizeItem (currentHandleIndex, nsize);
-					layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true);
+					layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, null);
 				}
 			}
 			else if (layout != null && placeholderWindow == null) {
@@ -272,7 +275,7 @@ namespace MonoDevelop.Components.Docking
 							this.GdkWindow.Cursor = vresizeCursor;
 						currentHandleGrp = grp;
 						currentHandleIndex = index;
-						layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true);
+						layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, null);
 					}
 				}
 				else if (currentHandleGrp != null) {
@@ -288,7 +291,7 @@ namespace MonoDevelop.Components.Docking
 			currentHandleGrp = null;
 			currentHandleIndex = -1;
 			if (layout != null)
-				layout.DrawSeparators (Allocation, null, -1, true);
+				layout.DrawSeparators (Allocation, null, -1, true, null);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
@@ -427,5 +430,21 @@ namespace MonoDevelop.Components.Docking
 				placeholderWindow = null;
 			}
 		}
+		
+		public IEnumerable<Rectangle> GetShadedAreas ()
+		{
+			List<Gdk.Rectangle> rects = new List<Gdk.Rectangle> ();
+			layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, rects);
+			return rects;
+		}
+		
+		internal void NotifySeparatorsChanged ()
+		{
+			if (AreasChanged != null)
+				AreasChanged (this, EventArgs.Empty);
+		}
+		
+		public event EventHandler AreasChanged;
+
 	}
 }

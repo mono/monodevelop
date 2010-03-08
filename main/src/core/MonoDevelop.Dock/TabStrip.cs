@@ -39,14 +39,31 @@ namespace MonoDevelop.Components.Docking
 		int currentTab = -1;
 		bool ellipsized = true;
 		HBox box = new HBox ();
+		DockFrame frame;
+		Label bottomFiller = new Label ();
 		
-		public TabStrip()
+		public TabStrip (DockFrame frame)
 		{
+			this.frame = frame;
+			frame.ShadedContainer.Add (this);
+			VBox vbox = new VBox ();
 			box = new HBox ();
-			AppendPage (box, null);
+			vbox.PackStart (box, false, false, 0);
+			vbox.PackStart (bottomFiller, false, false, 0);
+			AppendPage (vbox, null);
 			ShowBorder = false;
 			ShowTabs = false;
 			ShowAll ();
+			bottomFiller.Hide ();
+			BottomPadding = 3;
+		}
+		
+		public int BottomPadding {
+			get { return bottomFiller.HeightRequest; }
+			set {
+				bottomFiller.HeightRequest = value;
+				bottomFiller.Visible = value > 0;
+			}
 		}
 		
 		public void AddTab (Gtk.Widget page, Gdk.Pixbuf icon, string label)
@@ -177,26 +194,8 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			Gdk.Rectangle rect = Allocation;
-			
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.NewPath ();
-				cr.MoveTo (rect.X, rect.Y);
-				cr.RelLineTo (rect.Width, 0);
-				cr.RelLineTo (0, rect.Height);
-				cr.RelLineTo (-rect.Width, 0);
-				cr.RelLineTo (0, -rect.Height);
-				cr.ClosePath ();
-				Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height/3);
-				Cairo.Color color1 = DockFrame.ToCairoColor (Style.Mid (StateType.Normal));
-				color1.A = 0.6;
-				pat.AddColorStop (0, color1);
-				color1.A = 0;
-				pat.AddColorStop (1, color1);
-				cr.Pattern = pat;
-				cr.FillPreserve ();
-			}
-			
+			frame.ShadedContainer.DrawBackground (this);
+
 			Gtk.Widget[] tabs = box.Children;
 			for (int n=tabs.Length - 1; n>=0; n--) {
 				Tab tab = (Tab) tabs [n];

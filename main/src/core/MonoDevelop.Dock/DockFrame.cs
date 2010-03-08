@@ -42,10 +42,12 @@ namespace MonoDevelop.Components.Docking
 		internal const double ItemDockCenterArea = 0.4;
 		internal const int GroupDockSeparatorSize = 40;
 		
+		internal bool ShadedSeparators = true;
+		
 		DockContainer container;
 		
 		int handleSize = IsWindows ? 4 : 6;
-		int handlePadding = 1;
+		int handlePadding = 0;
 		int defaultItemWidth = 130;
 		int defaultItemHeight = 130;
 		uint autoShowDelay = 400;
@@ -54,12 +56,16 @@ namespace MonoDevelop.Components.Docking
 		SortedDictionary<string,DockLayout> layouts = new SortedDictionary<string,DockLayout> ();
 		List<DockFrameTopLevel> topLevels = new List<DockFrameTopLevel> ();
 		string currentLayout;
+		int compactGuiLevel = 3;
 		
 		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
 		VBox mainBox;
+		ShadedContainer shadedContainer;
 		
 		public DockFrame ()
 		{
+			shadedContainer = new ShadedContainer ();
+			
 			dockBarTop = new DockBar (this, Gtk.PositionType.Top);
 			dockBarBottom = new DockBar (this, Gtk.PositionType.Bottom);
 			dockBarLeft = new DockBar (this, Gtk.PositionType.Left);
@@ -76,17 +82,66 @@ namespace MonoDevelop.Components.Docking
 			mainBox.PackStart (dockBarBottom, false, false, 0);
 			Add (mainBox);
 			mainBox.ShowAll ();
-
-			dockBarTop.Hide ();
-			dockBarBottom.Hide ();
-			dockBarLeft.Hide ();
-			dockBarRight.Hide ();
-
 			mainBox.NoShowAll = true;
+			CompactGuiLevel = 2;
+			dockBarTop.UpdateVisibility ();
+			dockBarBottom.UpdateVisibility ();
+			dockBarLeft.UpdateVisibility ();
+			dockBarRight.UpdateVisibility ();
+		}
+		
+		/// <summary>
+		/// Compactness level of the gui, from 1 (not compact) to 5 (very compact).
+		/// </summary>
+		public int CompactGuiLevel {
+			get { return compactGuiLevel; }
+			set {
+				compactGuiLevel = value;
+				switch (compactGuiLevel) {
+					case 1: handleSize = 6; break;
+					case 2: 
+					case 3: handleSize = IsWindows ? 4 : 6; break;
+					case 4:
+					case 5: handleSize = 3; break;
+				}
+				handlePadding = 0;
+				dockBarTop.OnCompactLevelChanged ();
+				dockBarBottom.OnCompactLevelChanged ();
+				dockBarLeft.OnCompactLevelChanged ();
+				dockBarRight.OnCompactLevelChanged ();
+				container.RelayoutWidgets ();
+			}
+		}
+		
+		public DockBar ExtractDockBar (PositionType pos)
+		{
+			DockBar db = new DockBar (this, pos);
+			switch (pos) {
+				case PositionType.Left: db.OriginalBar = dockBarLeft; dockBarLeft = db; break;
+				case PositionType.Top: db.OriginalBar = dockBarTop; dockBarTop = db; break;
+				case PositionType.Right: db.OriginalBar = dockBarRight; dockBarRight = db; break;
+				case PositionType.Bottom: db.OriginalBar = dockBarBottom; dockBarBottom = db; break;
+			}
+			return db;
+		}
+		
+		internal DockBar GetDockBar (PositionType pos)
+		{
+			switch (pos) {
+				case Gtk.PositionType.Top: return dockBarTop;
+				case Gtk.PositionType.Bottom: return dockBarBottom;
+				case Gtk.PositionType.Left: return dockBarLeft;
+				case Gtk.PositionType.Right: return dockBarRight;
+			}
+			return null;
 		}
 		
 		internal DockContainer Container {
 			get { return container; }
+		}
+		
+		public ShadedContainer ShadedContainer {
+			get { return this.shadedContainer; }
 		}
 		
 		public int HandleSize {
@@ -380,8 +435,10 @@ namespace MonoDevelop.Components.Docking
 		internal void SetStatus (DockItem item, DockItemStatus status)
 		{
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
-			if (gitem == null)
+			if (gitem == null) {
+				item.DefaultStatus = status;
 				return;
+			}
 			gitem.StoreAllocation ();
 			gitem.Status = status;
 			container.RelayoutWidgets ();
@@ -445,6 +502,7 @@ namespace MonoDevelop.Components.Docking
 					}
 					DockGroupItem dgt = g.AddObject (it, dpos, id);
 					dgt.SetVisible (it.DefaultVisible);
+					dgt.Status = it.DefaultStatus;
 					return dgt;
 				}
 			}
@@ -466,6 +524,18 @@ namespace MonoDevelop.Components.Docking
 			w.Unparent ();
 			topLevels.Remove (w);
 			QueueResize ();
+		}
+		
+		public Gdk.Rectangle GetCoordinates (Gtk.Widget w)
+		{
+			int px, py;
+			if (!w.TranslateCoordinates (this, 0, 0, out px, out py))
+				return new Gdk.Rectangle (0,0,0,0);
+
+			Gdk.Rectangle rect = w.Allocation;
+			rect.X = px - Allocation.X;
+			rect.Y = py - Allocation.Y;
+			return rect;
 		}
 		
 		internal void ShowPlaceholder ()
@@ -490,40 +560,48 @@ namespace MonoDevelop.Components.Docking
 		
 		internal DockBarItem BarDock (Gtk.PositionType pos, DockItem item, int size)
 		{
-			switch (pos) {
-				case Gtk.PositionType.Top: return dockBarTop.AddItem (item, size);
-				case Gtk.PositionType.Bottom: return dockBarBottom.AddItem (item, size); 
-				case Gtk.PositionType.Left: return dockBarLeft.AddItem (item, size);
-				case Gtk.PositionType.Right: return dockBarRight.AddItem (item, size);
-			}
-			throw new InvalidOperationException ();
+			return GetDockBar (pos).AddItem (item, size);
 		}
 		
 		internal AutoHideBox AutoShow (DockItem item, DockBar bar, int size)
 		{
 			AutoHideBox aframe = new AutoHideBox (this, item, bar.Position, size);
+			Gdk.Size sTop = GetBarFrameSize (dockBarTop);
+			Gdk.Size sBot = GetBarFrameSize (dockBarBottom);
+			Gdk.Size sLeft = GetBarFrameSize (dockBarLeft);
+			Gdk.Size sRgt = GetBarFrameSize (dockBarRight);
 			
 			int x,y;
 			if (bar == dockBarLeft || bar == dockBarRight) {
-				aframe.HeightRequest = Allocation.Height - dockBarTop.SizeRequest().Height - dockBarBottom.SizeRequest().Height;
+				aframe.HeightRequest = Allocation.Height - sTop.Height - sBot.Height;
 				aframe.WidthRequest = size;
-				y = dockBarTop.SizeRequest().Height;
+				y = sTop.Height;
 				if (bar == dockBarLeft)
-					x = bar.Allocation.Width;
+					x = sLeft.Width;
 				else
-					x = Allocation.Width - bar.SizeRequest().Width - size;
+					x = Allocation.Width - size - sRgt.Width;
 			} else {
-				aframe.WidthRequest = Allocation.Width - dockBarLeft.SizeRequest().Width - dockBarRight.SizeRequest().Width;
+				aframe.WidthRequest = Allocation.Width - sLeft.Width - sRgt.Width;
 				aframe.HeightRequest = size;
-				x = dockBarLeft.SizeRequest().Width;
+				x = sLeft.Width;
 				if (bar == dockBarTop)
-					y = bar.Allocation.Height;
+					y = sTop.Height;
 				else
-					y = Allocation.Height - bar.Allocation.Height - size;
+					y = Allocation.Height - size - sBot.Height;
 			}
 			AddTopLevel (aframe, x, y);
 			aframe.AnimateShow ();
 			return aframe;
+		}
+		
+		Gdk.Size GetBarFrameSize (DockBar bar)
+		{
+			if (bar.OriginalBar != null)
+				bar = bar.OriginalBar;
+			if (!bar.Visible)
+				return new Gdk.Size (0,0);
+			Gtk.Requisition req = bar.SizeRequest ();
+			return new Gdk.Size (req.Width, req.Height);
 		}
 		
 		internal void AutoHide (DockItem item, AutoHideBox widget, bool animate)
@@ -561,6 +639,18 @@ namespace MonoDevelop.Components.Docking
 			foreach (DockFrameTopLevel child in clone)
 				callback (child);
 		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			HslColor cLight = new HslColor (Style.Background (Gtk.StateType.Normal));
+			HslColor cDark = cLight;
+			cLight.L *= 0.9;
+			cDark.L *= 0.8;
+			shadedContainer.LightColor = cLight;
+			shadedContainer.DarkColor = cDark;
+		}
+
 
 		static internal bool IsWindows {
 			get { return System.IO.Path.DirectorySeparatorChar == '\\'; }

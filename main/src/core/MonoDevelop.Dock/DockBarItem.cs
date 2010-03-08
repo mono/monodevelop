@@ -39,6 +39,8 @@ namespace MonoDevelop.Components.Docking
 		DockBar bar;
 		DockItem it;
 		Box box;
+		Label label;
+		Alignment mainBox;
 		AutoHideBox autoShowFrame;
 		AutoHideBox hiddenFrame;
 		uint autoShowTimeout = uint.MaxValue;
@@ -71,31 +73,50 @@ namespace MonoDevelop.Components.Docking
 		
 		public void UpdateTab ()
 		{
-			if (box != null) {
-				Remove (box);
-				box.Destroy ();
+			if (Child != null) {
+				Widget w = Child;
+				Remove (w);
+				w.Destroy ();
 			}
 			
-			if (bar.Orientation == Gtk.Orientation.Horizontal)
+			mainBox = new Alignment (0,0,1,1);
+			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
-			else
+				mainBox.LeftPadding = mainBox.RightPadding = 2;
+			}
+			else {
 				box = new VBox ();
+				mainBox.TopPadding = mainBox.BottomPadding = 2;
+			}
 			
-			if (it.Icon != null)
-				box.PackStart (new Gtk.Image (it.Icon), false, false, 0);
-				
-			if (!string.IsNullOrEmpty (it.Label)) {
-				Label lab = new Gtk.Label (it.Label);
-				lab.UseMarkup = true;
-				if (bar.Orientation == Gtk.Orientation.Vertical)
-					lab.Angle = 270;
-				box.PackStart (lab, true, true, 0);
+			Gtk.Widget customLabel = null;
+			if (it.DockLabelProvider != null)
+				customLabel = it.DockLabelProvider.CreateLabel (bar.Orientation);
+			
+			if (customLabel != null) {
+				customLabel.ShowAll ();
+				box.PackStart (customLabel, true, true, 0);
+			}
+			else {
+				if (it.Icon != null)
+					box.PackStart (new Gtk.Image (it.Icon), false, false, 0);
+					
+				if (!string.IsNullOrEmpty (it.Label)) {
+					label = new Gtk.Label (it.Label);
+					label.UseMarkup = true;
+					if (bar.Orientation == Gtk.Orientation.Vertical)
+						label.Angle = 270;
+					box.PackStart (label, true, true, 0);
+				} else
+					label = null;
 			}
 
-			box.ShowAll ();
-			box.BorderWidth = 3;
+			box.BorderWidth = 2;
 			box.Spacing = 2;
-			Add (box);
+			mainBox.Add (box);
+			mainBox.ShowAll ();
+			Add (mainBox);
+			SetNormalColor ();
 		}
 		
 		public MonoDevelop.Components.Docking.DockItem DockItem {
@@ -112,13 +133,64 @@ namespace MonoDevelop.Components.Docking
 			AutoHide (false);
 		}
 
-		static bool isWindows = (System.IO.Path.DirectorySeparatorChar == '\\');
-		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			Gtk.Style.PaintBox (Style, GdkWindow, StateType.Normal, ShadowType.Out, evnt.Area, this, isWindows? "button" : "",
-			                    Allocation.Left, Allocation.Top, Allocation.Width, Allocation.Height);
-			
+			if (State == StateType.Prelight) {
+				int w = Allocation.Width, h = Allocation.Height;
+				double x=Allocation.Left, y=Allocation.Top, r=3;
+				x += 0.5; y += 0.5; h -=1; w -= 1;
+				
+				using (Cairo.Context ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+					HslColor c = new HslColor (Style.Background (Gtk.StateType.Normal));
+					HslColor c1 = c;
+					HslColor c2 = c;
+					if (State != StateType.Prelight) {
+						c1.L *= 0.8;
+						c2.L *= 0.95;
+					} else {
+						c1.L *= 1.1;
+						c2.L *= 1;
+					}
+					Cairo.Gradient pat;
+					switch (bar.Position) {
+						case PositionType.Top: pat = new Cairo.LinearGradient (x, y, x, y+h); break;
+						case PositionType.Bottom: pat = new Cairo.LinearGradient (x, y, x, y+h); break;
+						case PositionType.Left: pat = new Cairo.LinearGradient (x+w, y, x, y); break;
+						default: pat = new Cairo.LinearGradient (x, y, x+w, y); break;
+					}
+					pat.AddColorStop (0, c1);
+					pat.AddColorStop (1, c2);
+					ctx.NewPath ();
+					ctx.Arc (x+r, y+r, r, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
+					ctx.LineTo (x+w-r, y);
+					ctx.Arc (x+w-r, y+r, r, 270 * (Math.PI / 180), 360 * (Math.PI / 180));
+					ctx.LineTo (x+w, y+h);
+					ctx.LineTo (x, y+h);
+					ctx.ClosePath ();
+					ctx.Pattern = pat;
+					ctx.FillPreserve ();
+					c1 = c;
+					c1.L *= 0.7;
+					ctx.LineWidth = 1;
+					ctx.Color = c1;
+					ctx.Stroke ();
+					
+					// Inner line
+					ctx.NewPath ();
+					ctx.Arc (x+r+1, y+r+1, r, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
+					ctx.LineTo (x+w-r-1, y+1);
+					ctx.Arc (x+w-r-1, y+r+1, r, 270 * (Math.PI / 180), 360 * (Math.PI / 180));
+					ctx.LineTo (x+w-1, y+h-1);
+					ctx.LineTo (x+1, y+h-1);
+					ctx.ClosePath ();
+					c1 = c;
+					//c1.L *= 0.9;
+					ctx.LineWidth = 1;
+					ctx.Color = c1;
+					ctx.Stroke ();
+				}
+			}
+		
 			bool res = base.OnExposeEvent (evnt);
 			return res;
 		}
@@ -147,6 +219,7 @@ namespace MonoDevelop.Components.Docking
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame.KeyPressEvent += OnFrameKeyPress;
+				SetPrelight ();
 			}
 		}
 		
@@ -164,6 +237,7 @@ namespace MonoDevelop.Components.Docking
 				autoShowFrame.LeaveNotifyEvent -= OnFrameLeave;
 				autoShowFrame.KeyPressEvent -= OnFrameKeyPress;
 				autoShowFrame = null;
+				UnsetPrelight ();
 			}
 		}
 		
@@ -221,15 +295,49 @@ namespace MonoDevelop.Components.Docking
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			ScheduleAutoShow ();
-			ModifyBg (StateType.Normal, bar.Style.Background (Gtk.StateType.Prelight));
+			SetPrelight ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			ScheduleAutoHide (true);
-			ModifyBg (StateType.Normal, bar.Style.Background (Gtk.StateType.Normal));
+			if (autoShowFrame == null)
+				UnsetPrelight ();
 			return base.OnLeaveNotifyEvent (evnt);
+		}
+		
+		void SetPrelight ()
+		{
+			if (State != StateType.Prelight) {
+				State = StateType.Prelight;
+				if (label != null)
+					label.ModifyFg (StateType.Normal, Style.Foreground (Gtk.StateType.Normal));
+			}
+		}
+		
+		void UnsetPrelight ()
+		{
+			if (State == StateType.Prelight) {
+				State = StateType.Normal;
+				SetNormalColor ();
+			}
+		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized();
+			SetNormalColor ();
+		}
+
+		
+		void SetNormalColor ()
+		{
+			if (label != null) {
+				HslColor c = Style.Background (Gtk.StateType.Normal);
+				c.L *= 0.4;
+				label.ModifyFg (StateType.Normal, c);
+			}
 		}
 		
 		void OnFrameEnter (object s, Gtk.EnterNotifyEventArgs args)

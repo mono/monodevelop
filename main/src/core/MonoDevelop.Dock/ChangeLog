@@ -1,3 +1,22 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* DockBar.cs:
+	* TabStrip.cs:
+	* DockItem.cs:
+	* Makefile.am:
+	* HslColor.cs:
+	* DockFrame.cs:
+	* DockGroup.cs:
+	* DockObject.cs:
+	* DockBarItem.cs:
+	* AutoHideBox.cs:
+	* DockContainer.cs:
+	* DockGroupItem.cs:
+	* DockItemToolbar.cs:
+	* ShadedContainer.cs:
+	* DockItemContainer.cs:
+	* MonoDevelop.Dock.csproj: Global look&feel improvements.
+
 2010-02-09  Mike Krüger  <mkrueger@novell.com>
 
 	* DockItem.cs:

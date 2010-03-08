@@ -637,6 +637,10 @@ namespace MonoDevelop.Components.Docking
 				} else
 					boundTabStrip.CurrentTab = 0;
 			}
+			if (Frame.CompactGuiLevel == 3 && IsNextToMargin (PositionType.Bottom))
+				boundTabStrip.BottomPadding = 3;
+			else
+				boundTabStrip.BottomPadding = 0;
 		}
 		
 		internal void Present (DockItem it, bool giveFocus)
@@ -774,7 +778,7 @@ namespace MonoDevelop.Components.Docking
 		public void Draw (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex)
 		{
 			if (type != DockGroupType.Tabbed) {
-				DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, false, false);
+				DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, false, false, null);
 				foreach (DockObject it in VisibleObjects) {
 					DockGroup grp = it as DockGroup;
 					if (grp != null)
@@ -783,12 +787,12 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly)
+		public void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, List<Gdk.Rectangle> areasList)
 		{
-			DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, true);
+			DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, true, areasList);
 		}
 		
-		void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, bool drawChildrenSep)
+		void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, bool drawChildrenSep, List<Gdk.Rectangle> areasList)
 		{
 			if (type == DockGroupType.Tabbed || VisibleObjects.Count == 0)
 				return;
@@ -806,20 +810,27 @@ namespace MonoDevelop.Components.Docking
 				DockObject ob = VisibleObjects [n];
 				DockGroup grp = ob as DockGroup;
 				if (grp != null && drawChildrenSep)
-					grp.DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly);
+					grp.DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, areasList);
 				if (ob != last) {
 					if (horiz)
 						x += ob.Allocation.Width + Frame.HandlePadding;
 					else
 						y += ob.Allocation.Height + Frame.HandlePadding;
 					
-					if (invalidateOnly) {
+					if (areasList != null) {
+						if (Frame.ShadedSeparators)
+							areasList.Add (new Gdk.Rectangle (x, y, hw, hh));
+					} else if (invalidateOnly) {
 						Frame.Container.QueueDrawArea (x, y, hw, hh);
 					}
 					else {
-						StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
-						if (!DockFrame.IsWindows)
-							Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
+						if (Frame.ShadedSeparators) {
+							Frame.ShadedContainer.DrawBackground (Frame.Container, new Gdk.Rectangle (x, y, hw, hh));
+						} else {
+							StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
+							if (!DockFrame.IsWindows)
+								Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
+						}
 					}
 					
 					if (horiz)
@@ -1086,6 +1097,31 @@ namespace MonoDevelop.Components.Docking
 			reader.ReadEndElement ();
 		}
 
+		public bool IsChildNextToMargin (Gtk.PositionType margin, DockObject obj)
+		{
+			if (type == DockGroupType.Tabbed)
+				return true;
+			else if (type == DockGroupType.Horizontal) {
+				if (margin == PositionType.Top || margin == PositionType.Bottom)
+					return true;
+				int i = VisibleObjects.IndexOf (obj);
+				if (margin == PositionType.Left && i == 0)
+					return true;
+				if (margin == PositionType.Right && i == VisibleObjects.Count - 1)
+					return true;
+			}
+			else if (type == DockGroupType.Vertical) {
+				if (margin == PositionType.Left || margin == PositionType.Right)
+					return true;
+				int i = VisibleObjects.IndexOf (obj);
+				if (margin == PositionType.Top && i == 0)
+					return true;
+				if (margin == PositionType.Bottom && i == VisibleObjects.Count - 1)
+					return true;
+			}
+			return false;
+		}
+		
 		internal TabStrip TabStrip {
 			get { return boundTabStrip; }
 		}
