@@ -1,3 +1,8 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Moved
+	  toolbar to the file scout pad.
+
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

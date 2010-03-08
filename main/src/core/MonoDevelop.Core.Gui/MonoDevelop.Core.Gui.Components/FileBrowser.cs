@@ -32,8 +32,6 @@ namespace MonoDevelop.Core.Gui.Components
 
 		private Gtk.TreeView tv;
 		private Gtk.ScrolledWindow scrolledwindow;
-		private Gtk.ToolButton goUp, goHome;
-		private ToolbarEntry entry;
 		private Gtk.CellRendererText text_render;
 		private ListStore store;
 		private string currentDir;
@@ -50,28 +48,6 @@ namespace MonoDevelop.Core.Gui.Components
 			scrolledwindow = new ScrolledWindow ();
 			scrolledwindow.VscrollbarPolicy = PolicyType.Automatic;
 			scrolledwindow.HscrollbarPolicy = PolicyType.Automatic;
-
-			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.Menu;
-			toolbar.ToolbarStyle = Gtk.ToolbarStyle.Icons;
-
-			goUp = new ToolButton (Gtk.Stock.GoUp);
-			goUp.Clicked += new EventHandler (OnGoUpClicked);
-			goUp.TooltipText = GettextCatalog.GetString ("Go up one level");
-			toolbar.Insert (goUp, -1);
-
-			goHome = new ToolButton (Gtk.Stock.Home);
-			goHome.Clicked += new EventHandler (OnGoHomeClicked);
-			goHome.TooltipText = GettextCatalog.GetString ("Home");
-			toolbar.Insert (goHome, -1);
-
-			entry = new ToolbarEntry ();
-			entry.Expand = true;
-			entry.Activated += new EventHandler (OnEntryActivated);
-			entry.TooltipText = GettextCatalog.GetString ("Location");
-			toolbar.Insert (entry, -1);
-			toolbar.ShowAll ();
-			this.PackStart (toolbar, false, true, 0);
 
 			Properties p = PropertyService.Get ("SharpDevelop.UI.SelectStyleOptions", new Properties ());
 			ignoreHidden = !p.Get ("MonoDevelop.Core.Gui.FileScout.ShowHidden", false);
@@ -153,11 +129,6 @@ namespace MonoDevelop.Core.Gui.Components
 		{
 			store.Clear ();
 
-			if (System.IO.Path.GetPathRoot (CurrentDir) == CurrentDir)
-				goUp.Sensitive = false;
-			else if (goUp.Sensitive == false)
-				goUp.Sensitive = true;
-
 			DirectoryInfo di = new DirectoryInfo (CurrentDir);
 			
 			try {
@@ -179,7 +150,6 @@ namespace MonoDevelop.Core.Gui.Components
 				if (init == true)
 					tv.Selection.SelectPath (new Gtk.TreePath ("0"));
 
-				entry.Text = CurrentDir;
 				string[] filesaux = Directory.GetFiles (CurrentDir);
 
 				files.Clear ();
@@ -294,31 +264,31 @@ namespace MonoDevelop.Core.Gui.Components
 			}
 		}
 		
-		private void OnGoUpClicked (object o, EventArgs args)
+		public void GoUp ()
 		{
 			if (System.IO.Path.GetPathRoot (CurrentDir) != CurrentDir)
 				CurrentDir = System.IO.Path.Combine (CurrentDir, "..");
 		}
 		
-		private void OnGoHomeClicked (object o, EventArgs args)
+		public void GoHome ()
 		{
 			CurrentDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 		}
-
-		private void OnEntryActivated (object sender, EventArgs args)
+		
+		public void GoPath (string path)
 		{
 			try {
-				if (Directory.Exists (entry.Text.Trim ())) {
-					CurrentDir = entry.Text.Trim ();
+				if (Directory.Exists (path.Trim ())) {
+					CurrentDir = path.Trim ();
 					return;
 				}
 			} catch (Exception ex) {
-				string message = GettextCatalog.GetString ("Cannot enter '{0}' folder", entry.Text);
+				string message = GettextCatalog.GetString ("Cannot enter '{0}' folder", path);
 				LoggingService.LogError (message, ex);
 				MessageService.ShowError (message);
 			}
 		}
-
+		
 		private void OnDirRename (object o, EventArgs args)
 		{
 			TreePath treepath;
