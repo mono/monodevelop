@@ -1,3 +1,10 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/BreakpointPad.cs: Use the new
+	  DockItemToolbar class for showing toolbar commands.
+
 2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am: Added target for running the tests.

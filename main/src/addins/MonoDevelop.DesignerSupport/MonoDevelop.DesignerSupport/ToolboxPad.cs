@@ -45,8 +45,14 @@ namespace MonoDevelop.DesignerSupport
 		
 		public ToolboxPad ()
 		{
-			toolbox = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService);
 		}
+		
+		public override void Initialize (IPadWindow container)
+		{
+			base.Initialize (container);
+			toolbox = new Toolbox.Toolbox (DesignerSupport.Service.ToolboxService, container);
+		}
+
 		
 		#region AbstractPadContent implementations
 		

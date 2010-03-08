@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.NUnit
 {
@@ -68,13 +69,13 @@ namespace MonoDevelop.NUnit
 		Widget outputViewScrolled;
 		VSeparator infoSep;
 		
-		ToolButton buttonStop;
-		ToolButton buttonRun;
+		Button buttonStop;
+		Button buttonRun;
 		
-		ToggleToolButton buttonSuccess;
-		ToggleToolButton buttonFailures;
-		ToggleToolButton buttonIgnored;
-		ToggleToolButton buttonOutput;
+		ToggleButton buttonSuccess;
+		ToggleButton buttonFailures;
+		ToggleButton buttonIgnored;
+		ToggleButton buttonOutput;
 		
 		bool running;
 		int testsToRun;
@@ -102,59 +103,6 @@ namespace MonoDevelop.NUnit
 			
 			panel = new VBox ();
 			
-			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.Menu;
-			panel.PackStart (toolbar, false, false, 0);
-			
-			buttonSuccess = new ToggleToolButton ();
-			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
-			buttonSuccess.Active = false;
-			buttonSuccess.IconWidget = new Gtk.Image (CircleImage.Success);
-			buttonSuccess.IsImportant = true;
-			buttonSuccess.Toggled += new EventHandler (OnShowSuccessfulToggled);
-			buttonSuccess.TooltipText = GettextCatalog.GetString ("Show Successful Tests");
-			toolbar.Insert (buttonSuccess, -1);
-			
-			buttonFailures = new ToggleToolButton ();
-			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
-			buttonFailures.Active = true;
-			buttonFailures.IconWidget = new Gtk.Image (CircleImage.Failure);
-			buttonFailures.IsImportant = true;
-			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
-			buttonFailures.TooltipText = GettextCatalog.GetString ("Show Failed Tests");
-			toolbar.Insert (buttonFailures, -1);
-			
-			buttonIgnored = new ToggleToolButton ();
-			buttonIgnored.Label = GettextCatalog.GetString ("Ignored Tests");
-			buttonIgnored.Active = true;
-			buttonIgnored.IconWidget = new Gtk.Image (CircleImage.NotRun);
-			buttonIgnored.Toggled += new EventHandler (OnShowIgnoredToggled);
-			buttonIgnored.IsImportant = true;
-			buttonIgnored.TooltipText = GettextCatalog.GetString( "Show Ignored Tests");
-			toolbar.Insert (buttonIgnored, -1);
-			
-			buttonOutput = new ToggleToolButton ();
-			buttonOutput.Label = GettextCatalog.GetString ("Output");
-			buttonOutput.Active = false;
-			buttonOutput.IconWidget = ImageService.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.Menu);
-			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
-			buttonOutput.IsImportant = true;
-			buttonOutput.TooltipText = GettextCatalog.GetString ("Show Output");
-			toolbar.Insert (buttonOutput, -1);
-			
-			toolbar.Insert (new SeparatorToolItem (), -1);
-			
-			buttonRun = new ToolButton (new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu), GettextCatalog.GetString ("Run Test"));
-			buttonRun.IsImportant = true;
-			buttonRun.Sensitive = false;
-			toolbar.Insert (buttonRun, -1);
-			
-			buttonStop = new ToolButton (Gtk.Stock.Stop);
-			toolbar.Insert (buttonStop, -1);
-			
-			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			toolbar.ShowArrow = false;
-			
 			// Results notebook
 			
 			book = new HPaned ();
@@ -176,10 +124,9 @@ namespace MonoDevelop.NUnit
 			failuresTreeView.Model = failuresStore;
 		
 			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
+			sw.ShadowType = ShadowType.None;
 			sw.Add(failuresTreeView);
-			Frame frame = new Frame ();
-			frame.Add (sw);
-			book.Pack1 (frame, true, true);
+			book.Pack1 (sw, true, true);
 			
 			outputView = new TextView();
 			outputView.Editable = false;
@@ -187,42 +134,11 @@ namespace MonoDevelop.NUnit
 			bold.Weight = Pango.Weight.Bold;
 			outputView.Buffer.TagTable.Add (bold);
 			sw = new Gtk.ScrolledWindow ();
+			sw.ShadowType = ShadowType.None;
 			sw.Add(outputView);
-			frame = new Frame ();
-			frame.Add (sw);
-			book.Pack2 (frame, true, true);
-			outputViewScrolled = frame;
+			book.Pack2 (sw, true, true);
+			outputViewScrolled = sw;
 			
-			// Run panel
-			
-			HBox runPanel = new HBox ();
-			runPanel.BorderWidth = 5;
-			
-			infoSep = new VSeparator ();
-			
-			resultLabel.UseMarkup = true;
-			infoCurrent.Ellipsize = Pango.EllipsizeMode.Start;
-			infoCurrent.WidthRequest = 0;
-			runPanel.PackStart (resultLabel, false, false, 0);
-			runPanel.PackStart (progressBar, false, false, 0);
-			runPanel.PackStart (infoCurrent, true, true, 10);	
-			
-			labels = new HBox (false, 10);
-			
-			infoFailed.UseMarkup = true;
-			infoIgnored.UseMarkup = true;
-			
-			labels.PackStart (infoFailed, true, false, 0);
-			labels.PackStart (infoIgnored, true, false, 0);
-			
-			runPanel.PackEnd (labels, false, false, 0);
-			runPanel.PackEnd (infoSep, false, false, 10);
-			
-			panel.PackStart (runPanel, false, false, 0);
-			progressBar.HeightRequest = infoFailed.SizeRequest().Height;
-			
-			buttonStop.Clicked += new EventHandler (OnStopClicked);
-			buttonRun.Clicked += new EventHandler (OnRunClicked);
 			failuresTreeView.ButtonReleaseEvent += new Gtk.ButtonReleaseEventHandler (OnPopupMenu);
 			failuresTreeView.RowActivated += OnRowActivated;
 			failuresTreeView.Selection.Changed += OnRowSelected;
@@ -235,6 +151,88 @@ namespace MonoDevelop.NUnit
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
+			
+			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			
+			buttonSuccess = new ToggleButton ();
+			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
+			buttonSuccess.Active = false;
+			buttonSuccess.Image = new Gtk.Image (CircleImage.Success);
+			buttonSuccess.Image.Show ();
+			buttonSuccess.Toggled += new EventHandler (OnShowSuccessfulToggled);
+			buttonSuccess.TooltipText = GettextCatalog.GetString ("Show Successful Tests");
+			toolbar.Add (buttonSuccess);
+			
+			buttonFailures = new ToggleButton ();
+			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
+			buttonFailures.Active = true;
+			buttonFailures.Image = new Gtk.Image (CircleImage.Failure);
+			buttonFailures.Image.Show ();
+			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
+			buttonFailures.TooltipText = GettextCatalog.GetString ("Show Failed Tests");
+			toolbar.Add (buttonFailures);
+			
+			buttonIgnored = new ToggleButton ();
+			buttonIgnored.Label = GettextCatalog.GetString ("Ignored Tests");
+			buttonIgnored.Active = true;
+			buttonIgnored.Image = new Gtk.Image (CircleImage.NotRun);
+			buttonIgnored.Image.Show ();
+			buttonIgnored.Toggled += new EventHandler (OnShowIgnoredToggled);
+			buttonIgnored.TooltipText = GettextCatalog.GetString( "Show Ignored Tests");
+			toolbar.Add (buttonIgnored);
+			
+			buttonOutput = new ToggleButton ();
+			buttonOutput.Label = GettextCatalog.GetString ("Output");
+			buttonOutput.Active = false;
+			buttonOutput.Image = ImageService.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.Menu);
+			buttonOutput.Image.Show ();
+			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
+			buttonOutput.TooltipText = GettextCatalog.GetString ("Show Output");
+			toolbar.Add (buttonOutput);
+			
+			toolbar.Add (new SeparatorToolItem ());
+			
+			buttonRun = new Button ();
+			buttonRun.Label = GettextCatalog.GetString ("Run Test");
+			buttonRun.Image = new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu);
+			buttonRun.Image.Show ();
+			buttonRun.Sensitive = false;
+			toolbar.Add (buttonRun);
+			
+			buttonStop = new Button (new Gtk.Image (Gtk.Stock.Stop, Gtk.IconSize.Menu));
+			toolbar.Add (buttonStop);
+			toolbar.ShowAll ();
+			
+			buttonStop.Clicked += new EventHandler (OnStopClicked);
+			buttonRun.Clicked += new EventHandler (OnRunClicked);
+			
+			// Run panel
+			
+			DockItemToolbar runPanel = window.GetToolbar (PositionType.Bottom);
+			
+			infoSep = new VSeparator ();
+			
+			resultLabel.UseMarkup = true;
+			infoCurrent.Ellipsize = Pango.EllipsizeMode.Start;
+			infoCurrent.WidthRequest = 0;
+			runPanel.Add (resultLabel);
+			runPanel.Add (progressBar);
+			runPanel.Add (infoCurrent, true, 10);	
+			
+			labels = new HBox (false, 10);
+			
+			infoFailed.UseMarkup = true;
+			infoIgnored.UseMarkup = true;
+			
+			labels.PackStart (infoFailed, true, false, 0);
+			labels.PackStart (infoIgnored, true, false, 0);
+			
+			runPanel.Add (new Gtk.Label (), true);
+			runPanel.Add (labels);
+			runPanel.Add (infoSep, false, 10);
+			
+			progressBar.HeightRequest = infoFailed.SizeRequest().Height;
+			runPanel.ShowAll ();
 		}
 		
 		public void Dispose ()
@@ -265,10 +263,7 @@ namespace MonoDevelop.NUnit
 			set {
 				running = value;
 				string title = GettextCatalog.GetString ("Test results");
-				if (running) 
-					window.Title = "<span foreground=\"blue\">" + title + "</span>";
-				else
-					window.Title = title;
+				window.IsWorking = value;
 			}
 		}
 		

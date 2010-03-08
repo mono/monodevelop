@@ -100,6 +100,10 @@
       <Name>Mono.Cecil</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Dock\MonoDevelop.Dock.csproj">
+      <Project>{2FAAB0BE-44B3-47A5-9294-758379545F59}</Project>
+      <Name>MonoDevelop.Dock</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ItemToolboxNode.cs" />

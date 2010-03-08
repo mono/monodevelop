@@ -8,6 +8,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
 

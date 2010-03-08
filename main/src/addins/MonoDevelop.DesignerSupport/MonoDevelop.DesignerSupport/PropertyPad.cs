@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui;
 
 using MonoDevelop.DesignerSupport;
 using pg = MonoDevelop.Components.PropertyGrid;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -55,6 +56,13 @@ namespace MonoDevelop.DesignerSupport
 			frame.ShowAll ();
 			DesignerSupport.Service.SetPad (this);
 		}
+		
+		public override void Initialize (IPadWindow container)
+		{
+			base.Initialize (container);
+			grid.SetToolbarProvider (new DockToolbarProvider (container.GetToolbar (Gtk.PositionType.Top)));
+		}
+
 		
 		#region AbstractPadContent implementations
 		
@@ -94,5 +102,46 @@ namespace MonoDevelop.DesignerSupport
 			frame.Add (widget);
 			widget.Show ();			
 		}
+	}
+	
+	class DockToolbarProvider: pg.PropertyGrid.IToolbarProvider
+	{
+		DockItemToolbar tb;
+		
+		public DockToolbarProvider (DockItemToolbar tb)
+		{
+			this.tb = tb;
+		}
+		
+		#region IToolbarProvider implementation
+		public void Insert (Gtk.Widget w, int pos)
+		{
+			tb.Insert (w, pos);
+		}
+		
+		
+		public void ShowAll ()
+		{
+			tb.ShowAll ();
+		}
+		
+		
+		public Gtk.Widget[] Children {
+			get {
+				return tb.Children;
+			}
+		}
+		
+		
+		public bool Visible {
+			get {
+				return tb.Visible;
+			}
+			set {
+				tb.Visible = value;
+			}
+		}
+		
+		#endregion
 	}
 }

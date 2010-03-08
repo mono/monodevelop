@@ -1,3 +1,7 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NUnit.csproj: Flush.
+
 2009-10-13  Ankit Jain  <jankit@novell.com>
 
 	* NUnit.csproj: Import md.targets .

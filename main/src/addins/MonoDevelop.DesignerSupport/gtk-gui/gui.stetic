@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -9,6 +9,7 @@
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Dock.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog" design-size="642 433">

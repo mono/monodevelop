@@ -39,6 +39,7 @@ using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -52,48 +53,45 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		ToolboxWidget toolboxWidget;
 		ScrolledWindow scrolledWindow;
 		
-		Toolbar toolbar;
-		ToggleToolButton filterToggleButton;
-		ToggleToolButton catToggleButton;
-		ToggleToolButton compactModeToggleButton;
+		ToggleButton filterToggleButton;
+		ToggleButton catToggleButton;
+		ToggleButton compactModeToggleButton;
 		Entry filterEntry;
 		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
 		
-		public Toolbox (ToolboxService toolboxService)
+		public Toolbox (ToolboxService toolboxService, IPadWindow container)
 		{			
 			this.toolboxService = toolboxService;
 			
 			#region Toolbar
-			toolbar = new Toolbar ();
-			toolbar.ToolbarStyle = ToolbarStyle.Icons;
-			toolbar.IconSize = IconSize.Menu;
-			base.PackStart (toolbar, false, false, 0);
+			DockItemToolbar toolbar = container.GetToolbar (PositionType.Top);
 		
-			filterToggleButton = new ToggleToolButton ();
-			filterToggleButton.IconWidget = new Image (Stock.Find, IconSize.Menu);
+			filterToggleButton = new ToggleButton ();
+			filterToggleButton.Image = new Image (Stock.Find, IconSize.Menu);
 			filterToggleButton.Toggled += new EventHandler (toggleFiltering);
 			filterToggleButton.TooltipText = GettextCatalog.GetString ("Show search box");
-			toolbar.Insert (filterToggleButton, 0);
+			toolbar.Add (filterToggleButton);
 			
-			catToggleButton = new ToggleToolButton ();
-			catToggleButton.IconWidget = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
+			catToggleButton = new ToggleButton ();
+			catToggleButton.Image = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			catToggleButton.TooltipText = GettextCatalog.GetString ("Show categories");
-			toolbar.Insert (catToggleButton, 1);
+			toolbar.Add (catToggleButton);
 			
-			compactModeToggleButton = new ToggleToolButton ();
-			compactModeToggleButton.IconWidget = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-listboxtoggle", IconSize.Menu));
+			compactModeToggleButton = new ToggleButton ();
+			compactModeToggleButton.Image = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-listboxtoggle", IconSize.Menu));
 			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
 			compactModeToggleButton.TooltipText = GettextCatalog.GetString ("Use compact display");
-			toolbar.Insert (compactModeToggleButton, 2);
+			toolbar.Add (compactModeToggleButton);
 	
-			SeparatorToolItem sep = new SeparatorToolItem();
-			toolbar.Insert (sep, 3);
+			VSeparator sep = new VSeparator ();
+			toolbar.Add (sep);
 			
-			ToolButton toolboxAddButton = new ToolButton (Stock.Add);
-			toolbar.Insert (toolboxAddButton, 4);
+			Button toolboxAddButton = new Button (new Gtk.Image (Stock.Add, IconSize.Menu));
+			toolbar.Add (toolboxAddButton);
 			toolboxAddButton.TooltipText = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
+			toolbar.ShowAll ();
 			
 			filterEntry = new Entry();
 			filterEntry.WidthRequest = 150;

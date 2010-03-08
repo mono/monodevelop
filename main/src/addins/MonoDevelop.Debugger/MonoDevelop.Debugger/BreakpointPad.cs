@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using Mono.Debugging.Client;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Debugger
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Debugger
 		
 		BreakpointsTreeView tree;
 		Gtk.TreeStore store;
-		VBox control;
+		Widget control;
 		ScrolledWindow sw;
 		CommandEntrySet menuSet;
 		TreeViewState treeState;
@@ -78,14 +79,12 @@ namespace MonoDevelop.Debugger
 			Properties
 		}
 		
-		public BreakpointPad()
+		public void Initialize (IPadWindow window)
 		{
-			control = new VBox ();
-			
 			// Toolbar and menu definitions
 			
-			LocalCommandEntry gotoCmd = new LocalCommandEntry (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
-			LocalCommandEntry propertiesCmd = new LocalCommandEntry (LocalCommands.Properties, GettextCatalog.GetString ("Properties"), Gtk.Stock.Properties);
+			ActionCommand gotoCmd = new ActionCommand (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
+			ActionCommand propertiesCmd = new ActionCommand (LocalCommands.Properties, GettextCatalog.GetString ("Properties"), Gtk.Stock.Properties);
 			
 			menuSet = new CommandEntrySet ();
 			menuSet.Add (gotoCmd);
@@ -104,13 +103,6 @@ namespace MonoDevelop.Debugger
 			toolbarSet.AddItem (EditCommands.Delete);
 			toolbarSet.AddSeparator ();
 			toolbarSet.Add (propertiesCmd);
-			
-			Gtk.Toolbar toolbar = IdeApp.CommandService.CreateToolbar ("bps", toolbarSet, control);
-			toolbar.IconSize = IconSize.Menu;
-			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			toolbar.ShowArrow = false;
-			
-			control.PackStart (toolbar, false, false, 0);
 			
 			// The breakpoint list
 			
@@ -161,7 +153,7 @@ namespace MonoDevelop.Debugger
 			sw.ShadowType = ShadowType.In;
 			sw.Add (tree);
 			
-			control.PackStart (sw, true, true, 0);
+			control = sw;
 			
 			control.ShowAll ();
 			
@@ -184,6 +176,10 @@ namespace MonoDevelop.Debugger
 			
 			tree.RowActivated += OnRowActivated;
 			tree.KeyPressEvent += OnKeyPressed;
+			
+			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			toolbar.Add (toolbarSet, sw);
+			toolbar.ShowAll ();
 		}
 		
 		public void Dispose ()
@@ -269,12 +265,6 @@ namespace MonoDevelop.Debugger
 				bp.Enabled = !bp.Enabled;
 			}
 			
-		}
-		
-		void IPadContent.Initialize (IPadWindow window)
-		{
-			window.Title = GettextCatalog.GetString ("Breakpoints");
-			window.Icon = Stock.OutputIcon;
 		}
 		
 		public void UpdateDisplay ()
