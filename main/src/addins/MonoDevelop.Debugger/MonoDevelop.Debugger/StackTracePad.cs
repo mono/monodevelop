@@ -87,8 +87,6 @@ namespace MonoDevelop.Debugger
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
-			window.Title = GettextCatalog.GetString ("Call Stack");
-			window.Icon = Stock.OutputIcon;
 			window.PadContentShown += delegate {
 				if (needsUpdate)
 					Update ();

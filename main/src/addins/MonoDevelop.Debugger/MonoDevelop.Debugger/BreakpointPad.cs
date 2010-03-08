@@ -150,7 +150,7 @@ namespace MonoDevelop.Debugger
 			col.Resizable = true;
 			
 			sw = new Gtk.ScrolledWindow ();
-			sw.ShadowType = ShadowType.In;
+			sw.ShadowType = ShadowType.None;
 			sw.Add (tree);
 			
 			control = sw;

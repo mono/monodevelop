@@ -1,5 +1,14 @@
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs: Icons are set in the
+	  extension node.
+
+	* MonoDevelop.Debugger/BreakpointPad.cs: Remove unrequired
+	  shadow.
+
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Debugger.csproj:
 	* MonoDevelop.Debugger/BreakpointPad.cs: Use the new
