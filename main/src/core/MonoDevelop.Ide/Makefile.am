@@ -103,7 +103,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/PadOptionCodon.cs \
 	MonoDevelop.Ide.Codons/ProjectActiveCondition.cs \
 	MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs \
-	MonoDevelop.Ide.Codons/SideBarTabNode.cs \
 	MonoDevelop.Ide.Codons/SolutionPadCodon.cs \
 	MonoDevelop.Ide.Codons/TaskListViewCodon.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
@@ -320,7 +319,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/RootWorkspace.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
-	MonoDevelop.Ide.Gui/SideBar.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \

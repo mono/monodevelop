@@ -1,5 +1,10 @@
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Remove unused files from project.
+
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/Scope.cs:
 	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Make
