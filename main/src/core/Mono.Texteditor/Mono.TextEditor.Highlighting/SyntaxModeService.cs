@@ -495,7 +495,8 @@ namespace Mono.TextEditor.Highlighting
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
+			
+			InstallSyntaxMode ("text/x-jay", new JaySyntaxMode ());
 		}
-
 	}
 }

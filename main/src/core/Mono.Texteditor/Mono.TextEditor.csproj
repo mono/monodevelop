@@ -159,6 +159,7 @@
     <Compile Include="Mono.TextEditor.Vi\ViMacro.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViMark.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -244,6 +245,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\CssSyntaxMode.xml">
       <LogicalName>CssSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\JaySyntaxMode.xml">
+      <LogicalName>JaySyntaxMode.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

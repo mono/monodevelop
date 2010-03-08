@@ -537,7 +537,10 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Length = length;
 				curChunk.Style  = GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, curChunk.Style);
-				foreach (SemanticRule semanticRule in spanParser.GetRule (span).SemanticRules) {
+				Rule spanRule = spanParser.GetRule (span);
+				if (spanRule == null)
+					throw new Exception ("Rule " + span.Rule + " not found in " + span);
+				foreach (SemanticRule semanticRule in spanRule.SemanticRules) {
 					semanticRule.Analyze (this.doc, line, curChunk, offset, line.EndOffset);
 				}
 			}

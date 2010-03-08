@@ -20,6 +20,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
 	Mono.TextEditor.Highlighting/IXmlProvider.cs \
+	Mono.TextEditor.Highlighting/JaySyntaxMode.cs \
 	Mono.TextEditor.Highlighting/Keywords.cs \
 	Mono.TextEditor.Highlighting/Marker.cs \
 	Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs \
@@ -142,6 +143,7 @@ RES =  \
 	SyntaxModes/ILSyntaxMode.xml \
 	SyntaxModes/JavascriptSyntaxMode.xml \
 	SyntaxModes/JavaSyntaxMode.xml \
+	SyntaxModes/JaySyntaxMode.xml \
 	SyntaxModes/LuaSyntaxMode.xml \
 	SyntaxModes/MakefileSyntaxMode.xml \
 	SyntaxModes/PythonSyntaxMode.xml \

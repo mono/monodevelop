@@ -1,3 +1,14 @@
+2010-03-08  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* SyntaxModes/JaySyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/JaySyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Added jay
+	  syntax mode (needed 'semantic' highlighting engine for
+	  this).
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor.csproj: Make it a real 3.5 project.
