@@ -258,7 +258,7 @@ namespace MonoDevelop.WelcomePage
 		public void SetLinkStatus (string link)
 		{
 			if (String.IsNullOrEmpty (link) || link.IndexOf ("monodevelop://") != -1) {
-				IdeApp.Workbench.StatusBar.ShowMessage (null);
+				IdeApp.Workbench.StatusBar.ShowReady ();
 			} else if (link.IndexOf ("project://") != -1) {
 				string message = link;
 				message = message.Substring (10);

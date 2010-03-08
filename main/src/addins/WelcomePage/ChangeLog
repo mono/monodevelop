@@ -1,3 +1,7 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WelcomePageView.cs: Track api changes.
+
 2010-02-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
