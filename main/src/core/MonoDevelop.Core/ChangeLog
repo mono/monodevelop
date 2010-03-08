@@ -1,3 +1,12 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs:
+	* MonoDevelop.Core.Serialization/PrimitiveDataType.cs: Added
+	  support for serializing time spans.
+
+	* MonoDevelop.Core/PropertyBag.cs: Escape spaces in key names
+	  when saving the property bag to xml.
+
 2010-03-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

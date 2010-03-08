@@ -31,6 +31,8 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
+using System.Text;
+using System.Globalization;
 
 namespace MonoDevelop.Core
 {
@@ -178,7 +180,7 @@ namespace MonoDevelop.Core
 				} else {
 					val = handler.SerializationContext.Serializer.Serialize (entry.Value, typeof(object));
 				}
-				val.Name = entry.Key;
+				val.Name = EscapeName (entry.Key);
 				data.Add (val);
 			}
 			return data;
@@ -194,8 +196,50 @@ namespace MonoDevelop.Core
 			sourceFile = handler.SerializationContext.BaseFile;
 			foreach (DataNode nod in data) {
 				if (nod.Name != "ctype")
-					properties [nod.Name] = nod;
+					properties [UnescapeName (nod.Name)] = nod;
 			}
+		}
+		
+		string EscapeName (string str)
+		{
+			StringBuilder sb = new StringBuilder (str.Length);
+			for (int n=0; n<str.Length; n++) {
+				char c = str [n];
+				if (c == '_')
+					sb.Append ("__");
+				else if (c != '.' && c != '-' && !char.IsLetter (c) && (!char.IsNumber (c) || n==0)) {
+					string s = ((int)c).ToString ("X");
+					sb.Append ("_" + s.Length.ToString ());
+					sb.Append (s);
+				}
+				else
+					sb.Append (c);
+			}
+			return sb.ToString ();
+		}
+		
+		string UnescapeName (string str)
+		{
+			StringBuilder sb = new StringBuilder (str.Length);
+			for (int n=0; n<str.Length; n++) {
+				char c = str [n];
+				if (c == '_') {
+					if (n + 1 >= str.Length)
+						return sb.ToString ();
+					if (str [n + 1] == '_')
+						sb.Append (c);
+					else {
+						int len = int.Parse (str.Substring (n+1,1));
+						if (n + 2 + len - 1 >= str.Length)
+							return sb.ToString ();
+						int ic;
+						if (int.TryParse (str.Substring (n + 2, len), NumberStyles.HexNumber, null, out ic))
+							sb.Append ((char)ic);
+					}
+				} else
+					sb.Append (c);
+			}
+			return sb.ToString ();
 		}
 	}
 }
