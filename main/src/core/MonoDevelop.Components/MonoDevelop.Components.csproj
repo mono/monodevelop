@@ -166,7 +166,6 @@
     <Compile Include="MonoDevelop.Components.Chart\IntegerAxis.cs" />
     <Compile Include="MonoDevelop.Components.Chart\Serie.cs" />
     <Compile Include="MonoDevelop.Components.Chart\TickEnumerator.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\LocalCommandEntry.cs" />
     <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
     <Compile Include="gtk-gui\generated.cs" />
@@ -253,6 +252,7 @@
     <Compile Include="MonoDevelop.Components.Diff\StructuredDiff.cs" />
     <Compile Include="MonoDevelop.Components.Diff\TextDiff.cs" />
     <Compile Include="MonoDevelop.Components.Diff\UnifiedDiff.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

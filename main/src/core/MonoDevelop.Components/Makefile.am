@@ -63,6 +63,7 @@ FILES =  \
 	MonoDevelop.Components.Commands/CustomCommandUpdaterAttribute.cs \
 	MonoDevelop.Components.Commands/CustomItem.cs \
 	MonoDevelop.Components.Commands/CustomMenuItem.cs \
+	MonoDevelop.Components.Commands/ICommandBar.cs \
 	MonoDevelop.Components.Commands/ICommandDelegatorRouter.cs \
 	MonoDevelop.Components.Commands/ICommandMenuItem.cs \
 	MonoDevelop.Components.Commands/ICommandRouter.cs \
@@ -75,7 +76,6 @@ FILES =  \
 	MonoDevelop.Components.Commands/KeyBindingService.cs \
 	MonoDevelop.Components.Commands/KeyBindingSet.cs \
 	MonoDevelop.Components.Commands/LinkCommandEntry.cs \
-	MonoDevelop.Components.Commands/LocalCommandEntry.cs \
 	MonoDevelop.Components.Commands/MenuToolButton.cs \
 	MonoDevelop.Components.Diff/Diff.cs \
 	MonoDevelop.Components.Diff/DiffWidget.cs \

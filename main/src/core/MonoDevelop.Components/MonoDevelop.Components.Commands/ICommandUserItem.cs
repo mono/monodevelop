@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
-	internal interface ICommandUserItem 
+	public interface ICommandUserItem 
 	{
 		void Update (object initialTarget);
 	}

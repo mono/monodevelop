@@ -39,11 +39,11 @@ namespace MonoDevelop.Components.Commands
 		IconId icon;
 		bool autoHide;
 		
-		public CommandEntrySet (): base (null)
+		public CommandEntrySet (): base ((object)null)
 		{
 		}
 		
-		public CommandEntrySet (string name, IconId icon): base (null)
+		public CommandEntrySet (string name, IconId icon): base ((object)null)
 		{
 			this.name = name;
 			this.icon = icon;
@@ -67,6 +67,11 @@ namespace MonoDevelop.Components.Commands
 		public void Add (CommandEntry entry)
 		{
 			cmds.Add (entry);
+		}
+		
+		public void Add (Command cmd)
+		{
+			cmds.Add (new CommandEntry (cmd));
 		}
 		
 		public CommandEntry AddItem (object cmdId)

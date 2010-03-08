@@ -1,3 +1,27 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Components.csproj:
+	* MonoDevelop.Components.Commands/ICommandBar.cs:
+	* MonoDevelop.Components.Commands/CommandEntry.cs:
+	* MonoDevelop.Components.Commands/ActionCommand.cs:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands/CommandToolbar.cs:
+	* MonoDevelop.Components.Commands/CommandEntrySet.cs:
+	* MonoDevelop.Components.Commands/ICommandUserItem.cs:
+	* MonoDevelop.Components.Commands/LocalCommandEntry.cs:
+	* MonoDevelop.Components.Commands.ExtensionNodes/LocalCommandItemCodon.cs:
+	  Added support for custom toolbars through the interface
+	  ICommandBar. Removed LocalCommandEntry, which is replaced by
+	  CommandEntry, now with some additional constructors.
+
+	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs: Allow
+	  externalizing the toolbar.
+
+	* MonoDevelop.Components/GtkUtil.cs: When the tooltip is
+	  clicked, syntetize a new click event and forward it to the
+	  underlying tree.
+
 2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

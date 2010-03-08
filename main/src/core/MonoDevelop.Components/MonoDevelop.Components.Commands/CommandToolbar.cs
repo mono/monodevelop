@@ -31,13 +31,13 @@ using MonoDevelop.Components.DockToolbars;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandToolbar: DockToolbar
+	public class CommandToolbar: DockToolbar, ICommandBar
 	{
 		object initialCommandTarget;
 		
 		public CommandToolbar (CommandManager manager, string id, string title): base (id, title)
 		{
-			manager.RegisterToolbar (this);
+			manager.RegisterCommandBar (this);
 		}
 		
 		internal object InitialCommandTarget {
@@ -48,11 +48,14 @@ namespace MonoDevelop.Components.Commands
 		protected override void OnShown ()
 		{
 			base.OnShown ();
-			Update (null);
+			((ICommandBar)this).Update (null);
 		}
 		
-		internal void Update (object defaultTarget)
+		void ICommandBar.Update (object defaultTarget)
 		{
+			if (!Visible)
+				return;
+			
 			if (initialCommandTarget != null)
 				defaultTarget = initialCommandTarget;
 

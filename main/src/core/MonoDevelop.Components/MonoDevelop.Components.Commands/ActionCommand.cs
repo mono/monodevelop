@@ -47,6 +47,10 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 		
+		public ActionCommand (object id, string text): base (id, text)
+		{
+		}
+		
 		public ActionCommand (object id, string text, IconId icon): base (id, text)
 		{
 			Icon = icon;

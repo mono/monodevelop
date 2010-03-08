@@ -35,6 +35,7 @@ namespace MonoDevelop.Components.Commands
 		object cmdId;
 		string overrideLabel;
 		bool disabledVisible = true;
+		Command localCmd;
 
 		public CommandEntry (object cmdId, string overrideLabel, bool disabledVisible)
 		{
@@ -51,6 +52,11 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 		
+		public CommandEntry (Command localCmd) : this (localCmd.Id, null, true)
+		{
+			this.localCmd = localCmd;
+		}
+		
 		public object CommandId {
 			get { return cmdId; }
 			set { cmdId = CommandManager.ToCommandId (value); }
@@ -61,9 +67,20 @@ namespace MonoDevelop.Components.Commands
 			set { disabledVisible = value; }
 		}
 		
+		public virtual Command GetCommand (CommandManager manager)
+		{
+			if (localCmd != null) {
+				if (manager.GetCommand (localCmd.Id) == null)
+					manager.RegisterCommand (localCmd);
+				localCmd = null;
+			}
+				
+			return manager.GetCommand (cmdId);
+		}
+		
 		internal protected virtual Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
-			return CreateMenuItem (manager, cmdId, true, overrideLabel, disabledVisible);
+			return CreateMenuItem (manager, GetCommand (manager), cmdId, true, overrideLabel, disabledVisible);
 		}
 		
 		internal protected virtual Gtk.ToolItem CreateToolItem (CommandManager manager)
@@ -71,7 +88,7 @@ namespace MonoDevelop.Components.Commands
 			if (cmdId == CommandManager.ToCommandId (Command.Separator))
 				return new Gtk.SeparatorToolItem ();
 
-			Command cmd = manager.GetCommand (cmdId);
+			Command cmd = GetCommand (manager);
 			if (cmd == null)
 				return new Gtk.ToolItem ();
 			
@@ -116,16 +133,17 @@ namespace MonoDevelop.Components.Commands
 		
 		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster)		
 		{
-			return CreateMenuItem (manager, cmdId, isArrayMaster, null, true);
+			return CreateMenuItem (manager, null, cmdId, isArrayMaster, null, true);
 		}
 
-		internal static Gtk.MenuItem CreateMenuItem (CommandManager manager, object cmdId, bool isArrayMaster, string overrideLabel, bool disabledVisible)
+		static Gtk.MenuItem CreateMenuItem (CommandManager manager, Command cmd, object cmdId, bool isArrayMaster, string overrideLabel, bool disabledVisible)
 		{
 			cmdId = CommandManager.ToCommandId (cmdId);
 			if (cmdId == CommandManager.ToCommandId (Command.Separator))
 				return new Gtk.SeparatorMenuItem ();
-				
-			Command cmd = manager.GetCommand (cmdId);
+			
+			if (cmd == null)
+				cmd = manager.GetCommand (cmdId);
 			if (cmd == null)
 				return new Gtk.MenuItem ("<Unknown Command>");
 			

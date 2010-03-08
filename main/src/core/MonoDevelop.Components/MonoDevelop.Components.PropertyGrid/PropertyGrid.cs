@@ -42,6 +42,7 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -54,12 +55,13 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		PropertyGridTree tree;
 		HSeparator helpSeparator;
+		HSeparator toolbarSeparator;
 		VPaned vpaned;
 		
-		Toolbar toolbar;
-		RadioToolButton catButton;
-		RadioToolButton alphButton;
-		ToggleToolButton helpButton;
+		IToolbarProvider toolbar;
+		RadioButton catButton;
+		RadioButton alphButton;
+		ToggleButton helpButton;
 
 		string descTitle, descText;
 		Label descTitleLabel;
@@ -81,25 +83,33 @@ namespace MonoDevelop.Components.PropertyGrid
 			this.editorManager = editorManager;
 			
 			#region Toolbar
-			toolbar = new Toolbar ();
-			toolbar.ToolbarStyle = ToolbarStyle.Icons;
-			toolbar.IconSize = IconSize.Menu;
-			base.PackStart (toolbar, false, false, 0);
 			
-			catButton = new RadioToolButton (new GLib.SList (IntPtr.Zero));
+			PropertyGridToolbar tb = new PropertyGridToolbar ();
+			base.PackStart (tb, false, false, 0);
+			toolbar = tb;
+			
+			catButton = new RadioButton ((Gtk.RadioButton)null);
+			catButton.DrawIndicator = false;
+			catButton.Relief = ReliefStyle.None;
 			Gdk.Pixbuf pixbuf = null;
 			try {
 				pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "MonoDevelop.Components.PropertyGrid.SortByCat.png");
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Components.PropertyGrid.SortByCat.png", e);
 			}
-			if (pixbuf != null)
-				catButton.IconWidget = new Gtk.Image (pixbuf);
+			if (pixbuf != null) {
+				catButton.Image = new Gtk.Image (pixbuf);
+				catButton.Image.Show ();
+			}
 			catButton.TooltipText = GettextCatalog.GetString ("Sort in categories");
 			catButton.Toggled += new EventHandler (toolbarClick);
 			toolbar.Insert (catButton, 0);
 			
-			alphButton = new RadioToolButton (catButton, Stock.SortAscending);
+			alphButton = new RadioButton (catButton);
+			alphButton.DrawIndicator = false;
+			alphButton.Relief = ReliefStyle.None;
+			alphButton.Image = new Gtk.Image (Stock.SortAscending, IconSize.Menu);
+			alphButton.Image.Show ();
 			alphButton.TooltipText = GettextCatalog.GetString ("Sort alphabetically");
 			alphButton.Clicked += new EventHandler (toolbarClick);
 			toolbar.Insert (alphButton, 1);
@@ -107,7 +117,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			catButton.Active = true;
 			
 			toolbar.Insert (new SeparatorToolItem (), 2);
-			helpButton = new ToggleToolButton (Gtk.Stock.Help);
+			helpButton = new ToggleButton ();
+			helpButton.Relief = ReliefStyle.None;
+			helpButton.Image = new Gtk.Image (Gtk.Stock.Help, IconSize.Menu);
 			helpButton.TooltipText = GettextCatalog.GetString ("Show help panel");
 			helpButton.Clicked += delegate {
 				ShowHelp = helpButton.Active;
@@ -125,9 +137,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			};
 
 			VBox tbox = new VBox ();
-			helpSeparator = new HSeparator ();
-			helpSeparator.Visible = true;
-			tbox.PackStart (helpSeparator, false, false, 0);
+			toolbarSeparator = new HSeparator ();
+			toolbarSeparator.Visible = true;
+			tbox.PackStart (toolbarSeparator, false, false, 0);
 			tbox.PackStart (tree, true, true, 0);
 			helpSeparator = new HSeparator ();
 			tbox.PackStart (helpSeparator, false, false, 0);
@@ -143,6 +155,23 @@ namespace MonoDevelop.Components.PropertyGrid
 			helpButton.Active = ShowHelp = MonoDevelop.Core.PropertyService.Get<bool> (PROP_HELP_KEY, true);
 			
 			Populate ();
+			UpdateTabs ();
+		}
+		
+		public void SetToolbarProvider (IToolbarProvider toolbarProvider)
+		{
+			PropertyGridToolbar t = toolbar as PropertyGridToolbar;
+			if (t == null)
+				throw new InvalidOperationException ("Custom toolbar provider already set");
+			Remove (t);
+			foreach (Widget w in t.Children) {
+				t.Remove (w);
+				toolbarProvider.Insert (w, -1);
+			}
+			t.Destroy ();
+			toolbarSeparator.Hide ();
+			toolbar = toolbarProvider;
+			UpdateTabs ();
 		}
 		
 		public event EventHandler Changed {
@@ -189,25 +218,27 @@ namespace MonoDevelop.Components.PropertyGrid
 			get { return selectedTab; }
 		}
 		
+		TabRadioToolButton firstTab;
+		
 		private void AddPropertyTab (PropertyTab tab)
 		{
 			TabRadioToolButton rtb;
 			if (propertyTabs.Count == 0) {
 				selectedTab = tab;
-				rtb = new TabRadioToolButton (new GLib.SList (IntPtr.Zero), Stock.MissingImage);
+				rtb = new TabRadioToolButton (null);
 				rtb.Active = true;
+				firstTab = rtb;
 				toolbar.Insert (new SeparatorToolItem (), FirstTabIndex - 1);
 			}
 			else
-				rtb = new TabRadioToolButton (
-					(RadioToolButton) toolbar.GetNthItem (propertyTabs.Count + FirstTabIndex - 1));
+				rtb = new TabRadioToolButton (firstTab);
 			
 			//load image from PropertyTab's bitmap
-			var icon = tab.GetIcon (); 
+			var icon = tab.GetIcon ();
 			if (icon != null)
-				rtb.IconWidget = new Gtk.Image (icon);
+				rtb.Image = new Gtk.Image (icon);
 			else
-				rtb.IconWidget = new Gtk.Image (Stock.MissingImage, IconSize.SmallToolbar);
+				rtb.Image = new Gtk.Image (Stock.MissingImage, IconSize.Menu);
 			
 			rtb.Tab = tab;
 			rtb.TooltipText = tab.TabName;
@@ -381,17 +412,41 @@ namespace MonoDevelop.Components.PropertyGrid
 			UpdateHelp ();
 		}
 		
+		public interface IToolbarProvider
+		{
+			void Insert (Widget w, int pos);
+			Widget[] Children { get; }
+			void ShowAll ();
+			bool Visible { get; set; }
+		}
+		
+		class PropertyGridToolbar: HBox, IToolbarProvider
+		{
+			public PropertyGridToolbar ()
+			{
+				Spacing = 3;
+			}
+			
+			public void Insert (Widget w, int pos)
+			{
+				PackStart (w, false, false, 0);
+				if (pos != -1) {
+					Box.BoxChild bc = (Box.BoxChild) this [w];
+					bc.Position = pos;
+				}
+			}
+		}
+		
 		#endregion
 	}
 	
-	class TabRadioToolButton: RadioToolButton
+	class TabRadioToolButton: RadioButton
 	{
-		public TabRadioToolButton (RadioToolButton group): base (group)
+		public TabRadioToolButton (RadioButton group): base (group)
 		{
-		}
-		
-		public TabRadioToolButton (GLib.SList group, string icon): base (group, icon)
-		{
+			DrawIndicator = false;
+			Relief = ReliefStyle.None;
+			NoShowAll = true;
 		}
 		
 		public PropertyTab Tab;

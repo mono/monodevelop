@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Components
 {
@@ -98,7 +99,7 @@ namespace MonoDevelop.Components
 			data.Timer = GLib.Timeout.Add (300, delegate {
 				data.ShowingTooltip = false;
 				int ox, oy;
-				tree.GdkWindow.GetOrigin (out ox, out oy);
+				tree.BinWindow.GetOrigin (out ox, out oy);
 				Gdk.Rectangle rect = tree.GetCellArea (path, col);
 				data.Tooltip = new CellTooltipWindow (tree, col, path);
 				if (rect.X + data.Tooltip.SizeRequest ().Width > tree.Allocation.Width) {
@@ -189,23 +190,35 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			Gdk.ModifierType mtype;
-			bool ctrlKey = Gtk.Global.GetCurrentEventState (out mtype) && (mtype & Gdk.ModifierType.ControlMask) != 0;
-			bool shiftKey = Gtk.Global.GetCurrentEventState (out mtype) && (mtype & Gdk.ModifierType.ShiftMask) != 0;
-			GtkUtil.HideTooltip (tree);
-			TreePath[] paths = tree.Selection.GetSelectedRows ();
-			if (ctrlKey) {
-				foreach (TreePath p in paths)
-					tree.Selection.SelectPath (p);
-				tree.Selection.SelectPath (path);
+			bool res = base.OnButtonPressEvent (evnt);
+			CreateEvent (evnt);
+			return res;
+		}
+		
+		void CreateEvent (Gdk.EventButton refEvent)
+		{
+			int rx, ry;
+			tree.BinWindow.GetOrigin (out rx, out ry);
+			NativeEventButtonStruct nativeEvent = new NativeEventButtonStruct (); 
+			nativeEvent.type = refEvent.Type;
+			nativeEvent.send_event = 1;
+			nativeEvent.window = tree.BinWindow.Handle;
+			nativeEvent.x = refEvent.XRoot - rx;
+			nativeEvent.y = refEvent.YRoot - ry;
+			nativeEvent.x_root = refEvent.XRoot;
+			nativeEvent.y_root = refEvent.YRoot;
+			nativeEvent.time = refEvent.Time;
+			nativeEvent.state = (uint) refEvent.State;
+			nativeEvent.button = refEvent.Button;
+			nativeEvent.device = refEvent.Device.Handle;
+
+			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
+			try {
+				Gdk.EventButton evnt = new Gdk.EventButton (ptr); 
+				Gdk.EventHelper.Put (evnt); 
+			} finally {
+				GLib.Marshaller.Free (ptr);
 			}
-			else if (shiftKey && paths.Length > 0) {
-				tree.Selection.SelectRange (path, paths[0]);
-			} else {
-				tree.Selection.SelectPath (path);
-				tree.SetCursor (path, col, false);
-			}
-			return base.OnButtonPressEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
@@ -221,4 +234,20 @@ namespace MonoDevelop.Components
 			return base.OnEnterNotifyEvent (evnt);
 		}
 	}
+	
+	[StructLayout (LayoutKind.Sequential)] 
+	struct NativeEventButtonStruct { 
+		public Gdk.EventType type; 
+		public IntPtr window; 
+		public sbyte send_event; 
+		public uint time; 
+		public double x; 
+		public double y; 
+		public IntPtr axes; 
+		public uint state; 
+		public uint button; 
+		public IntPtr device; 
+		public double x_root; 
+		public double y_root; 
+	} 
 }

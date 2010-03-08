@@ -44,7 +44,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		public override object CreateInstance ()
 		{
 			Command cmd = (Command) base.CreateInstance ();
-			return new LocalCommandEntry (cmd);
+			return new CommandEntry (cmd);
 		}
 	}
 }

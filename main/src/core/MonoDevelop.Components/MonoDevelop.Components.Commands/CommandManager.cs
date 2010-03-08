@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.Commands
 		
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
-		ArrayList toolbars = new ArrayList ();
+		List<ICommandBar> toolbars = new List<ICommandBar> ();
 		CommandTargetChain globalHandlerChain;
 		ArrayList commandUpdateErrors = new ArrayList ();
 		ArrayList visitors = new ArrayList ();
@@ -260,7 +260,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			guiLock++;
 			if (guiLock == 1) {
-				foreach (CommandToolbar toolbar in toolbars)
+				foreach (ICommandBar toolbar in toolbars)
 					toolbar.SetEnabled (false);
 			}
 		}
@@ -268,7 +268,7 @@ namespace MonoDevelop.Components.Commands
 		public void UnlockAll ()
 		{
 			if (guiLock == 1) {
-				foreach (CommandToolbar toolbar in toolbars)
+				foreach (ICommandBar toolbar in toolbars)
 					toolbar.SetEnabled (true);
 			}
 			
@@ -999,15 +999,25 @@ namespace MonoDevelop.Components.Commands
 			return toolbarUpdaterRunning;
 		}
 		
-		internal void RegisterToolbar (CommandToolbar toolbar)
+		public void RegisterCommandBar (ICommandBar commandBar)
 		{
-			toolbars.Add (toolbar);
+			if (toolbars.Contains (commandBar))
+				return;
+			
+			toolbars.Add (commandBar);
 			if (enableToolbarUpdate && !toolbarUpdaterRunning) {
 				GLib.Timeout.Add (500, new GLib.TimeoutHandler (UpdateStatus));
 				toolbarUpdaterRunning = true;
 			}
-			if (guiLock > 0)
-				toolbar.SetEnabled (false);
+			commandBar.SetEnabled (guiLock == 0);
+			
+			object activeWidget = GetActiveWidget (rootWidget);
+			commandBar.Update (activeWidget);
+		}
+		
+		public void UnregisterCommandBar (ICommandBar commandBar)
+		{
+			toolbars.Remove (commandBar);
 		}
 		
 		void UpdateToolbars ()
@@ -1018,9 +1028,8 @@ namespace MonoDevelop.Components.Commands
 				return;
 			
 			object activeWidget = GetActiveWidget (rootWidget);
-			foreach (CommandToolbar toolbar in toolbars) {
-				if (toolbar.Visible)
-					toolbar.Update (activeWidget);
+			foreach (ICommandBar toolbar in toolbars) {
+				toolbar.Update (activeWidget);
 			}
 			foreach (ICommandTargetVisitor v in visitors)
 				VisitCommandTargets (v, null);
