@@ -103,6 +103,7 @@ FILES =  \
 	MonoDevelop.Ide.Codons/PadOptionCodon.cs \
 	MonoDevelop.Ide.Codons/ProjectActiveCondition.cs \
 	MonoDevelop.Ide.Codons/ProjectTemplateCodon.cs \
+	MonoDevelop.Ide.Codons/SideBarTabNode.cs \
 	MonoDevelop.Ide.Codons/SolutionPadCodon.cs \
 	MonoDevelop.Ide.Codons/TaskListViewCodon.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
@@ -152,6 +153,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeOptions.cs \
+	MonoDevelop.Ide.Gui.Components/LogView.cs \
 	MonoDevelop.Ide.Gui.Components/NodeAttributes.cs \
 	MonoDevelop.Ide.Gui.Components/NodeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/NodeBuilderExtension.cs \
@@ -173,6 +175,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/IEncodedTextContent.cs \
 	MonoDevelop.Ide.Gui.Content/IExtensibleTextEditor.cs \
 	MonoDevelop.Ide.Gui.Content/IFoldable.cs \
+	MonoDevelop.Ide.Gui.Content/ILocationList.cs \
 	MonoDevelop.Ide.Gui.Content/INavigable.cs \
 	MonoDevelop.Ide.Gui.Content/IndentStyle.cs \
 	MonoDevelop.Ide.Gui.Content/IPathedDocument.cs \
@@ -270,7 +273,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Pads/FileList.cs \
 	MonoDevelop.Ide.Gui.Pads/FileListItem.cs \
 	MonoDevelop.Ide.Gui.Pads/FileScout.cs \
-	MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs \
 	MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs \
 	MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs \
 	MonoDevelop.Ide.Gui.Pads/SolutionPad.cs \
@@ -288,6 +290,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBinding.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
+	MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
 	MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
@@ -306,13 +309,10 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
 	MonoDevelop.Ide.Gui/IPadContent.cs \
 	MonoDevelop.Ide.Gui/IViewContent.cs \
-	MonoDevelop.Ide.Gui/IWorkbench.cs \
-	MonoDevelop.Ide.Gui/IWorkbenchLayout.cs \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/LayoutComboBox.cs \
 	MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs \
 	MonoDevelop.Ide.Gui/NavigationHistoryService.cs \
-	MonoDevelop.Ide.Gui/OutputProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadFontChanger.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
@@ -320,6 +320,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/RootWorkspace.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
+	MonoDevelop.Ide.Gui/SideBar.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \
@@ -327,7 +328,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
+	MonoDevelop.Ide.Gui/WorkbenchContext.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
+	MonoDevelop.Ide.Gui/WorkbenchWindow.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \

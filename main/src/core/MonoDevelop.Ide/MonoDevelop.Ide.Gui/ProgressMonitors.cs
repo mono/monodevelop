@@ -49,13 +49,12 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void Initialize ()
 		{
-			CreateMonitorPad (GettextCatalog.GetString ("Build Output"), Stock.BuildCombine, false, true, false);
 		}
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
-			bool front = IdeApp.Preferences.ShowErrorPadAfterBuild == BuildResultStates.Always;
-			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (GetOutputProgressMonitor (GettextCatalog.GetString ("Build Output"), Stock.BuildCombine, front, true));
+			ErrorListPad errorPad = (ErrorListPad) IdeApp.Workbench.GetPad<ErrorListPad> ().Content;
+			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
 			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), Stock.BuildCombine, false));
 			return mon;
 		}
@@ -100,11 +99,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetOutputProgressMonitor (string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
 		{
-			DefaultMonitorPad monitorPad = CreateMonitorPad (title, icon, bringToFront, allowMonitorReuse, true);
-			return new OutputProgressMonitor (monitorPad, title, icon);
+			Pad pad = CreateMonitorPad (title, icon, bringToFront, allowMonitorReuse, true);
+			pad.Visible = true;
+			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
 		}
 		
-		DefaultMonitorPad CreateMonitorPad (string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
+		Pad CreateMonitorPad (string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
 		{
 			Pad pad = null;
 			if (icon == null)
@@ -129,15 +129,15 @@ namespace MonoDevelop.Ide.Gui
 				}
 				if (pad != null) {
 					if (bringToFront) pad.BringToFront ();
-					return (DefaultMonitorPad) pad.Content;
+					return pad;
 				}
 			}
 
 			instanceCount++;
 			DefaultMonitorPad monitorPad = new DefaultMonitorPad (title, icon, instanceCount);
 			
-			string newPadId = "OutputPad - " + title + " - " + instanceCount;
-			string basePadId = "OutputPad - " + title + " - 0";
+			string newPadId = "OutputPad-" + title.Replace (' ','_') + "-" + instanceCount;
+			string basePadId = "OutputPad-" + title.Replace (' ','_') + "-0";
 			
 			if (instanceCount > 0) {
 				// Translate the title before adding the count
@@ -160,10 +160,15 @@ namespace MonoDevelop.Ide.Gui
 					pad.Destroy ();
 				};
 			}
-			if (bringToFront)
+			
+			pad.AutoHide = true;
+			
+			if (bringToFront) {
+				pad.Visible = true;
 				pad.BringToFront ();
+			}
 
-			return (DefaultMonitorPad) pad.Content;
+			return pad;
 		}
 		
 		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)

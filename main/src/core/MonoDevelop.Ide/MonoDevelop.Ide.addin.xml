@@ -1248,7 +1248,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" _label = "Files" icon="system-file-manager" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" _label = "Error List" icon="gtk-dialog-error" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" defaultStatus="AutoHide" _label = "Error List" icon="gtk-dialog-error" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" dockLabelProvider="MonoDevelop.Ide.Gui.Pads.ErrorPadLabelProvider"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" icon="md-task-list-icon" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
 		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Left" _label = "Help" icon="gtk-help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 

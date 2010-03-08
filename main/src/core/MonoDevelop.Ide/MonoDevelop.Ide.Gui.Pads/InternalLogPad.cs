@@ -45,17 +45,18 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core.Gui;
 
 using Gtk;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
 	internal class InternalLogPad : IPadContent, ILogger
 	{
-		VBox control;
+		Widget control;
 		ScrolledWindow sw;
 		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
 		TreeModelFilter filter;
-		ToggleToolButton errorBtn, warnBtn, msgBtn, debugBtn;
+		ToggleButton errorBtn, warnBtn, msgBtn, debugBtn;
 		IPadWindow window;
 		bool needsReload;
 
@@ -80,17 +81,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Message
 		}
 
-		void IPadContent.Initialize (IPadWindow window)
-		{
-			this.window = window;
-			window.Title = GettextCatalog.GetString ("Internal Message Log");
-			window.Icon = MonoDevelop.Core.Gui.Stock.OutputIcon;
-			window.PadShown += delegate {
-				if (needsReload)
-					Refresh ();
-			};
-		}
-		
 		public Gtk.Widget Control {
 			get {
 				return control;
@@ -106,16 +96,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 			// FIXME
 		}
 
-		public InternalLogPad ()
+		public void Initialize (IPadWindow window)
 		{
-			control = new VBox ();
-
-			Toolbar toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.Menu;
-			control.PackStart (toolbar, false, false, 0);
+			this.window = window;
+			window.PadShown += delegate {
+				if (needsReload)
+					Refresh ();
+			};
 			
-			errorBtn = new ToggleToolButton ();
-			UpdateErrorsNum();
+			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			
+			errorBtn = new ToggleButton ();
 			errorBtn.Active = (bool)PropertyService.Get (showErrorsPropertyName, true);
 			string errorTipText;
 			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Error) != EnabledLoggingLevel.Error
@@ -125,14 +116,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				errorTipText = GettextCatalog.GetString ("Show errors");
 			}
-			errorBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Button);
-			errorBtn.IsImportant = true;
+			errorBtn.Image = new Gtk.Image (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
+			errorBtn.Image.Show ();
 			errorBtn.Toggled += new EventHandler (FilterChanged);
 			errorBtn.TooltipText = errorTipText;
-			toolbar.Insert (errorBtn, -1);
+			UpdateErrorsNum();
+			toolbar.Add (errorBtn);
 			
-			warnBtn = new ToggleToolButton ();
-			UpdateWarningsNum();
+			warnBtn = new ToggleButton ();
 			warnBtn.Active = (bool)PropertyService.Get (showWarningsPropertyName, true);
 			string warnTipText;
 			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Warn) != EnabledLoggingLevel.Warn) {
@@ -141,14 +132,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				warnTipText = GettextCatalog.GetString ("Show warnings");
 			}
-			warnBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Button);
-			warnBtn.IsImportant = true;
+			warnBtn.Image = new Gtk.Image (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+			warnBtn.Image.Show ();
 			warnBtn.Toggled += new EventHandler (FilterChanged);
 			warnBtn.TooltipText = warnTipText;
-			toolbar.Insert (warnBtn, -1);
+			UpdateWarningsNum();
+			toolbar.Add (warnBtn);
 			
-			msgBtn = new ToggleToolButton ();
-			UpdateMessagesNum();
+			msgBtn = new ToggleButton ();
 			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
 			string msgTipText;
 			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Info) != EnabledLoggingLevel.Info) {
@@ -157,14 +148,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				msgTipText = GettextCatalog.GetString ("Show messages");
 			}
-			msgBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Button);
-			msgBtn.IsImportant = true;
+			msgBtn.Image = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu);
+			msgBtn.Image.Show ();
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = msgTipText;
-			toolbar.Insert (msgBtn, -1);
+			UpdateMessagesNum();
+			toolbar.Add (msgBtn);
 			
-			debugBtn = new ToggleToolButton ();
-			UpdateDebugNum();
+			debugBtn = new ToggleButton ();
 			debugBtn.Active = (bool)PropertyService.Get (showDebugPropertyName, true);
 			string debugTipText;
 			if ((InternalLog.EnabledLoggingLevel & EnabledLoggingLevel.Debug) != EnabledLoggingLevel.Debug) {
@@ -173,18 +164,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 			} else {
 				debugTipText = GettextCatalog.GetString ("Show debug");
 			}
-			debugBtn.IconWidget = new Gtk.Image (Gtk.Stock.DialogQuestion, Gtk.IconSize.Button);
-			debugBtn.IsImportant = true;
+			debugBtn.Image = new Gtk.Image (Gtk.Stock.DialogQuestion, Gtk.IconSize.Menu);
+			debugBtn.Image.Show ();
 			debugBtn.Toggled += new EventHandler (FilterChanged);
 			debugBtn.TooltipText = debugTipText;
-			toolbar.Insert (debugBtn, -1);
+			UpdateDebugNum();
+			toolbar.Add (debugBtn);
 			
-			toolbar.Insert (new SeparatorToolItem (), -1);
+			toolbar.Add (new SeparatorToolItem ());
 			
-			Gtk.ToolButton clearBtn = new Gtk.ToolButton (Gtk.Stock.Clear);
-			clearBtn.IsImportant = true;
+			Gtk.Button clearBtn = new Gtk.Button (new Gtk.Image (Gtk.Stock.Clear, Gtk.IconSize.Menu));
 			clearBtn.Clicked += new EventHandler (OnClearList);
-			toolbar.Insert (clearBtn, -1);
+			toolbar.Add (clearBtn);
+			toolbar.ShowAll ();
+
+			// Content
 			
 			store = new Gtk.ListStore (typeof (Gdk.Pixbuf),      // image - type
 			                           typeof (string),          // desc
@@ -216,16 +210,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 			iconInfo = sw.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
 			iconDebug = sw.RenderIcon (Gtk.Stock.DialogQuestion, Gtk.IconSize.Menu, "");
 			
-			control.Add (sw);
-			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			toolbar.ShowArrow = false;
-			Control.ShowAll ();
+			control = sw;
+			sw.ShowAll ();
 			
 			Refresh ();
 
 			store.SetSortFunc ((int)Columns.Time, TimeSortFunc);
 			((TreeModelSort)view.Model).SetSortColumnId ((int)Columns.Time, SortType.Descending);
 		}
+
 			
 		void Refresh ()
 		{
@@ -381,21 +374,25 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void UpdateErrorsNum () 
 		{
 			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", InternalLog.ErrorCount), InternalLog.ErrorCount);
+			errorBtn.Image.Show ();
 		}
 
 		void UpdateWarningsNum ()
 		{
 			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", InternalLog.WarningCount), InternalLog.WarningCount); 
+			warnBtn.Image.Show ();
 		}
 
 		void UpdateMessagesNum ()
 		{
 			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", InternalLog.InfoCount), InternalLog.InfoCount);
+			msgBtn.Image.Show ();
 		}
 
 		void UpdateDebugNum ()
 		{
 			debugBtn.Label = " " + string.Format(GettextCatalog.GetString("{0} Debug", InternalLog.DebugCount));
+			debugBtn.Image.Show ();
 		}
 
 		private int TimeSortFunc (TreeModel model, TreeIter iter1, TreeIter iter2)

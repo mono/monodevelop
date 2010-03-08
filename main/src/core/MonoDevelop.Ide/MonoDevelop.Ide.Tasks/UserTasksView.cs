@@ -53,8 +53,8 @@ namespace MonoDevelop.Ide.Tasks
 			Count
 		}
 		
-		ToolButton newButton;
-		ToolButton delButton;
+		Button newButton;
+		Button delButton;
 
 		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
@@ -116,13 +116,14 @@ namespace MonoDevelop.Ide.Tasks
 			col.Resizable = true;
 			col.Clicked += new EventHandler (UserTaskDescResort);
 			
-			newButton = new ToolButton (new Gtk.Image (Gtk.Stock.New, IconSize.Button), GettextCatalog.GetString ("New Task"));
-			newButton.IsImportant = true;
+			newButton = new Button ();
+			newButton.Image = new Gtk.Image (Gtk.Stock.New, IconSize.Button);
+			newButton.Label = GettextCatalog.GetString ("New Task");
+			newButton.ImagePosition = PositionType.Left;
 			newButton.Clicked += new EventHandler (NewUserTaskClicked); 
 			newButton.TooltipText = GettextCatalog.GetString ("Create New Task");
 			
-			delButton = new ToolButton (new Gtk.Image (Gtk.Stock.Delete, IconSize.Button), GettextCatalog.GetString ("Delete Task"));
-			delButton.IsImportant = true;
+			delButton = new Button (new Gtk.Image (Gtk.Stock.Delete, IconSize.Button));
 			delButton.Clicked += new EventHandler (DeleteUserTaskClicked); 
 			delButton.TooltipText = GettextCatalog.GetString ("Delete Task");
 
@@ -416,7 +417,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		#region ITaskListView members
 		TreeView ITaskListView.Content { get { return view; } }
-		ToolItem[] ITaskListView.ToolBarItems { get { return new ToolItem[] { newButton, delButton }; } }
+		Widget[] ITaskListView.ToolBarItems { get { return new Widget[] { newButton, delButton }; } }
 		#endregion
 	}
 }

@@ -47,9 +47,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			}
 		}
 		
-		public ClassBrowserPad ()
+		public override void Initialize (IPadWindow container)
 		{
-			this.widget = new ClassBrowserPadWidget (base.TreeView); 
+			base.Initialize (container);
+			this.widget = new ClassBrowserPadWidget (base.TreeView, container); 
 		}
+
 	}
 }

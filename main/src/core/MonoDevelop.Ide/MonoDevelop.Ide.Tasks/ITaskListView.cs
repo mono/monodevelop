@@ -34,6 +34,6 @@ namespace MonoDevelop.Ide.Tasks
 	public interface ITaskListView
 	{
 		TreeView Content { get; }
-		ToolItem[] ToolBarItems { get; }
+		Widget[] ToolBarItems { get; }
 	}
 }

@@ -1047,6 +1047,8 @@ namespace MonoDevelop.Ide.Gui
 					}
 
 					TaskService.Errors.AddRange (tasks);
+					TaskService.Errors.ResetLocationList ();
+					IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
@@ -1065,30 +1067,6 @@ namespace MonoDevelop.Ide.Gui
 					OnEndBuild (monitor, false);
 				
 				try {
-					Pad monitorPad = IdeApp.Workbench.Pads.FirstOrDefault (pad => pad.Content == ((OutputProgressMonitor)((AggregatedProgressMonitor)monitor).MasterMonitor).OutputPad);
-					switch (IdeApp.Preferences.ShowOutputPadAfterBuild) {
-					case BuildResultStates.Always:
-						if (!monitorPad.Visible)
-							monitorPad.IsOpenedAutomatically = true;
-						monitorPad.Visible = true;
-						monitorPad.BringToFront ();
-						break;
-					case BuildResultStates.Never:
-						if (monitorPad.IsOpenedAutomatically)
-							monitorPad.Visible = false;
-						break;
-					case BuildResultStates.OnErrors:
-						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))
-							goto case BuildResultStates.Always;
-						goto case BuildResultStates.Never;
-					case BuildResultStates.OnErrorsOrWarnings:
-						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning))
-							goto case BuildResultStates.Always;
-						goto case BuildResultStates.Never;
-					}
-				} catch {}
-				
-				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
 					MonoDevelop.Ide.Gui.Pads.ErrorListPad content = (MonoDevelop.Ide.Gui.Pads.ErrorListPad)errorsPad.Content;
 					switch (IdeApp.Preferences.ShowErrorPadAfterBuild) {
@@ -1099,8 +1077,6 @@ namespace MonoDevelop.Ide.Gui
 						errorsPad.BringToFront ();
 						break;
 					case BuildResultStates.Never:
-						if (errorsPad.IsOpenedAutomatically)
-							errorsPad.Visible = false;
 						break;
 					case BuildResultStates.OnErrors:
 						if (TaskService.Errors.Any (task => task.Severity == TaskSeverity.Error))

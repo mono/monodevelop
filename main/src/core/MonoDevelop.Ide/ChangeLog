@@ -1,3 +1,117 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.FindInFiles/FindReplace.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Make
+	  better use of progress monitors. Use it to log the
+	  directories being searched.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Tasks/TaskStore.cs:
+	* MonoDevelop.Ide.Tasks/TaskService.cs:
+	* MonoDevelop.Ide.Commands/ViewCommands.cs:
+	* MonoDevelop.Ide.Gui.Pads/ILocationListPad.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:
+	* MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Improved
+	  Show Next/Previous command (F4). The list on which the
+	  command works now has to be explicitly set using the
+	  IdeApp.Workbench.ActiveLocationList.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Added new files.
+
+	* MonoDevelop.Ide.Commands/NavigationCommands.cs: Some api
+	  changes.
+
+	* MonoDevelop.Ide.Gui.Pads/FileScout.cs:
+	* MonoDevelop.Ide.Tasks/ITaskListView.cs:
+	* MonoDevelop.Ide.Tasks/UserTasksView.cs:
+	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs:
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs:
+	* MonoDevelop.Ide.Gui.Pads/InternalLogPad.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPad.cs:
+	* MonoDevelop.Ide.Gui.Pads.ClassPad/ClassBrowserPadWidget.cs:
+	  Use the new DockItemToolbar for showing toolbar commands.
+
+	* MonoDevelop.Ide.Gui.Components/LogView.cs:
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Factorized
+	  the widget which shows log from an IProgressMonitor from
+	  DefaultMonitorPad into the new LogView widget.
+
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Use the new
+	  DockItemToolbar for showing toolbar commands. Integrated the
+	  output pad into the errors list pad.
+
+	* MonoDevelop.Ide.Gui/IdePreferences.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:
+	  Added option for selection the GUI compactness.
+
+	* MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:
+	  Removed option for showing the build output pad, since it is
+	  now integrated into the errors pad.
+
+	* MonoDevelop.Ide.addin.xml: Show the errors pad minimized by
+	  default.
+
+	* gtk-gui/gui.stetic: Updated.
+
+	* MonoDevelop.Ide.Gui/HiddenWorkbenchWindow.cs: Fix warning.
+
+	* MonoDevelop.Ide.Gui/OutputProgressMonitor.cs: Factorized
+	  into the new LogView widget.
+
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: Changed the
+	  api to be able to make the NavigationPoint class more
+	  reusable. It is now being used by the Show Next/Previous
+	  infrastructure.
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Embed the
+	  bottom dock bar.
+
+	* MonoDevelop.Ide.Gui/IPadContainer.cs: Added flags for
+	  setting a pad as Working, HasErrors and HasNewData.
+
+	* MonoDevelop.Ide.Gui/IWorkbench.cs:
+	* MonoDevelop.Ide.Gui/IWorkbenchLayout.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Removed IWorkbech
+	  and IWorkbenchLayout interfaces, which are internal and not
+	  required anymore.
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Track misc api
+	  changes. Implement the new IPadWindow.IsWorking, HasErrors
+	  and HasNewData properties.
+
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs: By default,
+	  autohide dynamically created output pads. The build progress
+	  monitor now shows the log in the errors list pad. Don't use
+	  spaces in the output pad ids, since it may break
+	  serialization into xml.
+
+	* MonoDevelop.Ide.Gui/Pad.cs: Track class name changes.
+
+	* MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs: New utility
+	  class with extension methods which allows loading a docking
+	  toolbar from a command entry set.
+
+	* MonoDevelop.Ide.Codons/PadCodon.cs: Allow setting a default
+	  status for a pad (e.g. auto hide). Allow setting a custom
+	  widget as label to show when the pad is in autohide mode.
+
+	* MonoDevelop.Ide.Gui/SideBar.cs: New layout switcher. Not yet
+	  used.
+
+	* MonoDevelop.Ide.Gui/WorkbenchWindow.cs: New base class for
+	  the root workbench window.
+
+	* MonoDevelop.Ide.Gui/WorkbenchContext.cs: File renamed from
+	  IWorkspace.
+
 2010-03-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

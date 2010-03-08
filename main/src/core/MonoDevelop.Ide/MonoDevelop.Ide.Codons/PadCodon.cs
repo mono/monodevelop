@@ -36,11 +36,12 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Codons
 {
 	[ExtensionNode ("Pad", "Registers a pad to be shown in the workbench.")]
-	public class PadCodon : ExtensionNode
+	public class PadCodon : ExtensionNode, IDockItemLabelProvider
 	{
 		IPadContent content;
 		string id;
@@ -64,7 +65,16 @@ namespace MonoDevelop.Ide.Codons
 		               )]
 		string defaultPlacement = "left";
 		
+		[NodeAttribute ("defaultStatus", "Default status ofthe pad. It can be 'Dockable', 'Floating', 'AutoHide'.")]
+		DockItemStatus defaultStatus = DockItemStatus.Dockable;
+		
+		[NodeAttribute("dockLabelProvider", "Name of a class implementing IDockItemLabelProvider. " +
+			"Using this class it is possible to use a custom widget as label when the item" +
+			"is docked in auto-hide mode.")]
+		string dockLabelProvider = null;
+		
 		string[] contexts;
+		IDockItemLabelProvider cachedDockLabelProvider;
 		bool initializeCalled;
 		
 		public IPadContent PadContent {
@@ -114,6 +124,10 @@ namespace MonoDevelop.Ide.Codons
 			get { return defaultPlacement; }
 		}
 		
+		public DockItemStatus DefaultStatus {
+			get { return defaultStatus; }
+		}
+		
 		public string[] Contexts {
 			get { return contexts; }
 		}
@@ -143,5 +157,13 @@ namespace MonoDevelop.Ide.Codons
 			return (IPadContent) Addin.CreateInstance (className, true);
 		}
 		
+		Gtk.Widget IDockItemLabelProvider.CreateLabel (Gtk.Orientation orientation)
+		{
+			if (dockLabelProvider == null)
+				return null;
+			if (cachedDockLabelProvider == null)
+				cachedDockLabelProvider = (IDockItemLabelProvider) Addin.CreateInstance (dockLabelProvider, true);
+			return cachedDockLabelProvider.CreateLabel (orientation);
+		}
 	}
 }

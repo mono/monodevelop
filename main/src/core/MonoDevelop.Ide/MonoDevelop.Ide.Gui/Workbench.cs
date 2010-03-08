@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal bool Close ()
 		{
-			return ((DefaultWorkbench)workbench).Close();
+			return workbench.Close();
 		}
 		
 		public RecentOpen RecentOpen {
@@ -185,8 +185,8 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		
-		public Gtk.Window RootWindow {
-			get { return (Gtk.Window) workbench; }
+		public WorkbenchWindow RootWindow {
+			get { return workbench; }
 		}
 		
 		/// <summary>
@@ -553,16 +553,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// Shows the next item in a pad that implements ILocationListPad.
 			
-			Pad pad = GetLocationListPad ();
-			if (pad != null) {
-				pad.BringToFront (true);
-				ILocationListPad loc = (ILocationListPad) pad.Content;
-				string file;
-				int lin, col;
-				if (loc.GetNextLocation (out file, out lin, out col)) {
-					if (!string.IsNullOrEmpty (file))
-						OpenDocument (file, lin, col, true);
-				}
+			if (activeLocationList != null) {
+				NavigationPoint next = activeLocationList.GetNextLocation ();
+				if (next != null)
+					next.Show ();
 			}
 		}
 		
@@ -570,37 +564,22 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// Shows the previous item in a pad that implements ILocationListPad.
 			
-			Pad pad = GetLocationListPad ();
-			if (pad != null) {
-				pad.BringToFront (true);
-				ILocationListPad loc = (ILocationListPad) pad.Content;
-				string file;
-				int lin, col;
-				if (loc.GetPreviousLocation (out file, out lin, out col)) {
-					if (!string.IsNullOrEmpty (file))
-						OpenDocument (file, lin, col, true);
-				}
+			if (activeLocationList != null) {
+				NavigationPoint next = activeLocationList.GetPreviousLocation ();
+				if (next != null)
+					next.Show ();
 			}
 		}
 		
-		internal Pad GetLocationListPad ()
-		{
-			// Locates a pad which implements ILocationListPad. If there are more than
-			// one, it returns the last one being focused.
-			
-			Pad active = null;
-			
-			foreach (Pad p in IdeApp.Workbench.Pads) {
-				if (!p.Visible)
-					continue;
-				ILocationListPad loc = p.Content as ILocationListPad;
-				if (loc != null && (active == null || p.Window == PadWindow.LastActiveLocationList))
-					active = p;
+		ILocationList activeLocationList;
+		
+		public ILocationList ActiveLocationList {
+			get {
+				return activeLocationList;
 			}
-			if (active == null)
-				return null;
-			
-			return active;
+			set {
+				activeLocationList = value;
+			}
 		}
 		
 		void OnDocumentChanged (object s, EventArgs a)
@@ -991,17 +970,17 @@ namespace MonoDevelop.Ide.Gui
 		IDisplayBinding binding;
 		Project project;
 		FileInformation fileInfo;
-		IWorkbench workbench;
+		DefaultWorkbench workbench;
 		IViewContent newContent;
 		
-		public LoadFileWrapper (IWorkbench workbench, IDisplayBinding binding, FileInformation fileInfo)
+		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, FileInformation fileInfo)
 		{
 			this.workbench = workbench;
 			this.fileInfo = fileInfo;
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (IWorkbench workbench, IDisplayBinding binding, Project project, FileInformation fileInfo)
+		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, Project project, FileInformation fileInfo)
 		{
 			this.workbench = workbench;
 			this.fileInfo = fileInfo;

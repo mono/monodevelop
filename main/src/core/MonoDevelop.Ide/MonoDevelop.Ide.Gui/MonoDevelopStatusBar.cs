@@ -57,6 +57,11 @@ namespace MonoDevelop.Ide
 			
 			BorderWidth = 0;
 			
+			DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
+			Gtk.Widget dockBar = wb.WorkbenchLayout.DockFrame.ExtractDockBar (PositionType.Bottom);
+			dockBar.NoShowAll = true;
+			PackStart (dockBar, false, false, 0);
+			
 			progressBar = new ProgressBar ();
 			progressBar.PulseStep = 0.3;
 			progressBar.SizeRequest ();
@@ -110,10 +115,6 @@ namespace MonoDevelop.Ide
 			
 			originalFrame.HideAll ();
 			progressBar.Visible = false;
-			
-			// the Mac has a resize grip by default, and the GTK+ one breaks it
-			if (MonoDevelop.Core.PropertyService.IsMac)
-				HasResizeGrip = false;
 			
 			// todo: Move this to the CompletionWindowManager when it's possible.
 			CompletionWindowManager.WindowShown += delegate {

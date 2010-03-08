@@ -109,6 +109,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			Gtk.IconSize curSize = IdeApp.Preferences.ToolbarSize;
 			toolbarCombobox.Active = Array.IndexOf (sizes, curSize);
+			
+			comboCompact.Active = (int) IdeApp.Preferences.WorkbenchCompactness;
 		}
 		
 		void FontOutputCheckboxToggled (object sender, EventArgs e)
@@ -152,6 +154,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				IdeApp.Preferences.CustomOutputPadFont = null;
 			
 			IdeApp.Preferences.ToolbarSize = sizes [toolbarCombobox.Active];
+			
+			IdeApp.Preferences.WorkbenchCompactness = (WorkbenchCompactness) comboCompact.Active;
+
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
 		}
 		

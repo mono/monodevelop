@@ -50,6 +50,15 @@ namespace MonoDevelop.Ide.Gui
 		ForErrorsAndWarnings
 	}
 	
+	public enum WorkbenchCompactness
+	{
+		VerySpacious,
+		Spacious,
+		Normal,
+		Compact,
+		VeryCompact
+	}
+	
 	public class IdePreferences
 	{
 		internal IdePreferences ()
@@ -266,6 +275,16 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler<PropertyChangedEventArgs> UserInterfaceThemeChanged {
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+		}
+		
+		public WorkbenchCompactness WorkbenchCompactness {
+			get { return PropertyService.Get ("MonoDevelop.Ide.WorkbenchCompactness", WorkbenchCompactness.Normal); }
+			set { PropertyService.Set ("MonoDevelop.Ide.WorkbenchCompactness", value); }
+		}
+		
+		public event EventHandler<PropertyChangedEventArgs> WorkbenchCompactnessChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.WorkbenchCompactness", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.WorkbenchCompactness", value); }
 		}
 	}
 	

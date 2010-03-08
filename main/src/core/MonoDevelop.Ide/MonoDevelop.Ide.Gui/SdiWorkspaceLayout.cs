@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the a Workspace with a single document interface.
 	/// </summary>
-	internal class SdiWorkbenchLayout : IWorkbenchLayout
+	internal class SdiWorkbenchLayout
 	{
 		static string configFile = Path.Combine (PropertyService.ConfigPath, "EditingLayout.xml");
 		const string fullViewModeTag = "[FullViewMode]";
@@ -107,13 +107,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		public DockFrame DockFrame {
+			get { return dock; }
+		}
+		
 		Gtk.VBox fullViewVBox = new VBox (false, 0);
 		DockItem documentDockItem;
 		
-		public void Attach (IWorkbench wb)
+		public void Attach (DefaultWorkbench workbench)
 		{
-			DefaultWorkbench workbench = (DefaultWorkbench) wb;
-
 			this.workbench = workbench;
 			wbWindow = (Window) workbench;
 			
@@ -134,10 +136,32 @@ namespace MonoDevelop.Ide.Gui
 			
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
-			toolbarFrame.AddContent (dock);
+			
+			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness) + 1;
+			IdeApp.Preferences.WorkbenchCompactnessChanged += delegate {
+				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness) + 1;
+			};
+			
+			HBox hbox = new HBox ();
+			VBox sideBox = new VBox ();
+			
+			
+			/* Side bar is experimental. Disabled for now
+			sideBox.PackStart (new SideBar (workbench, Orientation.Vertical), false, false, 0);
+			hbox.PackStart (sideBox, false, false, 0);
+			hbox.ShowAll ();
+			sideBox.NoShowAll = true;
+			hbox.PackStart (dock, true, true, 0);
+			DockBar bar = dock.ExtractDockBar (PositionType.Left);
+			bar.AlwaysVisible = true;
+			sideBox.PackStart (bar, true, true, 0);
+			toolbarFrame.AddContent (hbox);
+			*/
 
+			toolbarFrame.AddContent (dock);
+			
 			// Create the notebook for the various documents.
-			tabControl = new SdiDragNotebook ();
+			tabControl = new SdiDragNotebook (dock.ShadedContainer);
 			tabControl.Scrollable = true;
 			tabControl.SwitchPage += new SwitchPageHandler (ActiveMdiChanged);
 			tabControl.PageAdded += delegate { ActiveMdiChanged (null, null); };
@@ -196,7 +220,21 @@ namespace MonoDevelop.Ide.Gui
 
 			workbench.Add (fullViewVBox);
 			fullViewVBox.ShowAll ();
+			
 			fullViewVBox.PackEnd (IdeApp.Workbench.StatusBar, false, true, 0);
+			
+			// the Mac has a resize grip by default, and the GTK+ one breaks it
+			if (MonoDevelop.Core.PropertyService.IsMac)
+				IdeApp.Workbench.StatusBar.HasResizeGrip = false;
+			else {
+				if (wbWindow.GdkWindow != null && wbWindow.GdkWindow.State == Gdk.WindowState.Maximized)
+					IdeApp.Workbench.StatusBar.HasResizeGrip = false;
+				wbWindow.SizeAllocated += delegate {
+					if (wbWindow.GdkWindow != null)
+						IdeApp.Workbench.StatusBar.HasResizeGrip = wbWindow.GdkWindow.State != Gdk.WindowState.Maximized;
+				};
+			}
+				IdeApp.Workbench.StatusBar.HasResizeGrip = false;
 			
 			foreach (IViewContent content in workbench.ViewContentCollection)
 				ShowView (content);
@@ -208,7 +246,7 @@ namespace MonoDevelop.Ide.Gui
 			// create DockItems for all the pads
 			foreach (PadCodon content in workbench.PadContentCollection)
 			{
-				AddPad (content, content.DefaultPlacement);
+				AddPad (content, content.DefaultPlacement, content.DefaultStatus);
 			}
 
 			
@@ -372,7 +410,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		DockItem GetDockItem (PadCodon content)
+		internal DockItem GetDockItem (PadCodon content)
 		{
 			if (activePadCollection.Contains (content))
 			{
@@ -438,9 +476,8 @@ namespace MonoDevelop.Ide.Gui
 			activePadCollection = null;
 		}
 		
-		void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
+		public void CreatePadContent (bool force, PadCodon padCodon, PadWindow window, DockItem item)
 		{
-
 			if (force || item.Content == null) {
 				IPadContent newContent = padCodon.InitializePadContent (window);
 
@@ -459,15 +496,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void AddPad (PadCodon padCodon, string placement)
+		void AddPad (PadCodon padCodon, string placement, DockItemStatus defaultStatus)
 		{
 			PadWindow window = new PadWindow (this, padCodon);
 			window.Icon = "md-output-icon";
 			padWindows [padCodon] = window;
 			padCodons [window] = padCodon;
 			
-			window.TitleChanged += new EventHandler (UpdatePad);
-			window.IconChanged += new EventHandler (UpdatePad);
+			window.StatusChanged += new EventHandler (UpdatePad);
 			
 			string location = "";
 			foreach (string s in placement.Split (' ')) {
@@ -487,6 +523,8 @@ namespace MonoDevelop.Ide.Gui
 			item.Icon = ImageService.GetPixbuf (window.Icon, IconSize.Menu);
 			item.DefaultLocation = location;
 			item.DefaultVisible = false;
+			item.DefaultStatus = defaultStatus;
+			item.DockLabelProvider = padCodon;
 			window.Item = item;
 			
 			if (padCodon.Initialized) {
@@ -526,6 +564,12 @@ namespace MonoDevelop.Ide.Gui
 				string windowTitle = GettextCatalog.GetString (window.Title); 
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
+				if (window.IsWorking)
+					windowTitle = "<span foreground='blue'>" + windowTitle + "</span>";
+				else if (window.HasErrors && !window.ContentVisible)
+					windowTitle = "<span foreground='red'>" + windowTitle + "</span>";
+				else if (window.HasNewData && !window.ContentVisible)
+					windowTitle = "<b>" + windowTitle + "</b>";
 				item.Label = windowTitle;
 				item.Icon  = ImageService.GetPixbuf (window.Icon, IconSize.Menu);
 			}
@@ -537,14 +581,14 @@ namespace MonoDevelop.Ide.Gui
 			if (item != null)
 				item.Visible = true;
 			else
-				AddPad (content, content.DefaultPlacement);
+				AddPad (content, content.DefaultPlacement, content.DefaultStatus);
 		}
 		
 		public void AddPad (PadCodon content)
 		{
 			DockItem item = GetDockItem (content);
 			if (item == null)
-				AddPad (content, content.DefaultPlacement);
+				AddPad (content, content.DefaultPlacement, content.DefaultStatus);
 		}
 		
 		public void RemovePad (PadCodon content)
@@ -664,7 +708,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IPadWindow GetPadWindow (PadCodon content)
 		{
-			return padWindows [content];
+			IPadWindow w;
+			padWindows.TryGetValue (content, out w);
+			return w;
 		}
 		
 		bool SelectLastActiveWindow (IWorkbenchWindow cur)
@@ -691,7 +737,7 @@ namespace MonoDevelop.Ide.Gui
 			f.TabLabel.CloseClicked -= new EventHandler (closeClicked);
 			
 			if (f.ViewContent != null) {
-				((IWorkbench)wbWindow).CloseContent (f.ViewContent);
+				((DefaultWorkbench)wbWindow).CloseContent (f.ViewContent);
 				if (e.WasActive && !SelectLastActiveWindow (f))
 					ActiveMdiChanged(this, null);
 			}
@@ -853,20 +899,9 @@ namespace MonoDevelop.Ide.Gui
 
 	class PadCommandRouterContainer: CommandRouterContainer
 	{
-		PadWindow window;
-		
 		public PadCommandRouterContainer (PadWindow window, Gtk.Widget child, object target, bool continueToParent): base (child, target, continueToParent)
 		{
-			this.window = window;
 		}
-		
-		public override object GetDelegatedCommandTarget ()
-		{
-			// This pad has currently the focus. Set the actve pad property.
-			PadWindow.LastActivePadWindow = window;
-			return base.GetDelegatedCommandTarget ();
-		}
-
 	}
 	
 	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
@@ -874,6 +909,14 @@ namespace MonoDevelop.Ide.Gui
 	
 	class SdiDragNotebook: DragNotebook, ICommandDelegatorRouter
 	{
+		ShadedContainer shadedContainer;
+		
+		public SdiDragNotebook (ShadedContainer shadedContainer)
+		{
+			this.shadedContainer = shadedContainer;
+			shadedContainer.Add (this);
+		}
+		
 		public object GetNextCommandTarget ()
 		{
 			return Parent;
@@ -887,29 +930,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			bool res = base.OnExposeEvent (evnt);
-			if (Children.Length == 0) {
-				Gdk.Rectangle rect = Allocation;
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-					cr.NewPath ();
-					cr.MoveTo (rect.X, rect.Y);
-					cr.RelLineTo (rect.Width, 0);
-					cr.RelLineTo (0, rect.Height);
-					cr.RelLineTo (-rect.Width, 0);
-					cr.RelLineTo (0, -rect.Height);
-					cr.ClosePath ();
-					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height);
-					Gdk.Color gdkcol = Style.Mid (StateType.Normal);
-					Cairo.Color color1 = new Cairo.Color (gdkcol.Red / (double) ushort.MaxValue, gdkcol.Green / (double) ushort.MaxValue, gdkcol.Blue / (double) ushort.MaxValue);
-					color1.A = 0;
-					pat.AddColorStop (0, color1);
-					color1.A = 0.6;
-					pat.AddColorStop (1, color1);
-					cr.Pattern = pat;
-					cr.FillPreserve ();
-				}
-			}
-			return res;
+			shadedContainer.DrawBackground (this);
+			return base.OnExposeEvent (evnt);
 		}
 
 	}

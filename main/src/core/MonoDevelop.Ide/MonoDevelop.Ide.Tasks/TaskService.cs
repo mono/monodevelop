@@ -52,10 +52,15 @@ namespace MonoDevelop.Ide.Tasks
 		static TaskStore errors = new TaskStore ();
 		static TaskStore userTasks = new TaskStore ();
 		
+		static bool errorBubblesVisible = true;
+		static bool warningBubblesVisible = true;
+		
 		static TaskService ()
 		{
 			IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			errors.ItemName = GettextCatalog.GetString ("Warning/Error");
+			userTasks.ItemName = GettextCatalog.GetString ("User Task");
 		}
 		
 		public static TaskStore Errors {
@@ -66,6 +71,30 @@ namespace MonoDevelop.Ide.Tasks
 			get { return userTasks; }
 		}
 		
+		public static bool ErrorBubblesVisible {
+			get { return errorBubblesVisible; }
+			set {
+				if (errorBubblesVisible != value) {
+					errorBubblesVisible = value;
+					if (BubblesVisibilityChanged != null)
+						BubblesVisibilityChanged (null, EventArgs.Empty);
+				}
+			}
+		}
+		
+		public static bool WarningBubblesVisible {
+			get { return warningBubblesVisible; }
+			set {
+				if (warningBubblesVisible != value) {
+					warningBubblesVisible = value;
+					if (BubblesVisibilityChanged != null)
+						BubblesVisibilityChanged (null, EventArgs.Empty);
+				}
+			}
+		}
+		
+		public static event EventHandler BubblesVisibilityChanged;
+		
 		public static void ShowErrors ()
 		{
 			Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
@@ -73,6 +102,21 @@ namespace MonoDevelop.Ide.Tasks
 				errorsPad.Visible = true;
 				errorsPad.BringToFront ();
 			}
+		}
+		
+		/// <summary>
+		/// Shows a description of the task in the status bar
+		/// </summary>
+		public static void ShowStatus (Task t)
+		{
+			if (t == null)
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
+			else if (t.Severity == TaskSeverity.Error)
+				IdeApp.Workbench.StatusBar.ShowError (t.Description);
+			else if (t.Severity == TaskSeverity.Warning)
+				IdeApp.Workbench.StatusBar.ShowWarning (t.Description);
+			else
+				IdeApp.Workbench.StatusBar.ShowMessage (t.Description);
 		}
 			
 		static void OnWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)

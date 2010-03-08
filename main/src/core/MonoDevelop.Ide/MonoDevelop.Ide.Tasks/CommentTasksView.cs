@@ -601,7 +601,7 @@ namespace MonoDevelop.Ide.Tasks
 			} 
 		}
 		
-		ToolItem[] ITaskListView.ToolBarItems {
+		Widget[] ITaskListView.ToolBarItems {
 			get { return null; } 
 		}
 		#endregion

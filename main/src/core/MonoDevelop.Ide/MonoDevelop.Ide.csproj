@@ -268,7 +268,6 @@
     <Compile Include="MonoDevelop.Ide.Commands\WindowCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\OutputProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\Task.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskService.cs" />
@@ -297,8 +296,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\IBaseViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IPadContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\IWorkbench.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\IWorkbenchLayout.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ViewCommandHandlers.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IBookmarkBuffer.cs" />
@@ -406,7 +403,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorProperties.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IndentStyle.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads\ILocationListPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\InternalLogPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\InternalLog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\KeyBindingsPanel.cs" />
@@ -578,15 +574,22 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISupportsProjectReload.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildMessagePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\SideBarTabNode.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\HiddenTextEditorViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\WorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Content\ILocationList.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\OpenFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\SideBar.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\TextEditorExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\LogView.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\WorkbenchContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

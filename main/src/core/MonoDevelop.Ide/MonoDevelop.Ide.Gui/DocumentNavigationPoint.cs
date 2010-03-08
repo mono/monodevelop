@@ -31,8 +31,6 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
-	
-	
 	public class DocumentNavigationPoint : NavigationPoint
 	{
 		Document doc;
@@ -44,12 +42,17 @@ namespace MonoDevelop.Ide.Gui
 			doc.Closed += HandleClosed;
 		}
 
+		public DocumentNavigationPoint (FilePath fileName)
+		{
+			this.fileName = fileName;
+		}
+
 		void HandleClosed (object sender, EventArgs e)
 		{
 			doc.Closed -= HandleClosed;
 			fileName = doc.FileName;
 			if (fileName == FilePath.Null)
-				RemoveSelfFromHistory ();
+				OnDestroyed ();
 			doc = null;
 		}
 		
@@ -61,11 +64,12 @@ namespace MonoDevelop.Ide.Gui
 			get { return doc != null? doc.FileName : fileName; }
 		}
 		
-		protected Document Document {
-			get { return doc; }
+		public override void Show ()
+		{
+			DoShow ();
 		}
 		
-		protected override Document DoShow ()
+		protected virtual Document DoShow ()
 		{
 			if (doc != null) {
 				doc.Select ();

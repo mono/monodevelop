@@ -38,11 +38,6 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		Regex regex;
 		
-		public bool IsCanceled {
-			get;
-			set;
-		}
-		
 		public bool IsRunning {
 			get;
 			set;
@@ -60,7 +55,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public FindReplace ()
 		{
-			IsCanceled = IsRunning = false;
+			IsRunning = false;
 		}
 		
 		public bool ValidatePattern (FilterOptions filter, string pattern)
@@ -89,18 +84,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Searching..."), 100);
+			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 100);
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 100);
-				foreach (FileProvider provider in scope.GetFiles (filter)) {
-					if (IsCanceled)
+				foreach (FileProvider provider in scope.GetFiles (monitor, filter)) {
+					if (monitor.IsCancelRequested)
 						break;
 					SearchedFilesCount++;
 					if (!string.IsNullOrEmpty (replacePattern))
 						provider.BeginReplace ();
-					foreach (SearchResult result in FindAll (provider, pattern, replacePattern, filter)) {
-						if (IsCanceled)
+					foreach (SearchResult result in FindAll (monitor, provider, pattern, replacePattern, filter)) {
+						if (monitor.IsCancelRequested)
 							break;
 						FoundMatchesCount++;
 						yield return result;
@@ -117,7 +112,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		IEnumerable<SearchResult> FindAll (FileProvider provider, string pattern, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> FindAll (IProgressMonitor monitor, FileProvider provider, string pattern, string replacePattern, FilterOptions filter)
 		{
 			if (string.IsNullOrEmpty (pattern))
 				return new SearchResult[0];
@@ -130,16 +125,16 @@ namespace MonoDevelop.Ide.FindInFiles
 				return new SearchResult[0];
 			}
 			if (filter.RegexSearch)
-				return RegexSearch (provider, content, pattern, replacePattern, filter);
+				return RegexSearch (monitor, provider, content, pattern, replacePattern, filter);
 			return Search (provider, content, pattern, replacePattern, filter);
 		}
 		
-		IEnumerable<SearchResult> RegexSearch (FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> RegexSearch (IProgressMonitor monitor, FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
 		{
 			List<SearchResult> results = new List<SearchResult> ();
 			if (replacePattern == null) {
 				foreach (Match match in regex.Matches (content)) {
-					if (IsCanceled)
+					if (monitor.IsCancelRequested)
 						break;
 					if (provider.SelectionStartPosition > -1 && match.Index < provider.SelectionStartPosition)
 						continue;
@@ -161,7 +156,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (!string.IsNullOrEmpty (replacePattern))
 					provider.BeginReplace ();
 				int delta = 0;
-				for (int i = 0; !IsCanceled && i < matches.Count; i++) {
+				for (int i = 0; !monitor.IsCancelRequested && i < matches.Count; i++) {
 					Match match = matches[i];
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length)) {
 						string replacement = match.Result (replacePattern);

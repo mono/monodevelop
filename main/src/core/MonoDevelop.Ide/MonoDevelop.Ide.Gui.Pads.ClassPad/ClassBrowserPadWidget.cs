@@ -40,6 +40,7 @@ using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
@@ -56,23 +57,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		
 		
 		bool isInBrowerMode = true;
-		public ClassBrowserPadWidget (ExtensibleTreeView treeView)
+		public ClassBrowserPadWidget (ExtensibleTreeView treeView, IPadWindow window)
 		{
 			this.treeView = treeView;
 			
-			HBox searchBox = new HBox ();
-			Alignment align = new Alignment (0.5f, 0.5f, 1f, 1f);
-			align.Add (searchBox);
-			align.BottomPadding = 2;
-			this.PackStart (align, false, false, 0);
+			DockItemToolbar searchBox = window.GetToolbar (PositionType.Top);
+			
 			searchEntry = new Entry ();
-			searchBox.PackStart (searchEntry, true, true, 0);
+			searchBox.Add (searchEntry, true);
 			buttonSearch = new Button (new Gtk.Image (Gtk.Stock.Find, IconSize.Menu));
 			buttonSearch.Relief = ReliefStyle.None;
 			buttonCancelSearch = new Button (new Gtk.Image (Gtk.Stock.Stop, IconSize.Menu));
 			buttonCancelSearch.Relief = ReliefStyle.None;
-			searchBox.PackStart (buttonSearch, false, false, 2);
-			searchBox.PackStart (buttonCancelSearch, false, false, 0);
+			searchBox.Add (buttonSearch);
+			searchBox.Add (buttonCancelSearch);
+			searchBox.ShowAll ();
 			
 			notebook = new Notebook ();
 			notebook.ShowTabs = false;

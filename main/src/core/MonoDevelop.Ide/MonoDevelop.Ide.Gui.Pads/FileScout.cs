@@ -33,16 +33,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Gui;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
 	internal class FileScout : Gtk.VPaned, IPadContent
 	{
 		PadFontChanger fontChanger;
-		
-		void IPadContent.Initialize (IPadWindow window)
-		{
-		}
 		
 		public string Id {
 			get { return "MonoDevelop.Ide.Gui.Pads.FileScout"; }
@@ -98,6 +95,39 @@ namespace MonoDevelop.Ide.Gui.Pads
 			OnDirChanged (fb.CurrentDir);
 			this.ShowAll ();
 		}
+		
+		public void Initialize (IPadWindow window)
+		{
+			DockItemToolbar toolbar = window.GetToolbar (Gtk.PositionType.Top);
+			
+			Gtk.Button goUp = new Gtk.Button (new Gtk.Image (Gtk.Stock.GoUp, Gtk.IconSize.Menu));
+			goUp.TooltipText = GettextCatalog.GetString ("Go up one level");
+			goUp.Clicked += delegate {
+				fb.GoUp ();
+			};
+			toolbar.Add (goUp);
+			
+			Gtk.Button goHome = new Gtk.Button (new Gtk.Image (Gtk.Stock.Home, Gtk.IconSize.Menu));
+			goHome.TooltipText = GettextCatalog.GetString ("Home");
+			goHome.Clicked += delegate {
+				fb.GoHome ();
+			};
+			toolbar.Add (goHome);
+			
+			Gtk.Entry entry = new Gtk.Entry ();
+			entry.TooltipText = GettextCatalog.GetString ("Location");
+			entry.Activated += delegate {
+				fb.GoPath (entry.Text);
+			};
+			
+			fb.DirectoryChangedEvent += delegate {
+				entry.Text = fb.CurrentDir;
+				goUp.Sensitive = System.IO.Path.GetPathRoot (fb.CurrentDir) == fb.CurrentDir;
+			};
+			toolbar.Add (entry, true);
+			toolbar.ShowAll ();
+		}
+
 
 		void OnDirChanged (string path) 
 		{

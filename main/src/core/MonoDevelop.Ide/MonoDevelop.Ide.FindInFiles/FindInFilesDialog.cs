@@ -491,8 +491,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		static FindReplace find;
-		bool isCanceled = false;
-
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
 			SearchReplace (comboboxentryReplace.Entry.Text);
@@ -525,14 +523,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (find != null && find.IsRunning) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
 					return;
-				CancelSearch ();
+				lock (searchesInProgress) {
+					foreach (IProgressMonitor mon in searchesInProgress)
+						mon.AsyncOperation.Cancel ();
+					searchesInProgress.Clear ();
+				}
 			}
+			
 			Scope scope = GetScope ();
 			if (scope == null)
 				return;
 			
 			ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
-			searchMonitor.CancelRequested += (MonitorHandler)DispatchService.GuiDispatch (new MonitorHandler (OnCancelRequested));
 			lock (searchesInProgress)
 				searchesInProgress.Add (searchMonitor);
 			UpdateStopButton ();
@@ -584,7 +586,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				string message;
 				if (errorMessage != null) {
 					message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
-				} else if (isCanceled) {
+				} else if (monitor.IsCancelRequested) {
 					message = GettextCatalog.GetString ("Search cancelled.");
 				} else {
 					string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
@@ -599,18 +601,6 @@ namespace MonoDevelop.Ide.FindInFiles
 					searchesInProgress.Remove (searchMonitor);
 				UpdateStopButton ();
 			});
-		}
-
-		void OnCancelRequested (IProgressMonitor monitor)
-		{
-			CancelSearch ();
-		}
-
-		public void CancelSearch ()
-		{
-			isCanceled = true;
-			if (find != null)
-				find.IsCanceled = true;
 		}
 	}
 }

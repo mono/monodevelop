@@ -34,26 +34,105 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui
 {
 	public interface IPadWindow
 	{
 		string Id { get; }
+		
+		/// <summary>
+		/// Title shown at the top of the pad, or at the tab label when in a notebook
+		/// </summary>
 		string Title { get; set; }
+		
+		/// <summary>
+		/// Title shown at the top of the pad, or at the tab label when in a notebook
+		/// </summary>
 		IconId Icon { get; set; }
+		
+		/// <summary>
+		/// True if the pad is visible in the current layout (although it may be minimized when in autohide mode
+		/// </summary>
 		bool Visible { get; set; }
+		
+		/// <summary>
+		/// True when the pad is in autohide mode
+		/// </summary>
 		bool AutoHide { get; set; }
+		
+		/// <summary>
+		/// The content of the pad is visible (that is, if the pad is active in the notebook on which it is
+		/// docked, and it is not minimized.
+		/// </summary>
 		bool ContentVisible { get; }
+		
+		/// <summary>
+		/// When set to True, the pad will be visible in all layouts
+		/// </summary>
 		bool Sticky { get; set; }
+		
+		/// <summary>
+		/// When set to True, it flags the pad as "Work in progress". The pad's title will be shown in blue.
+		/// </summary>
+		bool IsWorking { get; set; }
+		
+		/// <summary>
+		/// When set to True, it flags the pad as "Has errors". The pad's title will be shown in red. This flag
+		/// will be automatically reset when the pad is made visible.
+		/// </summary>
+		bool HasErrors { get; set; }
+		
+		/// <summary>
+		/// When set to True, it flags the pad as "Has New Data". The pad's title will be shown in bold. This flag
+		/// will be automatically reset when the pad is made visible.
+		/// </summary>
+		bool HasNewData { get; set; }
+		
+		/// <summary>
+		/// Interface providing the content widget
+		/// </summary>
 		IPadContent Content { get; }
 		
+		/// <summary>
+		/// Interface providing the widget to be shown in the label of minimized pads
+		/// </summary>
+		IDockItemLabelProvider DockItemLabelProvider { get; set; }
+		
+		/// <summary>
+		/// Returns a toolbar for the pad.
+		/// </summary>
+		DockItemToolbar GetToolbar (Gtk.PositionType position);
+		
+		/// <summary>
+		/// Brings the pad to the front.
+		/// </summary>
 		void Activate (bool giveFocus);
 		
+		/// <summary>
+		/// Fired when the pad is shown in the current layout (although it may be minimized)
+		/// </summary>
 		event EventHandler PadShown;
+		
+		/// <summary>
+		/// Fired when the pad is hidden in the current layout
+		/// </summary>
 		event EventHandler PadHidden;
+		
+		/// <summary>
+		/// Fired when the content of the pad is shown
+		/// </summary>
 		event EventHandler PadContentShown;
+		
+		/// <summary>
+		/// Fired when the content of the pad is hidden
+		/// </summary>
 		event EventHandler PadContentHidden;
+		
+		/// <summary>
+		/// Fired when the pad is destroyed
+		/// </summary>
 		event EventHandler PadDestroyed;
 	}
 	
@@ -61,36 +140,24 @@ namespace MonoDevelop.Ide.Gui
 	{
 		string title;
 		IconId icon;
+		bool isWorking;
+		bool hasErrors;
+		bool hasNewData;
 		IPadContent content;
 		PadCodon codon;
-		IWorkbenchLayout layout;
+		SdiWorkbenchLayout layout;
 		
 		static IPadWindow lastWindow;
 		static IPadWindow lastLocationList;
 		
 		internal DockItem Item { get; set; }
 		
-		internal PadWindow (IWorkbenchLayout layout, PadCodon codon)
+		internal PadWindow (SdiWorkbenchLayout layout, PadCodon codon)
 		{
 			this.layout = layout;
 			this.codon = codon;
 			this.title = GettextCatalog.GetString (codon.Label);
 			this.icon = codon.Icon;
-		}
-		
-		// This property keeps track of the last focused pad. It is used by the
-		// ShowNext/ShowPrevious commands to know which pad has to show the next/previous item.
-		internal static IPadWindow LastActivePadWindow {
-			get { return lastWindow; }
-			set {
-				lastWindow = value;
-				if (lastWindow != null && lastWindow.Content is MonoDevelop.Ide.Gui.Pads.ILocationListPad)
-					lastLocationList = lastWindow;
-			}
-		}
-		
-		internal static IPadWindow LastActiveLocationList {
-			get { return lastLocationList; }
 		}
 		
 		public IPadContent Content {
@@ -104,8 +171,8 @@ namespace MonoDevelop.Ide.Gui
 			get { return title; }
 			set { 
 				title = value;
-				if (TitleChanged != null)
-					TitleChanged (this, EventArgs.Empty);
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
 			}
 		}
 		
@@ -113,8 +180,43 @@ namespace MonoDevelop.Ide.Gui
 			get { return icon; }
 			set { 
 				icon = value;
-				if (IconChanged != null)
-					IconChanged (this, EventArgs.Empty);
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
+			}
+		}
+		
+		public bool IsWorking {
+			get { return isWorking; }
+			set {
+				isWorking = value;
+				if (value) {
+					hasErrors = false;
+					hasNewData = false;
+				}
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
+			}
+		}
+		
+		public bool HasErrors {
+			get { return hasErrors; }
+			set {
+				hasErrors = value;
+				if (value)
+					isWorking = false;
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
+			}
+		}
+		
+		public bool HasNewData {
+			get { return hasNewData; }
+			set {
+				hasNewData = value;
+				if (value)
+					isWorking = false;
+				if (StatusChanged != null)
+					StatusChanged (this, EventArgs.Empty);
 			}
 		}
 		
@@ -143,6 +245,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public IDockItemLabelProvider DockItemLabelProvider {
+			get { return Item.DockLabelProvider; }
+			set { Item.DockLabelProvider = value; }
+		}
 
 		public bool ContentVisible {
 			get { return layout.IsContentVisible (codon); }
@@ -155,6 +261,11 @@ namespace MonoDevelop.Ide.Gui
 			set {
 				layout.SetSticky (codon, value);
 			}
+		}
+		
+		public DockItemToolbar GetToolbar (Gtk.PositionType position)
+		{
+			return Item.GetToolbar (position);
 		}
 		
 		public void Activate (bool giveFocus)
@@ -190,6 +301,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void NotifyContentShown ()
 		{
+			if (HasNewData)
+				HasNewData = false;
+			if (HasErrors)
+				HasErrors = false;
 			if (PadContentShown != null)
 				PadContentShown (this, EventArgs.Empty);
 		}
@@ -212,7 +327,6 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler PadContentHidden;
 		public event EventHandler PadDestroyed;
 		
-		internal event EventHandler TitleChanged;
-		internal event EventHandler IconChanged;
+		internal event EventHandler StatusChanged;
 	}
 }
