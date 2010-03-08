@@ -93,7 +93,8 @@ RES =  \
 	overlay_unversioned.png \
 	Policies.xml \
 	repository.png \
-	VersionControl.addin.xml
+	VersionControl.addin.xml \
+	version-control-16.png
 
 DATA_FILES =  \
 	comment.png \

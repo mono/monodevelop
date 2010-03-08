@@ -362,7 +362,7 @@ namespace MonoDevelop.VersionControl
 						res = DiffView.Show (items, test);
 						break;
 					case Commands.Log:
-						res = LogView.Show (items, null, test);
+						res = MonoDevelop.VersionControl.Views.LogView.Show (items, null, test);
 						break;
 					case Commands.Status:
 						res = StatusView.Show (items, test);

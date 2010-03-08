@@ -1,3 +1,15 @@
+2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* version-control-16.png:
+	* VersionControl.addin.xml:
+	* MonoDevelop.VersionControl.csproj:
+	* MonoDevelop.VersionControl/Task.cs: Added version control
+	  icon.
+
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	  Fix type reference ambiguity.
+
 2010-03-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: fix build.
