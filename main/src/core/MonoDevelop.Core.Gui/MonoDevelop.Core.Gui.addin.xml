@@ -304,5 +304,9 @@
 		<MimeType id="text/x-ilasm" _description="il files" isText="true">
 			<File pattern="*.il" />
 		</MimeType>
+		
+		<MimeType id="text/x-jay" _description="jay files" isText="true">
+			<File pattern="*.jay" />
+		</MimeType>
 	</Extension>
 </Addin>

@@ -1,3 +1,7 @@
+2010-03-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core.Gui.addin.xml: Added jay mime type.
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Gui.Components/FileBrowser.cs: Moved
