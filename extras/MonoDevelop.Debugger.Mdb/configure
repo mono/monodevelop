@@ -142,6 +142,7 @@ echo "ASSEMBLY_VERSION=$VERSION.0.0" >> config.make
 echo "VERSION=$VERSION" >> config.make
 echo "PACKAGE=$PACKAGE" >> config.make
 echo "CONFIG=$config" >> config.make
+echo "CSC=gmcs" >> config.make
 
 echo
 echo "$PACKAGE has been configured with "

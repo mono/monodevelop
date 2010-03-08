@@ -1,3 +1,9 @@
+2010-03-08  Jonathan Pryor  <jpryor@novell.com>
+
+	* Makefile: Set $(ASSEMBLY_COMPILER_COMMAND) to $(CSC).  
+	  This allows a top-level CSC override to be used within this
+	  module (e.g. top-level `make CSC=dmcs` for a v4 build).
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Manifest.addin.xml:

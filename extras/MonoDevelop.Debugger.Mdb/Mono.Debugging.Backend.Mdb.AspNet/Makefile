@@ -9,7 +9,7 @@ top_srcdir=..
 include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(CSC)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug "-define:DEBUG;TRACE"
 
 ASSEMBLY = ../build/AspNetDebuggerClient.dll
@@ -23,7 +23,7 @@ DEBUGGERCLIENT_DLL_MDB_SOURCE=../build/AspNetDebuggerClient.dll.mdb
 endif
 
 ifeq ($(CONFIG),RELEASE)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(CSC)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG "-define:TRACE"
 
 ASSEMBLY = bin/Release/AspNetDebuggerClient.dll

@@ -8,7 +8,7 @@ top_srcdir=.
 include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(CSC)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize- -debug "-define:DEBUG"
 
 ASSEMBLY = build/MonoDevelop.Debugger.Gdb.dll
@@ -23,7 +23,7 @@ MONODEVELOP_DEBUGGER_GDB_DLL_MDB=$(BUILD_DIR)/MonoDevelop.Debugger.Gdb.dll.mdb
 endif
 
 ifeq ($(CONFIG),RELEASE)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(CSC)
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize-
 ASSEMBLY = build/MonoDevelop.Debugger.Gdb.dll
 ASSEMBLY_MDB = 
