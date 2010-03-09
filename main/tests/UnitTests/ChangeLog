@@ -1,3 +1,15 @@
+2010-03-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.CSharpBinding/TestSpacingVisitor.cs:
+	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/TestIndentationVisitor.cs: Added
+	  test for 'Bug 586304 - Intellisense does not show several
+	  linq extenion methods when using nested generic type'/Worked
+	  on formatting tests.
+
 2010-03-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestFormattingVisitor.cs: Worked
