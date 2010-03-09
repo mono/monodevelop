@@ -1,3 +1,8 @@
+2010-03-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	  Properly compare data objects.
+
 2010-03-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Added

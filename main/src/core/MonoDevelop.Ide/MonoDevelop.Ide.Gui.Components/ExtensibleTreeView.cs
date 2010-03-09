@@ -635,7 +635,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (tnb == null) return null;
 					
 					object parent = tnb.GetParentObject (dataObject);
-					if (parent == null || parent == dataObject) return null;
+					if (parent == null || parent == dataObject || dataObject.Equals (parent)) return null;
 					
 					ITreeNavigator pnav = GetNodeAtObject (parent, true);
 					if (pnav == null) return null;
