@@ -66,9 +66,15 @@ namespace MonoDevelop.Components
 			remove { filter_changed -= value; }
 		}
 		
+		bool forceFilterButtonVisible;
 		public bool ForceFilterButtonVisible {
-			get;
-			set;
+			get {
+				return forceFilterButtonVisible; 
+			}
+			set {
+				forceFilterButtonVisible = value;
+				ShowHideButtons ();
+			}
 		}
 		
 		public Menu Menu {

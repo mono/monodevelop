@@ -1,3 +1,8 @@
+2010-03-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/SearchEntry.cs:
+	  ForceFilterButtonVisible now updates button states.
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
