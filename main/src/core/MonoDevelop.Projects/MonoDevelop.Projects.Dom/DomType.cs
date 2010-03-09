@@ -766,8 +766,9 @@ namespace MonoDevelop.Projects.Dom
 				}
 			} else {
 				foreach (IType type in dom.Types) {
-					if (type.ClassType == ClassType.Class && type.HasExtensionMethods) 
+					if (type.ClassType == ClassType.Class && type.HasExtensionMethods) {
 						result.Add (type);
+					}
 				}
 				foreach (var refDom in dom.References) {
 					foreach (IType type in refDom.Types) {

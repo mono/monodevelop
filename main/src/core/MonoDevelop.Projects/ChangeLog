@@ -1,3 +1,10 @@
+2010-03-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed 'Bug 586304 -
+	  Intellisense does not show several linq extenion methods
+	  when using nested generic type'.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/ProjectFile.cs: Add

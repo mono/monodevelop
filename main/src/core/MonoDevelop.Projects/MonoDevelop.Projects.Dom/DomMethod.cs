@@ -179,8 +179,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)
 		{
-		//	System.Console.WriteLine("----");
-		//	Console.WriteLine ("instantiate: " + method);
+//			System.Console.WriteLine("----");
+//			Console.WriteLine ("instantiate: " + method);
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
@@ -196,7 +196,7 @@ namespace MonoDevelop.Projects.Dom
 					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
 					while (returnTypeStack.Count > 0) {
 						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
-						//Console.WriteLine ("key:" + curReturnType.Key + "/ val:" + curReturnType.Value);
+//						Console.WriteLine ("key:" + curReturnType.Key + "/ val:" + curReturnType.Value);
 						bool found = false;
 						for (int j = 0; j < method.TypeParameters.Count; j++) {
 							if (method.TypeParameters[j].Name == curReturnType.Key.FullName) {
@@ -224,6 +224,7 @@ namespace MonoDevelop.Projects.Dom
 			((DomMethod)result).MethodModifier = method.MethodModifier;
 			
 //			System.Console.WriteLine("after:" + result);
+//			Console.WriteLine (result.Parameters[0]);
 			return result;
 		}
 		
@@ -233,6 +234,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			public void Add (IReturnType parameterType, IReturnType type)
 			{
+				//Console.WriteLine ("Add:" + parameterType +"->" + type);
 				if (type == null || string.IsNullOrEmpty (type.FullName))
 					return;
 				string name = parameterType.Name;
@@ -242,7 +244,9 @@ namespace MonoDevelop.Projects.Dom
 					newType.PointerNestingLevel = Math.Max (0, type.PointerNestingLevel - parameterType.PointerNestingLevel);
 					newType.Type  = type.Type; // May be anonymous type
 					for (int i = 0; i < newType.ArrayDimensions; i++)
-							newType.SetDimension (i, parameterType.GetDimension (i));
+						newType.SetDimension (i, parameterType.GetDimension (i));
+					foreach (var generic in type.GenericArguments)
+						newType.AddTypeParameter (generic);
 					typeTable[name] = newType;
 				}
 			}
@@ -299,9 +303,9 @@ namespace MonoDevelop.Projects.Dom
 			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension) {
 				return null;
 			}
-			//Console.WriteLine ("Ext.Type: " + type);
+//			Console.WriteLine ("Ext.Type: " + type);
 			string extensionTableKey = this.HelpUrl + "/" + type.FullName;
-			//Console.WriteLine ("table key:" + extensionTableKey);
+//			Console.WriteLine ("table key:" + extensionTableKey);
 			lock (extensionTable) {
 				if (extensionTable.ContainsKey (extensionTableKey))
 					return extensionTable[extensionTableKey];
@@ -320,9 +324,8 @@ namespace MonoDevelop.Projects.Dom
 						return instMethod;
 					}
 				}
-				
 				foreach (IType baseType in dom.GetInheritanceTree (type)) {
-					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[]{}, new IReturnType[] { new DomReturnType (baseType) });
+					IMethod instMethod = DomMethod.CreateInstantiatedGenericMethod (this, new IReturnType[] {}, new IReturnType[] { new DomReturnType (baseType) });
 					string baseTypeFullName = baseType is InstantiatedType ? ((InstantiatedType)baseType).UninstantiatedType.FullName : baseType.FullName;
 					
 					// compare the generic arguments.
