@@ -1,3 +1,8 @@
+2010-03-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneBuildOptionsPanel.cs: Fix typo that broke storing
+	  i18n options.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs:
