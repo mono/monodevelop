@@ -879,8 +879,15 @@ namespace Mono.Debugging.Soft
 
 		public override void Abort ()
 		{
-			// Not yet supported by the soft debugger
-			throw new NotSupportedException ();
+			if (handle is IInvokeAsyncResult) {
+				LoggingService.LogMessage ("Aborting Invocation !");
+				((IInvokeAsyncResult) handle).Abort ();
+				LoggingService.LogMessage ("Aborted Invocation");
+				WaitForCompleted (-1);
+				LoggingService.LogMessage ("Aborted Invocation - Done");
+			} else {
+				throw new NotSupportedException ();
+			}
 		}
 		
 		public override void Shutdown ()
