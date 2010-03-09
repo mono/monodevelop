@@ -1,5 +1,11 @@
 2010-03-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed 'Bug
+	  586164 - C# binding doesn't deal correctly with
+	  namespace/class+ctor clashes'.
+
+2010-03-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomType.cs:
 	* MonoDevelop.Projects.Dom/DomMethod.cs: Fixed 'Bug 586304 -
 	  Intellisense does not show several linq extenion methods

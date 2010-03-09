@@ -260,9 +260,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			// Now try to find the class using the included namespaces
-			
 			if (unit != null) {
-				foreach (IUsing u in unit.Usings) {
+				// it's a difference having using A; namespace B { } or namespace B { using A;  }, when a type 
+				// request equals a namespace name; for example the type B could be resolved in the 2nd case when a type
+				// A.B exists but not in the 1st.
+				foreach (IUsing u in unit.Usings.Reverse ()) {
+					if (u.Namespaces.Contains (name)) 
+						return null;
 					if (u != null) {
 						c = SearchType (u, name, genericParameters, true);
 						if (c != null) {
