@@ -5,6 +5,12 @@
 	* LoggingService.cs: Use custom logger for the new LogMessage
 	  call. Remove unnecessary string.Format call.
 
+2010-03-09  Martin Baulig  <martin@ximian.com>
+
+	* SoftDebuggerSession.cs: Add protected virtual methods
+	OnHandleEvent(), OnVMStartEvent(), OnVMDeathEvent() and
+	OnBreakpointBound().
+
 2010-03-05  Martin Baulig  <martin@ximian.com>
 
 	Use the new Soft Debugger API to abort invocations.

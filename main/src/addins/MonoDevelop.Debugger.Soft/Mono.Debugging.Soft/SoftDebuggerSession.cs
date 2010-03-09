@@ -510,6 +510,7 @@ namespace Mono.Debugging.Soft
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
 			bi.Req.Enabled = bi.Enabled;
 			breakpoints [bi.Req] = bi;
+			OnBreakpointBound (bp, (BreakpointEventRequest) bi.Req);
 		}
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
@@ -517,6 +518,10 @@ namespace Mono.Debugging.Soft
 			var request = bi.Req = vm.CreateExceptionRequest (excType, true, true);
 			request.Count = cp.HitCount;
 			bi.Req.Enabled = bi.Enabled;
+		}
+
+		protected virtual void OnBreakpointBound (Breakpoint bp, BreakpointEventRequest request)
+		{
 		}
 		
 		Location FindLocation (string file, int line)
@@ -573,10 +578,13 @@ namespace Mono.Debugging.Soft
 			while (true) {
 				try {
 					Event e = vm.GetNextEvent ();
-					if (e is VMDeathEvent || e is VMDisconnectEvent)
+					if (e is VMDeathEvent || e is VMDisconnectEvent) {
+						OnVMDeathEvent ();
 						break;
+					}
 					HandleEvent (e);
 				} catch (VMDisconnectedException ex) {
+					OnVMDeathEvent ();
 					OnDebuggerOutput (true, ex.ToString ());
 					break;
 				} catch (Exception ex) {
@@ -612,6 +620,8 @@ namespace Mono.Debugging.Soft
 			if (!(e is TypeLoadEvent))
 				Console.WriteLine ("pp event: " + e);
 #endif
+
+			OnHandleEvent (e);
 			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
@@ -625,6 +635,7 @@ namespace Mono.Debugging.Soft
 				var t = vm.RootDomain.Corlib.GetType ("System.Exception", false, false);
 				if (t != null)
 					ResolveBreakpoints (t);
+				OnVMStartEvent ((VMStartEvent) e);
 			}
 			
 			if (e is TypeLoadEvent) {
@@ -685,7 +696,19 @@ namespace Mono.Debugging.Soft
 				OnTargetEvent (args);
 			}
 		}
-		
+
+		protected virtual void OnHandleEvent (Event e)
+		{
+		}
+
+		protected virtual void OnVMStartEvent (VMStartEvent e)
+		{
+		}
+
+		protected virtual void OnVMDeathEvent ()
+		{
+		}
+
 		public ObjectMirror GetExceptionObject (ThreadMirror thread)
 		{
 			ObjectMirror obj;
