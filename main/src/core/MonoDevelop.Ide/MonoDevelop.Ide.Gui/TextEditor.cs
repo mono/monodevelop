@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int SearchChar (int startPos, char searchChar)
 		{
-			bool isInString = false, isInChar = false;
+			bool isInString = false, isInChar = false, isVerbatimString = false;
 			bool isInLineComment  = false, isInBlockComment = false;
 			
 			for (int pos = startPos; pos < TextLength; pos++) {
@@ -341,6 +341,8 @@ namespace MonoDevelop.Ide.Gui
 					case '\r':
 					case '\n':
 						isInLineComment = false;
+						if (!isVerbatimString)
+							isInString = false;
 						break;
 					case '/':
 						if (isInBlockComment) {
@@ -354,9 +356,26 @@ namespace MonoDevelop.Ide.Gui
 								isInBlockComment = true;
 						}
 						break;
+					case '\\':
+						if (isInChar || (isInString && !isVerbatimString))
+							pos++;
+						break;
+					case '@':
+						if (!(isInString || isInChar || isInLineComment || isInBlockComment) && pos + 1 < TextLength && GetCharAt (pos + 1) == '"') {
+							isInString = true;
+							isVerbatimString = true;
+							pos++;
+						}
+						break;
 					case '"':
-						if (!(isInChar || isInLineComment || isInBlockComment)) 
-							isInString = !isInString;
+						if (!(isInChar || isInLineComment || isInBlockComment)) {
+							if (isInString && isVerbatimString && pos + 1 < TextLength && GetCharAt (pos + 1) == '"') {
+								pos++;
+							} else {
+								isInString = !isInString;
+								isVerbatimString = false;
+							}
+						}
 						break;
 					case '\'':
 						if (!(isInString || isInLineComment || isInBlockComment)) 

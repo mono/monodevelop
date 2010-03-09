@@ -1,3 +1,11 @@
+2010-03-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Added
+	  deadlock insanity check
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs: improved string/escape
+	  char handling.
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/ILocationList.cs: Add missing
