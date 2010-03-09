@@ -1,10 +1,10 @@
 // 
-// ThisReferenceExpression.cs
+// Indent.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,51 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Projects.Dom;
 
-namespace MonoDevelop.CSharp.Dom
+namespace MonoDevelop.CSharp.Formatting
 {
-	public class ThisReferenceExpression : AbstractCSharpNode
+	public class Indent
 	{
-		public DomLocation Location {
+		public int Level {
 			get;
 			set;
 		}
 		
-		public override DomLocation StartLocation {
-			get {
-				return Location;
-			}
+		public int ExtraSpaces {
+			get;
+			set;
 		}
-		public override DomLocation EndLocation {
-			get {
-				return new DomLocation (Location.Line, Location.Column + "this".Length);
-			}
-		}
-
-
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		
+		public Indent ()
 		{
-			return visitor.VisitThisReferenceExpression (this, data);
+		}
+		
+		public Indent (int level, int extraSpaces)
+		{
+			this.Level = level;
+			this.ExtraSpaces = extraSpaces;
+		}
+		
+		public static Indent operator+(Indent left, Indent right)
+		{
+			return new Indent (left.Level + right.Level, left.ExtraSpaces + right.ExtraSpaces);
+		}
+		
+		public static Indent operator-(Indent left, Indent right)
+		{
+			return new Indent (left.Level - right.Level, left.ExtraSpaces - right.ExtraSpaces);
+		}
+		
+		public string IndentString {
+			get {
+				return new string ('\t', Level) + new string (' ', ExtraSpaces);
+			}
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[Indent: Level={0}, ExtraSpaces={1}]", Level, ExtraSpaces);
 		}
 	}
 }

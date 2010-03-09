@@ -829,7 +829,6 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 				}
 			}
-				
 		end:
 			if (result != null) {
 				result.CallingType   = CallingType;

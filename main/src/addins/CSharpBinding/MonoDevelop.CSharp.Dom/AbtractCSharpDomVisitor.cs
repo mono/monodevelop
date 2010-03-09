@@ -33,9 +33,7 @@ namespace MonoDevelop.CSharp.Dom
 		protected S VisitChildren (ICSharpNode node, T data)
 		{
 			ICSharpNode child = node.FirstChild as ICSharpNode;
-//			Console.WriteLine ("visit chidren of :" + node);
 			while (child != null) {
-//				Console.WriteLine ("child:" + child  + "next:" + child.NextSibling);
 				child.AcceptVisitor (this, data);
 				child = child.NextSibling as ICSharpNode;
 			}
@@ -51,6 +49,7 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			return default (S);
 		}
+		
 		public virtual S VisitIdentifier (Identifier identifier, T data)
 		{
 			return default (S);

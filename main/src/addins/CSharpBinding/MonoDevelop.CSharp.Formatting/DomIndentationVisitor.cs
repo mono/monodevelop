@@ -39,10 +39,15 @@ namespace MonoDevelop.CSharp.Formatting
 		CSharpFormattingPolicy policy;
 		TextEditorData data;
 		List<Change> changes = new List<Change> ();
+		Indent curIndent = new Indent ();
 		
 		public int IndentLevel {
-			get;
-			set;
+			get {
+				return curIndent.Level;
+			}
+			set {
+				curIndent.Level = value;
+			}
 		}
 		
 		public int CurrentSpaceIndents {
@@ -56,18 +61,26 @@ namespace MonoDevelop.CSharp.Formatting
 			this.data = data;
 		}
 		
+		public override object VisitCompilationUnit (MonoDevelop.CSharp.Dom.CompilationUnit unit, object data)
+		{
+			base.VisitCompilationUnit (unit, data);
+			RefactoringService.AcceptChanges (null, null, changes);
+			return null;
+		}
+		
 		public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
 		{
+			FixIndentation (namespaceDeclaration.StartLocation);
 			IndentLevel++;
-//			FixIndentation (namespaceDeclaration.StartLocation);
 			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
-			
 			IndentLevel--;
+			FixIndentation (namespaceDeclaration.EndLocation);
 			return result;
 		}
 		
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
+			FixIndentation (typeDeclaration.StartLocation);
 			IndentLevel++;
 			object result = base.VisitTypeDeclaration (typeDeclaration, data);
 			IndentLevel--;
@@ -76,6 +89,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 		{
+			FixIndentation (propertyDeclaration.StartLocation);
 			IndentLevel++;
 			object result = base.VisitPropertyDeclaration (propertyDeclaration, data);
 			IndentLevel--;
@@ -84,18 +98,39 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
+			Console.WriteLine ("Start:" + methodDeclaration.StartLocation);
+			FixIndentation (methodDeclaration.StartLocation);
 			IndentLevel++;
 			object result = base.VisitMethodDeclaration (methodDeclaration, data);
 			IndentLevel--;
 			return result;
 		}
-		
+		 
 		public override object VisitBlockStatement (BlockStatement blockStatement, object data)
 		{
+			FixIndentation (blockStatement.StartLocation);
 			IndentLevel++;
 			object result = base.VisitBlockStatement (blockStatement, data);
 			IndentLevel--;
 			return result;
+		}
+		
+		public override object VisitExpressionStatement (ExpressionStatement expressionStatement, object data)
+		{
+			FixIndentation (expressionStatement.StartLocation);
+			return base.VisitExpressionStatement (expressionStatement, data);
+		}
+
+		void FixIndentation (MonoDevelop.Projects.Dom.DomLocation location)
+		{
+//			Console.WriteLine ("Fix indent at : " + location + "/" + curIndent);
+//			Console.WriteLine (Environment.StackTrace);
+			LineSegment lineSegment = data.Document.GetLine (location.Line);
+			string lineIndent = lineSegment.GetIndentation (data.Document);
+			string indentString = this.curIndent.IndentString;
+			if (indentString != lineIndent) {
+				changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, lineSegment.Offset, lineIndent.Length, indentString));
+			}
 		}
 	}
 }

@@ -1,3 +1,18 @@
+2010-03-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Formatting/Indent.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs:
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs:
+	* MonoDevelop.CSharp.Formatting/DomFormattingVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ThisReferenceExpression.cs:
+	  Worked on new formatter/parser.
+
 2010-03-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CSharpBinding.csproj: Don't local-copy project refs, as it

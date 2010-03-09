@@ -71,7 +71,6 @@ namespace MonoDevelop.CSharp.Parser
 				return new FullTypeName (typeName.ToString (), Convert (typeName.Location));
 			}
 			
-			
 			#region Global
 			public override void Visit (ModuleCompiled mc)
 			{
@@ -173,7 +172,6 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (FixedField f)
 			{
 			}
-			
 			
 			HashSet<Field> visitedFields = new HashSet<Field> ();
 			public override void Visit (Field f)
@@ -746,6 +744,15 @@ namespace MonoDevelop.CSharp.Parser
 				return new Identifier (localVariableReference.Name, Convert (localVariableReference.Location));;
 			}
 
+			public override object Visit (MemberAccess memberAccess)
+			{
+				var result = new MemberReferenceExpression ();
+				result.AddChild ((INode)memberAccess.Left.Accept (this), MemberReferenceExpression.Roles.TargetExpression);
+				result.AddChild (new Identifier (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
+				Console.WriteLine (result.StartLocation +" - " + result.EndLocation);
+				return result;
+			}
+			
 			public override object Visit (Constant constant)
 			{
 				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), constant.AsString ().Length);

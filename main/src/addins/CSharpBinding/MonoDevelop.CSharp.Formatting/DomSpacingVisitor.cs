@@ -34,19 +34,19 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class DomFormattingVisitor : AbtractCSharpDomVisitor<object, object>
+	public class DomSpacingVisitor : AbtractCSharpDomVisitor<object, object>
 	{
 		CSharpFormattingPolicy policy;
 		TextEditorData data;
 		List<Change> changes = new List<Change> ();
 		
-		public DomFormattingVisitor (CSharpFormattingPolicy policy, TextEditorData data)
+		public DomSpacingVisitor (CSharpFormattingPolicy policy, TextEditorData data)
 		{
 			this.policy = policy;
 			this.data = data;
 		}
 		
-		class MyTextReplaceChange : TextReplaceChange
+		internal class MyTextReplaceChange : TextReplaceChange
 		{
 			TextEditorData data;
 			protected override TextEditorData TextEditorData {
