@@ -143,7 +143,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				
 				
-				if (doc.GetCharAt (i) == '{' && hasJayDefinitonSpan && !spanStack.Any (s => s is JayBlockSpan)) {
+				if (CurSpan is JayDefinitionSpan && doc.GetCharAt (i) == '{' && hasJayDefinitonSpan && !spanStack.Any (s => s is JayBlockSpan)) {
 					JayBlockSpan jayBlockSpan = new JayBlockSpan (i);
 					OnFoundSpanBegin (jayBlockSpan, i, 1);
 					spanStack.Push (jayBlockSpan);
@@ -161,12 +161,64 @@ namespace Mono.TextEditor.Highlighting
 				if (jbs != null) {
 					if (doc.GetCharAt (i) == '}') {
 						int brackets = 0;
+						bool isInString = false, isInChar = false, isVerbatimString = false;
+						bool isInLineComment  = false, isInBlockComment = false;
+						
 						for (int j = jbs.Offset; j <= i; j++) {
 							char ch = doc.GetCharAt (j);
-							if (ch == '{') {
-								brackets++;
-							} else if (ch == '}')
-								brackets--;
+							switch (ch) {
+								case '\n':
+								case '\r':
+									isInLineComment = false;
+									if (!isVerbatimString)
+										isInString = false;
+									break;
+								case '/':
+									if (isInBlockComment) {
+										if (j > 0 && doc.GetCharAt (j - 1) == '*') 
+											isInBlockComment = false;
+									} else if (!isInString && !isInChar && j + 1 < doc.Length) {
+										char nextChar = doc.GetCharAt (j + 1);
+										if (nextChar == '/')
+											isInLineComment = true;
+										if (!isInLineComment && nextChar == '*')
+											isInBlockComment = true;
+									}
+									break;
+								case '\\':
+									if (isInChar || (isInString && !isVerbatimString))
+										j++;
+									break;
+								case '@':
+									if (!(isInString || isInChar || isInLineComment || isInBlockComment) && j + 1 < doc.Length && doc.GetCharAt (j + 1) == '"') {
+										isInString = true;
+										isVerbatimString = true;
+										j++;
+									}
+									break;
+								case '"':
+									if (!(isInChar || isInLineComment || isInBlockComment))  {
+										if (isInString && isVerbatimString && j + 1 < doc.Length && doc.GetCharAt (j + 1) == '"') {
+											j++;
+										} else {
+											isInString = !isInString;
+											isVerbatimString = false;
+										}
+									}
+									break;
+								case '\'':
+									if (!(isInString || isInLineComment || isInBlockComment)) 
+										isInChar = !isInChar;
+									break;
+								case '{':
+									if (!(isInString || isInChar || isInLineComment || isInBlockComment))
+										brackets++;
+									break;
+								case '}':
+									if (!(isInString || isInChar || isInLineComment || isInBlockComment))
+										brackets--;
+									break;
+							}
 						}
 						if (brackets == 0) {
 							OnFoundSpanEnd (cur, i, 1);
