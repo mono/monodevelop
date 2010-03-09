@@ -150,6 +150,11 @@ namespace MonoDevelop.Debugger.Soft
 				LogError (message, ex);
 				MonoDevelop.Core.Gui.MessageService.ShowException (ex, message);
 			}
+
+			public void LogMessage (string messageFormat, params object[] args)
+			{
+				MonoDevelop.Core.LoggingService.LogInfo (messageFormat, args);
+			}
 		}
 	}
 }

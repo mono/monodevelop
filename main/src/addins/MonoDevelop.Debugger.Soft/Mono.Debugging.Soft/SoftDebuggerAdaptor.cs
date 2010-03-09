@@ -880,11 +880,11 @@ namespace Mono.Debugging.Soft
 		public override void Abort ()
 		{
 			if (handle is IInvokeAsyncResult) {
-				LoggingService.LogMessage ("Aborting Invocation !");
+				var info = GetInfo ();
+				LoggingService.LogMessage ("Aborting invocation of " + info);
 				((IInvokeAsyncResult) handle).Abort ();
-				LoggingService.LogMessage ("Aborted Invocation");
 				WaitForCompleted (-1);
-				LoggingService.LogMessage ("Aborted Invocation - Done");
+				LoggingService.LogMessage ("Aborted invocation of " + info);
 			} else {
 				throw new NotSupportedException ();
 			}

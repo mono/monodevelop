@@ -1,3 +1,10 @@
+2010-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Nicer log messages.
+
+	* LoggingService.cs: Use custom logger for the new LogMessage
+	  call. Remove unnecessary string.Format call.
+
 2010-03-05  Martin Baulig  <martin@ximian.com>
 
 	Use the new Soft Debugger API to abort invocations.
