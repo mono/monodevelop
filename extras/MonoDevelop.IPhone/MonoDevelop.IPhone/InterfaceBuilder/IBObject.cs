@@ -164,11 +164,14 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 	public class IBProxyObject : IBObject
 	{
 		public string IBProxiedObjectIdentifier { get; set; }
+		public string TargetRuntimeIdentifier { get; set; }
 		
 		protected override void OnPropertyDeserialized (string name, object value)
 		{
 			if (name == "IBProxiedObjectIdentifier")
 				IBProxiedObjectIdentifier = (string) value;
+			else if (name == "targetRuntimeIdentifier")
+				TargetRuntimeIdentifier = (string) value;
 			else
 				base.OnPropertyDeserialized (name, value);
 		}
