@@ -707,7 +707,7 @@ namespace Mono.TextEditor.Highlighting
 				case Node:
 					string extends = reader.GetAttribute ("extends");
 					if (!String.IsNullOrEmpty (extends)) {
-						result = SyntaxModeService.GetSyntaxMode (extends);
+						result = (SyntaxMode)SyntaxModeService.GetSyntaxMode (extends).MemberwiseClone ();
 					}
 					result.Name       = reader.GetAttribute ("name");
 					result.MimeType   = reader.GetAttribute (MimeTypesAttribute);

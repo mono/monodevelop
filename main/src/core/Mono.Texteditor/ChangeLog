@@ -1,5 +1,10 @@
 2010-03-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed failing
+	  unit tests.
+
+2010-03-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/JaySyntaxMode.cs: Improved jay
 	  syntax mode.
 
