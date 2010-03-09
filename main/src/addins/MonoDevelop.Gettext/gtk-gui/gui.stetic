@@ -1300,11 +1300,13 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Entry" id="entryFilter">
+                      <widget class="MonoDevelop.Components.SearchEntry" id="searchEntryFilter">
                         <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="IsEditable">True</property>
-                        <property name="InvisibleChar">●</property>
+                        <property name="ActiveFilterID">0</property>
+                        <property name="Ready">False</property>
+                        <property name="HasFocus">False</property>
+                        <property name="IsCheckMenu">False</property>
+                        <property name="ForceFilterButtonVisible">False</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -1354,23 +1356,6 @@
                       </widget>
                       <packing>
                         <property name="Position">4</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="MonoDevelop.Components.MenuButton" id="buttonOptions">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Type">TextAndIcon</property>
-                        <property name="Icon">stock:gtk-properties Menu</property>
-                        <property name="Label">_Options</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="UseMarkup">False</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">5</property>
                         <property name="AutoSize">True</property>
                         <property name="Expand">False</property>
                         <property name="Fill">False</property>
@@ -1728,6 +1713,7 @@
                 <property name="MemberName" />
                 <property name="ShowArrow">False</property>
                 <property name="ButtonStyle">Icons</property>
+                <property name="IconSize">LargeToolbar</property>
                 <node name="toolbarPages" type="Toolbar" />
               </widget>
               <packing>

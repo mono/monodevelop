@@ -173,8 +173,8 @@ namespace MonoDevelop.Gettext
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			this.notebookTranslated.RemovePage (0);
-			this.entryFilter.Text = "";
-			entryFilter.Changed += delegate {
+			this.searchEntryFilter.Entry.Text = "";
+			searchEntryFilter.Entry.Changed += delegate {
 				UpdateFromCatalog ();
 			};
 			
@@ -220,9 +220,17 @@ namespace MonoDevelop.Gettext
 				if (e.Event.Button == 3)
 					ShowPopup ();
 			};
-			this.buttonOptions.Label = GettextCatalog.GetString ("Options");
-			this.buttonOptions.StockImage = Gtk.Stock.Properties;
-			this.buttonOptions.MenuCreator = CreateOptionsMenu;
+			
+			searchEntryFilter.Ready = true;
+			searchEntryFilter.Visible = true;
+			searchEntryFilter.ForceFilterButtonVisible = true;
+			searchEntryFilter.RequestMenu += delegate {
+				searchEntryFilter.Menu = CreateOptionsMenu ();
+			};
+			
+//			this.buttonOptions.Label = GettextCatalog.GetString ("Options");
+//			this.buttonOptions.StockImage = Gtk.Stock.Properties;
+//			this.buttonOptions.MenuCreator = ;
 			widgets.Add (this);
 			UpdateTasks ();
 //			this.vpaned2.AcceptPosition += delegate {
@@ -335,7 +343,7 @@ namespace MonoDevelop.Gettext
 		}
 		#endregion
 		
-		public Menu CreateOptionsMenu (MenuButton button)
+		public Menu CreateOptionsMenu ()
 		{
 			Menu menu = new Menu ();
 			
@@ -855,7 +863,7 @@ namespace MonoDevelop.Gettext
 		
 		void UpdateFromCatalog ()
 		{
-			filter = this.entryFilter.Text;
+			filter = this.searchEntryFilter.Entry.Text;
 			if (!IsCaseSensitive && filter != null)
 				filter = filter.ToUpper ();
 			if (RegexSearch) {
@@ -866,11 +874,11 @@ namespace MonoDevelop.Gettext
 					regex = new Regex (filter, options);
 				} catch (Exception e) {
 					IdeApp.Workbench.StatusBar.ShowError (e.Message);
-					this.entryFilter.ModifyBase (StateType.Normal, errorColor);
+					this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, errorColor);
 					return;
 				}
 			}
-			this.entryFilter.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
+			this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
 			StopFilterWorkerThread ();
 			updateThread = new FilterWorkerThread (this);
 			updateThread.Start ();
