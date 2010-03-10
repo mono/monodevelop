@@ -76,6 +76,7 @@ namespace MonoDevelop.SourceEditor
 			WidgetFlags |= WidgetFlags.NoWindow;
 			
 			layout = new Pango.Layout (this.PangoContext);
+			measureLayout = new Pango.Layout (this.PangoContext);
 		}
 	
 		
@@ -88,21 +89,26 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			if (measureLayout != null) {
+				measureLayout.Dispose ();
+				measureLayout = null;
+			}
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
 			PropertyService.RemovePropertyHandler ("CaretStatusBoxShowRealColumns", PropertyHandler);
 		}
-		public void CaretPositionChanged ()
-		{
-			UpdateWidth ();
-		}
-
+		
 		int requestWidth = 200;
+		Pango.Layout measureLayout;
 		public void UpdateWidth ()
 		{
-			using (Pango.Layout layout2 = new Pango.Layout (this.PangoContext)) {
-				layout2.SetText (GetText (true));
-				int h;
-				layout2.GetPixelSize (out this.requestWidth, out h);
-				
+			measureLayout.SetText (GetText (true));
+			int h, w;
+			measureLayout.GetPixelSize (out w, out h);
+			if (w != requestWidth) {
+				requestWidth = w;
 				QueueResize ();
 			}
 		}

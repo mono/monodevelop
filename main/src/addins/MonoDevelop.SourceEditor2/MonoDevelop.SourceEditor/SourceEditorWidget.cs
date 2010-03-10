@@ -819,7 +819,6 @@ namespace MonoDevelop.SourceEditor
 			
 			if (classBrowser != null) {
 				classBrowser.UpdatePosition (TextEditor.Caret.Line + 1, TextEditor.Caret.Column + 1);
-				classBrowser.StatusBox.CaretPositionChanged ();
 			}
 		}
 		
@@ -844,6 +843,7 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				IdeApp.Workbench.StatusBar.ClearCaretState ();
 				classBrowser.StatusBox.ShowCaretState ();
+				classBrowser.StatusBox.UpdateWidth ();
 			}
 		}
 		
