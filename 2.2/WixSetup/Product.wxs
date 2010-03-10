@@ -663,3 +663,4 @@
     <Property Id="ARPPRODUCTICON" Value="MonoDevelop.exe" />
   </Product>
 </Wix>
+
