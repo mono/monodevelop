@@ -1,3 +1,8 @@
+2010-03-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs: Fixed
+	  the show column ruler option.
+
 2010-03-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: fixed 'Bug
