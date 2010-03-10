@@ -1,3 +1,8 @@
+2010-03-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Bumped svn revision so the Mac updater will
+	  deliver the iPhone addin updates.
+
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* build/MacOSX/Info.plist.in: Force QuartzGL off.
