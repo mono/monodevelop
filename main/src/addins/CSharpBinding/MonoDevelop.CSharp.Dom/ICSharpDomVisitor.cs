@@ -56,6 +56,7 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitMethodDeclaration (MethodDeclaration methodDeclaration, T data);
 		S VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, T data);
 		S VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, T data);
+		S VisitAccessorDeclaration (Accessor accessorDeclaration, T data);
 		S VisitVariableInitializer (VariableInitializer variableInitializer, T data);
 		S VisitArgumentDeclaration (ArgumentDeclaration argumentDeclaration, T data);
 		#endregion

@@ -80,6 +80,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
+			Console.WriteLine ("visit type");
 			FixIndentation (typeDeclaration.StartLocation);
 			IndentLevel++;
 			object result = base.VisitTypeDeclaration (typeDeclaration, data);
@@ -93,16 +94,21 @@ namespace MonoDevelop.CSharp.Formatting
 			IndentLevel++;
 			object result = base.VisitPropertyDeclaration (propertyDeclaration, data);
 			IndentLevel--;
+			FixIndentation (propertyDeclaration.EndLocation, -1);
+			return result;
+		}
+		
+		public override object VisitAccessorDeclaration (Accessor accessorDeclaration, object data)
+		{
+			FixIndentation (accessorDeclaration.StartLocation);
+			object result = base.VisitAccessorDeclaration (accessorDeclaration, data);
 			return result;
 		}
 		
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
-			Console.WriteLine ("Start:" + methodDeclaration.StartLocation);
 			FixIndentation (methodDeclaration.StartLocation);
-			IndentLevel++;
 			object result = base.VisitMethodDeclaration (methodDeclaration, data);
-			IndentLevel--;
 			return result;
 		}
 		 
@@ -123,12 +129,16 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void FixIndentation (MonoDevelop.Projects.Dom.DomLocation location)
 		{
-//			Console.WriteLine ("Fix indent at : " + location + "/" + curIndent);
-//			Console.WriteLine (Environment.StackTrace);
+			FixIndentation (location, 0);
+		}
+		void FixIndentation (MonoDevelop.Projects.Dom.DomLocation location, int relOffset)
+		{
 			LineSegment lineSegment = data.Document.GetLine (location.Line);
 			string lineIndent = lineSegment.GetIndentation (data.Document);
 			string indentString = this.curIndent.IndentString;
-			if (indentString != lineIndent) {
+//			Console.WriteLine ("fix " + location + "/" + lineIndent.Length);
+//			Console.WriteLine (Environment.StackTrace);
+			if (indentString != lineIndent && location.Column + relOffset == lineIndent.Length) {
 				changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, lineSegment.Offset, lineIndent.Length, indentString));
 			}
 		}

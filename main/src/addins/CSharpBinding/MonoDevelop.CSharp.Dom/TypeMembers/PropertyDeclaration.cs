@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
-			return default(S);
+			return visitor.VisitAccessorDeclaration (this, data);
 		}
 	}
 	

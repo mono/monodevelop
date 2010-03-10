@@ -148,6 +148,11 @@ namespace MonoDevelop.CSharp.Dom
 			return VisitChildren (propertyDeclaration, data);
 		}
 		
+		public virtual S VisitAccessorDeclaration (Accessor accessorDeclaration, T data)
+		{
+			return VisitChildren (accessorDeclaration, data);
+		}
+		
 		public virtual S VisitVariableInitializer (VariableInitializer variableInitializer, T data) 
 		{
 			return VisitChildren (variableInitializer, data);

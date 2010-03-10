@@ -1,3 +1,4 @@
+
 /*
 // 
 // CSharpParser.cs
@@ -87,83 +88,97 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (Class c)
 			{
-				TypeDeclaration newType = CreateTypeDeclaration (c, "class".Length);
+				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Class;
 				
-				newType.AddChild (new CSharpTokenNode (Convert (c.BodyStartLocation), 1), AbstractCSharpNode.Roles.LBrace);
-				
+				MemberLocation location = LocationStorage.Get<MemberLocation> (c);
+				AddModifiers (newType, location);
+				newType.AddChild (new CSharpTokenNode (Convert (location[0]), "class".Length), TypeDeclaration.TypeKeyword);
+				newType.AddChild (new Identifier (c.Name, Convert (location[1])), AbstractNode.Roles.Identifier);
+				newType.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
-				
 				base.Visit (c);
-				newType.AddChild (new CSharpTokenNode  (Convert (c.BodyEndLocation), 1), AbstractCSharpNode.Roles.RBrace);
+				newType.AddChild (new CSharpTokenNode  (Convert (location[3]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
+				AddType (newType);
 			}
-
-			TypeDeclaration CreateTypeDeclaration (Mono.CSharp.TypeContainer tc, int keywordLength)
-			{
-				TypeDeclaration newType = new TypeDeclaration ();
-				
-				Identifier nameIdentifier = new Identifier () {
-					Name = tc.Name
-				};
-				
-				newType.AddChild (new CSharpTokenNode (Convert (tc.ContainerTypeTokenPosition), keywordLength), TypeDeclaration.TypeKeyword);
-				newType.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
-				unit.AddChild (newType);
-				return newType;
-			}
-
 			
 			public override void Visit (Struct s)
 			{
-				TypeDeclaration newType = CreateTypeDeclaration (s, "struct".Length);
+				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Struct;
+				
+				MemberLocation location = LocationStorage.Get<MemberLocation> (s);
+				AddModifiers (newType, location);
+				newType.AddChild (new CSharpTokenNode (Convert (location[0]), "struct".Length), TypeDeclaration.TypeKeyword);
+				newType.AddChild (new Identifier (s.Name, Convert (location[1])), AbstractNode.Roles.Identifier);
+				newType.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (s);
+				newType.AddChild (new CSharpTokenNode  (Convert (location[3]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
+				AddType (newType);
 			}
 			
 			public override void Visit (Interface i)
 			{
-				TypeDeclaration newType = CreateTypeDeclaration (i, "interface".Length);
+				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Interface;
+				
+				MemberLocation location = LocationStorage.Get<MemberLocation> (i);
+				AddModifiers (newType, location);
+				newType.AddChild (new CSharpTokenNode (Convert (location[0]), "interface".Length), TypeDeclaration.TypeKeyword);
+				newType.AddChild (new Identifier (i.Name, Convert (location[1])), AbstractNode.Roles.Identifier);
+				newType.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (i);
+				newType.AddChild (new CSharpTokenNode  (Convert (location[3]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
+				AddType (newType);
 			}
 			
 			public override void Visit (Mono.CSharp.Delegate d)
 			{
 				DelegateDeclaration newDelegate = new DelegateDeclaration ();
-				Identifier nameIdentifier = new Identifier () {
-					Name = d.Name
-				};
+				MemberLocation location = LocationStorage.Get<MemberLocation> (d);
 				
-				newDelegate.AddChild (new CSharpTokenNode (Convert (d.ContainerTypeTokenPosition), "delegate".Length), TypeDeclaration.TypeKeyword);
+				AddModifiers (newDelegate, location);
+				
+				newDelegate.AddChild (new CSharpTokenNode (Convert (location[0]), "delegate".Length), TypeDeclaration.TypeKeyword);
 				newDelegate.AddChild (ConvertToReturnType (d.TypeName), AbstractNode.Roles.ReturnType);
-				newDelegate.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
+				newDelegate.AddChild (new Identifier (d.Name, Convert (location[1])), AbstractNode.Roles.Identifier);
 				
-				ParenthesisLocation parenthesisLocation = LocationStorage.Get<ParenthesisLocation> (d);
-				SemicolonLocation semicolonLocation = LocationStorage.Get<SemicolonLocation> (d);
+				newDelegate.AddChild (new CSharpTokenNode (Convert (location[2]), 1), DelegateDeclaration.Roles.LPar);
+				newDelegate.AddChild (new CSharpTokenNode (Convert (location[3]), 1), DelegateDeclaration.Roles.RPar);
+				newDelegate.AddChild (new CSharpTokenNode (Convert (location[4]), 1), DelegateDeclaration.Roles.Semicolon);
 				
-				newDelegate.AddChild (new CSharpTokenNode (Convert (parenthesisLocation.Open), 1), DelegateDeclaration.Roles.LPar);
-				newDelegate.AddChild (new CSharpTokenNode (Convert (parenthesisLocation.Close), 1), DelegateDeclaration.Roles.RPar);
-				newDelegate.AddChild (new CSharpTokenNode (Convert (semicolonLocation.Location), 1), DelegateDeclaration.Roles.Semicolon);
-				
+				AddType (newDelegate);
+			}
+			
+			void AddType (INode child)
+			{
 				if (typeStack.Count > 0) {
-					typeStack.Peek ().AddChild (newDelegate);
+					typeStack.Peek ().AddChild (child);
 				} else {
-					unit.AddChild (newDelegate);
+					unit.AddChild (child);
 				}
 			}
 			
 			public override void Visit (Mono.CSharp.Enum e)
 			{
-				TypeDeclaration newType = CreateTypeDeclaration (e, "enum".Length);
+				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = MonoDevelop.Projects.Dom.ClassType.Enum;
+				
+				MemberLocation location = LocationStorage.Get<MemberLocation> (e);
+				AddModifiers (newType, location);
+				newType.AddChild (new CSharpTokenNode (Convert (location[0]), "enum".Length), TypeDeclaration.TypeKeyword);
+				newType.AddChild (new Identifier (e.Name, Convert (location[1])), AbstractNode.Roles.Identifier);
+				newType.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (e);
+				newType.AddChild (new CSharpTokenNode  (Convert (location[3]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
+				AddType (newType);
 			}
 			
 			#endregion
@@ -221,14 +236,17 @@ namespace MonoDevelop.CSharp.Parser
 			public override void Visit (Indexer indexer)
 			{
 				IndexerDeclaration newIndexer = new IndexerDeclaration ();
+				
+				MemberLocation location = LocationStorage.Get<MemberLocation> (indexer);
+				AddModifiers (newIndexer, location);
+				
 				newIndexer.AddChild (ConvertToReturnType (indexer.TypeName), AbstractNode.Roles.ReturnType);
 				
-				BracketLocation location = LocationStorage.Get<BracketLocation> (indexer);
-				newIndexer.AddChild (new CSharpTokenNode (Convert (location.Open), 1), IndexerDeclaration.Roles.LBracket);
-				newIndexer.AddChild (new CSharpTokenNode (Convert (location.Close), 1), IndexerDeclaration.Roles.RBracket);
+				newIndexer.AddChild (new CSharpTokenNode (Convert (location[0]), 1), IndexerDeclaration.Roles.LBracket);
+				newIndexer.AddChild (new CSharpTokenNode (Convert (location[1]), 1), IndexerDeclaration.Roles.RBracket);
 				
-				newIndexer.AddChild (new CSharpTokenNode (Convert (indexer.BodyStartLocation), 1), IndexerDeclaration.Roles.LBrace);
-				newIndexer.AddChild (new CSharpTokenNode (Convert (indexer.BodyEndLocation), 1), IndexerDeclaration.Roles.RBrace);
+				newIndexer.AddChild (new CSharpTokenNode (Convert (location[2]), 1), IndexerDeclaration.Roles.LBrace);
+				newIndexer.AddChild (new CSharpTokenNode (Convert (location[3]), 1), IndexerDeclaration.Roles.RBrace);
 				
 				if (indexer.Get != null) {
 					MonoDevelop.CSharp.Dom.Accessor getAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
@@ -249,14 +267,12 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				MethodDeclaration newMethod = new MethodDeclaration ();
 				
-				Identifier nameIdentifier = new Identifier () {
-					Name = m.Name
-				};
 				newMethod.AddChild (ConvertToReturnType (m.TypeName), AbstractNode.Roles.ReturnType);
-				newMethod.AddChild (nameIdentifier, AbstractNode.Roles.Identifier);
-				ParenthesisLocation location = LocationStorage.Get<ParenthesisLocation> (m);
-				newMethod.AddChild (new CSharpTokenNode (Convert (location.Open), 1), MethodDeclaration.Roles.LPar);
-				newMethod.AddChild (new CSharpTokenNode (Convert (location.Close), 1), MethodDeclaration.Roles.RPar);
+				newMethod.AddChild (new Identifier (m.Name, Convert (m.Location)), AbstractNode.Roles.Identifier);
+				MemberLocation location = LocationStorage.Get<MemberLocation> (m);
+				AddModifiers (newMethod, location);
+				newMethod.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LPar);
+				newMethod.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RPar);
 				
 				if (m.Block != null)
 					newMethod.AddChild ((INode)m.Block.Accept (this), MethodDeclaration.Roles.Body);
@@ -264,25 +280,70 @@ namespace MonoDevelop.CSharp.Parser
 				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.Roles.Member);
 			}
 			
+			static Dictionary<Mono.CSharp.Modifiers, MonoDevelop.Projects.Dom.Modifiers> modifierTable = new Dictionary<Mono.CSharp.Modifiers, MonoDevelop.Projects.Dom.Modifiers> ();
+			static ConversionVisitor ()
+			{
+				modifierTable[Mono.CSharp.Modifiers.NEW] = MonoDevelop.Projects.Dom.Modifiers.New;
+				modifierTable[Mono.CSharp.Modifiers.PUBLIC] = MonoDevelop.Projects.Dom.Modifiers.Public;
+				modifierTable[Mono.CSharp.Modifiers.PROTECTED] = MonoDevelop.Projects.Dom.Modifiers.Protected;
+				modifierTable[Mono.CSharp.Modifiers.PRIVATE] = MonoDevelop.Projects.Dom.Modifiers.Private;
+				modifierTable[Mono.CSharp.Modifiers.INTERNAL] = MonoDevelop.Projects.Dom.Modifiers.Internal;
+				modifierTable[Mono.CSharp.Modifiers.ABSTRACT] = MonoDevelop.Projects.Dom.Modifiers.Abstract;
+				modifierTable[Mono.CSharp.Modifiers.VIRTUAL] = MonoDevelop.Projects.Dom.Modifiers.Virtual;
+				modifierTable[Mono.CSharp.Modifiers.SEALED] = MonoDevelop.Projects.Dom.Modifiers.Sealed;
+				modifierTable[Mono.CSharp.Modifiers.STATIC] = MonoDevelop.Projects.Dom.Modifiers.Static;
+				modifierTable[Mono.CSharp.Modifiers.OVERRIDE] = MonoDevelop.Projects.Dom.Modifiers.Override;
+				modifierTable[Mono.CSharp.Modifiers.READONLY] = MonoDevelop.Projects.Dom.Modifiers.Readonly;
+//				modifierTable[Mono.CSharp.Modifiers.] = MonoDevelop.Projects.Dom.Modifiers.Const;
+				modifierTable[Mono.CSharp.Modifiers.PARTIAL] = MonoDevelop.Projects.Dom.Modifiers.Partial;
+				modifierTable[Mono.CSharp.Modifiers.EXTERN] = MonoDevelop.Projects.Dom.Modifiers.Extern;
+				modifierTable[Mono.CSharp.Modifiers.VOLATILE] = MonoDevelop.Projects.Dom.Modifiers.Volatile;
+				modifierTable[Mono.CSharp.Modifiers.UNSAFE] = MonoDevelop.Projects.Dom.Modifiers.Unsafe;
+				modifierTable[Mono.CSharp.Modifiers.OVERRIDE] = MonoDevelop.Projects.Dom.Modifiers.Overloads;
+			}
+			
+			void AddModifiers (AbstractNode parent, Mono.CSharp.MemberLocation location)
+			{
+				if (location.Modifiers == null)
+					return;
+				foreach (var modifier in location.Modifiers) {
+					parent.AddChild (new CSharpModifierToken (Convert (modifier.Item1), modifierTable[modifier.Item2]), AbstractNode.Roles.Modifier);
+				}
+			}
+			
 			public override void Visit (Property p)
 			{
 				PropertyDeclaration newProperty = new PropertyDeclaration ();
-				newProperty.AddChild (ConvertToReturnType (p.TypeName), AbstractNode.Roles.ReturnType);
 				
-				newProperty.AddChild (new CSharpTokenNode (Convert (p.BodyStartLocation), 1), MethodDeclaration.Roles.LBrace);
-				newProperty.AddChild (new CSharpTokenNode (Convert (p.BodyEndLocation), 1), MethodDeclaration.Roles.RBrace);
+				MemberLocation location = LocationStorage.Get<MemberLocation> (p);
+				AddModifiers (newProperty, location);
+				
+				newProperty.AddChild (ConvertToReturnType (p.TypeName), AbstractNode.Roles.ReturnType);
+				newProperty.AddChild (new Identifier (p.MemberName.Name, Convert (p.MemberName.Location)), AbstractNode.Roles.Identifier);
+				newProperty.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LBrace);
 				
 				if (p.Get != null) {
 					MonoDevelop.CSharp.Dom.Accessor getAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
-					getAccessor.Location = Convert (p.Get.Location);
+					MemberLocation getLocation = LocationStorage.Get<MemberLocation> (p.Get);
+					AddModifiers (getAccessor, getLocation);
+					getAccessor.AddChild (new CSharpTokenNode (Convert (getLocation[0]), "get".Length), PropertyDeclaration.Roles.Keyword);
+					
+					if (p.Get.Block != null)
+						getAccessor.AddChild ((INode)p.Get.Block.Accept (this), MethodDeclaration.Roles.Body);
 					newProperty.AddChild (getAccessor, PropertyDeclaration.PropertyGetRole);
 				}
 				
 				if (p.Set != null) {
-					MonoDevelop.CSharp.Dom.Accessor getAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
-					getAccessor.Location = Convert (p.Set.Location);
-					newProperty.AddChild (getAccessor, PropertyDeclaration.PropertySetRole);
+					MonoDevelop.CSharp.Dom.Accessor setAccessor = new MonoDevelop.CSharp.Dom.Accessor ();
+					MemberLocation setLocation = LocationStorage.Get<MemberLocation> (p.Set);
+					AddModifiers (setAccessor, setLocation);
+					setAccessor.AddChild (new CSharpTokenNode (Convert (setLocation[0]), "set".Length), PropertyDeclaration.Roles.Keyword);
+					
+					if (p.Set.Block != null)
+						setAccessor.AddChild ((INode)p.Set.Block.Accept (this), MethodDeclaration.Roles.Body);
+					newProperty.AddChild (setAccessor, PropertyDeclaration.PropertySetRole);
 				}
+				newProperty.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RBrace);
 				
 				typeStack.Peek ().AddChild (newProperty, TypeDeclaration.Roles.Member);
 			}

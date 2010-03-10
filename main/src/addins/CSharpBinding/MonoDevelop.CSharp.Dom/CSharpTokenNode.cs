@@ -36,7 +36,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		int tokenLength;
+		protected int tokenLength;
 		public override DomLocation EndLocation {
 			get {
 				return new DomLocation (StartLocation.Line, StartLocation.Column + tokenLength);

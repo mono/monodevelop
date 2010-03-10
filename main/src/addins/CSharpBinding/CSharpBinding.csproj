@@ -301,6 +301,7 @@
     <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\DomSpacingVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\CSharpModifierToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

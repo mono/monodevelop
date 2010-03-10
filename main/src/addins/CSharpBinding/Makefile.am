@@ -46,6 +46,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs \
 	MonoDevelop.CSharp.Dom/CompilationUnit.cs \
 	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
+	MonoDevelop.CSharp.Dom/CSharpModifierToken.cs \
 	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AsExpression.cs \
