@@ -50,8 +50,10 @@ namespace PropertyList
 
 		public void LoadFromXmlFile (string path)
 		{
+			//allow DTD but not try to resolve it from web
 			var settings = new XmlReaderSettings () {
-				ProhibitDtd = false
+				ProhibitDtd = false,
+				XmlResolver = null,
 			};
 			using (var reader = XmlReader.Create (path, settings))
 				LoadFromXml (reader);
@@ -59,9 +61,11 @@ namespace PropertyList
 
 		public void LoadFromXml (string data)
 		{
+			//allow DTD but not try to resolve it from web
 			var settings = new XmlReaderSettings () {
 				CloseInput = true,
-				ProhibitDtd = false
+				ProhibitDtd = false,
+				XmlResolver = null,
 			};
 			using (var reader = XmlReader.Create (new StringReader (data), settings)) {
 				LoadFromXml (reader);

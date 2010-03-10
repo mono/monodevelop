@@ -165,7 +165,7 @@ namespace MonoDevelop.IPhone
 			
 			args.AppendFormat (" -res=\"{0}\",\"Info.plist\"", conf.AppDirectory.Combine ("Info.plist"));
 			
-			foreach (string asm in proj.GetReferencedAssemblies (slnConf))
+			foreach (string asm in proj.GetReferencedAssemblies (slnConf).Distinct ())
 				args.AppendFormat (" -r=\"{0}\"", asm);
 			
 			IPhoneBuildExtension.AppendExtrasMtouchArgs (args, proj, conf);

@@ -115,7 +115,7 @@ namespace MonoDevelop.IPhone
 					args.AppendFormat (" -sim \"{0}\" ", conf.AppDirectory);
 				}
 				
-				foreach (string asm in proj.GetReferencedAssemblies (configuration))
+				foreach (string asm in proj.GetReferencedAssemblies (configuration).Distinct ())
 					args.AppendFormat (" -r=\"{0}\"", asm);
 				
 				AppendExtrasMtouchArgs (args, proj, conf);
