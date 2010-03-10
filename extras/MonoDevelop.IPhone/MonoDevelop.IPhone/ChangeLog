@@ -1,3 +1,28 @@
+2010-03-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* InterfaceBuilder/IBObject.cs: Handle new property.
+
+2010-03-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneBuildOptionsPanel.cs: Fix typo that broke storing
+	  i18n options.
+
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneExecutionHandler.cs: Better message.
+
+	* IPhoneProject.cs: Don't try to run the app if the app bundle
+	  does not exist.
+
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneExecutionHandler.cs: Enable "run" command in device
+	  mode. It uploads then shows a dialog.
+
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Don't copy icon unless changed.
+
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* PropertyList/PlistDocument.cs: Forgot to commit second part

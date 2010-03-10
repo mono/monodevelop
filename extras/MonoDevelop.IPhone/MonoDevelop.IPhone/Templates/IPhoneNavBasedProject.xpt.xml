@@ -676,7 +676,7 @@ namespace ${Namespace}
 			{
 				string cellIdentifier = "Cell";
 				var cell = tableView.DequeueReusableCell (cellIdentifier);
-				if (cell != null) {
+				if (cell == null) {
 					cell = new UITableViewCell (UITableViewCellStyle.Default, cellIdentifier);
 				}
 				

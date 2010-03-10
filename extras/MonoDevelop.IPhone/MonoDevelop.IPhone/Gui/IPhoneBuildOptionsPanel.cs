@@ -145,7 +145,7 @@ namespace MonoDevelop.IPhone.Gui
 			if (store.GetIterFirst (out iter)) {
 				do {
 					if ((bool)store.GetValue (iter, 1)) {
-						if (sb.Length == 0)
+						if (sb.Length != 0)
 							sb.Append (",");
 						sb.Append ((string)store.GetValue (iter, 0));
 					}
