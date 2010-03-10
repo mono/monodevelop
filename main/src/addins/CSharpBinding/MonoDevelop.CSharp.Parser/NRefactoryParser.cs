@@ -492,7 +492,12 @@ namespace MonoDevelop.CSharp.Parser
 				foreach (DomParameter p in parameter) {
 					p.DeclaringMember = delegateType;
 				}
-
+				
+				if (delegateDeclaration.Templates != null && delegateDeclaration.Templates.Count > 0) {
+					foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition template in delegateDeclaration.Templates) {
+						delegateType.AddTypeParameter (ConvertTemplateDefinition (template));
+					}
+				}
 				AddType (delegateType);
 
 				return null;

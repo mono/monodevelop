@@ -1,5 +1,13 @@
 2010-03-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed 2nd
+	  bug described in 'Bug 586304 - Intellisense does not show
+	  several linq extenion methods when using nested generic
+	  type'.
+
+2010-03-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:

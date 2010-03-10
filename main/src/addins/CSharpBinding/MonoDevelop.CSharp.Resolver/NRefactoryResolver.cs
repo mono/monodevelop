@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -550,16 +551,27 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 					result.ResolveExtensionMethods ();
 					
-					// todo! - not 100% correct, but it's a best-fit until the dom contains token information
-					// This code assumes that the lambda expression is the first parameter of the method.
 					for (int i = 0; i < invocation.Arguments.Count; i++) {
 						if (invocation.Arguments[i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
+							
 							IParameter parameter = result.MostLikelyMethod.Parameters[i];
 							IReturnType returnType = parameter.ReturnType;
 							
-							while (returnType.GenericArguments.Count > 0) {
-								returnType = returnType.GenericArguments[0];
+							IType type = resolver.Dom.GetType (returnType);
+							bool isResolved = false;
+							if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
+								IMethod invocationMethod = type.Methods.First ();
+								if (invocationMethod.Parameters.Count > 0) {
+									returnType = invocationMethod.Parameters[System.Math.Min (i, invocationMethod.Parameters.Count - 1)].ReturnType;
+									isResolved = true;
+								}
 							}
+							if (!isResolved) {
+								while (returnType.GenericArguments.Count > 0) {
+									returnType = returnType.GenericArguments[0];
+								}
+							}
+							
 							string invariantString = returnType.ToInvariantString ();
 							if (returnTypeDictionary.ContainsKey (invariantString))
 								return returnTypeDictionary[invariantString];
