@@ -108,7 +108,7 @@ MyType TestMethod () {}
 			data.Document.FileName = "a.cs";
 			data.Document.Text = 
 @"class Test {
-				int Prop { get; set; }
+				public int Prop { get; set; }
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
@@ -117,7 +117,7 @@ MyType TestMethod () {}
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
-	int Prop { get; set; }
+	public int Prop { get; set; }
 }", data.Document.Text);
 		}
 		
@@ -128,7 +128,7 @@ MyType TestMethod () {}
 			data.Document.FileName = "a.cs";
 			data.Document.Text = 
 @"class Test {
-				int Prop {
+				public int Prop {
  get;
 set;
 }
@@ -140,7 +140,7 @@ set;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
-	int Prop {
+	public int Prop {
 		get;
 		set;
 	}
@@ -154,19 +154,19 @@ set;
 			data.Document.FileName = "a.cs";
 			data.Document.Text = 
 @"class Test {
-	void TestMethod ()
+	Test TestMethod ()
 	{
 this.TestMethod ();
 	}
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
 			
+			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
-	void TestMethod ()
+	Test TestMethod ()
 	{
 		this.TestMethod ();
 	}

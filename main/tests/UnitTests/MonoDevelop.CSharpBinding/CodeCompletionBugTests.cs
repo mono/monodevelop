@@ -2325,6 +2325,44 @@ public class Test
 			Assert.IsNotNull (provider.Find ("IsEmpty"), "method 'IsEmpty' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 586304 - Intellisense does not show several linq extenion methods when using nested generic type
+		/// </summary>
+		[Test()]
+		public void TestBug586304B ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+public delegate S Func<T, S> (T t);
+
+public class Lazy<T> {
+	public virtual bool IsLazy ()
+	{
+		return true;
+	}
+}
+
+static class ExtMethods
+{
+	public static T Where<T>(this Lazy<T> t, Func<T, bool> pred)
+	{
+		return default (T);
+	}
+}
+
+class MyClass
+{
+	public void Test()
+	{
+		Lazy<Lazy<MyClass>> c; 
+		$c.Where (x => x.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("Test"), "method 'Test' found, but shouldn't.");
+			Assert.IsNotNull (provider.Find ("IsLazy"), "method 'IsLazy' not found.");
+		}
 
 		
 	}
