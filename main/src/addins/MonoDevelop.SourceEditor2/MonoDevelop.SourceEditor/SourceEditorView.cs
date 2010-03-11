@@ -254,7 +254,7 @@ namespace MonoDevelop.SourceEditor
 			DisposeErrorMarkers ();
 			if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.Never)
 				return;
-			
+			widget.Document.BeginAtomicUndo ();
 			foreach (Task task in tasks) {
 				if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
 					if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
@@ -275,7 +275,7 @@ namespace MonoDevelop.SourceEditor
 					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description));
 				}
 			}
-			this.TextEditor.Repaint ();
+			widget.Document.EndAtomicUndo ();
 		}
 		
 		void DisposeErrorMarkers ()

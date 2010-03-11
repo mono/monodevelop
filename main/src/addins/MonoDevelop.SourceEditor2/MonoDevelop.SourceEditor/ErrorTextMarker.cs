@@ -75,22 +75,38 @@ namespace MonoDevelop.SourceEditor
 		
 		Task task;
 		LineSegment lineSegment;
+		int editorAllocHeight = -1, lastLineLength = -1;
+		int lastHeight = 0;
 		
 		public int GetLineHeight (TextEditor editor)
 		{
 			if (!IsExpanded || DebuggingService.IsDebugging)
 				return editor.LineHeight;
+			
+			if (editorAllocHeight == editor.Allocation.Width && lastLineLength == lineSegment.EditableLength)
+				return lastHeight;
+			
 			CalculateLineFit (editor, editor.TextViewMargin.GetLayout (lineSegment).Layout);
 			int height = CollapseExtendedErrors ? editor.LineHeight : editor.LineHeight * errors.Count;
 			if (!fitsInSameLine)
 				height += editor.LineHeight;
+			
+			editorAllocHeight = editor.Allocation.Height;
+			lastLineLength = lineSegment.EditableLength;
+			lastHeight = height;
+			
 			return height;
 		}
-		
+		static Dictionary<string, int> textWidthDictionary = new Dictionary<string, int> ();
 		void CalculateLineFit (TextEditor editor, Pango.Layout textLayout)
 		{
 			int textWidth, textHeight;
-			textLayout.GetPixelSize (out textWidth, out textHeight);
+			if (!textWidthDictionary.TryGetValue (textLayout.Text, out textWidth)) {
+				textLayout.GetPixelSize (out textWidth, out textHeight);
+				if (textWidthDictionary.Count > 10000)
+					textWidthDictionary.Clear ();
+				textWidthDictionary[textLayout.Text] = textWidth;
+			}
 			
 			EnsureLayoutCreated (editor);
 			fitsInSameLine = editor.TextViewMargin.XOffset + textWidth + layouts[0].Width + errorPixbuf.Width + border + editor.LineHeight / 2  < editor.Allocation.Width;
@@ -101,6 +117,7 @@ namespace MonoDevelop.SourceEditor
 			this.task = task;
 			this.IsExpanded = true;
 			this.lineSegment = lineSegment;
+			
 			errors.Add (new ErrorText (isError, errorMessage));
 			errorPixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Error, Gtk.IconSize.Menu);
 			warningPixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Warning, Gtk.IconSize.Menu);
@@ -222,8 +239,6 @@ namespace MonoDevelop.SourceEditor
 				errorCountLayout.FontDescription = fontDescription;
 				errorCountLayout.SetText (errors.Count.ToString ());
 			}
-			
-			
 		}
 		
 		public bool DrawBackground (TextEditor editor, Gdk.Drawable win, Pango.Layout layout2, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
