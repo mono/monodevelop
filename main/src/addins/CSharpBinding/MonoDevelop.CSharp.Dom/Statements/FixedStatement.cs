@@ -35,8 +35,8 @@ namespace MonoDevelop.CSharp.Dom
 		public const int FixedKeywordRole = 101;
 		public const int DeclaratorRole = 102;
 		
-		public INode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+		public ICSharpNode EmbeddedStatement {
+			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
 		public INode PointerDeclaration {

@@ -36,6 +36,17 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
+		public override DomLocation StartLocation {
+			get {
+				return Location;
+			}
+		}
+		public override DomLocation EndLocation {
+			get {
+				return new DomLocation (Location.Line, Location.Column + 1);
+			}
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitEmptyStatement (this, data);

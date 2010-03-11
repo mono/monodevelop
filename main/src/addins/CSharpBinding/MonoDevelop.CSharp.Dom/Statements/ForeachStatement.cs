@@ -34,8 +34,8 @@ namespace MonoDevelop.CSharp.Dom
 		public const int ForEachKeywordRole = 100;
 		public const int InKeywordRole = 101;
 			
-		public INode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+		public ICSharpNode EmbeddedStatement {
+			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
 		public INode Expression {

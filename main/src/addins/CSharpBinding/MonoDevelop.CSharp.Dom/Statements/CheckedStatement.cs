@@ -31,8 +31,8 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CheckedStatement : AbstractCSharpNode
 	{
-		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body); }
+		public ICSharpNode EmbeddedStatement {
+			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

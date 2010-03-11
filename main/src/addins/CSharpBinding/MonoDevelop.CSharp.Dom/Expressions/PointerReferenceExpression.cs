@@ -36,6 +36,15 @@ namespace MonoDevelop.CSharp.Dom
 	/// </summary>
 	public class PointerReferenceExpression : MemberReferenceExpression
 	{
+		public INode Expression {
+			get { return GetChildByRole (Roles.TargetExpression); }
+		}
+		
+		public string Dim {
+			get;
+			set;
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPointerReferenceExpression (this, data);

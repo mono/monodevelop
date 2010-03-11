@@ -35,8 +35,8 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildByRole (Roles.Statement); }
 		}
 		
-		public INode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+		public ICSharpNode EmbeddedStatement {
+			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
 		public CSharpTokenNode LPar {

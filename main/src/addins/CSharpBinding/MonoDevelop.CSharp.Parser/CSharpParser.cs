@@ -273,7 +273,6 @@ namespace MonoDevelop.CSharp.Parser
 				AddModifiers (newMethod, location);
 				newMethod.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LPar);
 				newMethod.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RPar);
-				
 				if (m.Block != null)
 					newMethod.AddChild ((INode)m.Block.Accept (this), MethodDeclaration.Roles.Body);
 				
@@ -489,7 +488,8 @@ namespace MonoDevelop.CSharp.Parser
 				KeywordWithSemicolon location = LocationStorage.Get<KeywordWithSemicolon> (returnStatement);
 				
 				result.AddChild (new CSharpTokenNode (Convert (location[0]), "return".Length), ReturnStatement.Roles.Keyword);
-				result.AddChild ((INode)returnStatement.Expr.Accept (this), ReturnStatement.Roles.Expression);
+				if (returnStatement.Expr != null)
+					result.AddChild ((INode)returnStatement.Expr.Accept (this), ReturnStatement.Roles.Expression);
 				result.AddChild (new CSharpTokenNode (Convert (location.Semicolon), 1), ReturnStatement.Roles.Semicolon);
 				
 				return result;
@@ -578,6 +578,8 @@ namespace MonoDevelop.CSharp.Parser
 					result.AddChild ((INode)stmt.Accept (this), AbstractCSharpNode.Roles.Statement);
 				}
 				result.AddChild (new CSharpTokenNode (Convert (blockStatement.EndLocation), 1), AbstractCSharpNode.Roles.RBrace);
+					Console.WriteLine ("block end:"  + blockStatement.EndLocation);
+
 				return result;
 			}
 			
@@ -784,6 +786,30 @@ namespace MonoDevelop.CSharp.Parser
 				
 				return result;
 			}
+			
+			public override object Visit (Yield yieldStatement)
+			{
+				var result = new YieldStatement ();
+				KeywordLocation location = LocationStorage.Get<KeywordLocation> (yieldStatement);
+				
+				result.AddChild (new CSharpTokenNode (Convert (location[0]), "yield".Length), YieldStatement.YieldKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (location[1]), "return".Length), YieldStatement.ReturnKeywordRole);
+				if (yieldStatement.Expr != null)
+					result.AddChild ((INode)yieldStatement.Expr.Accept (this), YieldStatement.Roles.Expression);
+				result.AddChild (new CSharpTokenNode (Convert (location[2]), ";".Length), YieldStatement.Roles.Semicolon);
+				
+				return result;
+			}
+			
+			public override object Visit (YieldBreak yieldBreakStatement)
+			{
+				var result = new YieldStatement ();
+				KeywordLocation location = LocationStorage.Get<KeywordLocation> (yieldBreakStatement);
+				result.AddChild (new CSharpTokenNode (Convert (location[0]), "yield".Length), YieldStatement.YieldKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (location[1]), "break".Length), YieldStatement.BreakKeywordRole);
+				result.AddChild (new CSharpTokenNode (Convert (location[2]), ";".Length), YieldStatement.Roles.Semicolon);
+				return result;
+			}
 			#endregion
 			
 			#region Expression
@@ -939,6 +965,15 @@ namespace MonoDevelop.CSharp.Parser
 				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), CastExpression.Roles.RPar);
 				if (castExpression.Expr != null)
 					result.AddChild ((INode)castExpression.Expr.Accept (this), CastExpression.Roles.Expression);
+				return result;
+			}
+			
+			public override object Visit (ComposedCast composedCast)
+			{
+				var result = new PointerReferenceExpression ();
+				result.Dim = composedCast.Dim;
+				result.AddChild (new CSharpTokenNode (Convert(composedCast.Location), composedCast.Dim.Length), PointerReferenceExpression.Roles.Argument);
+				result.AddChild ((INode)composedCast.Left.Accept (this), PointerReferenceExpression.Roles.TargetExpression);
 				return result;
 			}
 			

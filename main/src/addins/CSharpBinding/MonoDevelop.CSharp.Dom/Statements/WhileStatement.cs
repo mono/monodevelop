@@ -39,8 +39,8 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public INode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+		public ICSharpNode EmbeddedStatement {
+			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
 		public INode Condition {

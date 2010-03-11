@@ -31,8 +31,11 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class YieldStatement : AbstractCSharpNode
 	{
-		public INode Statement {
-			get { return GetChildByRole (Roles.Statement); }
+		public const int YieldKeywordRole = 100;
+		public const int ReturnKeywordRole = 101;
+		public const int BreakKeywordRole = 102;
+		public INode Expression {
+			get { return GetChildByRole (Roles.Expression); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
