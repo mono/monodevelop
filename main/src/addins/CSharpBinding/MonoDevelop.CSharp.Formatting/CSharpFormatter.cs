@@ -203,8 +203,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 		//			Console.WriteLine (wrapper);
 			
-			int i = wrapper.IndexOf ('{') + 1;
-			int col = GetColumn (wrapper, i, data.Options.TabSize);
+			int bracketIndex = wrapper.IndexOf ('{') + 1;
+			int col = GetColumn (wrapper, bracketIndex, data.Options.TabSize);
 			
 			CSharpFormatter formatter = new CSharpFormatter ();
 			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
@@ -213,7 +213,6 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			if (formatter.hasErrors)
 				return;
-
 			
 			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0) - 1;
 			InFormat = true;
@@ -237,7 +236,16 @@ namespace MonoDevelop.CSharp.Formatting
 			//Console.WriteLine ("formattedText1:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
 			formattedText = AddIndent (formattedText, GetIndent (data, member.Location.Line - 1));
 			
-			//Console.WriteLine ("formattedText2:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
+			Document doc = new Document ();
+			doc.Text = formattedText;
+			for (int i = doc.LineCount - 1; i >= 0; i--) {
+				LineSegment lineSegment = doc.GetLine (i);
+				if (IsEmptyLine (doc, lineSegment))
+					((IBuffer)doc).Remove (lineSegment.Offset, lineSegment.Length);
+			}
+			formattedText = doc.Text;
+			
+			//Console.WriteLine ("formattedText3:" + formattedText.Replace ("\t", "->").Replace (" ", "°").Replace ("\n", "\\n").Replace ("\r", "\\r"));
 	
 			int textLength = CanInsertFormattedText (data, startPos, data.Document.LocationToOffset (caretLocation.Line, caretLocation.Column), formattedText);
 			if (textLength > 0) {
@@ -249,6 +257,15 @@ namespace MonoDevelop.CSharp.Formatting
 			InFormat = false;
 		}
 
+		static bool IsEmptyLine (Document doc, LineSegment line)
+		{
+			for (int i = 0; i < line.EditableLength; i++) {
+				char ch = doc.GetCharAt (line.Offset + i);
+				if (!Char.IsWhiteSpace (ch)) 
+					return false;
+			}
+			return true;
+		}
 		static int CanInsertFormattedText (TextEditorData data, int offset, int endOffset, string formattedText)
 		{
 			int textOffset = 0;
@@ -313,16 +330,15 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static void InsertFormattedText (TextEditorData data, int offset, string formattedText)
 		{
-			formattedText = formattedText.Replace ("\r\n", "\n").Replace ("\r", "\n");
 			data.Document.BeginAtomicUndo ();
 			//			DocumentLocation caretLocation = data.Caret.Location;
-
+			
 			int selAnchor = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Anchor) : -1;
 			int selLead = data.IsSomethingSelected ? data.Document.LocationToOffset (data.MainSelection.Lead) : -1;
 			int textOffset = 0;
 			int caretOffset = data.Caret.Offset;
-		//			Console.WriteLine ("formattedText:" + formattedText);
-			Console.WriteLine ("caretOffset={0}", caretOffset);
+			
+//			Console.WriteLine ("formattedText3:" + formattedText.Replace ("\t", "->").Replace (" ", "°").Replace ("\n", "\\n").Replace ("\r", "\\r"));
 			while (textOffset < formattedText.Length /*&& offset < caretOffset*/) {
 				if (offset < 0) {
 					offset++;
@@ -344,7 +360,7 @@ namespace MonoDevelop.CSharp.Formatting
 					continue;
 				} else if (isCh1Eol) {
 					
-				//	int firstWhitespace = 0;
+					//int firstWhitespace = 0;
 					
 					 // skip all white spaces in formatted text - we had a line break
 					int firstWhitespace = -1;
@@ -353,11 +369,12 @@ namespace MonoDevelop.CSharp.Formatting
 							firstWhitespace = textOffset;
 						textOffset++;
 					}
+					
 					if (firstWhitespace >= 0 && firstWhitespace != textOffset && formattedText[textOffset] == '\n') {
 						int length = textOffset - firstWhitespace - 1;
 						data.Insert (offset, formattedText.Substring (firstWhitespace, length) + data.EolMarker);
+						data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (offset));
 						length += data.EolMarker.Length;
-						Console.WriteLine (data.EolMarker.Length);
 						if (offset < caretOffset)
 							caretOffset += length;
 						if (offset < selAnchor)
@@ -381,6 +398,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (ch2Ws && !ch1Ws) {
 					if (ch2 == '\n') {
 						data.Insert (offset, data.EolMarker);
+						data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (offset));
 						if (offset < caretOffset)
 							caretOffset += data.EolMarker.Length;
 						if (offset < selAnchor)
@@ -391,6 +409,7 @@ namespace MonoDevelop.CSharp.Formatting
 						offset += data.EolMarker.Length;
 					} else {
 						data.Insert (offset, ch2.ToString ());
+						data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (offset));
 						if (offset < caretOffset)
 							caretOffset++;
 						if (offset < selAnchor)
@@ -411,10 +430,12 @@ namespace MonoDevelop.CSharp.Formatting
 					if (offset < selLead)
 						selLead--;
 					data.Remove (offset, 1);
+					data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (offset));
 					continue;
 				}
 				if (ch1Ws && ch2Ws) {
 					data.Replace (offset, 1, ch2.ToString ());
+					data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (offset));
 					textOffset++;
 					offset++;
 					continue;
@@ -422,7 +443,6 @@ namespace MonoDevelop.CSharp.Formatting
 //				Console.WriteLine ("BAIL OUT");
 				break;
 			}
-			Console.WriteLine ("caretOffset={0}", caretOffset);
 			data.Caret.Offset = caretOffset;
 			
 			if (selAnchor >= 0)
