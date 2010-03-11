@@ -101,7 +101,7 @@ namespace MonoDevelop.Gettext
 		public POEditorWidget (TranslationProject project)
 		{
 			this.project = project;
-			this.Build();
+			this.Build ();
 			this.headersEditor = new CatalogHeadersWidget ();
 			this.notebookPages.AppendPage (headersEditor, new Gtk.Label ());
 			
@@ -109,7 +109,7 @@ namespace MonoDevelop.Gettext
 			AddButton (GettextCatalog.GetString ("Headers")).Active = false;
 			
 			// entries tree view 
-			store = new ListStore (typeof (string), typeof (bool), typeof (string), typeof (string), typeof (CatalogEntry), typeof (Gdk.Color), typeof(int), typeof (Gdk.Color));
+			store = new ListStore (typeof(string), typeof(bool), typeof(string), typeof(string), typeof(CatalogEntry), typeof(Gdk.Color), typeof(int), typeof(Gdk.Color));
 			this.treeviewEntries.Model = store;
 			
 			treeviewEntries.AppendColumn (String.Empty, new CellRendererIcon (), "stock_id", Columns.Stock, "cell-background-gdk", Columns.RowColor);
@@ -118,7 +118,7 @@ namespace MonoDevelop.Gettext
 			cellRendFuzzy.Toggled += new ToggledHandler (FuzzyToggled);
 			cellRendFuzzy.Activatable = true;
 			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Fuzzy"), cellRendFuzzy, "active", Columns.Fuzzy, "cell-background-gdk", Columns.RowColor);
-			 
+			
 			CellRendererText original = new CellRendererText ();
 			original.Ellipsize = Pango.EllipsizeMode.End;
 			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Original string"), original, "text", Columns.String, "cell-background-gdk", Columns.RowColor, "foreground-gdk", Columns.ForeColor);
@@ -144,7 +144,7 @@ namespace MonoDevelop.Gettext
 			treeviewEntries.GetColumn (3).Resizable = true;
 			treeviewEntries.GetColumn (3).Expand = true;
 			// found in tree view
-			foundInStore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (Pixbuf));
+			foundInStore = new ListStore (typeof(string), typeof(string), typeof(string), typeof(Pixbuf));
 			this.treeviewFoundIn.Model = foundInStore;
 			
 			TreeViewColumn fileColumn = new TreeViewColumn ();
@@ -161,7 +161,7 @@ namespace MonoDevelop.Gettext
 			treeviewFoundIn.HeadersVisible = false;
 			treeviewFoundIn.GetColumn (1).FixedWidth = 100;
 			
-			treeviewFoundIn.RowActivated += delegate (object sender, RowActivatedArgs e) {
+			treeviewFoundIn.RowActivated += delegate(object sender, RowActivatedArgs e) {
 				Gtk.TreeIter iter;
 				foundInStore.GetIter (out iter, e.Path);
 				string line = foundInStore.GetValue (iter, (int)FoundInColumns.Line) as string;
@@ -169,7 +169,8 @@ namespace MonoDevelop.Gettext
 				int lineNr = 1;
 				try {
 					lineNr = 1 + int.Parse (line);
-				} catch {}
+				} catch {
+				}
 				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			this.notebookTranslated.RemovePage (0);
@@ -203,7 +204,7 @@ namespace MonoDevelop.Gettext
 				if (this.isUpdating)
 					return;
 				if (this.currentEntry != null) {
-					string[] lines = StringEscaping.FromGettextFormat (textviewComments.Buffer.Text).Split (new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+					string[] lines = StringEscaping.FromGettextFormat (textviewComments.Buffer.Text).Split (new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
 					for (int i = 0; i < lines.Length; i++) {
 						if (!lines[i].StartsWith ("#"))
 							lines[i] = "# " + lines[i];
@@ -216,7 +217,7 @@ namespace MonoDevelop.Gettext
 				ShowPopup ();
 			};
 			
-			this.treeviewEntries.ButtonReleaseEvent += delegate (object sender, Gtk.ButtonReleaseEventArgs e) {
+			this.treeviewEntries.ButtonReleaseEvent += delegate(object sender, Gtk.ButtonReleaseEventArgs e) {
 				if (e.Event.Button == 3)
 					ShowPopup ();
 			};
@@ -227,29 +228,29 @@ namespace MonoDevelop.Gettext
 			searchEntryFilter.RequestMenu += delegate {
 				searchEntryFilter.Menu = CreateOptionsMenu ();
 			};
-			
+		
 //			this.buttonOptions.Label = GettextCatalog.GetString ("Options");
-//			this.buttonOptions.StockImage = Gtk.Stock.Properties;
-//			this.buttonOptions.MenuCreator = ;
+			//			this.buttonOptions.StockImage = Gtk.Stock.Properties;
+			//			this.buttonOptions.MenuCreator = ;
 			widgets.Add (this);
 			UpdateTasks ();
-//			this.vpaned2.AcceptPosition += delegate {
-//				PropertyService.Set ("Gettext.SplitPosition", vpaned2.Position / (double)Allocation.Height);
-//				inMove = false;
-//			};
-//			this.vpaned2.CancelPosition += delegate {
-//				inMove = false;
-//			};
-//			this.vpaned2.MoveHandle += delegate {
-//				inMove = true;
-//			};
-//			this.ResizeChecked += delegate {
-//				if (inMove)
-//					return;
-//				int newPosition = (int)(Allocation.Height * PropertyService.Get ("Gettext.SplitPosition", 0.3d));
-//				if (vpaned2.Position != newPosition)
-//					vpaned2.Position = newPosition;
-//			};
+			//			this.vpaned2.AcceptPosition += delegate {
+			//				PropertyService.Set ("Gettext.SplitPosition", vpaned2.Position / (double)Allocation.Height);
+			//				inMove = false;
+			//			};
+			//			this.vpaned2.CancelPosition += delegate {
+			//				inMove = false;
+			//			};
+			//			this.vpaned2.MoveHandle += delegate {
+			//				inMove = true;
+			//			};
+			//			this.ResizeChecked += delegate {
+			//				if (inMove)
+			//					return;
+			//				int newPosition = (int)(Allocation.Height * PropertyService.Get ("Gettext.SplitPosition", 0.3d));
+			//				if (vpaned2.Position != newPosition)
+			//					vpaned2.Position = newPosition;
+			//			};
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
@@ -257,6 +258,7 @@ namespace MonoDevelop.Gettext
 			options.ShowInvalidLines = false;
 			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
 			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			options.FontName = PropertyService.Get<string> ("FontName");
 			
 			this.scrolledwindowOriginal.Child = this.texteditorOriginal;
 			this.scrolledwindowPlural.Child = this.texteditorPlural;
