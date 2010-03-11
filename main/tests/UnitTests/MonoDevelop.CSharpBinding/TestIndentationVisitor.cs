@@ -575,7 +575,7 @@ using (var o = new MyObj()) {
 			data.Document.Text = @"class Test {
 	Test TestMethod ()
 	{
-int a;
+Test a;
 	}
 }";
 			
@@ -587,7 +587,7 @@ int a;
 			Assert.AreEqual (@"class Test {
 	Test TestMethod ()
 	{
-		int a;
+		Test a;
 	}
 }", data.Document.Text);
 		}
@@ -654,7 +654,7 @@ while (true)
 	Test TestMethod ()
 	{
 do {
-} while (true)
+} while (true);
 	}
 }";
 			
@@ -667,7 +667,7 @@ do {
 	Test TestMethod ()
 	{
 		do {
-		} while (true)
+		} while (true);
 	}
 }", data.Document.Text);
 		}
