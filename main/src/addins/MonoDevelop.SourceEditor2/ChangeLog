@@ -1,5 +1,10 @@
 2010-03-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added repaint
+	  after task update.
+
+2010-03-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Optimized
 	  error bubble speed.

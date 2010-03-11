@@ -276,6 +276,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			widget.Document.EndAtomicUndo ();
+			widget.TextEditor.Repaint ();
 		}
 		
 		void DisposeErrorMarkers ()
