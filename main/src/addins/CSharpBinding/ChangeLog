@@ -1,5 +1,10 @@
 2010-03-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs: Handled generated
+	  blocks/fixed some unit tests.
+
+2010-03-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
 	* MonoDevelop.CSharp.Dom/Statements/ForStatement.cs:
 	* MonoDevelop.CSharp.Dom/Statements/LockStatement.cs:

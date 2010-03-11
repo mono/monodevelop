@@ -1,5 +1,3 @@
-
-/*
 // 
 // CSharpParser.cs
 //  
@@ -25,8 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+/*
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using Mono.CSharp;
@@ -572,14 +571,15 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (Block blockStatement)
 			{
+				if (blockStatement.IsGenerated)
+					return blockStatement.Statements.Last ().Accept (this);
 				var result = new BlockStatement ();
 				result.AddChild (new CSharpTokenNode (Convert (blockStatement.StartLocation), 1), AbstractCSharpNode.Roles.LBrace);
 				foreach (Statement stmt in blockStatement.Statements) {
 					result.AddChild ((INode)stmt.Accept (this), AbstractCSharpNode.Roles.Statement);
 				}
 				result.AddChild (new CSharpTokenNode (Convert (blockStatement.EndLocation), 1), AbstractCSharpNode.Roles.RBrace);
-					Console.WriteLine ("block end:"  + blockStatement.EndLocation);
-
+				
 				return result;
 			}
 			
@@ -781,7 +781,6 @@ namespace MonoDevelop.CSharp.Parser
 					result.AddChild ((INode)foreachStatement.Expr.Accept (this), ForeachStatement.Roles.Initializer);
 				
 				result.AddChild (new CSharpTokenNode (Convert (location.Close), 1), ForeachStatement.Roles.RPar);
-				
 				result.AddChild ((INode)foreachStatement.Statement.Accept (this), ForeachStatement.Roles.EmbeddedStatement);
 				
 				return result;
@@ -836,7 +835,6 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new MemberReferenceExpression ();
 				result.AddChild ((INode)memberAccess.Left.Accept (this), MemberReferenceExpression.Roles.TargetExpression);
 				result.AddChild (new Identifier (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
-				Console.WriteLine (result.StartLocation +" - " + result.EndLocation);
 				return result;
 			}
 			
