@@ -46,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
-			ainfo.Add (GettextCatalog.GetString ("_Show Caret Panel"), new System.Action (delegate {
+			ainfo.Add (NavigationBar.HideStatusBox ? GettextCatalog.GetString ("_Show Caret Panel") : GettextCatalog.GetString ("_Hide Caret Panel"), new System.Action (delegate {
 				IdeApp.Workbench.StatusBar.ClearCaretState ();
 				NavigationBar.HideStatusBox = !NavigationBar.HideStatusBox;
 			}));

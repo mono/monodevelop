@@ -1,3 +1,9 @@
+2010-03-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/NavigationBarCommands.cs: When the
+	  caret panel is shown the toggle command is renamed to 'hide
+	  caret panel'.
+
 2010-03-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/StatusBox.cs:
