@@ -294,7 +294,7 @@ namespace Mono.TextEditor
 			margins.Add (dashedLineMargin);
 			margins.Add (foldMarkerMargin);
 			margins.Add (textViewMargin);
-			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged; 
+			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged;
 			this.textEditorData.UpdateAdjustmentsRequested += TextEditorDatahandleUpdateAdjustmentsRequested;
 			Document.DocumentUpdated += DocumentUpdatedHandler;
 			
@@ -304,12 +304,12 @@ namespace Mono.TextEditor
 			
 			Gtk.TargetList list = new Gtk.TargetList ();
 			list.AddTextTargets (ClipboardActions.CopyOperation.TextType);
-			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
+			Gtk.Drag.DestSet (this, DestDefaults.All, (TargetEntry[])list, DragAction.Move | DragAction.Copy);
 			
 			imContext = new IMMulticontext ();
 			imContext.Commit += IMCommit;
 			
-			imContext.UsePreedit = true; 
+			imContext.UsePreedit = true;
 			imContext.PreeditStart += delegate {
 				preeditOffset = Caret.Offset;
 				this.textViewMargin.ForceInvalidateLine (Caret.Line);
@@ -320,9 +320,9 @@ namespace Mono.TextEditor
 				this.textViewMargin.ForceInvalidateLine (Caret.Line);
 				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 			};
-			imContext.PreeditChanged += delegate (object sender, EventArgs e) {
+			imContext.PreeditChanged += delegate(object sender, EventArgs e) {
 				if (preeditOffset >= 0) {
-					imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos); 
+					imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos);
 					this.textViewMargin.ForceInvalidateLine (Caret.Line);
 					this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 				}
@@ -333,6 +333,12 @@ namespace Mono.TextEditor
 			}
 			
 			InitAnimations ();
+			this.Document.EndUndo += delegate {
+				if (this.Document.HeightChanged) {
+					this.Document.HeightChanged = false;
+					SetAdjustments ();
+				}
+			};
 		}
 
 		void TextEditorDatahandleUpdateAdjustmentsRequested (object sender, EventArgs e)
@@ -1179,7 +1185,7 @@ namespace Mono.TextEditor
 					this.textEditorData.VAdjustment.Value = 0;
 				} else {
 					int yMargin = 1 * this.LineHeight;
-					int caretPosition = Document.LogicalToVisualLine (Caret.Line) * this.LineHeight;
+					int caretPosition = LineToVisualY (Caret.Line);
 					if (this.textEditorData.VAdjustment.Value > caretPosition) {
 						this.textEditorData.VAdjustment.Value = caretPosition;
 					} else if (this.textEditorData.VAdjustment.Value + this.textEditorData.VAdjustment.PageSize - this.LineHeight < caretPosition + yMargin) {
@@ -2412,16 +2418,15 @@ namespace Mono.TextEditor
 		public int CalculateLineNumber (int yPos)
 		{
 			int logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
+			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
+			
 			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
-				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
-				if (lineNumber >= logicalLine || Document.GetFoldingContaining (extendedTextMarkerLine).Any (fs => fs.IsFolded))
+				if (logicalLineSegment != null && extendedTextMarkerLine.Offset >= logicalLineSegment.Offset)
 					continue;
-				int curLineHeight = GetLineHeight (extendedTextMarkerLine);
-				
-				yPos -= curLineHeight - LineHeight;
-				logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
-				if (logicalLine < lineNumber) {
-					return lineNumber;
+				int curLineHeight = GetLineHeight (extendedTextMarkerLine) - LineHeight;
+				if (curLineHeight != 0) {
+					logicalLine -= curLineHeight / LineHeight;
+					logicalLineSegment = Document.GetLine (logicalLine);
 				}
 			}
 			
@@ -2431,11 +2436,11 @@ namespace Mono.TextEditor
 		public int LineToVisualY (int logicalLine)
 		{
 			int delta = 0;
+			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
 			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
 				if (extendedTextMarkerLine == null)
 					continue;
-				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
-				if (lineNumber >= logicalLine || Document.GetFoldingContaining (extendedTextMarkerLine).Any (fs => fs.IsFolded))
+				if (logicalLineSegment != null && extendedTextMarkerLine.Offset >= logicalLineSegment.Offset)
 					continue;
 				delta += GetLineHeight (extendedTextMarkerLine) - LineHeight;
 			}

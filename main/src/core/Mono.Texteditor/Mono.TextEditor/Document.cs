@@ -63,6 +63,11 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		public bool HeightChanged {
+			get;
+			set;
+		}
+		
 		public SyntaxMode SyntaxMode {
 			get {
 				return syntaxMode ?? new SyntaxMode ();
@@ -1129,8 +1134,10 @@ namespace Mono.TextEditor
 				return;
 			if (marker is IExtendingTextMarker) {
 				lock (linesWithExtendingTextMarkers) {
-					if (!linesWithExtendingTextMarkers.Contains (line))
+					if (!linesWithExtendingTextMarkers.Contains (line)) {
+						HeightChanged = true;
 						linesWithExtendingTextMarkers.Add (line);
+					}
 				}
 			}
 			line.AddMarker (marker);
@@ -1149,6 +1156,7 @@ namespace Mono.TextEditor
 			if (marker is IExtendingTextMarker) {
 				lock (linesWithExtendingTextMarkers) {
 					if (!linesWithExtendingTextMarkers.Contains (line)) {
+						HeightChanged = true;
 						linesWithExtendingTextMarkers.Remove (line);
 					}
 				}
@@ -1169,6 +1177,7 @@ namespace Mono.TextEditor
 			if (typeof(IExtendingTextMarker).IsAssignableFrom (type)) {
 				lock (linesWithExtendingTextMarkers) {
 					if (!linesWithExtendingTextMarkers.Contains (line)) {
+						HeightChanged = true;
 						linesWithExtendingTextMarkers.Remove (line);
 					}
 				}

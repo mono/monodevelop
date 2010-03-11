@@ -1,3 +1,9 @@
+2010-03-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/TextEditor.cs: Fixed some error bubble
+	  calculating issues.
+
 2010-03-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed failing
