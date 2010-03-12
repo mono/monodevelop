@@ -271,8 +271,8 @@ namespace MonoDevelop.Core.Serialization
 					if (itemType != null) return itemType;
 					itemType = CreateConfigurationDataType (type);
 					configurationTypes [type] = itemType;
-					configurationTypesByName [itemType.Name] = itemType;
 					itemType.SetContext (this);
+					configurationTypesByName [itemType.Name] = itemType;
 					
 					TypeRef tr;
 					if (pendingTypesByTypeName.TryGetValue (type.FullName, out tr)) {
