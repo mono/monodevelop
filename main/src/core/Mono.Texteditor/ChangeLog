@@ -1,3 +1,7 @@
+2010-03-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: Removed wait update.
+
 2010-03-11  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs:
