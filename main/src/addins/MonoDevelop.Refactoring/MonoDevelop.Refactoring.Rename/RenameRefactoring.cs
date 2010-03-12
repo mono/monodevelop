@@ -235,10 +235,12 @@ namespace MonoDevelop.Refactoring.Rename
 			if (member is IMethod && ((IMethod)member).IsConstructor) {
 				yield return member;
 			} else {
+				bool isOverrideable = member.DeclaringType.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
+				bool isLastMember = false;
 				// for members we need to collect the whole 'class' of members (overloads & implementing types)
 				HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
 				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-					if (type.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
+					if (type.ClassType == ClassType.Interface || isOverrideable || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
 						// search in the class for the member
 						foreach (IMember interfaceMember in type.SearchMember (member.Name, true)) {
 							if (interfaceMember.MemberType == member.MemberType)
@@ -246,16 +248,23 @@ namespace MonoDevelop.Refactoring.Rename
 						}
 						
 						// now search in all subclasses of this class for the member
+						isLastMember = !member.IsOverride;
 						foreach (IType implementingType in dom.GetSubclasses (type)) {
 							string name = implementingType.DecoratedFullName;
 							if (alreadyVisitedTypes.Contains (name))
 								continue;
 							alreadyVisitedTypes.Add (name);
 							foreach (IMember typeMember in implementingType.SearchMember (member.Name, true)) {
-								if (typeMember.MemberType == member.MemberType)
+								if (typeMember.MemberType == member.MemberType) {
+									isLastMember = type.ClassType != ClassType.Interface && (typeMember.IsVirtual || typeMember.IsAbstract || !typeMember.IsOverride);
 									yield return typeMember;
+								}
 							}
+							if (!isOverrideable)
+								break;
 						}
+						if (isLastMember)
+							break;
 					}
 				}
 			}
