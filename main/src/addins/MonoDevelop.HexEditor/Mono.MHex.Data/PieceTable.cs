@@ -272,6 +272,7 @@ namespace Mono.MHex.Data
 				
 				return;
 			}
+			int endSegmentLength = offset + length - CalcOffset (endNode);
 			RedBlackTree<TreeNode>.RedBlackTreeIterator iter = new RedBlackTree<TreeNode>.RedBlackTreeIterator (startNode);
 			RedBlackTree<TreeNode>.RedBlackTreeNode node;
 			do {
@@ -285,8 +286,7 @@ namespace Mono.MHex.Data
 					ChangeLength (node, newLength);
 				} else if (node == endNode) {
 					// has no left side, otherwise it would be startNode == endNode
-					newLength = offset + length - node.value.CalcOffset (node) - node.value.Length;
-					TreeNode rightSide = node.value.SplitRight (newLength + length);
+					TreeNode rightSide = node.value.SplitRight (endSegmentLength);
 					if (rightSide.Length > 0)
 						InsertAfter (node, rightSide);
 					RemoveNode (node);
