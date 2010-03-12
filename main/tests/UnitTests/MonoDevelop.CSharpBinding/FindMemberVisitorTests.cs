@@ -54,6 +54,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		void RunTest (string test)
 		{
+			RunTest (test, null);
+		}
+		
+		void RunTest (string test, LocalVariable localVariable)
+		{
 			StringBuilder     testText           = new StringBuilder ();
 			List<DomLocation> expectedReferences = new List<DomLocation> ();
 			DomLocation memberLocation = DomLocation.Empty;
@@ -95,12 +100,18 @@ namespace MonoDevelop.CSharpBinding.Tests
 			                                                      MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (testViewContent), 
 			                                                      "a.cs");
 			SearchMemberVisitor smv = new SearchMemberVisitor (memberLocation.Line);
-			smv.Visit (parsedDocument.CompilationUnit, null);
-			if (smv.FoundMember == null) {
-				ResolveResult resolveResult = resolver.ResolveIdentifier ("a", memberLocation);
-				if (resolveResult is LocalVariableResolveResult)
-					smv.FoundMember = ((LocalVariableResolveResult)resolveResult).LocalVariable;
+			if (localVariable != null) {
+				((LocalVariable)localVariable).DeclaringMember = parsedDocument.CompilationUnit.GetMemberAt (expectedReferences[0]);
+				smv.FoundMember = localVariable;
+			} else {
+				smv.Visit (parsedDocument.CompilationUnit, null);
+				if (smv.FoundMember == null) {
+					ResolveResult resolveResult = resolver.ResolveIdentifier ("a", memberLocation);
+					if (resolveResult is LocalVariableResolveResult)
+						smv.FoundMember = ((LocalVariableResolveResult)resolveResult).LocalVariable;
+				}
 			}
+			
 			Assert.IsNotNull (smv.FoundMember, "Member to search not found.");
 			if (smv.FoundMember is IType) {
 				smv.FoundMember = dom.GetType (((IType)smv.FoundMember).FullName, 
@@ -690,6 +701,38 @@ class B : Base
 ");
 		}
 
+		/// <summary>
+		/// Bug 587530 – for/foreach rename refactoring ignores the scope
+		/// </summary>
+		[Test()]
+		public void TestBug587530 ()
+		{
+			LocalVariable localVariable = new LocalVariable (null,
+			                                  "t",
+			                                  DomReturnType.Int32,
+			                                  new DomRegion (11, 7, 13, 1));
+			RunTest (
+@"using System;
+
+class C
+{
+	static void Main ()
+	{
+		for (int t = 0; 
+t < 10;
+++t)
+		Console.WriteLine (t);
+
+		for (int $@t = 0; 
+@t < 10;
+++@t)
+			Console.WriteLine (@t);
+	}
+}
+", localVariable);
+		}
+
+		
 		
 		/*
 		[Test()]

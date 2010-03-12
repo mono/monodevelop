@@ -1,6 +1,12 @@
 2010-03-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
+	  test for 'Bug 587530 – for/foreach rename refactoring
+	  ignores the scope'.
+
+2010-03-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
 	  test for 'Bug 587071 - Find references shows a lot of
 	  methods with the same name but not from the correct class'.
 
