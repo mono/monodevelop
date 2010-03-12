@@ -664,6 +664,31 @@ class DemoMain
 }
 ");
 		}
+		
+		/// <summary>
+		/// Bug 587071 - Find references shows a lot of methods with the same name but not from the correct class
+		/// </summary>
+		[Test()]
+		public void TestBug587071 ()
+		{
+			RunTest (
+@"
+
+class Base {
+}
+
+class A : Base 
+{
+	public virtual void $@FooBar () {}
+}
+
+
+class B : Base 
+{
+	public virtual void FooBar () {}
+}
+");
+		}
 
 		
 		/*
