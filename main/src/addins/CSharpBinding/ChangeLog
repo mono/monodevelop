@@ -1,3 +1,9 @@
+2010-03-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  Fixed 'Bug 587530 – for/foreach rename refactoring ignores
+	  the scope'.
+
 2010-03-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs: Handled generated

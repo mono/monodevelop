@@ -425,6 +425,8 @@ namespace MonoDevelop.CSharp.Refactoring
 					parent = parent.Parent;
 				}
 				if (parent != null &&
+					localVariableDeclaration.StartLocation.Line - 1 == searchedVariable.Location.Line && 
+					localVariableDeclaration.StartLocation.Column - 1 == searchedVariable.Location.Column && 
 				    parent.StartLocation.Line == searchedVariable.DeclaringMember.Location.Line && 
 				    parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column &&
 				    searchedVariable.Region.Start != ConvertLocation (localVariableDeclaration.StartLocation)) {
