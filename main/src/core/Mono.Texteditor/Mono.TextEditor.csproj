@@ -160,6 +160,7 @@
     <Compile Include="Mono.TextEditor.Vi\ViMark.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
+    <Compile Include="Mono.TextEditor\PieceTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

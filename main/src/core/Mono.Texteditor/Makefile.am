@@ -95,6 +95,7 @@ FILES =  \
 	Mono.TextEditor/LineSplitter.cs \
 	Mono.TextEditor/LinkEventArgs.cs \
 	Mono.TextEditor/Margin.cs \
+	Mono.TextEditor/PieceTable.cs \
 	Mono.TextEditor/Platform.cs \
 	Mono.TextEditor/RedBlackTree.cs \
 	Mono.TextEditor/ReplaceEventArgs.cs \

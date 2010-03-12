@@ -1,5 +1,12 @@
 2010-03-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/PieceTable.cs: Implemented experimental
+	  piece table IBuffer implementation.
+
+2010-03-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs: Removed wait update.
 
 2010-03-11  Mike Krüger  <mkrueger@novell.com>
