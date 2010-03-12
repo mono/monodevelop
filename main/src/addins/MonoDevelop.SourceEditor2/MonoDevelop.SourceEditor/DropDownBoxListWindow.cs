@@ -68,20 +68,23 @@ namespace MonoDevelop.SourceEditor
 			list.SizeAllocated += delegate {
 				ResetSizes ();
 			};
-			list.PageChanged += delegate {
-				vScrollbar.Value = list.Page;
-			};
+			list.PageChanged += HandleListPageChanged;
 			hBox.PackStart (list, true, true, 0);
 			
 			vScrollbar = new VScrollbar (null);
 			vScrollbar.ValueChanged += delegate {
-				list.Page = (int)vScrollbar.Value;
+				list.ForcePage ((int)vScrollbar.Value);
 			};
 			
 			hBox.PackStart (vScrollbar, false, false, 0);
 			Add (hBox);
 			
 			this.Child.ShowAll ();
+		}
+
+		void HandleListPageChanged (object sender, EventArgs e)
+		{
+			vScrollbar.Value = list.Page;
 		}
 		
 		public void SelectItem (object item)
@@ -318,13 +321,20 @@ namespace MonoDevelop.SourceEditor
 					return page; 
 				}
 				set {
-					if (page != value) {
-						page = value;
-						UpdatePage ();
-						OnPageChanged (EventArgs.Empty);
-						this.QueueDraw ();
-					}
+					if (page == value)
+						return;
+					page = value;
+					UpdatePage ();
+					OnPageChanged (EventArgs.Empty);
+					this.QueueDraw ();
 				}
+			}
+			
+			internal void ForcePage (int page)
+			{
+				this.page = System.Math.Max (0, System.Math.Min (page, win.DataProvider.IconCount - VisibleRows));
+				OnPageChanged (EventArgs.Empty);
+				this.QueueDraw ();
 			}
 			
 			protected virtual void OnPageChanged (EventArgs e)

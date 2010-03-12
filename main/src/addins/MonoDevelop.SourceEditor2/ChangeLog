@@ -1,3 +1,8 @@
+2010-03-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: fixed
+	  scrolling bar bug.
+
 2010-03-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added repaint
