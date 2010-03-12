@@ -230,6 +230,9 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 		Widget IMimeTypePolicyOptionsPanel.CreateMimePanelWidget ()
 		{
 			panelWidget = CreatePanelWidget ();
+			//HACK: work around bug 469427 - broken themes match on widget names
+			if (panelWidget.Name.IndexOf ("Panel") > 0)
+				panelWidget.Name = panelWidget.Name.Replace ("Panel", "_");
 			if (isExactMimeType)
 				return panelWidget;
 			

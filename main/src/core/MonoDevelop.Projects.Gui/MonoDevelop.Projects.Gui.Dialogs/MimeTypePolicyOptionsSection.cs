@@ -107,9 +107,6 @@ namespace MonoDevelop.Projects.Gui.Dialogs
 			foreach (IMimeTypePolicyOptionsPanel panel in panelData.Panels) {
 				panel.SetParentSection (this);
 				Widget child = panel.CreateMimePanelWidget ();
-				//HACK: work around bug 469427 - broken themes match on widget names
-				if (child.Name.IndexOf ("Panel") > 0)
-					child.Name = child.Name.Replace ("Panel", "_");
 				
 				Label tlabel = new Label (panel.Label);
 				label.Show ();
