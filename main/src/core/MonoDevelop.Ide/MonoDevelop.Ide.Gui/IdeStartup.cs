@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Gui
 		ArrayList errorsList = new ArrayList ();
 		bool initialized;
 		internal static string DefaultTheme;
+		static readonly int ipcBasePort = 40000;
 		
 		public int Run (string[] args)
 		{
@@ -140,21 +141,25 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitor.Step (1);
 
-			if(!options.IpcTcp){
+			if (options.IpcTcp) {
+				listen_socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+				ep = new IPEndPoint (IPAddress.Loopback, ipcBasePort + HashSDBMBounded (Environment.UserName));
+			} else {
 				socket_filename = "/tmp/md-" + Environment.GetEnvironmentVariable ("USER") + "-socket";
 				listen_socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
 				ep = new UnixEndPoint (socket_filename);
+			}
 				
-				// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
-				if (!options.NewWindow && StartupInfo.GetRequestedFileList ().Length > 0 && File.Exists (socket_filename)) {
-					try {
-						listen_socket.Connect (ep);
-						listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", StartupInfo.GetRequestedFileList ())));
-						return 0;
-					} catch {
-						// Reset the socket
+			// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
+			if (!options.NewWindow && StartupInfo.GetRequestedFileList ().Length > 0) {
+				try {
+					listen_socket.Connect (ep);
+					listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", StartupInfo.GetRequestedFileList ())));
+					return 0;
+				} catch {
+					// Reset the socket
+					if (null != socket_filename && File.Exists (socket_filename))
 						File.Delete (socket_filename);
-					}
 				}
 			}
 			
@@ -222,14 +227,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			// FIXME: we should probably track the last 'selected' one
 			// and do this more cleanly
-			if (!options.IpcTcp) {
-				try {
-					listen_socket.Bind (ep);
-					listen_socket.Listen (5);
-					listen_socket.BeginAccept (new AsyncCallback (ListenCallback), listen_socket);
-				} catch {
-					// Socket already in use
-				}
+			try {
+				listen_socket.Bind (ep);
+				listen_socket.Listen (5);
+				listen_socket.BeginAccept (new AsyncCallback (ListenCallback), listen_socket);
+			} catch {
+				// Socket already in use
 			}
 			
 			initialized = true;
@@ -423,6 +426,23 @@ namespace MonoDevelop.Ide.Gui
 				LoggingService.LogFatalError ("Unhandled Exception", ex);
 				MessageService.ShowException (ex, "Unhandled Exception. MonoDevelop will now close.");
 			};
+		}
+		
+		/// <summary>
+		/// Implementation of sdbm-style hash, bounded to a range of 1000.
+		/// </summary>
+		public static int HashSDBMBounded (string input)
+		{
+			ulong hash = 0;
+
+			try {
+				foreach (char c in input)
+					hash = (ulong)char.GetNumericValue (c) + (hash << 6) + (hash << 16) - hash;
+			} catch {
+				// If we overflow, return the intermediate result
+			}
+				
+			return (int)(hash % 1000);
 		}
 	}
 	
