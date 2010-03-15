@@ -131,6 +131,16 @@ namespace MonoDevelop.CSharp.Resolver
 			
 		}
 		
+		public IType SearchType (string fullyDecoratedName)
+		{
+			return dom.SearchType (CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, fullyDecoratedName);
+		}
+		
+		public IType SearchType (IReturnType type)
+		{
+			return dom.SearchType (CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, type);
+		}
+		
 		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;
 		public ICSharpCode.NRefactory.Ast.CompilationUnit MemberCompilationUnit {
 			get {
@@ -156,14 +166,15 @@ namespace MonoDevelop.CSharp.Resolver
 			this.resultTable.Clear ();
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			if (callingType != null) {
+				callingType = dom.ResolveType (callingType);
 				callingMember = GetMemberAt (callingType, resolvePosition);
 				if (callingMember == null) {
 					DomLocation posAbove = resolvePosition;
 					posAbove.Line--;
 					callingMember = GetMemberAt (callingType, posAbove);
 				}
-				callingType = dom.ResolveType (callingType);
 			}
+			
 			//System.Console.WriteLine("CallingMember: " + callingMember);
 			if (callingMember != null && !setupLookupTableVisitor ) {
 				string wrapper = CreateWrapperClassForMember (callingMember, fileName, editor);
@@ -420,9 +431,9 @@ namespace MonoDevelop.CSharp.Resolver
 			if (unit != null && expressionResult.ExpressionContext == ExpressionContext.AttributeArguments) {
 				string attributeName = NewCSharpExpressionFinder.FindAttributeName (editor, unit, unit.FileName);
 				if (attributeName != null) {
-					IType type = dom.SearchType (new SearchTypeRequest (unit, new DomReturnType (attributeName + "Attribute"), CallingType));
+					IType type = SearchType (attributeName + "Attribute");
 					if (type == null) 
-						type = dom.SearchType (new SearchTypeRequest (unit, new DomReturnType (attributeName), CallingType));
+						type = SearchType (attributeName);
 					if (type != null) {
 						foreach (IProperty property in type.Properties) {
 							if (property.Name == expressionResult.Expression) {
@@ -462,6 +473,7 @@ namespace MonoDevelop.CSharp.Resolver
 //				result.StaticResolve = true;
 //			System.Console.WriteLine("result:" + result + "STATIC" + result.StaticResolve);
 			result.ResolvedExpression = expressionResult;
+		
 			return result;
 		}
 		
@@ -481,7 +493,6 @@ namespace MonoDevelop.CSharp.Resolver
 				return DomReturnType.Void;
 			if (type.Type != null) // type known (possible anonymous type), no resolving needed
 				return type;
-			
 			TypeResolverVisitor typeResolverVisitor = new TypeResolverVisitor (dom, unit);
 			typeResolverVisitor.SetCurrentMember (this.CallingMember);
 			return (IReturnType)typeResolverVisitor.Visit (type, this.CallingType);
@@ -494,7 +505,7 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			IReturnType type = resolveResult.ResolvedType;
 			while (type.GenericArguments.Count > 0) {
-				IType realType = dom.SearchType (new SearchTypeRequest (Unit, type, CallingType));
+				IType realType = SearchType (type);
 				if (realType != null && realType.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 					IMethod invokeMethod = realType.SearchMember ("Invoke", true) [0] as IMethod;
 					if (invokeMethod != null && invokeMethod.Parameters.Count > 0) {
@@ -648,17 +659,17 @@ namespace MonoDevelop.CSharp.Resolver
 		}
 		
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
- 		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
- 		{
- 			ResolveResult result = null;
- 			if (resultTable.TryGetValue (identifier, out result))
- 				return result;
- 			resultTable[identifier] = result;
- 			
+		public ResolveResult ResolveIdentifier (ResolveVisitor visitor, string identifier)
+		{
+			ResolveResult result = null;
+			if (resultTable.TryGetValue (identifier, out result))
+				return result;
+			resultTable[identifier] = result;
+			
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
- 				if (identifier == pair.Key) {
- 					LocalLookupVariable var = null;
-// 					Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
+				if (identifier == pair.Key) {
+					LocalLookupVariable var = null;
+//					Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
 					foreach (LocalLookupVariable v2 in pair.Value) {
 						DomLocation varStartPos = new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column - 1);
 						DomLocation varEndPos   = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column - 1);
@@ -711,8 +722,7 @@ namespace MonoDevelop.CSharp.Resolver
 					} else { 
 						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
-//					Console.WriteLine ("-----");
-//					Console.WriteLine (varType);
+					
 					varType = ResolveType (varType);
 					result = new LocalVariableResolveResult (
 						new LocalVariable (CallingMember, identifier, varType,
@@ -768,7 +778,7 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 				}
 			}
-			IType searchedType = dom.SearchType (new SearchTypeRequest (unit, this.CallingType, identifier));
+			IType searchedType = SearchType (identifier);
 			if (this.callingType != null && dom != null) {
 				List<IMember> members = new List <IMember> ();
 				foreach (IType type in dom.GetInheritanceTree (callingType)) {
@@ -802,6 +812,7 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 					result.UnresolvedType = members[0].ReturnType;
 					result.ResolvedType = ResolveType (members[0].ReturnType);
+					
 					if (members[0] is IProperty && searchedType != null && result.ResolvedType.FullName == searchedType.FullName) {
 						result = new AggregatedResolveResult (result, new MemberResolveResult (null, true) {
 							UnresolvedType = new DomReturnType (searchedType),

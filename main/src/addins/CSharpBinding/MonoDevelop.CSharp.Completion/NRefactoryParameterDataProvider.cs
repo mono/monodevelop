@@ -103,7 +103,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (resolveResult.CallingType != null) {
 				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
 				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
-					IType baseType = resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, rt, resolver.CallingType));
+					IType baseType = resolver.SearchType (rt);
 					bool includeProtected = DomType.IncludeProtected (resolver.Dom, baseType, resolvedType);
 					
 					if (baseType != null) {

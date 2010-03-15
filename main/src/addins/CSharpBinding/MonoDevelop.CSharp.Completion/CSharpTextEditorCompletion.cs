@@ -667,9 +667,11 @@ namespace MonoDevelop.CSharp.Completion
 				if (resolveResult != null) {
 					if (result.ExpressionContext == ExpressionContext.Attribute) {
 						IReturnType returnType = resolveResult.ResolvedType;
-						IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (result.Expression.Trim () + "Attribute"), resolver.CallingType));
+						
+						
+						IType type = resolver.SearchType (result.Expression.Trim () + "Attribute");
 						if (type == null) 
-							type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType, resolver.CallingType));
+							type = resolver.SearchType (returnType);
 						if (type != null && returnType != null && returnType.GenericArguments != null)
 							type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 						return new NRefactoryParameterDataProvider (Editor, resolver, type);
@@ -680,7 +682,7 @@ namespace MonoDevelop.CSharp.Completion
 					if (result.ExpressionContext is ExpressionContext.TypeExpressionContext) {
 						IReturnType returnType = resolveResult.ResolvedType ?? ((ExpressionContext.TypeExpressionContext)result.ExpressionContext).Type;
 						
-						IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, returnType, resolver.CallingType));
+						IType type = resolver.SearchType (returnType);
 						if (type != null && returnType.GenericArguments != null)
 							type = dom.CreateInstantiatedGenericType (type, returnType.GenericArguments);
 						return new NRefactoryParameterDataProvider (Editor, resolver, type);
@@ -694,7 +696,7 @@ namespace MonoDevelop.CSharp.Completion
 						if (resolveResult is BaseResolveResult)
 							return new NRefactoryParameterDataProvider (Editor, resolver, resolveResult as BaseResolveResult);
 					}
-					IType resolvedType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
+					IType resolvedType = resolver.SearchType (resolveResult.ResolvedType);
 					if (resolvedType != null && resolvedType.ClassType == ClassType.Delegate) {
 						return new NRefactoryParameterDataProvider (Editor, result.Expression, resolvedType);
 					}
@@ -783,7 +785,7 @@ namespace MonoDevelop.CSharp.Completion
 							break;
 						token = token.Trim ();
 						if (Char.IsLetterOrDigit (token[0]) || token[0] == '_') {
-							IType baseType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, token));
+							IType baseType = dom.SearchType (Document.CompilationUnit, token);
 							if (baseType != null) {
 								if (baseType.ClassType != ClassType.Interface)
 									isInterface = true;
@@ -828,18 +830,14 @@ namespace MonoDevelop.CSharp.Completion
 						if (word == "as") {
 							ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForAsCompletion (Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType);
 							if (exactContext is ExpressionContext.TypeExpressionContext) {
-								foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, ((ExpressionContext.TypeExpressionContext)exactContext).Type, resolver.CallingType));
-
-																
+								foundType = resolver.SearchType (((ExpressionContext.TypeExpressionContext)exactContext).Type);
 								AddAsCompletionData (col, foundType);
 							}
 						}
-
-												
+					
 						if (foundType == null)
-							foundType = dom.SearchType (new SearchTypeRequest (resolver.Unit, resolveResult.ResolvedType, resolver.CallingType));
-
-												
+							foundType = resolver.SearchType (resolveResult.ResolvedType);
+					
 						if (foundType != null) {
 							foreach (IType type in dom.GetSubclasses (foundType)) {
 								if (type.IsSpecialName || type.Name.StartsWith ("<"))
@@ -1274,7 +1272,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (curType == null)
 				return;
-			IType searchType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, curType, type));
+			IType searchType = dom.SearchType ((MonoDevelop.Projects.Dom.INode)type ?? Document.CompilationUnit, curType);
 			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
 			if (searchType == null)
 				return;
@@ -1353,7 +1351,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (returnType != null)
 				type = dom.GetType (returnType);
 			if (type == null)
-				type = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, returnTypeUnresolved, null));
+				type = dom.SearchType ((MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
 			
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
 				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, callingType, type, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == type.FullName)))) {
@@ -1587,7 +1585,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (exactContext is ExpressionContext.TypeExpressionContext) {
 					IReturnType objectInitializer = ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType;
 					
-					IType foundType = dom.SearchType (new SearchTypeRequest (Document.CompilationUnit, objectInitializer, resolver.CallingType));
+					IType foundType = resolver.SearchType (objectInitializer);
 					if (foundType == null)
 						foundType = dom.GetType (objectInitializer);
 					
@@ -1610,9 +1608,9 @@ namespace MonoDevelop.CSharp.Completion
 				AddPrimitiveTypes (col);
 				string attributeName = NewCSharpExpressionFinder.FindAttributeName (Editor, Document.CompilationUnit, Document.FileName);
 				if (attributeName != null) {
-					IType type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (attributeName + "Attribute"), resolver.CallingType));
+					IType type = resolver.SearchType (attributeName + "Attribute");
 					if (type == null) 
-						type = dom.SearchType (new SearchTypeRequest (resolver.Unit, new DomReturnType (attributeName), resolver.CallingType));
+						type = resolver.SearchType (attributeName);
 					if (type != null) {
 						foreach (IProperty property in type.Properties) {
 							col.Add (property);

@@ -197,12 +197,12 @@ namespace MonoDevelop.CSharp.Highlighting
 					
 					IType type = null;
 					if (ctx != null)
-						type = ctx.SearchType (new SearchTypeRequest (unit, returnType, callingType));
+						type = ctx.SearchType ((MonoDevelop.Projects.Dom.INode)callingType ?? unit, returnType);
 					if (type == null && unit != null && returnType != null)
 						type = unit.GetType (returnType.FullName, returnType.GenericArguments.Count);
 					if (ctx != null && type == null && returnType != null) {
 						returnType.Name += "Attribute";
-						type = ctx.SearchType (new SearchTypeRequest (unit, returnType, callingType));
+						type = ctx.SearchType ((MonoDevelop.Projects.Dom.INode)callingType ?? unit, returnType);
 					}
 					if (type != null)
 						nameSegments.ForEach (segment => HighlightSegment (startChunk, segment, "keyword.semantic.type"));

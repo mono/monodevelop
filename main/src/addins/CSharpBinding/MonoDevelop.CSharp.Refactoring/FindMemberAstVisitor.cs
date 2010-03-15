@@ -585,7 +585,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				ResolveResult resolveResult = resolver.Resolve (res, ConvertLocation (typeReference.StartLocation));
 				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
-				IType resolvedType = cls != null ? resolver.Dom.SearchType (new SearchTypeRequest (resolver.Unit, cls, resolver.CallingType)) : null;
+				IType resolvedType = cls != null ? resolver.SearchType (cls) : null;
 				if (resolvedType != null && resolvedType.FullName == ((IType)searchedMember).FullName) 
 					AddUniqueReference (line, col, typeReference.Type);
 			}
