@@ -1,3 +1,9 @@
+2010-03-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for 'Bug 587543 - Intellisense ignores interface
+	  constraints'.
+
 2010-03-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added

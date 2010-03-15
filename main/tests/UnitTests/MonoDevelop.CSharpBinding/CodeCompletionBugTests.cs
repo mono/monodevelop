@@ -2363,6 +2363,32 @@ class MyClass
 			Assert.IsNull (provider.Find ("Test"), "method 'Test' found, but shouldn't.");
 			Assert.IsNotNull (provider.Find ("IsLazy"), "method 'IsLazy' not found.");
 		}
+		
+		
+		/// <summary>
+		/// Bug 587543 - Intellisense ignores interface constraints
+		/// </summary>
+		[Test()]
+		public void TestBug587543 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+interface ITest
+{
+	void Foo ();
+}
+
+class C
+{
+	void Test<T> (T t) where T : ITest
+	{
+		$t.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+		}
 
 		
 	}
