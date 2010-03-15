@@ -1,5 +1,11 @@
 2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Use
+	  command-scroll instead of control-scroll on Mac, because
+	  control-scroll is used by the window manager.
+
+2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.addin.xml:
