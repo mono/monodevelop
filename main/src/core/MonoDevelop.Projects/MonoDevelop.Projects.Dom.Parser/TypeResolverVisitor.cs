@@ -112,30 +112,45 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			if (currentMethod != null) {
-				foreach (ITypeParameter t in currentMethod.TypeParameters) {
-					if (t.Name == type.Name) {
-						DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
-						DomType constructedType = new DomTypeParameterType (type.FullName);
-						foreach (IReturnType constraintType in t.Constraints) {
-							if (constructedType.BaseType == null) {
-								constructedType.BaseType = constraintType;
-							} else {
-								constructedType.AddInterfaceImplementation (constraintType);
+				IMethod method = null;
+				if (currentMethod.IsOverride) {
+					foreach (IType curType2 in db.GetInheritanceTree (contextType)) {
+						foreach (IMethod curMethod in curType2.SearchMember (currentMethod.Name, true)) {
+							if (!curMethod.IsOverride && curMethod.Parameters.Count == currentMethod.Parameters.Count) {
+								method = curMethod;
+								break;
 							}
 						}
-						
-						if (constructedType.BaseType == null) 
-							constructedType.BaseType = DomReturnType.Object;
-						
-						constructedType.SourceProjectDom = db;
-						
-						typeParameterReturnType.Type = constructedType;
-						typeParameterReturnType.ArrayDimensions = type.ArrayDimensions;
-						typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
-						for (int i = 0; i < type.ArrayDimensions; i++)
-							typeParameterReturnType.SetDimension (i, type.GetDimension (i));
-						return typeParameterReturnType;
+						if (method != null)
+							break;
 					}
+				}
+				if (method == null)
+					method = currentMethod;
+				int idx = currentMethod.GetTypeParameterIndex (type.Name);
+				if (idx >= 0) {
+					ITypeParameter t = method.TypeParameters[idx];
+					DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
+					DomType constructedType = new DomTypeParameterType (type.FullName);
+					foreach (IReturnType constraintType in t.Constraints) {
+						if (constructedType.BaseType == null) {
+							constructedType.BaseType = constraintType;
+						} else {
+							constructedType.AddInterfaceImplementation (constraintType);
+						}
+					}
+					
+					if (constructedType.BaseType == null) 
+						constructedType.BaseType = DomReturnType.Object;
+					
+					constructedType.SourceProjectDom = db;
+					
+					typeParameterReturnType.Type = constructedType;
+					typeParameterReturnType.ArrayDimensions = type.ArrayDimensions;
+					typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
+					for (int i = 0; i < type.ArrayDimensions; i++)
+						typeParameterReturnType.SetDimension (i, type.GetDimension (i));
+					return typeParameterReturnType;
 				}
 			}
 			

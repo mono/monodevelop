@@ -400,6 +400,20 @@ namespace MonoDevelop.Projects.Dom
 			}
 			return null;
 		}
+		
+		public static bool ParameterListEquals (IList<IParameter> left, IList<IParameter> right)
+		{
+			if (left.Count != right.Count)
+				return false;
+			
+			for (int i = 0; i < left.Count; i++) {
+				IParameter l = left[i];
+				IParameter r = right[i];
+				if (r.ParameterModifiers != l.ParameterModifiers || r.ReturnType != l.ReturnType)
+					return false;
+			}
+			return true;
+		}
 
         public override bool Equals (object obj)
         {
@@ -412,16 +426,8 @@ namespace MonoDevelop.Projects.Dom
                 meth.ReturnType != ReturnType ||
                 meth.FullName != FullName)
                 return false;
-
-            for (int i = 0; i < meth.Parameters.Count; i++) {
-                IParameter mpar = meth.Parameters [i];
-                IParameter par = Parameters [i];
-                if (par.ParameterModifiers != mpar.ParameterModifiers ||
-                    par.ReturnType != mpar.ReturnType)
-                    return false;
-            }
-
-            return true;
+			
+            return ParameterListEquals (Parameters, meth.Parameters);
         }
 
         public override int GetHashCode ()

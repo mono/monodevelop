@@ -33,6 +33,8 @@ namespace MonoDevelop.Projects.Dom
 		ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get;
 		}
+		
+		int GetTypeParameterIndex (string parameterName);
 	}
 }
 

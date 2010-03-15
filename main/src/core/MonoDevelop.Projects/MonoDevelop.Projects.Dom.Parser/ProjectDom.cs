@@ -206,6 +206,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public virtual IType SearchType (INode searchIn, string decoratedFullName)
 		{
+			if (string.IsNullOrEmpty (decoratedFullName))
+				return null;
 			INode cu = searchIn;
 			while (cu != null && !(cu is ICompilationUnit)) {
 				cu = cu.Parent;
@@ -215,6 +217,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public virtual IType SearchType (INode searchIn, IReturnType returnType)
 		{
+			if (returnType == null)
+				return null;
 			INode cu = searchIn;
 			while (cu != null && !(cu is ICompilationUnit)) {
 				cu = cu.Parent;
@@ -239,7 +243,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 				
 				if (callingMember is IMethod) {
-					Console.WriteLine ("!!!!!");
 					result = FindGenericParameter (unit, (IMethod)callingMember, name);
 					if (result != null)
 						return result;
@@ -323,7 +326,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		IType FindGenericParameter (ICompilationUnit cu, ITypeParameterMember callingClass, string name)
 		{
 			foreach (TypeParameter tp in callingClass.TypeParameters) {
-				Console.WriteLine (tp.Name + "/" + name);
 				if (tp.Name == name) {
 					return CreateInstantiatedParameterType (callingClass, tp);
 				}

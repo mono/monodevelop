@@ -55,6 +55,19 @@ namespace MonoDevelop.Projects.Dom
 				AddTypeParameter (parameter);
 			}
 		}
+		
+		public int GetTypeParameterIndex (string parameterName)
+		{
+			if (typeParameters == null)
+				return -1;
+			for (int i = 0; i < typeParameters.Count; i++) {
+				if (typeParameters[i].Name == parameterName)
+					return i;
+			}
+			
+			return -1;
+		}
+		
 	}
 }
 
