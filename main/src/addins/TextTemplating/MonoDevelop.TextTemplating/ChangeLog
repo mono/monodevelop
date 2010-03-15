@@ -1,5 +1,9 @@
 2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* TextTemplatingTool.cs: Remove dead code.
+
+2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* TextTemplatingService.cs: Added shared templating appdomain.
 
 	* TextTemplatingTool.cs: Added text templating tool.

@@ -38,8 +38,6 @@ namespace MonoDevelop.TextTemplating
 		public override CompilerErrorCollection Generate (ProjectFile file, out string generatedFileName)
 		{
 			using (var h = TextTemplatingService.GetTemplatingDomain ()) {
-				//FIXME: do we want to allow resolving arbitrary MD assemblies?
-				//domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
 				var host =  (MonoDevelopTemplatingHost) h.Domain.CreateInstanceAndUnwrap (
 					typeof (MonoDevelopTemplatingHost).Assembly.FullName,
 					typeof (MonoDevelopTemplatingHost).FullName);
