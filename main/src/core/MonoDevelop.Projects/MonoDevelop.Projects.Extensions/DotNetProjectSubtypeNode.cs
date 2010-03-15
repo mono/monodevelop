@@ -42,6 +42,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string import;
 		
+		[NodeAttribute]
+		string extension;
+
 		Type itemType;
 
 		public string Import {
@@ -60,6 +63,12 @@ namespace MonoDevelop.Projects.Extensions
 				return itemType;
 			}
 		}
+
+		public string Extension {
+			get { 
+				return extension; 
+			}
+		}
 		
 		public bool SupportsType (string guid)
 		{
@@ -74,6 +83,15 @@ namespace MonoDevelop.Projects.Extensions
 		public virtual bool CanHandleItem (SolutionEntityItem item)
 		{
 			return Type.IsAssignableFrom (item.GetType ());
+		}
+		
+		public virtual bool CanHandleFile (string fileName, string typeGuid)
+		{
+			if (typeGuid != null && typeGuid.ToLower().Contains(guid.ToLower()))
+				return true;
+			if (!string.IsNullOrEmpty (extension) && System.IO.Path.GetExtension (fileName) == "." + extension)
+				return true;
+			return false;
 		}
 		
 		public virtual void InitializeHandler (SolutionEntityItem item)

@@ -45,6 +45,19 @@ namespace MonoDevelop.Projects.Extensions
 		{
 			return (item is DotNetProject) && ((DotNetProject)item).LanguageName == language;
 		}
+
+		public override bool CanHandleFile (string fileName, string typeGuid)
+		{
+			if (base.CanHandleFile (fileName, typeGuid))
+				return true;
+			else if (!string.IsNullOrEmpty (typeGuid) && typeGuid.Contains (Guid))
+			{
+				DotNetProjectSubtypeNode node = MSBuildProjectService.GetDotNetProjectSubtype (typeGuid);
+				if (node != null && node.CanHandleFile (fileName, typeGuid))
+					return true;
+			}
+			return false;
+		}
 		
 		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, string itemGuid)
 		{

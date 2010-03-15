@@ -1,3 +1,20 @@
+2010-03-15  Lars Magnusson <lavima@gmail.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs: 
+	  Add method LoadProjectTypeGuids for reading typeGuid from 
+	  project file and add fallbacks for LoadItem and 
+	  FindHandlerForFile
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildFileFormat.cs:
+	  Add logic for checking the dotnet subtype extensions in 
+	  GetValidFormatName.
+	* MonoDevelop.Projects.Extensions/DotNetProjectNode.cs: Add
+	  CanHandleFile override that checks the for dotnet support
+	  if base call fails.
+	* MonoDevelop.Projects.Extensions/DotNetProjectSubtypeNode.cs:
+	  Add field and property for forced extension.
+	  Add CanHandleFile that checks for matching typeGuid and 
+	  extension.
+	  
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/Solution.cs:

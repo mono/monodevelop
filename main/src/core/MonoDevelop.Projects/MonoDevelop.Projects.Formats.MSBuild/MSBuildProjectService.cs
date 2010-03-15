@@ -82,6 +82,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node.CanHandleFile (fileName, typeGuid))
 					return node.LoadSolutionItem (monitor, fileName, itemGuid);
 			}
+			if (string.IsNullOrEmpty (typeGuid))
+			{
+				typeGuid = LoadProjectTypeGuids (fileName);
+				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
+					if (node.CanHandleFile (fileName, typeGuid))
+						return node.LoadSolutionItem (monitor, fileName, itemGuid);
+				}
+			}
+
 			return null;
 		}
 		
@@ -180,14 +189,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return node;
 				}
 			}
+			string typeGuids = LoadProjectTypeGuids (file);
+			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
+				if (node.CanHandleFile (file, typeGuids)) {
+					return node;
+				}
+			}
 			return null;
 		}
 		
-		internal static ItemTypeNode FindHandlerForItem (SolutionEntityItem item)
+		internal static string GetExtensionForItem (SolutionEntityItem item)
 		{
+			foreach (DotNetProjectSubtypeNode node in GetItemSubtypeNodes ()) {
+				if (!string.IsNullOrEmpty (node.Extension) && node.CanHandleItem (item))
+					return node.Extension;
+			}
 			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleItem (item)) {
-					return node;
+					return node.Extension;
 				}
 			}
 			// The generic handler should always be found
@@ -478,6 +497,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				return cultureNamesTable;
 			}
+		}
+
+		static string LoadProjectTypeGuids (string fileName)
+		{
+			MSBuildProject project = new MSBuildProject ();
+			project.LoadXml (File.ReadAllText (fileName));
+			
+			MSBuildPropertyGroup globalGroup = project.GetGlobalPropertyGroup ();
+			if (globalGroup == null)
+				return null;
+
+			return globalGroup.GetPropertyValue ("ProjectTypeGuids");
 		}
 	}
 	
