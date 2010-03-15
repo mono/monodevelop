@@ -49,6 +49,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core.Gui.Instrumentation;
+using MonoDevelop.Ide.CustomTools;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -152,6 +153,7 @@ namespace MonoDevelop.Ide.Gui
 			helpOperations = new HelpOperations ();
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
+			CustomToolService.Init ();
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
 			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;

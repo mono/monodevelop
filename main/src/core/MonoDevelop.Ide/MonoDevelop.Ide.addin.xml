@@ -210,6 +210,11 @@
 		<ExtensionNode name="Resolver" type="MonoDevelop.Ide.Gui.Content.TextEditorResolverProviderCodon"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/CustomTools" name = "Custom code generation tools">
+		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
+		<ExtensionNode name="Tool" type="MonoDevelop.Ide.Extensions.CustomToolExtensionNode"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">

@@ -588,6 +588,9 @@
     <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\LogView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\CustomToolExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\CustomTool.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\CustomToolService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -634,5 +637,6 @@
     <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
     <Folder Include="MonoDevelop.Ide.Execution\" />
     <Folder Include="MonoDevelop.Ide.Extensions\" />
+    <Folder Include="MonoDevelop.Ide.CustomTools\" />
   </ItemGroup>
 </Project>

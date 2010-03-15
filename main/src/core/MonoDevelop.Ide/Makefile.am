@@ -119,6 +119,8 @@ FILES =  \
 	MonoDevelop.Ide.Commands/ToolsCommands.cs \
 	MonoDevelop.Ide.Commands/ViewCommands.cs \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
+	MonoDevelop.Ide.CustomTools/CustomTool.cs \
+	MonoDevelop.Ide.CustomTools/CustomToolService.cs \
 	MonoDevelop.Ide.Execution/CommandExecutionContext.cs \
 	MonoDevelop.Ide.Execution/CustomArgsCustomizer.cs \
 	MonoDevelop.Ide.Execution/CustomExecutionMode.cs \
@@ -128,6 +130,7 @@ FILES =  \
 	MonoDevelop.Ide.Execution/MonoExecutionCustomizer.cs \
 	MonoDevelop.Ide.Execution/MonoExecutionParameters.cs \
 	MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs \
+	MonoDevelop.Ide.Extensions/CustomToolExtensionNode.cs \
 	MonoDevelop.Ide.Extensions/IAddFileDialogHandler.cs \
 	MonoDevelop.Ide.Extensions/IOpenFileDialogHandler.cs \
 	MonoDevelop.Ide.Extensions/TextEditorExtensionNode.cs \

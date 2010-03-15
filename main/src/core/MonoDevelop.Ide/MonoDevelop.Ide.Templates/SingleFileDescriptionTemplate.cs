@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Templates
 		bool addStandardHeader = false;
 		string dependsOn;
 		string buildAction;
+		string customTool;
 		List<string> references = new List<string> ();
 		
 		public override void Load (XmlElement filenode)
@@ -61,6 +62,7 @@ namespace MonoDevelop.Ide.Templates
 			defaultName = filenode.GetAttribute ("DefaultName");
 			defaultExtension = filenode.GetAttribute ("DefaultExtension");
 			dependsOn = filenode.GetAttribute ("DependsOn");
+			customTool = filenode.GetAttribute ("CustomTool");
 			
 			buildAction = BuildAction.Compile;
 			buildAction = filenode.GetAttribute ("BuildAction");
@@ -120,6 +122,9 @@ namespace MonoDevelop.Ide.Templates
 					if (projectFile.DependsOn != parsedDepName)
 						projectFile.DependsOn = parsedDepName;
 				}
+				
+				if (!string.IsNullOrEmpty (customTool))
+					projectFile.Generator = customTool;
 				
 				DotNetProject netProject = project as DotNetProject;
 				if (netProject != null) {
