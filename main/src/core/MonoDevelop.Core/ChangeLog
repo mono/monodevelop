@@ -1,5 +1,11 @@
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core/StringParserService.cs: Added new
+	  CustomTagStore type, which can be used to put together
+	  several related tags for string parsing.
+
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core/Runtime.cs:

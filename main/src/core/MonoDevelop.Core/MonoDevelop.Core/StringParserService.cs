@@ -167,12 +167,132 @@ namespace MonoDevelop.Core
 			return Parse (input, tags);
 		}
 		
+		public static string Parse (string input, CustomTagStore customTags)
+		{
+			return Parse (input, customTags.ToDictionary ());
+		}
+		
 		public interface IStringTagProvider 
 		{
 			IEnumerable<string> Tags {
 				get;
 			}
 			string Convert (string tag, string format);
+		}
+	}
+	
+	public class CustomTagStore
+	{
+		Dictionary<string,CustomTag> tags = new Dictionary<string, CustomTag> ();
+		Dictionary<string,string> aliases = new Dictionary<string, string> ();
+		List<CustomTagStore> stores;
+		
+		public void Add (string tag, string value)
+		{
+			Add (tag, value);
+		}
+		
+		public void Add (string tag, string value, string description)
+		{
+			tags [tag] = new CustomTag (tag, value, description);
+		}
+		
+		public void AddAlias (string tag, params string[] aliases)
+		{
+			CustomTag ct;
+			if (!tags.TryGetValue (tag, out ct))
+				throw new InvalidOperationException ("Tag not registered: " + tag);
+			foreach (string t in aliases)
+				this.aliases [t] = ct.Value;
+		}
+		
+		public void Add (CustomTagStore store)
+		{
+			if (stores == null)
+				stores = new List<CustomTagStore> ();
+			stores.Add (store);
+		}
+		
+		public IEnumerable<CustomTag> Tags {
+			get {
+				foreach (CustomTag t in tags.Values)
+					yield return t;
+				if (stores != null) {
+					foreach (CustomTagStore s in stores) {
+						foreach (CustomTag t in s.Tags)
+							yield return t;
+					}
+				}
+			}
+		}
+		
+		public Dictionary<string,string> ToDictionary ()
+		{
+			if (stores != null) {
+				foreach (CustomTagStore s in stores) {
+					foreach (KeyValuePair<string,string> ct in s.ToDictionary ()) {
+						if (!aliases.ContainsKey (ct.Key))
+							aliases [ct.Key] = ct.Value;
+					}
+				}
+			}
+			foreach (CustomTag t in tags.Values)
+				aliases [t.Tag] = t.Value;
+			return aliases;
+		}
+		
+		public string Parse (string input)
+		{
+			return StringParserService.Parse (input, this);
+		}
+	}
+	
+	public class CustomTag
+	{
+		string tag;
+		string value;
+		string description;
+		ValueGenerator valueGenerator;
+		
+		public delegate string ValueGenerator (string tag);
+		
+		public CustomTag (string tag, string value): this (tag, value, null)
+		{
+		}
+		
+		public CustomTag (string tag, string value, string description)
+		{
+			this.tag = tag;
+			this.value = value;
+			this.description = description;
+		}
+		
+		public CustomTag (string tag, ValueGenerator valueGenerator): this (tag, valueGenerator, null)
+		{
+		}
+		
+		public CustomTag (string tag, ValueGenerator valueGenerator, string description)
+		{
+			this.tag = tag;
+			this.valueGenerator = valueGenerator;
+			this.description = description;
+		}
+		
+		public string Tag {
+			get { return this.tag; }
+		}
+
+		public string Value {
+			get {
+				if (valueGenerator != null)
+					return valueGenerator (tag);
+				else
+					return this.value;
+			}
+		}
+
+		public string Description {
+			get { return this.description; }
 		}
 	}
 }
