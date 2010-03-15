@@ -1,5 +1,12 @@
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Components/DragOperation.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs: Added
+	  DropPosition parameter to the drop methods.
+
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Moved code for loading
 	  user preferences to MD.Projects. Added some time counters.
 

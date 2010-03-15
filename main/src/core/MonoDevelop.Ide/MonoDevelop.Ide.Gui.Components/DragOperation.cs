@@ -35,4 +35,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		Copy = 1,
 		Move = 2
 	}
+	
+	public enum DropPosition {
+		Into = 0,
+		Before = 1,
+		After = 2
+	}
 }

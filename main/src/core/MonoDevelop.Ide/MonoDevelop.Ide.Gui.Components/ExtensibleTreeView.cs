@@ -237,7 +237,36 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			this.Add (tree);
 			this.ShowAll ();
+			
+//			GLib.Timeout.Add (3000, Checker);
 		}
+		
+		/* Verifies the consistency of the tree view. Disabled by default
+		HashSet<object> ochecked = new HashSet<object> ();
+		bool Checker ()
+		{
+			int nodes = 0;
+			foreach (DictionaryEntry e in nodeHash) {
+				if (e.Value is Gtk.TreeIter) {
+					nodes++;
+					if (!store.IterIsValid ((Gtk.TreeIter)e.Value) && ochecked.Add (e.Key)) {
+						Console.WriteLine ("Found invalid iter in tree pad - Object: " + e.Key);
+						MessageService.ShowError ("Found invalid iter in tree pad", "Object: " + e.Key);
+					}
+				} else {
+					Gtk.TreeIter[] iters = (Gtk.TreeIter[]) e.Value;
+					for (int n=0; n<iters.Length; n++) {
+						Gtk.TreeIter it = iters [n];
+						if (!store.IterIsValid (it) && ochecked.Add (e.Key)) {
+							Console.WriteLine ("Found invalid iter in tree pad - Object: " + e.Key + ", index:" + n);
+							MessageService.ShowError ("Found invalid iter in tree pad", "Object: " + e.Key + ", index:" + n);
+						}
+						nodes++;
+					}
+				}
+			}
+			return true;
+		}*/
 		
 		public void UpdateBuilders (NodeBuilder[] builders, TreePadOption[] options)
 		{
@@ -363,6 +392,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			bool foundHandler = false;
 			
 			DragOperation oper = ctx.Action == Gdk.DragAction.Copy ? DragOperation.Copy : DragOperation.Move;
+			DropPosition dropPos;
+			if (pos == Gtk.TreeViewDropPosition.After)
+				dropPos = DropPosition.After;
+			else if (pos == Gtk.TreeViewDropPosition.Before)
+				dropPos = DropPosition.Before;
+			else
+				dropPos = DropPosition.Into;
+			
 			bool updatesLocked = false;
 
 			try {
@@ -370,14 +407,14 @@ namespace MonoDevelop.Ide.Gui.Components
 					try {
 						NodeCommandHandler handler = nb.CommandHandler;
 						handler.SetCurrentNode (nav);
-						if (handler.CanDropMultipleNodes (obj, oper)) {
+						if (handler.CanDropMultipleNodes (obj, oper, dropPos)) {
 							foundHandler = true;
 							if (drop) {
 								if (!updatesLocked) {
 									LockUpdates ();
 									updatesLocked = true;
 								}
-								handler.OnMultipleNodeDrop (obj, oper);
+								handler.OnMultipleNodeDrop (obj, oper, dropPos);
 							}
 						}
 					} catch (Exception ex) {
@@ -995,9 +1032,9 @@ namespace MonoDevelop.Ide.Gui.Components
 					foreach (NodeBuilder b in chain) {
 						NodeCommandHandler handler = b.CommandHandler;
 						handler.SetCurrentNode (node);
-						if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation)) {
+						if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation, DropPosition.Into)) {
 							node.MoveToPosition (pos);
-							handler.OnMultipleNodeDrop (copyObjects, currentTransferOperation);
+							handler.OnMultipleNodeDrop (copyObjects, currentTransferOperation, DropPosition.Into);
 						}
 						node.MoveToPosition (pos);
 					}
@@ -1024,7 +1061,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					foreach (NodeBuilder b in chain) {
 						NodeCommandHandler handler = b.CommandHandler;
 						handler.SetCurrentNode (node);
-						if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation)) {
+						if (handler.CanDropMultipleNodes (copyObjects, currentTransferOperation, DropPosition.Into)) {
 							info.Enabled = true;
 							return;
 						}
@@ -1322,7 +1359,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal void UnregisterNode (object dataObject, Gtk.TreeIter iter, NodeBuilder[] chain)
 		{
 			// Remove object from copy list
-
+			
 			if (copyObjects != null) {
 				int i = Array.IndexOf (copyObjects, dataObject);
 				if (i != -1) {

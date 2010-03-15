@@ -206,27 +206,54 @@ namespace MonoDevelop.Ide.Gui.Components
 			return DragOperation.None;
 		}
 		
+		public virtual bool CanDropNode (object dataObject, DragOperation operation, DropPosition position)
+		{
+			if (position == DropPosition.Into)
+				return CanDropNode (dataObject, operation);
+			else
+				return false;
+		}
+		
 		public virtual bool CanDropNode (object dataObject, DragOperation operation)
 		{
 			return false;
 		}
 		
+		DropPosition cachedPosition;
+		
+		public virtual bool CanDropMultipleNodes (object[] dataObjects, DragOperation operation, DropPosition position)
+		{
+			cachedPosition = position;
+			return CanDropMultipleNodes (dataObjects, operation);
+		}
+		
 		public virtual bool CanDropMultipleNodes (object[] dataObjects, DragOperation operation)
 		{
 			foreach (object ob in dataObjects)
-				if (!CanDropNode (ob, operation))
+				if (!CanDropNode (ob, operation, cachedPosition))
 					return false;
 			return true;
+		}
+		
+		public virtual void OnNodeDrop (object dataObjects, DragOperation operation, DropPosition position)
+		{
+			OnNodeDrop (dataObjects, operation);
 		}
 		
 		public virtual void OnNodeDrop (object dataObjects, DragOperation operation)
 		{
 		}
 		
+		public virtual void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation, DropPosition position)
+		{
+			cachedPosition = position;
+			OnMultipleNodeDrop (dataObjects, operation);
+		}
+		
 		public virtual void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
 		{
 			foreach (object ob in dataObjects)
-				OnNodeDrop (ob, operation);
+				OnNodeDrop (ob, operation, cachedPosition);
 		}
 		
 		internal class TransactedNodeHandlerAttribute: CustomCommandTargetAttribute
