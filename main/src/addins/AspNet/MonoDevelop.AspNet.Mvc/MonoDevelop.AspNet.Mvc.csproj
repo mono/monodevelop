@@ -178,5 +178,6 @@
     <None Include="CodeTemplates\AddView\Empty.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Makefile.am" />
   </ItemGroup>
 </Project>
