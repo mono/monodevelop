@@ -47,11 +47,13 @@ namespace MonoDevelop.Ide
 	
 	internal static class Counters
 	{
-		internal static Counter Initialization = InstrumentationService.CreateCounter ("IDE Initialization", "IDE");
-		internal static Counter OpenDocuments = InstrumentationService.CreateCounter ("Open Documents", "IDE");
-		internal static Counter DocumentsInMemory = InstrumentationService.CreateCounter ("Documents in Memory", "IDE");
-		internal static Counter PadsLoaded = InstrumentationService.CreateCounter ("Pads Loaded", "IDE");
-		internal static Counter CommandTargetScanTime = InstrumentationService.CreateTimerCounter ("Command Target Scan Time", "Timing");
+		internal static TimerCounter Initialization = InstrumentationService.CreateTimerCounter ("IDE Initialization", "IDE");
+		internal static Counter OpenDocuments = InstrumentationService.CreateCounter ("Open documents", "IDE");
+		internal static Counter DocumentsInMemory = InstrumentationService.CreateCounter ("Documents in memory", "IDE");
+		internal static Counter PadsLoaded = InstrumentationService.CreateCounter ("Pads loaded", "IDE");
+		internal static TimerCounter CommandTargetScanTime = InstrumentationService.CreateTimerCounter ("Command target scan", "Timing", 0.3, false);
+		internal static TimerCounter OpenWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Solution opened in the IDE", "IDE");
+		internal static TimerCounter OpenDocumentTimer = InstrumentationService.CreateTimerCounter ("Document opened", "IDE");
 	}
 }
 

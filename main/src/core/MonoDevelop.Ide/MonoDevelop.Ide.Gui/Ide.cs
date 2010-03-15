@@ -48,6 +48,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Core.Gui.Instrumentation;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -142,11 +143,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
-			LoggingService.Trace ("IdeApp", "Creating Workbench");
+			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
-			LoggingService.Trace ("IdeApp", "Creating Root Workspace");
+			Counters.Initialization.Trace ("Creating Root Workspace");
 			workspace = new RootWorkspace ();
-			LoggingService.Trace ("IdeApp", "Creating Services");
+			Counters.Initialization.Trace ("Creating Services");
 			projectOperations = new ProjectOperations ();
 			helpOperations = new HelpOperations ();
 			commandService = new CommandManager ();
@@ -165,12 +166,12 @@ namespace MonoDevelop.Ide.Gui
 			FileService.ErrorHandler = FileServiceErrorHandler;
 		
 			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
-			LoggingService.Trace ("IdeApp", "Loading Commands");
+			Counters.Initialization.Trace ("Loading Commands");
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
 			monitor.Step (1);
 
-			LoggingService.Trace ("IdeApp", "Initializing Workbench");
+			Counters.Initialization.Trace ("Initializing Workbench");
 			workbench.Initialize (monitor);
 			monitor.Step (1);
 			
@@ -181,13 +182,13 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitor.Step (1);
 
-			LoggingService.Trace ("IdeApp", "Restoring Workbench State");
+			Counters.Initialization.Trace ("Restoring Workbench State");
 			workbench.Show ("SharpDevelop.Workbench.WorkbenchMemento");
 			monitor.Step (1);
 			
-			LoggingService.Trace ("IdeApp", "Flushing GUI events");
+			Counters.Initialization.Trace ("Flushing GUI events");
 			DispatchService.RunPendingEvents ();
-			LoggingService.Trace ("IdeApp", "Flushed GUI events");
+			Counters.Initialization.Trace ("Flushed GUI events");
 			
 			MessageService.RootWindow = workbench.RootWindow;
 		
@@ -206,12 +207,12 @@ namespace MonoDevelop.Ide.Gui
 
 			
 			// Startup commands
-			LoggingService.Trace ("IdeApp", "Running Startup Commands");
+			Counters.Initialization.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 			monitor.EndTask ();
 
 			// Set initial run flags
-			LoggingService.Trace ("IdeApp", "Upgrading Settings");
+			Counters.Initialization.Trace ("Upgrading Settings");
 
 			if (PropertyService.Get("MonoDevelop.Core.FirstRun", false)) {
 				isInitialRun = true;
@@ -263,7 +264,7 @@ namespace MonoDevelop.Ide.Gui
 				initializedEvent (null, EventArgs.Empty);
 			
 			// Load requested files
-			LoggingService.Trace ("IdeApp", "Opening Files");
+			Counters.Initialization.Trace ("Opening Files");
 			OpenFiles (StartupInfo.GetRequestedFileList ());
 			
 			// load previous combine
@@ -280,6 +281,11 @@ namespace MonoDevelop.Ide.Gui
 			
 			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
 			MonoDevelop.Projects.HelpService.AsyncInitialize ();
+			
+			UpdateInstrumentationIcon ();
+			IdeApp.Preferences.EnableInstrumentationChanged += delegate {
+				UpdateInstrumentationIcon ();
+			};
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
@@ -439,7 +445,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		static TimeCounter commandTimeCounter;
+		static ITimeTracker commandTimeCounter;
 			
 		static void CommandServiceCommandTargetScanStarted (object sender, EventArgs e)
 		{
@@ -449,6 +455,24 @@ namespace MonoDevelop.Ide.Gui
 		static void CommandServiceCommandTargetScanFinished (object sender, EventArgs e)
 		{
 			commandTimeCounter.End ();
+		}
+		
+		static MonoDevelop.Ide.MonoDevelopStatusBar.StatusIcon instrumentationStatusIcon;
+		static void UpdateInstrumentationIcon ()
+		{
+			if (IdeApp.Preferences.EnableInstrumentation) {
+				if (instrumentationStatusIcon == null) {
+					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetPixbuf (Gtk.Stock.DialogInfo));
+					instrumentationStatusIcon.ToolTip = "Instrumentation service enabled";
+					instrumentationStatusIcon.EventBox.ButtonPressEvent += delegate {
+						InstrumentationViewerDialog dlg = new InstrumentationViewerDialog ();
+						dlg.TransientFor = IdeApp.Workbench.RootWindow;
+						dlg.Show ();
+					};
+				}
+			} else if (instrumentationStatusIcon != null) {
+				instrumentationStatusIcon.Dispose ();
+			}
 		}
 	}
 	

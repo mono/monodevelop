@@ -67,15 +67,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Initializing Main Window"), 4);
 			try {
-				LoggingService.Trace ("Workbench", "Creating DefaultWorkbench");
+				Counters.Initialization.Trace ("Creating DefaultWorkbench");
 				workbench = new DefaultWorkbench ();
 				monitor.Step (1);
 				
-				LoggingService.Trace ("Workbench", "Initializing Workspace");
+				Counters.Initialization.Trace ("Initializing Workspace");
 				workbench.InitializeWorkspace();
 				monitor.Step (1);
 				
-				LoggingService.Trace ("Workbench", "Initializing Layout");
+				Counters.Initialization.Trace ("Initializing Layout");
 				workbench.InitializeLayout (new SdiWorkbenchLayout ());
 				monitor.Step (1);
 				
@@ -118,22 +118,22 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void Show (string workbenchMemento)
 		{
-			LoggingService.Trace ("Workbench", "Realizing Root Window");
+			Counters.Initialization.Trace ("Realizing Root Window");
 			RootWindow.Realize ();
-			LoggingService.Trace ("Workbench", "Loading memento");
+			Counters.Initialization.Trace ("Loading memento");
 			var memento = PropertyService.Get (workbenchMemento, new Properties ());
-			LoggingService.Trace ("Workbench", "Setting memento");
+			Counters.Initialization.Trace ("Setting memento");
 			workbench.Memento = memento;
-			LoggingService.Trace ("Workbench", "Making Visible");
+			Counters.Initialization.Trace ("Making Visible");
 			RootWindow.Visible = true;
 			workbench.Context = WorkbenchContext.Edit;
 			
 			// now we have an layout set notify it
-			LoggingService.Trace ("Workbench", "Setting layout");
+			Counters.Initialization.Trace ("Setting layout");
 			if (LayoutChanged != null)
 				LayoutChanged (this, EventArgs.Empty);
 			
-			LoggingService.Trace ("Workbench", "Initializing monitors");
+			Counters.Initialization.Trace ("Initializing monitors");
 			monitors.Initialize ();
 			
 			Present ();
@@ -388,62 +388,68 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding, bool highlightCaretLine)
 		{
-			NavigationHistoryService.LogActiveDocument ();
-			
-			foreach (Document doc in Documents) {
-				IBaseViewContent vcFound = null;
-				int vcIndex = 0;
-				
-				//search all ViewContents to see if they can "re-use" this filename
-				if (doc.Window.ViewContent.CanReuseView (fileName))
-					vcFound = doc.Window.ViewContent;
-				
-				
-				//old method as fallback
-				if ((vcFound == null) && (doc.FileName == fileName))
-					vcFound = doc.Window.ViewContent;
-				
-				//if found, select window and jump to line
-				if (vcFound != null) {
-					if (bringToFront) {
-						doc.Select ();
-						doc.Window.SwitchView (vcIndex);
-						Present ();
-					}
-					
-					IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
-					if (line >= 1 && ipos != null) {
-						ipos.SetCaretTo (line, column >= 1 ? column : 1, highlightCaretLine);
-					}
-					
-					NavigationHistoryService.LogActiveDocument ();
-					return doc;
-				}
-			}
-			
-			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Opening {0}", fileName), Stock.OpenFileIcon, true);
-			FileInformation openFileInfo = new FileInformation();
-			openFileInfo.ProgressMonitor = pm;
-			openFileInfo.FileName = fileName;
-			openFileInfo.BringToFront = bringToFront;
-			openFileInfo.Line = line;
-			openFileInfo.Column = column;
-			openFileInfo.DisplayBinding = binding;
-			openFileInfo.Encoding = encoding;
-			openFileInfo.HighlightCaretLine = highlightCaretLine;
-			RealOpenFile (openFileInfo);
-			
-			if (!pm.AsyncOperation.Success)
-				return null;
-			
-			if (openFileInfo.NewContent != null) {
-				Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
+			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + fileName)) {
 				NavigationHistoryService.LogActiveDocument ();
-				if (bringToFront)
-					Present ();
-				return doc;
-			} else {
-				return null;
+				
+				Counters.OpenDocumentTimer.Trace ("Look for open document");
+				
+				foreach (Document doc in Documents) {
+					IBaseViewContent vcFound = null;
+					int vcIndex = 0;
+					
+					//search all ViewContents to see if they can "re-use" this filename
+					if (doc.Window.ViewContent.CanReuseView (fileName))
+						vcFound = doc.Window.ViewContent;
+					
+					
+					//old method as fallback
+					if ((vcFound == null) && (doc.FileName == fileName))
+						vcFound = doc.Window.ViewContent;
+					
+					//if found, select window and jump to line
+					if (vcFound != null) {
+						if (bringToFront) {
+							doc.Select ();
+							doc.Window.SwitchView (vcIndex);
+							Present ();
+						}
+						
+						IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
+						if (line >= 1 && ipos != null) {
+							ipos.SetCaretTo (line, column >= 1 ? column : 1, highlightCaretLine);
+						}
+						
+						NavigationHistoryService.LogActiveDocument ();
+						return doc;
+					}
+				}
+				
+				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
+				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Opening {0}", fileName), Stock.OpenFileIcon, true);
+				FileInformation openFileInfo = new FileInformation();
+				openFileInfo.ProgressMonitor = pm;
+				openFileInfo.FileName = fileName;
+				openFileInfo.BringToFront = bringToFront;
+				openFileInfo.Line = line;
+				openFileInfo.Column = column;
+				openFileInfo.DisplayBinding = binding;
+				openFileInfo.Encoding = encoding;
+				openFileInfo.HighlightCaretLine = highlightCaretLine;
+				RealOpenFile (openFileInfo);
+				
+				if (!pm.AsyncOperation.Success)
+					return null;
+				
+				if (openFileInfo.NewContent != null) {
+					Counters.OpenDocumentTimer.Trace ("Wrapping document");
+					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
+					NavigationHistoryService.LogActiveDocument ();
+					if (bringToFront)
+						Present ();
+					return doc;
+				} else {
+					return null;
+				}
 			}
 		}
 		
@@ -665,6 +671,8 @@ namespace MonoDevelop.Ide.Gui
 
 			using (monitor)
 			{
+				Counters.OpenDocumentTimer.Trace ("Checking file");
+				
 				string origName = oFileInfo.FileName;
 
 				if (origName == null) {
@@ -717,6 +725,8 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				
+				Counters.OpenDocumentTimer.Trace ("Looking for binding");
+				
 				IDisplayBinding binding;
 				
 				if (oFileInfo.DisplayBinding != null) {
@@ -749,9 +759,12 @@ namespace MonoDevelop.Ide.Gui
 					
 					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
 					fw.Invoke (fileName);
+					
+					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
 					RecentOpen.AddLastFile (fileName, project != null ? project.Name : null);
 				} else {
 					try {
+						Counters.OpenDocumentTimer.Trace ("Showing in browser");
 						// FIXME: this doesn't seem finished yet in Gtk#
 						//MimeType mimetype = new MimeType (new Uri ("file://" + fileName));
 						//if (mimetype != null) {
@@ -991,6 +1004,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Invoke (string fileName)
 		{
 			try {
+				Counters.OpenDocumentTimer.Trace ("Creating content");
 				if (binding.CanCreateContentForUri (fileName)) {
 					newContent = binding.CreateContentForUri (fileName);
 				} else {
@@ -1009,6 +1023,8 @@ namespace MonoDevelop.Ide.Gui
 				if (project != null)
 					newContent.Project = project;
 				
+				Counters.OpenDocumentTimer.Trace ("Loading file");
+				
 				IEncodedTextContent etc = (IEncodedTextContent) newContent.GetContent (typeof(IEncodedTextContent));
 				if (fileInfo.Encoding != null && etc != null)
 					etc.Load (fileName, fileInfo.Encoding);
@@ -1024,6 +1040,8 @@ namespace MonoDevelop.Ide.Gui
 				fileInfo.NewContent = newContent;
 				return;
 			}
+			
+			Counters.OpenDocumentTimer.Trace ("Showing view");
 			
 			workbench.ShowView (newContent, fileInfo.BringToFront);
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);

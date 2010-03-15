@@ -39,6 +39,7 @@ using MonoDevelop.Core.Gui;
 using System.IO;
 using Gtk;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Gui.Instrumentation;
 
 namespace MonoDevelop.Ide.Commands
 {

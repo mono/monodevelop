@@ -62,6 +62,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Run (string[] args)
 		{
+			Counters.Initialization.BeginTiming ();
+			
 			var options = new MonoDevelopOptions ();
 			var optionsSet = new Mono.Options.OptionSet () {
 				{ "nologo", "Do not display splash screen.", s => options.NoLogo = true },
@@ -77,8 +79,7 @@ namespace MonoDevelop.Ide.Gui
 				return 0;
 			}
 			
-			LoggingService.Trace ("IdeStartup", "Initializing GTK");
-			Counters.Initialization++;
+			Counters.Initialization.Trace ("Initializing GTK");
 			SetupExceptionManager ();
 			
 			try {
@@ -100,7 +101,7 @@ namespace MonoDevelop.Ide.Gui
 			// If a combine was specified, force --newwindow.
 			
 			if(!options.NewWindow && StartupInfo.HasFiles) {
-				LoggingService.Trace ("IdeStartup", "Pre-Initializing Runtime to load files in existing window");
+				Counters.Initialization.Trace ("Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
 				foreach (string file in StartupInfo.GetRequestedFileList ()) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file))
@@ -128,13 +129,13 @@ namespace MonoDevelop.Ide.Gui
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 			
-			LoggingService.Trace ("IdeStartup", "Initializing Runtime");
+			Counters.Initialization.Trace ("Initializing Runtime");
 			monitor.BeginTask (GettextCatalog.GetString ("Starting MonoDevelop"), 2);
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
-			LoggingService.Trace ("IdeStartup", "Initializing Platform Service");
+			Counters.Initialization.Trace ("Initializing Platform Service");
 			DesktopService.Initialize ();
 			monitor.Step (1);
 			monitor.EndTask ();
@@ -163,7 +164,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			LoggingService.Trace ("IdeStartup", "Checking System");
+			Counters.Initialization.Trace ("Checking System");
 			string version = Assembly.GetEntryAssembly ().GetName ().Version.Major + "." + Assembly.GetEntryAssembly ().GetName ().Version.Minor;
 			
 			if (Assembly.GetEntryAssembly ().GetName ().Version.Build != 0)
@@ -184,7 +185,7 @@ namespace MonoDevelop.Ide.Gui
 			int reportedFailures = 0;
 			
 			try {
-				LoggingService.Trace ("IdeStartup", "Loading Icons");
+				Counters.Initialization.Trace ("Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
 				MonoDevelop.Core.Gui.ImageService.Initialize ();
 				
@@ -202,7 +203,7 @@ namespace MonoDevelop.Ide.Gui
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
-				LoggingService.Trace ("IdeStartup", "Initializing IdeApp");
+				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);
 				monitor.Step (1);
 			
@@ -237,9 +238,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			initialized = true;
 			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
-			Counters.Initialization--;
-			
-			LoggingService.Trace ("IdeStartup", "Running IdeApp");
+			Thread.CurrentThread.Name = "GUI Thread";
+			Counters.Initialization.Trace ("Running IdeApp");
+			Counters.Initialization.EndTiming ();
 			IdeApp.Run ();
 			
 			// unloading services

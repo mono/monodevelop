@@ -1,3 +1,12 @@
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide/Services.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/IdeStartup.cs:
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Use the new
+	  timing counters.
+
 2010-03-12  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Ide.Gui/IdeStartup.cs: Implement TCP IPC.
