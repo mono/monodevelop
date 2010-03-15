@@ -1,3 +1,8 @@
+2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/TemplateGenerator.cs: Expose OutputFile
+	  for custom tool to access.
+
 2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextTemplating/CrossAppDomainAssemblyResolver.cs: A

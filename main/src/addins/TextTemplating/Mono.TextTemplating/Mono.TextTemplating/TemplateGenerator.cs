@@ -61,6 +61,7 @@ namespace Mono.TextTemplating
 		public List<string> ReferencePaths { get { return referencePaths; } }
 		public List<string> DirectiveProcessors { get { return directiveProcessors; } }
 		public IDictionary<string, string> ProcessorValues { get { return processorValues; } }
+		public string OutputFile { get { return outputFile; } }
 		
 		public TemplateGenerator ()
 		{
