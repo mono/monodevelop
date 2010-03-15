@@ -326,7 +326,12 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		public bool ShowToolbar {
 			get { return toolbar.Visible; }
-			set { toolbar.Visible = value; }
+			set { toolbar.Visible = toolbarSeparator.Visible = value; }
+		}
+		
+		public ShadowType ShadowType {
+			get { return tree.ShadowType; }
+			set { tree.ShadowType = value; }
 		}
 		
 		#region Hel Pane

@@ -177,7 +177,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			InstanceData idata = new InstanceData (instance);
 			
 			if (!categorised) {
-				sorted.Sort(new SortByName ());
+				if (PropertySort != PropertySort.NoSort)
+					sorted.Sort(new SortByName ());
 				foreach (PropertyDescriptor pd in sorted)
 					AppendProperty (TreeIter.Zero, pd, idata);
 			}
@@ -214,7 +215,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				InstanceData idata = (InstanceData) store.GetValue (it, 3);
 				if (prop != null && idata != null && prop.Name == pd.Name && idata.Instance == instance) {
 					// Don't update the current editing node, since it may cause tree update problems
-					if (!store.GetPath (tree.EditingIter).Equals (store.GetPath (it)))
+					if (!tree.Editing || !store.GetPath (tree.EditingIter).Equals (store.GetPath (it)))
 						store.SetValue (it, 1, pd);
 					return true;
 				}
@@ -680,7 +681,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			else {
 				session.Dispose ();
 				((InternalTree)parent).Editing = false;
-				box.Unparent ();
+				if (box.Parent != null && box.Parent.IsRealized)
+					box.Unparent ();
 			}
 		}
 		

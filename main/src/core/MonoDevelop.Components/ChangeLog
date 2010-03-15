@@ -1,5 +1,14 @@
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs: Allow
+	  setting the shadow type of the grid. Allow hiding/showing
+	  the toolbar.
+
+	* MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs:
+	  Added some missing checks.
+
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.Commands/CommandManager.cs: Fix
 	  command target notification issue.
 
