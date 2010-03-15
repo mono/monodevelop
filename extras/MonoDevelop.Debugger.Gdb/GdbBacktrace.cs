@@ -226,6 +226,10 @@ namespace MonoDevelop.Debugger.Gdb
 			ObjectValue val;
 			ObjectValueFlags flags = ObjectValueFlags.Variable;
 			
+			// There can be 'public' et al children for C++ structures
+			if (typeName == null)
+				typeName = "none";
+			
 			if (typeName.EndsWith ("]")) {
 				val = ObjectValue.CreateArray (this, new ObjectPath (vname), typeName, nchild, flags, null);
 			} else if (value == "{...}" || typeName.EndsWith ("*") || nchild > 0) {
@@ -243,6 +247,11 @@ namespace MonoDevelop.Debugger.Gdb
 			session.SelectThread (threadId);
 			GdbCommandResult res = session.RunCommand ("-var-list-children", "2", path.Join ("."));
 			ResultData cdata = res.GetObject ("children");
+			
+			// The response may not contain the "children" list at all.
+			if (cdata == null)
+				return children.ToArray ();
+			
 			if (index == -1) {
 				index = 0;
 				count = cdata.Count;
@@ -256,8 +265,16 @@ namespace MonoDevelop.Debugger.Gdb
 				if (name.Length > 0 && char.IsNumber (name [0]))
 					name = "[" + name + "]";
 				
-				ObjectValue val = CreateObjectValue (name, child);
-				children.Add (val);
+				// C++ structures may contain typeless children named
+				// "public", "private" and "protected".
+				if (child.GetValue("type") == null) {
+					ObjectPath childPath = new ObjectPath (child.GetValue ("name").Split ('.'));
+					ObjectValue[] subchildren = GetChildren (childPath, -1, -1);
+					children.AddRange(subchildren);
+				} else {
+					ObjectValue val = CreateObjectValue (name, child);
+					children.Add (val);
+				}
 			}
 			return children.ToArray ();
 		}

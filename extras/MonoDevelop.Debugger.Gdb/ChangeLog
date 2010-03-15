@@ -1,3 +1,8 @@
+2010-03-15  David Makovský  <yakeen@sannyas-on.net>
+
+	* GdbBacktrace.cs: fixes for C++ structures (thx Martin Vejnár
+	  <avakar@ratatanek.cz>)
+
 2010-03-08  Jonathan Pryor  <jpryor@novell.com>
 
 	* configure: Create a $(CSC) make variable.
