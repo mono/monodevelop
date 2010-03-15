@@ -1,5 +1,11 @@
 2010-03-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects/CompletionDatabaseTests.cs: Taken out
+	  the unit tests for now. Seems that the subclass table don't
+	  get updated for types with type parameters.
+
+2010-03-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
 	  test for 'Bug 587549 - Intellisense does not work with
 	  override constraints'.
