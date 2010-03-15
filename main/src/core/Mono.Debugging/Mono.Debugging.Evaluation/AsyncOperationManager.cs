@@ -61,7 +61,7 @@ namespace Mono.Debugging.Evaluation
 				}
 			}
 			else {
-				methodCall.WaitForCompleted (0);
+				methodCall.WaitForCompleted (System.Threading.Timeout.Infinite);
 			}
 
 			lock (operationsToCancel) {
@@ -133,7 +133,7 @@ namespace Mono.Debugging.Evaluation
 			if (Aborting) {
 				// Somebody else is aborting this. Just wait for it to finish.
 				ST.Monitor.Exit (this);
-				WaitForCompleted (0);
+				WaitForCompleted (System.Threading.Timeout.Infinite);
 				return;
 			}
 			
