@@ -115,7 +115,7 @@ namespace MonoDevelop.Core
 		
 		public bool RemoveValue (string name)
 		{
-			return properties.Remove (name);
+			return properties != null && properties.Remove (name);
 		}
 		
 		public bool HasValue<T> ()
