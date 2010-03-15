@@ -1246,7 +1246,8 @@ namespace Mono.TextEditor
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
+			var modifier = Platform.IsMac? Gdk.ModifierType.MetaMask : Gdk.ModifierType.ControlMask;
+			if ((evnt.State & modifier) !=0) {
 				if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomIn ();
 				else
