@@ -486,7 +486,6 @@ namespace MonoDevelop.Components.Commands
 			if (guiLock > 0)
 				return false;
 
-			NotifyCommandTargetScanStarted ();
 			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
 			try {
@@ -573,9 +572,6 @@ namespace MonoDevelop.Components.Commands
 				string name = (cmd != null && cmd.Text != null && cmd.Text.Length > 0) ? cmd.Text : commandId.ToString ();
 				name = name.Replace ("_","");
 				ReportError (commandId, "Error while executing command: " + name, ex);
-			}
-			finally {
-				NotifyCommandTargetScanFinished ();
 			}
 			return false;
 		}
