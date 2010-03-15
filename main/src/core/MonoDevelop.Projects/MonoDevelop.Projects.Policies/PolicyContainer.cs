@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.Policies
 			
 			if (policies == null) {
 				policies = new PolicyDictionary ();
-			} else {
+			} else if (value != null) {
 				object oldVal = null;
 				policies.TryGetValue (key, out oldVal);
 				if (oldVal != null && ((IEquatable<T>)oldVal).Equals (value))

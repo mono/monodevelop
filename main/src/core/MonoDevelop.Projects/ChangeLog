@@ -1,3 +1,8 @@
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicyContainer.cs: Add
+	  missing null check.
+
 2010-03-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
