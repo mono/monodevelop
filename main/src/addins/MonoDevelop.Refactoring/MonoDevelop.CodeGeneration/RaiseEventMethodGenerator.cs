@@ -85,7 +85,7 @@ namespace MonoDevelop.CodeGeneration
 				foreach (IEvent e in Options.EnclosingType.Events) {
 					if (e.IsSpecialName)
 						continue;
-					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.ParsedDocument.CompilationUnit, e.ReturnType, Options.EnclosingType));
+					IType type = Options.Dom.SearchType (e, e.ReturnType);
 					if (type == null)
 						continue;
 					IMethod invokeMethod = type.Methods.FirstOrDefault ();
@@ -104,7 +104,7 @@ namespace MonoDevelop.CodeGeneration
 					methodDeclaration.Modifier = ICSharpCode.NRefactory.Ast.Modifiers.Protected | ICSharpCode.NRefactory.Ast.Modifiers.Virtual;
 					methodDeclaration.Body = new BlockStatement ();
 
-					IType type = Options.Dom.SearchType (new SearchTypeRequest (Options.Document.ParsedDocument.CompilationUnit, member.ReturnType, Options.EnclosingType));
+					IType type = Options.Dom.SearchType (member, member.ReturnType);
 					IMethod invokeMethod = type.Methods.First ();
 
 					methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.ShortenTypeName (invokeMethod.Parameters[1].ReturnType.ConvertToTypeReference ()), invokeMethod.Parameters[1].Name));

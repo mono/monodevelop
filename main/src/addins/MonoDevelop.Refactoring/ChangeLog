@@ -1,3 +1,11 @@
+2010-03-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:
+	* MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
+	  Track API changes.
+
 2010-03-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fixed
