@@ -182,8 +182,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (visible != value) {
 					visible = value;
-					if (project != null)
-						project.NotifyFilePropertyChangedInProject (this);
+					OnChanged ();
 				}
 			}
 		}
@@ -199,8 +198,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (generator != value) {
 					generator = value;
-					if (project != null)
-						project.NotifyFilePropertyChangedInProject (this);
+					OnChanged ();
 				}
 			}
 		}
@@ -216,8 +214,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (customToolNamespace != value) {
 					customToolNamespace = value;
-					if (project != null)
-						project.NotifyFilePropertyChangedInProject (this);
+					OnChanged ();
 				}
 			}
 		}
@@ -234,8 +231,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (lastGenOutput != value) {
 					lastGenOutput = value;
-					if (project != null)
-						project.NotifyFilePropertyChangedInProject (this);
+					OnChanged ();
 				}
 			}
 		}
@@ -255,8 +251,7 @@ namespace MonoDevelop.Projects
 					if (value.IsAbsolute || value.ToString ().StartsWith (".."))
 						throw new ArgumentException ("value");
 					link = value;
-					if (project != null)
-						project.NotifyFilePropertyChangedInProject (this);
+					OnChanged ();
 				}
 			}
 		}
@@ -286,8 +281,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (copyToOutputDirectory != value) {
 					copyToOutputDirectory = value;
-					if (project != null)
-						project.NotifyFilePropertyChangedInProject (this);
+					OnChanged ();
 				}
 			}
 		}
