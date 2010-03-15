@@ -199,18 +199,20 @@ namespace MonoDevelop.Projects
 		
 		public SolutionEntityItem ReadSolutionItem (IProgressMonitor monitor, string file)
 		{
-			file = GetTargetFile (file);
-			SolutionEntityItem loadedItem = GetExtensionChain (null).LoadSolutionItem (monitor, file, delegate {
-				FileFormat format;
-				SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
-				if (item != null)
-					item.FileFormat = format;
-				else
-					throw new InvalidOperationException ("Invalid file format: " + file);
-				return item;
-			});
-			loadedItem.NeedsReload = false;
-			return loadedItem;
+			using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
+				file = GetTargetFile (file);
+				SolutionEntityItem loadedItem = GetExtensionChain (null).LoadSolutionItem (monitor, file, delegate {
+					FileFormat format;
+					SolutionEntityItem item = ReadFile (monitor, file, typeof(SolutionEntityItem), out format) as SolutionEntityItem;
+					if (item != null)
+						item.FileFormat = format;
+					else
+						throw new InvalidOperationException ("Invalid file format: " + file);
+					return item;
+				});
+				loadedItem.NeedsReload = false;
+				return loadedItem;
+			}
 		}
 		
 		public SolutionItem ReadSolutionItem (IProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)
@@ -251,13 +253,15 @@ namespace MonoDevelop.Projects
 		
 		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, string file)
 		{
-			file = GetTargetFile (file);
-			WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
-			if (item != null)
-				item.NeedsReload = false;
-			else
-				throw new InvalidOperationException ("Invalid file format: " + file);
-			return item;
+			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
+				file = GetTargetFile (file);
+				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
+				if (item != null)
+					item.NeedsReload = false;
+				else
+					throw new InvalidOperationException ("Invalid file format: " + file);
+				return item;
+			}
 		}
 		
 		internal void InternalWriteSolutionItem (IProgressMonitor monitor, string file, SolutionEntityItem item)
@@ -795,20 +799,23 @@ namespace MonoDevelop.Projects
 	
 	internal static class Counters
 	{
-		public static Counter ItemsInMemory = InstrumentationService.CreateCounter ("Projects in Memory", "Project Model");
-		public static Counter ItemsLoaded = InstrumentationService.CreateCounter ("Projects Loaded", "Project Model");
-		public static Counter SolutionsInMemory = InstrumentationService.CreateCounter ("Solutions in Memory", "Project Model");
-		public static Counter SolutionsLoaded = InstrumentationService.CreateCounter ("Solutions Loaded", "Project Model");
+		public static Counter ItemsInMemory = InstrumentationService.CreateCounter ("Projects in memory", "Project Model");
+		public static Counter ItemsLoaded = InstrumentationService.CreateCounter ("Projects loaded", "Project Model");
+		public static Counter SolutionsInMemory = InstrumentationService.CreateCounter ("Solutions in memory", "Project Model");
+		public static Counter SolutionsLoaded = InstrumentationService.CreateCounter ("Solutions loaded", "Project Model");
+		public static TimerCounter ReadWorkspaceItem = InstrumentationService.CreateTimerCounter ("Workspace item read", "Project Model");
+		public static TimerCounter ReadSolutionItem = InstrumentationService.CreateTimerCounter ("Solution item read", "Project Model");
+		public static TimerCounter ReadMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project read", "Project Model");
+		public static TimerCounter WriteMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project written", "Project Model");
 		
-		public static Counter FilesParsed = InstrumentationService.CreateCounter ("Files Parsed", "Parser Service");
-		public static Counter TypeIndexEntries = InstrumentationService.CreateCounter ("Type Index Entries", "Parser Service");
-		public static Counter LiveTypeObjects = InstrumentationService.CreateCounter ("Live Type Objects", "Parser Service");
-		public static Counter LiveDatabases = InstrumentationService.CreateCounter ("Parser Databases", "Parser Service");
-		public static Counter LiveAssemblyDatabases = InstrumentationService.CreateCounter ("Assembly Databases", "Parser Service");
-		public static Counter LiveProjectDatabases = InstrumentationService.CreateCounter ("Project Databases", "Parser Service");
-		public static Counter DatabasesWritten = InstrumentationService.CreateCounter ("Parser Databases Written", "Parser Service");
-		
-		public static Counter FileParseTime = InstrumentationService.CreateCounter ("File Parse Time", "Timing");
-		public static Counter AssemblyParseTime = InstrumentationService.CreateCounter ("Assembly Parse Time", "Timing");
+		public static Counter TypeIndexEntries = InstrumentationService.CreateCounter ("Type index entries", "Parser Service");
+		public static Counter LiveTypeObjects = InstrumentationService.CreateCounter ("Live type objects", "Parser Service");
+		public static Counter LiveDatabases = InstrumentationService.CreateCounter ("Parser databases", "Parser Service");
+		public static Counter LiveAssemblyDatabases = InstrumentationService.CreateCounter ("Assembly databases", "Parser Service");
+		public static Counter LiveProjectDatabases = InstrumentationService.CreateCounter ("Project databases", "Parser Service");
+		public static TimerCounter DatabasesRead = InstrumentationService.CreateTimerCounter ("Parser database read", "Parser Service");
+		public static TimerCounter DatabasesWritten = InstrumentationService.CreateTimerCounter ("Parser database written", "Parser Service");
+		public static TimerCounter FileParse = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
+		public static TimerCounter AssemblyParseTime = InstrumentationService.CreateTimerCounter ("Assembly parsed", "Parser Service");
 	}
 }

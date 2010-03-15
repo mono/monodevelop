@@ -40,6 +40,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using System.Linq;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -52,6 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string Unspecified = null;
 		RemoteProjectBuilder projectBuilder;
 		TargetFramework lastBuildFx;
+		ITimeTracker timer;
 		
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -219,9 +221,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public SolutionEntityItem Load (IProgressMonitor monitor, string fileName, string language, Type itemClass)
 		{
+			timer = Counters.ReadMSBuildProject.BeginTiming ();
+			
+			timer.Trace ("Reading project file");
 			MSBuildProject p = new MSBuildProject ();
 			fileContent = File.ReadAllText (fileName);
 			p.LoadXml (fileContent);
+			
+			timer.Trace ("Read project guids");
 			
 			MSBuildPropertyGroup globalGroup = p.GetGlobalPropertyGroup ();
 			
@@ -243,6 +250,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			try {
+				timer.Trace ("Create item instance");
 				ProjectExtensionUtil.BeginLoadOperation ();
 				Item = CreateSolutionItem (language, projectTypeGuids, itemType, itemClass);
 	
@@ -259,6 +267,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 			} finally {
 				ProjectExtensionUtil.EndLoadOperation ();
+				timer.End ();
 			}
 		}
 		
@@ -305,6 +314,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		void Load (IProgressMonitor monitor, MSBuildProject msproject)
 		{
+			timer.Trace ("Initialize serialization");
+			
 			MSBuildSerializer ser = CreateSerializer ();
 			ser.SerializationContext.BaseFile = EntityItem.FileName;
 			ser.SerializationContext.ProgressMonitor = monitor;
@@ -319,11 +330,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// Read all items
 			
+			timer.Trace ("Read project items");
+			
 			foreach (MSBuildItem buildItem in msproject.GetAllItems ()) {
 				ProjectItem it = ReadItem (ser, buildItem);
 				if (it != null)
 					((SolutionEntityItem)Item).Items.Add (it);
 			}
+			
+			timer.Trace ("Read configurations");
 			
 			if (dotNetProject != null) {
 				frameworkVersion = globalGroup.GetPropertyValue ("TargetFrameworkVersion");
@@ -378,6 +393,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// Read extended properties
 			
+			timer.Trace ("Read extended properties");
+			
 			DataItem globalData = ReadPropertyGroupMetadata (ser, globalGroup, Item);
 			
 			string extendedData = msproject.GetProjectExtensions ("MonoDevelop");
@@ -389,6 +406,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.Deserialize (Item, globalData);
 
 			// Final initializations
+			
+			timer.Trace ("Final initializations");
 			
 			if (dotNetProject != null && string.IsNullOrEmpty (frameworkVersion)) {
 				string fx = Item.ExtendedProperties ["InternalTargetFrameworkVersion"] as string;

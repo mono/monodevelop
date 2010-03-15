@@ -42,6 +42,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using System.Reflection;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {
@@ -182,17 +183,22 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			if (!File.Exists (dataFile)) return;
 			
+			ITimeTracker timer = Counters.DatabasesRead.BeginTiming ("Reading Parser Database " + dataFile);
+				
 			lock (rwlock)
 			{
+				timer.Trace ("Clearing");
 				Clear ();
 			
 				CloseReader ();
 
 				try {
+					timer.Trace ("Opening file");
 					dataFileStream = OpenForWrite ();
 					datareader = new BinaryReader (dataFileStream);
 				} catch (Exception ex) {
 					LoggingService.LogError ("PIDB file '{0}' could not be loaded: '{1}'. The file will be recreated.", dataFile, ex);
+					timer.End ();
 					return;
 				}
 					
@@ -203,11 +209,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					BinaryFormatter bf = new BinaryFormatter ();
 					
+					timer.Trace ("Read headers");
+					
 					// Read the headers
 					headers = (Hashtable) bf.Deserialize (dataFileStream);
 					int ver = (int) headers["Version"];
 					if (ver != FORMAT_VERSION)
 						throw new OldPidbVersionException (ver, FORMAT_VERSION);
+					
+					timer.Trace ("Read index");
 					
 					// Move to the index offset and read the index
 					BinaryReader br = new BinaryReader (dataFileStream);
@@ -233,46 +243,55 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				}
 			}
 			
-			// Notify read comments
-			foreach (FileEntry fe in files.Values) {
-				if (! fe.IsAssembly && fe.CommentTasks != null) {
-					ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, Project);
+			try {
+				timer.Trace ("Notify read comments");
+				
+				// Notify read comments
+				foreach (FileEntry fe in files.Values) {
+					if (! fe.IsAssembly && fe.CommentTasks != null) {
+						ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, Project);
+					}
 				}
+				
+				int totalEntries = 0;
+				IEnumerator<ClassEntry> ecls = rootNamespace.GetAllClasses ().GetEnumerator ();
+				while (ecls.MoveNext ())
+					totalEntries++;
+				Counters.TypeIndexEntries.Inc (totalEntries);
+				
+				if (verify) {
+					// Read all information from the database to ensure everything is in place
+					HashSet<ClassEntry> classes = new HashSet<ClassEntry> ();
+					foreach (ClassEntry ce in rootNamespace.GetAllClasses ()) {
+						classes.Add (ce);
+						try {
+							ReadClass (ce);
+						} catch (Exception ex) {
+							LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' could not be deserialized: " + ex.Message);
+						}
+					}
+	/*				foreach (FileEntry fe in files.Values) {
+						foreach (ClassEntry ce in fe.ClassEntries) {
+							if (!classes.Contains (ce))
+								LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' from file '" + fe.FileName + "' not found in main index.");
+							else
+								classes.Remove (ce);
+						}
+					}
+					foreach (ClassEntry ce in classes)
+						LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' not found in file index.");
+	*/			}
+				
+				timer.Trace ("Notify tag changes");
+				
+				// Update comments if needed...
+				CommentTagSet lastTags = new CommentTagSet (LastValidTaskListTokens);
+				if (!lastTags.Equals (ProjectDomService.SpecialCommentTags))
+					OnSpecialTagsChanged (null, null);
 			}
-			
-			int totalEntries = 0;
-			IEnumerator<ClassEntry> ecls = rootNamespace.GetAllClasses ().GetEnumerator ();
-			while (ecls.MoveNext ())
-				totalEntries++;
-			Counters.TypeIndexEntries.Inc (totalEntries);
-			
-			if (verify) {
-				// Read all information from the database to ensure everything is in place
-				HashSet<ClassEntry> classes = new HashSet<ClassEntry> ();
-				foreach (ClassEntry ce in rootNamespace.GetAllClasses ()) {
-					classes.Add (ce);
-					try {
-						ReadClass (ce);
-					} catch (Exception ex) {
-						LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' could not be deserialized: " + ex.Message);
-					}
-				}
-/*				foreach (FileEntry fe in files.Values) {
-					foreach (ClassEntry ce in fe.ClassEntries) {
-						if (!classes.Contains (ce))
-							LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' from file '" + fe.FileName + "' not found in main index.");
-						else
-							classes.Remove (ce);
-					}
-				}
-				foreach (ClassEntry ce in classes)
-					LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' not found in file index.");
-*/			}
-			
-			// Update comments if needed...
-			CommentTagSet lastTags = new CommentTagSet (LastValidTaskListTokens);
-			if (!lastTags.Equals (ProjectDomService.SpecialCommentTags))
-				OnSpecialTagsChanged (null, null);
+			finally {
+				timer.End ();
+			}
 		}
 
 		FileStream OpenForWrite ()
@@ -335,7 +354,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			{
 				if (!modified) return;
 
-				Counters.DatabasesWritten++;
+				ITimeTracker timer = Counters.DatabasesWritten.BeginTiming ("Writing Parser Database " + dataFile);
 				
 				modified = false;
 				headers["Version"] = FORMAT_VERSION;
@@ -345,11 +364,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				try {
 					if (dataFileStream == null) {
+						timer.Trace ("Opening file");
 						dataFileStream = OpenForWrite ();
 						datareader = new BinaryReader (dataFileStream);
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not write parser database.", ex);
+					timer.End ();
 					return;
 				}
 
@@ -358,6 +379,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				BinaryWriter bw = new BinaryWriter (tmpStream);
 				
 				try {
+					timer.Trace ("Serializing headers");
+					
 					// The headers are the first thing to write, so they can be read
 					// without deserializing the whole file.
 					bf.Serialize (tmpStream, headers);
@@ -368,6 +391,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					MemoryStream buffer = new MemoryStream ();
 					BinaryWriter bufWriter = new BinaryWriter (buffer);
+					
+					timer.Trace ("Writing class data");
 					
 					INameEncoder nameEncoder = pdb.CreateNameEncoder ();
 					
@@ -409,6 +434,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					bw.Flush ();
 					
+					timer.Trace ("Writing index");
+					
 					// Write the index
 					long indexOffset = tmpStream.Position;
 					
@@ -425,6 +452,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					// Save to file
 					
+					timer.Trace ("Saving to file");
+					
 					dataFileStream.SetLength (0);
 					dataFileStream.Position = 0;
 
@@ -435,6 +464,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					LoggingService.LogError (ex.ToString ());
 					dataFileStream.Close ();
 					dataFileStream = null;
+				} finally {
+					timer.End ();
 				}
 			}
 			

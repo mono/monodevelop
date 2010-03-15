@@ -55,7 +55,9 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public static SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, ItemLoadCallback callback)
 		{
-			return Services.ProjectService.GetExtensionChain (null).LoadSolutionItem (monitor, fileName, callback);
+			using (Counters.ReadSolutionItem.BeginTiming ("Read project " + fileName)) {
+				return Services.ProjectService.GetExtensionChain (null).LoadSolutionItem (monitor, fileName, callback);
+			}
 		}
 		
 		public static BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)

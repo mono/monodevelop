@@ -929,7 +929,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static ParsedDocument DoParseFile (ProjectDom dom, string fileName, string fileContent)
 		{
-			using (Counters.FileParseTime.BeginTiming ()) {
+			using (Counters.FileParse.BeginTiming ()) {
 				IParser parser = GetParserByFileName (fileName);
 				
 				if (parser == null)
@@ -949,7 +949,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				}
 	
-				Counters.FilesParsed++;
 				parserOutput = parser.Parse (dom, fileName, fileContent);
 				
 	/*			ParseInformation parseInformation = GetCachedParseInformation (fileName);

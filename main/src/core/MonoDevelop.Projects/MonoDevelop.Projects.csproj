@@ -327,8 +327,6 @@
     <Compile Include="MonoDevelop.Projects.Policies\PolicyContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\ScopedPolicy.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLogger.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteLoggerController.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteProjectBuilder.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildImportProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\IBaseMember.cs" />

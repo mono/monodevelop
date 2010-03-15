@@ -192,8 +192,6 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs \
-	MonoDevelop.Projects.Formats.MSBuild/RemoteLogger.cs \
-	MonoDevelop.Projects.Formats.MSBuild/RemoteLoggerController.cs \
 	MonoDevelop.Projects.Formats.MSBuild/RemoteProjectBuilder.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
