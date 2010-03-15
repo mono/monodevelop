@@ -84,6 +84,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				}
 			}
+			/*
 			if (contextType != null) {
 				foreach (ITypeParameter t in contextType.TypeParameters) {
 					if (t.Name == type.Name) {
@@ -99,7 +100,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 						return typeParameterReturnType;
 					}
 				}
-			}
+			}*/
 			
 			if (currentMethod != null) {
 				IMethod method = null;
@@ -141,10 +142,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			string name = type.DecoratedFullName; //!string.IsNullOrEmpty (type.Namespace) ? type.Namespace + "." + firstPart.Name : firstPart.Name;
 //			if (firstPart.GenericArguments.Count > 0)
 //				name += "`" + firstPart.GenericArguments.Count;
-			IType lookupType = db.SearchType (contextType, name);
+			IType lookupType = db.SearchType (unit, contextType, null, name);
 			if (visitAttribute && lookupType == null) {
 				name += "Attribute";
-				lookupType = db.SearchType (contextType, name);
+				lookupType = db.SearchType (unit, contextType, null, name);
 			}
 			if (lookupType == null) {
 				unresolvedCount++;
@@ -173,7 +174,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			DomReturnType rt = new DomReturnType (lookupType.Namespace, parts);
 			
 			// Make sure the whole type is resolved
-			if (parts.Count > 1 && db.SearchType (contextType, rt) == null) {
+			if (parts.Count > 1 && db.SearchType (unit, contextType, null, rt) == null) {
 				unresolvedCount++;
 				return db.GetSharedReturnType (type);
 			}
@@ -183,6 +184,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			rt.ArrayDimensions = type.ArrayDimensions;
 			for (int n=0; n<type.ArrayDimensions; n++)
 				rt.SetDimension (n, type.GetDimension (n));
+			
 			return db.GetSharedReturnType (rt);
 		}
 		

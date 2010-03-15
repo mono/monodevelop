@@ -100,9 +100,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return decorated.ResolveType (type);
 		}
 		
+		public override IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, string decoratedFullName)
+		{
+			return decorated.SearchType (unit, callingClass, callingMember, decoratedFullName);
+		}
+		
 		public override IType SearchType (INode searchIn, string decoratedFullName)
 		{
 			return decorated.SearchType (searchIn, decoratedFullName);
+		}
+		
+		public override IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, IReturnType returnType)
+		{
+			return decorated.SearchType (unit, callingClass, callingMember, returnType);
 		}
 		
 		public override IType SearchType (INode searchIn, IReturnType returnType)

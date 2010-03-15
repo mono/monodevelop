@@ -153,6 +153,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			type = ResolveType (type);
 			if (type == null)
 				yield break;
+			
 			HashSet<string> alreadyTaken = new HashSet<string> ();
 			Stack<IType> types = new Stack<IType> ();
 			types.Push (type);
@@ -165,7 +166,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (!alreadyTaken.Add (fullName)) {
 					continue;
 				}
-				
 				yield return cur;
 				
 				foreach (IReturnType baseType in cur.BaseTypes) {
@@ -204,6 +204,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return type;
 		}
 		
+		public virtual IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, string decoratedFullName)
+		{
+			if (string.IsNullOrEmpty (decoratedFullName))
+				return null;
+			return SearchType (decoratedFullName, callingClass, unit, null);
+		}
+		
 		public virtual IType SearchType (INode searchIn, string decoratedFullName)
 		{
 			if (string.IsNullOrEmpty (decoratedFullName))
@@ -212,7 +219,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			while (cu != null && !(cu is ICompilationUnit)) {
 				cu = cu.Parent;
 			}
-			return SearchType (decoratedFullName, searchIn as IMember, cu as ICompilationUnit, null);
+			IMember callingMember = searchIn as IMember;
+			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
+			return SearchType (decoratedFullName, callingClass, cu as CompilationUnit, null);
+		}
+		
+		public virtual IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, IReturnType returnType)
+		{
+			if (returnType == null)
+				return null;
+			return SearchType (returnType.DecoratedFullName, callingClass, unit, returnType.GenericArguments);
 		}
 		
 		public virtual IType SearchType (INode searchIn, IReturnType returnType)
@@ -223,17 +239,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 			while (cu != null && !(cu is ICompilationUnit)) {
 				cu = cu.Parent;
 			}
-			return SearchType (returnType.FullName, searchIn as IMember, cu as ICompilationUnit, returnType.GenericArguments);
+			IMember callingMember = searchIn as IMember;
+			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
+			return SearchType (returnType.DecoratedFullName, callingClass, cu as CompilationUnit, returnType.GenericArguments);
 		}
 		
-		internal IType SearchType (string name, IMember callingMember, ICompilationUnit unit, IList<IReturnType> genericParameters)
+/*		public virtual IType SearchType (SearchTypeRequest request)
 		{
-			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
+			return SearchType (request.Name, request.CallingType, request.CurrentCompilationUnit, request.GenericParameters);
+		}*/
+		
+		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, IList<IReturnType> genericParameters)
+		{
 			// TODO dom check generic parameter count
 			if (name == null || name == String.Empty)
 				return null;
-			IType result = null;
 			
+			IType result = null;
 			// It may be one of the generic parameters in the calling class
 			if (genericParameters == null || genericParameters.Count == 0) {
 				if (callingClass != null) {
@@ -242,16 +264,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 						return result;
 				}
 				
-				if (callingMember is IMethod) {
+/*				if (callingMember is IMethod) {
 					result = FindGenericParameter (unit, (IMethod)callingMember, name);
 					if (result != null)
 						return result;
-				}
+				}*/
 			}
 			
 			// A known type?
 			result = GetType (name, genericParameters, false, true);
-			if (result != null) 
+			if (result != null)
 				return result;
 			// Maybe an inner type?
 			if (callingClass != null) {
@@ -263,7 +285,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					return result;
 				}
 			}
-				
 			// If the name matches an alias, try using the alias first.
 			if (unit != null) {
 				IReturnType ualias = FindAlias (name, unit.Usings);
@@ -278,6 +299,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			// The enclosing namespace has preference over the using directives.
 			// Check it now.
+
 			if (callingClass != null) {
 				string[] namespaces = callingClass.FullName.Split ('.');
 				for (int n = namespaces.Length - 1; n >= 0; n--) {
@@ -287,7 +309,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 						return result;
 				}
 			}
-
+			
 			// Now try to find the class using the included namespaces
 			if (unit != null) {
 				// it's a difference having using A; namespace B { } or namespace B { using A;  }, when a type 
@@ -326,9 +348,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		IType FindGenericParameter (ICompilationUnit cu, ITypeParameterMember callingClass, string name)
 		{
 			foreach (TypeParameter tp in callingClass.TypeParameters) {
-				if (tp.Name == name) {
+				if (tp.Name == name)
 					return CreateInstantiatedParameterType (callingClass, tp);
-				}
 			}
 			if (callingClass.DeclaringType != null)
 				return FindGenericParameter (cu, callingClass.DeclaringType, name);
@@ -523,6 +544,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (returnType == null)
 				return null;
+			
 			if (returnType.ArrayDimensions > 0) {
 				DomReturnType newType = new DomReturnType (returnType.FullName);
 				newType.ArrayDimensions = returnType.ArrayDimensions - 1;
@@ -770,8 +792,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public virtual IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
 		{
-			if (genericArguments == null || genericArguments.Count == 0 || type == null || type is InstantiatedType)
+			if (genericArguments == null || type == null || type is InstantiatedType)
 				return type;
+			
 			string name = DomType.GetInstantiatedTypeName (type.FullName, genericArguments);
 			
 			lock (instantiatedTypeCache) {
