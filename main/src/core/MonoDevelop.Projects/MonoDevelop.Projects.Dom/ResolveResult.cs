@@ -276,7 +276,7 @@ namespace MonoDevelop.Projects.Dom
 					result.Add (extensionMethod);
 			}
 			foreach (IType curType in dom.GetInheritanceTree (type)) {
-				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface && !(type is DomTypeParameterType))
+				if (curType.ClassType == ClassType.Interface && type.ClassType != ClassType.Interface && !(type is InstantiatedParameterType))
 					continue;
 				foreach (IMember member in curType.Members) {
 					if (callingMember != null && !member.IsAccessibleFrom (dom, type, callingMember, includeProtected))

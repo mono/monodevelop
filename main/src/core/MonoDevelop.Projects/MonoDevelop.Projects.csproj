@@ -351,7 +351,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\IAssemblyReferenceHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\AbstractTypeParameterMember.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\ITypeParameterMember.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\DomTypeParameterType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />

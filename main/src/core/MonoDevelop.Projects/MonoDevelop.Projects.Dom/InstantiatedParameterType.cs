@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Dom
 {
 	internal class InstantiatedParameterType : DomType, ITypeParameterType
 	{
-		TypeParameter typeparam;
+		ITypeParameter typeparam;
 
 		public override TypeKind Kind {
 			get {
@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public InstantiatedParameterType (ProjectDom dom, ITypeParameterMember typeParameterMember, TypeParameter tp)
+		public InstantiatedParameterType (ProjectDom dom, ITypeParameterMember typeParameterMember, ITypeParameter tp)
 		{
 			IType outerType = typeParameterMember as IType ?? typeParameterMember.DeclaringType;
 			typeparam = tp;
@@ -50,24 +50,30 @@ namespace MonoDevelop.Projects.Dom
 			ClassType = ClassType.Class;
 			Modifiers = Modifiers.Public;
 			Name = tp.Name;
-			Namespace = outerType.Namespace;
+			Namespace = outerType.DecoratedFullName;
 			Location = outerType.Location;
 			DeclaringType = outerType;
-			
 			if (tp.ValueTypeRequired)
 				BaseType = new DomReturnType ("System.ValueType");
 			
+			if (tp.Constraints.Count > 0)
+				ClassType = ClassType.Interface;
 			foreach (IReturnType rt in tp.Constraints) {
 				if (FindCyclicReference (new HashSet<ITypeParameter> () { tp }, outerType, ((DomReturnType)rt).DecoratedFullName))
 					continue;
-				if (BaseType == null) {
-					BaseType = rt;
-					IType bt = dom.GetType (rt);
-					if (bt != null && bt.ClassType == ClassType.Interface)
-						ClassType = ClassType.Interface;
+				IType bt = dom.SearchType (typeParameterMember, rt);
+				IReturnType resolvedType = rt;
+				if (bt != null) {
+					resolvedType = new DomReturnType (bt);
+					if (bt.ClassType == ClassType.Interface || BaseType != null) {
+						AddInterfaceImplementation (resolvedType);
+					} else {
+						ClassType = bt.ClassType;
+						BaseType = resolvedType;
+					}
+				} else {
+					AddInterfaceImplementation (resolvedType);
 				}
-				else
-					AddInterfaceImplementation (rt);
 			}
 			if (BaseType == null)
 				BaseType = DomReturnType.Object;

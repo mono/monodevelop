@@ -84,30 +84,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				}
 			}
-			
-			foreach (ITypeParameter t in contextType.TypeParameters) {
-				if (t.Name == type.Name) {
-					DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
-					DomType constructedType = new DomTypeParameterType (type.FullName);
-					foreach (IReturnType constraintType in t.Constraints) {
-						if (constructedType.BaseType == null) {
-							constructedType.BaseType = constraintType;
-						} else {
-							constructedType.AddInterfaceImplementation (constraintType);
-						}
+			if (contextType != null) {
+				foreach (ITypeParameter t in contextType.TypeParameters) {
+					if (t.Name == type.Name) {
+						DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
+						DomType constructedType = new InstantiatedParameterType (db, contextType, t);
+						constructedType.SourceProjectDom = db;
+						
+						typeParameterReturnType.Type = constructedType;
+						typeParameterReturnType.ArrayDimensions = type.ArrayDimensions;
+						typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
+						for (int i = 0; i < type.ArrayDimensions; i++)
+							typeParameterReturnType.SetDimension (i, type.GetDimension (i));
+						return typeParameterReturnType;
 					}
-					
-					if (constructedType.BaseType == null) 
-						constructedType.BaseType = DomReturnType.Object;
-					
-					constructedType.SourceProjectDom = db;
-					
-					typeParameterReturnType.Type = constructedType;
-					typeParameterReturnType.ArrayDimensions = type.ArrayDimensions;
-					typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
-					for (int i = 0; i < type.ArrayDimensions; i++)
-						typeParameterReturnType.SetDimension (i, type.GetDimension (i));
-					return typeParameterReturnType;
 				}
 			}
 			
@@ -131,14 +121,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (idx >= 0) {
 					ITypeParameter t = method.TypeParameters[idx];
 					DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
-					DomType constructedType = new DomTypeParameterType (type.FullName);
-					foreach (IReturnType constraintType in t.Constraints) {
-						if (constructedType.BaseType == null) {
-							constructedType.BaseType = constraintType;
-						} else {
-							constructedType.AddInterfaceImplementation (constraintType);
-						}
-					}
+					DomType constructedType = new InstantiatedParameterType (db, method, t);
 					
 					if (constructedType.BaseType == null) 
 						constructedType.BaseType = DomReturnType.Object;
@@ -200,7 +183,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			rt.ArrayDimensions = type.ArrayDimensions;
 			for (int n=0; n<type.ArrayDimensions; n++)
 				rt.SetDimension (n, type.GetDimension (n));
-			
 			return db.GetSharedReturnType (rt);
 		}
 		

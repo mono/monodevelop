@@ -770,7 +770,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public virtual IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
 		{
-			if (genericArguments == null || type == null || type is InstantiatedType)
+			if (genericArguments == null || genericArguments.Count == 0 || type == null || type is InstantiatedType)
 				return type;
 			string name = DomType.GetInstantiatedTypeName (type.FullName, genericArguments);
 			
