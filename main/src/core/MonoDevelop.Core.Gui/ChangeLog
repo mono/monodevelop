@@ -1,3 +1,26 @@
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui.Instrumentation:
+	* MonoDevelop.Core.Gui.Instrumentation/TimersView.cs:
+	* MonoDevelop.Core.Gui.Instrumentation/TimeLineView.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Instrumentation.TimersView.cs:
+	* MonoDevelop.Core.Gui.Instrumentation/TimeLineViewWindow.cs:
+	* MonoDevelop.Core.Gui.Dialogs/InstrumentationViewerDialog.cs:
+	* MonoDevelop.Core.Gui.Instrumentation/CounterSelectorDialog.cs:
+	* MonoDevelop.Core.Gui.Instrumentation/InstrumenationChartView.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Instrumentation.TimeLineViewWindow.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs:
+	* MonoDevelop.Core.Gui.Instrumentation/InstrumentationViewerDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Instrumentation.CounterSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Instrumentation.InstrumenationChartView.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Instrumentation.InstrumentationViewerDialog.cs:
+	  New gui for the instrumentation service. Added time line
+	  view.
+
 2010-03-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core.Gui.addin.xml: Added jay mime type.

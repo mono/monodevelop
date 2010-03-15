@@ -23,10 +23,14 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Instrumentation.CounterSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Instrumentation.InstrumenationChartView.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Instrumentation.InstrumentationViewerDialog.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Instrumentation.TimeLineViewWindow.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Instrumentation.TimersView.cs \
 	MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs \
 	MonoDevelop.Core.Gui.Codons/OptionsDialogSection.cs \
 	MonoDevelop.Core.Gui.Codons/OptionsPanelNode.cs \
@@ -34,7 +38,6 @@ FILES =  \
 	MonoDevelop.Core.Gui.Components/FileBrowser.cs \
 	MonoDevelop.Core.Gui.Components/MenuButtonEntry.cs \
 	MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs \
-	MonoDevelop.Core.Gui.Dialogs/InstrumentationViewerDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/IOptionsPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiMessageDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/MultiTaskProgressDialog.cs \
@@ -42,6 +45,12 @@ FILES =  \
 	MonoDevelop.Core.Gui.Dialogs/OptionsPanel.cs \
 	MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs \
 	MonoDevelop.Core.Gui.Dialogs/SetupApp.cs \
+	MonoDevelop.Core.Gui.Instrumentation/CounterSelectorDialog.cs \
+	MonoDevelop.Core.Gui.Instrumentation/InstrumenationChartView.cs \
+	MonoDevelop.Core.Gui.Instrumentation/InstrumentationViewerDialog.cs \
+	MonoDevelop.Core.Gui.Instrumentation/TimeLineView.cs \
+	MonoDevelop.Core.Gui.Instrumentation/TimeLineViewWindow.cs \
+	MonoDevelop.Core.Gui.Instrumentation/TimersView.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Core.Gui.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \

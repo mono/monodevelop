@@ -610,9 +610,18 @@
     <Compile Include="MonoDevelop.Core.Gui.Dialogs\MultiMessageDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs" />
     <Compile Include="MonoDevelop.Core.Gui\DesktopService.cs" />
-    <Compile Include="MonoDevelop.Core.Gui.Dialogs\InstrumentationViewerDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.InstrumentationViewerDialog.cs" />
     <Compile Include="MonoDevelop.Core.Gui\CellRendererPixbuf.cs" />
+    <Compile Include="MonoDevelop.Core.Gui.Instrumentation\CounterSelectorDialog.cs" />
+    <Compile Include="MonoDevelop.Core.Gui.Instrumentation\InstrumenationChartView.cs" />
+    <Compile Include="MonoDevelop.Core.Gui.Instrumentation\InstrumentationViewerDialog.cs" />
+    <Compile Include="MonoDevelop.Core.Gui.Instrumentation\TimeLineView.cs" />
+    <Compile Include="MonoDevelop.Core.Gui.Instrumentation\TimeLineViewWindow.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Instrumentation.CounterSelectorDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Instrumentation.InstrumenationChartView.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Instrumentation.InstrumentationViewerDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Instrumentation.TimeLineViewWindow.cs" />
+    <Compile Include="MonoDevelop.Core.Gui.Instrumentation\TimersView.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Instrumentation.TimersView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -634,4 +643,12 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Core.Gui.Instrumentation\" />
+    <Folder Include="MonoDevelop.Core.Gui.Dialogs\" />
+    <Folder Include="MonoDevelop.Core.Gui.Dialogs\" />
+    <Folder Include="MonoDevelop.Core.Gui.Dialogs\" />
+    <Folder Include="MonoDevelop.Core.Gui.Dialogs\" />
+    <Folder Include="MonoDevelop.Core.Gui.Dialogs\" />
+  </ItemGroup>
 </Project>
