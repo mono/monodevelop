@@ -243,7 +243,6 @@
     <Compile Include="MonoDevelop.Projects.Dom\IExpressionFinder.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\ExpressionResult.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\ExpressionContext.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom\SearchTypeRequest.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\ResolveResult.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\ParsedDocument.cs" />
     <Compile Include="MonoDevelop.Projects.Dom\FoldingRegion.cs" />

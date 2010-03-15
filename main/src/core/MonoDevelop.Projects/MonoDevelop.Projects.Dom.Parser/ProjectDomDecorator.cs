@@ -100,12 +100,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return decorated.ResolveType (type);
 		}
 		
-		public override IType SearchType (SearchTypeRequest request)
+		public override IType SearchType (INode searchIn, string decoratedFullName)
 		{
-			return decorated.SearchType (request);
+			return decorated.SearchType (searchIn, decoratedFullName);
 		}
 		
-			
+		public override IType SearchType (INode searchIn, IReturnType returnType)
+		{
+			return decorated.SearchType (searchIn, returnType);
+		}
+		
 		public override List<IMember> GetNamespaceContents (string subNamespace, bool includeReferences, bool caseSensitive)
 		{
 			return decorated.GetNamespaceContents (subNamespace, includeReferences, caseSensitive);

@@ -147,7 +147,7 @@ namespace MonoDevelop.Projects.Dom
 				return compilationUnit;
 			}
 			set {
-				compilationUnit = value;
+				Parent = compilationUnit = value;
 			}
 		}
 		

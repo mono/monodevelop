@@ -131,7 +131,6 @@ FILES =  \
 	MonoDevelop.Projects.Dom/PreProcessorDefine.cs \
 	MonoDevelop.Projects.Dom/ReferenceEntry.cs \
 	MonoDevelop.Projects.Dom/ResolveResult.cs \
-	MonoDevelop.Projects.Dom/SearchTypeRequest.cs \
 	MonoDevelop.Projects.Dom/Tag.cs \
 	MonoDevelop.Projects.Dom/TypeParameter.cs \
 	MonoDevelop.Projects.Dom/TypeUpdateInformation.cs \

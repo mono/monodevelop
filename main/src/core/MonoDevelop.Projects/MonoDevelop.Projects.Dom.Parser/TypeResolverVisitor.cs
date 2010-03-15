@@ -85,6 +85,33 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			
+			foreach (ITypeParameter t in contextType.TypeParameters) {
+				if (t.Name == type.Name) {
+					DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
+					DomType constructedType = new DomType (type.FullName);
+					
+					foreach (IReturnType constraintType in t.Constraints) {
+						if (constructedType.BaseType == null) {
+							constructedType.BaseType = constraintType;
+						} else {
+							constructedType.AddInterfaceImplementation (constraintType);
+						}
+					}
+					
+					if (constructedType.BaseType == null) 
+						constructedType.BaseType = DomReturnType.Object;
+					
+					constructedType.SourceProjectDom = db;
+					
+					typeParameterReturnType.Type = constructedType;
+					typeParameterReturnType.ArrayDimensions = type.ArrayDimensions;
+					typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
+					for (int i = 0; i < type.ArrayDimensions; i++)
+						typeParameterReturnType.SetDimension (i, type.GetDimension (i));
+					return typeParameterReturnType;
+				}
+			}
+			
 			if (currentMethod != null) {
 				foreach (ITypeParameter t in currentMethod.TypeParameters) {
 					if (t.Name == type.Name) {
@@ -118,10 +145,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			string name = type.DecoratedFullName; //!string.IsNullOrEmpty (type.Namespace) ? type.Namespace + "." + firstPart.Name : firstPart.Name;
 //			if (firstPart.GenericArguments.Count > 0)
 //				name += "`" + firstPart.GenericArguments.Count;
-			IType lookupType = db.SearchType (new SearchTypeRequest (unit, contextType, name));
+			IType lookupType = db.SearchType (contextType, name);
 			if (visitAttribute && lookupType == null) {
 				name += "Attribute";
-				lookupType = db.SearchType (new SearchTypeRequest (unit, contextType, name));
+				lookupType = db.SearchType (contextType, name);
 			}
 			if (lookupType == null) {
 				unresolvedCount++;
@@ -150,7 +177,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			DomReturnType rt = new DomReturnType (lookupType.Namespace, parts);
 			
 			// Make sure the whole type is resolved
-			if (parts.Count > 1 && db.SearchType (new SearchTypeRequest (unit, rt, contextType)) == null) {
+			if (parts.Count > 1 && db.SearchType (contextType, rt) == null) {
 				unresolvedCount++;
 				return db.GetSharedReturnType (type);
 			}

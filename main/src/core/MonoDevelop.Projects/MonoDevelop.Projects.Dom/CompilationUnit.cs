@@ -132,6 +132,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void Add (IType newType)
 		{
+			newType.Parent = this;
 			newType.CompilationUnit = this;
 			types.Add (newType);
 		}

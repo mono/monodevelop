@@ -545,7 +545,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			int genericArgumentCount = ProjectDom.ExtractGenericArgCount (ref typeName);
 			if (genericArguments != null)
 				genericArgumentCount = genericArguments.Count;
-
 			lock (rwlock)
 			{
 				string[] path = typeName.Split ('.');
@@ -573,8 +572,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				}
 				if (result != null && genericArguments != null && genericArguments.Count > 0)
 					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
-				else
-					return result;
+				return result;
 			}
 		}
 		

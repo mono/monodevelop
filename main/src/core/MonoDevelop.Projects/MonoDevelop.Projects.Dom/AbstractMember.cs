@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom
 				return declaringType;
 			}
 			set {
-				this.declaringType = value;
+				this.Parent = this.declaringType = value;
 				fullNameIsDirty = true;
 			}
 		}
