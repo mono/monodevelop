@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects.Dom
 		HasOnlyHiddenConstructors = 1 // used for private & internal constructors in assemblies
 	}
 	
-	public interface IType : IMember, IEquatable<IType>
+	public interface IType : ITypeParameterMember, IEquatable<IType>
 	{
 		string Namespace {
 			get;
@@ -87,10 +87,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		ReadOnlyCollection<IReturnType> ImplementedInterfaces {
-			get;
-		}
-		
-		ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get;
 		}
 		

@@ -165,9 +165,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return decorated.CreateInstantiatedGenericType (type, genericArguments);
 		}
 		
-		public override IType CreateInstantiatedParameterType (IType outerType, TypeParameter tp)
+		public override IType CreateInstantiatedParameterType (ITypeParameterMember typeParameterMember, TypeParameter tp)
 		{
-			return decorated.CreateInstantiatedParameterType (outerType, tp);
+			return decorated.CreateInstantiatedParameterType (typeParameterMember, tp);
 		}
 	}
 }

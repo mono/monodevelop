@@ -69,6 +69,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
+	MonoDevelop.Projects.Dom/AbstractTypeParameterMember.cs \
 	MonoDevelop.Projects.Dom/AnonymousType.cs \
 	MonoDevelop.Projects.Dom/AttributeTarget.cs \
 	MonoDevelop.Projects.Dom/ClassType.cs \
@@ -97,6 +98,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/DomRegion.cs \
 	MonoDevelop.Projects.Dom/DomReturnType.cs \
 	MonoDevelop.Projects.Dom/DomType.cs \
+	MonoDevelop.Projects.Dom/DomTypeParameterType.cs \
 	MonoDevelop.Projects.Dom/DomUsing.cs \
 	MonoDevelop.Projects.Dom/Error.cs \
 	MonoDevelop.Projects.Dom/ExpressionContext.cs \
@@ -121,6 +123,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom/IReturnType.cs \
 	MonoDevelop.Projects.Dom/IType.cs \
 	MonoDevelop.Projects.Dom/ITypeParameter.cs \
+	MonoDevelop.Projects.Dom/ITypeParameterMember.cs \
 	MonoDevelop.Projects.Dom/IUsing.cs \
 	MonoDevelop.Projects.Dom/LocalVariable.cs \
 	MonoDevelop.Projects.Dom/Modifiers.cs \

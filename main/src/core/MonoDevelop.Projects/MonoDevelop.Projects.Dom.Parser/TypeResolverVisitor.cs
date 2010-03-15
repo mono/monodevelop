@@ -88,8 +88,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			foreach (ITypeParameter t in contextType.TypeParameters) {
 				if (t.Name == type.Name) {
 					DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
-					DomType constructedType = new DomType (type.FullName);
-					
+					DomType constructedType = new DomTypeParameterType (type.FullName);
 					foreach (IReturnType constraintType in t.Constraints) {
 						if (constructedType.BaseType == null) {
 							constructedType.BaseType = constraintType;
@@ -116,8 +115,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				foreach (ITypeParameter t in currentMethod.TypeParameters) {
 					if (t.Name == type.Name) {
 						DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
-						DomType constructedType = new DomType (type.FullName);
-						
+						DomType constructedType = new DomTypeParameterType (type.FullName);
 						foreach (IReturnType constraintType in t.Constraints) {
 							if (constructedType.BaseType == null) {
 								constructedType.BaseType = constraintType;

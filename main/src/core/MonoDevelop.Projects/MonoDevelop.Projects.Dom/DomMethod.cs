@@ -36,14 +36,11 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class DomMethod : AbstractMember, IMethod
+	public class DomMethod : AbstractTypeParameterMember, IMethod
 	{
 		protected List<IParameter> parameters = null;
-		protected List<ITypeParameter> genericParameters = null;
 
 		static readonly ReadOnlyCollection<IParameter> emptyParameters = new ReadOnlyCollection<IParameter> (new IParameter [0]);
-		static readonly ReadOnlyCollection<ITypeParameter> emptyGenericParameters = new ReadOnlyCollection<ITypeParameter> (new ITypeParameter [0]);
-		
 		
 		public override MemberType MemberType {
 			get {
@@ -89,12 +86,6 @@ namespace MonoDevelop.Projects.Dom
 		public override ReadOnlyCollection<IParameter> Parameters {
 			get {
 				return parameters != null ? parameters.AsReadOnly () : emptyParameters;
-			}
-		}
-		
-		public ReadOnlyCollection<ITypeParameter> TypeParameters {
-			get {
-				return genericParameters != null ? genericParameters.AsReadOnly () : emptyGenericParameters;
 			}
 		}
 		
@@ -373,13 +364,6 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IParameter parameter in parameters) {
 				Add (parameter);
 			}
-		}
-		
-		public void AddTypeParameter (ITypeParameter genPara)
-		{
-			if (genericParameters == null) 
-				genericParameters = new List<ITypeParameter> ();
-			genericParameters.Add (genPara);
 		}
 		
 		XmlNode FindMatch (XmlNodeList nodes)

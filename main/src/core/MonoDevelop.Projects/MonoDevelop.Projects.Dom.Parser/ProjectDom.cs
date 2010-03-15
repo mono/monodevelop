@@ -231,10 +231,19 @@ namespace MonoDevelop.Projects.Dom.Parser
 			IType result = null;
 			
 			// It may be one of the generic parameters in the calling class
-			if (callingClass != null && (genericParameters == null || genericParameters.Count == 0)) {
-				result = FindGenericParameter (unit, ResolveType (callingClass), name);
-				if (result != null)
-					return result;
+			if (genericParameters == null || genericParameters.Count == 0) {
+				if (callingClass != null) {
+					result = FindGenericParameter (unit, ResolveType (callingClass), name);
+					if (result != null)
+						return result;
+				}
+				
+				if (callingMember is IMethod) {
+					Console.WriteLine ("!!!!!");
+					result = FindGenericParameter (unit, (IMethod)callingMember, name);
+					if (result != null)
+						return result;
+				}
 			}
 			
 			// A known type?
@@ -266,7 +275,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			// The enclosing namespace has preference over the using directives.
 			// Check it now.
-
 			if (callingClass != null) {
 				string[] namespaces = callingClass.FullName.Split ('.');
 				for (int n = namespaces.Length - 1; n >= 0; n--) {
@@ -312,9 +320,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		IType FindGenericParameter (ICompilationUnit cu, IType callingClass, string name)
+		IType FindGenericParameter (ICompilationUnit cu, ITypeParameterMember callingClass, string name)
 		{
 			foreach (TypeParameter tp in callingClass.TypeParameters) {
+				Console.WriteLine (tp.Name + "/" + name);
 				if (tp.Name == name) {
 					return CreateInstantiatedParameterType (callingClass, tp);
 				}
@@ -512,7 +521,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (returnType == null)
 				return null;
-			
 			if (returnType.ArrayDimensions > 0) {
 				DomReturnType newType = new DomReturnType (returnType.FullName);
 				newType.ArrayDimensions = returnType.ArrayDimensions - 1;
@@ -775,9 +783,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		public virtual IType CreateInstantiatedParameterType (IType outerType, TypeParameter tp)
+		public virtual IType CreateInstantiatedParameterType (ITypeParameterMember typeParameterMember, TypeParameter tp)
 		{
-			return new InstantiatedParameterType (this, outerType, tp);
+			return new InstantiatedParameterType (this, typeParameterMember, tp);
 		}
 		
 		internal void ResetInstantiatedTypes (IType type)

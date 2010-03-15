@@ -42,8 +42,9 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 
-		public InstantiatedParameterType (ProjectDom dom, IType outerType, TypeParameter tp)
+		public InstantiatedParameterType (ProjectDom dom, ITypeParameterMember typeParameterMember, TypeParameter tp)
 		{
+			IType outerType = typeParameterMember as IType ?? typeParameterMember.DeclaringType;
 			typeparam = tp;
 			compilationUnit = outerType.CompilationUnit;
 			ClassType = ClassType.Class;

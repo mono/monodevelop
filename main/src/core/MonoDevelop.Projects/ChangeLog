@@ -1,3 +1,22 @@
+2010-03-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.csproj:
+	* MonoDevelop.Projects.Dom/IType.cs:
+	* MonoDevelop.Projects.Dom/IMethod.cs:
+	* MonoDevelop.Projects.Dom/DomType.cs:
+	* MonoDevelop.Projects.Dom/DomMethod.cs:
+	* MonoDevelop.Projects.Dom/ResolveResult.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom/DomTypeParameterType.cs:
+	* MonoDevelop.Projects.Dom/ITypeParameterMember.cs:
+	* MonoDevelop.Projects.Dom/InstantiatedParameterType.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomDecorator.cs:
+	* MonoDevelop.Projects.Dom/AbstractTypeParameterMember.cs:
+	  Fixed 'Bug 587543 - Intellisense ignores interface
+	  constraints'.
+
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Policies/PolicyContainer.cs: Add

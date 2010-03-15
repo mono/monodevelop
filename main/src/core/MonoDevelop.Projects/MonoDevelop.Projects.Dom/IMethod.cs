@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Dom
 		WasExtended   = 8
 	}
 	
-	public interface IMethod : IMember
+	public interface IMethod : ITypeParameterMember
 	{
 		MethodModifier MethodModifier {
 			get;
@@ -61,10 +61,6 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 		bool IsFinalizer {
-			get;
-		}
-		
-		ReadOnlyCollection<ITypeParameter> TypeParameters {
 			get;
 		}
 		

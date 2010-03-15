@@ -36,17 +36,14 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class DomType : AbstractMember, IType
+	public class DomType : AbstractTypeParameterMember, IType
 	{
 		protected ProjectDom sourceProjectDom;
 		protected ICompilationUnit compilationUnit;
 		protected IReturnType baseType;
 		
-		static readonly ReadOnlyCollection<ITypeParameter> emptyParamList = new List<ITypeParameter> ().AsReadOnly ();
 		static readonly ReadOnlyCollection<IReturnType> emptyTypeList = new List<IReturnType> ().AsReadOnly ();
 		
-		protected List<ITypeParameter> typeParameters      = null;
-
 		List<IReturnType> implementedInterfaces  = null;
 		
 		protected ClassType classType = ClassType.Unknown;
@@ -183,12 +180,6 @@ namespace MonoDevelop.Projects.Dom
 		public virtual ReadOnlyCollection<IReturnType> ImplementedInterfaces {
 			get {
 				return implementedInterfaces != null ? implementedInterfaces.AsReadOnly () : emptyTypeList;
-			}
-		}
-		
-		public virtual ReadOnlyCollection<ITypeParameter> TypeParameters {
-			get {
-				return typeParameters != null ? typeParameters.AsReadOnly () : emptyParamList;
 			}
 		}
 		
@@ -567,21 +558,6 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (typeParameters != null)
 				typeParameters.Clear ();
-		}
-		
-		public void AddTypeParameter (ITypeParameter parameter)
-		{
-			if (typeParameters == null)
-				typeParameters = new List<ITypeParameter> ();
-			typeParameters.Add (parameter);
-		}
-		public void AddTypeParameter (IEnumerable<ITypeParameter> parameters)
-		{
-			if (parameters == null)
-				return;
-			foreach (ITypeParameter parameter in parameters) {
-				AddTypeParameter (parameter);
-			}
 		}
 		
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
