@@ -1,3 +1,8 @@
+2010-03-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/LocalVariable.cs: Fixed unit test
+	  build.
+
 2010-03-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Fixed 'Bug

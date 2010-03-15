@@ -64,7 +64,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public IMember DeclaringMember {
 			get;
-			private set;
+			set;
 		}
 		
 		public ICompilationUnit CompilationUnit {
