@@ -88,6 +88,18 @@ namespace MonoDevelop.Projects
 		public Dictionary<string, string> EnvironmentVariables {
 			get { return environmentVariables; }
 		}
+		
+		public Dictionary<string, string> GetParsedEnvironmentVariables ()
+		{
+			if (ParentItem == null)
+				return environmentVariables;
+			
+			CustomTagStore tags = ParentItem.GetCustomTags (Selector);
+			Dictionary<string, string> vars = new Dictionary<string, string> ();
+			foreach (var v in environmentVariables)
+				vars [v.Key] = tags.Parse (v.Value);
+			return vars;
+		}
 
 		[ItemProperty("RunWithWarnings", DefaultValue = true)]
 		private bool runWithWarnings = true;

@@ -189,16 +189,65 @@ namespace MonoDevelop.Projects
 				multiStartupItems = value;
 			}
 		}
+
+		public override CustomTagStore GetCustomTags ()
+		{
+			CustomTagStore tags = new CustomTagStore ();
+			tags.Add ("SolutionName", Name, GettextCatalog.GetString ("Solution name"));
+			tags.Add ("SolutionFile", FileName, GettextCatalog.GetString ("Solution file"));
+			tags.Add ("SolutionDir", BaseDirectory, GettextCatalog.GetString ("Solution directory"));
+			return tags;
+		}
 		
-		public override PropertyBag UserProperties {
-			get {
-				return RootFolder.UserProperties;
+		public override void LoadUserProperties ()
+		{
+			base.LoadUserProperties ();
+			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
+		}
+		
+		public override void SaveUserProperties ()
+		{
+			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
+			base.SaveUserProperties ();
+			CleanItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
+		}
+		
+		void CollectItemProperties (PropertyBag props, SolutionItem item, string path)
+		{
+			if (!item.UserProperties.IsEmpty && item.ParentFolder != null)
+				props.SetValue (path, item.UserProperties);
+			
+			SolutionFolder sf = item as SolutionFolder;
+			if (sf != null) {
+				foreach (SolutionItem ci in sf.Items)
+					CollectItemProperties (props, ci, path + "." + ci.Name);
 			}
 		}
 		
-		public override void LoadUserProperties (PropertyBag properties)
+		void CleanItemProperties (PropertyBag props, SolutionItem item, string path)
 		{
-			RootFolder.LoadUserProperties (properties);
+			props.RemoveValue (path);
+			
+			SolutionFolder sf = item as SolutionFolder;
+			if (sf != null) {
+				foreach (SolutionItem ci in sf.Items)
+					CleanItemProperties (props, ci, path + "." + ci.Name);
+			}
+		}
+		
+		void LoadItemProperties (PropertyBag props, SolutionItem item, string path)
+		{
+			PropertyBag info = props.GetValue<PropertyBag> (path);
+			if (info != null) {
+				item.LoadUserProperties (info);
+				props.RemoveValue (path);
+			}
+			
+			SolutionFolder sf = item as SolutionFolder;
+			if (sf != null) {
+				foreach (SolutionItem ci in sf.Items)
+					LoadItemProperties (props, ci, path + "." + ci.Name);
+			}
 		}
 		
 		public void CreateDefaultConfigurations ()

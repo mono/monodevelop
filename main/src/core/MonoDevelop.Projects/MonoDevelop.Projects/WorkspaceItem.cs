@@ -76,14 +76,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		// Initializes the user properties of the item
-		public virtual void LoadUserProperties (PropertyBag properties)
-		{
-			if (userProperties != null)
-				throw new InvalidOperationException ("User properties already loaded.");
-			userProperties = properties;
-		}
-		
 		public virtual string Name {
 			get {
 				if (fileName.IsNullOrEmpty)
@@ -355,6 +347,7 @@ namespace MonoDevelop.Projects
 			try {
 				fileStatusTracker.BeginSave ();
 				Services.ProjectService.GetExtensionChain (this).Save (monitor, this);
+				SaveUserProperties ();
 				OnSaved (new WorkspaceItemEventArgs (this));
 				
 				// Update save times
@@ -436,8 +429,75 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnEndLoad ()
 		{
+			LoadUserProperties ();
+		}
+		
+		public virtual void LoadUserProperties ()
+		{
+			if (userProperties != null)
+				userProperties.Dispose ();
+			userProperties = null;
+			
+			string preferencesFileName = GetPreferencesFileName ();
+			if (!File.Exists (preferencesFileName))
+				return;
+			
+			XmlTextReader reader = new XmlTextReader (preferencesFileName);
+			try {
+				reader.MoveToContent ();
+				if (reader.LocalName != "Properties")
+					return;
+
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				ser.SerializationContext.BaseFile = preferencesFileName;
+				userProperties = (PropertyBag) ser.Deserialize (reader, typeof(PropertyBag));
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while loading user solution preferences.", e);
+				return;
+			} finally {
+				reader.Close ();
+			}
+		}
+		
+		public virtual void SaveUserProperties ()
+		{
+			string file = GetPreferencesFileName ();
+			
+			if (userProperties == null || userProperties.IsEmpty) {
+				if (File.Exists (file))
+					File.Delete (file);
+				return;
+			}
+			
+			XmlTextWriter writer = null;
+			try {
+				writer = new XmlTextWriter (file, System.Text.Encoding.UTF8);
+				writer.Formatting = Formatting.Indented;
+				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+				ser.SerializationContext.BaseFile = file;
+				ser.Serialize (writer, userProperties, typeof(PropertyBag));
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Could not save solution preferences: " + GetPreferencesFileName (), e);
+			} finally {
+				if (writer != null)
+					writer.Close ();
+			}
+		}
+		
+		string GetPreferencesFileName ()
+		{
+			return FileName.ChangeExtension (".userprefs");
 		}
 
+		public virtual CustomTagStore GetCustomTags ()
+		{
+			CustomTagStore tags = new CustomTagStore ();
+			tags.Add ("WorkspaceName", Name, GettextCatalog.GetString ("Workspace name"));
+			tags.Add ("WorkspaceFile", FileName, GettextCatalog.GetString ("Workspace file"));
+			tags.Add ("WorkspaceDir", BaseDirectory, GettextCatalog.GetString ("Workspace directory"));
+			return tags;
+		}
+		
 		public FilePath GetAbsoluteChildPath (FilePath relPath)
 		{
 			return relPath.ToAbsolute (BaseDirectory);
@@ -458,7 +518,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 			if (userProperties != null)
-				((IDisposable)userProperties).Dispose ();
+				userProperties.Dispose ();
 		}
 		
 		protected virtual void OnNameChanged (WorkspaceItemRenamedEventArgs e)

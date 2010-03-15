@@ -373,6 +373,18 @@ namespace MonoDevelop.Projects
 				internalChildren.Items.Remove (item);
 		}
 		
+		public virtual CustomTagStore GetCustomTags (ConfigurationSelector conf)
+		{
+			CustomTagStore tagStore = new CustomTagStore ();
+			tagStore.Add ("ItemName", Name, GettextCatalog.GetString ("Project Name"));
+			tagStore.AddAlias ("ItemName", "ProjectName");
+			tagStore.Add ("ItemDir", BaseDirectory, GettextCatalog.GetString ("Project Directory"));
+			tagStore.AddAlias ("ItemDir", "ProjectDir");
+			if (ParentSolution != null)
+				tagStore.Add (ParentSolution.GetCustomTags ());
+			return tagStore;
+		}
+		
 		public static ReadOnlyCollection<T> TopologicalSort<T> (IEnumerable<T> items, ConfigurationSelector configuration) where T: SolutionItem
 		{
 			IList<T> allItems;

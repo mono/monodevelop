@@ -1,5 +1,24 @@
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/WorkspaceItem.cs: Moved here the code
+	  for loading user properties for the solution.
+
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs: Implemented
+	  GetCustomTags method, which returns a list of tags which can
+	  be used to parse strings using the StringParserService.
+
+	* MonoDevelop.Projects/ProjectConfiguration.cs: Use the new
+	  GetCustomTags method to process environment variable
+	  strings.
+
+	* MonoDevelop.Projects/CustomCommand.cs: Use the new
+	  GetCustomTags method.
+
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects/ProjectService.cs:
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
 	* MonoDevelop.Projects.Extensions/ProjectExtensionUtil.cs:

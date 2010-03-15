@@ -116,44 +116,11 @@ namespace MonoDevelop.Projects
 		{
 			string [,] customtags = null;
 			
-			Project project = entry as Project;
-			if (project != null) {
-				string outputname = project.GetOutputFileName(configuration);
-				customtags = new string [,] {
-					// Keep in sync with CustomCommandWidget.cs
-					{"ItemName", entry.Name},
-					{"ItemDir", entry.BaseDirectory},
-					{"ItemFile", project.FileName},
-					{"ProjectName", entry.Name},
-					{"ProjectDir", entry.BaseDirectory},
-					{"ProjectFile", project.FileName},
-					{"TargetName", Path.GetFileName (outputname)},
-					{"TargetDir", Path.GetDirectoryName (outputname)},
-					{"SolutionName", project.ParentSolution.Name},
-					{"SolutionDir", project.ParentSolution.BaseDirectory},
-					{"SolutionFile", project.ParentSolution.FileName}
-				};
-			} else if (entry is SolutionEntityItem) {
-				SolutionEntityItem it = entry as SolutionEntityItem;
-				customtags = new string [,] {
-					// Keep in sync with CustomCommandWidget.cs
-					{"ItemName", it.Name},
-					{"ItemDir", it.BaseDirectory},
-					{"ItemFile", it.FileName},
-					{"ProjectName", it.Name},
-					{"ProjectDir", it.BaseDirectory},
-					{"ProjectFile", it.FileName},
-					{"SolutionName", it.ParentSolution.Name},
-					{"SolutionDir", it.ParentSolution.BaseDirectory},
-					{"SolutionFile", it.ParentSolution.FileName}
-				};
-			} else {
-				customtags = new string [,] {
-					// Keep in sync with CustomCommandWidget.cs
-					{"SolutionName", entry.Name},
-					{"SolutionDir", entry.BaseDirectory}
-				};
-			}
+			CustomTagStore tagStore = null;
+			if (entry is SolutionItem)
+				tagStore = ((SolutionItem)entry).GetCustomTags (configuration);
+			else if (entry is WorkspaceItem)
+				tagStore = ((WorkspaceItem)entry).GetCustomTags ();
 			
 			if (string.IsNullOrEmpty (command))
 				return;
@@ -166,7 +133,10 @@ namespace MonoDevelop.Projects
 				args = string.Empty;
 			} else {
 				exe = command.Substring (0, i);
-				args = StringParserService.Parse (command.Substring (i + 1), customtags);
+				if (tagStore != null)
+					args = StringParserService.Parse (command.Substring (i + 1), tagStore);
+				else
+					args = command.Substring (i + 1);
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));

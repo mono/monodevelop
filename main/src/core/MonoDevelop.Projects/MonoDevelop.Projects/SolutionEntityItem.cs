@@ -288,6 +288,15 @@ namespace MonoDevelop.Projects
 				col.Add (FileName);
 			return col;
 		}
+
+		public override CustomTagStore GetCustomTags (ConfigurationSelector conf)
+		{
+			CustomTagStore tagStore = base.GetCustomTags (conf);
+			tagStore.Add ("ItemFile", Name, GettextCatalog.GetString ("Project File"));
+			tagStore.AddAlias ("ItemFile", "ProjectFile");
+			return tagStore;
+		}
+		
 		
 		protected override void OnNameChanged (SolutionItemRenamedEventArgs e)
 		{
