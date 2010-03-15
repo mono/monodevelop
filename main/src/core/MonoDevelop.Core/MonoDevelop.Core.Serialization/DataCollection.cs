@@ -57,6 +57,7 @@ namespace MonoDevelop.Core.Serialization
 		public virtual DataNode this [int n]
 		{
 			get { return List[n]; }
+			set { List[n] = value; }
 		}
 		
 		public virtual DataNode this [string name]

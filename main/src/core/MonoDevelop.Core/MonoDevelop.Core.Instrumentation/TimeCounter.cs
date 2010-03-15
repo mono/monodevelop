@@ -28,15 +28,57 @@ using System;
 
 namespace MonoDevelop.Core.Instrumentation
 {
-	public class TimeCounter: IDisposable
+	public interface ITimeTracker: IDisposable
 	{
-		Counter counter;
-		DateTime begin;
-		
-		internal TimeCounter (Counter c)
+		void Trace (string message);
+		void End ();
+	}
+	
+	class DummyTimerCounter: ITimeTracker
+	{
+		public void Trace (string message)
 		{
-			counter = c;
+		}
+		
+		public void End ()
+		{
+		}
+		
+		public void Dispose ()
+		{
+		}
+	}
+	
+	public class TimeCounter: ITimeTracker
+	{
+		DateTime begin;
+		TimerTraceList traceList;
+		TimerTrace lastTrace;
+		TimerCounter counter;
+		
+		internal TimeCounter (TimerCounter counter)
+		{
+			this.counter = counter;
+			traceList = new TimerTraceList ();
 			Begin ();
+		}
+		
+		internal TimerTraceList TraceList {
+			get { return this.traceList; }
+		}
+		
+		public void Trace (string message)
+		{
+			TimerTrace t = new TimerTrace ();
+			t.Timestamp = DateTime.Now;
+			t.Message = message;
+			if (lastTrace == null)
+				lastTrace = traceList.FirstTrace = t;
+			else {
+				lastTrace.Next = t;
+				lastTrace = t;
+			}
+			traceList.TotalTime = t.Timestamp - traceList.FirstTrace.Timestamp;
 		}
 		
 		internal void Begin ()
@@ -46,13 +88,31 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void End ()
 		{
-			double time = (DateTime.Now - begin).TotalMilliseconds;
-			counter.SetValue ((int) time);
+			if (counter == null)
+				Console.WriteLine ("Timer already finished");
+			traceList.TotalTime = DateTime.Now - begin;
+			if (traceList.TotalTime.TotalSeconds < counter.MinSeconds)
+				counter.RemoveValue (traceList.ValueIndex);
+			counter = null;
 		}
 		
 		void IDisposable.Dispose ()
 		{
 			End ();
 		}
+	}
+	
+	class TimerTraceList
+	{
+		public TimerTrace FirstTrace;
+		public TimeSpan TotalTime;
+		public int ValueIndex;
+	}
+	
+	public class TimerTrace
+	{
+		internal TimerTrace Next;
+		public DateTime Timestamp { get; set; }
+		public string Message { get; set; }
 	}
 }

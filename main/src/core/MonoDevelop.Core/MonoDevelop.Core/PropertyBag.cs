@@ -128,7 +128,7 @@ namespace MonoDevelop.Core
 			return properties != null && properties.ContainsKey (name);
 		}
 		
-		void IDisposable.Dispose ()
+		public void Dispose ()
 		{
 			if (properties != null) {
 				foreach (object ob in properties.Values) {

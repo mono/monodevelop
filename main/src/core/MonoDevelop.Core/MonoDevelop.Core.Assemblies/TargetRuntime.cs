@@ -39,6 +39,7 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.PkgConfig;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -53,6 +54,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		RuntimeAssemblyContext assemblyContext;
 		ComposedAssemblyContext composedAssemblyContext;
+		ITimeTracker timer;
 		
 		protected bool ShuttingDown { get; private set; }
 		
@@ -156,7 +158,6 @@ namespace MonoDevelop.Core.Assemblies
 				cp.EnvironmentVariables [evar.Key] = evar.Value;
 			
 			ConvertAssemblyProcessStartInfo (pinfo);
-			Console.WriteLine ("pp pi:" + pinfo.FileName + " " + pinfo.Arguments);
 			return Process.Start (pinfo);
 		}
 		
@@ -246,10 +247,9 @@ namespace MonoDevelop.Core.Assemblies
 		
 		void BackgroundInitialize ()
 		{
-			LoggingService.Trace ("Core.TargetRuntime." + Id, "[ASYNC] Initializing target runtime'");
+			timer = Counters.TargetRuntimesLoading.BeginTiming ("Initializing Runtime " + Id);
 			lock (initLock) {
 				try {
-					Counters.TargetRuntimesLoading++;
 					RunInitialization ();
 				} catch (Exception ex) {
 					LoggingService.LogFatalError ("Unhandled exception in SystemAssemblyService background initialisation thread.", ex);
@@ -260,8 +260,7 @@ namespace MonoDevelop.Core.Assemblies
 						if (initializedEvent != null && !ShuttingDown)
 							initializedEvent (this, EventArgs.Empty);
 					}
-					Counters.TargetRuntimesLoading--;
-					LoggingService.Trace ("Core.TargetRuntime." + Id, "[ASYNC] Initialized target runtime'");
+					timer.End ();
 				}
 			}
 		}
@@ -271,15 +270,19 @@ namespace MonoDevelop.Core.Assemblies
 			if (ShuttingDown)
 				return;
 			
+			timer.Trace ("Creating frameworks");
 			CreateFrameworks ();
 			
 			if (ShuttingDown)
 				return;
 			
+			timer.Trace ("Initializing frameworks");
 			OnInitialize ();
 			
 			if (ShuttingDown)
 				return;
+			
+			timer.Trace ("Registering support packages");
 			
 			// Get assemblies registered using the extension point
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/SupportPackages", OnPackagesChanged);
@@ -342,8 +345,10 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 				// A framework is installed if the assemblies directory exists and the first
 				// assembly of the list exists.
-				if (IsInstalled (fx))
+				if (IsInstalled (fx)) {
+					timer.Trace ("Registering assemblies for framework " + fx.Id);
 					RegisterSystemAssemblies (fx);
+				}
 			}
 			
 			if (SystemAssemblyService.UpdateExpandedFrameworksFile && IsRunning) {

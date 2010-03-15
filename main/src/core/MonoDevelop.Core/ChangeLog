@@ -1,3 +1,22 @@
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core/LoggingService.cs:
+	* MonoDevelop.Core.Instrumentation/Counter.cs:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Instrumentation/TimeCounter.cs:
+	* MonoDevelop.Core.Instrumentation/TimerCounter.cs:
+	* MonoDevelop.Core.Logging/InstrumentationLogger.cs:
+	* MonoDevelop.Core.Instrumentation/InstrumentationService.cs:
+	  Add support for timers in the instrumentation service.
+
+	* MonoDevelop.Core/PropertyBag.cs: Dispose should be public.
+
+	* MonoDevelop.Core.Serialization/DataCollection.cs: Add setter
+	  indexer.
+
 2010-03-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs: Initialize

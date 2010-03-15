@@ -53,7 +53,7 @@ namespace MonoDevelop.Core
 		{
 			if (initialized)
 				return;
-			LoggingService.Trace ("CoreRuntime", "Loading");
+			Counters.RuntimeInitialization.BeginTiming ();
 			SetupInstrumentation ();
 			
 			AddinManager.AddinLoadError += OnLoadError;
@@ -61,14 +61,14 @@ namespace MonoDevelop.Core
 			AddinManager.AddinUnloaded += OnUnload;
 			
 			try {
-				LoggingService.Trace ("CoreRuntime", "Initializing Addin Manager");
+				Counters.RuntimeInitialization.Trace ("Initializing Addin Manager");
 				AddinManager.Initialize (MonoDevelop.Core.PropertyService.ConfigPath);
 				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
 				
 				if (updateAddinRegistry)
 					AddinManager.Registry.Update (null);
 				setupService = new SetupService (AddinManager.Registry);
-				LoggingService.Trace ("CoreRuntime", "Initialized Addin Manager");
+				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
 				
 				string prefix = string.Empty;
 				if (PropertyService.IsWindows)
@@ -83,7 +83,7 @@ namespace MonoDevelop.Core
 				}
 				setupService.Repositories.RegisterRepository (null, mainRep, false);
 	
-				LoggingService.Trace ("CoreRuntime", "Initializing Assembly Service");
+				Counters.RuntimeInitialization.Trace ("Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
 				
@@ -94,8 +94,9 @@ namespace MonoDevelop.Core
 				AddinManager.AddinLoadError -= OnLoadError;
 				AddinManager.AddinLoaded -= OnLoad;
 				AddinManager.AddinUnloaded -= OnUnload;
+			} finally {
+				Counters.RuntimeInitialization.EndTiming ();
 			}
-			LoggingService.Trace ("CoreRuntime", "Loaded");
 		}
 		
 		static void SetupInstrumentation ()
@@ -114,14 +115,12 @@ namespace MonoDevelop.Core
 		
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			LoggingService.LogInfo ("Add-in loaded: " + args.AddinId);
-			Counters.AddinsLoaded++;
+			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId);
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)
 		{
-			LoggingService.LogInfo ("Add-in unloaded: " + args.AddinId);
-			Counters.AddinsLoaded--;
+			Counters.AddinsLoaded.Dec ("Add-in unloaded: " + args.AddinId);
 		}
 		
 		internal static bool Initialized {
@@ -254,21 +253,29 @@ namespace MonoDevelop.Core
 	
 	internal static class Counters
 	{
-		public static Counter AddinsLoaded = InstrumentationService.CreateCounter ("Add-ins loaded", "Add-in Engine");
+		public static TimerCounter RuntimeInitialization = InstrumentationService.CreateTimerCounter ("Runtime initialization", "Runtime");
 		
-		public static Counter ProcessesStarted = InstrumentationService.CreateCounter ("Processes Started", "Process Service");
-		public static Counter ExternalObjects = InstrumentationService.CreateCounter ("External Objects", "Process Service");
-		public static Counter ExternalHostProcesses = InstrumentationService.CreateCounter ("External Processes Hosting Objects", "Process Service");
+		public static Counter AddinsLoaded = InstrumentationService.CreateCounter ("Add-ins loaded", "Add-in Engine", true);
 		
-		public static Counter TargetRuntimesLoading = InstrumentationService.CreateCounter ("Target Runtimes Loading", "Assembly Service");
-		public static Counter PcFilesParsed = InstrumentationService.CreateCounter (".pc Files Parsed", "Assembly Service");
+		public static Counter ProcessesStarted = InstrumentationService.CreateCounter ("Processes started", "Process Service");
+		public static Counter ExternalObjects = InstrumentationService.CreateCounter ("External objects", "Process Service");
+		public static Counter ExternalHostProcesses = InstrumentationService.CreateCounter ("External processes hosting objects", "Process Service");
 		
-		public static Counter FileChangeNotifications = InstrumentationService.CreateCounter ("File Change Notifications", "File Service");
-		public static Counter FilesRemoved = InstrumentationService.CreateCounter ("Files Removed", "File Service");
-		public static Counter FilesCreated = InstrumentationService.CreateCounter ("Files Created", "File Service");
-		public static Counter FilesRenamed = InstrumentationService.CreateCounter ("Files Renamed", "File Service");
-		public static Counter DirectoriesRemoved = InstrumentationService.CreateCounter ("Directories Removed", "File Service");
-		public static Counter DirectoriesCreated = InstrumentationService.CreateCounter ("Directories Created", "File Service");
-		public static Counter DirectoriesRenamed = InstrumentationService.CreateCounter ("Directories Renamed", "File Service");
+		public static TimerCounter TargetRuntimesLoading = InstrumentationService.CreateTimerCounter ("Target runtimes loaded", "Assembly Service", 0, true);
+		public static Counter PcFilesParsed = InstrumentationService.CreateCounter (".pc Files parsed", "Assembly Service");
+		
+		public static Counter FileChangeNotifications = InstrumentationService.CreateCounter ("File change notifications", "File Service");
+		public static Counter FilesRemoved = InstrumentationService.CreateCounter ("Files removed", "File Service");
+		public static Counter FilesCreated = InstrumentationService.CreateCounter ("Files created", "File Service");
+		public static Counter FilesRenamed = InstrumentationService.CreateCounter ("Files renamed", "File Service");
+		public static Counter DirectoriesRemoved = InstrumentationService.CreateCounter ("Directories removed", "File Service");
+		public static Counter DirectoriesCreated = InstrumentationService.CreateCounter ("Directories created", "File Service");
+		public static Counter DirectoriesRenamed = InstrumentationService.CreateCounter ("Directories renamed", "File Service");
+		
+		public static Counter LogErrors = InstrumentationService.CreateCounter ("Errors", "Runtime");
+		public static Counter LogWarnings = InstrumentationService.CreateCounter ("Warnings", "Runtime");
+		public static Counter LogMessages = InstrumentationService.CreateCounter ("Information messages", "Runtime");
+		public static Counter LogFatalErrors = InstrumentationService.CreateCounter ("Fatal errors", "Runtime");
+		public static Counter LogDebug = InstrumentationService.CreateCounter ("Debug messages", "Runtime");
 	}
 }

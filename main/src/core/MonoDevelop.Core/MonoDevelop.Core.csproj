@@ -195,6 +195,8 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\NullProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\SimpleProgressMonitor.cs" />
     <Compile Include="Mono.Options.cs" />
+    <Compile Include="MonoDevelop.Core.Logging\InstrumentationLogger.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\TimerCounter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

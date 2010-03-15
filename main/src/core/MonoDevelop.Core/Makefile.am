@@ -75,10 +75,12 @@ FILES =  \
 	MonoDevelop.Core.Instrumentation/InstrumentationService.cs \
 	MonoDevelop.Core.Instrumentation/MemoryProbe.cs \
 	MonoDevelop.Core.Instrumentation/TimeCounter.cs \
+	MonoDevelop.Core.Instrumentation/TimerCounter.cs \
 	MonoDevelop.Core.Logging/ConsoleCrayon.cs \
 	MonoDevelop.Core.Logging/ConsoleLogger.cs \
 	MonoDevelop.Core.Logging/FileLogger.cs \
 	MonoDevelop.Core.Logging/ILogger.cs \
+	MonoDevelop.Core.Logging/InstrumentationLogger.cs \
 	MonoDevelop.Core.Logging/LogLevel.cs \
 	MonoDevelop.Core.Logging/RemoteLogger.cs \
 	MonoDevelop.Core.ProgressMonitoring/AggregatedAsyncOperation.cs \

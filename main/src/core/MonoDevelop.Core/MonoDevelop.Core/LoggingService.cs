@@ -44,6 +44,7 @@ namespace MonoDevelop.Core
 		{
 			ConsoleLogger consoleLogger = new ConsoleLogger ();
 			loggers.Add (consoleLogger);
+			loggers.Add (new InstrumentationLogger ());
 			
 			string consoleLogLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL");
 			if (!string.IsNullOrEmpty (consoleLogLevelEnv)) {
