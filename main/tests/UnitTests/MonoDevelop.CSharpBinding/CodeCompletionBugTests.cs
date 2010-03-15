@@ -2391,5 +2391,43 @@ class C
 		}
 
 		
+		/// <summary>
+		/// Bug 587549 - Intellisense does not work with override constraints
+		/// </summary>
+		[Test()]
+		public void TestBug587549 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+public interface ITest
+{
+	void Bar();
+}
+
+public class BaseClass
+{
+	public void Foo ()
+	{}
+}
+
+public abstract class Printer
+{
+	public abstract void Print<T, U> (object x) where T : BaseClass, U where U : ITest;
+}
+
+public class PrinterImpl : Printer
+{
+	public override void Print<A, B> (object x)
+	{
+		A a;
+		$a.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
+		}
+		
 	}
 }

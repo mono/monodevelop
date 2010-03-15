@@ -1,6 +1,12 @@
 2010-03-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for 'Bug 587549 - Intellisense does not work with
+	  override constraints'.
+
+2010-03-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
 	  test for 'Bug 587543 - Intellisense ignores interface
 	  constraints'.
 
