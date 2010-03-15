@@ -1,5 +1,10 @@
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/RootWorkspace.cs: Moved code for loading
+	  user preferences to MD.Projects. Added some time counters.
+
+2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/Ide.cs:
 	* MonoDevelop.Ide/Services.cs:
 	* MonoDevelop.Ide.Gui/Workbench.cs:

@@ -40,6 +40,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
 using System.Runtime.CompilerServices;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -49,8 +50,6 @@ namespace MonoDevelop.Ide.Gui
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		bool useDefaultRuntime;
-		
-		Dictionary<WorkspaceItem, PropertyBag> userPrefs;
 		
 		ProjectFileEventHandler fileAddedToProjectHandler;
 		ProjectFileEventHandler fileRemovedFromProjectHandler;
@@ -84,8 +83,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckFileRemove));
 			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (CheckFileRename));
-			
-			userPrefs = new Dictionary<WorkspaceItem,PropertyBag> ();
 			
 			// Set the initial active runtime
 			UseDefaultRuntime = true;
@@ -546,6 +543,7 @@ namespace MonoDevelop.Ide.Gui
 		void BackgroundLoadWorkspace (IProgressMonitor monitor, string filename, bool loadPreferences)
 		{
 			WorkspaceItem item = null;
+			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
 			
 			try {
 				if (!File.Exists (filename)) {
@@ -563,10 +561,12 @@ namespace MonoDevelop.Ide.Gui
 					
 					// It is a project, not a solution. Try to create a dummy solution and add the project to it
 					
+					timer.Trace ("Getting wrapper solution");
 					item = IdeApp.Services.ProjectService.GetWrapperSolution (monitor, filename);
 				}
 				
 				if (item == null) {
+					timer.Trace ("Reading item");
 					item = Services.ProjectService.ReadWorkspaceItem (monitor, filename);
 					if (monitor.IsCancelRequested) {
 						monitor.Dispose ();
@@ -574,10 +574,13 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 
+				timer.Trace ("Registering to recent list");
 				IdeApp.Workbench.RecentOpen.AddLastProject (item.FileName, item.Name);
 				
+				timer.Trace ("Adding to items list");
 				Items.Add (item);
 				
+				timer.Trace ("Searching for new files");
 				SearchForNewFiles ();
 
 			} catch (Exception ex) {
@@ -585,15 +588,23 @@ namespace MonoDevelop.Ide.Gui
 				
 				// Don't use 'finally' to dispose the monitor, since it has to be disposed later
 				monitor.Dispose ();
+				timer.End ();
 				return;
 			}
 			
 			Gtk.Application.Invoke (delegate {
 				using (monitor) {
-					if (Items.Count == 1 && loadPreferences)
-						RestoreWorkspacePreferences (item);
-					ReattachDocumentProjects (null);
-					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+					try {
+						if (Items.Count == 1 && loadPreferences) {
+							timer.Trace ("Restoring workspace preferences");
+							RestoreWorkspacePreferences (item);
+						}
+						timer.Trace ("Reattaching documents");
+						ReattachDocumentProjects (null);
+						monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+					} finally {
+						timer.End ();
+					}
 				}
 			});
 		}
@@ -683,39 +694,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		void RestoreWorkspacePreferences (WorkspaceItem item)
 		{
-			string preferencesFileName = GetPreferencesFileName (item);
-			if (!File.Exists(preferencesFileName))
-				return;
-			
-			PropertyBag props = null;
-			XmlTextReader reader = new XmlTextReader (preferencesFileName);
-			try {
-				reader.MoveToContent ();
-				if (reader.LocalName != "Properties")
-					return;
-
-				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				ser.SerializationContext.BaseFile = preferencesFileName;
-				props = (PropertyBag) ser.Deserialize (reader, typeof(PropertyBag));
-				userPrefs [item] = props;
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while loading user solution preferences.", e);
-				return;
-			} finally {
-				reader.Close ();
-			}
-			
-			// Restore solution item properties
-			
-			item.LoadUserProperties (props);
-			
-			if (item is Solution)
-				LoadItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
-
 			// Restore local configuration data
 			
 			try {
-				WorkspaceUserData data = props.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
+				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
 					ActiveConfigurationId = data.ActiveConfiguration;
 					if (string.IsNullOrEmpty (data.ActiveRuntime))
@@ -736,78 +718,28 @@ namespace MonoDevelop.Ide.Gui
 			// Allow add-ins to restore preferences
 			
 			if (LoadingUserPreferences != null) {
-				UserPreferencesEventArgs args = new UserPreferencesEventArgs (item, props);
+				UserPreferencesEventArgs args = new UserPreferencesEventArgs (item, item.UserProperties);
 				try {
 					LoadingUserPreferences (this, args);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Exception in LoadingUserPreferences.", ex);
 				}
 			}
-		} 
-		
-		void LoadItemProperties (PropertyBag props, SolutionItem item, string path)
-		{
-			PropertyBag info = props.GetValue<PropertyBag> (path);
-			if (info != null) {
-				item.LoadUserProperties (info);
-				props.RemoveValue (path);
-			}
-			
-			SolutionFolder sf = item as SolutionFolder;
-			if (sf != null) {
-				foreach (SolutionItem ci in sf.Items)
-					LoadItemProperties (props, ci, path + "." + ci.Name);
-			}
-		}
-		
-		void SaveItemProperties (PropertyBag props, SolutionItem item, string path)
-		{
-			if (!item.UserProperties.IsEmpty && item.ParentFolder != null)
-				props.SetValue (path, item.UserProperties);
-			
-			SolutionFolder sf = item as SolutionFolder;
-			if (sf != null) {
-				foreach (SolutionItem ci in sf.Items)
-					SaveItemProperties (props, ci, path + "." + ci.Name);
-			}
-		}
-		
-		void CleanItemProperties (PropertyBag props, SolutionItem item, string path)
-		{
-			props.RemoveValue (path);
-			
-			SolutionFolder sf = item as SolutionFolder;
-			if (sf != null) {
-				foreach (SolutionItem ci in sf.Items)
-					CleanItemProperties (props, ci, path + "." + ci.Name);
-			}
-		}
-		
-		string GetPreferencesFileName (WorkspaceItem item)
-		{
-			return Path.Combine (Path.GetDirectoryName (item.FileName), Path.ChangeExtension (item.FileName, ".userprefs"));
 		}
 		
 		public void SavePreferences (WorkspaceItem item)
 		{
-			PropertyBag props = item.UserProperties;
-			
-			// Store solution item properties
-			
-			if (item is Solution)
-				SaveItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
-
 			// Local configuration info
 			
 			WorkspaceUserData data = new WorkspaceUserData ();
 			data.ActiveConfiguration = ActiveConfigurationId;
 			data.ActiveRuntime = UseDefaultRuntime ? null : ActiveRuntime.Id;
-			props.SetValue ("MonoDevelop.Ide.Workspace", data);
+			item.UserProperties.SetValue ("MonoDevelop.Ide.Workspace", data);
 			
 			// Allow add-ins to fill-up data
 			
 			if (StoringUserPreferences != null) {
-				UserPreferencesEventArgs args = new UserPreferencesEventArgs (item, props);
+				UserPreferencesEventArgs args = new UserPreferencesEventArgs (item, item.UserProperties);
 				try {
 					StoringUserPreferences (this, args);
 				} catch (Exception ex) {
@@ -817,31 +749,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			// Save the file
 			
-			string file = GetPreferencesFileName (item);
-			
-			if (props.IsEmpty) {
-				if (File.Exists (file))
-					File.Delete (file);
-				return;
-			}
-			
-		
-			XmlTextWriter writer = null;
-			try {
-				writer = new XmlTextWriter (file, System.Text.Encoding.UTF8);
-				writer.Formatting = Formatting.Indented;
-				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				ser.SerializationContext.BaseFile = file;
-				ser.Serialize (writer, props, typeof(PropertyBag));
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Could not save solution preferences: " + GetPreferencesFileName (item), e);
-			} finally {
-				if (writer != null)
-					writer.Close ();
-			}
-			
-			if (item is Solution)
-				CleanItemProperties (props, ((Solution)item).RootFolder, "MonoDevelop.Ide.ItemProperties");
+			item.SaveUserProperties ();
 		}
 		
 		bool OnRunProjectChecks ()
@@ -1254,7 +1162,6 @@ namespace MonoDevelop.Ide.Gui
 		void OnItemUnloaded (WorkspaceItem item)
 		{
 			try {
-				userPrefs.Remove (item);
 				if (WorkspaceItemUnloaded != null)
 					WorkspaceItemUnloaded (this, new WorkspaceItemEventArgs (item));
 				if (item is Solution && SolutionUnloaded != null)
