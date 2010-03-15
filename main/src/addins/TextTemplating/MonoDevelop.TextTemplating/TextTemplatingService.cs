@@ -31,25 +31,108 @@ using Microsoft.VisualStudio.TextTemplating;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Tasks;
+using System.CodeDom.Compiler;
+using System.IO;
 
 namespace MonoDevelop.TextTemplating
 {
 	
 	
 	public static class TextTemplatingService
-	{
-	
-		public static void ShowTemplateHostErrors (System.CodeDom.Compiler.CompilerErrorCollection errors)
+	{	
+		public static void ShowTemplateHostErrors (CompilerErrorCollection errors)
 		{
 			if (errors.Count == 0)
 				return;
 			
 			TaskService.Errors.Clear ();
-			foreach (System.CodeDom.Compiler.CompilerError err in errors) {
+			foreach (CompilerError err in errors) {
 					TaskService.Errors.Add (new Task (err.FileName, err.ErrorText, err.Column, err.Line,
 					                                    err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
 			}
 			TaskService.ShowErrors ();
+		}
+		
+		static RecyclableAppDomain domain;
+		
+		public static RecyclableAppDomain.Handle GetTemplatingDomain ()
+		{
+			if (domain == null || domain.Used) {
+				var dir = Path.GetDirectoryName (typeof (TemplatingEngine).Assembly.Location);
+				var info = new AppDomainSetup () {
+					ApplicationBase = dir,
+				};
+				domain = new RecyclableAppDomain ("T4Domain", info);
+			}
+			return domain.GetHandle ();
+		}
+	}
+	
+	public class RecyclableAppDomain
+	{
+		const int DOMAIN_TIMEOUT = 2 * 60 * 1000;
+		const int DOMAIN_RECYCLE_AFTER = 10;
+		
+		int handleCount = 0;
+		int uses = 0;
+		AppDomain domain;
+		
+		public RecyclableAppDomain (string name, AppDomainSetup info)
+		{
+			domain = AppDomain.CreateDomain (name, null, info);
+			
+			//FIXME: do we want to allow resolving arbitrary MD assemblies?
+			//domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
+		}
+		
+		public bool Used { get; private set; }
+		
+		~RecyclableAppDomain ()
+		{
+			if (handleCount != 0)
+				Console.WriteLine ("WARNING: RecyclableAppDomain's handles were not all disposed");
+		}
+		
+		void Kill ()
+		{
+			if (domain != null) {
+				AppDomain.Unload (domain);
+				domain = null;
+				GC.SuppressFinalize (this);
+			}
+		}
+		
+		public RecyclableAppDomain.Handle GetHandle ()
+		{
+			return new RecyclableAppDomain.Handle (this);
+		}
+		
+		public class Handle : IDisposable
+		{
+			RecyclableAppDomain parent;
+			
+			internal Handle (RecyclableAppDomain parent)
+			{
+				this.parent = parent;
+				parent.handleCount++;
+				parent.uses++;
+				if (parent.uses > DOMAIN_RECYCLE_AFTER)
+					parent.Used = true;
+			}
+			
+			public AppDomain Domain {
+				get { return parent.domain; }
+			}
+			
+			public void Dispose ()
+			{
+				if (parent != null) {
+					parent.handleCount--;
+					if (parent.Used && parent.handleCount == 0)
+						parent.Kill ();
+					parent = null;
+				}
+			}
 		}
 	}
 }

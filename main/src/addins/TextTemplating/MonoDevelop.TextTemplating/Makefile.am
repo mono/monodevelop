@@ -22,11 +22,17 @@ FILES =  \
 	Gui/T4EditorExtension.cs \
 	Parser/T4ParsedDocument.cs \
 	Parser/T4Parser.cs \
-	TextTemplatingService.cs
+	TextTemplatingService.cs \
+	TextTemplatingTool.cs
 
 RES =  \
 	MonoDevelop.TextTemplating.addin.xml \
 	T4SyntaxMode.xml
+
+DATA_FILES = \
+	Templates/T4TemplateCSharp.xft.xml
+
+DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
 
@@ -35,6 +41,10 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	$(CSC) $(CSC_FLAGS) -debug -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
+$(DATA_FILE_BUILD): $(ADDIN_BUILD)/% : $(srcdir)/%
+	mkdir -p $(dir $@)
+	cp $^ $@
+
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
 check: all
@@ -42,8 +52,19 @@ check: all
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.TextTemplating
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(RES)
+install-data-hook:
+	for F in $(DATA_FILES); do \
+		mkdir -p "$(DESTDIR)$(assemblydir)/$$(dirname $$F)/"; \
+		$(INSTALL) -c -m 0644 $(srcdir)/$$F "$(DESTDIR)$(assemblydir)/$$(dirname $$F)/"; \
+	done
+
+uninstall-hook:
+	for F in $(DATA_FILES); do \
+		rm -f "$(DESTDIR)$(assemblydir)/$$F"; \
+	done
+
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
 
 include $(top_srcdir)/Makefile.include
 

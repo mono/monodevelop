@@ -1,3 +1,16 @@
+2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* TextTemplatingService.cs: Added shared templating appdomain.
+
+	* TextTemplatingTool.cs: Added text templating tool.
+
+	* Templates:
+	* Templates/T4TemplateCSharp.xft.xml:
+	* MonoDevelop.TextTemplating.addin.xml: Added T4 template.
+
+	* Makefile.am:
+	* MonoDevelop.TextTemplating.csproj: Updated.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Gui/T4EditorExtension.cs: File extensions are now declared

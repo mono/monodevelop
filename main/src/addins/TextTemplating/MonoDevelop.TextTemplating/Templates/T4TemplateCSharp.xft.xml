@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2010/03/10"
+          lastModified="2010/03/10">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>T4 Template</_Name>
+		<Icon></Icon>
+		<_Category>Text Templating</_Category>
+		<_Description>A T4 template for generating code or text files.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.tt" CustomTool="TextTemplatingFileGenerator">
+		<![CDATA[﻿<#@ template language="C#v3.5" #>
+		
+		]]>
+		</File>
+	</TemplateFiles>
+</Template>

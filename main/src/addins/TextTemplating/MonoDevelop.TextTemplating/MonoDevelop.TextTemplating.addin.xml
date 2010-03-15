@@ -45,4 +45,13 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions = ".tt" class = "MonoDevelop.TextTemplating.Gui.T4EditorExtension" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id       = "T4TemplateCSharp"
+		              file     = "Templates/T4TemplateCSharp.xft.xml"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/CustomTools">
+		<Tool name="TextTemplatingFileGenerator" type="MonoDevelop.TextTemplating.TextTemplatingTool"/>
+	</Extension>
 </Addin>
