@@ -396,7 +396,7 @@ namespace MonoDevelop.CSharp.Dom
 			string keyword = settings.EmitKeyword (GetString (type.ClassType));
 			
 			string name = null;
-			if (type.Name.EndsWith("[]")) {
+			if (instantiatedType == null && type.Name.EndsWith("[]")) {
 				List<IMember> member = type.SearchMember ("Item", true);
 				if (member != null && member.Count >0)
 					name = Visit (member[0].ReturnType, settings);
@@ -413,11 +413,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 			int parameterCount = type.TypeParameters.Count;
 			if (instantiatedType != null) 
-				parameterCount = instantiatedType.GenericParameters.Count;
-			
-			
-			if (modifiers.Length == 0 && keyword.Length == 0 && (!settings.IncludeGenerics || parameterCount == 0) && (!settings.IncludeBaseTypes || !type.BaseTypes.Any ()))
-				return settings.UseFullName && type.DeclaringType != null ? GetString (type.DeclaringType, OutputFlags.UseFullName) + "." + name : name;
+				parameterCount = instantiatedType.UninstantiatedType.TypeParameters.Count;
 			
 			result.Append (modifiers);
 			result.Append (keyword);
@@ -434,12 +430,16 @@ namespace MonoDevelop.CSharp.Dom
 			}
 			
 			if (settings.UseFullName && type.DeclaringType != null) {
-				result.Append (GetString (type.DeclaringType, OutputFlags.UseFullName));
+				bool includeGenerics = settings.IncludeGenerics;
+				settings.OutputFlags |= OutputFlags.IncludeGenerics;
+				string typeString = GetString (type.DeclaringType, settings);
+				if (!includeGenerics)
+					settings.OutputFlags &= ~OutputFlags.IncludeGenerics;
+				result.Append (typeString);
 				result.Append (settings.Markup ("."));
 			}
 			
 			result.Append (settings.EmitName (type, name));
-			
 			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
 				for (int i = 0; i < parameterCount; i++) {
@@ -447,7 +447,11 @@ namespace MonoDevelop.CSharp.Dom
 						result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
 					if (!settings.HideGenericParameterNames) {
 						if (instantiatedType != null) {
-							result.Append (this.GetString (instantiatedType.GenericParameters[i], settings));
+							if (i < instantiatedType.GenericParameters.Count) {
+								result.Append (this.GetString (instantiatedType.GenericParameters[i], settings));
+							} else {
+								result.Append (instantiatedType.UninstantiatedType.TypeParameters[i].Name);
+							}
 						} else {
 							result.Append (NetToCSharpTypeName (type.TypeParameters[i].Name));
 						}

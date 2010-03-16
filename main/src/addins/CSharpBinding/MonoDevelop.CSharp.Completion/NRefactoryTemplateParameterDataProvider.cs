@@ -46,8 +46,8 @@ namespace MonoDevelop.CSharp.Completion
 		public NRefactoryTemplateParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, DomLocation loc)
 		{
 			this.editor = editor;
-			
-			MethodResolveResult resolveResult = resolver.Resolve (expressionResult, loc) as MethodResolveResult;
+			ResolveResult plainResolveResult = resolver.Resolve (expressionResult, loc);
+			MethodResolveResult resolveResult = plainResolveResult as MethodResolveResult;
 			if (resolveResult != null) {
 				foreach (IMethod method in resolveResult.Methods) {
 					if (method.TypeParameters.Count > 0)
@@ -62,6 +62,21 @@ namespace MonoDevelop.CSharp.Completion
 						if (possibleType != null)
 							this.types.Add (possibleType);
 					}
+				}
+				IType resolvedType = plainResolveResult != null ? resolver.Dom.GetType (plainResolveResult.ResolvedType) : null;
+				if (resolvedType == null) {
+					int idx = expressionResult.Expression.LastIndexOf (".");
+					if (idx < 0)
+						return;
+					typeName = expressionResult.Expression.Substring (idx + 1);
+					expressionResult.Expression = expressionResult.Expression.Substring (0, idx);
+					plainResolveResult = resolver.Resolve (expressionResult, loc);
+					resolvedType = resolver.Dom.GetType (plainResolveResult.ResolvedType);
+				}
+				if (resolvedType == null)
+					return;
+				foreach (IType innerType in resolvedType.InnerTypes) {
+					this.types.Add (innerType);
 				}
 			}
 		}
@@ -125,18 +140,18 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{
-			if (paramIndex < 0 || paramIndex >= types[overload].TypeParameters.Count)
+			ITypeParameterMember type = types[overload] is InstantiatedType ? ((InstantiatedType)types[overload]).UninstantiatedType : types[overload];
+			if (paramIndex < 0 || paramIndex >= type.TypeParameters.Count)
 				return "";
-			return types[overload].TypeParameters[paramIndex].Name;//ambience.GetString (, OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			return type.TypeParameters[paramIndex].Name;//ambience.GetString (, OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
 		public int GetParameterCount (int overload)
 		{
 			if (overload < 0 || overload >= OverloadCount)
 				return 0;
-			int result = types[overload].TypeParameters.Count;
-			
-			return result;
+			ITypeParameterMember type = types[overload] is InstantiatedType ? ((InstantiatedType)types[overload]).UninstantiatedType : types[overload];
+			return type.TypeParameters.Count;
 		}
 		
 		public int OverloadCount {
