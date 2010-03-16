@@ -1,54 +1,43 @@
-//
+// 
 // ErrorDialog.cs
-//
+//  
 // Author:
-//   Lluis Sanchez Gual
-//
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
+//       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
 using Gtk;
-using Glade;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	public class ErrorDialog : IDisposable
+	public partial class ErrorDialog : Gtk.Dialog
 	{
-		[Glade.Widget ("ErrorDialog")] protected Dialog dialog;
-		[Glade.Widget] protected Button okButton;
-		[Glade.Widget] protected Label descriptionLabel;
-		[Glade.Widget] protected Gtk.TextView detailsTextView;
-		[Glade.Widget] protected Gtk.Expander expander;
-		
 		TextTag tagNoWrap;
 		TextTag tagWrap;
 		
 		public ErrorDialog (Window parent)
 		{
-			new Glade.XML (null, "Base.glade", "ErrorDialog", null).Autoconnect (this);
-			dialog.TransientFor = parent;
-			okButton.Clicked += new EventHandler (OnClose);
-			expander.Activated += new EventHandler (OnExpanded);
+			this.Build ();
+			TransientFor = parent;
 			descriptionLabel.ModifyBg (StateType.Normal, new Gdk.Color (255,0,0));
 			
 			tagNoWrap = new TextTag ("nowrap");
@@ -83,29 +72,7 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			expander.Visible = true;
 		}
 		
-		public void Show ()
-		{
-			dialog.Show ();
-		}
-		
-		public void Run ()
-		{
-			dialog.Show ();
-			dialog.Run ();
-		}
-		
-		public void Dispose ()
-		{
-			dialog.Destroy ();
-			dialog.Dispose ();
-		}
-		
-		void OnClose (object sender, EventArgs args)
-		{
-			dialog.Destroy ();
-		}
-		
-		void OnExpanded (object sender, EventArgs args)
+		protected virtual void OnExpander1Activated (object sender, System.EventArgs e)
 		{
 			GLib.Timeout.Add (100, new GLib.TimeoutHandler (UpdateSize));
 		}
@@ -113,9 +80,15 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		bool UpdateSize ()
 		{
 			int w, h;
-			dialog.GetSize (out w, out h);
-			dialog.Resize (w, 1);
+			GetSize (out w, out h);
+			Resize (w, 1);
 			return false;
+		}
+		
+		protected virtual void OnOkButtonClicked (object sender, System.EventArgs e)
+		{
+			Destroy ();
 		}
 	}
 }
+

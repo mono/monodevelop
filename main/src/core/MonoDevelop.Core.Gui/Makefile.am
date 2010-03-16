@@ -23,9 +23,11 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Dialogs.ErrorDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Core.Gui.Dialogs.OptionsDialog.cs \
+	gtk-gui/MonoDevelop.Core.Gui.Dialogs.ProgressDialog.cs \
 	MonoDevelop.Core.Gui.Codons/MimeTypeNode.cs \
 	MonoDevelop.Core.Gui.Codons/OptionsDialogSection.cs \
 	MonoDevelop.Core.Gui.Codons/OptionsPanelNode.cs \
@@ -76,7 +78,6 @@ FILES =  \
 	MonoDevelop.Core.Gui/WebBrowserService.cs
 
 RES =  \
-	Base.glade \
 	gtk-gui/gui.stetic \
 	icons/add-namespace-16.png \
 	icons/assembly-project-16.png \

@@ -1,55 +1,44 @@
-//
+// 
 // ProgressDialog.cs
-//
+//  
 // Author:
-//   Lluis Sanchez Gual
-//
-// Copyright (C) 2005 Novell, Inc (http://www.novell.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
+//       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
-using System.Collections;
 using Gtk;
-using Glade;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Gui.Dialogs
 {
-	sealed class ProgressDialog : IDisposable
+	public partial class ProgressDialog : Gtk.Dialog
 	{
-		[Glade.Widget ("ProgressDialog")] Dialog dialog;
-		[Glade.Widget] Button btnCancel;
-		[Glade.Widget] Button btnClose;
-		[Glade.Widget] Label label;
-		[Glade.Widget] Gtk.TextView detailsTextView;
-		[Glade.Widget] Gtk.Expander expander;
-		[Glade.Widget] Gtk.ProgressBar progressBar;
-		
 		Gtk.TextBuffer buffer;
 		
 		TextTag tag;
 		TextTag bold;
 		int ident = 0;
-		ArrayList tags = new ArrayList ();
-		Stack indents = new Stack ();
+		List<TextTag> tags = new List<TextTag> ();
+		Stack<string> indents = new Stack<string> ();
 		IAsyncOperation asyncOperation;
 		
 		public ProgressDialog (bool allowCancel, bool showDetails): this (null, allowCancel, showDetails)
@@ -58,15 +47,15 @@ namespace MonoDevelop.Core.Gui.Dialogs
 		
 		public ProgressDialog (Window parent, bool allowCancel, bool showDetails)
 		{
-			new Glade.XML (null, "Base.glade", "ProgressDialog", null).Autoconnect (this);
-			dialog.TransientFor = parent;
+			this.Build ();
+			HasSeparator = false;
+			ActionArea.Hide ();
+			DefaultHeight = 5;
 			
-			btnCancel.Clicked += new EventHandler (OnCancel);
+			TransientFor = parent;
+			
 			btnCancel.Visible = allowCancel;
 
-			btnClose.Clicked += new EventHandler (OnClose);
-			
-			expander.Activated += new EventHandler (OnExpanded);
 			expander.Visible = showDetails;
 			
 			buffer = detailsTextView.Buffer;
@@ -159,23 +148,6 @@ namespace MonoDevelop.Core.Gui.Dialogs
 			}
 		}
 		
-		public void Show ()
-		{
-			dialog.Show ();
-		}
-		
-		public void Run ()
-		{
-			dialog.Show ();
-			dialog.Run ();
-		}
-		
-		public void Dispose ()
-		{
-			dialog.Destroy ();
-			dialog.Dispose ();
-		}
-		
 		public void ShowDone (bool warnings, bool errors)
 		{
 			progressBar.Fraction = 1;
@@ -191,28 +163,29 @@ namespace MonoDevelop.Core.Gui.Dialogs
 				label.Text = GettextCatalog.GetString ("Operation successfully completed.");
 		}
 		
-		void OnCancel (object sender, EventArgs args)
+		protected void OnBtnCancelClicked (object sender, System.EventArgs e)
 		{
 			if (asyncOperation != null)
 				asyncOperation.Cancel ();
 		}
 		
-		void OnClose (object sender, EventArgs args)
+		bool UpdateSize ()
 		{
-			Dispose ();
+			int w, h;
+			GetSize (out w, out h);
+			Resize (w, 1);
+			return false;
 		}
 		
-		void OnExpanded (object sender, EventArgs args)
+		protected virtual void OnExpander1Activated (object sender, System.EventArgs e)
 		{
 			GLib.Timeout.Add (100, new GLib.TimeoutHandler (UpdateSize));
 		}
 		
-		bool UpdateSize ()
+		protected virtual void OnBtnCloseClicked (object sender, System.EventArgs e)
 		{
-			int w, h;
-			dialog.GetSize (out w, out h);
-			dialog.Resize (w, 1);
-			return false;
+			Destroy ();
 		}
 	}
 }
+

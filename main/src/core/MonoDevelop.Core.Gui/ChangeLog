@@ -1,5 +1,19 @@
 2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Base.glade:
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Core.Gui.csproj:
+	* MonoDevelop.Core.Gui/MessageService.cs:
+	* MonoDevelop.Core.Gui.Dialogs/ErrorDialog.cs:
+	* MonoDevelop.Core.Gui.Dialogs/ProgressDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.ErrorDialog.cs:
+	* gtk-gui/MonoDevelop.Core.Gui.Dialogs.ProgressDialog.cs:
+	* MonoDevelop.Core.Gui.ProgressMonitoring/MessageDialogProgressMonitor.cs:
+	  Ported ErrorDialog and ProgressDialog from glade to stetic.
+
+2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:

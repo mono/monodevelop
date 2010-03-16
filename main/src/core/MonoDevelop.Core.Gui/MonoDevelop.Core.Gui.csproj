@@ -79,9 +79,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Base.glade">
-      <LogicalName>Base.glade</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\ExecutionMarker.png">
       <LogicalName>ExecutionMarker.png</LogicalName>
     </EmbeddedResource>
@@ -611,6 +608,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.MultiMessageDialog.cs" />
     <Compile Include="MonoDevelop.Core.Gui\DesktopService.cs" />
     <Compile Include="MonoDevelop.Core.Gui\CellRendererPixbuf.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.ErrorDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Core.Gui.Dialogs.ProgressDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

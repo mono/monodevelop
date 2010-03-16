@@ -296,8 +296,7 @@ namespace MonoDevelop.Core.Gui
 					errorDialog.AddDetails (e.ToString (), false);
 					errorDialog.Run ();
 				} finally {
-					if (errorDialog != null)
-						errorDialog.Dispose ();
+					errorDialog.Destroy ();
 				}
 			}
 			
