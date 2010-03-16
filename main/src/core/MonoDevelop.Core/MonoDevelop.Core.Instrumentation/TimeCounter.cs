@@ -88,8 +88,10 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void End ()
 		{
-			if (counter == null)
+			if (counter == null) {
 				Console.WriteLine ("Timer already finished");
+				return;
+			}
 			traceList.TotalTime = DateTime.Now - begin;
 			if (traceList.TotalTime.TotalSeconds < counter.MinSeconds)
 				counter.RemoveValue (traceList.ValueIndex);
@@ -102,6 +104,7 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 	}
 	
+	[Serializable]
 	class TimerTraceList
 	{
 		public TimerTrace FirstTrace;
@@ -109,6 +112,7 @@ namespace MonoDevelop.Core.Instrumentation
 		public int ValueIndex;
 	}
 	
+	[Serializable]
 	public class TimerTrace
 	{
 		internal TimerTrace Next;

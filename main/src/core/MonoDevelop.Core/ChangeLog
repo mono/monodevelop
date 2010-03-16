@@ -1,3 +1,8 @@
+2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Instrumentation/TimeCounter.cs: Add missing
+	  null check.
+
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/PropertyBag.cs: Add missing null check.
