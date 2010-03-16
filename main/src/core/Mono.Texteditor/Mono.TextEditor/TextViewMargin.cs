@@ -1665,7 +1665,15 @@ namespace Mono.TextEditor
 				break;
 			}
 			Caret.PreserveSelection = false;
-			if ((args.ModifierState & Gdk.ModifierType.Mod1Mask) == ModifierType.Mod1Mask) {
+			
+			//HACK: use command as block select modifier on Mac because GTK currently makes it impossible to access alt
+			//HACK: Mac command seems to be mapped as ControlMask from mouse events
+			var blockSelModifier = Platform.IsMac? ModifierType.ControlMask : ModifierType.Mod1Mask;
+			//HACK: also allow super for block seelct on X11 because most window managers use the alt modifier already
+			if (Platform.IsX11)
+				blockSelModifier |= ModifierType.SuperMask;
+			
+			if ((args.ModifierState & blockSelModifier) != 0) {
 				textEditor.SelectionMode = SelectionMode.Block;
 			} else {
 				textEditor.SelectionMode = SelectionMode.Normal;
