@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-16 13:16:42+0100\n"
-"PO-Revision-Date: 2010-03-16 13:20:45+0100\n"
+"PO-Revision-Date: 2010-03-16 15:07:29+0100\n"
 "Last-Translator: David Makovský <yakeen@sannyas-on.net>\n"
 "Language-Team: cs <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1507,9 +1507,8 @@ msgstr "Přepnout na následující dokument"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:837
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:838
-#, fuzzy
 msgid "Switch to previous document"
-msgstr "Přepne na předchozí dokument"
+msgstr "Přepnout na předchozí dokument"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:842
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:845
@@ -1768,7 +1767,7 @@ msgstr "Smazat do konce řádku"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1014
 msgid "Deletes to end of line, or if at end, deletes line ending"
-msgstr ""
+msgstr "Smaže do konce řádku, pokud je kurzor na konci řádku, smaže ukončení"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1018
 msgid "Move the line or highlighted selection up"
@@ -1867,9 +1866,8 @@ msgid "Insert new line"
 msgstr "Vložit nový řádek"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1073
-#, fuzzy
 msgid "Insert line break after the caret"
-msgstr "Vložit nový řádek a neposunout kurzor"
+msgstr "Vložit zalomení řádku za kurzorem"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1076
 msgid "Move caret to EOL and insert new line"
@@ -1910,12 +1908,11 @@ msgstr "Jít na následující znak"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1094
 msgid "Swaps the characters on either side of the caret"
-msgstr ""
+msgstr "Prohodí znaky před a za kurzorem"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1097
-#, fuzzy
 msgid "Recenter editor"
-msgstr "Textový editor"
+msgstr "Nedávný editor"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1098
 msgid "Scrolls the editor so that the caret is centered"
@@ -2873,14 +2870,12 @@ msgid "Activate window '{0}'"
 msgstr "Aktivovat okno '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:61
-#, fuzzy
 msgid "Warning/Error"
-msgstr "upozornění"
+msgstr "Upozornění/Chyba"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:62
-#, fuzzy
 msgid "User Task"
-msgstr "Úkoly"
+msgstr "Uživatelský úkol"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:112
 msgid "No more errors or warnings"
@@ -3027,9 +3022,8 @@ msgid "The project could not be created"
 msgstr "Projekt nemohl být vytvořen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs:595
-#, fuzzy
 msgid "Recent"
-msgstr "Navrátit"
+msgstr "Nedávné"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:40
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:49
@@ -3826,9 +3820,8 @@ msgid "Build Output"
 msgstr "Výstup kompilace"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:151
-#, fuzzy
 msgid "Show build output"
-msgstr "Zobrazit výstup"
+msgstr "Zobrazit výstup sestavení"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:292
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:293
@@ -4032,18 +4025,16 @@ msgid "Current format:"
 msgstr "Aktuální formát:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:155
-#, fuzzy
 msgid "<b>Console Project</b>"
-msgstr "Projekt pro konzoli"
+msgstr "<b>Projekt pro konzoli</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:169
 msgid "Creates a new C# Project"
 msgstr "Vytvoří nový C# projekt."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:231
-#, fuzzy
 msgid "_Create directory for solution"
-msgstr "Vytvořit v sestavě:"
+msgstr "_Vytvořit složku pro sestavu"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs:252
 msgid "_Location:"
@@ -4368,9 +4359,8 @@ msgstr ""
 "poskytují, bude chybět."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:43
-#, fuzzy
 msgid "Edit References"
-msgstr "_Editovat reference..."
+msgstr "Editovat reference"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs:94
 msgid "Selected references:"
@@ -4546,9 +4536,8 @@ msgid "Pads"
 msgstr "Panely"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:78
-#, fuzzy
 msgid "(Default)"
-msgstr "Výchozí"
+msgstr "(Výchozí)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:129
 msgid ""
@@ -4557,43 +4546,36 @@ msgid ""
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:59
-#, fuzzy
 msgid "Very spacious"
-msgstr "Verze"
+msgstr "Velmi prostorné"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:60
-#, fuzzy
 msgid "Spacious"
-msgstr "Mezery"
+msgstr "Prostorné"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:62
-#, fuzzy
 msgid "Compact"
-msgstr "C# Formát"
+msgstr "Kompaktní"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:63
-#, fuzzy
 msgid "Very compact"
-msgstr "Po čárce"
+msgstr "Velmi kompaktní"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:98
 msgid "_Toolbar icon size:"
 msgstr "Velikost ikon _nástrojové lišty:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:110
-#, fuzzy
 msgid "User Interface Language:"
-msgstr "Uživatelské rozhraní"
+msgstr "Jazyk uživatelského rozhraní:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:121
-#, fuzzy
 msgid "User Interface Theme:"
-msgstr "Uživatelské rozhraní"
+msgstr "Téma uživatelského rozhraní:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:132
-#, fuzzy
 msgid "Compactness:"
-msgstr "Šablony kódu"
+msgstr "Kompaktnost:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:139
 msgid "Smallest"
@@ -4608,19 +4590,16 @@ msgid "Large"
 msgstr "Velké"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:164
-#, fuzzy
 msgid "_Custom font for pads:"
 msgstr "Použít _vlastní font pro panely:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:191
-#, fuzzy
 msgid "_Custom font for Output pads:"
-msgstr "Použít _vlastní font pro panely:"
+msgstr "Použít vlastní font pro panel vý_stupu:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:214
-#, fuzzy
 msgid "S_how hidden files and directories in File Scout"
-msgstr "Zobrazovat _skryté soubory a složky"
+msgstr "Zobrazovat _skryté soubory a složky v panelu souborů"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:226
 msgid "_Enable document switch dialog"
@@ -4877,11 +4856,11 @@ msgstr "_Skupina:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:177
 msgid "Is _expandable template"
-msgstr ""
+msgstr "Je _expandující šablona"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:188
 msgid "Is _surround with template"
-msgstr ""
+msgstr "Je _obkličující šablona"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:205
 msgid "_Shortcut:"
@@ -5029,14 +5008,12 @@ msgid "Selection"
 msgstr "Výběr"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:159
-#, fuzzy
 msgid "Include binary files"
-msgstr "Zahrnout v Makefile"
+msgstr "Zahrnout binární soubory"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:166
-#, fuzzy
 msgid "Include hidden files and directories"
-msgstr "Zobrazovat _skryté soubory a složky"
+msgstr "Zobrazovat skryté soubory a složky"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:224
 msgid "_Path:"
@@ -5210,7 +5187,6 @@ msgid "Pin results pad"
 msgstr "Přišpendlit výsledky"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:559
-#, fuzzy
 msgid "Search Result"
 msgstr "Výsledky hledání"
 
@@ -5821,14 +5797,12 @@ msgid "Never"
 msgstr "Nikdy"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:82
-#, fuzzy
 msgid "Show error pad:"
-msgstr "Zobrazovat chyby"
+msgstr "Zobrazovat panel chyb:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:93
-#, fuzzy
 msgid "Show message bubbles:"
-msgstr "Zobrazovat zprávy"
+msgstr "Zobrazovat anotace chyb v kódu:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:104
 msgid "Jump to first error or warning:"
@@ -5840,7 +5814,7 @@ msgstr "Přepsat Implicitní akci sestavení"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:449
 msgid "Console input not supported"
-msgstr ""
+msgstr "Vstup konzole není podporován"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:450
 msgid ""
@@ -5848,6 +5822,9 @@ msgid ""
 "your applications needs to read data from the standard input, please set the "
 "'Run in External Console' option in the project options."
 msgstr ""
+"Vstup konzole není podporován při použití MonoDevelop výstupní konzole. Pokud "
+"vaše aplikace potřebuje číst ze standartního vstupu, nastavte volbu 'běhu v "
+"externí konzoli' ve volbách nastavení projektu."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/ProjectService.cs:329
 msgid "The project could not be saved"
@@ -5862,14 +5839,12 @@ msgid "File '{0}' not found."
 msgstr "Soubor '{0}' nenalezen."
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/SolutionEntityItem.cs:294
-#, fuzzy
 msgid "Project File"
-msgstr "Soubor pro_jektu"
+msgstr "Soubor projektu"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:196
-#, fuzzy
 msgid "Target File"
-msgstr "Název cíle"
+msgstr "Soubor cíle"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Project.cs:198
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:34
@@ -6098,34 +6073,28 @@ msgid "Unknown entry"
 msgstr "Neznámá položka"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/WorkspaceItem.cs:494
-#, fuzzy
 msgid "Workspace name"
-msgstr "Pracovní plocha uložena."
+msgstr "Název pracovní plochy"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/WorkspaceItem.cs:495
-#, fuzzy
 msgid "Workspace file"
-msgstr "Pracovní plocha"
+msgstr "Soubor pracovní plochy"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/WorkspaceItem.cs:496
-#, fuzzy
 msgid "Workspace directory"
-msgstr "Pra_covní složka:"
+msgstr "Složka pracovní plochy"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Solution.cs:195
-#, fuzzy
 msgid "Solution name"
-msgstr "Název _sestavy:"
+msgstr "Název sestavy"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Solution.cs:196
-#, fuzzy
 msgid "Solution file"
-msgstr "_Soubor sestavy"
+msgstr "Soubor sestavy"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Solution.cs:197
-#, fuzzy
 msgid "Solution directory"
-msgstr "Adresář _sestavy"
+msgstr "Složka sestavy"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/Solution.cs:511
 msgid "Startup item not set"
@@ -6144,14 +6113,12 @@ msgid "Building: {0} ({1})"
 msgstr "Sestavuji: {0} ({1})"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/SolutionItem.cs:378
-#, fuzzy
 msgid "Project Name"
-msgstr "Název p_rojektu"
+msgstr "Název projektu"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/SolutionItem.cs:380
-#, fuzzy
 msgid "Project Directory"
-msgstr "_Adresář projektu"
+msgstr "Složka projektu"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:67
 msgid "Removing all .resources files"
@@ -6528,7 +6495,7 @@ msgstr "Microsoft Visual Studio"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects.addin.xml:176
 msgid "Invariant"
-msgstr ""
+msgstr "Invariant"
 
 #: ../src/core/MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:48
 msgid "Project Options"
@@ -7112,7 +7079,7 @@ msgstr "Barevné schéma Microsoft Visual Studia."
 
 #: ../src/core/Mono.Texteditor/Styles/IrBlackStyle.xml:24
 msgid "IR Black style from Vim"
-msgstr ""
+msgstr "IR Black styl z Vimu"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:7
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:7
@@ -7334,9 +7301,8 @@ msgid "Getting text of {0} at revision {1}..."
 msgstr "Získávám text {0} pro revizi {1}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:375
-#, fuzzy
 msgid "Retrieving changes in {0} ..."
-msgstr "Získávám změny pro {0} z revize {1}..."
+msgstr "Získávám změny z {0} ..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:426
 msgid "Retreiving content of {0} at revision {1}..."
@@ -7748,7 +7714,7 @@ msgstr "Navráceno   '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1053
 msgid "Failed to revert '{0}' -- try updating instead."
-msgstr ""
+msgstr "Selhalo revertování '{0}' -- vyzkoušejte napřed aktualizovat."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion/SvnClient.cs:1056
 msgid "Resolved conflict state of '{0}'"
@@ -9229,18 +9195,16 @@ msgid "Text Snippets"
 msgstr "Úryvky kódu"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:71
-#, fuzzy
 msgid "Show search box"
-msgstr "Zobrazovat chyby"
+msgstr "Zobrazit pole hledání"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:77
-#, fuzzy
 msgid "Show categories"
-msgstr "Třídit podle kategorií"
+msgstr "Zobrazit kategorie"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:83
 msgid "Use compact display"
-msgstr ""
+msgstr "Použít kompaktní zobrazení"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:91
 msgid "Add toolbox items"
@@ -9358,14 +9322,12 @@ msgid "Copy to output directory"
 msgstr "Kopírovat do složky výstupu"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:96
-#, fuzzy
 msgid "Custom Tool"
-msgstr "Uživatelské zásady"
+msgstr "Uživatelský nástroj"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:104
-#, fuzzy
 msgid "Custom Tool Namespace"
-msgstr "Název uživatelského módu:"
+msgstr "Jmenný prostor uživatelského nástroje"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:48
 msgid "Name of the file."
@@ -10283,9 +10245,8 @@ msgid "The server {0} requires a user name and a password."
 msgstr ""
 
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs:29
-#, fuzzy
 msgid "Credentials"
-msgstr "Vymazat seznam"
+msgstr "Ověření"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:40
 msgid "Web Reference"
@@ -10825,7 +10786,7 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:98
 msgid "Parameters shouldn't start with upper case"
-msgstr ""
+msgstr "Parametry by neměly začínat velkým písmenem"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:105
 msgid "Fields shouldn't start with upper case"
@@ -10833,11 +10794,11 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:112
 msgid "Interfaces should always start with 'I'"
-msgstr ""
+msgstr "Rozhraní by měla vždy začínat s 'I'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:115
 msgid "Types should always start with upper case"
-msgstr ""
+msgstr "Typy by vždy měly začínat vekým pímenem"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:121
 msgid "Methods should always start with upper case"
@@ -11514,9 +11475,8 @@ msgid "_Start Regular Expression"
 msgstr "_Spustit regulární výraz"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:83
-#, fuzzy
 msgid "_Stop execution"
-msgstr "Pozastavit při vyjímkách:"
+msgstr "Po_zastavit běh"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:339
 msgid "Match '{0}'"
@@ -11535,9 +11495,8 @@ msgid "Group '{0}' not found"
 msgstr "Skupina '{0}' nebyla nalezena"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:367
-#, fuzzy
 msgid "Invalid expression"
-msgstr "Výraz podmínky:"
+msgstr "Neplatný výraz"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWindow.cs:428
 msgid "Ignore Whitespace"
@@ -11572,14 +11531,12 @@ msgid "_Regular Expression"
 msgstr "_Regulární výraz"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:222
-#, fuzzy
 msgid "_Options:"
-msgstr "_Volby"
+msgstr "_Volby:"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:242
-#, fuzzy
 msgid "_Elements:"
-msgstr "Elementy"
+msgstr "_Elementy_"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:276
 msgid "_Input:"
@@ -11601,9 +11558,8 @@ msgid "Update Library"
 msgstr "Aktualizovat knihovnu"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexLibraryWindow.cs:65
-#, fuzzy
 msgid "_Abort update"
-msgstr "O _aplikaci"
+msgstr "Pře_rušit aktualizaci"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexLibraryWindow.cs:73
 msgid "Rating"
@@ -12640,7 +12596,7 @@ msgstr "upozornění"
 
 #: ../src/addins/CBinding/Compiler/GNUCompiler.cs:678
 msgid "note"
-msgstr ""
+msgstr "poznámka"
 
 #: ../src/addins/CBinding/Compiler/GNUCompiler.cs:805
 #, fuzzy
@@ -12948,41 +12904,35 @@ msgid "_Open URL..."
 msgstr "_Otevřít URL..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:118
-#, fuzzy
 msgid "Find next"
 msgstr "Najít následující"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:119
-#, fuzzy
 msgid "Find previous"
 msgstr "Najít předchozí"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:120
 msgid "Toggle between search and replace mode"
-msgstr ""
+msgstr "Přepnout mezi módy hledání a nahrazení"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:294
-#, fuzzy
 msgid "Recent Searches"
-msgstr "Nedávné proj_ekty"
+msgstr "Nedávná hledání"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:308
-#, fuzzy
 msgid "Clear Recent Searches"
-msgstr "Vymazat seznam"
+msgstr "Smazat seznam nedávných hledání"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:645
-#, fuzzy
 msgid "Not found"
-msgstr "Soubor nebyl nalezen"
+msgstr "Nenalezeno"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:664
-#, fuzzy
 msgid "{0} match"
 msgid_plural "{0} matches"
-msgstr[0] "{0} výskyt."
-msgstr[1] "{0} výskyty."
-msgstr[2] "{0} výskytů."
+msgstr[0] "{0} výskyt"
+msgstr[1] "{0} výskyty"
+msgstr[2] "{0} výskytů"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:76
 msgid "<b>Coding</b>"
@@ -13149,12 +13099,11 @@ msgstr "Vyhodnocuji..."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs:289
 msgid "Page %N of %Q"
-msgstr ""
+msgstr "Strana %N z %Q"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/StatusBox.cs:128
-#, fuzzy
 msgid "Line: {0}, Column: {1}"
-msgstr "(Řádek:{0}, Sloupec:{1})"
+msgstr "Řádek: {0}, Sloupec: {1}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/NavigationBar.cs:241
 msgid "Region {0}"
@@ -13242,9 +13191,8 @@ msgid "Summary"
 msgstr "Celkový pohled"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:142
-#, fuzzy
 msgid "Search for types or members"
-msgstr "Hledání textu"
+msgstr "Hledání typu či členu"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:145
 msgid "Types"
@@ -13255,14 +13203,12 @@ msgid "Members"
 msgstr "Členy"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:163
-#, fuzzy
 msgid "Only public members"
-msgstr "Zobrazovat pouze veřejné členy"
+msgstr "Pouze veřejné členy"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:164
-#, fuzzy
 msgid "All members"
-msgstr "Členy"
+msgstr "Všechny členy"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:175
 msgid "Documentation"
@@ -13368,9 +13314,8 @@ msgid "Navigate forward"
 msgstr "Navigovat vpřed"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs:116
-#, fuzzy
 msgid "_Visibility:"
-msgstr "Zpříst_upnění"
+msgstr "Zpříst_upnění:"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs:98
 msgid "<b>Declaring Type:</b>\t{0}"
@@ -14704,9 +14649,8 @@ msgid "Throw _errors in XAML validation"
 msgstr "Vyhazovat _chyby v XAML validaci"
 
 #: ../src/addins/MonoDevelop.Moonlight/Templates/framework_SL_3_0.xml:0
-#, fuzzy
 msgid "Moonlight / Silverlight 3.0"
-msgstr "Moonlight / Silverlight 2.0"
+msgstr "Moonlight / Silverlight 3.0"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:238
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor/XmlEditorService.cs:267
@@ -15222,30 +15166,28 @@ msgstr "Zahrnout tyto kategorie: "
 
 #: ../src/addins/MacPlatform/Updater/UpdateService.cs:155
 msgid "No updatable products detected"
-msgstr ""
+msgstr "Není třeba aktualizovat žádný produkt"
 
 #: ../src/addins/MacPlatform/Updater/UpdateService.cs:217
 msgid "Error retrieving update information"
 msgstr "Nepodařilo se získat informace o dostupných aktualizacích"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:55
-#, fuzzy
 msgid "Stable"
-msgstr "Status"
+msgstr "Stabilní"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:56
 msgid "Beta (unstable)"
-msgstr ""
+msgstr "Beta (nestabilní)"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:57
 msgid "Alpha (experimental)"
-msgstr ""
+msgstr "Aplpha (experimentální)"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:70
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:79
-#, fuzzy
 msgid "Checking for updates..."
-msgstr "_Zkontrolovat aktualizace"
+msgstr "Kontroluji aktualizace..."
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:111
 msgid "No updates available"
@@ -15253,15 +15195,15 @@ msgstr "Nejsou dostupné žádné aktualizace"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:130
 msgid "ALPHA"
-msgstr ""
+msgstr "ALPHA"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:133
 msgid "BETA"
-msgstr ""
+msgstr "BETA"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:136
 msgid "TEST"
-msgstr ""
+msgstr "TEST"
 
 #: ../src/addins/MacPlatform/Updater/UpdateDialog.cs:150
 msgid "Download"
@@ -15280,9 +15222,8 @@ msgstr ""
 "prosím ukončete MonoDevelop před jejich instalací."
 
 #: ../src/addins/MacPlatform/gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs:114
-#, fuzzy
 msgid "Update _level:"
-msgstr "Aktualizace selhala."
+msgstr "Úroveň _aktualizace:"
 
 #: ../src/addins/MacPlatform/gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs:138
 msgid "Check for updates automatically"
@@ -15375,9 +15316,8 @@ msgid "Implement Interface (explicit)"
 msgstr "Implementovat rozhraní (explicitně)"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:385
-#, fuzzy
 msgid "Implement abstract members"
-msgstr "Přepsat/Implementovat členy..."
+msgstr "Implementovat abstraktní členy"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/RefactoryCommands.cs:392
 msgid "_Encapsulate Field..."
@@ -15677,33 +15617,28 @@ msgid "Select parameters to be null-checked."
 msgstr "Vyberte parametry, které budou zkontrolovány pro null hodnotu."
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs:52
-#, fuzzy
 msgid "_Implement abstract members"
-msgstr "Přepsat/Implementovat členy..."
+msgstr "_Implementovat abstraktní členy"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/QuickFixHandler.cs:98
-#, fuzzy
 msgid "Add using '{0}'"
-msgstr "Přidat (binární) '{0}'"
+msgstr "Přidat using '{0}'"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/QuickFixHandler.cs:107
-#, fuzzy
 msgid "Add '{0}'"
-msgstr "Přidat (binární) '{0}'"
+msgstr "Přidat '{0}'"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:76
-#, fuzzy
 msgid "Code Navigation"
-msgstr "Navigace"
+msgstr "Navigace kódu"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:84
 msgid "_Find references"
 msgstr "_Najít reference"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:92
-#, fuzzy
 msgid "Refactoring"
-msgstr "Refaktorovat"
+msgstr "Refaktorace"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:95
 msgid "_Rename..."
@@ -15731,13 +15666,12 @@ msgid "R_emove and Sort usings"
 msgstr "Ode_brat a setřídit using řádky"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:131
-#, fuzzy
 msgid "Create Method"
-msgstr "_Vytvořit metodu"
+msgstr "Vytvořit metodu"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:138
 msgid "Quick fix..."
-msgstr ""
+msgstr "Rychlá oprava..."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.addin.xml:109
 msgid "ASP.NET Files"
@@ -16425,18 +16359,16 @@ msgid "T4 Templates"
 msgstr "T4 šablony"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/Templates/T4TemplateCSharp.xft.xml:7
-#, fuzzy
 msgid "T4 Template"
-msgstr "T4 šablony"
+msgstr "T4 šablona"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/Templates/T4TemplateCSharp.xft.xml:9
-#, fuzzy
 msgid "Text Templating"
 msgstr "Textové šablony"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/Templates/T4TemplateCSharp.xft.xml:10
 msgid "A T4 template for generating code or text files."
-msgstr ""
+msgstr "T4 šablona pro generování kódu či textových souborů."
 
 #: ../src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/SoftDebuggerEngine.cs:114
 msgid ""
@@ -16491,9 +16423,8 @@ msgid "_Continue"
 msgstr "_Pokračovat"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:178
-#, fuzzy
 msgid "Outdated Debug Information"
-msgstr "Zahrnout informace ladění"
+msgstr "Zastaralé ladící informace"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:179
 msgid ""
@@ -16720,12 +16651,11 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:38
 msgid "<b>{0}</b> has been thrown"
-msgstr ""
+msgstr "<b>{0}</b> byla vyhozena"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs:23
-#, fuzzy
 msgid "Exception Caught"
-msgstr "Výjimky"
+msgstr "Zachycena výjimka"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:25
 msgid "Debug Windows"
