@@ -129,6 +129,10 @@ namespace MonoDevelop.Projects.Dom
 				} else {
 					result.Append ("M:");
 					result.Append (FullName);
+					if (TypeParameters.Count > 0) {
+						result.Append ("~");
+						result.Append (TypeParameters.Count);
+					}
 				}
 				AppendHelpParameterList (result, Parameters);
 				return result.ToString ();
