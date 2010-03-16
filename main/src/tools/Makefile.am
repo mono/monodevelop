@@ -1,3 +1,3 @@
 
-SUBDIRS = SharpCoco mdhost mdrun
+SUBDIRS = SharpCoco mdhost mdrun mdmonitor
 

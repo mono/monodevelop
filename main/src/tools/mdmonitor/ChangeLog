@@ -1,0 +1,22 @@
+2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui:
+	* Main.cs:
+	* Makefile.am:
+	* NewProfile.cs:
+	* AssemblyInfo.cs:
+	* TimeLineView.cs:
+	* mdmonitor.csproj:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* TimeLineViewWindow.cs:
+	* CounterSelectorDialog.cs:
+	* InstrumenationChartView.cs:
+	* InstrumentationViewerDialog.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.NewProfile.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.CounterSelectorDialog.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.InstrumenationChartView.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:
+	  Added new instrumentation monitor tool.
+

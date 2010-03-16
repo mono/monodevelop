@@ -1,3 +1,8 @@
+2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mdmonitor:
+	* Makefile.am: Added new instrumentation monitor tool.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Tools.mds: Migrated to MSBuild file format.
