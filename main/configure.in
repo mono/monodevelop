@@ -330,6 +330,7 @@ src/tools/Makefile
 src/tools/mdhost/Makefile
 src/tools/mdrun/Makefile
 src/tools/SharpCoco/Makefile
+src/tools/mdmonitor/Makefile
 src/addins/Makefile
 src/addins/MonoDeveloperExtensions/Makefile
 src/addins/MonoDeveloperExtensions/NUnit/Makefile
