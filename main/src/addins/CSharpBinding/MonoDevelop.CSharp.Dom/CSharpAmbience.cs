@@ -234,17 +234,16 @@ namespace MonoDevelop.CSharp.Dom
 					result.Append (settings.EmitName (returnType, Format (NormalizeTypeName (part.Name))));
 					if (settings.IncludeGenerics && part.GenericArguments.Count > 0) {
 						result.Append (settings.Markup ("<"));
-						if (!settings.HideGenericParameterNames) {
-							bool hideArrays = settings.HideArrayBrackets;
-							settings.OutputFlags &= ~OutputFlags.HideArrayBrackets;
-							for (int i = 0; i < part.GenericArguments.Count; i++) {
-								if (i > 0)
-									result.Append (settings.Markup (", "));
+						bool hideArrays = settings.HideArrayBrackets;
+						settings.OutputFlags &= ~OutputFlags.HideArrayBrackets;
+						for (int i = 0; i < part.GenericArguments.Count; i++) {
+							if (i > 0)
+								result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
+							if (!settings.HideGenericParameterNames) 
 								result.Append (GetString (part.GenericArguments[i], settings));
-							}
-							if (hideArrays)
-								settings.OutputFlags |= OutputFlags.HideArrayBrackets;
 						}
+						if (hideArrays)
+							settings.OutputFlags |= OutputFlags.HideArrayBrackets;
 						result.Append (settings.Markup (">"));
 					}
 				}
@@ -293,12 +292,12 @@ namespace MonoDevelop.CSharp.Dom
 				if (method.TypeParameters.Count > 0) {
 					result.Append (settings.Markup ("<"));
 					
-					if (!settings.HideGenericParameterNames) {
-						InstantiatedMethod instantiatedMethod = method as InstantiatedMethod;
-						
-						for (int i = 0; i < method.TypeParameters.Count; i++) {
-							if (i > 0)
-								result.Append (settings.Markup (", "));
+					InstantiatedMethod instantiatedMethod = method as InstantiatedMethod;
+					
+					for (int i = 0; i < method.TypeParameters.Count; i++) {
+						if (i > 0)
+							result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
+						if (!settings.HideGenericParameterNames) {
 							if (instantiatedMethod != null) {
 								result.Append (this.GetString (instantiatedMethod.GenericParameters[i], settings));
 							} else {
@@ -443,10 +442,10 @@ namespace MonoDevelop.CSharp.Dom
 			
 			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
-				if (!settings.HideGenericParameterNames) {
-					for (int i = 0; i < parameterCount; i++) {
-						if (i > 0)
-							result.Append (settings.Markup (", "));
+				for (int i = 0; i < parameterCount; i++) {
+					if (i > 0)
+						result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
+					if (!settings.HideGenericParameterNames) {
 						if (instantiatedType != null) {
 							result.Append (this.GetString (instantiatedType.GenericParameters[i], settings));
 						} else {

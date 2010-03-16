@@ -27,15 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Dom;
 using MonoDevelop.CSharp.Resolver;
 
@@ -44,18 +40,28 @@ namespace MonoDevelop.CSharp.Completion
 	public class NRefactoryTemplateParameterDataProvider : IParameterDataProvider
 	{
 		MonoDevelop.Ide.Gui.TextEditor editor;
-		List<IType> types = new List<IType> ();
+		List<ITypeParameterMember> types = new List<ITypeParameterMember> ();
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
-		public NRefactoryTemplateParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, string typeName)
+		public NRefactoryTemplateParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, DomLocation loc)
 		{
 			this.editor = editor;
-			foreach (string ns in namespaces) {
-				string prefix = ns + (ns.Length > 0 ? "." : "") + typeName + "`";
-				for (int i = 1; i < 99; i++) {
-					IType possibleType = resolver.Dom.GetType (prefix + i);
-					if (possibleType != null)
-						types.Add (possibleType);
+			
+			MethodResolveResult resolveResult = resolver.Resolve (expressionResult, loc) as MethodResolveResult;
+			if (resolveResult != null) {
+				foreach (IMethod method in resolveResult.Methods) {
+					if (method.TypeParameters.Count > 0)
+						this.types.Add (method);
+				}
+			} else {
+				string typeName = expressionResult.Expression.Trim ();
+				foreach (string ns in namespaces) {
+					string prefix = ns + (ns.Length > 0 ? "." : "") + typeName + "`";
+					for (int i = 1; i < 99; i++) {
+						IType possibleType = resolver.Dom.GetType (prefix + i);
+						if (possibleType != null)
+							this.types.Add (possibleType);
+					}
 				}
 			}
 		}

@@ -652,7 +652,8 @@ namespace MonoDevelop.CSharp.Completion
 			case '<':
 				if (string.IsNullOrEmpty (result.Expression))
 					return null;
-				return new NRefactoryTemplateParameterDataProvider (Editor, resolver, GetUsedNamespaces (), result.Expression.Trim ());
+				Console.WriteLine (result.Expression);
+				return new NRefactoryTemplateParameterDataProvider (Editor, resolver, GetUsedNamespaces (), result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 			case '[': {
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (resolveResult != null && !resolveResult.StaticResolve) {

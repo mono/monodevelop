@@ -213,6 +213,16 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (overloads == null)
 				overloads = new Dictionary<string, ICompletionData> ();
+			
+			// always set the member with the least type parameters as the main member.
+			if (Member is ITypeParameterMember && overload.Member is ITypeParameterMember) {
+				if (((ITypeParameterMember)Member).TypeParameters.Count > ((ITypeParameterMember)overload.Member).TypeParameters.Count) {
+					INode member = Member;
+					SetMember (overload.Member);
+					overload.Member = member;
+				}
+			}
+			
 			if (overload.Member is IMember && Member is IMember) {
 				// filter virtual & overriden members that came from base classes
 				// note that the overload tree is traversed top down.
@@ -229,8 +239,8 @@ namespace MonoDevelop.CSharp.Completion
 				
 				string MemberId = (overload.Member as IMember).HelpUrl;
 				if (Member is IMethod && overload.Member is IMethod) {
-					string signature1 = ambience.GetString (Member, OutputFlags.IncludeParameters);
-					string signature2 = ambience.GetString (overload.Member, OutputFlags.IncludeParameters);
+					string signature1 = ambience.GetString (Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics);
+					string signature2 = ambience.GetString (overload.Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics);
 					if (signature1 == signature2)
 						return;
 				}
@@ -243,14 +253,14 @@ namespace MonoDevelop.CSharp.Completion
 					//if any of the overloads is obsolete, we should not mark the item obsolete
 					if (!(overload.Member as IMember).IsObsolete)
 						DisplayFlags &= ~DisplayFlags.Obsolete;
-					
+/*					
 					//make sure that if there are generic overloads, we show a generic signature
 					if (overload.Member is IType && Member is IType && ((IType)Member).TypeParameters.Count == 0 && ((IType)overload.Member).TypeParameters.Count > 0) {
 						displayText = overload.DisplayText;
 					}
 					if (overload.Member is IMethod && Member is IMethod && ((IMethod)Member).TypeParameters.Count == 0 && ((IMethod)overload.Member).TypeParameters.Count > 0) {
 						displayText = overload.DisplayText;
-					}
+					}*/
 				}
 			}
 		}
