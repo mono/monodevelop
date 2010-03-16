@@ -1,3 +1,9 @@
+2010-03-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Don't modify
+	  the style's default font, because that affects other parts
+	  of the MD GUI. Make a copy instead, and track style updates.
+
 2010-03-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBox.cs:

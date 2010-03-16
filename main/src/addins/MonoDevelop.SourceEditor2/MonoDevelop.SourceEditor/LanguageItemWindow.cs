@@ -40,10 +40,7 @@ namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
 	{
-		public bool IsEmpty {
-			get; 
-			set;
-		}
+		public bool IsEmpty { get; set; }
 		
 		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, ICompilationUnit unit)
 		{
@@ -61,17 +58,16 @@ namespace MonoDevelop.SourceEditor
 				return;
 			}
 
-			MonoDevelop.Components.FixedWidthWrapLabel lab = new MonoDevelop.Components.FixedWidthWrapLabel ();
-			Pango.FontDescription font =  new Gtk.Label ("").Style.FontDescription;
-			font.Size = DefaultSourceEditorOptions.Instance.Font.Size;
-			lab.FontDescription = font;
-			lab.Wrap = Pango.WrapMode.WordChar;
-			lab.Indent = -20;
-			lab.BreakOnCamelCasing = true;
-			lab.BreakOnPunctuation = true;
-			lab.Markup = tooltip;
+			var label = new MonoDevelop.Components.FixedWidthWrapLabel () {
+				Wrap = Pango.WrapMode.WordChar,
+				Indent = -20,
+				BreakOnCamelCasing = true,
+				BreakOnPunctuation = true,
+				Markup = tooltip,
+			};
 			this.BorderWidth = 3;
-			Add (lab);
+			Add (label);
+			UpdateFont (label);
 			
 			EnableTransparencyControl = true;
 		}
@@ -79,11 +75,39 @@ namespace MonoDevelop.SourceEditor
 		//return the real width
 		public int SetMaxWidth (int maxWidth)
 		{
-			MonoDevelop.Components.FixedWidthWrapLabel l = Child as MonoDevelop.Components.FixedWidthWrapLabel;
-			if (l == null)
+			var label = Child as MonoDevelop.Components.FixedWidthWrapLabel;
+			if (label == null)
 				return Allocation.Width;
-			l.MaxWidth = maxWidth;
-			return l.RealWidth;
+			label.MaxWidth = maxWidth;
+			return label.RealWidth;
+		}
+		
+		protected override void OnStyleSet (Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			UpdateFont (Child as MonoDevelop.Components.FixedWidthWrapLabel);
+		}
+		
+		static void UpdateFont (MonoDevelop.Components.FixedWidthWrapLabel label)
+		{
+			if (label == null)
+				return;
+			if (label.FontDescription != null) {
+				label.FontDescription.Dispose ();
+				label.FontDescription = null;
+			}
+			label.FontDescription = new Gtk.Label ("").Style.FontDescription.Copy ();
+			label.FontDescription.Size = DefaultSourceEditorOptions.Instance.Font.Size;
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			var label = Child as MonoDevelop.Components.FixedWidthWrapLabel;
+			if (label != null && label.FontDescription != null) {
+				label.FontDescription.Dispose ();
+				label.FontDescription = null;
+			}
 		}
 		
 		
