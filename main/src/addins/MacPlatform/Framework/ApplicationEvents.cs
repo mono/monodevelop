@@ -196,12 +196,12 @@ namespace OSXIntegration.Framework
 	
 	public class ApplicationDocumentEventArgs : ApplicationEventArgs
 	{
-		public ApplicationDocumentEventArgs (IList<string> documents)
+		public ApplicationDocumentEventArgs (IDictionary<string,int> documents)
 		{
 			this.Documents = documents;
 		}		
 		
-		public IList<string> Documents { get; private set; }
+		public IDictionary<string,int> Documents { get; private set; }
 	}
 	
 	public class ApplicationUrlEventArgs : ApplicationEventArgs

@@ -339,16 +339,24 @@ namespace OSXIntegration.Framework
 		
 		#endregion
 		
-		public static List<string> GetFileListFromEventRef (IntPtr eventRef)
+		public static Dictionary<string,int> GetFileListFromEventRef (IntPtr eventRef)
 		{
 			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
+			int line = 0;
+			
+			try {
+				SelectionRange range = GetEventParameter<SelectionRange> (eventRef, CarbonEventParameterName.AEPosition, CarbonEventParameterType.Char);
+				line = range.lineNum+1;
+			} catch {
+			}
+			
 			long count = AECountItems (ref list);
-			var files = new List<string> ();
+			var files = new Dictionary<string,int> ();
 			for (int i = 1; i <= count; i++) {
 				FSRef fsRef = AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
 				string file = FSRefToPath (ref fsRef);
 				if (!string.IsNullOrEmpty (file))
-					files.Add (file);
+					files[file] = line;
 			}
 			CheckReturn (AEDisposeDesc (ref list));
 			return files;
@@ -384,6 +392,17 @@ namespace OSXIntegration.Framework
 		private byte hidden;
 	}
 	
+	[StructLayout(LayoutKind.Sequential)]
+	struct SelectionRange
+	{
+		public short unused1; // 0 (not used)
+		public short lineNum; // line to select (<0 to specify range)
+		public int startRange; // start of selection range (if line < 0)
+		public int endRange; // end of selection range (if line < 0)
+		public int unused2; // 0 (not used)
+		public int theDate; // modification date/time
+	}
+	
 	internal enum CarbonEventHandlerStatus //this is an OSStatus
 	{
 		Handled = 0,
@@ -393,6 +412,7 @@ namespace OSXIntegration.Framework
 	internal enum CarbonEventParameterName : uint
 	{
 		DirectObject = 757935405, // '----'
+		AEPosition = 1802530675, // 'kpos'
 	}
 	
 	internal enum CarbonEventParameterType : uint

@@ -218,7 +218,9 @@ namespace MonoDevelop.Platform
 				};
 				
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
-					IdeApp.OpenFiles (e.Documents);
+					foreach (KeyValuePair<string,int> filePair in e.Documents) {
+						IdeApp.Workbench.OpenDocument (filePair.Key, filePair.Value, 1, true);
+					}
 					e.Handled = true;
 				};
 				
