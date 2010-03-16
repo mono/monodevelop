@@ -1,3 +1,9 @@
+2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/Ide.cs:
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Use new api for
+	  starting the monitor.
+
 2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Use

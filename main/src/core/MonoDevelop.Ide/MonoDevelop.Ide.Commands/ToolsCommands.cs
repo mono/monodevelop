@@ -39,7 +39,6 @@ using MonoDevelop.Core.Gui;
 using System.IO;
 using Gtk;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui.Instrumentation;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -138,9 +137,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			InstrumentationViewerDialog dlg = new InstrumentationViewerDialog ();
-			dlg.TransientFor = IdeApp.Workbench.RootWindow;
-			dlg.Show ();
+			MonoDevelop.Core.Instrumentation.InstrumentationService.StartMonitor ();
 		}
 		
 		protected override void Update (CommandInfo info)

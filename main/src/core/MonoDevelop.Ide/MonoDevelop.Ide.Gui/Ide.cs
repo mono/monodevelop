@@ -48,7 +48,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Core.Gui.Instrumentation;
 using MonoDevelop.Ide.CustomTools;
 
 namespace MonoDevelop.Ide.Gui
@@ -467,9 +466,7 @@ namespace MonoDevelop.Ide.Gui
 					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetPixbuf (Gtk.Stock.DialogInfo));
 					instrumentationStatusIcon.ToolTip = "Instrumentation service enabled";
 					instrumentationStatusIcon.EventBox.ButtonPressEvent += delegate {
-						InstrumentationViewerDialog dlg = new InstrumentationViewerDialog ();
-						dlg.TransientFor = IdeApp.Workbench.RootWindow;
-						dlg.Show ();
+						InstrumentationService.StartMonitor ();
 					};
 				}
 			} else if (instrumentationStatusIcon != null) {

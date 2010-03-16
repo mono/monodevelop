@@ -1,5 +1,13 @@
 2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core/Runtime.cs:
+	* MonoDevelop.Core.Instrumentation/Counter.cs:
+	* MonoDevelop.Core.Instrumentation/CounterCategory.cs:
+	* MonoDevelop.Core.Instrumentation/InstrumentationService.cs:
+	  Allow remote access to counter data.
+
+2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Instrumentation/TimeCounter.cs: Add missing
 	  null check.
 

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Instrumentation
 {
+	[Serializable]
 	public class CounterCategory
 	{
 		string name;

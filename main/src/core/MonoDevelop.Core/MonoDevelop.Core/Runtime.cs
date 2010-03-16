@@ -102,6 +102,15 @@ namespace MonoDevelop.Core
 		static void SetupInstrumentation ()
 		{
 			InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
+			if (InstrumentationService.Enabled) {
+				LoggingService.LogInfo ("Instrumentation Service started");
+				try {
+					int port = InstrumentationService.PublishService (0);
+					LoggingService.LogInfo ("Instrumentation available at port " + port);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Instrumentation service could not be published", ex);
+				}
+			}
 			PropertyService.AddPropertyHandler ("MonoDevelop.EnableInstrumentation", delegate {
 				InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
 			});
@@ -272,10 +281,10 @@ namespace MonoDevelop.Core
 		public static Counter DirectoriesCreated = InstrumentationService.CreateCounter ("Directories created", "File Service");
 		public static Counter DirectoriesRenamed = InstrumentationService.CreateCounter ("Directories renamed", "File Service");
 		
-		public static Counter LogErrors = InstrumentationService.CreateCounter ("Errors", "Runtime");
-		public static Counter LogWarnings = InstrumentationService.CreateCounter ("Warnings", "Runtime");
-		public static Counter LogMessages = InstrumentationService.CreateCounter ("Information messages", "Runtime");
-		public static Counter LogFatalErrors = InstrumentationService.CreateCounter ("Fatal errors", "Runtime");
-		public static Counter LogDebug = InstrumentationService.CreateCounter ("Debug messages", "Runtime");
+		public static Counter LogErrors = InstrumentationService.CreateCounter ("Errors", "Log");
+		public static Counter LogWarnings = InstrumentationService.CreateCounter ("Warnings", "Log");
+		public static Counter LogMessages = InstrumentationService.CreateCounter ("Information messages", "Log");
+		public static Counter LogFatalErrors = InstrumentationService.CreateCounter ("Fatal errors", "Log");
+		public static Counter LogDebug = InstrumentationService.CreateCounter ("Debug messages", "Log");
 	}
 }

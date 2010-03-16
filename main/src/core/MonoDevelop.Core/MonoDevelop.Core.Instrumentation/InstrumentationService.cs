@@ -25,8 +25,17 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Diagnostics;
+using System.Collections;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -36,12 +45,59 @@ namespace MonoDevelop.Core.Instrumentation
 		static List<CounterCategory> categories;
 		static bool enabled = true;
 		static DateTime startTime;
+		static int publicPort = -1;
 		
 		static InstrumentationService ()
 		{
 			counters = new Dictionary <string, Counter> ();
 			categories = new List<CounterCategory> ();
 			startTime = DateTime.Now;
+		}
+		
+		public static int PublishService (int port)
+		{
+			// Get a free port
+			TcpListener listener = new TcpListener (IPAddress.Loopback, port);
+			listener.Start ();
+			if (port == 0)
+				port = ((IPEndPoint)listener.LocalEndpoint).Port;
+			listener.Stop ();
+			
+			Hashtable dict = new Hashtable ();
+			BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
+			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
+			dict ["port"] = port;
+			serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+			ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
+			publicPort = port;
+			
+			InstrumentationServiceBackend backend = new InstrumentationServiceBackend ();
+			System.Runtime.Remoting.RemotingServices.Marshal (backend, "InstrumentationService");
+			
+			return port;
+		}
+		
+		public static void StartMonitor ()
+		{
+			if (publicPort == -1)
+				throw new InvalidOperationException ("Service not published");
+			
+			ProcessStartInfo pi = new ProcessStartInfo ();
+			string exe = Path.Combine (Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location), "mdmonitor.exe");
+			string args = "localhost:" + publicPort;
+			if (File.Exists (exe)) {
+				pi.FileName = "mono";
+				pi.Arguments = exe + " " + args;
+			} else {
+				pi.FileName = "mdmonitor";
+				pi.Arguments = args;
+			}
+			Process.Start (pi);
+		}
+		
+		public static IInstrumentationService GetRemoteService (string hostAndPort)
+		{
+			return (IInstrumentationService) Activator.GetObject (typeof(IInstrumentationService), "tcp://" + hostAndPort + "/InstrumentationService");
 		}
 		
 		public static bool Enabled {
@@ -83,6 +139,10 @@ namespace MonoDevelop.Core.Instrumentation
 				Counter c = isTimer ? new TimerCounter (name, cat) : new Counter (name, cat);
 				c.LogMessages = logMessages;
 				cat.AddCounter (c);
+				
+				Counter old;
+				if (counters.TryGetValue (name, out old))
+					old.Disposed = true;
 				counters [name] = c;
 				return c;
 			}
@@ -136,7 +196,10 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			lock (counters) {
 				Counter c;
-				counters.TryGetValue (name, out c);
+				if (counters.TryGetValue (name, out c))
+					return c;
+				c = new Counter (name, null);
+				counters [name] = c;
 				return c;
 			}
 		}
@@ -251,7 +314,48 @@ namespace MonoDevelop.Core.Instrumentation
 				return logger;
 			}
 		}
+	}
+	
+	public interface IInstrumentationService
+	{
+		DateTime StartTime { get; }
+		IEnumerable<Counter> GetCounters ();
+		Counter GetCounter (string name);
+		CounterCategory GetCategory (string name);
+		IEnumerable<CounterCategory> GetCategories ();
+	}
+	
+	class InstrumentationServiceBackend: MarshalByRefObject, IInstrumentationService
+	{
+		public DateTime StartTime {
+			get {
+				return InstrumentationService.StartTime;
+			}
+		}
 
-
+		public IEnumerable<Counter> GetCounters ()
+		{
+			return InstrumentationService.GetCounters ();
+		}
+		
+		public Counter GetCounter (string name)
+		{
+			return InstrumentationService.GetCounter (name);
+		}
+		
+		public CounterCategory GetCategory (string name)
+		{
+			return InstrumentationService.GetCategory (name);
+		}
+		
+		public IEnumerable<CounterCategory> GetCategories ()
+		{
+			return InstrumentationService.GetCategories ();
+		}
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
+		}
 	}
 }

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Instrumentation
 {
-	public class Counter
+	public class Counter: MarshalByRefObject
 	{
 		internal int count;
 		int totalCount;
@@ -40,6 +40,7 @@ namespace MonoDevelop.Core.Instrumentation
 		TimeSpan resolution = TimeSpan.FromMilliseconds (0);
 		DateTime lastValueTime = DateTime.MinValue;
 		CounterDisplayMode displayMode = CounterDisplayMode.Block;
+		bool disposed;
 		
 		internal Counter (string name, CounterCategory category)
 		{
@@ -76,6 +77,11 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
+		public bool Disposed {
+			get { return disposed; }
+			internal set { disposed = value; }
+		}
+		
 		public int TotalCount {
 			get { return totalCount; }
 		}
@@ -84,8 +90,6 @@ namespace MonoDevelop.Core.Instrumentation
 			get { return this.displayMode; }
 			set { this.displayMode = value; }
 		}
-		
-		public object Color { get; set; }
 		
 		public IEnumerable<CounterValue> GetValues ()
 		{
@@ -274,8 +278,15 @@ namespace MonoDevelop.Core.Instrumentation
 			if (logMessages && message != null)
 				InstrumentationService.LogMessage (message);
 		}
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
+		}
+
 	}
 	
+	[Serializable]
 	public struct CounterValue
 	{
 		int value;
