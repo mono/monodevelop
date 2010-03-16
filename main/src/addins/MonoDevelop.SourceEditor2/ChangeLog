@@ -1,3 +1,10 @@
+2010-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Fixed
+	  'Bug 586479 - GTK and GLib criticals from
+	  DropDownBox.PositionListWindow'.
+
 2010-03-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: fixed

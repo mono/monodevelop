@@ -114,9 +114,7 @@ namespace MonoDevelop.SourceEditor
 				dx = Screen.Width - width;
 			
 			window.Move (dx, dy);
-			window.Show ();
 			window.GetSizeRequest (out width, out height);
-			
 			window.GrabFocus ();
 		}
 		
@@ -221,7 +219,6 @@ namespace MonoDevelop.SourceEditor
 							window = new DropDownBoxListWindow (this);
 							PositionListWindow ();
 							window.SelectItem (CurrentItem);
-							window.ShowAll ();
 						}
 					}
 				}

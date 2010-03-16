@@ -48,6 +48,7 @@ namespace MonoDevelop.SourceEditor
 		public DropDownBoxListWindow (DropDownBox parent) : base(Gtk.WindowType.Popup)
 		{
 			this.parent = parent;
+			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
 			this.TypeHint = Gdk.WindowTypeHint.Menu;
 			this.BorderWidth = 1;
 			
@@ -66,7 +67,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 			list.SizeAllocated += delegate {
-				ResetSizes ();
+				QueueResize ();
 			};
 			list.PageChanged += HandleListPageChanged;
 			hBox.PackStart (list, true, true, 0);
@@ -78,8 +79,7 @@ namespace MonoDevelop.SourceEditor
 			
 			hBox.PackStart (vScrollbar, false, false, 0);
 			Add (hBox);
-			
-			this.Child.ShowAll ();
+			ShowAll ();
 		}
 
 		void HandleListPageChanged (object sender, EventArgs e)
@@ -163,8 +163,9 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
-		internal void ResetSizes ()
+		protected override void OnSizeRequested (ref Requisition requisition)
 		{
+			base.OnSizeRequested (ref requisition);
 			var upper = Math.Max(0, DataProvider.IconCount);
 			var pageStep = list.VisibleRows;
 			vScrollbar.Adjustment.SetBounds (0, upper, 1, pageStep, pageStep);
@@ -172,10 +173,10 @@ namespace MonoDevelop.SourceEditor
 			if (list.VisibleRows >= DataProvider.IconCount && vScrollbar.Parent == hBox)
 				hBox.Remove (vScrollbar);
 		
-			HeightRequest = this.list.HeightRequest + 2;
-			this.Resize (this.Allocation.Width, this.list.HeightRequest + 2);
+			requisition.Height = this.list.HeightRequest + 2;
+//			this.Resize (this.Allocation.Width, this.list.HeightRequest + 2);
 		}
-		
+
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			bool result = base.OnExposeEvent (args);
