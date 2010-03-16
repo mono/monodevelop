@@ -1,3 +1,8 @@
+2010-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Parser/CSharp/CSharpParser.cs: Fixed 'Bug 588310 -
+	  Parser error: invalid UnaryExpr'.
+
 2010-02-25  lluis  <${AuthorEmail}>
 
 	* NRefactory.csproj: Remove duplicates.

@@ -465,6 +465,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			Token pt = la;
 			bool result = IsTypeNameOrKWForTypeCast (ref pt) && IsIdentifierToken (pt);
 			if (Peek (1).kind == Tokens.Question) {
+				if (Peek (2).kind == Tokens.OpenSquareBracket) // array case: T?[,]
+					return true;
 				result &= Peek (2).kind == Tokens.Identifier;
 				result &= Peek (3).kind == Tokens.Semicolon || Peek (3).kind == Tokens.Comma || Peek (3).kind == Tokens.Assign;
 			}
