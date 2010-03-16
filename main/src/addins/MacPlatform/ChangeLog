@@ -1,3 +1,9 @@
+2010-03-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Unbreak the OpenDocuments handler - the
+	  position handling changes stopped it from working when
+	  starting MD and when opening solutions.
+
 2010-03-16  Levi Bard  <levi@unity3d.com>
 
 	* MacPlatform/MacPlatform.cs

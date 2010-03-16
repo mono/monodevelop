@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using OSXIntegration.Framework;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace MonoDevelop.Platform
 {
@@ -218,9 +219,8 @@ namespace MonoDevelop.Platform
 				};
 				
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
-					foreach (KeyValuePair<string,int> filePair in e.Documents) {
-						IdeApp.Workbench.OpenDocument (filePair.Key, filePair.Value, 1, true);
-					}
+					//FIXME: make OpenFiles take the location too
+					IdeApp.OpenFiles (e.Documents.Select (x => x.Key).ToList ());
 					e.Handled = true;
 				};
 				
