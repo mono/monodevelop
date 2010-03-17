@@ -30,8 +30,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
 /// <summary>
 /// Wrappers for Afrodite completion library

@@ -1,24 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Core.Gui, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Deployment, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Components, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VersionControl, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.NUnit, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.XmlEditor, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Gettext, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment.Linux, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.GtkCore, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.DesignerSupport, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.VBNetBinding, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CBinding, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.CSharpBinding, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Autotools, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.VersionControl, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.XmlEditor, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Gettext, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Deployment.Linux, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.VBNetBinding, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.CBinding, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.CSharpBinding, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Autotools, Version=1.9.1.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=1.9.1.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.SourceEditor2, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Debugger, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Refactoring, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="../build/MonoDevelop.ValaBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.ValaBinding.CodeGenerationPanel" design-size="611 396">
@@ -353,7 +359,6 @@ Shared Object</property>
                       <widget class="Gtk.Table" id="table5">
                         <property name="MemberName" />
                         <property name="NRows">2</property>
-                        <property name="NColumns">1</property>
                         <property name="RowSpacing">6</property>
                         <property name="ColumnSpacing">9</property>
                         <property name="BorderWidth">6</property>
@@ -519,7 +524,6 @@ Example:
                   <widget class="Gtk.TreeView" id="libTreeView">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                     <signal name="CursorChanged" handler="OnLibTreeViewCursorChanged" />
                   </widget>
                 </child>
@@ -696,7 +700,6 @@ Example:
                       <widget class="Gtk.TreeView" id="includePathTreeView">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="HeadersClickable">True</property>
                         <signal name="CursorChanged" handler="OnIncludePathTreeViewCursorChanged" />
                       </widget>
                     </child>
@@ -1229,7 +1232,6 @@ Example:
             <property name="Tooltip" translatable="yes">Default compiler to use for new C projects.</property>
             <property name="IsTextCombo">True</property>
             <property name="Items" translatable="yes" />
-            <property name="Active">0</property>
             <signal name="Changed" handler="OnValaComboChanged" />
           </widget>
           <packing>
@@ -1283,7 +1285,6 @@ Example:
                           <widget class="Gtk.TreeView" id="normalPackageTreeView">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="HeadersClickable">True</property>
                             <signal name="CursorChanged" handler="OnNonSelectedPackageCursorChanged" />
                           </widget>
                         </child>
@@ -1307,7 +1308,6 @@ Example:
                           <widget class="Gtk.TreeView" id="projectPackageTreeView">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="HeadersClickable">True</property>
                             <signal name="CursorChanged" handler="OnNonSelectedPackageCursorChanged" />
                           </widget>
                         </child>
@@ -1423,7 +1423,6 @@ Example:
                       <widget class="Gtk.TreeView" id="selectedPackageTreeView">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="HeadersClickable">True</property>
                         <signal name="CursorChanged" handler="OnSelectedPackagesTreeViewCursorChanged" />
                       </widget>
                     </child>
@@ -1551,7 +1550,6 @@ Example:
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1731,7 +1729,6 @@ Example:
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="ShowScrollbars">True</property>
-                            <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
                       </widget>

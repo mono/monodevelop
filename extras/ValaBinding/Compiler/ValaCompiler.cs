@@ -41,12 +41,11 @@ using System.Diagnostics;
 using Mono.Addins;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.Gui.Components;
 
 namespace MonoDevelop.ValaBinding
 {

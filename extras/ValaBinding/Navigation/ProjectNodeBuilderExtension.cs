@@ -39,10 +39,10 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 using MonoDevelop.ValaBinding;
 using MonoDevelop.ValaBinding.Parser;

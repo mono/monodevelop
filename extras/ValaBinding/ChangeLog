@@ -1,3 +1,25 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Parser/Afrodite.cs:
+	* gtk-gui/gui.stetic:
+	* Gui/DataProvider.cs:
+	* ValaBinding.addin.xml:
+	* Project/ValaProject.cs:
+	* Compiler/ValaCompiler.cs:
+	* Gui/EditPackagesDialog.cs:
+	* Gui/OutputOptionsPanel.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* Gui/GeneralOptionsPanel.cs:
+	* Parser/ProjectInformation.cs:
+	* Gui/ValaTextEditorExtension.cs:
+	* Navigation/LanguageItemNodeBuilder.cs:
+	* ProjectPad/ProjectPackageNodeBuilder.cs:
+	* Navigation/LanguageItemCommandHandler.cs:
+	* Navigation/ProjectNodeBuilderExtension.cs:
+	* ProjectPad/ProjectPackagesFolderNodeBuilder.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-03-12  Levi Bard  <taktaktaktaktaktaktaktaktaktak@gmail.com>
 
 	* configure.in: Change autofoo to check for afrodite.

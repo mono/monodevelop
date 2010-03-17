@@ -36,8 +36,7 @@ using System.Collections.Generic;
 using Mono.Addins;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.ValaBinding
 {

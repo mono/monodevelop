@@ -29,14 +29,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
-
 using System;
-
-using Mono.Addins;
-
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.ValaBinding
 {

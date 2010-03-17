@@ -37,9 +37,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.ValaBinding.Parser;
 using MonoDevelop.ValaBinding.Parser.Afrodite;
