@@ -177,21 +177,8 @@
       <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.Autotools\MonoDevelop.Autotools.csproj">
-      <Project>{CFC02FEC-BDF4-40B9-94D6-35E73F76A92E}</Project>
-      <Name>MonoDevelop.Autotools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
-      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
-      <Name>MonoDevelop.Deployment</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

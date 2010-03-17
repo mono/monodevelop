@@ -3,10 +3,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Refactoring
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Refactoring.dll
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
-	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \

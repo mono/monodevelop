@@ -1,6 +1,11 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj: Fix build.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:
