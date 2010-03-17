@@ -20,8 +20,6 @@
 namespace BooBinding
 
 import System
-import System.Xml
-import System.Diagnostics
 
 import MonoDevelop.Projects
 import MonoDevelop.Core.Serialization

@@ -26,7 +26,7 @@
 
 using System;
 using Gtk;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Core;
 
 namespace MonoDevelop.MeeGo

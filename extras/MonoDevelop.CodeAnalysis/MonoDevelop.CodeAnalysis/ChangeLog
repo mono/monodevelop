@@ -1,3 +1,12 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/ResultsReporter.cs:
+	* Commands/AnalyzeHandler.cs:
+	* MonoDevelop.CodeAnalysis.csproj:
+	* MonoDevelop.CodeAnalysis.addin.xml: Merged MD.Projects into
+	  MD.Core, and MD.Projects.Gui, MD.Core.Gui and MD.Components
+	  into MD.Ide.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

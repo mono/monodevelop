@@ -20,15 +20,6 @@
 namespace BooBinding.Gui.OptionPanels
 
 import System
-import Gtk
-import Pango
-
-import MonoDevelop.Projects
-import MonoDevelop.Core.Gui.Dialogs
-import MonoDevelop.Components
-import MonoDevelop.Core
-import MonoDevelop.Core.Properties
-
 import BooBinding.Properties
 
 public class GeneralBooShellPanel(GeneralShellPanel):

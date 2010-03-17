@@ -29,7 +29,7 @@
 using System;
 using System.IO;
 using Gtk;
-using MonoDevelop.Core.Gui.WebBrowser;
+using MonoDevelop.Ide.WebBrowser;
 
 namespace MonoDevelop.WebBrowsers
 {

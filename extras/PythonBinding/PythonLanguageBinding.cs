@@ -30,7 +30,7 @@ using System.Threading;
 using Gtk;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
+ 
 
 namespace PythonBinding
 {

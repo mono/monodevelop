@@ -22,9 +22,10 @@ using System;
 using Gtk;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace JavaBinding
 {

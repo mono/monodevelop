@@ -2,9 +2,8 @@ using System;
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-
 
 namespace MonoDevelop.CodeAnalysis {
 	

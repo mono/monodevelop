@@ -22,21 +22,17 @@ namespace BooBinding.Gui
 import System
 import System.Collections
 import System.IO
-import System.Runtime.InteropServices
 
 import Gtk
 import Gdk
-import GLib
-import Pango
 import GtkSourceView
 
 import MonoDevelop.Components
-import MonoDevelop.Projects.Gui.Completion
+import MonoDevelop.Ide.CodeCompletion
 import MonoDevelop.Core
 import MonoDevelop.Projects
-import MonoDevelop.Ide.Gui
+import MonoDevelop.Ide
 import MonoDevelop.Projects.Dom.Parser
-import MonoDevelop.Projects.Dom.Output
 
 /*
  * TODO
@@ -187,7 +183,7 @@ class ShellTextView (SourceView, ICompletionWidget):
 	#region Overrides of the standard methods for event handling
 	override def OnPopulatePopup (menu as Gtk.Menu):
 		_copyScriptInput = ImageMenuItem (GettextCatalog.GetString ("Copy Script"))
-		_copyScriptInput.Activated += { Gtk.Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", true)).SetText(_scriptLines) }
+		_copyScriptInput.Activated += { Gtk.Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", true)).Text = _scriptLines }
 		_copyScriptInput.Image = Gtk.Image (Stock.Copy, Gtk.IconSize.Menu)
 		
 		_saveScriptToFile = ImageMenuItem (GettextCatalog.GetString ("Save Script As ..."))

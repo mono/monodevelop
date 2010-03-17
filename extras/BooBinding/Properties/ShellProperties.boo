@@ -3,12 +3,7 @@
 namespace BooBinding.Properties
 
 import System
-
-import Gtk
-import Gdk
 import Pango
-
-import MonoDevelop.Components
 import MonoDevelop.Core
 
 class ShellProperties:

@@ -25,8 +25,7 @@ import System
 import Gtk
 
 import MonoDevelop.Projects
-import MonoDevelop.Projects.Gui.Dialogs
-import MonoDevelop.Components
+import MonoDevelop.Ide.Gui.Dialogs
 import MonoDevelop.Core
 
 public class CodeGenerationPanel(MultiConfigItemOptionsPanel):

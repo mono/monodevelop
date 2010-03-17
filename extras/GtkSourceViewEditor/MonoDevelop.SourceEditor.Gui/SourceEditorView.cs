@@ -13,7 +13,7 @@ using Mono.Addins;
 using MonoDevelop.Components.Commands;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.CodeTemplates;
@@ -21,7 +21,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Parser;
 
 using MonoDevelop.SourceEditor;

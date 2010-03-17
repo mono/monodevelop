@@ -22,18 +22,14 @@ namespace BooBinding
 import System
 import System.IO
 import System.Diagnostics
-import System.Reflection
-import System.Resources
 import System.Xml
 import System.CodeDom
 import System.CodeDom.Compiler;
 import Boo.Lang.CodeDom;
 
 import MonoDevelop.Projects
-import MonoDevelop.Projects.Dom
 import MonoDevelop.Projects.Dom.Parser
 import MonoDevelop.Projects.CodeGeneration
-import MonoDevelop.Core.Gui
 import MonoDevelop.Core
 
 public class BooLanguageBinding(IDotNetLanguageBinding):

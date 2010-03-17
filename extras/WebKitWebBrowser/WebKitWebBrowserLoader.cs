@@ -27,7 +27,7 @@
 //
 
 using System;
-using MonoDevelop.Core.Gui.WebBrowser;
+using MonoDevelop.Ide.WebBrowser;
 
 namespace MonoDevelop.WebBrowsers
 {

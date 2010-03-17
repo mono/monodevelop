@@ -20,18 +20,12 @@
 namespace BooBinding.Gui
 
 import System
-import System.Diagnostics
 import System.Collections
 import System.IO
 import System.Threading
-import System.Runtime.Remoting
-import System.Runtime.Remoting.Channels
 
 import BooBinding.Properties
 import BooBinding.BooShell
-
-import MonoDevelop.Core
-import MonoDevelop.Core.Execution
 
 class BooShellModel(IShellModel):
 	private _props = BooShellProperties()

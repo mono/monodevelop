@@ -8,7 +8,7 @@ using System.CodeDom.Compiler;
 using Gtk;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Core;
 using MonoDevelop.Core;
 

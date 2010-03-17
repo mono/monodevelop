@@ -7,7 +7,7 @@ using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
+ 
 
 namespace PythonBinding
 {

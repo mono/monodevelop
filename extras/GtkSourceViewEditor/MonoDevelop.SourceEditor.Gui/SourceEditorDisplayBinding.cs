@@ -12,7 +12,6 @@ using GtkSourceView;
 using Mono.Addins;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 
 using MonoDevelop.Ide.Gui;
@@ -23,7 +22,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Parser;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.SourceEditor.FormattingStrategy;
 
@@ -382,7 +381,7 @@ namespace MonoDevelop.SourceEditor.Gui
 		{
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
-					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
+					if ( MonoDevelop.Ide.MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), MonoDevelop.Core.Gui.AlertButton.Cancel, MonoDevelop.Core.Gui.AlertButton.OverwriteFile) != MonoDevelop.Core.Gui.AlertButton.OverwriteFile)
 						return;
 				}
 				warnOverwrite = false;

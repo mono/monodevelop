@@ -30,7 +30,6 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.CodeGeneration;
 

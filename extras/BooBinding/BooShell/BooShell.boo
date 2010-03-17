@@ -21,16 +21,12 @@ namespace BooBinding.BooShell
 
 import System
 import System.Collections
-import System.IO
 import System.Threading
 import System.Text.RegularExpressions
 import Boo.Lang.Interpreter
-import Boo.Lang.Compiler
 
 import Gtk
-import GLib
 
-import MonoDevelop.Core
 import MonoDevelop.Core.Execution;
 
 class BooShell (RemoteProcessObject):

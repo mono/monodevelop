@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.SourceEditor.Gui.Dialogs;
 using GtkSourceView;
 using MonoDevelop.SourceEditor;
@@ -13,7 +13,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Search;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
-using Stock = MonoDevelop.Core.Gui.Stock;
+using Stock = Stock;
 
 namespace MonoDevelop.SourceEditor.Gui
 {

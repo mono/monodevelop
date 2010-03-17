@@ -1,3 +1,9 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Backend.Mdb.csproj: Merged MD.Projects into
+	  MD.Core, and MD.Projects.Gui, MD.Core.Gui and MD.Components
+	  into MD.Ide.
+
 2010-03-08  Jonathan Pryor  <jpryor@novell.com>
 
 	* Makefile: Set $(ASSEMBLY_COMPILER_COMMAND) to $(CSC).  

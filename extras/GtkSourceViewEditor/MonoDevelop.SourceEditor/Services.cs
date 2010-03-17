@@ -2,7 +2,7 @@ using System;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.SourceEditor

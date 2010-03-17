@@ -1,7 +1,6 @@
 using Gtk;
 using GLib;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using Mono.Addins;

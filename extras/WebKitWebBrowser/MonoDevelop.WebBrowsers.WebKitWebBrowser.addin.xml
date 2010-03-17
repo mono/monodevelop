@@ -9,7 +9,7 @@
        version     = "2.2">
 
 	<Dependencies>
-		<Addin id = "Core.Gui" version = "2.2"/>
+		<Addin id = "Ide" version = "2.2"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/WebBrowsers">
