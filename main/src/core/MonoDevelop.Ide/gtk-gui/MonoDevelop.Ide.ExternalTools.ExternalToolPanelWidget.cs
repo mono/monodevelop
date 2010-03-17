@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.argumentLabel.Name = "argumentLabel";
 			this.argumentLabel.Xalign = 0f;
 			this.argumentLabel.Yalign = 0f;
-			this.argumentLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Arguments:");
+			this.argumentLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Arguments:");
 			this.argumentLabel.UseUnderline = true;
 			this.table2.Add (this.argumentLabel);
 			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table2[this.argumentLabel]));
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.commandLabel.Name = "commandLabel";
 			this.commandLabel.Xalign = 0f;
 			this.commandLabel.Yalign = 0f;
-			this.commandLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Command:");
+			this.commandLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Command:");
 			this.commandLabel.UseUnderline = true;
 			this.table2.Add (this.commandLabel);
 			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table2[this.commandLabel]));
@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.titleLabel.Name = "titleLabel";
 			this.titleLabel.Xalign = 0f;
 			this.titleLabel.Yalign = 0f;
-			this.titleLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Title:");
+			this.titleLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Title:");
 			this.titleLabel.UseUnderline = true;
 			this.table2.Add (this.titleLabel);
 			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2[this.titleLabel]));
@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.workingDirLabel.Name = "workingDirLabel";
 			this.workingDirLabel.Xalign = 0f;
 			this.workingDirLabel.Yalign = 0f;
-			this.workingDirLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Working directory:");
+			this.workingDirLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Working directory:");
 			this.workingDirLabel.UseUnderline = true;
 			this.table2.Add (this.workingDirLabel);
 			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table2[this.workingDirLabel]));
@@ -301,7 +301,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			// Container child table1.Gtk.Table+TableChild
 			this.promptArgsCheckBox = new global::Gtk.CheckButton ();
 			this.promptArgsCheckBox.Name = "promptArgsCheckBox";
-			this.promptArgsCheckBox.Label = global::Mono.Unix.Catalog.GetString ("_Prompt for arguments");
+			this.promptArgsCheckBox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Prompt for arguments");
 			this.promptArgsCheckBox.DrawIndicator = true;
 			this.promptArgsCheckBox.UseUnderline = true;
 			this.table1.Add (this.promptArgsCheckBox);
@@ -311,7 +311,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.saveCurrentFileCheckBox = new global::Gtk.CheckButton ();
 			this.saveCurrentFileCheckBox.CanFocus = true;
 			this.saveCurrentFileCheckBox.Name = "saveCurrentFileCheckBox";
-			this.saveCurrentFileCheckBox.Label = global::Mono.Unix.Catalog.GetString ("_Save current file");
+			this.saveCurrentFileCheckBox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Save current file");
 			this.saveCurrentFileCheckBox.DrawIndicator = true;
 			this.saveCurrentFileCheckBox.UseUnderline = true;
 			this.table1.Add (this.saveCurrentFileCheckBox);
@@ -322,7 +322,7 @@ namespace MonoDevelop.Ide.ExternalTools
 			// Container child table1.Gtk.Table+TableChild
 			this.useOutputPadCheckBox = new global::Gtk.CheckButton ();
 			this.useOutputPadCheckBox.Name = "useOutputPadCheckBox";
-			this.useOutputPadCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Use _output window");
+			this.useOutputPadCheckBox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Use _output window");
 			this.useOutputPadCheckBox.DrawIndicator = true;
 			this.useOutputPadCheckBox.UseUnderline = true;
 			this.table1.Add (this.useOutputPadCheckBox);

@@ -33,8 +33,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			Stetic.BinContainer w1 = global::Stetic.BinContainer.Attach (this);
 			this.UIManager = new global::Gtk.UIManager ();
 			global::Gtk.ActionGroup w2 = new global::Gtk.ActionGroup ("Default");
-			this.ViewModeAction = new global::Gtk.Action ("ViewModeAction", global::Mono.Unix.Catalog.GetString ("ViewMode"), null, null);
-			this.ViewModeAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("ViewMode");
+			this.ViewModeAction = new global::Gtk.Action ("ViewModeAction", global::MonoDevelop.Core.GettextCatalog.GetString ("ViewMode"), null, null);
+			this.ViewModeAction.ShortLabel = global::MonoDevelop.Core.GettextCatalog.GetString ("ViewMode");
 			w2.Add (this.ViewModeAction, null);
 			this.UIManager.InsertActionGroup (w2, 0);
 			this.Name = "MonoDevelop.Ide.FindInFiles.SearchResultWidget";

@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.labelFileMask = new global::Gtk.Label ();
 			this.labelFileMask.Name = "labelFileMask";
 			this.labelFileMask.Xalign = 0f;
-			this.labelFileMask.LabelProp = global::Mono.Unix.Catalog.GetString ("_File Mask:");
+			this.labelFileMask.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_File Mask:");
 			this.labelFileMask.UseUnderline = true;
 			this.tableFindAndReplace.Add (this.labelFileMask);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelFileMask]));
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.labelFind = new global::Gtk.Label ();
 			this.labelFind.Name = "labelFind";
 			this.labelFind.Xalign = 0f;
-			this.labelFind.LabelProp = global::Mono.Unix.Catalog.GetString ("_Find:");
+			this.labelFind.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Find:");
 			this.labelFind.UseUnderline = true;
 			this.tableFindAndReplace.Add (this.labelFind);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelFind]));
@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.labelScope = new global::Gtk.Label ();
 			this.labelScope.Name = "labelScope";
 			this.labelScope.Xalign = 0f;
-			this.labelScope.LabelProp = global::Mono.Unix.Catalog.GetString ("_Scope:");
+			this.labelScope.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Scope:");
 			this.labelScope.UseUnderline = true;
 			this.tableFindAndReplace.Add (this.labelScope);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelScope]));
@@ -135,11 +135,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			// Container child tableFindAndReplace.Gtk.Table+TableChild
 			this.searchentry1 = new global::MonoDevelop.Components.SearchEntry ();
 			this.searchentry1.Name = "searchentry1";
+			this.searchentry1.ForceFilterButtonVisible = false;
+			this.searchentry1.IsCheckMenu = false;
 			this.searchentry1.ActiveFilterID = 0;
 			this.searchentry1.Ready = false;
 			this.searchentry1.HasFocus = false;
-			this.searchentry1.IsCheckMenu = false;
-			this.searchentry1.ForceFilterButtonVisible = false;
 			this.tableFindAndReplace.Add (this.searchentry1);
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.searchentry1]));
 			w8.TopAttach = ((uint)(2));
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.checkbuttonCaseSensitive = new global::Gtk.CheckButton ();
 			this.checkbuttonCaseSensitive.CanFocus = true;
 			this.checkbuttonCaseSensitive.Name = "checkbuttonCaseSensitive";
-			this.checkbuttonCaseSensitive.Label = global::Mono.Unix.Catalog.GetString ("_Case sensitive");
+			this.checkbuttonCaseSensitive.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Case sensitive");
 			this.checkbuttonCaseSensitive.DrawIndicator = true;
 			this.checkbuttonCaseSensitive.UseUnderline = true;
 			this.table1.Add (this.checkbuttonCaseSensitive);
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.checkbuttonRegexSearch = new global::Gtk.CheckButton ();
 			this.checkbuttonRegexSearch.CanFocus = true;
 			this.checkbuttonRegexSearch.Name = "checkbuttonRegexSearch";
-			this.checkbuttonRegexSearch.Label = global::Mono.Unix.Catalog.GetString ("Rege_x search");
+			this.checkbuttonRegexSearch.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Rege_x search");
 			this.checkbuttonRegexSearch.DrawIndicator = true;
 			this.checkbuttonRegexSearch.UseUnderline = true;
 			this.table1.Add (this.checkbuttonRegexSearch);
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.checkbuttonWholeWordsOnly = new global::Gtk.CheckButton ();
 			this.checkbuttonWholeWordsOnly.CanFocus = true;
 			this.checkbuttonWholeWordsOnly.Name = "checkbuttonWholeWordsOnly";
-			this.checkbuttonWholeWordsOnly.Label = global::Mono.Unix.Catalog.GetString ("_Whole words only");
+			this.checkbuttonWholeWordsOnly.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Whole words only");
 			this.checkbuttonWholeWordsOnly.DrawIndicator = true;
 			this.checkbuttonWholeWordsOnly.UseUnderline = true;
 			this.table1.Add (this.checkbuttonWholeWordsOnly);
@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			w20.Add (w21);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w23 = new global::Gtk.Label ();
-			w23.LabelProp = global::Mono.Unix.Catalog.GetString ("R_eplace");
+			w23.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("R_eplace");
 			w23.UseUnderline = true;
 			w20.Add (w23);
 			w19.Add (w20);

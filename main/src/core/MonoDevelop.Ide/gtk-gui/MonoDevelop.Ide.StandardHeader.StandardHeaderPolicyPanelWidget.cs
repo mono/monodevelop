@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.StandardHeader
 			this.includeAutoCheck = new global::Gtk.CheckButton ();
 			this.includeAutoCheck.CanFocus = true;
 			this.includeAutoCheck.Name = "includeAutoCheck";
-			this.includeAutoCheck.Label = global::Mono.Unix.Catalog.GetString ("_Include standard header in new files");
+			this.includeAutoCheck.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Include standard header in new files");
 			this.includeAutoCheck.DrawIndicator = true;
 			this.includeAutoCheck.UseUnderline = true;
 			this.vbox2.Add (this.includeAutoCheck);

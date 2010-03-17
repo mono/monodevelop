@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Preview:");
+			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Preview:");
 			this.hbox2.Add (this.label3);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label3]));
 			w8.Position = 0;
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.checkbuttonWhiteSpaces = new global::Gtk.CheckButton ();
 			this.checkbuttonWhiteSpaces.CanFocus = true;
 			this.checkbuttonWhiteSpaces.Name = "checkbuttonWhiteSpaces";
-			this.checkbuttonWhiteSpaces.Label = global::Mono.Unix.Catalog.GetString ("S_how whitespaces");
+			this.checkbuttonWhiteSpaces.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("S_how whitespaces");
 			this.checkbuttonWhiteSpaces.DrawIndicator = true;
 			this.checkbuttonWhiteSpaces.UseUnderline = true;
 			this.hbox2.Add (this.checkbuttonWhiteSpaces);

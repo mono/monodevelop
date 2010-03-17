@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.Xalign = 0f;
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Pads");
+			this.label8.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Pads");
 			this.alignment1.Add (this.label8);
 			this.vbox2.Add (this.alignment1);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment1]));
@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
 			this.label10.Xalign = 0f;
-			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("Documents");
+			this.label10.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Documents");
 			this.vbox3.Add (this.label10);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.label10]));
 			w9.Position = 0;

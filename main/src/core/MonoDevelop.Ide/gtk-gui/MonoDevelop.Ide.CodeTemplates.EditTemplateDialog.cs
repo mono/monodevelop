@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0f;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("_Mime:");
+			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Mime:");
 			this.label2.UseUnderline = true;
 			this.hbox1.Add (this.label2);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label2]));
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.entryShortcut1 = new global::Gtk.Entry ();
 			this.entryShortcut1.CanFocus = true;
 			this.entryShortcut1.Name = "entryShortcut1";
-			this.entryShortcut1.Text = global::Mono.Unix.Catalog.GetString (" ");
+			this.entryShortcut1.Text = global::MonoDevelop.Core.GettextCatalog.GetString (" ");
 			this.entryShortcut1.IsEditable = true;
 			this.entryShortcut1.InvisibleChar = '●';
 			this.hbox2.Add (this.entryShortcut1);
@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
 			this.label5.Xalign = 0f;
-			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("_Group:");
+			this.label5.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Group:");
 			this.label5.UseUnderline = true;
 			this.hbox2.Add (this.label5);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label5]));
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.checkbuttonExpansion = new global::Gtk.CheckButton ();
 			this.checkbuttonExpansion.CanFocus = true;
 			this.checkbuttonExpansion.Name = "checkbuttonExpansion";
-			this.checkbuttonExpansion.Label = global::Mono.Unix.Catalog.GetString ("Is _expandable template");
+			this.checkbuttonExpansion.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Is _expandable template");
 			this.checkbuttonExpansion.DrawIndicator = true;
 			this.checkbuttonExpansion.UseUnderline = true;
 			this.hbox5.Add (this.checkbuttonExpansion);
@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.checkbuttonSurroundWith = new global::Gtk.CheckButton ();
 			this.checkbuttonSurroundWith.CanFocus = true;
 			this.checkbuttonSurroundWith.Name = "checkbuttonSurroundWith";
-			this.checkbuttonSurroundWith.Label = global::Mono.Unix.Catalog.GetString ("Is _surround with template");
+			this.checkbuttonSurroundWith.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Is _surround with template");
 			this.checkbuttonSurroundWith.DrawIndicator = true;
 			this.checkbuttonSurroundWith.UseUnderline = true;
 			this.hbox5.Add (this.checkbuttonSurroundWith);
@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0f;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Shortcut:");
+			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Shortcut:");
 			this.label1.UseUnderline = true;
 			this.table2.Add (this.label1);
 			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table2[this.label1]));
@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 1f;
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Description:");
+			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Description:");
 			this.label3.UseUnderline = true;
 			this.table2.Add (this.label3);
 			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table2[this.label3]));
@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
 			this.label6.Xalign = 0f;
-			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Template Text:");
+			this.label6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Template Text:");
 			this.hbox3.Add (this.label6);
 			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label6]));
 			w16.Position = 0;
@@ -256,7 +256,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.checkbuttonWhiteSpaces = new global::Gtk.CheckButton ();
 			this.checkbuttonWhiteSpaces.CanFocus = true;
 			this.checkbuttonWhiteSpaces.Name = "checkbuttonWhiteSpaces";
-			this.checkbuttonWhiteSpaces.Label = global::Mono.Unix.Catalog.GetString ("S_how whitespaces");
+			this.checkbuttonWhiteSpaces.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("S_how whitespaces");
 			this.checkbuttonWhiteSpaces.DrawIndicator = true;
 			this.checkbuttonWhiteSpaces.UseUnderline = true;
 			this.hbox3.Add (this.checkbuttonWhiteSpaces);
