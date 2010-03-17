@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog";
-			this.Title = global::Mono.Unix.Catalog.GetString ("New Layout");
+			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("New Layout");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.BorderWidth = ((uint)(6));
 			this.Resizable = false;
@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label72 = new global::Gtk.Label ();
 			this.label72.Name = "label72";
 			this.label72.Xalign = 0f;
-			this.label72.LabelProp = global::Mono.Unix.Catalog.GetString ("Layout name:");
+			this.label72.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Layout name:");
 			this.hbox45.Add (this.label72);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox45[this.label72]));
 			w2.Position = 0;

@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0f;
 			this.label4.Yalign = 0f;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("The following add-ins could not be started:");
+			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("The following add-ins could not be started:");
 			this.vbox4.Add (this.label4);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label4]));
 			w3.Position = 0;
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.labelContinue.Name = "labelContinue";
 			this.labelContinue.Xalign = 0f;
 			this.labelContinue.Yalign = 0f;
-			this.labelContinue.LabelProp = global::Mono.Unix.Catalog.GetString ("You can start MonoDevelop without these add-ins, but the functionality they provide will be missing. Do you wish to continue?");
+			this.labelContinue.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("You can start MonoDevelop without these add-ins, but the functionality they provide will be missing. Do you wish to continue?");
 			this.labelContinue.Wrap = true;
 			this.vbox4.Add (this.labelContinue);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.labelContinue]));
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.labelFatal.Name = "labelFatal";
 			this.labelFatal.Xalign = 0f;
 			this.labelFatal.Yalign = 0f;
-			this.labelFatal.LabelProp = global::Mono.Unix.Catalog.GetString ("MonoDevelop cannot start because a fatal error has been detected.");
+			this.labelFatal.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("MonoDevelop cannot start because a fatal error has been detected.");
 			this.vbox4.Add (this.labelFatal);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.labelFatal]));
 			w7.Position = 3;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.labelWarning.Name = "labelWarning";
 			this.labelWarning.Xalign = 0f;
 			this.labelWarning.Yalign = 0f;
-			this.labelWarning.LabelProp = global::Mono.Unix.Catalog.GetString ("MonoDevelop can run without these add-ins, but the functionality they provide will be missing.");
+			this.labelWarning.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("MonoDevelop can run without these add-ins, but the functionality they provide will be missing.");
 			this.labelWarning.Wrap = true;
 			this.vbox4.Add (this.labelWarning);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.labelWarning]));

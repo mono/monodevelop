@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog";
-			this.Title = global::Mono.Unix.Catalog.GetString ("Select File Format");
+			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Select File Format");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0f;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>File Format Incompatibility Detected</b>");
+			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>File Format Incompatibility Detected</b>");
 			this.label1.UseMarkup = true;
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.labelMessage = new global::Gtk.Label ();
 			this.labelMessage.Name = "labelMessage";
 			this.labelMessage.Xalign = 0f;
-			this.labelMessage.LabelProp = global::Mono.Unix.Catalog.GetString ("The current file format for project {0} is not compatible with some settings of the project.");
+			this.labelMessage.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("The current file format for project {0} is not compatible with some settings of the project.");
 			this.vbox2.Add (this.labelMessage);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelMessage]));
 			w5.Position = 1;
@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
 			this.label6.Xalign = 0f;
-			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Please select a new file format for the solution:");
+			this.label6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Please select a new file format for the solution:");
 			this.vbox2.Add (this.label6);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label6]));
 			w7.Position = 3;
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0f;
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Current Format:");
+			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Current Format:");
 			this.table1.Add (this.label3);
 			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
 			w11.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0f;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("New Format:");
+			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("New Format:");
 			this.table1.Add (this.label4);
 			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
 			w12.TopAttach = ((uint)(1));
