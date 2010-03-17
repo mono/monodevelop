@@ -34,8 +34,7 @@ using System.Collections.Generic;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.CodeTemplates

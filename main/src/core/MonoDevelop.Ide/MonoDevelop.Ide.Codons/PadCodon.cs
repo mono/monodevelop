@@ -34,7 +34,6 @@ using System.Collections;
 using System.ComponentModel;
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
 

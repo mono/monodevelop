@@ -36,7 +36,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Tasks
 {	

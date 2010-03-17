@@ -33,7 +33,6 @@ using System;
 using System.Collections;
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using System.ComponentModel;

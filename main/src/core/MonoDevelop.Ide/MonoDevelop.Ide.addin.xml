@@ -16,10 +16,6 @@
 	
 	<Dependencies>
 		<Addin id="Core" version="2.2"/>
-		<Addin id="Core.Gui" version="2.2"/>
-		<Addin id="Projects" version="2.2"/>
-		<Addin id="Projects.Gui" version="2.2"/>
-		<Addin id="Components" version="2.2"/>
 	</Dependencies>
 
 	<!-- Extension ponts -->
@@ -28,6 +24,82 @@
 	<ConditionType id="activeproject" type="MonoDevelop.Ide.Codons.ProjectActiveCondition" />
 	<ConditionType id="activelanguage" type="MonoDevelop.Ide.Codons.LanguageActiveCondition" />
 	<ConditionType id="activecontext" type="MonoDevelop.Ide.Codons.WorkbenchContextCondition" />
+	
+	<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection">
+		<ExtensionNode name="Section" type="MonoDevelop.Ide.Extensions.OptionsDialogSection" />
+	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/PlatformService" name = "Platform Service">
+		<Description>Implementations of platform-dependent code wrapped in a platform-agnostic API. Specified classes must inherit from MonoDevelop.Ide.Desktop.PlatformService.</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/StockIcons" name = "Stock icons">
+		<Description>Available from MonoDevelop.Ide.ImageService</Description>
+		<ExtensionNode name="StockIcon" type="MonoDevelop.Ide.Extensions.StockIconCodon" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/WebBrowsers" name = "Web Browsers">
+		<Description>Used optionally to provides a web browser widget. Must implement MonoDevelop.Ide.WebBrowser.IWebBrowserLoader</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/MimeTypes" name = "Mime types">
+		<Description>Mime type to file extension mappings. Mime types defined here override the ones provided by the operating system.</Description>
+		<ExtensionNode name="MimeType" type="MonoDevelop.Ide.Extensions.MimeTypeNode"/>
+	</ExtensionPoint>
+	
+	<!-- This item set can be used to define extension points for extensible menus and toolbars -->
+	
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet">
+		<ExtensionNode name="CommandItem" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandItemCodon" />
+		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Components.Commands.ExtensionNodes.SeparatorItemCodon" />
+		<ExtensionNode name="ItemSet" type="MonoDevelop.Components.Commands.ExtensionNodes.ItemSetCodon">
+			<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+		</ExtensionNode>
+		<ExtensionNode name="LinkItem" type="MonoDevelop.Components.Commands.ExtensionNodes.LinkItemCodon" />
+		<ExtensionNode name="LocalCommandItem" type="MonoDevelop.Components.Commands.ExtensionNodes.LocalCommandItemCodon" />
+	</ExtensionNodeSet>
+
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.CommandSet">
+		<ExtensionNode name="Command" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCodon" />
+		<ExtensionNode name="Category" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCategoryCodon">
+			<ExtensionNode name="Command" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandCodon" />
+		</ExtensionNode>
+	</ExtensionNodeSet>
+
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme">
+		<ExtensionNode name="Scheme" type="MonoDevelop.Components.Commands.ExtensionNodes.SchemeExtensionNode" />
+	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/Components/DialogHandlers" name = "Dialog Handlers">
+		<Description>Allows providing platform-specific implementations for common dialogs</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels" name="Dialog panels for item options">
+		<Description>Dialog panels for item options. Those panels will be shown for all kind of solution items, solutions and workspaces.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
+		<ConditionType id="ItemType" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
+			<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
+		</ConditionType>
+		<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ProjectLanguageCondition">
+			<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
+		</ConditionType>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels" name = "Default policy panels">
+		<Description>Panels for editing default policies. Must derive from PolicyOptionsPanel. 
+		Should be the same policy panel registered for ItemOptionPanels.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels" name = "Mime Type policy panels">
+		<Description>Panels for editing mime type policies. Must derive from MimeTypePolicyOptionsPanel.</Description>
+		<ExtensionNode name="Panel" type="MonoDevelop.Ide.Extensions.MimeTypeOptionsPanelNode"/>
+	</ExtensionPoint>
+
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/DisplayBindings" name = "Display bindings">
 		<Description>Display bindings.</Description>
@@ -138,7 +210,7 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/GlobalOptionsDialog" name = "Global options panels">
 		<Description>Dialog panels for global MonoDevelop options.</Description>
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
+		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFileFilters" name = "Combine file filters">
@@ -216,6 +288,358 @@
 	</ExtensionPoint>
 	
 	<!-- Extensions -->
+	
+	
+	<Extension path = "/MonoDevelop/Core/Applications">
+		<Application id = "gsetup"
+		       description = "Graphical add-in setup utility"
+		       class = "MonoDevelop.Ide.Gui.Dialogs.SetupApp"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-add-namespace" resource = "add-namespace-16.png"/>
+		<StockIcon stockid = "md-breakpoint" resource = "breakpoint-22.png"/>
+		<StockIcon stockid = "md-breakpoint" resource = "breakpoint-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-22.png"/>
+		<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-22.png"/>
+		<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-22.png"/>
+		<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-on-off" resource = "breakpoint-on-off-22.png"/>
+		<StockIcon stockid = "md-breakpoint-on-off" resource = "breakpoint-on-off-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-disable-all" resource = "breakpoint-disable-all-22.png"/>
+		<StockIcon stockid = "md-breakpoint-disable-all" resource = "breakpoint-disable-all-16.png" size="Menu"/>
+		<StockIcon stockid = "md-breakpoint-remove-all" resource = "breakpoint-remove-all-22.png"/>
+		<StockIcon stockid = "md-breakpoint-remove-all" resource = "breakpoint-remove-all-16.png" size="Menu"/>
+		<StockIcon stockid = "md-build-combine" resource = "build-solution-22.png" />
+		<StockIcon stockid = "md-build-combine" resource = "build-solution-16.png" size="Menu"/>
+		<StockIcon stockid = "md-build-current-selected-project" resource = "build-project-22.png" />
+		<StockIcon stockid = "md-build-current-selected-project" resource = "build-project-16.png" size="Menu"/>
+		<StockIcon stockid = "md-class" resource = "element-class-16.png" />
+		<StockIcon stockid = "md-clear-all-bookmarks" resource = "Icons.16x16.ClearAllBookmarks" size="Menu"/>
+		<StockIcon stockid = "md-clear-all-bookmarks" resource = "Icons.22x22.ClearAllBookmarks.png" />
+		<StockIcon stockid = "md-close-all-documents" resource = "Icons.16x16.CloseAllDocuments" />
+		<StockIcon stockid = "md-close-combine-icon" resource = "Icons.16x16.CloseCombineIcon" />
+		<StockIcon stockid = "md-closed-folder" resource = "Icons.16x16.ClosedFolderBitmap" />
+		<StockIcon stockid = "md-closed-reference-folder" resource = "Icons.16x16.ClosedReferenceFolder" />
+		<StockIcon stockid = "md-closed-resource-folder" resource = "Icons.16x16.ClosedResourceFolder" />
+		<StockIcon stockid = "md-solution" resource = "solution-16.png" size = "Menu" />
+		<StockIcon stockid = "md-solution" resource = "solution-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-delegate" resource = "element-delegate-16.png" />
+		<StockIcon stockid = "md-empty" resource = "Icons.16x16.Empty" />
+		<StockIcon stockid = "md-empty-file-icon" resource = "Icons.32x32.EmptyFileIcon" />
+		<StockIcon stockid = "md-enum" resource = "element-enumeration-16.png" />
+		<StockIcon stockid = "md-event" resource = "element-event-16.png" />
+		<StockIcon stockid = "md-static-event" icon = "res:element-event-16.png|res:static-16.png" size="Menu"/>
+		<StockIcon stockid = "md-execution-marker" resource = "ExecutionMarker.png" />
+		<StockIcon stockid = "md-extensionmethod" resource = "element-extensionmethod-16.png" />
+		<StockIcon stockid = "md-field" resource = "element-field-16.png" />
+		<StockIcon stockid = "md-static-field" icon = "res:element-field-16.png|res:static-16.png" size="Menu" />
+		<StockIcon stockid = "md-find-in-files" resource = "Icons.16x16.FindInFiles" />
+		<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-16.png" size="Menu"/>
+		<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-24.png" />
+		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen.png"  size = "Menu" />
+		<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen_22.png" />
+		<StockIcon stockid = "md-goto-nextbookmark" resource = "Icons.16x16.GotoNextbookmark" size="Menu"/>
+		<StockIcon stockid = "md-goto-nextbookmark" resource = "Icons.22x22.GotoNextbookmark.png"/>
+		<StockIcon stockid = "md-goto-prevbookmark" resource = "Icons.16x16.GotoPrevbookmark" size="Menu"/>
+		<StockIcon stockid = "md-goto-prevbookmark" resource = "Icons.22x22.GotoPrevbookmark.png" />
+		<StockIcon stockid = "md-interface" resource = "element-interface-16.png" />
+		<StockIcon stockid = "md-internal-class" icon = "res:element-class-16.png|res:visibility-internal-16.png" size="Menu"/>
+		<StockIcon stockid = "md-internal-delegate" icon = "res:element-delegate-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-enum" icon = "res:element-enumeration-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-event" icon = "res:element-event-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-event" icon = "res:element-event-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-internal-16.png" />
+		<StockIcon stockid = "md-internal-field" icon = "res:element-field-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-field" icon = "res:element-field-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-interface" icon = "res:element-interface-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-method" icon = "res:element-method-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-method" icon = "res:element-method-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-property" icon = "res:element-property-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-static-property" icon = "res:element-property-16.png|res:static-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-internal-struct" icon = "res:element-structure-16.png|res:visibility-internal-16.png" size="Menu" />
+		<StockIcon stockid = "md-literal" resource = "element-literal-16.png" />
+		<StockIcon stockid = "md-method" resource = "element-method-16.png" />
+		<StockIcon stockid = "md-static-method" icon = "res:element-method-16.png|res:static-16.png" size="Menu" />
+		<StockIcon stockid = "md-newmethod" resource = "element-method-new-16.png" />
+		<StockIcon stockid = "md-misc-files" resource = "Icons.16x16.MiscFiles" />
+		<StockIcon stockid = "md-name-space" resource = "element-namespace-16.png" />
+		<StockIcon stockid = "md-new-folder-icon" resource = "folder-new-16.png" />
+		<StockIcon stockid = "md-new-project" resource = "project-new-16.png" />
+		<StockIcon stockid = "md-new-solution" resource = "solution-new-16.png" />
+		<StockIcon stockid = "md-open-folder" resource = "Icons.16x16.OpenFolderBitmap" />
+		<StockIcon stockid = "md-open-project-icon" resource = "Icons.16x16.OpenProjectIcon" />
+		<StockIcon stockid = "md-open-reference-folder" resource = "Icons.16x16.OpenReferenceFolder" />
+		<StockIcon stockid = "md-open-resource-folder" resource = "Icons.16x16.OpenResourceFolder" />
+		<StockIcon stockid = "md-output-icon" resource = "Icons.16x16.OutputIcon" />
+		<StockIcon stockid = "md-private-class" icon = "res:element-class-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-delegate" icon = "res:element-delegate-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-enum" icon = "res:element-enumeration-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-event" icon = "res:element-event-16.png|res:static-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-private-16.png" />
+		<StockIcon stockid = "md-private-field" icon = "res:element-field-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-field" icon = "res:element-field-16.png|res:visibility-private-16.png|res:static-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-interface" icon = "res:element-interface-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-method" icon = "res:element-method-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-method" icon = "res:element-method-16.png|res:static-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-property" icon = "res:element-property-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-static-property" icon = "res:element-property-16.png|res:static-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-private-struct" icon = "res:element-structure-16.png|res:visibility-private-16.png" size="Menu" />
+		<StockIcon stockid = "md-properties-icon" resource = "Icons.16x16.PropertiesIcon" />
+		<StockIcon stockid = "md-property" resource = "element-property-16.png" />
+		<StockIcon stockid = "md-static-property" icon = "res:element-property-16.png|res:static-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-class" icon = "res:element-class-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-delegate" icon = "res:element-delegate-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-enum" icon = "res:element-enumeration-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-event" icon = "res:element-event-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-event" icon = "res:element-event-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-extensionmethod" resource = "res:element-extensionmethod-16.png|res:visibility-protected-16.png" />
+		<StockIcon stockid = "md-protected-field" icon = "res:element-field-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-field" icon = "res:element-field-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-interface" icon = "res:element-interface-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-method" icon = "res:element-method-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-method" icon = "res:element-method-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-property" icon = "res:element-property-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-static-property" icon = "res:element-property-16.png|res:static-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-protected-struct" icon = "res:element-structure-16.png|res:visibility-protected-16.png" size="Menu" />
+		<StockIcon stockid = "md-reference" resource = "project-reference-16.png" />
+		<StockIcon stockid = "md-reference-package" resource = "project-reference-package-16.png" />
+		<StockIcon stockid = "md-reference-folder" resource = "project-reference-folder-16.png" />
+		<StockIcon stockid = "md-reference-project" resource = "project-reference-project-16.png" />
+		<StockIcon stockid = "md-remove-namespace" resource = "remove-namespace-16.png" />
+		<StockIcon stockid = "md-warning-overlay" resource = "res:warning-overlay.png" />
+		<StockIcon stockid = "md-reference-warning" icon = "res:project-reference-16.png|res:warning-overlay.png" size = "Menu"/>
+		<StockIcon stockid = "md-replace-in-files" resource = "Icons.16x16.ReplaceInFiles" />
+		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.16x16.ResourceFileIcon" size = "Menu" />
+		<StockIcon stockid = "md-resource-file-icon" resource = "Icons.32x32.ResourceFileIcon" size = "Dnd" />
+		<StockIcon stockid = "md-save-all-icon" resource = "Icons.16x16.SaveAllIcon" size = "Menu"/>
+		<StockIcon stockid = "md-save-all-icon" resource = "Icons.24x24.SaveAllIcon" />
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-16.png" size="Menu"/>
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-22.png" />
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-32.png" size="Dnd"/>
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-22.png" size="Button"/>
+		<StockIcon stockid = "md-monodevelop" resource = "monodevelop-48.png" size="Dialog"/>
+		<StockIcon stockid = "md-project" resource = "project-16.png" size="Menu"/>
+		<StockIcon stockid = "md-project" resource = "project-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-gui" icon = "md-project|res:project-gui-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-console" icon = "md-project|res:project-console-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-library" icon = "md-project|res:project-library-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-web" icon = "md-project|res:web-overlay-32.png" size="Dnd" />
+		<StockIcon stockid = "md-sort-namespace" resource = "sort-namespace-16.png" />
+		<StockIcon stockid = "md-split-window" resource = "Icons.16x16.SplitWindow" />
+		<StockIcon stockid = "md-struct" resource = "element-structure-16.png" />
+		<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-16.png" size="Menu"/>
+		<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-24.png" />
+		<StockIcon stockid = "md-text-file-icon" resource = "Icons.16x16.TextFileIcon" size = "Menu" />
+		<StockIcon stockid = "md-text-file-icon" resource = "Icons.32x32.TextFileIcon" size = "Dnd" />
+		<StockIcon stockid = "md-html-file-icon" icon = "md-text-file-icon|res:web-overlay-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-html-file-icon" icon = "md-text-file-icon|res:web-overlay-16.png" size = "Menu" />
+		<StockIcon stockid = "md-class-file" resource = "file-class-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-interface-file" resource = "file-interface-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-enum-file" resource = "file-enum-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-struct-file" resource = "file-struct-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-gui-file" icon = "md-text-file-icon|res:project-gui-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-tip-of-the-day" resource = "Icons.16x16.TipOfTheDay" />
+		<StockIcon stockid = "md-toggle-bookmark" resource = "Icons.16x16.ToggleBookmark" size="Menu"/>
+		<StockIcon stockid = "md-toggle-bookmark" resource = "Icons.22x22.ToggleBookmark.png" />
+		<StockIcon stockid = "md-web-search-icon" resource = "Icons.16x16.WebSearchIcon" />
+		<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-16.png" size = "Menu" />
+		<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-addin-file" resource = "file-addin-16.png" size = "Menu" />
+		<StockIcon stockid = "md-package" resource = "package-x-generic_22.png" />
+		<StockIcon stockid = "md-package" resource = "package-x-generic.png" size = "Dialog" />
+		<StockIcon stockid = "md-select-all" resource = "edit-select-all_22.png" />
+		<StockIcon stockid = "md-select-all" resource = "edit-select-all.png" size = "Menu" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Button" />
+		<StockIcon stockid = "md-software-update" resource = "system-software-update.png" size = "Dialog" />
+		<StockIcon stockid = "md-user-package" resource = "user-package.png" />
+		<StockIcon stockid = "md-visual-studio" resource = "visual-studio.png" />
+		<StockIcon stockid = "md-comment" resource = "comment.png" />
+		<StockIcon stockid = "md-uncomment" resource = "uncomment.png" />
+		<StockIcon stockid = "md-addin" resource = "plugin-16.png" />
+		<StockIcon stockid = "md-addin" resource = "plugin-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-addin" resource = "plugin-22.png" size = "Button"/>
+		<StockIcon stockid = "md-addin" resource = "plugin-32.png" size = "LargeToolbar"/>
+		<StockIcon stockid = "md-workspace" resource = "workspace-16.png" size="Menu"/>
+		<StockIcon stockid = "md-workspace" resource = "workspace-32.png" size="Dnd" />
+		<StockIcon stockid = "md-new-workspace" resource = "workspace-new-16.png"/>
+		<StockIcon stockid = "md-new-solution-folder" resource = "solution-folder-new-16.png"/>
+		<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-16.png" size="Menu"/>
+		<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-16.png" size="Menu"/>
+		<StockIcon stockid = "md-regular-file" resource = "gnome-fs-regular.png" />
+		<StockIcon stockid = "md-empty-category" resource = "empty-category-22.png" />
+		<StockIcon stockid = "md-empty-category" resource = "empty-category-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-keyword" resource = "keyword-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-template" resource = "template-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-template-surroundwith" resource = "template-surroundwith-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-author-information" resource = "author-information-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-author-information" resource = "author-information-24.png" />
+		<StockIcon stockid = "md-code-template" resource = "code-template-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-code-template" resource = "code-template-24.png" />
+		<StockIcon stockid = "md-compiler-options" resource = "compiler-options-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-compiler-options" resource = "compiler-options-24.png" />
+		<StockIcon stockid = "md-custom-commands" resource = "custom-commands-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-custom-commands" resource = "custom-commands-24.png" />
+		<StockIcon stockid = "md-formatting" resource = "formatting-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-formatting" resource = "formatting-24.png" />
+		<StockIcon stockid = "md-markers-rulers" resource = "markers-rulers-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-markers-rulers" resource = "markers-rulers-24.png" />
+		<StockIcon stockid = "md-syntax-highlighting" resource = "syntax-highlighting-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-syntax-highlighting" resource = "syntax-highlighting-24.png" />
+		<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-24.png" />
+		<StockIcon stockid = "md-message-log" resource = "view-message-log-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-visual-style" resource = "visual-style-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-visual-style" resource = "visual-style-24.png" />
+		<StockIcon stockid = "md-pin-active" resource = "hicolor_status_16x16_pin-active.png" />
+		<StockIcon stockid = "md-pin-down" resource = "hicolor_status_16x16_pin-down.png" />
+		<StockIcon stockid = "md-pin-up" resource = "hicolor_status_16x16_pin-up.png" />
+		<StockIcon stockid = "md-assembly-project" resource = "assembly-project-16.png" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
+			<File pattern="*.resources" />
+		</MimeType>
+		<MimeType id="application/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
+			<File pattern="*.resx" />
+		</MimeType>
+		<MimeType id="application/x-addin+xml" _description="Add-in manifest" icon="md-addin-file">
+			<File pattern="*.addin.xml" />
+			<File pattern="*.addin" />
+		</MimeType>
+		<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon" isText="true">
+			<File pattern="*.xml" />
+		</MimeType>
+		<MimeType id="application/config+xml" _description="Configuration File" baseType="application/xml">
+			<File pattern="*.config" />
+		</MimeType>
+		<MimeType id="application/glade+xml" _description="Glade File" baseType="application/xml">
+			<File pattern="*.glade" />
+		</MimeType>
+		<MimeType id="text/x-changelog" _description="ChangeLog document" isText="true">
+			<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
+		</MimeType>
+		<MimeType id="application/x-executable" _description=".NET program" icon="md-empty-file-icon">
+			<File pattern="*.exe" />
+			<File pattern="*.dll" />
+		</MimeType>
+		<MimeType id="application/x-sln" _description="MonoDevelop/MSBuild Solution" icon="md-solution" >
+			<File pattern="*.sln" />
+		</MimeType>
+		<MimeType id="application/x-mds" _description="MonoDevelop 1.0 Solution" icon="md-solution" baseType="application/xml">
+			<File pattern="*.mds" />
+		</MimeType>
+		
+		<MimeType id="text/x-patch" _description="diff files" isText="true">
+			<File pattern="*.patch" />
+			<File pattern="*.diff" />
+		</MimeType>
+		
+		<MimeType id="text/x-makefile" _description="Makefile" isText="true">
+			<File pattern="Makefile|Makefile.am|Makefile.in"/>
+		</MimeType>
+		
+		<MimeType id="text/x-lua" _description="lua files" isText="true">
+			<File pattern="*.lua" />
+		</MimeType>
+		
+		<MimeType id="text/x-ilasm" _description="il files" isText="true">
+			<File pattern="*.il" />
+		</MimeType>
+		
+		<MimeType id="text/x-jay" _description="jay files" isText="true">
+			<File pattern="*.jay" />
+		</MimeType>
+	</Extension>	
+
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+		<Section id="Common" _label="General">
+			<Section id="General" _label="Main Settings">
+				<Condition id="ItemType" value="Project">
+					<Panel id = "GeneralProjectPanel" _label = "Project" class = "MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptions" />
+					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+				</Condition>
+				<Condition id="ItemType" value="Solution">
+					<Panel id = "GeneralSolutionPanel" _label = "Solution" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineInformationPanel" />
+					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+				</Condition>
+				<Condition id="ItemType" value="SolutionFolder">
+					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+				</Condition>
+				<Condition id="ItemType" value="Workspace">
+					<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+				</Condition>
+			</Section>
+			<Condition id="ItemType" value="SolutionEntityItem">
+				<Section id = "CustomCommands" _label = "Custom Commands" icon="md-custom-commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.CustomCommandPanel"/>
+			</Condition>
+		</Section>
+		<Section id="Build" _label="Build">
+			<Section id="General" _label="General" icon="md-build-combine">
+				<Condition id="ItemType" value="Project">
+					<Panel id = "RuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanel"/>
+				</Condition>
+				<Condition id="ItemType" value="Solution">
+					<Panel id = "SolutionGeneral" _label = "Build" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptions"/>
+				</Condition>
+			</Section>
+			<Condition id="ItemType" value="Project">
+				<Section id = "ProjectConfigurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
+				<Section id = "Compiler" _label="Compiler" icon="md-compiler-options" />
+				<Section id = "SigningPreferences" _label = "Assembly Signing" class = "MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferencesPanel"/>
+				<Section id = "OutputOptionsPanel" _label = "Output" class = "MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanel"/>
+			</Condition>
+			<Condition id="ItemType" value="Solution">
+				<Section id = "SolutionConfigurations" _label="Configurations">
+					<Panel id = "Configurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
+					<Panel id = "EntryConfigurations" _label = "Configuration Mappings" fill = "true" grouping="Tab" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineConfigurationPanel"/>
+				</Section>
+			</Condition>
+		</Section>
+		<Section id="Run" _label="Run">
+			<Section id="General" _label="General" icon="gtk-execute">
+				<Condition id="ItemType" value="Project">
+					<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanel"/>
+				</Condition>
+			</Section>
+			<Condition id="ItemType" value="Solution">
+				<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel"/>
+			</Condition>
+		</Section>
+		<Section id="SourceCode" _label="Source Code">
+			<Condition id="ItemType" value="DotNetProject">
+				<Section id="DotNetNamingPolicies" _label=".NET Naming Policies">
+					<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
+				</Section>
+			</Condition>
+			<Condition id="ItemType" value="Solution">
+				<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+			</Condition>
+			<Condition id="ItemType" value="SolutionItem">
+				<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+			</Condition>
+		</Section>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
+		<Section id="Common" _label="General">
+		</Section>
+		<Section id="Build" _label="Build">
+		</Section>
+		<Section id="Run" _label="Run">
+		</Section>
+		<Section id="SourceCode" _label="Source Code">
+			<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
+				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
+			</Section>
+			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+		</Section>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "DefaultDisplayBinding"

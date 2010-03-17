@@ -30,8 +30,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects;

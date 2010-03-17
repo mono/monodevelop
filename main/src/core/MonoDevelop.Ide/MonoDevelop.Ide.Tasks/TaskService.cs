@@ -29,7 +29,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;

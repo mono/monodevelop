@@ -30,7 +30,8 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.StandardHeader
 {

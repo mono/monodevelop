@@ -26,19 +26,11 @@
 //
 
 
-using System;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core;
-using Mono.Addins;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Core.Gui;
-using System.IO;
-using Gtk;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.Gui;
+using System;
 
 namespace MonoDevelop.Ide.Commands
 {

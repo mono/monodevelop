@@ -34,9 +34,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.ExternalTools;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 #pragma warning disable 612
 

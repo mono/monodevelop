@@ -26,7 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels

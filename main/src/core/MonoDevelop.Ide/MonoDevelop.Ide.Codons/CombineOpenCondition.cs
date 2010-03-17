@@ -31,7 +31,6 @@ using System.Xml;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons

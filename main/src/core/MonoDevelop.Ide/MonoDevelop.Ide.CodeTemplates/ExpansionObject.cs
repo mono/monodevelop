@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 			return "var";
 		}
-		MonoDevelop.Projects.Gui.Completion.ICompletionDataList list;
+		MonoDevelop.Ide.CodeCompletion.ICompletionDataList list;
 		public IListDataProvider<string> GetCollections ()
 		{
 			var result = new List<CodeTemplateVariableValue> ();
@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
 				
 				foreach (object o in list) {
-					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
+					MonoDevelop.Ide.CodeCompletion.IMemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.IMemberCompletionData;
 					if (data == null)
 						continue;
 					
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				
 				foreach (object o in list) {
-					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
+					MonoDevelop.Ide.CodeCompletion.IMemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.IMemberCompletionData;
 					if (data == null)
 						continue;
 					if (data.Member is IParameter) {
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				
 				foreach (object o in list) {
-					MonoDevelop.Projects.Gui.Completion.IMemberCompletionData data = o as MonoDevelop.Projects.Gui.Completion.IMemberCompletionData;
+					MonoDevelop.Ide.CodeCompletion.IMemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.IMemberCompletionData;
 					if (data == null)
 						continue;
 					if (data.Member is LocalVariable) {

@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.Ide.FindInFiles

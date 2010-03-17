@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.Ide.CodeFormatting

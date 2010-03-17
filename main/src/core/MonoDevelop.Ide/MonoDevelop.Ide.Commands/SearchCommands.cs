@@ -24,13 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Commands

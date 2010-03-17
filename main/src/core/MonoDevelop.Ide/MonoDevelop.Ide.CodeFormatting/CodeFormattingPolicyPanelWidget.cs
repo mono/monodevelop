@@ -29,10 +29,9 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
 
 
 
@@ -135,9 +134,9 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			object o = store.GetValue (iter, objectColumn);
 			if (o is CodeFormatCategory) {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (TreeviewCategories.GetRowExpanded (store.GetPath (iter)) ? MonoDevelop.Core.Gui.Stock.OpenFolder : MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (TreeviewCategories.GetRowExpanded (store.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
 			} else {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Property, IconSize.Menu);
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Property, IconSize.Menu);
 			}
 		}
 		

@@ -29,7 +29,6 @@ using System;
 using System.Collections;
 using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;

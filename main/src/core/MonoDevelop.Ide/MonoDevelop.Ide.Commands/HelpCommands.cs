@@ -26,14 +26,9 @@
 //
 
 
-using System;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using Mono.Addins;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Commands
 {

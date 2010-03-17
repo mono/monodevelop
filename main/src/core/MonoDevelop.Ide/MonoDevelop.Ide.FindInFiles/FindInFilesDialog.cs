@@ -29,7 +29,6 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
-using MonoDevelop.Core.Gui;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
@@ -561,7 +560,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			DispatchService.BackgroundDispatch (delegate {
 				DateTime timer = DateTime.Now;
 				string errorMessage = null;
-				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), MonoDevelop.Core.Gui.Stock.FindInFiles, false);
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), MonoDevelop.Ide.Gui.Stock.FindInFiles, false);
 				
 				try {
 					List<SearchResult> results = new List<SearchResult> ();

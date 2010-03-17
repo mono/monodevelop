@@ -27,8 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
 using Gtk;

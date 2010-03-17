@@ -27,8 +27,9 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {

@@ -27,18 +27,10 @@
 
 
 using System;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
-using Mono.Addins;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Core.Gui;
 using System.IO;
-using Gtk;
 using System.Collections.Generic;
 using System.Xml;
 

@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Execution
 		
 		public IExecutionConfigurationEditor CreateEditor ()
 		{
-			return new MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget ();
+			return new MonoExecutionParametersWidget ();
 		}
 	}
 }

@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Execution
 	{
 		public IExecutionConfigurationEditor CreateEditor ()
 		{
-			return new MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget ();
+			return new CustomExecutionModeWidget ();
 		}
 
 		public bool CanCustomize (ExecutionCommand cmd)

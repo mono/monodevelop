@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;

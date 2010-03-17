@@ -1,0 +1,2985 @@
+2010-03-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:
+	  Fixed issue with themes that match on widget names.
+
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: only
+	  subtract empty category when in category mode.
+
+2010-03-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  'Bug 585673 - Completion list shows blank row in categorized
+	  mode'.
+
+2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Handle Link
+	  files.
+
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Added show/hide events for the code completion window.
+
+2010-03-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  'Bug 584881 - Completion list layout issue'.
+
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Toggle code completion category is now toggled by the
+	  ShowCompletionWindow command, when the window is visible.
+
+2010-03-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Changed mode toggeling to ctrl+space.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: added
+	  safety check for exact matches to override history
+	  selection.
+
+2010-02-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  'Bug 583396 - Exact completion matches should always
+	  override history/fuzzy'.
+
+
+2010-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: added
+	  null check.
+
+2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Show the .NET naming
+	  policies options panel only for .NET projects.
+
+2010-02-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionContextEventArgs.cs:
+	  Implemented 'Bug 429265 - #region reindentation does not
+	  work with autocompletion'.
+
+2010-02-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  Implemented 'Bug 580660 - Feature request: Make popup-lists
+	  "continuous"'.
+
+2010-02-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Added missing getstring call.
+
+2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	  Use the new IconId type.
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Track api changes.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  completion window now remembers the operation mode.
+
+2010-02-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Categories are now sorted.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj: ActiveLanguageCondition has
+	  been moved to MD.Projects.
+
+2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ActiveLanguageCondition.cs:
+	  ActiveLanguageCondition has been replaced by
+	  ProjectLanguageCondition in MD.Projects.
+
+2010-02-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  'Bug 576322 - Click in code completion list selects wrong
+	  item when categories enabled'.
+
+2010-02-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Track API changes for lazy loading images.
+
+2010-02-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	  Completion categories are now easier to read.
+
+2010-02-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  fixed a bug where left/right didn't go through the overloads
+	  in the cc list.
+
+2010-02-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Shift+up/down now selects next/prev category or enables
+	  category mode.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  parameter info window no longer takes the up/down keys when
+	  there are no overloads.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  changed categorized window toggle key to shift+space since
+	  F3 may be bound to commands.
+
+2010-02-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Changed the category mode hotkey for code completion to F3.
+
+2010-01-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Tweaked the categorized completion feature a bit.
+
+2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: When
+	  calculating window size, don't include categories in the row
+	  count if categories are disabled. Fixes displaying blank
+	  rows.
+
+2010-01-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Worked on 'completion categories'.
+
+2010-01-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Implemented histroy based completion.
+
+2010-01-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added support for custom key actions in completion list.
+
+2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.AddMimeTypeDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:
+	  Flush.
+
+2009-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Use new icons.
+
+2009-12-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Introduced the ConfigurationSelector class to all methods
+	  that previously took a configuration name as string. This
+	  eliminates the ambiguity between solution configuration
+	  names and project configuration names.
+
+2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2009-10-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.AddMimeTypeDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:
+	  Flush.
+
+2009-10-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Worked on 'Bug 533564 - Intellisense DropDown and Tooltips
+	  overlap'.
+
+2009-10-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Moved Startup Options
+	  panel to Run section.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Properly check if a project can be executed or not. Fixes
+	  bug #547939 - Solution option "Startup Project" always not
+	  selectable.
+
+2009-10-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed 'Bug 547819 - Ctrl-space with single entry does not
+	  commit it'.
+
+2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Don't
+	  complete on letters when control/meta/super/alt are active.
+
+2009-10-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2009-10-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  addded wrapping to parameter info window.
+
+2009-10-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	  Make more keyboard-friendly.
+
+	* gtk-gui/gui.stetic: Flush.
+
+2009-10-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: fixed
+	  'Bug 543984 – Completion window should only accept
+	  punctuation when it's an exact match'.
+
+2009-10-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added some refactorings required for some more deep unit
+	  tests.
+
+2009-10-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed 'Bug 543938 - Completion list up/down broken with
+	  single entry' / checked in some missing updates.
+
+2009-10-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  'Bug 543923 - Completion window should deselect when word is
+	  deleted'.
+
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Respect
+	  footer size in list window size request.
+
+2009-10-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Completion window now respects default selection.
+
+2009-10-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.csproj: Updated.
+
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	  Added ConfigurationsAreEqual. When it returns true, the
+	  options panel will select All Configurations by default in
+	  the combo.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs:
+	  Implement ConfigurationsAreEqual.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
+	  Allow mixed configurations.
+
+2009-10-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Optimized drawing of code completion list window.
+
+2009-09-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs:
+	  Track api changes.
+
+2009-09-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/IMemberCompletionData.cs:
+	  Renamed IDomVisitable -> INode
+
+2009-09-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 540375 - [REGRESSION] Completion list window
+	  sometimes extends offscreen".
+
+2009-09-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Move the parameter info tooltip a bit further away from the
+	  text, so it's not so overbearing.
+
+2009-09-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	  Fix broken GUI file.
+
+2009-09-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Remove
+	  debug code.
+
+2009-09-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: If there
+	  are too few selections for up/down close window & process
+	  key. Should be more in line with our left/right behavior.
+
+2009-09-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Accept
+	  punctuation for matching if it matches an item in the list.
+	  Fixes regression with XML and related languages' completion.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  Added some insanity checks.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added new option for special handling where only hint code
+	  completion can be given. 
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Resolved a fixme, since we're now using gtk+ 2.12.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionContext.cs:
+	* MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	  Removed ICodeCompletionContext interface. Didn't make any
+	  sense - use CodeCompletionContext instead.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Corrected failing unit test.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Some changes to allow code completion window unit tests.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/IMemberCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	* MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs:
+	  Refactored completion window.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: another
+	  try for x bs x fix.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed
+	  bug.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Removed
+	  unnecessary if.
+
+2009-09-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed the
+	  x backspace x bug.
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added ResetSizes call when completion data has changed.
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed code completion bug.
+
+2009-09-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  "Bug 538175 - Commit completion list with space or
+	  punctuation is broken.".
+
+2009-09-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	  Allow subclasses to filter the configurations that they
+	  show.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Reduce
+	  spacing.
+
+2009-09-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	  Make autoselect default behaviour consistent between the two
+	  ctors. Hopefully fixes "Bug 538175 - Commit completion list
+	  with space or punctuation is broken.". Also remove
+	  unnecessary assignment of a default value.
+
+2009-09-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Fixed
+	  click position.
+
+2009-09-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fix the
+	  page size on the completion list scrollbar. Use a single
+	  SetBounds call which reduces unnecessary change events.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Added
+	  some bounds checking code.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Only
+	  update page / redraw when selection has really changed.
+
+2009-09-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Worked on
+	  'Bug 537267 - Code completion window scrolling is wrong'.
+
+2009-09-08  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs: 
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs: 
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs:
+	  Fix dialogs to be transient.
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  removed debug message.
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Display
+	  no suggestions message in preview completion string mode,
+	  when no item has a match.
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 537195 - Can't select a 'Surround With' template
+	  by typing the name".
+
+2009-09-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  "Bug 537267 - Code completion window scrolling is wrong".
+
+2009-09-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	  Allow setting the release version of a project. Fixes bug
+	  #480771 - Tarball deploy uses DotNetProject.Version in the
+	  pc file but this is not configurable.
+
+2009-09-01  Christian Hergert  <chris@dronelabs.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Fix NRE.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  fixed warning.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic: Update gtk# dependency.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.csproj: Updated dependencies. We
+	  now depend on gtk# 2.12.8, Mono 2.4, and Mono.Addins 0.4.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/AddMimeTypeDialog.cs: If
+	  description of mime type is empty, use the mime type name.
+
+	* gtk-gui/objects.xml: Flush.
+
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Dialogs/AddMimeTypeDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.AddMimeTypeDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs:
+	  The code formatting panel now allows adding new mime types.
+	  Also, the panel will automatically include mime types which
+	  are known to have custom properties.
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 533674 - Documentation tooltip shown over
+	  completion list".
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Fixed "Bug 533668 - Completion window shown over the
+	  parameter information tooltip".
+
+2009-08-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 479457 - Intellisense blocking left and right
+	  arrow keys even when not used".
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs: Removed
+	  debug message.
+
+2009-08-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWidget.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Fixed "Bug 533672 - Code completion window does not show the
+	  selected row in some cases".
+
+2009-08-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Tweak spacing.
+
+2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	  Don't dispose pixbufs from the icon service, as Dispose
+	  calls g_free, but these pixpuf are used in other places.
+	  Instead let the finalizer queue a g_unref.
+
+2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	  Better pixbuf disposal.
+
+2009-08-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	  Fix directory listing that regressed during FilePath
+	  changes.
+
+2009-07-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Actually empty
+	  the relative path if no file is selected.
+
+2009-07-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Fixed possible null reference exception/removed some
+	  duplicate code.
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  In parameter info window the count message is now always on
+	  top.
+
+2009-07-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Added property
+	  to make entry non-editable. Better handling of empty
+	  filenames.
+
+2009-07-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs:
+	  Handled parameter documentation.
+
+2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui/ProjectFileEntry.cs: Add a simple
+	  widget for picking a file from a project.
+
+2009-07-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectFileSelectorDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog.cs:
+	  Move AspNetFileSelector to
+	  MonoDevelop.Project.Gui.Dialogs.ProjectFileSelectorDialog.
+
+2009-07-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	  When changing the name of a project, rename the project
+	  file.
+
+	* gtk-gui/objects.xml: Flush.
+
+2009-07-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Add missing collection length check. Fixes bug #513867 -
+	  ArgumentOutOfRangeException when closing solution properties
+	  dialog.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Fixed sizing bug.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Worked on code completion.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  Completion window now hides instead of displaying a message,
+	  when no match is found.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed cc bug.
+
+2009-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  added null check.
+
+2009-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed bug
+	  that caused the size of the code completion window to be
+	  wrong.
+
+2009-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionWindowManager.cs:
+	  The items in the completion window are now selected more
+	  carefully.
+
+2009-07-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Optimized/improved the abbreviation algorithm. Changed the
+	  process key, the keyChar is now given as parameter.
+
+2009-07-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed scrolling bug.
+
+2009-07-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Overworked the code completion window. It now features
+	  'CamelHumps' ex. myLongName can be completed with mLN.
+	  Highlighting will help to learn this feature. And it has now
+	  a code completion history.
+
+2009-07-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed auto select issue.
+
+2009-07-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 518548 - Completion is very annoying on lambda
+	  parameters".
+
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Track api changes.
+
+2009-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	  Use the new DesktopService instead of PlatformService.
+
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs\MimeTypePolicyOptionsSection.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels\CodeFormattingPanel.cs:
+	  If there is no description for a mime type, use the mime
+	  type name.
+
+2009-06-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	  Track api changes.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Added some sections to
+	  the default policies dialog.
+
+2009-06-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui.Extensions:
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Extensions/MimeTypeOptionsPanelNode.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CodeFormattingPanel.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CodeFormattingPanelWidget.cs:
+	  Added support for per mime-type policies. Implemented new
+	  code formatting panel.
+
+2009-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Disable
+	  selection of most-recently-used match until #385043 is
+	  fixed.
+
+2009-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels\StartupOptionsPanel.cs:
+	  Don't use Gtk.TreeIter.Equals, since it's broken. Compare
+	  TreePaths instead.
+
+2009-05-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fixed "Bug 385043 - Intellisense should default to
+	  most-recently-used match (instead of first match
+	  alphabetically)".
+
+2009-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fix for GTK# 2.8.
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Moved the workaround for "Bug 492264 - Intellisense menu
+	  locks on top of the screen" to WindowTransparencyDecorator,
+	  so no need to do it here too.
+
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Changed
+	  default for completewithpunctuation
+
+2009-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Fixed "Bug 492264 - Intellisense menu locks on top of the
+	  screen".
+
+2009-05-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Better set of modifiers for closing completion window on
+	  arrow+modifier.
+
+2009-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Fixed possible cast exception.
+
+2009-04-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Restore
+	  behaviour of not closing the list on punctuation when it
+	  matches an item in the list.
+
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:
+	  Added missing translation string.
+
+2009-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
+	  Reimplemented language binding service.
+
+2009-04-24  Mike Krüger  <mkrueger@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Projects.Gui.addin.xml: Changed copyright tag.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Renamed PixbufService to ImageService.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.Completion/TextUtilities.cs:
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Relicensed some old stuff. Removed text utilities. These
+	  functions can't be done on that level. The backend bindings
+	  have to handle this stuff.
+
+2009-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Track API changes.
+
+2009-04-17  Mike Kestner  <mkestner@novell.com>
+
+	* MonoDevelop.Projects.Gui.csproj: don't require specific
+	gtk-sharp version.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui/IconCodon.cs:
+	* MonoDevelop.Projects.Gui/IconService.cs: Removed icon codon
+	  & icon service.
+
+2009-04-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui/IconCodon.cs:
+	* MonoDevelop.Projects.Gui/IconService.cs:
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Removed icon service.
+
+2009-04-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	  Moved SystemAssemblyService and related classes to the
+	  namespace MonoDevelop.Core.Assemblies.
+
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed
+	  "Bug 494566 - Problem with generics completion.".
+
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: changed
+	  default value for "CompleteWithSpaceOrPunctuation".
+
+2009-04-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed
+	  "Bug 494565 - New auto-complete behavior is improperly
+	  labeled.".
+
+2009-04-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Made the 'undo' of code completion operations more
+	  intelligent.
+
+2009-04-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	  shift+space now overrides automatic completion.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs:
+	  Fixed Header.
+
+2009-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs:
+	  Added icons to the template completion list.
+
+2009-03-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj: 
+
+	* MonoDevelop.Projects.Gui.Completion/BaseMemberCompletionData.cs:
+	  Worked on template callbacks.
+
+2009-03-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Added IsSorted property.
+
+2009-02-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Don't display solutions multiple times. Add translatable
+	  string.
+
+2009-02-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Translation fixes. Patch from Kriván Bálint.
+
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs:
+	  The dialog now works for any solutionEntityItem.
+
+2009-02-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  destroy declaration view window.
+
+2009-02-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/MutableCompletionDataList.cs:
+	  Fix Changed event subscription.
+
+2009-02-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Fix warning.
+
+2009-02-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.csproj:
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
+	  Moved ItemTypeCondition to MD.Projects.
+
+2009-02-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs:
+	  Fixed several issues related to configuration management.
+	  Fixes bug #446851.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Updated.
+
+2009-02-11  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/objects.xml: 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  fixed "Bug 474458 - NRE on code completion".
+
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Reposition the GUI window if the allocated size changes
+	  after initial placement. Fixes "Bug 441631 - Completion
+	  window positioning is sometimes wrong".
+
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Align window's text with the trigger text.
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: If icon's
+	  null, actually look up the size for the space. Add property
+	  for getting offset of list's text relative to the window
+	  border.
+
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  If resource name policy is unset, don't automatically set it
+	  to MD1 format. Only change it when the user makes a change.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.mdp:
+	* MonoDevelop.Projects.Gui.csproj: Migrated to MSBuild file
+	  format.
+
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Track IOverloadedCompletionData API. Overloads can now be
+	  sorted.
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	  Rename IOverloadedCompletionData.GetOverloads to
+	  GetOverloadedData. It now returns the "root" datum as well
+	  as the overload, so that it can sort them.
+
+2009-02-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Fix escaping of overload descriptions.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	*
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Show resource policy checkbox as inconsistent if a policy
+	  has not been yet chosen.
+
+2009-02-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic: Flush.
+
+	*
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Fix crash when editing the default policy.
+
+2009-02-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs:
+	  Workaround for GTK#/mcs delegate issue. Hopefully fixes Bug
+	  471482 - Unhandled exception with Standard Header policy.
+
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/objects.xml: Flush.
+
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Fix
+	  warning.
+
+	*
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Added support for resource naming policy.
+
+2009-02-02  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Moved namig panel to a
+	  new Source Code section.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Display named
+	policies list when editing policy sets.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Add extension point for defaul
+	policies panels. Add the .NET naming panel to this extension point.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+	* MonoDevelop.Projects.Gui.Dialogs/DefaultPolicyOptionsDialog.cs: Add a
+	dialog for editing default policies.
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Add support
+	for editing policy sets.
+
+2009-01-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	Disable GUI for resource style names as it's not implemented yet.
+	Comment out cosmetic properties not available in GTK 2.8.
+
+2009-01-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Workaround for
+	JIT bug.
+
+2009-01-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Don't use
+	SingleOrDefault as this was crashing the 2.4 JIT.
+
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Work around
+	bug 469427 - broken themes match on *Panel* widget names.
+
+2009-01-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	Add a hack to work around broken themes that attach themes to *Panel* 
+	widget names.
+
+2009-01-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Add named
+	policies to the list store correctly.
+
+2009-01-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/NamespaceSynchronisationPanel.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.NamespaceSynchronisationPanelWidget.cs:
+	Implement a panel for editing DotNetNamingPolicy policies.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+	* MonoDevelop.Projects.Gui.Dialogs/PolicyOptionsPanel.cs: Add an
+	abstract ItemOptionsPanel for editing policies which handles
+	selecting named policies, parent policy, etc.
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	Remove unused setting.
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	Flush.
+
+2009-01-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:
+	Updated.
+
+2009-01-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs:
+	Store configuration rename operations, and update the parent solution
+	when required. Fixes bug #465150 - Configuration names & mappings not
+	updating when changed.
+
+2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use an
+	IComparer object instead of a Comparison delegate, since delegate
+	invocations are an order of magnitude slower than virtual method
+	calls. Speeds up sort substantially.
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: Add
+	IComparer sort overload.
+
+2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Process the enter
+	key normally when there list has disabled selection. If the list has
+	a selection, continue to interpret it only as a commit command.
+	Matches VS behaviour.
+
+2009-01-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use
+	ordinal string compare for sorting the list, as it's an order of
+	magnitude faster. Makes code completion more responsive.
+
+2009-01-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: fixed Find
+	in completiondatalist for unit tests.
+
+2008-12-25  Eric Butler  <eric@extremeboredom.net>
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
+	Fix output path validation.
+
+2008-12-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp:
+	* MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs:
+	Moved TooltipWindow to MD.Components.
+
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:
+	Flush.
+
+2008-12-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.mdp: Set correct target framework.
+
+2008-12-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	Implemented support for the new TargetFramework model.
+
+2008-12-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.mdp: Don't require a specific version of
+	Mono.Addins.
+
+2008-12-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/MutableCompletionDataList.cs:
+	Implement lazy hooking up of ProjectDomService events, and marshal
+	then to the GUI thread. Should fix Bug 443908 - Random crash
+	(gdk-critical).
+
+2008-12-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Make it work for parallel builds.
+
+2008-12-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* AssemblyInfo.cs:
+	* AssemblyInfo.cs.in:
+	* MonoDevelop.Projects.Gui.mdp: Add AssemblyInfo.cs files that are
+	autogenerated from the addin manifests.
+
+2008-11-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Don't crash on
+	setting selection or resetting when the window isn't realised. Handle
+	these cases properly.
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Don't
+	show completion window if it's an auto-accepting unique match. Fixes
+	Bug 445390 - Ctrl-space with auto-accept still briefly shows
+	completion window.
+
+2008-11-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.mdp: Flush.
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Dismiss window on
+	ctrl-backspace. Fixes Bug 444535 - Autocomplete selection gets
+	confused by ctrl-backspace.
+
+2008-11-11  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs: added
+	tostring method.
+
+2008-11-06  Mike Krüger  <mike@icsharpcode.net>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: fixed
+	'Bug 442160 - Double-click on scrollbar down arrow of code completion
+	menu results in selection'.
+
+2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Make "Tab" key
+	always complete item even if selection is disabled.
+
+2008-11-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: Moved
+	interface to another file.
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Remove
+	dead code, and hide update footer when hiding list.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+	* MonoDevelop.Projects.Gui.Completion/MutableCompletionDataList.cs:
+	Implement a mutable completion list that flags itself based on the
+	ProjectDomService.
+
+2008-11-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2008-11-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs: Added property
+	for getting the list of configuration objects being edited in the
+	dialog (they are a copy of the original configurations).
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	Assign the selected clr version to all configurations (The ClrVersion
+	setter of DotNetProject does it, but configurations are replaced by
+	the copies being edited in the dialog).
+
+2008-10-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	fixed 'Bug 436669 - function hints (tooltip) hides typing when typing
+	a multi-line function'.
+
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	Rename Moonlight 1.1 to Moonlight 2.0.
+
+2008-10-16 Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: fixed 'Bug 432435 -
+	Code completion shows 'List', not List<T>'.
+
+2008-10-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: Add
+	AddRange overloads.
+
+2008-10-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: When the
+	list is first shown, don't autoselect the top item unless it matches
+	the DefaultCompletionString.
+
+2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Empty
+	the windows when the assigned description is empty as well as when
+	it's null. Prevents showing empty tooltip.
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Cleanup.
+
+2008-10-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs: Add methods
+	for removing completion data.
+
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: When the selection
+	is disabled, first up/down keystroke enables the selection and does
+	not move it. Makes it easier to select current deselected item, and
+	mimics VS behaviour.
+
+2008-10-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Disable the
+	selection when the completion string is empty.
+
+2008-10-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Reset after using
+	markup, or the same attributes will be applied to later SetText
+	calls.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Fix NRE
+	on commiting selection. The code was relying on keeping the
+	completion list; recent changes disposed it when the window was
+	hidden.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionDataList.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: New
+	CompletionDataList API to replace CompletionDataProvider.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	Removed.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs:
+	Rename file.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	Tidy up ICompletionData API.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+2008-10-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Add a reference to System.Core.
+
+2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionData.cs: Add some very
+	simple default completion data objects.
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Fix
+	compilation.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+2008-10-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/IOverloadedCompletionData.cs: Move
+	overloading functionality into an IOverloadedCompletionData interface
+	so that ICompletionData implementors that want overloads do not have
+	to subclass CodeCompletionData, and can customise overloading
+	behaviour.
+
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Track API.
+
+2008-10-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Re-implement sinking obsolete members to the bottom, but in a
+	  non-broken way this time.
+
+2008-10-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: now '<' is a
+	  autocomplete char too.
+
+2008-10-02  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui/IconService.cs: Track removal of service
+	  APIs.
+
+2008-09-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	  Completion data now implements IComparable.
+
+2008-09-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Custom commands are not supported
+	  at solution level.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Hide the
+	  completion list if there is nothing to show.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Minor
+	  allocation optimization.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Cosmetic fix.
+
+2008-09-22  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: List view items
+	  now can contain pango markup.
+
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs:
+	  Flush.
+
+2008-09-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs: No
+	  setter is required. That's up to the implementation.
+
+2008-09-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  fixed "Bug 427286 - Code Completion: completion done without
+	  showing the completion list".
+
+2008-09-17  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Added some functions used by unit testing.
+
+2008-09-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Update.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Escape
+	  list item description since it may contain markup.
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Show
+	  documentation header in bold. Set a minimum width for the
+	  documentation window.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/gui.stetic: Updated.
+
+2008-09-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Track api changes.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs: Run
+	  options panel will now work for non-dot net projects.
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs:
+	  Added Configurations property to be used by subclasses.
+
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Use attributes to describe custom widgets.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/objects.xml: Removed some parts of the documentation service.
+
+2008-07-29  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui/IconService.cs,
+	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Translated old code to new dom.
+
+2008-07-27  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Worked on
+	  new dom/completion/database.
+
+2008-07-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Use the
+	  ResourceService to render the icons.
+
+2008-07-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RunOptionsPanelWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/EnvVarList.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RunOptionsPanel.cs:
+	  Added new Run options panel which includes some options from the
+	  output panel and a new list for setting env vars to be set when
+	  running the project.
+
+2008-07-12  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Completion list now returns true, if it is shown.
+
+2008-07-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Avoid
+	  unnecessary string creations, concatenations and comparisons. Also
+	  fixes logic that was supposed to prevent empty tooltips from being
+	  shown.
+
+2008-07-07  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added null check.
+
+2008-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	
+
+2008-06-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	  Don't show namespace settings GUI unless project is a
+	  DotNetProject.
+
+2008-06-17  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Maintain more
+	  completion window state after a parser DB update. Fixes "Bug 400228
+	  - C# parsing frequently interrupts code completion".
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:
+	  Disable option panels which require a configuration when no
+	  configurations are available.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Updated.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:
+	  Support new variables in custom command options.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/gui.stetic: Cosmetic fix.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Minor project file fixes.
+
+2008-06-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2008-06-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/StartupOptionsPanel.cs:
+	  Implemented new options panel for setting the solution startup
+	  options.
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.StartupOptionsPanelWidget.cs:
+	  Updated.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Reorganize the main settings
+	  section.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanel.cs:
+	  Cosmetic fix.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
+	  Added comment.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
+	  Remove debug code.
+
+2008-05-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ItemOptionsDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.BaseDirectoryPanelWidget.cs,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/BaseDirectoryPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ActiveLanguageCondition.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/ItemTypeCondition.cs:
+	  Merged the extension points for project and solution option panels
+	  into a single extension point. A single extension point will now be
+	  used for all kinds of items. Extension conditions can be used to
+	  make panels visible only for some specific item types.
+
+2008-05-21  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs:
+	  Show only runtime versions allowed by the project, rather than the
+	  language binding.
+
+2008-05-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/MultiConfigItemOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ItemOptionsPanel.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/SolutionItemConfigurationsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  New project model changes.
+
+2008-05-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Only return a
+	  valid completion word if there is a selection. Makes code
+	  completion much less intrusive.
+
+2008-05-16  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs: Tooltip window
+	  hint only works on GTK+ >= 2.10, so reflect it.
+
+2008-04-28  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Allow completion
+	  box to accept punctuation, if it matches an entry.
+
+2008-04-25  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Allow the
+	  overload list to be scrolled when Num lock is enabled, by handling
+	  modifier keys more carefully. May still have problems with unusual
+	  X settings.
+
+2008-04-24  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  Use TooltipWindow.
+	* MonoDevelop.Projects.Gui.Completion/TooltipWindow.cs: Share some
+	  behaviours commons to tooltip-like windows.
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Use
+	  TooltipWindow and FixedWidthWrapLabel. Wrapping is now somewhat
+	  improved.
+
+2008-04-11  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Track
+	  API.
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs:
+	  Add transparency behaviour to parameter tooltip.
+	* MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs:
+	  De-uglify API.
+
+2008-04-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs:
+	  Work around GTK# crasher bug and enable transparency by default.
+
+2008-04-10  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs: Make
+	  completion window semi-transparent when Ctrl key is held down.
+	* MonoDevelop.Projects.Gui.Completion/WindowTransparencyDecorator.cs:
+	  Decorator class that makes the attached GTK window semi-transparent
+	  when the Control key is held down. Set
+	  MONODEVELOP_ENABLE_UNSTABLE_TRANSPARENCY to enable it. Requires
+	  GTK+ 2.12 and a compositing window manager, but degrades
+	  transparently (ha!) if these aren't available.
+
+2008-04-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Use the new mime type extension
+	  to register new file types.
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs:
+	  Updated.
+
+2008-04-01  Aaron Bockover <abockover@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	Added a 'use parent directory as namespace' check box under the default
+	namespace entry
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	Connect the UseParentDirectoryAsNamespace project property to the new
+	check box; make the default namespace entry insensitive if use parent
+	directory is enabled
+
+2008-03-10  Marcos David Marín Amador <MarcosMarin@gmail.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs:
+	  Workaround for bug in Mono 1.2.4 where usings are ignored in anonymous
+	  methods.
+
+2008-03-04  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs:
+	  Worked on gnome hig compliant alerts.
+
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Removed gnome reference, added
+	  glib.
+
+2008-01-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/TextUtilities.cs: Added
+	  SearchBracketForward method.
+
+2008-01-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Update MD version.
+
+2008-01-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Don't reset
+	  the code completion list to top when data gathering is completed. Fixes
+	  bug #350890.
+
+2008-01-10  Zach Lute <zach.lute@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Scrollbar adjustment is
+	  updated even if scrollbar is invisible. (Bug #350973)
+
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Don't process
+	  keys if the completion window is hidden. Fixes bug #348696.
+
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Updated project files. The order of extended
+	  properties won't change anymore.
+
+2007-12-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/DeclarationViewWindow.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs: API
+	  cleanup.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Bump add-in versions.
+
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconService.cs: API cleanup.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Remove unused
+	  event.
+
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Directory reorganization.
+
+2007-11-22  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs: Add
+	  support for 2.1 runtime, and explicitly name the runtime versions.
+
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am,
+	  MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs:
+	  Removed unused file.
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs,
+	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  Added missing license headers.
+
+2007-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Base.glade,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.GeneralProjectOptionsWidget.cs,
+	  gtk-gui/objects.xml, gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:
+	  Ported the last dialog to Stetic. Removed all remaining glade
+	  references.
+
+2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs: Fix
+	  build.
+
+2007-11-20  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui.Dialogs/RenameConfigDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/NewConfigurationDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/DeleteConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineStartupPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.RuntimeOptionsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineInformationWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.NewConfigurationDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineConfigurationPanelWidget.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineEntryConfigurationsPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.DeleteConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.OutputOptionsPanelWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.RenameConfigDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CompileFileOptionsWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CombineBuildOptionsWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:
+	  Migrated dialogs to Stetic.
+	* MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:
+	  Removed old files.
+
+2007-11-09  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Track
+	  LoggingService API changes.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Register some basic file type icons.
+	* MonoDevelop.Projects.Gui/IconCodon.cs: Renamed resource attribute to icon,
+	  since that's how the icon service handles it.
+
+2007-10-24  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconService.cs: Use new icon names.
+
+2007-10-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Project file names updated by change in MD
+	  path functions.
+
+2007-10-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs: fixed
+	  "Bug 325509 - Inaccessible methods displayed in autocomplete".
+
+2007-10-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Fixed
+	  "Bug 325528 - Intellisense contains multiple entries of same namespace".
+
+2007-10-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Track
+	  api changes.
+
+2007-10-15  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs
+	(OnComboTypeChanged):
+	(OnWorkingdirEntryChanged): Set focus on the correct widget.
+
+2007-10-12  Mike Krüger <mkrueger@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:
+	  Applied changes that were neccassary for to the new FileService.
+
+2007-10-11  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:
+	  Changed calls for the new StringParser.
+
+2007-09-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Bump MD version.
+
+2007-09-19  Michael Hutchinson <mhutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs: Only
+	  display relevant substitution tags for solutions and projects.
+
+2007-09-18  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added some changes
+	  for bug 325438.
+
+2007-09-16  Eric Butler <eric@extremeboredom.net>
+
+	* Base.glade,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs:
+	  Add Default Namespace option
+	  Fix some formatting issues in GeneralProjectOptions.cs
+
+2007-09-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Fix warning level.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Add
+	  support for ITypeNameResolver.
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Use the Text not the
+	  CompletionText to find entries in the completion window. For example,
+	  the completion window may show "ArrayList", while the completion string
+	  may be "System.Collections.ArrayList". If the user types 'a', the window
+	  should select the ArrayLsit entry.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Added
+	  method for finding a ICompletionData instance.
+
+2007-09-13  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Fixed 82205: Can't read autocomplete.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Properly format
+	  delegate names.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Close the
+	  completion window when pressing the cursor keys with shift or control.
+	  Fixes bug #82475.
+
+2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs: Added
+	  a flag in CodeCompletionData to allow or disallow use of intrinsic type
+	  names.
+
+2007-09-04  Michael Hutchinson <MHutchinson@novell.com> 
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs:
+	  Fix some compile warnings.
+
+2007-08-31  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconCodon.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ConfigurationManager.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/RuntimeOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/GeneralProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineBuildOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  Changes due to new property infrastructure.
+
+2007-08-28  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs: Fixed 82207:
+	  Incorrect autocomplete insertion.
+
+2007-08-16  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed 80813:Code
+	  completion should show the best match in the middle of the combo
+	  box.
+	
+	  (applied patch from Levi Bard)
+
+2007-08-14  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Added a
+	  new constructor for the code completion data (used for
+	  XmlDocComments).
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui/IconCodon.cs,
+	  MonoDevelop.Projects.Gui/IconService.cs, Makefile.am: Reorganized the
+	  extension point hierarchy. Embedded all add-in manifests as resources.
+
+2007-08-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/ProjectsGuiServices.cs, gtk-gui/objects.xml: API
+	  cleanup. Converted core services into regular classes.
+
+2007-08-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Converted DispatchService to a static class.
+
+2007-08-01  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:
+	  Added support to enter the working directory.
+
+2007-07-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/TextUtilities.cs: Use the log
+	  service for logging errors.
+
+2007-07-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconService.cs: New overload for getting an
+	  icon of a member.
+
+2007-07-13  Marcos David Marín Amador <MarcosMarin@gmail.com>
+
+	* MonoDevelop.Projects.Gui/MonoDevelop.Projects.Gui.addin.xml:
+	  The assembly signing panel is now only shown for .Net projects.
+
+2007-07-13  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs: Store
+	  more code completion information in the code completion context.
+	  Needed to fix bug #82033.
+
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs:
+	  Made the assembly signing panel a bit nicer.
+
+2007-07-03  Mike Krüger <mkrueger@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CommonAssemblySigningPreferences.cs,
+	  Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CommonAssemblySigningPreferences.cs,
+	  gtk-gui/gui.stetic: Added assembly signing panel.
+
+2007-06-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs: When a
+	  solution contains a reference to an unknown project type (perhaps
+	  the addin is not available on the machine) an exception occurs when
+	  viewing the configuration properties for the solution. Patch by
+	  Jerome Haltom.
+
+2007-06-23 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Fixed capitalization.
+
+2007-06-23  Marcos David Marin Amador <MarcosMarin@gmail.com>
+
+	* MonoDevelop.Projects.Gui.CompletionCompletionList/Window.cs: Check whether 
+	  ICompletionData is a CodeCompletionData instead of just casting it.
+
+2007-06-13  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs
+	(ProjectOptionsCommands): Remove, unused.
+	(SetSelectedConfigurationAsStartup): Remove. Active configuration cannot
+	be set for a project by the user.
+
+2007-06-07  Ankit Jain  <jankit@novell.com>
+
+	Fixes bug#81820.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs
+	(.ctor): Use FileService.NormalizeRelativePath for project files.
+
+2007-06-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/objects.xml: Updated.
+
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/gui.stetic,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs:
+	  Option panel widgets don't need to be public.
+
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs: Make sure
+	  root nodes in option dialogs are expanded by default.
+
+2007-05-30  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs
+	(.ctor): If CombineExecuteDefinition is invalid then load an empty
+	default set.
+	(AddEmptyExecuteDefinitions): New.
+
+2007-05-21  Ankit Jain  <jankit@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs:
+	Ensure FileSelector dialog is Destroy()'ed.
+
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Reference shared assemblies from the correct location.
+
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui/IconService.cs: Removed reference to deleted
+	  property.
+
+2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui/IconService.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  Makefile.am: Migration to Mono.Addins.
+
+2007-04-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui.Deployment,
+	  MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs,
+	  MonoDevelop.Projects.Gui.Deployment/IFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/InstallDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/InstallDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CommandDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/FileCopyConfigurationSelector.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CommandDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Moved all deployment code to the new MonoDevelop.Deployment add-in.
+
+2007-03-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+	* MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Track api changes.
+	* gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs:
+	  Flush.
+
+2007-03-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Don't local-copy references.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:
+	  Show errors in a modal dialog. Fixes bug #81085.
+
+2007-02-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Change add-in versions to 0.13.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Disabled building through makefile.
+	  Added missing file.
+
+2007-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp: Flush.
+	* Base.glade: Cosmetic fix.
+
+2007-02-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: In CalcVisibleRows
+	  get the window size using GetSizeRequest, since the size is later
+	  being set with SetSizeRequest.
+
+2007-02-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs: Fixe
+	  format string.
+	* Makefile.am: Flush.
+
+2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
+
+2007-02-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Synchronized the MD
+	  project and the Makefile
+	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  Save changes in configurations only once at dialog level. 
+	* gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/gui.stetic: Flush.
+
+2007-02-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml, MonoDevelop.Projects.Gui.mdp,
+	  MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs,
+	  Base.glade, gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandPanelWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Dialogs.OptionPanels.CustomCommandWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanelWidget.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CustomCommandPanel.cs:
+	  Implemented options panels for configuring custom commands for
+	  projects.
+
+2007-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am,
+	  MonoDevelop.Projects.Gui.Completion/IParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/MethodParameterDataProvider.cs,
+	  MonoDevelop.Projects.Gui.Completion/ParameterInformationWindowManager.cs:
+	  Infrastructure for supporting parameter information windows.
+
+2007-02-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.mdp,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/gui.stetic, Makefile.am: i18n fixes.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Always use
+	  the ambience object to convert class names (needed since it may be
+	  an instantiated generic type).
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Make the parser context optional in the constructor.
+
+2007-02-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs:
+	  Set the project directory as default path for the file entries.
+	  Fixes bug #80386 and #79223.
+
+2007-02-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ICompletionData.cs,
+	  MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs,
+	  MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added new
+	  interface IActionCompletionData, which can be used to implement
+	  custom completion actions.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Made this
+	  class public. Factorized some methods to make them more usable.
+
+2007-01-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Track
+	  changes in the API. Now the cursor positions are taken from a
+	  CodeCompletionContext object.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Lazily get
+	  documentation from classes, to avoid loading too much data into
+	  memory.
+	* MonoDevelop.Projects.Gui.Completion/CommentCompletionDataProvider.cs:
+	  Removed since it's not being used right now.
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Allow specifying a
+	  completion text which is different from the text shown in the list.
+	  Added method for selecting an entry in the list.
+	* MonoDevelop.Projects.Gui.Completion/ICompletionWidget.cs: Created
+	  class CodeCompletionContext, which holds the coordinates of a code
+	  completion operation.
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs: A
+	  completion provider can now specify the entry that has to be
+	  selected by default in the completion list.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	  Moved al C# specific code to the C# add-in. Now this class is just
+	  a collection of CodeCompletionData. Every language add-in should
+	  implement the code completion logic in a text editor extension.
+
+2007-01-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml,
+	  MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/LocalFileCopyConfigurationEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/InstallDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DirectoryDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/InstallDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CommandDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CommandDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/CombinedDeployEditorWidget.cs,
+	  MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.DirectoryDeployEditorWidget.cs,
+	  gtk-gui/generated.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.InstallDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.FileCopyConfigurationSelector.cs,
+	  gtk-gui/objects.xml,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CommandDeployEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.LocalFileCopyConfigurationEditorWidget.cs,
+	  gtk-gui/MonoDevelop.Projects.Gui.Deployment.CombinedDeployEditorWidget.cs,
+	  gtk-gui/gui.stetic: Implemented editors for all new deployment
+	  targets.
+	* MonoDevelop.Projects.Gui.mdp, Makefile.am: Updated.
+	* MonoDevelop.Projects.Gui.Deployment/DialogFileReplacePolicy.cs:
+	  IFileReplacePolicy implementation. Patch by Michael Hutchinson.
+	* MonoDevelop.Projects.Gui.Deployment/IFileCopyConfigurationEditor.cs,
+	  MonoDevelop.Projects.Gui.Deployment/FileCopyConfigurationSelector.cs:
+	  Basic infrastructure for file copy configuration editors.
+	* MonoDevelop.Projects.Gui.Deployment/FileDeployTargetEditor.cs:
+	  Removed.
+	* MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Some minor gui improvements.
+	* Base.glade: Set new default sizes for the deploy dialogs.
+
+2007-01-19  Marek Sieradzki  <marek.sieradzki@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineEntryConfigurationPanel.cs:
+	  Removed redundant String.Format ().
+
+2006-12-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CompileFileProjectOptions.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/OutputOptionsPanel.cs,
+	  MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:
+	  Track changes in FileService API.
+
+2006-11-21  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: Fix bug
+	  that makes the code completion window appear randomly when an
+	  assembly is reparsed.
+
+2006-09-21 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Added some null checks.
+
+2006-09-19 Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* .: Added svn:ignore for MonoDevelop.Projects.Gui.pidb
+
+2006-09-01 Lluis Sanchez Gual  <lluis@novell.com>
+
+ 	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs: changed
+ 	  the icon shown in the tooltip when the parser db is being generated.
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+2006-08-10 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	  Provide the ambience to use for code completion as a parameter.
+
+2006-08-07 Philip Turnbull <philip.turnbull@gmail.com>
+
+	* MonoDevelop.Projects.Gui/IconService.cs:
+	Added GetIcon method for indexers.
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	Track API changes in Ambience.
+
+2006-08-08 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	* Base.glade: Allow setting the default deploy target in
+	  the deployment options panel.
+
+2006-08-04 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  Properly handle the case when the completion list is empty
+	  (this may happen if the parser database is being generated).
+
+2006-07-29 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Base types of
+	  classes were not displayed. Fixed that.
+
+2006-07-28 Matej Urbas <matej.urbas@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs: Fixed the completion
+	  popup so that it doesn't use Pango markup for displaying type names.
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs: Changed the
+	  way names are generated for types in code completion.
+
+2006-07-25 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Deployment/FileDeployTargetEditor.cs:
+	  Fix incorrect type check.
+	
+	* MonoDevelop.Projects.Gui.Completion/ICompletionDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	* MonoDevelop.Projects.Gui.Completion/ListWindow.cs:
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  When the code completion window is shown and the parser database
+	  is still being generated, the completion window will now show a message
+	  saying that class information is being gathered.
+
+2006-07-17 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Removed unused file.
+
+2006-07-12 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/ProjectOptionsDialog.cs: Show the
+	  project/solution name in the window title.
+	  
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Set the correct button state when initially showing the panel.
+
+2006-07-03 Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Registered a deploy target editor.
+	  Updated add-in and references versions.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	  Make it work for unknown deploy targets.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:
+	  Minor fix.
+	* MonoDevelop.Projects.Gui.addin.xml: Updated versions.
+	
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Added FileDeployTargetEditor.cs.
+	
+2006-06-19 Scott Ellington  <scott.ellington@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineInformationPanel.cs:
+	* Base.glade:
+	* MonoDevelop.Projects.Gui.addin.xml: 
+	Added option panel for setting solution information	
+	* MonoDevelop.Projects.Gui.mdp:
+	* Makefile.am:
+	Added file
+
+2006-05-15 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Added new deployment panel
+	  and extension point.
+	* MonoDevelop.Projects.Gui.mdp: Added new files and updated references.
+	* Base.glade: Added new deploymnet panel and support dialogs.
+	* Makefile.am: Added new files.
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Implement deploy command.
+	* MonoDevelop.Ide.addin.xml: Added new command which shows a list of
+	  available deploy targets.
+	* MonoDevelop.Projects.Gui.Deployment/DeployTargetEditor.cs:
+	* MonoDevelop.Projects.Gui.Deployment/IDeployTargetEditor.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeploymentOptionsPanel.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/AddDeployTargetDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs/EditDeployTargetDialog.cs: New files.
+
+2006-05-24  Grzegorz Sobański  <silk@boktor.net>
+
+	* MonoDevelop.Projects.Gui.Completion/CompletionListWindow.cs:
+	  alter code completion - do not auto-insert first match - it too often
+	  destroys what user has written.
+
+2006-05-04 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Updated versions.
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+
+2006-04-21 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Removed unused stuff.
+	* Base.glade: Added RuntimeOptionsPanel design.
+	
+	* Makefile.am:
+	* MonoDevelop.Projects.Gui.mdp: Added RuntimeOptionsPanel.cs.
+
+2006-04-07 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.addin.xml: Add documentation.
+
+2006-03-29 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:
+	  Make the "configuraiton" column editable.
+   
+2006-03-24 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Gui.mdp: Updated.
+	* Makefile.am: Use an unified format. Patch by Matze Braun.
+	* MonoDevelop.Projects.Gui.addin.xml: Updated add-in versions.
+
+2006-03-23 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs:
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineConfigurationPanel.cs:
+	  Save changes done in the entry configuration panel. Fixes bug #77716.
+
+2006-03-12  David Makovský (Yakeen) <yakeen@sannyas-on.net>
+
+        * Base.glade: Marking some strings not to be translated. Not include balast in pot file.
+
+2006-02-19 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/DeployFileOptions.cs:
+	fixed a typo in a string.
+
+2006-01-30 Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	Use LanguageItemCollection instead of ArrayList.
+
+2006-01-25  Jacob Ilsø Christensen  <jacobilsoe@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionData.cs:
+	Removed duplication.
+
+2006-01-14 Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* MonoDevelop.Projects.Gui.Dialogs/CombineOptionsDialog.cs: Replaced
+	'Combine' by 'Solution'.
+	* MonoDevelop.Projects.Gui.Dialogs.OptionPanels/CombineStartupPanel.cs:
+	Replaced 'Combine' by 'Solution'.
+
+2006-01-10 Lluis Sanchez Gual  <lluis@novell.com>   
+
+	* MonoDevelop.Projects.Gui.Completion/CodeCompletionDataProvider.cs:
+	Track api changes.
+
+2005-10-11  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Fixed addin header information.
+	Use "id" attribuet instead of "name" to identify addins.
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Implemented BeginStepTask.
+
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com> 
+
+	* MonoDevelop.Projects.Gui.addin.xml: Added addin dependencies.
+	* MonoDevelop.Projects.Gui/IconService.cs: Use the new addin API.
+
+2005-10-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Install the assembly in the AddIns directory.
+
+2005-09-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	Created new assembly. Old ChangeLog entries can be found in the
+	MonoDevelop.Ide ChangeLog.

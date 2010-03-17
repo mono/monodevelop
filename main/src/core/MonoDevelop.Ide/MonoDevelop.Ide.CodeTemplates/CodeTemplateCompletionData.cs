@@ -27,7 +27,7 @@
 using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeTemplates

@@ -30,9 +30,6 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
@@ -274,7 +271,7 @@ namespace MonoDevelop.Ide.Execution
 			if (cmode.Scope == CustomModeScope.Global)
 				SaveGlobalCustomExecutionModes ();
 			else
-				Ide.Gui.IdeApp.Workspace.SavePreferences ();
+				IdeApp.Workspace.SavePreferences ();
 		}
 		
 		static CustomExecutionModes GetCustomExecutionModeList (SolutionEntityItem project, CustomModeScope scope)
@@ -307,7 +304,7 @@ namespace MonoDevelop.Ide.Execution
 			if (cmode.Scope == CustomModeScope.Global)
 				SaveGlobalCustomExecutionModes ();
 			else
-				Ide.Gui.IdeApp.Workspace.SavePreferences ();
+				IdeApp.Workspace.SavePreferences ();
 		}
 		
 		static CustomExecutionModes GetGlobalCustomExecutionModes ()

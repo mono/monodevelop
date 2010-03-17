@@ -27,18 +27,9 @@
 //
 
 using System;
-using System.Collections;
-using System.CodeDom.Compiler;
-using System.IO;
-using System.Diagnostics;
-
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
-using MonoDevelop.Ide.Gui.Pads;
-
-using Gtk;
-using Pango;
+using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.FindInFiles
 {

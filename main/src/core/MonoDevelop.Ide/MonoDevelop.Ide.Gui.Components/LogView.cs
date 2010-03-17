@@ -33,7 +33,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using System.IO;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Components
 {

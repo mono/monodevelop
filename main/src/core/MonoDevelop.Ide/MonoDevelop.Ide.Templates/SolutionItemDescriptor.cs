@@ -35,7 +35,6 @@ using System.Diagnostics;
 using System.Reflection;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Templates

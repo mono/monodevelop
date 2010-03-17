@@ -32,11 +32,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using Gtk;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {

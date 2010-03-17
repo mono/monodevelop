@@ -1,12 +1,7 @@
 
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -31,32 +26,29 @@ FILES =  \
 	AssemblyInfo.cs \
 	BuildVariables.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Components.FolderListSelector.cs \
 	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
+	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeManagerDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Execution.MonoExecutionParametersPreview.cs \
+	gtk-gui/MonoDevelop.Ide.Execution.MonoExecutionParametersWidget.cs \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CombineEntryFeatureSelector.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ConfirmProjectDeleteDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeManagerDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.CustomExecutionModeWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.EncapsulateFieldDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ExportProjectDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.FeatureSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.IncludeNewFilesDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersPreview.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MonoExecutionParametersWidget.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewFileDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiMessageDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewProjectDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OptionsDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayWindow.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AddInsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs \
@@ -71,9 +63,224 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.OverridesImplementsDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.DeleteConfigDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.FeatureSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.NewFileDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptionsWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineConfigurationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineInformationWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.RenameConfigDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
+	MonoDevelop.Components.Chart/Axis.cs \
+	MonoDevelop.Components.Chart/AxisDimension.cs \
+	MonoDevelop.Components.Chart/AxisPosition.cs \
+	MonoDevelop.Components.Chart/BasicChart.cs \
+	MonoDevelop.Components.Chart/ChartCursor.cs \
+	MonoDevelop.Components.Chart/DateTimeAxis.cs \
+	MonoDevelop.Components.Chart/IntegerAxis.cs \
+	MonoDevelop.Components.Chart/Serie.cs \
+	MonoDevelop.Components.Chart/TickEnumerator.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/CommandCategoryCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/CommandCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/CommandItemCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/ItemSetCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/LinkItemCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/LocalCommandItemCodon.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/SchemeExtensionNode.cs \
+	MonoDevelop.Components.Commands.ExtensionNodes/SeparatorItemCodon.cs \
+	MonoDevelop.Components.Commands/ActionCommand.cs \
+	MonoDevelop.Components.Commands/ActionType.cs \
+	MonoDevelop.Components.Commands/Command.cs \
+	MonoDevelop.Components.Commands/CommandArrayInfo.cs \
+	MonoDevelop.Components.Commands/CommandCheckMenuItem.cs \
+	MonoDevelop.Components.Commands/CommandEntry.cs \
+	MonoDevelop.Components.Commands/CommandEntrySet.cs \
+	MonoDevelop.Components.Commands/CommandErrorHandler.cs \
+	MonoDevelop.Components.Commands/CommandFrame.cs \
+	MonoDevelop.Components.Commands/CommandHandler.cs \
+	MonoDevelop.Components.Commands/CommandHandlerAttribute.cs \
+	MonoDevelop.Components.Commands/CommandInfo.cs \
+	MonoDevelop.Components.Commands/CommandInfoSet.cs \
+	MonoDevelop.Components.Commands/CommandManager.cs \
+	MonoDevelop.Components.Commands/CommandMenu.cs \
+	MonoDevelop.Components.Commands/CommandMenuBar.cs \
+	MonoDevelop.Components.Commands/CommandMenuItem.cs \
+	MonoDevelop.Components.Commands/CommandRouterContainer.cs \
+	MonoDevelop.Components.Commands/CommandSelectedEventArgs.cs \
+	MonoDevelop.Components.Commands/CommandSystemCommands.cs \
+	MonoDevelop.Components.Commands/CommandToggleToolButton.cs \
+	MonoDevelop.Components.Commands/CommandToolbar.cs \
+	MonoDevelop.Components.Commands/CommandToolButton.cs \
+	MonoDevelop.Components.Commands/CustomCommand.cs \
+	MonoDevelop.Components.Commands/CustomCommandUpdaterAttribute.cs \
+	MonoDevelop.Components.Commands/CustomItem.cs \
+	MonoDevelop.Components.Commands/CustomMenuItem.cs \
+	MonoDevelop.Components.Commands/ICommandBar.cs \
+	MonoDevelop.Components.Commands/ICommandDelegatorRouter.cs \
+	MonoDevelop.Components.Commands/ICommandMenuItem.cs \
+	MonoDevelop.Components.Commands/ICommandRouter.cs \
+	MonoDevelop.Components.Commands/ICommandTargetVisitor.cs \
+	MonoDevelop.Components.Commands/ICommandUpdateHandler.cs \
+	MonoDevelop.Components.Commands/ICommandUserItem.cs \
+	MonoDevelop.Components.Commands/IMultiCastCommandRouter.cs \
+	MonoDevelop.Components.Commands/KeyBindingManager.cs \
+	MonoDevelop.Components.Commands/KeyBindingScheme.cs \
+	MonoDevelop.Components.Commands/KeyBindingService.cs \
+	MonoDevelop.Components.Commands/KeyBindingSet.cs \
+	MonoDevelop.Components.Commands/LinkCommandEntry.cs \
+	MonoDevelop.Components.Commands/MenuToolButton.cs \
+	MonoDevelop.Components.Diff/Diff.cs \
+	MonoDevelop.Components.Diff/DiffWidget.cs \
+	MonoDevelop.Components.Diff/Merge.cs \
+	MonoDevelop.Components.Diff/Patch.cs \
+	MonoDevelop.Components.Diff/StructuredDiff.cs \
+	MonoDevelop.Components.Diff/TextDiff.cs \
+	MonoDevelop.Components.Diff/UnifiedDiff.cs \
+	MonoDevelop.Components.Docking/AutoHideBox.cs \
+	MonoDevelop.Components.Docking/DockBar.cs \
+	MonoDevelop.Components.Docking/DockBarItem.cs \
+	MonoDevelop.Components.Docking/DockContainer.cs \
+	MonoDevelop.Components.Docking/DockFrame.cs \
+	MonoDevelop.Components.Docking/DockFrameTopLevel.cs \
+	MonoDevelop.Components.Docking/DockGroup.cs \
+	MonoDevelop.Components.Docking/DockGroupItem.cs \
+	MonoDevelop.Components.Docking/DockGroupType.cs \
+	MonoDevelop.Components.Docking/DockItem.cs \
+	MonoDevelop.Components.Docking/DockItemBehavior.cs \
+	MonoDevelop.Components.Docking/DockItemContainer.cs \
+	MonoDevelop.Components.Docking/DockItemStatus.cs \
+	MonoDevelop.Components.Docking/DockItemToolbar.cs \
+	MonoDevelop.Components.Docking/DockLayout.cs \
+	MonoDevelop.Components.Docking/DockObject.cs \
+	MonoDevelop.Components.Docking/DockPosition.cs \
+	MonoDevelop.Components.Docking/PlaceholderWindow.cs \
+	MonoDevelop.Components.Docking/ShadedContainer.cs \
+	MonoDevelop.Components.Docking/TabStrip.cs \
+	MonoDevelop.Components.DockToolbars/ArrowWindow.cs \
+	MonoDevelop.Components.DockToolbars/DockedPosition.cs \
+	MonoDevelop.Components.DockToolbars/DockGrip.cs \
+	MonoDevelop.Components.DockToolbars/DockToolbar.cs \
+	MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs \
+	MonoDevelop.Components.DockToolbars/DockToolbarFrameLayout.cs \
+	MonoDevelop.Components.DockToolbars/DockToolbarFrameStatus.cs \
+	MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs \
+	MonoDevelop.Components.DockToolbars/DockToolbarPosition.cs \
+	MonoDevelop.Components.DockToolbars/DockToolbarStatus.cs \
+	MonoDevelop.Components.DockToolbars/FixedPanel.cs \
+	MonoDevelop.Components.DockToolbars/FloatingDock.cs \
+	MonoDevelop.Components.DockToolbars/FloatingPosition.cs \
+	MonoDevelop.Components.DockToolbars/IDockBar.cs \
+	MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
+	MonoDevelop.Components.Extensions/ISelectFileDialog.cs \
+	MonoDevelop.Components.Extensions/MimeTypeNode.cs \
+	MonoDevelop.Components.Extensions/MimeTypeOptionsPanelNode.cs \
+	MonoDevelop.Components.Extensions/OptionsDialogSection.cs \
+	MonoDevelop.Components.Extensions/OptionsPanelNode.cs \
+	MonoDevelop.Components.Extensions/PlatformDialog.cs \
+	MonoDevelop.Components.Extensions/StockIconCodon.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/ColorEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/DateTimeEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/DefaultEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/EnumerationEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/EventEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/ExpandableObjectEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/FlagsEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/FlagsSelectorDialog.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/FloatRange.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/IntRange.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/TextEditor.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/TextEditorDialog.cs \
+	MonoDevelop.Components.PropertyGrid.Editors/TimeSpanEditor.cs \
+	MonoDevelop.Components.PropertyGrid/DefaultPropertyTab.cs \
+	MonoDevelop.Components.PropertyGrid/EditorManager.cs \
+	MonoDevelop.Components.PropertyGrid/EventPropertyTab.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyEditorCell.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyEditorTypeAttribute.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyGrid.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventArgs.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventHandler.cs \
+	MonoDevelop.Components.PropertyGrid/SurrogateUITypeEditorAttribute.cs \
+	MonoDevelop.Components.Theming/GtkColors.cs \
+	MonoDevelop.Components.Theming/GtkTheme.cs \
+	MonoDevelop.Components.Theming/Theme.cs \
+	MonoDevelop.Components.Theming/ThemeContext.cs \
+	MonoDevelop.Components.Theming/ThemeEngine.cs \
+	MonoDevelop.Components/BaseFileEntry.cs \
+	MonoDevelop.Components/CairoExtensions.cs \
+	MonoDevelop.Components/CellRendererComboBox.cs \
+	MonoDevelop.Components/ConsoleView.cs \
+	MonoDevelop.Components/DataGrid.cs \
+	MonoDevelop.Components/FileEntry.cs \
+	MonoDevelop.Components/FileSelector.cs \
+	MonoDevelop.Components/FixedWidthWrapLabel.cs \
+	MonoDevelop.Components/FolderDialog.cs \
+	MonoDevelop.Components/FolderEntry.cs \
+	MonoDevelop.Components/FolderListSelector.cs \
+	MonoDevelop.Components/GtkUtil.cs \
+	MonoDevelop.Components/HoverImageButton.cs \
+	MonoDevelop.Components/HslColor.cs \
+	MonoDevelop.Components/IconView.cs \
+	MonoDevelop.Components/InfoBar.cs \
+	MonoDevelop.Components/InvisibleFrame.cs \
+	MonoDevelop.Components/ListView.cs \
+	MonoDevelop.Components/MenuButton.cs \
+	MonoDevelop.Components/MenuButtonEntry.cs \
+	MonoDevelop.Components/MiniButton.cs \
+	MonoDevelop.Components/Navbar.cs \
+	MonoDevelop.Components/NotebookButtonBar.cs \
+	MonoDevelop.Components/PangoCairoHelper.cs \
+	MonoDevelop.Components/PathBar.cs \
+	MonoDevelop.Components/RoundedFrame.cs \
+	MonoDevelop.Components/SearchEntry.cs \
+	MonoDevelop.Components/SelectFileDialog.cs \
+	MonoDevelop.Components/SelectFolderDialog.cs \
+	MonoDevelop.Components/TabLabel.cs \
+	MonoDevelop.Components/TooltipWindow.cs \
+	MonoDevelop.Components/TreeViewCellContainer.cs \
+	MonoDevelop.Components/TreeViewState.cs \
+	MonoDevelop.Components/WindowTransparencyDecorator.cs \
+	MonoDevelop.Ide.CodeCompletion/CodeCompletionContext.cs \
+	MonoDevelop.Ide.CodeCompletion/CodeCompletionContextEventArgs.cs \
+	MonoDevelop.Ide.CodeCompletion/CompletionData.cs \
+	MonoDevelop.Ide.CodeCompletion/CompletionDataList.cs \
+	MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs \
+	MonoDevelop.Ide.CodeCompletion/CompletionWindowManager.cs \
+	MonoDevelop.Ide.CodeCompletion/DeclarationViewWindow.cs \
+	MonoDevelop.Ide.CodeCompletion/ICompletionData.cs \
+	MonoDevelop.Ide.CodeCompletion/ICompletionWidget.cs \
+	MonoDevelop.Ide.CodeCompletion/IMemberCompletionData.cs \
+	MonoDevelop.Ide.CodeCompletion/IParameterDataProvider.cs \
+	MonoDevelop.Ide.CodeCompletion/ListWidget.cs \
+	MonoDevelop.Ide.CodeCompletion/ListWindow.cs \
+	MonoDevelop.Ide.CodeCompletion/MutableCompletionDataList.cs \
+	MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs \
+	MonoDevelop.Ide.CodeCompletion/ParameterInformationWindowManager.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs \
@@ -121,14 +328,25 @@ FILES =  \
 	MonoDevelop.Ide.Commands/WindowCommands.cs \
 	MonoDevelop.Ide.CustomTools/CustomTool.cs \
 	MonoDevelop.Ide.CustomTools/CustomToolService.cs \
+	MonoDevelop.Ide.Desktop/DefaultPlatformService.cs \
+	MonoDevelop.Ide.Desktop/DesktopApplication.cs \
+	MonoDevelop.Ide.Desktop/PlatformService.cs \
+	MonoDevelop.Ide.Desktop/RecentFileStorage.cs \
+	MonoDevelop.Ide.Desktop/RecentItem.cs \
+	MonoDevelop.Ide.Desktop/RecentOpen.cs \
 	MonoDevelop.Ide.Execution/CommandExecutionContext.cs \
 	MonoDevelop.Ide.Execution/CustomArgsCustomizer.cs \
 	MonoDevelop.Ide.Execution/CustomExecutionMode.cs \
+	MonoDevelop.Ide.Execution/CustomExecutionModeDialog.cs \
+	MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs \
+	MonoDevelop.Ide.Execution/CustomExecutionModeWidget.cs \
 	MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs \
 	MonoDevelop.Ide.Execution/IExecutionCommandCustomizer.cs \
 	MonoDevelop.Ide.Execution/IExecutionConfigurationEditor.cs \
 	MonoDevelop.Ide.Execution/MonoExecutionCustomizer.cs \
 	MonoDevelop.Ide.Execution/MonoExecutionParameters.cs \
+	MonoDevelop.Ide.Execution/MonoExecutionParametersPreview.cs \
+	MonoDevelop.Ide.Execution/MonoExecutionParametersWidget.cs \
 	MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs \
 	MonoDevelop.Ide.Extensions/CustomToolExtensionNode.cs \
 	MonoDevelop.Ide.Extensions/IAddFileDialogHandler.cs \
@@ -148,9 +366,13 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultPad.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs \
+	MonoDevelop.Ide.Gui.Components/CellRendererPixbuf.cs \
+	MonoDevelop.Ide.Gui.Components/CustomCommandTargetAttribute.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
+	MonoDevelop.Ide.Gui.Components/EnvVarList.cs \
 	MonoDevelop.Ide.Gui.Components/ExecutionModeComboBox.cs \
 	MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs \
+	MonoDevelop.Ide.Gui.Components/FileBrowser.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeBuilderContext.cs \
 	MonoDevelop.Ide.Gui.Components/ITreeNavigator.cs \
@@ -162,6 +384,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
 	MonoDevelop.Ide.Gui.Components/PadTreeView.cs \
+	MonoDevelop.Ide.Gui.Components/ProjectFileEntry.cs \
 	MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs \
@@ -194,34 +417,31 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextEditorProperties.cs \
 	MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs \
-	MonoDevelop.Ide.Gui.Dialogs/AddFileDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/AssemblyReferencePanel.cs \
-	MonoDevelop.Ide.Gui.Dialogs/CombineEntryFeatureSelector.cs \
+	MonoDevelop.Ide.Gui.Dialogs/AlertDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/ConfirmProjectDeleteDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeManagerDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/CustomExecutionModeWidget.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/EncapsulateFieldDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/ExportProjectDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/FeatureSelectorDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/ErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/GacReferencePanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/IncludeNewFilesDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersPreview.cs \
-	MonoDevelop.Ide.Gui.Dialogs/MonoExecutionParametersWidget.cs \
-	MonoDevelop.Ide.Gui.Dialogs/NewFileDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/IOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/ItemOptionsDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/ItemOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MultiMessageDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/MultiTaskProgressDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/NewProjectDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/OpenFileDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/OverridesImplementsDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/ProjectReferencePanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/OptionsPanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs \
+	MonoDevelop.Ide.Gui.Dialogs/ProgressDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectEncodingsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SelectFileFormatDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/SelectReferenceDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/SetupApp.cs \
 	MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs \
 	MonoDevelop.Ide.Gui.Dialogs/TipOfTheDay.cs \
 	MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs \
@@ -284,8 +504,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs \
 	MonoDevelop.Ide.Gui/AbstractPadContent.cs \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
-	MonoDevelop.Ide.Gui/AddEntryEventHandler.cs \
 	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
+	MonoDevelop.Ide.Gui/AsyncDispatchAttribute.cs \
 	MonoDevelop.Ide.Gui/AuthorInformation.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
@@ -297,16 +517,15 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
 	MonoDevelop.Ide.Gui/DragNotebook.cs \
-	MonoDevelop.Ide.Gui/ExitEventHandler.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
-	MonoDevelop.Ide.Gui/HelpOperations.cs \
+	MonoDevelop.Ide.Gui/FreeDispatchAttribute.cs \
+	MonoDevelop.Ide.Gui/GuiSyncContext.cs \
+	MonoDevelop.Ide.Gui/GuiSyncObject.cs \
 	MonoDevelop.Ide.Gui/HiddenTextEditorViewContent.cs \
 	MonoDevelop.Ide.Gui/HiddenWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/IAttachableViewContent.cs \
 	MonoDevelop.Ide.Gui/IBaseViewContent.cs \
-	MonoDevelop.Ide.Gui/Ide.cs \
-	MonoDevelop.Ide.Gui/IdePreferences.cs \
-	MonoDevelop.Ide.Gui/IdeStartup.cs \
+	MonoDevelop.Ide.Gui/IMementoCapable.cs \
 	MonoDevelop.Ide.Gui/InternalLog.cs \
 	MonoDevelop.Ide.Gui/IPadContainer.cs \
 	MonoDevelop.Ide.Gui/IPadContent.cs \
@@ -318,12 +537,14 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadFontChanger.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
-	MonoDevelop.Ide.Gui/ProjectOperations.cs \
-	MonoDevelop.Ide.Gui/RootWorkspace.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
+	MonoDevelop.Ide.Gui/StockIcons.cs \
+	MonoDevelop.Ide.Gui/SyncContext.cs \
+	MonoDevelop.Ide.Gui/SyncContextAttribute.cs \
+	MonoDevelop.Ide.Gui/SyncObject.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \
 	MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
@@ -332,6 +553,46 @@ FILES =  \
 	MonoDevelop.Ide.Gui/WorkbenchContext.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindow.cs \
+	MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs \
+	MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs \
+	MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/BaseDirectoryPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/BaseDirectoryPanelWidget.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CombineBuildOptions.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CombineInformationPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CommonAssemblySigningPreferences.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CustomCommandPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CustomCommandPanelWidget.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/GeneralProjectOptions.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/OutputOptionsPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/RunOptionsPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/RuntimeOptionsPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/SolutionItemConfigurationsPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs \
+	MonoDevelop.Ide.Projects/AddFileDialog.cs \
+	MonoDevelop.Ide.Projects/AddMimeTypeDialog.cs \
+	MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs \
+	MonoDevelop.Ide.Projects/CombineEntryFeatureSelector.cs \
+	MonoDevelop.Ide.Projects/CombineOptionsDialog.cs \
+	MonoDevelop.Ide.Projects/ConfirmProjectDeleteDialog.cs \
+	MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs \
+	MonoDevelop.Ide.Projects/DeleteConfigDialog.cs \
+	MonoDevelop.Ide.Projects/ExportProjectDialog.cs \
+	MonoDevelop.Ide.Projects/FeatureSelectorDialog.cs \
+	MonoDevelop.Ide.Projects/GacReferencePanel.cs \
+	MonoDevelop.Ide.Projects/IncludeNewFilesDialog.cs \
+	MonoDevelop.Ide.Projects/NewConfigurationDialog.cs \
+	MonoDevelop.Ide.Projects/NewFileDialog.cs \
+	MonoDevelop.Ide.Projects/NewProjectDialog.cs \
+	MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs \
+	MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs \
+	MonoDevelop.Ide.Projects/ProjectReferencePanel.cs \
+	MonoDevelop.Ide.Projects/RenameConfigDialog.cs \
+	MonoDevelop.Ide.Projects/SelectReferenceDialog.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
@@ -361,29 +622,215 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionDescriptor.cs \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
-	MonoDevelop.Ide/Services.cs
+	MonoDevelop.Ide.WebBrowser/IWebBrowser.cs \
+	MonoDevelop.Ide.WebBrowser/IWebBrowserLoader.cs \
+	MonoDevelop.Ide.WebBrowser/LoadingProgressChangedEventArgs.cs \
+	MonoDevelop.Ide.WebBrowser/LocationChangedEventArgs.cs \
+	MonoDevelop.Ide.WebBrowser/LocationChangingEventArgs.cs \
+	MonoDevelop.Ide.WebBrowser/StatusMessageChangedEventArgs.cs \
+	MonoDevelop.Ide.WebBrowser/TitleChangedEventArgs.cs \
+	MonoDevelop.Ide/AddEntryEventHandler.cs \
+	MonoDevelop.Ide/DesktopService.cs \
+	MonoDevelop.Ide/DispatchService.cs \
+	MonoDevelop.Ide/ExitEventHandler.cs \
+	MonoDevelop.Ide/GLibLogging.cs \
+	MonoDevelop.Ide/HelpOperations.cs \
+	MonoDevelop.Ide/Ide.cs \
+	MonoDevelop.Ide/IdePreferences.cs \
+	MonoDevelop.Ide/IdeStartup.cs \
+	MonoDevelop.Ide/ImageService.cs \
+	MonoDevelop.Ide/MessageService.cs \
+	MonoDevelop.Ide/ProjectOperations.cs \
+	MonoDevelop.Ide/RootWorkspace.cs \
+	MonoDevelop.Ide/Services.cs \
+	MonoDevelop.Ide/WebBrowserService.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
+	gtk-gui/objects.xml \
 	icons/AboutImage.png \
 	icons/AboutImageSep.png \
+	icons/add-namespace-16.png \
+	icons/assembly-project-16.png \
+	icons/author-information-16.png \
+	icons/author-information-24.png \
+	icons/breakpoint-16.png \
+	icons/breakpoint-22.png \
+	icons/breakpoint-disable-all-16.png \
+	icons/breakpoint-disable-all-22.png \
+	icons/breakpoint-disabled-16.png \
+	icons/breakpoint-disabled-22.png \
+	icons/breakpoint-invalid-16.png \
+	icons/breakpoint-invalid-22.png \
+	icons/breakpoint-new-16.png \
+	icons/breakpoint-new-22.png \
+	icons/breakpoint-on-off-16.png \
+	icons/breakpoint-on-off-22.png \
+	icons/breakpoint-remove-all-16.png \
+	icons/breakpoint-remove-all-22.png \
+	icons/build-project-16.png \
+	icons/build-project-22.png \
+	icons/build-solution-16.png \
+	icons/build-solution-22.png \
+	icons/code-template-16.png \
+	icons/code-template-24.png \
+	icons/comment.png \
+	icons/compiler-options-16.png \
+	icons/compiler-options-24.png \
+	icons/custom-commands-16.png \
+	icons/custom-commands-24.png \
+	icons/edit-find-next-16.png \
+	icons/edit-find-next-24.png \
+	icons/edit-select-all.png \
+	icons/edit-select-all_22.png \
+	icons/element-class-16.png \
+	icons/element-delegate-16.png \
+	icons/element-enumeration-16.png \
+	icons/element-event-16.png \
+	icons/element-extensionmethod-16.png \
+	icons/element-field-16.png \
+	icons/element-interface-16.png \
+	icons/element-literal-16.png \
+	icons/element-method-16.png \
+	icons/element-method-new-16.png \
+	icons/element-namespace-16.png \
+	icons/element-property-16.png \
+	icons/element-structure-16.png \
+	icons/empty-category-16.png \
+	icons/empty-category-22.png \
+	icons/ExecutionMarker.png \
+	icons/file-addin-16.png \
+	icons/file-class-32.png \
+	icons/file-enum-32.png \
+	icons/file-interface-32.png \
+	icons/file-struct-32.png \
+	icons/file-xml-16.png \
+	icons/file-xml-32.png \
+	icons/folder-new-16.png \
+	icons/formatting-16.png \
+	icons/formatting-24.png \
+	icons/GeneralWizardBackground \
+	icons/gnome-fs-regular.png \
+	icons/hicolor_status_16x16_pin-active.png \
+	icons/hicolor_status_16x16_pin-down.png \
+	icons/hicolor_status_16x16_pin-up.png \
+	icons/Icons.16x16.ClearAllBookmarks \
+	icons/Icons.16x16.CloseAllDocuments \
+	icons/Icons.16x16.CloseCombineIcon \
+	icons/Icons.16x16.ClosedFolderBitmap \
+	icons/Icons.16x16.ClosedReferenceFolder \
+	icons/Icons.16x16.ClosedResourceFolder \
+	icons/Icons.16x16.CombineIcon \
+	icons/Icons.16x16.Empty \
+	icons/Icons.16x16.FindInFiles \
+	icons/Icons.16x16.GotoNextbookmark \
+	icons/Icons.16x16.GotoPrevbookmark \
 	icons/Icons.16x16.LinkOverlay.png \
+	icons/Icons.16x16.MiscFiles \
+	icons/Icons.16x16.NewFolderIcon \
+	icons/Icons.16x16.OpenFolderBitmap \
+	icons/Icons.16x16.OpenProjectIcon \
+	icons/Icons.16x16.OpenReferenceFolder \
+	icons/Icons.16x16.OpenResourceFolder \
+	icons/Icons.16x16.OutputIcon \
+	icons/Icons.16x16.ReplaceInFiles \
+	icons/Icons.16x16.ResourceFileIcon \
+	icons/Icons.16x16.SaveAllIcon \
+	icons/Icons.16x16.SplitWindow \
+	icons/Icons.16x16.TextFileIcon \
+	icons/Icons.16x16.TipOfTheDay \
+	icons/Icons.16x16.ToggleBookmark \
+	icons/Icons.16x16.WebSearchIcon \
+	icons/Icons.22x22.ClearAllBookmarks.png \
+	icons/Icons.22x22.GotoNextbookmark.png \
+	icons/Icons.22x22.GotoPrevbookmark.png \
+	icons/Icons.22x22.ToggleBookmark.png \
+	icons/Icons.24x24.SaveAllIcon \
+	icons/Icons.32x32.EmptyFileIcon \
+	icons/Icons.32x32.HTMLFileIcon \
+	icons/Icons.32x32.ResourceFileIcon \
+	icons/Icons.32x32.TextFileIcon \
+	icons/Icons.32x32.XMLFileIcon \
 	icons/keyboard-shortcuts-16.png \
 	icons/keyboard-shortcuts-22.png \
+	icons/keyword-16.png \
+	icons/markers-rulers-16.png \
+	icons/markers-rulers-24.png \
+	icons/monodevelop-16.png \
+	icons/monodevelop-22.png \
+	icons/monodevelop-32.png \
+	icons/monodevelop-48.png \
 	icons/mono-powered.png \
 	icons/navigate-next-16.png \
 	icons/navigate-next-24.png \
 	icons/navigate-previous-16.png \
 	icons/navigate-previous-24.png \
+	icons/package-x-generic.png \
+	icons/package-x-generic_22.png \
+	icons/pad-task-list-16.png \
+	icons/pad-task-list-24.png \
 	icons/parsing.png \
 	icons/pindown.png \
 	icons/pinup.png \
+	icons/plugin-16.png \
+	icons/plugin-22.png \
+	icons/plugin-32.png \
+	icons/project-16.png \
+	icons/project-32.png \
+	icons/project-console-32.png \
+	icons/project-gui-32.png \
+	icons/project-library-32.png \
+	icons/project-new-16.png \
+	icons/project-reference-16.png \
+	icons/project-reference-folder-16.png \
+	icons/project-reference-package-16.png \
+	icons/project-reference-project-16.png \
+	icons/remove-namespace-16.png \
+	icons/solution-16.png \
+	icons/solution-32.png \
+	icons/solution-folder-closed-16.png \
+	icons/solution-folder-new-16.png \
+	icons/solution-folder-open-16.png \
+	icons/solution-new-16.png \
+	icons/sort-namespace-16.png \
 	icons/SplashScreen.png \
+	icons/static-16.png \
+	icons/syntax-highlighting-16.png \
+	icons/syntax-highlighting-24.png \
 	icons/system-file-manager.png \
+	icons/system-software-update.png \
+	icons/system-software-update_22.png \
+	icons/template-16.png \
+	icons/template-surroundwith-16.png \
 	icons/text-editor-16.png \
 	icons/text-editor-22.png \
+	icons/text-editor-behavior-16.png \
+	icons/text-editor-behavior-24.png \
 	icons/tools-external-tools-16.png \
 	icons/tools-external-tools-24.png \
+	icons/uncomment.png \
+	icons/user-package.png \
+	icons/view-message-log-16.png \
+	icons/visibility-internal-16.png \
+	icons/visibility-private-16.png \
+	icons/visibility-protected-16.png \
+	icons/visual-studio.png \
+	icons/visual-style-16.png \
+	icons/visual-style-24.png \
+	icons/warning-overlay.png \
+	icons/web-overlay-16.png \
+	icons/web-overlay-32.png \
+	icons/workspace-16.png \
+	icons/workspace-32.png \
+	icons-components/MonoDevelop.Close.png \
+	icons-components/MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp \
+	icons-components/MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp \
+	icons-components/MonoDevelop.Components.PropertyGrid.SortByCat.png \
+	MonoDevelop.Components.Docking/stock-auto-hide.png \
+	MonoDevelop.Components.Docking/stock-close-12.png \
+	MonoDevelop.Components.Docking/stock-dock.png \
+	MonoDevelop.Components.Docking/stock-menu-left-12.png \
+	MonoDevelop.Components.Docking/stock-menu-right-12.png \
 	MonoDevelop.Ide.addin.xml \
 	MonoDevelop.Ide.CodeFormatting/InvariantTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
@@ -432,7 +879,7 @@ $(build_OPTIONS): $(top_builddir)/build/data/options/%.xml: $(srcdir)/options/%.
 	cp $(srcdir)/options/$(notdir $@) $@
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -debug -codepage:utf8 -out:$@ -target:library $(REFS) $(build_deps) \
+	$(CSC) $(CSC_FLAGS) -debug -unsafe -codepage:utf8 -out:$@ -target:library $(REFS) $(build_deps) \
 		$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)

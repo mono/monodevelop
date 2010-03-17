@@ -4,7 +4,6 @@ using System.Text;
 using Pango;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Content {
 	public enum LineViewerStyle {

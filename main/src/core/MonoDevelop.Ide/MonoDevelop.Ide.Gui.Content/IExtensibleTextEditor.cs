@@ -26,7 +26,7 @@
 //
 
 using System;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.Gui.Content
 {

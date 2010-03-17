@@ -32,7 +32,6 @@ using MonoDevelop.Ide.Gui;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using System.Text;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
@@ -125,7 +124,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
-			ToggleToolButton buttonOutput = new ToggleToolButton (MonoDevelop.Core.Gui.Stock.OutputIcon);
+			ToggleToolButton buttonOutput = new ToggleToolButton (MonoDevelop.Ide.Gui.Stock.OutputIcon);
 			buttonOutput.Clicked += ButtonOutputClicked;
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show output");
 			toolbar.Insert (buttonOutput, -1);

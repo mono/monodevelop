@@ -29,8 +29,7 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -168,7 +167,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			CodeTemplate template = (CodeTemplate)templateStore.GetValue (iter, 0);
 			
 			if (template == null) {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (treeviewCodeTemplates.GetRowExpanded (templateStore.GetPath (iter)) ? MonoDevelop.Core.Gui.Stock.OpenFolder : MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (treeviewCodeTemplates.GetRowExpanded (templateStore.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
 			} else {
 				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf ("md-template", IconSize.Menu);
 			}

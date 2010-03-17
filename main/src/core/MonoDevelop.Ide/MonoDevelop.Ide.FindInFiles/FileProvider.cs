@@ -29,7 +29,6 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using System.Text;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.FindInFiles
 {

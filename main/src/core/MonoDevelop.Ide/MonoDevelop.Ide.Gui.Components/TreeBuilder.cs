@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.Ide.Gui.Components

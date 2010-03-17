@@ -28,7 +28,8 @@
 
 using System;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			}
 		}
 
-		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
+		public override void Initialize (MonoDevelop.Ide.Gui.Dialogs.OptionsDialog dialog, object dataObject)
 		{
 			solution = dataObject as Solution;
 			base.Initialize (dialog, dataObject);

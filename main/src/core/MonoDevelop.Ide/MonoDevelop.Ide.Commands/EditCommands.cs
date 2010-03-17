@@ -27,7 +27,7 @@
 
 
 using System;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Components.Commands;

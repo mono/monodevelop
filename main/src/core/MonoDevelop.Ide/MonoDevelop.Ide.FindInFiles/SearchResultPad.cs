@@ -30,7 +30,6 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
@@ -100,7 +99,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override void Initialize (IPadWindow window)
 		{
-			window.Icon = MonoDevelop.Core.Gui.Stock.FindIcon;
+			window.Icon = MonoDevelop.Ide.Gui.Stock.FindIcon;
 			base.Initialize (window);
 		}
 		

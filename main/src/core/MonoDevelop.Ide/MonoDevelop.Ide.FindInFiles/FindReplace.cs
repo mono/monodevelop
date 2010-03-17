@@ -29,7 +29,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 
 
 namespace MonoDevelop.Ide.FindInFiles

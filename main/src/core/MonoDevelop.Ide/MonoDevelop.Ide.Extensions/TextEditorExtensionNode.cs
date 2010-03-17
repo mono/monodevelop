@@ -54,9 +54,9 @@ namespace MonoDevelop.Ide.Extensions
 				return ((IList)fileExtensions).Contains (ext);
 			}
 			if (mimeTypes != null && mimeTypes.Length > 0) {
-				string mt = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (fileName);
+				string mt = DesktopService.GetMimeTypeForUri (fileName);
 				foreach (string t in mimeTypes) {
-					if (MonoDevelop.Core.Gui.DesktopService.GetMimeTypeIsSubtype (mt, t))
+					if (DesktopService.GetMimeTypeIsSubtype (mt, t))
 						return true;
 				}
 				return false;
