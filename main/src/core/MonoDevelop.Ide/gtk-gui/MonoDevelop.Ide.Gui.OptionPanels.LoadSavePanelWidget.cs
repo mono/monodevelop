@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0f;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Project file format to use when creating new projects:");
+			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Project file format to use when creating new projects:");
 			this.vbox26.Add (this.label1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox26[this.label1]));
 			w1.Position = 0;
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.locationLabel.Name = "locationLabel";
 			this.locationLabel.Xalign = 0f;
 			this.locationLabel.Yalign = 0f;
-			this.locationLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Default _Solution location");
+			this.locationLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Default _Solution location");
 			this.locationLabel.UseUnderline = true;
 			this.vbox26.Add (this.locationLabel);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox26[this.locationLabel]));
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.loadLabel.Name = "loadLabel";
 			this.loadLabel.Xalign = 0f;
 			this.loadLabel.Yalign = 0f;
-			this.loadLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Load</b>");
+			this.loadLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Load</b>");
 			this.loadLabel.UseMarkup = true;
 			this.vbox18.Add (this.loadLabel);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox18[this.loadLabel]));
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child vbox65.Gtk.Box+BoxChild
 			this.loadUserDataCheckButton = new global::Gtk.CheckButton ();
 			this.loadUserDataCheckButton.Name = "loadUserDataCheckButton";
-			this.loadUserDataCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Load user-specific settings with the document");
+			this.loadUserDataCheckButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Load user-specific settings with the document");
 			this.loadUserDataCheckButton.DrawIndicator = true;
 			this.loadUserDataCheckButton.UseUnderline = true;
 			this.vbox65.Add (this.loadUserDataCheckButton);
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child vbox65.Gtk.Box+BoxChild
 			this.loadPrevProjectCheckButton = new global::Gtk.CheckButton ();
 			this.loadPrevProjectCheckButton.Name = "loadPrevProjectCheckButton";
-			this.loadPrevProjectCheckButton.Label = global::Mono.Unix.Catalog.GetString ("_Load previous solution on startup");
+			this.loadPrevProjectCheckButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Load previous solution on startup");
 			this.loadPrevProjectCheckButton.DrawIndicator = true;
 			this.loadPrevProjectCheckButton.UseUnderline = true;
 			this.vbox65.Add (this.loadPrevProjectCheckButton);
@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.saveLabel.Name = "saveLabel";
 			this.saveLabel.Xalign = 0f;
 			this.saveLabel.Yalign = 0f;
-			this.saveLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Save</b>");
+			this.saveLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Save</b>");
 			this.saveLabel.UseMarkup = true;
 			this.vbox19.Add (this.saveLabel);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox19[this.saveLabel]));
@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child vbox20.Gtk.Box+BoxChild
 			this.createBackupCopyCheckButton = new global::Gtk.CheckButton ();
 			this.createBackupCopyCheckButton.Name = "createBackupCopyCheckButton";
-			this.createBackupCopyCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Always create backup copy");
+			this.createBackupCopyCheckButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Always create backup copy");
 			this.createBackupCopyCheckButton.DrawIndicator = true;
 			this.createBackupCopyCheckButton.UseUnderline = true;
 			this.vbox20.Add (this.createBackupCopyCheckButton);

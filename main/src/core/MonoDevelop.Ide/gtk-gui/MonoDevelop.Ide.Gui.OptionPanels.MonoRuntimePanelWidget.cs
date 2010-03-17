@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label1.WidthRequest = 500;
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0f;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("If you have a parallel installation of Mono you can register it here, so you can use it for building and running projects. The <b>default runtime</b> is the .NET runtime to be used for building and running applications when none is specifically selected.");
+			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("If you have a parallel installation of Mono you can register it here, so you can use it for building and running projects. The <b>default runtime</b> is the .NET runtime to be used for building and running applications when none is specifically selected.");
 			this.label1.UseMarkup = true;
 			this.label1.Wrap = true;
 			this.vbox1.Add (this.label1);
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buttonDefault.CanFocus = true;
 			this.buttonDefault.Name = "buttonDefault";
 			this.buttonDefault.UseUnderline = true;
-			this.buttonDefault.Label = global::Mono.Unix.Catalog.GetString ("Set as Default");
+			this.buttonDefault.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Set as Default");
 			this.vbox2.Add (this.buttonDefault);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonDefault]));
 			w4.Position = 0;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.labelRunning = new global::Gtk.Label ();
 			this.labelRunning.Name = "labelRunning";
 			this.labelRunning.Xalign = 0f;
-			this.labelRunning.LabelProp = global::Mono.Unix.Catalog.GetString ("label1");
+			this.labelRunning.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("label1");
 			this.vbox1.Add (this.labelRunning);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.labelRunning]));
 			w9.Position = 2;

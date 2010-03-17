@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.labelTokens.Name = "labelTokens";
 			this.labelTokens.Xalign = 0f;
 			this.labelTokens.Yalign = 0f;
-			this.labelTokens.LabelProp = global::Mono.Unix.Catalog.GetString ("_Token List:");
+			this.labelTokens.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Token List:");
 			this.labelTokens.UseUnderline = true;
 			this.vbox7.Add (this.labelTokens);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox7[this.labelTokens]));
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label112 = new global::Gtk.Label ();
 			this.label112.Name = "label112";
 			this.label112.Xalign = 0f;
-			this.label112.LabelProp = global::Mono.Unix.Catalog.GetString ("_Name:");
+			this.label112.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Name:");
 			this.label112.UseUnderline = true;
 			this.vboxPriority.Add (this.label112);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vboxPriority[this.label112]));
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label113 = new global::Gtk.Label ();
 			this.label113.Name = "label113";
 			this.label113.Xalign = 0f;
-			this.label113.LabelProp = global::Mono.Unix.Catalog.GetString ("Priority:");
+			this.label113.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Priority:");
 			this.vboxPriority.Add (this.label113);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vboxPriority[this.label113]));
 			w7.Position = 2;
@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label.Name = "label";
 			this.label.Ypad = 12;
 			this.label.Yalign = 0f;
-			this.label.LabelProp = global::Mono.Unix.Catalog.GetString ("<i><b>Note:</b> Only Letters, Digits and Underscore are allowed.</i>");
+			this.label.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<i><b>Note:</b> Only Letters, Digits and Underscore are allowed.</i>");
 			this.label.UseMarkup = true;
 			this.label.Wrap = true;
 			this.label.Justify = ((global::Gtk.Justification)(2));
@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
 			this.label10.Xalign = 1f;
-			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("High");
+			this.label10.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("High");
 			this.table6.Add (this.label10);
 			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table6[this.label10]));
 			w20.XOptions = ((global::Gtk.AttachOptions)(0));
@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
 			this.label11.Xalign = 1f;
-			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("Normal");
+			this.label11.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Normal");
 			this.table6.Add (this.label11);
 			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table6[this.label11]));
 			w21.TopAttach = ((uint)(1));
@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
 			this.label12.Xalign = 1f;
-			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Low");
+			this.label12.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Low");
 			this.label12.Justify = ((global::Gtk.Justification)(2));
 			this.table6.Add (this.label12);
 			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table6[this.label12]));
@@ -297,7 +297,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.frame1.Add (this.alignment1);
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Task Priorities Foreground Colors</b>");
+			this.label9.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Task Priorities Foreground Colors</b>");
 			this.label9.UseMarkup = true;
 			this.frame1.LabelWidget = this.label9;
 			this.vbox6.Add (this.frame1);

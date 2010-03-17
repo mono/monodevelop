@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.checkCustom = new global::Gtk.CheckButton ();
 			this.checkCustom.CanFocus = true;
 			this.checkCustom.Name = "checkCustom";
-			this.checkCustom.Label = global::Mono.Unix.Catalog.GetString ("_Use custom author information for this solution");
+			this.checkCustom.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Use custom author information for this solution");
 			this.checkCustom.DrawIndicator = true;
 			this.checkCustom.UseUnderline = true;
 			this.vbox1.Add (this.checkCustom);
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0f;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("_Name:");
+			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Name:");
 			this.label2.UseUnderline = true;
 			this.infoTable.Add (this.label2);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.infoTable[this.label2]));
@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0f;
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Copyright:");
+			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Copyright:");
 			this.label3.UseUnderline = true;
 			this.infoTable.Add (this.label3);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.infoTable[this.label3]));
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0f;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_Email:");
+			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Email:");
 			this.label4.UseUnderline = true;
 			this.infoTable.Add (this.label4);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.infoTable[this.label4]));

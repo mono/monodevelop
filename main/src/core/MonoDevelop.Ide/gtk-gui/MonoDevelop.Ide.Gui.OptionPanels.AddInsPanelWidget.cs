@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child vbox72.Gtk.Box+BoxChild
 			this.lookCheck = new global::Gtk.CheckButton ();
 			this.lookCheck.Name = "lookCheck";
-			this.lookCheck.Label = global::Mono.Unix.Catalog.GetString ("Look for add-in updates at startup, with the following periodicity:");
+			this.lookCheck.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Look for add-in updates at startup, with the following periodicity:");
 			this.lookCheck.DrawIndicator = true;
 			this.lookCheck.UseUnderline = true;
 			this.vbox72.Add (this.lookCheck);
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label105 = new global::Gtk.Label ();
 			this.label105.Name = "label105";
 			this.label105.Xalign = 0f;
-			this.label105.LabelProp = global::Mono.Unix.Catalog.GetString ("Every");
+			this.label105.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Every");
 			this.hbox46.Add (this.label105);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox46[this.label105]));
 			w3.Position = 1;
@@ -84,8 +84,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w4.Fill = false;
 			// Container child hbox46.Gtk.Box+BoxChild
 			this.periodCombo = global::Gtk.ComboBox.NewText ();
-			this.periodCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Days"));
-			this.periodCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Months"));
+			this.periodCombo.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Days"));
+			this.periodCombo.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Months"));
 			this.periodCombo.Name = "periodCombo";
 			this.periodCombo.Active = 0;
 			this.hbox46.Add (this.periodCombo);
@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.managerButton = new global::Gtk.Button ();
 			this.managerButton.Name = "managerButton";
 			this.managerButton.UseUnderline = true;
-			this.managerButton.Label = global::Mono.Unix.Catalog.GetString ("Add-in Manager...");
+			this.managerButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Add-in Manager...");
 			this.hbox47.Add (this.managerButton);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox47[this.managerButton]));
 			w8.Position = 0;

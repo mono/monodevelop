@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildBeforeRunCheckBox = new global::Gtk.CheckButton ();
 			this.buildBeforeRunCheckBox.CanFocus = true;
 			this.buildBeforeRunCheckBox.Name = "buildBeforeRunCheckBox";
-			this.buildBeforeRunCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Build solution before running");
+			this.buildBeforeRunCheckBox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Build solution before running");
 			this.buildBeforeRunCheckBox.DrawIndicator = true;
 			this.buildBeforeRunCheckBox.UseUnderline = true;
 			this.vbox66.Add (this.buildBeforeRunCheckBox);
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.runWithWarningsCheckBox = new global::Gtk.CheckButton ();
 			this.runWithWarningsCheckBox.CanFocus = true;
 			this.runWithWarningsCheckBox.Name = "runWithWarningsCheckBox";
-			this.runWithWarningsCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Run solution if build completed with warnings");
+			this.runWithWarningsCheckBox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Run solution if build completed with warnings");
 			this.runWithWarningsCheckBox.DrawIndicator = true;
 			this.runWithWarningsCheckBox.UseUnderline = true;
 			this.vbox66.Add (this.runWithWarningsCheckBox);
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.checkXBuild = new global::Gtk.CheckButton ();
 			this.checkXBuild.CanFocus = true;
 			this.checkXBuild.Name = "checkXBuild";
-			this.checkXBuild.Label = global::Mono.Unix.Catalog.GetString ("Compile projects using MSBuild / XBuild\n(this is an experimental feature and may not work for some projects)");
+			this.checkXBuild.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Compile projects using MSBuild / XBuild\n(this is an experimental feature and may not work for some projects)");
 			this.checkXBuild.DrawIndicator = true;
 			this.checkXBuild.UseUnderline = true;
 			this.vbox66.Add (this.checkXBuild);
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildAndRunOptionsLabel.Name = "buildAndRunOptionsLabel";
 			this.buildAndRunOptionsLabel.Xalign = 0f;
 			this.buildAndRunOptionsLabel.Yalign = 0f;
-			this.buildAndRunOptionsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>File Save Options Before Building</b>");
+			this.buildAndRunOptionsLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>File Save Options Before Building</b>");
 			this.buildAndRunOptionsLabel.UseMarkup = true;
 			this.vbox66.Add (this.buildAndRunOptionsLabel);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox66[this.buildAndRunOptionsLabel]));
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.vbox67.Name = "vbox67";
 			this.vbox67.Spacing = 6;
 			// Container child vbox67.Gtk.Box+BoxChild
-			this.saveChangesRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Save changes to open documents"));
+			this.saveChangesRadioButton = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("_Save changes to open documents"));
 			this.saveChangesRadioButton.Name = "saveChangesRadioButton";
 			this.saveChangesRadioButton.Active = true;
 			this.saveChangesRadioButton.DrawIndicator = true;
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
-			this.promptChangesRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Prompt to save changes to open documents"));
+			this.promptChangesRadioButton = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("_Prompt to save changes to open documents"));
 			this.promptChangesRadioButton.Name = "promptChangesRadioButton";
 			this.promptChangesRadioButton.DrawIndicator = true;
 			this.promptChangesRadioButton.UseUnderline = true;
@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
-			this.noSaveRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Don't save changes to open documents "));
+			this.noSaveRadioButton = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("_Don't save changes to open documents "));
 			this.noSaveRadioButton.Name = "noSaveRadioButton";
 			this.noSaveRadioButton.DrawIndicator = true;
 			this.noSaveRadioButton.UseUnderline = true;

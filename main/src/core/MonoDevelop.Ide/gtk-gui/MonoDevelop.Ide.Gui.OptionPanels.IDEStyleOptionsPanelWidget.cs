@@ -57,11 +57,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
 			this.comboCompact = global::Gtk.ComboBox.NewText ();
-			this.comboCompact.AppendText (global::Mono.Unix.Catalog.GetString ("Very spacious"));
-			this.comboCompact.AppendText (global::Mono.Unix.Catalog.GetString ("Spacious"));
-			this.comboCompact.AppendText (global::Mono.Unix.Catalog.GetString ("Normal"));
-			this.comboCompact.AppendText (global::Mono.Unix.Catalog.GetString ("Compact"));
-			this.comboCompact.AppendText (global::Mono.Unix.Catalog.GetString ("Very compact"));
+			this.comboCompact.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Very spacious"));
+			this.comboCompact.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Spacious"));
+			this.comboCompact.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Normal"));
+			this.comboCompact.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Compact"));
+			this.comboCompact.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Very compact"));
 			this.comboCompact.Name = "comboCompact";
 			this.comboCompact.Active = 2;
 			this.table1.Add (this.comboCompact);
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0f;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Toolbar icon size:");
+			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Toolbar icon size:");
 			this.label1.UseUnderline = true;
 			this.table1.Add (this.label1);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0f;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("User Interface Language:");
+			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("User Interface Language:");
 			this.table1.Add (this.label2);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
 			w5.TopAttach = ((uint)(1));
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0f;
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("User Interface Theme:");
+			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("User Interface Theme:");
 			this.table1.Add (this.label3);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
 			w6.TopAttach = ((uint)(2));
@@ -130,16 +130,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0f;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Compactness:");
+			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Compactness:");
 			this.table1.Add (this.label4);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.toolbarCombobox = global::Gtk.ComboBox.NewText ();
-			this.toolbarCombobox.AppendText (global::Mono.Unix.Catalog.GetString ("Smallest"));
-			this.toolbarCombobox.AppendText (global::Mono.Unix.Catalog.GetString ("Small"));
-			this.toolbarCombobox.AppendText (global::Mono.Unix.Catalog.GetString ("Large"));
+			this.toolbarCombobox.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Smallest"));
+			this.toolbarCombobox.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Small"));
+			this.toolbarCombobox.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Large"));
 			this.toolbarCombobox.Name = "toolbarCombobox";
 			this.toolbarCombobox.Active = 1;
 			this.table1.Add (this.toolbarCombobox);
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.fontCheckbox = new global::Gtk.CheckButton ();
 			this.fontCheckbox.Name = "fontCheckbox";
-			this.fontCheckbox.Label = global::Mono.Unix.Catalog.GetString ("_Custom font for pads:");
+			this.fontCheckbox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Custom font for pads:");
 			this.fontCheckbox.DrawIndicator = true;
 			this.fontCheckbox.UseUnderline = true;
 			this.hbox2.Add (this.fontCheckbox);
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.fontOutputCheckbox = new global::Gtk.CheckButton ();
 			this.fontOutputCheckbox.Name = "fontOutputCheckbox";
-			this.fontOutputCheckbox.Label = global::Mono.Unix.Catalog.GetString ("_Custom font for Output pads:");
+			this.fontOutputCheckbox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Custom font for Output pads:");
 			this.fontOutputCheckbox.DrawIndicator = true;
 			this.fontOutputCheckbox.UseUnderline = true;
 			this.hbox3.Add (this.fontOutputCheckbox);
@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child vbox13.Gtk.Box+BoxChild
 			this.hiddenButton = new global::Gtk.CheckButton ();
 			this.hiddenButton.Name = "hiddenButton";
-			this.hiddenButton.Label = global::Mono.Unix.Catalog.GetString ("S_how hidden files and directories in File Scout");
+			this.hiddenButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("S_how hidden files and directories in File Scout");
 			this.hiddenButton.DrawIndicator = true;
 			this.hiddenButton.UseUnderline = true;
 			this.vbox13.Add (this.hiddenButton);
@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.documentSwitcherButton = new global::Gtk.CheckButton ();
 			this.documentSwitcherButton.CanFocus = true;
 			this.documentSwitcherButton.Name = "documentSwitcherButton";
-			this.documentSwitcherButton.Label = global::Mono.Unix.Catalog.GetString ("_Enable document switch dialog");
+			this.documentSwitcherButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Enable document switch dialog");
 			this.documentSwitcherButton.DrawIndicator = true;
 			this.documentSwitcherButton.UseUnderline = true;
 			this.vbox13.Add (this.documentSwitcherButton);

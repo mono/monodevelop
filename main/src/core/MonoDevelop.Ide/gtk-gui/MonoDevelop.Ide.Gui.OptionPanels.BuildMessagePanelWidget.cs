@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.table4.ColumnSpacing = ((uint)(6));
 			// Container child table4.Gtk.Table+TableChild
 			this.comboboxErrorPadAfter = global::Gtk.ComboBox.NewText ();
-			this.comboboxErrorPadAfter.AppendText (global::Mono.Unix.Catalog.GetString ("Never"));
+			this.comboboxErrorPadAfter.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Never"));
 			this.comboboxErrorPadAfter.Name = "comboboxErrorPadAfter";
 			this.comboboxErrorPadAfter.Active = 0;
 			this.table4.Add (this.comboboxErrorPadAfter);
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.comboboxJumpToFirst = global::Gtk.ComboBox.NewText ();
-			this.comboboxJumpToFirst.AppendText (global::Mono.Unix.Catalog.GetString ("Never"));
+			this.comboboxJumpToFirst.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Never"));
 			this.comboboxJumpToFirst.Name = "comboboxJumpToFirst";
 			this.comboboxJumpToFirst.Active = 0;
 			this.table4.Add (this.comboboxJumpToFirst);
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.comboboxMessageBubbles = global::Gtk.ComboBox.NewText ();
-			this.comboboxMessageBubbles.AppendText (global::Mono.Unix.Catalog.GetString ("Never"));
+			this.comboboxMessageBubbles.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Never"));
 			this.comboboxMessageBubbles.Name = "comboboxMessageBubbles";
 			this.comboboxMessageBubbles.Active = 0;
 			this.table4.Add (this.comboboxMessageBubbles);
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0f;
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Show error pad:");
+			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Show error pad:");
 			this.table4.Add (this.label3);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table4[this.label3]));
 			w4.TopAttach = ((uint)(1));
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
 			this.label5.Xalign = 0f;
-			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Show message bubbles:");
+			this.label5.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Show message bubbles:");
 			this.table4.Add (this.label5);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table4[this.label5]));
 			w5.TopAttach = ((uint)(2));
@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
 			this.label6.Xalign = 0f;
-			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Jump to first error or warning:");
+			this.label6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Jump to first error or warning:");
 			this.table4.Add (this.label6);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table4[this.label6]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
-			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("    ");
+			this.label10.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("    ");
 			this.hbox4.Add (this.label10);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.label10]));
 			w8.Position = 0;
