@@ -28,9 +28,8 @@
 
 using System;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Deployment;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Deployment.Gui
 {

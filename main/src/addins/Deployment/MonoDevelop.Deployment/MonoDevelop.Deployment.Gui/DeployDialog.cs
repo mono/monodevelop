@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Gtk;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -91,7 +91,7 @@ namespace MonoDevelop.Deployment.Gui
 			
 			store.Clear ();
 			foreach (PackageBuilder builder in builders) {
-				Gdk.Pixbuf pix = MonoDevelop.Core.Gui.ImageService.GetPixbuf (builder.Icon, Gtk.IconSize.LargeToolbar);
+				Gdk.Pixbuf pix = ImageService.GetPixbuf (builder.Icon, Gtk.IconSize.LargeToolbar);
 				store.AppendValues (pix, builder.Description, builder);
 			}
 			
@@ -222,7 +222,7 @@ namespace MonoDevelop.Deployment.Gui
 				break;
 			}
 			if (msg != null) {
-				MonoDevelop.Core.Gui.MessageService.ShowError (this, msg);
+				 MonoDevelop.Ide.MessageService.ShowError (this, msg);
 				return false;
 			}
 			else

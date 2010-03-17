@@ -28,13 +28,12 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Deployment
 {

@@ -1,7 +1,7 @@
 
 using System;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -19,7 +19,7 @@ namespace MonoDevelop.Deployment.Gui
 			target = package.PackageBuilder.Clone ();
 			this.Title = target.Description;
 			
-			this.Icon = MonoDevelop.Core.Gui.ImageService.GetPixbuf (target.Icon, Gtk.IconSize.Menu);
+			this.Icon = ImageService.GetPixbuf (target.Icon, Gtk.IconSize.Menu);
 			entryName.Text = package.Name;
 			
 			targetBox.PackStart (new PackageBuilderEditor (target), true, true, 0);
@@ -43,7 +43,7 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			string msg = target.Validate ();
 			if (!string.IsNullOrEmpty (msg)) {
-				MonoDevelop.Core.Gui.MessageService.ShowError (this, msg);
+				MonoDevelop.Ide.MessageService.ShowError (this, msg);
 				return;
 			}
 			package.Name = entryName.Text;

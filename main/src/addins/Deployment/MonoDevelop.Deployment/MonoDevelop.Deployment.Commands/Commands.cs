@@ -1,11 +1,9 @@
 
-using System;
 using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
 using MonoDevelop.Deployment.Gui;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Deployment
 {

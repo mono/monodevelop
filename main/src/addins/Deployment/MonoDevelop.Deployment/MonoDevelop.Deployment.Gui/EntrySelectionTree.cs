@@ -1,11 +1,11 @@
 
+using Gtk;
 using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui;
+using System.Collections.ObjectModel;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using Gtk;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -77,13 +77,13 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			string icon;
 			if (entry.ParentFolder == null)
-				icon = MonoDevelop.Core.Gui.Stock.Solution;
+				icon = MonoDevelop.Ide.Gui.Stock.Solution;
 			else if (entry is SolutionFolder)
-				icon = MonoDevelop.Core.Gui.Stock.SolutionFolderClosed;
+				icon = MonoDevelop.Ide.Gui.Stock.SolutionFolderClosed;
 			else if (entry is Project)
 				icon = ((Project)entry).StockIcon;
 			else
-				icon = MonoDevelop.Core.Gui.Stock.Project;
+				icon = MonoDevelop.Ide.Gui.Stock.Project;
 			
 			bool visible = builder.CanBuild (entry);
 			bool selected = selectedEntries.ContainsKey (entry);

@@ -4,9 +4,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Xml;
 using Gtk;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Deployment.Linux
 {

@@ -2,7 +2,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Deployment.Linux
 {

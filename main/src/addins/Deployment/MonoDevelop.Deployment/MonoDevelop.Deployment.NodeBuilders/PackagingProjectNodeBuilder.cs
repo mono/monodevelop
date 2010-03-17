@@ -27,16 +27,11 @@
 //
 
 using System;
-using System.Collections;
 
-using MonoDevelop.Projects;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Deployment.Gui;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Deployment.NodeBuilders

@@ -1,14 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../../build/bin/MonoDevelop.Core.Gui.dll" />
-    <widget-library name="../../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" internal="true" />
   </import>
@@ -51,7 +48,6 @@
                     <property name="MemberName" />
                     <property name="WidthRequest">24</property>
                     <property name="CanFocus">True</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -701,9 +697,6 @@ Directory</property>
               </widget>
             </child>
           </widget>
-          <packing>
-            <property name="TabExpand">False</property>
-          </packing>
         </child>
         <child>
           <widget class="Gtk.Label" id="label7">
@@ -777,7 +770,6 @@ Directory</property>
                           <widget class="Gtk.TreeView" id="treeCategories">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="HeadersClickable">True</property>
                           </widget>
                         </child>
                       </widget>
@@ -929,7 +921,6 @@ Directory</property>
               <widget class="Gtk.Frame" id="frame1">
                 <property name="MemberName" />
                 <property name="ShadowType">In</property>
-                <property name="LabelXalign">0</property>
                 <child>
                   <widget class="Gtk.Alignment" id="GtkAlignment4">
                     <property name="MemberName" />
@@ -939,7 +930,6 @@ Directory</property>
                       <widget class="Gtk.TreeView" id="treeEnvs">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="HeadersClickable">True</property>
                       </widget>
                     </child>
                   </widget>
@@ -955,7 +945,6 @@ Directory</property>
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -1020,7 +1009,6 @@ Directory</property>
                   <widget class="Gtk.TreeView" id="treeMimeTypes">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1096,7 +1084,6 @@ Directory</property>
           </widget>
           <packing>
             <property name="Position">2</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -1123,7 +1110,6 @@ Directory</property>
                   <widget class="Gtk.TreeView" id="treeEntries">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1184,7 +1170,6 @@ Directory</property>
           </widget>
           <packing>
             <property name="Position">3</property>
-            <property name="TabExpand">False</property>
           </packing>
         </child>
         <child>
@@ -1206,7 +1191,6 @@ Directory</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1238,7 +1222,6 @@ Directory</property>
                   <widget class="Gtk.TreeView" id="tree">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>

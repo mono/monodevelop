@@ -1,3 +1,22 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Deployment.csproj:
+	* MonoDevelop.Deployment.addin.xml:
+	* MonoDevelop.Deployment/PackageBuilder.cs:
+	* MonoDevelop.Deployment.Gui/DeployDialog.cs:
+	* MonoDevelop.Deployment.Commands/Commands.cs:
+	* MonoDevelop.Deployment.Gui/DeployOperations.cs:
+	* MonoDevelop.Deployment.Gui/EditPackageDialog.cs:
+	* MonoDevelop.Deployment.Gui/EntrySelectionTree.cs:
+	* gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:
+	* MonoDevelop.Deployment.Gui/DialogFileReplacePolicy.cs:
+	* MonoDevelop.Deployment.NodeBuilders/PackageNodeBuilder.cs:
+	* MonoDevelop.Deployment.NodeBuilders/PackagingProjectNodeBuilder.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Deployment/DeployProperties.cs: Track

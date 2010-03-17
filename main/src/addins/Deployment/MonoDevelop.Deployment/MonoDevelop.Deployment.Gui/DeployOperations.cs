@@ -1,9 +1,8 @@
 
-using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
 using System.Collections;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -29,7 +28,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		static IAsyncOperation BuildPackages (ICollection packages)
 		{
-			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Packaging Output"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
+			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Packaging Output"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
 
 			// Run the deploy command in a background thread to avoid
 			// deadlocks with the gui thread

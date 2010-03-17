@@ -1,11 +1,6 @@
 
-using System;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
+ 
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Deployment.Linux
 {
