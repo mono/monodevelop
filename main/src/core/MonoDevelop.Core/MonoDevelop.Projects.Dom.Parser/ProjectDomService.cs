@@ -463,12 +463,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 				string uri = "Project:" + project.FileName;
 				if (databases.ContainsKey (uri)) return;
 				
-				ProjectDom db = ParserDatabase.LoadProjectDom (project);
-				RegisterDom (db, uri);
+				try {
+					ProjectDom db = ParserDatabase.LoadProjectDom (project);
+					RegisterDom (db, uri);
 				
-				if (project is DotNetProject) {
-					((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
-					((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
+					if (project is DotNetProject) {
+						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
+						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
 			}
 		}
