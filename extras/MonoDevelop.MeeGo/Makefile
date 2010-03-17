@@ -1,6 +1,7 @@
 include config.make
 installdir = "$(prefix)/lib/monodevelop/AddIns/MonoDevelop.MeeGo"
 conf=Debug
+SLN=MonoDevelop.MeeGo.sln
 
 
 ISLOCAL := $(wildcard "../local-config/monodevelop.pc")
@@ -16,14 +17,14 @@ else
 endif
 
 all: update-reg
-	$(MDTOOL) build -c:$(conf)
+	$(MDTOOL) build -c:$(conf) $(SLN)
 
 clean:
 	rm -rf build/*
 
 # this breaks if the local MD has been cleaned
 #clean: update-reg	
-#	$(MDTOOL) build -t:Clean -c:$(conf)
+#	$(MDTOOL) build -t:Clean -c:$(conf) $(SLN)
 
 install: all
 	mkdir -p  $(installdir)
