@@ -26,11 +26,10 @@
 //
 
 using System;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using Mono.Debugging.Client;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {

@@ -27,24 +27,18 @@
 //
 
 using System;
-using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
-
-using MonoDevelop.Core;
+using System.Xml;
 using Mono.Addins;
-using MonoDevelop.Projects;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Ide.Gui.Dialogs;
-
-using MonoDevelop.Ide.Gui;
-
 using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Text;
 
 /*
  * Some places we should be doing some error handling we used to toss

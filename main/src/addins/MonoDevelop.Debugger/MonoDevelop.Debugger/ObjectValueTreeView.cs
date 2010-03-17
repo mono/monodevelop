@@ -26,15 +26,16 @@
 //
 
 using System;
-using System.Xml;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
 using Gtk;
 using Mono.Debugging.Client;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Gui.Components;
+
 
 namespace MonoDevelop.Debugger
 {
@@ -236,6 +237,7 @@ namespace MonoDevelop.Debugger
 				} else {
 					newFont = this.Style.FontDescription;
 				}
+				typeCol.Visible = !compact;
 				crtExp.FontDesc = newFont;
 				crtValue.FontDesc = newFont;
 				crtType.FontDesc = newFont;

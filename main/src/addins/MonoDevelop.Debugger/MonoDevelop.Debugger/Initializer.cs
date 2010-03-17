@@ -31,6 +31,7 @@ using MonoDevelop.Components.Commands;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {

@@ -26,11 +26,7 @@
 //
 
 using System;
-using System.Xml;
-using System.Collections.Generic;
 using Gtk;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging.Client;
 

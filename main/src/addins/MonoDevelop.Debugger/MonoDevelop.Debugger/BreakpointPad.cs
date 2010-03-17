@@ -26,25 +26,19 @@
 
 using GLib;
 using Gtk;
-using GtkSharp;
-
 using System;
-using System.Text;
-using System.IO;
-using System.Collections;
-using System.Globalization;
-using System.Runtime.InteropServices;
 
-using Stock = MonoDevelop.Core.Gui.Stock;
+using Stock = MonoDevelop.Ide.Gui.Stock;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using Mono.Debugging.Client;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {

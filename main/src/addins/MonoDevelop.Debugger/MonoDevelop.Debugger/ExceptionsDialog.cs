@@ -28,13 +28,12 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {

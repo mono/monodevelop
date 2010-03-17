@@ -26,8 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Debugging.Client;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Debugger
 {

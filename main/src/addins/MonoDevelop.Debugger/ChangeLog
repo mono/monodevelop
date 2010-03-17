@@ -1,3 +1,28 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/WatchPad.cs:
+	* MonoDevelop.Debugger/LocalsPad.cs:
+	* MonoDevelop.Debugger/Extensions.cs:
+	* MonoDevelop.Debugger/ThreadsPad.cs:
+	* MonoDevelop.Debugger/Initializer.cs:
+	* MonoDevelop.Debugger/ImmediatePad.cs:
+	* MonoDevelop.Debugger/StackTracePad.cs:
+	* MonoDevelop.Debugger/DebugCommands.cs:
+	* MonoDevelop.Debugger/BreakpointPad.cs:
+	* MonoDevelop.Debugger/ObjectValuePad.cs:
+	* MonoDevelop.Debugger/ExceptionsDialog.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs:
+	* MonoDevelop.Debugger/DebuggerOptionsPanelWidget.cs:
+	* MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ImmediatePad.cs: Show the clear button

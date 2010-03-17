@@ -26,19 +26,15 @@
 //
 
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using Mono.Addins;
 using Mono.Debugging.Client;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {

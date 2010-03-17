@@ -29,8 +29,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
