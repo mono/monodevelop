@@ -1,4 +1,8 @@
 <Combine fileversion="2.0">
+  <Policies>
+    <VersionControlPolicy inheritsSet="Mono" />
+    <ChangeLogPolicy UpdateMode="Nearest" inheritsSet="Mono" />
+  </Policies>
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="MonoDevelop.Profiling" configuration="Debug" />

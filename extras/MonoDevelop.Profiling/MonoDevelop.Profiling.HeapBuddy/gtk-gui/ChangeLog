@@ -1,3 +1,9 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gui.stetic:
+	* generated.cs: Merged MD.Projects into MD.Core, and
+	  MD.Projects.Gui, MD.Core.Gui and MD.Components into MD.Ide.
+
 2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gui.stetic: We now depend on gtk# 2.12.8, Mono 2.4, and

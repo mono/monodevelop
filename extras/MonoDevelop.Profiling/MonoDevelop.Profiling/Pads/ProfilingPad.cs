@@ -29,7 +29,7 @@ using System;
 using System.Resources;
 
 using MonoDevelop.Core;
-using Stock = MonoDevelop.Core.Gui.Stock;
+using Stock = MonoDevelop.Ide.Gui.Stock;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;

@@ -1,64 +1,5 @@
-<Project name="MonoDevelop.Profiling.HeapBuddy" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
-  <Configurations active="Debug">
-    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../build" assembly="MonoDevelop.Profiling.HeapBuddy" />
-      <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
-    </Configuration>
-    <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="../build" assembly="MonoDevelop.Profiling.HeapBuddy" />
-      <Build debugmode="False" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
-    </Configuration>
-  </Configurations>
-  <Contents>
-    <File name="gtk-gui/gui.stetic" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="gtk-gui/generated.cs" subtype="Code" buildaction="Compile" />
-    <File name="HeapBuddyProfiler.cs" subtype="Code" buildaction="Compile" />
-    <File name="HeapBuddyProfilingSnapshot.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/BacktracesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/BacktracesView.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/FakeNodes.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/HeapBuddyProfilingSnapshotNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/HistoryNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/HistoryView.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/TypesNodeBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Gui/TypesView.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/Backtrace.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/Frame.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/Gc.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/ObjectStats.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/OutfileReader.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/Resize.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/Type.cs" subtype="Code" buildaction="Compile" />
-    <File name="Snapshot/Util.cs" subtype="Code" buildaction="Compile" />
-    <File name="MonoDevelop.Profiling.HeapBuddy.addin.xml" subtype="Code" buildaction="EmbedAsResource" />
-    <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-  </Contents>
-  <References>
-    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core, Version=0.18.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core.Gui, Version=0.18.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.18.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects, Version=0.18.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Profiling" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Components, Version=0.19.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Projects.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-  </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
+<Project name="MonoDevelop.Profiling.HeapBuddy" fileversion="2.0" DefaultNamespace="MonoDevelop.Profiling.HeapBuddy" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar />
     <ResourcesVar Sync="True" Name="RES" />
@@ -67,4 +8,61 @@
     <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="../build" assembly="MonoDevelop.Profiling.HeapBuddy" />
+      <Build debugmode="True" target="Library" />
+      <Execution consolepause="True" runwithwarnings="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="../build" assembly="MonoDevelop.Profiling.HeapBuddy" />
+      <Build debugmode="False" target="Library" />
+      <Execution consolepause="True" runwithwarnings="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File subtype="Code" buildaction="EmbedAsResource" name="gtk-gui/gui.stetic" />
+    <File subtype="Code" buildaction="Compile" name="gtk-gui/generated.cs" />
+    <File subtype="Code" buildaction="Compile" name="HeapBuddyProfiler.cs" />
+    <File subtype="Code" buildaction="Compile" name="HeapBuddyProfilingSnapshot.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/BacktracesNodeBuilder.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/BacktracesView.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/FakeNodes.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/HeapBuddyProfilingSnapshotNodeBuilder.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/HistoryNodeBuilder.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/HistoryView.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/TypesNodeBuilder.cs" />
+    <File subtype="Code" buildaction="Compile" name="Gui/TypesView.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/Backtrace.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/Frame.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/Gc.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/ObjectStats.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/OutfileReader.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/Resize.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/Type.cs" />
+    <File subtype="Code" buildaction="Compile" name="Snapshot/Util.cs" />
+    <File subtype="Code" buildaction="EmbedAsResource" name="MonoDevelop.Profiling.HeapBuddy.addin.xml" />
+    <File subtype="Code" buildaction="Compile" name="AssemblyInfo.cs" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Core, Version=0.18.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Ide, Version=0.18.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Addins, Version=0.3.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Profiling" />
+    <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e" />
+    <ProjectReference type="Custom" localcopy="True" Include="MonoDevelop.Core,2.2" refto="MonoDevelop.Core,2.2" ctype="AddinReference" />
+    <ProjectReference type="Custom" localcopy="True" Include="MonoDevelop.Ide,2.2" refto="MonoDevelop.Ide,2.2" ctype="AddinReference" />
+  </References>
 </Project>

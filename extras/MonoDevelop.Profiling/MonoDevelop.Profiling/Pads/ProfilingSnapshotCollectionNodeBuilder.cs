@@ -24,14 +24,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Gtk;
 using System;
-using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Profiling
 {

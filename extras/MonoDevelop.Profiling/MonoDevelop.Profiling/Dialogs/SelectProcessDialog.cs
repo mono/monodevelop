@@ -28,7 +28,7 @@ using Gtk;
 using System;
 using System.Diagnostics;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Profiling
 {

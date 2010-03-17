@@ -30,9 +30,10 @@ using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 

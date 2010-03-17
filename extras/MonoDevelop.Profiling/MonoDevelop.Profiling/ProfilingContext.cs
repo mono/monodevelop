@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 

@@ -1,3 +1,23 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* ProfilingContext.cs:
+	* ProfilingService.cs:
+	* AbstractProfiler.cs:
+	* gtk-gui/generated.cs:
+	* ProfilingOperations.cs:
+	* Commands/PadCommands.cs:
+	* Commands/ToolCommands.cs:
+	* MonoDevelop.Profiling.mdp:
+	* Commands/ProjectCommands.cs:
+	* Dialogs/SelectProcessDialog.cs:
+	* MonoDevelop.Profiling.addin.xml:
+	* Commands/AbstractProfilerList.cs:
+	* gtk-gui/MonoDevelop.Profiling.SelectProcessDialog.cs:
+	* gtk-gui/MonoDevelop.Profiling.SelectExecutableDialog.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2009-10-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Profiling.addin.xml: Bump MD version.

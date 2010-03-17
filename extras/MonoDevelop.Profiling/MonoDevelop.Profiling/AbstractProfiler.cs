@@ -32,7 +32,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Profiling
 {

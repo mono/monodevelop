@@ -28,7 +28,7 @@ using Gtk;
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;

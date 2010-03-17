@@ -30,8 +30,8 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;

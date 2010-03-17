@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Profiling;
 
