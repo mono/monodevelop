@@ -32,9 +32,8 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace CBinding.Parser
 {

@@ -32,8 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-
-using CBinding.Navigation;
+using MonoDevelop.Ide;
 
 namespace CBinding.Parser
 {
@@ -59,7 +58,7 @@ namespace CBinding.Parser
 			ParsedDocument doc = new ParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 			Project p = (null == dom || null == dom.Project)? 
-				MonoDevelop.Ide.Gui.IdeApp.Workspace.GetProjectContainingFile (fileName):
+				IdeApp.Workspace.GetProjectContainingFile (fileName):
 				dom.Project;
 			ProjectInformation pi = ProjectInformationManager.Instance.Get (p);
 			CompilationUnit cu;

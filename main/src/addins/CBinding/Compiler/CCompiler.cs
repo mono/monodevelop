@@ -34,13 +34,10 @@ using System.IO;
 using System.Text;
 using System.CodeDom.Compiler;
 
-using Mono.Addins;
-
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace CBinding
 {

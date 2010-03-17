@@ -29,18 +29,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.IO;
-
-using Mono.Addins;
-
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
-
 using CBinding.Parser;
+using MonoDevelop.Ide;
 
 namespace CBinding.Navigation
 {

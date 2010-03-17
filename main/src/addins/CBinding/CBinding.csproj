@@ -61,29 +61,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
-      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
-      <Name>MonoDevelop.Components</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
-      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
-      <Name>MonoDevelop.Core.Gui</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
-      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
-      <Name>MonoDevelop.Projects</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
-      <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
-      <Name>MonoDevelop.Projects.Gui</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -100,6 +80,10 @@
       <Project>{BA9020AD-A2D1-47C8-9A7C-756162C38296}</Project>
       <Name>MonoDevelop.Deployment.Linux</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +287,7 @@
     <Compile Include="Gui\SwapSourceHeaderCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

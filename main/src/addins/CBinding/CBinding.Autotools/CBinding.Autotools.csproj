@@ -42,11 +42,6 @@
       <Name>MonoDevelop.Autotools</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
-      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
-      <Name>MonoDevelop.Projects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\CBinding.csproj">
       <Project>{7B57882B-AD46-469B-84E7-06DF98D11468}</Project>
       <Name>CBinding</Name>

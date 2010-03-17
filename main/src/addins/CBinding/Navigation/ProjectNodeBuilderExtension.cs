@@ -31,21 +31,15 @@
 
 using System;
 using System.IO;
-using System.Threading;
-
-using Mono.Addins;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
-
 using CBinding;
 using CBinding.Parser;
+using MonoDevelop.Ide;
 
 namespace CBinding.Navigation
 {

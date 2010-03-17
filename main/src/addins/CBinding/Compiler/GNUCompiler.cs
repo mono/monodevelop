@@ -38,14 +38,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
 
-using Mono.Addins;
-
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
 
 namespace CBinding
 {

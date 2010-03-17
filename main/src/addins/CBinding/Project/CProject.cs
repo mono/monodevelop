@@ -32,24 +32,20 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.CodeDom.Compiler;
 
 using Mono.Addins;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Deployment;
 using MonoDevelop.Deployment.Linux;
-
 using CBinding.Parser;
+using MonoDevelop.Ide;
 
 namespace CBinding
 {

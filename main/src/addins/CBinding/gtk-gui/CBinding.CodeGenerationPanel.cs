@@ -218,7 +218,6 @@ namespace CBinding
 			this.noWarningRadio = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("no warnings"));
 			this.noWarningRadio.CanFocus = true;
 			this.noWarningRadio.Name = "noWarningRadio";
-			this.noWarningRadio.Active = true;
 			this.noWarningRadio.DrawIndicator = true;
 			this.noWarningRadio.UseUnderline = true;
 			this.noWarningRadio.Group = new global::GLib.SList (global::System.IntPtr.Zero);

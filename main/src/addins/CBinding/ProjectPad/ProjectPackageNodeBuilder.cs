@@ -32,14 +32,10 @@
 using System;
 using System.Reflection;
 
-using Mono.Addins;
-
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace CBinding.ProjectPad
 {

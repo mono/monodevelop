@@ -1,3 +1,45 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* CBinding.csproj:
+	* CBinding.addin.xml:
+	* gtk-gui/gui.stetic:
+	* Project/CProject.cs:
+	* Gui/DataProvider.cs:
+	* Gui/CompilerPanel.cs:
+	* Compiler/CCompiler.cs:
+	* Parser/LanguageItem.cs:
+	* Compiler/GppCompiler.cs:
+	* Compiler/GNUCompiler.cs:
+	* Compiler/GccCompiler.cs:
+	* Gui/EditPackagesDialog.cs:
+	* Gui/OutputOptionsPanel.cs:
+	* Parser/CDocumentParser.cs:
+	* Gui/GeneralOptionsPanel.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* Gui/CTextEditorExtension.cs:
+	* Navigation/UnionNodeBuilder.cs:
+	* Navigation/MacroNodeBuilder.cs:
+	* Navigation/ClassNodeBuilder.cs:
+	* Gui/SwapSourceHeaderCommand.cs:
+	* Navigation/MemberNodeBuilder.cs:
+	* Navigation/GlobalsNodeBuilder.cs:
+	* Navigation/TypedefNodeBuilder.cs:
+	* Navigation/FunctionNodeBuilder.cs:
+	* Navigation/VariableNodeBuilder.cs:
+	* Navigation/StructureNodeBuilder.cs:
+	* Navigation/NamespaceNodeBuilder.cs:
+	* Navigation/EnumeratorNodeBuilder.cs:
+	* Navigation/EnumerationNodeBuilder.cs:
+	* ProjectPad/ProjectPackageNodeBuilder.cs:
+	* gtk-gui/CBinding.CodeGenerationPanel.cs:
+	* Navigation/LanguageItemCommandHandler.cs:
+	* Navigation/MacroDefinitionsNodeBuilder.cs:
+	* Navigation/ProjectNodeBuilderExtension.cs:
+	* ProjectPad/ProjectPackagesFolderNodeBuilder.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Project/CProject.cs: Track ProjectFile Link API.

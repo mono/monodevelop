@@ -30,14 +30,10 @@
 //
 
 using System;
-using System.IO;
-using System.Collections;
-
 using Mono.Addins;
 
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide;
 
 namespace CBinding
 {
