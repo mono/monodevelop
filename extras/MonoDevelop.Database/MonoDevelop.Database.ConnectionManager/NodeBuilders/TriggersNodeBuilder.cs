@@ -28,11 +28,7 @@
 
 using System;
 using System.Threading;
-using System.Collections.Generic;
 using MonoDevelop.Database.Sql;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 

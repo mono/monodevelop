@@ -31,7 +31,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Database.Sql;
 using MonoDevelop.Database.Components;

@@ -54,6 +54,20 @@
     </itemgroups>
     <signals />
   </object>
+  <object type="MonoDevelop.Database.Components.DatabaseConnectionEditorWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="DatabaseConnectionEditorWidget Signals">
+        <signal name="SelectedDatabaseChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Database.Components.SqlEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+    </itemgroups>
+    <signals>
+    </signals>
+  </object>
   <object type="MonoDevelop.Database.Components.ConnectionSettingsWidget" palette-category="MonoDevelop.Database.Components" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="ConnectionSettingsWidget Properties">
@@ -70,27 +84,6 @@
     <signals>
       <itemgroup label="ConnectionSettingsWidget Signals">
         <signal name="NeedsValidation" />
-      </itemgroup>
-    </signals>
-  </object>
-  <object type="MonoDevelop.Database.Components.DatabaseConnectionEditorWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals>
-      <itemgroup label="DatabaseConnectionEditorWidget Signals">
-        <signal name="SelectedDatabaseChanged" />
-      </itemgroup>
-    </signals>
-  </object>
-  <object type="MonoDevelop.Database.Components.SqlEditorWidget" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-      <itemgroup label="SqlEditorWidget Properties">
-        <property name="Text" />
-        <property name="Editable" />
-      </itemgroup>
-    </itemgroups>
-    <signals>
-      <itemgroup label="SqlEditorWidget Signals">
-        <signal name="TextChanged" />
       </itemgroup>
     </signals>
   </object>

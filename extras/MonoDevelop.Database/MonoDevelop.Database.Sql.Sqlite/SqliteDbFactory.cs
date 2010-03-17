@@ -27,7 +27,7 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Database.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Database.Sql;

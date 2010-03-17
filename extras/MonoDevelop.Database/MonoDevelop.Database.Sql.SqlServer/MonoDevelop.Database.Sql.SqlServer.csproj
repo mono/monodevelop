@@ -55,10 +55,6 @@
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.VersionControl, Version=2.1.1.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
@@ -115,34 +111,28 @@
     <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
-      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=2.2.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.9.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <Package>monodevelop</Package>
     </Reference>
   </ItemGroup>

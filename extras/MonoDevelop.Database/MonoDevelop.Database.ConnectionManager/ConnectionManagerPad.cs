@@ -30,7 +30,7 @@ using Gtk;
 using System;
 using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;

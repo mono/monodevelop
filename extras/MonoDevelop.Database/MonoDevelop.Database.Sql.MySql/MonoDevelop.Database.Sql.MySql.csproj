@@ -39,28 +39,23 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MySql.Data, Version=5.0.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
       <HintPath>..\contrib\MySql\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
@@ -76,52 +71,69 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.VersionControl, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.NUnit, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.XmlEditor, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.AspNet, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Gettext, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Deployment, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Deployment.Linux, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.GtkCore, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.VBNetBinding, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.CBinding, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.CSharpBinding, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Autotools, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Debugger, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Refactoring, Version=2.1.1.0, Culture=neutral">
-    </Reference>
-    <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb">
+    <Reference Include="MonoDevelop.NUnit, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.XmlEditor, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.AspNet, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Gettext, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Deployment.Linux, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.GtkCore, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.DesignerSupport, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.VBNetBinding, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CBinding, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.CSharpBinding, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Autotools, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Refactoring, Version=2.1.1.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <Package>monodevelop</Package>
     </Reference>
   </ItemGroup>

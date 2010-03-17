@@ -26,7 +26,7 @@
 
 using Gtk;
 using System;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Database.Sql;
 using MonoDevelop.Database.Designer;
 using MonoDevelop.Database.Components;

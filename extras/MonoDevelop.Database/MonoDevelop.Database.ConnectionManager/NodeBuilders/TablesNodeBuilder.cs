@@ -34,7 +34,7 @@ using MonoDevelop.Database.Sql;
 using MonoDevelop.Database.Components;
 using MonoDevelop.Database.Designer;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;

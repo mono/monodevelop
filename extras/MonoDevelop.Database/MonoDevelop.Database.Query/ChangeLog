@@ -1,3 +1,13 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SqlQueryView.cs:
+	* QueryResultView.cs:
+	* Commands/ToolCommands.cs:
+	* MonoDevelop.Database.Query.csproj:
+	* MonoDevelop.Database.Query.addin.xml: Merged MD.Projects
+	  into MD.Core, and MD.Projects.Gui, MD.Core.Gui and
+	  MD.Components into MD.Ide.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

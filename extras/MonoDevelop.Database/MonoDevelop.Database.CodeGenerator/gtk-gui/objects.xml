@@ -1,6 +1,2 @@
 <objects attr-sync="on">
-  <object type="MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog" palette-category="MonoDevelop.Database.CodeGenerator" allow-children="false" base-type="Gtk.Dialog">
-    <itemgroups />
-    <signals />
-  </object>
 </objects>

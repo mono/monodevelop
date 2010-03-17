@@ -1,3 +1,24 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* Dialogs/WaitDialog.cs:
+	* Widgets/SqlEditorWidget.cs:
+	* Commands/DataGridCommands.cs:
+	* Widgets/SelectSchemaWidget.cs:
+	* Commands/SqlEditorCommands.cs:
+	* Widgets/ProjectDirectoryComboBox.cs:
+	* Widgets/ConnectionSettingsWidget.cs:
+	* MonoDevelop.Database.Components.csproj:
+	* Commands/AbstractDatabaseProviderList.cs:
+	* MonoDevelop.Database.Components.addin.xml:
+	* Dialogs/DatabaseConnectionSettingsDialog.cs:
+	* Widgets/DataGrid/Views/TextVisualizerView.cs:
+	* Widgets/DataGrid/Views/ImageVisualizerView.cs:
+	* Widgets/DataGrid/Visualizers/DefaultVisualizers.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

@@ -29,7 +29,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Database.Sql;
 
 namespace MonoDevelop.Database.Components

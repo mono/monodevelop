@@ -24,7 +24,6 @@
 //
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Database.Components;
 using MonoDevelop.Database.Sql;
 using System;

@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -25,13 +25,7 @@
 
 using Gtk;
 using System;
-using System.Threading;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Components;
 using MonoDevelop.Database.Sql;
-using MonoDevelop.Database.Components;
 
 namespace MonoDevelop.Database.Designer
 {

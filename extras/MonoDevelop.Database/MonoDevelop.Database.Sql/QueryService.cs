@@ -32,7 +32,8 @@ using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Database.Sql;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
+ 
 
 namespace MonoDevelop.Database.Sql
 {

@@ -1,3 +1,27 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* Dialogs/PreviewDialog.cs:
+	* Dialogs/UserEditorDialog.cs:
+	* Dialogs/ViewEditorDialog.cs:
+	* Dialogs/TableEditorDialog.cs:
+	* Widgets/CommentEditorWidget.cs:
+	* Widgets/IndicesEditorWidget.cs:
+	* Widgets/ColumnsEditorWidget.cs:
+	* Dialogs/CreateDatabaseDialog.cs:
+	* Widgets/TriggersEditorWidget.cs:
+	* Widgets/CreateDatabaseWidget.cs:
+	* Dialogs/ProcedureEditorDialog.cs:
+	* Widgets/ConstraintsEditorWidget.cs:
+	* MonoDevelop.Database.Designer.csproj:
+	* Widgets/CheckConstraintEditorWidget.cs:
+	* MonoDevelop.Database.Designer.addin.xml:
+	* Widgets/UniqueConstraintEditorWidget.cs:
+	* Widgets/PrimaryKeyConstraintEditorWidget.cs:
+	* Widgets/ForeignKeyConstraintEditorWidget.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Christian Hergert <chris@mosaix.net>
 //   Ben Motmans  <ben.motmans@gmail.com>
@@ -28,10 +28,6 @@
 using Gtk;
 using System;
 using System.Data;
-using System.Collections.Generic;
-using Mono.Addins;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Database.Components;
 

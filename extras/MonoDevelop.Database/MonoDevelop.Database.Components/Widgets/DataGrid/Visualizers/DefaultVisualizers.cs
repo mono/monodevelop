@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -28,7 +28,7 @@ using System;
 using System.Data;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Database.Components
 {

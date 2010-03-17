@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
@@ -27,7 +27,7 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Database.Components;
 namespace MonoDevelop.Database.Sql.Odbc
 {

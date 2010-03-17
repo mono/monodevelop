@@ -23,10 +23,7 @@
     <widget-library name="MonoDevelop.Refactoring, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.Database.Components.dll" internal="true" />
   </import>

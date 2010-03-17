@@ -39,23 +39,11 @@
   <ItemGroup>
     <Reference Include="System.Data" />
     <Reference Include="System" />
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
@@ -66,7 +54,6 @@
     <Reference Include="Mono.Cecil, Version=0.6.8.8607, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -80,10 +67,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Data">
@@ -146,14 +129,8 @@
     <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
-      <Package>monodevelop</Package>
-    </Reference>
->>>>>>> .r151756
-  </ItemGroup>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; .r151756
+  <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f"><Package>monodevelop-core-addins</Package></Reference><Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756"><Package>monodevelop-core-addins</Package></Reference><Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f"><Package>monodevelop</Package></Reference></ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Designer\MonoDevelop.Database.Designer.csproj">
       <Project>{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}</Project>

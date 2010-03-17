@@ -30,7 +30,7 @@ using System.Data;
 using MonoDevelop.Database.Sql;
 using MonoDevelop.Database.Components;
 using MonoDevelop.Database.Designer;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Database.Sql.MySql
 {

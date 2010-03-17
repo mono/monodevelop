@@ -1,3 +1,38 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ConnectionManagerPad.cs:
+	* Commands/ToolbarCommands.cs:
+	* NodeBuilders/UserNodeBuilder.cs:
+	* NodeBuilders/ViewNodeBuilder.cs:
+	* NodeBuilders/UsersNodeBuilder.cs:
+	* NodeBuilders/RolesNodeBuilder.cs:
+	* NodeBuilders/ViewsNodeBuilder.cs:
+	* NodeBuilders/RulesNodeBuilder.cs:
+	* NodeBuilders/TableNodeBuilder.cs:
+	* NodeBuilders/TypesNodeBuilder.cs:
+	* NodeBuilders/GroupsNodeBuilder.cs:
+	* NodeBuilders/TablesNodeBuilder.cs:
+	* NodeBuilders/ColumnNodeBuilder.cs:
+	* NodeBuilders/ColumnsNodeBuilder.cs:
+	* NodeBuilders/TriggersNodeBuilder.cs:
+	* NodeBuilders/ProcedureNodeBuilder.cs:
+	* NodeBuilders/LanguagesNodeBuilder.cs:
+	* NodeBuilders/SequencesNodeBuilder.cs:
+	* NodeBuilders/OperatorsNodeBuilder.cs:
+	* NodeBuilders/ParameterNodeBuilder.cs:
+	* NodeBuilders/ProceduresNodeBuilder.cs:
+	* Commands/ConnectionManagerCommands.cs:
+	* NodeBuilders/ParametersNodeBuilder.cs:
+	* NodeBuilders/ConstraintNodeBuilder.cs:
+	* NodeBuilders/AggregatesNodeBuilder.cs:
+	* NodeBuilders/ConstraintsNodeBuilder.cs:
+	* NodeBuilders/ConnectionContextNodeBuilder.cs:
+	* MonoDevelop.Database.ConnectionManager.csproj:
+	* MonoDevelop.Database.ConnectionManager.addin.xml:
+	* NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

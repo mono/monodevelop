@@ -26,11 +26,6 @@
 
 using Gtk;
 using System;
-using System.Threading;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Database.Sql;
 
 namespace MonoDevelop.Database.Designer
 {

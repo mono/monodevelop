@@ -31,7 +31,7 @@ using System;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Database.Sql;
 using MonoDevelop.Database.Designer;

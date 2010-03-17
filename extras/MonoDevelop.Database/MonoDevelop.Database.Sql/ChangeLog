@@ -1,3 +1,10 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* QueryService.cs:
+	* MonoDevelop.Database.Sql.csproj: Merged MD.Projects into
+	  MD.Core, and MD.Projects.Gui, MD.Core.Gui and MD.Components
+	  into MD.Ide.
+
 2010-02-15  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* IDbLinq.cs:
