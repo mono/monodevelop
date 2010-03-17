@@ -30,7 +30,7 @@ using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 
 namespace UnitTests
 {

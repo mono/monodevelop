@@ -25,8 +25,8 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../build/bin/MonoDevelop.Components.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
+	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \

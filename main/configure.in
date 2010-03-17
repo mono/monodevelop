@@ -317,14 +317,9 @@ src/core/Makefile
 src/core/Mono.Texteditor/Makefile
 src/core/Mono.Debugging/Makefile
 src/core/MonoDevelop.Core/Makefile
-src/core/MonoDevelop.Core.Gui/Makefile
 src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
-src/core/MonoDevelop.Projects/Makefile
-src/core/MonoDevelop.Projects.Gui/Makefile
 src/core/MonoDevelop.Ide/Makefile
 src/core/MonoDevelop.Ide/BuildVariables.cs
-src/core/MonoDevelop.Dock/Makefile
-src/core/MonoDevelop.Components/Makefile
 src/core/MonoDevelop.Startup/Makefile
 src/tools/Makefile
 src/tools/mdhost/Makefile

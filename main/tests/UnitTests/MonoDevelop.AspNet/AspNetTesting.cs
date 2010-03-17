@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom.Parser;
 

@@ -82,11 +82,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
-      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
-      <Name>MonoDevelop.Projects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
@@ -107,24 +102,9 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\core\MonoDevelop.Projects.Gui\MonoDevelop.Projects.Gui.csproj">
-      <Project>{00E87426-F1BD-4B55-9B3E-7267EE93E002}</Project>
-      <Name>MonoDevelop.Projects.Gui</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
       <Name>MonoDevelop.XmlEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
-      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
-      <Name>MonoDevelop.Components</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
-      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
-      <Name>MonoDevelop.Core.Gui</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
