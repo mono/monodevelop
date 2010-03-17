@@ -1,3 +1,22 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IPhoneProject.cs:
+	* IPhoneCommands.cs:
+	* gtk-gui/gui.stetic:
+	* IPhoneBuildExtension.cs:
+	* IPhoneFrameworkBackend.cs:
+	* MonoDevelop.IPhone.csproj:
+	* Gui/IPhoneOptionsPanel.cs:
+	* IPhoneExecutionHandler.cs:
+	* Gui/IPhoneSigningKeyPanel.cs:
+	* MonoDevelop.IPhone.addin.xml:
+	* Gui/IPhoneBuildOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* InterfaceBuilder/IBObject.cs: Handle new property.

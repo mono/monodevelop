@@ -37,23 +37,7 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=2.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=2.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects.Gui, Version=2.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Components, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
@@ -238,11 +222,16 @@
     <Folder Include="Icons\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ItemGroup>
     <None Include="Icons\256x256\application-x-mono-develop-xib.png" />
     <None Include="Icons\256x256\phone-apple-iphone.png" />
     <None Include="Icons\application-x-mono-develop-xib.svg" />
     <None Include="Icons\mono-develop.svg" />
     <None Include="Icons\phone-apple-iphone.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddinReference Include="MonoDevelop.Core,2.2" />
+    <AddinReference Include="MonoDevelop.Ide,2.2" />
   </ItemGroup>
 </Project>

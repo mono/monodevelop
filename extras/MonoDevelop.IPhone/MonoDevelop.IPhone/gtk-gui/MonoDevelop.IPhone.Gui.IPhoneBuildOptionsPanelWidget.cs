@@ -16,7 +16,7 @@ namespace MonoDevelop.IPhone.Gui
 
 		private global::Gtk.Table table1;
 
-		private global::MonoDevelop.Core.Gui.Components.MenuButtonEntry extraArgsEntry;
+		private global::MonoDevelop.Components.MenuButtonEntry extraArgsEntry;
 
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 
@@ -81,7 +81,7 @@ namespace MonoDevelop.IPhone.Gui
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.extraArgsEntry = new global::MonoDevelop.Core.Gui.Components.MenuButtonEntry ();
+			this.extraArgsEntry = new global::MonoDevelop.Components.MenuButtonEntry ();
 			this.extraArgsEntry.Name = "extraArgsEntry";
 			this.table1.Add (this.extraArgsEntry);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.extraArgsEntry]));

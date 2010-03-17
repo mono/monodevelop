@@ -14,9 +14,9 @@ namespace MonoDevelop.IPhone.Gui
 
 		private global::Gtk.Table signingTable;
 
-		private global::MonoDevelop.Core.Gui.Components.MenuButtonEntry additionalArgsEntry;
+		private global::MonoDevelop.Components.MenuButtonEntry additionalArgsEntry;
 
-		private global::MonoDevelop.Projects.Gui.ProjectFileEntry entitlementsEntry;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry entitlementsEntry;
 
 		private global::Gtk.ComboBox identityCombo;
 
@@ -32,7 +32,7 @@ namespace MonoDevelop.IPhone.Gui
 
 		private global::Gtk.ComboBox provisioningCombo;
 
-		private global::MonoDevelop.Projects.Gui.ProjectFileEntry resourceRulesEntry;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry resourceRulesEntry;
 
 		protected virtual void Build ()
 		{
@@ -60,7 +60,7 @@ namespace MonoDevelop.IPhone.Gui
 			this.signingTable.RowSpacing = ((uint)(6));
 			this.signingTable.ColumnSpacing = ((uint)(6));
 			// Container child signingTable.Gtk.Table+TableChild
-			this.additionalArgsEntry = new global::MonoDevelop.Core.Gui.Components.MenuButtonEntry ();
+			this.additionalArgsEntry = new global::MonoDevelop.Components.MenuButtonEntry ();
 			this.additionalArgsEntry.Name = "additionalArgsEntry";
 			this.signingTable.Add (this.additionalArgsEntry);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.signingTable[this.additionalArgsEntry]));
@@ -70,7 +70,7 @@ namespace MonoDevelop.IPhone.Gui
 			w1.RightAttach = ((uint)(2));
 			w1.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child signingTable.Gtk.Table+TableChild
-			this.entitlementsEntry = new global::MonoDevelop.Projects.Gui.ProjectFileEntry ();
+			this.entitlementsEntry = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.entitlementsEntry.Name = "entitlementsEntry";
 			this.entitlementsEntry.EntryIsEditable = false;
 			this.signingTable.Add (this.entitlementsEntry);
@@ -158,7 +158,7 @@ namespace MonoDevelop.IPhone.Gui
 			w9.RightAttach = ((uint)(2));
 			w9.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child signingTable.Gtk.Table+TableChild
-			this.resourceRulesEntry = new global::MonoDevelop.Projects.Gui.ProjectFileEntry ();
+			this.resourceRulesEntry = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.resourceRulesEntry.Name = "resourceRulesEntry";
 			this.resourceRulesEntry.EntryIsEditable = false;
 			this.signingTable.Add (this.resourceRulesEntry);

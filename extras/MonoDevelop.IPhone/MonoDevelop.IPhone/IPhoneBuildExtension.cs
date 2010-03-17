@@ -66,7 +66,7 @@ namespace MonoDevelop.IPhone
 			
 			if (IPhoneFramework.SimOnly && isDevice) {
 				//if in the GUI, show a dialog too
-				if (MonoDevelop.Ide.Gui.IdeApp.IsInitialized)
+				if (MonoDevelop.Ide.IdeApp.IsInitialized)
 					Gtk.Application.Invoke (delegate { IPhoneFramework.ShowSimOnlyDialog (); } );
 				return IPhoneFramework.GetSimOnlyError ();
 			}

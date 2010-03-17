@@ -28,12 +28,12 @@ using System;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using System.IO;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.IPhone
 {
@@ -174,7 +174,7 @@ namespace MonoDevelop.IPhone
 			string argStr = args.ToString ();
 			
 			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				GettextCatalog.GetString ("Generate Xcode project"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
+				GettextCatalog.GetString ("Generate Xcode project"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
 			console.Log.WriteLine (mtouchPath + " " + argStr);
 			Runtime.ProcessService.StartConsoleProcess (mtouchPath, argStr, conf.OutputDirectory, console, null);
 		}
@@ -186,7 +186,7 @@ namespace MonoDevelop.IPhone
 		{
 			string mtouchPath = GetMtouchPath (runtime, fx);
 			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Core.Gui.Stock.RunProgramIcon, true, true);
+				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
 			console.Log.WriteLine (String.Format ("{0} -installdev=\"{1}\"", mtouchPath, appBundle));
 			return Runtime.ProcessService.StartConsoleProcess (mtouchPath,
 				String.Format ("-installdev=\"{0}\"", appBundle), appBundle.ParentDirectory, console, null);

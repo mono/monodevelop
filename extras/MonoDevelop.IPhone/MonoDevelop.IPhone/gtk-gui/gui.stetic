@@ -5,10 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.DesignerSupport, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.IPhone.dll" internal="true" />
@@ -47,7 +44,7 @@
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
-                  <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="appIconPicker">
+                  <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="appIconPicker">
                     <property name="MemberName" />
                     <property name="EntryIsEditable">False</property>
                   </widget>
@@ -281,7 +278,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="mainNibPicker">
+                  <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="mainNibPicker">
                     <property name="MemberName" />
                     <property name="EntryIsEditable">False</property>
                   </widget>
@@ -349,7 +346,7 @@
                         <property name="RowSpacing">6</property>
                         <property name="ColumnSpacing">6</property>
                         <child>
-                          <widget class="MonoDevelop.Core.Gui.Components.MenuButtonEntry" id="additionalArgsEntry">
+                          <widget class="MonoDevelop.Components.MenuButtonEntry" id="additionalArgsEntry">
                             <property name="MemberName" />
                           </widget>
                           <packing>
@@ -368,7 +365,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="entitlementsEntry">
+                          <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="entitlementsEntry">
                             <property name="MemberName" />
                             <property name="EntryIsEditable">False</property>
                           </widget>
@@ -536,7 +533,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="resourceRulesEntry">
+                          <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="resourceRulesEntry">
                             <property name="MemberName" />
                             <property name="EntryIsEditable">False</property>
                           </widget>
@@ -637,7 +634,7 @@
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
                     <child>
-                      <widget class="MonoDevelop.Core.Gui.Components.MenuButtonEntry" id="extraArgsEntry">
+                      <widget class="MonoDevelop.Components.MenuButtonEntry" id="extraArgsEntry">
                         <property name="MemberName" />
                       </widget>
                       <packing>

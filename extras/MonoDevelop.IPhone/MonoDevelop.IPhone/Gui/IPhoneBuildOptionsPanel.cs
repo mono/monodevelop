@@ -27,12 +27,12 @@
 using System;
 using System.Linq;
 using Gtk;
-using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Core.Gui.Components;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.Text;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.IPhone.Gui
 {

@@ -25,25 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.AspNet;
 using System.IO;
 using System.Threading;
 using System.Text;
 using System.Diagnostics;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
-
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.IPhone
 {
-
-
 	public class IPhoneExecutionHandler : IExecutionHandler
 	{
 

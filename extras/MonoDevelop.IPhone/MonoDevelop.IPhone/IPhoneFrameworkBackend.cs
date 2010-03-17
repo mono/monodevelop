@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using Gtk;
 
 

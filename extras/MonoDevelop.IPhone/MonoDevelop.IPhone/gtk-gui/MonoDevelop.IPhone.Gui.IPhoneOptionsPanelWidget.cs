@@ -12,7 +12,7 @@ namespace MonoDevelop.IPhone.Gui
 
 		private global::Gtk.Table table1;
 
-		private global::MonoDevelop.Projects.Gui.ProjectFileEntry appIconPicker;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry appIconPicker;
 
 		private global::Gtk.Entry bundleIdEntry;
 
@@ -34,7 +34,7 @@ namespace MonoDevelop.IPhone.Gui
 
 		private global::Gtk.Label label7;
 
-		private global::MonoDevelop.Projects.Gui.ProjectFileEntry mainNibPicker;
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry mainNibPicker;
 
 		protected virtual void Build ()
 		{
@@ -67,7 +67,7 @@ namespace MonoDevelop.IPhone.Gui
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.appIconPicker = new global::MonoDevelop.Projects.Gui.ProjectFileEntry ();
+			this.appIconPicker = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.appIconPicker.Name = "appIconPicker";
 			this.appIconPicker.EntryIsEditable = false;
 			this.table1.Add (this.appIconPicker);
@@ -202,7 +202,7 @@ namespace MonoDevelop.IPhone.Gui
 			w12.XOptions = ((global::Gtk.AttachOptions)(4));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.mainNibPicker = new global::MonoDevelop.Projects.Gui.ProjectFileEntry ();
+			this.mainNibPicker = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.mainNibPicker.Name = "mainNibPicker";
 			this.mainNibPicker.EntryIsEditable = false;
 			this.table1.Add (this.mainNibPicker);

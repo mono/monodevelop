@@ -31,10 +31,9 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.IO;
 using System.Collections.Generic;
-using System.Diagnostics;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.IPhone
 {

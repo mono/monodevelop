@@ -29,18 +29,18 @@ using System.Linq;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 using System.Security.Cryptography.X509Certificates;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.IPhone.Gui
 {
-	
 	class IPhoneSigningKeyPanel : MultiConfigItemOptionsPanel
 	{
 		IPhoneSigningKeyPanelWidget widget;
 		
-		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
+		public override void Initialize (OptionsDialog dialog, object dataObject)
 		{
 			base.Initialize (dialog, dataObject);
 		}

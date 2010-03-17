@@ -26,13 +26,13 @@
 
 using System;
 using Gtk;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.IPhone.Gui
 {
-	
 	public class IPhoneOptionsPanel : ItemOptionsPanel
 	{
 		IPhoneOptionsPanelWidget panel;
