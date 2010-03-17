@@ -1,5 +1,11 @@
 2010-03-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	  Implemented 'Bug 588618 - Find in Files: "Directories"
+	  pattern should warn about non-existant path'.
+
+2010-03-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/IdePreferences.cs:
 	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Changed the
 	  default error handling to: bubbles for errors & warnings,

@@ -469,6 +469,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			case ScopeAllOpenFiles:
 				return new AllOpenFilesScope ();
 			case ScopeDirectories: 
+				if (!System.IO.Directory.Exists (comboboxentryPath.Entry.Text)) {
+					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"), comboboxentryPath.Entry.Text));
+					return null;
+				}
 				DirectoryScope directoryScope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active);
 				
 				Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
