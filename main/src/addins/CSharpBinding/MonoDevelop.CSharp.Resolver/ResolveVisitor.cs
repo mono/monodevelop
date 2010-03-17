@@ -546,13 +546,19 @@ namespace MonoDevelop.CSharp.Resolver
 				if (member[0] is IMethod) {
 					bool isStatic = result.StaticResolve;
 					List<IMember> nonMethodMembers = new List<IMember> ();
+					int typeParameterCount = 0;
+					if (memberReferenceExpression.TypeArguments != null)
+						typeParameterCount = memberReferenceExpression.TypeArguments.Count;
+					
 					for (int i = 0; i < member.Count; i++) {
 						IMethod method = member[i] as IMethod;
 						if (method == null)
 							nonMethodMembers.Add (member[i]);
 						if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended) && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
 							continue;
-						if ((member[i].IsStatic ^ isStatic) || !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || (method != null && method.IsFinalizer)) {
+						if ((member[i].IsStatic ^ isStatic) || 
+						    !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || 
+						    (method != null && (method.IsFinalizer || method.TypeParameters.Count != typeParameterCount))) {
 							member.RemoveAt (i);
 							i--;
 						}
