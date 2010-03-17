@@ -29,7 +29,6 @@ using System;
 using System.Xml;
 using System.Diagnostics;
 using System.ComponentModel;
-using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 

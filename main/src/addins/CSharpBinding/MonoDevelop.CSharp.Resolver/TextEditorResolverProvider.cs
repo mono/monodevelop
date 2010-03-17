@@ -32,6 +32,7 @@ using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Resolver
 {

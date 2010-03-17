@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Projects;
 using Gtk;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.CSharp.Project
 		}
 	}
 	
-	public class CodeGenerationPanel : MonoDevelop.Projects.Gui.Dialogs.MultiConfigItemOptionsPanel
+	public class CodeGenerationPanel : MultiConfigItemOptionsPanel
 	{
 		CodeGenerationPanelWidget widget;
 		

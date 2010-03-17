@@ -39,7 +39,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;

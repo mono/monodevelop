@@ -24,13 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Projects.Gui.Dialogs;
 using Gtk;
 using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using System.Xml;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.CSharp.Formatting
 {

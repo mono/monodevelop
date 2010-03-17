@@ -1,3 +1,31 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
+	* MonoDevelop.CSharp.Formatting/FormattingPanel.cs:
+	* MonoDevelop.CSharp.Project/CodeGenerationPanel.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs:
+	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs:
+	* MonoDevelop.CSharp.Project/CSharpCompilerParameters.cs:
+	* MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:
+	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanel.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug

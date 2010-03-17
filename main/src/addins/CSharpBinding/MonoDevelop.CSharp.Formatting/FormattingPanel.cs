@@ -1,14 +1,8 @@
-using System;
 
 using Gtk;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
-
-using MonoDevelop.Ide.Gui.Content;
-
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Parser;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.CSharp.Formatting
 {

@@ -31,7 +31,7 @@ using System.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.CSharp.Completion

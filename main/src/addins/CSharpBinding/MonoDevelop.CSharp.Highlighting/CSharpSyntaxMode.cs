@@ -37,6 +37,8 @@ using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -49,13 +51,13 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static CSharpSyntaxMode ()
 		{
-			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += (EventHandler<MonoDevelop.Ide.Gui.DocumentEventArgs>)MonoDevelop.Core.Gui.DispatchService.GuiDispatch (new EventHandler<MonoDevelop.Ide.Gui.DocumentEventArgs> (OnDisableConditionalCompilation));
-			MonoDevelop.Ide.Gui.IdeApp.Workspace.ActiveConfigurationChanged += delegate {
-				foreach (var doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents) {
+			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += (EventHandler<DocumentEventArgs>)DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
+			IdeApp.Workspace.ActiveConfigurationChanged += delegate {
+				foreach (var doc in IdeApp.Workbench.Documents) {
 					ITextEditorDataProvider provider = doc.GetContent<ITextEditorDataProvider> ();
 					if (provider == null)
 						continue;
-					Document document = provider.GetTextEditorData ().Document;
+					Mono.TextEditor.Document document = provider.GetTextEditorData ().Document;
 					document.UpdateHighlighting ();
 					document.CommitUpdateAll ();
 				}
@@ -95,7 +97,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			AddSemanticRule (new HighlightCSharpSemanticRule ());
 		}
 		
-		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
+		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
 		{
 			return new CSharpSpanParser (doc, mode, line, spanStack);
 		}
@@ -190,11 +192,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				HashSet<string> symbols = new HashSet<string> ();
 				
-				public ConditinalExpressionEvaluator (Document doc)
+				public ConditinalExpressionEvaluator (Mono.TextEditor.Document doc)
 				{
-					var project = MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.CurrentSelectedProject;
+					var project = IdeApp.ProjectOperations.CurrentSelectedProject;
 					if (project != null) {
-						DotNetProjectConfiguration configuration = project.GetConfiguration (MonoDevelop.Ide.Gui.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+						DotNetProjectConfiguration configuration = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 						if (configuration != null) {
 							CSharpCompilerParameters cparams = configuration.CompilationParameters as CSharpCompilerParameters;
 							if (cparams != null) {
@@ -419,7 +421,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	//		Span preprocessorSpan;
 	//		Rule preprocessorRule;
 			
-			public CSharpSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
+			public CSharpSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
 			{
 		/*		foreach (Span span in mode.Spans) {
 					if (span.Rule == "text.preprocessor") {

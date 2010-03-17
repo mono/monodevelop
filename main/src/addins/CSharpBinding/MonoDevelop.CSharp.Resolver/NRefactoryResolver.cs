@@ -43,7 +43,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeTemplates;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Parser;

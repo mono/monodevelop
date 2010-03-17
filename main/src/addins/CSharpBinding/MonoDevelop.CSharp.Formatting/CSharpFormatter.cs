@@ -38,11 +38,11 @@ using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -461,7 +461,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public static void SetFormatOptions (CSharpOutputVisitor outputVisitor, PolicyContainer policyParent)
 		{
-			IEnumerable<string> types = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (MimeType);
+			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (MimeType);
 			TextStylePolicy currentPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 			CSharpFormattingPolicy codePolicy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 

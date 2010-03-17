@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 

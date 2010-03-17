@@ -32,6 +32,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using System.CodeDom;
 using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Dom
 {
@@ -367,7 +368,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public CSharpFormattingPolicy GetPolicy (OutputSettings settings)
 		{
-			IEnumerable<string> types = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 			return settings.PolicyParent != null ? settings.PolicyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 		}
 		

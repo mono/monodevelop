@@ -31,7 +31,7 @@ using System.Text;
 using System.Xml;
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;

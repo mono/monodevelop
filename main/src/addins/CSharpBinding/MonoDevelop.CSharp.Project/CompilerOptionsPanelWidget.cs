@@ -30,14 +30,13 @@
 using System;
 using Gtk;
 
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Project
 {
