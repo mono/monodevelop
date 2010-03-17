@@ -558,7 +558,7 @@ namespace MonoDevelop.CSharp.Resolver
 							continue;
 						if ((member[i].IsStatic ^ isStatic) || 
 						    !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || 
-						    (method != null && (method.IsFinalizer || method.TypeParameters.Count != typeParameterCount))) {
+						    (method != null && (method.IsFinalizer || typeParameterCount > 0 && method.TypeParameters.Count != typeParameterCount))) {
 							member.RemoveAt (i);
 							i--;
 						}
