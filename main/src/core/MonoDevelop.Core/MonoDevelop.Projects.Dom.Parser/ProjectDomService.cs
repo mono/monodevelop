@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -579,8 +580,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		internal static bool UnrefDom (string uri)
 		{
 			ProjectDom db;
-			lock (databases)
-			{
+			lock (databases) {
 				if (databases.TryGetValue (uri, out db)) {
 					if (db.ReferenceCount > 1) {
 						db.ReferenceCount--;
@@ -589,13 +589,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 					// It has to be deleted by iterating because a ProjectDom
 					// may be registered using different uris (e.g. full/partial assembly name
-					List<string> uris = new List<string> ();
-					foreach (KeyValuePair<string,ProjectDom> pd in databases) {
-						if (pd.Value.Uri == db.Uri)
-							uris.Add (pd.Key);
-					}
-					foreach (string u in uris)
-						databases.Remove (u);
+					List<string> uris = new List<string> (from p in databases where p.Value.Uri == db.Uri select p.Key);
+					uris.ForEach (u => databases.Remove (u));
 					
 					// Delete all pending parse jobs for this database
 					RemoveParseJobs (db);

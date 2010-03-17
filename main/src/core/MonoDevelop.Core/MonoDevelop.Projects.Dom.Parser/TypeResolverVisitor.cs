@@ -121,15 +121,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			
-//			IReturnTypePart firstPart = type.Parts[0];
-			string name = type.DecoratedFullName; //!string.IsNullOrEmpty (type.Namespace) ? type.Namespace + "." + firstPart.Name : firstPart.Name;
-//			if (firstPart.GenericArguments.Count > 0)
-//				name += "`" + firstPart.GenericArguments.Count;
-			IType lookupType = db.SearchType (unit, contextType, null, name);
-			if (visitAttribute && lookupType == null) {
-				name += "Attribute";
-				lookupType = db.SearchType (unit, contextType, null, name);
-			}
+			IType lookupType = db.SearchType (unit, contextType, null, type);
+			if (visitAttribute && lookupType == null)
+				lookupType = db.SearchType (unit, contextType, null, type.FullName + "Attribute");
+			
 			if (lookupType == null) {
 				unresolvedCount++;
 				return db.GetSharedReturnType (type);

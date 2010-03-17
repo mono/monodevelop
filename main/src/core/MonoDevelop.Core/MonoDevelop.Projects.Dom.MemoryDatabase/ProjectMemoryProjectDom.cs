@@ -197,7 +197,6 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		List<string> referenceUris = new List<string> ();
 		internal override IEnumerable<string> OnGetReferences ()
 		{
-			referenceUris.ForEach (u => Console.WriteLine (u));
 			return referenceUris;
 		}
 		

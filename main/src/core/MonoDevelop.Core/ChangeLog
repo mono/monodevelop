@@ -1,3 +1,15 @@
+2010-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/FileEntry.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Fixed 'Bug 553554 - MD takes a while to quit'.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	Merged MD.Projects into MD.Core, and MD.Projects.Gui,

@@ -172,8 +172,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 					// There is no need to resolve baseType here, since 'cur' is an already resolved
 					// type, so all types it references are already resolved too
 					IType resolvedType = GetType (baseType);
-					if (resolvedType != null)
+					
+					if (resolvedType != null) {
 						types.Push (resolvedType);
+					}
 				}
 
 				if (cur.BaseType == null && cur.FullName != "System.Object") 
@@ -712,9 +714,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		IType FindInnerTypeInClass (IType outerType, string name, int typeArgCount, bool caseSensitive)
 		{
 			foreach (IType innerc in outerType.InnerTypes) {
-				if (string.Compare (innerc.Name, name, !caseSensitive) == 0 && innerc.TypeParameters.Count == typeArgCount) {
+				if (string.Compare (innerc.Name, name, !caseSensitive) == 0 && innerc.TypeParameters.Count == typeArgCount)
 					return innerc;
-				}
 			}
 			// Check type parameters
 			if (typeArgCount == 0) {

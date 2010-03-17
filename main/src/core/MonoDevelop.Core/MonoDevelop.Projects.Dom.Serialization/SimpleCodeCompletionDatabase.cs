@@ -62,6 +62,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 		
 		public override void Read () {}
-		public override void Write () {}
+		public override bool Write () { return false; }
 	}
 }

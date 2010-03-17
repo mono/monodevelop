@@ -133,10 +133,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 
 		
-		public override void Write ()
+		public override bool Write ()
 		{
-			base.Write ();
-			Read ();
+			if (base.Write ()) {
+				Read ();
+				return true;
+			}
+			return false;
 		}
 		
 		static bool? regenPackageDbOnlyOnVersionChange;

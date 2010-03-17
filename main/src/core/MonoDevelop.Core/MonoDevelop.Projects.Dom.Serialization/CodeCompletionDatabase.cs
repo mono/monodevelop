@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		BinaryReader datareader;
 		FileStream dataFileStream;
 		int currentGetTime = 0;
-		bool modified;
+		
 		bool disposed;
 		bool handlesCommentTags;
 		
@@ -133,8 +133,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		}
 		
 		public bool Modified {
-			get { return modified; }
-			set { modified = value; }
+			get;
+			set;
 		}
 		
 		public bool Disposed {
@@ -204,7 +204,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 				try 
 				{
-					modified = false;
+					Modified = false;
 					currentGetTime = 0;
 					
 					BinaryFormatter bf = new BinaryFormatter ();
@@ -283,7 +283,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	*/			}
 				
 				timer.Trace ("Notify tag changes");
-				
 				// Update comments if needed...
 				CommentTagSet lastTags = new CommentTagSet (LastValidTaskListTokens);
 				if (!lastTags.Equals (ProjectDomService.SpecialCommentTags))
@@ -348,15 +347,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		public virtual void Write ()
+		public virtual bool Write ()
 		{
 			lock (rwlock)
 			{
-				if (!modified) return;
-
+				if (!Modified) return false;
+				
 				ITimeTracker timer = Counters.DatabasesWritten.BeginTiming ("Writing Parser Database " + dataFile);
 				
-				modified = false;
+				Modified = false;
 				headers["Version"] = FORMAT_VERSION;
 				headers["LastValidTaskListTokens"] = ProjectDomService.SpecialCommentTags.ToString ();
 
@@ -371,7 +370,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not write parser database.", ex);
 					timer.End ();
-					return;
+					return false;
 				}
 
 				MemoryStream tmpStream = new MemoryStream ();
@@ -464,6 +463,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					LoggingService.LogError (ex.ToString ());
 					dataFileStream.Close ();
 					dataFileStream = null;
+					return false;
 				} finally {
 					timer.End ();
 				}
@@ -472,6 +472,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 #if CHECK_STRINGS
 			StringNameTable.PrintTop100 ();
 #endif
+			return true;
 		}
 		
 		protected virtual void SerializeData (Queue dataQueue)
@@ -793,8 +794,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock)
 			{
 				foreach (FileEntry file in files.Values) {
-					if (IsFileModified (file))
+					if (IsFileModified (file)) {
 						list.Add (file);
+					}
 				}
 			}
 			return list;
@@ -866,7 +868,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				ArrayList list = (ArrayList) references.Clone ();
 				list.Add (re);
 				references = list;
-				modified = true;
+				Modified = true;
 			}
 		}
 		
@@ -880,7 +882,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						ArrayList list = (ArrayList) references.Clone ();
 						list.RemoveAt (n);
 						references = list;
-						modified = true;
+						Modified = true;
 						return;
 					}
 				}
@@ -903,7 +905,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			{
 				FileEntry fe = new FileEntry (fileName);
 				files [fileName] = fe;
-				modified = true;
+				Modified = true;
 				return fe;
 			}
 		}
@@ -937,7 +939,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				Counters.TypeIndexEntries.Dec (te);
 				
 				files.Remove (fileName);
-				modified = true;
+				Modified = true;
 
 				OnFileRemoved (fileName, classInfo);
 			}
@@ -954,7 +956,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				TypeUpdateInformation res = new TypeUpdateInformation ();
 				
 				FileEntry fe = files [fileName] as FileEntry;
-				if (fe == null) return null;
+				if (fe == null) {
+					return null;
+				}
 				
 				// Get the namespace entry for each class
 
@@ -1062,8 +1066,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				fe.SetClasses (newFileClasses);
 				rootNamespace.Clean ();
-				fe.LastParseTime = DateTime.Now;
-				modified = true;
+				try {
+					FileInfo fi = new FileInfo (fe.FileName);
+					fe.LastParseTime = fi.LastWriteTime;
+				} catch {
+					fe.LastParseTime = DateTime.Now;
+				}
+				
+				Modified = true;
 				
 				return res;
 			}
