@@ -208,7 +208,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (string.IsNullOrEmpty (decoratedFullName))
 				return null;
-			return SearchType (decoratedFullName, callingClass, unit, null);
+			return SearchType (decoratedFullName, callingClass, callingMember, unit, null);
 		}
 		
 		public virtual IType SearchType (INode searchIn, string decoratedFullName)
@@ -221,14 +221,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			IMember callingMember = searchIn as IMember;
 			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
-			return SearchType (decoratedFullName, callingClass, cu as CompilationUnit, null);
+			return SearchType (decoratedFullName, callingClass, callingMember, cu as CompilationUnit, null);
 		}
 		
 		public virtual IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, IReturnType returnType)
 		{
 			if (returnType == null)
 				return null;
-			return SearchType (returnType.DecoratedFullName, callingClass, unit, returnType.GenericArguments);
+			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, unit, returnType.GenericArguments);
 		}
 		
 		public virtual IType SearchType (INode searchIn, IReturnType returnType)
@@ -241,7 +241,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			IMember callingMember = searchIn as IMember;
 			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
-			return SearchType (returnType.DecoratedFullName, callingClass, cu as CompilationUnit, returnType.GenericArguments);
+			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, cu as CompilationUnit, returnType.GenericArguments);
 		}
 		
 /*		public virtual IType SearchType (SearchTypeRequest request)
@@ -249,7 +249,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return SearchType (request.Name, request.CallingType, request.CurrentCompilationUnit, request.GenericParameters);
 		}*/
 		
-		internal IType SearchType (string name, IType callingClass, ICompilationUnit unit, IList<IReturnType> genericParameters)
+		internal IType SearchType (string name, IType callingClass, IMember callingMember, ICompilationUnit unit, IList<IReturnType> genericParameters)
 		{
 			// TODO dom check generic parameter count
 			if (name == null || name == String.Empty)
@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 						return result;
 				}
 				
-/*				if (callingMember is IMethod) {
+			/*	if (callingMember is IMethod) {
 					result = FindGenericParameter (unit, (IMethod)callingMember, name);
 					if (result != null)
 						return result;

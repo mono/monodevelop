@@ -84,30 +84,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 					}
 				}
 			}
-			/*
-			if (contextType != null) {
-				foreach (ITypeParameter t in contextType.TypeParameters) {
-					if (t.Name == type.Name) {
-						DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
-						DomType constructedType = new InstantiatedParameterType (db, contextType, t);
-						constructedType.SourceProjectDom = db;
-						
-						typeParameterReturnType.Type = constructedType;
-						typeParameterReturnType.ArrayDimensions = type.ArrayDimensions;
-						typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
-						for (int i = 0; i < type.ArrayDimensions; i++)
-							typeParameterReturnType.SetDimension (i, type.GetDimension (i));
-						return typeParameterReturnType;
-					}
-				}
-			}*/
 			
 			if (currentMethod != null) {
 				IMethod method = null;
 				if (currentMethod.IsOverride) {
 					foreach (IType curType2 in db.GetInheritanceTree (contextType)) {
 						foreach (IMethod curMethod in curType2.SearchMember (currentMethod.Name, true)) {
-							if (!curMethod.IsOverride && curMethod.Parameters.Count == currentMethod.Parameters.Count) {
+							if (!curMethod.IsOverride && curMethod.Parameters.Count == currentMethod.Parameters.Count && curMethod.TypeParameters.Count == currentMethod.TypeParameters.Count) {
 								method = curMethod;
 								break;
 							}
