@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Database.CodeGenerator.csproj: Flush.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Database.CodeGenerator.csproj: Remove
 	  mono.addins.targets import.
 

@@ -1,3 +1,7 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CodeAnalysis.Gendarme.csproj: Flush.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

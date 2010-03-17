@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* GeckoWebBrowser.csproj: Flush.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* GeckoWebBrowser.cs:
 	* gtk-gui/generated.cs:
 	* GeckoWebBrowser.csproj:

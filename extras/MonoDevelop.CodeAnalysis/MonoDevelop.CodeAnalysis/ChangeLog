@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.CodeAnalysis.csproj: Flush.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Gui/ResultsReporter.cs:
 	* Commands/AnalyzeHandler.cs:
 	* MonoDevelop.CodeAnalysis.csproj:

@@ -130,7 +130,7 @@
       <Package>monodevelop-core-addins</Package>
     </Reference>
 &gt;&gt;&gt;&gt;&gt;&gt;&gt; .r151756
-  <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f"><Package>monodevelop-core-addins</Package></Reference><Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756"><Package>monodevelop-core-addins</Package></Reference><Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f"><Package>monodevelop</Package></Reference></ItemGroup>
+  <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756"><Package>monodevelop-core-addins</Package></Reference><Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb"><Package>monodevelop-core-addins</Package></Reference><Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e"><Package>monodevelop</Package></Reference></ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Designer\MonoDevelop.Database.Designer.csproj">
       <Project>{8BA96BBA-D7D5-4C72-9AF1-DD816D8D958F}</Project>

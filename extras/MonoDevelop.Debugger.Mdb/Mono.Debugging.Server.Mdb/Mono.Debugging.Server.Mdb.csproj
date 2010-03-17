@@ -62,15 +62,7 @@
       <Package>monodevelop</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -126,14 +118,6 @@
       <Package>monodevelop-core-addins</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -160,6 +144,9 @@
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
       <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
