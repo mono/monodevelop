@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Gui
 		}*/
 		
 		public BuildResultStates ShowErrorPadAfterBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadAfterBuild", BuildResultStates.OnErrorsOrWarnings); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadAfterBuild", BuildResultStates.Never); }
 			set { PropertyService.Set ("MonoDevelop.Ide.ShowErrorPadAfterBuild", value); }
 		}
 
@@ -156,12 +156,12 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public JumpToFirst JumpToFirstErrorOrWarning {
-			get { return PropertyService.Get ("MonoDevelop.Ide.JumpToFirstErrorOrWarning", JumpToFirst.Never); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.JumpToFirstErrorOrWarning", JumpToFirst.Error); }
 			set { PropertyService.Set ("MonoDevelop.Ide.JumpToFirstErrorOrWarning", value); }
 		}
 		
 		public ShowMessageBubbles ShowMessageBubbles {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowMessageBubbles", ShowMessageBubbles.Never); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.ShowMessageBubbles", ShowMessageBubbles.ForErrorsAndWarnings); }
 			set { PropertyService.Set ("MonoDevelop.Ide.ShowMessageBubbles", value); }
 		}
 		

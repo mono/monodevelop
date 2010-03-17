@@ -1088,6 +1088,18 @@ namespace MonoDevelop.Ide.Gui
 						goto case BuildResultStates.Never;
 					}
 				} catch {}
+				Task jumpTask = null;
+				switch (IdeApp.Preferences.JumpToFirstErrorOrWarning) {
+				case JumpToFirst.Error:
+					jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error);
+					break;
+				case JumpToFirst.ErrorOrWarning:
+					jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error || t.Severity == TaskSeverity.Warning);
+					break;
+				}
+				if (jumpTask != null)
+					jumpTask.JumpToPosition ();
+				
 			} finally {
 				monitor.Dispose ();
 			}

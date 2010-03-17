@@ -1,3 +1,10 @@
+2010-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/IdePreferences.cs:
+	* MonoDevelop.Ide.Gui/ProjectOperations.cs: Changed the
+	  default error handling to: bubbles for errors & warnings,
+	  never show error list automatically & jump to first error.
+
 2010-03-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/Ide.cs:
