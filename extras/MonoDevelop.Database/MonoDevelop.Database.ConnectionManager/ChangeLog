@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Database.ConnectionManager.csproj: Remove
+	  mono.addins.targets import.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* ConnectionManagerPad.cs:
 	* Commands/ToolbarCommands.cs:
 	* NodeBuilders/UserNodeBuilder.cs:

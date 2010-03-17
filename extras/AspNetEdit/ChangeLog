@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AspNetEdit.csproj: Flush.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AspNetEdit.addin.xml:
 	* AspNetEdit.Editor/EditorHost.cs:
 	* AspNetEdit.Integration/GeckoWebBrowser.cs:

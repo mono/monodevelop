@@ -1,3 +1,8 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Database.Sql.Firebird.csproj: Remove
+	  mono.addins.targets import.
+
 2010-02-03  Luciano N. Callero  <lnc19@hotmail.com>
 
 	* MonoDevelop.Database.Sql.Firebird.csproj: - Flush changes.

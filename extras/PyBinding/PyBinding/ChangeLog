@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* PyBinding.csproj: Remove mono.addins.targets import.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* PyBinding.csproj:
 	* gtk-gui/gui.stetic:
 	* PyBinding.addin.xml:

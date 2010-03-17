@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Database.Sql.MySql.csproj: Remove
+	  mono.addins.targets import.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MySqlDbFactory.cs:
 	* Dialogs/MySqlCreateDatabaseDialog.cs:
 	* MonoDevelop.Database.Sql.MySql.csproj:

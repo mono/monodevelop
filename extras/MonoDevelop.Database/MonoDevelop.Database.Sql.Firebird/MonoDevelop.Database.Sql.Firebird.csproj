@@ -57,7 +57,6 @@
     <Folder Include="Schema\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -67,8 +66,5 @@
   </ProjectExtensions>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Database.Sql.Firebird.addin.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddinReference Include="MonoDevelop.MonoDevelop.Database.Sql,2.2" />
   </ItemGroup>
 </Project>

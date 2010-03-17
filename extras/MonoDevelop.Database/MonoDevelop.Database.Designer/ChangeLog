@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Database.Designer.csproj: Remove
+	  mono.addins.targets import.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* Dialogs/PreviewDialog.cs:
 	* Dialogs/UserEditorDialog.cs:

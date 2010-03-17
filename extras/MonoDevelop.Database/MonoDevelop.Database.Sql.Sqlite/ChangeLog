@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Database.Sql.Sqlite.csproj: Remove
+	  mono.addins.targets import.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SqliteDbFactory.cs:
 	* Dialogs/SqliteCreateDatabaseDialog.cs:
 	* MonoDevelop.Database.Sql.Sqlite.csproj:

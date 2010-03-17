@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* ValaBinding.csproj: Flush.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Parser/Afrodite.cs:
 	* gtk-gui/gui.stetic:
 	* Gui/DataProvider.cs:

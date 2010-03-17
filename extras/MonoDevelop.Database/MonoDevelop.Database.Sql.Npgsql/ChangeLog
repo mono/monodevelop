@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Database.Sql.Npgsql.csproj: Remove
+	  mono.addins.targets import.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* NpgsqlDbFactory.cs:
 	* Dialogs/NpgsqlCreateDatabaseDialog.cs:
 	* MonoDevelop.Database.Sql.Npgsql.csproj:

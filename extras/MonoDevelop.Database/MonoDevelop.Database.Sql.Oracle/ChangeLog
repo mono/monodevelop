@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Database.Sql.Oracle.csproj: Remove
+	  mono.addins.targets import.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Database.Sql.Oracle.addin.xml: Merged
 	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
 	  and MD.Components into MD.Ide.

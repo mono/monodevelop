@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>AspNetEdit</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <RootNamespace>AspNetEdit</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,10 +20,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <AssemblyKeyFile>.</AssemblyKeyFile>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -42,19 +43,10 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
-    <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Core, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="gecko-sharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ccf7d78a55e9f021" />
@@ -113,16 +105,28 @@
     <Reference Include="MonoDevelop.XmlEditor, Version=1.9.2.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects.Gui, Version=1.9.2.0, Culture=neutral">
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Refactoring, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
@@ -163,7 +167,9 @@
     <Compile Include="AspNetEdit.Integration\GeckoWebBrowser.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AspNetEdit.addin.xml" />
+    <EmbeddedResource Include="AspNetEdit.addin.xml">
+      <LogicalName>AspNetEdit.addin.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome\install.rdf" />
