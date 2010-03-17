@@ -30,7 +30,7 @@ using System;
 using System.IO;
 using Gecko;
 
-using MonoDevelop.Core.Gui.WebBrowser;
+using MonoDevelop.Ide.WebBrowser;
 
 namespace AspNetEdit.Integration
 {

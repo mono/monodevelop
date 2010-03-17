@@ -35,7 +35,8 @@ using System.ComponentModel.Design;
 using System.Drawing.Design;
 using System.ComponentModel.Design.Serialization;
 
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.DesignerSupport.Toolbox;
 
 using AspNetEdit.Editor.ComponentModel;

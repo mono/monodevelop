@@ -39,7 +39,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
@@ -225,7 +225,7 @@ namespace AspNetEdit.Integration
 				try {
 					doc = editorProcess.Editor.GetDocument ();
 				} catch (Exception e) {
-					MonoDevelop.Core.Gui.MessageService.ShowException (e,
+					MonoDevelop.Ide.MessageService.ShowException (e,
 						AddinManager.CurrentLocalizer.GetString (
 					        "The document could not be retrieved from the designer"));
 				}
@@ -369,10 +369,10 @@ namespace AspNetEdit.Integration
 		
 		bool InstallExtension (string extensionStatus)
 		{
-			if (!MonoDevelop.Core.Gui.MessageService.Confirm (
+			if (!MessageService.Confirm (
 			    AddinManager.CurrentLocalizer.GetString ("Mozilla extension installation"),
 			    extensionStatus + "\n" + AddinManager.CurrentLocalizer.GetString ("Would you like to install it?"),
-			    new MonoDevelop.Core.Gui.AlertButton (AddinManager.CurrentLocalizer.GetString ("Install extension"))))
+			    new AlertButton (AddinManager.CurrentLocalizer.GetString ("Install extension"))))
 				return false;
 			
 			string sourcePath = Path.GetTempFileName ();
@@ -402,7 +402,7 @@ namespace AspNetEdit.Integration
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error installing ASP.NET designer Mozilla extension.", ex);
 			}
-			MonoDevelop.Core.Gui.MessageService.ShowError (
+			MessageService.ShowError (
 			    AddinManager.CurrentLocalizer.GetString ("Could not execute command as root. \n"+
 			        "Please manually run the command \n{0}\nbefore continuing.", installCommand));
 			File.Delete (sourcePath);

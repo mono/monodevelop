@@ -15,9 +15,6 @@
 
 	<Dependencies>
 		<Addin id="Core" version="2.2"/>
-		<Addin id="Core.Gui" version="2.2"/>
-		<Addin id="Projects" version="2.2"/>
-		<Addin id="Projects.Gui" version="2.2"/>
 		<Addin id="Ide" version="2.2"/>
 		<Addin id="Deployment" version="2.2" />
 		<Addin id="AspNet" version="2.2" />

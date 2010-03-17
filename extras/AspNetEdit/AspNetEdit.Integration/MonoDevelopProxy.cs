@@ -34,7 +34,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
