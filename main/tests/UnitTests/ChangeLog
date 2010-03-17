@@ -1,3 +1,9 @@
+2010-03-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for 'Bug 588223 - Intellisense does not recognize
+	  nested generics correctly.'.
+
 2010-03-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/CompletionDatabaseTests.cs:

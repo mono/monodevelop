@@ -2429,5 +2429,45 @@ public class PrinterImpl : Printer
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 588223 - Intellisense does not recognize nested generics correctly.
+		/// </summary>
+		[Test()]
+		public void TestBug588223 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class Lazy<T> { public void Foo () {} }
+class Lazy<T, S> { public void Bar () {} }
+
+class Test
+{
+	public object Get ()
+	{
+		return null;
+	}
+	
+	public Lazy<T> Get<T> ()
+	{
+		return null;
+	}
+
+	public Lazy<T, TMetaDataView> Get<T, TMetaDataView> ()
+	{
+		return null;
+	}
+	
+	public Test ()
+	{
+		Test t = new Test ();
+		var bug = t.Get<string, string> ();
+		$bug.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
+		}
+		
 	}
 }
