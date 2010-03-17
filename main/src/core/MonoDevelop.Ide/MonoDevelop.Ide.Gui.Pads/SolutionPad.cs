@@ -30,7 +30,6 @@ using System;
 using System.Resources;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;

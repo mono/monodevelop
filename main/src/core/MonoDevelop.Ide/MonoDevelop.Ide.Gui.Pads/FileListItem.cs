@@ -29,7 +29,6 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {

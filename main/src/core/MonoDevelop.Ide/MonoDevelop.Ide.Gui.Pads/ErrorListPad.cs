@@ -36,7 +36,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
@@ -112,7 +111,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			window.Title = GettextCatalog.GetString ("Error List");
-			window.Icon = MonoDevelop.Core.Gui.Stock.Error;
+			window.Icon = MonoDevelop.Ide.Gui.Stock.Error;
 			
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
 			
@@ -831,11 +830,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				box = new VBox ();
 			box.Spacing = 3;
 			
-			box.PackStart (ImageService.GetImage (MonoDevelop.Core.Gui.Stock.Error, IconSize.Menu), false, false, 0);
+			box.PackStart (ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), false, false, 0);
 			Label errors = new Gtk.Label ();
 			box.PackStart (errors, false, false, 0);
 			
-			box.PackStart (ImageService.GetImage (MonoDevelop.Core.Gui.Stock.Warning, IconSize.Menu), false, false, 0);
+			box.PackStart (ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), false, false, 0);
 			Label warnings = new Gtk.Label ();
 			box.PackStart (warnings, false, false, 0);
 			

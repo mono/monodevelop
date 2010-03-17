@@ -35,7 +35,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;

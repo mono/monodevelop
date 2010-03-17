@@ -42,7 +42,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Core.Gui;
 
 using Gtk;
 using MonoDevelop.Components.Docking;

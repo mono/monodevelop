@@ -33,7 +33,6 @@ using System.IO;
 using System.Diagnostics;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 

@@ -42,9 +42,9 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (targetProject != null)
 				projectsToSave.Add (targetProject);
 			
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Core.Gui.Stock.CopyIcon, true))
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Ide.Gui.Stock.CopyIcon, true))
 			{
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);

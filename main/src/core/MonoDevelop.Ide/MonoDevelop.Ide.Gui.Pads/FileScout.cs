@@ -28,11 +28,10 @@
 using System;
 using System.IO;
 
-using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui.Pads

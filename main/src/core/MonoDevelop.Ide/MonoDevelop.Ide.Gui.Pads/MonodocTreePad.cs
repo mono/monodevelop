@@ -32,7 +32,6 @@ using System.Collections;
 using Gtk;
 using Monodoc;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Parser;
