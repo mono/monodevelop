@@ -82,8 +82,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node.CanHandleFile (fileName, typeGuid))
 					return node.LoadSolutionItem (monitor, fileName, itemGuid);
 			}
-			if (string.IsNullOrEmpty (typeGuid))
-			{
+			
+			if (string.IsNullOrEmpty (typeGuid) && IsProjectSubtypeFile (fileName)) {
 				typeGuid = LoadProjectTypeGuids (fileName);
 				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 					if (node.CanHandleFile (fileName, typeGuid))
@@ -189,10 +189,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return node;
 				}
 			}
-			string typeGuids = LoadProjectTypeGuids (file);
-			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
-				if (node.CanHandleFile (file, typeGuids)) {
-					return node;
+			if (IsProjectSubtypeFile (file)) {
+				string typeGuids = LoadProjectTypeGuids (file);
+				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
+					if (node.CanHandleFile (file, typeGuids)) {
+						return node;
+					}
 				}
 			}
 			return null;
@@ -211,6 +213,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			// The generic handler should always be found
 			throw new InvalidOperationException ();
+		}
+		
+		static bool IsProjectSubtypeFile (FilePath file)
+		{
+			foreach (DotNetProjectSubtypeNode node in GetItemSubtypeNodes ()) {
+				if (!string.IsNullOrEmpty (node.Extension) && node.CanHandleFile (file, null))
+					return true;
+			}
+			return false;
 		}
 		
 		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?', '*' };
