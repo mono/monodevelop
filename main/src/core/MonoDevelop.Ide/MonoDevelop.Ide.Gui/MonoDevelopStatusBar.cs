@@ -28,9 +28,8 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using Gtk;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide
@@ -154,13 +153,13 @@ namespace MonoDevelop.Ide
 		
 		public void ShowError (string error)
 		{
-			ShowMessage (new Image (MonoDevelop.Core.Gui.Stock.Error, IconSize.Menu), error);
+			ShowMessage (new Image (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), error);
 		}
 		
 		public void ShowWarning (string warning)
 		{
 			DispatchService.AssertGuiThread ();
-			ShowMessage (new Gtk.Image (MonoDevelop.Core.Gui.Stock.Warning, IconSize.Menu), warning);
+			ShowMessage (new Gtk.Image (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), warning);
 		}
 		
 		public void ShowMessage (string message)

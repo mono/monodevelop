@@ -1,9 +1,9 @@
-// IBaseViewContent.cs
+// GuiSyncContext.cs
 //
 // Author:
-//   Viktoria Dudka (viktoriad@remobjects.com)
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2009 RemObjects Software
+// Copyright (c) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,19 +25,28 @@
 //
 //
 
+
 using System;
-using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
-    public interface IBaseViewContent : IDisposable
+	public class GuiSyncContext: SyncContext
 	{
-        IWorkbenchWindow WorkbenchWindow { get; set; }
-        Widget Control { get; }
-        string TabPageLabel { get; }
-
-        object GetContent (Type type);
-        bool CanReuseView (string fileName);
-        void RedrawContent ();
+		public override void Dispatch (StatefulMessageHandler cb, object ob)
+		{
+			if (DispatchService.IsGuiThread)
+				cb (ob);
+			else
+				DispatchService.GuiSyncDispatch (cb, ob);
+		}
+		
+		public override void AsyncDispatch (StatefulMessageHandler cb, object ob)
+		{
+			if (DispatchService.IsGuiThread)
+				cb (ob);
+			else
+				DispatchService.GuiDispatch (cb, ob);
+		}
 	}
 }

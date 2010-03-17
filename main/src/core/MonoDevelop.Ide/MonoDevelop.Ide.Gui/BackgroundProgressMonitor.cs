@@ -30,8 +30,6 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.ProgressMonitoring;
 using Gtk;
 

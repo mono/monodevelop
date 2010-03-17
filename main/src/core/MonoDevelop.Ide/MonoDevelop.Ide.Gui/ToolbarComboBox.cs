@@ -29,7 +29,6 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui

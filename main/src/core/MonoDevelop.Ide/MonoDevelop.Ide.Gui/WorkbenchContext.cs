@@ -27,7 +27,6 @@ using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui

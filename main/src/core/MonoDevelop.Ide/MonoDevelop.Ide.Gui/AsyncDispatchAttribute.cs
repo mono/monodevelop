@@ -1,9 +1,9 @@
-// AddEntryEventHandler.cs
+// AsyncDispatchAttribute.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2005 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,38 +25,11 @@
 //
 //
 
-
 using System;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public delegate void AddEntryEventHandler (object s, AddEntryEventArgs args);
-	
-	public class AddEntryEventArgs
+	public class AsyncDispatchAttribute: Attribute
 	{
-		string fileName;
-		bool cancel;
-		SolutionFolder combine;
-		
-		public AddEntryEventArgs (SolutionFolder combine, string fileName)
-		{
-			this.combine = combine;
-			this.fileName = fileName;
-		}
-		
-		public SolutionFolder Combine {
-			get { return combine; }
-		}
-		
-		public string FileName {
-			get { return fileName; }
-			set { fileName = value; }
-		}
-		
-		public bool Cancel {
-			get { return cancel; }
-			set { cancel = value; }
-		}
 	}
 }

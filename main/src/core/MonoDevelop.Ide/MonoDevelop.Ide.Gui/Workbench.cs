@@ -38,12 +38,13 @@ using System.Threading;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Desktop;
 using Mono.Addins;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -540,8 +541,8 @@ namespace MonoDevelop.Ide.Gui
 			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
 
-			MonoDevelop.Projects.Gui.Dialogs.DefaultPolicyOptionsDialog ops
-				= new MonoDevelop.Projects.Gui.Dialogs.DefaultPolicyOptionsDialog (parentWindow);
+			DefaultPolicyOptionsDialog ops
+				= new DefaultPolicyOptionsDialog (parentWindow);
 
 			try {
 				if (panelId != null)

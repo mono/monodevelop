@@ -31,7 +31,6 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;

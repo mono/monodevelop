@@ -27,14 +27,9 @@
 //
 
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Gui
 {

@@ -28,7 +28,6 @@
 
 using System;
 using MonoDevelop.Ide;
-using MonoDevelop.Core.Gui;
 using Gtk;
 
 namespace MonoDevelop.Ide.Gui

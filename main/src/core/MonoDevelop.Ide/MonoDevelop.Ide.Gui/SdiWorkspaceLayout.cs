@@ -34,7 +34,6 @@ using System.Linq;
 using MonoDevelop.Core;
 
 using Gtk;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using Mono.Addins;
 using MonoDevelop.Ide.Commands;

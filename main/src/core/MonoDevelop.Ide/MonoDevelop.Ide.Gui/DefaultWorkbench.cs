@@ -25,26 +25,16 @@
 
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
-using System.CodeDom.Compiler;
-using System.ComponentModel;
-using System.Xml;
 
 using MonoDevelop.Projects;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
 
 using GLib;
@@ -235,7 +225,7 @@ namespace MonoDevelop.Ide.Gui
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
 			
-			if (!DesktopService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
+			if (!DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath))
 				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 			
 			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
@@ -257,7 +247,7 @@ namespace MonoDevelop.Ide.Gui
 			bool changed = false;
 			
 			if (args.PathChanged (mainMenuPath)) {
-				if (DesktopService.SetGlobalMenu (MonoDevelop.Ide.Gui.IdeApp.CommandService, mainMenuPath))
+				if (DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath))
 					return;
 				
 				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);

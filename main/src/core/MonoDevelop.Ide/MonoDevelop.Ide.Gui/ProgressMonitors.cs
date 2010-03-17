@@ -31,7 +31,6 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;

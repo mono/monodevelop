@@ -31,7 +31,6 @@ using System.Collections.Generic;
 
 using Mono.Addins;
 
-using MonoDevelop.Core.Gui.Codons;
 using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Gui

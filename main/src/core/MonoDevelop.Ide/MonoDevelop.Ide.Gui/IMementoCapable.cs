@@ -1,10 +1,10 @@
 //
-// ExitEventHandler.cs
+// IMementoCapable.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,19 +26,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public delegate void ExitEventHandler (object sender, ExitEventArgs args);
-	
-	public class ExitEventArgs: EventArgs
+	public interface IMementoCapable
 	{
-		bool cancel;
-		
-		public bool Cancel {
-			get { return cancel; }
-			set { cancel = value; }
+		ICustomXmlSerializer Memento {
+			get;
+			set;
 		}
 	}
 }

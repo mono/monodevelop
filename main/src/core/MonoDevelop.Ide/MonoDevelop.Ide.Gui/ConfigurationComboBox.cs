@@ -32,7 +32,6 @@ using System.Collections.ObjectModel;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui

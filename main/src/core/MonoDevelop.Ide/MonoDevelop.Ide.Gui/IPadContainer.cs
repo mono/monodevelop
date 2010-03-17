@@ -32,7 +32,6 @@ using System.Drawing;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.Commands;
 
@@ -146,9 +145,6 @@ namespace MonoDevelop.Ide.Gui
 		IPadContent content;
 		PadCodon codon;
 		SdiWorkbenchLayout layout;
-		
-		static IPadWindow lastWindow;
-		static IPadWindow lastLocationList;
 		
 		internal DockItem Item { get; set; }
 		

@@ -39,7 +39,6 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects.Dom;

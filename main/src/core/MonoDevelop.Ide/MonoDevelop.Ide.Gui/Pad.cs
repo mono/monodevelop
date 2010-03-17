@@ -31,7 +31,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
 

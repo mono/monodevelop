@@ -28,10 +28,9 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui
 {

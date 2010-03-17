@@ -28,7 +28,7 @@
 
 using System;
 using MonoDevelop.Ide.Codons;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.Ide.Gui
 {

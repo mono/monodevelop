@@ -28,20 +28,13 @@
 
 
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
-using Gtk;
 
 using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -112,7 +105,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (FileCommands.ReloadFile)]
 		protected void OnReloadFile ()
 		{
-			if (MessageService.GenericAlert (MonoDevelop.Core.Gui.Stock.Warning,
+			if (MessageService.GenericAlert (MonoDevelop.Ide.Gui.Stock.Warning,
 			                                GettextCatalog.GetString ("Revert unsaved changes to document '{0}'?", Path.GetFileName (doc.Name)),
 			                                GettextCatalog.GetString ("All changes made to the document will be permanently lost."), 0, AlertButton.Cancel, AlertButton.Revert) == AlertButton.Revert)
 				doc.Reload ();
