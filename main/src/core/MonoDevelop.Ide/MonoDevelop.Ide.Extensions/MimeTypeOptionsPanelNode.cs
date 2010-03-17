@@ -27,7 +27,7 @@
 using System;
 using Mono.Addins;
 
-namespace MonoDevelop.Projects.Gui.Extensions
+namespace MonoDevelop.Ide.Extensions
 {
 	public class MimeTypeOptionsPanelNode: TypeExtensionNode
 	{

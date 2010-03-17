@@ -32,7 +32,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Gui;
 using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide

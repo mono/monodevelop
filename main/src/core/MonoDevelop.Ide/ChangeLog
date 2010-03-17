@@ -1,5 +1,24 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide/Services.cs:
+	* MonoDevelop.Ide.Extensions/MimeTypeNode.cs:
+	* MonoDevelop.Ide.Extensions/StockIconCodon.cs:
+	* MonoDevelop.Ide.Extensions/OptionsPanelNode.cs:
+	* MonoDevelop.Components.Extensions/MimeTypeNode.cs:
+	* MonoDevelop.Ide.Extensions/OptionsDialogSection.cs:
+	* MonoDevelop.Components.Extensions/StockIconCodon.cs:
+	* MonoDevelop.Components.Extensions/OptionsPanelNode.cs:
+	* MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs:
+	* MonoDevelop.Components.Extensions/OptionsDialogSection.cs:
+	* MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:
+	* MonoDevelop.Components.Extensions/MimeTypeOptionsPanelNode.cs:
+	  Moved to correct directory. Fixed namespace for
+	  MimeTypeOptionsPanelNode.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	Merged MD.Projects into MD.Core, and MD.Projects.Gui,
 	MD.Core.Gui and MD.Components into MD.Ide.
 

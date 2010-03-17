@@ -194,12 +194,7 @@ FILES =  \
 	MonoDevelop.Components.DockToolbars/IDockBar.cs \
 	MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
 	MonoDevelop.Components.Extensions/ISelectFileDialog.cs \
-	MonoDevelop.Components.Extensions/MimeTypeNode.cs \
-	MonoDevelop.Components.Extensions/MimeTypeOptionsPanelNode.cs \
-	MonoDevelop.Components.Extensions/OptionsDialogSection.cs \
-	MonoDevelop.Components.Extensions/OptionsPanelNode.cs \
 	MonoDevelop.Components.Extensions/PlatformDialog.cs \
-	MonoDevelop.Components.Extensions/StockIconCodon.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs \
@@ -351,6 +346,11 @@ FILES =  \
 	MonoDevelop.Ide.Extensions/CustomToolExtensionNode.cs \
 	MonoDevelop.Ide.Extensions/IAddFileDialogHandler.cs \
 	MonoDevelop.Ide.Extensions/IOpenFileDialogHandler.cs \
+	MonoDevelop.Ide.Extensions/MimeTypeNode.cs \
+	MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs \
+	MonoDevelop.Ide.Extensions/OptionsDialogSection.cs \
+	MonoDevelop.Ide.Extensions/OptionsPanelNode.cs \
+	MonoDevelop.Ide.Extensions/StockIconCodon.cs \
 	MonoDevelop.Ide.Extensions/TextEditorExtensionNode.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs \

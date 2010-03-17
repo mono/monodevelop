@@ -1256,10 +1256,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\SyncContext.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SyncContextAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SyncObject.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\MimeTypeNode.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\OptionsDialogSection.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\OptionsPanelNode.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\StockIconCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ProjectFileEntry.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\ItemOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\ItemOptionsPanel.cs" />
@@ -1325,7 +1321,6 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionItemConfigurationsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\StartupOptionsPanel.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\MimeTypeOptionsPanelNode.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs" />
@@ -1350,6 +1345,11 @@
     <Compile Include="MonoDevelop.Ide\ExitEventHandler.cs" />
     <Compile Include="MonoDevelop.Ide\AddEntryEventHandler.cs" />
     <Compile Include="MonoDevelop.Ide\IdeStartup.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\MimeTypeNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\MimeTypeOptionsPanelNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\OptionsDialogSection.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\OptionsPanelNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\StockIconCodon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

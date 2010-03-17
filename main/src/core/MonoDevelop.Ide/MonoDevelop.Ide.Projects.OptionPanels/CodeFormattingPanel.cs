@@ -32,7 +32,6 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Extensions;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Components;
 
