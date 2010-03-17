@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using System;
 

@@ -27,20 +27,16 @@
 //
 
 using System;
-using System.Linq;
 using System.Text;
-
+using System.Linq;
 using Mono.Cecil;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor.Highlighting;
-using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AssemblyBrowser
 {

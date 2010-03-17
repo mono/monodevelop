@@ -31,6 +31,7 @@ using System.Text;
 
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Platform.Updater
 {
@@ -154,7 +155,7 @@ namespace MonoDevelop.Platform.Updater
 				//NOTE: grab the variable from the loop var so the closure captures it 
 				var url = update.Url;
 				downloadButton.Clicked += delegate {
-					MonoDevelop.Core.Gui.DesktopService.ShowUrl (url);
+					DesktopService.ShowUrl (url);
 				};
 				labelBox.PackStart (downloadButton, false, false, 0);
 				

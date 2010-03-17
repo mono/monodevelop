@@ -5,12 +5,8 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.NUnit.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/NUnit/NUnitRunner.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Dock.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.dll
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
@@ -33,7 +29,6 @@ FILES =  \
 	Gui/CircleImage.cs \
 	Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs \
 	Gui/NUnitAssemblyGroupNodeBuilder.cs \
-	Gui/NUnitOptionsPanel.cs \
 	Gui/TestAssemblyNodeBuilder.cs \
 	Gui/TestChart.cs \
 	Gui/TestNodeBuilder.cs \

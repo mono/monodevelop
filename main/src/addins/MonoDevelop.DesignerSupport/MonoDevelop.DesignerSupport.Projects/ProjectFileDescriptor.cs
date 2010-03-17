@@ -30,8 +30,7 @@ using System.ComponentModel;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using System.Reflection;
-using System.IO;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -63,8 +62,8 @@ namespace MonoDevelop.DesignerSupport
 		[LocalizedDescription ("Type of the file.")]
 		public string FileType {
 			get {
-				string type = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (file.Name);
-				return MonoDevelop.Core.Gui.DesktopService.GetMimeTypeDescription (type); 
+				string type = DesktopService.GetMimeTypeForUri (file.Name);
+				return DesktopService.GetMimeTypeDescription (type); 
 			}
 		}
 		

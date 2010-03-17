@@ -29,10 +29,10 @@ using System.IO;
 using System.Xml;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.XmlEditor
 {

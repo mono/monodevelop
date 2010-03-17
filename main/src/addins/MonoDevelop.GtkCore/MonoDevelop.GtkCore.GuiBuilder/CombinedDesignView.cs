@@ -28,17 +28,12 @@
 
 
 using System;
+using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-
-using Gtk;
-using Gdk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {

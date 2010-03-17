@@ -144,11 +144,11 @@ namespace MonoDevelop.AssemblyBrowser
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.searchentry1 = new global::MonoDevelop.Components.SearchEntry ();
 			this.searchentry1.Name = "searchentry1";
+			this.searchentry1.ForceFilterButtonVisible = false;
+			this.searchentry1.IsCheckMenu = false;
 			this.searchentry1.ActiveFilterID = 0;
 			this.searchentry1.Ready = false;
 			this.searchentry1.HasFocus = false;
-			this.searchentry1.IsCheckMenu = false;
-			this.searchentry1.ForceFilterButtonVisible = false;
 			this.hbox2.Add (this.searchentry1);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.searchentry1]));
 			w8.PackType = ((global::Gtk.PackType)(1));

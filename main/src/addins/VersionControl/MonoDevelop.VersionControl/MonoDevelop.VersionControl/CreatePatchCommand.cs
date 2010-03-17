@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using Mono.Addins;
 
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -95,7 +96,7 @@ namespace MonoDevelop.VersionControl
 			
 			string patch = repo.CreatePatch (diffs);
 			string filename = string.Format ("{0}.diff", ((string)items.BaseLocalPath.FullPath).TrimEnd (Path.DirectorySeparatorChar));
-			MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (filename, "text/x-diff", patch);
+			IdeApp.Workbench.NewDocument (filename, "text/x-diff", patch);
 			return can;
 		}
 		

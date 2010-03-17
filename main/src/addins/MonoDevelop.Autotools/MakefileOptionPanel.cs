@@ -1,12 +1,7 @@
-using System;
-using System.IO;
-
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
 
 using Gtk;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Autotools
 {

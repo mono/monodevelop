@@ -26,14 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Codons;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using Mono.Cecil;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Refactoring;
+using System;
+ 
 
 namespace MonoDevelop.AssemblyBrowser
 {

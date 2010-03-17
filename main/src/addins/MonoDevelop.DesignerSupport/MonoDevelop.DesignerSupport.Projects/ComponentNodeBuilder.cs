@@ -1,10 +1,8 @@
 
 using System;
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {

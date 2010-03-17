@@ -25,7 +25,7 @@
 using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using System;
 using MonoDevelop.XmlEditor;
 using MonoDevelop.Core;

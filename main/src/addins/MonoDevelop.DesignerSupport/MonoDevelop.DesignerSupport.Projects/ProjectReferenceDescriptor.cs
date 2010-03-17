@@ -26,12 +26,10 @@
 //
 
 
-using System;
-using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Reflection;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {

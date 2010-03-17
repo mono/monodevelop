@@ -24,11 +24,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-using GLib;
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.Platform {
 

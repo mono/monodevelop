@@ -30,6 +30,7 @@ using System;
 using Glade;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public int Run ()
 		{
-			dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			return dialog.Run ();
 		}
 		

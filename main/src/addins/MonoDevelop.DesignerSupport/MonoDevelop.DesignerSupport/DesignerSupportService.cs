@@ -35,9 +35,8 @@
 using System;
 using System.Collections;
 
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport
 {

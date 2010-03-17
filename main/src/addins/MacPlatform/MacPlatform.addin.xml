@@ -12,8 +12,6 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Components" version="2.2"/>
-	    <Addin id="Core.Gui" version="2.2"/>
 	    <Addin id="Ide" version="2.2"/>
 	</Dependencies>
 	

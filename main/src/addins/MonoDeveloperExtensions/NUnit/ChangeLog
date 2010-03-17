@@ -1,3 +1,9 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* NUnit.csproj: Merged MD.Projects into MD.Core, and
+	  MD.Projects.Gui, MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* NUnit.csproj: Flush.

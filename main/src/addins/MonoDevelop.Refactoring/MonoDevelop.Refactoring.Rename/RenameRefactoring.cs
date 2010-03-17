@@ -28,14 +28,11 @@ using System;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
-using Mono.TextEditor.PopupWindow;
 using System.Text;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -99,7 +96,7 @@ namespace MonoDevelop.Refactoring.Rename
 				Mono.TextEditor.TextEditor editor = GetEditor (options.Document.ActiveView.Control);
 				if (editor == null) {
 					RenameItemDialog dialog = new RenameItemDialog (options, this);
-					dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+					dialog.TransientFor = IdeApp.Workbench.RootWindow;
 					dialog.Show ();
 					return;
 				}
@@ -125,7 +122,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			} else {
 				RenameItemDialog dialog = new RenameItemDialog (options, this);
-				dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+				dialog.TransientFor = IdeApp.Workbench.RootWindow;
 				dialog.Show ();
 			}
 		}

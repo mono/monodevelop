@@ -14,7 +14,6 @@
 	
 	<Dependencies>
 		<Addin id="Core" version="2.2"/>
-		<Addin id="Components" version="2.2"/>
 		<Addin id="Ide" version="2.2"/>
 		<Addin id="AssemblyBrowser" version="2.2"/>
 	</Dependencies>

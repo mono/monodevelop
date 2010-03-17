@@ -28,15 +28,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Gtk;
-
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
-
 using Mono.TextEditor;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -79,7 +75,7 @@ namespace MonoDevelop.CodeMetrics
 				Gtk.TreeIter selectedIter;
 				if (treeviewMetrics.Selection.GetSelected (out selectedIter)) {
 					string fileName = (string)store.GetValue (selectedIter, 0);
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (fileName);
+					IdeApp.Workbench.OpenDocument (fileName);
 				}
 			};
 		}
@@ -212,7 +208,7 @@ namespace MonoDevelop.CodeMetrics
 						doc.Text = System.IO.File.ReadAllText (file);
 					} catch (Exception e) {
 						DispatchService.GuiSyncDispatch (delegate {
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
+						IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
 							widget.store.AppendValues (file,
 							                           e.Message,
 							                           e.Message);
@@ -235,7 +231,7 @@ namespace MonoDevelop.CodeMetrics
 					totalRealLines += (ulong)realLines;
 			//		licenseStats[license]++;
 					DispatchService.GuiSyncDispatch (delegate {
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
+						IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
 						widget.store.AppendValues (file,
 						                           doc.LineCount + "(" + realLines + ")",
 						                         //  license,

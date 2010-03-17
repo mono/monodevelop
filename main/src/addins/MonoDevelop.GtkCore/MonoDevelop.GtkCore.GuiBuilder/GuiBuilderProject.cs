@@ -29,22 +29,16 @@
 using System;
 using System.Xml;
 using System.IO;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -416,7 +410,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				new Gtk.FileChooserDialog ("Open Glade File", null, Gtk.FileChooserAction.Open,
 						       Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
 						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
-			dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			int response = dialog.Run ();
 			if (response == (int)Gtk.ResponseType.Ok) {
 				SteticProject.ImportGlade (dialog.Filename);

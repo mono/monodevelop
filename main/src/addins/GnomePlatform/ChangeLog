@@ -1,3 +1,13 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gio.cs:
+	* Makefile.am:
+	* GnomePlatform.cs:
+	* GnomePlatform.csproj:
+	* GnomePlatform.addin.xml: Merged MD.Projects into MD.Core,
+	  and MD.Projects.Gui, MD.Core.Gui and MD.Components into
+	  MD.Ide.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GnomePlatform.csproj: Add missing reference.

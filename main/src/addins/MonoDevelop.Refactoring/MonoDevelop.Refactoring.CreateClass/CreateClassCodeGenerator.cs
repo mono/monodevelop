@@ -40,7 +40,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using Mono.TextEditor;
 using MonoDevelop.Ide.StandardHeader;
 using MonoDevelop.Projects;

@@ -29,10 +29,7 @@
 using System;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.VBNetBinding
 {	

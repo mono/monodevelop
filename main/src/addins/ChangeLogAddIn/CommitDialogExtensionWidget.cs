@@ -33,6 +33,7 @@ using MonoDevelop.VersionControl;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -250,7 +251,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				ChangeLogEntry entry;
 				if (!entries.TryGetValue (logf, out entry)) {
 					entry = new ChangeLogEntry ();
-					entry.AuthorInformation = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetAuthorInformation (parentItem);
+					entry.AuthorInformation = IdeApp.Workspace.GetAuthorInformation (parentItem);
 					entry.MessageStyle = ChangeLogService.GetMessageStyle (parentItem);
 					entry.CantGenerate = cantGenerate;
 					entry.File = logf;

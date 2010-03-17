@@ -28,13 +28,12 @@
 
 
 using System;
-using System.Collections;
 
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui.Codons;
 using Gtk;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.NUnit {
 

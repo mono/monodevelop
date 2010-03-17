@@ -33,11 +33,10 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.GtkCore.GuiBuilder;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore
 {

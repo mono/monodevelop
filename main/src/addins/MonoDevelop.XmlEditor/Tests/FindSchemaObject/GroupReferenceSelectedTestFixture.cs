@@ -1,5 +1,5 @@
-﻿
-using MonoDevelop.Projects.Gui.Completion;
+
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
 using System;

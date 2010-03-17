@@ -9,7 +9,6 @@ using Gnome.Vfs;
 using Gtk;
 using GtkSourceView;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Search;

@@ -25,14 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 {

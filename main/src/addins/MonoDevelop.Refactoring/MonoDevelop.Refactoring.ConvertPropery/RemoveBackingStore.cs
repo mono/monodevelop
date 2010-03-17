@@ -25,16 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Core;
 using Mono.TextEditor;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.ConvertPropery
 {

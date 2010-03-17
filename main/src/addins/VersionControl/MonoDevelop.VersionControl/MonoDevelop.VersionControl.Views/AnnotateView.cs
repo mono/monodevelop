@@ -28,19 +28,14 @@
 
 using System;
 using System.Threading;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 using Gtk;
-
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.SourceEditor;
-
 using Mono.TextEditor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -83,7 +78,7 @@ namespace MonoDevelop.VersionControl.Views
 				return false;
 			}
 			
-			MonoDevelop.Ide.Gui.Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, true);
+			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.OpenDocument (file, true);
 			SourceEditorView view = doc.ActiveView as SourceEditorView;
 			if (view != null) {
 				if (view.TextEditor.HasMargin (typeof (AnnotationMargin))) { 
@@ -116,7 +111,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (test){ return (null != repo && repo.CanGetAnnotations (file) && !Show (repo, file, test)); }
 			
-			MonoDevelop.Ide.Gui.Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, true);
+			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.OpenDocument (file, true);
 			SourceEditorView view = doc.ActiveView as SourceEditorView;
 			if (view != null && view.TextEditor.HasMargin (typeof (AnnotationMargin))) { 
 				view.TextEditor.GetMargin (typeof (AnnotationMargin)).IsVisible = false;

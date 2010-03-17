@@ -27,18 +27,13 @@
 //
 
 using System;
-using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {

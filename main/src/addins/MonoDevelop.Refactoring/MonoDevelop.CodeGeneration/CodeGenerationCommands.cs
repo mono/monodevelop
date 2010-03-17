@@ -24,11 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Gui.Completion;
-
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeGeneration
 {

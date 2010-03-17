@@ -3,14 +3,13 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Refactoring
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Refactoring.dll
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	$(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
@@ -26,8 +25,10 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs \
+	gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog.cs \
+	gtk-gui/MonoDevelop.Refactoring.OverridesImplementsDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
 	MonoDevelop.CodeGeneration/AbstractGenerateAction.cs \
@@ -79,11 +80,13 @@ FILES =  \
 	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
 	MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs \
 	MonoDevelop.Refactoring/Change.cs \
+	MonoDevelop.Refactoring/EncapsulateFieldDialog.cs \
 	MonoDevelop.Refactoring/FindDerivedClassesHandler.cs \
 	MonoDevelop.Refactoring/FindReferencesHandler.cs \
 	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
 	MonoDevelop.Refactoring/HelperMethods.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
+	MonoDevelop.Refactoring/OverridesImplementsDialog.cs \
 	MonoDevelop.Refactoring/QuickFixHandler.cs \
 	MonoDevelop.Refactoring/RefactoringOperation.cs \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \

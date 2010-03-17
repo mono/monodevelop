@@ -1,11 +1,8 @@
 
 using System;
-using System.Collections;
 using Gtk;
 using Gdk;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Views
 {

@@ -22,25 +22,19 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
 OTHER DEALINGS IN THE SOFTWARE. 
 */
+
 using System;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-
-using Gtk;
-
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.WebBrowser;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Components.Commands;
-
-using System.Net;
-using System.Xml;
-using System.IO;
 using System.Collections.Generic;
-
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Xml;
+using Gtk;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Desktop;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.WelcomePage
 {	

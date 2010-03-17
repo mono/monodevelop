@@ -68,7 +68,7 @@ namespace ILAsmBinding
 		}
 	}
 	
-	public class CompilerParametersPanel : MonoDevelop.Projects.Gui.Dialogs.MultiConfigItemOptionsPanel
+	public class CompilerParametersPanel : MonoDevelop.Ide.Gui.Dialogs.MultiConfigItemOptionsPanel
 	{
 		CompilerParametersPanelWidget widget;
 		

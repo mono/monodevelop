@@ -27,16 +27,14 @@
 //
 
 
+using Gtk;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Xml;
-
-using Gtk;
-
-using MonoDevelop.Core;
 using System.Threading;
+using System.Xml;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -50,7 +48,7 @@ namespace MonoDevelop.RegexToolkit
 		public RegexLibraryWindow () : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
-			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			
 			this.buttonCancel.Clicked += delegate {
 				Destroy ();

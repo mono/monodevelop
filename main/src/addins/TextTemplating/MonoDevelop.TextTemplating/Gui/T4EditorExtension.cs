@@ -25,11 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.TextTemplating.Parser;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
@@ -243,7 +244,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		void RefillOutlineStore ()
 		{
-			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			DispatchService.AssertGuiThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
 			if (outlineTreeStore == null || !outlineTreeView.IsRealized)

@@ -29,6 +29,7 @@
 using System;
 
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport
 {

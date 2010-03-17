@@ -8,7 +8,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl

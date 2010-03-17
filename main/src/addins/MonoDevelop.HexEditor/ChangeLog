@@ -1,3 +1,13 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.HexEditor.csproj:
+	* MonoDevelop.HexEditor.addin.xml:
+	* MonoDevelop.HexEditor/DisplayBinding.cs:
+	* MonoDevelop.HexEditor/HexEditorNodeExtension.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-03-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.MHex.Data/PieceTable.cs: fixed cut&paste error.

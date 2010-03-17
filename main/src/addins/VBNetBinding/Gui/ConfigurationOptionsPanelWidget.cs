@@ -26,17 +26,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
 
-using System;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Components;
-
+ 
 namespace MonoDevelop.VBNetBinding
 {
 	[System.ComponentModel.ToolboxItem(true)]

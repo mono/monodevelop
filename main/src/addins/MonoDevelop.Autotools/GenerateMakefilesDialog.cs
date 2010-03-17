@@ -1,13 +1,10 @@
 //
 
-using System;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Autotools
 {
-
-
 	public partial class GenerateMakefilesDialog : Gtk.Dialog
 	{
 

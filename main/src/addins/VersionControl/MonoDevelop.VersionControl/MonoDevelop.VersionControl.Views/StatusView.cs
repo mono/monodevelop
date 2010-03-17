@@ -1,21 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Text;
-using System.Collections.Specialized;
 using Mono.Addins;
 
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -91,7 +86,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (item.Repository.IsVersioned (item.Path)) {
 				if (test) return true;
 				StatusView d = new StatusView (item.Path, item.Repository);
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
+				IdeApp.Workbench.OpenDocument (d, true);
 				return true;
 			}
 			return false;
@@ -449,7 +444,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			Gdk.Pixbuf fileIcon;
 			if (n.IsDirectory)
-				fileIcon = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
+				fileIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
 				fileIcon = DesktopService.GetPixbufForFile (n.LocalPath, Gtk.IconSize.Menu);
 

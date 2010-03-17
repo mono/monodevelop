@@ -1,3 +1,23 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Commands.cs:
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Gettext.csproj:
+	* MonoDevelop.Gettext.addin.xml:
+	* MonoDevelop.Gettext/Catalog.cs:
+	* MonoDevelop.Gettext/TranslationProject.cs:
+	* MonoDevelop.Gettext/GettextFeatureWidget.cs:
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs:
+	* gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:
+	* MonoDevelop.Gettext/TranslationProjectOptionsDialog.cs:
+	* MonoDevelop.Gettext.NodeBuilders/TranslationNodeBuilder.cs:
+	* MonoDevelop.Gettext.NodeBuilders/TranslationProjectNodeBuilder.cs:
+	* MonoDevelop.Gettext.NodeBuilders/ProjectFileNodeBuilderExtension.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Alexander

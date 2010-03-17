@@ -1,15 +1,13 @@
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
-using MonoDevelop.Core.Assemblies;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Gtk;
-
 using SPath = System.IO.Path;
+
+using Gtk;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Autotools
 {

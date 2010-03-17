@@ -27,6 +27,7 @@
 
 using System;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.VersionControl
 			this.Build();
 			
 			Pango.FontDescription font = Pango.FontDescription.FromString (
-			   MonoDevelop.Core.Gui.DesktopService.DefaultMonospaceFont);
+			   DesktopService.DefaultMonospaceFont);
 			font.Size = Pango.Units.FromPixels (8);
 			textview.ModifyFont (font);
 			textview.AcceptsTab = true;

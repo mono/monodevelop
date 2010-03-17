@@ -24,12 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.AspNet.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Moonlight
 {

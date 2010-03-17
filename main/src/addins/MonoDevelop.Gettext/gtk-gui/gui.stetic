@@ -5,10 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Projects.Gui.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
@@ -1302,11 +1299,11 @@
                     <child>
                       <widget class="MonoDevelop.Components.SearchEntry" id="searchEntryFilter">
                         <property name="MemberName" />
+                        <property name="ForceFilterButtonVisible">False</property>
+                        <property name="IsCheckMenu">False</property>
                         <property name="ActiveFilterID">0</property>
                         <property name="Ready">False</property>
                         <property name="HasFocus">False</property>
-                        <property name="IsCheckMenu">False</property>
-                        <property name="ForceFilterButtonVisible">False</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>

@@ -1,3 +1,16 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.CodeMetrics.csproj:
+	* MonoDevelop.CodeMetrics.addin.xml:
+	* MonoDevelop.CodeMetrics/Commands.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsView.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsNodeExtension.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-01-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/generated.cs:

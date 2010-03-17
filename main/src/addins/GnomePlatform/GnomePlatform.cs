@@ -26,17 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.IO;
-using System.Collections;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
-
-using MonoDevelop.Core.Gui;
 using Gnome;
+using MonoDevelop.Ide.Desktop;
+using System;
 using System.Collections.Generic;
-
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Platform
 {

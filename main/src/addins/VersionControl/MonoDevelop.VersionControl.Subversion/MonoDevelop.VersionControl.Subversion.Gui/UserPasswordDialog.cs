@@ -1,7 +1,7 @@
 
 using System;
-using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion.Gui
 {
@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			EventHandler del = delegate {
 					try {
 						UserPasswordDialog dlg = new UserPasswordDialog (user, realm, may_save, showPwd);
-						dlg.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+						dlg.TransientFor = IdeApp.Workbench.RootWindow;
 						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							s = dlg.SavePassword ? 1 : 0;

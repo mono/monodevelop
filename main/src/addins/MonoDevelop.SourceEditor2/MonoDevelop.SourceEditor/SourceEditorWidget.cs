@@ -25,30 +25,21 @@
 
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Gtk;
 using Mono.TextEditor;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Completion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Debugger;
-using Mono.Debugging.Client;
-using MonoDevelop.DesignerSupport.Toolbox;
-using MonoDevelop.Core.Gui;
-
 using Document = Mono.TextEditor.Document;
 using Services = MonoDevelop.Projects.Services;
 using System.Threading;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {

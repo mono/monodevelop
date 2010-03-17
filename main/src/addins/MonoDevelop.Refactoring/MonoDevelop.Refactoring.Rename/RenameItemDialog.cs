@@ -25,16 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 
 using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -121,11 +119,11 @@ namespace MonoDevelop.Refactoring.Rename
 				return true;
 			ValidationResult result = nameValidator.ValidateName (this.options.SelectedItem, entry.Text);
 			if (!result.IsValid) {
-				imageWarning.IconName = Stock.DialogError;
+				imageWarning.IconName = Gtk.Stock.DialogError;
 			} else if (result.HasWarning) {
-				imageWarning.IconName = Stock.DialogWarning;
+				imageWarning.IconName = Gtk.Stock.DialogWarning;
 			} else {
-				imageWarning.IconName = Stock.Apply;
+				imageWarning.IconName = Gtk.Stock.Apply;
 			}
 			labelWarning.Text = result.Message;
 			return result.IsValid;

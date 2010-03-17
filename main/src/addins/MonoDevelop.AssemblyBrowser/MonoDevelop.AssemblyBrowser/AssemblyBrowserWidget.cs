@@ -27,26 +27,20 @@
 //
 
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
-using System.IO;
+using System.ComponentModel;
 using System.Text;
-using System.Threading;
 using System.Xml;
-using System.Xml.Xsl;
-
 using Gtk;
-using Mono.Cecil;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Commands;
+using Mono.Cecil;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -459,7 +453,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
 							if (worker.CancellationPending)
 								return;
@@ -494,7 +488,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
 							if (worker.CancellationPending)
 								return;
@@ -525,7 +519,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
 						foreach (MonoDevelop.Projects.Dom.IMember member in members) {
 							if (worker.CancellationPending)
 								return;
@@ -562,7 +556,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 			} finally {
 				Gtk.Application.Invoke (delegate {
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
+					IdeApp.Workbench.StatusBar.EndProgress ();
 				});
 			}
 		}

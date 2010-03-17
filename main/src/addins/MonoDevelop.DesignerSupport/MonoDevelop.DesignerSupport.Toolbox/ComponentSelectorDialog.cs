@@ -27,15 +27,13 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
+using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {

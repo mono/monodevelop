@@ -29,8 +29,8 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore {
 
@@ -215,7 +215,7 @@ namespace MonoDevelop.GtkCore {
 
 			DotNetProject dnp = args.Project as DotNetProject;
 
-			if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new MonoDevelop.Core.Gui.AlertButton (GettextCatalog.GetString ("Disable Designer"))))
+			if (MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new AlertButton (GettextCatalog.GetString ("Disable Designer"))))
 				GtkDesignInfo.DisableProject (dnp);
 			else
 				dnp.References.Add (new ProjectReference (ReferenceType.Gac, args.ProjectReference.StoredReference));

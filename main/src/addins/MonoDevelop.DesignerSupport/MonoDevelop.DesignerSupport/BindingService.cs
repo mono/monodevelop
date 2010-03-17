@@ -38,10 +38,9 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport
 {

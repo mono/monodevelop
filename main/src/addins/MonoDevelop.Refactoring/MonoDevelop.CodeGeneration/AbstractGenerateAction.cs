@@ -32,8 +32,8 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeGeneration
 {

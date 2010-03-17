@@ -27,22 +27,16 @@
 //
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Gettext.Editor;
 using MonoDevelop.Deployment;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext
 {	
@@ -251,7 +245,7 @@ namespace MonoDevelop.Gettext
 					if (!File.Exists (file.FilePath))
 						continue;
 					if (file.Subtype == Subtype.Code) {
-						string mimeType = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (file.FilePath);
+						string mimeType = DesktopService.GetMimeTypeForUri (file.FilePath);
 						foreach (IFileScanner fs in scanners) {
 							if (fs.CanScan (this, catalog, file.FilePath, mimeType))
 								fs.UpdateCatalog (this, catalog, monitor, file.FilePath);

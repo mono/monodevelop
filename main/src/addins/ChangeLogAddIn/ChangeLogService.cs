@@ -25,12 +25,11 @@
 //
 //
 
-using System;
 using System.IO;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.ChangeLogAddIn
 {

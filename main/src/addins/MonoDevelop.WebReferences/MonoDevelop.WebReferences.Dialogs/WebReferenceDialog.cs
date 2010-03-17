@@ -1,22 +1,17 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
-using System.Xml;
-using System.Xml.Xsl;
-using System.Xml.XPath;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.WebBrowser;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.WebReferences;
 using Gtk;
+
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.WebBrowser;
+using MonoDevelop.WebReferences;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.WebReferences.Dialogs
 {

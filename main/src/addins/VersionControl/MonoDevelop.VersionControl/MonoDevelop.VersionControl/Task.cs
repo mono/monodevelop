@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Threading;
-
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {

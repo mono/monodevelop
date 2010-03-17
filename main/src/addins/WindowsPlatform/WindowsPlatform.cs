@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using MonoDevelop.Core.Gui;
 using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;

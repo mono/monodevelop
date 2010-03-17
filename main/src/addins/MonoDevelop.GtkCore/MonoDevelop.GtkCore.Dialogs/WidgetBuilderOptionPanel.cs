@@ -28,22 +28,11 @@
 //
 
 
-using System;
-using System.Collections.Specialized;
-using System.Collections;
 using Gtk;
-using Gdk;
-using Glade;
 	
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Components;
-using MonoDevelop.Projects.Gui.Dialogs;
-
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {

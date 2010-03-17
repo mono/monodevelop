@@ -24,12 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Linq;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using MonoDevelop.Ide;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.SourceEditor
 {

@@ -1,3 +1,18 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Commands.cs:
+	* MacPlatform.cs:
+	* Menus/OSXMenu.cs:
+	* MacPlatform.csproj:
+	* gtk-gui/gui.stetic:
+	* MacPlatform.addin.xml:
+	* Updater/UpdateResult.cs:
+	* Updater/UpdateDialog.cs:
+	* Updater/UpdateService.cs: Merged MD.Projects into MD.Core,
+	  and MD.Projects.Gui, MD.Core.Gui and MD.Components into
+	  MD.Ide.
+
 2010-03-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Unbreak the OpenDocuments handler - the

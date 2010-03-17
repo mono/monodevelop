@@ -28,15 +28,11 @@
 
 using System;
 using System.IO;
-
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.CodeMetrics
 {

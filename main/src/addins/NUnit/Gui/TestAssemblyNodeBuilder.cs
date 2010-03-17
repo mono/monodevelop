@@ -36,7 +36,6 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.NUnit
@@ -64,7 +63,7 @@ namespace MonoDevelop.NUnit
 		{
 			TestAssembly asm = dataObject as TestAssembly;
 			label = Path.GetFileName (asm.Path);
-			icon = Context.GetIcon (Stock.Reference);
+			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Reference);
 		}
 	}
 	

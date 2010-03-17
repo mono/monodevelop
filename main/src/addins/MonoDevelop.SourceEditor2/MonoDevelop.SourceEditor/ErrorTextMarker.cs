@@ -30,6 +30,7 @@ using Mono.TextEditor;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Tasks;
 using System.Collections.Generic;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -119,8 +120,8 @@ namespace MonoDevelop.SourceEditor
 			this.lineSegment = lineSegment;
 			
 			errors.Add (new ErrorText (isError, errorMessage));
-			errorPixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Error, Gtk.IconSize.Menu);
-			warningPixbuf = MonoDevelop.Core.Gui.ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Warning, Gtk.IconSize.Menu);
+			errorPixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
+			warningPixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		}
 		
 		public void AddError (bool isError, string errorMessage)
@@ -457,7 +458,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			IsExpanded = !IsExpanded;
 			args.Editor.Repaint ();
-			MonoDevelop.Ide.Gui.Pads.ErrorListPad pad = MonoDevelop.Ide.Gui.IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
+			MonoDevelop.Ide.Gui.Pads.ErrorListPad pad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			pad.Control.QueueDraw ();
 		}
 		

@@ -28,24 +28,16 @@
 //
 
 using System;
-using System.Xml;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Serialization;
-
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.NodeBuilders;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore
 {

@@ -24,9 +24,8 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {

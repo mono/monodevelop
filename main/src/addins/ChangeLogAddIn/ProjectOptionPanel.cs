@@ -25,12 +25,10 @@
 //
 //
 
-using System;
 using Gtk;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.ChangeLogAddIn
 {		
@@ -43,7 +41,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			return widget = new ProjectOptionPanelWidget (this);
 		}
 		
-		public override void Initialize (MonoDevelop.Core.Gui.Dialogs.OptionsDialog dialog, object dataObject)
+		public override void Initialize (OptionsDialog dialog, object dataObject)
 		{
 			if (dataObject is SolutionItem)
 				OldChangeLogData.Migrate ((SolutionItem)dataObject);

@@ -1,12 +1,12 @@
 
 using System;
-using System.Collections.Specialized;
 using System.Collections;
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Ide.Gui;
 using Mono.Addins;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {

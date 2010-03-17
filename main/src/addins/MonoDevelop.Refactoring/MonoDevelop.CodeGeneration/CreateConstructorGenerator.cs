@@ -24,21 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom;
 using Gtk;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Core.Gui;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Ast;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Dom;
 using MonoDevelop.Refactoring;
-
 
 namespace MonoDevelop.CodeGeneration
 {

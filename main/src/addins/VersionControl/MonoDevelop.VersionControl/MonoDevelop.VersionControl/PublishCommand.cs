@@ -1,13 +1,9 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-
 using MonoDevelop.VersionControl.Dialogs;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl 
 {

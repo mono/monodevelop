@@ -28,14 +28,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MonoDevelop.XmlEditor;
-using MonoDevelop.XmlEditor.Completion;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-
 using System;
 using System.Collections.Generic;
+
 using Gtk;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.XmlEditor;
+using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.XmlEditor.Gui
 {

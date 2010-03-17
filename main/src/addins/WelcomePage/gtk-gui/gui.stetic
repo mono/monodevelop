@@ -5,9 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/MonoDevelop.Components.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/bin/MonoDevelop.Core.Gui.dll" />
     <widget-library name="../../../../build/AddIns/WelcomePage/WelcomePage.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.WelcomePage.WelcomePageWidget" design-size="658 421">

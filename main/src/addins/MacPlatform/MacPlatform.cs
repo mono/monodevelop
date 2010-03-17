@@ -27,16 +27,16 @@
 //
 
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Ide.Gui;
 using OSXIntegration.Framework;
-using System.Runtime.InteropServices;
+using MonoDevelop.Ide; 
 using System.Linq;
 
 namespace MonoDevelop.Platform

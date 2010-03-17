@@ -24,12 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
 {

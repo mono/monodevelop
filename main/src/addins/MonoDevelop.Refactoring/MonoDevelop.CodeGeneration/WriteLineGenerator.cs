@@ -27,7 +27,6 @@
 using System;
 using MonoDevelop.Components;
 using Gtk;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;

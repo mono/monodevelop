@@ -110,12 +110,12 @@ namespace MonoDevelop.Gettext
 		string GetIcon (SolutionItem entry)
 		{
 			if (entry is SolutionFolder)
-				return MonoDevelop.Core.Gui.Stock.Solution;
+				return MonoDevelop.Ide.Gui.Stock.Solution;
 			
 			if (entry is Project)
 				return ((Project)entry).StockIcon;
 			
-			return MonoDevelop.Core.Gui.Stock.Project;
+			return MonoDevelop.Ide.Gui.Stock.Project;
 		}
 		
 		bool IsIncluded (SolutionItem entry)

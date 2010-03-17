@@ -26,16 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 
 using Gtk;
 
-using MonoDevelop.Ide.Templates;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Core;
 using MonoDevelop.Gettext.Translator;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext
 {

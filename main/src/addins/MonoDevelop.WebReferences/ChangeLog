@@ -1,3 +1,16 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.WebReferences.csproj:
+	* MonoDevelop.WebReferences.addin.xml:
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceNodeBuilder.cs:
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

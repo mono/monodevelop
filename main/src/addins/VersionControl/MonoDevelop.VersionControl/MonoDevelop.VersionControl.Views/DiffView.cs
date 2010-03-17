@@ -1,15 +1,9 @@
 using System;
-using System.Collections;
 using System.IO;
-
 using Gtk;
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Ide.Gui;
-
 using MonoDevelop.Components.Diff;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -43,7 +37,7 @@ namespace MonoDevelop.VersionControl.Views
 						Path.GetFileName (item.Path),
 						item.Repository.GetPathToBaseText (item.Path),
 						item.Path);
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
+					IdeApp.Workbench.OpenDocument (d, true);
 				}
 			}
 			return found;
@@ -56,7 +50,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 		public static void Show(string name, string lefttext, string righttext) {
 			DiffView d = new DiffView(name, split(lefttext), split(righttext));
-			MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument(d, true);
+			IdeApp.Workbench.OpenDocument(d, true);
 		}
 		
 		public DiffView(string name, string left, string right) 

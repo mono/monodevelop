@@ -29,22 +29,18 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using System.Text.RegularExpressions;
 
 using Gtk;
 using Gdk;
 
-using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Gettext.Editor;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext
 {
@@ -171,7 +167,7 @@ namespace MonoDevelop.Gettext
 					lineNr = 1 + int.Parse (line);
 				} catch {
 				}
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
+				IdeApp.Workbench.OpenDocument (file, lineNr, 1, true);
 			};
 			this.notebookTranslated.RemovePage (0);
 			this.searchEntryFilter.Entry.Text = "";
@@ -479,10 +475,10 @@ namespace MonoDevelop.Gettext
 						this.currentEntry.SetTranslation (escapedText, index);
 						AddChange (this.currentEntry, oldText, escapedText, index);
 					}
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowReady ();
+					IdeApp.Workbench.StatusBar.ShowReady ();
 					textView.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				} catch (System.Exception e) {
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowError (e.Message);
+					IdeApp.Workbench.StatusBar.ShowError (e.Message);
 					textView.ModifyBase (Gtk.StateType.Normal, errorColor);
 				}
 				UpdateProgressBar ();
@@ -534,7 +530,7 @@ namespace MonoDevelop.Gettext
 		
 		void RemoveEntry (CatalogEntry entry)
 		{
-			bool yes = MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove the translation string {0} (It will be removed from all translations)?", entry.String),
+			bool yes = MessageService.AskQuestion (GettextCatalog.GetString ("Do you really want to remove the translation string {0} (It will be removed from all translations)?", entry.String),
 			                                                            AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 			if (yes) {
@@ -963,7 +959,7 @@ namespace MonoDevelop.Gettext
 						number++;
 						if (number % 50 == 0) {
 							DispatchService.GuiSyncDispatch (delegate {
-								MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
+								IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
 							});
 						}
 						if (!widget.ShouldFilter (entry, widget.filter)) {
@@ -982,11 +978,11 @@ namespace MonoDevelop.Gettext
 				
 				}
 				if (!IsStopping) {
-					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
+					DispatchService.GuiSyncDispatch (delegate {
 						widget.store.Dispose ();
 						widget.treeviewEntries.Model = widget.store = newStore;
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
+						IdeApp.Workbench.StatusBar.EndProgress ();
+						IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
 					});
 				} /*else {
 					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {

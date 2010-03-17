@@ -1,3 +1,16 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* WelcomePage.csproj:
+	* gtk-gui/gui.stetic:
+	* WelcomePageView.cs:
+	* WelcomePageWidget.cs:
+	* WelcomePage.addin.xml:
+	* WelcomePageCommands.cs:
+	* WelcomePageOptionPanel.cs: Merged MD.Projects into MD.Core,
+	  and MD.Projects.Gui, MD.Core.Gui and MD.Components into
+	  MD.Ide.
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WelcomePageView.cs: Track api changes.

@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 		public DropDownBoxListWindow (DropDownBox parent) : base(Gtk.WindowType.Popup)
 		{
 			this.parent = parent;
-			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			this.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 			this.TypeHint = Gdk.WindowTypeHint.Menu;
 			this.BorderWidth = 1;
 			

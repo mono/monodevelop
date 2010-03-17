@@ -27,20 +27,17 @@
 //
 
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
 using Mono.Addins;
 using MonoDevelop.Projects;
 using NUnit.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {

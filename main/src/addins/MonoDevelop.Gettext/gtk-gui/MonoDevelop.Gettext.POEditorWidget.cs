@@ -121,11 +121,11 @@ namespace MonoDevelop.Gettext
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.searchEntryFilter = new global::MonoDevelop.Components.SearchEntry ();
 			this.searchEntryFilter.Name = "searchEntryFilter";
+			this.searchEntryFilter.ForceFilterButtonVisible = false;
+			this.searchEntryFilter.IsCheckMenu = false;
 			this.searchEntryFilter.ActiveFilterID = 0;
 			this.searchEntryFilter.Ready = false;
 			this.searchEntryFilter.HasFocus = false;
-			this.searchEntryFilter.IsCheckMenu = false;
-			this.searchEntryFilter.ForceFilterButtonVisible = false;
 			this.hbox2.Add (this.searchEntryFilter);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.searchEntryFilter]));
 			w4.Position = 1;

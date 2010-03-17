@@ -26,11 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
 {

@@ -1,3 +1,18 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* ChangeLogAddIn.cs:
+	* gtk-gui/gui.stetic:
+	* ChangeLogService.cs:
+	* AddLogEntryDialog.cs:
+	* ChangeLogAddIn.csproj:
+	* ProjectOptionPanel.cs:
+	* ChangeLogAddIn.addin.xml:
+	* ProjectOptionPanelWidget.cs:
+	* CommitDialogExtensionWidget.cs: Merged MD.Projects into
+	  MD.Core, and MD.Projects.Gui, MD.Core.Gui and MD.Components
+	  into MD.Ide.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AddLogEntryDialog.cs: Track api changes.

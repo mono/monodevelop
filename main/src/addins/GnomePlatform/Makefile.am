@@ -4,7 +4,7 @@ ASSEMBLY = $(ADDIN_BUILD)/GnomePlatform.dll
 
 DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
 REFS =  \
 	$(GCONF_SHARP_LIBS) \

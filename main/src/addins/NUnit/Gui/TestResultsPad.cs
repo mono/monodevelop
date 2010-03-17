@@ -28,20 +28,17 @@
 
 using System;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {
@@ -184,7 +181,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput = new ToggleButton ();
 			buttonOutput.Label = GettextCatalog.GetString ("Output");
 			buttonOutput.Active = false;
-			buttonOutput.Image = ImageService.GetImage (MonoDevelop.Core.Gui.Stock.OutputIcon, IconSize.Menu);
+			buttonOutput.Image = ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Image.Show ();
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show Output");

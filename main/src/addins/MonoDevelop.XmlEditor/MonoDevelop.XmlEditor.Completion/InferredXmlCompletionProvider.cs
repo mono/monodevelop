@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.XmlEditor.Completion

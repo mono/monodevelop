@@ -28,21 +28,18 @@
 
 using System;
 using System.Collections;
-using System.Threading;
 using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Execution;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {

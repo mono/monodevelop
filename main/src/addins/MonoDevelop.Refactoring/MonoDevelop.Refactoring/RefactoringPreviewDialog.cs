@@ -28,13 +28,12 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
+ 
 using MonoDevelop.Components.Diff;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using Mono.TextEditor;
+using MonoDevelop.Ide;
 
 
 namespace MonoDevelop.Refactoring
@@ -177,9 +176,9 @@ namespace MonoDevelop.Refactoring
 			foreach (Change change in changes) {
 				TreeIter iter = GetFile (change);
 				if (iter.Equals (TreeIter.Zero)) {
-					iter = store.AppendValues (ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
+					iter = store.AppendValues (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
 				} else {
-					iter = store.AppendValues (iter, ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
+					iter = store.AppendValues (iter, ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
 				}
 				TextReplaceChange replaceChange = change as TextReplaceChange;
 				if (replaceChange != null && replaceChange.Offset >= 0)

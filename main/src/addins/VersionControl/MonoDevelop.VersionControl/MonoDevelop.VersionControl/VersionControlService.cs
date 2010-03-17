@@ -9,11 +9,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {

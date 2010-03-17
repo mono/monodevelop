@@ -22,17 +22,12 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.XmlEditor;
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
+
 using Gtk;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.XmlEditor;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -74,7 +69,7 @@ namespace MonoDevelop.XmlEditor.Gui
 					string msg = MonoDevelop.Core.GettextCatalog.GetString (
 					    "Unhandled error saving schema changes.");
 					MonoDevelop.Core.LoggingService.LogError (msg, ex);
-					MonoDevelop.Core.Gui.MessageService.ShowException (ex, msg);
+					MonoDevelop.Ide.MessageService.ShowException (ex, msg);
 					return;
 				}
 			}

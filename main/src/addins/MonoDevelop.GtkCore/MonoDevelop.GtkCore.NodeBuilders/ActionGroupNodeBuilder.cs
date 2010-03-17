@@ -29,13 +29,11 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
@@ -63,7 +61,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
 			label = group.Name;
-			icon = MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-gtkcore-actiongroup", Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf ("md-gtkcore-actiongroup", Gtk.IconSize.Menu);
 		}
 		
 		public override void OnNodeAdded (object dataObject)

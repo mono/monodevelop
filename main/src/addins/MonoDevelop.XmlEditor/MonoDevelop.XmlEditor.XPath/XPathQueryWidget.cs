@@ -27,7 +27,6 @@ using Gtk;
 using GtkSourceView;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Core.Gui.Dialogs;
 using System;

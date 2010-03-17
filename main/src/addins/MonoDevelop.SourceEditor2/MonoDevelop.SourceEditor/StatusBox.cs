@@ -31,6 +31,7 @@ using Mono.TextEditor;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {

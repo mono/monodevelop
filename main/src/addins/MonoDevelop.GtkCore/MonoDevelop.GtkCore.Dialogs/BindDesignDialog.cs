@@ -33,7 +33,7 @@ using Glade;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {

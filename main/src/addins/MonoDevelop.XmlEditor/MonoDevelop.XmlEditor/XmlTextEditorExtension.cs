@@ -35,12 +35,12 @@ using System.Xml.Schema;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects.Gui;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -480,7 +480,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if (System.IO.Path.IsPathRooted (fileName)) {
 				string vfsname = fileName.Replace ("%", "%25").Replace ("#", "%23").Replace ("?", "%3F");
-				string mimeType = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (vfsname);
+				string mimeType = DesktopService.GetMimeTypeForUri (vfsname);
 				if (IsMimeTypeHandled (mimeType))
 					return true;
 			}
@@ -625,7 +625,7 @@ namespace MonoDevelop.XmlEditor
 					try {
 						string schema = XmlEditorService.CreateSchema (xml);
 						string fileName = XmlEditorService.GenerateFileName (FileName, "{0}.xsd");
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
+						IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
 						monitor.ReportSuccess (GettextCatalog.GetString ("Schema created."));
 					} catch (Exception ex) {
 						string msg = GettextCatalog.GetString ("Error creating XML schema.");
@@ -634,7 +634,7 @@ namespace MonoDevelop.XmlEditor
 					}
 				}
 			} catch (Exception ex) {
-				MonoDevelop.Core.Gui.MessageService.ShowError(ex.Message);
+				MessageService.ShowError(ex.Message);
 			}
 		}
 		
@@ -643,10 +643,10 @@ namespace MonoDevelop.XmlEditor
 		{
 			if (!string.IsNullOrEmpty (stylesheetFileName)) {
 				try {
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (stylesheetFileName);
+					IdeApp.Workbench.OpenDocument (stylesheetFileName);
 				} catch (Exception ex) {
 					MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
-					MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Could not open document.");
+					MessageService.ShowException (ex, "Could not open document.");
 				}
 			}
 		}
@@ -668,14 +668,14 @@ namespace MonoDevelop.XmlEditor
 				// Open schema if resolved
 				if (schemaObject != null && schemaObject.SourceUri != null && schemaObject.SourceUri.Length > 0) {
 					string schemaFileName = schemaObject.SourceUri.Replace ("file:/", String.Empty);
-					MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (
+					IdeApp.Workbench.OpenDocument (
 					    schemaFileName,
 					    Math.Max (1, schemaObject.LineNumber),
 					    Math.Max (1, schemaObject.LinePosition), true);
 				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
-				MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Could not open document.");
+				MessageService.ShowException (ex, "Could not open document.");
 			}
 		}
 		
@@ -733,7 +733,7 @@ namespace MonoDevelop.XmlEditor
 					monitor.BeginTask (GettextCatalog.GetString ("Executing transform..."), 1);
 					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter()) {
 						xslt.Transform (doc, null, output);
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (
+						IdeApp.Workbench.NewDocument (
 						    newFileName, "application/xml", output.ToString ());
 					}
 					monitor.ReportSuccess (GettextCatalog.GetString ("Transform completed."));

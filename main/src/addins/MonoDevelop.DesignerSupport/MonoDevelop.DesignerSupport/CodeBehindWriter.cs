@@ -30,8 +30,8 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
 using System.IO;
+using MonoDevelop.Ide;
 
 
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.DesignerSupport
 				if (openFiles == null) {
 					openFiles = new List<string> ();
 					DispatchService.GuiSyncDispatch (delegate {
-						foreach (var doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents)
+						foreach (var doc in IdeApp.Workbench.Documents)
 						if (doc.GetContent<IEditableTextBuffer> () != null)
 							openFiles.Add (doc.FileName);
 					});
@@ -133,7 +133,7 @@ namespace MonoDevelop.DesignerSupport
 					try {
 						
 						bool updated = false;
-						foreach (MonoDevelop.Ide.Gui.Document doc in MonoDevelop.Ide.Gui.IdeApp.Workbench.Documents) {
+						foreach (MonoDevelop.Ide.Gui.Document doc in IdeApp.Workbench.Documents) {
 							if (doc.FileName == item.Key) {
 								var textFile = doc.GetContent<MonoDevelop.Projects.Text.IEditableTextFile> ();
 								if (textFile == null)

@@ -1,3 +1,36 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.XmlEditor.addin.xml:
+	* MonoDevelop.XmlEditor/Commands.cs:
+	* MonoDevelop.XmlEditor/XmlFormatter.cs:
+	* MonoDevelop.XmlEditor/XmlEditorView.cs:
+	* MonoDevelop.XmlEditor/XmlEditorService.cs:
+	* MonoDevelop.Xml.Formatting/XmlFormatter.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs:
+	* MonoDevelop.XmlEditor/XmlEditorCommandBase.cs:
+	* MonoDevelop.XmlEditor/XmlEditorViewContent.cs:
+	* MonoDevelop.XmlEditor/OpenStylesheetCommand.cs:
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.XPath/XPathQueryWidget.cs:
+	* MonoDevelop.XmlEditor/XmlCompletionListWindow.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs:
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlTagCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs:
+	* MonoDevelop.XmlEditor.Completion/EmptyXmlCompletionProvider.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs:
+	* MonoDevelop.XmlEditor.Completion/InferredXmlCompletionProvider.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlMultipleClosingTagCompletionData.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.csproj: Don't local-copy project refs,

@@ -27,16 +27,14 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 
 
 namespace MonoDevelop.DesignerSupport
@@ -184,7 +182,7 @@ namespace MonoDevelop.DesignerSupport
 
 		bool RefillOutlineStore ()
 		{
-			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			DispatchService.AssertGuiThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
 			if (outlineTreeStore == null || !outlineTreeView.IsRealized)

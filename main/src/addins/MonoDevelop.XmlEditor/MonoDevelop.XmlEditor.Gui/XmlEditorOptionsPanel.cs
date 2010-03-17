@@ -22,11 +22,10 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Dialogs;
-
 using System;
 using Gtk;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.XmlEditor.Gui
 {

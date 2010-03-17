@@ -1,3 +1,19 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* VBNetBinding.csproj:
+	* VBNetBinding.addin.xml:
+	* Gui/ImportsOptionsPanel.cs:
+	* Gui/ProjectOptionsPanel.cs:
+	* VBBindingCompilerServices.cs:
+	* Gui/ImportsOptionsPanelWidget.cs:
+	* Gui/ConfigurationOptionsPanel.cs:
+	* Gui/ProjectOptionsPanelWidget.cs:
+	* Gui/ConfigurationOptionsPanelWidget.cs: Merged MD.Projects
+	  into MD.Core, and MD.Projects.Gui, MD.Core.Gui and
+	  MD.Components into MD.Ide.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Project/VBNetResourceIdBuilder.cs: Track ProjectFile Link

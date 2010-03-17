@@ -30,10 +30,9 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 
 namespace MonoDevelop.Refactoring

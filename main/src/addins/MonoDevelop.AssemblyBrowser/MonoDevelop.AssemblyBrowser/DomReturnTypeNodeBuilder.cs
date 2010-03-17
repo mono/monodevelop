@@ -28,7 +28,6 @@
 
 using System;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
@@ -59,7 +58,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IReturnType returnType = (IReturnType)dataObject;
 			label = Ambience.GetString (returnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			icon = Context.GetIcon (Stock.Class);
+			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Class);
 		}
 	}
 	

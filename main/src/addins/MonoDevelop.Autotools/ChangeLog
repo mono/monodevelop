@@ -1,3 +1,19 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Commands.cs:
+	* MakefileData.cs:
+	* gtk-gui/gui.stetic:
+	* MakefileOptionPanel.cs:
+	* ImportMakefileDialog.cs:
+	* GenerateMakefilesDialog.cs:
+	* FileNodeBuilderExtension.cs:
+	* MakefileOptionPanelWidget.cs:
+	* MonoDevelop.Autotools.csproj:
+	* MonoDevelop.Autotools.addin.xml: Merged MD.Projects into
+	  MD.Core, and MD.Projects.Gui, MD.Core.Gui and MD.Components
+	  into MD.Ide.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MakefileData.cs:

@@ -28,7 +28,6 @@
 
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -36,9 +35,10 @@ using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.XmlEditor.Completion;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -738,7 +738,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		void refillOutlineStore ()
 		{
-			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			DispatchService.AssertGuiThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
 			if (outlineTreeStore == null || !outlineTreeView.IsRealized)

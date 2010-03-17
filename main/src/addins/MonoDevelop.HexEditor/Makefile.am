@@ -43,30 +43,21 @@ RES =  \
 	MonoDevelop.HexEditor.addin.xml  
 
 DEPS =  \
+	$(top_builddir)/build/AddIns/MonoDevelop.AssemblyBrowser.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Components.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.Gui.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Projects.Gui.dll \
 	$(top_builddir)/build/bin/NRefactory.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../build/AddIns/MonoDevelop.SourceEditor2.dll \
-	-r:../../../build/bin/Mono.TextEditor.dll \
-	-r:../../../build/bin/MonoDevelop.Components.dll \
-	-r:../../../build/bin/MonoDevelop.Core.dll \
-	-r:../../../build/bin/MonoDevelop.Core.Gui.dll \
-	-r:../../../build/bin/MonoDevelop.Ide.dll \
-	-r:../../../build/bin/MonoDevelop.Projects.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \

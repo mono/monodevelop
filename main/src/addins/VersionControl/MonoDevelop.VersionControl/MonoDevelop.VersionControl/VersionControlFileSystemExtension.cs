@@ -1,10 +1,9 @@
 
-using System;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.FileSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {

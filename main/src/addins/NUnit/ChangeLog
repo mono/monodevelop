@@ -1,3 +1,23 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Gui/TestPad.cs:
+	* Gui/CircleImage.cs:
+	* Gui/TestResultsPad.cs:
+	* Gui/TestNodeBuilder.cs:
+	* MonoDevelop.NUnit.csproj:
+	* Services/NUnitService.cs:
+	* Commands/NUnitCommands.cs:
+	* MonoDevelopNUnit.addin.xml:
+	* Gui/UnitTestOptionsDialog.cs:
+	* Gui/TestAssemblyNodeBuilder.cs:
+	* Services/NUnitProjectTestSuite.cs:
+	* Gui/NUnitAssemblyGroupNodeBuilder.cs:
+	* Services/NUnitProjectServiceExtension.cs:
+	* Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

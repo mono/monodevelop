@@ -28,24 +28,19 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Collections;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Deployment;
-using Mono.Cecil;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -109,12 +104,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string OnMimeResolve (string url)
 		{
-			return MonoDevelop.Core.Gui.DesktopService.GetMimeTypeForUri (url);
+			return DesktopService.GetMimeTypeForUri (url);
 		}
 		
 		static void OnShowUrl (string url)
 		{
-			MonoDevelop.Core.Gui.DesktopService.ShowUrl (url);
+			DesktopService.ShowUrl (url);
 		}
 		
 		internal static void StoreConfiguration ()

@@ -30,10 +30,9 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.ExtractMethod
 {
@@ -122,11 +121,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				return true;
 			ValidationResult result = nameValidator.ValidateName (new DomMethod (), entry.Text);
 			if (!result.IsValid) {
-				imageWarning.IconName = Stock.DialogError;
+				imageWarning.IconName = Gtk.Stock.DialogError;
 			} else if (result.HasWarning) {
-				imageWarning.IconName = Stock.DialogWarning;
+				imageWarning.IconName = Gtk.Stock.DialogWarning;
 			} else {
-				imageWarning.IconName = Stock.Apply;
+				imageWarning.IconName = Gtk.Stock.Apply;
 			}
 			labelWarning.Text = result.Message;
 			return result.IsValid;

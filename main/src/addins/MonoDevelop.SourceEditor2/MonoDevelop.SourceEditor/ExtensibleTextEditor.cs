@@ -25,9 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.ComponentModel;
 
 using Gtk;
 
@@ -37,13 +34,14 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Components.Commands;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.CodeTemplates;
 using Mono.Addins;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -236,7 +234,7 @@ namespace MonoDevelop.SourceEditor
 		void ReportExtensionError (Exception ex) 
 		{
 			MonoDevelop.Core.LoggingService.LogError ("Error in text editor extension chain", ex);
-			MonoDevelop.Core.Gui.MessageService.ShowException (ex, "Error in text editor extension chain");
+			MessageService.ShowException (ex, "Error in text editor extension chain");
 		}
 		
 		IEnumerable<char> TextWithoutCommentsAndStrings {

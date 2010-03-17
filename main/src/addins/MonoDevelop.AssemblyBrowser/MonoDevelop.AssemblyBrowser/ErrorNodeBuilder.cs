@@ -31,7 +31,6 @@ using System.Collections.Generic;
 
 using Mono.Cecil;
 
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Pads;

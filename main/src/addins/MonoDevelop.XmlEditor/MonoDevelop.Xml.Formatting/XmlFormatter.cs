@@ -25,13 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Policies;
-using MonoDevelop.Core.Gui;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Xml.Formatting
 {

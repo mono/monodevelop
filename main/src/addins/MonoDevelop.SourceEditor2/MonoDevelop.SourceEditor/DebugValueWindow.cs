@@ -32,7 +32,6 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Gtk;
 using Mono.TextEditor;
-using MonoDevelop.Core.Gui;
 using Gdk;
 
 namespace MonoDevelop.SourceEditor

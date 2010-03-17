@@ -27,10 +27,8 @@
 //
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Text;
-using System.CodeDom;
 using System.Threading;
 
 using MonoDevelop.Core;
@@ -47,6 +45,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.RefactorImports;
+using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring
 {
@@ -205,7 +205,7 @@ namespace MonoDevelop.Refactoring
 							if (options.Document.CompilationUnit.IsNamespaceUsedAt (ns, options.ResolveResult.ResolvedExpression.Region.Start))
 								continue;
 							CommandInfo info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new RefactoryOperation (new ResolveNameOperation (ctx, doc, resolveResult, ns).AddImport));
-							info.Icon = MonoDevelop.Core.Gui.Stock.AddNamespace;
+							info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
 						}
 						if (!(resolveResult is UnresolvedMemberResolveResult))
 							resolveMenu.CommandInfos.AddSeparator ();
@@ -1049,7 +1049,7 @@ namespace MonoDevelop.Refactoring
 				editor.BeginAtomicUndo ();
 			
 			try {
-				MonoDevelop.Ide.OverridesImplementsDialog dialog = new MonoDevelop.Ide.OverridesImplementsDialog ((IType)item);
+				OverridesImplementsDialog dialog = new OverridesImplementsDialog ((IType)item);
 				dialog.TransientFor = IdeApp.Workbench.RootWindow;
 				dialog.Run ();
 			} finally {

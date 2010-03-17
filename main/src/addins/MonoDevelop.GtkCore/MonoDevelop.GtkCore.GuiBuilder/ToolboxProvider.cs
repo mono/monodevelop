@@ -9,7 +9,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using Stetic;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {

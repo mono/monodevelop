@@ -103,7 +103,7 @@ namespace MonoDevelop.Debugger.Soft
 				
 				dialog.AddButton ("Cancel", Gtk.ResponseType.Cancel);
 				
-				int response = MonoDevelop.Core.Gui.MessageService.ShowCustomDialog (dialog);
+				int response = MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
 				dialog.Destroy ();
 				
 				if (response != (int) Gtk.ResponseType.Ok) {

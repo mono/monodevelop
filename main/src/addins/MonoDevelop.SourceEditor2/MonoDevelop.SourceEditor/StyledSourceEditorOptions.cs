@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -56,7 +57,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (string.IsNullOrEmpty (mimeType))
 				mimeType = "text/plain";
-			this.mimeTypes = MonoDevelop.Core.Gui.DesktopService.GetMimeTypeInheritanceChain (mimeType);
+			this.mimeTypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
 
 			if (styleParent != null)
 				policyContainer = styleParent.Policies;

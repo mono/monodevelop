@@ -1,17 +1,10 @@
 using System;
-using System.IO;
-using System.Collections;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.WebReferences.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.WebReferences.NodeBuilders
 {

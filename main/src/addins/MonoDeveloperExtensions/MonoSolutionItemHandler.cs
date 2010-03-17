@@ -26,15 +26,15 @@
 //
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections;
 using System.IO;
+using System.Text.RegularExpressions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using System.Text.RegularExpressions;
-using MonoDevelop.Projects;
-using System.CodeDom.Compiler;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 
 namespace MonoDeveloper

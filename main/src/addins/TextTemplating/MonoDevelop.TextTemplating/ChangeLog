@@ -1,3 +1,12 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Gui/T4EditorExtension.cs:
+	* MonoDevelop.TextTemplating.csproj:
+	* MonoDevelop.TextTemplating.addin.xml: Merged MD.Projects
+	  into MD.Core, and MD.Projects.Gui, MD.Core.Gui and
+	  MD.Components into MD.Ide.
+
 2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* TextTemplatingTool.cs: Remove dead code.

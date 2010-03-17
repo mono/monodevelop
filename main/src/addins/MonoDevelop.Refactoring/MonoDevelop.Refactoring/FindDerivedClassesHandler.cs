@@ -32,6 +32,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring
 {

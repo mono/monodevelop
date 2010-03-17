@@ -31,15 +31,12 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using System.Reflection;
-using System.Collections;
 using System.Drawing.Design;
-using System.ComponentModel.Design;
-using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -67,19 +64,19 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			DockItemToolbar toolbar = container.GetToolbar (PositionType.Top);
 		
 			filterToggleButton = new ToggleButton ();
-			filterToggleButton.Image = new Image (Stock.Find, IconSize.Menu);
+			filterToggleButton.Image = new Image (Gtk.Stock.Find, IconSize.Menu);
 			filterToggleButton.Toggled += new EventHandler (toggleFiltering);
 			filterToggleButton.TooltipText = GettextCatalog.GetString ("Show search box");
 			toolbar.Add (filterToggleButton);
 			
 			catToggleButton = new ToggleButton ();
-			catToggleButton.Image = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
+			catToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			catToggleButton.TooltipText = GettextCatalog.GetString ("Show categories");
 			toolbar.Add (catToggleButton);
 			
 			compactModeToggleButton = new ToggleButton ();
-			compactModeToggleButton.Image = new Image (MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-design-listboxtoggle", IconSize.Menu));
+			compactModeToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-listboxtoggle", IconSize.Menu));
 			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
 			compactModeToggleButton.TooltipText = GettextCatalog.GetString ("Use compact display");
 			toolbar.Add (compactModeToggleButton);
@@ -87,7 +84,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			VSeparator sep = new VSeparator ();
 			toolbar.Add (sep);
 			
-			Button toolboxAddButton = new Button (new Gtk.Image (Stock.Add, IconSize.Menu));
+			Button toolboxAddButton = new Button (new Gtk.Image (Gtk.Stock.Add, IconSize.Menu));
 			toolbar.Add (toolboxAddButton);
 			toolboxAddButton.TooltipText = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
@@ -202,7 +199,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Delete)]
 		internal void OnDeleteItem ()
 		{
-			if (MonoDevelop.Core.Gui.MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the selected Item?"), MonoDevelop.Core.Gui.AlertButton.Delete))
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the selected Item?"), AlertButton.Delete))
 				toolboxService.RemoveUserItem (selectedNode);
 		}
 
@@ -237,7 +234,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public void Refresh ()
 		{
 			// GUI assert here is to catch Bug 434065 - Exception while going to the editor
-			MonoDevelop.Core.Gui.DispatchService.AssertGuiThread ();
+			DispatchService.AssertGuiThread ();
 			
 			if (toolboxService.Initializing) {
 				toolboxWidget.CustomMessage = GettextCatalog.GetString ("Initializing...");

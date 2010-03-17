@@ -35,6 +35,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Gettext
 {
@@ -725,7 +727,7 @@ namespace MonoDevelop.Gettext
 			Language = Country = Project = Team = TeamEmail = "";
 			
 			Charset = "utf-8";
-			MonoDevelop.Ide.Gui.AuthorInformation userInfo = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetAuthorInformation (project);       
+			AuthorInformation userInfo = IdeApp.Workspace.GetAuthorInformation (project);       
 			Translator = userInfo.Name;
 			TranslatorEmail = userInfo.Email;
 			

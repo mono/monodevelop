@@ -33,7 +33,7 @@ using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Debugger;
 
 namespace MonoDevelop.SourceEditor
@@ -66,13 +66,22 @@ namespace MonoDevelop.SourceEditor
 			
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
-			string expression;
+			string expression = null;
 			if (ed.IsSomethingSelected && offset >= ed.SelectionRange.Offset && offset <= ed.SelectionRange.EndOffset)
 				expression = ed.SelectedText;
-			else
-				expression = ed.GetExpression (offset);
+			else {
+				ResolveResult res = ed.GetLanguageItem (offset);
+/*				if (res is MemberResolveResult) {
+					MemberResolveResult mr = (MemberResolveResult) res;
+					if (mr.ResolvedMember == null && mr.ResolvedType != null)
+						expression = mr.ResolvedType.FullName;
+				}
+				if (expression == null)*/
+				if (res != null && res.ResolvedExpression != null)
+					expression = res.ResolvedExpression.Expression;
+			}
 			
-			if (expression.Length == 0)
+			if (string.IsNullOrEmpty (expression))
 				return null;
 			
 			ObjectValue val;

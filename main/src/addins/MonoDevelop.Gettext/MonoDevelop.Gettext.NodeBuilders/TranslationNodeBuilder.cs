@@ -30,15 +30,9 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
-using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext.NodeBuilders
 {
@@ -107,7 +101,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				if (project == null || translation == null)
 					return;
 				
-				bool yes = MonoDevelop.Core.Gui.MessageService.AskQuestion (GettextCatalog.GetString (
+				bool yes = MessageService.AskQuestion (GettextCatalog.GetString (
 					"Do you really want to remove the translation {0} from solution {1}?", translation.IsoCode, project.ParentFolder.Name), AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove;
 
 				if (yes) {

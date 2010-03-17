@@ -29,18 +29,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-
 using Gtk;
 
-using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.Gui;
-
 
 namespace MonoDevelop.SourceEditor
 {
@@ -315,7 +311,7 @@ namespace MonoDevelop.SourceEditor
 				membersCombo.SetItem ("", null, null);
 			} else {
 				membersCombo.SetItem (Editor.Ambience.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters),
-				                      MonoDevelop.Core.Gui.ImageService.GetPixbuf (member.StockIcon, IconSize.Menu),
+				                      ImageService.GetPixbuf (member.StockIcon, IconSize.Menu),
 				                      member);
 			}
 			UpdateMemberComboTip (member);
@@ -409,7 +405,7 @@ namespace MonoDevelop.SourceEditor
 				typeCombo.SetItem ("", null, null);
 			} else {
 				typeCombo.SetItem (Editor.Ambience.GetString (result, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName),
-				                   MonoDevelop.Core.Gui.ImageService.GetPixbuf (result.StockIcon, IconSize.Menu),
+				                   ImageService.GetPixbuf (result.StockIcon, IconSize.Menu),
 				                   result);
 				
 			}
@@ -438,7 +434,7 @@ namespace MonoDevelop.SourceEditor
 		void JumpTo (int line, int column)
 		{
 			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = 
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.ActiveDocument.GetContent
+				IdeApp.Workbench.ActiveDocument.GetContent
 					<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
 			if (extEditor != null)
 				extEditor.SetCaretTo (Math.Max (1, line), column);

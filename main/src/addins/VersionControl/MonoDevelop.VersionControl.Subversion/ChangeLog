@@ -1,3 +1,18 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.VersionControl.Subversion.csproj:
+	* MonoDevelop.VersionControl.Subversion.addin.xml:
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionNodeExtension.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/SslServerTrustDialog.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/ClientCertificateDialog.cs:
+	* MonoDevelop.VersionControl.Subversion.Gui/ClientCertificatePasswordDialog.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-02-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:

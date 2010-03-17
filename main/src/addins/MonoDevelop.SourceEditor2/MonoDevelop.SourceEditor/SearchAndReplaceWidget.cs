@@ -28,14 +28,12 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-
+using System.Collections.Generic;
 using Gtk;
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {

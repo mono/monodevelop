@@ -30,7 +30,6 @@ using System.IO;
 using System.Text;
 using MonoDevelop.Core;
 using System.Net;
-using MonoDevelop.Core.Gui;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Platform.Updater

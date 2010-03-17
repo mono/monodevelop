@@ -28,8 +28,6 @@
 
 using System;
 using Gdk;
-
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit

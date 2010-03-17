@@ -25,9 +25,9 @@
 //
 //
 
-using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {

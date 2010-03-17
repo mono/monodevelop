@@ -31,7 +31,7 @@
 //using MonoDevelop.Ide.Tasks;
 //using System.Collections.Generic;
 //using Mono.Debugging.Client;
-//using MonoDevelop.Core.Gui;
+// 
 //using MonoDevelop.Core;
 //
 //namespace MonoDevelop.SourceEditor

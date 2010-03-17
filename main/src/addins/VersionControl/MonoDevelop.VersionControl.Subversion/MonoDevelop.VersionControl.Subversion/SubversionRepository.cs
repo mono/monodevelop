@@ -4,12 +4,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
-using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.VersionControl.Subversion.Gui;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Components.Diff;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion
 {

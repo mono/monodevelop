@@ -24,11 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
 using OSXIntegration.Framework;
-using MonoDevelop.Platform.Updater;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Platform.Mac
 {

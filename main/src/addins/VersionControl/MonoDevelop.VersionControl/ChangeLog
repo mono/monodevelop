@@ -1,3 +1,34 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* VersionControl.addin.xml:
+	* MonoDevelop.VersionControl.csproj:
+	* MonoDevelop.VersionControl/Task.cs:
+	* MonoDevelop.VersionControl/BaseView.cs:
+	* MonoDevelop.VersionControl/UpdateCommand.cs:
+	* MonoDevelop.VersionControl/CommitCommand.cs:
+	* MonoDevelop.VersionControl/RevertCommand.cs:
+	* MonoDevelop.VersionControl.Views/LogView.cs:
+	* MonoDevelop.VersionControl/PublishCommand.cs:
+	* MonoDevelop.VersionControl.Views/DiffView.cs:
+	* MonoDevelop.VersionControl/AnnotateCommand.cs:
+	* MonoDevelop.VersionControl/CheckoutCommand.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs:
+	* MonoDevelop.VersionControl/CreatePatchCommand.cs:
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs:
+	* MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:
+	* MonoDevelop.VersionControl/VersionControlService.cs:
+	* MonoDevelop.VersionControl.Views/CellRendererDiff.cs:
+	* MonoDevelop.VersionControl/RevertRevisionsCommands.cs:
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	* MonoDevelop.VersionControl.Dialogs/VersionControlPolicyPanel.cs:
+	* MonoDevelop.VersionControl/VersionControlFileSystemExtension.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

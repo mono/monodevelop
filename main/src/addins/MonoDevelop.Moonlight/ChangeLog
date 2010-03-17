@@ -1,3 +1,15 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Moonlight.csproj:
+	* MonoDevelop.Moonlight.addin.xml:
+	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs:
+	* MonoDevelop.Moonlight.Gui/MoonlightOptionsPanel.cs:
+	* MonoDevelop.Moonlight/MoonlightExecutionHandler.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightBuildExtension.cs: Track

@@ -25,25 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
 
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using Mono.TextEditor;
 using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.ExtractMethod
 {

@@ -27,17 +27,11 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 
-using Mono.Cecil;
-
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
@@ -63,7 +57,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Namespace ns = (Namespace)dataObject;
 			label = GLib.Markup.EscapeText (ns.Name);
-			icon = Context.GetIcon (Stock.NameSpace);
+			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.NameSpace);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

@@ -29,8 +29,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Gtk;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.ChangeLogAddIn
 {

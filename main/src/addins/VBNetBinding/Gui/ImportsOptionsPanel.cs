@@ -24,15 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui;
-using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.VBNetBinding
 {

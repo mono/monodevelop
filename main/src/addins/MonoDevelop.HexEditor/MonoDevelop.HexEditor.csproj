@@ -107,6 +107,7 @@
     <Compile Include="MonoDevelop.HexEditor\HexEditorNodeExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ItemGroup>
     <Folder Include="Mono.MHex\" />
     <Folder Include="Mono.MHex.Data\" />
@@ -124,11 +125,6 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Core.Gui\MonoDevelop.Core.Gui.csproj">
-      <Project>{659B0888-3956-4040-BDB1-B45F6D64E7FA}</Project>
-      <Name>MonoDevelop.Core.Gui</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
@@ -139,15 +135,29 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
-      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
-      <Name>MonoDevelop.Projects</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\MonoDevelop.Components\MonoDevelop.Components.csproj">
-      <Project>{3344D566-484B-4AEC-BBCF-86BC484D14B0}</Project>
-      <Name>MonoDevelop.Components</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Debugging\Mono.Debugging.csproj">
+      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
+      <Name>Mono.Debugging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.AssemblyBrowser\MonoDevelop.AssemblyBrowser.csproj">
+      <Project>{0EA3AD14-404A-4D3F-979B-F087E2E70C82}</Project>
+      <Name>MonoDevelop.AssemblyBrowser</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>
@@ -160,7 +170,7 @@
           <OthersVar />
           <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
           <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="DEPS" />
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>

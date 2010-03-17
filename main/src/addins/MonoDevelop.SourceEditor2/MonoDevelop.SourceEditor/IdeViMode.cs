@@ -30,11 +30,10 @@ using System;
 using System.Text.RegularExpressions;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
-	
-	
 	public class IdeViMode : Mono.TextEditor.Vi.ViEditMode
 	{
 		ExtensibleTextEditor editor;

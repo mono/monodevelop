@@ -29,13 +29,12 @@ using System;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.ChangeLogAddIn
 {

@@ -48,11 +48,6 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\core\MonoDevelop.Projects\MonoDevelop.Projects.csproj">
-      <Project>{04BED15A-DDC5-48BC-A36C-3E360A0348C0}</Project>
-      <Name>MonoDevelop.Projects</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\NUnit\MonoDevelop.NUnit.csproj">
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.NUnit</Name>

@@ -25,12 +25,11 @@
 //
 //
 
-using System;
 using Gtk;
-using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {

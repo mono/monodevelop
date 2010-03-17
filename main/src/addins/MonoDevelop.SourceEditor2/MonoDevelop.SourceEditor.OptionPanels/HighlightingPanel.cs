@@ -25,15 +25,13 @@
 
 using System;
 using System.IO;
-
-using Gtk;
-
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Core;
-using MonoDevelop.Components;
 using System.Text;
+using Gtk;
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {

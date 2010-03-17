@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using System.IO;
-using System.Text;
-using MonoDevelop.Core;
-using System.Net;
-using MonoDevelop.Core.Gui;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Platform.Updater
 {

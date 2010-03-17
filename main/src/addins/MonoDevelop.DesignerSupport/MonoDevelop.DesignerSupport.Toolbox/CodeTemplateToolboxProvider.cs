@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					n.Description = ct.Description;
 					n.Name = ct.Shortcut;
 					n.Category = category;
-					n.Icon = MonoDevelop.Core.Gui.ImageService.GetPixbuf ("md-template", Gtk.IconSize.Menu);
+					n.Icon = ImageService.GetPixbuf ("md-template", Gtk.IconSize.Menu);
 					yield return n;
 				}
 			}

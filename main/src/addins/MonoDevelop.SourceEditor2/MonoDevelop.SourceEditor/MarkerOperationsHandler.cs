@@ -30,8 +30,8 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-
 using Mono.TextEditor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -49,7 +49,7 @@ namespace MonoDevelop.SourceEditor
 					System.Diagnostics.Process.Start (urlMarker.Url);
 				}
 			} catch (Exception) {
-				MonoDevelop.Core.Gui.MessageService.ShowError (GettextCatalog.GetString ("Could not open the url {0}", urlMarker.Url));
+				MessageService.ShowError (GettextCatalog.GetString ("Could not open the url {0}", urlMarker.Url));
 			}
 		}
 		

@@ -27,18 +27,11 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 
-using Mono.Addins;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Core.Gui.Dialogs;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Core;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.VBNetBinding
 {

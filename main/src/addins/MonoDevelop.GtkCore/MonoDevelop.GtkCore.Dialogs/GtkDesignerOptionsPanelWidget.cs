@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Gui.Dialogs;
 using MonoDevelop.GtkCore.GuiBuilder;
 using Gtk;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {

@@ -1,13 +1,9 @@
 using System;
-using System.Collections;
 using System.IO;
-
 using Gtk;
-
-using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -64,7 +60,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (history == null)
 					return;
 				LogView d = new LogView (filepath, isDirectory, history, vc);
-				MonoDevelop.Ide.Gui.IdeApp.Workbench.OpenDocument (d, true);
+				IdeApp.Workbench.OpenDocument (d, true);
 			}
 		}
 		
@@ -256,7 +252,7 @@ namespace MonoDevelop.VersionControl.Views
 					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
 				} else {
 					action = rp.ActionDescription;
-					actionIcon = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Empty, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
 				
 				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
@@ -398,7 +394,7 @@ namespace MonoDevelop.VersionControl.Views
 			string mimeType = DesktopService.GetMimeTypeForUri (file);
 			if (mimeType == null || mimeType.Length == 0)
 				mimeType = "text/plain";
-			Document doc = MonoDevelop.Ide.Gui.IdeApp.Workbench.NewDocument (name, mimeType, text);
+			Document doc = IdeApp.Workbench.NewDocument (name, mimeType, text);
 			doc.IsDirty = false;
 		}
 			

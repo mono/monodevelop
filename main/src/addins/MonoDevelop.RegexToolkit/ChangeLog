@@ -1,3 +1,14 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.RegexToolkit.csproj:
+	* MonoDevelop.RegexToolkit.addin.xml:
+	* MonoDevelop.RegexToolkit/RegexLibraryWindow.cs:
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-02-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: disabled

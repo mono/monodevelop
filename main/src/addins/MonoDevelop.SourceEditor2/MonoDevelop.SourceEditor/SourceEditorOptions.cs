@@ -24,20 +24,11 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-
-using Pango;
 
 using Mono.TextEditor;
-using Mono.TextEditor.Highlighting;
-
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {

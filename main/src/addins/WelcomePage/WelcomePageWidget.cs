@@ -29,19 +29,15 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.IO;
 using System.Xml;
-using System.Reflection;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
-using Mono.Addins;
-
-using Gtk;
 using Gdk;
+using Gtk;
+using Mono.Addins;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.WelcomePage
 {

@@ -1,3 +1,38 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/StatusBox.cs:
+	* MonoDevelop.SourceEditor/IdeViMode.cs:
+	* MonoDevelop.SourceEditor/NavigationBar.cs:
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs:
+	* MonoDevelop.SourceEditor/DefaultFormatter.cs:
+	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs:
+	* MonoDevelop.SourceEditor/ISourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/NavigationBarCommands.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* MonoDevelop.SourceEditor/MarkerOperationsHandler.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs:
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/DebugValueTooltipProvider.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/BehaviorPanel.cs:
+	* MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Don't modify

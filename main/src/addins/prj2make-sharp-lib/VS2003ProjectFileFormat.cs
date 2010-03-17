@@ -28,7 +28,6 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
@@ -37,8 +36,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System.Threading;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Prj2Make
 {
@@ -280,7 +279,7 @@ namespace MonoDevelop.Prj2Make
 
 		public IProgressMonitor CreateProgressMonitor ()
 		{
-			return new MonoDevelop.Core.Gui.ProgressMonitoring.MessageDialogProgressMonitor (true, false, true, false);
+			return new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, false, true, false);
 		}
 	}
 }

@@ -35,7 +35,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
 using Gtk;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Core.Gui;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using System.Text;

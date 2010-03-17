@@ -32,6 +32,7 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.IntroduceConstant
 {
@@ -87,7 +88,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 		public override void Run (RefactoringOptions options)
 		{
 			IntroduceConstantDialog dialog = new IntroduceConstantDialog (this, options, new Parameters ());
-			dialog.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			dialog.Show ();
 		}
 		

@@ -29,10 +29,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using MonoDevelop.Components.Commands;
 using OSXIntegration.Framework;
 using System.Text;
+using MonoDevelop.Ide;
 
 namespace OSXIntegration
 {
@@ -293,7 +293,7 @@ namespace OSXIntegration
 		// We can justify this because safari 3.2.1 does it ("do you want to close all tabs?").
 		static bool IsGloballyDisabled {
 			get {
-				return !MonoDevelop.Ide.Gui.IdeApp.Workbench.HasToplevelFocus;
+				return !IdeApp.Workbench.HasToplevelFocus;
 			}
 		}
 		
@@ -585,7 +585,7 @@ namespace OSXIntegration
 						System.Diagnostics.Process.Start (url);
 					} catch (Exception ex) {
 						Gtk.Application.Invoke (delegate {
-							MonoDevelop.Core.Gui.MessageService.ShowException (ex, MonoDevelop.Core.GettextCatalog.GetString ("Could not open the url {0}", url));
+							MonoDevelop.Ide.MessageService.ShowException (ex, MonoDevelop.Core.GettextCatalog.GetString ("Could not open the url {0}", url));
 						});
 					}
 					DestroyOldMenuObjects ();

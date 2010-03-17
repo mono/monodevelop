@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.StateEngine; 
 
 namespace MonoDevelop.Moonlight

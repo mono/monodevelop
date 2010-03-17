@@ -26,16 +26,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Gdk;
+using Gtk;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
-using Gdk;
-using Gtk;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -51,7 +51,7 @@ namespace MonoDevelop.RegexToolkit
 		public RegexToolkitWindow () : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
-			this.TransientFor = MonoDevelop.Ide.Gui.IdeApp.Workbench.RootWindow;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			optionsStore = new ListStore (typeof(bool), typeof(string), typeof(Options));
 			resultStore = new Gtk.TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
 			

@@ -27,19 +27,13 @@
 //
 
 
-using System;
-using System.Reflection;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Ide.Gui;
-
-using NUnit.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {

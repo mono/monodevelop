@@ -30,7 +30,7 @@ using System;
 using System.Text;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Xml.StateEngine;
 

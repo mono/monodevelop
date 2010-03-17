@@ -28,22 +28,18 @@
 
 
 using System;
-using System.Xml;
-using System.Reflection;
 using System.Collections;
 using System.CodeDom;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Text;
-
 using MonoDevelop.GtkCore.Dialogs;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {

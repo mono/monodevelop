@@ -32,18 +32,13 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
-using System.Threading;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.Components;
-using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 

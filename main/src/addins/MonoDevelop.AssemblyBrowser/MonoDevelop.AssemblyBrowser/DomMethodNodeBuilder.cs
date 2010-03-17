@@ -34,15 +34,11 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
-using Cecil.Decompiler.Cil;
 using Cecil.Decompiler.Languages;
-using System.IO;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AssemblyBrowser
 {

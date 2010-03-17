@@ -19,23 +19,13 @@ Boston, MA 02111-1307, USA.
 */
 
 using System;
-using System.Collections;
-using System.IO;
 using MonoDevelop.Core;
 
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
-
 using MonoDevelop.Projects;
-using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Deployment;
 using MonoDevelop.Ide.Gui.Components;
-
-using Gtk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Autotools
 {
@@ -91,7 +81,7 @@ namespace MonoDevelop.Autotools
 				if ( deployer.HasGeneratedFiles ( solution ) )
 				{
 					string msg = GettextCatalog.GetString ( "{0} already exist for this solution.  Would you like to overwrite them?", dialog.GenerateAutotools ? "Autotools files" : "Makefiles" );
-					if (MonoDevelop.Core.Gui.MessageService.AskQuestion (msg, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
+					if (MonoDevelop.Ide.MessageService.AskQuestion (msg, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
 						return;
 				}
 
