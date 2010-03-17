@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
@@ -63,7 +63,7 @@ namespace PyBinding.Gui.Navigation
 		{
 			PythonNode pyNode = dataObject as PythonNode;
 			label = pyNode.Name;
-			icon = Context.GetIcon (Stock.Property);
+			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Property);
 		}
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

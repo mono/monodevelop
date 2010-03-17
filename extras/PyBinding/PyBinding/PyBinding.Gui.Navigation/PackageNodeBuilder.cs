@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;

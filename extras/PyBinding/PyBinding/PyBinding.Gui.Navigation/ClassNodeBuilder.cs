@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+ 
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
@@ -65,7 +65,7 @@ namespace PyBinding.Gui.Navigation
 			PythonClass pyClass = dataObject as PythonClass;
 
 			label = pyClass.Name;
-			icon = Context.GetIcon (Stock.Class);
+			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Class);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder,

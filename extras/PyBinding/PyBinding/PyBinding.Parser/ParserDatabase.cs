@@ -30,6 +30,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using MonoDevelop.Ide;
 
 using Mono.Data.Sqlite;
 
@@ -286,7 +287,7 @@ namespace PyBinding.Parser
 			var rowsCommand = new SqliteCommand ("SELECT count(*) FROM Items;", src);
 			var count = (long)rowsCommand.ExecuteScalar ();
 			
-			var progress = MonoDevelop.Ide.Gui.IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Python Completion Database", Gtk.Stock.Execute);
+			var progress = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Python Completion Database", Gtk.Stock.Execute);
 			progress.BeginTask ("Migrating completion database", (int)count);
 			
 			while (reader.Read ())

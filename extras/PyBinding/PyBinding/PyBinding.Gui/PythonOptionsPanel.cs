@@ -22,16 +22,8 @@
 
 using System;
 using System.Collections.Generic;
-
 using Gtk;
-
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Dialogs;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace PyBinding.Gui
 {

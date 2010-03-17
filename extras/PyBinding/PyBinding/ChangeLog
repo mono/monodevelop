@@ -1,3 +1,25 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PyBinding.csproj:
+	* gtk-gui/gui.stetic:
+	* PyBinding.addin.xml:
+	* gtk-gui/generated.cs:
+	* PyBinding/PythonSite.cs:
+	* PyBinding/PythonProject.cs:
+	* PyBinding.Parser/ParserDatabase.cs:
+	* PyBinding.Gui/PythonOptionsPanel.cs:
+	* PyBinding.Gui/PythonOptionsWidget.cs:
+	* PyBinding.Gui/PythonEditorOutline.cs:
+	* PyBinding.Gui/PythonEditorCompletion.cs:
+	* PyBinding.Gui.Navigation/ClassNodeBuilder.cs:
+	* gtk-gui/PyBinding.Gui.PythonOptionsWidget.cs:
+	* PyBinding.Gui.Navigation/PackageNodeBuilder.cs:
+	* PyBinding.Gui.Navigation/PackagesNodeBuilder.cs:
+	* PyBinding.Gui.Navigation/FunctionNodeBuilder.cs:
+	* PyBinding.Gui.Navigation/AttributeNodeBuilder.cs: Merged
+	  MD.Projects into MD.Core, and MD.Projects.Gui, MD.Core.Gui
+	  and MD.Components into MD.Ide.
+
 2010-02-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* PyBinding.Parser.Dom/PythonCompilationUnit.cs: Track api

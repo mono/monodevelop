@@ -27,7 +27,7 @@ using System.Xml;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Gettext;
 using MonoDevelop.Ide.Gui;

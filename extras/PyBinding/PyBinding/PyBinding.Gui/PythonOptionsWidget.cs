@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Gettext;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 using PyBinding.Runtime;
 

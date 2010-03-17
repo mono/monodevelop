@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 using PyBinding.Parser;
 using PyBinding.Runtime;
