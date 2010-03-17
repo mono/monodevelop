@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		static void RunMainLoop ()
 		{
-			MonoDevelop.Core.Gui.DispatchService.RunPendingEvents ();
+			DispatchService.RunPendingEvents ();
 		}
 		
 		void IProgressMonitor.BeginTask (string name, int totalWork)

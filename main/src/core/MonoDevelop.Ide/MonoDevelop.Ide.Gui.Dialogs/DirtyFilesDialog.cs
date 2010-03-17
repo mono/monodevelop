@@ -4,7 +4,6 @@ using System.Collections;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Dialogs

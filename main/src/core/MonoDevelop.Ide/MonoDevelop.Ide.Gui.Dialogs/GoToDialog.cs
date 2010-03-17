@@ -41,13 +41,12 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public partial class GoToDialog : Gtk.Dialog
+	partial class GoToDialog : Gtk.Dialog
 	{
 		ListView list;
 		ResultsDataSource currentResults;

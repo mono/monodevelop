@@ -1,9 +1,9 @@
-// FeatureSelectorDialog.cs
+// ItemOptionsDialog.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,27 +25,29 @@
 //
 //
 
-
 using System;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Templates;
+using Mono.Addins;
+using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	
-	
-	public partial class FeatureSelectorDialog : Gtk.Dialog
+	public class ItemOptionsDialog: OptionsDialog
 	{
-		public FeatureSelectorDialog (SolutionFolder parentCombine, SolutionItem entry)
+		public ItemOptionsDialog (): base ("/MonoDevelop/ProjectModel/Gui/ItemOptionPanels")
 		{
-			this.Build();
-			featureList.Fill (parentCombine, entry, SolutionItemFeatures.GetFeatures (parentCombine, entry));
 		}
-
-		protected virtual void OnButtonOkClicked(object sender, System.EventArgs e)
+		
+		public ItemOptionsDialog (Gtk.Window parentWindow, object dataObject)
+			: base (parentWindow, dataObject, "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels")
 		{
-			featureList.ApplyFeatures ();
-			Respond (Gtk.ResponseType.Ok);
+		}
+		
+		protected override void InitializeContext (ExtensionContext extensionContext)
+		{
+			base.InitializeContext (extensionContext);
+			extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (DataObject.GetType ()));
+			extensionContext.RegisterCondition ("ActiveLanguage", new ProjectLanguageCondition (DataObject));
 		}
 	}
 }

@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using Gtk;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide.Gui;
 
 #pragma warning disable 612
 

@@ -1,4 +1,4 @@
-﻿// VersionInformationTabPage.cs
+// VersionInformationTabPage.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)

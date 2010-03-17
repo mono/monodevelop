@@ -5,7 +5,6 @@ using System.Xml;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {

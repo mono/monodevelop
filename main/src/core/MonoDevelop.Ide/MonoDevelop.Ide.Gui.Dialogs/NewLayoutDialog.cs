@@ -3,10 +3,7 @@
 // Authors: Gustavo Giráldez  <gustavo.giraldez@gmx.net>
 
 using System;
-
 using Gtk;
-
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Gui.Dialogs

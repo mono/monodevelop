@@ -1,9 +1,9 @@
-// ExportProjectDialog.cs
+// IOptionsPanel.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,53 +25,19 @@
 //
 //
 
-
 using System;
-using System.IO;
-using MonoDevelop.Components;
-using MonoDevelop.Projects;
+using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public partial class ExportProjectDialog : Gtk.Dialog
+	public interface IOptionsPanel
 	{
-		FileFormat[] formats;
+		void Initialize (OptionsDialog dialog, object dataObject);
 		
-		public ExportProjectDialog (IWorkspaceObject entry, FileFormat selectedFormat)
-		{
-			this.Build();
-			
-			FileFormat f = entry is WorkspaceItem ? ((WorkspaceItem)entry).FileFormat : ((SolutionEntityItem)entry).FileFormat;
-			labelNewFormat.Text = f.Name;
-			
-			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
-			foreach (FileFormat format in formats)
-				comboFormat.AppendText (format.Name);
-
-			int sel = Array.IndexOf (formats, selectedFormat);
-			if (sel == -1) sel = 0;
-			comboFormat.Active = sel;
-			
-			folderEntry.Path = entry.ItemDirectory;
-			UpdateControls ();
-		}
+		Widget CreatePanelWidget ();
 		
-		public FileFormat Format {
-			get { return formats [comboFormat.Active]; }
-		}
-		
-		public string TargetFolder {
-			get { return folderEntry.Path; }
-		}
-		
-		void UpdateControls ()
-		{
-			buttonOk.Sensitive = folderEntry.Path.Length > 0;
-		}
-
-		protected virtual void OnFolderEntryPathChanged(object sender, System.EventArgs e)
-		{
-			UpdateControls ();
-		}
+		bool IsVisible ();
+		bool ValidateChanges ();
+		void ApplyChanges ();
 	}
 }
