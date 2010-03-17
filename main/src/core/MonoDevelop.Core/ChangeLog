@@ -1,3 +1,11 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Bump db version because serialized headers are referencing
+	  the old MD.Projects assembly.
+
+	* MonoDevelop.Projects.Dom/DomType.cs: Added null check.
+
 2010-03-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:

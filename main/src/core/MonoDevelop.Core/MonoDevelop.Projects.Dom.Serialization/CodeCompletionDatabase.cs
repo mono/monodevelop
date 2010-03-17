@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 75;
+		static protected readonly int FORMAT_VERSION   = 76;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
