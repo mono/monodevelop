@@ -60,47 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="DockLayout.cs" />
-    <Compile Include="DockItem.cs" />
-    <Compile Include="DockObject.cs" />
-    <Compile Include="DockFrame.cs" />
-    <Compile Include="DockGroup.cs" />
-    <Compile Include="DockGroupItem.cs" />
-    <Compile Include="DockItemContainer.cs" />
-    <Compile Include="DockItemBehavior.cs" />
-    <Compile Include="TabStrip.cs" />
-    <Compile Include="DockContainer.cs" />
-    <Compile Include="DockItemStatus.cs" />
-    <Compile Include="DockBar.cs" />
-    <Compile Include="DockGroupType.cs" />
-    <Compile Include="DockPosition.cs" />
-    <Compile Include="PlaceholderWindow.cs" />
-    <Compile Include="DockBarItem.cs" />
-    <Compile Include="DockFrameTopLevel.cs" />
-    <Compile Include="AutoHideBox.cs" />
-    <Compile Include="HslColor.cs" />
-    <Compile Include="ShadedContainer.cs" />
-    <Compile Include="DockItemToolbar.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="stock-close-12.png">
-      <LogicalName>stock-close-12.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="stock-menu-left-12.png">
-      <LogicalName>stock-menu-left-12.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="stock-menu-right-12.png">
-      <LogicalName>stock-menu-right-12.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="layout.glade">
-      <LogicalName>layout.glade</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="stock-auto-hide.png">
-      <LogicalName>stock-auto-hide.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="stock-dock.png">
-      <LogicalName>stock-dock.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -1,13 +1,7 @@
 RUNTIME = mono
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Dock.dll
 
-RES =  \
-	layout.glade \
-	stock-auto-hide.png \
-	stock-close-12.png \
-	stock-dock.png \
-	stock-menu-left-12.png \
-	stock-menu-right-12.png
+RES =
 
 
 assemblydir = $(MD_ASSEMBLY_DIR)
@@ -22,29 +16,7 @@ REFS =  \
 	-r:System \
 	-r:System.Xml
 
-FILES =  \
-	AssemblyInfo.cs \
-	AutoHideBox.cs \
-	DockBar.cs \
-	DockBarItem.cs \
-	DockContainer.cs \
-	DockFrame.cs \
-	DockFrameTopLevel.cs \
-	DockGroup.cs \
-	DockGroupItem.cs \
-	DockGroupType.cs \
-	DockItem.cs \
-	DockItemBehavior.cs \
-	DockItemContainer.cs \
-	DockItemStatus.cs \
-	DockItemToolbar.cs \
-	DockLayout.cs \
-	DockObject.cs \
-	DockPosition.cs \
-	HslColor.cs \
-	PlaceholderWindow.cs \
-	ShadedContainer.cs \
-	TabStrip.cs
+FILES = AssemblyInfo.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

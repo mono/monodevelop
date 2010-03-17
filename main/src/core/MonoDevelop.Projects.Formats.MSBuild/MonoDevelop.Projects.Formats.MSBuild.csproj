@@ -8,7 +8,7 @@
     <ProjectGuid>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

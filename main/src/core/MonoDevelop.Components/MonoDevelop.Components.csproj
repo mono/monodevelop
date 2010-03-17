@@ -79,180 +79,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\MonoDevelop.Close.png">
-      <LogicalName>MonoDevelop.Close.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.addin.xml">
       <LogicalName>MonoDevelop.Components.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\MonoDevelop.Components.PropertyGrid.SortByCat.png">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.SortByCat.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.Components.Commands\ActionCommand.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ActionType.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\Command.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandArrayInfo.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandCheckMenuItem.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandEntry.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandEntrySet.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandErrorHandler.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandFrame.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandHandler.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandHandlerAttribute.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandInfo.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandInfoSet.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandManager.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandMenu.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandMenuBar.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandMenuItem.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandSystemCommands.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandToggleToolButton.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandToolbar.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandToolButton.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CustomCommand.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CustomMenuItem.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ICommandMenuItem.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ICommandRouter.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ICommandUserItem.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\LinkCommandEntry.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\MenuToolButton.cs" />
-    <Compile Include="MonoDevelop.Components\DataGrid.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\ArrowWindow.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockedPosition.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockGrip.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbar.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrame.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrameLayout.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarFrameStatus.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarPanel.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarPosition.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\DockToolbarStatus.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\FixedPanel.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\FloatingDock.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\FloatingPosition.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\IDockBar.cs" />
-    <Compile Include="MonoDevelop.Components.DockToolbars\PlaceholderWindow.cs" />
-    <Compile Include="MonoDevelop.Components\FileSelector.cs" />
-    <Compile Include="MonoDevelop.Components\BaseFileEntry.cs" />
-    <Compile Include="MonoDevelop.Components\FileEntry.cs" />
-    <Compile Include="MonoDevelop.Components\FolderDialog.cs" />
-    <Compile Include="MonoDevelop.Components\FolderEntry.cs" />
-    <Compile Include="MonoDevelop.Components\GladeWidgetExtract.cs" />
-    <Compile Include="MonoDevelop.Components\IconView.cs" />
-    <Compile Include="MonoDevelop.Components\Navbar.cs" />
-    <Compile Include="MonoDevelop.Components\TabLabel.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ICommandDelegatorRouter.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandRouterContainer.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\Axis.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\AxisDimension.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\AxisPosition.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\BasicChart.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\ChartCursor.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\DateTimeAxis.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\IntegerAxis.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\Serie.cs" />
-    <Compile Include="MonoDevelop.Components.Chart\TickEnumerator.cs" />
-    <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />
-    <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ICommandTargetVisitor.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\KeyBindingManager.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\KeyBindingService.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\CommandCategoryCodon.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\CommandCodon.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\CommandItemCodon.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\ItemSetCodon.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\LinkItemCodon.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SeparatorItemCodon.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\LocalCommandItemCodon.cs" />
-    <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SchemeExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CustomItem.cs" />
-    <Compile Include="MonoDevelop.Components\TreeViewState.cs" />
-    <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CommandSelectedEventArgs.cs" />
-    <Compile Include="MonoDevelop.Components\MenuButton.cs" />
-    <Compile Include="MonoDevelop.Components\FixedWidthWrapLabel.cs" />
-    <Compile Include="MonoDevelop.Components\InvisibleFrame.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\IMultiCastCommandRouter.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ICommandUpdateHandler.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CustomCommandUpdaterAttribute.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\KeyBindingScheme.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\KeyBindingSet.cs" />
-    <Compile Include="MonoDevelop.Components\ListView.cs" />
-    <Compile Include="MonoDevelop.Components\TooltipWindow.cs" />
-    <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
-    <Compile Include="MonoDevelop.Components\ConsoleView.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\DefaultPropertyTab.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\EditorManager.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\EventPropertyTab.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyEditorCell.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyEditorTypeAttribute.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGrid.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTree.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyValueChangedEventArgs.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyValueChangedEventHandler.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid\SurrogateUITypeEditorAttribute.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\CharPropertyEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\CollectionEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\ColorEditorCell.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\DateTimeEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\DefaultEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\EnumerationEditorCell.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\EventEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\ExpandableObjectEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FlagsEditorCell.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FlagsSelectorDialog.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FloatRange.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\IntRange.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TextEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TextEditorDialog.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TimeSpanEditor.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\BooleanEditorCell.cs" />
-    <Compile Include="MonoDevelop.Components\FolderListSelector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Components.FolderListSelector.cs" />
-    <Compile Include="MonoDevelop.Components\InfoBar.cs" />
-    <Compile Include="MonoDevelop.Components\GtkUtil.cs" />
-    <Compile Include="MonoDevelop.Components\MiniButton.cs" />
-    <Compile Include="MonoDevelop.Components\HslColor.cs" />
-    <Compile Include="MonoDevelop.Components\SearchEntry.cs" />
-    <Compile Include="MonoDevelop.Components\HoverImageButton.cs" />
-    <Compile Include="MonoDevelop.Components\PathBar.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\PlatformDialog.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\ISelectFileDialog.cs" />
-    <Compile Include="MonoDevelop.Components\SelectFileDialog.cs" />
-    <Compile Include="MonoDevelop.Components\SelectFolderDialog.cs" />
-    <Compile Include="MonoDevelop.Components\RoundedFrame.cs" />
-    <Compile Include="MonoDevelop.Components.Theming\GtkColors.cs" />
-    <Compile Include="MonoDevelop.Components.Theming\GtkTheme.cs" />
-    <Compile Include="MonoDevelop.Components.Theming\Theme.cs" />
-    <Compile Include="MonoDevelop.Components.Theming\ThemeContext.cs" />
-    <Compile Include="MonoDevelop.Components.Theming\ThemeEngine.cs" />
-    <Compile Include="MonoDevelop.Components\CairoExtensions.cs" />
-    <Compile Include="MonoDevelop.Components\PangoCairoHelper.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\DiffWidget.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\Diff.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\Merge.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\Patch.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\StructuredDiff.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\TextDiff.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\UnifiedDiff.cs" />
-    <Compile Include="MonoDevelop.Components.Commands\ICommandBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -275,9 +115,4 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.Components.Extensions\" />
-    <Folder Include="MonoDevelop.Components.Theming\" />
-    <Folder Include="MonoDevelop.Components.Diff\" />
-  </ItemGroup>
 </Project>
