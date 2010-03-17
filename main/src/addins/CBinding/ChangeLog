@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* CBinding.csproj: Remove import off mono.addins targets.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* CBinding.csproj:
 	* CBinding.addin.xml:

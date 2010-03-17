@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.HexEditor.csproj: Remove import off mono.addins
+	  targets.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.HexEditor.csproj:
 	* MonoDevelop.HexEditor.addin.xml:

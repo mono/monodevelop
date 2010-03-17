@@ -107,7 +107,6 @@
     <Compile Include="MonoDevelop.HexEditor\HexEditorNodeExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ItemGroup>
     <Folder Include="Mono.MHex\" />
     <Folder Include="Mono.MHex.Data\" />

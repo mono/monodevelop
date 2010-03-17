@@ -1,5 +1,9 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* CSharpBinding.csproj: Remove import off mono.addins targets.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* CSharpBinding.csproj:

@@ -1,5 +1,10 @@
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* WindowsPlatform.csproj: Remove import off mono.addins
+	  targets.
+
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Win32.cs:
 	* WindowsPlatform.cs:
 	* WindowsPlatform.csproj:
