@@ -1,3 +1,15 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* AspMvcProject.cs:
+	* gtk-gui/gui.stetic:
+	* Gui/AddViewDialog.cs:
+	* MonoDevelop.AspNet.Mvc.csproj:
+	* MonoDevelop.AspNet.Mvc.addin.xml:
+	* Gui/FolderNodeBuilderExtension.cs: Merged MD.Projects into
+	  MD.Core, and MD.Projects.Gui, MD.Core.Gui and MD.Components
+	  into MD.Ide.
+
 2010-03-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Mvc.csproj: Added makefile to project.

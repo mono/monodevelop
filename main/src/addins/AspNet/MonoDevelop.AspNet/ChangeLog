@@ -1,3 +1,38 @@
+2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.AspNet.csproj:
+	* MonoDevelop.AspNet.addin.xml:
+	* MonoDevelop.Html/PathCompletion.cs:
+	* MonoDevelop.AspNet/XspParameters.cs:
+	* MonoDevelop.AspNet/WebTypeManager.cs:
+	* MonoDevelop.Html/HtmlSchemaService.cs:
+	* MonoDevelop.AspNet.Parser/Document.cs:
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet.Parser/Directive.cs:
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs:
+	* MonoDevelop.AspNet.Gui/BrowserLauncher.cs:
+	* MonoDevelop.AspNet.Gui/XspOptionsPanel.cs:
+	* MonoDevelop.Html/DocTypeCompletionData.cs:
+	* MonoDevelop.AspNet.Completion/SimpleLists.cs:
+	* MonoDevelop.Html/HtmlCompletionDataProvider.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs:
+	* MonoDevelop.AspNet.Deployment/WebDeployService.cs:
+	* MonoDevelop.AspNet.Deployment/WebDeployCommands.cs:
+	* MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs:
+	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs:
+	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs:
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs:
+	* MonoDevelop.AspNet.Deployment/WebDeployLaunchDialog.cs:
+	* MonoDevelop.AspNet.Deployment/WebDeployOptionsPanel.cs:
+	* MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs:
+	* MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:
+	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:
+	  Merged MD.Projects into MD.Core, and MD.Projects.Gui,
+	  MD.Core.Gui and MD.Components into MD.Ide.
+
 2010-03-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Parser/Directive.cs:

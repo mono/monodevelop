@@ -30,7 +30,7 @@ using System;
 using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport;
 

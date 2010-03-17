@@ -26,12 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.Execution;
 using System;
-
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.Gui
 {

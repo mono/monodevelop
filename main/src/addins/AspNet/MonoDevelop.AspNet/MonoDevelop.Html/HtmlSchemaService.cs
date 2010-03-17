@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.Html

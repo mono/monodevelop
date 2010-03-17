@@ -33,7 +33,6 @@
 using System;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 

@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using System.Text.RegularExpressions;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Html
 {
@@ -151,7 +151,7 @@ namespace MonoDevelop.Html
 			public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
 			{
 				string text;
-				using (var dialog = new MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog (proj, "", pattern)) {
+				using (var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (proj, "", pattern)) {
 					if (MessageService.ShowCustomDialog (dialog) != (int)Gtk.ResponseType.Ok || dialog.SelectedFile == null)
 						return;
 					text = pathFunc (dialog.SelectedFile);

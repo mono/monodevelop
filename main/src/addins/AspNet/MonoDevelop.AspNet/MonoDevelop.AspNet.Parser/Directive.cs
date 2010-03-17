@@ -36,7 +36,7 @@ using System.Web.UI;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.AspNet.Completion;
 

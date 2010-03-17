@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.AspNet;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.Deployment
 {
@@ -121,7 +122,7 @@ namespace MonoDevelop.AspNet.Deployment
 		
 		protected virtual void editTargetsClicked (object sender, System.EventArgs e)
 		{
-			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.ShowOptions (project, "MonoDevelop.AspNet.Deployment");
+			IdeApp.ProjectOperations.ShowOptions (project, "MonoDevelop.AspNet.Deployment");
 			targetStore.Clear ();
 			fillStore ();
 		}

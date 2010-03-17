@@ -31,10 +31,10 @@ using System.ComponentModel;
 using System.Drawing.Design;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet
 {

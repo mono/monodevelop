@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.AspNet.Gui;
 using MonoDevelop.Projects.Dom.Parser;
 using PP = System.IO.Path;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -156,7 +157,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected virtual void ShowMasterSelectionDialog (object sender, System.EventArgs e)
 		{
 			//MonoDevelop.AspNet.Gui.
-			using (var dialog = new MonoDevelop.Projects.Gui.Dialogs.ProjectFileSelectorDialog (project, null, "*.master")) {
+			using (var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (project, null, "*.master")) {
 				dialog.Title = MonoDevelop.Core.GettextCatalog.GetString ("Select a Master Page...");
 				dialog.Modal = true;
 				dialog.TransientFor = this;
@@ -297,7 +298,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			public Gdk.Pixbuf GetIcon (int n)
 			{
-				return MonoDevelop.Core.Gui.ImageService.GetPixbuf (List[n].StockIcon,Gtk.IconSize.Menu);
+				return ImageService.GetPixbuf (List[n].StockIcon,Gtk.IconSize.Menu);
 			}
 			
 			public object GetTag (int n)

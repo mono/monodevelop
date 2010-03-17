@@ -29,11 +29,10 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet
 {
@@ -60,7 +59,7 @@ namespace MonoDevelop.AspNet
 			if (proj == null)
 				return;
 			proj.AddDirectory ((string) ob);
-			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Save (proj);
+			IdeApp.ProjectOperations.Save (proj);
 		}
 		
 		[CommandUpdateHandler (AspNetCommands.AddAspNetDirectory)]

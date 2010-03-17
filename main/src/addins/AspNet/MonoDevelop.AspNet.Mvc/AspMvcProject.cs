@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNet.Mvc
 				string version = (string) mr.GetMethod ("GetDisplayName", BindingFlags.NonPublic|BindingFlags.Static).Invoke (null, null);
 				//MD only builds on 2.0 or later
 				if (version.StartsWith ("Mono 2.0") || version.StartsWith ("Mono 2.2"))
-					MonoDevelop.Core.Gui.MessageService.ShowWarning ("ASP.NET MVC projects only build and run on Mono 2.4 or later");
+					MonoDevelop.Ide.MessageService.ShowWarning ("ASP.NET MVC projects only build and run on Mono 2.4 or later");
 			}
 		}
 		

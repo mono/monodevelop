@@ -28,7 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Html
 {

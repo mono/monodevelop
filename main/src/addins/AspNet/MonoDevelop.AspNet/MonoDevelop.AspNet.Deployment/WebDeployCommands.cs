@@ -24,12 +24,10 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 
-using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.AspNet;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.Deployment
 {

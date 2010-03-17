@@ -30,11 +30,12 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.ProgressMonitoring;
+using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Deployment;
 using MonoDevelop.Deployment.Gui;
 using MonoDevelop.AspNet;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.Deployment
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.AspNet.Deployment
 		static public void Deploy (AspNetAppProject project, ICollection<WebDeployTarget> targets, ConfigurationSelector configuration)
 		{
 			//project needs to be built before it can be deployed
-			MonoDevelop.Ide.Gui.IdeApp.ProjectOperations.Build (project);
+			IdeApp.ProjectOperations.Build (project);
 			
 			//set up and launch a copying thread
 			DeployThreadParams threadParams = new DeployThreadParams ();
@@ -103,7 +104,7 @@ namespace MonoDevelop.AspNet.Deployment
 				}
 			} catch (Exception e) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled exception in the web deploy thread", e);
-				MonoDevelop.Core.Gui.MessageService.ShowException (e, "Web deploy failed due to unhandled exception");
+				 MonoDevelop.Ide.MessageService.ShowException (e, "Web deploy failed due to unhandled exception");
 			} finally {
 				threadParams.Monitor.Dispose ();
 			}
@@ -112,7 +113,7 @@ namespace MonoDevelop.AspNet.Deployment
 		static public void DeployDialog (AspNetAppProject project)
 		{
 			WebDeployLaunchDialog dialog = new WebDeployLaunchDialog (project);
-			Gtk.Window rootWindow = MonoDevelop.Core.Gui.MessageService.RootWindow as Gtk.Window;
+			Gtk.Window rootWindow =  MonoDevelop.Ide.MessageService.RootWindow as Gtk.Window;
 			dialog.TransientFor = rootWindow;
 			dialog.Modal = true;
 			dialog.Show ();
@@ -130,7 +131,7 @@ namespace MonoDevelop.AspNet.Deployment
 			dialog.Destroy ();
 			
 			if (targets != null && targets.Count > 0)
-				Deploy (project, targets, MonoDevelop.Ide.Gui.IdeApp.Workspace.ActiveConfiguration);
+				Deploy (project, targets, IdeApp.Workspace.ActiveConfiguration);
 		}
 		
 		class DeployThreadParams

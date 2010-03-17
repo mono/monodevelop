@@ -38,6 +38,7 @@ using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -131,7 +132,7 @@ namespace MonoDevelop.AspNet.Parser
 		public AspNetAppProject Project {
 			get {
 				if (project == null)
-					project = MonoDevelop.Ide.Gui.IdeApp.Workspace.GetProjectContainingFile (filePath)
+					project = IdeApp.Workspace.GetProjectContainingFile (filePath)
 						as AspNetAppProject;
 				return project;
 			}

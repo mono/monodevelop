@@ -34,7 +34,6 @@ using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;

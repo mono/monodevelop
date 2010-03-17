@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AspNet.Parser

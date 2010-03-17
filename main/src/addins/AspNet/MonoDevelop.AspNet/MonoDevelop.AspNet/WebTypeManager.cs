@@ -40,7 +40,7 @@ using System.Web.Configuration;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Assemblies;
@@ -158,7 +158,7 @@ namespace MonoDevelop.AspNet
 			return null;
 		}
 		
-		public static IEnumerable<MonoDevelop.Projects.Gui.Completion.CompletionData>
+		public static IEnumerable<MonoDevelop.Ide.CodeCompletion.CompletionData>
 			GetMachineRegisteredTypeCompletionData (AspNetAppProject project, IType baseType)
 		{
 			Configuration config = ConfigurationManager.OpenMachineConfiguration ();

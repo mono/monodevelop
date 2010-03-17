@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.AspNet.Completion
 {

@@ -182,7 +182,7 @@ namespace MonoDevelop.AspNet
 					pwtemp = password;
 				else
 					//TODO: hide password chars (will need custom dialogue)
-					pwtemp = MonoDevelop.Core.Gui.MessageService.GetPassword (
+					pwtemp = MonoDevelop.Ide.MessageService.GetPassword (
 					      "Please enter the password for your private key for the XSP Web Server",
 					      "XSP Private Key Password");
 				
