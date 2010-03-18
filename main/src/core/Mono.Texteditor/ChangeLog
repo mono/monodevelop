@@ -1,3 +1,9 @@
+2010-03-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/JaySyntaxMode.cs: Fixed
+	  ms-build problem 'Bug 589118 – JaySyntaxMode.xml resource
+	  name problem => initializer exception'
+
 2010-03-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: For block select, use
