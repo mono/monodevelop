@@ -1,6 +1,11 @@
 2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
+	* mdmonitor.csproj: Add missing reference.
+
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
 	* ChartView.cs:
 	* TimeLineView.cs:
 	* mdmonitor.csproj:

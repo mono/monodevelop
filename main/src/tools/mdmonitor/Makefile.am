@@ -34,7 +34,8 @@ REFS =  \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
-	-r:System.Core
+	-r:System.Core \
+	-r:System.Xml
 	
 $(ASSEMBLY): $(build_sources) $(build_resources)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$(ASSEMBLY)
