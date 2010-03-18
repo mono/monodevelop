@@ -249,20 +249,33 @@ namespace MonoDevelop.WelcomePage
 			}
 		}
 		
+		StatusBarContext statusBar;
+		
 		public void SetLinkStatus (string link)
 		{
-			if (String.IsNullOrEmpty (link) || link.IndexOf ("monodevelop://") != -1) {
-				IdeApp.Workbench.StatusBar.ShowReady ();
-			} else if (link.IndexOf ("project://") != -1) {
+			if (link == null) {
+				if (statusBar != null) {
+					statusBar.Dispose ();
+					statusBar = null;
+				}
+				return;
+			}
+			if (link.IndexOf ("monodevelop://") != -1)
+				return;
+				
+			if (statusBar == null)
+				statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
+			
+			if (link.IndexOf ("project://") != -1) {
 				string message = link;
 				message = message.Substring (10);
 				string msg = GettextCatalog.GetString ("Open solution {0}", message);
 				if (IdeApp.Workspace.IsOpen)
 					msg += " - " + GettextCatalog.GetString ("Hold Control key to open in current workspace.");
-				IdeApp.Workbench.StatusBar.ShowMessage (msg);
+				statusBar.ShowMessage (msg);
 			} else {
 				string msg = GettextCatalog.GetString ("Open {0}", link);
-				IdeApp.Workbench.StatusBar.ShowMessage (msg);
+				statusBar.ShowMessage (msg);
 			}
 		}
 

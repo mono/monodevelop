@@ -1,3 +1,7 @@
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WelcomePageView.cs: Use the new status bar model.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
