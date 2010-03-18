@@ -1,5 +1,10 @@
 2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Use the
+	  stock Visual Design layout as layout for stetic.
+
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs:
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Fix
 	  race in SteticApp initialization.

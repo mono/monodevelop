@@ -46,7 +46,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	class GuiBuilderService
 	{
-		static string GuiBuilderLayout = "GUI Builder";
+		static string GuiBuilderLayout = "Visual Design";
 		
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
 		private void DoNotCompile ()
