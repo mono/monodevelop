@@ -54,6 +54,10 @@
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.NewProfile.cs" />
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.CounterSelectorDialog.cs" />
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.TimeLineViewWindow.cs" />
+    <Compile Include="TimeStatisticsView.cs" />
+    <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.TimeStatisticsView.cs" />
+    <Compile Include="ChartView.cs" />
+    <Compile Include="ChartSerieInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

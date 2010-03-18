@@ -3,6 +3,8 @@ ASSEMBLY = $(top_builddir)/build/bin/mdmonitor.exe
 
 FILES =  \
 	AssemblyInfo.cs \
+	ChartSerieInfo.cs \
+	ChartView.cs \
 	CounterSelectorDialog.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/Mono.Instrumentation.Monitor.CounterSelectorDialog.cs \
@@ -10,12 +12,14 @@ FILES =  \
 	gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs \
 	gtk-gui/Mono.Instrumentation.Monitor.NewProfile.cs \
 	gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs \
+	gtk-gui/Mono.Instrumentation.Monitor.TimeStatisticsView.cs \
 	InstrumenationChartView.cs \
 	InstrumentationViewerDialog.cs \
 	Main.cs \
 	NewProfile.cs \
 	TimeLineView.cs \
-	TimeLineViewWindow.cs
+	TimeLineViewWindow.cs \
+	TimeStatisticsView.cs
 
 RES = gtk-gui/gui.stetic 
 

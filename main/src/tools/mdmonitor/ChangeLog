@@ -1,3 +1,20 @@
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* ChartView.cs:
+	* TimeLineView.cs:
+	* mdmonitor.csproj:
+	* ChartSerieInfo.cs:
+	* gtk-gui/gui.stetic:
+	* TimeLineViewWindow.cs:
+	* TimeStatisticsView.cs:
+	* InstrumenationChartView.cs:
+	* InstrumentationViewerDialog.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.TimeStatisticsView.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.InstrumenationChartView.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:
+	  Added timer statistics view.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -31,14 +31,14 @@ namespace Mono.Instrumentation.Monitor
 {
 	partial class TimeLineViewWindow : Gtk.Window
 	{
-		ChartSerieInfo mainCounter;
+		Counter mainCounter;
 		CounterValue mainValue;
 		
-		public TimeLineViewWindow (ListViewValueInfo valueInfo) : base(Gtk.WindowType.Toplevel)
+		public TimeLineViewWindow (Counter c, CounterValue value) : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
-			this.mainCounter = valueInfo.Serie;
-			this.mainValue = valueInfo.Value;
+			this.mainCounter = c;
+			this.mainValue = value;
 			timeView.Scale = 300;
 			
 			Update ();

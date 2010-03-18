@@ -37,7 +37,7 @@ namespace Mono.Instrumentation.Monitor
 	[System.ComponentModel.ToolboxItem(true)]
 	class TimeLineView: EventBox
 	{
-		ChartSerieInfo mainCounter;
+		Counter mainCounter;
 		CounterValue mainValue;
 		List<ChartSerieInfo> extraCounters = new List<ChartSerieInfo> ();
 		List<CounterValueInfo> data;
@@ -96,7 +96,7 @@ namespace Mono.Instrumentation.Monitor
 			data = null;
 		}
 		
-		public void SetMainCounter (ChartSerieInfo c, CounterValue value)
+		public void SetMainCounter (Counter c, CounterValue value)
 		{
 			mainCounter = c;
 			mainValue = value;
@@ -169,7 +169,7 @@ namespace Mono.Instrumentation.Monitor
 			if (mainCounter == null)
 				return;
 			
-			DateTime lastTime = mainValue.TimeStamp + mainValue.TotalTime;
+			DateTime lastTime = mainValue.TimeStamp + mainValue.Duration;
 			FillTimerTraces (mainValue.GetTimerTraces (), data, mainValue.TimeStamp, lastTime);
 			FixValueList (data, lastTime);
 			
@@ -191,7 +191,7 @@ namespace Mono.Instrumentation.Monitor
 				CounterValueInfo v = new CounterValueInfo ();
 				v.Time = tt.Timestamp;
 				v.Trace = tt.Message;
-				v.Counter = mainCounter.Counter;
+				v.Counter = mainCounter;
 				v.CanExpand = true;
 				list.Add (v);
 			}
@@ -230,7 +230,7 @@ namespace Mono.Instrumentation.Monitor
 						v.Trace = cval.Message + " " + v.Trace;
 					if (cval.HasTimerTraces) {
 						v.TimerTraces = cval.GetTimerTraces ();
-						v.Duration = cval.TotalTime;
+						v.Duration = cval.Duration;
 						v.CanExpand = true;
 					}
 					list.Add (v);
@@ -366,7 +366,7 @@ namespace Mono.Instrumentation.Monitor
 			// Draw full time marker
 			
 			ctx.NewPath ();
-			ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth/2, ((mainValue.TotalTime.TotalMilliseconds * scale) / 1000));
+			ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth/2, ((mainValue.Duration.TotalMilliseconds * scale) / 1000));
 			HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
 			hsl.L = 0.8;
 			ctx.Color = hsl;
@@ -381,7 +381,7 @@ namespace Mono.Instrumentation.Monitor
 			if (ty > maxy)
 				maxy = ty;
 			
-			int totalms = (int) mainValue.TotalTime.TotalMilliseconds;
+			int totalms = (int) mainValue.Duration.TotalMilliseconds;
 			int marks = (totalms / 1000) + 1;
 			
 			ctx.LineWidth = 1;

@@ -6,16 +6,6 @@ namespace Mono.Instrumentation.Monitor
 	{
 		private global::Gtk.VBox vbox3;
 
-		private global::Gtk.HBox hbox;
-
-		private global::Gtk.Label labelTitle;
-
-		private global::Gtk.Button buttonSave;
-
-		private global::Gtk.Button buttonSaveAs;
-
-		private global::Gtk.Button buttonDelete;
-
 		private global::Gtk.HPaned hpaned2;
 
 		private global::Gtk.HBox hbox4;
@@ -27,8 +17,6 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.ToggleButton toggleTimeView;
 
 		private global::Gtk.ToggleButton toggleListView;
-
-		private global::Gtk.Button buttonFlush;
 
 		private global::Gtk.Button buttonZoomOut;
 
@@ -61,94 +49,6 @@ namespace Mono.Instrumentation.Monitor
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.hbox = new global::Gtk.HBox ();
-			this.hbox.Name = "hbox";
-			this.hbox.Spacing = 6;
-			// Container child hbox.Gtk.Box+BoxChild
-			this.labelTitle = new global::Gtk.Label ();
-			this.labelTitle.Name = "labelTitle";
-			this.labelTitle.Xalign = 0f;
-			this.hbox.Add (this.labelTitle);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox[this.labelTitle]));
-			w1.Position = 0;
-			// Container child hbox.Gtk.Box+BoxChild
-			this.buttonSave = new global::Gtk.Button ();
-			this.buttonSave.CanFocus = true;
-			this.buttonSave.Name = "buttonSave";
-			this.buttonSave.UseUnderline = true;
-			// Container child buttonSave.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w2 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w3 = new global::Gtk.HBox ();
-			w3.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w4 = new global::Gtk.Image ();
-			w4.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-save", global::Gtk.IconSize.Button);
-			w3.Add (w4);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w6 = new global::Gtk.Label ();
-			w3.Add (w6);
-			w2.Add (w3);
-			this.buttonSave.Add (w2);
-			this.hbox.Add (this.buttonSave);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox[this.buttonSave]));
-			w10.Position = 1;
-			w10.Expand = false;
-			w10.Fill = false;
-			// Container child hbox.Gtk.Box+BoxChild
-			this.buttonSaveAs = new global::Gtk.Button ();
-			this.buttonSaveAs.CanFocus = true;
-			this.buttonSaveAs.Name = "buttonSaveAs";
-			this.buttonSaveAs.UseUnderline = true;
-			// Container child buttonSaveAs.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w11 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w12 = new global::Gtk.HBox ();
-			w12.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w13 = new global::Gtk.Image ();
-			w13.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-save-as", global::Gtk.IconSize.Button);
-			w12.Add (w13);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w15 = new global::Gtk.Label ();
-			w12.Add (w15);
-			w11.Add (w12);
-			this.buttonSaveAs.Add (w11);
-			this.hbox.Add (this.buttonSaveAs);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox[this.buttonSaveAs]));
-			w19.Position = 2;
-			w19.Expand = false;
-			w19.Fill = false;
-			// Container child hbox.Gtk.Box+BoxChild
-			this.buttonDelete = new global::Gtk.Button ();
-			this.buttonDelete.CanFocus = true;
-			this.buttonDelete.Name = "buttonDelete";
-			this.buttonDelete.UseUnderline = true;
-			// Container child buttonDelete.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w20 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w21 = new global::Gtk.HBox ();
-			w21.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w22 = new global::Gtk.Image ();
-			w22.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-delete", global::Gtk.IconSize.Button);
-			w21.Add (w22);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w24 = new global::Gtk.Label ();
-			w21.Add (w24);
-			w20.Add (w21);
-			this.buttonDelete.Add (w20);
-			this.hbox.Add (this.buttonDelete);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.hbox[this.buttonDelete]));
-			w28.Position = 3;
-			w28.Expand = false;
-			w28.Fill = false;
-			this.vbox3.Add (this.hbox);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox]));
-			w29.Position = 0;
-			w29.Expand = false;
-			w29.Fill = false;
-			// Container child vbox3.Gtk.Box+BoxChild
 			this.hpaned2 = new global::Gtk.HPaned ();
 			this.hpaned2.CanFocus = true;
 			this.hpaned2.Name = "hpaned2";
@@ -170,90 +70,82 @@ namespace Mono.Instrumentation.Monitor
 			this.toggleTimeView.CanFocus = true;
 			this.toggleTimeView.Name = "toggleTimeView";
 			this.toggleTimeView.UseUnderline = true;
+			this.toggleTimeView.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.toggleTimeView.Label = global::Mono.Unix.Catalog.GetString ("Time View");
 			this.hboxChartBar.Add (this.toggleTimeView);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.toggleTimeView]));
-			w30.Position = 0;
-			w30.Expand = false;
-			w30.Fill = false;
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.toggleTimeView]));
+			w1.Position = 0;
+			w1.Expand = false;
+			w1.Fill = false;
 			// Container child hboxChartBar.Gtk.Box+BoxChild
 			this.toggleListView = new global::Gtk.ToggleButton ();
 			this.toggleListView.CanFocus = true;
 			this.toggleListView.Name = "toggleListView";
 			this.toggleListView.UseUnderline = true;
+			this.toggleListView.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.toggleListView.Label = global::Mono.Unix.Catalog.GetString ("List View");
 			this.hboxChartBar.Add (this.toggleListView);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.toggleListView]));
-			w31.Position = 1;
-			w31.Expand = false;
-			w31.Fill = false;
-			// Container child hboxChartBar.Gtk.Box+BoxChild
-			this.buttonFlush = new global::Gtk.Button ();
-			this.buttonFlush.CanFocus = true;
-			this.buttonFlush.Name = "buttonFlush";
-			this.buttonFlush.UseUnderline = true;
-			this.buttonFlush.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.buttonFlush.Label = global::Mono.Unix.Catalog.GetString ("Flush Memory");
-			this.hboxChartBar.Add (this.buttonFlush);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.buttonFlush]));
-			w32.Position = 2;
-			w32.Expand = false;
-			w32.Fill = false;
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.toggleListView]));
+			w2.Position = 1;
+			w2.Expand = false;
+			w2.Fill = false;
 			// Container child hboxChartBar.Gtk.Box+BoxChild
 			this.buttonZoomOut = new global::Gtk.Button ();
 			this.buttonZoomOut.CanFocus = true;
 			this.buttonZoomOut.Name = "buttonZoomOut";
 			this.buttonZoomOut.UseUnderline = true;
+			this.buttonZoomOut.Relief = ((global::Gtk.ReliefStyle)(2));
 			// Container child buttonZoomOut.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w33 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w3 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w34 = new global::Gtk.HBox ();
-			w34.Spacing = 2;
+			global::Gtk.HBox w4 = new global::Gtk.HBox ();
+			w4.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w35 = new global::Gtk.Image ();
-			w35.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-out", global::Gtk.IconSize.Menu);
-			w34.Add (w35);
+			global::Gtk.Image w5 = new global::Gtk.Image ();
+			w5.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-out", global::Gtk.IconSize.Menu);
+			w4.Add (w5);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w37 = new global::Gtk.Label ();
-			w34.Add (w37);
-			w33.Add (w34);
-			this.buttonZoomOut.Add (w33);
+			global::Gtk.Label w7 = new global::Gtk.Label ();
+			w4.Add (w7);
+			w3.Add (w4);
+			this.buttonZoomOut.Add (w3);
 			this.hboxChartBar.Add (this.buttonZoomOut);
-			global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.buttonZoomOut]));
-			w41.PackType = ((global::Gtk.PackType)(1));
-			w41.Position = 3;
-			w41.Expand = false;
-			w41.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.buttonZoomOut]));
+			w11.PackType = ((global::Gtk.PackType)(1));
+			w11.Position = 2;
+			w11.Expand = false;
+			w11.Fill = false;
 			// Container child hboxChartBar.Gtk.Box+BoxChild
 			this.buttonZoomIn = new global::Gtk.Button ();
 			this.buttonZoomIn.CanFocus = true;
 			this.buttonZoomIn.Name = "buttonZoomIn";
 			this.buttonZoomIn.UseUnderline = true;
+			this.buttonZoomIn.Relief = ((global::Gtk.ReliefStyle)(2));
 			// Container child buttonZoomIn.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w42 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w43 = new global::Gtk.HBox ();
-			w43.Spacing = 2;
+			global::Gtk.HBox w13 = new global::Gtk.HBox ();
+			w13.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w44 = new global::Gtk.Image ();
-			w44.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-in", global::Gtk.IconSize.Menu);
-			w43.Add (w44);
+			global::Gtk.Image w14 = new global::Gtk.Image ();
+			w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-in", global::Gtk.IconSize.Menu);
+			w13.Add (w14);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w46 = new global::Gtk.Label ();
-			w43.Add (w46);
-			w42.Add (w43);
-			this.buttonZoomIn.Add (w42);
+			global::Gtk.Label w16 = new global::Gtk.Label ();
+			w13.Add (w16);
+			w12.Add (w13);
+			this.buttonZoomIn.Add (w12);
 			this.hboxChartBar.Add (this.buttonZoomIn);
-			global::Gtk.Box.BoxChild w50 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.buttonZoomIn]));
-			w50.PackType = ((global::Gtk.PackType)(1));
-			w50.Position = 4;
-			w50.Expand = false;
-			w50.Fill = false;
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hboxChartBar[this.buttonZoomIn]));
+			w20.PackType = ((global::Gtk.PackType)(1));
+			w20.Position = 3;
+			w20.Expand = false;
+			w20.Fill = false;
 			this.boxCharts.Add (this.hboxChartBar);
-			global::Gtk.Box.BoxChild w51 = ((global::Gtk.Box.BoxChild)(this.boxCharts[this.hboxChartBar]));
-			w51.Position = 0;
-			w51.Expand = false;
-			w51.Fill = false;
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.boxCharts[this.hboxChartBar]));
+			w21.Position = 0;
+			w21.Expand = false;
+			w21.Fill = false;
 			// Container child boxCharts.Gtk.Box+BoxChild
 			this.frameCharts = new global::Gtk.VBox ();
 			this.frameCharts.Name = "frameCharts";
@@ -266,20 +158,20 @@ namespace Mono.Instrumentation.Monitor
 			this.chartScroller.Adjustment.PageSize = 10;
 			this.chartScroller.Adjustment.StepIncrement = 1;
 			this.frameCharts.Add (this.chartScroller);
-			global::Gtk.Box.BoxChild w52 = ((global::Gtk.Box.BoxChild)(this.frameCharts[this.chartScroller]));
-			w52.PackType = ((global::Gtk.PackType)(1));
-			w52.Position = 2;
-			w52.Expand = false;
-			w52.Fill = false;
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.frameCharts[this.chartScroller]));
+			w22.PackType = ((global::Gtk.PackType)(1));
+			w22.Position = 2;
+			w22.Expand = false;
+			w22.Fill = false;
 			this.boxCharts.Add (this.frameCharts);
-			global::Gtk.Box.BoxChild w53 = ((global::Gtk.Box.BoxChild)(this.boxCharts[this.frameCharts]));
-			w53.Position = 1;
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.boxCharts[this.frameCharts]));
+			w23.Position = 1;
 			this.hbox4.Add (this.boxCharts);
-			global::Gtk.Box.BoxChild w54 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.boxCharts]));
-			w54.Position = 0;
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.boxCharts]));
+			w24.Position = 0;
 			this.hpaned2.Add (this.hbox4);
-			global::Gtk.Paned.PanedChild w55 = ((global::Gtk.Paned.PanedChild)(this.hpaned2[this.hbox4]));
-			w55.Resize = false;
+			global::Gtk.Paned.PanedChild w25 = ((global::Gtk.Paned.PanedChild)(this.hpaned2[this.hbox4]));
+			w25.Resize = false;
 			// Container child hpaned2.Gtk.Paned+PanedChild
 			this.vbox5 = new global::Gtk.VBox ();
 			this.vbox5.Name = "vbox5";
@@ -294,31 +186,33 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonRemoveCounter.Name = "buttonRemoveCounter";
 			this.buttonRemoveCounter.UseStock = true;
 			this.buttonRemoveCounter.UseUnderline = true;
+			this.buttonRemoveCounter.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.buttonRemoveCounter.Label = "gtk-remove";
 			this.hboxSeriesBar.Add (this.buttonRemoveCounter);
-			global::Gtk.Box.BoxChild w56 = ((global::Gtk.Box.BoxChild)(this.hboxSeriesBar[this.buttonRemoveCounter]));
-			w56.PackType = ((global::Gtk.PackType)(1));
-			w56.Position = 0;
-			w56.Expand = false;
-			w56.Fill = false;
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hboxSeriesBar[this.buttonRemoveCounter]));
+			w26.PackType = ((global::Gtk.PackType)(1));
+			w26.Position = 0;
+			w26.Expand = false;
+			w26.Fill = false;
 			// Container child hboxSeriesBar.Gtk.Box+BoxChild
 			this.buttonAddCounter = new global::Gtk.Button ();
 			this.buttonAddCounter.CanFocus = true;
 			this.buttonAddCounter.Name = "buttonAddCounter";
 			this.buttonAddCounter.UseStock = true;
 			this.buttonAddCounter.UseUnderline = true;
+			this.buttonAddCounter.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.buttonAddCounter.Label = "gtk-add";
 			this.hboxSeriesBar.Add (this.buttonAddCounter);
-			global::Gtk.Box.BoxChild w57 = ((global::Gtk.Box.BoxChild)(this.hboxSeriesBar[this.buttonAddCounter]));
-			w57.PackType = ((global::Gtk.PackType)(1));
-			w57.Position = 1;
-			w57.Expand = false;
-			w57.Fill = false;
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.hboxSeriesBar[this.buttonAddCounter]));
+			w27.PackType = ((global::Gtk.PackType)(1));
+			w27.Position = 1;
+			w27.Expand = false;
+			w27.Fill = false;
 			this.vbox5.Add (this.hboxSeriesBar);
-			global::Gtk.Box.BoxChild w58 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hboxSeriesBar]));
-			w58.Position = 0;
-			w58.Expand = false;
-			w58.Fill = false;
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hboxSeriesBar]));
+			w28.Position = 0;
+			w28.Expand = false;
+			w28.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
@@ -331,26 +225,22 @@ namespace Mono.Instrumentation.Monitor
 			this.listSeries.HeadersVisible = false;
 			this.GtkScrolledWindow1.Add (this.listSeries);
 			this.vbox5.Add (this.GtkScrolledWindow1);
-			global::Gtk.Box.BoxChild w60 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.GtkScrolledWindow1]));
-			w60.Position = 1;
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.GtkScrolledWindow1]));
+			w30.Position = 1;
 			this.hpaned2.Add (this.vbox5);
-			global::Gtk.Paned.PanedChild w61 = ((global::Gtk.Paned.PanedChild)(this.hpaned2[this.vbox5]));
-			w61.Resize = false;
-			w61.Shrink = false;
+			global::Gtk.Paned.PanedChild w31 = ((global::Gtk.Paned.PanedChild)(this.hpaned2[this.vbox5]));
+			w31.Resize = false;
+			w31.Shrink = false;
 			this.vbox3.Add (this.hpaned2);
-			global::Gtk.Box.BoxChild w62 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hpaned2]));
-			w62.Position = 1;
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hpaned2]));
+			w32.Position = 0;
 			this.Add (this.vbox3);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.buttonSave.Clicked += new global::System.EventHandler (this.OnButtonSaveClicked);
-			this.buttonSaveAs.Clicked += new global::System.EventHandler (this.OnButtonSaveAsClicked);
-			this.buttonDelete.Clicked += new global::System.EventHandler (this.OnButtonDeleteClicked);
 			this.toggleTimeView.Toggled += new global::System.EventHandler (this.OnToggleTimeViewToggled);
 			this.toggleListView.Toggled += new global::System.EventHandler (this.OnToggleListViewToggled);
-			this.buttonFlush.Clicked += new global::System.EventHandler (this.OnButtonFlushClicked);
 			this.buttonZoomIn.Clicked += new global::System.EventHandler (this.OnButtonZoomInClicked);
 			this.buttonZoomOut.Clicked += new global::System.EventHandler (this.OnButtonZoomOutClicked);
 			this.chartScroller.ValueChanged += new global::System.EventHandler (this.OnChartScrollerValueChanged);

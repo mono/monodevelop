@@ -45,6 +45,7 @@ namespace Mono.Instrumentation.Monitor
 		TreeIter iterViews;
 //		TreeIter iterStart;
 		TreeIter iterTimers;
+		TreeIter iterTimerStats;
 		Dictionary<ChartView,InstrumenationChartView> chartWidgets = new Dictionary<ChartView, InstrumenationChartView> ();
 		InstrumenationChartView timersWidget;
 		
@@ -58,6 +59,7 @@ namespace Mono.Instrumentation.Monitor
 			
 			//iterStart = store.AppendValues ("Start");
 			iterTimers = store.AppendValues ("Timers Events");
+			iterTimerStats = store.AppendValues ("Timer Statistics");
 			iterViews = store.AppendValues ("Views");
 			LoadViews ();
 			
@@ -65,6 +67,16 @@ namespace Mono.Instrumentation.Monitor
 			treeCounters.Selection.Changed += HandleTreeCountersSelectionChanged;
 			ShowAll ();
 		}
+		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			
+			MonoDevelop.Components.HslColor c = Style.Background (Gtk.StateType.Normal);
+			c.L -= 0.1;
+			headerBox.ModifyBg (Gtk.StateType.Normal, c);
+		}
+
 
 		void LoadViews ()
 		{
@@ -166,7 +178,7 @@ namespace Mono.Instrumentation.Monitor
 			base.OnDestroyed ();
 		}
 
-
+		TimeStatisticsView timerStatsView;
 		void HandleTreeCountersSelectionChanged (object sender, EventArgs e)
 		{
 			TreeIter it;
@@ -178,7 +190,13 @@ namespace Mono.Instrumentation.Monitor
 					timersWidget = new InstrumenationChartView (this);
 					timersWidget.ShowAllTimers ();
 				}
-				SetView (timersWidget);
+				SetView (timersWidget, "Timers", false);
+			}
+			else if (store.GetPath (it).Equals (store.GetPath (iterTimerStats))) {
+				if (timerStatsView == null)
+					timerStatsView = new TimeStatisticsView (this);
+				timerStatsView.Fill ();
+				SetView (timerStatsView, "Timer Statistics", false);
 			}
 			else {
 				ChartView v = (ChartView) store.GetValue (it, 1);
@@ -189,21 +207,37 @@ namespace Mono.Instrumentation.Monitor
 						chartWidgets [v] = cv;
 						cv.SetView (v);
 					}
-					SetView (cv);
+					SetView (cv, v.Name, true);
+				} else {
+					SetView (null, null, false);
 				}
 			}
 		}
 		
-		void SetView (Widget w)
+		void SetView (Widget w, string title, bool showSaveButtons)
 		{
-			if (hpaned.Child2 != null) {
-				Widget ow = hpaned.Child2;
-				hpaned.Remove (ow);
+			if (viewBox.Child != null) {
+				Widget ow = viewBox.Child;
+				viewBox.Remove (ow);
 			}
 			if (w != null) {
-				hpaned.Add2 (w);
+				viewBox.Add (w);
 				w.Show ();
 			}
+			
+			if (title != null) {
+				labelHeader.Markup = "<big><b>" + GLib.Markup.EscapeText (title) + "</b></big>";
+				headerBox.Show ();
+				buttonsBox.Visible = showSaveButtons;
+			} else {
+				headerBox.Hide ();
+				buttonsBox.Visible = false;
+			}
+		}
+		
+		public void EnableSave (bool enable)
+		{
+			buttonSave.Sensitive = enable;
 		}
 		
 		protected virtual void OnButtonFlushClicked (object sender, System.EventArgs e)
@@ -214,202 +248,41 @@ namespace Mono.Instrumentation.Monitor
 				mem [0] = 0;
 			}
 		}
+		
+		protected virtual void OnButtonSaveClicked (object sender, System.EventArgs e)
+		{
+			((InstrumenationChartView)viewBox.Child).Save ();
+		}
+		
+		protected virtual void OnButtonSaveAsClicked (object sender, System.EventArgs e)
+		{
+			((InstrumenationChartView)viewBox.Child).SaveAs ();
+		}
+		
+		protected virtual void OnButtonDeleteClicked (object sender, System.EventArgs e)
+		{
+			((InstrumenationChartView)viewBox.Child).Delete ();
+		}
+		
+		protected virtual void OnFlushMemoryActionActivated (object sender, System.EventArgs e)
+		{
+			GC.Collect ();
+			for (int n=0; n<500; n++) {
+				byte[] mem = new byte [1024 * 1000];
+				mem [0] = 0;
+			}
+		}
+		
+		protected virtual void OnExitActionActivated (object sender, System.EventArgs e)
+		{
+			Gtk.Application.Quit ();
+		}
 	}		
-	
-	class ChartView
-	{
-		[ItemProperty]
-		public string Name { get; set; }
-		
-		[ItemProperty]
-		public List<ChartSerieInfo> Series = new List<ChartSerieInfo> ();
-		
-		public ChartView EditedView;
-		public bool Modified;
-		
-		public IEnumerable<Counter> GetCounters ()
-		{
-			foreach (ChartSerieInfo ci in Series)
-				yield return ci.Counter;
-		}
-		
-		public void CopyFrom (ChartView other)
-		{
-			Name = other.Name;
-			Series.Clear ();
-			foreach (ChartSerieInfo si in other.Series) {
-				ChartSerieInfo c = new ChartSerieInfo ();
-				c.CopyFrom (si);
-				Series.Add (c);
-			}
-		}
-		
-		public bool Contains (Counter c)
-		{
-			foreach (ChartSerieInfo si in Series) {
-				if (si.Name == c.Name)
-					return true;
-			}
-			return false;
-		}
-		
-		public void Add (Counter c)
-		{
-			ChartSerieInfo info = new ChartSerieInfo ();
-			info.Init (c);
-			Series.Add (info);
-			Modified = true;
-		}
-		
-/*		bool IsColorUsed (string color)
-		{
-			foreach (ChartSerieInfo info in Series)
-				if (info.Color == color)
-					return true;
-			return false;
-		}*/
-		
-		public void Remove (Counter c)
-		{
-			for (int n=0; n<Series.Count; n++) {
-				if (Series [n].Name == c.Name) {
-					Series.RemoveAt (n);
-					return;
-				}
-			}
-			Modified = true;
-		}
-		
-		public void SetVisible (ChartSerieInfo info, bool visible)
-		{
-			info.Visible = visible;
-			info.Serie.Visible = visible;
-			Modified = true;
-		}
-		
-		public void UpdateSeries ()
-		{
-			foreach (ChartSerieInfo info in Series)
-				info.UpdateSerie ();
-		}
-		
-		internal static Cairo.Color ParseColor (string s)
-		{
-			double r = ((double) int.Parse (s.Substring (0,2), System.Globalization.NumberStyles.HexNumber)) / 255;
-			double g = ((double) int.Parse (s.Substring (2,2), System.Globalization.NumberStyles.HexNumber)) / 255;
-			double b = ((double) int.Parse (s.Substring (4,2), System.Globalization.NumberStyles.HexNumber)) / 255;
-			return new Cairo.Color (r, g, b);
-		}
-	}
-	
-	class ChartSerieInfo
-	{
-		Serie serie;
-		Counter counter;
-		Gdk.Pixbuf colorIcon;
-		
-		[ItemProperty]
-		public string Name;
-		
-		[ItemProperty]
-//		public string Color;
-		
-		[ItemProperty (DefaultValue=true)]
-		public bool Visible = true;
-		
-		DateTime lastUpdateTime = DateTime.MinValue;
-		
-		public void Init (Counter counter)
-		{
-			this.counter = counter;
-			Name = counter.Name;
-		}
-		
-		public void CopyFrom (ChartSerieInfo other)
-		{
-			Name = other.Name;
-			Visible = other.Visible;
-			serie = other.serie;
-			counter = other.counter;
-		}
-		
-		public Counter Counter {
-			get {
-				if (counter == null && Name != null)
-					counter = App.Service.GetCounter (Name);
-				return counter;
-			}
-		}
-		
-		public Serie Serie {
-			get {
-				if (serie == null) {
-					serie = new Serie (Name);
-					if (Counter == null)
-						return serie;
-					if (Counter.DisplayMode == CounterDisplayMode.Block) {
-						serie.ExtendBoundingValues = true;
-						serie.InitialValue = 0;
-						serie.DisplayMode = DisplayMode.BlockLine;
-					} else
-						serie.DisplayMode = DisplayMode.Line;
-					serie.Color = GdkColor.ToCairoColor ();
-					foreach (CounterValue val in Counter.GetValues ()) {
-						serie.AddData (val.TimeStamp.Ticks, val.Value);
-						lastUpdateTime = val.TimeStamp;
-					}
-					serie.Visible = Visible;
-				}
-				return serie;
-			}
-		}
-		
-		public bool UpdateCounter ()
-		{
-			if (!Counter.Disposed)
-				return false;
-			serie = null;
-			counter = null;
-			lastUpdateTime = DateTime.MinValue;
-			return true;
-		}
-		
-		public void UpdateSerie ()
-		{
-			if (serie == null || Counter == null)
-				return;
-			foreach (CounterValue val in Counter.GetValuesAfter (lastUpdateTime)) {
-				serie.AddData (val.TimeStamp.Ticks, val.Value);
-				lastUpdateTime = val.TimeStamp;
-			}
-		}
-		
-		public Gdk.Color GdkColor {
-			get {
-				return Counter.GetColor ();
-			}
-		}
-		
-		public Gdk.Pixbuf ColorIcon {
-			get {
-				if (colorIcon == null) {
-					uint color = (((uint)GdkColor.Red >> 8) << 24) | (((uint)GdkColor.Green >> 8) << 16) | (((uint)GdkColor.Blue >> 8) << 8) | 0xff;
-					if (!colorIcons.TryGetValue (color, out colorIcon)) {
-						colorIcon = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, 16, 16);
-						colorIcon.Fill (color);
-						colorIcons [GdkColor.Pixel] = colorIcon;
-					}
-				}
-				return colorIcon;
-			}
-		}
-		
-		static Dictionary<uint,Gdk.Pixbuf> colorIcons = new Dictionary<uint, Gdk.Pixbuf> ();
-	}
 	
 	internal static class CounterColor
 	{
 		static Dictionary<Counter,Gdk.Color> colors = new Dictionary<Counter, Gdk.Color> ();
+		static Dictionary<Counter,Gdk.Pixbuf> icons = new Dictionary<Counter, Gdk.Pixbuf> ();
 		
 		public static Gdk.Color GetColor (this Counter c)
 		{
@@ -427,6 +300,43 @@ namespace Mono.Instrumentation.Monitor
 			Gdk.Color gc = col;
 			colors [c] = gc;
 			return gc;
+		}
+		
+		public static Gdk.Pixbuf GetIcon (this Counter c)
+		{
+			Gdk.Pixbuf cachedIcon;
+			if (icons.TryGetValue (c, out cachedIcon))
+				return cachedIcon;
+			
+			Gdk.Color gcolor = c.GetColor ();
+			uint color = (((uint)gcolor.Red >> 8) << 24) | (((uint)gcolor.Green >> 8) << 16) | (((uint)gcolor.Blue >> 8) << 8) | 0xff;
+			cachedIcon = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, 16, 16);
+			cachedIcon.Fill (color);
+			icons [c] = cachedIcon;
+			return cachedIcon;
+		}
+		
+		public static Gdk.Color GetTimeColor (this CounterValue val, TimerCounter c)
+		{
+			long m = c.AverageTime.Ticks;
+			long v = val.Duration.Ticks;
+			if (v >= m*3)
+				return new Gdk.Color (255, 0, 0);
+			if (v >= m*2)
+				return new Gdk.Color (150, 0, 0);
+			if (v >= (long)((double)m) * 1.5d)
+				return new Gdk.Color (100, 0, 0);
+			if (v >= (long)((double)m) * 1.1d)
+				return new Gdk.Color (50, 0, 0);
+			if (v <= m/3)
+				return new Gdk.Color (0, 255, 0);
+			if (v <= m/2)
+				return new Gdk.Color (0, 150, 0);
+			if (v <= (long)((double)m) * 0.75d)
+				return new Gdk.Color (0, 100, 0);
+			if (v <= (long)((double)m) * 0.90d)
+				return new Gdk.Color (00, 50, 0);
+			return new Gdk.Color (0, 0, 0);
 		}
 	}
 }

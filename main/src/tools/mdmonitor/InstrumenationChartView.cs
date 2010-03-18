@@ -172,8 +172,6 @@ namespace Mono.Instrumentation.Monitor
 		
 		public void ShowAllTimers ()
 		{
-			labelTitle.Markup = "<big><b>Timers</b></big>";
-			buttonSave.Visible = buttonSaveAs.Visible = buttonDelete.Visible = false;
 			hboxChartBar.Visible = hboxSeriesBar.Visible = false;
 			
 			view = new ChartView ();
@@ -193,7 +191,7 @@ namespace Mono.Instrumentation.Monitor
 				return;
 			ListViewValueInfo vinfo = (ListViewValueInfo) listViewStore.GetValue (sel, 0);
 			if (vinfo.Value.HasTimerTraces) {
-				TimeLineViewWindow win = new TimeLineViewWindow (vinfo);
+				TimeLineViewWindow win = new TimeLineViewWindow (vinfo.Serie.Counter, vinfo.Value);
 				win.Show ();
 			}
 		}
@@ -220,13 +218,15 @@ namespace Mono.Instrumentation.Monitor
 				if (c != null) {
 					view.SetVisible (c, val);
 					UpdateButtonStatus ();
+					if (listViewScrolled.Visible)
+						FillValuesList ();
 				}
 			}
 		}
 		
 		void UpdateButtonStatus ()
 		{
-			buttonSave.Sensitive = view.Modified;
+			parent.EnableSave (view.Modified);
 		}
 		
 		void UpdateCharts ()
@@ -256,23 +256,28 @@ namespace Mono.Instrumentation.Monitor
 				UpdatePageSize ();
 			}
 			else if (listViewScrolled.Visible) {
-				listViewStore.Clear ();
-				List<ListViewValueInfo> values = new List<ListViewValueInfo> ();
-				
-				foreach (var serie in view.Series.Where (s => s.Visible)) {
-					foreach (CounterValue val in serie.Counter.GetValues ())
-						values.Add (new ListViewValueInfo () { Serie=serie, Value=val });
-				}
-				
-				values.Sort (delegate (ListViewValueInfo v1, ListViewValueInfo v2) {
-					return v1.Value.TimeStamp.CompareTo (v2.Value.TimeStamp);
-				});
-				
-				foreach (ListViewValueInfo vinfo in values) {
-					CounterValue val = vinfo.Value;
-					string time = val.TimeStamp.ToLongTimeString ();
-					listViewStore.AppendValues (vinfo, vinfo.Serie.ColorIcon, vinfo.Serie.Counter.Name, time, val.Value.ToString (), val.TotalCount.ToString (), val.HasTimerTraces ? val.TotalTime.TotalMilliseconds.ToString () : "");
-				}
+				FillValuesList ();
+			}
+		}
+		
+		void FillValuesList ()
+		{
+			listViewStore.Clear ();
+			List<ListViewValueInfo> values = new List<ListViewValueInfo> ();
+			
+			foreach (var serie in view.Series.Where (s => s.Visible)) {
+				foreach (CounterValue val in serie.Counter.GetValues ())
+					values.Add (new ListViewValueInfo () { Serie=serie, Value=val });
+			}
+			
+			values.Sort (delegate (ListViewValueInfo v1, ListViewValueInfo v2) {
+				return v1.Value.TimeStamp.CompareTo (v2.Value.TimeStamp);
+			});
+			
+			foreach (ListViewValueInfo vinfo in values) {
+				CounterValue val = vinfo.Value;
+				string time = val.TimeStamp.ToLongTimeString ();
+				listViewStore.AppendValues (vinfo, vinfo.Serie.ColorIcon, vinfo.Serie.Counter.Name, time, val.Value.ToString (), val.TotalCount.ToString (), val.HasTimerTraces ? val.Duration.TotalMilliseconds.ToString () : "");
 			}
 		}
 		
@@ -432,7 +437,6 @@ namespace Mono.Instrumentation.Monitor
 		public void SetView (ChartView v)
 		{
 			originalView = v;
-			labelTitle.Markup = "<big><b>" + GLib.Markup.EscapeText (v.Name) + "</b></big>";
 			view = new ChartView ();
 			
 			if (v.EditedView != null)
@@ -446,15 +450,6 @@ namespace Mono.Instrumentation.Monitor
 			UpdateButtonStatus ();
 		}
 
-		protected virtual void OnButtonFlushClicked (object sender, System.EventArgs e)
-		{
-			GC.Collect ();
-			for (int n=0; n<500; n++) {
-				byte[] mem = new byte [1024 * 1000];
-				mem [0] = 0;
-			}
-		}
-		
 		bool uppdatingToggles;
 		
 		protected virtual void OnToggleListViewToggled (object sender, System.EventArgs e)
@@ -484,7 +479,7 @@ namespace Mono.Instrumentation.Monitor
 			UpdateCharts ();
 		}
 		
-		protected virtual void OnButtonSaveClicked (object sender, System.EventArgs e)
+		public void Save ()
 		{
 			originalView.CopyFrom (view);
 			view.Modified = false;
@@ -492,14 +487,14 @@ namespace Mono.Instrumentation.Monitor
 			UpdateButtonStatus ();
 		}
 
-		protected virtual void OnButtonSaveAsClicked (object sender, System.EventArgs e)
+		public void SaveAs ()
 		{
 			Application.Invoke (delegate {
 				parent.NewView (view);
 			});
 		}
 
-		protected virtual void OnButtonDeleteClicked (object sender, System.EventArgs e)
+		public void Delete ()
 		{
 			Application.Invoke (delegate {
 				parent.DeleteView (originalView);
