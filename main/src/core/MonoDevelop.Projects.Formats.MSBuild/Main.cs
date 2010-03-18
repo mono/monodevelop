@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				bf.Serialize (ms, oref);
 				Console.Error.WriteLine (Convert.ToBase64String (ms.ToArray ()));
 				
-				if (WaitHandle.WaitAny (new [] { builderEngine.WaitHandle, exitEvent }) == 0) {
+				if (WaitHandle.WaitAny (new WaitHandle[] { builderEngine.WaitHandle, exitEvent }) == 0) {
 					// Wait before exiting, so that the remote call that disposed the builder can be completed
 					System.Threading.Thread.Sleep (400);
 				}

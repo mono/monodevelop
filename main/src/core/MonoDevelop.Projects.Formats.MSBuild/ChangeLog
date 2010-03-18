@@ -1,3 +1,7 @@
+2010-03-18  Levi Bard  <levi@unity3d.com>
+
+	* Main.cs: Fix windows build. (Patch by Reapazor)
+
 2010-03-02  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.cs:
