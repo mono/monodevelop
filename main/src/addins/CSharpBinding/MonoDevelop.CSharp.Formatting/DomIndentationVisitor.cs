@@ -138,19 +138,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitCheckedStatement (CheckedStatement checkedStatement, object data)
 		{
 			FixStatementIndentation (checkedStatement.StartLocation);
-			return VisitEmbeddedStatement (checkedStatement.EmbeddedStatement);
-		}
-
-		object VisitEmbeddedStatement (MonoDevelop.CSharp.Dom.ICSharpNode embeddedStatement)
-		{
-			if (embeddedStatement == null)
-				return null;
-			if (!(embeddedStatement is BlockStatement))
-				IndentLevel++;
-			object result = embeddedStatement.AcceptVisitor (this, data);
-			if (!(embeddedStatement is BlockStatement))
-				IndentLevel--;
-			return result;
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement , checkedStatement.EmbeddedStatement);
 		}
 		
 		public override object VisitContinueStatement (ContinueStatement continueStatement, object data)
@@ -168,7 +156,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitFixedStatement (FixedStatement fixedStatement, object data)
 		{
 			FixStatementIndentation (fixedStatement.StartLocation);
-			return VisitEmbeddedStatement (fixedStatement.EmbeddedStatement);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, fixedStatement.EmbeddedStatement);
 		}
 		
 		public override object VisitForeachStatement (ForeachStatement foreachStatement, object data)
@@ -179,6 +167,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, ICSharpNode node)
 		{
+			if (node == null)
+				return null;
 			bool isBlock = node is BlockStatement;
 			int originalIndentLevel = curIndent.Level;
 			
@@ -207,7 +197,6 @@ namespace MonoDevelop.CSharp.Formatting
 						break;
 					}
 					changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, start, offset - start, startBrace));
-					curIndent.Level++;
 				}
 				break;
 			case BraceForcement.RemoveBraces:
@@ -223,10 +212,8 @@ namespace MonoDevelop.CSharp.Formatting
 						changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, start, offset1 - start + 1, null));
 						changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, end + 1, offset2 - end, null));
 						node = (ICSharpNode)block.FirstChild;
-						curIndent.Level++;
 						isBlock = false;
 					}
-					
 				}
 				break;
 			}
@@ -234,11 +221,11 @@ namespace MonoDevelop.CSharp.Formatting
 			if (isBlock) {
 				BlockStatement block = node as BlockStatement;
 				EnforceBraceStyle (braceStyle, block.LBrace, block.RBrace);
-				curIndent.Level++;
 				if (braceStyle == BraceStyle.NextLineShifted2)
 					curIndent.Level++;
 			}
 			
+			curIndent.Level++;
 			object result = isBlock ? base.VisitBlockStatement ((BlockStatement)node, null) : node.AcceptVisitor (this, null);
 			
 			curIndent.Level = originalIndentLevel;
@@ -323,7 +310,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitForStatement (ForStatement forStatement, object data)
 		{
 			FixStatementIndentation (forStatement.StartLocation);
-			return VisitEmbeddedStatement (forStatement.EmbeddedStatement);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForBraceForcement, forStatement.EmbeddedStatement);
 		}
 		
 		public override object VisitGotoStatement (GotoStatement gotoStatement, object data)
@@ -334,8 +321,16 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
 		{
-			// TODO
-			return VisitChildren (ifElseStatement, data);
+			if (ifElseStatement.Condition != null)
+				ifElseStatement.Condition.AcceptVisitor (this, data);
+			
+			if (ifElseStatement.TrueEmbeddedStatement != null)
+				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement , ifElseStatement.TrueEmbeddedStatement);
+			
+			if (ifElseStatement.TrueEmbeddedStatement != null)
+				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement, ifElseStatement.FalseEmbeddedStatement);
+			
+			return null;
 		}
 		
 		public override object VisitLabelStatement (LabelStatement labelStatement, object data)
@@ -347,7 +342,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitLockStatement (LockStatement lockStatement, object data)
 		{
 			FixStatementIndentation (lockStatement.StartLocation);
-			return VisitEmbeddedStatement (lockStatement.EmbeddedStatement);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement , lockStatement.EmbeddedStatement);
 		}
 		
 		public override object VisitReturnStatement (ReturnStatement returnStatement, object data)
@@ -395,19 +390,19 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitUncheckedStatement (UncheckedStatement uncheckedStatement, object data)
 		{
 			FixStatementIndentation (uncheckedStatement.StartLocation);
-			return VisitEmbeddedStatement (uncheckedStatement.EmbeddedStatement);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement , uncheckedStatement.EmbeddedStatement);
 		}
 		
 		public override object VisitUnsafeStatement (UnsafeStatement unsafeStatement, object data)
 		{
 			FixStatementIndentation (unsafeStatement.StartLocation);
-			return VisitEmbeddedStatement (unsafeStatement.Block);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement , unsafeStatement.Block);
 		}
 		
 		public override object VisitUsingStatement (UsingStatement usingStatement, object data)
 		{
 			FixStatementIndentation (usingStatement.StartLocation);
-			return VisitEmbeddedStatement (usingStatement.EmbeddedStatement);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.UsingBraceForcement , usingStatement.EmbeddedStatement);
 		}
 		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
@@ -419,11 +414,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitWhileStatement (WhileStatement whileStatement, object data)
 		{
 			FixStatementIndentation (whileStatement.StartLocation);
-			IndentLevel++;
-			object result = whileStatement.EmbeddedStatement.AcceptVisitor (this, data);
-			IndentLevel--;
-			FixStatementIndentation (whileStatement.EndLocation);
-			return result;
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.WhileBraceForcement , whileStatement.EmbeddedStatement);
 		}
 		
 		public override object VisitYieldStatement (YieldStatement yieldStatement, object data)

@@ -1,3 +1,10 @@
+2010-03-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/Statements/IfElseStatement.cs:
+	* MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs:
+	  Worked on indenter.
+
 2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Always
