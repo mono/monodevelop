@@ -49,7 +49,7 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 	}
 	
-	public class TimeCounter: ITimeTracker
+	class TimeCounter: ITimeTracker
 	{
 		DateTime begin;
 		TimerTraceList traceList;
@@ -95,6 +95,8 @@ namespace MonoDevelop.Core.Instrumentation
 			traceList.TotalTime = DateTime.Now - begin;
 			if (traceList.TotalTime.TotalSeconds < counter.MinSeconds)
 				counter.RemoveValue (traceList.ValueIndex);
+			else
+				counter.AddTime (traceList.TotalTime);
 			counter = null;
 		}
 		

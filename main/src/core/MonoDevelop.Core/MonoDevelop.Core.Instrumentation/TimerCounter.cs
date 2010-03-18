@@ -32,6 +32,10 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		TimeCounter lastTimer;
 		double minSeconds;
+		TimeSpan totalTime;
+		int totalCountWithTime;
+		TimeSpan minTime = TimeSpan.MaxValue;
+		TimeSpan maxTime;
 		
 		public TimerCounter (string name, CounterCategory category): base (name, category)
 		{
@@ -40,6 +44,38 @@ namespace MonoDevelop.Core.Instrumentation
 		public double MinSeconds {
 			get { return this.minSeconds; }
 			set { this.minSeconds = value; }
+		}
+		
+		public TimeSpan TotalTime {
+			get { return totalTime; }
+		}
+		
+		public TimeSpan AverageTime {
+			get { return totalCountWithTime > 0 ? new TimeSpan (totalTime.Ticks / totalCountWithTime) : TimeSpan.FromTicks (0); }
+		}
+		
+		public TimeSpan MinTime {
+			get { return totalCountWithTime > 0 ? this.minTime : TimeSpan.Zero; }
+		}
+
+		public TimeSpan MaxTime {
+			get { return this.maxTime; }
+		}
+		
+		public int CountWithDuration {
+			get { return totalCountWithTime; }
+		}
+		
+		internal void AddTime (TimeSpan time)
+		{
+			lock (values) {
+				totalCountWithTime++;
+				totalTime += time;
+				if (time < minTime)
+					minTime = time;
+				if (time > maxTime)
+					maxTime = time;
+			}
 		}
 		
 		public override void Trace (string message)

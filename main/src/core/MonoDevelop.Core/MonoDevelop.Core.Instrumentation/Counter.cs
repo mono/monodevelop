@@ -340,7 +340,7 @@ namespace MonoDevelop.Core.Instrumentation
 			get { return traces != null; }
 		}
 		
-		public TimeSpan TotalTime {
+		public TimeSpan Duration {
 			get {
 				if (traces == null)
 					return new TimeSpan (0);
