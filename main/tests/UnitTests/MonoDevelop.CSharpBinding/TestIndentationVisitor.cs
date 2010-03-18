@@ -371,7 +371,7 @@ foreach (var obj in col) {
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			
-			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
@@ -671,6 +671,143 @@ do {
 	}
 }", data.Document.Text);
 		}
+		
+		
+		[Test()]
+		public void TestForeachBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col) {}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col) {
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestForeachBracketPlacement2 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col) {;}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.NextLineShifted2;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col)
+			{
+				;
+			}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestForEachBraceForcementAdd ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col)
+		{
+		}
+		foreach (var obj in col) ;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.NextLine;
+			policy.ForEachBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col)
+		{
+		}
+		foreach (var obj in col)
+		{
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestForEachBraceForcementRemove ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col)
+		{
+			;
+			;
+		}
+		foreach (var obj in col)
+		{
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.NextLine;
+			policy.ForEachBraceForcement = BraceForcement.RemoveBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		foreach (var obj in col)
+		{
+			;
+			;
+		}
+		foreach (var obj in col)
+			;
+	}
+}", data.Document.Text);
+		}
+		
 		
 	}
 }*/
