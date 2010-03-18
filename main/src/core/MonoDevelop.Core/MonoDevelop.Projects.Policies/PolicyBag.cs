@@ -33,6 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core;
 
 
 namespace MonoDevelop.Projects.Policies
@@ -92,8 +93,15 @@ namespace MonoDevelop.Projects.Policies
 			
 			policies = new PolicyDictionary ();
 			foreach (DataNode node in data) {
-				ScopedPolicy val = PolicyService.DiffDeserialize (node);
-				policies.Add (val);
+				try {
+					ScopedPolicy val = PolicyService.DiffDeserialize (node);
+					policies.Add (val);
+				} catch (Exception ex) {
+					if (handler.SerializationContext.ProgressMonitor != null)
+						handler.SerializationContext.ProgressMonitor.ReportError (ex.Message, ex);
+					else
+						LoggingService.LogError (ex.Message, ex);
+				}
 			}
 		}
 		

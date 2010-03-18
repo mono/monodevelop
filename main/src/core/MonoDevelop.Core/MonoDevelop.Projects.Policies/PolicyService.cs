@@ -35,6 +35,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
+using System.Text;
 
 namespace MonoDevelop.Projects.Policies
 {
@@ -142,7 +143,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		internal static IEnumerable<ScopedPolicy> RawDeserializeXml (System.IO.StreamReader reader)
 		{
-			var xr = System.Xml.XmlReader.Create (reader);
+			var xr = new System.Xml.XmlTextReader (reader);
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
 			while (!xr.EOF && xr.MoveToContent () != System.Xml.XmlNodeType.None) {
 				DataNode node = configReader.Read (xr);
@@ -327,19 +328,73 @@ namespace MonoDevelop.Projects.Policies
 		
 		static void ApplyOverlay (DataItem baseline, DataItem diffNode)
 		{
+			DataValue rem = diffNode.Extract ("__removed") as DataValue;
+			if (rem != null) {
+				// Remove items marked as removed in the diff
+				List<DataNode> toRemove = new List<DataNode> ();
+				foreach (string removed in rem.Value.Split (' ')) {
+					if (removed [0] == '@') {
+						string aname = removed.Substring (1);
+						DataNode n = baseline.ItemData [aname];
+						if (n != null)
+							toRemove.Add (n);
+					} else {
+						int n = int.Parse (removed);
+						if (n < baseline.ItemData.Count )
+							toRemove.Add (baseline.ItemData [n]);
+					}
+				}
+				foreach (var nod in toRemove)
+					baseline.ItemData.Remove (nod);
+			}
+			
+			List<DataNode> toAdd = new List<DataNode> ();
+			HashSet<DataNode> applied = new HashSet<DataNode> ();
+			
 			foreach (DataNode node in diffNode.ItemData)
 			{
-				DataNode baselineNode = baseline[node.Name];
-				if (baselineNode == null)
-					throw new InvalidOperationException ("Diff node '" + node.Name + "' does not exist on " +
-					                                     "the baseline node. It is likely that the serialised " +
-					                                     "objects have default or null values, which cannot safely " +
-					                                     "be diff-serialised.");
+				DataNode baselineNode = null;
+				if (node is DataItem) {
+					DataItem item = (DataItem) node;
+					DataValue added = item.ItemData.Extract ("__added") as DataValue;
+					if (added != null) {
+						DataNode newNode = node;
+						DataValue val = item.ItemData.Extract ("__value") as DataValue;
+						if (val != null)
+							newNode = new DataValue (node.Name, val.Value);
+						int pos = int.Parse (added.Value);
+						if (pos > baseline.ItemData.Count)
+							pos = baseline.ItemData.Count;
+						baseline.ItemData.Insert (pos, newNode);
+						continue;
+					}
+					DataValue index = item.ItemData.Extract ("__index") as DataValue;
+					if (index != null) {
+						int n = int.Parse (index.Value);
+						baselineNode = baseline.ItemData [n];
+						DataValue val = item.ItemData.Extract ("__value") as DataValue;
+						if (val != null) {
+							baseline.ItemData [n] = new DataValue (node.Name, val.Value);
+							continue;
+						}
+					}
+				}
 				
-				DataValue val = baselineNode as DataValue;
-				if (val != null) {
-					baseline.ItemData.Remove (baselineNode);
-					baseline.ItemData.Add (node);
+				if (baselineNode == null)
+					baselineNode = baseline[node.Name];
+				
+				if (baselineNode != null && !applied.Add (baselineNode))
+					baselineNode = null;
+				
+				if (baselineNode == null) {
+					// New node
+					toAdd.Add (node);
+					continue;
+				}
+				
+				if (baselineNode is DataValue) {
+					int i = baseline.ItemData.IndexOf (baselineNode);
+					baseline.ItemData [i] = node;
 				} else {
 					ApplyOverlay ((DataItem)baselineNode, (DataItem)node);
 				}
@@ -368,15 +423,32 @@ namespace MonoDevelop.Projects.Policies
 		{
 			DataItem newItem = new DataItem ();
 			newItem.Name = baseline.Name;
+			HashSet<DataNode> extracted = new HashSet<DataNode> ();
 			
-			foreach (DataNode node in baseline.ItemData)
-			{
-				DataNode overlayNode = diffNode.ItemData[node.Name];
-				if (overlayNode == null)
-					throw new InvalidOperationException ("Baseline node '" + node.Name + "' does not exist on " +
-					                                     "the diff node. It is likely that the serialised " +
-					                                     "objects have default or null values, which cannot safely " +
-					                                     "be diff-serialised.");
+			for (int n=0; n<diffNode.ItemData.Count; n++) {
+				DataNode node = diffNode.ItemData [n];
+				
+				int index;
+				DataNode overlayNode = GetBestOverlayNode (baseline, node, out index);
+				
+				if (overlayNode != null && !extracted.Add (overlayNode))
+					overlayNode = null;
+				
+				if (overlayNode == null) {
+					// The node is new.
+					if (node is DataItem) {
+						((DataItem)node).ItemData.Add (new DataValue ("__added",n.ToString ()) {StoreAsAttribute = true});
+						newItem.ItemData.Add (node);
+					}
+					else {
+						DataItem nval = new DataItem ();
+						nval.Name = node.Name;
+						nval.ItemData.Add (new DataValue ("__added",n.ToString ()) {StoreAsAttribute = true});
+						nval.ItemData.Add (new DataValue ("__value",((DataValue)node).Value) {StoreAsAttribute = true});
+						newItem.ItemData.Add (nval);
+					}
+					continue;
+				}
 				
 				DataValue val = overlayNode as DataValue;
 				if (val != null) {
@@ -386,18 +458,119 @@ namespace MonoDevelop.Projects.Policies
 							throw new InvalidOperationException ("Data node '" + val.Name + "' has null value, which cannot safely " +
 							                                     "be diff-serialised.");
 						size += val.Value.Length;
-						newItem.ItemData.Add (val);
+						if (index == -1)
+							newItem.ItemData.Add (node);
+						else {
+							DataItem nval = new DataItem ();
+							nval.Name = node.Name;
+							nval.ItemData.Add (new DataValue ("__index", index.ToString ()) {StoreAsAttribute = true});
+							nval.ItemData.Add (new DataValue ("__value", ((DataValue)node).Value) {StoreAsAttribute = true});
+							newItem.ItemData.Add (nval);
+						}
 					}
 				} else {
-					DataItem childItem = ExtractOverlay ((DataItem) node, (DataItem) overlayNode, ref size);
+					DataItem childItem = ExtractOverlay ((DataItem) overlayNode, (DataItem) node, ref size);
 					if (childItem != null && childItem.HasItemData) {
 						size += childItem.Name.Length + childItem.Name.Length;
 						newItem.ItemData.Add (childItem);
+						if (index != -1)
+							childItem.ItemData.Add (new DataValue ("__index", index.ToString ()) {StoreAsAttribute = true});
 					}
 				}
 			}
 			
+			StringBuilder removed = new StringBuilder ();
+			for (int n=0; n<baseline.ItemData.Count; n++) {
+				DataNode node = baseline.ItemData [n];
+				if (!extracted.Contains (node)) {
+					if (removed.Length > 0)
+						removed.Append (' ');
+					if (baseline.UniqueNames && node is DataValue)
+						removed.Append ("@" + node.Name);
+					else
+						removed.Append (n.ToString ());
+				}
+			}
+			
+			if (removed.Length > 0)
+				newItem.ItemData.Add (new DataValue ("__removed", removed.ToString ()) {StoreAsAttribute = true});
 			return newItem;
+		}
+		
+		static DataNode GetBestOverlayNode (DataItem baseline, DataNode node, out int index)
+		{
+			int bestIndex = -1;
+			int bestSize = -1;
+			
+			for (int n=0; n<baseline.ItemData.Count; n++) {
+				DataNode bnode = baseline.ItemData [n];
+				if (bnode.Name != node.Name)
+					continue;
+				if (bestIndex == -1) {
+					bestIndex = n;
+					continue;
+				}
+				if (bestSize == -1)
+					bestSize = CalcDiffSize (baseline.ItemData [bestIndex], node);
+				
+				int size = CalcDiffSize (bnode, node);
+				if (size < bestSize) {
+					bestSize = size;
+					bestIndex = n;
+				}
+			}
+			if (bestIndex == -1) {
+				index = -1;
+				return null;
+			}
+			
+			if (bestSize != -1)
+				index = bestIndex;
+			else
+				index = -1; // There is only one item
+			
+			return baseline.ItemData [bestIndex];
+		}
+		
+		static int CalcDiffSize (DataNode node1, DataNode node2)
+		{
+			if (node1 is DataValue) {
+				DataValue d1 = (DataValue)node1;
+				DataValue d2 = node2 as DataValue;
+				if (d2 == null)
+					return int.MaxValue;
+				if (d1.Value == d2.Value)
+					return 0;
+				else
+					return d2.Value.Length;
+			} else {
+				DataItem it1 = (DataItem) node1;
+				DataItem it2 = node2 as DataItem;
+				if (it2 == null)
+					return int.MaxValue;
+				int size = 0;
+				foreach (DataNode n2 in it2.ItemData) {
+					DataNode n1 = it1.ItemData [n2.Name];
+					if (n1 != null)
+						size += CalcDiffSize (n1, n2);
+					else
+						size += CalcSize (n2);
+				}
+				return size;
+			}
+		}
+		
+		static int CalcSize (DataNode node)
+		{
+			DataValue val = node as DataValue;
+			if (val != null)
+				return node.Name.Length + (val.Value != null ? val.Value.Length : 0);
+			else {
+				int size = 0;
+				foreach (DataNode n in ((DataItem)node).ItemData)
+					size += CalcSize (n);
+				return size;
+			}
 		}
 		
 		public static PolicySet GetPolicySet (string name)
