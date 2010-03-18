@@ -57,26 +57,42 @@
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad" 
 			class = "MonoDevelop.DesignerSupport.ToolboxPad" 
-			_label="Toolbox" 
+			_label="Toolbox"
 			icon = "md-toolbox-pad"
-			defaultPlacement="right"/>
+			defaultLayout="*"
+			defaultPlacement="Right"
+			defaultStatus="AutoHide"
+			/>
 		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad" 
 			class = "MonoDevelop.DesignerSupport.PropertyPad" 
 			_label="Properties"
 			icon = "md-properties-pad"
-			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right" />
+			defaultLayout="*"
+			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right"
+			defaultStatus="AutoHide"
+			/>
 		<Pad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad" 
 			class = "MonoDevelop.DesignerSupport.DocumentOutlinePad" 
 			_label="Document Outline"
 			icon="md-pad-document-outline"
+			defaultLayout="*"
 			defaultPlacement="MonoDevelop.DesignerSupport.PropertyPad/center; bottom"
+			defaultStatus="AutoHide"
 			/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
-		<ContextPad id = "MonoDevelop.DesignerSupport.ToolboxPad" />
-		<ContextPad id = "MonoDevelop.DesignerSupport.PropertyPad" />
-		<ContextPad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad" />
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
+		<Layout id="VisualDesign" _name="Visual Design">
+			<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" status="Dockable" />
+			<LayoutPad id="MonoDevelop.DesignerSupport.PropertyPad" status="Dockable" />
+			<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" status="Dockable" />
+		</Layout>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts/Solution">
+		<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" placement="Right" status="AutoHide" />
+		<LayoutPad id="MonoDevelop.DesignerSupport.PropertyPad" placement="Right" status="AutoHide" />
+		<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" placement="Right" status="AutoHide" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
