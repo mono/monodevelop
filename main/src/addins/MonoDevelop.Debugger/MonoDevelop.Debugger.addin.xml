@@ -20,24 +20,19 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
-			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
-			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultPlacement = "Bottom" icon="md-view-debug-locals" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
-			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultPlacement = "Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
-			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultPlacement = "Bottom" icon="md-view-debug-breakpoints" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
-			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
-			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultPlacement = "Bottom" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
+			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
+			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-locals" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
+			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-breakpoints" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
+			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
+			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.WatchPad/Right Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
+			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.StackTracePad/Center Bottom" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
-		<ContextPad id = "MonoDevelop.Debugger.WatchPad" />
-		<ContextPad id = "MonoDevelop.Debugger.LocalsPad" />
-		<ContextPad id = "MonoDevelop.Debugger.StackTracePad" />
-		<ContextPad id = "MonoDevelop.Debugger.BreakpointPad" />
-		<ContextPad id = "MonoDevelop.Debugger.ThreadsPad" />
-		<ContextPad id = "MonoDevelop.Debugger.ImmediatePad" />
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
+		<Layout id="Debug" _name="Debug" />
 	</Extension>
-
+	
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class="MonoDevelop.Debugger.Initializer" />
 	</Extension>

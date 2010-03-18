@@ -1,3 +1,8 @@
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml: Set the default location for
+	  debug pads. Register a new Debug layout.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
