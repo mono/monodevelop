@@ -36,6 +36,7 @@ using System.Text;
 using System.Xml;
 
 using MonoDevelop.Xml.StateEngine; // for XmlChar
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Xml.Formatting
 {
@@ -98,7 +99,7 @@ namespace MonoDevelop.Xml.Formatting
 
 		Stream base_stream;
 		TextWriter source; // the input TextWriter to .ctor().
-		TextWriter writer;
+		TextWritterWrapper writer;
 		// It is used for storing xml:space, xml:lang and xmlns values.
 		StringWriter preserver;
 		string preserved_name;
@@ -128,7 +129,8 @@ namespace MonoDevelop.Xml.Formatting
 		
 		XmlFormatingSettings formatSettings = new XmlFormatingSettings ();
 		XmlFormatingSettings defaultFormatSettings = new XmlFormatingSettings ();
-
+		internal TextStylePolicy TextPolicy;
+		
 		// Constructors
 
 		public XmlFormatterWriter (string filename, Encoding encoding)
@@ -163,7 +165,7 @@ namespace MonoDevelop.Xml.Formatting
 			if (writer == null)
 				throw new ArgumentNullException ("writer");
 			XmlNameTable name_table = new NameTable ();
-			this.writer = writer;
+			this.writer = new TextWritterWrapper (writer, this);
 			if (writer is StreamWriter)
 				base_stream = ((StreamWriter) writer).BaseStream;
 			source = writer;
@@ -180,8 +182,9 @@ namespace MonoDevelop.Xml.Formatting
 		
 		Dictionary<XmlNode,XmlFormatingSettings> formatMap = new Dictionary<XmlNode, XmlFormatingSettings> ();
 		
-		public void WriteNode (XmlNode node, XmlFormattingPolicy formattingPolicy)
+		public void WriteNode (XmlNode node, XmlFormattingPolicy formattingPolicy, TextStylePolicy textPolicy)
 		{
+			this.TextPolicy = textPolicy;
 			formatMap.Clear ();
 			defaultFormatSettings = formattingPolicy.DefaultFormat;
 			foreach (XmlFormatingSettings format in formattingPolicy.Formats) {
@@ -839,8 +842,15 @@ namespace MonoDevelop.Xml.Formatting
 						prefix, localName, namespaceUri);
 			}
 
-			if (formatSettings.AttributesInNewLine)
+			writer.AttributesPerLine++;
+			if (formatSettings.WrapAttributes && writer.AttributesPerLine > 1)
+				writer.MarkBlockStart ();
+			
+			if (formatSettings.AttributesInNewLine || writer.AttributesPerLine > formatSettings.MaxAttributesPerLine) {
+				writer.MarkBlockEnd ();
 				WriteIndentAttribute ();
+				writer.AttributesPerLine = 1;
+			}
 			else if (state != WriteState.Start)
 				writer.Write (' ');
 
@@ -857,7 +867,7 @@ namespace MonoDevelop.Xml.Formatting
 					preserver = new StringWriter ();
 				else
 					preserver.GetStringBuilder ().Length = 0;
-				writer = preserver;
+				writer = new TextWritterWrapper (preserver, this);
 
 				if (!isNSDecl) {
 					is_preserved_xmlns = false;
@@ -931,8 +941,8 @@ namespace MonoDevelop.Xml.Formatting
 			if (state != WriteState.Attribute)
 				throw StateError ("End of attribute");
 
-			if (writer == preserver) {
-				writer = source;
+			if (writer.Wrapped == preserver) {
+				writer = new TextWritterWrapper (source, this);
 				string value = preserver.ToString ();
 				if (is_preserved_xmlns) {
 					if (preserved_name.Length > 0 &&
@@ -979,6 +989,18 @@ namespace MonoDevelop.Xml.Formatting
 			}
 
 			writer.Write (formatSettings.QuoteChar);
+			
+			if (writer.InBlock) {
+				writer.MarkBlockEnd ();
+				if (writer.Column > TextPolicy.FileWidth) {
+					WriteIndentAttribute ();
+					writer.WriteBlock (true);
+					writer.AttributesPerLine++;
+				} else {
+					writer.WriteBlock (false);
+				}
+			}
+			
 			state = WriteState.Element;
 		}
 
@@ -1870,6 +1892,69 @@ namespace MonoDevelop.Xml.Formatting
 
 		#endregion
 	}
-
 	
+	class TextWritterWrapper: TextWriter
+	{
+		public TextWriter Wrapped;
+		XmlFormatterWriter formatter;
+		StringBuilder sb;
+		bool inBlock;
+		bool charsWritten;
+		
+		public int Column;
+		public int AttributesPerLine;
+		
+		public TextWritterWrapper (TextWriter wrapped, XmlFormatterWriter formatter)
+		{
+			this.Wrapped = wrapped;
+			this.formatter = formatter;
+		}
+		
+		public void MarkBlockStart ()
+		{
+			sb = new StringBuilder ();
+			inBlock = true;
+		}
+		
+		public void MarkBlockEnd ()
+		{
+			inBlock = false;
+		}
+		
+		public void WriteBlock (bool wrappedLine)
+		{
+			if (wrappedLine)
+				Write (sb.ToString ());
+			else
+				Wrapped.Write (sb.ToString ());
+			sb = null;
+		}
+		
+		public bool InBlock {
+			get { return this.inBlock; }
+		}
+		
+		public override Encoding Encoding {
+			get { return Wrapped.Encoding; }
+		}
+		
+		public override void Write (char c)
+		{
+			if (inBlock)
+				sb.Append (c);
+			else
+				Wrapped.Write (c);
+			
+			if (c == '\n') {
+				AttributesPerLine = 0;
+				Column = 0;
+			}
+			else {
+				if (c == '\t' && formatter.TextPolicy != null)
+					Column += formatter.TextPolicy.TabWidth;
+				else
+					Column++;
+			}
+		}
+	}
 }

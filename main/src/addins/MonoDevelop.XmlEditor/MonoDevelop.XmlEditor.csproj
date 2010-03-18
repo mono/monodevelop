@@ -160,6 +160,9 @@
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormatterWriter.cs" />
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormattingPolicy.cs" />
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormatter.cs" />
+    <Compile Include="MonoDevelop.Xml.Formatting\XmlFormattingPolicyPanel.cs" />
+    <Compile Include="MonoDevelop.Xml.Formatting\XmlFormattingPolicyPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="XmlEditor.glade">
@@ -173,6 +176,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\objects.xml">
       <LogicalName>objects.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Xml.Formatting\MonoXmlPolicy.xml">
+      <LogicalName>MonoXmlPolicy.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

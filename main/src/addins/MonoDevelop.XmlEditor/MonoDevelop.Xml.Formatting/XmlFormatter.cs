@@ -30,10 +30,12 @@ using System.Xml;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects.Text;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Xml.Formatting
 {
-	public class XmlFormatter
+	public class XmlFormatter: IPrettyPrinter
 	{
 		public bool CanFormat (string mimeType)
 		{
@@ -42,39 +44,43 @@ namespace MonoDevelop.Xml.Formatting
 		
 		public string FormatXml (TextStylePolicy textPolicy, XmlFormattingPolicy formattingPolicy, string input)
 		{
-			StringWriter sw = new StringWriter ();
-			
-			List<XmlFormatingSettings> formats = new List<XmlFormatingSettings> ();
-			XmlFormatingSettings f = new XmlFormatingSettings ();
-			f.AttributesInNewLine = true;
-			f.AlignAttributeValues = true;
-			f.EmptyLinesAfterStart = 1;
-			f.EmptyLinesBeforeEnd = 1;
-			f.SpacesAfterAssignment = f.SpacesBeforeAssignment = 1;
-			f.ScopeXPath.Add ("Addin");
-			f.ScopeXPath.Add ("Addin/Extension/Condition");
-			formats.Add (f);
-			
-			f = new XmlFormatingSettings ();
-			f.EmptyLinesBeforeStart = 1;
-			f.EmptyLinesAfterEnd = 1;
-			f.ScopeXPath.Add ("Addin/*");
-			formats.Add (f);
-			
+			XmlDocument doc;
 			try {
-				XmlDocument doc = new XmlDocument ();
+				doc = new XmlDocument ();
 				doc.LoadXml (input);
-				
-				XmlFormatterWriter xmlWriter = new XmlFormatterWriter (sw);
-				xmlWriter.WriteNode (doc, formattingPolicy);
-				xmlWriter.Flush ();
-			} catch (Exception ex) {
-				// Ignore malfored xml
-				Console.WriteLine ("pp:" + ex);
+			} catch {
+				// Ignore malformed xml
 				return input;
 			}
-
+			
+			StringWriter sw = new StringWriter ();
+			XmlFormatterWriter xmlWriter = new XmlFormatterWriter (sw);
+			xmlWriter.WriteNode (doc, formattingPolicy, textPolicy);
+			xmlWriter.Flush ();
 			return sw.ToString ();
+		}
+		
+		public void OnTheFlyFormat (object textEditorData, MonoDevelop.Projects.Dom.IType callingType, MonoDevelop.Projects.Dom.IMember callingMember, MonoDevelop.Projects.Dom.Parser.ProjectDom dom, MonoDevelop.Projects.Dom.ICompilationUnit unit, MonoDevelop.Projects.Dom.DomLocation endLocation)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
+		{
+			XmlFormattingPolicy xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeType);
+			TextStylePolicy txtPol = policyParent.Get<TextStylePolicy> (mimeType);
+			return FormatXml (txtPol, xmlPol, input);
+		}
+		
+		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
+		{
+			return input;
+		}
+		
+		public bool SupportsOnTheFlyFormatting {
+			get {
+				return false;
+			}
 		}
 	}
 }

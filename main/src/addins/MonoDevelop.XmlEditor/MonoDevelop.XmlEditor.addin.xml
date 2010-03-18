@@ -132,6 +132,18 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
-		<Class class="MonoDevelop.XmlEditor.XmlFormatter" />
+		<Class class="MonoDevelop.Xml.Formatting.XmlFormatter" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+		<PolicyType class="MonoDevelop.Xml.Formatting.XmlFormattingPolicy" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="MonoXmlPolicy.xml" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
+		<Panel id = "XmlFormatting" _label = "XML Format" mimeType="application/xml" class = "MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanel" />
 	</Extension>
 </Addin>

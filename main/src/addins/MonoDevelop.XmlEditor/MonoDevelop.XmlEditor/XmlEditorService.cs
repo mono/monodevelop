@@ -467,7 +467,7 @@ namespace MonoDevelop.XmlEditor
 			fs.AddFilter(allFiles);
 			
 			fs.Modal = true;
-			fs.TransientFor = MessageService.RootWindow;
+			fs.TransientFor = IdeApp.Workbench.RootWindow;
 			fs.DestroyWithParent = true;
 			int response = fs.Run ();
 			

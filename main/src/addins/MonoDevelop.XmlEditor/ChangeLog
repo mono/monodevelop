@@ -1,3 +1,19 @@
+2010-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.XmlEditor.addin.xml:
+	* MonoDevelop.XmlEditor/XmlEditorService.cs:
+	* MonoDevelop.Xml.Formatting/XmlFormatter.cs:
+	* MonoDevelop.Xml.Formatting/MonoXmlPolicy.xml:
+	* MonoDevelop.Xml.Formatting/XmlFormatterWriter.cs:
+	* MonoDevelop.Xml.Formatting/XmlFormattingPolicy.cs:
+	* MonoDevelop.Xml.Formatting/XmlFormattingPolicyPanel.cs:
+	* MonoDevelop.Xml.Formatting/XmlFormattingPolicyPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanelWidget.cs:
+	  New xml formatting policy.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

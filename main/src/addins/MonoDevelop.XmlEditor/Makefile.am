@@ -25,11 +25,14 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs \
 	MonoDevelop.Xml.Formatting/XmlFormatter.cs \
 	MonoDevelop.Xml.Formatting/XmlFormatterWriter.cs \
 	MonoDevelop.Xml.Formatting/XmlFormattingPolicy.cs \
+	MonoDevelop.Xml.Formatting/XmlFormattingPolicyPanel.cs \
+	MonoDevelop.Xml.Formatting/XmlFormattingPolicyPanelWidget.cs \
 	MonoDevelop.Xml.StateEngine/Parser.cs \
 	MonoDevelop.Xml.StateEngine/State.cs \
 	MonoDevelop.Xml.StateEngine/XDom.cs \
@@ -91,6 +94,7 @@ DATA_FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
+	MonoDevelop.Xml.Formatting/MonoXmlPolicy.xml \
 	MonoDevelop.XmlEditor.addin.xml \
 	XmlEditor.glade
 
