@@ -176,9 +176,12 @@ namespace MonoDevelop.Ide
 		{
 			ShowMessage (image, message, false);
 		}
-		
+		string lastText = null;
 		void ShowMessage (Image image, string message, bool isMarkup)
 		{
+			if (message == lastText)
+				return;
+			lastText = message;
 			DispatchService.AssertGuiThread ();
 			if (currentStatusImage != image) {
 				if (currentStatusImage != null) 

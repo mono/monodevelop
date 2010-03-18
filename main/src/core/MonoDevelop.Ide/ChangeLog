@@ -1,5 +1,10 @@
 2010-03-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Optimized
+	  status bar update.
+
+2010-03-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Fixed 'Bug
 	  589148 - Focus does not return to Find/Replace in Files
 	  dialog'.
