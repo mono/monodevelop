@@ -948,8 +948,10 @@ namespace MonoDevelop.Gettext
 				int number = 1, found = 0;
 				double count = widget.catalog.Count;
 				ListStore newStore = new ListStore (typeof(string), typeof(bool), typeof(string), typeof(string), typeof(CatalogEntry), typeof(Gdk.Color), typeof(int), typeof(Gdk.Color));
+				StatusBarContext statusBar = null;
 				DispatchService.GuiSyncDispatch (delegate {
-					IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
+					statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
+					statusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
 				});
 				
 				try {
@@ -959,7 +961,7 @@ namespace MonoDevelop.Gettext
 						number++;
 						if (number % 50 == 0) {
 							DispatchService.GuiSyncDispatch (delegate {
-								IdeApp.Workbench.StatusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
+								statusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
 							});
 						}
 						if (!widget.ShouldFilter (entry, widget.filter)) {
@@ -981,7 +983,7 @@ namespace MonoDevelop.Gettext
 					DispatchService.GuiSyncDispatch (delegate {
 						widget.store.Dispose ();
 						widget.treeviewEntries.Model = widget.store = newStore;
-						IdeApp.Workbench.StatusBar.EndProgress ();
+						statusBar.EndProgress ();
 						IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
 					});
 				} /*else {
