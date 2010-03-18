@@ -332,7 +332,7 @@ namespace CBinding
 			}
 			
 			if (!in_project && info.IncludedFiles.ContainsKey (currentFileName)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
+				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
 					foreach (LanguageItem li in fi.Containers ()) {
 						if (itemFullName == li.FullName)
 							container = li;
@@ -346,7 +346,7 @@ namespace CBinding
 			if (in_project) {
 				AddItemsWithParent (list, info.AllItems (), container);
 			} else {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
+				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
 					AddItemsWithParent (list, fi.AllItems (), container);
 				}
 			}
@@ -417,7 +417,7 @@ namespace CBinding
 			
 			// Search included files
 			if (!in_project && info.IncludedFiles.ContainsKey (currentFileName)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
+				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
 					foreach (Member li in fi.Members) {
 						if (instanceName == li.Name && li.IsPointer == isPointer) {
 							container = li.InstanceType;
@@ -447,7 +447,7 @@ namespace CBinding
 			if (in_project) {
 				AddMembersWithParent (list, info.InstanceMembers (), container);
 			} else {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
+				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
 					AddMembersWithParent (list, fi.InstanceMembers (), container);
 				}
 			}
@@ -505,7 +505,7 @@ namespace CBinding
 			string currentFileName = Document.FileName;
 			
 			if (info.IncludedFiles.ContainsKey (currentFileName)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFileName]) {
+				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
 					foreach (LanguageItem li in fi.Containers ())
 						if (li.Parent == null)
 							list.Add (new CompletionData (li));

@@ -60,7 +60,7 @@ namespace CBinding
 			string currentFile = document.FileName;
 			
 			if (info.IncludedFiles.ContainsKey (currentFile)) {
-				foreach (FileInformation fi in info.IncludedFiles[currentFile]) {
+				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFile]) {
 					foreach (Function f in fi.Functions) {
 						if (f.Name == functionName) {
 							functions.Add (f);
