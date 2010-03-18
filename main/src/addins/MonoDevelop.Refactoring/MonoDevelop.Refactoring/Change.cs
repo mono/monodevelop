@@ -187,7 +187,7 @@ namespace MonoDevelop.Refactoring
 		
 		public override void PerformChange (IProgressMonitor monitor, RefactorerContext rctx)
 		{
-			IdeApp.OpenFiles (new string[] { FileName });
+			IdeApp.Workbench.OpenDocument (FileName);
 		}
 	}
 	
