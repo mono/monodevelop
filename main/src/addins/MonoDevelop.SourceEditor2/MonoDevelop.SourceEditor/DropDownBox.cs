@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				layout.SetText (value);
-				QueueResize ();
+//				QueueResize ();
 			}
 		}
 		
@@ -283,7 +283,7 @@ namespace MonoDevelop.SourceEditor
 			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2, arrowWidth, arrowHeight);
 			if (DrawRightBorder)
 				win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);			
-			return true;
+			return false;
 		}
 		
 		public EventHandler ItemSet;

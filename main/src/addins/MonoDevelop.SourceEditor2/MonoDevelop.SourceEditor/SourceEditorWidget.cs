@@ -834,7 +834,6 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				IdeApp.Workbench.StatusBar.ClearCaretState ();
 				classBrowser.StatusBox.ShowCaretState ();
-				classBrowser.StatusBox.UpdateWidth ();
 			}
 		}
 		

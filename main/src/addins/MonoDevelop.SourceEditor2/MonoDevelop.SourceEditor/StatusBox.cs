@@ -47,7 +47,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				layout.SetText (value);
-				QueueResize (); 
 			}
 		}
 		
@@ -185,16 +184,16 @@ namespace MonoDevelop.SourceEditor
 			Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
 			                Allocation.X - padding, Allocation.Y - padding, Allocation.Width + padding * 2, Allocation.Height + padding * 2);
 			
-			int xPos = Allocation.Left;
+//			int xPos = Allocation.Left;
 			
 			//constrain the text area so it doesn't get rendered under the arrows
-			var textArea = new Gdk.Rectangle (xPos + 2, Allocation.Y + ySpacing, arrowXPos - xPos - 2, Allocation.Height - ySpacing);
+//			var textArea = new Gdk.Rectangle (xPos + 2, Allocation.Y + ySpacing, arrowXPos - xPos - 2, Allocation.Height - ySpacing);
 			args.Window.DrawLayout (Style.TextGC (StateType.Normal), Allocation.X + 2, Allocation.Y+ ySpacing, layout);
 			//Style.PaintLayout (Style, win, state, true, textArea, this, "", textArea.X, textArea.Y, layout);
 			
 			if (DrawRightBorder)
 				win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);			
-			return true;
+			return false;
 		}
 		
 	}

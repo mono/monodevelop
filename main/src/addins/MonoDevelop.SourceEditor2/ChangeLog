@@ -1,3 +1,10 @@
+2010-03-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/StatusBox.cs:
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Optimized
+	  text editor caret movement/selection speed.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
