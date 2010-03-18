@@ -32,6 +32,7 @@ using System.Reflection;
 namespace MonoDevelop.CSharp.Formatting
 {
 	public enum BraceStyle {
+		DoNotChange,
 		EndOfLine,
 		EndOfLineWithoutSpace,
 		NextLine,
@@ -42,8 +43,7 @@ namespace MonoDevelop.CSharp.Formatting
 	public enum BraceForcement {
 		DoNotChange,
 		RemoveBraces,
-		AddBraces,
-		RemoveBracesForSingleLine
+		AddBraces
 	}
 	
 	public enum ArrayInitializerPlacement {

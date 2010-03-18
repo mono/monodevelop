@@ -1,6 +1,7 @@
 <CodeStyle version="1.0" mimeType="text/x-csharp">
 
 	<Type name = "BraceStyle">
+		<Value _displayName="Do not change">DoNotChange</Value>
 		<Value _displayName="End of line">EndOfLine</Value>
 		<Value _displayName="End of line without space">EndOfLineWithoutSpace</Value>
 		<Value _displayName="Next line">NextLine</Value>

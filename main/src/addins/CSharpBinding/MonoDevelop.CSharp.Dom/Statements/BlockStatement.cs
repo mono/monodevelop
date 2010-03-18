@@ -32,15 +32,15 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class BlockStatement : AbstractCSharpNode
 	{
-		public INode LBrace {
+		public CSharpTokenNode LBrace {
 			get {
-				return GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
 			}
 		}
 		
-		public INode RBrace {
+		public CSharpTokenNode RBrace {
 			get {
-				return GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
 			}
 		}
 		

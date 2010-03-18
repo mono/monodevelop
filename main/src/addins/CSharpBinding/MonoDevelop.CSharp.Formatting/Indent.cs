@@ -65,6 +65,12 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
+		public string SingleIndent {
+			get {
+				return "\t";
+			}
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format ("[Indent: Level={0}, ExtraSpaces={1}]", Level, ExtraSpaces);
