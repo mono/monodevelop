@@ -1,3 +1,11 @@
+2010-03-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Fixed 'Bug
+	  589148 - Focus does not return to Find/Replace in Files
+	  dialog'.
+
+	* gtk-gui/objects.xml: 
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

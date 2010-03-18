@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.showReplace = showReplace;
 			this.Build ();
 			this.Title = showReplace ? GettextCatalog.GetString ("Replace in Files") : GettextCatalog.GetString ("Find in Files");
-
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			if (!showReplace) {
 				buttonReplace.Destroy ();
 			}
@@ -416,24 +416,27 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public static void ShowFind ()
 		{
-			if (!IsCurrentDialogClosed)
-				return;
+			if (!IsCurrentDialogClosed) {
+				currentFindDialog.Destroy ();
+			}
 			currentFindDialog = new FindInFilesDialog (false);
 			currentFindDialog.Show ();
 		}
 		
 		public static void ShowReplace ()
 		{
-			if (!IsCurrentDialogClosed)
-				return;
+			if (!IsCurrentDialogClosed) {
+				currentFindDialog.Destroy ();
+			}
 			currentFindDialog = new FindInFilesDialog (true);
 			currentFindDialog.Show ();
 		}
 		
 		public static void FindInPath (string path)
 		{
-			if (!IsCurrentDialogClosed)
-				return;
+			if (!IsCurrentDialogClosed) {
+				currentFindDialog.Destroy ();
+			}
 			currentFindDialog = new FindInFilesDialog (false, path);
 			currentFindDialog.Show ();
 		}
