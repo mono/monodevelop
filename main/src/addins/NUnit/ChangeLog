@@ -1,3 +1,8 @@
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelopNUnit.addin.xml: Set the default location for
+	  unit tests pads. Register a new Unit Testing layout.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

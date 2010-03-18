@@ -74,23 +74,25 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<SolutionPad id = "MonoDevelop.NUnit.TestPad" defaultPlacement = "Left" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.NUnit.TestPad">
+		<SolutionPad id = "MonoDevelop.NUnit.TestPad" defaultLayout="*" defaultPlacement = "Left" defaultStatus="AutoHide" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.NUnit.TestPad">
 			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
 			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
 			<NodeBuilder id = "TestNode" class = "MonoDevelop.NUnit.TestNodeBuilder"/>
 		</SolutionPad>
-		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom"/>
+		<Pad id="MonoDevelop.NUnit.TestResultsPad" _label="Test Results" icon="nunit-pad-icon" class="MonoDevelop.NUnit.TestResultsPad" defaultPlacement = "Bottom" defaultLayout="UnitTesting" defaultStatus="AutoHide"/>
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
+		<Layout id="UnitTesting" _name="Unit Testing">
+			<LayoutPad id="MonoDevelop.NUnit.TestPad" status="Dockable" />
+			<LayoutPad id="MonoDevelop.NUnit.TestResultsPad" status="Dockable" />
+		</Layout>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "NUnitAssemblyGroupNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupNodeBuilder"/>
 		<NodeBuilder id = "NUnitAssemblyGroupConfigurationNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupConfigurationNodeBuilder"/>
 		<NodeBuilder id = "TestAssemblyNodeBuilder" class = "MonoDevelop.NUnit.TestAssemblyNodeBuilder"/>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
-		<ContextPad id = "MonoDevelop.NUnit.TestPad" />
-		<ContextPad id = "MonoDevelop.NUnit.TestResultsPad" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
