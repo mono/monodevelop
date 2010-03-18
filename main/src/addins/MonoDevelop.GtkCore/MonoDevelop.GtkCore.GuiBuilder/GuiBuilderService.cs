@@ -85,6 +85,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public static Stetic.Application SteticApp {
 			get {
+				// Stetic is not thread safe, so all has to be done in the gui thread
+				DispatchService.AssertGuiThread ();
 				if (steticApp == null) {
 					steticApp = Stetic.ApplicationFactory.CreateApplication (Stetic.IsolationMode.None);
 					steticApp.AllowInProcLibraries = false;

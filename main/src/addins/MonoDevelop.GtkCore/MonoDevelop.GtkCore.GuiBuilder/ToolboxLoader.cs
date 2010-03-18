@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using Stetic;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -57,7 +58,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
-			foreach (ComponentType ct in GuiBuilderService.SteticApp.GetComponentTypes (filename)) {
+			ComponentType[] types = null;
+			DispatchService.GuiSyncDispatch (delegate {
+				// Stetic is not thread safe, it has to be used from the gui thread
+				types = GuiBuilderService.SteticApp.GetComponentTypes (filename);
+			});
+			foreach (ComponentType ct in types) {
 				if (ct.Category == "window")
 					continue;
 				ComponentToolboxNode cn = new ComponentToolboxNode (ct);
