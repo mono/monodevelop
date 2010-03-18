@@ -1,6 +1,11 @@
 2010-03-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestIndentationVisitor.cs: Added
+	  some indenter unit tests.
+
+2010-03-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/TestIndentationVisitor.cs: Added
 	  some indenter tests.
 
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>

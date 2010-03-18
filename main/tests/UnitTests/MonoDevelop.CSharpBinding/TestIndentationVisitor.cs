@@ -809,5 +809,320 @@ do {
 		}
 		
 		
+		[Test()]
+		public void TestIfBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		if (true) {}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		if (true) {
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestIfElseBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		if (true) {} else {}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		if (true) {
+		} else {
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestFixedBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		fixed (object* obj = &obj)
+
+;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.NextLineShifted;
+			policy.FixedBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		fixed (object* obj = &obj)
+			{
+			;
+			}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestForBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		for (;;) {;}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		for (;;){
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestCheckedBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		checked {;}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		checked{
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestUncheckedBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		unchecked {;}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		unchecked{
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestLockBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		lock (this)
+		{
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		lock (this) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestUnsafeBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		unsafe
+		{
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		unsafe {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestUsingBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		using (var e = new E())
+		{
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		using (var e = new E()) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestWhileBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		while (true)
+		{
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		while (true) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+			[Test()]
+		public void TestDoWhileBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+		do
+		{
+			;
+		} while (true);
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		do {
+			;
+		} while (true);
+	}
+}", data.Document.Text);
+		}
+		
 	}
 }*/
