@@ -31,14 +31,14 @@ using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
-	public class MonoDevelopStatusBar : Gtk.Statusbar
+	class MonoDevelopStatusBar : Gtk.Statusbar, StatusBar
 	{
 		ProgressBar progressBar = new ProgressBar ();
 		Frame textStatusBarPanel = new Frame ();
-		
 		
 		Label statusLabel;
 		Label modeLabel;
@@ -47,8 +47,20 @@ namespace MonoDevelop.Ide
 		HBox statusBox;
 		Image currentStatusImage;
 		EventBox eventBox;
+		List<StatusBarContextImpl> contexts = new List<StatusBarContextImpl> ();
+		MainStatusBarContextImpl mainContext;
+		StatusBarContextImpl activeContext;
+		
+		public StatusBar MainContext {
+			get { return mainContext; }
+		}
+		
 		internal MonoDevelopStatusBar()
 		{
+			mainContext = new MainStatusBarContextImpl (this);
+			activeContext = mainContext;
+			contexts.Add (mainContext);
+			
 			Frame originalFrame = (Frame)Children[0];
 //			originalFrame.WidthRequest = 8;
 //			originalFrame.Shadow = ShadowType.In;
@@ -57,7 +69,7 @@ namespace MonoDevelop.Ide
 			BorderWidth = 0;
 			
 			DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
-			Gtk.Widget dockBar = wb.WorkbenchLayout.DockFrame.ExtractDockBar (PositionType.Bottom);
+			Gtk.Widget dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
 			dockBar.NoShowAll = true;
 			PackStart (dockBar, false, false, 0);
 			
@@ -115,16 +127,65 @@ namespace MonoDevelop.Ide
 			originalFrame.HideAll ();
 			progressBar.Visible = false;
 			
+			StatusBarContext completionStatus = null;
+			
 			// todo: Move this to the CompletionWindowManager when it's possible.
 			CompletionWindowManager.WindowShown += delegate {
 				CompletionListWindow wnd = CompletionWindowManager.Wnd;
-				if (wnd != null && wnd.List != null && wnd.List.CategoryCount > 1)
-					ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (Commands.TextEditorCommands.ShowCompletionWindow, null).AccelKey));
+				if (wnd != null && wnd.List != null && wnd.List.CategoryCount > 1) {
+					if (completionStatus == null)
+						completionStatus = CreateContext ();
+					completionStatus.ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (Commands.TextEditorCommands.ShowCompletionWindow, null).AccelKey));
+				}
 			};
 			
 			CompletionWindowManager.WindowClosed += delegate {
-				ShowReady ();
+				if (completionStatus != null) {
+					completionStatus.Dispose ();
+					completionStatus = null;
+				}
 			};
+		}
+		
+		internal bool IsCurrentContext (StatusBarContextImpl ctx)
+		{
+			return ctx == activeContext;
+		}
+		
+		internal void Remove (StatusBarContextImpl ctx)
+		{
+			if (ctx == mainContext)
+				return;
+			
+			StatusBarContextImpl oldActive = activeContext;
+			contexts.Remove (ctx);
+			UpdateActiveContext ();
+			if (oldActive != activeContext) {
+				// Removed the active context. Update the status bar.
+				activeContext.Update ();
+			}
+		}
+		
+		internal void UpdateActiveContext ()
+		{
+			for (int n = contexts.Count - 1; n >= 0; n--) {
+				StatusBarContextImpl ctx = contexts [n];
+				if (ctx.StatusChanged) {
+					if (ctx != activeContext) {
+						activeContext = ctx;
+						activeContext.Update ();
+					}
+					return;
+				}
+			}
+			throw new InvalidOperationException (); // There must be at least the main context
+		}
+		
+		public StatusBarContext CreateContext ()
+		{
+			StatusBarContextImpl ctx = new StatusBarContextImpl (this);
+			contexts.Add (ctx);
+			return ctx;
 		}
 		
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
@@ -177,7 +238,7 @@ namespace MonoDevelop.Ide
 			ShowMessage (image, message, false);
 		}
 		string lastText = null;
-		void ShowMessage (Image image, string message, bool isMarkup)
+		public void ShowMessage (Image image, string message, bool isMarkup)
 		{
 			if (message == lastText)
 				return;
@@ -203,7 +264,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public StatusIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
+		public StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
 		{
 			DispatchService.AssertGuiThread ();
 			
@@ -261,7 +322,7 @@ namespace MonoDevelop.Ide
 		}		
 		#endregion
 		
-		public class StatusIcon : IDisposable
+		public class StatusIcon : StatusBarIcon
 		{
 			MonoDevelopStatusBar statusBar;
 			internal EventBox box;
@@ -326,7 +387,7 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
-			public bool AnimateIcon ()
+			bool AnimateIcon ()
 			{
 				box.Remove (box.Child);
 				
@@ -346,6 +407,281 @@ namespace MonoDevelop.Ide
 				astep = (astep + 1) % 20;
 				return true;
 			}
+		}
+	}
+	
+	/// <summary>
+	/// The MonoDevelop status bar.
+	/// </summary>
+	public interface StatusBar: StatusBarContext
+	{
+		/// <summary>
+		/// Show caret state information
+		/// </summary>
+		void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode);
+		
+		/// <summary>
+		/// Hides the caret state information
+		/// </summary>
+		void ClearCaretState ();
+		
+		/// <summary>
+		/// Shows a status icon in the toolbar. The icon can be removed by disposing
+		/// the StatusBarIcon instance.
+		/// </summary>
+		StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf);
+		
+		/// <summary>
+		/// Creates a status bar context. The returned context can be used to show status information
+		/// which will be cleared when the context is disposed. When several contexts are created,
+		/// the status bar will show the status of the latest created context.
+		/// </summary>
+		StatusBarContext CreateContext ();
+		
+		// Clears the status bar information
+		void ShowReady ();
+	}
+	
+	public interface StatusBarContext: IDisposable
+	{
+		/// <summary>
+		/// Shows a message with an error icon
+		/// </summary>
+		void ShowError (string error);
+		
+		/// <summary>
+		/// Shows a message with a warning icon
+		/// </summary>
+		void ShowWarning (string warning);
+		
+		/// <summary>
+		/// Shows a message in the status bar
+		/// </summary>
+		void ShowMessage (string message);
+		
+		/// <summary>
+		/// Shows a message in the status bar
+		/// </summary>
+		void ShowMessage (string message, bool isMarkup);
+		
+		/// <summary>
+		/// Shows a message in the status bar
+		/// </summary>
+		void ShowMessage (Image image, string message);
+		
+		/// <summary>
+		/// Shows a progress bar, with the provided label next to it
+		/// </summary>
+		void BeginProgress (string name);
+		
+		/// <summary>
+		/// Shows a progress bar, with the provided label and icon next to it
+		/// </summary>
+		void BeginProgress (Image image, string name);
+		
+		/// <summary>
+		/// Sets the progress fraction. It can only be used after calling BeginProgress.
+		/// </summary>
+		void SetProgressFraction (double work);
+
+		/// <summary>
+		/// Hides the progress bar shown with BeginProgress
+		/// </summary>
+		void EndProgress ();
+		
+		/// <summary>
+		/// Pulses the progress bar shown with BeginProgress
+		/// </summary>
+		void Pulse ();
+	}
+	
+	public interface StatusBarIcon : IDisposable
+	{
+		/// <summary>
+		/// Tooltip of the status icon
+		/// </summary>
+		string ToolTip { get; set; }
+		
+		/// <summary>
+		/// Event box which can be used to subscribe mouse events on the icon
+		/// </summary>
+		EventBox EventBox { get; }
+		
+		/// <summary>
+		/// The icon
+		/// </summary>
+		Gdk.Pixbuf Image { get; set; }
+		
+		/// <summary>
+		/// Sets alert mode. The icon will flash for the provided number of seconds.
+		/// </summary>
+		void SetAlertMode (int seconds);
+	}
+	
+	class StatusBarContextImpl: StatusBarContext
+	{
+		Image image;
+		string message;
+		bool isMarkup;
+		double progressFraction;
+		bool showProgress;
+		protected MonoDevelopStatusBar statusBar;
+		
+		internal bool StatusChanged { get; set; }
+		
+		internal StatusBarContextImpl (MonoDevelopStatusBar statusBar)
+		{
+			this.statusBar = statusBar;
+		}
+		
+		public void Dispose ()
+		{
+			statusBar.Remove (this);
+		}
+		
+		public void ShowError (string error)
+		{
+			ShowMessage (new Image (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), error);
+		}
+		
+		public void ShowWarning (string warning)
+		{
+			ShowMessage (new Gtk.Image (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), warning);
+		}
+		
+		public void ShowMessage (string message)
+		{
+			ShowMessage (null, message, false);
+		}
+		
+		public void ShowMessage (string message, bool isMarkup)
+		{
+			ShowMessage (null, message, isMarkup);
+		}
+		
+		public void ShowMessage (Image image, string message)
+		{
+			ShowMessage (image, message, false);
+		}
+		
+		bool InitialSetup ()
+		{
+			if (!StatusChanged) {
+				StatusChanged = true;
+				statusBar.UpdateActiveContext ();
+				return true;
+			} else
+				return false;
+		}
+		
+		public void ShowMessage (Image image, string message, bool isMarkup)
+		{
+			this.image = image;
+			this.message = message;
+			this.isMarkup = isMarkup;
+			if (InitialSetup ())
+				return;
+			if (statusBar.IsCurrentContext (this))
+				statusBar.ShowMessage (image, message, isMarkup);
+		}
+		
+		public void BeginProgress (string name)
+		{
+			image = null;
+			isMarkup = false;
+			progressFraction = 0;
+			message = name;
+			showProgress = true;
+			if (InitialSetup ())
+				return;
+			if (statusBar.IsCurrentContext (this))
+				statusBar.BeginProgress (name);
+		}
+		
+		public void BeginProgress (Image image, string name)
+		{
+			this.image = image;
+			isMarkup = false;
+			progressFraction = 0;
+			message = name;
+			showProgress = true;
+			if (InitialSetup ())
+				return;
+			if (statusBar.IsCurrentContext (this))
+				statusBar.BeginProgress (name);
+		}
+		
+		public void SetProgressFraction (double work)
+		{
+			progressFraction = work;
+			if (InitialSetup ())
+				return;
+			if (statusBar.IsCurrentContext (this))
+				statusBar.SetProgressFraction (work);
+		}
+		
+		public void EndProgress ()
+		{
+			showProgress = false;
+			message = string.Empty;
+			progressFraction = 0;
+			if (InitialSetup ())
+				return;
+			if (statusBar.IsCurrentContext (this))
+				statusBar.EndProgress ();
+		}
+		
+		public void Pulse ()
+		{
+			showProgress = true;
+			if (InitialSetup ())
+				return;
+			if (statusBar.IsCurrentContext (this))
+				statusBar.Pulse ();
+		}
+		
+		internal void Update ()
+		{
+			if (showProgress) {
+				statusBar.BeginProgress (image, message);
+				statusBar.SetProgressFraction (progressFraction);
+			} else {
+				statusBar.EndProgress ();
+				statusBar.ShowMessage (image, message, isMarkup);
+			}
+		}
+	}
+	
+	class MainStatusBarContextImpl: StatusBarContextImpl, StatusBar
+	{
+		public MainStatusBarContextImpl (MonoDevelopStatusBar statusBar): base (statusBar)
+		{
+			StatusChanged = true;
+		}
+		
+		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
+		{
+			statusBar.ShowCaretState (line, column, selectedChars, isInInsertMode);
+		}
+		
+		public void ClearCaretState ()
+		{
+			statusBar.ClearCaretState ();
+		}
+		
+		public StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
+		{
+			return statusBar.ShowStatusIcon (pixbuf);
+		}
+		
+		public StatusBarContext CreateContext ()
+		{
+			return statusBar.CreateContext ();
+		}
+		
+		public void ShowReady ()
+		{
+			statusBar.ShowReady ();
 		}
 	}
 }

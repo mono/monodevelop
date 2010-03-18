@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Codons
 {
@@ -72,7 +73,9 @@ namespace MonoDevelop.Ide.Codons
 			"is docked in auto-hide mode.")]
 		string dockLabelProvider = null;
 		
-		string[] contexts;
+		[NodeAttribute ("defaultLayout", "Name of the layouts (comma separated list) on which this pad should be visible by default")]
+		string[] defaultLayouts;
+		
 		IDockItemLabelProvider cachedDockLabelProvider;
 		bool initializeCalled;
 		
@@ -104,12 +107,16 @@ namespace MonoDevelop.Ide.Codons
 		}
 		
 		public IconId Icon {
-			get { return icon; }
+			get { return !string.IsNullOrEmpty (icon) ? icon : "md-output-icon"; }
 		}
 		
 		public string ClassName {
 			get { return className; }
 		}
+		
+		public IList<string> DefaultLayouts {
+			get { return this.defaultLayouts; }
+		}		
 		
 		/// <summary>
 		/// Returns the default placement of the pad: left, right, top, bottom.
@@ -125,10 +132,6 @@ namespace MonoDevelop.Ide.Codons
 		
 		public DockItemStatus DefaultStatus {
 			get { return defaultStatus; }
-		}
-		
-		public string[] Contexts {
-			get { return contexts; }
 		}
 		
 		public bool Initialized {

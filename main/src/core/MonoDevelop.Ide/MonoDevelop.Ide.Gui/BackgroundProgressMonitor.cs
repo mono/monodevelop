@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui
 	internal class BackgroundProgressMonitor: SimpleProgressMonitor
 	{
 		string title;
-		MonoDevelopStatusBar.StatusIcon icon;
+		StatusBarIcon icon;
 		
 		public BackgroundProgressMonitor (string title, IconId iconName)
 		{

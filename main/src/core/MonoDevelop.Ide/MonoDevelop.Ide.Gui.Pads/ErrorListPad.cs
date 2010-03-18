@@ -830,11 +830,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 				box = new VBox ();
 			box.Spacing = 3;
 			
-			box.PackStart (ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), false, false, 0);
+			Gdk.Pixbuf errorIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu);
+			Gdk.Pixbuf noErrorIcon = ImageService.MakeGrayscale (errorIcon);
+			Gdk.Pixbuf warningIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu);
+			Gdk.Pixbuf noWarningIcon = ImageService.MakeGrayscale (warningIcon);
+			
+			Gtk.Image errorImage = new Gtk.Image (errorIcon);
+			Gtk.Image warningImage = new Gtk.Image (warningIcon);
+			
+			box.PackStart (errorImage, false, false, 0);
 			Label errors = new Gtk.Label ();
 			box.PackStart (errors, false, false, 0);
 			
-			box.PackStart (ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), false, false, 0);
+			box.PackStart (warningImage, false, false, 0);
 			Label warnings = new Gtk.Label ();
 			box.PackStart (warnings, false, false, 0);
 			
@@ -847,7 +855,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 						wc++;
 				}
 				errors.Text = ec.ToString ();
+				errorImage.Pixbuf = ec > 0 ? errorIcon : noErrorIcon;
 				warnings.Text = wc.ToString ();
+				warningImage.Pixbuf = wc > 0 ? warningIcon : noWarningIcon;
 			};
 			
 			updateHandler (null, null);

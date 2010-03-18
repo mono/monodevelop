@@ -77,12 +77,11 @@ namespace MonoDevelop.Ide.Gui
 				monitor.Step (1);
 				
 				Counters.Initialization.Trace ("Initializing Layout");
-				workbench.InitializeLayout (new SdiWorkbenchLayout ());
+				workbench.InitializeLayout ();
 				monitor.Step (1);
 				
 				((Gtk.Window)workbench).Visible = false;
 				workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
-				PropertyService.PropertyChanged += new EventHandler<PropertyChangedEventArgs> (TrackPropertyChanges);
 				FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (IdeApp.Workbench.RecentOpen.InformFileRemoved));
 				FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (IdeApp.Workbench.RecentOpen.InformFileRenamed));
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
@@ -102,21 +101,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		/// <remarks>
-		/// This method handles the redraw all event for specific changed IDE properties
-		/// </remarks>
-		void TrackPropertyChanges(object sender, MonoDevelop.Core.PropertyChangedEventArgs e)
-		{
-			if (e.OldValue != e.NewValue) {
-				switch (e.Key) {
-					case "MonoDevelop.Core.Gui.VisualStyle":
-					case "CoreProperties.UILanguage":
-						workbench.RedrawAllComponents();
-						break;
-				}
-			}
-		}
-		
 		internal void Show (string workbenchMemento)
 		{
 			Counters.Initialization.Trace ("Realizing Root Window");
@@ -127,7 +111,6 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Memento = memento;
 			Counters.Initialization.Trace ("Making Visible");
 			RootWindow.Visible = true;
-			workbench.Context = WorkbenchContext.Edit;
 			
 			// now we have an layout set notify it
 			Counters.Initialization.Trace ("Setting layout");
@@ -159,7 +142,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Document ActiveDocument {
 			get {
-				if (workbench == null || workbench.ActiveWorkbenchWindow == null)
+				if (workbench.ActiveWorkbenchWindow == null)
 					return null;
 				return WrapDocument (workbench.ActiveWorkbenchWindow); 
 			}
@@ -178,7 +161,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (pads == null) {
 					pads = new List<Pad> ();
-					foreach (PadCodon pc in workbench.ActivePadContentCollection)
+					foreach (PadCodon pc in workbench.PadContentCollection)
 						WrapPad (pc);
 				}
 				return pads;
@@ -212,28 +195,17 @@ namespace MonoDevelop.Ide.Gui
 			if (!PropertyService.IsMac)
 				RootWindow.Present ();
 		}
-		
-		public WorkbenchContext Context {
-			get { return workbench.Context; }
-			set {
-				if (workbench.Context != value) {
-					workbench.Context = value;
-					pads = null;
-				}
-			}
-		}
-		
+				
 		public bool FullScreen {
 			get { return workbench.FullScreen; }
 			set { workbench.FullScreen = value; }
 		}
 		
 		public string CurrentLayout {
-			get { return workbench != null && workbench.WorkbenchLayout != null ? workbench.WorkbenchLayout.CurrentLayout : ""; }
+			get { return workbench.CurrentLayout; }
 			set {
-				if (value != workbench.WorkbenchLayout.CurrentLayout)
-				{
-					workbench.WorkbenchLayout.CurrentLayout = value;
+				if (value != workbench.CurrentLayout) {
+					workbench.CurrentLayout = value;
 					if (LayoutChanged != null)
 						LayoutChanged (this, EventArgs.Empty);
 				}
@@ -241,16 +213,16 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public string[] Layouts {
-			get { return workbench.WorkbenchLayout != null ? workbench.WorkbenchLayout.Layouts : new string[0]; }
+			get { return workbench.Layouts; }
 		}
 		
 		public ProgressMonitorManager ProgressMonitors {
 			get { return monitors; }
 		}
 		
-		public MonoDevelopStatusBar StatusBar {
+		public StatusBar StatusBar {
 			get {
-				return workbench.StatusBar;
+				return workbench.StatusBar.MainContext;
 			}
 		}
 		
@@ -264,7 +236,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void DeleteLayout (string name)
 		{
-			workbench.WorkbenchLayout.DeleteLayout (name);
+			workbench.DeleteLayout (name);
 			if (LayoutChanged != null)
 				LayoutChanged (this, EventArgs.Empty);
 		}
@@ -464,9 +436,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ToggleMaximize ()
 		{
-			SdiWorkbenchLayout sdiLayout = this.workbench.WorkbenchLayout as SdiWorkbenchLayout;
-			if (sdiLayout != null)
-				sdiLayout.ToggleFullViewMode ();
+			workbench.ToggleFullViewMode ();
 		}
 
 		public Document NewDocument (string defaultName, string mimeType, string content)
@@ -873,7 +843,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void ReorderDocuments (int oldPlacement, int newPlacement)
 		{
-			IViewContent content = workbench.ViewContentCollection[oldPlacement];
+			IViewContent content = workbench.InternalViewContentCollection[oldPlacement];
 			workbench.InternalViewContentCollection.RemoveAt (oldPlacement);
 			workbench.InternalViewContentCollection.Insert (newPlacement, content);
 			

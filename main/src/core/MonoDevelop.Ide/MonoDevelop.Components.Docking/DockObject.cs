@@ -272,13 +272,13 @@ namespace MonoDevelop.Components.Docking
 			prefSize = obj.prefSize;
 		}
 		
-		public virtual bool IsNextToMargin (Gtk.PositionType margin)
+		public virtual bool IsNextToMargin (Gtk.PositionType margin, bool visibleOnly)
 		{
 			if (ParentGroup == null)
 				return true;
-			if (!ParentGroup.IsNextToMargin (margin))
+			if (!ParentGroup.IsNextToMargin (margin, visibleOnly))
 				return false;
-			return ParentGroup.IsChildNextToMargin (margin, this);
+			return ParentGroup.IsChildNextToMargin (margin, this, visibleOnly);
 		}
 	}
 }

@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal Pad (DefaultWorkbench workbench, PadCodon content)
 		{
-			this.window    = workbench.WorkbenchLayout.GetPadWindow (content);
+			this.window    = workbench.GetPadWindow (content);
 			this.window.PadHidden += delegate {
 				IsOpenedAutomatically = false;
 			};

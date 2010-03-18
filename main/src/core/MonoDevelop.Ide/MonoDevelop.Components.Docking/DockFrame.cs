@@ -444,6 +444,15 @@ namespace MonoDevelop.Components.Docking
 			container.RelayoutWidgets ();
 		}
 
+		internal void SetDockLocation (DockItem item, string placement)
+		{
+			bool vis = item.Visible;
+			DockItemStatus stat = item.Status;
+			item.ResetMode ();
+			container.Layout.RemoveItemRec (item);
+			AddItemAtLocation (container.Layout, item, placement, vis, stat);
+		}
+		
 		DockLayout GetDefaultLayout ()
 		{
 			DockLayout group = new DockLayout (this);
@@ -486,7 +495,12 @@ namespace MonoDevelop.Components.Docking
 		
 		DockGroupItem AddDefaultItem (DockGroup grp, DockItem it)
 		{
-			string[] positions = it.DefaultLocation.Split (';');
+			return AddItemAtLocation (grp, it, it.DefaultLocation, it.DefaultVisible, it.DefaultStatus);
+		}
+		
+		DockGroupItem AddItemAtLocation (DockGroup grp, DockItem it, string location, bool visible, DockItemStatus status)
+		{
+			string[] positions = location.Split (';');
 			foreach (string pos in positions) {
 				int i = pos.IndexOf ('/');
 				if (i == -1) continue;
@@ -501,8 +515,8 @@ namespace MonoDevelop.Components.Docking
 						continue;
 					}
 					DockGroupItem dgt = g.AddObject (it, dpos, id);
-					dgt.SetVisible (it.DefaultVisible);
-					dgt.Status = it.DefaultStatus;
+					dgt.SetVisible (visible);
+					dgt.Status = status;
 					return dgt;
 				}
 			}

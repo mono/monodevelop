@@ -637,7 +637,7 @@ namespace MonoDevelop.Components.Docking
 				} else
 					boundTabStrip.CurrentTab = 0;
 			}
-			if (Frame.CompactGuiLevel == 3 && IsNextToMargin (PositionType.Bottom))
+			if (Frame.CompactGuiLevel == 3 && IsNextToMargin (PositionType.Bottom, true))
 				boundTabStrip.BottomPadding = 3;
 			else
 				boundTabStrip.BottomPadding = 0;
@@ -1097,26 +1097,26 @@ namespace MonoDevelop.Components.Docking
 			reader.ReadEndElement ();
 		}
 
-		public bool IsChildNextToMargin (Gtk.PositionType margin, DockObject obj)
+		public bool IsChildNextToMargin (Gtk.PositionType margin, DockObject obj, bool visibleOnly)
 		{
 			if (type == DockGroupType.Tabbed)
 				return true;
 			else if (type == DockGroupType.Horizontal) {
 				if (margin == PositionType.Top || margin == PositionType.Bottom)
 					return true;
-				int i = VisibleObjects.IndexOf (obj);
+				int i = visibleOnly ? VisibleObjects.IndexOf (obj) : Objects.IndexOf (obj);
 				if (margin == PositionType.Left && i == 0)
 					return true;
-				if (margin == PositionType.Right && i == VisibleObjects.Count - 1)
+				if (margin == PositionType.Right && i == (visibleOnly ? VisibleObjects.Count - 1 : Objects.Count - 1))
 					return true;
 			}
 			else if (type == DockGroupType.Vertical) {
 				if (margin == PositionType.Left || margin == PositionType.Right)
 					return true;
-				int i = VisibleObjects.IndexOf (obj);
+				int i = visibleOnly ? VisibleObjects.IndexOf (obj) : Objects.IndexOf (obj);
 				if (margin == PositionType.Top && i == 0)
 					return true;
-				if (margin == PositionType.Bottom && i == VisibleObjects.Count - 1)
+				if (margin == PositionType.Bottom && i == (visibleOnly ? VisibleObjects.Count - 1 : Objects.Count - 1))
 					return true;
 			}
 			return false;

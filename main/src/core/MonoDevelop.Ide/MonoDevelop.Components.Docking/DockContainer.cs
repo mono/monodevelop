@@ -434,7 +434,8 @@ namespace MonoDevelop.Components.Docking
 		public IEnumerable<Rectangle> GetShadedAreas ()
 		{
 			List<Gdk.Rectangle> rects = new List<Gdk.Rectangle> ();
-			layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, rects);
+			if (layout != null)
+				layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, rects);
 			return rects;
 		}
 		

@@ -308,7 +308,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/SolutionPadCodon.cs \
 	MonoDevelop.Ide.Codons/TaskListViewCodon.cs \
 	MonoDevelop.Ide.Codons/WorkbenchContextCodon.cs \
-	MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs \
 	MonoDevelop.Ide.Commands/CustomStringTagProvider.cs \
 	MonoDevelop.Ide.Commands/EditCommands.cs \
 	MonoDevelop.Ide.Commands/FileCommands.cs \
@@ -346,6 +345,7 @@ FILES =  \
 	MonoDevelop.Ide.Extensions/CustomToolExtensionNode.cs \
 	MonoDevelop.Ide.Extensions/IAddFileDialogHandler.cs \
 	MonoDevelop.Ide.Extensions/IOpenFileDialogHandler.cs \
+	MonoDevelop.Ide.Extensions/LayoutExtensionNode.cs \
 	MonoDevelop.Ide.Extensions/MimeTypeNode.cs \
 	MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs \
 	MonoDevelop.Ide.Extensions/OptionsDialogSection.cs \
@@ -537,7 +537,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadFontChanger.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
-	MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs \
 	MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \

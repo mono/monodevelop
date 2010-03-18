@@ -294,6 +294,11 @@ namespace MonoDevelop.Components.Docking
 				return widget.Parent != null && widget.Visible;
 			}
 		}
+		
+		public void SetDockLocation (string location)
+		{
+			frame.SetDockLocation (this, location);
+		}
 
 		internal void SetFocus ()
 		{

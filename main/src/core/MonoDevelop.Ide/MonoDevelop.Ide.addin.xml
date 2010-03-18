@@ -23,7 +23,6 @@
 	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
 	<ConditionType id="activeproject" type="MonoDevelop.Ide.Codons.ProjectActiveCondition" />
 	<ConditionType id="activelanguage" type="MonoDevelop.Ide.Codons.LanguageActiveCondition" />
-	<ConditionType id="activecontext" type="MonoDevelop.Ide.Codons.WorkbenchContextCondition" />
 	
 	<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection">
 		<ExtensionNode name="Section" type="MonoDevelop.Ide.Extensions.OptionsDialogSection" />
@@ -282,13 +281,17 @@
 		<ExtensionNode name="Resolver" type="MonoDevelop.Ide.Gui.Content.TextEditorResolverProviderCodon"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/WorkbenchLayouts" name = "Workbench Layouts">
+		<Description>This extension point allows registering layouts and pads to be shown in each layout</Description>
+		<ExtensionNode name="Layout" type="MonoDevelop.Ide.Extensions.LayoutExtensionNode"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CustomTools" name = "Custom code generation tools">
 		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
 		<ExtensionNode name="Tool" type="MonoDevelop.Ide.Extensions.CustomToolExtensionNode"/>
 	</ExtensionPoint>
 	
 	<!-- Extensions -->
-	
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"
@@ -1676,12 +1679,38 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout" _label = "Files" icon="system-file-manager" class = "MonoDevelop.Ide.Gui.Pads.FileScout"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" defaultPlacement = "Bottom" defaultStatus="AutoHide" _label = "Error List" icon="gtk-dialog-error" class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad" dockLabelProvider="MonoDevelop.Ide.Gui.Pads.ErrorPadLabelProvider"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultPlacement = "Bottom" _label = "Task List" icon="md-task-list-icon" class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
-		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultPlacement = "Left" _label = "Help" icon="gtk-help" class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.FileScout"
+			_label = "Files"
+			icon="system-file-manager"
+			class = "MonoDevelop.Ide.Gui.Pads.FileScout"
+			defaultPlacement="Left"
+			defaultStatus="AutoHide"
+			defaultLayout="*" />
+			
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
+			_label = "Error List"
+			icon="gtk-dialog-error"
+			class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
+			dockLabelProvider="MonoDevelop.Ide.Gui.Pads.ErrorPadLabelProvider"
+			defaultPlacement = "Bottom"
+			defaultStatus="AutoHide"
+			defaultLayout="*"/>
+			
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
+			_label = "Task List"
+			icon="md-task-list-icon"
+			class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
+			defaultPlacement = "Bottom"
+			defaultStatus="AutoHide"
+			defaultLayout="*"/>
+			
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.HelpTree"
+			defaultPlacement = "Left"
+			_label = "Help"
+			icon="gtk-help"
+			class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
-		<SolutionPad id = "ProjectPad" defaultPlacement = "Left" _label = "Solution" icon = "md-solution" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad">
+		<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left">
 			<ContextMenu path="/MonoDevelop/Ide/ContextMenu/ProjectPad" />
 			<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
@@ -1698,7 +1727,7 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
 		</SolutionPad>
 		
-		<SolutionPad id = "ClassPad" defaultPlacement = "Left" _label = "Classes" icon = "md-class" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad">
+		<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-class" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultLayout="Solution" defaultPlacement = "Left" defaultStatus="AutoHide">
 			<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
 			<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
 			<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />
@@ -1724,25 +1753,11 @@
 		</Category>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts">
-		<WorkbenchContext id = "Edit">
-			<ContextPad id = "ProjectPad" />
-			<ContextPad id = "ClassPad" />
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" />
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" />
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"/>
-		</WorkbenchContext>
-		<WorkbenchContext id = "Debug">
-			<ContextPad id = "ProjectPad"/>
-			<ContextPad id = "ClassPad" defaultVisible = "False"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.FileScout" defaultVisible = "False"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.HelpTree" defaultVisible = "False"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
-			<ContextPad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad" defaultVisible = "False"/>
-		</WorkbenchContext>
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
+		<Layout id="Default" _name="Default">
+			<LayoutPad id="ProjectPad" status="AutoHide" />
+		</Layout>
+		<Layout id="Solution" _name="Solution" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
@@ -1981,19 +1996,18 @@
 		</ItemSet>
 		
 		<ItemSet id = "View" _label = "_View">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />
+			<SeparatorItem id = "ViewSeparator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
+			<SeparatorItem id = "ViewSeparator2" />
+			<ItemSet id = "ViewPads" _label = "Pads">
+				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+			</ItemSet>
 			<ItemSet id = "ViewToolbars" _label = "Toolbars">
 				<CommandItem id = "MonoDevelop.Components.Commands.CommandSystemCommands.ToolbarList" />
 			</ItemSet>
-			<SeparatorItem id = "ViewItemsSeparator0" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
 			<SeparatorItem id = "ViewItemsSeparator" />
-			<ItemSet id = "ViewLayouts" _label = "_Layouts">
-				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />
-				<SeparatorItem id = "ViewItemsSeparator" />
-				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
-				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
-			</ItemSet>
-			<SeparatorItem id = "ViewItemsSeparator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />

@@ -1,3 +1,68 @@
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Updated.
+
+	* MonoDevelop.Ide/Ide.cs:
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs: Use the new
+	  status bar model.
+
+	* MonoDevelop.Ide/ImageService.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Show error and
+	  warning icons in grayscale when there are no
+	  errors/warnings.
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: Don't sort layouts
+	  by name. Use the order in the extension point.
+
+	* MonoDevelop.Components.Docking/DockGroup.cs:
+	* MonoDevelop.Components.Docking/DockObject.cs:
+	* MonoDevelop.Components.Docking/DockGroupItem.cs: Impoved the
+	  logic that selects a dock bar where to show an autohide item
+	  by default.
+
+	* MonoDevelop.Components.Docking/DockItem.cs:
+	* MonoDevelop.Components.Docking/DockFrame.cs:
+	* MonoDevelop.Components.Docking/DockContainer.cs: Allow
+	  setting the dock location of an item.
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Extensions/LayoutExtensionNode.cs: Added
+	  extension point for registering stock layous. Assigned
+	  default layouts for existing pads.
+
+	* gtk-gui/objects.xml:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	  Flush.
+
+	* MonoDevelop.Ide.Gui/InternalLog.cs:
+	* MonoDevelop.Ide.Gui/AddinUpdateHandler.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	* MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs: New status
+	  bar model. The status bar widget is hidden behind an
+	  interface. Added support for status bar contexts. Status
+	  information displayed through a context is cleaned up when
+	  the context is disposed.
+
+	* MonoDevelop.Ide.Gui/Pad.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/IPadContainer.cs:
+	* MonoDevelop.Ide.Gui/WorkbenchMemento.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceLayout.cs: Merged
+	  SdiWorkspaceLayout into DefaultWorkbench. Removed support
+	  for workbench contexts.
+
+	* MonoDevelop.Ide.Codons/PadCodon.cs: Allow setting the
+	  default layout of a pad.
+
+	* MonoDevelop.Ide.Codons/WorkbenchContextCondition.cs: Not
+	  required anymore.
+
+	* MonoDevelop.Ide.Tasks/TaskStore.cs: Show a better status
+	  message when the end of the task list is reached.
+
 2010-03-18  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Ide/Ide.cs:

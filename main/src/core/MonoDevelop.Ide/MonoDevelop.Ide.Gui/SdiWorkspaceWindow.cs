@@ -254,7 +254,7 @@ namespace MonoDevelop.Ide.Gui
 					myUntitledTitle = baseName + System.IO.Path.GetExtension (content.UntitledName);
 					while (found) {
 						found = false;
-						foreach (IViewContent windowContent in workbench.ViewContentCollection) {
+						foreach (IViewContent windowContent in workbench.InternalViewContentCollection) {
 							string title = windowContent.WorkbenchWindow.Title;
 							if (title.EndsWith("*") || title.EndsWith("+")) {
 								title = title.Substring(0, title.Length - 1);
@@ -296,16 +296,16 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
 		{
-			bool wasActive = workbench.WorkbenchLayout.ActiveWorkbenchwindow == this;
+			bool wasActive = workbench.ActiveWorkbenchWindow == this;
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force, wasActive);
 			args.Cancel = false;
 			OnClosing (args);
 			if (args.Cancel)
 				return false;
 			if (fromMenu == true) {
-				workbench.WorkbenchLayout.RemoveTab (tabControl.PageNum(this));
+				workbench.RemoveTab (tabControl.PageNum(this));
 			} else {
-				workbench.WorkbenchLayout.RemoveTab (pageNum);
+				workbench.RemoveTab (pageNum);
 			}
 			
 			content.ContentNameChanged -= new EventHandler(SetTitleEvent);

@@ -112,6 +112,13 @@ namespace MonoDevelop.Ide
 			return result;
 		}
 
+		public static Gdk.Pixbuf MakeGrayscale (Gdk.Pixbuf icon)
+		{
+			Gdk.Pixbuf copy = icon.Copy ();
+			copy.SaturateAndPixelate (copy, 0, false);
+			return copy;
+		}
+		
 		public static Gdk.Pixbuf GetPixbuf (string name)
 		{
 			return GetPixbuf (name, Gtk.IconSize.Button);

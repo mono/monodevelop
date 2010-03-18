@@ -259,6 +259,39 @@ namespace MonoDevelop.Components.Docking
 			// Determine the best position for docking the item
 			
 			if (Allocation.IsEmpty) {
+				int uniqueTrue = -1;
+				int uniqueFalse = -1;
+				for (int n=0; n<4; n++) {
+					bool inMargin = IsNextToMargin ((PositionType) n, false);
+					if (inMargin) {
+						if (uniqueTrue == -1)
+							uniqueTrue = n;
+						else
+							uniqueTrue = -2;
+					} else {
+						if (uniqueFalse == -1)
+							uniqueFalse = n;
+						else
+							uniqueFalse = -2;
+					}
+				}
+				
+				if (uniqueTrue >= 0) {
+					barDocPosition = (PositionType) uniqueTrue;
+					autoHideSize = 200;
+					return;
+				} else if (uniqueFalse >= 0) {
+					barDocPosition = (PositionType) uniqueFalse;
+					switch (barDocPosition) {
+						case PositionType.Left: barDocPosition = PositionType.Right; break;
+						case PositionType.Right: barDocPosition = PositionType.Left; break;
+						case PositionType.Top: barDocPosition = PositionType.Bottom; break;
+						case PositionType.Bottom: barDocPosition = PositionType.Top; break;
+					}
+					autoHideSize = 200;
+					return;
+				}
+				
 				// If the item is in a group, use the dock location of other items
 				DockObject current = this;
 				do {

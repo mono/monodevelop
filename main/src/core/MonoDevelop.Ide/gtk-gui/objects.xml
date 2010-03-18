@@ -12,14 +12,6 @@
     </itemgroups>
     <signals />
   </object>
-  <object type="MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget" palette-category="MonoDevelop.Projects.Gui" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-      <itemgroup label="BaseDirectoryPanelWidget Properties">
-        <property name="BaseDirectory" />
-      </itemgroup>
-    </itemgroups>
-    <signals />
-  </object>
   <object type="MonoDevelop.Ide.FindInFiles.SearchResultWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
     <itemgroups>
       <itemgroup label="SearchResultWidget Properties">
@@ -166,5 +158,17 @@
         <signal name="ItemActivated" />
       </itemgroup>
     </signals>
+  </object>
+  <object type="MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget" palette-category="MonoDevelop.Projects.Gui" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="BaseDirectoryPanelWidget Properties">
+        <property name="BaseDirectory" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
   </object>
 </objects>

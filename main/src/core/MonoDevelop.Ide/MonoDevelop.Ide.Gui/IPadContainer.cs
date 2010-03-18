@@ -144,13 +144,13 @@ namespace MonoDevelop.Ide.Gui
 		bool hasNewData;
 		IPadContent content;
 		PadCodon codon;
-		SdiWorkbenchLayout layout;
+		DefaultWorkbench workbench;
 		
 		internal DockItem Item { get; set; }
 		
-		internal PadWindow (SdiWorkbenchLayout layout, PadCodon codon)
+		internal PadWindow (DefaultWorkbench workbench, PadCodon codon)
 		{
-			this.layout = layout;
+			this.workbench = workbench;
 			this.codon = codon;
 			this.title = GettextCatalog.GetString (codon.Label);
 			this.icon = codon.Icon;
@@ -247,15 +247,15 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public bool ContentVisible {
-			get { return layout.IsContentVisible (codon); }
+			get { return workbench.IsContentVisible (codon); }
 		}
 		
 		public bool Sticky {
 			get {
-				return layout.IsSticky (codon);
+				return workbench.IsSticky (codon);
 			}
 			set {
-				layout.SetSticky (codon, value);
+				workbench.SetSticky (codon, value);
 			}
 		}
 		
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Gui
 		public void Activate (bool giveFocus)
 		{
 			CreateContent ();
-			layout.ActivatePad (codon, giveFocus);
+			workbench.ActivatePad (codon, giveFocus);
 		}
 		
 		void CreateContent ()

@@ -748,7 +748,6 @@
     <Compile Include="MonoDevelop.Ide.Codons\CombineOpenCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\LanguageActiveCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\ProjectActiveCondition.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\WorkbenchContextCondition.cs" />
     <Compile Include="MonoDevelop.Ide.ExternalTools\ExternalTool.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateService.cs" />
@@ -807,7 +806,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads\TreeViewPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DefaultWorkbench.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchMemento.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\SdiWorkspaceLayout.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SdiWorkspaceWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\DisplayBindingCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\IDisplayBinding.cs" />
@@ -1018,6 +1016,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\LogView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\LayoutExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\CustomToolExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\CustomTool.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\CustomToolService.cs" />

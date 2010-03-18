@@ -34,6 +34,7 @@ using System.Xml;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Components.DockToolbars;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -83,6 +84,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 			set {
 				properties.Set ("layoutMemento", value);
+			}
+		}
+		
+		public DockToolbarFrameStatus ToolbarStatus {
+			get {
+				return properties.Get ("toolbarStatus", new DockToolbarFrameStatus ());
+			}
+			set {
+				properties.Set ("toolbarStatus", value);
 			}
 		}
 		

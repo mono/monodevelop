@@ -350,6 +350,8 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
+		static StatusBarContext menuDescriptionContext;
+		
 		static void OnCommandSelected (object s, CommandSelectedEventArgs args)
 		{
 			string msg = args.CommandInfo.Description;
@@ -361,13 +363,19 @@ namespace MonoDevelop.Ide
 					idx = msg.Length;
 				msg = msg.Substring (0, idx).Replace ("_", "") + msg.Substring (idx);
 			}
-			if (!string.IsNullOrEmpty (msg))
-				Workbench.StatusBar.ShowMessage (msg, args.CommandInfo.UseMarkup);
+			if (!string.IsNullOrEmpty (msg)) {
+				if (menuDescriptionContext == null)
+					menuDescriptionContext = Workbench.StatusBar.CreateContext ();
+				menuDescriptionContext.ShowMessage (msg, args.CommandInfo.UseMarkup);
+			}
 		}
 			
 		static void OnCommandDeselected (object s, EventArgs args)
 		{
-			Workbench.StatusBar.ShowReady ();
+			if (menuDescriptionContext != null) {
+				menuDescriptionContext.Dispose ();
+				menuDescriptionContext = null;
+			}
 		}
 			
 		public static void Run ()
@@ -450,7 +458,7 @@ namespace MonoDevelop.Ide
 			commandTimeCounter.End ();
 		}
 		
-		static MonoDevelop.Ide.MonoDevelopStatusBar.StatusIcon instrumentationStatusIcon;
+		static StatusBarIcon instrumentationStatusIcon;
 		static void UpdateInstrumentationIcon ()
 		{
 			if (IdeApp.Preferences.EnableInstrumentation) {

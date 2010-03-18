@@ -120,7 +120,6 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			string[] layouts = IdeApp.Workbench.Layouts;
-			Array.Sort<string> (layouts, StringComparer.CurrentCultureIgnoreCase);
 			for (int i = 0; i < layouts.Length; i++) {
 				string name = layouts[i];
 				CommandInfo item = new CommandInfo(GettextCatalog.GetString (name));

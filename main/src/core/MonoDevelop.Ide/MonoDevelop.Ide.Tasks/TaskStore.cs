@@ -398,7 +398,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
 			}
 			else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}
@@ -444,7 +444,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
 			}
 			else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}
