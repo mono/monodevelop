@@ -1,3 +1,10 @@
+2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Always
+	  use the full file name for assembly references. Some
+	  assemblies from core packages are not located in the
+	  compiler directory, so a full file name is required.
+
 2010-03-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/Indent.cs:

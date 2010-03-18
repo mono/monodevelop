@@ -81,10 +81,9 @@ namespace MonoDevelop.CSharp
 							monitor.ReportWarning (msg);
 							continue;
 						}
-						string referencedName = pkg.IsCorePackage ? Path.GetFileName (fileName) : fileName;
-						if (alreadyAddedReference.Add (referencedName)) {
-							AppendQuoted (sb, "/r:", referencedName);
-						}
+
+						if (alreadyAddedReference.Add (fileName))
+							AppendQuoted (sb, "/r:", fileName);
 						
 						if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
 							gacRoots.Add (pkg.GacRoot);
