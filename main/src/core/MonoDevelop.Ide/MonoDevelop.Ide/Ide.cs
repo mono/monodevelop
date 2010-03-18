@@ -282,9 +282,9 @@ namespace MonoDevelop.Ide
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		public static void OpenFiles (System.Collections.Generic.IList<string> files)
+		public static void OpenFiles (System.Collections.Generic.IEnumerable<FileInformation> files)
 		{
-			if (files.Count == 0)
+			if (files.Count() == 0)
 				return;
 			
 			if (!IsInitialized) {
@@ -297,20 +297,20 @@ namespace MonoDevelop.Ide
 				return;
 			}
 			
-			var filteredFiles = new System.Collections.Generic.List<string> ();
+			var filteredFiles = new System.Collections.Generic.List<FileInformation> ();
 			
 			//open the firsts sln/workspace file, and remove the others from the list
 		 	//FIXME: can we handle multiple slns?
 			bool foundSln = false;
-			foreach (string file in files) {
-				if (Services.ProjectService.IsWorkspaceItemFile (file)) {
+			foreach (FileInformation file in files) {
+				if (Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
 					if (!foundSln) {
 						try {
-							Workspace.OpenWorkspaceItem (file);
+							Workspace.OpenWorkspaceItem (file.FileName);
 							foundSln = true;
 						} catch (Exception ex) {
-							LoggingService.LogError ("Unhandled error opening solution/workspace \"" + file + "\"", ex);
-							MessageService.ShowException (ex, "Could not load solution: " + file);
+							LoggingService.LogError ("Unhandled error opening solution/workspace \"" + file.FileName + "\"", ex);
+							MessageService.ShowException (ex, "Could not load solution: " + file.FileName);
 						}
 					}
 				} else {
@@ -318,12 +318,12 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
-			foreach (string file in filteredFiles) {
+			foreach (FileInformation file in filteredFiles) {
 				try {
-					Workbench.OpenDocument (file);
+					Workbench.OpenDocument (file.FileName, file.Line, file.Column, file.BringToFront);
 				} catch (Exception ex) {
-					LoggingService.LogError ("Unhandled error opening file \"" + file + "\"", ex);
-					MessageService.ShowException (ex, "Could not open file: " + file);
+					LoggingService.LogError ("Unhandled error opening file \"" + file.FileName + "\"", ex);
+					MessageService.ShowException (ex, "Could not open file: " + file.FileName);
 				}
 			}
 			

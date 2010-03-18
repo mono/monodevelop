@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class StartupInfo
 	{
-		static List<string> requestedFileList = new List<string> ();
+		static List<FileInformation> requestedFileList = new List<FileInformation> ();
 		static List<string> parameterList = new List<string> ();
 
 		/// <summary>
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 			return parameterList.ToArray ();
 		}
 		
-		public static string[] GetRequestedFileList()
+		public static FileInformation[] GetRequestedFileList()
 		{
 			return requestedFileList.ToArray ();
 		}
@@ -76,8 +76,14 @@ namespace MonoDevelop.Ide.Gui
 				if (fileMatch != null && fileMatch.Success) {
 					string filename = fileMatch.Groups["filename"].Value;
 					if (File.Exists (filename)) {
+						int line = 1, column = 1;
 						a = a.Replace (filename, Path.GetFullPath (filename));
-						requestedFileList.Add (a);
+						if (fileMatch.Groups["line"].Success)
+							int.TryParse (fileMatch.Groups["line"].Value, out line);
+						if (fileMatch.Groups["column"].Success)
+							int.TryParse (fileMatch.Groups["column"].Value, out column);
+						FileInformation file = new FileInformation (a, line, column, true);
+						requestedFileList.Add (file);
 					}
 				} else if (a[0] == '-' || a[0] == '/') {
 					int markerLength = 1;

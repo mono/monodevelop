@@ -1,3 +1,11 @@
+2010-03-18  Levi Bard  <levi@unity3d.com>
+
+	* MonoDevelop.Ide/Ide.cs:
+	* MonoDevelop.Ide/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/StartupInfo.cs: Pass position
+	  information to OpenFiles.
+
 2010-03-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Optimized

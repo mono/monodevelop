@@ -966,7 +966,7 @@ namespace MonoDevelop.Ide.Gui
 	}
 	
 
-	class FileInformation
+	public class FileInformation
 	{
 		public IProgressMonitor ProgressMonitor;
 		public string FileName;
@@ -977,6 +977,15 @@ namespace MonoDevelop.Ide.Gui
 		public IViewContent NewContent;
 		public string Encoding;
 		public bool HighlightCaretLine;
+		
+		public FileInformation () {}
+		public FileInformation (string FileName, int Line, int Column, bool BringToFront) 
+		{
+			this.FileName = FileName;
+			this.Line = Line;
+			this.Column = Column;
+			this.BringToFront = BringToFront;
+		}
 	}
 	
 	class LoadFileWrapper

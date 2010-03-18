@@ -36,6 +36,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 using Mono.Unix;
 
@@ -98,8 +99,8 @@ namespace MonoDevelop.Ide
 			if(!options.NewWindow && StartupInfo.HasFiles) {
 				Counters.Initialization.Trace ("Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
-				foreach (string file in StartupInfo.GetRequestedFileList ()) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file))
+				foreach (FileInformation file in StartupInfo.GetRequestedFileList ()) {
+					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName))
 					{
 						options.NewWindow = true;
 						break;
@@ -149,8 +150,12 @@ namespace MonoDevelop.Ide
 			// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
 			if (!options.NewWindow && StartupInfo.GetRequestedFileList ().Length > 0) {
 				try {
+					StringBuilder builder = new StringBuilder ();
+					foreach (FileInformation file in StartupInfo.GetRequestedFileList ()) {
+						builder.AppendFormat ("{0};{1};{2}\n", file.FileName, file.Line, file.Column);
+					}
 					listen_socket.Connect (ep);
-					listen_socket.Send (Encoding.UTF8.GetBytes (String.Join ("\n", StartupInfo.GetRequestedFileList ())));
+					listen_socket.Send (Encoding.UTF8.GetBytes (builder.ToString ()));
 					return 0;
 				} catch {
 					// Reset the socket
