@@ -1,3 +1,7 @@
+2010-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.sln: Don't build gnome and mac platforms on windows.
+
 2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.sln: Fix startup project.
