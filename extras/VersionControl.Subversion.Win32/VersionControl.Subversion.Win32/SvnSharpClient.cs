@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
- 
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
 using SharpSvn;
 using SharpSvn.Security;
 using SvnRevision = MonoDevelop.VersionControl.Subversion.SvnRevision;
+using MonoDevelop.Ide;
 
 namespace SubversionAddinWindows
 {
