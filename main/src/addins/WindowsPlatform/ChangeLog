@@ -1,5 +1,9 @@
 2010-03-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* WindowsPlatform.addin.xml: Remove old add-in.
+
+2010-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Win32.cs:
 	* Enums.cs:
 	* structs.cs:
