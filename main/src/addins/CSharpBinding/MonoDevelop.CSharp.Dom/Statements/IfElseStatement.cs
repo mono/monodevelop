@@ -56,6 +56,14 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}
 		
+		public CSharpTokenNode IfKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (IfKeywordRole); }
+		}
+		
+		public CSharpTokenNode ElseKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (ElseKeywordRole); }
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIfElseStatement (this, data);

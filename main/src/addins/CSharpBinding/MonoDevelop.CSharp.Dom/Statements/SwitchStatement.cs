@@ -50,6 +50,13 @@ namespace MonoDevelop.CSharp.Dom
 		public CSharpTokenNode RPar {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}
+		public CSharpTokenNode LBrace {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LBrace); }
+		}
+		
+		public CSharpTokenNode RBrace {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace); }
+		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
@@ -66,7 +73,10 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public IEnumerable<INode> Statements {
-			get { return GetChildrenByRole (Roles.Statement); }
+			get {
+				BlockStatement block = (BlockStatement)GetChildByRole (Roles.Body);
+				return block.Statements;
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

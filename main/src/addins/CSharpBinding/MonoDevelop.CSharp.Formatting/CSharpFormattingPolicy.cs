@@ -114,19 +114,19 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool IndentSwitchBody {
+		public bool IndentSwitchBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentCaseBody {
+		public bool IndentCaseBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentBreakStatements {
+		public bool IndentBreakStatements { // tested
 			get;
 			set;
 		}
@@ -140,31 +140,31 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public BraceStyle ClassBraceStyle {
+		public BraceStyle ClassBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle InterfaceBraceStyle {
+		public BraceStyle InterfaceBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle StructBraceStyle {
+		public BraceStyle StructBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle EnumBraceStyle {
+		public BraceStyle EnumBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle MethodBraceStyle {
+		public BraceStyle MethodBraceStyle { // tested
 			get;
 			set;
 		}
@@ -176,31 +176,31 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public BraceStyle ConstructorBraceStyle {
+		public BraceStyle ConstructorBraceStyle {  // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle DestructorBraceStyle {
+		public BraceStyle DestructorBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle PropertyBraceStyle {
+		public BraceStyle PropertyBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle PropertyGetBraceStyle {
+		public BraceStyle PropertyGetBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle PropertySetBraceStyle {
+		public BraceStyle PropertySetBraceStyle { // tested
 			get;
 			set;
 		}
@@ -218,19 +218,19 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public BraceStyle EventBraceStyle {
+		public BraceStyle EventBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle EventAddBraceStyle {
+		public BraceStyle EventAddBraceStyle { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceStyle EventRemoveBraceStyle {
+		public BraceStyle EventRemoveBraceStyle { // tested
 			get;
 			set;
 		}
@@ -248,7 +248,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public BraceStyle StatementBraceStyle {
+		public BraceStyle StatementBraceStyle { // tested
 			get;
 			set;
 		}
@@ -256,37 +256,37 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#region Force Braces
 		[ItemProperty]
-		public BraceForcement IfElseBraceForcement {
+		public BraceForcement IfElseBraceForcement { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceForcement ForBraceForcement {
+		public BraceForcement ForBraceForcement { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceForcement ForEachBraceForcement {
+		public BraceForcement ForEachBraceForcement { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceForcement WhileBraceForcement {
+		public BraceForcement WhileBraceForcement { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceForcement UsingBraceForcement {
+		public BraceForcement UsingBraceForcement { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public BraceForcement FixedBraceForcement {
+		public BraceForcement FixedBraceForcement { // tested
 			get;
 			set;
 		}
@@ -294,31 +294,31 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#region NewLines
 		[ItemProperty]
-		public bool PlaceElseOnNewLine {
+		public bool PlaceElseOnNewLine { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool PlaceElseIfOnNewLine {
+		public bool PlaceElseIfOnNewLine { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool PlaceCatchOnNewLine {
+		public bool PlaceCatchOnNewLine { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool PlaceFinallyOnNewLine {
+		public bool PlaceFinallyOnNewLine { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool PlaceWhileOnNewLine {
+		public bool PlaceWhileOnNewLine { // tested
 			get;
 			set;
 		}

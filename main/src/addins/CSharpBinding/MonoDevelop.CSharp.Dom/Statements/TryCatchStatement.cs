@@ -39,6 +39,13 @@ namespace MonoDevelop.CSharp.Dom
 		public const int FinallyBlockRole   = 103;
 		public const int CatchClauseRole    = 104;
 		
+		public CSharpTokenNode TryKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (TryKeywordRole); }
+		}
+		
+		public CSharpTokenNode FinallyKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (FinallyKeywordRole); }
+		}
 		
 		public BlockStatement TryBlock {
 			get { return (BlockStatement)GetChildByRole (TryBlockRole); }
@@ -82,6 +89,10 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public CSharpTokenNode RPar {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
+		public CSharpTokenNode CatchKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

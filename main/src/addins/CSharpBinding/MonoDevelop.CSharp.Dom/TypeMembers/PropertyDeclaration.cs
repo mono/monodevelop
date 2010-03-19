@@ -37,6 +37,12 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
+		public BlockStatement Body {
+			get {
+				return (BlockStatement)GetChildByRole (Roles.Body);
+			}
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAccessorDeclaration (this, data);
@@ -46,29 +52,29 @@ namespace MonoDevelop.CSharp.Dom
 	public class PropertyDeclaration : AbstractMember
 	{
 		public const int PropertyGetRole = 100;
-		public const int PropertySetRole = 100;
+		public const int PropertySetRole = 101;
 		
-		public INode LBrace {
+		public CSharpTokenNode LBrace {
 			get {
-				return GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
 			}
 		}
 		
-		public INode RBrace {
+		public CSharpTokenNode RBrace {
 			get {
-				return GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
 			}
 		}
 		
-		public INode GetBody {
+		public Accessor GetAccessor {
 			get {
-				return GetChildByRole (PropertyGetRole);
+				return (Accessor)GetChildByRole (PropertyGetRole);
 			}
 		}
 		
-		public INode SetBody {
+		public Accessor SetAccessor {
 			get {
-				return GetChildByRole (PropertySetRole);
+				return (Accessor)GetChildByRole (PropertySetRole);
 			}
 		}
 		

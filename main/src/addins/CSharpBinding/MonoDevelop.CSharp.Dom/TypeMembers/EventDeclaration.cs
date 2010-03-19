@@ -32,29 +32,29 @@ namespace MonoDevelop.CSharp.Dom
 	public class EventDeclaration : AbstractMember
 	{
 		public const int EventAddRole = 100;
-		public const int EventRemoveRole = 100;
+		public const int EventRemoveRole = 101;
 		
-		public INode LBrace {
+		public CSharpTokenNode LBrace {
 			get {
-				return GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
 			}
 		}
 		
-		public INode RBrace {
+		public CSharpTokenNode RBrace {
 			get {
-				return GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
 			}
 		}
 		
-		public INode AddBody {
+		public Accessor AddAccessor {
 			get {
-				return GetChildByRole (EventAddRole);
+				return (Accessor)GetChildByRole (EventAddRole);
 			}
 		}
 		
-		public INode RemoveBody {
+		public Accessor RemoveAccessor {
 			get {
-				return GetChildByRole (EventRemoveRole);
+				return (Accessor)GetChildByRole (EventRemoveRole);
 			}
 		}
 		

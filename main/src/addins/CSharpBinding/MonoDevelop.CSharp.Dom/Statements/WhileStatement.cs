@@ -47,6 +47,14 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildByRole (Roles.Condition); }
 		}
 		
+		public CSharpTokenNode DoKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (DoKeywordRole); }
+		}
+		
+		public CSharpTokenNode WhileKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (WhileKeywordRole); }
+		}
+		
 		public CSharpTokenNode LPar {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
 		}

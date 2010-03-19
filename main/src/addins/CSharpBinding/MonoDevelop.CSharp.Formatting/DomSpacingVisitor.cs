@@ -74,27 +74,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
-			BraceStyle braceStyle;
-			switch (typeDeclaration.ClassType) {
-			case ClassType.Class:
-				braceStyle = policy.ClassBraceStyle;
-				break;
-			case ClassType.Struct:
-				braceStyle = policy.StructBraceStyle;
-				break;
-			case ClassType.Interface:
-				braceStyle = policy.InterfaceBraceStyle;
-				break;
-			case ClassType.Enum:
-				braceStyle = policy.EnumBraceStyle;
-				break;
-			default:
-				throw new InvalidOperationException ("unsupported class type : " + typeDeclaration.ClassType);
-			}
-			EnforceBraceStyle (braceStyle, 
-			                   typeDeclaration.GetChildByRole (TypeDeclaration.TypeKeyword),
-			                   typeDeclaration.GetChildByRole (AbstractNode.Roles.LBrace), 
-			                   typeDeclaration.GetChildByRole (AbstractNode.Roles.RBrace));
 			
 			return base.VisitTypeDeclaration (typeDeclaration, data);
 		}

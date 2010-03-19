@@ -47,6 +47,18 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public CSharpTokenNode LBrace {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
+			}
+		}
+		
+		public CSharpTokenNode RBrace {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
+			}
+		}
+		
 		public virtual ClassType ClassType {
 			get;
 			set;
