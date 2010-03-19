@@ -77,7 +77,7 @@ namespace MonoDevelop.WebReferences.Commands
 						string targetName = project.TargetRuntime.AssemblyContext.GetAssemblyNameForVersion (refName, null, project.TargetFramework);
 						//FIXME: warn when we could not find a matching target assembly
 						if (targetName != null) {
-							gacRef = new ProjectReference (ReferenceType.Gac, refName);
+							gacRef = new ProjectReference (ReferenceType.Gac, targetName);
 							if (!project.References.Contains (gacRef))
 								project.References.Add (gacRef);
 						}

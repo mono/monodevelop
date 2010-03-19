@@ -1,3 +1,9 @@
+2010-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	  Use the correct reference name for comparing. Fixes bug
+	  #583009 - WebReferenceCommandHandler duplicates references.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
