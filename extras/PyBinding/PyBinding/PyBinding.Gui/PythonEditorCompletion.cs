@@ -30,7 +30,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 
 using PyBinding;

@@ -1,3 +1,7 @@
+2010-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PyBinding.Gui/PythonEditorCompletion.cs: Fix build.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* PyBinding.csproj: Remove mono.addins.targets import.
