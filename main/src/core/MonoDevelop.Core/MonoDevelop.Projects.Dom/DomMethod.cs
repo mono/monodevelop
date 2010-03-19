@@ -358,6 +358,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (parameters == null) 
 				parameters = new List<IParameter> ();
+			parameter.DeclaringMember = this;
 			parameters.Add (parameter);
 		}
 		

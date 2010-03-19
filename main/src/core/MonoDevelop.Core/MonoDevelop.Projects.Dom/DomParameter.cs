@@ -48,8 +48,12 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public IMember DeclaringMember {
-			get;
-			set;
+			get {
+				return (IMember)Parent;
+			}
+			set {
+				Parent = value;
+			}
 		}
 
 		public string Name {
