@@ -134,8 +134,7 @@ namespace MonoDevelop.Refactoring
 								change.Offset += replaceChange.InsertedText.Length;
 						} else if (replaceChange.Offset < change.Offset + change.RemovedChars) {
 							change.RemovedChars -= replaceChange.RemovedChars;
-							if (!string.IsNullOrEmpty (replaceChange.InsertedText))
-								change.RemovedChars += replaceChange.InsertedText.Length;
+							change.Offset = replaceChange.Offset + replaceChange.InsertedText.Length;
 						}
 					}
 				}
