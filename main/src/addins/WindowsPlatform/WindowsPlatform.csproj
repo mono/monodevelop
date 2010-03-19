@@ -35,6 +35,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -46,17 +47,46 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddFileDialogHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CustomAddFilesDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomAddFilesDialog.Designer.cs">
+      <DependentUpon>CustomAddFilesDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Enums.cs" />
+    <Compile Include="OpenFileDialogEx.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OpenFileDialogEx.Designer.cs">
+      <DependentUpon>OpenFileDialogEx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SelectFileDialogHandler.cs" />
+    <Compile Include="structs.cs" />
     <Compile Include="Win32.cs" />
-    <Compile Include="WindowsPlatform.cs" />
+    <Compile Include="WindowsPlatform.cs">
+    </Compile>
+    <Compile Include="WinFormsRoot.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CustomAddFilesDialog.resx">
+      <DependentUpon>CustomAddFilesDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenFileDialogEx.resx">
+      <DependentUpon>OpenFileDialogEx.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="WindowsPlatform.addin.xml">
       <LogicalName>WindowsPlatform.addin.xml</LogicalName>
     </EmbeddedResource>

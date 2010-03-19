@@ -1,3 +1,23 @@
+2010-03-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Win32.cs:
+	* Enums.cs:
+	* structs.cs:
+	* WinFormsRoot.cs:
+	* WindowsPlatform.cs:
+	* OpenFileDialogEx.cs:
+	* OpenFileDialogEx.resx:
+	* WindowsPlatform.csproj:
+	* CustomAddFilesDialog.cs:
+	* AddFileDialogHandler.cs:
+	* WindowsPlatform.addin.xml:
+	* CustomAddFilesDialog.resx:
+	* SelectFileDialogHandler.cs:
+	* OpenFileDialogEx.Designer.cs:
+	* CustomAddFilesDialog.Designer.cs: Initial implementation of
+	  native dialogs for file open operations. Not yet enabled.
+	  Fixed build.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WindowsPlatform.csproj: Remove import off mono.addins

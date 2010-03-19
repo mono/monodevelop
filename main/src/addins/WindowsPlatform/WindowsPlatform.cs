@@ -6,6 +6,10 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Win32;
+using CustomControls.OS;
+using CustomControls.Controls;
+using System.Windows.Forms;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.Platform
 {

@@ -15,10 +15,15 @@
 	<Dependencies>
 		<Addin id="Core" version="2.2"/>
 		<Addin id="Ide" version="2.2"/>
-	</Dependencies>
+    <Addin id="Components" version="2.2"/>
+  </Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
-		<Class id      = "PlatformService"
-		       class   = "MonoDevelop.Platform.WindowsPlatform"/>
+		<Class class = "MonoDevelop.Platform.WindowsPlatform"/>
 	</Extension>
+
+<!--  <Extension path = "/MonoDevelop/Components/DialogHandlers">
+    <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
+    <Class class = "MonoDevelop.Platform.AddFileDialogHandler"/>
+  </Extension>-->
 </Addin>
