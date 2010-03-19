@@ -348,6 +348,7 @@
 <!--                <File Name="MonoDevelop.CBinding.Autotools.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CBinding.Autotools.dll" />
                 <File Name="MonoDevelop.CBinding.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CBinding.dll" />
 -->                <File Name="MonoDevelop.CSharpBinding.Autotools.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CSharpBinding.Autotools.dll" />
+                <File Name="MonoDevelop.CSharpBinding.AspNet.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CSharpBinding.AspNet.dll" />
                 <File Name="MonoDevelop.CSharpBinding.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.CSharpBinding.dll" />
                 <File Name="MonoDevelop.VBNetBinding.dll" Source="$(var.BuildRoot)\AddIns\BackendBindings\MonoDevelop.VBNetBinding.dll" />
               </Component>
@@ -468,6 +469,8 @@
               <Directory Id="Templates" Name="Templates">
                 <Component Id="MonoDevelop_AddIns_MonoDevelop_Moonlight_Templates" Guid="5d50359a-19c7-4620-80d6-904a949b7093">
                   <File Name="Silverlight.js" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Moonlight\Templates\Silverlight.js" />
+                  <File Name="framework_SL_2_0.xml" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Moonlight\Templates\framework_SL_2_0.xml" />
+                  <File Name="framework_SL_3_0.xml" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Moonlight\Templates\framework_SL_3_0.xml" />
                 </Component>
               </Directory>
               <Component Id="MonoDevelop_AddIns_MonoDevelop_Moonlight" Guid="290aa8aa-edf6-4ac4-bca9-5eb5e86e23b7">
