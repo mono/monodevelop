@@ -51,16 +51,11 @@
               <File Name="Mono.Cecil.Mdb.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.Mdb.dll" />
               <File Name="Mono.Debugging.dll" Source="$(var.BuildRoot)\bin\Mono.Debugging.dll" />
               <File Name="Mono.TextEditor.dll" Source="$(var.BuildRoot)\bin\Mono.TextEditor.dll" />
-              <File Name="MonoDevelop.Components.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Components.dll" />
               <File Name="MonoDevelop.Core.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Core.dll" />
-              <File Name="MonoDevelop.Core.Gui.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Core.Gui.dll" />
-              <File Name="MonoDevelop.Dock.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Dock.dll" />
               <File Name="MonoDevelop.exe.addins" Source="$(var.BuildRoot)\bin\MonoDevelop.exe.addins" />
               <File Name="MonoDevelop.exe.config" Source="$(var.BuildRoot)\bin\MonoDevelop.exe.config" />
               <File Name="MonoDevelop.Ide.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Ide.dll" />
-              <File Name="MonoDevelop.Projects.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.dll" />
               <File Name="MonoDevelop.Projects.Formats.MSBuild.exe" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe" />
-              <File Name="MonoDevelop.Projects.Gui.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Gui.dll" />
               <File Name="NRefactory.dll" Source="$(var.BuildRoot)\bin\NRefactory.dll" />
 
               <File Name="ICSharpCode.SharpZipLib.dll" Source="Libraries\ICSharpCode.SharpZipLib.dll" />
