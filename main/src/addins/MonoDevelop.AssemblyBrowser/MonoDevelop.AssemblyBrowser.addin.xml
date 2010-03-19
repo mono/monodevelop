@@ -8,10 +8,6 @@
        category    = "MonoDevelop Core"
        version     = "2.2">
 	
-	<Runtime>
-		<Import assembly="../bin/Cecil.Decompiler.dll"/>
-	</Runtime>
-	
 	<Dependencies>
 		<Addin id="Core" version="2.2"/>
 		<Addin id="Ide" version="2.2"/>
