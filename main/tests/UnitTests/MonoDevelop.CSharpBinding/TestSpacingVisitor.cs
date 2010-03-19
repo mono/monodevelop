@@ -1,4 +1,3 @@
-/*
 // 
 // TestFormattingVisitor.cs
 //  
@@ -24,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+/*
 using System;
 using NUnit.Framework;
 using MonoDevelop.Ide.Gui;
@@ -44,90 +43,6 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	[TestFixture()]
 	public class TestSpacingVisitor : UnitTests.TestBase
 	{
-		[Test()]
-		public void TestClassBraceFormattingEndOfLine1 ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test{}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestClassBraceFormattingEndOfLine2 ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-		}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestClassBraceFormattingEndOfLineWithoutSpace ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test{}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLineWithoutSpace;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test{
-}", data.Document.Text);
-		}
-		[Test()]
-		public void TestClassBraceFormattingNextLine ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test{}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.NextLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test
-{
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestClassBraceFormattingNextLineShifted ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test{}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.NextLineShifted;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test
-	{
-	}", data.Document.Text);
-		}
-		
-		
 		[Test()]
 		public void TestFieldSpacesBeforeComma1 ()
 		{

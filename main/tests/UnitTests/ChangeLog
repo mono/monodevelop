@@ -1,3 +1,12 @@
+2010-03-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.CSharpBinding/TestBraceStlye.cs:
+	* MonoDevelop.CSharpBinding/TestSpacingVisitor.cs:
+	* MonoDevelop.CSharpBinding/TestIndentationVisitor.cs: Added
+	  some indentation tests.
+
 2010-03-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestIndentationVisitor.cs: Added

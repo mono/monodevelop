@@ -1,5 +1,5 @@
 // 
-// TestIndentationVisitor.cs
+// TestStatementIndentation.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -41,7 +41,7 @@ using MonoDevelop.CSharp.Formatting;
 namespace MonoDevelop.CSharpBinding.FormattingTests
 {
 	[TestFixture()]
-	public class TestIndentationVisitor : UnitTests.TestBase
+	public class TestStatementIndentation : UnitTests.TestBase
 	{
 		[Test()]
 		public void TestClassIndentation ()
@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 @"			class Test {}";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.ClassBraceStyle =  BraceStyle.DoNotChange;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
@@ -86,16 +86,18 @@ class FooBar {}
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = 
-@"class Test {
+@"class Test
+{
 MyType TestMethod () {}
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.MethodBraceStyle =  BraceStyle.DoNotChange;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	MyType TestMethod () {}
 }", data.Document.Text);
 		}
@@ -106,16 +108,18 @@ MyType TestMethod () {}
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = 
-@"class Test {
+@"class Test
+{
 				public int Prop { get; set; }
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.PropertyBraceStyle =  BraceStyle.DoNotChange;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	public int Prop { get; set; }
 }", data.Document.Text);
 		}
@@ -126,7 +130,8 @@ MyType TestMethod () {}
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = 
-@"class Test {
+@"class Test
+{
 				public int Prop {
  get;
 set;
@@ -134,11 +139,11 @@ set;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	public int Prop {
 		get;
 		set;
@@ -357,11 +362,47 @@ fixed (object* obj = &obj)
 		}
 		
 		[Test()]
+		public void TestFixedForcementAdd ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		fixed (object* obj = &obj) {
+		}
+		fixed (object* obj = &obj) ;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.FixedBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		fixed (object* obj = &obj) {
+		}
+		fixed (object* obj = &obj) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestForeachIndentation ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 foreach (var obj in col) {
@@ -374,7 +415,8 @@ foreach (var obj in col) {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col) {
@@ -568,6 +610,76 @@ using (var o = new MyObj()) {
 		}
 		
 		[Test()]
+		public void TestUsingForcementAdd ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		using (var o = new MyObj()) {
+		}
+		using (var o = new MyObj()) ;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.UsingBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		using (var o = new MyObj()) {
+		}
+		using (var o = new MyObj()) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestUsingForcementDoNotChange ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		using (var o = new MyObj()) {
+		}
+		using (var o = new MyObj()) ;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.UsingBraceForcement = BraceForcement.DoNotChange;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		using (var o = new MyObj()) {
+		}
+		using (var o = new MyObj())
+			;
+	}
+}", data.Document.Text);
+		}
+		
+		
+		[Test()]
 		public void TestVariableDeclarationIndentation ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -580,7 +692,7 @@ Test a;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			
+			Console.WriteLine (data.Document.Text);
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
@@ -678,7 +790,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col) {}
@@ -690,7 +803,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col) {
@@ -704,7 +818,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col) {;}
@@ -716,7 +831,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.NextLineShifted2;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col)
@@ -732,7 +848,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col)
@@ -751,7 +868,8 @@ do {
 			
 			Console.WriteLine (data.Document.Text);
 			
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col)
@@ -766,11 +884,50 @@ do {
 		}
 		
 		[Test()]
+		public void TestForBraceForcementAdd ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		for (;;)
+		{
+		}
+		for (;;) ;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.NextLine;
+			policy.ForBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		for (;;)
+		{
+		}
+		for (;;)
+		{
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestForEachBraceForcementRemove ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col)
@@ -794,7 +951,8 @@ do {
 			
 			Console.WriteLine (data.Document.Text);
 			
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		foreach (var obj in col)
@@ -814,7 +972,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		if (true) {}
@@ -826,7 +985,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		if (true) {
@@ -840,7 +1000,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		if (true) {} else {}
@@ -852,7 +1013,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		if (true) {
@@ -863,11 +1025,215 @@ do {
 		}
 		
 		[Test()]
+		public void TestIfForcementRemove ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true)
+		{
+			;
+			;
+		}
+		if (true)
+		{
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.NextLine;
+			policy.IfElseBraceForcement = BraceForcement.RemoveBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true)
+		{
+			;
+			;
+		}
+		if (true)
+			;
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestElseOnNewLine ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+			;
+		} else if (false) {
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.PlaceElseOnNewLine = true;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+			;
+		}
+		else if (false) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestElseIfOnNewLine ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+			;
+		} else if (false) {
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.PlaceElseIfOnNewLine = true;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+			;
+		} else
+		if (false) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestElseOnNewLineOff ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+			;
+		}
+		else if (false) {
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.PlaceElseOnNewLine = false;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+			;
+		} else if (false) {
+			;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		
+		[Test()]
+		public void TestWhileForcementRemove ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		while (true)
+		{
+			;
+			;
+		}
+		while (true)
+		{
+			;
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.NextLine;
+			policy.WhileBraceForcement = BraceForcement.RemoveBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		while (true)
+		{
+			;
+			;
+		}
+		while (true)
+			;
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestFixedBracketPlacement ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		fixed (object* obj = &obj)
@@ -875,14 +1241,15 @@ do {
 ;
 	}
 }";
-			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			
 			policy.StatementBraceStyle = BraceStyle.NextLineShifted;
 			policy.FixedBraceForcement = BraceForcement.AddBraces;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		fixed (object* obj = &obj)
@@ -898,7 +1265,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		for (;;) {;}
@@ -910,7 +1278,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		for (;;){
@@ -925,7 +1294,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		checked {;}
@@ -937,7 +1307,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		checked{
@@ -952,7 +1323,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		unchecked {;}
@@ -964,7 +1336,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLineWithoutSpace;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		unchecked{
@@ -979,7 +1352,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		lock (this)
@@ -994,7 +1368,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		lock (this) {
@@ -1009,7 +1384,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		unsafe
@@ -1024,7 +1400,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		unsafe {
@@ -1039,7 +1416,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		using (var e = new E())
@@ -1054,7 +1432,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		using (var e = new E()) {
@@ -1069,7 +1448,8 @@ do {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		while (true)
@@ -1084,7 +1464,8 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		while (true) {
@@ -1094,12 +1475,13 @@ do {
 }", data.Document.Text);
 		}
 		
-			[Test()]
+		[Test()]
 		public void TestDoWhileBracketPlacement ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	Test TestMethod ()
 	{
 		do
@@ -1114,12 +1496,230 @@ do {
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	Test TestMethod ()
 	{
 		do {
 			;
 		} while (true);
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestSwitchFormatting1 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		switch (a) { case 1: case 2: DoSomething(); break; default: Foo (); break;}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.IndentSwitchBody = true;
+			policy.IndentCaseBody = true;
+			policy.IndentBreakStatements = true;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		switch (a) {
+			case 1:
+			case 2:
+				DoSomething();
+				break;
+			default:
+				Foo ();
+				break;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestSwitchFormatting2 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		switch (a) { case 1: case 2: DoSomething(); break; default: Foo (); break;}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.IndentSwitchBody = false;
+			policy.IndentCaseBody = false;
+			policy.IndentBreakStatements = false;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		switch (a) {
+		case 1:
+		case 2:
+		DoSomething();
+		break;
+		default:
+		Foo ();
+		break;
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestTryCatchBracketPlacement ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		try { ; } catch (Exception e) { } finally { }
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		try {
+			;
+		} catch (Exception e) {
+		} finally {
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestPlaceCatchOnNewLine ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		try {
+			;
+		} catch (Exception e) {
+		} finally {
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.PlaceCatchOnNewLine = true;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		try {
+			;
+		}
+		catch (Exception e) {
+		} finally {
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestPlaceFinallyOnNewLine ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		try {
+			;
+		} catch (Exception e) {
+		} finally {
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.PlaceFinallyOnNewLine = true;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		try {
+			;
+		} catch (Exception e) {
+		}
+		finally {
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestPlaceWhileOnNewLine ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		do {
+			;
+		} while (true);
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.PlaceWhileOnNewLine = true;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		do {
+			;
+		}
+		while (true);
 	}
 }", data.Document.Text);
 		}

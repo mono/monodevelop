@@ -198,6 +198,7 @@
     <Compile Include="MonoDevelop.Refactoring\BaseRefactorerTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestSpacingVisitor.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestIndentationVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TestBraceStlye.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
