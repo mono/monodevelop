@@ -1693,7 +1693,7 @@ namespace Mono.TextEditor
 
 		public int ColumnToVisualX (LineSegment line, int column)
 		{
-			if (line == null || line.EditableLength == 0)
+			if (line == null || line.EditableLength == 0 || column < 0)
 				return 0;
 
 			Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
