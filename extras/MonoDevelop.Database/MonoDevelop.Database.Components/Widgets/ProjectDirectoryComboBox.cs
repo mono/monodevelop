@@ -31,7 +31,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Gui;
 
 namespace MonoDevelop.Database.Components
 {
