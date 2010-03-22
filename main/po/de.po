@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-09 12:39:03+0100\n"
-"PO-Revision-Date: 2010-03-12 15:10:03+0100\n"
+"PO-Revision-Date: 2010-03-22 08:14:41+0100\n"
 "Last-Translator: Alexandra Diaconu <alexandra.diaconu@embarcadero.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3319,7 +3319,7 @@ msgstr ".NET-Assembly"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:85
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:119
 msgid "Stop"
-msgstr "Stopp"
+msgstr "Stop"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:90
 msgid "Clear console"
@@ -11887,7 +11887,7 @@ msgstr "\\t"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:5
 msgid "Matches a tab \\u0009."
-msgstr "Entspricht einem Tabstoppzeichen \\u0009."
+msgstr "Entspricht einem Tabstopzeichen \\u0009."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:6
 msgid "\\r"
@@ -11903,7 +11903,7 @@ msgstr "\\v"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:7
 msgid "Matches a vertical tab \\u000B."
-msgstr "Entspricht einem vertikalen Tabstoppzeichen \\u000B."
+msgstr "Entspricht einem vertikalen Tabstopzeichen \\u000B."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:8
 msgid "\\f"
@@ -17213,7 +17213,6 @@ msgstr "Debugger"
 #~ msgstr "_in:"
 #~ msgid "Failed to open test page in browser."
 #~ msgstr "Testseite konnte im Browser nicht geöffnet werden."
-
 #~ msgid "Threads List"
 #~ msgstr "Thread-Liste"
 
@@ -18261,7 +18260,6 @@ msgstr "Debugger"
 #~ msgstr "_Zurück"
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Ausnahme aufgetreten: {0}"
-
 #~ msgid "Question"
 #~ msgstr "Frage"
 
