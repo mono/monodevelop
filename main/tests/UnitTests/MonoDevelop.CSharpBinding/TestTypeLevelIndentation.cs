@@ -1,5 +1,5 @@
 // 
-// TestBraceStyle.cs
+// TestTypeLevelIndentation.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -41,489 +41,461 @@ using MonoDevelop.CSharp.Formatting;
 namespace MonoDevelop.CSharpBinding.FormattingTests
 {
 	[TestFixture()]
-	public class TestBraceStyle : UnitTests.TestBase
+	public class TestTypeLevelIndentation : UnitTests.TestBase
 	{
-		[Test()]
-		public void TestNamespaceBraceStyle ()
+	[Test()]
+		public void TestClassIndentation ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"namespace A
+			data.Document.Text = 
+@"			class Test {}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.DoNotChange;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestIndentClassBody ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
 {
-namespace B {
-	class Test {}
-}
+				Test a;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.NamespaceBraceStyle = BraceStyle.EndOfLine;
-			policy.ClassBraceStyle = BraceStyle.DoNotChange;
+			policy.IndentClassBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"namespace A {
-	namespace B {
-		class Test {}
-	}
+			Assert.AreEqual (@"class Test
+{
+	Test a;
 }", data.Document.Text);
-			
-			policy.NamespaceBraceStyle = BraceStyle.NextLineShifted;
+			policy.IndentClassBody = false;
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"namespace A 
-	{
-	namespace B
-		{
-		class Test {}
-		}
-	}", data.Document.Text);
-		}
-		
-		
-		[Test()]
-		public void TestClassBraceStlye ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"class Test {
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestStructBraceStyle ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"struct Test {}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.StructBraceStyle =  BraceStyle.NextLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			Assert.AreEqual (@"struct Test
+			Assert.AreEqual (@"class Test
 {
+Test a;
 }", data.Document.Text);
 		}
 		
 		[Test()]
-		public void TestInterfaceBraceStyle ()
+		public void TestIndentInterfaceBody ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"interface Test {}";
+			data.Document.Text = 
+@"interface Test
+{
+				Test Foo ();
+}";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.InterfaceBraceStyle =  BraceStyle.NextLine;
+			policy.IndentInterfaceBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"interface Test
 {
+	Test Foo ();
+}", data.Document.Text);
+			policy.IndentInterfaceBody = false;
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"interface Test
+{
+Test Foo ();
 }", data.Document.Text);
 		}
 		
 		[Test()]
-		public void TestEnumBraceStyle ()
+		public void TestIndentStructBody ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"enum Test {
-	A
+			data.Document.Text = 
+@"struct Test
+{
+				Test a;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.EnumBraceStyle =  BraceStyle.NextLineShifted;
+			policy.IndentStructBody = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"struct Test
+{
+	Test a;
+}", data.Document.Text);
+			policy.IndentStructBody = false;
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"struct Test
+{
+Test a;
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestIndentEnumBody ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"enum Test
+{
+								A
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.IndentEnumBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"enum Test
-	{
+{
 	A
-	}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestMethodBraceStlye ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-	Test MyMethod() {}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.MethodBraceStyle = BraceStyle.NextLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
-			Assert.AreEqual (@"class Test
-{
-	Test MyMethod()
-	{
-	}
 }", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestConstructorBraceStyle ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-	Test() {}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ConstructorBraceStyle = BraceStyle.NextLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
-			Assert.AreEqual (@"class Test
-{
-	Test()
-	{
-	}
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestDestructorBraceStyle ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-	~Test() {}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.DestructorBraceStyle = BraceStyle.NextLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
-			Assert.AreEqual (@"class Test
-{
-	~Test()
-	{
-	}
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestPropertyBraceStyle ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-	Test A {
-		get;
-		set;
-	}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.PropertyBraceStyle = BraceStyle.NextLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
-			Assert.AreEqual (@"class Test
-{
-	Test A
-	{
-		get;
-		set;
-	}
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestPropertyGetBraceStyle ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-	Test A {
-		get {
-			return null;
-		}
-		set;
-	}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.PropertyGetBraceStyle = BraceStyle.NextLine;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
-			Assert.AreEqual (@"class Test
-{
-	Test A {
-		get
-		{
-			return null;
-		}
-		set;
-	}
-}", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestAllowPropertyGetBlockInline ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-	Test A {
-		get { return null; }
-		set { ; }
-	}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.PropertyBraceStyle = BraceStyle.DoNotChange;
-			policy.AllowPropertyGetBlockInline = true;
-			policy.AllowPropertySetBlockInline = false;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
-			Assert.AreEqual (@"class Test
-{
-	Test A {
-		get { return null; }
-		set {
-			;
-		}
-	}
-}", data.Document.Text);
-			
-			policy.AllowPropertyGetBlockInline = false;
+			policy.IndentEnumBody = false;
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Assert.AreEqual (@"class Test
+			Assert.AreEqual (@"enum Test
 {
-	Test A {
-		get {
-			return null;
-		}
-		set {
-			;
-		}
-	}
+A
 }", data.Document.Text);
 		}
 		
 		[Test()]
-		public void TestAllowPropertySetBlockInline ()
+		public void TestIndentMethodBody ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
+			data.Document.Text = 
+@"class Test
 {
-	Test A {
-		get { return null; }
-		set { ; }
+	Test Foo ()
+	{
+;
+								;
 	}
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.PropertyBraceStyle = BraceStyle.DoNotChange;
-			policy.AllowPropertyGetBlockInline = false;
-			policy.AllowPropertySetBlockInline = true;
+			policy.IndentMethodBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
 {
-	Test A {
-		get {
-			return null;
-		}
-		set { ; }
+	Test Foo ()
+	{
+		;
+		;
 	}
 }", data.Document.Text);
-			
-			policy.AllowPropertySetBlockInline = false;
+			policy.IndentMethodBody = false;
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
 			Assert.AreEqual (@"class Test
 {
-	Test A {
-		get {
-			return null;
-		}
-		set {
-			;
-		}
+	Test Foo ()
+	{
+	;
+	;
 	}
 }", data.Document.Text);
 		}
 		
 		[Test()]
-		public void TestPropertySetBraceStyle ()
+		public void TestIndentMethodBodyOperatorCase ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
+			data.Document.Text = 
+@"class Test
 {
-	Test A {
-		get;
-		set {
-			;
-		}
+	static Test operator+(Test left, Test right)
+	{
+;
+								;
 	}
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.PropertySetBraceStyle = BraceStyle.NextLine;
+			policy.IndentMethodBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
 {
-	Test A {
-		get;
-		set
-		{
-			;
-		}
+	static Test operator+(Test left, Test right)
+	{
+		;
+		;
+	}
+}", data.Document.Text);
+			policy.IndentMethodBody = false;
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	static Test operator+(Test left, Test right)
+	{
+	;
+	;
 	}
 }", data.Document.Text);
 		}
 		
 		[Test()]
-		public void TestEventBraceStyle ()
+		public void TestIndentPropertyBody ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
+			data.Document.Text = 
+@"class Test
 {
-	public event EventHandler Handler {
-		add {
+	Test TestMe {
+			get;
+set;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.IndentPropertyBody = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMe {
+		get;
+		set;
+	}
+}", data.Document.Text);
+			policy.IndentPropertyBody = false;
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMe {
+	get;
+	set;
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestIndentPropertyBodyIndexerCase ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
+{
+	Test this[int a] {
+			get {
+	return null;
 }
-		remove {
+set {
+	;
 }
 	}
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.EventBraceStyle = BraceStyle.NextLine;
-			policy.EventAddBraceStyle = BraceStyle.NextLine;
-			policy.EventRemoveBraceStyle = BraceStyle.NextLine;
+			policy.IndentPropertyBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
 {
-	public event EventHandler Handler
-	{
-		add
-		{
+	Test this[int a] {
+		get {
+			return null;
 		}
-		remove
-		{
+		set {
+			;
 		}
+	}
+}", data.Document.Text);
+			policy.IndentPropertyBody = false;
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test this[int a] {
+	get {
+		return null;
+	}
+	set {
+		;
+	}
 	}
 }", data.Document.Text);
 		}
 		
+		
 		[Test()]
-		public void TestAllowEventAddBlockInline ()
+		public void TestIndentNamespaceBody ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
+			data.Document.Text = 
+@"			namespace Test {
+class FooBar {}
+		}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.DoNotChange;
+			policy.IndentNamespaceBody = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"namespace Test {
+	class FooBar {}
+}", data.Document.Text);
+			
+			policy.IndentNamespaceBody = false;
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"namespace Test {
+class FooBar {}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestMethodIndentation ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
 {
-	public event EventHandler Handler {
-		add { ; }
-		remove { ; }
+MyType TestMethod () {}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.MethodBraceStyle =  BraceStyle.DoNotChange;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	MyType TestMethod () {}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestPropertyIndentation ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
+{
+				public int Prop { get; set; }
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.PropertyBraceStyle =  BraceStyle.DoNotChange;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	public int Prop { get; set; }
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestPropertyIndentationCase2 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
+{
+				public int Prop {
+ get;
+set;
+}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	public int Prop {
+		get;
+		set;
+	}
+}", data.Document.Text);
+		}
+		
+		
+		[Test()]
+		public void TestIndentEventBody ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
+{
+	public event EventHandler TestMe {
+								add {
+							;
+						}
+remove {
+	;
+}
 	}
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AllowEventAddBlockInline = true;
-			policy.AllowEventRemoveBlockInline = false;
+			policy.IndentEventBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
 {
-	public event EventHandler Handler {
-		add { ; }
+	public event EventHandler TestMe {
+		add {
+			;
+		}
 		remove {
 			;
 		}
 	}
 }", data.Document.Text);
-		}
-		
-		[Test()]
-		public void TestAllowEventRemoveBlockInline ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test
-{
-	public event EventHandler Handler {
-		add { ; }
-		remove { ; }
-	}
-}";
-			
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AllowEventAddBlockInline = false;
-			policy.AllowEventRemoveBlockInline = true;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			policy.IndentEventBody = false;
+			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
-			
-			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
 {
-	public event EventHandler Handler {
-		add {
-			;
-		}
-		remove { ; }
+	public event EventHandler TestMe {
+	add {
+		;
+	}
+	remove {
+		;
+	}
 	}
 }", data.Document.Text);
 		}
-		
-		
 		
 	}
 }*/
+

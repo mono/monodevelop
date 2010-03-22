@@ -56,8 +56,9 @@ FILES =  \
 	MonoDevelop.CSharpBinding/ParameterCompletionTests.cs \
 	MonoDevelop.CSharpBinding/ProjectDomTests.cs \
 	MonoDevelop.CSharpBinding/TestBraceStlye.cs \
-	MonoDevelop.CSharpBinding/TestIndentationVisitor.cs \
 	MonoDevelop.CSharpBinding/TestSpacingVisitor.cs \
+	MonoDevelop.CSharpBinding/TestStatementIndentation.cs \
+	MonoDevelop.CSharpBinding/TestTypeLevelIndentation.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
 	MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs \
 	MonoDevelop.CSharpBinding/TopLevelTests.cs \
