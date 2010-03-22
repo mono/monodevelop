@@ -308,10 +308,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void FileNameDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			if (TreeIter.Zero.Equals (iter))
+				return;
 			CellRendererText fileNameRenderer = (CellRendererText)cell;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			
+			if (searchResult == null)
+				return;
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 			
 			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName), didRead, isSelected);
@@ -349,8 +352,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void ResultPathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			if (TreeIter.Zero.Equals (iter))
+				return;
 			CellRendererText pathRenderer = (CellRendererText)cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			if (searchResult == null)
+				return;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 			pathRenderer.Markup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead, isSelected);
@@ -358,8 +365,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void ResultLineDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			if (TreeIter.Zero.Equals (iter))
+				return;
 			CellRendererText lineRenderer = (CellRendererText)cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			if (searchResult == null)
+				return;
+			
 			Mono.TextEditor.Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
@@ -369,8 +381,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void ResultTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			if (TreeIter.Zero.Equals (iter))
+				return;
 			CellRendererText textRenderer = (CellRendererText)cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			if (searchResult == null)
+				return;
 			
 			Mono.TextEditor.Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);

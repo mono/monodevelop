@@ -1,3 +1,9 @@
+2010-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Added
+	  some code to prevent 'Bug 589661 - Null ref aborting a
+	  search'.
+
 2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
