@@ -122,6 +122,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				AppDomainSetup info = new AppDomainSetup ();
 				info.ApplicationBase  = System.IO.Path.GetDirectoryName (typeof (MvcTextTemplateHost).Assembly.Location);
 				domain = AppDomain.CreateDomain ("AspMvcGenerationDomain", null, info);
+				domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
+				
 				host = MvcTextTemplateHost.Create (domain);
 				
 				if (dialog.HasMaster) {

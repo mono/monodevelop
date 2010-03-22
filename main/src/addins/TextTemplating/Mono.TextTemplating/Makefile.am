@@ -17,6 +17,7 @@ FILES =  \
 	Microsoft.VisualStudio.TextTemplating/TextTransformation.cs \
 	Microsoft.VisualStudio.TextTemplating/ToStringHelper.cs \
 	Mono.TextTemplating/CompiledTemplate.cs \
+	Mono.TextTemplating/CrossAppDomainAssemblyResolver.cs \
 	Mono.TextTemplating/IExtendedTextTemplatingEngineHost.cs \
 	Mono.TextTemplating/ParsedTemplate.cs \
 	Mono.TextTemplating/TemplateGenerator.cs \

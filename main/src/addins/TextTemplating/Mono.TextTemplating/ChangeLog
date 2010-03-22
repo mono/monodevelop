@@ -1,3 +1,12 @@
+2010-03-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextTemplating/CrossAppDomainAssemblyResolver.cs: A
+	  handler for AssemblyResolve events that looks them up in the
+	  domain that created the resolver.
+
+	* Makefile.am:
+	* Mono.TextTemplating.csproj: Added file.
+
 2009-11-27  Olivier Dagenais  <olivier.dagenais@gmail.com>
 	* Mono.TextTemplating/ParsedTemplate.cs: Fixed a bug where the
 	  location of an error was being ignored.
