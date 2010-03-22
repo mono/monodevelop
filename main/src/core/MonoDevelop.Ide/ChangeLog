@@ -1,5 +1,10 @@
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Use corrent layout
+	  configuration file name.
+
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* BuildVariables.cs:
 	* MonoDevelop.Ide.addin.xml: Bumped MD version.
