@@ -1,5 +1,12 @@
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.Docking/DockItem.cs: Set the focus to
+	  the child widget instead of the docking container. Fixes bug
+	  #561512 - Selecting floating pad from doc/pad switcher does
+	  not focus it.
+
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Ask before
 	  restarting the execution of the solution. Fixes bug #561693
 	  - Usability issues in debugger commands.
