@@ -67,6 +67,9 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class OperatorDeclaration : MethodDeclaration
 	{
+		public const int OperatorKeywordRole = 100;
+		public const int OperatorTypeRole = 101;
+		
 		public OperatorType OperatorType {
 			get;
 			set;
@@ -76,6 +79,23 @@ namespace MonoDevelop.CSharp.Dom
 			get;
 			set;
 		}
+		
+		public CSharpTokenNode OperatorKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (OperatorKeywordRole); }
+		}
+		
+		public CSharpTokenNode OperatorTypeKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (OperatorTypeRole); }
+		}
+		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{

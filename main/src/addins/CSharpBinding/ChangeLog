@@ -1,3 +1,23 @@
+2010-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/IndexerExpression.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:
+	* MonoDevelop.CSharp.Dom/TypeMembers/IndexerDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/OperatorDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ObjectCreateExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ArrayObjectCreateExpression.cs:
+	  Worked on new dom/parser/formatter.
+
 2010-03-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:

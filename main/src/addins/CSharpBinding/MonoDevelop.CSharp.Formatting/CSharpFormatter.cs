@@ -431,7 +431,7 @@ namespace MonoDevelop.CSharp.Formatting
 					offset++;
 					continue;
 				}
-//				Console.WriteLine ("BAIL OUT");
+				Console.WriteLine ("BAIL OUT");
 				break;
 			}
 			data.Caret.Offset = caretOffset;

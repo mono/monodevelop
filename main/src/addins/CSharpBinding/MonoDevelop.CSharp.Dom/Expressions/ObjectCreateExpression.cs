@@ -36,14 +36,16 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (IReturnType)GetChildByRole (Roles.ReturnType); }
 		}
 		
-		public IEnumerable<INode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument); }
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
 		}
 		
-		public CollectionInitializerExpression Initializer {
-			get {
-				return (CollectionInitializerExpression)GetChildByRole (Roles.Initializer);
-			}
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
+		public IEnumerable<INode> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
@@ -52,15 +54,4 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class CollectionInitializerExpression : AbstractCSharpNode
-	{
-		public IEnumerable<INode> CreateExpressions {
-			get { return GetChildrenByRole (Roles.Expression); }
-		}
-		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitCollectionInitializerExpression (this, data);
-		}
-	}
 }

@@ -106,7 +106,8 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data);
 		S VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, T data);
 		S VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, T data);
-		S VisitCollectionInitializerExpression (CollectionInitializerExpression collectionInitializerExpression, T data);
+		S VisitArrayObjectCreateExpression (ArrayObjectCreateExpression arrayObjectCreateExpression, T data);
+		
 		S VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, T data);
 		S VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression, T data);
 		S VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, T data);

@@ -46,6 +46,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/CSharpModifierToken.cs \
 	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/ArrayObjectCreateExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AsExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/BaseReferenceExpression.cs \

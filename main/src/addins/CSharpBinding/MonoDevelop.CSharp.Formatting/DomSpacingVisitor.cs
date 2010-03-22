@@ -80,20 +80,13 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 		{
-			EnforceBraceStyle (policy.PropertyBraceStyle, 
-			                   propertyDeclaration.GetChildByRole (PropertyDeclaration.Roles.ReturnType), 
-			                   propertyDeclaration.GetChildByRole (PropertyDeclaration.Roles.LBrace), 
-			                   propertyDeclaration.GetChildByRole (PropertyDeclaration.Roles.RBrace));
-		
 			return base.VisitPropertyDeclaration (propertyDeclaration, data);
 		}
 		
 		public override object VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
 		{
-			EnforceBraceStyle (policy.PropertyBraceStyle, 
-			                   indexerDeclaration.GetChildByRole (IndexerDeclaration.Roles.ReturnType), 
-			                   indexerDeclaration.GetChildByRole (IndexerDeclaration.Roles.LBrace), 
-			                   indexerDeclaration.GetChildByRole (IndexerDeclaration.Roles.RBrace));
+			ForceSpacesAfter (indexerDeclaration.LBracket, policy.SpacesWithinBrackets);
+			ForceSpacesBefore (indexerDeclaration.RBracket, policy.SpacesWithinBrackets);
 			return base.VisitIndexerDeclaration (indexerDeclaration, data);
 		}
 		public override object VisitBlockStatement (BlockStatement blockStatement, object data)
@@ -243,10 +236,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
-			CSharpTokenNode lParen = (CSharpTokenNode)methodDeclaration.GetChildByRole (MethodDeclaration.Roles.LPar);
-			int offset = this.data.Document.LocationToOffset (lParen.StartLocation.Line, lParen.StartLocation.Column);
-			ForceSpaceBefore (offset, policy.BeforeMethodDeclarationParentheses);
-			
+			ForceSpacesBefore (methodDeclaration.LPar, policy.BeforeMethodDeclarationParentheses);
+
 			ForceSpacesAfter (methodDeclaration.LPar, policy.WithinMethodDeclarationParentheses);
 			ForceSpacesBefore (methodDeclaration.RPar, policy.WithinMethodDeclarationParentheses);
 			
@@ -366,51 +357,6 @@ namespace MonoDevelop.CSharp.Formatting
 				return "\t";
 			}
 		}
-		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, INode startNode, INode lbraceNode, INode rbraceNode)
-		{
-			ICSharpNode start = (ICSharpNode)startNode;
-			ICSharpNode lbrace = (ICSharpNode)lbraceNode;
-			ICSharpNode rbrace = (ICSharpNode)rbraceNode;
-				
-			LineSegment lbraceLineSegment = data.Document.GetLine (lbrace.StartLocation.Line);
-			string indent = lbraceLineSegment.GetIndentation (data.Document);
-			
-			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.StartLocation.Line);
-			
-			int lbraceOffset = data.Document.LocationToOffset (lbrace.StartLocation.Line, lbrace.StartLocation.Column);
-			
-			int lastNonWsChar = SearchLastNonWsChar (data.Document.LocationToOffset (start.StartLocation.Line, start.StartLocation.Column), lbraceOffset);
-			
-			switch (braceStyle) {
-			case BraceStyle.EndOfLineWithoutSpace:
-				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, null));
-				break;
-			case BraceStyle.EndOfLine:
-				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, " "));
-				break;
-			case BraceStyle.NextLine:
-				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, data.EolMarker));
-				break;
-			case BraceStyle.NextLineShifted:
-				indent += SingleIndent;
-				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, data.EolMarker + SingleIndent));
-				break;
-			case BraceStyle.NextLineShifted2:
-				indent += SingleIndent;
-				changes.Add (new MyTextReplaceChange (data, lastNonWsChar + 1, lbraceOffset - lastNonWsChar - 1, data.EolMarker + SingleIndent));
-				break;
-			}
-			
-			int firstNonWsChar = rbrace.StartLocation.Column - 1;
-			
-			for (; firstNonWsChar >= 0; firstNonWsChar--) {
-				char ch = data.Document.GetCharAt (rbraceLineSegment.Offset + firstNonWsChar);
-				if (!Char.IsWhiteSpace (ch))
-					break;
-			}
-			
-			changes.Add (new MyTextReplaceChange (data, rbraceLineSegment.Offset + firstNonWsChar + 1, rbrace.StartLocation.Column - firstNonWsChar - 1, firstNonWsChar > 0 ? data.EolMarker + indent : indent));
-		}
 		
 		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
 		{
@@ -422,6 +368,13 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitInvocationExpression (invocationExpression, data);
 		}
 		
+		public override object VisitIndexerExpression (IndexerExpression indexerExpression, object data)
+		{
+			ForceSpacesAfter (indexerExpression.LBracket, policy.SpacesWithinBrackets);
+			ForceSpacesBefore (indexerExpression.RBracket, policy.SpacesWithinBrackets);
+			return base.VisitIndexerExpression (indexerExpression, data);
+		}
+
 		public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
 		{
 			ForceSpacesBefore (ifElseStatement.LPar, policy.IfParentheses);
@@ -447,6 +400,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			foreach (INode node in forStatement.Children) {
 				if (node.Role == ForStatement.Roles.Semicolon) {
+					if (node.NextSibling is CSharpTokenNode || node.NextSibling is EmptyStatement)
+						continue;
 					ForceSpacesAfter (node, policy.SpacesAfterSemicolon);
 				}
 			}
@@ -456,7 +411,10 @@ namespace MonoDevelop.CSharp.Formatting
 			ForceSpacesAfter (forStatement.LPar, policy.WithinForParentheses);
 			ForceSpacesBefore (forStatement.RPar, policy.WithinForParentheses);
 			
-			return base.VisitForStatement (forStatement, data);
+			if (forStatement.EmbeddedStatement != null)
+				forStatement.EmbeddedStatement.AcceptVisitor (this, data);
+			
+			return null;
 		}
 		
 		public override object VisitForeachStatement (ForeachStatement foreachStatement, object data)
@@ -546,9 +504,26 @@ namespace MonoDevelop.CSharp.Formatting
 			ForceSpacesBefore (uncheckedExpression.RPar, policy.WithinCheckedExpressionParantheses);
 			return base.VisitUncheckedExpression (uncheckedExpression, data);
 		}
-
 		
-
+		public override object VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, object data)
+		{
+			ForceSpacesBefore (objectCreateExpression.LPar, policy.NewParentheses);
+			
+			return base.VisitObjectCreateExpression (objectCreateExpression, data);
+		}
+		
+		public override object VisitArrayObjectCreateExpression (ArrayObjectCreateExpression arrayObjectCreateExpression, object data)
+		{
+			foreach (INode node in arrayObjectCreateExpression.Children) {
+				if (node.Role == ArrayObjectCreateExpression.Roles.Comma) {
+					ForceSpacesBefore (node, policy.SpacesBeforeComma);
+					ForceSpacesAfter (node, policy.SpacesAfterComma);
+				}
+			}
+			
+			
+			return base.VisitArrayObjectCreateExpression (arrayObjectCreateExpression, data);
+		}
 
 	}
 }

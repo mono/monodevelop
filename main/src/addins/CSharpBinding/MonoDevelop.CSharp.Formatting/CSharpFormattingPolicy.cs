@@ -60,55 +60,55 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#region Indentation
 		[ItemProperty]
-		public bool IndentNamespaceBody {
+		public bool IndentNamespaceBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentClassBody {
+		public bool IndentClassBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentInterfaceBody {
+		public bool IndentInterfaceBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentStructBody {
+		public bool IndentStructBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentEnumBody {
+		public bool IndentEnumBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentMethodBody {
+		public bool IndentMethodBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentPropertyBody {
+		public bool IndentPropertyBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentEventBody {
+		public bool IndentEventBody { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool IndentBlocks {
+		public bool IndentBlocks { // tested
 			get;
 			set;
 		}
@@ -134,7 +134,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#region Braces
 		[ItemProperty]
-		public BraceStyle NamespaceBraceStyle {
+		public BraceStyle NamespaceBraceStyle { // tested
 			get;
 			set;
 		}
@@ -206,13 +206,13 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool AllowPropertyGetBlockInline {
+		public bool AllowPropertyGetBlockInline { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AllowPropertySetBlockInline {
+		public bool AllowPropertySetBlockInline { // tested
 			get;
 			set;
 		}
@@ -236,13 +236,13 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool AllowEventAddBlockInline {
+		public bool AllowEventAddBlockInline { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AllowEventRemoveBlockInline {
+		public bool AllowEventRemoveBlockInline { // tested
 			get;
 			set;
 		}
@@ -356,7 +356,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool NewParentheses {
+		public bool NewParentheses { // tested
 			get;
 			set;
 		}
@@ -572,19 +572,19 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool SpacesWithinBrackets {
+		public bool SpacesWithinBrackets { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool SpacesAfterComma {
+		public bool SpacesAfterComma { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool SpacesBeforeComma {
+		public bool SpacesBeforeComma { // tested
 			get;
 			set;
 		}

@@ -358,9 +358,9 @@ namespace MonoDevelop.CSharp.Dom
 			return VisitChildren (objectCreateExpression, data);
 		}
 		
-		public virtual S VisitCollectionInitializerExpression (CollectionInitializerExpression collectionInitializerExpression, T data) 
+		public virtual S VisitArrayObjectCreateExpression (ArrayObjectCreateExpression arrayObjectCreateExpression, T data) 
 		{
-			return VisitChildren (collectionInitializerExpression, data);
+			return VisitChildren (arrayObjectCreateExpression, data);
 		}
 		
 		public virtual S VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, T data) 

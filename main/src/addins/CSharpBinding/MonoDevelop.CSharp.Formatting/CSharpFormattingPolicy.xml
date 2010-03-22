@@ -307,7 +307,7 @@ class ClassDeclaration {
 	}
 ]]></Example>
 
-	<Example name="simpleArrayInitializer"><![CDATA[
+	m<Example name="simpleArrayInitializer"><![CDATA[
 class ClassDeclaration { 
 		public void Test (object o)
 		{

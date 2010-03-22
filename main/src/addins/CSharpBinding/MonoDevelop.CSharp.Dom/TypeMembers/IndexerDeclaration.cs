@@ -39,6 +39,19 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public CSharpTokenNode LBracket {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.LBracket);
+			}
+		}
+		
+		public CSharpTokenNode RBracket {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.RBracket);
+			}
+		}
+		
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIndexerDeclaration (this, data);
