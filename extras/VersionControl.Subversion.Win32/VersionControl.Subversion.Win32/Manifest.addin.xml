@@ -5,13 +5,13 @@
        copyright = "GPL"
        description = "Subversion support for the Version Control Add-in (for Windows)"
        category    = "Version Control"
-       version   = "2.2">
+       version   = "2.4">
 
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
-		<Addin id="VersionControl" version="2.2"/>
-		<Addin id="VersionControl.Subversion" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+		<Addin id="VersionControl" version="2.4"/>
+		<Addin id="VersionControl.Subversion" version="2.4"/>
 	</Dependencies>
 
 	<Runtime>

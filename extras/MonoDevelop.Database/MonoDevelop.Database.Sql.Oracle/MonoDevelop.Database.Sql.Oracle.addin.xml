@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category    = "Database"
-	version		= "2.2">
+	version		= "2.4">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.Oracle.dll"/>
@@ -15,11 +15,11 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
-		<Addin id="Database.Sql" version="2.2"/>
-		<Addin id="Database.Components" version="2.2"/>
-		<Addin id="Database.Designer" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+		<Addin id="Database.Sql" version="2.4"/>
+		<Addin id="Database.Components" version="2.4"/>
+		<Addin id="Database.Designer" version="2.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Database/Sql">

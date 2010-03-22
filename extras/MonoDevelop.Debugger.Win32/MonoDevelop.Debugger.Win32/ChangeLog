@@ -1,3 +1,7 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.Win32.addin.xml: Bumped MD version.
+
 2009-12-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CorObjectAdaptor.cs: 

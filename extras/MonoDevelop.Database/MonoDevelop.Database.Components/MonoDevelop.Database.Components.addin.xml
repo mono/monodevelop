@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Components Module"
 	category	= "Database"
-	version		= "2.2">
+	version		= "2.4">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Components.dll"/>
@@ -15,10 +15,10 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
-		<Addin id="Database.Sql" version="2.2"/>
-		<Addin id="SourceEditor2" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+		<Addin id="Database.Sql" version="2.4"/>
+		<Addin id="SourceEditor2" version="2.4"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Database/DataGrid/Renderers" name = "DataGrid renderers">

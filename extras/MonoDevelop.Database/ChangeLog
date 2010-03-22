@@ -1,3 +1,7 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Bumped MD version.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Database.sln: Merged MD.Projects into MD.Core,

@@ -1,6 +1,6 @@
 #!/bin/bash
 prefix=/usr/local
-common_packages=" mono-addins;0.3 monodevelop;2.2 monodevelop-core-addins;2.2"
+common_packages=" mono-addins;0.3 monodevelop;2.3 monodevelop-core-addins;2.3"
 
 usage ()
 {

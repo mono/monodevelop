@@ -1,3 +1,7 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bumped MD version.
+
 2010-03-08  Jonathan Pryor  <jpryor@novell.com>
 
 	* configure: Create a $(CSC) make variable.

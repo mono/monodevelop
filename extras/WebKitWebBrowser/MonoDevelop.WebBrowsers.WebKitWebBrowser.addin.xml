@@ -6,10 +6,10 @@
        url         = "http://www.monodevelop.com"
        description = "WebKit Web Browser component"
        category    = "Platform Support"
-       version     = "2.2">
+       version     = "2.4">
 
 	<Dependencies>
-		<Addin id = "Ide" version = "2.2"/>
+		<Addin id = "Ide" version = "2.4"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/WebBrowsers">
