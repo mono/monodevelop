@@ -1,3 +1,11 @@
+2010-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* templates/ValaTestFixture.xpt.xml:
+	* templates/ConsoleValaProject.xpt.xml:
+	* templates/EmptyValaSourceFile.xft.xml:
+	* templates/SharedLibraryValaProject.xpt.xml: Fixed 'Bug
+	  589786 - new vala files don't include the standard header'.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* ValaBinding.csproj: Flush.

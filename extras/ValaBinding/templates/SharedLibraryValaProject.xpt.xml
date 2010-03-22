@@ -24,9 +24,7 @@
 				/>
 			
 			<Files>
-				<File name = "main.vala"><![CDATA[// project created on ${Date} at ${Time}
-
-// Library content goes here
+				<File name = "main.vala" AddStandardHeader ="True"><![CDATA[// Library content goes here
 
 ]]></File>
 			</Files>

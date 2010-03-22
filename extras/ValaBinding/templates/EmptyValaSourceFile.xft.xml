@@ -14,7 +14,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".vala" DefaultName="EmptyValaSourceFile"/>
+		<File DefaultExtension=".vala" DefaultName="EmptyValaSourceFile" AddStandardHeader ="True"/>
 	</TemplateFiles>
 	
 	<FileOptions/>

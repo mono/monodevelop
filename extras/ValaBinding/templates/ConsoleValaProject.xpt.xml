@@ -25,8 +25,7 @@
 				/>
 			
 			<Files>
-				<File name = "main.vala"><![CDATA[// project created on ${Date} at ${Time}
-using GLib;
+				<File name = "main.vala" AddStandardHeader ="True"><![CDATA[using GLib;
 
 public class HelloVala: GLib.Object {
 	public static int main (string[] args) {
