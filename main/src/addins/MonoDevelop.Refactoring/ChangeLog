@@ -1,3 +1,10 @@
+2010-03-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Don't
+	  rename partial type files when they've a different name than
+	  the class name. (Bug 589663 - Rename class doesnt work well
+	  with partial types)
+
 2010-03-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoringService.cs: fixed bug

@@ -154,6 +154,8 @@ namespace MonoDevelop.Refactoring.Rename
 				int currentPart = 1;
 				HashSet<string> alreadyRenamed = new HashSet<string> ();
 				foreach (IType part in cls.Parts) {
+					if (part.CompilationUnit.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
+						continue;
 					if (alreadyRenamed.Contains (part.CompilationUnit.FileName))
 						continue;
 					alreadyRenamed.Add (part.CompilationUnit.FileName);
