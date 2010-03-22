@@ -68,7 +68,7 @@
 				defaultHandler = "MonoDevelop.Debugger.PauseDebugHandler"
 				shortcut = "Control|Break"
 				_label = "Pause"
-				_description = "Break Execution"
+				_description = "Pause Execution"
 				macShortcut = "Alt|Meta|P"
 				icon="gtk-media-pause"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepOver"

@@ -138,6 +138,7 @@ namespace MonoDevelop.Debugger
 			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
 				info.Enabled = true;
 				info.Text = GettextCatalog.GetString ("_Continue");
+				info.Description = GettextCatalog.GetString ("Continue the execution of the application");
 				return;
 			}
 

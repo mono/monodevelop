@@ -1,5 +1,11 @@
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/DebugCommands.cs: Fixed some command
+	  descriptions.
+
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AssemblyInfo.cs:
 	* MonoDevelop.Debugger.addin.xml: Bumped MD version.
 
