@@ -269,6 +269,8 @@ namespace MonoDevelop.Ide.Commands
         public static void RunMethod (IExecutionHandler executionHandler)
         {
             if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+				if (!MessageService.Confirm (GettextCatalog.GetString ("An application is already running. Do you want to stop it?"), AlertButton.Stop))
+					return;
                 StopHandler.StopBuildOperations ();
                 IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
             }

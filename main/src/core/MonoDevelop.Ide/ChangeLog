@@ -1,5 +1,11 @@
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Commands/ProjectCommands.cs: Ask before
+	  restarting the execution of the solution. Fixes bug #561693
+	  - Usability issues in debugger commands.
+
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Revert last change.
 
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
