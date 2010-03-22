@@ -7,15 +7,15 @@
         url = "http://www.monodevelop.com/"
         description = "Provides a testing workbench for regular expressions"
         category = "IDE extensions"
-        version = "2.2">
+        version = "2.4">
 
 	<Runtime>
 		<Import assembly = "MonoDevelop.RegexToolkit.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->

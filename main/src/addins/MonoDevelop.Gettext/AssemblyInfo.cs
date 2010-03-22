@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Gettext Translations Support")]
 [assembly: AssemblyDescription ("Provides support for adding/editing PO files.")]
-[assembly: AssemblyVersion ("2.2")]
+[assembly: AssemblyVersion ("2.4")]
 [assembly: AssemblyCopyright ("X11")]

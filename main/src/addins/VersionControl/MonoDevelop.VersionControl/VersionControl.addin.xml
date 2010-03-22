@@ -7,15 +7,15 @@
        description = "A MonoDevelop addin for using version control systems like Subversion"
        category    = "Version Control"
        flags = "Hidden"
-       version   = "2.2">
+       version   = "2.4">
  
 	<Runtime>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="2.2"/>
-	    <Addin id="Ide" version="2.2"/>
-	    <Addin id="SourceEditor2" version="2.2"/>
+	    <Addin id="Core" version="2.4"/>
+	    <Addin id="Ide" version="2.4"/>
+	    <Addin id="SourceEditor2" version="2.4"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">

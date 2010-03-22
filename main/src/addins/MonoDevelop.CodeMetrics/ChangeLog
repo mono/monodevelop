@@ -1,3 +1,8 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.CodeMetrics.addin.xml: Bumped MD version.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

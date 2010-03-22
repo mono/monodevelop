@@ -6,12 +6,12 @@
        url         = ""
        description = "Provides an assembly browser for the MonoDevelop"
        category    = "MonoDevelop Core"
-       version     = "2.2">
+       version     = "2.4">
 	
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
-		<Addin id="Refactoring" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+		<Addin id="Refactoring" version="2.4"/>
 	</Dependencies>
 	
 	<!-- Extension points -->

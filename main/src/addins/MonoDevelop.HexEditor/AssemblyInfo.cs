@@ -29,4 +29,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Hex Editor")]
 [assembly: AssemblyDescription ("Provides a hex editor for MonoDevelop")]
-[assembly: AssemblyVersion ("2.2")]
+[assembly: AssemblyVersion ("2.4")]

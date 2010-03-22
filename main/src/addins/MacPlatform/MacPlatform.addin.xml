@@ -6,13 +6,13 @@
        url         = "http://monodevelop.com/"
        description = "Mac Platform Support for MonoDevelop"
        category    = "Platform Support"
-       version     = "2.2">
+       version     = "2.4">
 	
 	<Runtime>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Ide" version="2.2"/>
+	    <Addin id="Ide" version="2.4"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">

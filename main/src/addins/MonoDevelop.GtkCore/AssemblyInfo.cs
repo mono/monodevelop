@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("GTK# Visual Designer")]
 [assembly: AssemblyDescription ("Provides support for visual design of GTK# windows, dialogs and widgets.")]
-[assembly: AssemblyVersion ("2.2")]
+[assembly: AssemblyVersion ("2.4")]
 [assembly: AssemblyCopyright ("X11")]

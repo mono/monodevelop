@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("CSharp Language Binding")]
 [assembly: AssemblyDescription ("CSharp Language Binding")]
-[assembly: AssemblyVersion ("2.2")]
+[assembly: AssemblyVersion ("2.4")]
 [assembly: AssemblyCopyright ("MIT X11")]

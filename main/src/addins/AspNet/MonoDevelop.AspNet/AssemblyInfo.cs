@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("ASP.NET Project Support")]
 [assembly: AssemblyDescription ("Support for ASP.NET projects, including editing, compiling, previewing and deploying to remote servers.")]
-[assembly: AssemblyVersion ("2.2")]
+[assembly: AssemblyVersion ("2.4")]
 [assembly: AssemblyCopyright ("MIT X11")]

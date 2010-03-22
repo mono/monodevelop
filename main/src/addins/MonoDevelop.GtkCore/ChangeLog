@@ -1,3 +1,8 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.GtkCore.addin.xml: Bumped MD version.
+
 2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Use the

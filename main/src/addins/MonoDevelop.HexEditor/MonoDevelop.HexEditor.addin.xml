@@ -6,16 +6,16 @@
        url         = ""
        description = "Provides a hex editor for MonoDevelop"
        category    = "MonoDevelop Core"
-       version     = "2.2">
+       version     = "2.4">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.HexEditor.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
-		<Addin id="AssemblyBrowser" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+		<Addin id="AssemblyBrowser" version="2.4"/>
 	</Dependencies>
 	<!--
 	<Extension path = "/MonoDevelop/Ide/Commands">

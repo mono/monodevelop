@@ -6,11 +6,11 @@
        description = "Support for Debugging projects"
        copyright = "MIT X11"
        flags = "Hidden"
-       version = "2.2">
+       version = "2.4">
 
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
 	</Dependencies>
 	
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerEngines">

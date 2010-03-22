@@ -1,5 +1,10 @@
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* MonoDevelopNUnit.addin.xml: Bumped MD version.
+
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Services/NUnitAssemblyTestSuite.cs: Fill the tests in the
 	  gui thread. Fixes bug #585286 - Collection modified while
 	  iterating.

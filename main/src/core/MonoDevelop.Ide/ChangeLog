@@ -1,5 +1,11 @@
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* AssemblyInfo.cs:
+	* BuildVariables.cs:
+	* MonoDevelop.Ide.addin.xml: Bumped MD version.
+
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Make the dialog
 	  non-sensitive after pressing ok. Make sure the locations
 	  list is not modified after getting it (should not happen

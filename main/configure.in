@@ -1,4 +1,4 @@
-AC_INIT([monodevelop], 2.2, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop], 2.3, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
@@ -6,8 +6,8 @@ AM_MAINTAINER_MODE
 #capture aclocal flags for autoreconf
 AC_SUBST(ACLOCAL_FLAGS)
 
-ASSEMBLY_VERSION=2.2.0.0
-PACKAGE_VERSION_LABEL="2.2 RC"
+ASSEMBLY_VERSION=2.4.0.0
+PACKAGE_VERSION_LABEL="2.4 Alpha 1"
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)

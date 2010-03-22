@@ -1,3 +1,8 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.SourceEditor.addin.xml: Bumped MD version.
+
 2010-03-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/StatusBox.cs:

@@ -1,3 +1,8 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs:
+	* MonoDevelop.Core.addin.xml: Bumped MD version.
+
 2010-03-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CopyDomVisitor.cs: Handle parameter

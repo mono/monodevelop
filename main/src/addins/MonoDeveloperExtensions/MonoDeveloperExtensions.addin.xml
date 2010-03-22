@@ -6,15 +6,15 @@
        url         = "http://www.monodevelop.com"
        description = "Provides some IDE extensions useful for developing and building the Mono class libraries."
        category    = "Project Import and Export"
-       version     = "2.2">
+       version     = "2.4">
     
     <Runtime>
         <Import assembly="MonoDeveloperExtensions.dll"/>
     </Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.2"/>
-		<Addin id="Ide" version="2.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
@@ -55,7 +55,7 @@
 	        <Import assembly="MonoDeveloperExtensions_nunit.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="NUnit" version="2.2"/>
+			<Addin id="NUnit" version="2.4"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/NUnit/TestProviders">
 			<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>
