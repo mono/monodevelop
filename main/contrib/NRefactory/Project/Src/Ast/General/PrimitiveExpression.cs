@@ -29,6 +29,12 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 		}
 		
+		public bool HasStringValue {
+			get {
+				return stringValue != null;
+			}
+		}
+		
 		public PrimitiveExpression(object val)
 		{
 			this.Value = val;

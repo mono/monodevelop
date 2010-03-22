@@ -1,5 +1,11 @@
 2010-03-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Src/Ast/General/PrimitiveExpression.cs:
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed
+	  failing unit test.
+
+2010-03-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed 'Bug
 	  589980 - Code formatter truncates floating-point literals'.
 
