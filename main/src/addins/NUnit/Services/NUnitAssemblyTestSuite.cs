@@ -41,6 +41,7 @@ using MonoDevelop.Core.Execution;
 using NUnit.Core;
 using NUnit.Core.Filters;
 using MonoDevelop.NUnit.External;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {
@@ -176,7 +177,9 @@ namespace MonoDevelop.NUnit
 			ld.Path = AssemblyPath;
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
 			ld.Callback = delegate {
-				AsyncCreateTests (ld);
+				DispatchService.GuiDispatch (delegate {
+					AsyncCreateTests (ld);
+				});
 			};
 			ld.SupportAssemblies = new List<string> (SupportAssemblies);
 			

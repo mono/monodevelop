@@ -1,3 +1,9 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/NUnitAssemblyTestSuite.cs: Fill the tests in the
+	  gui thread. Fixes bug #585286 - Collection modified while
+	  iterating.
+
 2010-03-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelopNUnit.addin.xml: Set the default location for
