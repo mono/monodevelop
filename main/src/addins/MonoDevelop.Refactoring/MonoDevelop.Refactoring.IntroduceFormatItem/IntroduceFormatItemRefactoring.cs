@@ -91,7 +91,6 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 				}
 				expressionStart--;
 			}
-			
 			// Add parameter to existing string.format call
 			ExpressionResult expressionResult = expressionFinder.FindFullExpression (options.Document.TextEditor.Text, expressionStart);
 			InvocationExpression formatCall = null;
@@ -100,9 +99,11 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 				if (possibleFormatCall != null && possibleFormatCall.TargetObject is MemberReferenceExpression && ((MemberReferenceExpression)possibleFormatCall.TargetObject).MemberName == "Format") {
 					PrimitiveExpression expr = possibleFormatCall.Arguments[0] as PrimitiveExpression;
 					if (expr != null) {
-						expr.Value = data.Document.GetTextBetween (start + 1, data.SelectionRange.Offset) + 
+						string str = data.Document.GetTextBetween (start + 1, data.SelectionRange.Offset) + 
 							"{" + (possibleFormatCall.Arguments.Count - 1) + "}" +
 								data.Document.GetTextBetween (data.SelectionRange.EndOffset, end);
+						expr.Value = str;
+						expr.StringValue = '"' + str  + '"';
 						possibleFormatCall.Arguments.Add (new PrimitiveExpression (data.Document.GetTextAt (data.SelectionRange)));
 						formatCall = possibleFormatCall;
 						start = data.Document.LocationToOffset (expressionResult.Region.Start.Line - 1, expressionResult.Region.Start.Column - 1);
@@ -135,9 +136,9 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 			return changes;
 		}
 		
-		static char ReadEscapeSequence (string str, ref int pos)
+		static char ReadEscapeSequence (string txt, ref int pos)
 		{
-			char ch = str[pos];
+			char ch = txt[pos];
 			switch (ch) {
 			case '\'':
 				return '\'';
@@ -165,14 +166,14 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 			return ch;
 		}
 		
-		static string UnescapeString (string str)
+		static string UnescapeString (string txt)
 		{
 			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < str.Length; i++) {
-				char ch = str[i];
-				if (ch == '\\' && i + 1 < str.Length) {
+			for (int i = 0; i < txt.Length; i++) {
+				char ch = txt[i];
+				if (ch == '\\' && i + 1 < txt.Length) {
 					i++;
-					sb.Append (ReadEscapeSequence (str, ref i));
+					sb.Append (ReadEscapeSequence (txt, ref i));
 				} else {
 					sb.Append (ch);
 				}
