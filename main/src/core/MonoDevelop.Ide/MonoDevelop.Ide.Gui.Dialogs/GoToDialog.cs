@@ -80,10 +80,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		List<OpenLocation> locations = new List<OpenLocation> ();
 		
-		public ReadOnlyCollection<OpenLocation> Locations
+		public ICollection<OpenLocation> Locations
 		{
 			get {
-				return new ReadOnlyCollection<OpenLocation> (locations);
+				return new List<OpenLocation> (locations);
 			}
 		}
 		
@@ -130,6 +130,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			try {
 				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
+					dialog.Sensitive = false;
 					foreach (OpenLocation loc in dialog.Locations)
 						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
 				}

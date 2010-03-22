@@ -1,3 +1,11 @@
+2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Make the dialog
+	  non-sensitive after pressing ok. Make sure the locations
+	  list is not modified after getting it (should not happen
+	  anymore after the previous change, but just in case). Fixes
+	  bug #586575 - Goto dialog is not thread safe.
+
 2010-03-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Added
