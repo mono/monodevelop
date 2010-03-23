@@ -1100,6 +1100,26 @@ return (Test)null;
 			Assert.AreEqual (@"new int[] { 1,3,3,7 };", data.Document.GetTextBetween (i1, i2));
 		}
 		
+		[Test()]
+		public void TestSpacesInLambdaExpression ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		var v = x=>x!=null;
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinWhileParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("x");
+			int i2 = data.Document.Text.LastIndexOf ("null") + "null".Length;
+			Assert.AreEqual (@"x => x != null", data.Document.GetTextBetween (i1, i2));
+		}
 		
 	}
 }*/

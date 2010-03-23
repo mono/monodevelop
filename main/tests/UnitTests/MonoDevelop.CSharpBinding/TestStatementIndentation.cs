@@ -165,6 +165,31 @@ checked {
 		}
 		
 		[Test()]
+		public void TestBaseIndentation ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+                              base.FooBar();
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		base.FooBar();
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestUncheckedIndentation ()
 		{
 			TextEditorData data = new TextEditorData ();
