@@ -542,6 +542,17 @@
               <Component Id="MonoDevelop_AddIns_VersionControl" Guid="185a74d4-17c2-4e94-9dbc-4c391026eb1e">
                 <File Name="MonoDevelop.VersionControl.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.dll" />
                 <File Name="MonoDevelop.VersionControl.Subversion.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll" />
+                <File Name="comment.png" Source="$(var.BuildRoot)\AddIns\VersionControl\comment.png" />
+                <File Name="menu_add.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_add.png" />
+                <File Name="menu_commit.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_commit.png" />
+                <File Name="menu_diff.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_diff.png" />
+                <File Name="menu_log.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_log.png" />
+                <File Name="menu_remote_status.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_remote_status.png" />
+                <File Name="menu_remove.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_remove.png" />
+                <File Name="menu_resolve.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_resolve.png" />
+                <File Name="menu_revert.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_revert.png" />
+                <File Name="menu_status.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_status.png" />
+                <File Name="menu_update.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_update.png" />
               </Component>
             </Directory>
             <Directory Id="WelcomePage" Name="WelcomePage">
