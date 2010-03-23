@@ -1,3 +1,8 @@
+2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Add
+	  description for BlameRevision.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

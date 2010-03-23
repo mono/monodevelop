@@ -1141,6 +1141,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			case LibSvnClient.NotifyAction.Unlocked: 
 				actiondesc = string.Format (GettextCatalog.GetString ("'{0}' unlocked."), file);
 				break;
+			case LibSvnClient.NotifyAction.BlameRevision:
+				actiondesc = string.Format (GettextCatalog.GetString ("Get annotations {0}"), file);
+				break;
 //			case LibSvnClient.NotifyAction.ChangeListSet: 
 //				actiondesc = string.Format (GettextCatalog.GetString ("Path '{0}' is now a member of changelist '{1}'."), file, Marshal.PtrToStringAuto (data.changelist_name));
 //				break;
