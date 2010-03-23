@@ -31,9 +31,9 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class IdentifierExpression : AbstractCSharpNode
 	{
-		public IReturnType Identifier {
+		public Identifier Identifier {
 			get {
-				return (IReturnType)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier);
 			}
 		}
 		

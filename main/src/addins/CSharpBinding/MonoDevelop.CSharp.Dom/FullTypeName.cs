@@ -25,43 +25,21 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Projects.Dom;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
 	public class FullTypeName : AbstractCSharpNode
 	{
-		public string Name {
-			get;
-			set;
-		}
-		
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		public Identifier Identifier {
 			get {
-				return startLocation;
+				return (Identifier)GetChildByRole (Roles.Identifier);
 			}
 		}
-		
-		public override DomLocation EndLocation {
-			get {
-				return new DomLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
-			}
-		}
-		
-		/*
-		public ISegment Segment {
-			get {
-				return new Segment (Offset, Name != null ? Name.Length : 0);
-			}
-		}*/
-		
-		public FullTypeName ()
-		{
-		}
-		public FullTypeName (string name, DomLocation location)
-		{
-			this.Name = name;
-			this.startLocation = location;
+			
+		public IEnumerable<ICSharpNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

@@ -163,6 +163,11 @@ namespace MonoDevelop.CSharp.Dom
 			return VisitChildren (parameterDeclarationExpression, data);
 		}
 		
+		public virtual S VisitConstraint (Constraint constraint, T data)
+		{
+			return VisitChildren (constraint, data);
+		}
+		
 		public virtual S VisitBlockStatement (BlockStatement blockStatement, T data) 
 		{
 			return VisitChildren (blockStatement, data);

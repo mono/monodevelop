@@ -43,6 +43,10 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public IEnumerable<ICSharpNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitMemberReferenceExpression (this, data);

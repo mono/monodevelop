@@ -32,9 +32,19 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class MethodDeclaration : AbstractMember
 	{
+		public IEnumerable<ICSharpNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
+		}
+		
+		public IEnumerable<Constraint> Constraints { 
+			get {
+				return base.GetChildrenByRole (Roles.Constraint).Cast <Constraint> ();
+			}
+		}
+		
 		public IEnumerable<ParameterDeclarationExpression> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression> ();
 			}
 		}
 		
@@ -51,6 +61,8 @@ namespace MonoDevelop.CSharp.Dom
 				return (BlockStatement)GetChildByRole (Roles.Body);
 			}
 		}
+		
+		
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{

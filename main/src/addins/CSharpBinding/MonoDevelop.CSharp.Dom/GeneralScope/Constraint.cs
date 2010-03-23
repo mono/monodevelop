@@ -1,10 +1,10 @@
 // 
-// TypeDeclaration.cs
+// Constraint.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,54 +31,28 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class TypeDeclaration : AbstractMemberBase
+	public class Constraint : AbstractCSharpNode
 	{
-		public const int TypeKeyword      = 100;
-		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
-			}
+		public CSharpTokenNode WhereKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public string Name {
-			get {
-				return NameIdentifier.Name;
-			}
+		public Identifier TypeParameter {
+			get { return (Identifier)GetChildByRole (Roles.Identifier); }
+		}
+		
+		public CSharpTokenNode Colon {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon); }
 		}
 		
 		public IEnumerable<ICSharpNode> TypeArguments {
-			get {
-				return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> ();
-			}
-		}
-		
-		public IEnumerable<Constraint> Constraints { 
-			get {
-				return base.GetChildrenByRole (Roles.Constraint).Cast <Constraint> ();
-			}
-		}
-		
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
-			}
-		}
-		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
-			}
-		}
-		
-		public virtual ClassType ClassType {
-			get;
-			set;
+			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitTypeDeclaration (this, data);
+			return visitor.VisitConstraint (this, data);
 		}
 	}
 }
+

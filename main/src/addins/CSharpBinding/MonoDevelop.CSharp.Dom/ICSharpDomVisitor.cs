@@ -45,6 +45,7 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitFullTypeName (FullTypeName fullTypeName, T data);
 		S VisitIdentifier (Identifier identifier, T data);
 		S VisitParameterDeclarationExpression (ParameterDeclarationExpression parameterDeclarationExpression, T data);
+		S VisitConstraint (Constraint constraint, T data);
 		#endregion
 		
 		#region Type members

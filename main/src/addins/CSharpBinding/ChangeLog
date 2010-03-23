@@ -1,5 +1,20 @@
 2010-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Dom/FullTypeName.cs:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/GeneralScope/Constraint.cs:
+	* MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/MethodDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/IdentifierExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/MemberReferenceExpression.cs:
+	  Handled templates & constraints.
+
+2010-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
 	  Removed duplicate section.
 

@@ -289,6 +289,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArgListExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\LambdaExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ParameterDeclarationExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Constraint.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
