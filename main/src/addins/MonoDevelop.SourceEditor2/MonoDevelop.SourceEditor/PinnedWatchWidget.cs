@@ -58,7 +58,7 @@ namespace MonoDevelop.SourceEditor
 				this.objectValue = value;
 				if (this.objectValue != null) {
 					image.Pixbuf = ImageService.GetPixbuf (ObjectValueTreeView.GetIcon (this.objectValue.Flags), Gtk.IconSize.Menu);
-					label.Text = this.objectValue.Name;
+					label.Text = this.watch.Expression;
 					valueLabel.Text = GetString (this.objectValue);
 					this.QueueResize ();
 				} else {
@@ -105,13 +105,14 @@ namespace MonoDevelop.SourceEditor
 			this.watch = watch;
 			this.ObjectValue = watch.Value;
 			
-			Gtk.HBox box = new Gtk.HBox ();
+			Gtk.HBox box = new Gtk.HBox (false, 2);
+			box.BorderWidth = 2;
 			box.PackStart (image, false, false, 0);
 			box.PackStart (label, false, false, 0);
 			
-			box.PackStart (new Divider (), true, true, 2);
+			box.PackStart (new Divider (), true, true, 0);
 			
-			box.PackStart (valueLabel, false, false, 2);
+			box.PackStart (valueLabel, false, false, 0);
 			unpinImage = new Gtk.Image ();
 			unpinImage.Pixbuf = ImageService.GetPixbuf ("md-pin-down", Gtk.IconSize.Menu);
 			unpin.Child = unpinImage;
@@ -128,7 +129,7 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleEditorOptionsChanged (object sender, EventArgs e)
 		{
-			HeightRequest = Math.Max (Math.Max (Editor.LineHeight, image.HeightRequest), 18);
+//			HeightRequest = Math.Max (Math.Max (Editor.LineHeight, image.HeightRequest), 18);
 			/*
 			Pango.FontDescription fontDescription = Pango.FontDescription.FromString (Editor.Options.FontName);
 			fontDescription.Family = "Sans";
@@ -136,8 +137,8 @@ namespace MonoDevelop.SourceEditor
 			label.ModifyFont (fontDescription);
 			valueLabel.ModifyFont (fontDescription);*/
 			
-			label.ModifyFont (Editor.Options.Font);
-			valueLabel.ModifyFont (Editor.Options.Font);
+//			label.ModifyFont (Editor.Options.Font);
+//			valueLabel.ModifyFont (Editor.Options.Font);
 		}
 		
 		protected override void OnDestroyed ()

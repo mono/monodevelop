@@ -1,3 +1,8 @@
+2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs: Improve
+	  visual style.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
