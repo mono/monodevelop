@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -160,7 +161,16 @@ namespace Mono.TextEditor
 				Console.WriteLine ("Error while executing actions " + action1.ToString () + 
 				                   " & " + action2.ToString () + ": " + e);
 			}
+		
 		}
+		static Dictionary<Gdk.Key, Gdk.Key> keyMappings = new Dictionary<Gdk.Key, Gdk.Key> ();
+		static EditMode ()
+		{
+			for (char ch = 'a'; ch <= 'z'; ch++) {
+				keyMappings[(Gdk.Key)ch] = (Gdk.Key)(ch -'a' + 'A');
+			}
+		}
+		
 		
 		public virtual bool PreemptIM (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
@@ -169,7 +179,7 @@ namespace Mono.TextEditor
 		
 		public static int GetKeyCode (Gdk.Key key)
 		{
-			return (int)key;
+			return (int)(keyMappings.ContainsKey (key) ? keyMappings[key] : key);
 		}
 		
 		public static int GetKeyCode (Gdk.Key key, Gdk.ModifierType modifier)
@@ -180,7 +190,7 @@ namespace Mono.TextEditor
 			m = (m << 1) | (uint)(((modifier & Gdk.ModifierType.Mod1Mask)    != 0)? 1 : 0);
 			m = (m << 1) | (uint)(((modifier & Gdk.ModifierType.SuperMask)   != 0)? 1 : 0);
 			
-			return (int)key | (int)(m << 16);
+			return GetKeyCode (key) | (int)(m << 16);
 		}
 		
 	}
