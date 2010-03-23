@@ -326,18 +326,6 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append (namespaceStr);
 					s.Append ("</i></small>\n");
 					s.Append (ambience.GetString (new Namespace (((NamespaceResolveResult)result).Namespace), settings));
-				} else if (result is MethodResolveResult) {
-					MethodResolveResult mrr = (MethodResolveResult)result;
-					s.Append ("<small><i>");
-					s.Append (methodStr);
-					s.Append ("</i></small>\n");
-					s.Append (ambience.GetString (mrr.MostLikelyMethod, settings));
-					if (mrr.Methods.Count > 1) {
-						int overloadCount = mrr.Methods.Count - 1;
-						s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
-					}
-
-					doc = AmbienceService.GetDocumentationSummary (((MethodResolveResult)result).MostLikelyMethod);
 				} else {
 					s.Append (ambience.GetString (result.ResolvedType, settings));
 				}
