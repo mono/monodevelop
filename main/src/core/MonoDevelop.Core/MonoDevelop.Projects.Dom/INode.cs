@@ -104,6 +104,8 @@ namespace MonoDevelop.Projects.Dom
 			public const int Colon = 60; // :
 			public const int Semicolon = 61; // ;
 			public const int QuestionMark = 62; // ?
+			
+			public const int Assign = 63; // =
 		}
 		
 		public INode Parent {
@@ -183,6 +185,24 @@ namespace MonoDevelop.Projects.Dom
 		{
 			child.Role = role;
 			AddChild (child);
+		}
+		
+		public void InsertChildBefore (INode nextSibling, INode child, int role)
+		{
+			if (FirstChild == null || nextSibling == null) {
+				AddChild (child, role);
+				return;
+			}
+			child.Parent = this;
+			child.Role = role;
+			
+			child.NextSibling = nextSibling;
+			
+			if (nextSibling.PrevSibling != null) {
+				child.PrevSibling = nextSibling.PrevSibling;
+				nextSibling.PrevSibling.NextSibling = child;
+			}
+			nextSibling.PrevSibling = child;
 		}
 		
 		public virtual S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
