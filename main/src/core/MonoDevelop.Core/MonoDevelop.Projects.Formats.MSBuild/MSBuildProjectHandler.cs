@@ -334,8 +334,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			foreach (MSBuildItem buildItem in msproject.GetAllItems ()) {
 				ProjectItem it = ReadItem (ser, buildItem);
-				if (it != null)
-					((SolutionEntityItem)Item).Items.Add (it);
+				if (it != null) {
+					EntityItem.Items.Add (it);
+					int i = EntityItem.Items.IndexOf (it);
+					if (i != -1 && EntityItem.Items [i] != it && EntityItem.Items [i].Condition == it.Condition)
+						EntityItem.Items.RemoveAt (i); // Remove duplicates
+				}
 			}
 			
 			timer.Trace ("Read configurations");
