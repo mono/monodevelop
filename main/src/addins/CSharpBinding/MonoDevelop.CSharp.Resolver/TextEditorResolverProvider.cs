@@ -283,6 +283,17 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append (((LocalVariableResolveResult)result).LocalVariable.Name);
 				} else if (result is UnresolvedMemberResolveResult) {
 					s.Append (String.Format (GettextCatalog.GetString ("Unresolved member '{0}'"), ((UnresolvedMemberResolveResult)result).MemberName));
+				} else if (result is MethodResolveResult) {
+					MethodResolveResult mrr = (MethodResolveResult)result;
+					s.Append("<small><i>");
+					s.Append(methodStr);
+					s.Append("</i></small>\n");
+					s.Append(ambience.GetString(mrr.MostLikelyMethod, settings));
+					if (mrr.Methods.Count > 1) {
+						int overloadCount = mrr.Methods.Count - 1;
+						s.Append(string.Format(GettextCatalog.GetPluralString(" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
+					}
+					doc = AmbienceService.GetDocumentationSummary(((MethodResolveResult)result).MostLikelyMethod);
 				} else if (result is MemberResolveResult) {
 					IMember member = ((MemberResolveResult)result).ResolvedMember;
 					if (member == null) {

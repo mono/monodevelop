@@ -1,5 +1,13 @@
 2010-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
+	  Submittet patch send by ' Eugene Kulabuhov
+	  <eugene.kulabuhov@gmail.com>': Fixed MemberResolveResult
+	  clause incorrectly handling MethodResolveResult type as
+	  well.
+
+2010-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
