@@ -87,7 +87,9 @@ namespace Mono.Debugging.Evaluation
 			
 			sb.Append ("]");
 			
-			return ObjectValue.CreateObject (this, new ObjectPath (sb.ToString ()), "", "", ObjectValueFlags.ArrayElement|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			ObjectValue res = ObjectValue.CreateObject (this, new ObjectPath (sb.ToString ()), "", "", ObjectValueFlags.ArrayElement|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
+			res.ChildSelector = "";
+			return res;
 		}
 
 		public ObjectValue[] GetChildren ()

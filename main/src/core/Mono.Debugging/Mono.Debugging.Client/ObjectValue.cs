@@ -221,7 +221,14 @@ namespace Mono.Debugging.Client
 		/// (for example ".foo" if this object represents a "foo" field of an object
 		/// </summary>
 		public string ChildSelector {
-			get { return childSelector ?? "." + Name; }
+			get {
+				if (childSelector != null)
+					return childSelector;
+				if ((flags & ObjectValueFlags.ArrayElement) != 0)
+					return Name;
+				else
+					return "." + Name;
+			}
 			set { childSelector = value; }
 		}
 		

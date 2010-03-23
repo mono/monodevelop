@@ -1,3 +1,10 @@
+2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs: Child
+	  selector fixes. Fixes bug #588307 - Cannot pin an element of
+	  multidimensional array.
+
 2010-03-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/AsyncOperationManager.cs: Use
