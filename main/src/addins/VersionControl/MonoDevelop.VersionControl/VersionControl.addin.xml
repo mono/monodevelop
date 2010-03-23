@@ -10,6 +10,17 @@
        version   = "2.4">
  
 	<Runtime>
+		<Import file="comment.png" />
+		<Import file="menu_add.png" />
+		<Import file="menu_commit.png" />
+		<Import file="menu_diff.png" />
+		<Import file="menu_log.png" />
+		<Import file="menu_remote_status.png" />
+		<Import file="menu_remove.png" />
+		<Import file="menu_resolve.png" />
+		<Import file="menu_revert.png" />
+		<Import file="menu_status.png" />
+		<Import file="menu_update.png" />
 	</Runtime>
 
 	<Dependencies>
