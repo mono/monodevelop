@@ -1,3 +1,8 @@
+2010-03-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide/MessageService.cs: Use 'Ok' in error dialogs
+	  for consistency with warning and info dialogs.
+
 2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Desktop/DesktopApplication.cs: Properly

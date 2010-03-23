@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide
 		}
 		public static void ShowError (Gtk.Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, AlertButton.Cancel);
+			GenericAlert (MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, AlertButton.Ok);
 		}
 		#endregion
 		
