@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Desktop
 				Process.Start (cmd);
 			} else {
 				foreach (string s in files) {
-					Process.Start (command + " \"" + s + "\"");
+					Process.Start (command, "\"" + s + "\"");
 				}
 			}
 		}
