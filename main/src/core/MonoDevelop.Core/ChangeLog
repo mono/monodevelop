@@ -1,5 +1,9 @@
 2010-03-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/INode.cs: Added some node types.
+
+2010-03-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/INode.cs: Added method.
 
 2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>

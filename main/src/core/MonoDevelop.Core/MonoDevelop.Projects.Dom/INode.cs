@@ -106,6 +106,9 @@ namespace MonoDevelop.Projects.Dom
 			public const int QuestionMark = 62; // ?
 			
 			public const int Assign = 63; // =
+			
+			public const int TypeArgument = 64;
+			public const int Constraint = 65;
 		}
 		
 		public INode Parent {
