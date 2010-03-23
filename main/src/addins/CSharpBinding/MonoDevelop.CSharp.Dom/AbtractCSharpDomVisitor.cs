@@ -158,9 +158,9 @@ namespace MonoDevelop.CSharp.Dom
 			return VisitChildren (variableInitializer, data);
 		}
 		
-		public virtual S VisitArgumentDeclaration (ArgumentDeclaration argumentDeclaration, T data) 
+		public virtual S VisitParameterDeclarationExpression (ParameterDeclarationExpression parameterDeclarationExpression, T data)
 		{
-			return VisitChildren (argumentDeclaration, data);
+			return VisitChildren (parameterDeclarationExpression, data);
 		}
 		
 		public virtual S VisitBlockStatement (BlockStatement blockStatement, T data) 
@@ -296,6 +296,11 @@ namespace MonoDevelop.CSharp.Dom
 		public virtual S VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, T data) 
 		{
 			return VisitChildren (anonymousMethodExpression, data);
+		}
+		
+		public virtual S VisitLambdaExpression (LambdaExpression lambdaExpression, T data) 
+		{
+			return VisitChildren (lambdaExpression, data);
 		}
 		
 		public virtual S VisitAssignmentExpression (AssignmentExpression assignmentExpression, T data) 
@@ -461,6 +466,11 @@ namespace MonoDevelop.CSharp.Dom
 		public virtual S VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, T data)
 		{
 			return VisitChildren (defaultValueExpression, data);
+		}
+		
+		public virtual S VisitArgListExpression (ArgListExpression argListExpression, T data)
+		{
+			return VisitChildren (argListExpression, data);
 		}
 	}
 }

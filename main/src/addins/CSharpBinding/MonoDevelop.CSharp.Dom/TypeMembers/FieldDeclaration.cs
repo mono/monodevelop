@@ -33,6 +33,10 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class FieldDeclaration : AbstractMember
 	{
+		public CSharpTokenNode Semicolon {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon); }
+		}
+		
 		public IEnumerable<VariableInitializer> Variables { 
 			get {
 				return base.GetChildrenByRole (Roles.Initializer).Cast <VariableInitializer>();

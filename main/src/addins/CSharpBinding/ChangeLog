@@ -1,3 +1,27 @@
+2010-03-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/FieldDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/LambdaExpression.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/MethodDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ArgListExpression.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/IndexerDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/ArgumentDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/OperatorDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/StackAllocExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/InvocationExpression.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/ConstructorDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/BaseReferenceExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ArrayObjectCreateExpression.cs:
+	* MonoDevelop.CSharp.Dom/TypeMembers/ParameterDeclarationExpression.cs:
+	  Worked on new DOM.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

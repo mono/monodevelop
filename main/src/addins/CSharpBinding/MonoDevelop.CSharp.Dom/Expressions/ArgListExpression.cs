@@ -1,10 +1,10 @@
 // 
-// InvocationExpression.cs
+// ArgListExpression.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
 using MonoDevelop.Projects.Dom;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class InvocationExpression : AbstractCSharpNode
+	/// <summary>
+	/// Represents the undocumented __arglist keyword.
+	/// </summary>
+	public class ArgListExpression : AbstractCSharpNode
 	{
-		public INode Target {
-			get { return GetChildByRole (Roles.TargetExpression); }
+		public bool IsAccess { // access is __arglist, otherwise it's __arlist (a1, a2, ..., an)
+			get;
+			set;
 		}
 		
-		public IEnumerable<ICSharpNode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument).Cast<ICSharpNode> (); }
+		public CSharpTokenNode Keyword {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
 		public CSharpTokenNode LPar {
@@ -49,9 +53,14 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}
 		
+		public IEnumerable<ICSharpNode> Arguments {
+			get { return GetChildrenByRole (Roles.Argument).Cast<ICSharpNode> (); }
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitInvocationExpression (this, data);
+			return visitor.VisitArgListExpression (this, data);
 		}
 	}
 }
+

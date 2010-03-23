@@ -44,6 +44,7 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, T data);
 		S VisitFullTypeName (FullTypeName fullTypeName, T data);
 		S VisitIdentifier (Identifier identifier, T data);
+		S VisitParameterDeclarationExpression (ParameterDeclarationExpression parameterDeclarationExpression, T data);
 		#endregion
 		
 		#region Type members
@@ -58,7 +59,6 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, T data);
 		S VisitAccessorDeclaration (Accessor accessorDeclaration, T data);
 		S VisitVariableInitializer (VariableInitializer variableInitializer, T data);
-		S VisitArgumentDeclaration (ArgumentDeclaration argumentDeclaration, T data);
 		#endregion
 		
 		#region Statements
@@ -94,6 +94,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		#region Expressions
 		S VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, T data);
+		S VisitLambdaExpression (LambdaExpression lambdaExpression, T data);
 		S VisitAssignmentExpression (AssignmentExpression assignmentExpression, T data);
 		S VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, T data);
 		S VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, T data);
@@ -120,6 +121,7 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitAsExpression (AsExpression asExpression, T data);
 		S VisitIsExpression (IsExpression isExpression, T data);
 		S VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, T data);
+		S VisitArgListExpression (ArgListExpression argListExpression, T data);
 		#endregion
 		
 		#region Query Expressions

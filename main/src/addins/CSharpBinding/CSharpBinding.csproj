@@ -183,7 +183,6 @@
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\EventDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\IndexerDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\MethodDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ArgumentDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\OperatorDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Statements\BreakStatement.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Statements\CheckedStatement.cs" />
@@ -287,6 +286,9 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\DomSpacingVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\CSharpModifierToken.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayObjectCreateExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArgListExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\LambdaExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ParameterDeclarationExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -352,12 +352,6 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 		
-		string SingleIndent {
-			get {
-				return "\t";
-			}
-		}
-		
 		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
 		{
 			ForceSpacesBefore (invocationExpression.LPar, policy.BeforeMethodCallParentheses);
@@ -520,10 +514,17 @@ namespace MonoDevelop.CSharp.Formatting
 					ForceSpacesAfter (node, policy.SpacesAfterComma);
 				}
 			}
-			
-			
 			return base.VisitArrayObjectCreateExpression (arrayObjectCreateExpression, data);
 		}
+		
+		public override object VisitLambdaExpression (LambdaExpression lambdaExpression, object data)
+		{
+			ForceSpacesAfter (lambdaExpression.Arrow, true);
+			ForceSpacesBefore (lambdaExpression.Arrow, true);
+			
+			return base.VisitLambdaExpression (lambdaExpression, data);
+		}
+
 
 	}
 }

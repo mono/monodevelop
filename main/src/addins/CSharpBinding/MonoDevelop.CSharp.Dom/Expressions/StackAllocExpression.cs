@@ -31,14 +31,34 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class StackAllocExpression : AbstractCSharpNode
 	{
-		public IReturnType Type {
+		public const int StackAllocKeywordRole = 100;
+		
+		public FullTypeName Type {
 			get {
-				return (IReturnType)GetChildByRole (Roles.ReturnType);
+				return (FullTypeName)GetChildByRole (Roles.ReturnType);
 			}
 		}
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public ICSharpNode CountExpression {
+			get { return (ICSharpNode)GetChildByRole (Roles.Expression); }
+		}
+		
+		public CSharpTokenNode StackAllocKeyword {
+			get {
+				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole);
+			}
+		}
+		
+		public CSharpTokenNode LBracket {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.LBracket);
+			}
+		}
+		
+		public CSharpTokenNode RBracket {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.RBracket);
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

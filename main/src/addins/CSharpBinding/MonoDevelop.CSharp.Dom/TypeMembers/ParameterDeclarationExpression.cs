@@ -1,10 +1,10 @@
 // 
-// ArgumentDeclaration.cs
+// ParameterDeclarationExpression.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ArgumentDeclaration : AbstractMemberBase
+	
+	public enum ParameterModifier {
+		None,
+		Ref,
+		Out,
+		Params,
+		This
+	}
+	
+	public class ParameterDeclarationExpression : AbstractCSharpNode
 	{
-		public IReturnType ReturnType {
-			get {
-				return (IReturnType)GetChildByRole (Roles.ReturnType);
-			}
+		public ParameterModifier ParameterModifier {
+			get;
+			set;
 		}
 		
-		public Identifier NameIdentifier {
+		public Identifier Identifier {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier);
 			}
 		}
 		
-		public string Name {
+		public ICSharpNode DefaultExpression {
 			get {
-				return NameIdentifier.Name;
+				return (ICSharpNode)GetChildByRole (Roles.Expression);
 			}
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitArgumentDeclaration (this, data);
+			return visitor.VisitParameterDeclarationExpression (this, data);
 		}
 	}
 }
+

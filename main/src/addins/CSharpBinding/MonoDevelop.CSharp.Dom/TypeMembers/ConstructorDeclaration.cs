@@ -63,9 +63,9 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public IEnumerable<ArgumentDeclaration> Arguments { 
+		public IEnumerable<ParameterDeclarationExpression> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ArgumentDeclaration>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
 			}
 		}
 		

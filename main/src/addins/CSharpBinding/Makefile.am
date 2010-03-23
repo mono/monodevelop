@@ -46,6 +46,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/CSharpModifierToken.cs \
 	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/ArgListExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ArrayObjectCreateExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AsExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \
@@ -59,6 +60,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Expressions/IndexerExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/InvocationExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/IsExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/LambdaExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/MemberReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/NullReferenceExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ObjectCreateExpression.cs \
@@ -110,7 +112,6 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Statements/YieldStatement.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/AbstractMember.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/AbstractMemberBase.cs \
-	MonoDevelop.CSharp.Dom/TypeMembers/ArgumentDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/ConstructorDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/DestructorDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/EventDeclaration.cs \
@@ -118,6 +119,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/TypeMembers/IndexerDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/MethodDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/OperatorDeclaration.cs \
+	MonoDevelop.CSharp.Dom/TypeMembers/ParameterDeclarationExpression.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/PropertyDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/VariableInitializer.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \

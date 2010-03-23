@@ -31,10 +31,6 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class ArrayObjectCreateExpression : ObjectCreateExpression
 	{
-		public IReturnType Type {
-			get { return (IReturnType)GetChildByRole (Roles.ReturnType); }
-		}
-		
 		public CSharpTokenNode Rank {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}
