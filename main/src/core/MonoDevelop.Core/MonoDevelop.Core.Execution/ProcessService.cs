@@ -181,7 +181,7 @@ namespace MonoDevelop.Core.Execution
 		{
 			if (console == null || (console is ExternalConsole)) {
 				ProcessStartInfo psi = ExternalConsoleLocator.GetConsoleProcess (command, arguments, workingDirectory, environmentVariables,
-				    GettextCatalog.GetString ("MonoDevelop External Console"), !console.CloseOnDispose);
+				    GettextCatalog.GetString ("MonoDevelop External Console"), console != null ? !console.CloseOnDispose : false);
 
 				ProcessWrapper p = new ProcessWrapper();
 				

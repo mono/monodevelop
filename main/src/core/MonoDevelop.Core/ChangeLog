@@ -1,5 +1,10 @@
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Execution/ProcessService.cs: Fix possible
+	  NRE.
+
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core.StringParsing:
