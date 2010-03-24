@@ -56,16 +56,25 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
+		public List<Change> Changes {
+			get { return this.changes; }
+		}
+		
+		public bool AutoAcceptChanges { get; set; }
+		
+		
 		public DomIndentationVisitor (CSharpFormattingPolicy policy, TextEditorData data)
 		{
 			this.policy = policy;
 			this.data = data;
+			AutoAcceptChanges = true;
 		}
 		
 		public override object VisitCompilationUnit (MonoDevelop.CSharp.Dom.CompilationUnit unit, object data)
 		{
 			base.VisitCompilationUnit (unit, data);
-			RefactoringService.AcceptChanges (null, null, changes);
+			if (AutoAcceptChanges)
+				RefactoringService.AcceptChanges (null, null, changes);
 			return null;
 		}
 		
@@ -410,8 +419,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (braceStyle == BraceStyle.NextLineShifted2)
 					curIndent.Level++;
 			}
-			
-			if (!(node is IfElseStatement))
+			if (!(node is IfElseStatement && node.Parent is IfElseStatement || node is UsingStatement && node.Parent is UsingStatement)) 
 				curIndent.Level++;
 			object result = isBlock ? base.VisitBlockStatement ((BlockStatement)node, null) : node.AcceptVisitor (this, null);
 			curIndent.Level = originalLevel;
@@ -483,10 +491,11 @@ namespace MonoDevelop.CSharp.Formatting
 				endIndent = startIndent = data.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
 				break;
 			}
-			if (startIndent != null) {
+			
+			if (lbraceOffset > 0 && startIndent != null)
 				AddChange (whitespaceStart, lbraceOffset - whitespaceStart, startIndent);
+			if (rbraceOffset > 0 && endIndent != null)
 				AddChange (whitespaceEnd, rbraceOffset - whitespaceEnd, endIndent);
-			}
 		}
 		
 		void AddChange (int offset, int removedChars, string insertedText)
@@ -692,7 +701,11 @@ namespace MonoDevelop.CSharp.Formatting
 		void FixStatementIndentation (MonoDevelop.Projects.Dom.DomLocation location)
 		{
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
-			
+			if (offset == 0) {
+				Console.WriteLine ("possible wrong offset");
+				Console.WriteLine (Environment.StackTrace);
+				return;
+			}
 			int whitespaceStart = SearchWhitespaceStart (offset);
 			string indentString = nextStatementIndent == null ? data.EolMarker + this.curIndent.IndentString : nextStatementIndent;
 			nextStatementIndent = null;

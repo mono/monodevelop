@@ -398,6 +398,8 @@ namespace MonoDevelop.CSharp.Formatting
 				
 				DomLocation location = new DomLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column);
 				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
+//				OnTheFlyFormatter.Format (textEditorData, dom, location);
+
 				//		textEditorData.Document.TextReplaced += TextCut;
 				textEditorData.Paste += TextEditorDataPaste;
 			}

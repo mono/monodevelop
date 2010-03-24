@@ -1,5 +1,15 @@
 2010-03-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs:
+	* MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  Worked on new formatter.
+
+2010-03-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/TypeMembers/AbstractMember.cs:
 	* MonoDevelop.CSharp.Dom/Expressions/CastExpression.cs:
 	* MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs:

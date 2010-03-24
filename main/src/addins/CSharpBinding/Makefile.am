@@ -134,6 +134,7 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs \
 	MonoDevelop.CSharp.Formatting/FormattingPanel.cs \
 	MonoDevelop.CSharp.Formatting/Indent.cs \
+	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \
 	MonoDevelop.CSharp.Parser/CSharpParser.cs \

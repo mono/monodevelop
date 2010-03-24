@@ -40,10 +40,17 @@ namespace MonoDevelop.CSharp.Formatting
 		TextEditorData data;
 		List<Change> changes = new List<Change> ();
 		
+		public List<Change> Changes {
+			get { return this.changes; }
+		}
+		
+		public bool AutoAcceptChanges { get; set; }
+		
 		public DomSpacingVisitor (CSharpFormattingPolicy policy, TextEditorData data)
 		{
 			this.policy = policy;
 			this.data = data;
+			AutoAcceptChanges = true;
 		}
 		
 		internal class MyTextReplaceChange : TextReplaceChange
@@ -68,7 +75,8 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitCompilationUnit (MonoDevelop.CSharp.Dom.CompilationUnit unit, object data)
 		{
 			base.VisitCompilationUnit (unit, data);
-			RefactoringService.AcceptChanges (null, null, changes);
+			if (AutoAcceptChanges)
+				RefactoringService.AcceptChanges (null, null, changes);
 			return null;
 		}
 

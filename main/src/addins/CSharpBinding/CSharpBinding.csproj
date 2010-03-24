@@ -290,6 +290,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\LambdaExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ParameterDeclarationExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Constraint.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
