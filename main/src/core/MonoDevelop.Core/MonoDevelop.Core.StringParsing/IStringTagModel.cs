@@ -40,7 +40,7 @@ namespace MonoDevelop.Core.StringParsing
 		
 		public DictionaryStringTagModel (Dictionary<string, T> dict)
 		{
-			this.dict = dict;
+			this.dict = new Dictionary<string,T> (dict, StringComparer.InvariantCultureIgnoreCase);
 		}
 		
 		public object GetValue (string name)

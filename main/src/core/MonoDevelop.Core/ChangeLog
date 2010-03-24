@@ -1,5 +1,10 @@
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.StringParsing/IStringTagModel.cs: Make sure
+	  search on dictionary is case insensitive.
+
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Execution/ProcessService.cs: Fix possible
 	  NRE.
 
