@@ -171,4 +171,8 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

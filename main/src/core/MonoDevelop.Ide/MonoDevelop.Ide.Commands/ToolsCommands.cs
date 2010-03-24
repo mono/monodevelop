@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			ExternalTools.ExternalTool tool = (ExternalTools.ExternalTool)dataItem;
 			
-			string argumentsTool = StringParserService.Parse (tool.Arguments);
+			string argumentsTool = StringParserService.Parse (tool.Arguments, IdeApp.Workbench.GetStringTagModel ());
 			
 			//Save current file checkbox
 			if (tool.SaveCurrentFile && IdeApp.Workbench.ActiveDocument != null)
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Commands
 			if (tool.PromptForArguments) {
 				string customerArguments = MessageService.GetTextResponse (GettextCatalog.GetString ("Enter any arguments you want to use while launching tool, {0}:", tool.MenuCommand), GettextCatalog.GetString ("Command Arguments for {0}", tool.MenuCommand), "");
 				if (customerArguments != String.Empty)
-					argumentsTool = StringParserService.Parse (customerArguments);
+					argumentsTool = StringParserService.Parse (customerArguments, IdeApp.Workbench.GetStringTagModel ());
 			}
 
 			DispatchService.BackgroundDispatch (delegate {

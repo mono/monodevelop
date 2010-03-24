@@ -151,8 +151,7 @@ namespace MonoDevelop.Ide.Templates
 			//This is a bit hacky doing it here instead of in CreateContent, but need to
 			//substitute all tags in code before language is translated, because language
 			//translation gets confused by unsubstituted  substitution tokens.
-			string [,] tagsArr = HashtableToStringArray (tags);
-			tempSubstitutedContent = StringParserService.Parse (content, tagsArr);
+			tempSubstitutedContent = StringParserService.Parse (content, tags);
 		}
 		
 		private System.CodeDom.Compiler.CodeDomProvider GetCodeDomProvider (string language)

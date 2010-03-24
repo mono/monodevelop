@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Collections;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -373,16 +374,21 @@ namespace MonoDevelop.Projects
 				internalChildren.Items.Remove (item);
 		}
 		
-		public virtual CustomTagStore GetCustomTags (ConfigurationSelector conf)
+		public virtual StringTagModelDescription GetStringTagModelDescription (ConfigurationSelector conf)
 		{
-			CustomTagStore tagStore = new CustomTagStore ();
-			tagStore.Add ("ItemName", Name, GettextCatalog.GetString ("Project Name"));
-			tagStore.AddAlias ("ItemName", "ProjectName");
-			tagStore.Add ("ItemDir", BaseDirectory, GettextCatalog.GetString ("Project Directory"));
-			tagStore.AddAlias ("ItemDir", "ProjectDir");
+			StringTagModelDescription model = new StringTagModelDescription ();
+			model.Add (GetType ());
+			model.Add (typeof(Solution));
+			return model;
+		}
+		
+		public virtual StringTagModel GetStringTagModel (ConfigurationSelector conf)
+		{
+			StringTagModel source = new StringTagModel ();
+			source.Add (this);
 			if (ParentSolution != null)
-				tagStore.Add (ParentSolution.GetCustomTags ());
-			return tagStore;
+				source.Add (ParentSolution.GetStringTagModel ());
+			return source;
 		}
 		
 		public static ReadOnlyCollection<T> TopologicalSort<T> (IEnumerable<T> items, ConfigurationSelector configuration) where T: SolutionItem
@@ -493,5 +499,28 @@ namespace MonoDevelop.Projects
 		
 		public event SolutionItemRenamedEventHandler NameChanged;
 		public event SolutionItemModifiedEventHandler Modified;
+	}
+	
+	[Mono.Addins.Extension]
+	class SolutionItemTagProvider: StringTagProvider<SolutionItem>, IStringTagProvider
+	{
+		public override IEnumerable<StringTagDescription> GetTags ()
+		{
+			yield return new StringTagDescription ("ProjectName", "Project Name");
+			yield return new StringTagDescription ("ProjectDir", "Project Directory");
+		}
+		
+		public override object GetTagValue (SolutionItem item, string tag)
+		{
+			switch (tag) {
+				case "ITEMNAME":
+				case "PROJECTNAME":
+					return item.Name;
+				case "ITEMDIR":
+				case "PROJECTDIR":
+					return item.BaseDirectory;
+			}
+			throw new NotSupportedException ();
+		}
 	}
 }

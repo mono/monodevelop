@@ -129,6 +129,12 @@ FILES =  \
 	MonoDevelop.Core.Serialization/XmlDataSerializer.cs \
 	MonoDevelop.Core.Serialization/XmlElementDataType.cs \
 	MonoDevelop.Core.Serialization/XmlMapAttributeProvider.cs \
+	MonoDevelop.Core.StringParsing/IStringTagModel.cs \
+	MonoDevelop.Core.StringParsing/IStringTagProvider.cs \
+	MonoDevelop.Core.StringParsing/StringTagDescription.cs \
+	MonoDevelop.Core.StringParsing/StringTagModel.cs \
+	MonoDevelop.Core.StringParsing/StringTagModelDescription.cs \
+	MonoDevelop.Core.StringParsing/StringTagProvider.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/ComponentModelLocalization.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \

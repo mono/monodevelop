@@ -31,117 +31,80 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Commands
 {
-    class DefaultStringTagProvider : StringParserService.IStringTagProvider
+	// The path name should not be required here. This is a workaround to a Mono.Addins bug (fixed in the last version)
+	[Mono.Addins.Extension ("/MonoDevelop.Core/TypeExtensions/MonoDevelop.Core.StringParsing.IStringTagProvider")]
+	class DefaultStringTagProvider : StringTagProvider<Workbench>
 	{
-        public IEnumerable<string> Tags { 
-            get {
-                return new String[] {
-                                "ITEMPATH", 
-                                "ITEMDIR", 
-                                "ITEMFILENAME", 
-                                "ITEMEXT", 
-                                "TARGETPATH", 
-                                "TARGETDIR", 
-                                "TARGETNAME", 
-                                "TARGETEXT", 
-                                "PROJECTDIR", 
-                                "PROJECTFILENAME",
-                                "SOLUTIONDIR", 
-                                "SOLUTIONFILE",
-                                "COMBINEDIR", 
-                                "COMBINEFILENAME"
-                };
-            }
-        }
+		public override IEnumerable<StringTagDescription> GetTags ()
+		{
+			yield return new StringTagDescription ("FilePath", "File Path");
+			yield return new StringTagDescription ("FileDir", "File Directory");
+			yield return new StringTagDescription ("FileName", "File Name");
+			yield return new StringTagDescription ("FileExt", "File Extension");
+			yield return new StringTagDescription ("CurLine", "Cursor Line", false);
+			yield return new StringTagDescription ("CurColumn", "Cursor Column", false);
+			yield return new StringTagDescription ("CurOffset", "Cursor Offset", false);
+			yield return new StringTagDescription ("CurText", "Selected Editor Text", false);
+			yield return new StringTagDescription ("EditorText", "Editor Text", false);
+			yield return new StringTagDescription ("StartupPath", "MonoDevelop Startup Directory", false);
+		}
+		
+		public override object GetTagValue (Workbench wb, string tag)
+		{
+			switch (tag) {
+				case "FILEPATH":
+					if (wb.ActiveDocument != null)
+						return !wb.ActiveDocument.IsFile ? String.Empty : wb.ActiveDocument.Name;
+					return null;
 
-        public string Convert (string tag, string format)
-        {
-			try {
-				switch (tag.ToUpperInvariant ()) {
-					case "ITEMPATH":
-						if (IdeApp.Workbench.ActiveDocument != null)
-							return (IdeApp.Workbench.ActiveDocument.IsViewOnly) ? String.Empty : IdeApp.Workbench.ActiveDocument.Name;
-						return String.Empty;
+				case "FILEDIR":
+					if (wb.ActiveDocument != null)
+						return !wb.ActiveDocument.IsFile ? FilePath.Empty : wb.ActiveDocument.FileName.ParentDirectory;
+					return null;
 
-					case "ITEMDIR":
-						if (IdeApp.Workbench.ActiveDocument != null)
-							return (IdeApp.Workbench.ActiveDocument.IsViewOnly) ? String.Empty : (string)IdeApp.Workbench.ActiveDocument.FileName.ParentDirectory;
-						return String.Empty;
+				case "FILENAME":
+					if (wb.ActiveDocument != null)
+						return !wb.ActiveDocument.IsFile ? String.Empty : wb.ActiveDocument.FileName.FileName;
+					return null;
 
-					case "ITEMFILENAME":
-						if (IdeApp.Workbench.ActiveDocument != null)
-							return (IdeApp.Workbench.ActiveDocument.IsViewOnly) ? String.Empty : IdeApp.Workbench.ActiveDocument.FileName.FileName;
-						return String.Empty;
-
-					case "ITEMEXT":
-						if (IdeApp.Workbench.ActiveDocument != null)
-							return (IdeApp.Workbench.ActiveDocument.IsViewOnly) ? String.Empty : IdeApp.Workbench.ActiveDocument.FileName.Extension;
-						return String.Empty;
-
-					case "TARGETPATH":
-						if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-							return IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
-						else
-							if ((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.Project != null))
-								return IdeApp.Workbench.ActiveDocument.Project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
-						return String.Empty;
-
-					case "TARGETDIR":
-						if(IdeApp.ProjectOperations.CurrentSelectedProject != null)
-							return Path.GetDirectoryName (IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
-						else
-							if((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.Project != null))
-								return Path.GetDirectoryName (IdeApp.Workbench.ActiveDocument.Project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
-						return String.Empty;
-
-					case "TARGETNAME":
-						if(IdeApp.ProjectOperations.CurrentSelectedProject != null)
-							return Path.GetFileName (IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
-						else
-							if((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.Project != null))
-								return Path.GetFileName (IdeApp.Workbench.ActiveDocument.Project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
-						return String.Empty;
-
-					case "TARGETEXT":
-						if(IdeApp.ProjectOperations.CurrentSelectedProject != null)
-							return Path.GetExtension (IdeApp.ProjectOperations.CurrentSelectedProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
-						else
-							if((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.Project != null))
-								return Path.GetExtension (IdeApp.Workbench.ActiveDocument.Project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
-						return String.Empty;
-
-					case "PROJECTDIR":
-						if((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.Project != null))
-							return IdeApp.Workbench.ActiveDocument.Project.FileName.ParentDirectory.FullPath;
-						return String.Empty;
-
-					case "PROJECTFILENAME":
-						if((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.Project != null))
-							return IdeApp.Workbench.ActiveDocument.Project.FileName.FileName;
-						return String.Empty;
-
-					case "SOLUTIONDIR":
-					case "COMBINEDIR":
-						if(IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
-							return IdeApp.ProjectOperations.CurrentSelectedSolutionItem.ParentSolution.FileName.ParentDirectory.FullPath;
-						return String.Empty;
-
-					case "SOLUTIONFILE":
-					case "COMBINEFILENAME":
-						if(IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
-							return IdeApp.ProjectOperations.CurrentSelectedSolutionItem.ParentSolution.FileName.FileName;
-						return String.Empty;
-
-					default:
-						return String.Empty;
-				}
+				case "FILEEXT":
+					if (wb.ActiveDocument != null)
+						return !wb.ActiveDocument.IsFile ? String.Empty : wb.ActiveDocument.FileName.Extension;
+					return null;
+					
+				case "CURLINE":
+					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
+						return wb.ActiveDocument.TextEditor.CursorLine;
+					return null;
+					
+				case "CURCOLUMN":
+					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
+						return wb.ActiveDocument.TextEditor.CursorColumn;
+					return null;
+					
+				case "CUROFFSET":
+					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
+						return wb.ActiveDocument.TextEditor.CursorPosition;
+					return null;
+					
+				case "CURTEXT":
+					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
+						return wb.ActiveDocument.TextEditor.SelectedText;
+					return null;
+					
+				case "EDITORTEXT":
+					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
+						return wb.ActiveDocument.TextEditor.Text;
+					return null;
+					
+				case "STARTUPPATH":
+					return AppDomain.CurrentDomain.BaseDirectory;
 			}
-			catch {
-				return String.Empty;
-			}
+			throw new NotSupportedException ();
         }
 	}
 }

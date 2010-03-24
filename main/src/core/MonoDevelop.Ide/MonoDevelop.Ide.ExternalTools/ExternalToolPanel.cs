@@ -62,43 +62,6 @@ namespace MonoDevelop.Ide.ExternalTools
 	
 	public partial class ExternalToolPanelWidget : Gtk.Bin 
 	{
-		static string[,] argumentQuickInsertMenu = new string[,] {
-			{GettextCatalog.GetString ("Item Path"), "${ItemPath}"},
-			{GettextCatalog.GetString ("_Item Directory"), "${ItemDir}"},
-			{GettextCatalog.GetString ("Item file name"), "${ItemFileName}"},
-			{GettextCatalog.GetString ("Item extension"), "${ItemExt}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("Current line"), "${CurLine}"},
-			{GettextCatalog.GetString ("Current column"), "${CurCol}"},
-			{GettextCatalog.GetString ("Current text"), "${CurText}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("Target Path"), "${TargetPath}"},
-			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
-			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
-			{GettextCatalog.GetString ("Target Extension"), "${TargetExt}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
-			{GettextCatalog.GetString ("Project file name"), "${ProjectFileName}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
-			{GettextCatalog.GetString ("Solution File Name"), "${SolutionFile}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
-		};
-
-		static string[,] workingDirInsertMenu = new string[,] {
-			{GettextCatalog.GetString ("_Item Directory"), "${ItemDir}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
-			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
-		};
-		 
 		// gtk controls
 		ListStore toolListBoxStore;
 		
@@ -119,8 +82,8 @@ namespace MonoDevelop.Ide.ExternalTools
 				titleTextBox, argumentTextBox, 
 				workingDirTextBox, promptArgsCheckBox, useOutputPadCheckBox, 
 				titleLabel, argumentLabel, commandLabel, 
-				workingDirLabel, browseButton, argumentQuickInsertButton, 
-				workingDirQuickInsertButton, moveUpButton, moveDownButton,
+				workingDirLabel, browseButton, 
+				moveUpButton, moveDownButton,
 				saveCurrentFileCheckBox
 			};
 			 
@@ -136,8 +99,11 @@ namespace MonoDevelop.Ide.ExternalTools
 				 
 			toolListBox.AppendColumn (GettextCatalog.GetString ("Tools"), new CellRendererText (), "text", 0);
 
-			new MenuButtonEntry (argumentTextBox, argumentQuickInsertButton, argumentQuickInsertMenu);
-			new MenuButtonEntry (workingDirTextBox, workingDirQuickInsertButton, workingDirInsertMenu);
+			tagSelectorArgs.TagModel = IdeApp.Workbench.GetStringTagModelDescription ();
+			tagSelectorArgs.TargetEntry = argumentTextBox;
+			
+			tagSelectorPath.TagModel = IdeApp.Workbench.GetStringTagModelDescription ();
+			tagSelectorPath.TargetEntry = workingDirTextBox;
 
 			toolListBox.Selection.Changed += SelectionChanged;
 			removeButton.Clicked          += RemoveButtonClicked;

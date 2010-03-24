@@ -38,16 +38,18 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		CustomCommandCollection commands;
 		CustomCommandWidget lastSlot;
 		SolutionEntityItem entry;
+		ConfigurationSelector configSelector;
 		
 		public CustomCommandPanelWidget ()
 		{
 			this.Build();
 		}
 		
-		public void Load (SolutionEntityItem entry, CustomCommandCollection commands)
+		public void Load (SolutionEntityItem entry, CustomCommandCollection commands, ConfigurationSelector configSelector)
 		{
 			this.entry = entry;
 			this.commands = commands;
+			this.configSelector = configSelector;
 			
 			// Clean the list
 			foreach (CustomCommandWidget ccw in vboxCommands.Children) {
@@ -66,7 +68,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		void AddCommandSlot (CustomCommand cmd)
 		{
-			CustomCommandWidget widget = new CustomCommandWidget (entry, cmd);
+			CustomCommandWidget widget = new CustomCommandWidget (entry, cmd, configSelector);
 			vboxCommands.PackStart (widget, false, false, 0);
 			widget.CommandCreated += OnCommandCreated;
 			widget.CommandRemoved += OnCommandRemoved;

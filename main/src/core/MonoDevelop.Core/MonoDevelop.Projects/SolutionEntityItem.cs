@@ -40,6 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -289,15 +290,6 @@ namespace MonoDevelop.Projects
 			return col;
 		}
 
-		public override CustomTagStore GetCustomTags (ConfigurationSelector conf)
-		{
-			CustomTagStore tagStore = base.GetCustomTags (conf);
-			tagStore.Add ("ItemFile", Name, GettextCatalog.GetString ("Project File"));
-			tagStore.AddAlias ("ItemFile", "ProjectFile");
-			return tagStore;
-		}
-		
-		
 		protected override void OnNameChanged (SolutionItemRenamedEventArgs e)
 		{
 			Solution solution = this.ParentSolution;
@@ -426,6 +418,26 @@ namespace MonoDevelop.Projects
 				ConfigurationsChanged (this, EventArgs.Empty);
 		}
 		
+		public override StringTagModelDescription GetStringTagModelDescription (ConfigurationSelector conf)
+		{
+			StringTagModelDescription model = base.GetStringTagModelDescription (conf);
+			SolutionItemConfiguration config = GetConfiguration (conf);
+			if (config != null)
+				model.Add (config.GetType ());
+			else
+				model.Add (typeof(SolutionItemConfiguration));
+			return model;
+		}
+		
+		public override StringTagModel GetStringTagModel (ConfigurationSelector conf)
+		{
+			StringTagModel source = base.GetStringTagModel (conf);
+			SolutionItemConfiguration config = GetConfiguration (conf);
+			if (config != null)
+				source.Add (config);
+			return source;
+		}
+		
 		internal protected virtual void OnItemAdded (object obj)
 		{
 		}
@@ -464,4 +476,24 @@ namespace MonoDevelop.Projects
 			remove { fileStatusTracker.ReloadRequired -= value; }
 		}
 */	}
+	
+	[Mono.Addins.Extension]
+	class SolutionEntityItemTagProvider: StringTagProvider<SolutionEntityItem>, IStringTagProvider
+	{
+		public override IEnumerable<StringTagDescription> GetTags ()
+		{
+			yield return new StringTagDescription ("ProjectFile", "Project File");
+		}
+		
+		public override object GetTagValue (SolutionEntityItem item, string tag)
+		{
+			switch (tag) {
+				case "ITEMFILE":
+				case "PROJECTFILE":
+				case "PROJECTFILENAME":
+					return item.FileName;
+			}
+			throw new NotSupportedException ();
+		}
+	}
 }

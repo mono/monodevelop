@@ -168,9 +168,6 @@ namespace MonoDevelop.Ide
 			workbench.Initialize (monitor);
 			monitor.Step (1);
 			
-			// register string tag provider (TODO: move to add-in tree :)
-			StringParserService.RegisterStringTagProvider (new MonoDevelop.Ide.Commands.DefaultStringTagProvider ());
-			
 			InternalLog.EnableErrorNotification ();
 			
 			monitor.Step (1);

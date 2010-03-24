@@ -1131,6 +1131,7 @@
                           <widget class="MonoDevelop.Components.MenuButton" id="conflicButton">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
+                            <property name="Type">Custom</property>
                             <property name="Label">View Conflicts</property>
                             <property name="UseMarkup">False</property>
                           </widget>
@@ -1819,7 +1820,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget" design-size="482 442">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget" design-size="805 442">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox32">
@@ -2015,27 +2016,6 @@
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">4</property>
                 <child>
-                  <widget class="Gtk.Button" id="argumentQuickInsertButton">
-                    <property name="MemberName" />
-                    <property name="Type">TextOnly</property>
-                    <property name="Label"> &gt; </property>
-                    <property name="UseUnderline">True</property>
-                  </widget>
-                  <packing>
-                    <property name="LeftAttach">1</property>
-                    <property name="RightAttach">2</property>
-                    <property name="AutoSize">False</property>
-                    <property name="XOptions">0</property>
-                    <property name="YOptions">0</property>
-                    <property name="XExpand">False</property>
-                    <property name="XFill">False</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">False</property>
-                    <property name="YShrink">False</property>
-                  </packing>
-                </child>
-                <child>
                   <widget class="Gtk.Entry" id="argumentTextBox">
                     <property name="MemberName" />
                     <property name="IsEditable">True</property>
@@ -2049,6 +2029,25 @@
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
                     <property name="YFill">False</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" id="tagSelectorArgs">
+                    <property name="MemberName" />
+                    <property name="Events">ButtonPressMask</property>
+                  </widget>
+                  <packing>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
@@ -2075,23 +2074,21 @@
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">4</property>
                 <child>
-                  <widget class="Gtk.Button" id="workingDirQuickInsertButton">
+                  <widget class="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" id="tagSelectorPath">
                     <property name="MemberName" />
-                    <property name="Type">TextOnly</property>
-                    <property name="Label"> &gt; </property>
-                    <property name="UseUnderline">True</property>
+                    <property name="Events">ButtonPressMask</property>
                   </widget>
                   <packing>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
-                    <property name="AutoSize">False</property>
-                    <property name="XOptions">0</property>
-                    <property name="YOptions">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
                     <property name="XExpand">False</property>
-                    <property name="XFill">False</property>
+                    <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
-                    <property name="YFill">False</property>
+                    <property name="YFill">True</property>
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
@@ -8024,31 +8021,6 @@ Custom Command</property>
               <placeholder />
             </child>
             <child>
-              <widget class="Gtk.Button" id="buttonBrowse">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Browse...</property>
-                <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="OnButtonBrowseClicked" />
-              </widget>
-              <packing>
-                <property name="TopAttach">1</property>
-                <property name="BottomAttach">2</property>
-                <property name="LeftAttach">2</property>
-                <property name="RightAttach">3</property>
-                <property name="AutoSize">True</property>
-                <property name="XOptions">Fill</property>
-                <property name="YOptions">Fill</property>
-                <property name="XExpand">False</property>
-                <property name="XFill">True</property>
-                <property name="XShrink">False</property>
-                <property name="YExpand">False</property>
-                <property name="YFill">True</property>
-                <property name="YShrink">False</property>
-              </packing>
-            </child>
-            <child>
               <widget class="Gtk.Entry" id="entryCommand">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
@@ -8097,11 +8069,9 @@ Custom Command</property>
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Button" id="workingdirQuickInsertButton">
+                  <widget class="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" id="tagSelectorDirectory">
                     <property name="MemberName" />
-                    <property name="Type">TextOnly</property>
-                    <property name="Label"> &gt; </property>
-                    <property name="UseUnderline">True</property>
+                    <property name="Events">ButtonPressMask</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -8114,6 +8084,55 @@ Custom Command</property>
               <packing>
                 <property name="TopAttach">2</property>
                 <property name="BottomAttach">3</property>
+                <property name="LeftAttach">2</property>
+                <property name="RightAttach">3</property>
+                <property name="AutoSize">True</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HBox" id="hbox3">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Button" id="buttonBrowse">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Type">TextOnly</property>
+                    <property name="Label" translatable="yes">Browse...</property>
+                    <property name="UseUnderline">True</property>
+                    <signal name="Clicked" handler="OnButtonBrowseClicked" />
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" id="tagSelectorCommand">
+                    <property name="MemberName" />
+                    <property name="Events">ButtonPressMask</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="TopAttach">1</property>
+                <property name="BottomAttach">2</property>
                 <property name="LeftAttach">2</property>
                 <property name="RightAttach">3</property>
                 <property name="AutoSize">True</property>
@@ -11284,6 +11303,24 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" design-size="27 27">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.Button" id="button">
+        <property name="MemberName" />
+        <property name="CanFocus">True</property>
+        <property name="Type">Custom</property>
+        <signal name="Clicked" handler="OnButtonClicked" />
+        <child>
+          <widget class="Gtk.Arrow" id="arrow1">
+            <property name="MemberName" />
+            <property name="ArrowType">Down</property>
+          </widget>
         </child>
       </widget>
     </child>

@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		string arguments;
 		string initialDirectory;
 		bool   promptForArguments;
-		bool   useOutputPad;
+		bool   useOutputPad = true;
 		bool   saveCurrentFile;
 
 		public string MenuCommand {
@@ -154,7 +154,21 @@ namespace MonoDevelop.Ide.ExternalTools
 			if (!String.IsNullOrEmpty (reader.GetAttribute (saveCurrentFileAttribute)))
 			    result.saveCurrentFile = Boolean.Parse (reader.GetAttribute (saveCurrentFileAttribute));
 			
+			// Some tag names have changed. Update them now.
+			
+			result.arguments = UpgradeTags (result.arguments);
+			result.initialDirectory = UpgradeTags (result.initialDirectory);
+			
 			return result;
+		}
+		
+		static string UpgradeTags (string s)
+		{
+			s = s.Replace ("${ItemPath}","${FilePath}");
+			s = s.Replace ("${ItemDir}","${FileDir}");
+			s = s.Replace ("${ItemFileName}","${FileName}");
+			s = s.Replace ("${ItemExt}","${FileExt}");
+			return s;
 		}
 #endregion
 		

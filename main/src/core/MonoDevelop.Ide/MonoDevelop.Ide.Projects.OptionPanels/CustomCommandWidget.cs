@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -41,64 +42,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		IWorkspaceObject entry;
 		bool updating;
 		
-		// snatched from MonoDevelop.Ide.Gui.OptionPanels/ExternalToolPanel.cs
-		// a lot of these probably don't apply to custom build commands (e.g. ItemPath -- path of current open doc)
-//		static string[,] argumentQuickInsertMenu = new string[,] {
-//			{GettextCatalog.GetString ("Item Path"), "${ItemPath}"},
-//			{GettextCatalog.GetString ("_Item Directory"), "${ItemDir}"},
-//			{GettextCatalog.GetString ("Item file name"), "${ItemFileName}"},
-//			{GettextCatalog.GetString ("Item extension"), "${ItemExt}"},
-//			{"-", ""},
-//			{GettextCatalog.GetString ("Current line"), "${CurLine}"},
-//			{GettextCatalog.GetString ("Current column"), "${CurCol}"},
-//			{GettextCatalog.GetString ("Current text"), "${CurText}"},
-//			{"-", ""},
-//			{GettextCatalog.GetString ("Target Path"), "${TargetPath}"},
-//			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
-//			{GettextCatalog.GetString ("Target Name"), "${TargetName}"},
-//			{GettextCatalog.GetString ("Target Extension"), "${TargetExt}"},
-//			{"-", ""},
-//			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
-//			{GettextCatalog.GetString ("Project file name"), "${ProjectFileName}"},
-//			{"-", ""},
-//			{GettextCatalog.GetString ("_Solution Directory"), "${CombineDir}"},
-//			{GettextCatalog.GetString ("Solution File Name"), "${CombineFileName}"},
-//			{"-", ""},
-//			{GettextCatalog.GetString ("MonoDevelop Startup Directory"), "${StartupPath}"},
-//		};
-
-		static string[,] projectWorkingDirInsertMenu = new string[,] {
-			// Keep in sync with CustomCommand.cs
-			{GettextCatalog.GetString ("_Target Directory"), "${TargetDir}"},
-			{GettextCatalog.GetString ("Target _Name"), "${TargetName}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Project Directory"), "${ProjectDir}"},
-			{GettextCatalog.GetString ("P_roject Name"), "${ProjectName}"},
-			{GettextCatalog.GetString ("Project _File"), "${ProjectFile}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
-			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
-			{GettextCatalog.GetString ("Solution F_ile"), "${SolutionFile}"},
-		};
-		
-		static string[,] entryWorkingDirInsertMenu = new string[,] {
-			// Keep in sync with CustomCommand.cs
-			{GettextCatalog.GetString ("Solution _Item Directory"), "${ItemDir}"},
-			{GettextCatalog.GetString ("Solution Item _Name"), "${ItemName}"},
-			{GettextCatalog.GetString ("Solution Item _File"), "${ItemFile}"},
-			{"-", ""},
-			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
-			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
-			{GettextCatalog.GetString ("Solution F_ile"), "${SolutionFile}"},
-		};
-		
-		static string[,] solutionWorkingDirInsertMenu = new string[,] {
-			// Keep in sync with CustomCommand.cs
-			{GettextCatalog.GetString ("_Solution Directory"), "${SolutionDir}"},
-			{GettextCatalog.GetString ("So_lution Name"), "${SolutionName}"},
-		};
-		
-		public CustomCommandWidget (IWorkspaceObject entry, CustomCommand cmd)
+		public CustomCommandWidget (IWorkspaceObject entry, CustomCommand cmd, ConfigurationSelector configSelector)
 		{
 			this.Build();
 			this.cmd = cmd;
@@ -112,15 +56,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			UpdateControls ();
 			this.WidgetFlags |= Gtk.WidgetFlags.NoShowAll;
 			
-			string[,] workingDirInsertMenu;
-			if (entry is Project)
-				workingDirInsertMenu = projectWorkingDirInsertMenu;
-			else if (entry is SolutionEntityItem)
-				workingDirInsertMenu = entryWorkingDirInsertMenu;
+			StringTagModelDescription tagModel;
+			if (entry is SolutionItem)
+				tagModel = ((SolutionItem)entry).GetStringTagModelDescription (configSelector);
+			else if (entry is WorkspaceItem)
+				tagModel = ((WorkspaceItem)entry).GetStringTagModelDescription ();
 			else
-				workingDirInsertMenu = solutionWorkingDirInsertMenu;
+				tagModel = new StringTagModelDescription ();
+
+			tagSelectorDirectory.TagModel = tagModel;
+			tagSelectorDirectory.TargetEntry = workingdirEntry;
 			
-			new MenuButtonEntry (workingdirEntry, workingdirQuickInsertButton, workingDirInsertMenu);
+			tagSelectorCommand.TagModel = tagModel;
+			tagSelectorCommand.TargetEntry = entryCommand;
 		}
 		
 		public CustomCommand CustomCommand {

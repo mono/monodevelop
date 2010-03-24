@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Templates
 				if (!string.IsNullOrEmpty (dependsOn)) {
 					Dictionary<string,string> tags = new Dictionary<string,string> ();
 					ModifyTags (policyParent, project, language, null, generatedFile, ref tags);
-					string parsedDepName = StringParserService.Parse (dependsOn, HashtableToStringArray (tags));
+					string parsedDepName = StringParserService.Parse (dependsOn, tags);
 					if (projectFile.DependsOn != parsedDepName)
 						projectFile.DependsOn = parsedDepName;
 				}
@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.Templates
 			if ((name != null) && (name.Length > 0)) {
 				Dictionary<string,string> tags = new Dictionary<string,string> ();
 				ModifyTags (policyParent, project, language, entryName ?? name, null, ref tags);
-				fileName = StringParserService.Parse (name, HashtableToStringArray (tags));
+				fileName = StringParserService.Parse (name, tags);
 			}
 			
 			if (fileName == null)
@@ -370,19 +370,6 @@ namespace MonoDevelop.Ide.Templates
 			if (binding == null)
 				throw new InvalidOperationException ("Language '" + language + "' not found");
 			return binding;
-		}
-		
-		protected string[,] HashtableToStringArray (Dictionary<string,string> tags)
-		{			
-			string[,] tagsArr = new string [tags.Count, 2];
-			int i = 0;
-			foreach (string key in tags.Keys) {
-				tagsArr [i, 0] = key;
-				tagsArr [i, 1] = tags [key];
-				i++;
-			}
-			
-			return tagsArr;
 		}
 	}
 }

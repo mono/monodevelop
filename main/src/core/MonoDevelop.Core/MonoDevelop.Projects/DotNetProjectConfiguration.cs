@@ -32,6 +32,8 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.StringParsing;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -187,6 +189,36 @@ namespace MonoDevelop.Projects
 		
 		public IDictionary ExtendedProperties { 
 			get { return table; }
+		}
+	}
+	
+	[Mono.Addins.Extension]
+	class ProjectTagProvider: StringTagProvider<DotNetProjectConfiguration>, IStringTagProvider
+	{
+		public override IEnumerable<StringTagDescription> GetTags ()
+		{
+			yield return new StringTagDescription ("ProjectConfig", GettextCatalog.GetString ("Project Configuration"));
+			yield return new StringTagDescription ("ProjectConfigName", GettextCatalog.GetString ("Project Configuration Name"));
+			yield return new StringTagDescription ("ProjectConfigPlat", GettextCatalog.GetString ("Project Configuration Platform"));
+			yield return new StringTagDescription ("TargetFile", GettextCatalog.GetString ("Target File"));
+			yield return new StringTagDescription ("TargetName", GettextCatalog.GetString ("Target Name"));
+			yield return new StringTagDescription ("TargetDir", GettextCatalog.GetString ("Target Directory"));
+			yield return new StringTagDescription ("TargetExt", GettextCatalog.GetString ("Target Extension"));
+		}
+		
+		public override object GetTagValue (DotNetProjectConfiguration conf, string tag)
+		{
+			switch (tag) {
+				case "TARGETPATH":
+				case "TARGETFILE": return conf.CompiledOutputName;
+				case "TARGETNAME": return conf.CompiledOutputName.FileName;
+				case "TARGETDIR": return conf.CompiledOutputName.ParentDirectory;
+				case "TARGETEXT": return conf.CompiledOutputName.Extension;
+				case "PROJECTCONFIG": return conf.Name + "." + conf.Platform;
+				case "PROJECTCONFIGNAME": return conf.Name;
+				case "PROJECTCONFIGPLAT": return conf.Platform;
+			}
+			throw new NotSupportedException ();
 		}
 	}
 }

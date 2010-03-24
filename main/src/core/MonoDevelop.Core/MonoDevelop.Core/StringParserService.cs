@@ -33,17 +33,20 @@ using System.Collections.Generic;
 using System.Text;
 
 using MonoDevelop.Core;
+using Mono.Addins;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Core
 {
 	public static class StringParserService
 	{
-		static Dictionary<string, string> properties = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
+		static Dictionary<string, object> properties = new Dictionary<string, object> (StringComparer.InvariantCultureIgnoreCase);
 		static Dictionary<string, GenerateString> stringGenerators = new Dictionary<string, GenerateString> (StringComparer.InvariantCultureIgnoreCase);
+		static StringTagModel DefaultStringTagModel = new StringTagModel ();
 		
 		delegate string GenerateString (string tag, string format);
 		
-		public static Dictionary<string, string> Properties {
+		public static Dictionary<string, object> Properties {
 			get {
 				return properties;
 			}
@@ -76,7 +79,7 @@ namespace MonoDevelop.Core
 		
 		public static string Parse (string input)
 		{
-			return Parse (input, (string[,])null);
+			return Parse (input, DefaultStringTagModel);
 		}
 		
 		public static void Parse (ref string[] inputs)
@@ -85,23 +88,8 @@ namespace MonoDevelop.Core
 				inputs[i] = Parse (inputs[i], (string[,])null);
 		}
 		
-		public static void RegisterStringTagProvider (IStringTagProvider tagProvider)
+		static string Replace (string tag, IStringTagModel customTags)
 		{
-			foreach (string providedTag in tagProvider.Tags) { 
-				stringGenerators [providedTag] = delegate (string tag, string format) {
-					return tagProvider.Convert (tag, format);
-				};
-			}
-		}
-		
-		static string Replace (string tag, Dictionary<string, string> customTags)
-		{
-			if (customTags.ContainsKey(tag))
-				return customTags[tag];
-			if (properties.ContainsKey (tag))
-				return properties [tag];
-		
-			GenerateString genString;
 			string tname, tformat;
 			int n = tag.IndexOf (':');
 			if (n != -1) {
@@ -111,6 +99,16 @@ namespace MonoDevelop.Core
 				tname = tag;
 				tformat = string.Empty;
 			}
+			
+			tag = tag.ToUpperInvariant ();
+			object val = customTags.GetValue (tag);
+			if (val != null)
+				return FormatValue (val, tformat);
+			
+			if (properties.ContainsKey (tag))
+				return FormatValue (properties [tag], tformat);
+		
+			GenerateString genString;
 
 			if (stringGenerators.TryGetValue (tname, out genString))
 				return genString (tname, tformat);
@@ -130,7 +128,51 @@ namespace MonoDevelop.Core
 			return null;
 		}
 		
-		public static string Parse (string input, Dictionary<string, string> customTags)
+		static string FormatValue (object val, string format)
+		{
+			if (format.Length == 0)
+				return val.ToString ();
+			if (val is DateTime)
+				return ((DateTime)val).ToString (format);
+			else if (val is int)
+				return ((int)val).ToString (format);
+			else if (val is uint)
+				return ((uint)val).ToString (format);
+			else if (val is long)
+				return ((long)val).ToString (format);
+			else if (val is ulong)
+				return ((ulong)val).ToString (format);
+			else if (val is short)
+				return ((short)val).ToString (format);
+			else if (val is ushort)
+				return ((ushort)val).ToString (format);
+			else if (val is byte)
+				return ((byte)val).ToString (format);
+			else if (val is sbyte)
+				return ((sbyte)val).ToString (format);
+			else if (val is decimal)
+				return ((decimal)val).ToString (format);
+			else
+				return val.ToString ();
+		}
+		
+		public static string Parse<T> (string input, Dictionary<string,T> customTags)
+		{
+			return Parse (input, new DictionaryStringTagModel<T> (customTags));
+		}
+		
+		public static string Parse (string input, string[,] customTags)
+		{
+			Dictionary<string, object> tags = new Dictionary<string, object> (StringComparer.InvariantCultureIgnoreCase);
+			if (customTags != null) {
+				for (int i = 0; i < customTags.GetLength (0); ++i) {
+					tags.Add (customTags[i, 0].ToUpper (), customTags[i, 1]);
+				}
+			}
+			return Parse (input, tags);
+		}
+		
+		public static string Parse (string input, IStringTagModel customTags)
 		{
 			StringBuilder result = new StringBuilder (input.Length);
 			int i = 0;
@@ -156,143 +198,10 @@ namespace MonoDevelop.Core
 			return result.ToString ();
 		}
 		
-		public static string Parse (string input, string[,] customTags)
+		public static IEnumerable<IStringTagProvider> GetProviders ()
 		{
-			Dictionary<string, string> tags = new Dictionary<string, string> (StringComparer.InvariantCultureIgnoreCase);
-			if (customTags != null) {
-				for (int i = 0; i < customTags.GetLength (0); ++i) {
-					tags.Add (customTags[i, 0].ToUpper (), customTags[i, 1]);
-				}
-			}
-			return Parse (input, tags);
-		}
-		
-		public static string Parse (string input, CustomTagStore customTags)
-		{
-			return Parse (input, customTags.ToDictionary ());
-		}
-		
-		public interface IStringTagProvider 
-		{
-			IEnumerable<string> Tags {
-				get;
-			}
-			string Convert (string tag, string format);
-		}
-	}
-	
-	public class CustomTagStore
-	{
-		Dictionary<string,CustomTag> tags = new Dictionary<string, CustomTag> ();
-		Dictionary<string,string> aliases = new Dictionary<string, string> ();
-		List<CustomTagStore> stores;
-		
-		public void Add (string tag, string value)
-		{
-			Add (tag, value);
-		}
-		
-		public void Add (string tag, string value, string description)
-		{
-			tags [tag] = new CustomTag (tag, value, description);
-		}
-		
-		public void AddAlias (string tag, params string[] aliases)
-		{
-			CustomTag ct;
-			if (!tags.TryGetValue (tag, out ct))
-				throw new InvalidOperationException ("Tag not registered: " + tag);
-			foreach (string t in aliases)
-				this.aliases [t] = ct.Value;
-		}
-		
-		public void Add (CustomTagStore store)
-		{
-			if (stores == null)
-				stores = new List<CustomTagStore> ();
-			stores.Add (store);
-		}
-		
-		public IEnumerable<CustomTag> Tags {
-			get {
-				foreach (CustomTag t in tags.Values)
-					yield return t;
-				if (stores != null) {
-					foreach (CustomTagStore s in stores) {
-						foreach (CustomTag t in s.Tags)
-							yield return t;
-					}
-				}
-			}
-		}
-		
-		public Dictionary<string,string> ToDictionary ()
-		{
-			if (stores != null) {
-				foreach (CustomTagStore s in stores) {
-					foreach (KeyValuePair<string,string> ct in s.ToDictionary ()) {
-						if (!aliases.ContainsKey (ct.Key))
-							aliases [ct.Key] = ct.Value;
-					}
-				}
-			}
-			foreach (CustomTag t in tags.Values)
-				aliases [t.Tag] = t.Value;
-			return aliases;
-		}
-		
-		public string Parse (string input)
-		{
-			return StringParserService.Parse (input, this);
-		}
-	}
-	
-	public class CustomTag
-	{
-		string tag;
-		string value;
-		string description;
-		ValueGenerator valueGenerator;
-		
-		public delegate string ValueGenerator (string tag);
-		
-		public CustomTag (string tag, string value): this (tag, value, null)
-		{
-		}
-		
-		public CustomTag (string tag, string value, string description)
-		{
-			this.tag = tag;
-			this.value = value;
-			this.description = description;
-		}
-		
-		public CustomTag (string tag, ValueGenerator valueGenerator): this (tag, valueGenerator, null)
-		{
-		}
-		
-		public CustomTag (string tag, ValueGenerator valueGenerator, string description)
-		{
-			this.tag = tag;
-			this.valueGenerator = valueGenerator;
-			this.description = description;
-		}
-		
-		public string Tag {
-			get { return this.tag; }
-		}
-
-		public string Value {
-			get {
-				if (valueGenerator != null)
-					return valueGenerator (tag);
-				else
-					return this.value;
-			}
-		}
-
-		public string Description {
-			get { return this.description; }
+			foreach (IStringTagProvider provider in AddinManager.GetExtensionObjects (typeof(IStringTagProvider)))
+				yield return provider;
 		}
 	}
 }

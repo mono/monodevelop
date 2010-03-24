@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.IO;
 using MonoDevelop.Core.Serialization;
 using System.Collections.Generic;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -93,11 +94,11 @@ namespace MonoDevelop.Projects
 		{
 			if (ParentItem == null)
 				return environmentVariables;
-			
-			CustomTagStore tags = ParentItem.GetCustomTags (Selector);
+
+			StringTagModel tagSource = ParentItem.GetStringTagModel (Selector);
 			Dictionary<string, string> vars = new Dictionary<string, string> ();
 			foreach (var v in environmentVariables)
-				vars [v.Key] = tags.Parse (v.Value);
+				vars [v.Key] = StringParserService.Parse (v.Value, tagSource);
 			return vars;
 		}
 

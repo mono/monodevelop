@@ -40,6 +40,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs \
@@ -385,6 +386,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
 	MonoDevelop.Ide.Gui.Components/PadTreeView.cs \
 	MonoDevelop.Ide.Gui.Components/ProjectFileEntry.cs \
+	MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs \
 	MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeBuilder.cs \
 	MonoDevelop.Ide.Gui.Components/TreeNodeNavigator.cs \

@@ -95,8 +95,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		Document document;
 		StringBuilder buffer = null;
+		bool somethingReplaced;
+		
 		public void BeginReplace ()
 		{
+			somethingReplaced = false;
 			TextReader reader = Open ();
 			buffer = new StringBuilder (reader.ReadToEnd ());
 			reader.Close ();
@@ -111,6 +114,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void Replace (int offset, int length, string replacement)
 		{
+			somethingReplaced = true;
 			buffer.Remove (offset, length);
 			buffer.Insert (offset, replacement);
 			if (this.document != null) {
@@ -128,12 +132,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				Gtk.Application.Invoke (delegate { document.TextEditor.EndAtomicUndo (); });
 				return;
 			}
-			if (buffer != null) {
+			if (buffer != null && somethingReplaced) {
 				object attributes = DesktopService.GetFileAttributes (FileName);
 				File.WriteAllText (FileName, buffer.ToString ());
 				DesktopService.SetFileAttributes (FileName, attributes);
-				buffer = null;
 			}
+			buffer = null;
 		}
 	}
 }

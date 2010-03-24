@@ -31,6 +31,7 @@ using System.IO;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -114,13 +115,14 @@ namespace MonoDevelop.Projects
 		
 		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			string [,] customtags = null;
+			StringTagModel tagSource;
 			
-			CustomTagStore tagStore = null;
 			if (entry is SolutionItem)
-				tagStore = ((SolutionItem)entry).GetCustomTags (configuration);
+				tagSource = ((SolutionItem)entry).GetStringTagModel (configuration);
 			else if (entry is WorkspaceItem)
-				tagStore = ((WorkspaceItem)entry).GetCustomTags ();
+				tagSource = ((WorkspaceItem)entry).GetStringTagModel ();
+			else
+				tagSource = new StringTagModel ();
 			
 			if (string.IsNullOrEmpty (command))
 				return;
@@ -133,15 +135,12 @@ namespace MonoDevelop.Projects
 				args = string.Empty;
 			} else {
 				exe = command.Substring (0, i);
-				if (tagStore != null)
-					args = StringParserService.Parse (command.Substring (i + 1), tagStore);
-				else
-					args = command.Substring (i + 1);
+				args = StringParserService.Parse (command.Substring (i + 1), tagSource);
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));
 
-			FilePath dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : (FilePath) StringParserService.Parse (workingdir, customtags));
+			FilePath dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : (FilePath) StringParserService.Parse (workingdir, tagSource));
 
 			FilePath localPath = entry.BaseDirectory.Combine (exe);
 			if (File.Exists (localPath))

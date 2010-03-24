@@ -33,6 +33,7 @@ using System.Threading;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -190,15 +191,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public override CustomTagStore GetCustomTags ()
-		{
-			CustomTagStore tags = new CustomTagStore ();
-			tags.Add ("SolutionName", Name, GettextCatalog.GetString ("Solution name"));
-			tags.Add ("SolutionFile", FileName, GettextCatalog.GetString ("Solution file"));
-			tags.Add ("SolutionDir", BaseDirectory, GettextCatalog.GetString ("Solution directory"));
-			return tags;
-		}
-		
 		public override void LoadUserProperties ()
 		{
 			base.LoadUserProperties ();
@@ -762,5 +754,27 @@ namespace MonoDevelop.Projects
 		public event SolutionItemEventHandler EntryModified;
 		public event SolutionItemEventHandler EntrySaved;
 		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
+	}
+
+	[Mono.Addins.Extension]
+	class SolutionTagProvider: StringTagProvider<Solution>, IStringTagProvider
+	{
+		public override IEnumerable<StringTagDescription> GetTags ()
+		{
+			yield return new StringTagDescription ("SolutionFile", GettextCatalog.GetString ("Solution File"));
+			yield return new StringTagDescription ("SolutionName", GettextCatalog.GetString ("Solution Name"));
+			yield return new StringTagDescription ("SolutionDir", GettextCatalog.GetString ("Solution Directory"));
+		}
+		
+		public override object GetTagValue (Solution sol, string tag)
+		{
+			switch (tag) {
+				case "SOLUTIONNAME": return sol.Name;
+				case "COMBINEFILENAME":
+				case "SOLUTIONFILE": return sol.FileName;
+				case "SOLUTIONDIR": return sol.BaseDirectory;
+			}
+			throw new NotSupportedException ();
+		}
 	}
 }

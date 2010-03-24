@@ -38,6 +38,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -489,13 +490,18 @@ namespace MonoDevelop.Projects
 			return FileName.ChangeExtension (".userprefs");
 		}
 
-		public virtual CustomTagStore GetCustomTags ()
+		public virtual StringTagModelDescription GetStringTagModelDescription ()
 		{
-			CustomTagStore tags = new CustomTagStore ();
-			tags.Add ("WorkspaceName", Name, GettextCatalog.GetString ("Workspace name"));
-			tags.Add ("WorkspaceFile", FileName, GettextCatalog.GetString ("Workspace file"));
-			tags.Add ("WorkspaceDir", BaseDirectory, GettextCatalog.GetString ("Workspace directory"));
-			return tags;
+			StringTagModelDescription model = new StringTagModelDescription ();
+			model.Add (GetType ());
+			return model;
+		}
+		
+		public virtual StringTagModel GetStringTagModel ()
+		{
+			StringTagModel source = new StringTagModel ();
+			source.Add (this);
+			return source;
 		}
 		
 		public FilePath GetAbsoluteChildPath (FilePath relPath)
@@ -733,6 +739,31 @@ namespace MonoDevelop.Projects
 		{
 			if (reloadRequired != null)
 				reloadRequired (this, args);
+		}
+	}
+
+	[Mono.Addins.Extension]
+	class WorkspaceItemTagProvider: IStringTagProvider
+	{
+		public IEnumerable<StringTagDescription> GetTags (Type type)
+		{
+			if (typeof(WorkspaceItem).IsAssignableFrom (type) && !typeof(Solution).IsAssignableFrom (type)) {
+				// Solutions have its own provider
+				yield return new StringTagDescription ("WorkspaceFile", GettextCatalog.GetString ("Workspace File"));
+				yield return new StringTagDescription ("WorkspaceName", GettextCatalog.GetString ("Workspace Name"));
+				yield return new StringTagDescription ("WorkspaceDir", GettextCatalog.GetString ("Workspace Directory"));
+			}
+		}
+		
+		public object GetTagValue (object obj, string tag)
+		{
+			WorkspaceItem item = (WorkspaceItem) obj;
+			switch (tag) {
+				case "WORKSPACENAME": return item.Name;
+				case "WORKSPACEFILE": return item.FileName;
+				case "WORKSPACEDIR": return item.BaseDirectory;
+			}
+			throw new NotSupportedException ();
 		}
 	}
 }

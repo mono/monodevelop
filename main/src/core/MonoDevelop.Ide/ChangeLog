@@ -1,3 +1,36 @@
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/FileProvider.cs: Don't save the
+	  file if nothing has been replaced.
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	* MonoDevelop.Ide.Templates/CodeTranslationFileDescriptionTemplate.cs:
+	  HashtableToStringArray is not necessary. The string parser
+	  service can directly handle a string dictionary.
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.Ide/Ide.cs:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs:
+	* MonoDevelop.Ide.ExternalTools/ExternalTool.cs:
+	* MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:
+	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:
+	* MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs:
+	* MonoDevelop.Ide.Projects.OptionPanels/CustomCommandPanel.cs:
+	* MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:
+	* MonoDevelop.Ide.Projects.OptionPanels/CustomCommandPanelWidget.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs:
+	* gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:
+	  Use the new string tag model. Added a new
+	  StringTagSelectorButton class.
+
+	* MonoDevelop.Ide.Projects.OptionPanels/CombineConfigurationPanel.cs:
+	  Sort the configurations list.
+
 2010-03-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide/MessageService.cs: Use 'Ok' in error dialogs

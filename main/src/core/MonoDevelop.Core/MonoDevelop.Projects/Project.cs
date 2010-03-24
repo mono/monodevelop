@@ -190,16 +190,6 @@ namespace MonoDevelop.Projects
 			return BuildAction.StandardActions;
 		}
 
-		public override CustomTagStore GetCustomTags (ConfigurationSelector conf)
-		{
-			CustomTagStore tagStore = base.GetCustomTags (conf);
-			FilePath outputFile = GetOutputFileName (conf);
-			tagStore.Add ("TargetFile", outputFile, GettextCatalog.GetString ("Target File"));
-			tagStore.Add ("TargetName", outputFile.FileName, GettextCatalog.GetString ("Target Name"));
-			tagStore.Add ("TargetDir", outputFile.ParentDirectory, GettextCatalog.GetString ("Target Directory"));
-			return tagStore;
-		}
-		
 		public static Project LoadProject (string filename, IProgressMonitor monitor)
 		{
 			Project prj = Services.ProjectService.ReadSolutionItem (monitor, filename) as Project;

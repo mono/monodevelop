@@ -34,13 +34,13 @@ namespace MonoDevelop.Ide.ExternalTools
 
 		private global::Gtk.Table table3;
 
-		private global::Gtk.Button argumentQuickInsertButton;
-
 		private global::Gtk.Entry argumentTextBox;
+
+		private global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton tagSelectorArgs;
 
 		private global::Gtk.Table table4;
 
-		private global::Gtk.Button workingDirQuickInsertButton;
+		private global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton tagSelectorPath;
 
 		private global::Gtk.Entry workingDirTextBox;
 
@@ -198,24 +198,23 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.table3.RowSpacing = ((uint)(6));
 			this.table3.ColumnSpacing = ((uint)(4));
 			// Container child table3.Gtk.Table+TableChild
-			this.argumentQuickInsertButton = new global::Gtk.Button ();
-			this.argumentQuickInsertButton.Name = "argumentQuickInsertButton";
-			this.argumentQuickInsertButton.UseUnderline = true;
-			this.argumentQuickInsertButton.Label = " > ";
-			this.table3.Add (this.argumentQuickInsertButton);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table3[this.argumentQuickInsertButton]));
-			w13.LeftAttach = ((uint)(1));
-			w13.RightAttach = ((uint)(2));
-			w13.XOptions = ((global::Gtk.AttachOptions)(0));
-			w13.YOptions = ((global::Gtk.AttachOptions)(0));
-			// Container child table3.Gtk.Table+TableChild
 			this.argumentTextBox = new global::Gtk.Entry ();
 			this.argumentTextBox.Name = "argumentTextBox";
 			this.argumentTextBox.IsEditable = true;
 			this.argumentTextBox.InvisibleChar = '●';
 			this.table3.Add (this.argumentTextBox);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table3[this.argumentTextBox]));
-			w14.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table3[this.argumentTextBox]));
+			w13.YOptions = ((global::Gtk.AttachOptions)(0));
+			// Container child table3.Gtk.Table+TableChild
+			this.tagSelectorArgs = new global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton ();
+			this.tagSelectorArgs.Events = ((global::Gdk.EventMask)(256));
+			this.tagSelectorArgs.Name = "tagSelectorArgs";
+			this.table3.Add (this.tagSelectorArgs);
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table3[this.tagSelectorArgs]));
+			w14.LeftAttach = ((uint)(1));
+			w14.RightAttach = ((uint)(2));
+			w14.XOptions = ((global::Gtk.AttachOptions)(4));
+			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.table2.Add (this.table3);
 			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table2[this.table3]));
 			w15.TopAttach = ((uint)(2));
@@ -229,16 +228,15 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.table4.RowSpacing = ((uint)(6));
 			this.table4.ColumnSpacing = ((uint)(4));
 			// Container child table4.Gtk.Table+TableChild
-			this.workingDirQuickInsertButton = new global::Gtk.Button ();
-			this.workingDirQuickInsertButton.Name = "workingDirQuickInsertButton";
-			this.workingDirQuickInsertButton.UseUnderline = true;
-			this.workingDirQuickInsertButton.Label = " > ";
-			this.table4.Add (this.workingDirQuickInsertButton);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table4[this.workingDirQuickInsertButton]));
+			this.tagSelectorPath = new global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton ();
+			this.tagSelectorPath.Events = ((global::Gdk.EventMask)(256));
+			this.tagSelectorPath.Name = "tagSelectorPath";
+			this.table4.Add (this.tagSelectorPath);
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table4[this.tagSelectorPath]));
 			w16.LeftAttach = ((uint)(1));
 			w16.RightAttach = ((uint)(2));
-			w16.XOptions = ((global::Gtk.AttachOptions)(0));
-			w16.YOptions = ((global::Gtk.AttachOptions)(0));
+			w16.XOptions = ((global::Gtk.AttachOptions)(4));
+			w16.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.workingDirTextBox = new global::Gtk.Entry ();
 			this.workingDirTextBox.Name = "workingDirTextBox";

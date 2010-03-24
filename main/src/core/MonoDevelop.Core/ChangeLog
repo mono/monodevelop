@@ -1,3 +1,28 @@
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.StringParsing:
+	* MonoDevelop.Projects/Project.cs:
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/CustomCommand.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Core/StringParserService.cs:
+	* MonoDevelop.Projects/SolutionEntityItem.cs:
+	* MonoDevelop.Projects/ProjectConfiguration.cs:
+	* MonoDevelop.Core.StringParsing/StringTagModel.cs:
+	* MonoDevelop.Core.StringParsing/IStringTagModel.cs:
+	* MonoDevelop.Projects/DotNetProjectConfiguration.cs:
+	* MonoDevelop.Core.StringParsing/StringTagProvider.cs:
+	* MonoDevelop.Core.StringParsing/IStringTagProvider.cs:
+	* MonoDevelop.Core.StringParsing/StringTagDescription.cs:
+	* MonoDevelop.Core.StringParsing/StringTagModelDescription.cs:
+	  Reworked the string parser service. Added an extension point
+	  for registering tag providers. Added StringTagModel and
+	  StringTagModelDescription classes.
+
 2010-03-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/INode.cs: Added some node types.

@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 	partial class CombineConfigurationPanelWidget : Gtk.Bin
 	{
-		TreeStore store;
+		ListStore store;
 		SolutionConfiguration configuration;
 		MultiConfigItemOptionsDialog parentDialog;
 		
@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Build ();
 			
 			this.parentDialog = parentDialog;
-			store = new TreeStore (typeof(object), typeof(string), typeof(bool));
+			store = new ListStore (typeof(object), typeof(string), typeof(bool));
 			configsList.Model = store;
 			configsList.HeadersVisible = true;
 			
@@ -79,6 +79,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			col.AddAttribute (sr, "text", 1);
 			col.Title = GettextCatalog.GetString ("Solution Item");
 			configsList.AppendColumn (col);
+			col.SortColumnId = 1;
 			
 			CellRendererToggle tt = new CellRendererToggle ();
 			tt.Activatable = true;
@@ -88,6 +89,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			CellRendererComboBox comboCell = new CellRendererComboBox ();
 			comboCell.Changed += new ComboSelectionChangedHandler (OnConfigSelectionChanged);
 			configsList.AppendColumn (GettextCatalog.GetString ("Configuration"), comboCell, new TreeCellDataFunc (OnSetConfigurationsData));
+			store.SetSortColumnId (1, SortType.Ascending);
 		}
 		
 		public void Load (SolutionConfiguration config)

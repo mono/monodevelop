@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Desktop;
 using Mono.Addins;
 using MonoDevelop.Ide.Projects;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -524,6 +525,27 @@ namespace MonoDevelop.Ide.Gui
 			} finally {
 				ops.Destroy ();
 			}
+		}
+		
+		public StringTagModelDescription GetStringTagModelDescription ()
+		{
+			StringTagModelDescription model = new StringTagModelDescription ();
+			model.Add (typeof (Project));
+			model.Add (typeof (Solution));
+			model.Add (typeof (DotNetProjectConfiguration));
+			model.Add (typeof (Workbench));
+			return model;
+		}
+		
+		public StringTagModel GetStringTagModel ()
+		{
+			StringTagModel source = new StringTagModel ();
+			source.Add (this);
+			if (IdeApp.ProjectOperations.CurrentSelectedSolutionItem != null)
+				source.Add (IdeApp.ProjectOperations.CurrentSelectedSolutionItem.GetStringTagModel (IdeApp.Workspace.ActiveConfiguration));
+			else if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem != null)
+				source.Add (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetStringTagModel ());
+			return source;
 		}
 		
 		internal void ShowNext ()

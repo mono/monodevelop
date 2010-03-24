@@ -45,6 +45,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
