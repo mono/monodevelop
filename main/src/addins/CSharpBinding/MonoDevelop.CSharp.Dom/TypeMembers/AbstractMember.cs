@@ -33,18 +33,18 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		const int PrivateImplementationTypeRole = 100;
 		
-		public IReturnType ReturnType {
+		public ICSharpNode ReturnType {
 			get {
-				return (IReturnType)GetChildByRole (Roles.ReturnType);
+				return (ICSharpNode)GetChildByRole (Roles.ReturnType);
 			}
 		}
 		
 		/// <summary>
 		/// Only supported on members that can be declared in an interface.
 		/// </summary>
-		public IReturnType PrivateImplementationType {
+		public ICSharpNode PrivateImplementationType {
 			get {
-				return (IReturnType)GetChildByRole (PrivateImplementationTypeRole);
+				return (ICSharpNode)GetChildByRole (PrivateImplementationTypeRole);
 			}
 		}
 		

@@ -1,5 +1,18 @@
 2010-03-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Dom/TypeMembers/AbstractMember.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/CastExpression.cs:
+	* MonoDevelop.CSharp.Dom/Statements/ForeachStatement.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/QueryExpression.cs:
+	* MonoDevelop.CSharp.Dom/Statements/TryCatchStatement.cs:
+	* MonoDevelop.CSharp.Dom/GeneralScope/DelegateDeclaration.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/ObjectCreateExpression.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/MemberReferenceExpression.cs:
+	* MonoDevelop.CSharp.Dom/Statements/VariableDeclarationStatement.cs:
+	  Changed return type properties.
+
+2010-03-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
 	* MonoDevelop.CSharp.Dom/Expressions/QueryExpression.cs:
 	  Worked on LINQ expressions.

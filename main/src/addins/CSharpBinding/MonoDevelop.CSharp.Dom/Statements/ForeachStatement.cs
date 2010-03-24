@@ -42,8 +42,8 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildByRole (Roles.Initializer); }
 		}
 		
-		public IReturnType VariableType {
-			get { return (IReturnType)GetChildByRole (Roles.ReturnType); }
+		public ICSharpNode VariableType {
+			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public CSharpTokenNode LPar {

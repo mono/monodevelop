@@ -31,8 +31,8 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CastExpression : AbstractCSharpNode
 	{
-		public IReturnType CastTo {
-			get { return (IReturnType)GetChildByRole (Roles.ReturnType); }
+		public ICSharpNode CastTo {
+			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public INode Expression {

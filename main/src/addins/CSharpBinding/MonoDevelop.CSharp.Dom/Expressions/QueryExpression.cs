@@ -36,9 +36,9 @@ namespace MonoDevelop.CSharp.Dom
 		public const int FromKeywordRole = 100;
 		public const int InKeywordRole = 100;
 		
-		public IReturnType Type {
+		public ICSharpNode Type {
 			get {
-				return (IReturnType)GetChildByRole (Roles.ReturnType);
+				return (ICSharpNode)GetChildByRole (Roles.ReturnType);
 			}
 		}
 		

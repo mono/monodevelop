@@ -45,9 +45,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IReturnType ReturnType {
+		public ICSharpNode ReturnType {
 			get {
-				return (IReturnType)GetChildByRole (Roles.ReturnType);
+				return (ICSharpNode)GetChildByRole (Roles.ReturnType);
 			}
 		}
 		

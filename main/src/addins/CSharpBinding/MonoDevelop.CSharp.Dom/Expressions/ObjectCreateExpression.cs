@@ -32,8 +32,8 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class ObjectCreateExpression : AbstractCSharpNode
 	{
-		public IReturnType Type {
-			get { return (IReturnType)GetChildByRole (Roles.ReturnType); }
+		public ICSharpNode Type {
+			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public CSharpTokenNode LPar {

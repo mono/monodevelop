@@ -67,8 +67,8 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class CatchClause : AbstractCSharpNode
 	{
-		public IReturnType ReturnType {
-			get { return (IReturnType)GetChildByRole (Roles.ReturnType); }
+		public ICSharpNode ReturnType {
+			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public string VariableName {
