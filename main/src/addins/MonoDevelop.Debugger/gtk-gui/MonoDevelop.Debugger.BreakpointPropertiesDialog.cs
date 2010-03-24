@@ -211,6 +211,7 @@ namespace MonoDevelop.Debugger
 			this.radioBreakAlways = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Always break"));
 			this.radioBreakAlways.CanFocus = true;
 			this.radioBreakAlways.Name = "radioBreakAlways";
+			this.radioBreakAlways.Active = true;
 			this.radioBreakAlways.DrawIndicator = true;
 			this.radioBreakAlways.UseUnderline = true;
 			this.radioBreakAlways.Group = new global::GLib.SList (global::System.IntPtr.Zero);

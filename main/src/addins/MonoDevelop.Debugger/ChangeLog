@@ -1,3 +1,11 @@
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	  Flush.
+
+	* MonoDevelop.Debugger/StackTracePad.cs: Alloy copying the
+	  call stack to the clipboard. Added context menu.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.addin.xml:

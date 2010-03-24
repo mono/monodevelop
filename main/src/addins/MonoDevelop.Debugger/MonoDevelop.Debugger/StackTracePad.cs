@@ -8,6 +8,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using Stock = MonoDevelop.Ide.Gui.Stock;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Debugger
 {
@@ -16,19 +18,31 @@ namespace MonoDevelop.Debugger
 		Backtrace current_backtrace;
 
 		MonoDevelop.Ide.Gui.Components.PadTreeView tree;
-		Gtk.TreeStore store;
+		Gtk.ListStore store;
 		bool needsUpdate;
 		IPadWindow window;
+		CommandEntrySet menuSet;
 
 		public StackTracePad ()
 		{
 			this.ShadowType = ShadowType.None;
 
-			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string), typeof(string), typeof (Pango.Style));
+			ActionCommand gotoCmd = new ActionCommand ("StackTracePad.ActivateFrame", GettextCatalog.GetString ("Activate Stack Frame"));
+			
+			menuSet = new CommandEntrySet ();
+			menuSet.Add (gotoCmd);
+			menuSet.AddSeparator ();
+			menuSet.AddItem (EditCommands.SelectAll);
+			menuSet.AddItem (EditCommands.Copy);
+			
+			store = new ListStore (typeof(string), typeof (string), typeof(string), typeof(string), typeof(string), typeof(string), typeof (Pango.Style));
 
 			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
+			tree.Selection.Mode = SelectionMode.Multiple;
+			tree.ButtonPressEvent += HandleTreeButtonPressEvent;;
+			tree.PopupMenu += HandleTreePopupMenu;
 
 			TreeViewColumn col = new TreeViewColumn ();
 			CellRenderer crp = new CellRendererIcon ();
@@ -165,10 +179,7 @@ namespace MonoDevelop.Debugger
 		
 		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
-			TreeIter iter;
-			if (store.GetIter (out iter, args.Path)) {
-				DebuggingService.CurrentFrameIndex = args.Path.Indices [0];
-			}
+			ActivateFrame ();
 		}
 
 		public Gtk.Widget Control {
@@ -189,5 +200,59 @@ namespace MonoDevelop.Debugger
 		{
 			UpdateDisplay ();
 		}
+
+		[GLib.ConnectBefore]
+		void HandleTreeButtonPressEvent (object o, ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 3)
+				ShowPopup ();
+		}
+
+		[GLib.ConnectBefore]
+		void HandleTreePopupMenu (object o, PopupMenuArgs args)
+		{
+			ShowPopup ();
+		}
+
+		internal void ShowPopup ()
+		{
+			IdeApp.CommandService.ShowContextMenu (menuSet, tree);
+		}
+		
+		[CommandHandler ("StackTracePad.ActivateFrame")]
+		void ActivateFrame ()
+		{
+			TreePath[] sel = tree.Selection.GetSelectedRows ();
+			if (sel.Length > 0) {
+				DebuggingService.CurrentFrameIndex = sel[0].Indices [0];
+			}
+		}
+		
+		[CommandHandler (EditCommands.SelectAll)]
+		internal void OnSelectAll ()
+		{
+			tree.Selection.SelectAll ();
+		}
+		
+		[CommandHandler (EditCommands.Copy)]
+		internal void OnCopy ()
+		{
+			TreeModel model;
+			StringBuilder txt = new StringBuilder ();
+			foreach (Gtk.TreePath p in tree.Selection.GetSelectedRows (out model)) {
+				TreeIter it;
+				if (!model.GetIter (out it, p))
+					continue;
+				string met = (string) model.GetValue (it, 1);
+				string file = (string) model.GetValue (it, 2);
+				if (txt.Length > 0)
+					txt.Append ('\n');
+				txt.AppendFormat ("{0} in {1}", met, file);
+			}
+			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = txt.ToString ();
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = txt.ToString ();
+		}		
 	}
 }
