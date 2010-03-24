@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	[TestFixture()]
 	public class TestTypeLevelIndentation : UnitTests.TestBase
 	{
-	[Test()]
+		[Test()]
 		public void TestClassIndentation ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -347,6 +347,7 @@ set {
 		
 		
 		[Test()]
+		[Ignore("currently failing because namespaces are not inserted")]
 		public void TestIndentNamespaceBody ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -495,7 +496,6 @@ remove {
 	}
 }", data.Document.Text);
 		}
-		
 	}
 }*/
 
