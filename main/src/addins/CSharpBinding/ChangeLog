@@ -1,3 +1,9 @@
+2010-03-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/QueryExpression.cs:
+	  Worked on LINQ expressions.
+
 2010-03-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
