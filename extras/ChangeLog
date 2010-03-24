@@ -1,3 +1,7 @@
+2010-03-24  Andrés G. Aragoneses  <knocte@gmail.com>
+
+	* extras.mds: Removed as it's obsolete in favor of the .mdw file.
+
 2008-11-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* GtkSourceViewEditor: Moved from main. Doesn't build right now so 
