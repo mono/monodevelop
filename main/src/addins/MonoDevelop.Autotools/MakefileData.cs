@@ -1617,7 +1617,7 @@ namespace MonoDevelop.Autotools
 			int len = str.Length;
 			for (int i = 0; i < len; i ++) {
 				char c = str [i];
-				if (c == '\\' || c == '#')
+				if (c == '\\' || c == '#' || c == ' ')
 					sb.Append ("\\");
 				
 				sb.Append (c);
@@ -1640,7 +1640,7 @@ namespace MonoDevelop.Autotools
 					continue;
 				}
 				char next = str [i + 1];
-				if (next != '\\' && next != '#')
+				if (next != '\\' && next != '#' && next != ' ')
 					sb.Append ("\\");
 				
 				sb.Append (next);

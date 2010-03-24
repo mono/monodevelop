@@ -358,7 +358,7 @@ namespace MonoDevelop.Autotools
 
 
 				foreach (string ef in extraFiles)
-					extras.AppendFormat ("\\\n\t{0} ", MakefileData.ToMakefilePath (ef));
+					extras.AppendFormat ("\\\n\t{0} ", ef);
 
 				Dictionary<string, DeployFileData> commonDeployVars = new Dictionary<string, DeployFileData> (allDeployVars);
 				foreach (ConfigSection configSection in configSections) {

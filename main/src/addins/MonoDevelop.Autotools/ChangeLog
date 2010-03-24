@@ -1,3 +1,11 @@
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SimpleProjectMakefileHandler.cs: Removed unnecessary
+	  ToMakefilePath call (it is already called when adding paths
+	  to extraFiles).
+
+	* MakefileData.cs: Properly escape spaces.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
