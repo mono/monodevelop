@@ -64,6 +64,7 @@
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -229,9 +230,5 @@
     <None Include="Icons\application-x-mono-develop-xib.svg" />
     <None Include="Icons\mono-develop.svg" />
     <None Include="Icons\phone-apple-iphone.svg" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddinReference Include="MonoDevelop.Core,2.2" />
-    <AddinReference Include="MonoDevelop.Ide,2.2" />
   </ItemGroup>
 </Project>
