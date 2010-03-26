@@ -205,7 +205,7 @@ namespace Mono.Debugging.Soft
 			
 			OnConnected ();
 			
-			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath);
+			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath, EventType.AssemblyUnload);
 			try {
 				unhandledExceptionRequest = vm.CreateExceptionRequest (null, false, true);
 				unhandledExceptionRequest.Enable ();
@@ -628,6 +628,28 @@ namespace Mono.Debugging.Soft
 				bool isExternal = !UpdateAssemblyFilters (ae.Assembly) && userAssemblyNames != null;
 				string flagExt = isExternal? " [External]" : "";
 				OnDebuggerOutput (false, string.Format ("Loaded assembly: {0}{1}\n", ae.Assembly.Location, flagExt));
+			}
+			
+			if (e is AssemblyUnloadEvent) {
+				AssemblyUnloadEvent aue = (AssemblyUnloadEvent)e;
+				
+				// Mark affected breakpoints as pending again
+				List<KeyValuePair<EventRequest,BreakInfo>> affectedBreakpoints = new List<KeyValuePair<EventRequest, BreakInfo>> (
+					breakpoints.Where (x=> (x.Value.Location.Method.DeclaringType.Assembly.Equals (aue.Assembly)))
+				);
+				foreach (KeyValuePair<EventRequest,BreakInfo> breakpoint in affectedBreakpoints) {
+					breakpoints.Remove (breakpoint.Key);
+					pending_bes.Add (breakpoint.Value.BreakEvent);
+				}
+				
+				// Remove affected types from the loaded types list
+				List<string> affectedTypes = new List<string> (
+					from pair in types where pair.Value.Assembly.Equals (aue.Assembly) select pair.Key
+				);
+				foreach (string typename in affectedTypes) {
+					types.Remove (typename);
+				}
+				OnDebuggerOutput (false, string.Format ("Unloaded assembly: {0}\n", aue.Assembly.Location));
 			}
 			
 			if (e is VMStartEvent) {
