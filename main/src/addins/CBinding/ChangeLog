@@ -1,3 +1,8 @@
+2010-03-26  Levi Bard  <levi@unity3d.com>
+
+	* Project/CProject.cs: Fix linking for library projects whose
+	  names are prefixed with lib. Fixes #587298.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

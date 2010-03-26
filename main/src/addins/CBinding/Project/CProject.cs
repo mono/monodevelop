@@ -235,7 +235,9 @@ namespace CBinding
 				writer.WriteLine ("Name: {0}", Name);
 				writer.WriteLine ("Description: {0}", Description);
 				writer.WriteLine ("Version: {0}", Version);
-				writer.WriteLine ("Libs: -L{0} -l{1}", config.OutputDirectory, config.Output);
+				writer.WriteLine ("Libs: -L{0} -l{1}", config.OutputDirectory, config.Output.StartsWith ("lib", StringComparison.OrdinalIgnoreCase)?
+				                                                                                                config.Output.Substring (3):
+				                                                                                                config.Output);
 //				writer.WriteLine ("Cflags: -I{0}", BaseDirectory);
 				writer.WriteLine ("Cflags: -I{0}", string.Join (" -I", headerDirectories.ToArray ()));
 			}
@@ -276,7 +278,9 @@ namespace CBinding
 				// TODO: How should I get this?
 				writer.WriteLine ("Conflicts: {0}", string.Empty);
 				writer.Write ("Libs: -L${libdir} ");
-				writer.WriteLine ("-l{0}", config.Output);
+				writer.WriteLine ("-l{0}", config.Output.StartsWith ("lib", StringComparison.OrdinalIgnoreCase)?
+				                                                            config.Output.Substring (3):
+				                                                            config.Output);
 				writer.Write ("Cflags: -I${includedir}/");
 				writer.WriteLine ("{0} {1}", Name, Compiler.GetDefineFlags (project, config));
 			}
