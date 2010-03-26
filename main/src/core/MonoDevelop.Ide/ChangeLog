@@ -1,3 +1,8 @@
+2010-03-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs:
+	  Worked around toolbar background rendering issues on Mac.
+
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/FileProvider.cs: Don't save the

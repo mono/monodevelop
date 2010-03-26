@@ -836,14 +836,18 @@ namespace MonoDevelop.Components.DockToolbars
 			var shadowType = (ShadowType) styleProvider.StyleGetProperty ("shadow-type");
 			
 			//render each row separately, so the theme treats each as a row, and they match the individual toolbars' themed painting
-			//FIXME: Mac only seems to display the last-painted row, even though we make paint calls for all of them
 			int row = MaxRow;
 			for (int i = bars.Count - 1; i >= 0; i--) {
 				var bar = (DockToolbar) bars[i];
 				if (bar.DockRow == row) {
 					row--;
-					Style.PaintBox (bar.Style, evnt.Window, State, shadowType, evnt.Area, bar, "toolbar", 
-					                Allocation.X, bar.Allocation.Y, Allocation.Width, bar.Allocation.Height);
+					//HACK: On Mac, PaintBox seems to fill the whole area instead of using it for clipping
+					//so we create a new area for the row, to stop it overpainting other rows
+					//otoh this could improve performance when only single rows are repainted, because we can intersect with invalidated area
+					var rowArea = new Rectangle (Allocation.X, bar.Allocation.Y, Allocation.Width, bar.Allocation.Height);
+					var invalidated = Gdk.Rectangle.Intersect (evnt.Area, rowArea);
+					Style.PaintBox (bar.Style, evnt.Window, State, shadowType, invalidated, bar, "toolbar", 
+					                rowArea.X, rowArea.Y, rowArea.Width, rowArea.Height);
 				}
 			}
 			
