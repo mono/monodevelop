@@ -12,6 +12,10 @@ namespace MonoDevelop.IPhone.Gui
 
 		private global::Gtk.Table table1;
 
+		private global::Gtk.Alignment alignment2;
+
+		private global::Gtk.Label iPadInterfaceFileLabel;
+
 		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry appIconPicker;
 
 		private global::Gtk.Entry bundleIdEntry;
@@ -21,6 +25,8 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.Entry devRegionEntry;
 
 		private global::Gtk.Entry displayNameEntry;
+
+		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry iPadNibPicker;
 
 		private global::Gtk.Label label2;
 
@@ -34,7 +40,11 @@ namespace MonoDevelop.IPhone.Gui
 
 		private global::Gtk.Label label7;
 
+		private global::Gtk.Label label9;
+
 		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry mainNibPicker;
+
+		private global::Gtk.ComboBox targetDevicesCombo;
 
 		protected virtual void Build ()
 		{
@@ -62,22 +72,38 @@ namespace MonoDevelop.IPhone.Gui
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(12));
 			// Container child alignment1.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(6)), ((uint)(2)), false);
+			this.table1 = new global::Gtk.Table (((uint)(8)), ((uint)(2)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
+			// Container child table1.Gtk.Table+TableChild
+			this.alignment2 = new global::Gtk.Alignment (0f, 0.5f, 1f, 1f);
+			this.alignment2.Name = "alignment2";
+			// Container child alignment2.Gtk.Container+ContainerChild
+			this.iPadInterfaceFileLabel = new global::Gtk.Label ();
+			this.iPadInterfaceFileLabel.Name = "iPadInterfaceFileLabel";
+			this.iPadInterfaceFileLabel.Xalign = 0f;
+			this.iPadInterfaceFileLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("i_Pad interface file:");
+			this.iPadInterfaceFileLabel.UseUnderline = true;
+			this.alignment2.Add (this.iPadInterfaceFileLabel);
+			this.table1.Add (this.alignment2);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.alignment2]));
+			w3.TopAttach = ((uint)(5));
+			w3.BottomAttach = ((uint)(6));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.appIconPicker = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.appIconPicker.Name = "appIconPicker";
 			this.appIconPicker.EntryIsEditable = false;
 			this.table1.Add (this.appIconPicker);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.appIconPicker]));
-			w2.TopAttach = ((uint)(3));
-			w2.BottomAttach = ((uint)(4));
-			w2.LeftAttach = ((uint)(1));
-			w2.RightAttach = ((uint)(2));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.appIconPicker]));
+			w4.TopAttach = ((uint)(3));
+			w4.BottomAttach = ((uint)(4));
+			w4.LeftAttach = ((uint)(1));
+			w4.RightAttach = ((uint)(2));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.bundleIdEntry = new global::Gtk.Entry ();
 			this.bundleIdEntry.CanFocus = true;
@@ -85,13 +111,13 @@ namespace MonoDevelop.IPhone.Gui
 			this.bundleIdEntry.IsEditable = true;
 			this.bundleIdEntry.InvisibleChar = '●';
 			this.table1.Add (this.bundleIdEntry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.bundleIdEntry]));
-			w3.TopAttach = ((uint)(1));
-			w3.BottomAttach = ((uint)(2));
-			w3.LeftAttach = ((uint)(1));
-			w3.RightAttach = ((uint)(2));
-			w3.XOptions = ((global::Gtk.AttachOptions)(4));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.bundleIdEntry]));
+			w5.TopAttach = ((uint)(1));
+			w5.BottomAttach = ((uint)(2));
+			w5.LeftAttach = ((uint)(1));
+			w5.RightAttach = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.bundleVersionEntry = new global::Gtk.Entry ();
 			this.bundleVersionEntry.CanFocus = true;
@@ -99,13 +125,13 @@ namespace MonoDevelop.IPhone.Gui
 			this.bundleVersionEntry.IsEditable = true;
 			this.bundleVersionEntry.InvisibleChar = '●';
 			this.table1.Add (this.bundleVersionEntry);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.bundleVersionEntry]));
-			w4.TopAttach = ((uint)(2));
-			w4.BottomAttach = ((uint)(3));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.bundleVersionEntry]));
+			w6.TopAttach = ((uint)(2));
+			w6.BottomAttach = ((uint)(3));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.devRegionEntry = new global::Gtk.Entry ();
 			this.devRegionEntry.CanFocus = true;
@@ -113,13 +139,13 @@ namespace MonoDevelop.IPhone.Gui
 			this.devRegionEntry.IsEditable = true;
 			this.devRegionEntry.InvisibleChar = '●';
 			this.table1.Add (this.devRegionEntry);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.devRegionEntry]));
-			w5.TopAttach = ((uint)(5));
-			w5.BottomAttach = ((uint)(6));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.devRegionEntry]));
+			w7.TopAttach = ((uint)(7));
+			w7.BottomAttach = ((uint)(8));
+			w7.LeftAttach = ((uint)(1));
+			w7.RightAttach = ((uint)(2));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.displayNameEntry = new global::Gtk.Entry ();
 			this.displayNameEntry.CanFocus = true;
@@ -127,10 +153,22 @@ namespace MonoDevelop.IPhone.Gui
 			this.displayNameEntry.IsEditable = true;
 			this.displayNameEntry.InvisibleChar = '●';
 			this.table1.Add (this.displayNameEntry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.displayNameEntry]));
-			w6.LeftAttach = ((uint)(1));
-			w6.RightAttach = ((uint)(2));
-			w6.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.displayNameEntry]));
+			w8.LeftAttach = ((uint)(1));
+			w8.RightAttach = ((uint)(2));
+			w8.YOptions = ((global::Gtk.AttachOptions)(0));
+			// Container child table1.Gtk.Table+TableChild
+			this.iPadNibPicker = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
+			this.iPadNibPicker.Name = "iPadNibPicker";
+			this.iPadNibPicker.EntryIsEditable = false;
+			this.table1.Add (this.iPadNibPicker);
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1[this.iPadNibPicker]));
+			w9.TopAttach = ((uint)(5));
+			w9.BottomAttach = ((uint)(6));
+			w9.LeftAttach = ((uint)(1));
+			w9.RightAttach = ((uint)(2));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
@@ -138,11 +176,11 @@ namespace MonoDevelop.IPhone.Gui
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Main _interface file:");
 			this.label2.UseUnderline = true;
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
-			w7.TopAttach = ((uint)(4));
-			w7.BottomAttach = ((uint)(5));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
+			w10.TopAttach = ((uint)(4));
+			w10.BottomAttach = ((uint)(5));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
@@ -150,11 +188,11 @@ namespace MonoDevelop.IPhone.Gui
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Development _region:");
 			this.label3.UseUnderline = true;
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
-			w8.TopAttach = ((uint)(5));
-			w8.BottomAttach = ((uint)(6));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
+			w11.TopAttach = ((uint)(7));
+			w11.BottomAttach = ((uint)(8));
+			w11.XOptions = ((global::Gtk.AttachOptions)(4));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
@@ -162,11 +200,11 @@ namespace MonoDevelop.IPhone.Gui
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Application i_con:");
 			this.label4.UseUnderline = true;
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
-			w9.TopAttach = ((uint)(3));
-			w9.BottomAttach = ((uint)(4));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			w12.TopAttach = ((uint)(3));
+			w12.BottomAttach = ((uint)(4));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
@@ -174,11 +212,11 @@ namespace MonoDevelop.IPhone.Gui
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Bundle _version:");
 			this.label5.UseUnderline = true;
 			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.label5]));
-			w10.TopAttach = ((uint)(2));
-			w10.BottomAttach = ((uint)(3));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1[this.label5]));
+			w13.TopAttach = ((uint)(2));
+			w13.BottomAttach = ((uint)(3));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
@@ -186,9 +224,9 @@ namespace MonoDevelop.IPhone.Gui
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("_Display name:");
 			this.label6.UseUnderline = true;
 			this.table1.Add (this.label6);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.label6]));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1[this.label6]));
+			w14.XOptions = ((global::Gtk.AttachOptions)(4));
+			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
@@ -196,28 +234,51 @@ namespace MonoDevelop.IPhone.Gui
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Bundle _identifier:");
 			this.label7.UseUnderline = true;
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
-			w12.TopAttach = ((uint)(1));
-			w12.BottomAttach = ((uint)(2));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			w15.TopAttach = ((uint)(1));
+			w15.BottomAttach = ((uint)(2));
+			w15.XOptions = ((global::Gtk.AttachOptions)(4));
+			w15.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label9 = new global::Gtk.Label ();
+			this.label9.Name = "label9";
+			this.label9.Xalign = 0f;
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("_Target devices:");
+			this.label9.UseUnderline = true;
+			this.table1.Add (this.label9);
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1[this.label9]));
+			w16.TopAttach = ((uint)(6));
+			w16.BottomAttach = ((uint)(7));
+			w16.XOptions = ((global::Gtk.AttachOptions)(4));
+			w16.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.mainNibPicker = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.mainNibPicker.Name = "mainNibPicker";
 			this.mainNibPicker.EntryIsEditable = false;
 			this.table1.Add (this.mainNibPicker);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1[this.mainNibPicker]));
-			w13.TopAttach = ((uint)(4));
-			w13.BottomAttach = ((uint)(5));
-			w13.LeftAttach = ((uint)(1));
-			w13.RightAttach = ((uint)(2));
-			w13.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1[this.mainNibPicker]));
+			w17.TopAttach = ((uint)(4));
+			w17.BottomAttach = ((uint)(5));
+			w17.LeftAttach = ((uint)(1));
+			w17.RightAttach = ((uint)(2));
+			w17.YOptions = ((global::Gtk.AttachOptions)(0));
+			// Container child table1.Gtk.Table+TableChild
+			this.targetDevicesCombo = global::Gtk.ComboBox.NewText ();
+			this.targetDevicesCombo.Name = "targetDevicesCombo";
+			this.table1.Add (this.targetDevicesCombo);
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1[this.targetDevicesCombo]));
+			w18.TopAttach = ((uint)(6));
+			w18.BottomAttach = ((uint)(7));
+			w18.LeftAttach = ((uint)(1));
+			w18.RightAttach = ((uint)(2));
+			w18.XOptions = ((global::Gtk.AttachOptions)(4));
+			w18.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.alignment1.Add (this.table1);
 			this.vbox1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
-			w15.Position = 1;
-			w15.Expand = false;
-			w15.Fill = false;
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
+			w20.Position = 1;
+			w20.Expand = false;
+			w20.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

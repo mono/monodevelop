@@ -71,11 +71,34 @@ namespace MonoDevelop.IPhone.Gui
 			bundleVersionEntry.Text = proj.BundleVersion ?? "";
 			displayNameEntry.Text = proj.BundleDisplayName ?? "";
 			
-			mainNibPicker.Project = proj;
-			mainNibPicker.EntryIsEditable = true;
-			mainNibPicker.DefaultFilter = "*.xib";
+			mainNibPicker.Project         = iPadNibPicker.Project         = proj;
+			mainNibPicker.EntryIsEditable = iPadNibPicker.EntryIsEditable = true;
+			mainNibPicker.DefaultFilter   = iPadNibPicker.DefaultFilter   = "*.xib";
+			
 			mainNibPicker.DialogTitle = GettextCatalog.GetString ("Select main interface file...");
 			mainNibPicker.SelectedFile = proj.MainNibFile.ToString () ?? "";
+			
+			iPadNibPicker.DialogTitle = GettextCatalog.GetString ("Select iPad interface file...");
+			iPadNibPicker.SelectedFile = proj.MainNibFileIPad.ToString () ?? "";
+			
+			targetDevicesCombo.AppendText (GettextCatalog.GetString ("iPhone and iPad"));
+			targetDevicesCombo.AppendText (GettextCatalog.GetString ("iPhone only"));
+			targetDevicesCombo.AppendText (GettextCatalog.GetString ("iPad only"));
+			
+			switch (proj.SupportedDevices) {
+			case TargetDevice.IPhoneAndIPad:
+				targetDevicesCombo.Active = 0;
+				break;
+			case TargetDevice.IPhone:
+				targetDevicesCombo.Active = 1;
+				break;
+			case TargetDevice.IPad:
+				targetDevicesCombo.Active = 2;
+				break;
+			default:
+				LoggingService.LogWarning ("Unknown value '{0}' in SupportedDevices. sChanging to default.");
+				goto case TargetDevice.IPhone;
+			}
 			
 			appIconPicker.Project = proj;
 			appIconPicker.DefaultFilter = "*.png";
@@ -90,7 +113,20 @@ namespace MonoDevelop.IPhone.Gui
 			proj.BundleVersion = NullIfEmpty (bundleVersionEntry.Text);
 			proj.BundleDisplayName = NullIfEmpty (displayNameEntry.Text);
 			proj.MainNibFile = NullIfEmpty (mainNibPicker.SelectedFile);
+			proj.MainNibFileIPad = NullIfEmpty (iPadNibPicker.SelectedFile);
 			proj.BundleIcon = NullIfEmpty (appIconPicker.SelectedFile);
+			
+			switch (targetDevicesCombo.Active) {
+			case 0:
+				proj.SupportedDevices = TargetDevice.IPhoneAndIPad;
+				break;
+			case 1:
+				proj.SupportedDevices = TargetDevice.IPhone;
+				break;
+			case 2:
+				proj.SupportedDevices = TargetDevice.IPad;
+				break;
+			}
 		}
 		
 		string NullIfEmpty (string s)

@@ -1,3 +1,11 @@
+2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* Gui/IPhoneOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	  Add options for supported devices and iPad main nib.
+
 2010-03-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.IPhone.csproj: Remove unwanted/unknown

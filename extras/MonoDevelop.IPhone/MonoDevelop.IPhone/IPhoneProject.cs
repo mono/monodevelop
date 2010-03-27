@@ -37,6 +37,13 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.IPhone
 {
+	[Flags]
+	public enum TargetDevice
+	{
+		IPhone = 1,
+		IPad =   1 << 1,
+		IPhoneAndIPad = IPhone & IPad,
+	}
 	
 	public class IPhoneProject : DotNetProject
 	{
@@ -48,6 +55,12 @@ namespace MonoDevelop.IPhone
 		
 		[ProjectPathItemProperty ("MainNibFile")]
 		string mainNibFile;
+		
+		[ProjectPathItemProperty ("MainNibFileIPad")]
+		string mainNibFileIPad;
+		
+		[ItemProperty ("SupportedDevices", DefaultValue = TargetDevice.IPhone)]
+		TargetDevice supportedDevices = TargetDevice.IPhone;
 		
 		[ItemProperty ("BundleDevelopmentRegion")]
 		string bundleDevelopmentRegion;
@@ -75,6 +88,26 @@ namespace MonoDevelop.IPhone
 					return;
 				NotifyModified ("MainNibFile");
 				mainNibFile = value;
+			}
+		}
+		
+		public FilePath MainNibFileIPad {
+			get { return mainNibFileIPad; }
+			set {
+				if (value == (FilePath) mainNibFileIPad)
+					return;
+				NotifyModified ("MainNibFileIPad");
+				mainNibFileIPad = value;
+			}
+		}
+		
+		public TargetDevice SupportedDevices {
+			get { return supportedDevices; }
+			set {
+				if (value == supportedDevices)
+					return;
+				NotifyModified ("SupportedDevices");
+				supportedDevices = value;
 			}
 		}
 		
