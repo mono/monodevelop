@@ -205,8 +205,9 @@ namespace MonoDevelop.Platform
 			
 			//FIXME: should we remove these when finalizing?
 			try {
-				ApplicationEvents.Quit += delegate (object sender, ApplicationEventArgs e) {
-					IdeApp.Exit ();
+				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e) {
+					if (!IdeApp.Exit ())
+						e.UserCancelled = true;
 					e.Handled = true;
 				};
 				

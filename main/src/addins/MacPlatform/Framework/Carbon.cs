@@ -407,6 +407,7 @@ namespace OSXIntegration.Framework
 	{
 		Handled = 0,
 		NotHandled = -9874,
+		UserCancelled = -128,
 	}
 	
 	internal enum CarbonEventParameterName : uint

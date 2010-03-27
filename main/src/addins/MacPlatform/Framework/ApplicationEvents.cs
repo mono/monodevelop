@@ -34,10 +34,10 @@ namespace OSXIntegration.Framework
 		
 		#region Quit
 		
-		static EventHandler<ApplicationEventArgs> quit;
+		static EventHandler<ApplicationQuitEventArgs> quit;
 		static IntPtr quitHandlerRef = IntPtr.Zero;
 		
-		public static event EventHandler<ApplicationEventArgs> Quit {
+		public static event EventHandler<ApplicationQuitEventArgs> Quit {
 			add {
 				lock (lockObj) {
 					quit += value;
@@ -58,9 +58,9 @@ namespace OSXIntegration.Framework
 		
 		static CarbonEventHandlerStatus HandleQuit (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
-			var args = new ApplicationEventArgs ();
+			var args = new ApplicationQuitEventArgs ();
 			quit (null, args);
-			return args.HandledStatus;
+			return args.UserCancelled? CarbonEventHandlerStatus.UserCancelled : args.HandledStatus;
 		}
 		
 		#endregion
@@ -192,6 +192,11 @@ namespace OSXIntegration.Framework
 				return Handled? CarbonEventHandlerStatus.Handled : CarbonEventHandlerStatus.NotHandled;
 			}
 		}
+	}
+	
+	public class ApplicationQuitEventArgs : ApplicationEventArgs
+	{
+		public bool UserCancelled { get; set; }
 	}
 	
 	public class ApplicationDocumentEventArgs : ApplicationEventArgs

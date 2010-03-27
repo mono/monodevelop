@@ -1,3 +1,10 @@
+2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs:
+	* Framework/Carbon.cs:
+	* Framework/ApplicationEvents.cs: Don't crash when the user
+	  cancels quitting.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
