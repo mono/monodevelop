@@ -1,3 +1,8 @@
+2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger.Soft.IPhone.csproj: Update refs to
+	  track changes in main.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Manifest.addin.xml: Bumped MD version.
