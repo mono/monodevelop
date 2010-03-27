@@ -33,13 +33,15 @@ using System.Collections;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
 	public class DispatchService
 	{
-		static ArrayList arrBackgroundQueue;
-		static ArrayList arrGuiQueue;
+		static Queue<GenericMessageContainer> backgroundQueue = new Queue<GenericMessageContainer> ();
+		static ManualResetEvent backgroundThreadWait = new ManualResetEvent (false);
+		static Queue<GenericMessageContainer> guiQueue = new Queue<GenericMessageContainer> ();
 		static Thread thrBackground;
 		static uint iIdle = 0;
 		static GLib.TimeoutHandler handler;
@@ -51,17 +53,17 @@ namespace MonoDevelop.Ide
 		static DispatchService ()
 		{
 			guiContext = new GuiSyncContext ();
-
 			guiThread = Thread.CurrentThread;
 			
 			handler = new GLib.TimeoutHandler (guiDispatcher);
-			arrBackgroundQueue = new ArrayList ();
-			arrGuiQueue = new ArrayList ();
-			thrBackground = new Thread (new ThreadStart (backgroundDispatcher));
-			thrBackground.Name = "Background dispatcher";
-			thrBackground.IsBackground = true;
-			thrBackground.Priority = ThreadPriority.Lowest;
+			
+			thrBackground = new Thread (new ThreadStart (backgroundDispatcher)) {
+				Name = "Background dispatcher",
+				IsBackground = true,
+				Priority = ThreadPriority.Lowest,
+			};
 			thrBackground.Start ();
+			
 			DispatchDebug = Environment.GetEnvironmentVariable ("MONODEVELOP_DISPATCH_DEBUG") != null;
 		}
 
@@ -122,10 +124,10 @@ namespace MonoDevelop.Ide
 			guiDispatcher ();
 		}
 		
-		static void QueueMessage (object msg)
+		static void QueueMessage (GenericMessageContainer msg)
 		{
-			lock (arrGuiQueue) {
-				arrGuiQueue.Add (msg);
+			lock (guiQueue) {
+				guiQueue.Enqueue (msg);
 				if (iIdle == 0)
 					iIdle = GLib.Timeout.Add (0, handler);
 			}
@@ -155,13 +157,21 @@ namespace MonoDevelop.Ide
 		
 		public static void BackgroundDispatch (MessageHandler cb)
 		{
-			arrBackgroundQueue.Add (new GenericMessageContainer (cb, false));
+			QueueBackground (new GenericMessageContainer (cb, false));
 		}
 
 		public static void BackgroundDispatch (StatefulMessageHandler cb, object state)
 		{
-			arrBackgroundQueue.Add (new StatefulMessageContainer (cb, state, false));
-			//thrBackground.Resume ();
+			QueueBackground (new StatefulMessageContainer (cb, state, false));
+		}
+		
+		static void QueueBackground (GenericMessageContainer c)
+		{
+			lock (backgroundQueue) {
+				backgroundQueue.Enqueue (c);
+				if (backgroundQueue.Count == 1)
+					backgroundThreadWait.Set ();
+			}
 		}
 		
 		public static void ThreadDispatch (MessageHandler cb)
@@ -187,8 +197,8 @@ namespace MonoDevelop.Ide
 			GenericMessageContainer msg;
 			int iterCount;
 			
-			lock (arrGuiQueue) {
-				iterCount = arrGuiQueue.Count;
+			lock (guiQueue) {
+				iterCount = guiQueue.Count;
 				if (iterCount == 0) {
 					iIdle = 0;
 					return false;
@@ -196,13 +206,12 @@ namespace MonoDevelop.Ide
 			}
 			
 			for (int n=0; n<iterCount; n++) {
-				lock (arrGuiQueue) {
-					if (arrGuiQueue.Count == 0) {
+				lock (guiQueue) {
+					if (guiQueue.Count == 0) {
 						iIdle = 0;
 						return false;
 					}
-					msg = (GenericMessageContainer) arrGuiQueue [0];
-					arrGuiQueue.RemoveAt (0);
+					msg = guiQueue.Dequeue ();
 				}
 				
 				msg.Run ();
@@ -213,8 +222,8 @@ namespace MonoDevelop.Ide
 					HandlerError (msg);
 			}
 			
-			lock (arrGuiQueue) {
-				if (arrGuiQueue.Count == 0) {
+			lock (guiQueue) {
+				if (guiQueue.Count == 0) {
 					iIdle = 0;
 					return false;
 				} else
@@ -224,18 +233,22 @@ namespace MonoDevelop.Ide
 
 		static void backgroundDispatcher ()
 		{
-			// FIXME: use an event to avoid active wait
 			while (true) {
-				if (arrBackgroundQueue.Count == 0) {
-					Thread.Sleep (500);
-					//thrBackground.Suspend ();
+				GenericMessageContainer msg = null;
+				bool wait = false;
+				lock (backgroundQueue) {
+					if (backgroundQueue.Count == 0) {
+						backgroundThreadWait.Reset ();
+						wait = true;
+					} else
+						msg = backgroundQueue.Dequeue ();
+				}
+				
+				if (wait) {
+					WaitHandle.WaitAll (new WaitHandle[] {backgroundThreadWait});
 					continue;
 				}
-				GenericMessageContainer msg = null;
-				lock (arrBackgroundQueue) {
-					msg = (GenericMessageContainer)arrBackgroundQueue[0];
-					arrBackgroundQueue.RemoveAt (0);
-				}
+				
 				if (msg != null) {
 					msg.Run ();
 					if (msg.Exception != null)

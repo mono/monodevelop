@@ -1,5 +1,10 @@
 2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide/DispatchService.cs: Strongly type queues,
+	  and use an event instead of an active wait.
+
+2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide/Ide.cs: Exit returns bool indicating whether
 	  user cancelled.
 
