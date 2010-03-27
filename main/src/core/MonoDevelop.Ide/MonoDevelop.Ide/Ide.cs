@@ -381,10 +381,17 @@ namespace MonoDevelop.Ide
 			Gtk.Application.Run ();
 		}
 		
-		public static void Exit ()
+		
+		/// <summary>
+		/// Exits MonoDevelop. Returns false if the user cancels exiting.
+		/// </summary>
+		public static bool Exit ()
 		{
-			if (workbench.Close ())
+			if (workbench.Close ()) {
 				Gtk.Application.Quit ();
+				return true;
+			}
+			return false;
 		}
 		
 		internal static bool OnExit ()
