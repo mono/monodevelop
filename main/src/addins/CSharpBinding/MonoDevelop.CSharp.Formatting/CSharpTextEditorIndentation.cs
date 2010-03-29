@@ -59,7 +59,10 @@ namespace MonoDevelop.CSharp.Formatting
 		static CSharpTextEditorIndentation ()
 		{
 			CompletionWindowManager.WordCompleted += delegate(object sender, CodeCompletionContextEventArgs e) {
-				ITextEditorExtension textEditorExtension = ((IExtensibleTextEditor)e.Widget).Extension;
+				IExtensibleTextEditor editor = e.Widget as IExtensibleTextEditor;
+				if (editor == null)
+					return;
+				ITextEditorExtension textEditorExtension = editor.Extension;
 				while (textEditorExtension != null && !(textEditorExtension is CSharpTextEditorIndentation)) {
 					textEditorExtension = textEditorExtension.Next;
 				}

@@ -1,3 +1,8 @@
+2010-03-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  handled cast exception.
+
 2010-03-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
