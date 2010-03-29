@@ -49,6 +49,7 @@ namespace MonoDevelop.Core.Execution
 		DefaultExecutionModeSet defaultExecutionModeSet = new DefaultExecutionModeSet ();
 		IExecutionHandler defaultExecutionHandler = new DefaultExecutionHandler ();
 		IExecutionMode defaultExecutionMode = new DefaultExecutionMode ();
+		ExternalConsoleHandler externalConsoleHandler;
 		
 		Dictionary<string, string> environmentVariableOverrides = null;
 		
@@ -74,6 +75,13 @@ namespace MonoDevelop.Core.Execution
 		
 		internal ProcessService ()
 		{
+		}
+		
+		public void SetExternalConsoleHandler (ExternalConsoleHandler handler)
+		{
+			if (externalConsoleHandler != null)
+				throw new InvalidOperationException ("External console handler already set");
+			externalConsoleHandler = handler;
 		}
 		
 		public ProcessWrapper StartProcess (string command, string arguments, string workingDirectory, EventHandler exited) 
@@ -180,7 +188,7 @@ namespace MonoDevelop.Core.Execution
 		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
 			if (console == null || (console is ExternalConsole)) {
-				ProcessStartInfo psi = ExternalConsoleLocator.GetConsoleProcess (command, arguments, workingDirectory, environmentVariables,
+				ProcessStartInfo psi = externalConsoleHandler (command, arguments, workingDirectory, environmentVariables,
 				    GettextCatalog.GetString ("MonoDevelop External Console"), console != null ? !console.CloseOnDispose : false);
 
 				ProcessWrapper p = new ProcessWrapper();
@@ -427,4 +435,7 @@ namespace MonoDevelop.Core.Execution
 			return tw != null ? new ProcessEventHandler(new OutWriter (tw).WriteOut) : null;
 		}
 	}
+	
+	public delegate ProcessStartInfo ExternalConsoleHandler (string command, string commandArguments, 
+			string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished);
 }

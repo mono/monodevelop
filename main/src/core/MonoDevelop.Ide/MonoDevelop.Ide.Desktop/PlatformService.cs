@@ -292,5 +292,11 @@ namespace MonoDevelop.Ide.Desktop
 			UnixFileSystemInfo info = UnixFileSystemInfo.GetFileSystemEntry (fileName);
 			info.FileAccessPermissions = (FileAccessPermissions)attributes;
 		}
+		
+		public virtual ProcessStartInfo CreateConsoleProcessInfo (string command, string commandArguments, 
+			string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished)
+		{
+			return null;
+		}
 	}
 }

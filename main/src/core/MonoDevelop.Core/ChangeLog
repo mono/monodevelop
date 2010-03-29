@@ -1,5 +1,13 @@
 2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Execution/ProcessService.cs:
+	* MonoDevelop.Core.Execution/ExternalConsoleLocator.cs: Moved
+	  external console creation to the platform service.
+
+2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.csproj: Don't do overflow checks.
 
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>

@@ -48,7 +48,6 @@ FILES =  \
 	MonoDevelop.Core.Execution/ExecutionMode.cs \
 	MonoDevelop.Core.Execution/ExecutionPlatform.cs \
 	MonoDevelop.Core.Execution/ExternalConsoleFactory.cs \
-	MonoDevelop.Core.Execution/ExternalConsoleLocator.cs \
 	MonoDevelop.Core.Execution/IBreakpoint.cs \
 	MonoDevelop.Core.Execution/IConsole.cs \
 	MonoDevelop.Core.Execution/IConsoleFactory.cs \

@@ -104,7 +104,6 @@
     <Compile Include="MonoDevelop.Core.Logging\FileLogger.cs" />
     <Compile Include="MonoDevelop.Core\DefaultAddinLocalizer.cs" />
     <Compile Include="MonoDevelop.Core.Logging\ConsoleCrayon.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\ExternalConsoleLocator.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionPlatform.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\ExecutionModeNode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IExecutionMode.cs" />

@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide
 				platformService = new DefaultPlatformService ();
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
+			Runtime.ProcessService.SetExternalConsoleHandler (platformService.CreateConsoleProcessInfo);
 		}
 		
 		public static DesktopApplication GetDefaultApplication (string mimetype)
