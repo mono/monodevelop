@@ -33,10 +33,10 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
-using MonoDevelop.Core.Gui;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui.Components;
 

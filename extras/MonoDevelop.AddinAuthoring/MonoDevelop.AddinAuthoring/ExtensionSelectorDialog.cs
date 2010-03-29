@@ -5,7 +5,7 @@ using Gtk;
 using Mono.Addins;
 using Mono.Addins.Description;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
@@ -48,9 +48,9 @@ namespace MonoDevelop.AddinAuthoring
 			this.adesc = adesc;
 			this.isRoot = isRoot;
 			
-			pixCategory = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.ClosedFolder, IconSize.Menu);
-			pixNamespace = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.NameSpace, IconSize.Menu);
-			pixAddin = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
+			pixCategory = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
+			pixNamespace = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.NameSpace, IconSize.Menu);
+			pixAddin = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Addin, IconSize.Menu);
 			pixLocalAddin = ImageService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
 			
 			store = new TreeStore (typeof(string), typeof(object), typeof(ExtensionPoint), typeof(bool), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool), typeof(bool));

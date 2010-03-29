@@ -1,3 +1,22 @@
+2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AddinAuthoring/TypeCellEditor.cs:
+	* MonoDevelop.AddinAuthoring/SolutionAddinData.cs:
+	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs:
+	* MonoDevelop.AddinAuthoring/AddinAuthoringService.cs:
+	* MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs:
+	* MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs:
+	* MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs:
+	* MonoDevelop.AddinAuthoring/ExtensionSelectorDialog.cs:
+	* MonoDevelop.AddinAuthoring/AddinDescriptionDisplayBinding.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionsNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinFolderNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.CodeCompletion/CodeCompletionExtension.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionPointsNodeBuilder.cs:
+	* MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	Track api chages. Patch by Jay R. Wren.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:

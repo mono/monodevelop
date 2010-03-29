@@ -31,7 +31,6 @@ using Gtk;
 using Gdk;
 using System.Text;
 using System.ComponentModel;
-using MonoDevelop.Core.Gui;
 using MonoDevelop.Components.PropertyGrid;
 
 namespace MonoDevelop.AddinAuthoring

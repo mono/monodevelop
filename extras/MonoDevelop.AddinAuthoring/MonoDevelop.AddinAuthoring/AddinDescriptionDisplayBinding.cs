@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;

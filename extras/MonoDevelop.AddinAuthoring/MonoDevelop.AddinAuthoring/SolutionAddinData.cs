@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Mono.Addins;
 using Mono.Addins.Setup;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring

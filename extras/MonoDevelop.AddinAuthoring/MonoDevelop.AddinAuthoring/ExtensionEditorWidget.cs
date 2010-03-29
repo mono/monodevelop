@@ -6,8 +6,7 @@ using Mono.Addins;
 using Mono.Addins.Description;
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
 
@@ -43,7 +42,7 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			this.Build();
 			
-			pixAddin = ImageService.GetPixbuf (MonoDevelop.Core.Gui.Stock.Addin, IconSize.Menu);
+			pixAddin = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Addin, IconSize.Menu);
 			pixLocalAddin = ImageService.GetPixbuf ("md-addinauthoring-current-addin", IconSize.Menu);
 			pixExtensionPoint = ImageService.GetPixbuf ("md-extension-point", IconSize.Menu);
 			pixExtensionNode = ImageService.GetPixbuf ("md-extension-node", IconSize.Menu);

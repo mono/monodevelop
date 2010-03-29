@@ -3,8 +3,6 @@ using System;
 using Gtk;
 using Mono.Addins;
 using MonoDevelop.Components;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
 {

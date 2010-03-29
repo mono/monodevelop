@@ -2,9 +2,9 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.Gui;
-using MonoDevelop.Projects.Gui.Dialogs;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.AddinAuthoring
 {
