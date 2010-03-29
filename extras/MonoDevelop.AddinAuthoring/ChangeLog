@@ -1,5 +1,9 @@
 2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.AddinAuthoring.addin.xml: Remove old add-ins.
+
+2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.AddinAuthoring/TypeCellEditor.cs:
 	* MonoDevelop.AddinAuthoring/SolutionAddinData.cs:
 	* MonoDevelop.AddinAuthoring/AddinDescriptionView.cs:
