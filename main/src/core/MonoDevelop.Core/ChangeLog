@@ -1,3 +1,7 @@
+2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.csproj: Don't do overflow checks.
+
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.StringParsing/IStringTagModel.cs: Make sure
