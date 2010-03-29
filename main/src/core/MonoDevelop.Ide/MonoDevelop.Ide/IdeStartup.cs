@@ -307,7 +307,6 @@ namespace MonoDevelop.Ide
 				}
 			} else {
 				try {
-					LoggingService.LogError ("Opening {0} at {1}:{2}", file, line, column);
 					IdeApp.Workbench.OpenDocument (file, line, column, true);
 				} catch {
 				}

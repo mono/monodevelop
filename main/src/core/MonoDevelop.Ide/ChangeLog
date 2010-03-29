@@ -1,3 +1,7 @@
+2010-03-29  Levi Bard  <levi@unity3d.com>
+
+	* MonoDevelop.Ide/IdeStartup.cs: Remove debug logging.
+
 2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Fixed bug
