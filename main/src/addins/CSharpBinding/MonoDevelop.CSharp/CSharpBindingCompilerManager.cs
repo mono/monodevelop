@@ -240,9 +240,11 @@ namespace MonoDevelop.CSharp
 			
 			if (!string.IsNullOrEmpty (compilerParameters.NoWarnings)) 
 				AppendQuoted (sb, "/nowarn:", compilerParameters.NoWarnings);
-			
-			if (runtime.RuntimeId == "MS.NET")
-				sb.AppendLine ("/fullpaths");
+
+			if (runtime.RuntimeId == "MS.NET") {
+				sb.AppendLine("/fullpaths");
+				sb.AppendLine("/utf8output");
+			}
 
 			string output = "";
 			string error  = "";
@@ -367,6 +369,8 @@ namespace MonoDevelop.CSharp
 			StreamWriter errwr = new StreamWriter (error);
 			
 			ProcessStartInfo pinfo = new ProcessStartInfo (compilerName, compilerArgs);
+			pinfo.StandardErrorEncoding = Encoding.UTF8;
+			pinfo.StandardOutputEncoding = Encoding.UTF8;
 			pinfo.WorkingDirectory = working_dir;
 			
 			if (gacRoots.Count > 0) {
