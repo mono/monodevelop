@@ -130,9 +130,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnButtonPinClick (object sender, EventArgs e)
 		{
 			if (buttonPin.Active)
-				((Gtk.Image)buttonPin.Child).Stock = "md-pin-down";
+				((Gtk.Image)buttonPin.Image).Stock = (IconId) "md-pin-down";
 			else
-				((Gtk.Image)buttonPin.Child).Stock = "md-pin-up";
+				((Gtk.Image)buttonPin.Image).Stock = (IconId) "md-pin-up";
 		}
 		
 		public bool AllowReuse {

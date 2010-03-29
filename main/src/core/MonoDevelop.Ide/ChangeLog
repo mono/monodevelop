@@ -1,3 +1,9 @@
+2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Fixed bug
+	  #591785 - Unable to cast object of type 'Gtk.Alignment' to
+	  type 'Gtk.Image'.
+
 2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide/DispatchService.cs: Strongly type queues,
