@@ -7,7 +7,6 @@ REFS =  \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
-	-r:Mono.Data \
 	-r:Mono.Data.Sqlite \
 	-r:System \
 	-r:System.Data
