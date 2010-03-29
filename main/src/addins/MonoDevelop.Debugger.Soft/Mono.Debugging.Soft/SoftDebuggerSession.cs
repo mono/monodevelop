@@ -635,16 +635,21 @@ namespace Mono.Debugging.Soft
 				
 				// Mark affected breakpoints as pending again
 				List<KeyValuePair<EventRequest,BreakInfo>> affectedBreakpoints = new List<KeyValuePair<EventRequest, BreakInfo>> (
-					breakpoints.Where (x=> (x.Value.Location.Method.DeclaringType.Assembly.Equals (aue.Assembly)))
+					breakpoints.Where (x=> (x.Value.Location.Method.DeclaringType.Assembly.Location.Equals (aue.Assembly.Location, StringComparison.OrdinalIgnoreCase)))
 				);
 				foreach (KeyValuePair<EventRequest,BreakInfo> breakpoint in affectedBreakpoints) {
+					OnDebuggerOutput (false, string.Format ("Re-pending breakpoint at {0}:{1}\n",
+					                                        Path.GetFileName (breakpoint.Value.Location.SourceFile),
+					                                        breakpoint.Value.Location.LineNumber));
 					breakpoints.Remove (breakpoint.Key);
 					pending_bes.Add (breakpoint.Value.BreakEvent);
 				}
 				
 				// Remove affected types from the loaded types list
 				List<string> affectedTypes = new List<string> (
-					from pair in types where pair.Value.Assembly.Equals (aue.Assembly) select pair.Key
+					from pair in types
+					where pair.Value.Assembly.Location.Equals (aue.Assembly.Location, StringComparison.OrdinalIgnoreCase)
+					select pair.Key
 				);
 				foreach (string typename in affectedTypes) {
 					types.Remove (typename);
