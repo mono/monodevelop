@@ -1,3 +1,7 @@
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: Fix ordering.
+
 2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.IPhone.addin.xml: Move sim target menu to run

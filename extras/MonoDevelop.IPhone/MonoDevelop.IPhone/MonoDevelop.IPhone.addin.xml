@@ -156,9 +156,9 @@
 		<Condition id="MonoTouchInstalled">
 			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
-			<ItemSet id = "SelectSimulatorTarget" _label = "iPhone Simulator Target" autohide = "true">
-				<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget"
-					insertafter = "SelectActiveRuntime"  />
+			<ItemSet id = "SelectSimulatorTarget" _label = "iPhone Simulator Target" autohide = "true" 
+			         insertafter = "SelectActiveRuntime"  >
+				<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget" />
 			</ItemSet>
 		</Condition>
 	</Extension>
