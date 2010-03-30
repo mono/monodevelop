@@ -123,9 +123,6 @@
     <EmbeddedResource Include="Templates\IPadApplicationXib.xft.xml">
       <LogicalName>IPadApplicationXib.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPadInfoPlist.xft.xml">
-      <LogicalName>IPadInfoPlist.xft.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneViewXib.xft.xml">
       <LogicalName>IPhoneViewXib.xft.xml</LogicalName>
     </EmbeddedResource>

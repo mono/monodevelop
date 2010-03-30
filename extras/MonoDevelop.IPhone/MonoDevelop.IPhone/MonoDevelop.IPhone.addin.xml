@@ -34,8 +34,6 @@
 			              resource = "IPhoneEntitlements.xft.xml"/>
 			<FileTemplate id       = "IPadApplicationXib"
 			              resource = "IPadApplicationXib.xft.xml"/>
-			<FileTemplate id       = "IPadInfoPlist"
-			              resource = "IPadInfoPlist.xft.xml"/>
 		</Condition>
 	</Extension>
 

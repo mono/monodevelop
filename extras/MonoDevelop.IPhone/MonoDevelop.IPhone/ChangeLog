@@ -1,5 +1,15 @@
 2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPadInfoPlist.xft.xml: Remove the ipad plist
+	  template as MD can merge the right settings now.
+
+	* Templates/IPadWindowBasedProject.xpt.xml: Set target device
+	  as IPad.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs: Add SupportedDevices and MainNibFileIPad
 	  options for templates to set.
 
