@@ -1,5 +1,18 @@
 2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs:
+	* MonoDevelop.IPhone.addin.xml: Add a command for picking
+	  simulator version and device.
+
+	* IPhoneProject.cs:
+	* IPhoneFrameworkBackend.cs:
+	* IPhoneExecutionCommand.cs:
+	* IPhoneExecutionModeSet.cs:
+	* IPhoneExecutionHandler.cs: Rework how the simulator target
+	  is stored and passed around.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.csproj:
 	* IPhoneExecutionModeSet.cs:
 	* MonoDevelop.IPhone.addin.xml: Add execution modes for every

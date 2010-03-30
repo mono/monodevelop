@@ -42,34 +42,30 @@ namespace MonoDevelop.IPhone
 		{
 		}
 		
-		public IPhoneExecutionHandler (TargetDevice simulatorTargetDevice, string simulatorSdkVersion)
+		public IPhoneExecutionHandler (IPhoneSimulatorTarget target)
 		{
-			this.SimulatorTargetDevice = simulatorTargetDevice;
-			this.SimulatorSdkVersion = simulatorSdkVersion;
-			this.IsSimulatorSpecificHandler = true;
+			this.SimulatorTarget = target;
 		}		
 		
-		public TargetDevice SimulatorTargetDevice { get; private set; }
-		public string SimulatorSdkVersion { get; private set; }
-		public bool IsSimulatorSpecificHandler { get; private set; }
+		public IPhoneSimulatorTarget SimulatorTarget { get; private set; }
 
 		public bool CanExecute (ExecutionCommand command)
 		{
 			var cmd = command as IPhoneExecutionCommand;
 			if (cmd == null)
 				return false;
-			if (IsSimulatorSpecificHandler && !cmd.Simulator)
+			if (SimulatorTarget != null && !cmd.Simulator)
 				return false;
 			return true;
 		}
 		
 		public static ProcessStartInfo CreateMtouchSimStartInfo (IPhoneExecutionCommand cmd, bool logSimOutput)
 		{
-			return CreateMtouchSimStartInfo (cmd, logSimOutput, cmd.SdkVersion, cmd.TargetDevice);
+			return CreateMtouchSimStartInfo (cmd, logSimOutput, cmd.SimulatorTarget);
 		}
 		
 		public static ProcessStartInfo CreateMtouchSimStartInfo (IPhoneExecutionCommand cmd, bool logSimOutput, 
-		                                                         string forceSdkVersion, TargetDevice forceDevice)
+		                                                         IPhoneSimulatorTarget forceTarget)
 		{
 			string mtouchPath = cmd.Runtime.GetToolPath (cmd.Framework, "mtouch");
 			if (string.IsNullOrEmpty (mtouchPath))
@@ -89,10 +85,11 @@ namespace MonoDevelop.IPhone
 			if (logSimOutput) 
 				sb.AppendFormat (" -stderr='{0}' -stdout='{1}'", errLog, outLog);
 			
-			if (!string.IsNullOrEmpty (forceSdkVersion))
-				sb.AppendFormat (" -sdk='{0}'", forceSdkVersion);
-			if (forceDevice == TargetDevice.IPad)
-				sb.AppendFormat (" -device=2");
+			if (forceTarget != null) {
+				sb.AppendFormat (" -sdk='{0}'", forceTarget.Version.ToString ());
+				if (forceTarget.Device == TargetDevice.IPad)
+					sb.AppendFormat (" -device=2");
+			}
 			
 			var psi = new ProcessStartInfo (mtouchPath, sb.ToString ()) {
 				WorkingDirectory = cmd.LogDirectory,
@@ -118,9 +115,7 @@ namespace MonoDevelop.IPhone
 				return NullProcessAsyncOperation.Success;
 			}
 			
-			var psi = IsSimulatorSpecificHandler? 
-				  CreateMtouchSimStartInfo (cmd, true, SimulatorSdkVersion ?? cmd.SdkVersion, SimulatorTargetDevice)
-				: CreateMtouchSimStartInfo (cmd, true, cmd.SdkVersion, TargetDevice.IPhone);
+			var psi = CreateMtouchSimStartInfo (cmd, true, SimulatorTarget ?? cmd.SimulatorTarget);;
 			
 			psi.RedirectStandardOutput = true;
 			psi.RedirectStandardError = true;

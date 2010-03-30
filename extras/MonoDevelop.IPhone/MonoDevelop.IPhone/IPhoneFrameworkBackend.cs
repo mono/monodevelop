@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Ide;
 using Gtk;
+using MonoDevelop.Core.Serialization;
 
 
 namespace MonoDevelop.IPhone
@@ -148,6 +149,17 @@ namespace MonoDevelop.IPhone
 			get {
 				EnsureSdkVersions ();
 				return installedSdkVersions;
+			}
+		}
+		
+		public static IEnumerable<IPhoneSimulatorTarget> GetSimulatorTargets ()
+		{
+			var v32 = new IPhoneSdkVersion (new int[] { 3, 2 });
+			foreach (var v in IPhoneFramework.InstalledSdkVersions) {
+				string vStr = v.ToString ();
+				yield return new IPhoneSimulatorTarget (TargetDevice.IPhone, vStr);
+				if (v.CompareTo (v32) >= 0)
+					yield return new IPhoneSimulatorTarget (TargetDevice.IPad, vStr);
 			}
 		}
 		
@@ -308,6 +320,29 @@ namespace MonoDevelop.IPhone
 					acc ^= x[i] << i;
 				return acc;
 			}
+		}
+	}
+	
+	public class IPhoneSimulatorTarget
+	{
+		public IPhoneSimulatorTarget (TargetDevice device, string version)
+		{
+			this.Device = device;
+			this.Version = version;
+		}
+		
+		//for deserializer
+		private IPhoneSimulatorTarget () {}
+		
+		[ItemProperty]
+		public TargetDevice Device { get; private set; }
+		
+		[ItemProperty]
+		public string Version { get; private set; }
+		
+		public override string ToString ()
+		{
+			return (Device == TargetDevice.IPad? "iPad Simulator " : "iPhone Simulator ") + Version;
 		}
 	}
 }

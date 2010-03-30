@@ -138,6 +138,10 @@
 				_description = "Upload the iPhone application to the device" 
 				defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
 				_label = "Upload to Device" />
+		<Command id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget"
+				type = "radio|array"
+				defaultHandler = "MonoDevelop.IPhone.SelectSimulatorTargetHandler"
+				_label = "iPhone Simulator Target" />
 		</Condition>
 	</Extension>
 	
@@ -146,6 +150,10 @@
 			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
 		</Condition>
+		<ItemSet id = "SelectSimulatorTarget" _label = "iPhone Simulator Target" autohide = "true">
+			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget"
+				insertafter = "SelectActiveRuntime"  />
+		</ItemSet>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">

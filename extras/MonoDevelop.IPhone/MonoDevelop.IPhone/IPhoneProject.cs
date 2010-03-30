@@ -264,25 +264,14 @@ namespace MonoDevelop.IPhone
 		#region Execution
 		
 		/// <summary>
-		/// User setting of device for running app in simulator. Only valid if SimulatorSdk not null.
+		/// User setting of device for running app in simulator. Null means use default.
 		/// </summary>
-		public TargetDevice SimulatorDevice {
+		public IPhoneSimulatorTarget SimulatorTarget {
 			get {
-				switch (UserProperties.GetValue<TargetDevice> ("IPhoneSimulatorDevice")) {
-				case TargetDevice.IPad: return TargetDevice.IPad;
-				default: return TargetDevice.IPhone;
-				}
+				return UserProperties.GetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget");
 			}
-		}
-		
-		/// <summary>
-		/// User setting of SDK for running app in simulator. Null means use default.
-		/// </summary>
-		public string SimulatorSdk {
-			get {
-				string sdk = UserProperties.GetValue<string> ("IPhoneSimulatorSdk");
-				return string.IsNullOrEmpty (sdk)? null
-					: IPhoneFramework.GetClosestInstalledSdk (IPhoneSdkVersion.Parse (sdk)).ToString ();
+			set {
+				UserProperties.SetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget", value);
 			}
 		}
 		
@@ -291,12 +280,19 @@ namespace MonoDevelop.IPhone
 		{
 			var conf = (IPhoneProjectConfiguration) configuration;
 			
-			var simSdk = SimulatorSdk;
-			var simDevice = simSdk == null? TargetDevice.IPhone : SimulatorDevice;
+			IPhoneSimulatorTarget simTarget = null;
+			if (conf.Platform != PLAT_IPHONE) {
+				simTarget = SimulatorTarget;
+				if (simTarget == null) {
+					var defaultDevice = ((IPhoneProject)conf.ParentItem).SupportedDevices == TargetDevice.IPad?
+						TargetDevice.IPad : TargetDevice.IPhone;
+					var defaultSdk = conf.MtouchSdkVersion ?? IPhoneSdkVersion.Default.ToString ();
+					simTarget = new IPhoneSimulatorTarget (defaultDevice, defaultSdk);
+				}
+			}
 			
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode && conf.MtouchDebug,
-			                                   simSdk ?? conf.MtouchSdkVersion, simDevice) {
+			                                   conf.DebugMode && conf.MtouchDebug, simTarget) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}

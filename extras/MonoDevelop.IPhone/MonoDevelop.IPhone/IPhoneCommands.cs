@@ -41,7 +41,34 @@ namespace MonoDevelop.IPhone
 	public enum IPhoneCommands
 	{
 		UploadToDevice,
-		ExportToXcode
+		ExportToXcode,
+		SelectSimulatorSdk,
+	}
+	
+	class SelectSimulatorTargetHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as IPhoneProject;
+			if (proj == null)
+				return;
+			
+			info.Add ("Default", null);
+			var projSetting = proj.SimulatorTarget;
+			foreach (var st in IPhoneFramework.GetSimulatorTargets ()) {
+				var i = info.Add (st.ToString (), st);
+				if (st == projSetting)
+					i.Checked  = true;
+			}
+		}
+
+		protected override void Run (object dataItem)
+		{
+			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as IPhoneProject;
+			if (proj != null) {
+				proj.SimulatorTarget = (IPhoneSimulatorTarget) dataItem;
+			}
+		}
 	}
 	
 	class DefaultUploadToDeviceHandler : CommandHandler

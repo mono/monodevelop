@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.IPhone
 {
@@ -36,37 +37,32 @@ namespace MonoDevelop.IPhone
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				var v32 = new IPhoneSdkVersion (new int[] { 3, 2 });
-				foreach (var v in IPhoneFramework.InstalledSdkVersions) {
-					var vStr = v.ToString ();
-					yield return new IPhoneExecutionMode (TargetDevice.IPhone, vStr);
-					if (v.CompareTo (v32) >= 0)
-						yield return new IPhoneExecutionMode (TargetDevice.IPad, vStr);
-				}
+				return IPhoneFramework.GetSimulatorTargets ().Select (t => (IExecutionMode) new IPhoneExecutionMode (t));
 			}
 		}
 	}
 	
 	class IPhoneExecutionMode : IExecutionMode
 	{
-		public IPhoneExecutionMode (TargetDevice targetDevice, string sdkVersion)
+		public IPhoneExecutionMode (IPhoneSimulatorTarget target)
 		{
-			this.TargetDevice = targetDevice;
-			this.SdkVersion = sdkVersion;
-			this.Name = (targetDevice == TargetDevice.IPad? "iPad Simulator " : "iPhone Simulator ")
-				+ SdkVersion;
+			this.Target = target;
 		}
 		
 		IPhoneExecutionHandler handler;
 		
-		public string Name { get; private set; }
+		public string Name {
+			get {
+				return (Target.Device == TargetDevice.IPad? "iPad Simulator " : "iPhone Simulator ") + Target.Version;
+			}
+		}
+		
 		public string Id { get { return "IPhoneExecutionMode"; } }
-		public TargetDevice TargetDevice { get; private set; }
-		public string SdkVersion { get; private set; }
+		public IPhoneSimulatorTarget Target { get; private set; }
 		
 		public IExecutionHandler ExecutionHandler {
 			get {
-				return handler ?? (handler = new IPhoneExecutionHandler ());
+				return handler ?? (handler = new IPhoneExecutionHandler (Target));
 			}
 		}
 	}
