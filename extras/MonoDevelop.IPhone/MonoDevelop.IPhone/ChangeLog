@@ -1,5 +1,9 @@
 2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneExecutionHandler.cs: Fix log error.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs:
 	* IPhoneCommands.cs:
 	* IPhoneFramework.cs:
