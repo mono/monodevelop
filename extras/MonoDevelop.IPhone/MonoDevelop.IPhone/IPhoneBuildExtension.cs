@@ -264,20 +264,45 @@ namespace MonoDevelop.IPhone
 				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
 				SetIfNotPresent (dict, "DTSDKName", (sim? "iphonesimulator" : "iphoneos")  + conf.MtouchSdkVersion);
 				SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
+				if (proj.SupportedDevices != TargetDevice.IPhone)
+					SetIfNotPresent (dict,  "UIDeviceFamily", GetSupportedDevices (proj.SupportedDevices));
+				SetIfNotPresent (dict, "DTPlatformVersion", conf.MtouchSdkVersion);
 				
 				if (!sim)
 					//FIXME allow user to choose version?
 					SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchSdkVersion);
 				
-				if (!String.IsNullOrEmpty (proj.MainNibFile.ToString ())) {
-					string mainNib = proj.MainNibFile.ToRelative (proj.BaseDirectory);
-					if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
-					    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
-					SetIfNotPresent (dict, "NSMainNibFile", mainNib);
-				};
+				SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile");
+				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)
+					SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
 				
 				return null;
 			});
+		}
+		
+		static void SetNibProperty (PlistDictionary dict, IPhoneProject proj, FilePath mainNibProp, string propName)
+		{
+			if (!mainNibProp.IsNullOrEmpty) {
+				string mainNib = mainNibProp.ToRelative (proj.BaseDirectory);
+				if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
+				    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
+				SetIfNotPresent (dict, propName, mainNib);
+			};
+		}
+		
+		static PlistArray GetSupportedDevices (TargetDevice devices)
+		{
+			switch (devices) {
+			case TargetDevice.IPhone:
+				return new PlistArray (new int[] { 1 });
+			case TargetDevice.IPad:
+				return new PlistArray (new int[] { 2 });
+			case TargetDevice.IPhoneAndIPad:
+				return new PlistArray (new int[] { 1, 2 });
+			default:
+				LoggingService.LogError ("Bad TargetDevice value {0}", devices);
+				goto case TargetDevice.IPhoneAndIPad;
+			}
 		}
 		
 		static void SetIfNotPresent (PlistDictionary dict, string key, PlistObjectBase value)

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -41,7 +42,46 @@ namespace MonoDevelop.IPhone
 	public enum IPhoneCommands
 	{
 		UploadToDevice,
-		ExportToXcode
+		ExportToXcode,
+		SelectSimulatorSdk,
+	}
+	
+	class SelectSimulatorTargetHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as IPhoneProject;
+			if (proj == null)
+				return;
+			
+			var workspaceConfig = IdeApp.Workspace.ActiveConfigurationId;
+			var conf = proj.GetConfiguration (new SolutionConfigurationSelector (workspaceConfig)) as IPhoneProjectConfiguration;
+			if (conf == null || conf.Platform != IPhoneProject.PLAT_SIM)
+				return;
+			
+			var projSetting = proj.GetSimulatorTarget (conf);
+			
+			var def = info.Add ("Default", null);
+			if (projSetting == null)
+				def.Checked  = true;
+			
+			foreach (var st in IPhoneFramework.GetSimulatorTargets (IPhoneSdkVersion.Parse (conf.MtouchSdkVersion), proj.SupportedDevices)) {
+				var i = info.Add (st.ToString (), st);
+				if (projSetting != null && projSetting.Equals (st))
+					i.Checked  = true;
+			}
+		}
+
+		protected override void Run (object dataItem)
+		{
+			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as IPhoneProject;
+			if (proj != null) {
+				var workspaceConfig = IdeApp.Workspace.ActiveConfigurationId;
+				var conf = proj.GetConfiguration (new SolutionConfigurationSelector (workspaceConfig)) as IPhoneProjectConfiguration;
+				if (conf != null && conf.Platform == IPhoneProject.PLAT_SIM)
+					proj.SetSimulatorTarget (conf, (IPhoneSimulatorTarget) dataItem);
+			}
+		}
 	}
 	
 	class DefaultUploadToDeviceHandler : CommandHandler

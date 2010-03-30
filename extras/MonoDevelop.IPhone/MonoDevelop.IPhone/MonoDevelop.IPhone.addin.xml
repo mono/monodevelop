@@ -37,8 +37,6 @@
 			              resource = "IPhoneEntitlements.xft.xml"/>
 			<FileTemplate id       = "IPadApplicationXib"
 			              resource = "IPadApplicationXib.xft.xml"/>
-			<FileTemplate id       = "IPadInfoPlist"
-			              resource = "IPadInfoPlist.xft.xml"/>
 		</Condition>
 	</Extension>
 
@@ -127,6 +125,10 @@
 		</Condition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<ModeSetType class="MonoDevelop.IPhone.IPhoneExecutionModeSet"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Condition id="MonoTouchInstalled">
 			<Command id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode" 
@@ -137,6 +139,10 @@
 				_description = "Upload the iPhone application to the device" 
 				defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
 				_label = "Upload to Device" />
+		<Command id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget"
+				type = "radio|array"
+				defaultHandler = "MonoDevelop.IPhone.SelectSimulatorTargetHandler"
+				_label = "iPhone Simulator Target" />
 		</Condition>
 	</Extension>
 	
@@ -144,6 +150,10 @@
 		<Condition id="MonoTouchInstalled">
 			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			<ItemSet id = "SelectSimulatorTarget" _label = "iPhone Simulator Target" autohide = "true" 
+			         insertafter = "SelectActiveRuntime"  >
+				<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget" />
+			</ItemSet>
 		</Condition>
 	</Extension>
 	

@@ -1,3 +1,106 @@
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPadInfoPlist.xft.xml: Remove the ipad plist
+	  template as MD can merge the right settings now.
+
+	* Templates/IPadWindowBasedProject.xpt.xml: Set target device
+	  as IPad.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Add SupportedDevices and MainNibFileIPad
+	  options for templates to set.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs:
+	* Gui/IPhoneOptionsPanel.cs: Better handling of the ipad nib.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs: Allow the default to be checked and fix
+	  NRE.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneExecutionHandler.cs: Fix log error.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* IPhoneCommands.cs:
+	* IPhoneFramework.cs:
+	* IPhoneSdkVersion.cs:
+	* IPhoneSimulatorTarget.cs:
+	* IPhoneExecutionCommand.cs:
+	* IPhoneFrameworkBackend.cs:
+	* MonoDevelop.IPhone.csproj:
+	* IPhoneExecutionHandler.cs:
+	* MonoDevelop.IPhone.addin.xml: Only show sim targets that are
+	  valid for the current project. Move some types to own files.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: Fix ordering.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: Move sim target menu to run
+	  menu.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml: Tweak command ordering.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs:
+	* MonoDevelop.IPhone.addin.xml: Add a command for picking
+	  simulator version and device.
+
+	* IPhoneProject.cs:
+	* IPhoneFrameworkBackend.cs:
+	* IPhoneExecutionCommand.cs:
+	* IPhoneExecutionModeSet.cs:
+	* IPhoneExecutionHandler.cs: Rework how the simulator target
+	  is stored and passed around.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* IPhoneExecutionModeSet.cs:
+	* MonoDevelop.IPhone.addin.xml: Add execution modes for every
+	  installed SDK.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneFrameworkBackend.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs: Reworked SDK version
+	  detection code.
+
+	* IPhoneExecutionHandler.cs: Allow handlers be created with a
+	  forced SDK version and device.
+
+	* IPhoneExecutionCommand.cs: Allow execution commands to
+	  contain default target device.
+
+	* IPhoneProject.cs: Creates execution commands with a target
+	  device and sdk from user project settings.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Added iPad keys.
+
+2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* Gui/IPhoneOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	  Add options for supported devices and iPad main nib.
+
 2010-03-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* InterfaceBuilder/IBObject.cs: Handle new property.

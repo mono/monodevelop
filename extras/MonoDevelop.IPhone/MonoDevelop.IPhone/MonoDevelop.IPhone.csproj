@@ -123,6 +123,10 @@
     <Compile Include="PropertyList\PlistDate.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DataConverter.cs" />
+    <Compile Include="IPhoneExecutionModeSet.cs" />
+    <Compile Include="IPhoneFramework.cs" />
+    <Compile Include="IPhoneSdkVersion.cs" />
+    <Compile Include="IPhoneSimulatorTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">
@@ -133,9 +137,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPadApplicationXib.xft.xml">
       <LogicalName>IPadApplicationXib.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPadInfoPlist.xft.xml">
-      <LogicalName>IPadInfoPlist.xft.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneViewXib.xft.xml">
       <LogicalName>IPhoneViewXib.xft.xml</LogicalName>

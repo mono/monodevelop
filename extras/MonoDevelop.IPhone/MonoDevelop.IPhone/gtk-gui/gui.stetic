@@ -5,15 +5,11 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Projects.Gui, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Components, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.DesignerSupport, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.DesignerSupport, Version=2.4.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.IPhone.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget" design-size="613 234">
+  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget" design-size="613 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
@@ -42,12 +38,39 @@
             <child>
               <widget class="Gtk.Table" id="table1">
                 <property name="MemberName" />
-                <property name="NRows">6</property>
+                <property name="NRows">8</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
-                  <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="appIconPicker">
+                  <widget class="Gtk.Alignment" id="alignment2">
+                    <property name="MemberName" />
+                    <property name="Xalign">0</property>
+                    <child>
+                      <widget class="Gtk.Label" id="iPadInterfaceFileLabel">
+                        <property name="MemberName" />
+                        <property name="Xalign">0</property>
+                        <property name="LabelProp" translatable="yes">i_Pad interface file:</property>
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">5</property>
+                    <property name="BottomAttach">6</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="appIconPicker">
                     <property name="MemberName" />
                     <property name="EntryIsEditable">False</property>
                   </widget>
@@ -121,8 +144,8 @@
                     <property name="InvisibleChar">●</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">5</property>
-                    <property name="BottomAttach">6</property>
+                    <property name="TopAttach">7</property>
+                    <property name="BottomAttach">8</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
@@ -157,6 +180,27 @@
                   </packing>
                 </child>
                 <child>
+                  <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="iPadNibPicker">
+                    <property name="MemberName" />
+                    <property name="EntryIsEditable">False</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">5</property>
+                    <property name="BottomAttach">6</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="Gtk.Label" id="label2">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
@@ -185,8 +229,8 @@
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
-                    <property name="TopAttach">5</property>
-                    <property name="BottomAttach">6</property>
+                    <property name="TopAttach">7</property>
+                    <property name="BottomAttach">8</property>
                     <property name="AutoSize">True</property>
                     <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
@@ -281,7 +325,28 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="mainNibPicker">
+                  <widget class="Gtk.Label" id="label9">
+                    <property name="MemberName" />
+                    <property name="Xalign">0</property>
+                    <property name="LabelProp" translatable="yes">_Target devices:</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">6</property>
+                    <property name="BottomAttach">7</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="mainNibPicker">
                     <property name="MemberName" />
                     <property name="EntryIsEditable">False</property>
                   </widget>
@@ -297,6 +362,28 @@
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
                     <property name="YFill">False</property>
+                    <property name="YShrink">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.ComboBox" id="targetDevicesCombo">
+                    <property name="MemberName" />
+                    <property name="IsTextCombo">True</property>
+                    <property name="Items" translatable="yes" />
+                  </widget>
+                  <packing>
+                    <property name="TopAttach">6</property>
+                    <property name="BottomAttach">7</property>
+                    <property name="LeftAttach">1</property>
+                    <property name="RightAttach">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
+                    <property name="YOptions">Fill</property>
+                    <property name="XExpand">False</property>
+                    <property name="XFill">True</property>
+                    <property name="XShrink">False</property>
+                    <property name="YExpand">False</property>
+                    <property name="YFill">True</property>
                     <property name="YShrink">False</property>
                   </packing>
                 </child>
@@ -349,7 +436,7 @@
                         <property name="RowSpacing">6</property>
                         <property name="ColumnSpacing">6</property>
                         <child>
-                          <widget class="MonoDevelop.Core.Gui.Components.MenuButtonEntry" id="additionalArgsEntry">
+                          <widget class="MonoDevelop.Components.MenuButtonEntry" id="additionalArgsEntry">
                             <property name="MemberName" />
                           </widget>
                           <packing>
@@ -368,7 +455,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="entitlementsEntry">
+                          <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="entitlementsEntry">
                             <property name="MemberName" />
                             <property name="EntryIsEditable">False</property>
                           </widget>
@@ -536,7 +623,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="MonoDevelop.Projects.Gui.ProjectFileEntry" id="resourceRulesEntry">
+                          <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="resourceRulesEntry">
                             <property name="MemberName" />
                             <property name="EntryIsEditable">False</property>
                           </widget>
@@ -637,7 +724,7 @@
                     <property name="RowSpacing">6</property>
                     <property name="ColumnSpacing">6</property>
                     <child>
-                      <widget class="MonoDevelop.Core.Gui.Components.MenuButtonEntry" id="extraArgsEntry">
+                      <widget class="MonoDevelop.Components.MenuButtonEntry" id="extraArgsEntry">
                         <property name="MemberName" />
                       </widget>
                       <packing>

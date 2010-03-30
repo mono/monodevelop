@@ -38,6 +38,14 @@ using MonoDevelop.Core.Gui;
 
 namespace MonoDevelop.IPhone
 {
+	[Flags]
+	public enum TargetDevice
+	{
+		NotSet = 0,
+		IPhone = 1,
+		IPad =   1 << 1,
+		IPhoneAndIPad = IPhone & IPad,
+	}
 	
 	public class IPhoneProject : DotNetProject
 	{
@@ -49,6 +57,12 @@ namespace MonoDevelop.IPhone
 		
 		[ProjectPathItemProperty ("MainNibFile")]
 		string mainNibFile;
+		
+		[ProjectPathItemProperty ("MainNibFileIPad")]
+		string mainNibFileIPad;
+		
+		[ItemProperty ("SupportedDevices", DefaultValue = TargetDevice.IPhone)]
+		TargetDevice supportedDevices = TargetDevice.IPhone;
 		
 		[ItemProperty ("BundleDevelopmentRegion")]
 		string bundleDevelopmentRegion;
@@ -76,6 +90,26 @@ namespace MonoDevelop.IPhone
 					return;
 				NotifyModified ("MainNibFile");
 				mainNibFile = value;
+			}
+		}
+		
+		public FilePath MainNibFileIPad {
+			get { return mainNibFileIPad; }
+			set {
+				if (value == (FilePath) mainNibFileIPad)
+					return;
+				NotifyModified ("MainNibFileIPad");
+				mainNibFileIPad = value;
+			}
+		}
+		
+		public TargetDevice SupportedDevices {
+			get { return supportedDevices; }
+			set {
+				if (value == supportedDevices)
+					return;
+				NotifyModified ("SupportedDevices");
+				supportedDevices = value;
 			}
 		}
 		
@@ -162,6 +196,16 @@ namespace MonoDevelop.IPhone
 				this.mainNibFile = mainNibAtt.InnerText;	
 			}
 			
+			var ipadNibAtt = projectOptions.Attributes ["MainNibFileIPad"];
+			if (ipadNibAtt != null) {
+				this.mainNibFileIPad = ipadNibAtt.InnerText;	
+			}
+			
+			var supportedDevicesAtt = projectOptions.Attributes ["SupportedDevices"];
+			if (supportedDevicesAtt != null) {
+				this.supportedDevices = (TargetDevice) Enum.Parse (typeof (TargetDevice), supportedDevicesAtt.InnerText);	
+			}
+			
 			var sdkVersionAtt = projectOptions.Attributes ["SdkVersion"];
 			string sdkVersion = sdkVersionAtt != null? sdkVersionAtt.InnerText : null;
 			
@@ -230,13 +274,40 @@ namespace MonoDevelop.IPhone
 		
 		#region Execution
 		
+		/// <summary>
+		/// User setting of device for running app in simulator. Null means use default.
+		/// </summary>
+		public IPhoneSimulatorTarget GetSimulatorTarget (IPhoneProjectConfiguration conf)
+		{
+			return UserProperties.GetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget-" + conf.Id);
+		}
+		
+		public void SetSimulatorTarget (IPhoneProjectConfiguration conf, IPhoneSimulatorTarget value)
+		{
+			UserProperties.SetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget-" + conf.Id, value);
+		}
+		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
 		                                                            DotNetProjectConfiguration configuration)
 		{
 			var conf = (IPhoneProjectConfiguration) configuration;
+			
+			IPhoneSimulatorTarget simTarget = null;
+			var minSdk = string.IsNullOrEmpty (conf.MtouchSdkVersion)?
+				IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+			
+			if (conf.Platform != PLAT_IPHONE) {
+				simTarget = GetSimulatorTarget (conf);
+				if (simTarget == null) {
+					var defaultDevice = ((IPhoneProject)conf.ParentItem).SupportedDevices == TargetDevice.IPad?
+						TargetDevice.IPad : TargetDevice.IPhone;
+					simTarget = new IPhoneSimulatorTarget (defaultDevice, minSdk);
+				}
+			}
+			
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode && conf.MtouchDebug,
-			                                   conf.MtouchSdkVersion) {
+			                                   conf.DebugMode && conf.MtouchDebug, simTarget, minSdk,
+			                                   ((IPhoneProject)conf.ParentItem).SupportedDevices) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}
