@@ -10,6 +10,7 @@ using CustomControls.OS;
 using CustomControls.Controls;
 using System.Windows.Forms;
 using MonoDevelop.Ide.Desktop;
+using System.Diagnostics;
 
 namespace MonoDevelop.Platform
 {
@@ -111,5 +112,22 @@ namespace MonoDevelop.Platform
 			ms.Position = 0;
 			return new Gdk.Pixbuf (ms);
 		}
+
+        public override ProcessStartInfo CreateConsoleProcessInfo(string command, string commandArguments, string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished)
+        {
+            string args = "/C \"title " + title + " && " + command + " " + commandArguments;
+            if (pauseWhenFinished)
+                args += " && pause\"";
+            else
+                args += "\"";
+            ProcessStartInfo psi = new ProcessStartInfo ("cmd.exe", args);
+            psi.WorkingDirectory = workingDirectory;
+
+            if (environmentVariables != null)
+                foreach (KeyValuePair<string, string> kvp in environmentVariables)
+                    psi.EnvironmentVariables[kvp.Key] = kvp.Value;
+
+            return psi;
+        }
 	}
 }

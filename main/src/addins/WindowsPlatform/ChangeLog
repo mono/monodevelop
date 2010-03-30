@@ -1,3 +1,8 @@
+2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WindowsPlatform.cs: Add support for external consoles using
+	  cmd.exe.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
