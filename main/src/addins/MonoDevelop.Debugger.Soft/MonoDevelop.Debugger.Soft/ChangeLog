@@ -1,3 +1,7 @@
+2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerEngine.cs: Fix external console support again.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

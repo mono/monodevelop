@@ -49,6 +49,8 @@ namespace Mono.Debugging.Soft
 		/// creating the SoftDebuggerStartInfo
 		/// </summary>
 		public string LogMessage { get; set; }
+		
+		public Mono.Debugger.Soft.LaunchOptions.ProcessLauncher ExternalConsoleLauncher;
 	}
 }
 

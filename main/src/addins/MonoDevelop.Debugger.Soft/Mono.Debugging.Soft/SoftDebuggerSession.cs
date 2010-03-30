@@ -100,18 +100,12 @@ namespace Mono.Debugging.Soft
 			};
 			
 			LaunchOptions options = null;
-			/*
-			if (startInfo.UseExternalConsole) {
+			
+			if (dsi.UseExternalConsole && dsi.ExternalConsoleLauncher != null) {
 				options = new LaunchOptions ();
-				options.CustomProcessLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
-					var vars = new Dictionary<string, string> ();
-					foreach (string k in psi.EnvironmentVariables.Keys)
-						vars [k] = psi.EnvironmentVariables [k];
-					return Runtime.ProcessService.StartConsoleProcess (psi.FileName, psi.Arguments, psi.WorkingDirectory,
-						vars, ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), null);
-				};
+				options.CustomProcessLauncher = dsi.ExternalConsoleLauncher;
 			}
-			*/
+
 			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");
 			if (!String.IsNullOrEmpty (sdbLog)) {
 				options = options ?? new LaunchOptions ();

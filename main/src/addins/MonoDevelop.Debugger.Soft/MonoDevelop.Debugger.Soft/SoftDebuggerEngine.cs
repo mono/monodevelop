@@ -78,6 +78,13 @@ namespace MonoDevelop.Debugger.Soft
 			
 			foreach (KeyValuePair<string,string> var in cmd.EnvironmentVariables)
 				dsi.EnvironmentVariables [var.Key] = var.Value;
+			
+			var varsCopy = new Dictionary<string, string> (cmd.EnvironmentVariables);
+			dsi.ExternalConsoleLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
+				return Runtime.ProcessService.StartConsoleProcess (info.FileName, info.Arguments, info.WorkingDirectory,
+					varsCopy, ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), null);
+			};
+
 			return dsi;
 		}
 		
