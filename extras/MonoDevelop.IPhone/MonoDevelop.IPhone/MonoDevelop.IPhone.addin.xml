@@ -124,6 +124,10 @@
 		</Condition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<ModeSetType class="MonoDevelop.IPhone.IPhoneExecutionModeSet"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Condition id="MonoTouchInstalled">
 			<Command id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode" 

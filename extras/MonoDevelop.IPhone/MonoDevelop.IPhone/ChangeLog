@@ -1,5 +1,12 @@
 2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.csproj:
+	* IPhoneExecutionModeSet.cs:
+	* MonoDevelop.IPhone.addin.xml: Add execution modes for every
+	  installed SDK.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneFrameworkBackend.cs:
 	* Gui/IPhoneBuildOptionsPanel.cs: Reworked SDK version
 	  detection code.
