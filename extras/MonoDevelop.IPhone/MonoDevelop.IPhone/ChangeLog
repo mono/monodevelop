@@ -1,5 +1,10 @@
 2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs:
+	* Gui/IPhoneOptionsPanel.cs: Better handling of the ipad nib.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Allow the default to be checked and fix
 	  NRE.
 

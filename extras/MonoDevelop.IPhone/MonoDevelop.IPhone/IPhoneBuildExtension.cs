@@ -273,7 +273,8 @@ namespace MonoDevelop.IPhone
 					SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchSdkVersion);
 				
 				SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile");
-				SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
+				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)
+					SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
 				
 				return null;
 			});

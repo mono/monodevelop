@@ -62,6 +62,12 @@ namespace MonoDevelop.IPhone.Gui
 		public IPhoneOptionsPanelWidget ()
 		{
 			this.Build ();
+			targetDevicesCombo.Changed += HandleTargetDevicesComboChanged;
+		}
+
+		void HandleTargetDevicesComboChanged (object sender, EventArgs e)
+		{
+			iPadNibPicker.Sensitive = targetDevicesCombo.Active == 0;
 		}
 		
 		public void Load (IPhoneProject proj)
@@ -99,6 +105,8 @@ namespace MonoDevelop.IPhone.Gui
 				LoggingService.LogWarning ("Unknown value '{0}' in SupportedDevices. sChanging to default.");
 				goto case TargetDevice.IPhone;
 			}
+			
+			HandleTargetDevicesComboChanged (null, null);
 			
 			appIconPicker.Project = proj;
 			appIconPicker.DefaultFilter = "*.png";
