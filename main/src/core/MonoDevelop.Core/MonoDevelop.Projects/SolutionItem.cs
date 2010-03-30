@@ -36,6 +36,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Projects
 {
@@ -250,52 +251,57 @@ namespace MonoDevelop.Projects
 		
 		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
 		{
-			if (!buildReferences) {
-				if (!NeedsBuilding (solutionConfiguration))
-					return new BuildResult (new CompilerResults (null), "");
-					
-				try {
-					SolutionEntityItem it = this as SolutionEntityItem;
-					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
-					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
-					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
-					
-					// This will end calling OnBuild ()
-					return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
-					
-				} finally {
-					monitor.EndTask ();
+			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Building " + Name);
+			try {
+				if (!buildReferences) {
+					if (!NeedsBuilding (solutionConfiguration))
+						return new BuildResult (new CompilerResults (null), "");
+						
+					try {
+						SolutionEntityItem it = this as SolutionEntityItem;
+						SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
+						string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
+						monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
+						
+						// This will end calling OnBuild ()
+						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
+						
+					} finally {
+						monitor.EndTask ();
+					}
 				}
-			}
+					
+				// Get a list of all items that need to be built (including this),
+				// and build them in the correct order
 				
-			// Get a list of all items that need to be built (including this),
-			// and build them in the correct order
-			
-			List<SolutionItem> referenced = new List<SolutionItem> ();
-			Set<SolutionItem> visited = new Set<SolutionItem> ();
-			GetBuildableReferencedItems (visited, referenced, this, solutionConfiguration);
-			
-			ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, solutionConfiguration);
-			
-			BuildResult cres = new BuildResult ();
-			cres.BuildCount = 0;
-			HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
-			
-			monitor.BeginTask (null, sortedReferenced.Count);
-			foreach (SolutionItem p in sortedReferenced) {
-				if (p.NeedsBuilding (solutionConfiguration) && !p.ContainsReferences (failedItems, solutionConfiguration)) {
-					BuildResult res = p.Build (monitor, solutionConfiguration, false);
-					cres.Append (res);
-					if (res.ErrorCount > 0)
+				List<SolutionItem> referenced = new List<SolutionItem> ();
+				Set<SolutionItem> visited = new Set<SolutionItem> ();
+				GetBuildableReferencedItems (visited, referenced, this, solutionConfiguration);
+				
+				ReadOnlyCollection<SolutionItem> sortedReferenced = SolutionFolder.TopologicalSort (referenced, solutionConfiguration);
+				
+				BuildResult cres = new BuildResult ();
+				cres.BuildCount = 0;
+				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
+				
+				monitor.BeginTask (null, sortedReferenced.Count);
+				foreach (SolutionItem p in sortedReferenced) {
+					if (p.NeedsBuilding (solutionConfiguration) && !p.ContainsReferences (failedItems, solutionConfiguration)) {
+						BuildResult res = p.Build (monitor, solutionConfiguration, false);
+						cres.Append (res);
+						if (res.ErrorCount > 0)
+							failedItems.Add (p);
+					} else
 						failedItems.Add (p);
-				} else
-					failedItems.Add (p);
-				monitor.Step (1);
-				if (monitor.IsCancelRequested)
-					break;
+					monitor.Step (1);
+					if (monitor.IsCancelRequested)
+						break;
+				}
+				monitor.EndTask ();
+				return cres;
+			} finally {
+				tt.End ();
 			}
-			monitor.EndTask ();
-			return cres;
 		}
 		
 		internal bool ContainsReferences (HashSet<SolutionItem> items, ConfigurationSelector conf)
@@ -335,12 +341,14 @@ namespace MonoDevelop.Projects
 		
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
-			if (ParentSolution != null && this is SolutionEntityItem) {
-				SolutionConfiguration sconf = ParentSolution.GetConfiguration (configuration);
-				if (sconf != null && !sconf.BuildEnabledForItem ((SolutionEntityItem) this))
-					return false;
+			using (Counters.NeedsBuildingTimer.BeginTiming ("NeedsBuilding check for " + Name)) {
+				if (ParentSolution != null && this is SolutionEntityItem) {
+					SolutionConfiguration sconf = ParentSolution.GetConfiguration (configuration);
+					if (sconf != null && !sconf.BuildEnabledForItem ((SolutionEntityItem) this))
+						return false;
+				}
+				return Services.ProjectService.GetExtensionChain (this).GetNeedsBuilding (this, configuration);
 			}
-			return Services.ProjectService.GetExtensionChain (this).GetNeedsBuilding (this, configuration);
 		}
 		
 		public void SetNeedsBuilding (bool value, ConfigurationSelector configuration)

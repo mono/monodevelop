@@ -1,3 +1,10 @@
+2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectService.cs: Make sure a full
+	  path is always used to read projects and solutions.
+
+	* MonoDevelop.Projects/SolutionItem.cs: Added some timers.
+
 2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -200,6 +200,7 @@ namespace MonoDevelop.Projects
 		
 		public SolutionEntityItem ReadSolutionItem (IProgressMonitor monitor, string file)
 		{
+			file = Path.GetFullPath (file);
 			using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
 				file = GetTargetFile (file);
 				SolutionEntityItem loadedItem = GetExtensionChain (null).LoadSolutionItem (monitor, file, delegate {
@@ -254,6 +255,7 @@ namespace MonoDevelop.Projects
 		
 		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, string file)
 		{
+			file = Path.GetFullPath (file);
 			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 				file = GetTargetFile (file);
 				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
@@ -808,6 +810,10 @@ namespace MonoDevelop.Projects
 		public static TimerCounter ReadSolutionItem = InstrumentationService.CreateTimerCounter ("Solution item read", "Project Model");
 		public static TimerCounter ReadMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project read", "Project Model");
 		public static TimerCounter WriteMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project written", "Project Model");
+		public static TimerCounter BuildSolutionTimer = InstrumentationService.CreateTimerCounter ("Solution built", "Project Model");
+		public static TimerCounter BuildProjectTimer = InstrumentationService.CreateTimerCounter ("Project built", "Project Model");
+		public static TimerCounter BuildWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Workspace item built", "Project Model");
+		public static TimerCounter NeedsBuildingTimer = InstrumentationService.CreateTimerCounter ("Needs building checked", "Project Model");
 		
 		public static Counter TypeIndexEntries = InstrumentationService.CreateCounter ("Type index entries", "Parser Service");
 		public static Counter LiveTypeObjects = InstrumentationService.CreateCounter ("Live type objects", "Parser Service");
