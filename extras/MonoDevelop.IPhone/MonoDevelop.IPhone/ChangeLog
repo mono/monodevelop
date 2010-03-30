@@ -1,3 +1,7 @@
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Added iPad keys.
+
 2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs:
