@@ -59,11 +59,15 @@ namespace MonoDevelop.IPhone
 			if (conf == null || conf.Platform != IPhoneProject.PLAT_SIM)
 				return;
 			
-			info.Add ("Default", null);
 			var projSetting = proj.GetSimulatorTarget (conf);
+			
+			var def = info.Add ("Default", null);
+			if (projSetting == null)
+				def.Checked  = true;
+			
 			foreach (var st in IPhoneFramework.GetSimulatorTargets (IPhoneSdkVersion.Parse (conf.MtouchSdkVersion), proj.SupportedDevices)) {
 				var i = info.Add (st.ToString (), st);
-				if (projSetting.Equals (st))
+				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;
 			}
 		}
