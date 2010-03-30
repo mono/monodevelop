@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -53,11 +54,16 @@ namespace MonoDevelop.IPhone
 			if (proj == null)
 				return;
 			
+			var workspaceConfig = IdeApp.Workspace.ActiveConfigurationId;
+			var conf = proj.GetConfiguration (new SolutionConfigurationSelector (workspaceConfig)) as IPhoneProjectConfiguration;
+			if (conf == null || conf.Platform != IPhoneProject.PLAT_SIM)
+				return;
+			
 			info.Add ("Default", null);
-			var projSetting = proj.SimulatorTarget;
-			foreach (var st in IPhoneFramework.GetSimulatorTargets ()) {
+			var projSetting = proj.GetSimulatorTarget (conf);
+			foreach (var st in IPhoneFramework.GetSimulatorTargets (IPhoneSdkVersion.Parse (conf.MtouchSdkVersion), proj.SupportedDevices)) {
 				var i = info.Add (st.ToString (), st);
-				if (st == projSetting)
+				if (projSetting.Equals (st))
 					i.Checked  = true;
 			}
 		}
@@ -66,7 +72,10 @@ namespace MonoDevelop.IPhone
 		{
 			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as IPhoneProject;
 			if (proj != null) {
-				proj.SimulatorTarget = (IPhoneSimulatorTarget) dataItem;
+				var workspaceConfig = IdeApp.Workspace.ActiveConfigurationId;
+				var conf = proj.GetConfiguration (new SolutionConfigurationSelector (workspaceConfig)) as IPhoneProjectConfiguration;
+				if (conf != null && conf.Platform == IPhoneProject.PLAT_SIM)
+					proj.SetSimulatorTarget (conf, (IPhoneSimulatorTarget) dataItem);
 			}
 		}
 	}

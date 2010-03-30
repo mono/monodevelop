@@ -1,5 +1,19 @@
 2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs:
+	* IPhoneCommands.cs:
+	* IPhoneFramework.cs:
+	* IPhoneSdkVersion.cs:
+	* IPhoneSimulatorTarget.cs:
+	* IPhoneExecutionCommand.cs:
+	* IPhoneFrameworkBackend.cs:
+	* MonoDevelop.IPhone.csproj:
+	* IPhoneExecutionHandler.cs:
+	* MonoDevelop.IPhone.addin.xml: Only show sim targets that are
+	  valid for the current project. Move some types to own files.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.addin.xml: Fix ordering.
 
 2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>

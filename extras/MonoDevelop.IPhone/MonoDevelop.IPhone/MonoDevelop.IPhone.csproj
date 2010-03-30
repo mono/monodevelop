@@ -109,6 +109,9 @@
     <Compile Include="Device.cs" />
     <Compile Include="DataConverter.cs" />
     <Compile Include="IPhoneExecutionModeSet.cs" />
+    <Compile Include="IPhoneFramework.cs" />
+    <Compile Include="IPhoneSdkVersion.cs" />
+    <Compile Include="IPhoneSimulatorTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

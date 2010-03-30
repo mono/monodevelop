@@ -35,7 +35,8 @@ namespace MonoDevelop.IPhone
 	public class IPhoneExecutionCommand: ExecutionCommand
 	{
 		public IPhoneExecutionCommand (TargetRuntime runtime, TargetFramework framework, FilePath appPath, 
-		                               FilePath logDirectory, bool debugMode, IPhoneSimulatorTarget target)
+		                               FilePath logDirectory, bool debugMode, IPhoneSimulatorTarget target, 
+		                               IPhoneSdkVersion minSdkVersion, TargetDevice supportedDevices)
 		{
 			this.AppPath = appPath;
 			this.LogDirectory = logDirectory;
@@ -43,6 +44,8 @@ namespace MonoDevelop.IPhone
 			this.Runtime = runtime;
 			this.DebugMode = debugMode;
 			this.SimulatorTarget = target;
+			this.MinSdkVersion = minSdkVersion;
+			this.SupportedDevices = supportedDevices;
 		}
 		
 		public FilePath AppPath { get; private set; }
@@ -52,6 +55,8 @@ namespace MonoDevelop.IPhone
 		public TargetRuntime Runtime { get; private set; }
 		public TargetFramework Framework { get; private set; }
 		public IList<string> UserAssemblyPaths { get; set; }
+		public IPhoneSdkVersion MinSdkVersion { get; private set; }
+		public TargetDevice SupportedDevices { get; private set; }
 		
 		public IPhoneSimulatorTarget SimulatorTarget { get; private set; }
 		
