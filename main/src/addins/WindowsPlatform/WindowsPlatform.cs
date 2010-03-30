@@ -115,7 +115,7 @@ namespace MonoDevelop.Platform
 
         public override ProcessStartInfo CreateConsoleProcessInfo(string command, string commandArguments, string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished)
         {
-            string args = "/C \"title " + title + " && " + command + " " + commandArguments;
+            string args = "/C \"title " + title + " && \"" + command + "\" " + commandArguments;
             if (pauseWhenFinished)
                 args += " && pause\"";
             else
