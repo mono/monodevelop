@@ -1,5 +1,9 @@
 2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.addin.xml: Tweak command ordering.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs:
 	* MonoDevelop.IPhone.addin.xml: Add a command for picking
 	  simulator version and device.

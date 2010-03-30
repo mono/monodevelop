@@ -150,10 +150,15 @@
 			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
 		</Condition>
-		<ItemSet id = "SelectSimulatorTarget" _label = "iPhone Simulator Target" autohide = "true">
-			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget"
-				insertafter = "SelectActiveRuntime"  />
-		</ItemSet>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<Condition id="MonoTouchInstalled">
+			<ItemSet id = "SelectSimulatorTarget" _label = "iPhone Simulator Target" autohide = "true">
+				<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget"
+					insertafter = "SelectActiveRuntime"  />
+			</ItemSet>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
