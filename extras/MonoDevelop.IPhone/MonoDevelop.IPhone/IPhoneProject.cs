@@ -40,6 +40,7 @@ namespace MonoDevelop.IPhone
 	[Flags]
 	public enum TargetDevice
 	{
+		NotSet = 0,
 		IPhone = 1,
 		IPad =   1 << 1,
 		IPhoneAndIPad = IPhone & IPad,
@@ -262,13 +263,40 @@ namespace MonoDevelop.IPhone
 		
 		#region Execution
 		
+		/// <summary>
+		/// User setting of device for running app in simulator. Only valid if SimulatorSdk not null.
+		/// </summary>
+		public TargetDevice SimulatorDevice {
+			get {
+				switch (UserProperties.GetValue<TargetDevice> ("IPhoneSimulatorDevice")) {
+				case TargetDevice.IPad: return TargetDevice.IPad;
+				default: return TargetDevice.IPhone;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// User setting of SDK for running app in simulator. Null means use default.
+		/// </summary>
+		public string SimulatorSdk {
+			get {
+				string sdk = UserProperties.GetValue<string> ("IPhoneSimulatorSdk");
+				return string.IsNullOrEmpty (sdk)? null
+					: IPhoneFramework.GetClosestInstalledSdk (IPhoneSdkVersion.Parse (sdk)).ToString ();
+			}
+		}
+		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
 		                                                            DotNetProjectConfiguration configuration)
 		{
 			var conf = (IPhoneProjectConfiguration) configuration;
+			
+			var simSdk = SimulatorSdk;
+			var simDevice = simSdk == null? TargetDevice.IPhone : SimulatorDevice;
+			
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
 			                                   conf.Platform != PLAT_IPHONE, conf.DebugMode && conf.MtouchDebug,
-			                                   conf.MtouchSdkVersion) {
+			                                   simSdk ?? conf.MtouchSdkVersion, simDevice) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}

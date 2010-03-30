@@ -38,13 +38,38 @@ namespace MonoDevelop.IPhone
 {
 	public class IPhoneExecutionHandler : IExecutionHandler
 	{
+		public IPhoneExecutionHandler ()
+		{
+		}
+		
+		public IPhoneExecutionHandler (TargetDevice simulatorTargetDevice, string simulatorSdkVersion)
+		{
+			this.SimulatorTargetDevice = simulatorTargetDevice;
+			this.SimulatorSdkVersion = simulatorSdkVersion;
+			this.IsSimulatorSpecificHandler = true;
+		}		
+		
+		public TargetDevice SimulatorTargetDevice { get; private set; }
+		public string SimulatorSdkVersion { get; private set; }
+		public bool IsSimulatorSpecificHandler { get; private set; }
 
 		public bool CanExecute (ExecutionCommand command)
 		{
-			return command is IPhoneExecutionCommand;
+			var cmd = command as IPhoneExecutionCommand;
+			if (cmd == null)
+				return false;
+			if (IsSimulatorSpecificHandler && !cmd.Simulator)
+				return false;
+			return true;
 		}
 		
 		public static ProcessStartInfo CreateMtouchSimStartInfo (IPhoneExecutionCommand cmd, bool logSimOutput)
+		{
+			return CreateMtouchSimStartInfo (cmd, logSimOutput, cmd.SdkVersion, cmd.TargetDevice);
+		}
+		
+		public static ProcessStartInfo CreateMtouchSimStartInfo (IPhoneExecutionCommand cmd, bool logSimOutput, 
+		                                                         string forceSdkVersion, TargetDevice forceDevice)
 		{
 			string mtouchPath = cmd.Runtime.GetToolPath (cmd.Framework, "mtouch");
 			if (string.IsNullOrEmpty (mtouchPath))
@@ -63,8 +88,11 @@ namespace MonoDevelop.IPhone
 			sb.AppendFormat ("-launchsim='{0}'", cmd.AppPath);
 			if (logSimOutput) 
 				sb.AppendFormat (" -stderr='{0}' -stdout='{1}'", errLog, outLog);
-			if (!string.IsNullOrEmpty (cmd.SdkVersion))
-				sb.AppendFormat (" -sdk='{0}'", cmd.SdkVersion);
+			
+			if (!string.IsNullOrEmpty (forceSdkVersion))
+				sb.AppendFormat (" -sdk='{0}'", forceSdkVersion);
+			if (forceDevice == TargetDevice.IPad)
+				sb.AppendFormat (" -device=2");
 			
 			var psi = new ProcessStartInfo (mtouchPath, sb.ToString ()) {
 				WorkingDirectory = cmd.LogDirectory,
@@ -90,7 +118,10 @@ namespace MonoDevelop.IPhone
 				return NullProcessAsyncOperation.Success;
 			}
 			
-			var psi = CreateMtouchSimStartInfo (cmd, true);
+			var psi = IsSimulatorSpecificHandler? 
+				  CreateMtouchSimStartInfo (cmd, true, SimulatorSdkVersion ?? cmd.SdkVersion, SimulatorTargetDevice)
+				: CreateMtouchSimStartInfo (cmd, true, cmd.SdkVersion, TargetDevice.IPhone);
+			
 			psi.RedirectStandardOutput = true;
 			psi.RedirectStandardError = true;
 			psi.RedirectStandardInput = true;

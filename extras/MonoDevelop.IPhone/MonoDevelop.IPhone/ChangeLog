@@ -1,5 +1,20 @@
 2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneFrameworkBackend.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs: Reworked SDK version
+	  detection code.
+
+	* IPhoneExecutionHandler.cs: Allow handlers be created with a
+	  forced SDK version and device.
+
+	* IPhoneExecutionCommand.cs: Allow execution commands to
+	  contain default target device.
+
+	* IPhoneProject.cs: Creates execution commands with a target
+	  device and sdk from user project settings.
+
+2010-03-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Added iPad keys.
 
 2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>

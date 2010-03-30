@@ -89,7 +89,7 @@ namespace MonoDevelop.IPhone
 	{
 		static bool? isInstalled = null;
 		static bool? simOnly = null;
-		static int[][] installedSdkVersions;
+		static IPhoneSdkVersion[] installedSdkVersions;
 		
 		public static bool IsInstalled {
 			get {
@@ -124,10 +124,31 @@ namespace MonoDevelop.IPhone
 			                    + version + ".sdk/ResourceRules.plist");
 		}
 		
-		public static IEnumerable<string> GetInstalledSdkVersions ()
+		public static bool SdkIsInstalled (IPhoneSdkVersion version)
 		{
-			EnsureSdkVersions ();
-			return installedSdkVersions.Select (x => GetVersionString (x));
+			return SdkIsInstalled (version.ToString ());
+		}
+		
+		public static IPhoneSdkVersion GetClosestInstalledSdk (IPhoneSdkVersion v)
+		{
+			IPhoneSdkVersion? previous = null;
+			foreach (var i in InstalledSdkVersions) {
+				var cmp = v.CompareTo (i);
+				if (cmp == 0) {
+					return i;
+				} else if (cmp > 0) {
+					return previous ?? i;	
+				}
+				previous = i;
+			}
+			return IPhoneSdkVersion.Default;
+		}
+		
+		public static IList<IPhoneSdkVersion> InstalledSdkVersions {
+			get {
+				EnsureSdkVersions ();
+				return installedSdkVersions;
+			}
 		}
 		
 		static void EnsureSdkVersions ()
@@ -137,7 +158,7 @@ namespace MonoDevelop.IPhone
 			
 			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
 			if (!Directory.Exists (sdkDir)) {
-				installedSdkVersions = new int[0][];
+				installedSdkVersions = new IPhoneSdkVersion[0];
 				return;
 			}
 			
@@ -151,53 +172,16 @@ namespace MonoDevelop.IPhone
 				if (d.Length > 0)
 					sdks.Add (d);
 			}
-			var vs = new List<int[]> ();
+			var vs = new List<IPhoneSdkVersion> ();
 			foreach (var s in sdks) {
 				try {
-					var vstr = s.Split ('.');
-					var vint = new int[vstr.Length];
-					for (int j = 0; j < vstr.Length; j++)
-						vint[j] = int.Parse (vstr[j]);
-					vs.Add (vint);
+					vs.Add (IPhoneSdkVersion.Parse (s));
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not parse iPhone SDK version {0}:\n{1}", s, ex.ToString ());
 				}
 			}
 			installedSdkVersions = vs.ToArray ();
-			Array.Sort (installedSdkVersions, CompareVersions);
-		}
-		
-		public static string GetVersionString (int[] version)
-		{
-			string[] v = new string [version.Length];
-			for (int i = 0; i < v.Length; i++)
-				v[i] = version[i].ToString ();
-			return string.Join (".", v);
-		}
-		
-		static int CompareVersions (int[] x, int[] y)
-		{
-			for (int i = 0; i < Math.Min (x.Length,y.Length); i++) {
-				int res = x[i] - y[i];
-				if (res != 0)
-					return res;
-			}
-			return x.Length - y.Length;
-		}
-		
-		public static int[] GetDefaultSdkVersion ()
-		{
-			EnsureSdkVersions ();
-			return installedSdkVersions.Length > 0? installedSdkVersions[0] : new int[] { 3, 0 };
-		}
-		
-		public static int[] GetNextLowestInstalledSdk (int[] version)
-		{
-			EnsureSdkVersions ();
-			foreach (int[] i in installedSdkVersions)
-				if (CompareVersions (version, i) <= 0)
-					return i;
-			return null;
+			Array.Sort (installedSdkVersions);
 		}
 		
 		public static void ShowSimOnlyDialog ()
@@ -245,6 +229,85 @@ namespace MonoDevelop.IPhone
 		public override bool Evaluate (NodeElement conditionNode)
 		{
 			return IPhoneFramework.IsInstalled;
+		}
+	}
+	
+	public struct IPhoneSdkVersion : IComparable<IPhoneSdkVersion>, IEquatable<IPhoneSdkVersion>
+	{
+		public static readonly IPhoneSdkVersion Default = GetDefaultSdkVersion ();
+		
+		static IPhoneSdkVersion GetDefaultSdkVersion ()
+		{
+			var v = IPhoneFramework.InstalledSdkVersions;
+			return v.Count > 0? v[0] : new IPhoneSdkVersion (new int[] { 3, 0 });
+		}
+		
+		int[] version;
+		
+		public IPhoneSdkVersion (int[] version)
+		{
+			if (version == null)
+				throw new ArgumentNullException ();
+			this.version = version;
+		}
+		
+		public static IPhoneSdkVersion Parse (string s)
+		{
+			var vstr = s.Split ('.');
+			var vint = new int[vstr.Length];
+			for (int j = 0; j < vstr.Length; j++)
+				vint[j] = int.Parse (vstr[j]);
+			return new IPhoneSdkVersion (vint);
+		}
+		
+		public int[] Version { get { return version ?? Default.version; } }
+		
+		public override string ToString ()
+		{
+			string[] v = new string [version.Length];
+			for (int i = 0; i < v.Length; i++)
+				v[i] = version[i].ToString ();
+			return string.Join (".", v);
+		}
+		
+		public int CompareTo (IPhoneSdkVersion other)
+		{
+			var x = this.Version;
+			var y = other.Version;
+			if (ReferenceEquals (x, y))
+				return 0;
+			
+			for (int i = 0; i < Math.Min (x.Length,y.Length); i++) {
+				int res = x[i] - y[i];
+				if (res != 0)
+					return res;
+			}
+			return x.Length - y.Length;
+		}
+		
+		public bool Equals (IPhoneSdkVersion other)
+		{
+			var x = this.Version;
+			var y = other.Version;
+			if (ReferenceEquals (x, y))
+				return true;
+			if (x.Length != y.Length)
+				return false;
+			for (int i = 0; i < x.Length; i++)
+				if (x[i] != y[i])
+					return false;
+			return true;
+		}
+		
+		public override int GetHashCode ()
+		{
+			unchecked {
+				var x = this.Version;
+				int acc = 0;
+				for (int i = 0; i < x.Length; i++)
+					acc ^= x[i] << i;
+				return acc;
+			}
 		}
 	}
 }
