@@ -1,3 +1,8 @@
+2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fix bug 569417
+	  - Exception in SourceEditorView.CheckFrameIsInFile.
+
 2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs: Improve

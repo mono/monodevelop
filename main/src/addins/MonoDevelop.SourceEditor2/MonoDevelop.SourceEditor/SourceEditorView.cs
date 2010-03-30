@@ -626,7 +626,7 @@ namespace MonoDevelop.SourceEditor
 		
 		StackFrame CheckFrameIsInFile (StackFrame frame)
 		{
-			if (frame != null && frame.SourceLocation.Filename != FilePath.Null
+			if (!string.IsNullOrEmpty (ContentName) && frame != null && frame.SourceLocation.Filename != FilePath.Null
 				&& ((FilePath)frame.SourceLocation.Filename).FullPath == ((FilePath)ContentName).FullPath)
 				return frame;
 			return null;
