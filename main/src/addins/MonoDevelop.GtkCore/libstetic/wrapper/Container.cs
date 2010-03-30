@@ -1296,6 +1296,12 @@ namespace Stetic.Wrapper
 					compName = name + idx;
 				}
 				w.Name = compName;
+				Widget ww = Widget.Lookup (w);
+				if (ww != null)
+					ww.InitializeName (compName);
+				else
+					w.Name = compName;
+				
 			}
 			
 			names [w.Name] = w;

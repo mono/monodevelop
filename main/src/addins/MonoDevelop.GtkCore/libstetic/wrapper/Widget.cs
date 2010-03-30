@@ -235,6 +235,12 @@ namespace Stetic.Wrapper {
 			}
 		}
 		
+		internal void InitializeName (string name)
+		{
+			oldName = name;
+			Wrapped.Name = name;
+		}
+		
 		public string Name {
 			get { return Wrapped.Name; }
 			set { Wrapped.Name = value; EmitNotify ("Name"); }
