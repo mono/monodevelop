@@ -195,6 +195,16 @@ namespace MonoDevelop.IPhone
 				this.mainNibFile = mainNibAtt.InnerText;	
 			}
 			
+			var ipadNibAtt = projectOptions.Attributes ["MainNibFileIPad"];
+			if (ipadNibAtt != null) {
+				this.mainNibFileIPad = ipadNibAtt.InnerText;	
+			}
+			
+			var supportedDevicesAtt = projectOptions.Attributes ["SupportedDevices"];
+			if (supportedDevicesAtt != null) {
+				this.supportedDevices = (TargetDevice) Enum.Parse (typeof (TargetDevice), supportedDevicesAtt.InnerText);	
+			}
+			
 			var sdkVersionAtt = projectOptions.Attributes ["SdkVersion"];
 			string sdkVersion = sdkVersionAtt != null? sdkVersionAtt.InnerText : null;
 			

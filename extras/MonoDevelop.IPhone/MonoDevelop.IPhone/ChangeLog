@@ -1,5 +1,10 @@
 2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Add SupportedDevices and MainNibFileIPad
+	  options for templates to set.
+
+2010-03-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs:
 	* Gui/IPhoneOptionsPanel.cs: Better handling of the ipad nib.
 
