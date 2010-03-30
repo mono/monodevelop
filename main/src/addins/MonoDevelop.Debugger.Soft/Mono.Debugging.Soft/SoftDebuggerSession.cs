@@ -380,6 +380,7 @@ namespace Mono.Debugging.Soft
 				if (assemblyFilters != null && assemblyFilters.Count > 0)
 					req.AssemblyFilter = assemblyFilters;
 				req.Enabled = true;
+				currentStepRequest = req;
 				OnResumed ();
 				vm.Resume ();
 				DequeueEventsForFirstThread ();

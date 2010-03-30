@@ -1,5 +1,11 @@
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftDebuggerSession.cs: Set the current request in the Step
+	  Out command. Fixes bug #569418 - Debugger sometimes loses
+	  track of stepping.
+
+2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* SoftDebuggerSession.cs:
 	* SoftDebuggerStartInfo.cs: Fix external console support
 	  again.
