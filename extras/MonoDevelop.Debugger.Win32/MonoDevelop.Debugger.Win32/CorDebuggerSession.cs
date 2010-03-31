@@ -316,7 +316,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnCreateAppDomain (object sender, CorAppDomainEventArgs e)
 		{
-			e.AppDomain.Attach ();
+            e.AppDomain.Attach();
 			e.Continue = true;
 		}
 
@@ -446,7 +446,14 @@ namespace MonoDevelop.Debugger.Win32
 					if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc))
 						return null;
 
-					int line = doc.Document.FindClosestLine (bp.Line);
+					int line;
+                    try {
+                        line = doc.Document.FindClosestLine(bp.Line);
+                    }
+                    catch {
+                        // Invalid line
+                        return null;
+                    }
 					ISymbolMethod met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
 					if (met == null)
 						return null;

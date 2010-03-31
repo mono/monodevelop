@@ -254,14 +254,50 @@ namespace MonoDevelop.Debugger.Win32
 		public override object TryCast (EvaluationContext ctx, object val, object type)
 		{
 			CorType ctype = (CorType) GetValueType (ctx, val);
-			string tname = GetTypeName (ctx, type);
-			while (ctype != null) {
-				if (GetTypeName (ctx, ctype) == tname)
-					return val;
-				ctype = ctype.Base;
-			}
-			return null;
-		}
+            CorValue obj = GetRealObject(ctx, val);
+            string tname = GetTypeName(ctx, type);
+            string ctypeName = GetValueTypeName (ctx, val);
+            if (tname == "System.Object")
+                return val;
+
+            if (tname == ctypeName)
+                return val;
+
+            if (obj is CorStringValue)
+                return ctypeName == tname;
+
+            if (obj is CorArrayValue)
+                return ctypeName == tname || ctypeName == "System.Array";
+
+            if (obj is CorObjectValue)
+            {
+                while (ctype != null)
+                {
+                    if (GetTypeName(ctx, ctype) == tname)
+                        return val;
+                    ctype = ctype.Base;
+                }
+                return null;
+            }
+
+            CorGenericValue genVal = obj as CorGenericValue;
+            if (genVal != null) {
+                Type t = Type.GetType(tname);
+                if (t != null && t.IsPrimitive && t != typeof(string)) {
+                    object pval = genVal.GetValue();
+                    try
+                    {
+                        pval = System.Convert.ChangeType(pval, t);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                    return CreateValue(ctx, pval);
+                }
+            }
+            return null;
+        }
 
 		public bool IsEnum (EvaluationContext ctx, CorType targetType)
 		{
@@ -611,6 +647,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		IEnumerable<ValueReference> GetLocals (CorEvaluationContext ctx, ISymbolScope scope, int offset, bool showHidden)
 		{
+            if (ctx.Frame.FrameType != CorFrameType.ILFrame)
+                yield break;
+
 			if (scope == null) {
 				ISymbolMethod met = ctx.Frame.Function.GetSymbolMethod (ctx.Session);
 				if (met != null)

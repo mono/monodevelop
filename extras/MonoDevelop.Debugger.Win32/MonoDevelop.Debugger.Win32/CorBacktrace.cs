@@ -33,8 +33,10 @@ namespace MonoDevelop.Debugger.Win32
 		internal static IEnumerable<CorFrame> GetFrames (CorThread thread)
 		{
 			foreach (CorChain chain in thread.Chains) {
-				foreach (CorFrame frame in chain.Frames)
-					yield return frame;
+                if (!chain.IsManaged)
+                    continue;
+                foreach (CorFrame frame in chain.Frames)
+                    yield return frame;
 			}
 		}
 
