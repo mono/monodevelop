@@ -112,7 +112,10 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (KeyValuePair<string, string> var in startInfo.EnvironmentVariables)
 				env[var.Key] = var.Value;
 
-			process = dbg.CreateProcess (startInfo.Command, startInfo.Arguments, startInfo.WorkingDirectory, env);
+            // The second parameter of CreateProcess is the command line, and it includes the application being launched
+            string cmdLine = "\"" + startInfo.Command + "\" " + startInfo.Arguments;
+
+            process = dbg.CreateProcess(startInfo.Command, cmdLine, startInfo.WorkingDirectory, env);
 			processId = process.Id;
 
 			process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
