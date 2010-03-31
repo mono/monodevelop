@@ -572,7 +572,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 
-			string rname = fname.Replace ('/', '.');
+			string rname = fname.Replace (Path.DirectorySeparatorChar, '.');
 			
 			DotNetProject dp = file.Project as DotNetProject;
 
