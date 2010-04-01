@@ -83,6 +83,10 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -103,6 +107,26 @@
     <Compile Include="MonoDevelop.CodeMetrics\Commands.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeMetrics.CodeMetricsWidget.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\ProjectProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\ASTVisitor.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\LOCEvaluate.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\ClassProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\CodeMetricsServices.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\ComplexityMetrics.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\NamespaceProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\Coupling.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\MethodProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\MetricsContext.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\InterfaceProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\DelegateProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\StructProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\Cohesion.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\EnumProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\InheritanceTree.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\FieldProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\ObjectOrientedMetrics.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\IProperties.cs" />
+    <Compile Include="MonoDevelop.CodeMetrics\AssociationBetweenClasses.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

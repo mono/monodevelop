@@ -3,8 +3,9 @@
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
+//	 Nikhil Sarda <diff.operator@gmail.com>
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com), Nikhil Sarda
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,249 +29,323 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+
 using Gtk;
-using Mono.TextEditor;
+using Gdk;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom.Output;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CodeMetrics
 {
-	[System.ComponentModel.Category("MonoDevelop.CodeMetrics")]
-	[System.ComponentModel.ToolboxItem(true)]
+	// TODO Use thread synchronization to coordinate between TreeStore drawing and Metrics calculation 
 	public partial class CodeMetricsWidget : Gtk.Bin
 	{
+		public static CodeMetricsWidget widget;
+		
 		List<string> files = new List<string> ();
-		TreeStore store = new TreeStore (typeof (string), // file name
-		                                 typeof (string), // line count (real lines)
-		     //                            typeof (string),  // license
-		                                 typeof (int) // line count number
+		List<ProjectProperties> projects = new List<ProjectProperties>();
+		
+		public List<ProjectProperties> Projects {
+			get {
+				return projects;
+			}
+		}
+		
+		MetricsContext ctx = new MetricsContext ();
+		
+		//TODO Treestore will have LOC, real LOC, commented LOC and cyclometric complexity (later to add code coverage)
+		TreeStore metricStore = new TreeStore (typeof (Pixbuf), // Icon
+		                                 typeof (string), // type name
+		                                 typeof (string), // cyclometric complexity
+		                                 typeof (string), // class coupling
+		                                 typeof (string), 	  // real loc
+		                                 typeof (string),	  // comments loc
+		                                 typeof (IProperties)  // reference to objects
 		                                 );
-		TreeViewColumn col1, col2;
+		TreeViewColumn iconCol, 
+						typenameCol, 
+						cyclometricComplexityCol,
+						classCouplingCol,
+						realLocCol, 
+						commentsLocCol;
+		
+		CellRendererText crt;
+		IProperties rowSelectTypeName;
+		bool clicked = false;
+		
 		public CodeMetricsWidget()
 		{
 			this.Build();
 			treeviewMetrics.RulesHint = true;
-			treeviewMetrics.Model = store;
+			treeviewMetrics.Model = metricStore;
 			
-			CellRendererText crt = new CellRendererText ();
+			projects = new List<ProjectProperties>();
+			
+			crt = new CellRendererText ();
 			crt.Ellipsize = Pango.EllipsizeMode.Start;
-			col1 = new TreeViewColumn (GettextCatalog.GetString ("File"), crt, "text", 0);
-			col1.SortIndicator = true;
-			col1.SortColumnId = 0;
-			col1.Expand = true;
-			col1.Resizable = true;
-			treeviewMetrics.AppendColumn (col1);
 			
-			col2 = new TreeViewColumn (GettextCatalog.GetString ("Lines (real)"), new CellRendererText (), "text", 1);
-			col2.SortIndicator = true;
-			col2.SortColumnId = 3;
-			treeviewMetrics.AppendColumn (col2);
-			/*
-			col = new TreeViewColumn (GettextCatalog.GetString ("License"), new CellRendererText (), "text", 2);
-			col.SortIndicator = true;
-			col.SortColumnId = 2;
-			treeviewMetrics.AppendColumn (col);*/
+			iconCol = new TreeViewColumn (GettextCatalog.GetString ("Icon"), new Gtk.CellRendererPixbuf (), "pixbuf", 0);
+			iconCol.SortIndicator = true;
+			iconCol.SortColumnId = 1;
+			iconCol.Expand = false;
+			iconCol.Resizable = true;
+			treeviewMetrics.AppendColumn (iconCol);
+						
+			typenameCol = new TreeViewColumn (GettextCatalog.GetString ("Type name"), crt, "text", 1);
+			typenameCol.SortIndicator = true;
+			typenameCol.SortColumnId = 0;
+			typenameCol.Expand = true;
+			typenameCol.Resizable = true;
+			treeviewMetrics.AppendColumn (typenameCol);
+			
+			cyclometricComplexityCol = new TreeViewColumn (GettextCatalog.GetString ("Cyclometric Complexity"), new CellRendererText (), "text", 2);
+			cyclometricComplexityCol.SortIndicator = true;
+			cyclometricComplexityCol.SortColumnId = 0;
+			cyclometricComplexityCol.Reorderable = true;
+			cyclometricComplexityCol.Resizable = false;
+			treeviewMetrics.AppendColumn (cyclometricComplexityCol);
+			
+			classCouplingCol = new TreeViewColumn (GettextCatalog.GetString ("Class Coupling"), new CellRendererText (), "text", 3);
+			classCouplingCol.SortIndicator = true;
+			classCouplingCol.SortColumnId = 0;
+			classCouplingCol.Reorderable = true;
+			classCouplingCol.Resizable = false;
+			treeviewMetrics.AppendColumn (classCouplingCol);
+			
+			realLocCol = new TreeViewColumn (GettextCatalog.GetString ("Real Loc"), new CellRendererText (), "text", 4);
+			realLocCol.SortIndicator = true;
+			realLocCol.SortColumnId = 0;
+			realLocCol.Reorderable = true;
+			realLocCol.Resizable = false;
+			treeviewMetrics.AppendColumn (realLocCol);
+			
+			commentsLocCol = new TreeViewColumn (GettextCatalog.GetString ("Comments Loc"), new CellRendererText (), "text", 5);
+			commentsLocCol.SortIndicator = true;
+			commentsLocCol.SortColumnId = 0;
+			commentsLocCol.Reorderable = true;
+			commentsLocCol.Resizable = false;
+			treeviewMetrics.AppendColumn (commentsLocCol);
+			
+			// TODO: When user clicks on the respective type then the corresponding filename containing that type should open
+			
 			this.treeviewMetrics.RowActivated += delegate {
 				Gtk.TreeIter selectedIter;
 				if (treeviewMetrics.Selection.GetSelected (out selectedIter)) {
-					string fileName = (string)store.GetValue (selectedIter, 0);
-					IdeApp.Workbench.OpenDocument (fileName);
+					rowSelectTypeName = (IProperties)metricStore.GetValue (selectedIter, 6);
+						MonoDevelop.Ide.IdeApp.Workbench.OpenDocument (rowSelectTypeName.FilePath);
+						MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.TextEditor.JumpTo(rowSelectTypeName.StartLine, 0);	
+				}
+			};
+			
+			this.treeviewMetrics.CursorChanged += delegate {
+				Gtk.TreeIter selectedIter;
+				if (treeviewMetrics.Selection.GetSelected (out selectedIter)) {
+					rowSelectTypeName = (IProperties)metricStore.GetValue (selectedIter, 6);
+					Gtk.Application.Invoke( delegate {
+						textviewReport.Buffer.Text = CodeMetricsService.GenerateTypeMetricText(rowSelectTypeName);	
+					});
 				}
 			};
 		}
 		
 		protected override void OnDestroyed ()
 		{
-			if (store != null) {
-				store.Dispose ();
-				store = null;
+			if (metricStore != null) {
+				metricStore.Dispose ();
+				metricStore = null;
 			}
 			base.OnDestroyed ();
 		}
 		
 		class MetricsWorkerThread : WorkerThread
 		{
-			//Dictionary<string, Mono.TextEditor.Document> headers = new Dictionary<string, Mono.TextEditor.Document> ();
-			//int longestHeader = -1;
-				
-			CodeMetricsWidget widget;
+			//Earlier wasnt using the static thing, maybe not required as well
+			CodeMetricsWidget widget=CodeMetricsWidget.widget;
 			
-			//int[,] num;
+			public static object lockCounter = new object();
+			
 			public MetricsWorkerThread (CodeMetricsWidget widget)
 			{
 				this.widget = widget;
-			/*	foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
-					Mono.TextEditor.Document newDoc = new Mono.TextEditor.Document ();
-					newDoc.Text = header.Value;
-					headers[header.Key] = newDoc;
-					longestHeader = Math.Max (longestHeader, header.Value.Length);
-				}i*/
-			//	num = new int [longestHeader, longestHeader];
 			}
-			/* real lcs takes too long, but we can fake it.
-			int LongestCommonSubstring (string str1, string str2)
-			{
-				if (String.IsNullOrEmpty (str1) || String.IsNullOrEmpty (str2))
-					return 0;
-				
-				for (int i = 0; i < str1.Length; i++) {
-					num [i, 0] = 0;
-				}
-				for (int j = 0; j < str2.Length; j++) {
-					num [0, j] = 0;
-				}
-				
-				for (int i = 1; i < str1.Length; i++) {
-					for (int j = 1; j < str2.Length; j++) {
-						if (str1[i] == str2[j])
-							num [i, j] = num [i - 1, j - 1] + 1;
-						else 
-							num [i, j] = Math.Max (num [i, j - 1], num [i - 1, j]);
-					}
-				}
-				return num [str1.Length - 1, str2.Length - 1];
-			}*/
 			
-		/*	int FakeLongestCommonSubstring (Mono.TextEditor.Document doc, string header)
-			{
-				int lcs = 0;
-				int i = 0;
-				
-				int j = Math.Max (0, header.LastIndexOf ('}') + 1);
-				while (j < header.Length && i < doc.Length) {
-					if (doc.GetCharAt (i) == header[j]) {
-						i++;
-						j++;
-						lcs++;
-						continue;
-					} 
-					if (Char.IsWhiteSpace (header[j])) {
-						j++;
-						continue;
-					}
-					if (header[j] == '[') {
-						while (j < header.Length && header[j] != ']') {
-							j++;
-						}
-						j++;
-						continue;
-					}
-					if (Char.IsWhiteSpace (doc.GetCharAt (i))) {
-						i++;
-						continue;
-					}
-					i++;
-				}
-				return lcs;
-			}*/
-			
-			//string last = null;
-			/*
-			string GetLicense (Mono.TextEditor.Document document)
-			{
-				string result = GettextCatalog.GetString ("Unknown");
-				//string possibleHeader = document.GetTextAt (0, Math.Min (this.longestHeader, document.Length));
-				
-				if (!String.IsNullOrEmpty (last)) {
-					foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
-						if (header.Key == last) {
-							int match = FakeLongestCommonSubstring (document, header.Value);//;LongestCommonSubstring (header.Value, possibleHeader);
-							if (match > header.Value.Length / 2) 
-								return header.Key;
-							break;
-						}
-					}
-				}
-				
-				foreach (KeyValuePair<string, string> header in StandardHeaderService.HeaderTemplates) {
-					if (header.Key == last)
-						continue;
-					int match = FakeLongestCommonSubstring (document, header.Value);
-//					int match = LongestCommonSubstring (header.Value, possibleHeader);
-					if (match > header.Value.Length / 2) {
-						last = header.Key;
-						return header.Key;
-					}
-				}
-				return result;
-			}
-			Dictionary<string, int> licenseStats = new Dictionary<string,int> (); */
 			protected override void InnerRun ()
 			{
-				ulong totalLines = 0, totalRealLines = 0, totalCommentedLines = 0;
-				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-				for (int i = 0; i < widget.files.Count; i++) {
-					string file = widget.files [i];
-					if (base.IsStopping)
-						return;
-					try {
-						doc.Text = System.IO.File.ReadAllText (file);
-					} catch (Exception e) {
-						DispatchService.GuiSyncDispatch (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
-							widget.store.AppendValues (file,
-							                           e.Message,
-							                           e.Message);
+				int counter=0;
+				int totalProjects = widget.projects.Count;
+				try {
+					foreach(ProjectProperties projectprop in widget.projects)
+						CodeMetricsService.AddTypes(projectprop, widget.ctx);
+					
+					foreach(ProjectProperties projectprop in widget.projects) {
+						ObjectOrientedMetrics.EvaluateOOMetrics(widget.ctx, projectprop);
+						ComplexityMetrics.EvaluateComplexityMetrics(widget.ctx, projectprop);
+						CodeMetricsService.ProcessInnerTypes(projectprop);
+					
+						Gtk.Application.Invoke ( delegate {
+							FillTree(projectprop);
 						});
-						continue;
+						if(base.IsStopping)
+							return;
+						lock(lockCounter)
+						{
+							counter++;
+							DispatchService.GuiSyncDispatch (delegate {
+								IdeApp.Workbench.StatusBar.SetProgressFraction (counter / (double)totalProjects);
+							});
+						}
 					}
-					int realLines = 0;
-					foreach (LineSegment segment in doc.Lines) {
-						string text = doc.GetTextAt (segment).Trim ();
-						bool isComment = text.StartsWith ("//");
-						if (isComment)
-							totalCommentedLines++;
-						if (text.Length > 0 && !isComment)
-							realLines++;
-					}
-			//		string license = GetLicense (doc);
-			//		if (!licenseStats.ContainsKey (license))
-			//			licenseStats [license] = 0;
-					totalLines     += (ulong)doc.LineCount;
-					totalRealLines += (ulong)realLines;
-			//		licenseStats[license]++;
-					DispatchService.GuiSyncDispatch (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction (i / (double)widget.files.Count);
-						widget.store.AppendValues (file,
-						                           doc.LineCount + "(" + realLines + ")",
-						                         //  license,
-						                           doc.LineCount);
-					});
+				} catch (Exception e) {
+					Console.WriteLine("Error : " + e.ToString());
+					base.Stop ();
 				}
-				DispatchService.GuiSyncDispatch (delegate {
+				
+				
+				Gtk.Application.Invoke (delegate {
+					IdeApp.Workbench.StatusBar.ShowMessage("Finished calculating metrics\n");
 					IdeApp.Workbench.StatusBar.EndProgress ();
-					widget.ShowResults (totalLines, totalRealLines, totalCommentedLines);//, licenseStats);
+					widget.textviewReport.Buffer.Text = GettextCatalog.GetString ("Finished calculating metrics\n");
+					widget.textviewReport.Buffer.Text += CodeMetricsService.GenerateAssemblyMetricText();
 				});
+				
 				base.Stop ();
 			}
+			
+			protected void FillTree (ProjectProperties projprop)
+			{
+				var rootIter = widget.metricStore.AppendValues ( ImageService.GetPixbuf("md-project", Gtk.IconSize.Menu),
+					                                           projprop.Project.Name, 
+				    	                                       projprop.CyclometricComplexity.ToString(),
+				        	                                   "",
+				            	                               projprop.LOCReal.ToString(),
+				                	                           projprop.LOCComments.ToString(),
+				                       	                       projprop);
 				
-		}
+					FillNamespaces(projprop.Namespaces, rootIter);
+					FillClasses(projprop.Classes, rootIter);
+					FillEnums(projprop.Enums, rootIter);
+					FillStructs(projprop.Structs, rootIter);
+					FillDelegates(projprop.Delegates, rootIter);
+					FillInterfaces(projprop.Interfaces, rootIter);
+			}
+			
+			private void FillNamespaces (Dictionary<string, NamespaceProperties> namespaces, TreeIter parentIter)
+			{
+				foreach (var namesp in namespaces) {
+					var subiter = widget.metricStore.AppendValues (parentIter,
+					                                           ImageService.GetPixbuf("md-name-space", Gtk.IconSize.Menu),
+					                                           namesp.Value.FullName, 
+					                                           namesp.Value.CyclometricComplexity.ToString(), 
+					                                           namesp.Value.ClassCoupling.ToString(),
+					                                           namesp.Value.LOCReal.ToString(),
+					                                           namesp.Value.LOCComments.ToString(),
+					                                           namesp.Value);
+					FillClasses(namesp.Value.Classes, subiter);
+					FillEnums(namesp.Value.Enums, subiter);
+					FillStructs(namesp.Value.Structs, subiter);
+					FillDelegates(namesp.Value.Delegates, subiter);
+					FillInterfaces(namesp.Value.Interfaces, subiter);
+				}
+			}
+			
+			private void FillEnums (Dictionary<string,EnumProperties> enms, TreeIter parentIter)
+			{
+				foreach (var cls in enms){
+					var iter = widget.metricStore.AppendValues (parentIter,
+					                                            ImageService.GetPixbuf("md-enum", Gtk.IconSize.Menu),
+					                                            cls.Value.FullName, 
+					                                            cls.Value.CyclometricComplexity.ToString(),
+					                                            cls.Value.ClassCoupling.ToString(),
+					                                            cls.Value.LOCReal.ToString(),
+					                                            cls.Value.LOCComments.ToString(),
+					                                            cls.Value);
+				}
+			}
+			
+			private void FillStructs (Dictionary<string, StructProperties> strcts, TreeIter parentIter)
+			{
+				foreach (var cls in strcts){
+					var iter = widget.metricStore.AppendValues (parentIter,
+					                                            ImageService.GetPixbuf("md-struct", Gtk.IconSize.Menu),
+					                                            cls.Value.FullName, 
+					                                            cls.Value.CyclometricComplexity.ToString(),
+					                                            cls.Value.ClassCoupling.ToString(),
+					                                            cls.Value.LOCReal.ToString(),
+					                                            cls.Value.LOCComments.ToString(),
+					                                            cls.Value);
+				}
+			}
+			
+			private void FillInterfaces (Dictionary<string, InterfaceProperties> interfces, TreeIter parentIter)
+			{
+				foreach (var cls in interfces){
+					var iter = widget.metricStore.AppendValues (parentIter,
+					                                            ImageService.GetPixbuf("md-interface", Gtk.IconSize.Menu),
+					                                            cls.Value.FullName, 
+					                                            cls.Value.CyclometricComplexity.ToString(),
+					                                            cls.Value.ClassCoupling.ToString(),
+					                                            cls.Value.LOCReal.ToString(),
+					                                            cls.Value.LOCComments.ToString(),
+					                                            cls.Value);
+					// Add recursive field for members of interfaces
+				}
+			}
+			
+			private void FillDelegates (Dictionary<string, DelegateProperties> dlgtes, TreeIter parentIter)
+			{
+				foreach (var cls in dlgtes){
+					var iter = widget.metricStore.AppendValues (parentIter,
+					                                            ImageService.GetPixbuf("md-method", Gtk.IconSize.Menu),
+					                                            cls.Value.FullName, 
+					                                            cls.Value.CyclometricComplexity.ToString(),
+					                                            cls.Value.ClassCoupling.ToString(),
+					                                            cls.Value.LOCReal.ToString(),
+					                                            cls.Value.LOCComments.ToString(),
+					                                            cls.Value);
+				}
+			}
+			
+			private void FillClasses (Dictionary<string, ClassProperties> clss, TreeIter parentIter)
+			{
+				foreach (var cls in clss){
+					var childIter = widget.metricStore.AppendValues (parentIter,
+					                                            ImageService.GetPixbuf("md-class", Gtk.IconSize.Menu),
+					                                            cls.Value.FullName, 
+					                                            cls.Value.CyclometricComplexity.ToString(),
+					                                            cls.Value.ClassCoupling.ToString(),
+					                                            cls.Value.LOCReal.ToString(),
+					                                            cls.Value.LOCComments.ToString(),
+					                                            cls.Value);
+					FillMethods(cls.Value.Methods, childIter);
+					FillDelegates(cls.Value.InnerDelegates, childIter);
+					FillStructs(cls.Value.InnerStructs, childIter);
+					FillEnums(cls.Value.InnerEnums, childIter);
+					FillInterfaces(cls.Value.InnerInterfaces, childIter);
+					FillClasses(cls.Value.InnerClasses, childIter);
+				}
+			}
 		
-		public void ShowResults (ulong lines, ulong realLines, ulong commentedLines)//, Dictionary<string, int> licenseStats)
-		{
-			textviewReport.Buffer.Text = GettextCatalog.GetString ("Results:"); 
-			textviewReport.Buffer.Text += Environment.NewLine; 
-			textviewReport.Buffer.Text += GettextCatalog.GetString ("lines: {0} (real:{1}), commented:{2} ({3:0.00}%), blank:{4} ({5:0.00}%)",
-			                                                       lines,
-			                                                       realLines,
-			                                                       commentedLines,
-			                                                       Percent (commentedLines, lines),
-			                                                       lines - realLines - commentedLines,
-			                                                       Percent (lines - realLines - commentedLines, lines));
-			textviewReport.Buffer.Text += Environment.NewLine; /*
-			textviewReport.Buffer.Text += Environment.NewLine; 
-			textviewReport.Buffer.Text += GettextCatalog.GetString ("Licenses:"); 
-			textviewReport.Buffer.Text += Environment.NewLine; 
-			foreach (KeyValuePair<string, int> license in licenseStats) {
-				textviewReport.Buffer.Text += "\t"; 
-				textviewReport.Buffer.Text += license.Key;
-				textviewReport.Buffer.Text += Environment.NewLine; 
-				textviewReport.Buffer.Text +=  String.Format ("\t\t{0} ({1:0.00}%)",
-				                                              license.Value,
-				                                              license.Value * 100.0 / this.files.Count); 
-				textviewReport.Buffer.Text += Environment.NewLine; 
-			}*/
+			private void FillMethods (Dictionary<string, MethodProperties> mthd, TreeIter parentIter)
+			{
+				foreach (var cls in mthd){
+					var childIter = widget.metricStore.AppendValues (parentIter,
+					                                            ImageService.GetPixbuf("md-method", Gtk.IconSize.Menu),
+					                                            cls.Value.FullName, 
+					                                            cls.Value.CyclometricComplexity.ToString(),
+					                                            cls.Value.ClassCoupling.ToString(),
+					                                            cls.Value.LOCReal.ToString(),
+					                                            cls.Value.LOCComments.ToString(),
+					                                            cls.Value);
+				}
+			}
 		}
 		
 		double Percent (ulong a, ulong b)
@@ -283,11 +358,12 @@ namespace MonoDevelop.CodeMetrics
 		public void Run ()
 		{
 			MetricsWorkerThread thread = new MetricsWorkerThread (this);
-			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Scanning files..."));
-			textviewReport.Buffer.Text = GettextCatalog.GetString ("Scanning files...");
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Calculating Metrics..."));
+			textviewReport.Buffer.Text = GettextCatalog.GetString ("Calculating Metrics...");
 			thread.Start ();
 		}
 		
+		#region AddMethods
 		public void Add (string fileName)
 		{
 			files.Add (fileName);
@@ -301,26 +377,26 @@ namespace MonoDevelop.CodeMetrics
 		
 		public void Add (Project project)
 		{
-//			System.Console.WriteLine("add project folder :" + project);
+			projects.Add(new ProjectProperties(project));
 			foreach (ProjectFile projectFile in project.Files) {
-				Add (projectFile);
+				Add (projectFile);	
 			}
 		}
 		
 		public void Add (SolutionFolder combine)
 		{
-//			System.Console.WriteLine("add solution folder :" + combine);
 			foreach (Project project in combine.GetAllProjects ()) {
 				Add (project);
 			}
+			
 		}
 		
 		public void Add (WorkspaceItem item)
 		{
-//			System.Console.WriteLine("add workspace item:" + item);
 			foreach (Project project in item.GetAllProjects ()) {
 				Add (project);
 			}
 		}
+		#endregion
 	}
 }

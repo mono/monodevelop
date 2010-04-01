@@ -2,9 +2,10 @@
 // CodeMetricsNodeExtension.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//   Mike KrÃ¼ger <mkrueger@novell.com>
+//	 Nikhil Sarda <diff.operator@gmail.com>
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com), Nikhil Sarda
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,11 +29,16 @@
 
 using System;
 using System.IO;
+
+using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -68,11 +74,7 @@ namespace MonoDevelop.CodeMetrics
 				view.Add (file);
 			
 			ProjectFolder folder = CurrentNode.DataItem as ProjectFolder;
-			if (folder != null) {
-				foreach (string fileName in System.IO.Directory.GetFiles (folder.Path, "*", SearchOption.AllDirectories)) {
-					view.Add (fileName);
-				}
-			}
+			
 			SolutionFolder combine = CurrentNode.DataItem as SolutionFolder;
 			if (combine != null) 
 				view.Add (combine);

@@ -1,3 +1,34 @@
+2010-04-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.CodeMetrics.csproj:
+	* MonoDevelop.CodeMetrics/Commands.cs:
+	* MonoDevelop.CodeMetrics/Cohesion.cs:
+	* MonoDevelop.CodeMetrics/Coupling.cs:
+	* MonoDevelop.CodeMetrics/ASTVisitor.cs:
+	* MonoDevelop.CodeMetrics/LOCEvaluate.cs:
+	* MonoDevelop.CodeMetrics/IProperties.cs:
+	* MonoDevelop.CodeMetrics/MetricsContext.cs:
+	* MonoDevelop.CodeMetrics/EnumProperties.cs:
+	* MonoDevelop.CodeMetrics/FieldProperties.cs:
+	* MonoDevelop.CodeMetrics/InheritanceTree.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsView.cs:
+	* MonoDevelop.CodeMetrics/ClassProperties.cs:
+	* MonoDevelop.CodeMetrics/StructProperties.cs:
+	* MonoDevelop.CodeMetrics/MethodProperties.cs:
+	* MonoDevelop.CodeMetrics/ComplexityMetrics.cs:
+	* MonoDevelop.CodeMetrics/ProjectProperties.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:
+	* MonoDevelop.CodeMetrics/DelegateProperties.cs:
+	* MonoDevelop.CodeMetrics/NamespaceProperties.cs:
+	* MonoDevelop.CodeMetrics/InterfaceProperties.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsServices.cs:
+	* MonoDevelop.CodeMetrics/ObjectOrientedMetrics.cs:
+	* MonoDevelop.CodeMetrics/CodeMetricsNodeExtension.cs:
+	* MonoDevelop.CodeMetrics/AssociationBetweenClasses.cs: Added
+	  the code metrics addin from 'nikhil sarda
+	  <diff.operator@gmail.com>'.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
