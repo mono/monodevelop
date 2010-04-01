@@ -43,7 +43,7 @@ namespace MonoDevelop.IPhone
 	{
 		UploadToDevice,
 		ExportToXcode,
-		SelectSimulatorSdk,
+		SelectSimulatorTarget,
 	}
 	
 	class SelectSimulatorTargetHandler : CommandHandler
