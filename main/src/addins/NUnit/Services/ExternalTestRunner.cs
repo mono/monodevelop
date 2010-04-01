@@ -59,6 +59,10 @@ namespace MonoDevelop.NUnit.External
 				}
 				return null;
 			};
+			
+			// Preload the runner assembly. Required because TestNameFilter is implemented there
+			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
+			Assembly.LoadFrom (asm);
 		}
 		
 		public UnitTestResult Run (IRemoteEventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies)

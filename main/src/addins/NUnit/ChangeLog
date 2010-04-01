@@ -1,3 +1,8 @@
+2010-04-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services\ExternalTestRunner.cs: Preload the NUnitRunner
+	  assembly.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
