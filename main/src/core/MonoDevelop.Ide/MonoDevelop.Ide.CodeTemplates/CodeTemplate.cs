@@ -215,7 +215,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 				string name = match.Groups[1].Value;
 				sb.Append (code.Substring (lastOffset, match.Index - lastOffset));
 				lastOffset = match.Index + match.Length;
-				if (name == "end") {
+				if (string.IsNullOrEmpty (name)) { // $$ is interpreted as $
+					sb.Append ("$");
+				} else if (name == "end") {
 					result.CaretEndOffset = sb.Length;
 				} else if (name == "selected") {
 					if (!string.IsNullOrEmpty (context.SelectedText)) {

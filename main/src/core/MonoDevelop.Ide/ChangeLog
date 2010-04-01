@@ -1,5 +1,11 @@
 2010-04-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Implemented
+	  'Bug 591436 - Cannot add the "$" symbol to the custom
+	  template text'.
+
+2010-04-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide/IdePreferences.cs: Changed message bubble
 	  property keys.
 
