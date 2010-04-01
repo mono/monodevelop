@@ -2469,5 +2469,34 @@ class Test
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
+		
+		/// <summary>
+		/// Bug 592120 - Type resolver bug with this.Property[]
+		/// </summary>
+		[Test()]
+		public void TestBug592120 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+
+interface IBar
+{
+	void Test ();
+}
+
+class Foo
+{
+	public IBar[] X { get; set; }
+
+	public void Bar ()
+	{
+		var y = this.X;
+		$y.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("Test"), "method 'Test' found, but shouldn't.");
+		}
 	}
 }

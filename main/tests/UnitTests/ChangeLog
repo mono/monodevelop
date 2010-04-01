@@ -1,3 +1,9 @@
+2010-04-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for 'Bug 592120 - Type resolver bug with
+	  this.Property[]'.
+
 2010-03-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
