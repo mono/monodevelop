@@ -1,5 +1,9 @@
 2010-04-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am: Fixed build.
+
+2010-04-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.CodeMetrics.csproj:
 	* MonoDevelop.CodeMetrics/Commands.cs:

@@ -13,7 +13,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-pkg:monodevelop \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Data \
