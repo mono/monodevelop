@@ -336,7 +336,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                     out pulCodeRVA,
                                     out pdwImplFlags);
 
-			CorCallingConvention callingConv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref ppvSigBlob);
+			CorCallingConvention callingConv;
+			MetadataHelperFunctions.ReadMethodSignature (importer, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
 			m_name = szMethodName.ToString ();
             m_methodAttributes = (MethodAttributes)pdwAttr;
         }
@@ -345,7 +346,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-                throw new NotImplementedException();
+				return m_retType;
             }
         }
 
@@ -434,6 +435,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             ArrayList al = new ArrayList();
             IntPtr hEnum = new IntPtr();
+			int nArg = 0;
             try 
             {
                 while(true) 
@@ -445,7 +447,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                     if(count!=1)
                         break;
 					MetadataParameterInfo mp = new MetadataParameterInfo (m_importer, paramToken,
-													 this, DeclaringType);
+													 this, DeclaringType, m_argTypes [nArg++]);
 					if (mp.Name != string.Empty)
 						al.Add(mp);
                 }
@@ -475,7 +477,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         private int m_classToken;
         private int m_methodToken;
         private MethodAttributes m_methodAttributes;
-    }
+		private List<Type> m_argTypes;
+		private Type m_retType;
+	}
 
     public enum MetadataTokenType
     {
@@ -599,6 +603,116 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     static class MetadataHelperFunctions
     {
         private static uint TokenFromRid(uint rid, uint tktype) {return (rid) | (tktype);}
+
+		public static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
+		{
+			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
+			uint numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+			retType = MetadataHelperFunctions.ReadType (importer, ref pData);
+			argTypes = new List<Type> ();
+			for (int n = 0; n < numArgs; n++)
+				argTypes.Add (MetadataHelperFunctions.ReadType (importer, ref pData));
+		}
+
+		class GenericType
+		{
+			// Used as marker for generic method args
+		}
+
+		static Type ReadType (IMetadataImport importer, ref IntPtr pData)
+		{
+			CorElementType et;
+			unsafe {
+				byte* pBytes = (byte*)pData;
+				et = (CorElementType) (*pBytes);
+				pData = (IntPtr) (pBytes + 1);
+			}
+
+			switch (et)
+			{
+				case CorElementType.ELEMENT_TYPE_VOID: return typeof (void);
+				case CorElementType.ELEMENT_TYPE_BOOLEAN: return typeof (bool);
+				case CorElementType.ELEMENT_TYPE_CHAR: return typeof (char);
+				case CorElementType.ELEMENT_TYPE_I1: return typeof (sbyte);
+				case CorElementType.ELEMENT_TYPE_U1: return typeof (byte);
+				case CorElementType.ELEMENT_TYPE_I2: return typeof (short);
+				case CorElementType.ELEMENT_TYPE_U2: return typeof (ushort);
+				case CorElementType.ELEMENT_TYPE_I4: return typeof (int);
+				case CorElementType.ELEMENT_TYPE_U4: return typeof (uint);
+				case CorElementType.ELEMENT_TYPE_I8: return typeof (long);
+				case CorElementType.ELEMENT_TYPE_U8: return typeof (ulong);
+				case CorElementType.ELEMENT_TYPE_R4: return typeof (float);
+				case CorElementType.ELEMENT_TYPE_R8: return typeof (double);
+				case CorElementType.ELEMENT_TYPE_STRING: return typeof (string);
+				case CorElementType.ELEMENT_TYPE_I: return typeof (IntPtr);
+				case CorElementType.ELEMENT_TYPE_U: return typeof (UIntPtr);
+				case CorElementType.ELEMENT_TYPE_OBJECT: return typeof (object);
+
+				case CorElementType.ELEMENT_TYPE_VAR:
+				case CorElementType.ELEMENT_TYPE_MVAR:
+					// Generic args in methods not supported. Return a dummy type.
+					CorSigUncompressData (ref pData);
+					return typeof(GenericType);
+
+				case CorElementType.ELEMENT_TYPE_GENERICINST: {
+					Type t = ReadType (importer, ref pData);
+					List<Type> typeArgs = new List<Type> ();
+					uint num = CorSigUncompressData (ref pData);
+					for (int n=0; n<num; n++) {
+						typeArgs.Add (ReadType (importer, ref pData));
+					}
+					return MetadataType.MakeGeneric (t, typeArgs);
+				}
+
+				case CorElementType.ELEMENT_TYPE_PTR: {
+						Type t = ReadType (importer, ref pData);
+						return MetadataType.MakePointer (t);
+					}
+
+				case CorElementType.ELEMENT_TYPE_BYREF: {
+						Type t = ReadType (importer, ref pData);
+						return MetadataType.MakeByRef(t);
+					}
+
+				case CorElementType.ELEMENT_TYPE_VALUETYPE:
+				case CorElementType.ELEMENT_TYPE_CLASS: {
+						uint token = CorSigUncompressToken (ref pData);
+						return new MetadataType (importer, (int) token);
+					}
+
+				case CorElementType.ELEMENT_TYPE_ARRAY: {
+						Type t = ReadType (importer, ref pData);
+						uint rank = CorSigUncompressData (ref pData);
+						uint numSizes = CorSigUncompressData (ref pData);
+						List<uint> sizes = new List<uint> ();
+						for (int n = 0; n < numSizes; n++)
+							sizes.Add (CorSigUncompressData (ref pData));
+						uint numLoBounds = CorSigUncompressData (ref pData);
+						List<uint> loBounds = new List<uint> ();
+						for (int n = 0; n < numLoBounds; n++)
+							loBounds.Add (CorSigUncompressData (ref pData));
+						return MetadataType.MakeArray (t, sizes, loBounds);
+					}
+
+				case CorElementType.ELEMENT_TYPE_SZARRAY: {
+						Type t = ReadType (importer, ref pData);
+						return MetadataType.MakeArray (t, null, null);
+					}
+
+				case CorElementType.ELEMENT_TYPE_FNPTR: {
+						CorCallingConvention cconv;
+						Type retType;
+						List<Type> argTypes;
+						ReadMethodSignature (importer, ref pData, out cconv, out retType, out argTypes);
+						return MetadataType.MakeDelegate (retType, argTypes);
+					}
+
+				case CorElementType.ELEMENT_TYPE_CMOD_REQD:
+				case CorElementType.ELEMENT_TYPE_CMOD_OPT:
+						return ReadType (importer, ref pData);
+			}
+			throw new NotSupportedException ("Unknown sig element type: " + et);
+		}
 
         // The below have been translated manually from the inline C++ helpers in cor.h
         // <STRIP>

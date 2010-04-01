@@ -20,7 +20,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     public sealed class MetadataParameterInfo : ParameterInfo
     {
         internal MetadataParameterInfo(IMetadataImport importer,int paramToken,
-                                       MemberInfo memberImpl,Type typeImpl)
+                                       MemberInfo memberImpl,Type typeImpl, Type argType)
         {
             int parentToken;
             uint pulSequence,pdwAttr,pdwCPlusTypeFlag,pcchValue,size;
@@ -50,7 +50,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                    out pcchValue
                                    );
             NameImpl = szName.ToString();
-            ClassImpl = typeImpl;
+			ClassImpl = argType;
             PositionImpl = (int)pulSequence;
             AttrsImpl = (ParameterAttributes)pdwAttr;
             //<strip>DefaultValueImpl=??;                   @TODO </strip>

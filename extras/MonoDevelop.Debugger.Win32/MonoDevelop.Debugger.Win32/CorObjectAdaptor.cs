@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger.Win32
 				return t.FullName;
 			try {
 				if (type.Type == CorElementType.ELEMENT_TYPE_ARRAY || type.Type == CorElementType.ELEMENT_TYPE_SZARRAY)
-					return GetTypeName (ctx, type.FirstTypeParameter) + "[]";
+					return GetTypeName (ctx, type.FirstTypeParameter) + "[" + new string (',', type.Rank - 1) + "]";
 
 				if (type.Type == CorElementType.ELEMENT_TYPE_BYREF)
 					return GetTypeName (ctx, type.FirstTypeParameter) + "&";
@@ -159,25 +159,122 @@ namespace MonoDevelop.Debugger.Win32
 			return ret;
 		}
 
+        public override string CallToString(EvaluationContext ctx, object objr)
+        {
+            CorValue obj = GetRealObject(ctx, objr);
+
+            if ((obj is CorReferenceValue) && ((CorReferenceValue)obj).IsNull)
+                return string.Empty;
+
+            CorStringValue stringVal = obj as CorStringValue;
+            if (stringVal != null)
+                return stringVal.String;
+
+            CorArrayValue arr = obj as CorArrayValue;
+            if (arr != null)
+            {
+                StringBuilder tn = new StringBuilder (GetDisplayTypeName (ctx, arr.ExactType.FirstTypeParameter));
+                tn.Append("[");
+                int[] dims = arr.GetDimensions();
+                for (int n = 0; n < dims.Length; n++)
+                {
+                    if (n > 0)
+                        tn.Append(',');
+                    tn.Append(dims[n]);
+                }
+                tn.Append("]");
+                return tn.ToString();
+            }
+
+            CorEvaluationContext cctx = (CorEvaluationContext)ctx;
+            CorObjectValue co = obj as CorObjectValue;
+            if (co != null)
+            {
+                if (co.ExactType.Base != null && GetTypeName(ctx, co.ExactType.Base) == "System.Enum")
+                {
+                    MetadataType rt = co.ExactType.Class.GetTypeInfo(cctx.Session) as MetadataType;
+                    bool isFlags = rt != null && rt.ReallyIsFlagsEnum;
+                    string enumName = GetTypeName(ctx, co.ExactType);
+                    ValueReference val = GetMember(ctx, null, objr, "value__");
+                    ulong nval = (ulong)System.Convert.ChangeType(val.ObjectValue, typeof(ulong));
+                    ulong remainingFlags = nval;
+                    string flags = null;
+                    foreach (ValueReference evals in GetMembers(ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static))
+                    {
+                        ulong nev = (ulong)System.Convert.ChangeType(evals.ObjectValue, typeof(ulong));
+                        if (nval == nev)
+                            return evals.Name;
+                        if (isFlags && nev != 0 && (nval & nev) == nev)
+                        {
+                            if (flags == null)
+                                flags = enumName + "." + evals.Name;
+                            else
+                                flags += " | " + enumName + "." + evals.Name;
+                            remainingFlags &= ~nev;
+                        }
+                    }
+                    if (isFlags)
+                    {
+                        if (remainingFlags == nval)
+                            return nval.ToString ();
+                        if (remainingFlags != 0)
+                            flags += " | " + remainingFlags;
+                        return flags;
+                    }
+                    else
+                        return nval.ToString ();
+                }
+
+                object vtype = GetValueType(ctx, objr);
+                object[] args = new object [0];
+                if (HasMethod(ctx, vtype, "ToString", args, BindingFlags.Public | BindingFlags.Instance))
+                {
+                    CorStringValue res = RuntimeInvoke(ctx, vtype, objr, "ToString", args, args) as CorStringValue;
+                    if (res != null)
+                        return res.String;
+                }
+
+                return GetDisplayTypeName(ctx, vtype);
+            }
+
+            CorGenericValue genVal = obj as CorGenericValue;
+            if (genVal != null)
+            {
+                return genVal.GetValue().ToString ();
+            }
+
+            return base.CallToString(ctx, obj);
+        }
+
+		bool IsValueType (CorEvaluationContext ctx, CorValRef val)
+		{
+			CorValue v = GetRealObject (ctx, val);
+			if (v.Type == CorElementType.ELEMENT_TYPE_VALUETYPE)
+				return true;
+			return v is CorGenericValue;
+		}
+
+		CorValRef Box (CorEvaluationContext ctx, CorValRef val)
+		{
+			CorValRef arr = new CorValRef (delegate {
+				return ctx.Session.NewArray (ctx, (CorType)GetValueType (ctx, val), 1);
+			});
+			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr);
+			realArr.SetElement (new int[] { 0 }, val);
+			
+			CorType at = (CorType) GetType (ctx, "System.Array");
+			object[] argTypes = new object[] { GetType (ctx, "System.Int32") };
+			return (CorValRef)RuntimeInvoke (ctx, at, arr, "GetValue", argTypes, new object[] { CreateValue (ctx, 0) });
+		}
+
 		public override bool HasMethod (EvaluationContext gctx, object gtargetType, string methodName, object[] gargTypes, BindingFlags flags)
 		{
 			CorType targetType = (CorType) gtargetType;
 			CorType[] argTypes = gargTypes != null ? CastArray<CorType> (gargTypes) : null;
-
-			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			Type type = targetType.Class.GetTypeInfo (ctx.Session);
+			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
 			flags = flags | BindingFlags.Public | BindingFlags.NonPublic;
 
-			foreach (MethodInfo mi in type.GetMethods (flags)) {
-				if (mi.Name == methodName) {
-					if (argTypes == null)
-						return true;
-					ParameterInfo[] pi = mi.GetParameters ();
-					if (pi.Length == argTypes.Length)
-						return true;
-				}
-			}
-			return false;
+			return OverloadResolve (ctx, methodName, targetType, argTypes, flags, false) != null;
 		}
 
 		public override object RuntimeInvoke (EvaluationContext gctx, object gtargetType, object gtarget, string methodName, object[] gargTypes, object[] gargValues)
@@ -187,24 +284,20 @@ namespace MonoDevelop.Debugger.Win32
 			CorType[] argTypes = CastArray<CorType> (gargTypes);
 			CorValRef[] argValues = CastArray<CorValRef> (gargValues);
 
-			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			Type type = targetType.Class.GetTypeInfo (ctx.Session);
 			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
 			if (target != null)
 				flags |= BindingFlags.Instance;
 			else
 				flags |= BindingFlags.Static;
 
-			MethodInfo method = null;
-			foreach (MethodInfo mi in type.GetMethods (flags)) {
-				if (mi.Name == methodName) {
-					ParameterInfo[] pi = mi.GetParameters ();
-					if (pi.Length == argValues.Length) {
-						method = mi;
-						break;
-					}
-				}
+			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
+			MethodInfo method = OverloadResolve (ctx, methodName, targetType, argTypes, flags, true);
+			ParameterInfo[] parameters = method.GetParameters ();
+			for (int n = 0; n < parameters.Length; n++) {
+				if (parameters[n].ParameterType == typeof(object) && (IsValueType (ctx, argValues[n])))
+					argValues[n] = Box (ctx, argValues[n]);
 			}
+
 			if (method != null) {
 				CorValRef v = new CorValRef (delegate {
 					CorFunction func = targetType.Class.Module.GetFunctionFromToken (method.MetadataToken);
@@ -220,8 +313,129 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			else
 				throw new EvaluatorException ("Invalid method name or incompatible arguments.");
-
 		}
+
+
+		MethodInfo OverloadResolve (CorEvaluationContext ctx, string methodName, CorType type, CorType[] argtypes, BindingFlags flags, bool throwIfNotFound)
+		{
+			List<MethodInfo> candidates = new List<MethodInfo> ();
+			CorType currentType = type;
+
+			while (currentType != null) {
+				Type rtype = currentType.Class.GetTypeInfo (ctx.Session);
+				foreach (MethodInfo met in rtype.GetMethods (flags)) {
+					if (met.Name == methodName) {
+						if (argtypes == null)
+							return met;
+						ParameterInfo[] pars = met.GetParameters ();
+						if (pars.Length == argtypes.Length)
+							candidates.Add (met);
+					}
+				}
+				if (methodName == ".ctor")
+					break; // Can't create objects using constructor from base classes
+				currentType = currentType.Base;
+			}
+
+
+			return OverloadResolve (ctx, GetTypeName (ctx, type), methodName, argtypes, candidates, throwIfNotFound);
+		}
+
+		bool IsApplicable (CorEvaluationContext ctx, MethodInfo method, CorType[] types, out string error, out int matchCount)
+		{
+			ParameterInfo[] mparams = method.GetParameters ();
+			matchCount = 0;
+
+			for (int i = 0; i < types.Length; i++) {
+
+				Type param_type = mparams[i].ParameterType;
+
+				if (param_type.FullName == GetTypeName (ctx, types[i])) {
+					matchCount++;
+					continue;
+				}
+
+				if (IsAssignableFrom (ctx, param_type, types[i]))
+					continue;
+
+				error = String.Format (
+					"Argument {0}: Cannot implicitly convert `{1}' to `{2}'",
+					i, GetTypeName (ctx, types[i]), param_type.FullName);
+				return false;
+			}
+
+			error = null;
+			return true;
+		}
+
+		MethodInfo OverloadResolve (CorEvaluationContext ctx, string typeName, string methodName, CorType[] argtypes, List<MethodInfo> candidates, bool throwIfNotFound)
+		{
+			if (candidates.Count == 1) {
+				string error;
+				int matchCount;
+				if (IsApplicable (ctx, candidates[0], argtypes, out error, out matchCount))
+					return candidates[0];
+
+				if (throwIfNotFound)
+					throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
+				else
+					return null;
+			}
+
+			if (candidates.Count == 0) {
+				if (throwIfNotFound)
+					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
+				else
+					return null;
+			}
+
+			// Ok, now we need to find an exact match.
+			MethodInfo match = null;
+			int bestCount = -1;
+			bool repeatedBestCount = false;
+
+			foreach (MethodInfo method in candidates) {
+				string error;
+				int matchCount;
+
+				if (!IsApplicable (ctx, method, argtypes, out error, out matchCount))
+					continue;
+
+				if (matchCount == bestCount) {
+					repeatedBestCount = true;
+				}
+				else if (matchCount > bestCount) {
+					match = method;
+					bestCount = matchCount;
+					repeatedBestCount = false;
+				}
+			}
+
+			if (match == null) {
+				if (!throwIfNotFound)
+					return null;
+				if (methodName != null)
+					throw new EvaluatorException ("Invalid arguments for method `{0}'.", methodName);
+				else
+					throw new EvaluatorException ("Invalid arguments for indexer.");
+			}
+
+			if (repeatedBestCount) {
+				// If there is an ambiguous match, just pick the first match. If the user was expecting
+				// something else, he can provide more specific arguments
+
+				/*				if (!throwIfNotFound)
+									return null;
+								if (methodName != null)
+									throw new EvaluatorException ("Ambiguous method `{0}'; need to use full name", methodName);
+								else
+									throw new EvaluatorException ("Ambiguous arguments for indexer.", methodName);
+				*/
+			}
+
+			return match;
+		}
+
 
 		public override string[] GetImportedNamespaces (EvaluationContext ctx)
 		{
@@ -249,6 +463,35 @@ namespace MonoDevelop.Debugger.Win32
 			childNamespaces = new string[nss.Count];
 			nss.CopyTo (childNamespaces, 0);
 			childTypes = types.ToArray ();
+		}
+
+		bool IsAssignableFrom (CorEvaluationContext ctx, Type baseType, CorType ctype)
+		{
+			string tname = baseType.FullName;
+			string ctypeName = GetTypeName (ctx, ctype);
+			if (tname == "System.Object")
+				return true;
+
+			if (tname == ctypeName)
+				return true;
+
+			if (CorMetadataImport.CoreTypes.ContainsKey (ctype.Type))
+				return false;
+
+			switch (ctype.Type) {
+				case CorElementType.ELEMENT_TYPE_ARRAY:
+				case CorElementType.ELEMENT_TYPE_SZARRAY:
+				case CorElementType.ELEMENT_TYPE_BYREF:
+				case CorElementType.ELEMENT_TYPE_PTR:
+					return false;
+			}
+
+			while (ctype != null) {
+				if (GetTypeName (ctx, ctype) == tname)
+					return true;
+				ctype = ctype.Base;
+			}
+			return false;
 		}
 
 		public override object TryCast (EvaluationContext ctx, object val, object type)
@@ -522,23 +765,14 @@ namespace MonoDevelop.Debugger.Win32
 				return stringVal.String;
 
 			CorArrayValue arr = obj as CorArrayValue;
-			if (arr != null) {
-				StringBuilder tn = new StringBuilder (GetTypeName (ctx, arr.ExactType.FirstTypeParameter));
-				tn.Append ("[");
-				int[] dims = arr.GetDimensions ();
-				for (int n = 0; n < dims.Length; n++) {
-					if (n > 0)
-						tn.Append (',');
-					tn.Append (dims [n]);
-				}
-				tn.Append ("]");
-				return new EvaluationResult (tn.ToString ());
-			}
+			if (arr != null)
+                return base.TargetObjectToObject(ctx, objr);
 
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorObjectValue co = obj as CorObjectValue;
 			if (co != null) {
-				if (co.ExactType.Base != null && GetTypeName (ctx, co.ExactType.Base) == "System.Enum") {
+                return base.TargetObjectToObject(ctx, objr);
+/*				if (co.ExactType.Base != null && GetTypeName (ctx, co.ExactType.Base) == "System.Enum") {
 					MetadataType rt = co.ExactType.Class.GetTypeInfo (cctx.Session) as MetadataType;
 					bool isFlags = rt != null && rt.ReallyIsFlagsEnum;
 					string enumName = GetTypeName (ctx, co.ExactType);
@@ -573,7 +807,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (co.Class.GetTypeInfo (cctx.Session).Name == "System.Decimal")
 					return new EvaluationResult (CallToString (ctx, objr));
 
-				return base.TargetObjectToObject (ctx, objr);
+				return base.TargetObjectToObject (ctx, objr);*/
 			}
 
 			CorGenericValue genVal = obj as CorGenericValue;

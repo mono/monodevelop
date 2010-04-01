@@ -741,7 +741,49 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public void WaitUntilStopped ( )
+		public CorValue NewArray (CorEvaluationContext ctx, CorType elemType, int size)
+		{
+			ManualResetEvent doneEvent = new ManualResetEvent (false);
+			CorValue result = null;
+
+			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs)
+			{
+				OnEndEvaluating ();
+				result = eargs.Eval.Result;
+				doneEvent.Set ();
+				eargs.Continue = false;
+			};
+
+			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs)
+			{
+				OnEndEvaluating ();
+				result = eargs.Eval.Result;
+				doneEvent.Set ();
+				eargs.Continue = false;
+			};
+
+			try {
+				process.OnEvalComplete += completeHandler;
+				process.OnEvalException += exceptionHandler;
+
+				ctx.Eval.NewParameterizedArray (elemType, 1, 1, 0);
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
+				OnStartEvaluating ();
+				ClearEvalStatus ();
+				process.Continue (false);
+
+				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
+					return result;
+				else
+					return null;
+			}
+			finally {
+				process.OnEvalComplete -= completeHandler;
+				process.OnEvalException -= exceptionHandler;
+			}
+		}
+
+		public void WaitUntilStopped ()
 		{
 			lock (debugLock) {
 				while (evaluating)

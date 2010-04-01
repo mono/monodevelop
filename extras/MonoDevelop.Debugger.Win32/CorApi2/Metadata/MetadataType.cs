@@ -246,9 +246,28 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         public override String FullName 
         {
-            get 
+            get
             {
-                return m_name;
+				StringBuilder sb = new StringBuilder (m_name);
+				if (m_typeArgs != null) {
+					sb.Append ("`").Append (m_typeArgs.Count);
+					sb.Append ("[");
+					for (int n = 0; n < m_typeArgs.Count; n++) {
+						if (n > 0)
+							sb.Append (",");
+						sb.Append (m_typeArgs[n].FullName);
+					}
+					sb.Append ("]");
+				}
+				if (IsPointer)
+					sb.Append ("*");
+				if (IsArray) {
+					sb.Append ("[");
+					for (int n = 1; n < m_arraySizes.Count; n++)
+						sb.Append (",");
+					sb.Append ("]");
+				}
+				return sb.ToString ();
             }
         }
 
@@ -284,6 +303,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 throw new NotImplementedException();
             }
         }
+
+		public override Type[] GetGenericArguments ()
+		{
+			return m_typeArgs.ToArray ();
+		}
 
 
         // methods
@@ -332,23 +356,31 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         protected override bool IsPointerImpl()
         {
-            throw new NotImplementedException();
+			return m_isPtr;
         }
 
         protected override bool IsByRefImpl()
         {
-            throw new NotImplementedException();
+			return m_isByRef;
         }
 
         protected override bool IsArrayImpl()
         {
-            throw new NotImplementedException();
+			return m_arraySizes != null;
         }
 
         protected override TypeAttributes GetAttributeFlagsImpl()
         {
             throw new NotImplementedException();
         }
+
+		public override int GetArrayRank ()
+		{
+			if (m_arraySizes != null)
+				return m_arraySizes.Count;
+			else
+				return 0;
+		}
 
         public override MemberInfo[] GetMembers(BindingFlags bindingAttr)
         {
@@ -604,16 +636,72 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 return String.Empty;
         }
 
-        // member variables
-        private string m_name;
-        private IMetadataImport m_importer;
-        private int m_typeToken;
-        private bool m_isEnum;
-        private bool m_isFlagsEnum;
-        private CorElementType m_enumUnderlyingType;
-        private List<KeyValuePair<string,ulong>> m_enumValues;
+		internal static Type MakeDelegate (Type retType, List<Type> argTypes)
+		{
+			
+			throw new NotImplementedException ();
+		}
+
+		internal static Type MakeArray (Type t, List<uint> sizes, List<uint> loBounds)
+		{
+			MetadataType mt = t as MetadataType;
+			if (mt != null) {
+				if (sizes == null) {
+					sizes = new List<uint> ();
+					sizes.Add (1);
+				}
+				mt.m_arraySizes = sizes;
+				mt.m_arrayLoBounds = loBounds;
+				return mt;
+			}
+			if (sizes == null)
+				return t.MakeArrayType ();
+			else
+				return t.MakeArrayType (sizes.Count);
+		}
+
+		internal static Type MakeByRef (Type t)
+		{
+			MetadataType mt = t as MetadataType;
+			if (mt != null) {
+				mt.m_isByRef = true;
+				return mt;
+			}
+			return t.MakeByRefType ();
+		}
+
+		internal static Type MakePointer (Type t)
+		{
+			MetadataType mt = t as MetadataType;
+			if (mt != null) {
+				mt.m_isPtr = true;
+				return mt;
+			}
+			return t.MakeByRefType ();
+		}
+
+		internal static Type MakeGeneric (Type t, List<Type> typeArgs)
+		{
+			MetadataType mt = (MetadataType)t;
+			mt.m_typeArgs = typeArgs;
+			return mt;
+		}
+
+		// member variables
+		private string m_name;
+		private IMetadataImport m_importer;
+		private int m_typeToken;
+		private bool m_isEnum;
+		private bool m_isFlagsEnum;
+		private CorElementType m_enumUnderlyingType;
+		private List<KeyValuePair<string, ulong>> m_enumValues;
 		private object[] m_customAttributes;
 		private Type m_declaringType;
+		private List<uint> m_arraySizes;
+		private List<uint> m_arrayLoBounds;
+		private bool m_isByRef, m_isPtr;
+		private List<Type> m_typeArgs;
+
 	}
 
     // Sorts KeyValuePair<string,ulong>'s in increasing order by the value

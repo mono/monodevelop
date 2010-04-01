@@ -71,7 +71,7 @@ namespace MonoDevelop.Debugger.Win32
 		
 		public object ElementType {
 			get {
-				return obj.Val.ExactType;
+				return obj.Val.ExactType.FirstTypeParameter;
 			}
 		}
 
