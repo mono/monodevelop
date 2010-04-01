@@ -576,8 +576,7 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 					((MethodResolveResult)result).ResolveExtensionMethods ();
 					if (nonMethodMembers.Count > 0) {
-						IType searchType = resolver.SearchType (nonMethodMembers[0].ReturnType);
-						MemberResolveResult baseResult = (MemberResolveResult) CreateResult (nonMethodMembers[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
+						MemberResolveResult baseResult = (MemberResolveResult) CreateResult (nonMethodMembers[0].DeclaringType.CompilationUnit, nonMethodMembers[0].ReturnType);
 						baseResult.ResolvedMember = nonMethodMembers[0];
 						return new CombinedMethodResolveResult (baseResult, (MethodResolveResult)result);
 					}
@@ -589,8 +588,7 @@ namespace MonoDevelop.CSharp.Resolver
 					result = CreateResult (member[0].FullName);
 					result.StaticResolve = true;
 				} else {
-					IType searchType = resolver.SearchType (member[0].ReturnType);
-					result = CreateResult (member[0].DeclaringType.CompilationUnit, searchType != null ? new DomReturnType (searchType) : DomReturnType.Void);
+					result = CreateResult (member[0].DeclaringType.CompilationUnit, member[0].ReturnType);
 					((MemberResolveResult)result).ResolvedMember = member[0];
 				}
 				return result;
