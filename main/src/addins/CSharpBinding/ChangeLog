@@ -1,5 +1,10 @@
 2010-04-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs: fixed
+	  possible null ref.
+
+2010-04-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug
 	  592120 - Type resolver bug with this.Property[]'.
 

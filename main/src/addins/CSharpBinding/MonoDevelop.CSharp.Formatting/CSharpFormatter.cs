@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Formatting
 			CSharpFormatter formatter = new CSharpFormatter ();
 			formatter.startIndentLevel = System.Math.Max (0, col / data.Options.TabSize - 1);
 			
-			string formattedText = formatter.InternalFormat (dom.Project.Policies, MimeType, wrapper, 0, wrapper.Length);
+			string formattedText = formatter.InternalFormat (dom != null && dom.Project != null ? dom.Project.Policies : null, MimeType, wrapper, 0, wrapper.Length);
 			
 			if (formatter.hasErrors)
 				return;
