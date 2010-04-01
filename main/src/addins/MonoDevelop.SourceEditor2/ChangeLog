@@ -1,3 +1,8 @@
+2010-04-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed auto
+	  save creation.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fix bug 569417

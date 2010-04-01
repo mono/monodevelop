@@ -143,7 +143,8 @@ namespace MonoDevelop.SourceEditor
 			
 			widget = new SourceEditorWidget (this);
 			widget.TextEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs args) {
-				wasEdited = true;
+				if (!inLoad)
+					wasEdited = true;
 				int startIndex = args.Offset;
 				int endIndex = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
 				if (TextChanged != null)
@@ -153,11 +154,13 @@ namespace MonoDevelop.SourceEditor
 				UpdateBreakpoints ();
 			};
 			
-			widget.TextEditor.Document.EndUndo += delegate {
-				if (!inLoad && wasEdited) {
-					autoSave.InformAutoSaveThread (Document);
-				}
+			widget.TextEditor.Document.BeginUndo += delegate {
 				wasEdited = false;
+			};
+			
+			widget.TextEditor.Document.EndUndo += delegate {
+				if (wasEdited)
+					autoSave.InformAutoSaveThread (Document);
 			};
 			
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
