@@ -21,10 +21,6 @@
     </itemgroups>
     <signals />
   </object>
-  <object type="MonoDevelop.Components.FolderListSelector" palette-category="General" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
   <object type="MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox" palette-category="General" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
     <signals>
@@ -32,10 +28,6 @@
         <signal name="SelectionChanged" />
       </itemgroup>
     </signals>
-  </object>
-  <object type="MonoDevelop.Ide.Projects.CombineEntryFeatureSelector" palette-category="MonoDevelop.Ide" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
   </object>
   <object type="MonoDevelop.Components.MenuButton" palette-category="MonoDevelop.Components" allow-children="false" base-type="Gtk.Button">
     <itemgroups>
@@ -158,18 +150,6 @@
         <signal name="ItemActivated" />
       </itemgroup>
     </signals>
-  </object>
-  <object type="MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget" palette-category="MonoDevelop.Projects.Gui" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups>
-      <itemgroup label="BaseDirectoryPanelWidget Properties">
-        <property name="BaseDirectory" />
-      </itemgroup>
-    </itemgroups>
-    <signals />
-  </object>
-  <object type="MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
   </object>
   <object type="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" palette-category="General" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />

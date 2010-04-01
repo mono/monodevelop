@@ -146,28 +146,28 @@ namespace MonoDevelop.Ide
 		}*/
 		
 		public BuildResultStates ShowErrorPadAfterBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowErrorPadAfterBuild", BuildResultStates.Never); }
-			set { PropertyService.Set ("MonoDevelop.Ide.ShowErrorPadAfterBuild", value); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", BuildResultStates.Never); }
+			set { PropertyService.Set ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", value); }
 		}
 
 		public event EventHandler<PropertyChangedEventArgs> ShowErrorPadAfterBuildChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowErrorPadAfterBuild", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowErrorPadAfterBuild", value); }
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.NewShowErrorPadAfterBuild", value); }
 		}
 		
 		public JumpToFirst JumpToFirstErrorOrWarning {
-			get { return PropertyService.Get ("MonoDevelop.Ide.JumpToFirstErrorOrWarning", JumpToFirst.Error); }
-			set { PropertyService.Set ("MonoDevelop.Ide.JumpToFirstErrorOrWarning", value); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.NewJumpToFirstErrorOrWarning", JumpToFirst.Error); }
+			set { PropertyService.Set ("MonoDevelop.Ide.NewJumpToFirstErrorOrWarning", value); }
 		}
 		
 		public ShowMessageBubbles ShowMessageBubbles {
-			get { return PropertyService.Get ("MonoDevelop.Ide.ShowMessageBubbles", ShowMessageBubbles.ForErrorsAndWarnings); }
-			set { PropertyService.Set ("MonoDevelop.Ide.ShowMessageBubbles", value); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.NewShowMessageBubbles", ShowMessageBubbles.ForErrorsAndWarnings); }
+			set { PropertyService.Set ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
 		}
 		
 		public event EventHandler<PropertyChangedEventArgs> ShowMessageBubblesChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.ShowMessageBubbles", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.ShowMessageBubbles", value); }
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
 		}
 		
 		public BeforeCompileAction BeforeBuildSaveAction {

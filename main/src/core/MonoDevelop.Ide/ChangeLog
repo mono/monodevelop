@@ -1,3 +1,10 @@
+2010-04-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide/IdePreferences.cs: Changed message bubble
+	  property keys.
+
+	* gtk-gui/objects.xml: 
+
 2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/DesktopService.cs:
