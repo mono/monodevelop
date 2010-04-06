@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects
 	{
 		Workspace parentWorkspace;
 		FileFormat format;
+		internal bool FormatSet;
 		Hashtable extendedProperties;
 		FilePath fileName;
 		int loading;
@@ -319,6 +320,7 @@ namespace MonoDevelop.Projects
 		
 		public virtual void ConvertToFormat (FileFormat format, bool convertChildren)
 		{
+			FormatSet = true;
 			this.format = format;
 			if (!string.IsNullOrEmpty (FileName))
 				FileName = format.GetValidFileName (this, FileName);

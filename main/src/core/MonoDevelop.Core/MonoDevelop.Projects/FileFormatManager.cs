@@ -94,5 +94,13 @@ namespace MonoDevelop.Projects
 					return f;
 			return null;
 		}
+		
+		internal FileFormat GetFileFormat (IFileFormat format)
+		{
+			foreach (FileFormat f in fileFormats)
+				if (f.Format == format)
+					return f;
+			return null;
+		}
 	}
 }

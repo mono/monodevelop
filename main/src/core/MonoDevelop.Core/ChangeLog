@@ -1,3 +1,11 @@
+2010-04-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/WorkspaceItem.cs:
+	* MonoDevelop.Projects/ProjectService.cs:
+	* MonoDevelop.Projects/FileFormatManager.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:
+	  Assign the correct format to the loaded solutions.
+
 2010-03-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectService.cs:

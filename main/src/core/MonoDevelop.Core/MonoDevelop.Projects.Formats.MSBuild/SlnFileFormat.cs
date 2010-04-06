@@ -541,7 +541,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ProjectExtensionUtil.BeginLoadOperation ();
 				sol = new Solution ();
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
-				LoadSolution (sol, fileName, monitor);
+				LoadSolution (sol, fileName, format, monitor);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
 				throw;
@@ -557,7 +557,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		//		Platform : Eg. Any CPU
 		//		SolutionConfigurationPlatforms
 		//
-		SolutionFolder LoadSolution (Solution sol, string fileName, IProgressMonitor monitor)
+		SolutionFolder LoadSolution (Solution sol, string fileName, MSBuildFileFormat format, IProgressMonitor monitor)
 		{
 			string headerComment;
 			string version = GetSlnFileVersion (fileName, out headerComment);
@@ -568,7 +568,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			List<Section> projectSections = null;
 			List<string> lines = null;
 			
-			FileFormat projectFormat = GetProjectFormatForSolution (version);
+			FileFormat projectFormat = Services.ProjectService.FileFormats.GetFileFormat (format);
 
 			monitor.BeginTask (GettextCatalog.GetString ("Loading solution: {0}", fileName), 1);
 			//Parse the .sln file
@@ -1079,17 +1079,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 		
-		FileFormat GetProjectFormatForSolution (string solutionVersion)
-		{
-			string projectVersion;
-			if (solutionVersion == "10.00")
-				projectVersion = "MSBuild08";
-			else
-				projectVersion = "MSBuild05";
-			
-			return Services.ProjectService.FileFormats.GetFileFormat (projectVersion);
-		}
-
 		// static regexes
 		static Regex projectRegex = null;
 		internal static Regex ProjectRegex {
