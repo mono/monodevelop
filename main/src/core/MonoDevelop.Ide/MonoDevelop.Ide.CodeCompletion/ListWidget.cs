@@ -590,6 +590,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public Gdk.Rectangle GetRowArea (int row)
 		{
+			if (this.GdkWindow == null)
+				return Gdk.Rectangle.Zero;
 			row -= page;
 			int winWidth, winHeight;
 			this.GdkWindow.GetSize (out winWidth, out winHeight);

@@ -1,5 +1,11 @@
 2010-04-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	  Handled possible null reference.
+
+2010-04-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
 	  worked on 'Bug 593232 - Intense flickering in OSX with
 	  help/autocompletion on OSX'.

@@ -479,6 +479,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		bool DelayedTooltipShow ()
 		{
 			Gdk.Rectangle rect = List.GetRowArea (List.Selection);
+			if (rect.IsEmpty)
+				return false;
 			int listpos_x = 0, listpos_y = 0;
 			while (listpos_x == 0 || listpos_y == 0)
 				GetPosition (out listpos_x, out listpos_y);
