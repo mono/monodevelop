@@ -1,3 +1,9 @@
+2010-04-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	  Remove dead space at bottom of dialog.
+
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:

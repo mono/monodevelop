@@ -211,7 +211,6 @@ namespace MonoDevelop.Debugger
 			this.radioBreakAlways = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Always break"));
 			this.radioBreakAlways.CanFocus = true;
 			this.radioBreakAlways.Name = "radioBreakAlways";
-			this.radioBreakAlways.Active = true;
 			this.radioBreakAlways.DrawIndicator = true;
 			this.radioBreakAlways.UseUnderline = true;
 			this.radioBreakAlways.Group = new global::GLib.SList (global::System.IntPtr.Zero);
@@ -369,7 +368,6 @@ namespace MonoDevelop.Debugger
 			this.radioActionBreak = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Break"));
 			this.radioActionBreak.CanFocus = true;
 			this.radioActionBreak.Name = "radioActionBreak";
-			this.radioActionBreak.Active = true;
 			this.radioActionBreak.DrawIndicator = true;
 			this.radioActionBreak.UseUnderline = true;
 			this.radioActionBreak.Group = new global::GLib.SList (global::System.IntPtr.Zero);
@@ -473,8 +471,8 @@ namespace MonoDevelop.Debugger
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 508;
-			this.DefaultHeight = 505;
+			this.DefaultWidth = 512;
+			this.DefaultHeight = 438;
 			this.Show ();
 			this.radioBreakAlways.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
 			this.radioBreakTrue.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);

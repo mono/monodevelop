@@ -536,7 +536,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.BreakpointPropertiesDialog" design-size="508 505">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.BreakpointPropertiesDialog" design-size="512 438">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Breakpoint Properties</property>
     <property name="WindowPosition">CenterOnParent</property>
