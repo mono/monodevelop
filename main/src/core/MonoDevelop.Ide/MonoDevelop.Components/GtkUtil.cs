@@ -217,7 +217,7 @@ namespace MonoDevelop.Components
 				Gdk.EventButton evnt = new Gdk.EventButton (ptr); 
 				Gdk.EventHelper.Put (evnt); 
 			} finally {
-				GLib.Marshaller.Free (ptr);
+				Marshal.FreeHGlobal (ptr);
 			}
 		}
 		
