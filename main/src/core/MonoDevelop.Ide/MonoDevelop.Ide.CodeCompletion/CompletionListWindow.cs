@@ -73,6 +73,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override void OnDestroyed ()
 		{
+			HideDeclarationView ();
+			RemoveDeclarationViewTimer ();
 			
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Destroy ();
@@ -366,29 +368,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateDeclarationView ();
 		}
 		
+		bool declarationViewHidden = true;
+		int declarationViewX = -1, declarationViewY = -1;
+		uint declarationViewTimer = 0;
+		uint declarationviewwindowOcapacityTimer = 0;
+		
 		void UpdateDeclarationView ()
 		{
 			if (completionDataList == null || List.Selection >= completionDataList.Count || List.Selection == -1)
 				return;
-
+			
 			if (List.GdkWindow == null)
 				return;
-			Gdk.Rectangle rect = List.GetRowArea (List.Selection);
-			int listpos_x = 0, listpos_y = 0;
-			while (listpos_x == 0 || listpos_y == 0)
-				GetPosition (out listpos_x, out listpos_y);
-			int vert = listpos_y + rect.Y;
-
-			int lvWidth = 0, lvHeight = 0;
-			while (lvWidth == 0)
-				this.GdkWindow.GetSize (out lvWidth, out lvHeight);
-			
-			if (vert >= listpos_y + lvHeight - 2) {
-				vert = listpos_y + lvHeight - rect.Height;
-			} else if (vert < listpos_y) {
-				vert = listpos_y;
-			}
-
+			RemoveDeclarationViewTimer ();
 			// no selection, try to find a selection
 			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
@@ -397,7 +389,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			// no success, hide declaration view
 			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
-				declarationviewwindow.Hide ();
+				HideDeclarationView ();
 				return;
 			}
 			ICompletionData data = completionDataList[List.SelectionIndex];
@@ -409,10 +401,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				overloads = new ICompletionData[] { data };
 			}
-
-			declarationviewwindow.Hide ();
 			
 			if (data != currentData) {
+				HideDeclarationView ();
+				
 				declarationviewwindow.Clear ();
 				declarationviewwindow.Realize ();
 				
@@ -422,26 +414,98 @@ namespace MonoDevelop.Ide.CodeCompletion
 							? overload.Description
 							: GLib.Markup.EscapeText (overload.Description));
 				}
+				
+				declarationviewwindow.Multiple = (overloadedData != null && overloadedData.IsOverloaded);
+				currentData = data;
 			}
 			
-			currentData = data;
-			if (declarationviewwindow.DescriptionMarkup.Length == 0)
+			if (declarationviewwindow.DescriptionMarkup.Length == 0) {
+				HideDeclarationView ();
 				return;
+			}
 			
-			declarationviewwindow.Move (this.Screen.Width + 1, vert);
+			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+		}
+		
+		void HideDeclarationView ()
+		{
+			if (declarationviewwindow != null) {
+				declarationviewwindow.Hide ();
+				declarationviewwindow.Opacity = 0;
+			}
+			declarationViewHidden = true;
+			declarationViewX = declarationViewY = -1; 
+		}
+		
+		void RemoveDeclarationViewTimer ()
+		{
+			if (declarationViewHidden && declarationviewwindowOcapacityTimer != 0) {
+				GLib.Source.Remove (declarationviewwindowOcapacityTimer);
+				declarationviewwindowOcapacityTimer = 0;
+			}
+			if (declarationViewTimer != 0) {
+				GLib.Source.Remove (declarationViewTimer);
+				declarationViewTimer = 0;
+			}
+		}
+		
+		class OcapacityTimer
+		{
+			public double Opacity { get; private set; }
 			
-			declarationviewwindow.SetFixedWidth (-1);
-			declarationviewwindow.ReshowWithInitialSize ();
-			declarationviewwindow.ShowAll ();
-			declarationviewwindow.Multiple = (overloadedData != null && overloadedData.IsOverloaded);
-
+			CompletionListWindow window;
+//			static int num = 0;
+//			int id;
+			public OcapacityTimer (CompletionListWindow window)
+			{
+//				id = num++;
+				this.window = window;
+				Opacity = 0.1;
+				window.declarationviewwindow.Opacity = Opacity;
+			}
+			
+			public bool Timer ()
+			{
+				Opacity = System.Math.Min (1.0, Opacity + 0.1);
+				//Console.WriteLine (id + " current:" + window.declarationviewwindow.Opacity + " set to:" + Opacity);
+				window.declarationviewwindow.Opacity = Opacity;
+				bool result = Math.Round (Opacity * 10.0) < 10;
+				if (!result)
+					window.declarationviewwindowOcapacityTimer = 0;
+				return result;
+			}
+		}
+		
+		bool DelayedTooltipShow ()
+		{
+			Gdk.Rectangle rect = List.GetRowArea (List.Selection);
+			int listpos_x = 0, listpos_y = 0;
+			while (listpos_x == 0 || listpos_y == 0)
+				GetPosition (out listpos_x, out listpos_y);
+			int vert = listpos_y + rect.Y;
+			int lvWidth = 0, lvHeight = 0;
+			while (lvWidth == 0)
+				this.GdkWindow.GetSize (out lvWidth, out lvHeight);
+			
+			if (vert >= listpos_y + lvHeight - 2) {
+				vert = listpos_y + lvHeight - rect.Height;
+			} else if (vert < listpos_y) {
+				vert = listpos_y;
+			}
+			
+			if (declarationViewHidden) {
+				declarationviewwindow.Move (this.Screen.Width + 1, vert);
+				declarationviewwindow.SetFixedWidth (-1);
+				declarationviewwindow.ReshowWithInitialSize ();
+				declarationviewwindow.ShowAll ();
+				if (declarationviewwindowOcapacityTimer != 0) 
+					GLib.Source.Remove (declarationviewwindowOcapacityTimer);
+				declarationviewwindowOcapacityTimer = GLib.Timeout.Add (50, new OcapacityTimer (this).Timer);
+				declarationViewHidden = false;
+			}
+			
 			Requisition req = declarationviewwindow.SizeRequest ();
 			int dvwWidth = req.Width;
-//			int dvwHeight = req.Height;
-			
-//			int dvwWidth, dvwHeight;
-//			declarationviewwindow.GdkWindow.GetSize (out dvwWidth, out dvwHeight);
-		
 			int horiz = listpos_x + lvWidth + declarationWindowMargin;
 			if (this.Screen.Width - horiz >= lvWidth) {
 				if (this.Screen.Width - horiz < dvwWidth)
@@ -453,8 +517,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				horiz = curXPos - dvwWidth - declarationWindowMargin;
 			}
-
-			declarationviewwindow.Move (horiz, vert);
+			
+			if (declarationViewX != horiz || declarationViewY != vert) {
+				declarationviewwindow.Move (horiz, vert);
+				declarationViewX = horiz;
+				declarationViewY = vert;
+			}
+			declarationViewTimer = 0;
+			return false;
 		}
 		
 		#region IListDataProvider
