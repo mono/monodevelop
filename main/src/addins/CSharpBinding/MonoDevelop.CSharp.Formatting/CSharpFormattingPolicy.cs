@@ -252,6 +252,13 @@ namespace MonoDevelop.CSharp.Formatting
 			get;
 			set;
 		}
+		
+		[ItemProperty]
+		public bool AllowIfBlockInline {
+			get;
+			set;
+		}
+		
 		#endregion
 		
 		#region Force Braces

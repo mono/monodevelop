@@ -56,6 +56,25 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.AddRange (domIndentationVisitor.Changes);
 			RefactoringService.AcceptChanges (null, null, changes);
 		}
+		
+		public static void Format (TextEditorData data, ProjectDom dom)
+		{
+			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
+			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			CSharpFormattingPolicy policy = dom.Project.Policies != null ? dom.Project.Policies.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
+			domSpacingVisitor.AutoAcceptChanges = false;
+			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
+			
+			DomIndentationVisitor domIndentationVisitor = new DomIndentationVisitor (policy, data);
+			domIndentationVisitor.AutoAcceptChanges = false;
+			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
+			
+			List<Change> changes = new List<Change> ();
+			changes.AddRange (domSpacingVisitor.Changes);
+			changes.AddRange (domIndentationVisitor.Changes);
+			RefactoringService.AcceptChanges (null, null, changes);
+		}
 	}
 }*/
 

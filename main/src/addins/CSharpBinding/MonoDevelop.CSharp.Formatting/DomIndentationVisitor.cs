@@ -364,6 +364,11 @@ namespace MonoDevelop.CSharp.Formatting
 
 		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, ICSharpNode node)
 		{
+			return FixEmbeddedStatment (braceStyle, braceForcement, null, false, node);
+		}
+		
+		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, ICSharpNode node)
+		{
 			if (node == null)
 				return null;
 			bool isBlock = node is BlockStatement;
@@ -415,9 +420,18 @@ namespace MonoDevelop.CSharp.Formatting
 			int originalLevel = curIndent.Level;
 			if (isBlock) {
 				BlockStatement block = node as BlockStatement;
-				EnforceBraceStyle (braceStyle, block.LBrace, block.RBrace);
+				if (allowInLine && block.StartLocation.Line == block.EndLocation.Line && block.Statements.Count () <= 1) {
+					if (block.Statements.Count () == 1)
+						nextStatementIndent = " ";
+				} else {
+					EnforceBraceStyle (braceStyle, block.LBrace, block.RBrace);
+				}
 				if (braceStyle == BraceStyle.NextLineShifted2)
 					curIndent.Level++;
+			} else {
+				if (allowInLine && token.StartLocation.Line == node.EndLocation.Line) {
+					nextStatementIndent = " ";
+				}
 			}
 			if (!(node is IfElseStatement && node.Parent is IfElseStatement || node is UsingStatement && node.Parent is UsingStatement)) 
 				curIndent.Level++;
@@ -541,14 +555,14 @@ namespace MonoDevelop.CSharp.Formatting
 				ifElseStatement.Condition.AcceptVisitor (this, data);
 			
 			if (ifElseStatement.TrueEmbeddedStatement != null)
-				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement , ifElseStatement.TrueEmbeddedStatement);
+				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement, ifElseStatement.IfKeyword, policy.AllowIfBlockInline, ifElseStatement.TrueEmbeddedStatement);
 			
 			if (ifElseStatement.FalseEmbeddedStatement != null) {
 				PlaceOnNewLine (policy.PlaceElseOnNewLine, ifElseStatement.ElseKeyword);
 				if (ifElseStatement.FalseEmbeddedStatement is IfElseStatement) {
 					PlaceOnNewLine (policy.PlaceElseIfOnNewLine, ((IfElseStatement)ifElseStatement.FalseEmbeddedStatement).IfKeyword);
 				}
-				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement, ifElseStatement.FalseEmbeddedStatement);
+				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement, ifElseStatement.ElseKeyword, policy.AllowIfBlockInline, ifElseStatement.FalseEmbeddedStatement);
 			}
 			
 			return null;

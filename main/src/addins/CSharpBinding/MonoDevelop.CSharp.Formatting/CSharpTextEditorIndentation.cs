@@ -460,7 +460,14 @@ namespace MonoDevelop.CSharp.Formatting
 				Editor.CursorPosition = pos;
 				Editor.Select (pos, pos);
 			}
-			
 		}
+		/*
+		[MonoDevelop.Components.Commands.CommandHandler (MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer)]
+		public void FormatBuffer ()
+		{
+			Console.WriteLine ("format buffer!");
+			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
+			OnTheFlyFormatter.Format (this.textEditorData, dom);
+		}*/
 	}
 }

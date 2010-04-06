@@ -446,6 +446,19 @@ class ClassDeclaration {
 	</Category>
 	
 	<Category _displayName="New Lines">
+<!--		<OptionCategory _displayName="Allow one line embedded statements">
+			<Option name="AllowIfBlockInline" _displayName="'if'"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			if (true) { Console.WriteLine ("Hello World!"); }
+			if (true) Console.WriteLine ("Hello World!");
+			if (true) { Foo (); Bar (); }
+		}
+	}
+]]></Example></Option>
+		</OptionCategory>-->
+	
 		<Category _displayName="Place on new line">
 			<Option name="PlaceElseOnNewLine" _displayName="'else'" example="simpleIf"/>
 			<Option name="PlaceElseIfOnNewLine" _displayName="'else if'" example="simpleIf"/>
