@@ -1,3 +1,7 @@
+2010-04-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* EvaluationTests.cs: Make some tests work on windows.
+
 2010-03-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Tests.csproj: Merged MD.Projects into

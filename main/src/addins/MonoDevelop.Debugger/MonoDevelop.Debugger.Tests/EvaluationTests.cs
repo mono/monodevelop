@@ -56,7 +56,7 @@ namespace MonoDevelop.Debugger.Tests
 
 		ObjectValue Eval (string exp)
 		{
-			return frame.GetExpressionValue (exp, EvaluationOptions.DefaultOptions).Sync ();
+			return frame.GetExpressionValue (exp, true).Sync ();
 		}
 		
 		[Test()]
@@ -123,14 +123,15 @@ namespace MonoDevelop.Debugger.Tests
 		public virtual void Typeof ()
 		{
 			ObjectValue val = Eval ("typeof(System.Console)");
-			Assert.AreEqual ("System.MonoType", val.TypeName);
+			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			Assert.AreEqual ("{System.Console}", val.Value);
 		}
 		
 		[Test()]
 		public void MethodInvoke ()
 		{
-			ObjectValue val = Eval ("TestMethod ()");
+			ObjectValue val;
+			val = Eval ("TestMethod ()");
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
@@ -141,7 +142,7 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("TestMethod (42)");
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
-			
+						 
 			val = Eval ("TestMethod (false)");
 			Assert.AreEqual ("2", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
@@ -240,7 +241,8 @@ namespace MonoDevelop.Debugger.Tests
 		[Test()]
 		public void Cast ()
 		{
-			ObjectValue val = Eval ("(byte)n");
+			ObjectValue val;
+			val = Eval ("(byte)n");
 			Assert.AreEqual ("32", val.Value);
 			Assert.AreEqual ("byte", val.TypeName);
 			
@@ -482,7 +484,7 @@ namespace MonoDevelop.Debugger.Tests
 			Eval ("numbers[0] = \"one\"");
 			val = Eval ("numbers[0]");
 			Assert.AreEqual ("\"one\"", val.Value);
-			
+
 			Eval ("alist[0] = 6");
 			val = Eval ("alist[0]");
 			Assert.AreEqual ("6", val.Value);
@@ -654,12 +656,16 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatGeneric ()
 		{
 			ObjectValue val;
-			
+		
+			ds.Options.EvaluationOptions.AllowTargetInvoke = false;
 			val = Eval ("dict");
+			ds.Options.EvaluationOptions.AllowTargetInvoke = true;
 			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>}", val.Value);
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>", val.TypeName);
 			
+			ds.Options.EvaluationOptions.AllowTargetInvoke = false;
 			val = Eval ("dictArray");
+			ds.Options.EvaluationOptions.AllowTargetInvoke = true;
 			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>[2,3]}", val.Value);
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>[,]", val.TypeName);
 			
