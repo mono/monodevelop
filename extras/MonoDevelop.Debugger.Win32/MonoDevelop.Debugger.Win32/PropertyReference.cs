@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger.Win32
 	{
 		PropertyInfo prop;
 		CorValRef thisobj;
-		CorValRef index;
+		CorValRef[] index;
 		CorModule module;
 		CorType declaringType;
 		CorValRef.ValueLoader loader;
@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger.Win32
 		{
 		}
 
-		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType, CorValRef index)
+		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType, CorValRef[] index)
 			: base (ctx)
 		{
 			this.prop = prop;
@@ -84,25 +84,53 @@ namespace MonoDevelop.Debugger.Win32
 				if (!prop.CanRead)
 					return null;
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
+				CorValue[] args;
+				if (index != null) {
+					args = new CorValue[index.Length];
+					ParameterInfo[] metArgs = prop.GetGetMethod ().GetParameters ();
+					for (int n = 0; n < index.Length; n++)
+						args[n] = ctx.Adapter.GetBoxedArg (ctx, index[n], metArgs[n].ParameterType).Val;
+				}
+				else
+					args = new CorValue[0];
+
 				MethodInfo mi = prop.GetGetMethod ();
-				CorValue[] args = index == null ? new CorValue[0] : new CorValue[] { index.Val };
 				CorFunction func = module.GetFunctionFromToken (mi.MetadataToken);
 				CorValue val = ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
 				return cachedValue = new CorValRef (val, loader);
 			}
 			set {
-				CorEvaluationContext ctx = (CorEvaluationContext) Context;
+				CorEvaluationContext ctx = (CorEvaluationContext)Context;
 				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod ().MetadataToken);
 				CorValRef val = (CorValRef) value;
-				CorValue[] args = index == null ? new CorValue[] { val.Val } : new CorValue[] { index.Val, val.Val };
+				CorValue[] args;
+				ParameterInfo[] metArgs = prop.GetSetMethod ().GetParameters ();
+
+				if (index == null)
+					args = new CorValue[1];
+				else {
+					args = new CorValue [index.Length + 1];
+					for (int n = 0; n < index.Length; n++) {
+						args[n] = ctx.Adapter.GetBoxedArg (ctx, index[n], metArgs[n].ParameterType).Val;
+					}
+				}
+				args[args.Length - 1] = ctx.Adapter.GetBoxedArg (ctx, val, metArgs[metArgs.Length - 1].ParameterType).Val;
 				ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
 			}
 		}
 		
 		public override string Name {
 			get {
-				if (index != null)
-					return "[" + Context.Evaluator.TargetObjectToExpression (Context, index) + "]";
+				if (index != null) {
+					System.Text.StringBuilder sb = new System.Text.StringBuilder ("[");
+					foreach (CorValRef vr in index) {
+						if (sb.Length > 1)
+							sb.Append (",");
+						sb.Append (Context.Evaluator.TargetObjectToExpression (Context, vr));
+					}
+					sb.Append ("]");
+					return sb.ToString ();
+				}
 				else
 					return prop.Name;
 			}

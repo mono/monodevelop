@@ -250,7 +250,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             {
 				StringBuilder sb = new StringBuilder (m_name);
 				if (m_typeArgs != null) {
-					sb.Append ("`").Append (m_typeArgs.Count);
 					sb.Append ("[");
 					for (int n = 0; n < m_typeArgs.Count; n++) {
 						if (n > 0)
@@ -642,25 +641,25 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			throw new NotImplementedException ();
 		}
 
-		internal static Type MakeArray (Type t, List<uint> sizes, List<uint> loBounds)
+		public static Type MakeArray (Type t, List<int> sizes, List<int> loBounds)
 		{
 			MetadataType mt = t as MetadataType;
 			if (mt != null) {
 				if (sizes == null) {
-					sizes = new List<uint> ();
+					sizes = new List<int> ();
 					sizes.Add (1);
 				}
 				mt.m_arraySizes = sizes;
 				mt.m_arrayLoBounds = loBounds;
 				return mt;
 			}
-			if (sizes == null)
+			if (sizes == null || sizes.Count == 1)
 				return t.MakeArrayType ();
 			else
 				return t.MakeArrayType (sizes.Count);
 		}
 
-		internal static Type MakeByRef (Type t)
+		public static Type MakeByRef (Type t)
 		{
 			MetadataType mt = t as MetadataType;
 			if (mt != null) {
@@ -670,7 +669,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			return t.MakeByRefType ();
 		}
 
-		internal static Type MakePointer (Type t)
+		public static Type MakePointer (Type t)
 		{
 			MetadataType mt = t as MetadataType;
 			if (mt != null) {
@@ -680,7 +679,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			return t.MakeByRefType ();
 		}
 
-		internal static Type MakeGeneric (Type t, List<Type> typeArgs)
+		public static Type MakeGeneric (Type t, List<Type> typeArgs)
 		{
 			MetadataType mt = (MetadataType)t;
 			mt.m_typeArgs = typeArgs;
@@ -697,8 +696,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		private List<KeyValuePair<string, ulong>> m_enumValues;
 		private object[] m_customAttributes;
 		private Type m_declaringType;
-		private List<uint> m_arraySizes;
-		private List<uint> m_arrayLoBounds;
+		private List<int> m_arraySizes;
+		private List<int> m_arrayLoBounds;
 		private bool m_isByRef, m_isPtr;
 		private List<Type> m_typeArgs;
 

@@ -904,11 +904,41 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public static Type GetTypeInfo (this CorClass type, CorDebuggerSession session)
+		public static Type GetTypeInfo (this CorType type, CorDebuggerSession session)
 		{
-			CorMetadataImport mi = session.GetMetadataForModule (type.Module.Name);
-			if (mi != null)
-				return mi.GetType (type.Token);
+			Type t;
+			if (CorMetadataImport.CoreTypes.TryGetValue (type.Type, out t))
+				return t;
+
+			if (type.Type == CorElementType.ELEMENT_TYPE_ARRAY || type.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+				List<int> sizes = new List<int> ();
+				List<int> loBounds = new List<int> ();
+				for (int n = 0; n < type.Rank; n++) {
+					sizes.Add (1);
+					loBounds.Add (0);
+				}
+				return MetadataType.MakeArray (type.FirstTypeParameter.GetTypeInfo (session), sizes, loBounds);
+			}
+
+			if (type.Type == CorElementType.ELEMENT_TYPE_BYREF)
+				return MetadataType.MakeByRef (type.FirstTypeParameter.GetTypeInfo (session));
+
+			if (type.Type == CorElementType.ELEMENT_TYPE_PTR)
+				return MetadataType.MakePointer (type.FirstTypeParameter.GetTypeInfo (session));
+
+			CorMetadataImport mi = session.GetMetadataForModule (type.Class.Module.Name);
+			if (mi != null) {
+				t = mi.GetType (type.Class.Token);
+				CorType[] targs = type.TypeParameters;
+				if (targs.Length > 0) {
+					List<Type> types = new List<Type> ();
+					foreach (CorType ct in targs)
+						types.Add (ct.GetTypeInfo (session));
+					return MetadataType.MakeGeneric (t, types);
+				}
+				else
+					return t;
+			}
 			else
 				return null;
 		}

@@ -1,0 +1,6 @@
+2010-04-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Metadata\CorMetadata.cs:
+	* Metadata\MetadataType.cs: The Make*Type methods are now
+	public.
+

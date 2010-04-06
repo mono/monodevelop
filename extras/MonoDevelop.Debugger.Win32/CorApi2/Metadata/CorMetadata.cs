@@ -684,13 +684,13 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 						Type t = ReadType (importer, ref pData);
 						uint rank = CorSigUncompressData (ref pData);
 						uint numSizes = CorSigUncompressData (ref pData);
-						List<uint> sizes = new List<uint> ();
+						List<int> sizes = new List<int> ();
 						for (int n = 0; n < numSizes; n++)
-							sizes.Add (CorSigUncompressData (ref pData));
+							sizes.Add ((int)CorSigUncompressData (ref pData));
 						uint numLoBounds = CorSigUncompressData (ref pData);
-						List<uint> loBounds = new List<uint> ();
+						List<int> loBounds = new List<int> ();
 						for (int n = 0; n < numLoBounds; n++)
-							loBounds.Add (CorSigUncompressData (ref pData));
+							loBounds.Add ((int)CorSigUncompressData (ref pData));
 						return MetadataType.MakeArray (t, sizes, loBounds);
 					}
 

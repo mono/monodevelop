@@ -1,3 +1,24 @@
+2010-04-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CorEvaluationContext.cs: New helper property.
+
+	* CorObjectAdaptor.cs: Improved CallToString. Fixed enum
+	conversions. Implemented some missing overrideables:
+	CreateTypeObject, GetEnumMembers, GetIndexerReference.
+
+	* CorDebuggerSession.cs: Improved implementation of
+	GetTypeInfo. It now supports primitive, generic and array
+	types.
+
+	* FieldReference.cs: When getting enum members, convert the
+	integer value to an enum value
+
+	* PropertyReference.cs: Improved implementation of indexers.
+	Properly box primitive values when setting/getting the
+	property.
+
+	* MonoDevelop.Debugger.Win32.csproj: Updated.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.Win32.addin.xml: Bumped MD version.

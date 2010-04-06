@@ -24,10 +24,14 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			Session = session;
 			Evaluator = session.Evaluator;
-			Adapter = session.ObjectAdapter;
+			base.Adapter = session.ObjectAdapter;
 			frameIndex = index;
 			this.backtrace = backtrace;
 			evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
+		}
+
+		public new CorObjectAdaptor Adapter {
+			get { return (CorObjectAdaptor)base.Adapter; }
 		}
 
 		void CheckTimestamp ( )
