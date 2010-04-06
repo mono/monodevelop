@@ -1,3 +1,11 @@
+2010-04-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/TestBraceStlye.cs:
+	* MonoDevelop.CSharpBinding/TestTypeLevelIndentation.cs:
+	* MonoDevelop.CSharpBinding/TestStatementIndentation.cs: Added
+	  test for 'Bug 593635 - Auto-formatting doesn't allow
+	  single-line if statements'.
+
 2010-04-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added

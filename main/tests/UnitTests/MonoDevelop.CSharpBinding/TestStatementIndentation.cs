@@ -928,6 +928,95 @@ do {
 		}
 		
 		[Test()]
+		public void TestAllowIfBlockInline ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.AllowIfBlockInline = true;
+			
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {}
+	}
+}";
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {}
+	}
+}", data.Document.Text);
+			
+			
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) { Foo (); }
+	}
+}";
+			
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) { Foo (); }
+	}
+}", data.Document.Text);
+			
+			
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) Foo ();
+	}
+}";
+			
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) Foo ();
+	}
+}", data.Document.Text);
+			
+			
+			data.Document.Text = @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true)
+			Foo ();
+	}
+}";
+			
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true)
+			Foo ();
+	}
+}", data.Document.Text);
+			
+			
+		}
+		
+		[Test()]
 		public void TestIfElseBracketPlacement ()
 		{
 			TextEditorData data = new TextEditorData ();
