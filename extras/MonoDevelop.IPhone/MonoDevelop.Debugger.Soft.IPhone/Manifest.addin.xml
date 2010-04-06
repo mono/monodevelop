@@ -18,7 +18,7 @@
 		<DebuggerEngine
 			id="Mono.Debugger.Soft.IPhone"
 			name="Mono Soft Debugger for iPhone"
-			features="Breakpoints, Pause, Stepping, DebugFile, Catchpoints"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
 			type="MonoDevelop.Debugger.Soft.IPhone.IPhoneSoftDebuggerEngine" />
 	</Extension>
 </Addin>

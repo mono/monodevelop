@@ -49,7 +49,7 @@
 		<DebuggerEngine
 			id="MonoDevelop.MeeGo.SoftDebugger"
 			name="Mono Soft Debugger for MeeGo"
-			features="Breakpoints, Pause, Stepping, DebugFile, Catchpoints"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
 			type="MonoDevelop.MeeGo.MeeGoSoftDebuggerEngine" />
 	</Extension>
 </Addin>
