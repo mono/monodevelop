@@ -945,6 +945,31 @@ namespace MonoDevelop.SourceEditor
 			ShowSearchReplaceWidget (true);
 		}
 		
+		[CommandUpdateHandler (SearchCommands.UseSelectionForFind)]
+		protected void OnUpdateUseSelectionForFind (CommandInfo info)
+		{
+			info.Enabled = searchAndReplaceWidget != null && TextEditor.IsSomethingSelected;
+		}
+		
+		[CommandHandler (SearchCommands.UseSelectionForFind)]
+		public void UseSelectionForFind ()
+		{
+			SetSearchPatternToSelection ();
+		}
+		
+		[CommandUpdateHandler (SearchCommands.UseSelectionForReplace)]
+		protected void OnUpdateUseSelectionForReplace (CommandInfo info)
+		{
+			info.Enabled = searchAndReplaceWidget != null && TextEditor.IsSomethingSelected;
+		}
+		
+		[CommandHandler (SearchCommands.UseSelectionForReplace)]
+		public void UseSelectionForReplace ()
+		{
+			SetReplacePatternToSelection ();
+		}
+		
+		
 		void ShowSearchReplaceWidget (bool replace)
 		{
 			this.textEditor.SearchPattern = SearchAndReplaceWidget.searchPattern = "";
@@ -1100,10 +1125,15 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (TextEditor.IsSomethingSelected) {
 				TextEditor.SearchPattern = TextEditor.SelectedText;
-	//			CheckSearchPatternCasing (TextEditor.SelectedText);
 			}
 			if (searchAndReplaceWidget != null)
 				searchAndReplaceWidget.UpdateSearchPattern ();
+		}
+		
+		void SetReplacePatternToSelection ()
+		{
+			if (searchAndReplaceWidget != null && TextEditor.IsSomethingSelected)
+				searchAndReplaceWidget.ReplacePattern = TextEditor.SelectedText;
 		}
 		
 		[CommandHandler (SearchCommands.FindNextSelection)]

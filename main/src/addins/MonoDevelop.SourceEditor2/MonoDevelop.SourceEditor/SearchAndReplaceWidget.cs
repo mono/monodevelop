@@ -77,6 +77,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public string ReplacePattern {
 			get { return entryReplace.Text; }
+			set { entryReplace.Text = value; }
 		}
 		
 		public string SearchPattern {
