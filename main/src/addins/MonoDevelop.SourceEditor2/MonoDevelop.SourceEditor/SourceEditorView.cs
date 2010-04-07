@@ -821,7 +821,7 @@ namespace MonoDevelop.SourceEditor
 				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
 			} else if (args.Button == 1) {
 				if (!string.IsNullOrEmpty (this.Document.FileName)) {
-					if (DebuggingService.IsDebugging || !args.LineSegment.Markers.Any (m => m is ErrorTextMarker))
+					if (DebuggingService.IsDebugging || (args.LineSegment != null && !args.LineSegment.Markers.Any (m => m is ErrorTextMarker)))
 						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber + 1);
 				}
 			}

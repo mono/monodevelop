@@ -303,10 +303,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = true;
 			if (key == Gdk.Key.Escape) {
-				bool b;
-				if (Extension != null)
-					b = ExtensionKeyPress (key, ch, state); else
-					b = base.OnIMProcessedKeyPressEvent (key, ch, state);
+				bool b = Extension != null ? ExtensionKeyPress (key, ch, state) : base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
