@@ -316,6 +316,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			CellRendererText fileNameRenderer = (CellRendererText)cell;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
