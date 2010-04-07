@@ -240,7 +240,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (currentHandleGrp != null) {
 				dragging = true;
-				dragPos = (currentHandleGrp.Type == DockGroupType.Horizontal) ? (int)ev.X : (int)ev.Y;
+				dragPos = (currentHandleGrp.Type == DockGroupType.Horizontal) ? (int)ev.XRoot : (int)ev.YRoot;
 				DockObject obj = currentHandleGrp.VisibleObjects [currentHandleIndex];
 				dragSize = (currentHandleGrp.Type == DockGroupType.Horizontal) ? obj.Allocation.Width : obj.Allocation.Height;
 			}
@@ -257,7 +257,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (dragging) {
 				NotifySeparatorsChanged ();
-				int newpos = (currentHandleGrp.Type == DockGroupType.Horizontal) ? (int)e.X : (int)e.Y;
+				int newpos = (currentHandleGrp.Type == DockGroupType.Horizontal) ? (int)e.XRoot : (int)e.YRoot;
 				if (newpos != dragPos) {
 					int nsize = dragSize + (newpos - dragPos);
 					currentHandleGrp.ResizeItem (currentHandleIndex, nsize);

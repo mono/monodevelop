@@ -1,3 +1,9 @@
+2010-04-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Docking/DockContainer.cs: Partial fix
+	  dor bug 578531 - MD 2.2.1 Splitters only work if you move
+	  reeaaallllyyyy slooowwwllly on OSX.
+
 2010-04-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:
