@@ -1142,11 +1142,12 @@ namespace Mono.TextEditor
 			
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
-			
-			Pango.Rectangle ink_rect, logical_rect;
-			layout.Layout.GetExtents (out ink_rect, out logical_rect);
-			int width = (int)((logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale);
-			
+			int width, ph;
+			layout.Layout.GetPixelSize (out width, out ph);
+			// work around for Bug 591459 - Visual glitches when highlighting text
+			// on mac the width is always 1 pixel too wide.
+			if (Platform.IsMac)
+				width--;
 			bool drawBg = true;
 			bool drawText = true;
 			

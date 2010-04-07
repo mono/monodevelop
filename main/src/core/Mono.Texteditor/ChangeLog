@@ -1,3 +1,8 @@
+2010-04-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Added work around for
+	  'Bug 591459 - Visual glitches when highlighting text'.
+
 2010-03-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/SimpleEditMode.cs: Fixed shortcut key bug.
