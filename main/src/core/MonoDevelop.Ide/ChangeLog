@@ -1,3 +1,8 @@
+2010-04-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Handle
+	  null ref in data func.
+
 2010-04-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Docking/DockContainer.cs: Partial fix

@@ -296,8 +296,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void FileIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			if (TreeIter.Zero.Equals (iter))
+				return;
 			CellRendererPixbuf fileNamePixbufRenderer = (CellRendererPixbuf) cell;
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			if (searchResult == null)
+				return;
 			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
 		}
 		
@@ -312,7 +316,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			CellRendererText fileNameRenderer = (CellRendererText)cell;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
