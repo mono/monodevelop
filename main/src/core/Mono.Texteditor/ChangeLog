@@ -1,5 +1,11 @@
 2010-04-07  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/GutterMargin.cs: Fixed 'Bug 571338 -
+	  multiline selection in monodevelop blows monkeys'.
+
+2010-04-07  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Added work around for
 	  'Bug 591459 - Visual glitches when highlighting text'.
 

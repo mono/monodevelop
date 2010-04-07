@@ -87,6 +87,7 @@ namespace Mono.TextEditor
 			
 			if (args.Button != 1)
 				return;
+			editor.LockedMargin = this;
 			int lineNumber       = args.LineNumber;
 			bool extendSelection = (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
 			if (lineNumber < editor.Document.LineCount) {
@@ -108,6 +109,12 @@ namespace Mono.TextEditor
 				editor.Caret.Location = loc;
 				editor.Caret.PreserveSelection = false;
 			}
+		}
+		
+		internal protected override void MouseReleased (MarginMouseEventArgs args)
+		{
+			editor.LockedMargin = null;
+			base.MouseReleased (args);
 		}
 		
 		public static DocumentLocation GetLineEndLocation (TextEditorData data, int lineNumber)

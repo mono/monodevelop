@@ -846,16 +846,28 @@ namespace Mono.TextEditor
 			Console.WriteLine (evnt.Type);
 			return base.OnWidgetEvent (evnt);
 		}*/
-
+		
+		public Margin LockedMargin {
+			get;
+			set;
+		}
+		
 		Margin GetMarginAtX (int x, out int startingPos)
 		{
 			int curX = 0;
 			foreach (Margin margin in this.margins) {
 				if (!margin.IsVisible)
 					continue;
-				if (curX <= x && (x <= curX + margin.Width || margin.Width < 0)) {
-					startingPos = curX;
-					return margin;
+				if (LockedMargin != null) {
+					if (LockedMargin == margin) {
+						startingPos = curX;
+						return margin;
+					}
+				} else {
+					if (curX <= x && (x <= curX + margin.Width || margin.Width < 0)) {
+						startingPos = curX;
+						return margin;
+					}
 				}
 				curX += margin.Width;
 			}
