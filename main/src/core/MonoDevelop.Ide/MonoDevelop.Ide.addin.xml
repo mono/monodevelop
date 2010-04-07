@@ -1385,6 +1385,12 @@
 				shortcut = "Control|I"
 				macShortcut = "Meta|L"
 				icon = "gtk-jump-to" />
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForFind"
+				_label = "Use Selection for Find" 
+				_description = "Uses the current selection as find string"/>
+		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForReplace"
+				_label = "Use Selection for Replace" 
+				_description = "Uses the current selection as replace string"/>
 		</Category>
 				
 	

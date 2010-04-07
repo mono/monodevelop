@@ -45,6 +45,9 @@ namespace MonoDevelop.Ide.Commands
 		FindBox,
 		ReplaceInFiles,
 		
+		UseSelectionForFind,
+		UseSelectionForReplace,
+		
 		GotoType,
 		GotoFile,
 		GotoLineNumber,
