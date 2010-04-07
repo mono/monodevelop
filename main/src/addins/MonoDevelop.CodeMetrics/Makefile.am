@@ -15,6 +15,7 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Data \
 	-r:System.Web \
 	-r:System.Web.Services \

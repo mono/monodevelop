@@ -1,3 +1,8 @@
+2010-04-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.CodeMetrics.csproj: Add system.core reference.
+
 2010-04-01  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am: Fixed build.
