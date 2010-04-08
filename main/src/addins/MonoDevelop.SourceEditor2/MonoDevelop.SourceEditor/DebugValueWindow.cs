@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor
 {
 	public class BaseWindow : Gtk.Window
 	{
-		public BaseWindow () : base(Gtk.WindowType.Popup)
+		public BaseWindow () : base(Gtk.WindowType.Toplevel)
 		{
 			this.SkipPagerHint = true;
 			this.SkipTaskbarHint = true;
@@ -48,6 +48,7 @@ namespace MonoDevelop.SourceEditor
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			int winWidth, winHeight;
@@ -113,6 +114,13 @@ namespace MonoDevelop.SourceEditor
 					tree.Selection.UnselectAll ();
 				}
 			};
+			
+			// Avoid getting the focus when the window is shown, but allow it after a short wait.
+			AcceptFocus = false;
+			GLib.Timeout.Add (200, delegate {
+				AcceptFocus = true;
+				return false;
+			});
 		}
 		
 		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)
