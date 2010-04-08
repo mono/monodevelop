@@ -1,3 +1,8 @@
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	  Add missing root folder check.
+
 2010-04-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Fixed
