@@ -491,7 +491,12 @@ namespace Mono.TextEditor
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
 			imContext.FocusOut ();
-			HideTooltip ();
+			GLib.Timeout.Add (10, delegate {
+				// Don't immediately hide the tooltip. Wait a bit and check if the tooltip has the focus.
+				if (tipWindow != null && !tipWindow.HasToplevelFocus)
+					HideTooltip ();
+				return false;
+			});
 			TextViewMargin.StopCaretThread ();
 			return base.OnFocusOutEvent (evnt);
 		}

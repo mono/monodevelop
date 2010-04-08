@@ -1,3 +1,8 @@
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: When losing focus, don't hide
+	  the tooltip if it is getting the new focus.
+
 2010-04-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
