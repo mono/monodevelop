@@ -1,5 +1,10 @@
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Removed
+	  unnecessary unselection code.
+
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Converted to a
 	  TopLevel window, so that it can get proper focus and the
 	  value entry works as expected.

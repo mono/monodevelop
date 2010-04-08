@@ -65,7 +65,6 @@ namespace MonoDevelop.SourceEditor
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
-		bool resetSelection = true;
 		
 		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch)
 		{
@@ -108,13 +107,6 @@ namespace MonoDevelop.SourceEditor
 				Modal = false;
 			};
 
-			tree.Selection.Changed += delegate {
-				if (resetSelection) {
-					resetSelection = false;
-					tree.Selection.UnselectAll ();
-				}
-			};
-			
 			// Avoid getting the focus when the window is shown, but allow it after a short wait.
 			AcceptFocus = false;
 			GLib.Timeout.Add (200, delegate {
