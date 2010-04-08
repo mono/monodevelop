@@ -1,5 +1,10 @@
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide/Services.cs:
+	* MonoDevelop.Ide/ProjectOperations.cs: Added build timers.
+
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.addin.xml:
 	* MonoDevelop.Ide.Commands/EditCommands.cs:
 	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Added

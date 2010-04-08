@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide
 {
@@ -953,24 +954,33 @@ namespace MonoDevelop.Ide
 			}
 			*/
 			
-			DoBeforeCompileAction ();
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Building " + entry.Name);
+			try {
+				tt.Trace ("Pre-build operations");
+				DoBeforeCompileAction ();
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 			
-			BeginBuild (monitor);
+				tt.Trace ("Start build event");
+				BeginBuild (monitor);
 
-			DispatchService.ThreadDispatch (delegate {
-				BuildSolutionItemAsync (entry, monitor);
-			}, null);
-			currentBuildOperation = monitor.AsyncOperation;
-			currentBuildOperationOwner = entry;
-			currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
+				DispatchService.ThreadDispatch (delegate {
+					BuildSolutionItemAsync (entry, monitor, tt);
+				}, null);
+				currentBuildOperation = monitor.AsyncOperation;
+				currentBuildOperationOwner = entry;
+				currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
+			} catch {
+				tt.End ();
+				throw;
+			}
 			return currentBuildOperation;
 		}
 		
-		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor)
+		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt)
 		{
 			BuildResult result = null;
 			try {
+				tt.Trace ("Building item");
 				SolutionItem it = entry as SolutionItem;
 				if (it != null)
 					result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
@@ -978,10 +988,12 @@ namespace MonoDevelop.Ide
 					result = entry.RunTarget (monitor, ProjectService.BuildTarget, IdeApp.Workspace.ActiveConfiguration);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
+			} finally {
+				tt.Trace ("Done building");
 			}
 			DispatchService.GuiDispatch (
 				delegate {
-					BuildDone (monitor, result, entry);	// BuildDone disposes the monitor
+					BuildDone (monitor, result, entry, tt);	// BuildDone disposes the monitor
 			});
 		}
 
@@ -1025,15 +1037,17 @@ namespace MonoDevelop.Ide
 				StartBuild (this, new BuildEventArgs (monitor, true));
 		}
 		
-		void BuildDone (IProgressMonitor monitor, BuildResult result, IBuildTarget entry)
+		void BuildDone (IProgressMonitor monitor, BuildResult result, IBuildTarget entry, ITimeTracker tt)
 		{
 			Task[] tasks = null;
+			tt.Trace ("Begin reporting build result");
 			try {
 				if (result != null) {
 					lastResult = result;
 					monitor.Log.WriteLine ();
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
+					tt.Trace ("Updating task service");
 					tasks = new Task [result.Errors.Count];
 					for (int n=0; n<tasks.Length; n++) {
 						tasks [n] = new Task (result.Errors [n]);
@@ -1043,6 +1057,8 @@ namespace MonoDevelop.Ide
 					TaskService.Errors.AddRange (tasks);
 					TaskService.Errors.ResetLocationList ();
 					IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
+					
+					tt.Trace ("Reporting result");
 					
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
@@ -1056,9 +1072,14 @@ namespace MonoDevelop.Ide
 					} else {
 						monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
 					}
+					tt.Trace ("End build event");
 					OnEndBuild (monitor, lastResult.FailedBuildCount == 0);
-				} else
+				} else {
+					tt.Trace ("End build event");
 					OnEndBuild (monitor, false);
+				}
+				
+				tt.Trace ("Showing results pad");
 				
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
@@ -1082,6 +1103,7 @@ namespace MonoDevelop.Ide
 						goto case BuildResultStates.Never;
 					}
 				} catch {}
+				
 				Task jumpTask = null;
 				switch (IdeApp.Preferences.JumpToFirstErrorOrWarning) {
 				case JumpToFirst.Error:
@@ -1091,11 +1113,14 @@ namespace MonoDevelop.Ide
 					jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error || t.Severity == TaskSeverity.Warning);
 					break;
 				}
-				if (jumpTask != null)
+				if (jumpTask != null) {
+					tt.Trace ("Jumping to first result position");
 					jumpTask.JumpToPosition ();
+				}
 				
 			} finally {
 				monitor.Dispose ();
+				tt.End ();
 			}
 		}
 		
