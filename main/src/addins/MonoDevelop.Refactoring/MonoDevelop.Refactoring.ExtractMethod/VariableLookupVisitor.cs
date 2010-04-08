@@ -115,6 +115,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		IResolver resolver;
 		DomLocation position;
+		public DomRegion CutRegion {
+			get;
+			set;
+		}
 		public VariableLookupVisitor (IResolver resolver, DomLocation position)
 		{
 			this.resolver = resolver;
@@ -142,11 +146,13 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public override object VisitLocalVariableDeclaration (LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			foreach (VariableDeclaration varDecl in localVariableDeclaration.Variables) {
-				variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
-					IsDefined = true, 
-					ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference)
-				};
+			if (!CutRegion.Contains (localVariableDeclaration.StartLocation.Line - 1, localVariableDeclaration.StartLocation.Column -1)) {
+				foreach (VariableDeclaration varDecl in localVariableDeclaration.Variables) {
+					variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
+						IsDefined = true, 
+						ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference)
+					};
+				}
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}

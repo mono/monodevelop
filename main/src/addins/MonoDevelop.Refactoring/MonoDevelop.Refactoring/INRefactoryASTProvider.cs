@@ -38,6 +38,10 @@ namespace MonoDevelop.Refactoring
 		string OutputNode (ProjectDom dom, INode node);
 		string OutputNode (ProjectDom dom, INode node, string indent);
 		
+		ICSharpCode.NRefactory.Parser.Errors LastErrors {
+			get;
+		}
+		
 		INode ParseText (string text);
 		Expression ParseExpression (string expressionText);
 		CompilationUnit ParseFile (string content);

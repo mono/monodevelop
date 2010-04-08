@@ -76,8 +76,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			ExtractMethodParameters param = CreateParameters (options);
 			if (param == null)
 				return;
-			if (Analyze (options, param, false) == null || param.VariablesToGenerate == null)
+			if (Analyze (options, param, false) == null || param.VariablesToGenerate == null) {
+				MessageService.ShowError (GettextCatalog.GetString ("Invalid selection for method extraction."));
 				return;
+			}
 			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
 			dialog.TransientFor = IdeApp.Workbench.RootWindow;
 			dialog.Run ();
@@ -244,10 +246,21 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				return null;
 
 			string text = options.Document.TextEditor.GetText (options.Document.TextEditor.SelectionStartPosition, options.Document.TextEditor.SelectionEndPosition);
+			
+			TextEditorData data = options.GetTextEditorData ();
+			Console.WriteLine (data.Document.GetTextAt (0, data.SelectionRange.Offset) + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
+			var cu = provider.ParseFile (data.Document.GetTextAt (0, data.SelectionRange.Offset) + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
+			if (cu == null || provider.LastErrors.Count > 0) {
+				return null;
+			}
+			
 			param.Text = RemoveIndent (text, GetIndent (text)).TrimEnd ('\n', '\r');
 			
 			ICSharpCode.NRefactory.Ast.INode result = provider.ParseText (text);
-
+			if (cu == null || provider.LastErrors.Count > 0) {
+				return null;
+			}
+			
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
 			visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);
 			if (fillParameter) {
@@ -272,7 +285,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				param.ChangedVariables = new HashSet<string> (visitor.Variables.Values.Where (v => v.GetsChanged).Select (v => v.Name));
 				
 				// analyze the variables outside of the selected text
-				TextEditorData data = options.GetTextEditorData ();
 				IMember member = param.DeclaringMember;
 			
 				int startOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
@@ -282,6 +294,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
 				ICSharpCode.NRefactory.Ast.INode parsedNode = provider.ParseText (text);
 				visitor = new VariableLookupVisitor (resolver, param.Location);
+				visitor.CutRegion = new DomRegion (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 				visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);
 				if (parsedNode != null)
 					parsedNode.AcceptVisitor (visitor, null);
