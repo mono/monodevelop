@@ -1402,6 +1402,11 @@
 				_label = "Show Completion Window" 
 				macShortcut="Control|space"
 				shortcut = "Control|space" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
+				defaultHandler = "MonoDevelop.Ide.Commands.ToggleCompletionSuggestionModeHandler"
+				_label = "Toggle Completion Suggestion Mode" 
+				macShortcut="Control|Meta|space"
+				shortcut = "Control|Alt|space" />
 		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
 				_label = "I_nsert Template..." 
 				shortcut = "Control|t" />
@@ -1990,6 +1995,8 @@
 			</ItemSet>
 			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode" />
+			
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 			<SeparatorItem id = "Separator5" />

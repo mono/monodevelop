@@ -1,3 +1,13 @@
+2010-04-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs:
+	* MonoDevelop.Ide.Commands/TextEditorCommands.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionWindowManager.cs:
+	  Implemented 'Bug 572067 - Shortcut for toggling between
+	  completion and suggestion mode'.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:

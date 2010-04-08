@@ -51,7 +51,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get {
 				return wnd.CodeCompletionContext;
 			}
-		} 
+		}
+		
+		static bool forceSuggestionMode;
+		public static bool ForceSuggestionMode {
+			get { return forceSuggestionMode; }
+			set {
+				forceSuggestionMode = value; 
+				if (wnd != null) {
+					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !forceSuggestionMode;
+				}
+			}
+		}
 		
 		static CompletionWindowManager ()
 		{
@@ -71,6 +82,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 						DestroyWindow ();
 						return false;
 					}
+					
+					if (ForceSuggestionMode)
+						wnd.AutoSelect = false;
+					
 					OnWindowShown (EventArgs.Empty);
 					return true;
 				} catch (Exception ex) {

@@ -467,7 +467,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			public bool Timer ()
 			{
 				Opacity = System.Math.Min (1.0, Opacity + 0.33);
-				Console.WriteLine (" current:" + window.declarationviewwindow.Opacity + " set to:" + Opacity);
 				window.declarationviewwindow.Opacity = Opacity;
 				bool result = Math.Round (Opacity * 10.0) < 10;
 				if (!result)
