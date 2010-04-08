@@ -663,12 +663,15 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
+		bool editing;
+		
 		void OnValueEditing (object s, Gtk.EditingStartedArgs args)
 		{
 			TreeIter it;
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
 			
+			editing = true;
 			Gtk.Entry e = (Gtk.Entry) args.Editable;
 			
 			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
@@ -694,7 +697,8 @@ namespace MonoDevelop.Debugger
 					MessageService.ShowError (GettextCatalog.GetString ("Unregognized escape sequence."));
 					return;
 				}
-*/				val.Value = newVal;
+*/				if (val.Value != newVal)
+					val.Value = newVal;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
 			}
@@ -730,6 +734,7 @@ namespace MonoDevelop.Debugger
 		
 		void OnEndEditing ()
 		{
+			editing = false;
 			editEntry.KeyPressEvent -= OnEditKeyPress;
 			CompletionWindowManager.HideWindow ();
 			currentCompletionData = null;
@@ -769,7 +774,7 @@ namespace MonoDevelop.Debugger
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
 			TreePath path;
-			if (AllowPinning && GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path)) {
+			if (!editing && AllowPinning && GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path)) {
 				TreeIter it;
 				if (path.Depth > 1 || PinnedWatch == null) {
 					store.GetIter (out it, path);
@@ -791,7 +796,8 @@ namespace MonoDevelop.Debugger
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			CleanPinIcon ();
+			if (!editing)
+				CleanPinIcon ();
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 
@@ -803,7 +809,7 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn col;
 			CellRenderer cr;
 			
-			if (GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
+			if (!editing && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
 				TreeIter it;
 				store.GetIter (out it, path);
 				if (cr == crpButton) {
