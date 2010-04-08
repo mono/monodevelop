@@ -662,6 +662,18 @@
 			scheme for the next MD version and do the change there.
 		-->
 	
+		<!-- Hidden commands -->
+		<!-- The commands in the hidden category are not shown in the key bindings configuration panel -->
+		<Category id="Hidden" _name="Hidden">
+			<!-- The EditCommands.DeleteKey command can be used to easily bind the Delete key to a command handler -->
+			<!-- Notice that the EditCommands.Delete command is not bound to the Delete key since it is not always -->
+			<!-- convenient to fire the Delete command when pressing Delete (for example, while editing the name of -->
+			<!-- a file in the solution pad. -->
+			<Command id = "MonoDevelop.Ide.Commands.EditCommands.DeleteKey"
+					_label = "_Delete"
+					shortcut = "Delete"/>
+		</Category>
+		
 		<!-- EditCommands -->
 		<Category _name = "Edit" id="Edit">
 				

@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			foreach (object c in IdeApp.CommandService.GetCommands ()) {
 				ActionCommand cmd = c as ActionCommand;
-				if (cmd == null || cmd.CommandArray)
+				if (cmd == null || cmd.CommandArray || cmd.Category == GettextCatalog.GetString ("Hidden"))
 					continue;
 				
 				string key;

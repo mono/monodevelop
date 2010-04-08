@@ -1,3 +1,11 @@
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs: Added
+	  DeleteKey command, which can be used to easily bind the
+	  Delete key to command handlers.
+
 2010-04-08  Aaron Bockover  <abockover@novell.com>
 
 	* MonoDevelop.Components/SearchEntry.cs: Render the entry

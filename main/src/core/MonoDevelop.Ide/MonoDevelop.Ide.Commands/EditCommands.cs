@@ -61,7 +61,15 @@ namespace MonoDevelop.Ide.Commands
 		
 		ToggleFolding,
 		ToggleAllFoldings,
-		FoldDefinitions
+		FoldDefinitions,
+		
+		/// <summary>
+		/// The DeleteKey command can be used to easily bind the Delete key to a command handler
+		/// Notice that the EditCommands.Delete command is not bound to the Delete key since it is not always
+		/// convenient to fire the Delete command when pressing Delete (for example, while editing the name of
+		/// a file in the solution pad.
+		/// </summary>
+		DeleteKey
 	}
 	
 	internal class MonodevelopPreferencesHandler: CommandHandler
