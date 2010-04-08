@@ -1966,20 +1966,17 @@ delegate T MyFunc<S, T> (S t);
 
 class TestClass
 {
-    public string Value
-    {
-        get;
-        set;
-    }
+	public string Value {
+		get;
+		set;
+	}
 	
-    public static object GetProperty<TType> (MyFunc<TType, object> expression)
+	public static object GetProperty<TType> (MyFunc<TType, object> expression)
 	{
 		return null;
-    }
-    private static object ValueProperty = TestClass.GetProperty<TestClass> ($x => x.$);
-
+	}
+	private static object ValueProperty = TestClass.GetProperty<TestClass> ($x => x.$);
 }
-
 ");
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Value"), "property 'Value' not found.");
@@ -2469,7 +2466,6 @@ class Test
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
-		
 		/// <summary>
 		/// Bug 592120 - Type resolver bug with this.Property[]
 		/// </summary>
@@ -2498,5 +2494,50 @@ class Foo
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNull (provider.Find ("Test"), "method 'Test' found, but shouldn't.");
 		}
+		
+		
+		/// <summary>
+		/// Bug 576354 - Type inference failure
+		/// </summary>
+		[Test()]
+		public void TestBug576354 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+delegate T Func<S, T> (S s);
+
+class Foo
+{
+	string str;
+	
+	public Foo (string str)
+	{
+		this.str = str;
+	}
+	
+	public void Bar () 
+	{
+		System.Console.WriteLine (str);
+	}
+}
+
+class Test
+{
+	static T Test<T> (Func<string, T> myFunc)
+	{
+		return myFunc (""Hello World"");
+	}
+	
+	public static void Main (string[] args)
+	{
+		var result = Test (str => new Foo (str));
+		$result.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
+		}
+		
 	}
 }
