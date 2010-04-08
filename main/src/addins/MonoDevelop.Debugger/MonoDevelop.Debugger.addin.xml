@@ -140,6 +140,9 @@
 				_label = "Show Current Execution Line"
 				shortcut = "Alt|*"
 				defaultHandler = "MonoDevelop.Debugger.ShowCurrentExecutionLineCommand" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.AddWatch"
+				_description = "Add expression to watch pad"
+				_label = "Add watch" />
 		</Category>
 	</Extension>
 	

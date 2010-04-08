@@ -35,6 +35,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 
 namespace MonoDevelop.Debugger
@@ -75,6 +77,8 @@ namespace MonoDevelop.Debugger
 		string modifiedColor = "blue";
 		string disabledColor = "gray";
 		
+		static CommandEntrySet menuSet;
+		
 		const int NameCol = 0;
 		const int ValueCol = 1;
 		const int TypeCol = 2;
@@ -94,11 +98,28 @@ namespace MonoDevelop.Debugger
 		public event EventHandler EndEditing;
 		public event EventHandler PinStatusChanged;
 
+		enum LocalCommands
+		{
+			AddWatch
+		}
+		
+		static ObjectValueTreeView ()
+		{
+			// Context menu definition
+			
+			menuSet = new CommandEntrySet ();
+			menuSet.AddItem (DebugCommands.AddWatch);
+			menuSet.AddSeparator ();
+			menuSet.AddItem (EditCommands.Rename);
+			menuSet.AddItem (EditCommands.Delete);
+		}
+		
 		public ObjectValueTreeView ()
 		{
 			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf));
 			Model = store;
 			RulesHint = true;
+			Selection.Mode = SelectionMode.Multiple;
 			
 			Pango.FontDescription newFont = this.Style.FontDescription.Copy ();
 			newFont.Size = (newFont.Size * 8) / 10;
@@ -618,14 +639,6 @@ namespace MonoDevelop.Debugger
 			return sb.ToString ();
 		}
 
-		[MonoDevelop.Components.Commands.CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)]
-		protected void OnStartEditing ()
-		{
-			Gtk.TreeIter it;
-			if (Selection.GetSelected (out it))
-				SetCursor (store.GetPath (it), Columns[0], true);
-		}
-
 		void OnExpEditing (object s, Gtk.EditingStartedArgs args)
 		{
 			TreeIter it;
@@ -671,7 +684,6 @@ namespace MonoDevelop.Debugger
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
 			
-			editing = true;
 			Gtk.Entry e = (Gtk.Entry) args.Editable;
 			
 			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
@@ -726,6 +738,7 @@ namespace MonoDevelop.Debugger
 		
 		void OnStartEditing (Gtk.EditingStartedArgs args)
 		{
+			editing = true;
 			editEntry = (Gtk.Entry) args.Editable;
 			editEntry.KeyPressEvent += OnEditKeyPress;
 			if (StartEditing != null)
@@ -809,7 +822,7 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn col;
 			CellRenderer cr;
 			
-			if (!editing && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
+			if (!editing && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
 				TreeIter it;
 				store.GetIter (out it, path);
 				if (cr == crpButton) {
@@ -831,7 +844,101 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			}
+			
+			if (evnt.Button == 3)
+				ShowPopup ();
+			
 			return res;
+		}
+		
+		protected override bool OnPopupMenu ()
+		{
+			ShowPopup ();
+			return true;
+		}
+		
+		void ShowPopup ()
+		{
+			IdeApp.CommandService.ShowContextMenu (menuSet, this);
+		}
+		
+		[CommandHandler (EditCommands.Delete)]
+		[CommandHandler (EditCommands.DeleteKey)]
+		protected void OnDelete ()
+		{
+			foreach (TreePath tp in Selection.GetSelectedRows ()) {
+				TreeIter it;
+				if (store.GetIter (out it, tp)) {
+					string exp = (string) store.GetValue (it, NameCol);
+					int i = valueNames.IndexOf (exp);
+					if (i != -1)
+						valueNames.RemoveAt (i);
+				}
+			}
+			Refresh ();
+		}
+		
+		[CommandUpdateHandler (EditCommands.Delete)]
+		[CommandUpdateHandler (EditCommands.DeleteKey)]
+		protected void OnUpdateDelete (CommandInfo cinfo)
+		{
+			if (editing) {
+				cinfo.Bypass = true;
+				return;
+			}
+			
+			if (!allowAdding) {
+				cinfo.Visible = false;
+				return;
+			}
+			TreePath[] sel = Selection.GetSelectedRows ();
+			if (sel.Length == 0) {
+				cinfo.Enabled = false;
+				return;
+			}
+			foreach (TreePath tp in sel) {
+				if (tp.Depth > 1) {
+					cinfo.Enabled = false;
+					return;
+				}
+			}
+		}
+		
+		[CommandHandler (DebugCommands.AddWatch)]
+		protected void OnAddWatch ()
+		{
+			List<string> exps = new List<string> ();
+			foreach (TreePath tp in Selection.GetSelectedRows ()) {
+				TreeIter it;
+				if (store.GetIter (out it, tp)) {
+					string exp = GetFullExpression (it);
+					exps.Add (exp);
+				}
+			}
+			foreach (string s in exps) {
+				DebuggingService.AddWatch (s);
+			}
+		}
+
+		[CommandUpdateHandler (DebugCommands.AddWatch)]
+		protected void OnUpdateAddWatch (CommandInfo cinfo)
+		{
+			cinfo.Enabled = Selection.GetSelectedRows ().Length > 0;
+		}
+		
+		[CommandHandler (EditCommands.Rename)]
+		protected void OnRename ()
+		{
+			TreeIter it;
+			if (store.GetIter (out it, Selection.GetSelectedRows ()[0]))
+				SetCursor (store.GetPath (it), Columns[0], true);
+		}
+		
+		[CommandUpdateHandler (EditCommands.Rename)]
+		protected void OnUpdateRename (CommandInfo cinfo)
+		{
+			cinfo.Visible = allowAdding;
+			cinfo.Enabled = Selection.GetSelectedRows ().Length == 1;
 		}
 		
 		bool GetCellAtPos (int x, int y, out TreePath path, out TreeViewColumn col, out CellRenderer cellRenderer)
@@ -850,8 +957,8 @@ namespace MonoDevelop.Debugger
 			cellRenderer = null;
 			return false;
 		}
-
-		void CreatePinnedWatch (TreeIter it)
+		
+		string GetFullExpression (TreeIter it)
 		{
 			string exp = "";
 			while (store.GetPath (it).Depth != 1) {
@@ -860,7 +967,12 @@ namespace MonoDevelop.Debugger
 				store.IterParent (out it, it);
 			}
 			string name = (string) store.GetValue (it, NameCol);
-			exp = name + exp;
+			return name + exp;
+		}
+
+		void CreatePinnedWatch (TreeIter it)
+		{
+			string exp = GetFullExpression (it);
 			
 			PinnedWatch watch = new PinnedWatch ();
 			watch.File = PinnedWatchFile;

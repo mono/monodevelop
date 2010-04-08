@@ -60,7 +60,8 @@ namespace MonoDevelop.Debugger
 		ExpressionEvaluator,
 		SelectExceptions,
 		ShowCurrentExecutionLine,
-		AddTracepoint
+		AddTracepoint,
+		AddWatch
 	}
 
 	internal class DebugHandler: CommandHandler

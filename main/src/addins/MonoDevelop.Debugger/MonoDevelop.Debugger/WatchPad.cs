@@ -41,6 +41,11 @@ namespace MonoDevelop.Debugger
 			tree.AllowAdding = true;
 		}
 		
+		public void AddWatch (string expression)
+		{
+			tree.AddExpression (expression);
+		}
+		
 		#region IMementoCapable implementation 
 		
 		public ICustomXmlSerializer Memento {

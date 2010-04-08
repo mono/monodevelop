@@ -1,5 +1,15 @@
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger/WatchPad.cs:
+	* MonoDevelop.Debugger/DebugCommands.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Added a context
+	  menu to ObjectValueTreeView, which includes a command which
+	  allows adding a value to the watch pad.
+
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Don't set
 	  change the pin icon while editing.
 

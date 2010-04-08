@@ -189,6 +189,14 @@ namespace MonoDevelop.Debugger
 			}
 			dlg.Destroy ();
 		}
+		
+		public static void AddWatch (string expression)
+		{
+			Pad pad = IdeApp.Workbench.GetPad<WatchPad> ();
+			pad.BringToFront (false);
+			WatchPad wp = (WatchPad) pad.Content;
+			wp.AddWatch (expression);
+		}
 
 		public static bool IsFeatureSupported (IBuildTarget target, DebuggerFeatures feature)
 		{
