@@ -5,7 +5,7 @@
 //   Aaron Bockover <abockover@novell.com>
 //   Gabriel Burt <gburt@novell.com>
 //
-// Copyright (C) 2007 Novell, Inc.
+// Copyright 2007-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -308,9 +308,11 @@ namespace MonoDevelop.Components
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
+			Style.PaintFlatBox (entry.Style, GdkWindow, State, ShadowType.None,
+				evnt.Area, this, "entry_bg", 0, 0, Allocation.Width, Allocation.Height);
 			PropagateExpose (Child, evnt);
-			Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In, evnt.Area, entry, "entry", 0, 0, Allocation.Width,
-			Allocation.Height);
+			Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
+				evnt.Area, entry, "entry", 0, 0, Allocation.Width, Allocation.Height);
 			return true;
 		}
 

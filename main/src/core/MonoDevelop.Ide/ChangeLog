@@ -1,3 +1,11 @@
+2010-04-08  Aaron Bockover  <abockover@novell.com>
+
+	* MonoDevelop.Components/SearchEntry.cs: Render the entry
+	background flat box style "entry_bg" to properly draw the
+	full entry (we were previously only drawing the shadow),
+	which fixes a rendering bug in some themes - fix ported
+	from Banshee
+
 2010-04-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:
