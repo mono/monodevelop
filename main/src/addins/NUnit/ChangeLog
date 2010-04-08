@@ -1,3 +1,11 @@
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Services/UnitTestGroup.cs:
+	* Services/NUnitTestSuite.cs:
+	* Services/SystemTestProvider.cs:
+	* Services/NUnitAssemblyTestSuite.cs: Don't show projects and
+	  solutions which don't contain unit tests.
+
 2010-04-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services\ExternalTestRunner.cs: Preload the NUnitRunner

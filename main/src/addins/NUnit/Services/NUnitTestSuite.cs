@@ -49,6 +49,12 @@ namespace MonoDevelop.NUnit
 			this.rootSuite = rootSuite;
 		}
 		
+		public override bool HasTests {
+			get {
+				return true;
+			}
+		}
+		
 		public string ClassName {
 			get { return fullName; }
 		}

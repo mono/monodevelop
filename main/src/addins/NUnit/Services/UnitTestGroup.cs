@@ -46,6 +46,19 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
+		public virtual bool HasTests {
+			get {
+				foreach (UnitTest t in Tests) {
+					if (t is UnitTestGroup) {
+						if (((UnitTestGroup)t).HasTests)
+							return true;
+					} else
+						return true;
+				}
+				return false;
+			}
+		}
+		
 		public UnitTestCollection Tests {
 			get {
 				if (tests == null) {

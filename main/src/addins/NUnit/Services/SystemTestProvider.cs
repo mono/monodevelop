@@ -36,18 +36,24 @@ namespace MonoDevelop.NUnit
 	{
 		public UnitTest CreateUnitTest (IWorkspaceObject entry)
 		{
-			// TODO msbuild
+			UnitTest test = null;
+			
 			if (entry is SolutionFolder)
-				return SolutionFolderTestGroup.CreateTest ((SolutionFolder)entry);
+				test = SolutionFolderTestGroup.CreateTest ((SolutionFolder)entry);
 			if (entry is Solution)
-				return SolutionFolderTestGroup.CreateTest (((Solution)entry).RootFolder);
+				test = SolutionFolderTestGroup.CreateTest (((Solution)entry).RootFolder);
 			if (entry is Workspace)
-				return WorkspaceTestGroup.CreateTest ((Workspace)entry);
+				test = WorkspaceTestGroup.CreateTest ((Workspace)entry);
 			if (entry is DotNetProject)
-				return NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
+				test = NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
 			if (entry is NUnitAssemblyGroupProject)
-				return ((NUnitAssemblyGroupProject)entry).RootTest;
-			return null;
+				test = ((NUnitAssemblyGroupProject)entry).RootTest;
+			
+			UnitTestGroup grp = test as UnitTestGroup;
+			if (grp != null && !grp.HasTests)
+				return null;
+			
+			return test;
 		}
 		
 		public Type[] GetOptionTypes ()
