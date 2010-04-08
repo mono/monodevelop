@@ -245,7 +245,6 @@
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightCSharpSemanticRule.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\FormattingPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProperties.cs" />
@@ -264,7 +263,6 @@
     <Compile Include="MonoDevelop.CSharp.Project\CompilerOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpBindingCompilerManager.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpEnhancedCodeProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpLanguageBinding.cs" />

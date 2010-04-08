@@ -79,10 +79,6 @@
 			             class = "MonoDevelop.CSharp.Project.CodeGenerationPanel"/>
 		</Condition>
 	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Formatting">
-		<Section _label = "C#" class = "MonoDevelop.CSharp.Formatting.FormattingPanel"/>
-	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id    = "CSharp"

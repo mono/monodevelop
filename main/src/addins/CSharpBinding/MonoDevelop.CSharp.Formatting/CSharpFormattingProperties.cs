@@ -41,15 +41,8 @@ namespace MonoDevelop.CSharp.Formatting
 		// Indent goto labels normally
 		Normal
 	}
-	
+/*	
 	public class FormattingProperties {
-		static MonoDevelop.Core.Properties properties;
-		
-		static FormattingProperties ()
-		{
-			properties = PropertyService.Get ("CSharpBinding.FormattingProperties", new MonoDevelop.Core.Properties ());
-		}
-		
 		public static bool IndentCaseLabels {
 			get {
 				return properties.Get ("IndentCaseLabels", false);
@@ -67,5 +60,5 @@ namespace MonoDevelop.CSharp.Formatting
 				properties.Set ("GotoLabelIndentStyle", value);
 			}
 		}
-	}
+	}*/
 }

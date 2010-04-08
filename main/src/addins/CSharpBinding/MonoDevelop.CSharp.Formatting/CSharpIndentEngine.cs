@@ -73,11 +73,14 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		int curLineNr;
 		int cursor;
-		
+		CSharpFormattingPolicy policy;
 		// Constructors
-		public CSharpIndentEngine ()
+		public CSharpIndentEngine (CSharpFormattingPolicy policy)
 		{
-			stack = new IndentStack ();
+			if (policy == null)
+				throw new ArgumentNullException ("policy");
+			this.policy = policy;
+			stack = new IndentStack (this);
 			linebuf = new StringBuilder ();
 			Reset ();
 		}
@@ -212,7 +215,7 @@ namespace MonoDevelop.CSharp.Formatting
 		// to test things w/o changing the real indent engine state
 		public object Clone ()
 		{
-			CSharpIndentEngine engine = new CSharpIndentEngine ();
+			CSharpIndentEngine engine = new CSharpIndentEngine (policy);
 			
 			engine.stack = (IndentStack) stack.Clone ();
 			engine.linebuf = new StringBuilder (linebuf.ToString (), linebuf.Capacity);
@@ -532,7 +535,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 				
-				if (!FormattingProperties.IndentCaseLabels) {
+				if (!policy.IndentSwitchBody) {
 					needsReindent = true;
 					TrimIndent ();
 				}

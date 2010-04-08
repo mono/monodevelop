@@ -75,13 +75,15 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			Node[] stack;
 			int size;
+			CSharpIndentEngine engine;
 			
-			public IndentStack () : this (INITIAL_CAPACITY)
+			public IndentStack (CSharpIndentEngine engine) : this (engine, INITIAL_CAPACITY)
 			{
 			}
 			
-			public IndentStack (int capacity)
+			public IndentStack (CSharpIndentEngine engine, int capacity)
 			{
+				this.engine = engine;
 				if (capacity < INITIAL_CAPACITY)
 					capacity = INITIAL_CAPACITY;
 				
@@ -99,7 +101,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			public object Clone ()
 			{
-				IndentStack clone = new IndentStack (stack.Length);
+				IndentStack clone = new IndentStack (engine, stack.Length);
 				
 				clone.stack = (Node[]) stack.Clone ();
 				clone.size = size;
@@ -163,7 +165,7 @@ namespace MonoDevelop.CSharp.Formatting
 						sp--;
 					}
 					
-					if (FormattingProperties.IndentCaseLabels)
+					if (engine.policy.IndentSwitchBody)
 						indentBuilder.Append ('\t');
 					
 					nSpaces = 0;

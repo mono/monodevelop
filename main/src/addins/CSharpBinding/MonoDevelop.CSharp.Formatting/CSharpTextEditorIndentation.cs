@@ -55,6 +55,7 @@ namespace MonoDevelop.CSharp.Formatting
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;
 		TextEditorData textEditorData;
+		CSharpFormattingPolicy policy;
 		
 		static CSharpTextEditorIndentation ()
 		{
@@ -77,6 +78,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpTextEditorIndentation ()
 		{
+			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 		}
 		
 		public override void Initialize ()
@@ -84,11 +87,15 @@ namespace MonoDevelop.CSharp.Formatting
 			base.Initialize ();
 			InitTracker ();
 			
+			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			if (base.Document.Project != null && base.Document.Project.Policies != null)
+				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
+			
 			Mono.TextEditor.ITextEditorDataProvider view = base.Document.GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
 			
 			if (view != null) {
 				textEditorData = view.GetTextEditorData ();
-				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor));
+				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), Editor));
 				textEditorData.Caret.AllowCaretBehindLineEnd = true;
 				textEditorData.Paste += TextEditorDataPaste;
 			//	textEditorData.Document.TextReplaced += TextCut;
@@ -168,7 +175,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (c != null && c.StateTracker != null) {
 				stateTracker = c.StateTracker;
 			} else {
-				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
+				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), Editor);
 			}
 		}
 		

@@ -29,7 +29,6 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.CSharp.Formatting.FormattingPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
@@ -132,7 +131,6 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
 	MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs \
 	MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs \
-	MonoDevelop.CSharp.Formatting/FormattingPanel.cs \
 	MonoDevelop.CSharp.Formatting/Indent.cs \
 	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \

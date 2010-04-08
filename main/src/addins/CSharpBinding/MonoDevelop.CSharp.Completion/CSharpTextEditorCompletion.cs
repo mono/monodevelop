@@ -56,6 +56,7 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		ProjectDom dom;
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
+		CSharpFormattingPolicy policy;
 		
 		public ProjectDom Dom {
 			get { return this.dom; }
@@ -64,9 +65,11 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public CSharpTextEditorCompletion ()
 		{
+			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 		}
 		
-		public CSharpTextEditorCompletion (Document doc)
+		public CSharpTextEditorCompletion (Document doc) : this ()
 		{
 			Initialize (doc);
 		}
@@ -78,6 +81,10 @@ namespace MonoDevelop.CSharp.Completion
 			dom = ProjectDomService.GetProjectDom (Document.Project);
 			if (dom == null)
 				dom = ProjectDomService.GetFileDom (Document.FileName);
+			
+			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			if (dom != null && dom.Project.Policies != null)
+				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
 		}
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
@@ -94,7 +101,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (c != null && c.StateTracker != null) {
 				stateTracker = c.StateTracker;
 			} else {
-				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (), Editor);
+				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), Editor);
 			}
 		}
 		

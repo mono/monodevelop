@@ -195,7 +195,8 @@ namespace MonoDevelop.CSharp.Completion
 				return -1;
 			if (i == cursor) 
 				return 1; // parameters are 1 based
-			CSharpIndentEngine engine = new CSharpIndentEngine ();
+			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			CSharpIndentEngine engine = new CSharpIndentEngine (MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types));
 			int index = memberStart + 1;
 			int bracket = 0;
 			do {
