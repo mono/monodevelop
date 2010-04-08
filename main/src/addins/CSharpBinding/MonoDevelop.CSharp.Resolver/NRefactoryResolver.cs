@@ -522,7 +522,25 @@ namespace MonoDevelop.CSharp.Resolver
 			resolveResult.ResolvedType = type;
 			return resolveResult;
 		}
-		
+		class TypeReplaceVisitor : CopyDomVisitor <object>
+		{
+			IReturnType replaceType;
+			IReturnType replaceWith;
+			
+			public TypeReplaceVisitor (IReturnType replaceType, IReturnType replaceWith)
+			{
+				this.replaceType = replaceType;
+				this.replaceWith = replaceWith;
+			}
+			
+			public override MonoDevelop.Projects.Dom.INode Visit (IReturnType type, object data)
+			{
+				if (type.ToInvariantString () == replaceType.ToInvariantString ())
+					return base.Visit (replaceWith, data);
+				return base.Visit (type, data);
+			}
+
+		}
 		class LambdaResolver
 		{
 			HashSet<Expression> expressions = new HashSet<Expression> ();
@@ -540,7 +558,6 @@ namespace MonoDevelop.CSharp.Resolver
 					return null;
 				}
 				expressions.Add (lambdaExpression);
-				
 				if (lambdaExpression.Parent is LambdaExpression)
 					return ResolveLambda (visitor, lambdaExpression.Parent as Expression);
 				if (lambdaExpression.Parent is ParenthesizedExpression)
@@ -554,6 +571,20 @@ namespace MonoDevelop.CSharp.Resolver
 					return resolver.GetFunctionParameterType (resolver.ResolveIdentifier (visitor, varDec.Name));
 				}
 				if (lambdaExpression.Parent is InvocationExpression) {
+					LambdaExpression lambda = (LambdaExpression)lambdaExpression; 
+					ResolveResult lambdaReturnType = null;
+					if (!lambda.ExpressionBody.IsNull) {
+						DomLocation old = resolver.resolvePosition;
+						try {
+							resolver.resolvePosition = new DomLocation (resolver.CallingMember.Location.Line + 
+							                                            lambda.ExpressionBody.StartLocation.Line - 2,
+							                                            lambda.ExpressionBody.StartLocation.Column - 1);
+							lambdaReturnType =  visitor.Resolve (lambda.ExpressionBody);
+						} finally {
+							resolver.resolvePosition = old;
+						}
+					}
+					
 					InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
 					MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
 					if (result == null) {
@@ -564,16 +595,18 @@ namespace MonoDevelop.CSharp.Resolver
 					
 					for (int i = 0; i < invocation.Arguments.Count; i++) {
 						if (invocation.Arguments[i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
-							
 							IParameter parameter = result.MostLikelyMethod.Parameters[i];
 							IReturnType returnType = parameter.ReturnType;
-							
 							IType type = resolver.Dom.GetType (returnType);
 							bool isResolved = false;
 							if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 								IMethod invocationMethod = type.Methods.First ();
 								if (invocationMethod.Parameters.Count > 0) {
-									returnType = invocationMethod.Parameters[System.Math.Min (i, invocationMethod.Parameters.Count - 1)].ReturnType;
+									if (lambdaReturnType == null || string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName)) {
+										returnType = invocationMethod.Parameters[System.Math.Min (i, invocationMethod.Parameters.Count - 1)].ReturnType;
+									} else {
+										returnType = (IReturnType)new TypeReplaceVisitor (invocationMethod.ReturnType, lambdaReturnType.ResolvedType).Visit (returnType, null);
+									}
 									isResolved = true;
 								}
 							}
@@ -582,7 +615,6 @@ namespace MonoDevelop.CSharp.Resolver
 									returnType = returnType.GenericArguments[0];
 								}
 							}
-							
 							string invariantString = returnType.ToInvariantString ();
 							if (returnTypeDictionary.ContainsKey (invariantString))
 								return returnTypeDictionary[invariantString];
@@ -592,26 +624,8 @@ namespace MonoDevelop.CSharp.Resolver
 						}
 					}
 					
-					LambdaExpression lambda = (LambdaExpression)lambdaExpression;
-	//				Console.WriteLine ("lambda:" + lambda);
-					if (!lambda.ExpressionBody.IsNull) {
-						DomLocation old = resolver.resolvePosition;
-						try {
-							resolver.resolvePosition = new DomLocation (resolver.CallingMember.Location.Line + resolver.lookupVariableLine + 
-							                                   lambda.ExpressionBody.StartLocation.Line - 2,
-							                                   lambda.ExpressionBody.StartLocation.Column - 1);
-	//						Console.WriteLine ("pos:" + resolvePosition);
-	//						result.AddArgument (visitor.GetTypeSafe (lambda.ExpressionBody));
-	//						result.ResolveExtensionMethods ();
-							ResolveResult res =  visitor.Resolve (lambda.ExpressionBody);
-	//						Console.WriteLine (lambda.ExpressionBody);
-	//						Console.WriteLine ("RES:" + res.ResolvedType.FullName);
-							if (!string.IsNullOrEmpty (res.ResolvedType.FullName))
-								return res;
-						} finally {
-							resolver.resolvePosition = old;
-						}
-					} 
+					if (lambdaReturnType != null && !string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName))
+						return lambdaReturnType;
 					
 					foreach (Expression arg in invocation.Arguments) {
 						var argType = arg is LambdaExpression ?  DomReturnType.Void : visitor.GetTypeSafe (arg);
@@ -673,7 +687,7 @@ namespace MonoDevelop.CSharp.Resolver
 					foreach (LocalLookupVariable v2 in pair.Value) {
 						DomLocation varStartPos = new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column - 1);
 						DomLocation varEndPos   = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column - 1);
-//						Console.WriteLine (v2.Name + ":" + varStartPos + " <> " + varEndPos);
+//						Console.WriteLine (v2.Name + ":" + varStartPos + " <> " + varEndPos + " resolve position:" + this.resolvePosition);
 						if (varStartPos > this.resolvePosition || (!v2.EndPos.IsEmpty && varEndPos < this.resolvePosition))
 							continue;
 						var = v2;
