@@ -1,3 +1,10 @@
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Add the Service element to the list of unsupported elements.
+	  Fixes bug #483716 - Strange "GUID" files are shown in
+	  projects.
+
 2010-04-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/WorkspaceItem.cs:
