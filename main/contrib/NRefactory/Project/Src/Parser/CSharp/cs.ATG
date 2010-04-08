@@ -1785,7 +1785,7 @@ StatementExpr<out Statement stmt>
 	Expr<out expr>
 	/* The grammar allows only assignments or method invocations here, */
 	/* but we don't enforce that here */
-	(. stmt = new ExpressionStatement(expr); .)
+	(. stmt = new ExpressionStatement(expr); if (expr is PrimitiveExpression) Error("Primitive expressions are not allowed as statements."); .)
 .
 
 Expr<out Expression expr>

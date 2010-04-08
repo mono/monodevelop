@@ -4089,7 +4089,7 @@ out Statement stmt) {
 out expr);
 
 #line  1788 "Frames/cs.ATG" 
-		stmt = new ExpressionStatement(expr); 
+		stmt = new ExpressionStatement(expr); if (expr is PrimitiveExpression) Error("Primitive expressions are not allowed as statements."); 
 	}
 
 	void TryStatement(
