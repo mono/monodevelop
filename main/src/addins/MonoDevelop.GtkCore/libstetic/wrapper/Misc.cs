@@ -5,19 +5,31 @@ namespace Stetic.Wrapper
 {
 	public class Misc: Widget
 	{
-		public void AlignLeft ()
-		{
-			((Gtk.Misc)Wrapped).Xalign = 0;
+		public bool AlignLeft {
+			get {
+				return ((Gtk.Misc)Wrapped).Xalign == 0;
+			}
+			set {
+				((Gtk.Misc)Wrapped).Xalign = 0;
+			}
 		}
 		
-		public void AlignRight ()
-		{
-			((Gtk.Misc)Wrapped).Xalign = 1;
+		public bool AlignRight {
+			get {
+				return ((Gtk.Misc)Wrapped).Xalign == 1;
+			}
+			set {
+				((Gtk.Misc)Wrapped).Xalign = 1;
+			}
 		}
 		
-		public void AlignCenter ()
-		{
-			((Gtk.Misc)Wrapped).Xalign = 0.5f;
+		public bool AlignCenter {
+			get {
+				return ((Gtk.Misc)Wrapped).Xalign == 0.5f;
+			}
+			set {
+				((Gtk.Misc)Wrapped).Xalign = 0.5f;
+			}
 		}
 	}
 }

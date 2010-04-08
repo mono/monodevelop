@@ -1,3 +1,7 @@
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* wrapper/Misc.cs: Show alignment buttons as toggles.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Widget.cs:
