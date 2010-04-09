@@ -1,3 +1,11 @@
+2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/TreeViewState.cs: When restoring
+	  state, if a node was selected and it now has been deleted,
+	  try to select an adjacent node. Fixes bug 595176 - Next
+	  breakpoint in BP pad should be selected after deleting a BP
+	  and similar bugs in other views using TreeStateView.
+
 2010-04-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:

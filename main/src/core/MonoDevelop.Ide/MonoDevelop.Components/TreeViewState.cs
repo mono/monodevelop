@@ -27,6 +27,7 @@
 
 using System;
 using Gtk;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Components
@@ -90,16 +91,22 @@ namespace MonoDevelop.Components
 		
 		void Load (List<NodeInfo> info, TreeIter it)
 		{
+			bool oneSelected = false;
+			var infoCopy = new List<NodeInfo> (info);
+			Dictionary<NodeInfo,TreeIter> nodes = new Dictionary<NodeInfo, TreeIter> ();
 			do {
 				object id = tree.Model.GetValue (it, idColumn);
 				NodeInfo ni = ExtractNodeInfo (info, id);
 				if (ni != null) {
+					nodes [ni] = it;
 					if (ni.Expanded)
 						tree.ExpandRow (tree.Model.GetPath (it), false);
 					else
 						tree.CollapseRow (tree.Model.GetPath (it));
-					if (ni.Selected)
+					if (ni.Selected) {
+						oneSelected = true;
 						tree.Selection.SelectIter (it);
+					}
 					else
 						tree.Selection.UnselectIter (it);
 					
@@ -111,6 +118,33 @@ namespace MonoDevelop.Components
 				}
 			}
 			while (tree.Model.IterNext (ref it));
+			
+			// If this tree level had a selected node and this node has been deleted, then
+			// try to select and adjacent node
+			if (!oneSelected) {
+				// 'info' contains the nodes that have not been inserted
+				if (info.Any (n => n.Selected)) {
+					NodeInfo an = FindAdjacentNode (infoCopy, nodes, info[0]);
+					if (an != null) {
+						it = nodes [an];
+						tree.Selection.SelectIter (it);
+					}
+				}
+			}
+		}
+		
+		NodeInfo FindAdjacentNode (List<NodeInfo> infos, Dictionary<NodeInfo,TreeIter> nodes, NodeInfo referenceNode)
+		{
+			int i = infos.IndexOf (referenceNode);
+			for (int n=i; n<infos.Count; n++) {
+				if (nodes.ContainsKey (infos[n]))
+					return infos[n];
+			}
+			for (int n=i-1; n>=0; n--) {
+				if (nodes.ContainsKey (infos[n]))
+					return infos[n];
+			}
+			return null;
 		}
 		
 		NodeInfo ExtractNodeInfo (List<NodeInfo> info, object id)
