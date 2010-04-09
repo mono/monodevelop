@@ -498,7 +498,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Move (this.Screen.Width + 1, vert);
 				declarationviewwindow.SetFixedWidth (-1);
 				declarationviewwindow.ReshowWithInitialSize ();
-				declarationviewwindow.ShowAll ();
+				declarationviewwindow.Show ();
 				if (declarationViewWindowOpacityTimer != 0) 
 					GLib.Source.Remove (declarationViewWindowOpacityTimer);
 				declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);

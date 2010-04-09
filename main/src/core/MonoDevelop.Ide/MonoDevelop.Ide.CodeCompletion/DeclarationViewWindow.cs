@@ -34,8 +34,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	internal class DeclarationViewWindow : TooltipWindow
 	{
 		static char[] newline = {'\n'};
-		static char[] whitespace = {' '};
-
+		
 		List<string> overloads = new List<string> ();
 		int current_overload;
 		
@@ -53,13 +52,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set {
 				if (string.IsNullOrEmpty (value)) {
 					headlabel.Markup = bodylabel.Markup = "";
+					headlabel.Visible = bodylabel.Visible = false;
 					return;
 				}
 				string[] parts = value.Split (newline, 2);
-				headlabel.Markup = "<b>" + parts[0].Trim (whitespace) + "</b>";
-				bodylabel.Markup = parts.Length == 2 ? "<span size=\"smaller\">" + parts[1].Trim (whitespace) + "</span>" : "";
-				headlabel.Visible = !string.IsNullOrEmpty (headlabel.Text);
-				bodylabel.Visible = !string.IsNullOrEmpty (bodylabel.Text);
+				headlabel.Markup = "<b>" + parts[0].Trim () + "</b>";
+				bodylabel.Markup = parts.Length == 2 && !string.IsNullOrEmpty (parts[1].Trim ())? "<span size=\"smaller\">" + parts[1].Trim () + "</span>" : "";
+				headlabel.Visible = !string.IsNullOrEmpty (parts[0].Trim ());
+				bodylabel.Visible = parts.Length == 2 ;
 			}
 		}
 
@@ -173,6 +173,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.PackStart (helpbox, false, true, 0);
 			
 			this.Add (vb2);
+			
+			ShowAll ();
 		}
 	}
 }
