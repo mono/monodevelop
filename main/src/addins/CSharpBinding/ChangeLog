@@ -1,3 +1,8 @@
+2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fix NRE when opening a file with no open project.
+
 2010-04-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:

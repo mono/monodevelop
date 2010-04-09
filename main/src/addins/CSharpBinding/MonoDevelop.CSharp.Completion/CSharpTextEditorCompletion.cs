@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp.Completion
 				dom = ProjectDomService.GetFileDom (Document.FileName);
 			
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			if (dom != null && dom.Project.Policies != null)
+			if (dom != null && dom.Project != null)
 				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
 		}
 		
