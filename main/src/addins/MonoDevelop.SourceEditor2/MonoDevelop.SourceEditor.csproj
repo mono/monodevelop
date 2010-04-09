@@ -156,7 +156,6 @@
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorTextMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\DebugValueMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PrintSettingsWidget.cs" />

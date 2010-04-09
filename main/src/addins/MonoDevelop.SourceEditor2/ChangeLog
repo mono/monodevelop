@@ -1,3 +1,10 @@
+2010-04-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/DebugValueMarker.cs: Removed
+	  debugvaluemarker (it's now done by pinnedquickwatch).
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Removed
