@@ -258,9 +258,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return absPath.Replace ('/', '\\');
 		}
 		
-		internal static string ToMSBuildPathRelative (string baseDirectory, string relPath)
+		internal static string ToMSBuildPathRelative (string baseDirectory, string absPath)
 		{
-			FilePath file = ToMSBuildPath (baseDirectory, relPath);
+			FilePath file = ToMSBuildPath (baseDirectory, absPath);
 			return file.ToRelative (baseDirectory);
 		}
 

@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects
 	public class SolutionFolder : SolutionItem
 	{
 		SolutionFolderItemCollection items;
+		SolutionFolderFileCollection files;
 		string name;
 		
 		public SolutionFolder ()
@@ -62,6 +63,16 @@ namespace MonoDevelop.Projects
 				if (items == null)
 					items = new SolutionFolderItemCollection (this);
 				return items;
+			}
+		}
+		
+		[ItemProperty]
+		[ProjectPathItemProperty ("File", Scope="*")]
+		public SolutionFolderFileCollection Files {
+			get {
+				if (files == null)
+					files = new SolutionFolderFileCollection (this);
+				return files;
 			}
 		}
 		
@@ -607,6 +618,9 @@ namespace MonoDevelop.Projects
 		
 		void RemoveFileFromAllProjects (string fileName)
 		{
+			foreach (SolutionFolder sf in GetAllItems<SolutionFolder> ()) {
+				sf.Files.Remove (fileName);
+			}
 			foreach (Project projectEntry in GetAllProjects()) {
 				List<ProjectFile> toDelete = new List<ProjectFile> ();
 				foreach (ProjectFile fInfo in projectEntry.Files) {
@@ -717,6 +731,18 @@ namespace MonoDevelop.Projects
 				ParentSolution.OnSolutionItemRemoved (e);
 		}
 		
+		internal void NotifyFilesAdded (params FilePath[] files)
+		{
+			foreach (FilePath f in files)
+				OnSolutionItemFileAdded (new SolutionItemFileEventArgs (f));
+		}
+		
+		internal void NotifyFilesRemoved (params FilePath[] files)
+		{
+			foreach (FilePath f in files)
+				OnSolutionItemFileRemoved (new SolutionItemFileEventArgs (f));
+		}
+		
 		void OnItemAdded (SolutionItemChangeEventArgs e, bool newToSolution)
 		{
 			NotifyItemAddedToFolder (this, e, newToSolution);
@@ -824,6 +850,18 @@ namespace MonoDevelop.Projects
 				ItemSaved (this, e);
 		}
 		
+		protected virtual void OnSolutionItemFileAdded (SolutionItemFileEventArgs args)
+		{
+			if (SolutionItemFileAdded != null)
+				SolutionItemFileAdded (this, args);
+		}
+		
+		protected virtual void OnSolutionItemFileRemoved (SolutionItemFileEventArgs args)
+		{
+			if (SolutionItemFileRemoved != null)
+				SolutionItemFileRemoved (this, args);
+		}
+		
 /*		protected virtual void OnItemReloadRequired (SolutionItemEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
@@ -846,6 +884,8 @@ namespace MonoDevelop.Projects
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		public event SolutionItemModifiedEventHandler ItemModified;
 		public event SolutionItemEventHandler ItemSaved;
+		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileAdded;
+		public event EventHandler<SolutionItemFileEventArgs> SolutionItemFileRemoved;
 //		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 	}
 	
@@ -878,6 +918,59 @@ namespace MonoDevelop.Projects
 		
 		public void Dispose ()
 		{
+		}
+	}
+	
+	public class SolutionFolderFileCollection: System.Collections.ObjectModel.Collection<FilePath>
+	{
+		SolutionFolder parent;
+		
+		internal SolutionFolderFileCollection (SolutionFolder parent)
+		{
+			this.parent = parent;
+		}
+		
+		protected override void ClearItems ()
+		{
+			FilePath[] files = new FilePath [Count];
+			CopyTo (files, 0);
+			base.ClearItems();
+			parent.NotifyFilesRemoved (files);
+		}
+		
+		protected override void InsertItem (int index, FilePath item)
+		{
+			base.InsertItem(index, item);
+			parent.NotifyFilesAdded (item);
+		}
+		
+		protected override void RemoveItem (int index)
+		{
+			FilePath f = this[index];
+			base.RemoveItem (index);
+			parent.NotifyFilesRemoved (f);
+		}
+		
+		protected override void SetItem (int index, FilePath item)
+		{
+			FilePath f = this[index];
+			base.SetItem(index, item);
+			parent.NotifyFilesRemoved (f);
+			parent.NotifyFilesAdded (item);
+		}
+	}
+	
+	public class SolutionItemFileEventArgs: EventArgs
+	{
+		FilePath file;
+		
+		public SolutionItemFileEventArgs (FilePath file)
+		{
+			this.file = file;
+		}
+
+		public FilePath File {
+			get { return this.file; }
 		}
 	}
 }

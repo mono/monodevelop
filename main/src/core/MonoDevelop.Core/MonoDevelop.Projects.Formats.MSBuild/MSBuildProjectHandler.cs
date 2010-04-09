@@ -1403,6 +1403,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return true;
 				return prop.Name != "name" && prop.Name != "Configurations";
 			}
+			if (instance is SolutionFolder) {
+				if (prop.Name == "Files")
+					return false;
+			}
 			if (instance is ProjectFile)
 				return prop.IsExtendedProperty (typeof(ProjectFile));
 			if (instance is ProjectReference)

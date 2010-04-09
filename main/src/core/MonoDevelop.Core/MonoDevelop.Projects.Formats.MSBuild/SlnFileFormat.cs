@@ -258,6 +258,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						ce.Name,
 						ce.ItemId);
 					
+					// Folder files
+					WriteFolderFiles (writer, (SolutionFolder) ce);
+					
 					//Write custom properties
 					MSBuildSerializer ser = new MSBuildSerializer (folder.ParentSolution.FileName);
 					DataItem data = (DataItem) ser.Serialize (ce, typeof(SolutionFolder));
@@ -279,6 +282,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				monitor.Step (1);
 			}
 			monitor.EndTask ();
+		}
+		
+		void WriteFolderFiles (StreamWriter writer, SolutionFolder folder)
+		{
+			if (folder.Files.Count > 0) {
+				writer.WriteLine ("\tProjectSection(SolutionItems) = preProject");
+				foreach (FilePath f in folder.Files) {
+					string relFile = MSBuildProjectService.ToMSBuildPathRelative (folder.ParentSolution.ItemDirectory, f);
+					writer.WriteLine ("\t\t" + relFile + " = " + relFile);
+				}
+				writer.WriteLine ("\tEndProjectSection");
+			}
 		}
 
 		void WriteProjectConfigurations (Solution sol, List<string> list)
@@ -306,25 +321,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		DataItem GetSolutionItemData (List<string> lines)
 		{
 			// Find a project section of type MonoDevelopProperties
-
-			int start = -1;
-			for (int n=0; n<lines.Count && start == -1; n++) {
-				string line = lines [n].Replace ("\t","").Replace (" ", "");
-				if (line == "ProjectSection(MonoDevelopProperties)=preProject")
-					start = n;
-			}
-			if (start == -1)
-				return null;
-
-			int end = -1;
-
-			for (int n=start+1; n<lines.Count && end == -1; n++) {
-				string line = lines [n].Replace ("\t","").Replace (" ", "");
-				if (line == "EndProjectSection")
-					end = n;
-			}
-			
-			if (end == -1)
+			int start, end;
+			if (!FindSection (lines, "MonoDevelopProperties", out start, out end))
 				return null;
 			
 			// Deserialize the object
@@ -333,6 +331,51 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Remove the lines, since they have already been preocessed
 			lines.RemoveRange (start, end - start + 1);
 			return it;
+		}
+		
+		List<string> ReadFolderFiles (List<string> lines)
+		{
+			// Find a solution item section of type SolutionItems
+
+			List<string> list = new List<string> ();
+			int start, end;
+			if (!FindSection (lines, "SolutionItems", out start, out end))
+				return list;
+			
+			for (int n=start + 1; n < end; n++) {
+				string file = lines [n];
+				int i = file.IndexOf ('=');
+				if (i == -1)
+					continue;
+				file = file.Substring (0, i).Trim (' ','\t');
+				if (file.Length > 0)
+					list.Add (file);
+			}
+			
+			// Remove the lines, since they have already been preocessed
+			lines.RemoveRange (start, end - start + 1);
+			return list;
+		}
+		
+		bool FindSection (List<string> lines, string name, out int start, out int end)
+		{
+			start = -1;
+			end = -1;
+			
+			for (int n=0; n<lines.Count && start == -1; n++) {
+				string line = lines [n].Replace ("\t","").Replace (" ", "");
+				if (line == "ProjectSection(" + name + ")=preProject")
+					start = n;
+			}
+			if (start == -1)
+				return false;
+
+			for (int n=start+1; n<lines.Count && end == -1; n++) {
+				string line = lines [n].Replace ("\t","").Replace (" ", "");
+				if (line == "EndProjectSection")
+					end = n;
+			}
+			return end != -1;
 		}
 		
 		void DeserializeSolutionItem (Solution sln, SolutionItem item, List<string> lines)
@@ -650,6 +693,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 					List<string> projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
 					DeserializeSolutionItem (sol, sfolder, projLines);
+					
+					foreach (string f in ReadFolderFiles (projLines))
+						sfolder.Files.Add (MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (fileName), f));
 					
 					SlnData slnData = new SlnData ();
 					slnData.Extra = projLines.ToArray ();

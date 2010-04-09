@@ -1,3 +1,11 @@
+2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/SolutionFolder.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Add support for files added to solution folders.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
