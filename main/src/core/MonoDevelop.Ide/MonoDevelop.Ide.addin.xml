@@ -1617,10 +1617,12 @@
 				<SeparatorItem id = "Separator1" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder" />
 			</Condition>
-			<Condition id="ItemType" value="Project|ProjectFolder">
+			<Condition id="ItemType" value="Project|ProjectFolder|Solution|SolutionFolder">
 				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
-				<SeparatorItem id = "Separator1" />
+			</Condition>
+			<Condition id="ItemType" value="Project|ProjectFolder">
+				<SeparatorItem/>
 				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
 			</Condition>
 		</ItemSet>
@@ -1748,6 +1750,7 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ShowAllFilesBuilderExtension"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.FileOperationsBuilderExtension"/>
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
+			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SolutionFolderFileNodeBuilder"/>
 		</SolutionPad>
 		
 		<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-class" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultLayout="Solution" defaultPlacement = "Left" defaultStatus="AutoHide">

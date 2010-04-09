@@ -142,21 +142,43 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void IncludeFileToProject ()
 		{
 			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<Solution> solutions = new Set<Solution> ();
 			foreach (ITreeNavigator node in CurrentNodes) {
-				Project project = node.GetParentDataItem (typeof(Project), true) as Project;
 				SystemFile file = (SystemFile) node.DataItem;
-				
-				project.AddFile (file.Path);
-				projects.Add (project);
+				Project project = node.GetParentDataItem (typeof(Project), true) as Project;
+				if (project != null) {
+					project.AddFile (file.Path);
+					projects.Add (project);
+				}
+				else {
+					SolutionFolder folder = node.GetParentDataItem (typeof(SolutionFolder), true) as SolutionFolder;
+					if (folder != null) {
+						folder.Files.Add (file.Path);
+						solutions.Add (folder.ParentSolution);
+					}
+					else {
+						Solution sol = node.GetParentDataItem (typeof(Solution), true) as Solution;
+						sol.RootFolder.Files.Add (file.Path);
+						solutions.Add (sol);
+					}
+				}
 			}
 			IdeApp.ProjectOperations.Save (projects);
+			foreach (Solution sol in solutions)
+				IdeApp.ProjectOperations.Save (sol);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]
 		public void UpdateIncludeFileToProject (CommandInfo info)
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			info.Visible = project != null;
+			if (project != null)
+				return;
+			if (CurrentNode.GetParentDataItem (typeof(Solution), true) != null) {
+				info.Text = GettextCatalog.GetString ("Include to Solution");
+				return;
+			}
+			info.Visible = false;
 		}
 		
 		[CommandHandler (ViewCommands.OpenWithList)]

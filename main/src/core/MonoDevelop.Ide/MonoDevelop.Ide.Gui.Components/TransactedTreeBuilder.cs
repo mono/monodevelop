@@ -729,6 +729,16 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (!objects.TryGetValue (node.DataItem, out nodes)) {
 						nodes = new List<TreeNode> ();
 						objects [node.DataItem] = nodes;
+						
+						// We can't wait for the node commit to fire the added event. A node builder may subscribe
+						// events in OnNodeAdded which may be fired during the transaction.
+						foreach (NodeBuilder nb in node.BuilderChain) {
+							try {
+								nb.OnNodeAdded (node.DataItem);
+							} catch (Exception ex) {
+								LoggingService.LogError (ex.ToString ());
+							}
+						}
 					}
 					nodes.Add (node);
 				}
@@ -744,8 +754,16 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (!node.HasIter) {
 					List<TreeNode> list = objects [node.DataItem];
 					list.Remove (node);
-					if (list.Count == 0)
+					if (list.Count == 0) {
 						objects.Remove (node.DataItem);
+						foreach (NodeBuilder nb in node.BuilderChain) {
+							try {
+								nb.OnNodeRemoved (node.DataItem);
+							} catch (Exception ex) {
+								LoggingService.LogError (ex.ToString ());
+							}
+						}
+					}
 				}
 			}
 
@@ -822,7 +840,8 @@ namespace MonoDevelop.Ide.Gui.Components
 						Gtk.TreeIter it = tree.Store.AppendValues (node.NodeIter, cn.Text, cn.Icon, cn.ClosedIcon, cn.DataItem, cn.BuilderChain, cn.Filled);
 						if (!cn.Filled)
 							tree.Store.AppendNode (it);	// Dummy node
-						tree.RegisterNode (it, cn.DataItem, cn.BuilderChain);
+						// The OnNodeAdded event was already fired when the node was added. There is no need to fire it again.
+						tree.RegisterNode (it, cn.DataItem, cn.BuilderChain, false);
 						cn.NodeIter = it;
 						cn.Modified = false;
 						node.Reset = false;
@@ -849,7 +868,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (node.DeleteDone)
 					return;
 				node.DeleteDone = true;
-				tree.UnregisterNode (node.DataItem, node.NodeIter, node.BuilderChain);
+				tree.UnregisterNode (node.DataItem, node.NodeIter, node.BuilderChain, true);
 				MarkChildrenDeleted (node);
 			}
 			
@@ -881,7 +900,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						MarkChildrenDeleted (child);
 						object childData = tree.store.GetValue (child, ExtensibleTreeView.DataItemColumn);
 						if (childData != null)
-							tree.UnregisterNode (childData, child, null);
+							tree.UnregisterNode (childData, child, null, true);
 					}
 				}
 				while (tree.store.IterNext (ref child));

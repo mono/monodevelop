@@ -135,9 +135,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (builder.Options ["ShowAllFiles"] && Directory.Exists (path))
 			{
 				Project project = (Project) builder.GetParentDataItem (typeof(Project), true);
+				SolutionFolderFileCollection folderFiles = null;
+				if (dataObject is Solution)
+					folderFiles = ((Solution)dataObject).RootFolder.Files;
+				else if (dataObject is SolutionFolder)
+					folderFiles = ((SolutionFolder)dataObject).Files;
 				
 				foreach (string file in Directory.GetFiles (path)) {
-					if (project == null || project.Files.GetFile (file) == null)
+					if ((project == null || project.Files.GetFile (file) == null) && (folderFiles == null || !folderFiles.Contains (file)))
 						builder.AddChild (new SystemFile (file, project));
 				}
 				

@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -44,12 +45,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		SolutionItemRenamedEventHandler combineNameChanged;
 		SolutionItemChangeEventHandler combineEntryAdded;
 		SolutionItemChangeEventHandler combineEntryRemoved;
+		EventHandler<SolutionItemFileEventArgs> fileAdded;
+		EventHandler<SolutionItemFileEventArgs> fileRemoved;
 		
 		public SolutionFolderNodeBuilder ()
 		{
 			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
 			combineEntryAdded = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryAdded));
 			combineEntryRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryRemoved));
+			fileAdded = (EventHandler<SolutionItemFileEventArgs>) DispatchService.GuiDispatch (new EventHandler<SolutionItemFileEventArgs> (OnFileAdded));
+			fileRemoved = (EventHandler<SolutionItemFileEventArgs>) DispatchService.GuiDispatch (new EventHandler<SolutionItemFileEventArgs> (OnFileRemoved));
 		}
 
 		public override Type NodeDataType {
@@ -80,14 +85,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			SolutionFolder combine = (SolutionFolder) dataObject;
-			foreach (SolutionItem entry in combine.Items)
+			SolutionFolder folder = (SolutionFolder) dataObject;
+			foreach (SolutionItem entry in folder.Items)
 				ctx.AddChild (entry);
+			foreach (FilePath file in folder.Files)
+				ctx.AddChild (new SolutionFolderFileNode (file, folder));
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ((SolutionFolder) dataObject).Items.Count > 0;
+			SolutionFolder sf = (SolutionFolder) dataObject;
+			return sf.Items.Count > 0 || sf.Files.Count > 0;
 		}
 		
 		public override object GetParentObject (object dataObject)
@@ -110,6 +118,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			folder.NameChanged += combineNameChanged;
 			folder.ItemAdded += combineEntryAdded;
 			folder.ItemRemoved += combineEntryRemoved;
+			folder.SolutionItemFileAdded += fileAdded;
+			folder.SolutionItemFileRemoved += fileRemoved;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
@@ -118,6 +128,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			folder.NameChanged -= combineNameChanged;
 			folder.ItemAdded -= combineEntryAdded;
 			folder.ItemRemoved -= combineEntryRemoved;
+			folder.SolutionItemFileAdded -= fileAdded;
+			folder.SolutionItemFileRemoved -= fileRemoved;
 		}
 		
 		void OnCombineRenamed (object sender, SolutionItemRenamedEventArgs e)
@@ -140,6 +152,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null)
 				tb.Remove ();
+		}
+				
+		void OnFileAdded (object s, SolutionItemFileEventArgs args)
+		{
+			SolutionFolder folder = (SolutionFolder) s;
+			ITreeBuilder tb = Context.GetTreeBuilder (folder);
+			if (tb != null) {
+				tb.AddChild (new SolutionFolderFileNode (args.File, folder));
+			}
+		}
+		
+		void OnFileRemoved (object s, SolutionItemFileEventArgs args)
+		{
+			SolutionFolder folder = (SolutionFolder) s;
+			ITreeBuilder tb = Context.GetTreeBuilder (folder);
+			if (tb != null) {
+				if (tb.MoveToChild (args.File, typeof(SolutionFolderFileNode)))
+					tb.Remove ();
+			}
 		}
 	}
 	
@@ -164,6 +195,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
+			if (dataObject is IFileItem)
+				return true;
 			SolutionItem it = dataObject as SolutionItem;
 			return it != null && operation == DragOperation.Move;
 		}
@@ -171,13 +204,29 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			SolutionItem it = (SolutionItem) dataObject;
-			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the solution folder '{1}'?", it.Name, folder.Name), AlertButton.Move))
-				return;
-
-			// If the items belongs to another folder, it will be automatically removed from it
-			folder.Items.Add (it);
-			IdeApp.ProjectOperations.Save (folder.ParentSolution);
+			if (dataObject is SolutionItem) {
+				SolutionItem it = (SolutionItem) dataObject;
+				if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the solution folder '{1}'?", it.Name, folder.Name), AlertButton.Move))
+					return;
+	
+				// If the items belongs to another folder, it will be automatically removed from it
+				folder.Items.Add (it);
+			}
+			else {
+				DropFile (folder, (IFileItem) dataObject, operation);
+			}
+			
+		    IdeApp.ProjectOperations.Save (folder.ParentSolution);
+		}
+		
+		internal static void DropFile (SolutionFolder folder, IFileItem fileItem, DragOperation operation)
+		{
+			FilePath dest = folder.BaseDirectory.Combine (fileItem.FileName.FileName);
+			if (operation == DragOperation.Copy)
+				FileService.CopyFile (fileItem.FileName, dest);
+			else
+				FileService.MoveFile (fileItem.FileName, dest);
+			folder.Files.Add (dest);
 		}
 			
 		public override void ActivateMultipleItems ()
@@ -256,6 +305,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					info.Visible = false;
 					return;
 				}
+			}
+		}
+		
+/*		[CommandHandler (ProjectCommands.AddNewFiles)]
+		protected void OnAddNewFiles ()
+		{
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			if (IdeApp.ProjectOperations.CreateProjectFile (null, folder.BaseDirectory)) {
+				IdeApp.ProjectOperations.Save (folder.ParentSolution);
+				CurrentNode.Expanded = true;
+			}
+		}*/
+		
+		[CommandHandler (ProjectCommands.AddFiles)]
+		protected void OnAddFiles ()
+		{
+			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
+			if (IdeApp.ProjectOperations.AddFilesToSolutionFolder (folder)) {
+				CurrentNode.Expanded = true;
+				IdeApp.ProjectOperations.Save (folder.ParentSolution);
 			}
 		}
 		

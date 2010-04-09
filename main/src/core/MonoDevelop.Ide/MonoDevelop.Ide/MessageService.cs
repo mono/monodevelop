@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
@@ -218,6 +219,11 @@ namespace MonoDevelop.Ide
 		{
 			return GenericAlert (MonoDevelop.Ide.Gui.Stock.Question, primaryText, secondaryText, confirmIsDefault ? 0 : 1, AlertButton.Cancel, button) == button;
 		}
+		
+		public static bool Confirm (ConfirmationMessage message)
+		{
+			return messageService.GenericAlert (message) == message.ConfirmButton;
+		}
 		#endregion
 		
 		#region AskQuestion
@@ -239,6 +245,12 @@ namespace MonoDevelop.Ide
 		{
 			return GenericAlert (MonoDevelop.Ide.Gui.Stock.Question, primaryText, secondaryText, defaultButton, buttons);
 		}
+		
+		public static AlertButton AskQuestion (QuestionMessage message)
+		{
+			return messageService.GenericAlert (message);
+		}
+		
 		#endregion
 		
 		public static int ShowCustomDialog (Gtk.Dialog dialog)
@@ -258,9 +270,24 @@ namespace MonoDevelop.Ide
 		{
 			return GenericAlert (icon, primaryText, secondaryText, buttons.Length - 1, buttons);
 		}
+		
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
 		{
-			return messageService.GenericAlert (icon, primaryText, secondaryText, defaultButton, buttons);
+			GenericMessage message = new GenericMessage () {
+				Icon = icon,
+				Text = primaryText,
+				SecondaryText = secondaryText,
+				DefaultButton = defaultButton
+			};
+			foreach (AlertButton but in buttons)
+				message.Buttons.Add (but);
+			
+			return messageService.GenericAlert (message);
+		}
+		
+		public static AlertButton GenericAlert (GenericMessage message)
+		{
+			return messageService.GenericAlert (message);
 		}
 		
 		public static string GetTextResponse (string question, string caption, string initialValue)
@@ -302,15 +329,15 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
-			public AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
+			public AlertButton GenericAlert (MessageDescription message)
 			{
-				if (string.IsNullOrEmpty (secondaryText)) {
-					secondaryText = primaryText;
-					primaryText = null;
-				}
-				AlertDialog alertDialog = new AlertDialog (icon, primaryText, secondaryText, buttons);
-				alertDialog.FocusButton (defaultButton);
+				if (message.ApplyToAllButton != null)
+					return message.ApplyToAllButton;
+				AlertDialog alertDialog = new AlertDialog (message);
+				alertDialog.FocusButton (message.DefaultButton);
 				ShowCustomDialog (alertDialog);
+				if (alertDialog.ApplyToAll)
+					message.ApplyToAllButton = alertDialog.ResultButton;
 				return alertDialog.ResultButton;
 			}
 			
@@ -354,5 +381,151 @@ namespace MonoDevelop.Ide
 			}
 		}
 		#endregion
+	}
+	
+	public class MessageDescription
+	{
+		internal MessageDescription ()
+		{
+			DefaultButton = -1;
+		}
+		
+		internal List<AlertButton> buttons = new List<AlertButton> ();
+		List<Option> options = new List<Option> ();
+		
+		internal class Option {
+			public string Text;
+			public bool Value;
+			public string Id;
+		}
+		
+		internal AlertButton ApplyToAllButton;
+		
+		internal IEnumerable<Option> Options {
+			get { return options; }
+		}
+		
+		public string Icon { get; set; }
+		
+		public string Text { get; set; }
+		public string SecondaryText { get; set; }
+		public bool AllowApplyToAll { get; set; }
+		public int DefaultButton { get; set; }
+		
+		public void AddOption (string id, string text, bool setByDefault)
+		{
+			options.Add (new Option () { Text = text, Id = id, Value = setByDefault });
+		}
+		
+		public bool GetOptionValue (string id)
+		{
+			foreach (Option op in options)
+				if (op.Id == id)
+					return op.Value;
+			throw new ArgumentException ("Invalid option id");
+		}
+		
+		public void SetOptionValue (string id, bool value)
+		{
+			foreach (Option op in options) {
+				if (op.Id == id) {
+					op.Value = value;
+					return;
+				}
+			}
+			throw new ArgumentException ("Invalid option id");
+		}
+	}
+	
+	public sealed class GenericMessage: MessageDescription
+	{
+		public GenericMessage ()
+		{
+		}
+		
+		public GenericMessage (string text)
+		{
+			Text = text;
+		}
+		
+		public GenericMessage (string text, string secondaryText): this (text)
+		{
+			SecondaryText = secondaryText;
+		}
+		
+		public List<AlertButton> Buttons {
+			get { return buttons; }
+		}
+	}
+	
+	
+	public sealed class QuestionMessage: MessageDescription
+	{
+		public QuestionMessage ()
+		{
+			Icon = MonoDevelop.Ide.Gui.Stock.Question;
+		}
+		
+		public QuestionMessage (string text): this ()
+		{
+			Text = text;
+		}
+		
+		public QuestionMessage (string text, string secondaryText): this (text)
+		{
+			SecondaryText = secondaryText;
+		}
+		
+		public List<AlertButton> Buttons {
+			get { return buttons; }
+		}
+	}
+	
+	public sealed class ConfirmationMessage: MessageDescription
+	{
+		AlertButton confirmButton;
+		
+		public ConfirmationMessage ()
+		{
+			Icon = MonoDevelop.Ide.Gui.Stock.Question;
+			buttons.Add (AlertButton.Cancel);
+		}
+		
+		public ConfirmationMessage (AlertButton button): this ()
+		{
+			ConfirmButton = button;
+		}
+		
+		public ConfirmationMessage (string primaryText, AlertButton button): this (button)
+		{
+			Text = primaryText;
+		}
+		
+		public ConfirmationMessage (string primaryText, string secondaryText, AlertButton button): this (primaryText, button)
+		{
+			SecondaryText = secondaryText;
+		}
+		
+		public AlertButton ConfirmButton {
+			get { return confirmButton; }
+			set {
+				if (buttons.Count == 2)
+					buttons.RemoveAt (1);
+				buttons.Add (value);
+				confirmButton = value;
+			}
+		}
+		
+		public bool ConfirmIsDefault {
+			get {
+				return DefaultButton == 1;
+			}
+			set {
+				if (value)
+					DefaultButton = 1;
+				else
+					DefaultButton = 0;
+			}
+		}
 	}
 }

@@ -670,19 +670,19 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public void CreateProjectFile (Project parentProject, string basePath)
+		public bool CreateProjectFile (Project parentProject, string basePath)
 		{
-			CreateProjectFile (parentProject, basePath, null);
+			return CreateProjectFile (parentProject, basePath, null);
 		}
 		
-		public void CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
+		public bool CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
 			NewFileDialog nfd = null;
 			try {
 				nfd = new NewFileDialog (parentProject, basePath);
 				if (selectedTemplateId != null)
 					nfd.SelectTemplate (selectedTemplateId);
-				nfd.Run ();
+				return nfd.Run () == (int) Gtk.ResponseType.Ok;
 			} finally {
 				if (nfd != null) nfd.Destroy ();
 			}
@@ -1122,6 +1122,62 @@ namespace MonoDevelop.Ide
 				monitor.Dispose ();
 				tt.End ();
 			}
+		}
+		
+		public bool AddFilesToSolutionFolder (SolutionFolder folder)
+		{
+			SelectFileDialog dlg = new SelectFileDialog ();
+			dlg.SelectMultiple = true;
+			dlg.Action = Gtk.FileChooserAction.Open;
+			dlg.CurrentFolder = folder.BaseDirectory;
+			dlg.TransientFor = IdeApp.Workbench.RootWindow;
+			if (dlg.Run ())
+				return AddFilesToSolutionFolder (folder, dlg.SelectedFiles);
+			else
+				return false;
+		}
+		
+		public bool AddFilesToSolutionFolder (SolutionFolder folder, string[] files)
+		{
+			QuestionMessage msg = new QuestionMessage ();
+			AlertButton keepButton = new AlertButton (GettextCatalog.GetString ("Keep file path"));
+			msg.Buttons.Add (keepButton);
+			msg.Buttons.Add (AlertButton.Copy);
+			msg.Buttons.Add (AlertButton.Move);
+			msg.Buttons.Add (AlertButton.Cancel);
+			msg.AllowApplyToAll = true;
+			
+			bool someAdded = false;
+			
+			foreach (string file in files) {
+				FilePath fp = file;
+				FilePath dest = folder.BaseDirectory.Combine (fp.FileName);
+				
+				if (folder.IsRoot) {
+					// Don't allow adding files to the root folder. VS doesn't allow it
+					SolutionFolder newFolder = new SolutionFolder ();
+					newFolder.Name = "Solution Items";
+					folder.AddItem (newFolder);
+					folder = newFolder;
+				}
+				
+				if (!fp.IsChildPathOf (folder.BaseDirectory)) {
+					msg.Text = GettextCatalog.GetString ("The file {0} is outside the folder directory. What do you want to do?", fp.FileName);
+					AlertButton res = MessageService.AskQuestion (msg);
+					if (res == AlertButton.Cancel)
+						return someAdded;
+					if (res == AlertButton.Copy) {
+						FileService.CopyFile (file, dest);
+						fp = dest;
+					} else if (res == AlertButton.Move) {
+						FileService.MoveFile (file, dest);
+						fp = dest;
+					}
+				}
+				folder.Files.Add (fp);
+				someAdded = true;
+			}
+			return someAdded;
 		}
 		
 		public string[] AddFilesToProject (Project project, string[] files, string targetDirectory)

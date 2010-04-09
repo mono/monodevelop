@@ -1329,17 +1329,19 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		internal void RegisterNode (Gtk.TreeIter it, object dataObject, NodeBuilder[] chain)
+		internal void RegisterNode (Gtk.TreeIter it, object dataObject, NodeBuilder[] chain, bool fireAddedEvent)
 		{
 			object currentIt = nodeHash [dataObject];
 			if (currentIt == null) {
 				nodeHash [dataObject] = it;
 				if (chain == null) chain = GetBuilderChain (dataObject.GetType());
-				foreach (NodeBuilder nb in chain) {
-					try {
-						nb.OnNodeAdded (dataObject);
-					} catch (Exception ex) {
-						LoggingService.LogError (ex.ToString ());
+				if (fireAddedEvent) {
+					foreach (NodeBuilder nb in chain) {
+						try {
+							nb.OnNodeAdded (dataObject);
+						} catch (Exception ex) {
+							LoggingService.LogError (ex.ToString ());
+						}
 					}
 				}
 			} else {
@@ -1355,7 +1357,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		internal void UnregisterNode (object dataObject, Gtk.TreeIter iter, NodeBuilder[] chain)
+		internal void UnregisterNode (object dataObject, Gtk.TreeIter iter, NodeBuilder[] chain, bool fireRemovedEvent)
 		{
 			// Remove object from copy list
 			
@@ -1409,7 +1411,8 @@ namespace MonoDevelop.Ide.Gui.Components
 					nodeHash.Remove (dataObject);
 			} else {
 				nodeHash.Remove (dataObject);
-				NotifyNodeRemoved (dataObject, chain);
+				if (fireRemovedEvent)
+					NotifyNodeRemoved (dataObject, chain);
 			}
 		}
 		
@@ -1420,7 +1423,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				RemoveChildren (child);
 				object childData = store.GetValue (child, ExtensibleTreeView.DataItemColumn);
 				if (childData != null)
-					UnregisterNode (childData, child, null);
+					UnregisterNode (childData, child, null, true);
 				store.Remove (ref child);
 			}
 		}

@@ -29,6 +29,7 @@
 using System;
 using System.Text;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -43,6 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Gtk.HBox  hbox  = new HBox ();
 		Gtk.Image image = new Image ();
 		Gtk.Label label = new Label ();
+		VBox labelsBox = new VBox (false, 6);
 		
 		public AlertButton ResultButton {
 			get {
@@ -50,11 +52,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
+		public bool ApplyToAll { get; set; }
+		
 		void Init ()
 		{
 			VBox.PackStart (hbox);
 			hbox.PackStart (image, false, false, 0);
-			hbox.PackStart (label, true, true, 0);
+			hbox.PackStart (labelsBox, true, true, 0);
+			labelsBox.PackStart (label, true, true, 0);
 				
 			// Table 3.1
 			this.Title        = "";
@@ -81,11 +86,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label.Xalign    = 0.00f;
 		}
 		
-		public AlertDialog (string icon, string primaryText, string secondaryText, AlertButton[] buttons)
+		public AlertDialog (MessageDescription message)
 		{
 			Init ();
-			this.buttons = buttons;
-			image.Pixbuf = ImageService.GetPixbuf (icon, IconSize.Dialog);
+			this.buttons = message.buttons.ToArray ();
+			
+			string primaryText;
+			string secondaryText;
+			
+			if (string.IsNullOrEmpty (message.SecondaryText)) {
+				secondaryText = message.Text;
+				primaryText = null;
+			} else {
+				primaryText = message.Text;
+				secondaryText = message.SecondaryText;
+			}
+			
+			image.Pixbuf = ImageService.GetPixbuf (message.Icon, IconSize.Dialog);
 			
 			StringBuilder markup = new StringBuilder (@"<span weight=""bold"" size=""larger"">");
 			markup.Append (GLib.Markup.EscapeText (primaryText));
@@ -99,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			label.Markup = markup.ToString ();
 			
-			foreach (AlertButton button in buttons) {
+			foreach (AlertButton button in message.buttons) {
 				Button newButton = new Button ();
 				newButton.Label        = button.Label;
 				newButton.UseUnderline = true;
@@ -109,11 +126,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				newButton.Clicked += ButtonClicked;
 				ActionArea.Add (newButton);
 			}
+			
+			foreach (MessageDescription.Option op in message.Options) {
+				CheckButton check = new CheckButton (op.Text);
+				check.Active = op.Value;
+				labelsBox.PackStart (check, false, false, 0);
+				check.Toggled += delegate {
+					message.SetOptionValue (op.Id, check.Active);
+				};
+			}
+			
+			if (message.AllowApplyToAll) {
+				CheckButton check = new CheckButton (GettextCatalog.GetString ("Apply to all"));
+				labelsBox.PackStart (check, false, false, 0);
+				check.Toggled += delegate {
+					ApplyToAll = check.Active;
+				};
+			}
+			
 			this.ShowAll ();
 		}
 		
 		public void FocusButton (int buttonNumber)
 		{
+			if (buttonNumber == -1)
+				buttonNumber = ActionArea.Children.Length - 1;
 			ActionArea.Children[buttonNumber].GrabFocus ();
 		}
 			

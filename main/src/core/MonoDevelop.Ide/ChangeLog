@@ -1,3 +1,30 @@
+2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ShowAllFilesBuilderExtension.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:
+	  Add support for adding files to solution folders.
+
+	* MonoDevelop.Ide/MessageService.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/AlertDialog.cs: Introduced the
+	  MessageDescription hierarchy of classes, which allow setting
+	  all message dialog settings in an object. It also adds
+	  support for the Apply to All option and other custom
+	  options.
+
+	* MonoDevelop.Ide.Gui.Components/TreeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs:
+	  While in a transaction, make sure the OnNodeAdded event is
+	  fired when the node is added, not when the transaction is
+	  committed.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/Services.cs:
