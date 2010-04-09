@@ -1,5 +1,11 @@
 2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Gui/Pad.cs: Show all pad categories in the
+	  View menu.
+
+2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components/TreeViewState.cs: When restoring
 	  state, if a node was selected and it now has been deleted,
 	  try to select an adjacent node. Fixes bug 595176 - Next

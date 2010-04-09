@@ -81,13 +81,17 @@ namespace MonoDevelop.Ide.Gui
 		public string[] Categories {
 			get {
 				if (categories == null) {
-					List<string> list = new List<string> ();
 					CategoryNode cat = content.Parent as CategoryNode;
-					while (cat != null) {
-						list.Insert (0, cat.Name);
-						cat = cat.Parent as CategoryNode;
+					if (cat == null)
+						categories = new string[] { GettextCatalog.GetString ("Pads") };
+					else {
+						List<string> list = new List<string> ();
+						while (cat != null) {
+							list.Insert (0, cat.Name);
+							cat = cat.Parent as CategoryNode;
+						}
+						categories = list.ToArray ();
 					}
-					categories = list.ToArray ();
 				}
 				return categories;
 			}

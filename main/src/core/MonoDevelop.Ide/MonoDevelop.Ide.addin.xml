@@ -1774,8 +1774,9 @@
 			<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ReferenceNodeBuilder"/>
 		</SolutionPad>
 		
-		<Category id="Other" _name="Other Windows">
-			<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" icon="md-message-log" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
+		<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" icon="md-message-log" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
+		
+		<Category id="Other" _name="Other Pads">
 		</Category>
 	</Extension>
 	
@@ -2029,9 +2030,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
 			<SeparatorItem id = "ViewSeparator2" />
-			<ItemSet id = "ViewPads" _label = "Pads">
-				<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
-			</ItemSet>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+			<SeparatorItem id = "ViewSeparator3" />
 			<ItemSet id = "ViewToolbars" _label = "Toolbars">
 				<CommandItem id = "MonoDevelop.Components.Commands.CommandSystemCommands.ToolbarList" />
 			</ItemSet>
