@@ -1,3 +1,9 @@
+2010-04-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorContainer.cs: Fixed 'Bug 594836 -
+	  Performance degradation in the text editor'.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: When losing focus, don't hide

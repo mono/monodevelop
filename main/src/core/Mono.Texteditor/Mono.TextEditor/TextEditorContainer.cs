@@ -171,6 +171,11 @@ namespace Mono.TextEditor
 			allocation = new Rectangle (0, 0, allocation.Width, allocation.Height);
 			if (textEditorWidget.Allocation != allocation)
 				textEditorWidget.SizeAllocate (allocation);
+			SetChildrenPositions (allocation);
+		}
+		
+		void SetChildrenPositions (Rectangle allocation)
+		{
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
 				if (child.Child == textEditorWidget)
 					continue;
@@ -300,8 +305,7 @@ namespace Mono.TextEditor
 		
 		void HandleHAdjustementValueChanged (object sender, EventArgs e)
 		{
-			if (this.containerChildren.Count > 0)
-				QueueResize ();
+			SetChildrenPositions (Allocation);
 		}
 	}
 }

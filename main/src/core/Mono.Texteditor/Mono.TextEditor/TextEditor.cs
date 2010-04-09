@@ -186,8 +186,7 @@ namespace Mono.TextEditor
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
 			}
-/*			if (this.containerChildren.Count > 0)
-				QueueResize ();*/
+
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			textViewMargin.VAdjustmentValueChanged ();
