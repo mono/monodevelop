@@ -1,3 +1,9 @@
+2010-04-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs: Fixed
+	  'Bug 415469 - return ternary in a switch is not tabbed
+	  properly'.
+
 2010-04-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs:

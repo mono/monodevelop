@@ -296,8 +296,10 @@ namespace MonoDevelop.CSharp.Formatting
 			"if",
 			"base",
 			"this",
-			"="
+			"=",
+			"return"
 		};
+		
 		static readonly int maxKeywordLength = keywords.Max (word => word.Length);
 		
 		// Check to see if linebuf contains a keyword we're interested in (not all keywords)
