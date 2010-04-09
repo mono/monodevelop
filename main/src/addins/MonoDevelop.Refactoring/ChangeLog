@@ -1,3 +1,8 @@
+2010-04-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: Fixed 'Bug
+	  546446 - Find references shows usages of overloads'.
+
 2010-04-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/INRefactoryASTProvider.cs:
