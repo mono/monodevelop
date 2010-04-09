@@ -622,10 +622,12 @@ namespace MonoDevelop.CSharp.Resolver
 				if (idExpr.Identifier == "__reftype") 
 					return CreateResult ("System.Type");
 			}
+			
 			ResolveResult targetResult = Resolve (invocationExpression.TargetObject);
 			
 			if (targetResult is CombinedMethodResolveResult)
 				targetResult = ((CombinedMethodResolveResult)targetResult).MethodResolveResult;
+			
 			targetResult.StaticResolve = false; // invocation result is never static
 			if (this.resolver.CallingType != null) {
 				if (targetResult is ThisResolveResult) {
@@ -635,12 +637,15 @@ namespace MonoDevelop.CSharp.Resolver
 					targetResult.CallingMember = resolver.CallingMember;
 				} else if (targetResult is BaseResolveResult) {
 					System.Collections.IEnumerable baseConstructors = null;
-					foreach (IType baseType in resolver.Dom.GetInheritanceTree (this.resolver.CallingType)) {
-						if (baseType.DecoratedFullName == this.resolver.CallingType.DecoratedFullName || baseType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface)
-							continue;
-						baseConstructors = baseType.Methods.Where (method => method.IsConstructor);
-						break;
+					foreach (IReturnType bT in this.resolver.CallingType.BaseTypes) {
+						foreach (IType baseType in resolver.Dom.GetInheritanceTree (resolver.SearchType (bT))) {
+							if (baseType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface)
+								break;
+							baseConstructors = baseType.Methods.Where (method => method.IsConstructor);
+							goto bailOut;
+						}
 					}
+				bailOut:
 					targetResult = new MethodResolveResult (baseConstructors);
 					((MethodResolveResult)targetResult).Type = this.resolver.CallingType;
 					targetResult.CallingType   = resolver.CallingType;

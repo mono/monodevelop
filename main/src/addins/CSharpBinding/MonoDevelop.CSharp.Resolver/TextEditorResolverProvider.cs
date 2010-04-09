@@ -141,12 +141,16 @@ namespace MonoDevelop.CSharp.Resolver
 			    resolveResult is MethodResolveResult && ((MethodResolveResult)resolveResult).Methods.Count > 1) {
 				// put the search offset at the end of the invocation to be able to find the full expression
 				// the resolver finds it itself if spaces are between the method name and the argument opening parentheses.
+				while (wordEnd < txt.Length - 1 && Char.IsWhiteSpace (txt[wordEnd]))
+					wordEnd++;
 				if (txt[wordEnd] == '(') {
 					int matchingBracket = data.Document.GetMatchingBracketOffset (wordEnd);
 					if (matchingBracket > 0)
 						wordEnd = matchingBracket;
 				}
+				//Console.WriteLine (expressionFinder.FindFullExpression (txt, wordEnd));
 				ResolveResult possibleResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? resolveResult;
+				//Console.WriteLine ("possi:" + resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)));
 				if (possibleResult is MethodResolveResult)
 					resolveResult = possibleResult;
 			}

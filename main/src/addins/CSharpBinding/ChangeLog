@@ -1,5 +1,11 @@
 2010-04-09  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:
+	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
+	  Fixed 'Bug 578195 - Wrong ctor shown on base() call'.
+
+2010-04-09  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs: Fixed
 	  'Bug 415469 - return ternary in a switch is not tabbed
 	  properly'.
