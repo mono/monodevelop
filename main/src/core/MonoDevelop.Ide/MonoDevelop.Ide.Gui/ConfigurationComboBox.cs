@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			foreach (DropDownBox.ComboItem item in configs) {
-				if (item.Label == IdeApp.Workspace.ActiveConfigurationId) {
+				if ((string)(item.Item) == IdeApp.Workspace.ActiveConfigurationId) {
 					configs.CurrentItem = IdeApp.Workspace.ActiveConfigurationId;
 					UpdateLabel ();
 					return;
@@ -309,7 +309,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				Gtk.RadioMenuItem grp = new Gtk.RadioMenuItem ("");
 				foreach (ComboItem ci in iset) {
-					Gtk.RadioMenuItem mi = new Gtk.RadioMenuItem (grp, ci.Label);
+					Gtk.RadioMenuItem mi = new Gtk.RadioMenuItem (grp, ci.Label.Replace ("_","__"));
 					if (ci.Item == iset.CurrentItem || ci.Item.Equals (iset.CurrentItem))
 						mi.Active = true;
 					
