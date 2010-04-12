@@ -151,7 +151,10 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
-			Extension = null;
+			if (Extension != null) {
+				Extension.Dispose ();
+				Extension = null;
+			}
 			view = null;
 			this.ButtonPressEvent -= OnPopupMenu;
 			AddinManager.RemoveExtensionNodeHandler  ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);

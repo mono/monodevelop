@@ -1,5 +1,10 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Dispose
+	  text editor extensions.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented
 	  command for 'Bug 595228 - Block selection should be usable
 	  from keyboard'
