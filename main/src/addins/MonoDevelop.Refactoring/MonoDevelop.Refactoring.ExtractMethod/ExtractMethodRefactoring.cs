@@ -43,6 +43,15 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 {
 	public class ExtractMethodRefactoring : RefactoringOperation
 	{
+		public override string AccelKey {
+			get {
+				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.ExtractMethod, null);
+				if (cmdInfo != null && cmdInfo.AccelKey != null)
+					return cmdInfo.AccelKey.Replace ("dead_circumflex", "^");
+				return null;
+			}
+		}
+		
 		public ExtractMethodRefactoring ()
 		{
 			Name = "Extract Method";

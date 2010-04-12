@@ -36,6 +36,15 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 {
 	public class IntegrateTemporaryVariableRefactoring : RefactoringOperation
 	{
+		public override string AccelKey {
+			get {
+				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.IntegrateTemporaryVariable, null);
+				if (cmdInfo != null && cmdInfo.AccelKey != null)
+					return cmdInfo.AccelKey.Replace ("dead_circumflex", "^");
+				return null;
+			}
+		}
+		
 		public IntegrateTemporaryVariableRefactoring ()
 		{
 			Name = "Integrate Temporary Variable";
@@ -45,7 +54,6 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		{
 			return GettextCatalog.GetString ("_Integrate Temporary Variable");
 		}
-		
 		
 		ICSharpCode.NRefactory.Ast.INode GetMemberBodyNode (MonoDevelop.Refactoring.RefactoringOptions options)
 		{

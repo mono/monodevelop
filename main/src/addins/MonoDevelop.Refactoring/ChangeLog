@@ -1,5 +1,17 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableHandler.cs:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
+	  Fixed 'Bug 595580 - Add default key-bindings for currently
+	  unbindable refactoring actions'.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs: Fixed 'Bug
 	  595175 - Code generator window displays offscreen'.
 

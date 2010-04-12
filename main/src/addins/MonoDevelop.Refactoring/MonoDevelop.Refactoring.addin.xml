@@ -122,7 +122,8 @@
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ExtractMethod"
 					defaultHandler = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodHandler"
-					_label = "Extract Method"/>
+					_label = "Extract Method"
+					shortcut = "Control|Alt|M"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CreateMethod"
 					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.CreateMethodHandler"
 					_label = "Create Method"/>
@@ -134,6 +135,11 @@
 					defaultHandler = "MonoDevelop.Refactoring.QuickFixHandler"
 					_label = "Quick fix..."
 					shortcut = "Alt|Return" />
+		
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntegrateTemporaryVariable"
+					defaultHandler = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableHandler"
+					_label = "Integrate Temporary Variable"
+					shortcut = "Control|Alt|I" />
 		</Category>
 	</Extension>
 	

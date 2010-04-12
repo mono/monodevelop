@@ -60,6 +60,7 @@ FILES =  \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs \
+	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableHandler.cs \
 	MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantDialog.cs \
 	MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantHandler.cs \
