@@ -471,29 +471,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		
 		internal List<int> filteredItems = new List<int> ();
-/*		public static int MatchRating (string filterText, string text)
-		{
-			int[] indices = Match (filterText, text);
-			if (indices == null)
-				return -1;
-			int result = 0;
-			int lastIndex = -10;
-			
-			for (int newSelection = 0; newSelection < indices.Length; newSelection++) {
-				int idx = indices[newSelection];
-				if (idx >= text.Length)
-					break;
-				int positionRating = short.MaxValue - idx + 1;
-				int weight = filterText[newSelection] == text[idx] ? 10 : 5;
-				result += positionRating * weight;
-				if (idx - lastIndex == 1)
-					result += positionRating * weight;
-				lastIndex = idx;
-			}
-			return result;
-		}*/
 		
 		internal static int[] Match (string filterText, string text)
 		{
@@ -514,6 +492,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 					matchIndices.Add (newSelection);
 					wasMatch = true;
 					continue;
+				} else {
+					for (; newSelection < text.Length; newSelection++) {
+						if (char.IsUpper (text[newSelection]) && ch2 == text[newSelection]) {
+							matchIndices.Add (newSelection);
+							itemIndex++;
+							wasMatch = true;
+							break;
+						}
+					}
+					if (wasMatch)
+						continue;
 				}
 				
 				if ((char.IsPunctuation (ch2) || char.IsWhiteSpace (ch2))) {

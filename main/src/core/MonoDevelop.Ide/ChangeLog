@@ -1,5 +1,11 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs: Implemented
+	  'Bug 595240 - Completion list filtering should match on
+	  words not just at start'.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs: Text
 	  editor extensions are now disposing correctly.
 
