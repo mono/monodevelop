@@ -1,3 +1,8 @@
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs: Added GetLineIndent method to
+	  document.
+
 2010-04-09  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

@@ -279,6 +279,18 @@ namespace Mono.TextEditor
 			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset));
 		}
 		
+		public string GetLineIndent (int lineNumber)
+		{
+			return GetLineIndent (GetLine (lineNumber));
+		}
+		
+		public string GetLineIndent (LineSegment segment)
+		{
+			if (segment == null)
+				return "";
+			return segment.GetIndentation (this);
+		}
+		
 		public LineSegment GetLine (int lineNumber)
 		{
 			return splitter.Get (lineNumber);
