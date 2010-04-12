@@ -1,5 +1,10 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Text
+	  editor extension is disposed in Document.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Dispose
 	  text editor extensions.
 
