@@ -26,9 +26,11 @@ FILES =  \
 	AssemblyInfo.cs \
 	Commands/NUnitCommands.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.NUnit.NUnitOptionsWidget.cs \
 	Gui/CircleImage.cs \
 	Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs \
 	Gui/NUnitAssemblyGroupNodeBuilder.cs \
+	Gui/NUnitOptionsPanel.cs \
 	Gui/TestAssemblyNodeBuilder.cs \
 	Gui/TestChart.cs \
 	Gui/TestNodeBuilder.cs \
@@ -78,7 +80,6 @@ RES =  \
 	Gui/unit-test-24.png \
 	md1format.xml \
 	MonoDevelopNUnit.addin.xml \
-	nunit.glade \
 	templates/NUnitAssemblyGroup.xpt.xml \
 	templates/NUnitProject.xpt.xml \
 	templates/NUnitTestClass.xft.xml

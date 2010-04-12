@@ -32,162 +32,14 @@ using System.IO;
 using System.Collections;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Components;
-using MonoDevelop.Core.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 
 namespace MonoDevelop.NUnit
 {
 	public class NUnitOptionsPanel : OptionsPanel
 	{
-		
-		sealed class NUnitOptionsWidget : GladeWidgetExtract
-		{
-			// Gtk Controls
-			[Glade.Widget] Gtk.TreeView categoryTree;
-			[Glade.Widget] CheckButton useParentCheck;
-			[Glade.Widget] RadioButton noFilterRadio;
-			[Glade.Widget] RadioButton includeRadio;
-			[Glade.Widget] RadioButton excludeRadio;
-			[Glade.Widget] Button addButton;
-			[Glade.Widget] Button removeButton;
-			TreeStore store;
-			TreeViewColumn textColumn;
-			
-			UnitTest test;
-			string config;
-			NUnitCategoryOptions options;
-			NUnitCategoryOptions localOptions;
-
-			public NUnitOptionsWidget (Properties customizationObject) : base ("nunit.glade", "NUnitOptions")
-			{
-				test =  ((Properties)customizationObject).Get<UnitTest> ("UnitTest");
-				config =  ((Properties)customizationObject).Get<string> ("Config");
-				options = localOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions), config);
-				
-				store = new TreeStore (typeof(string));
-				categoryTree.Model = store;
-				categoryTree.HeadersVisible = false;
-				
-				CellRendererText tr = new CellRendererText ();
-				tr.Editable = true;
-				tr.Edited += new EditedHandler (OnCategoryEdited);
-				textColumn = new TreeViewColumn ();
-				textColumn.Title = GettextCatalog.GetString ("Category");
-				textColumn.PackStart (tr, false);
-				textColumn.AddAttribute (tr, "text", 0);
-				textColumn.Expand = true;
-				categoryTree.AppendColumn (textColumn);
-				
-				if (test.Parent != null)
-					useParentCheck.Active = !test.HasOptions (typeof(NUnitCategoryOptions), config);
-				else {
-					useParentCheck.Active = false;
-					useParentCheck.Sensitive = false;
-				}
-				
-				if (!options.EnableFilter)
-					noFilterRadio.Active = true;
-				else if (options.Exclude)
-					excludeRadio.Active = true;
-				else
-					includeRadio.Active = true;
-
-				Fill ();
-				
-				noFilterRadio.Toggled += new EventHandler (OnFilterToggled);
-				includeRadio.Toggled += new EventHandler (OnFilterToggled);
-				excludeRadio.Toggled += new EventHandler (OnFilterToggled);
-				useParentCheck.Toggled += new EventHandler (OnToggledUseParent);
-				addButton.Clicked += new EventHandler (OnAddCategory);
-				removeButton.Clicked += new EventHandler (OnRemoveCategory);
-			}
-			
-			void Fill ()
-			{
-				noFilterRadio.Sensitive = !useParentCheck.Active;
-				includeRadio.Sensitive = !useParentCheck.Active;
-				excludeRadio.Sensitive = !useParentCheck.Active;
-				categoryTree.Sensitive = !useParentCheck.Active && !noFilterRadio.Active;
-				removeButton.Sensitive = !useParentCheck.Active && !noFilterRadio.Active;
-				addButton.Sensitive = !useParentCheck.Active && !noFilterRadio.Active;
-				
-				store.Clear ();
-				foreach (string cat in options.Categories)
-					store.AppendValues (cat);
-			}
-			
-			void OnToggledUseParent (object sender, EventArgs args)
-			{
-				if (useParentCheck.Active)
-					options = (NUnitCategoryOptions) test.Parent.GetOptions (typeof(NUnitCategoryOptions), config);
-				else
-					options = localOptions;
-
-				if (!options.EnableFilter)
-					noFilterRadio.Active = true;
-				else if (options.Exclude)
-					excludeRadio.Active = true;
-				else
-					includeRadio.Active = true;
-
-				Fill ();
-			}
-			
-			void OnFilterToggled (object sender, EventArgs args)
-			{
-				options.EnableFilter = !noFilterRadio.Active;
-				options.Exclude = excludeRadio.Active;
-				Fill ();
-			}
-
-			void OnAddCategory (object sender, EventArgs args)
-			{
-				TreeIter it = store.AppendValues ("");
-				categoryTree.SetCursor (store.GetPath (it), textColumn, true);
-			}
-
-			void OnRemoveCategory (object sender, EventArgs args)
-			{
-				Gtk.TreeModel foo;
-				Gtk.TreeIter iter;
-				if (!categoryTree.Selection.GetSelected (out foo, out iter))
-					return;
-				string old = (string) store.GetValue (iter, 0);
-				options.Categories.Remove (old);
-				store.Remove (ref iter);
-			}
-
-			void OnCategoryEdited (object sender, EditedArgs args)
-			{
-				TreeIter iter;
-				if (!store.GetIter (out iter, new TreePath (args.Path)))
-					return;
-				
-				string old = (string) store.GetValue (iter, 0);
-				if (args.NewText.Length == 0) {
-					options.Categories.Remove (old);
-					store.Remove (ref iter);
-				} else {
-					int i = options.Categories.IndexOf (old);
-					if (i == -1)
-						options.Categories.Add (args.NewText);
-					else
-						options.Categories [i] = args.NewText;
-					store.SetValue (iter, 0, args.NewText);
-				}
-			}
-
-			public void Store (Properties customizationObject)
-			{
-				if (useParentCheck.Active)
-					test.ResetOptions (typeof(NUnitCategoryOptions), config);
-				else
-					test.SetOptions (options, config);
-			}
-		}
-		
 		NUnitOptionsWidget widget;
 		
 		public override Widget CreatePanelWidget ()
@@ -199,6 +51,145 @@ namespace MonoDevelop.NUnit
 		{
 			Console.WriteLine ("STORE !!!!");
 			widget.Store ((Properties) DataObject);
+		}
+	}
+	
+	partial class NUnitOptionsWidget: Gtk.Bin
+	{
+		TreeStore store;
+		TreeViewColumn textColumn;
+		
+		UnitTest test;
+		string config;
+		NUnitCategoryOptions options;
+		NUnitCategoryOptions localOptions;
+
+		public NUnitOptionsWidget (Properties customizationObject)
+		{
+			Build ();
+			test =  ((Properties)customizationObject).Get<UnitTest> ("UnitTest");
+			config =  ((Properties)customizationObject).Get<string> ("Config");
+			options = localOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions), config);
+			
+			store = new TreeStore (typeof(string));
+			categoryTree.Model = store;
+			categoryTree.HeadersVisible = false;
+			
+			CellRendererText tr = new CellRendererText ();
+			tr.Editable = true;
+			tr.Edited += new EditedHandler (OnCategoryEdited);
+			textColumn = new TreeViewColumn ();
+			textColumn.Title = GettextCatalog.GetString ("Category");
+			textColumn.PackStart (tr, false);
+			textColumn.AddAttribute (tr, "text", 0);
+			textColumn.Expand = true;
+			categoryTree.AppendColumn (textColumn);
+			
+			if (test.Parent != null)
+				useParentCheck.Active = !test.HasOptions (typeof(NUnitCategoryOptions), config);
+			else {
+				useParentCheck.Active = false;
+				useParentCheck.Sensitive = false;
+			}
+			
+			if (!options.EnableFilter)
+				noFilterRadio.Active = true;
+			else if (options.Exclude)
+				excludeRadio.Active = true;
+			else
+				includeRadio.Active = true;
+
+			Fill ();
+			
+			noFilterRadio.Toggled += new EventHandler (OnFilterToggled);
+			includeRadio.Toggled += new EventHandler (OnFilterToggled);
+			excludeRadio.Toggled += new EventHandler (OnFilterToggled);
+			useParentCheck.Toggled += new EventHandler (OnToggledUseParent);
+			addButton.Clicked += new EventHandler (OnAddCategory);
+			removeButton.Clicked += new EventHandler (OnRemoveCategory);
+		}
+		
+		void Fill ()
+		{
+			noFilterRadio.Sensitive = !useParentCheck.Active;
+			includeRadio.Sensitive = !useParentCheck.Active;
+			excludeRadio.Sensitive = !useParentCheck.Active;
+			categoryTree.Sensitive = !useParentCheck.Active && !noFilterRadio.Active;
+			removeButton.Sensitive = !useParentCheck.Active && !noFilterRadio.Active;
+			addButton.Sensitive = !useParentCheck.Active && !noFilterRadio.Active;
+			
+			store.Clear ();
+			foreach (string cat in options.Categories)
+				store.AppendValues (cat);
+		}
+		
+		void OnToggledUseParent (object sender, EventArgs args)
+		{
+			if (useParentCheck.Active)
+				options = (NUnitCategoryOptions) test.Parent.GetOptions (typeof(NUnitCategoryOptions), config);
+			else
+				options = localOptions;
+
+			if (!options.EnableFilter)
+				noFilterRadio.Active = true;
+			else if (options.Exclude)
+				excludeRadio.Active = true;
+			else
+				includeRadio.Active = true;
+
+			Fill ();
+		}
+		
+		void OnFilterToggled (object sender, EventArgs args)
+		{
+			options.EnableFilter = !noFilterRadio.Active;
+			options.Exclude = excludeRadio.Active;
+			Fill ();
+		}
+
+		void OnAddCategory (object sender, EventArgs args)
+		{
+			TreeIter it = store.AppendValues ("");
+			categoryTree.SetCursor (store.GetPath (it), textColumn, true);
+		}
+
+		void OnRemoveCategory (object sender, EventArgs args)
+		{
+			Gtk.TreeModel foo;
+			Gtk.TreeIter iter;
+			if (!categoryTree.Selection.GetSelected (out foo, out iter))
+				return;
+			string old = (string) store.GetValue (iter, 0);
+			options.Categories.Remove (old);
+			store.Remove (ref iter);
+		}
+
+		void OnCategoryEdited (object sender, EditedArgs args)
+		{
+			TreeIter iter;
+			if (!store.GetIter (out iter, new TreePath (args.Path)))
+				return;
+			
+			string old = (string) store.GetValue (iter, 0);
+			if (args.NewText.Length == 0) {
+				options.Categories.Remove (old);
+				store.Remove (ref iter);
+			} else {
+				int i = options.Categories.IndexOf (old);
+				if (i == -1)
+					options.Categories.Add (args.NewText);
+				else
+					options.Categories [i] = args.NewText;
+				store.SetValue (iter, 0, args.NewText);
+			}
+		}
+
+		public void Store (Properties customizationObject)
+		{
+			if (useParentCheck.Active)
+				test.ResetOptions (typeof(NUnitCategoryOptions), config);
+			else
+				test.SetOptions (options, config);
 		}
 	}
 }

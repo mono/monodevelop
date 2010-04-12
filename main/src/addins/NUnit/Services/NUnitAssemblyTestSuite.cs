@@ -380,6 +380,7 @@ namespace MonoDevelop.NUnit
 			} finally {
 				testContext.Monitor.CancelRequested -= new TestHandler (rd.Cancel);
 				runner.Dispose ();
+				System.Runtime.Remoting.RemotingServices.Disconnect (localMonitor);
 			}
 			
 			return result;

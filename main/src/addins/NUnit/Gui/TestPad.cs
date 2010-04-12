@@ -88,8 +88,6 @@ namespace MonoDevelop.NUnit
 			VBox vbox = new VBox ();
 			DockItemToolbar topToolbar = Window.GetToolbar (PositionType.Top);
 			
-			Gdk.Pixbuf pixbuf  = Gtk.IconTheme.Default.LoadIcon (Gtk.Stock.GoUp, 16, (Gtk.IconLookupFlags) 0);
-			
 			buttonRunAll = new Button (new Gtk.Image (Gtk.Stock.GoUp, IconSize.Menu));
 			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);
 			buttonRunAll.Sensitive = true;

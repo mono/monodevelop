@@ -259,7 +259,6 @@ namespace MonoDevelop.NUnit
 			get { return running; }
 			set {
 				running = value;
-				string title = GettextCatalog.GetString ("Test results");
 				window.IsWorking = value;
 			}
 		}

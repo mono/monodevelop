@@ -53,11 +53,11 @@
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/GeneralOptions">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
+		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
-		<ExtensionNodeSet id="MonoDevelop.Core.Gui.OptionsDialogSection"/>
+		<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
 	</ExtensionPoint>
 
 

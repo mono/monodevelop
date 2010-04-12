@@ -1,3 +1,23 @@
+2010-04-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelopNUnit.addin.xml: Fixed node set name.
+
+	* nunit.glade:
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.NUnit.csproj:
+	* Gui/NUnitOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.NUnit.NUnitOptionsWidget.cs: Ported some
+	  old glade code to stetic.
+
+	* Services/ExternalTestRunner.cs:
+	* Services/NUnitAssemblyTestSuite.cs: Make sure the remote
+	  monitor is not disconnected too early.
+
+	* Gui/TestPad.cs:
+	* Gui/TestResultsPad.cs: Fix warnings.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/UnitTestGroup.cs:

@@ -379,6 +379,12 @@ namespace MonoDevelop.NUnit.External
 			}
 			return null;
 		}
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
+		}
+
 	}	
 }
 

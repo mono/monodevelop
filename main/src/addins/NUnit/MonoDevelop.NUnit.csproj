@@ -93,9 +93,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="nunit.glade">
-      <LogicalName>nunit.glade</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\NUnitAssemblyGroup.xpt.xml">
       <LogicalName>NUnitAssemblyGroup.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -188,6 +185,8 @@
     <Compile Include="Services\UnitTestResult.cs" />
     <Compile Include="Services\UnitTestStatus.cs" />
     <Compile Include="Services\NUnitProjectServiceExtension.cs" />
+    <Compile Include="Gui\NUnitOptionsPanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.NUnit.NUnitOptionsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
