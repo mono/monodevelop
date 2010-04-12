@@ -1,3 +1,8 @@
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs: Text
+	  editor extensions are now disposing correctly.
+
 2010-04-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs: If the

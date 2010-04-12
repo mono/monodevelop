@@ -38,7 +38,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public class TextEditorExtension : ITextEditorExtension, ICommandRouter, IDisposable
+	public class TextEditorExtension : ITextEditorExtension, ICommandRouter
 	{
 		internal Document document;
 		
@@ -139,7 +139,10 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		public virtual void Dispose ()
 		{
-			document = null;
+			if (Next != null) {
+				Next.Dispose ();
+				Next = null;
+			}
 		}
 		
 		void CheckInitialized ()
@@ -162,7 +165,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 	}
 	
-	public interface ITextEditorExtension
+	public interface ITextEditorExtension : IDisposable
 	{
 		ITextEditorExtension Next {
 			get;
