@@ -164,7 +164,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			public bool DrawBackground (TextEditor editor, Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 			{
 				drawBg = false;
-				if (selected)
+				if (selected || editor.CurrentMode is TextLinkEditMode)
 					return true;
 				foreach (ISegment usage in Usages) {
 					int markerStart = usage.Offset;

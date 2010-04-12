@@ -1,5 +1,10 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  de-activated usage highlighting in text link mode.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
 	  Made usage highlighter more robust.
