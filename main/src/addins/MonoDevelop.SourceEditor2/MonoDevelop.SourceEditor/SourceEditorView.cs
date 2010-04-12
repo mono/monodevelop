@@ -1669,5 +1669,19 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.RunAction (MiscActions.MoveBlockDown);
 		}
 		
+		
+		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]
+		protected void UpdateToggleBlockSelectionMode (CommandInfo cinfo)
+		{
+			cinfo.Enabled = TextEditor.IsSomethingSelected;
+		}
+		
+		[CommandHandler (TextEditorCommands.ToggleBlockSelectionMode)]
+		protected void OnToggleBlockSelectionMode ()
+		{
+			TextEditor.SelectionMode = TextEditor.SelectionMode == Mono.TextEditor.SelectionMode.Normal ? Mono.TextEditor.SelectionMode.Block : Mono.TextEditor.SelectionMode.Normal;
+			TextEditor.Repaint ();
+		}
+		
 	}
 } 
