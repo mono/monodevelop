@@ -1,5 +1,10 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs: Fixed 'Bug
+	  595175 - Code generator window displays offscreen'.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs:
 	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
 	  Fixed 'Bug 595558 - "Remove unused usings" sometimes removes

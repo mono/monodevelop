@@ -125,7 +125,19 @@ namespace MonoDevelop.CodeGeneration
 			messageArea.Add (vbox1);
 			this.Add (messageArea);
 			this.ShowAll ();
-			Move (completionContext.TriggerXCoord, completionContext.TriggerYCoord);
+			
+			int x = completionContext.TriggerXCoord;
+			int y = completionContext.TriggerYCoord;
+
+			int w, h;
+			GetSize (out w, out h);
+			if (x + w > Screen.Width)
+				x = Screen.Width - w;
+
+			if (y + h > Screen.Height)
+				y = y - completionContext.TriggerTextHeight - h;
+			
+			Move (x, y);
 		}
 		
 		void Populate (List<ICodeGenerator> validGenerators)
