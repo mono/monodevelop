@@ -1548,6 +1548,8 @@
 				_label = "Recenter editor"
 				_description = "Scrolls the editor so that the caret is centered"
 				macShortcut = "Control|L" />
+		<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
+				_label = "Toggle block selection mode"/>
 		</Category>
 		
 	</Extension>
@@ -1990,6 +1992,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
 			
 			<SeparatorItem id = "Separator4" />
+			
 			<ItemSet id = "Format" _label = "_Format">
 				<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
 				<SeparatorItem id ="FormatSeparator" /> 
@@ -2018,7 +2021,8 @@
 			<SeparatorItem id = "Separator5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
-			
+			<SeparatorItem id = "Separator6" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
 			<SeparatorItem id = "optionssep5" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />

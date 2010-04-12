@@ -89,6 +89,7 @@ namespace MonoDevelop.Ide.Commands
 		RecenterEditor,
 		
 		ToggleCompletionSuggestionMode,
+		ToggleBlockSelectionMode
 	}
 	
 	public class ToggleCompletionSuggestionModeHandler : CommandHandler
