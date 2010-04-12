@@ -542,6 +542,19 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreEqual ("foo bar", output);
 		}
 		
+		[Test]
+		public void TestBug595240 ()
+		{
+			string output = RunSimulation ("", "A\t", true, true, false, "AbCdEf");
+			Assert.AreEqual ("AbCdEf", output);
+			
+			output = RunSimulation ("", "Cd\t", true, true, false, "AbCdEf");
+			Assert.AreEqual ("AbCdEf", output);
+			
+			output = RunSimulation ("", "bC\t", true, true, false, "AbCdEf");
+			Assert.AreNotEqual ("AbCdEf", output);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

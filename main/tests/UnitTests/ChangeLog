@@ -1,3 +1,9 @@
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Added
+	  test for 'Bug 595240 - Completion list filtering should
+	  match on words not just at start'.
+
 2010-04-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
