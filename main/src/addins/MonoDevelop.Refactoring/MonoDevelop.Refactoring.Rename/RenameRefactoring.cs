@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -109,12 +110,19 @@ namespace MonoDevelop.Refactoring.Rename
 					baseOffset = Math.Min (baseOffset, data.Document.LocationToOffset (r.Line - 1, r.Column - 1));
 				}
 				foreach (MemberReference r in col) {
-					link.AddLink (new Segment (data.Document.LocationToOffset (r.Line - 1, r.Column - 1) - baseOffset, r.Name.Length));
+					Segment segment = new Segment (data.Document.LocationToOffset (r.Line - 1, r.Column - 1) - baseOffset, r.Name.Length);
+					Console.WriteLine ((data.Caret.Offset - baseOffset) + ":" + segment);
+					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
+						link.Links.Insert (0, segment); 
+					} else {
+						link.AddLink (segment);
+					}
 				}
-
+				
 				links.Add (link);
 				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
 				tle.SetCaretPosition = false;
+				tle.SelectPrimaryLink = false;
 				if (tle.ShouldStartTextLinkMode) {
 					tle.OldMode = data.CurrentMode;
 					tle.StartMode ();

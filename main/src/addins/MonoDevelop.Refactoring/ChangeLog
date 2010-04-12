@@ -1,5 +1,10 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
+	  Implemented 'Bug 595585 - Allow in-place variable renaming'.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:
