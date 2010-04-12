@@ -199,6 +199,9 @@ namespace MonoDevelop.Components.PropertyGrid
 				selectedTab = button.Tab;
 				Populate ();
 			}
+			// If the tree is re-populated while a value is being edited, the focus that the value editor had
+			// is not returned back to the tree. We need to explicitly get it.
+			tree.GrabFocus ();
 		}
 		
 		public PropertySort PropertySort {

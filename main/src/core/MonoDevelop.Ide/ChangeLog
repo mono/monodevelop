@@ -1,5 +1,12 @@
 2010-04-12  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.PropertyGrid/PropertyGrid.cs: If the
+	  tree is re-populated while a value is being edited, the
+	  focus that the value editor had is not returned back to the
+	  tree. We need to explicitly get it.
+
+2010-04-12  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: Don't show
 	  mnemonics for configuration and runtime names.
 
