@@ -178,6 +178,10 @@ namespace MonoDevelop.Projects
 			get { return false; }
 		}
 
+		public virtual bool GeneratesDebugInfoFile {
+			get { return true; }
+		}
+		
 		public ProjectReferenceCollection References {
 			get { return projectReferences; }
 		}
@@ -672,6 +676,19 @@ namespace MonoDevelop.Projects
 			if (base.CheckNeedsBuild (configuration))
 				return true;
 
+			DotNetProjectConfiguration configObj = (DotNetProjectConfiguration) GetConfiguration (configuration);
+			if (GeneratesDebugInfoFile && configObj != null && configObj.DebugMode) {
+				string file = GetOutputFileName (configuration);
+				if (file != null) {
+					file = TargetRuntime.GetAssemblyDebugInfoFile (file);
+					FileInfo finfo = new FileInfo (file);
+					if (!finfo.Exists)
+						return true;
+					else if (finfo.LastWriteTime < GetLastBuildTime (configuration))
+						return true;
+				}
+			}
+			
 			foreach (ProjectFile file in Files) {
 				if (file.BuildAction == BuildAction.EmbeddedResource && String.Compare (Path.GetExtension (file.FilePath), ".resx", true) == 0 && MD1DotNetProjectHandler.IsResgenRequired (file.FilePath)) {
 					return true;

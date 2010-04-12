@@ -1,3 +1,10 @@
+2010-04-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: When checking if a
+	  project has to be built, return true if the mdb/pdb file is
+	  not up to date. Fixes bug #594959 - MD doesn't recompile
+	  when switching runtime.
+
 2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/SolutionFolder.cs:
