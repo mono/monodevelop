@@ -171,6 +171,10 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
+		public bool SelectPrimaryLink {
+			get;
+			set;
+		}
 		
 		TextLinkTooltipProvider tooltipProvider;
 		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
@@ -182,6 +186,7 @@ namespace Mono.TextEditor
 			tooltipProvider = new TextLinkTooltipProvider (this);
 			this.Editor.TooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
+			this.SelectPrimaryLink = true;
 		}
 
 		TextLink closedLink = null;
@@ -229,7 +234,8 @@ namespace Mono.TextEditor
 				}
 			}
 			TextLink firstLink = links.First (l => l.IsEditable);
-			Setlink (firstLink);
+			if (SelectPrimaryLink)
+				Setlink (firstLink);
 			Editor.Document.TextReplaced += UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged += HandlePositionChanged;
 			this.UpdateTextLinks ();
@@ -244,7 +250,7 @@ namespace Mono.TextEditor
 				return;
 			Editor.Caret.Offset = baseOffset + link.PrimaryLink.Offset;
 			Editor.ScrollToCaret ();
-			Editor.Caret.Offset    = baseOffset + link.PrimaryLink.EndOffset;
+			Editor.Caret.Offset = baseOffset + link.PrimaryLink.EndOffset;
 			Editor.MainSelection = new Selection (Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.Offset),
 			                                      Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.EndOffset));
 			Editor.Document.CommitUpdateAll ();
@@ -448,10 +454,7 @@ namespace Mono.TextEditor
 				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
 					continue;
 				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText) {
-					int delta = link.CurrentText.Length - s.Length;
-					Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText);
-					if (offset < Editor.Caret.Offset)
-						Editor.Caret.Offset += delta;
+					Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText); // <- updates caret postion as well
 					s.Length = link.CurrentText.Length;
 				}
 			}
