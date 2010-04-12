@@ -319,6 +319,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 			bool inChar = false;
 			bool inComment = false;
+			bool inString = false;
 //			string escape = "\"";
 			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
 			Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
@@ -329,11 +330,12 @@ namespace MonoDevelop.SourceEditor
 					inStringOrComment = true;
 					inChar |= span.Color == "string.single";
 					inComment |= span.Color.StartsWith ("comment");
+					inString = !inChar && !inComment;
 					//escape = span.Escape;
 					break;
 				}
 			}
-
+			
 			Document.BeginAtomicUndo ();
 
 			// insert template when space is typed (currently disabled - it's annoying).
@@ -375,7 +377,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
-					if (!inComment && !inChar && ch == '"' && charBefore != '\\') {
+					if (!inString && !inComment && !inChar && ch == '"' && charBefore != '\\') {
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						insertionChar = '"';
 						Insert (Caret.Offset, "\"");

@@ -1,5 +1,11 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed 'Bug
+	  595601 - Make "add matching quote" aware of whether or not
+	  it is within a string already'.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Text
 	  editor extension is disposed in Document.
 
