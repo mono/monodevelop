@@ -31,11 +31,13 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring.RefactorImports
 {
 	public class FindTypeReferencesVisitor : AbstractAstVisitor
 	{
+		TextEditorData data;
 		IResolver resolver;
 		List<TypeReference> possibleTypeReferences = new List<TypeReference> ();
 		
@@ -43,8 +45,9 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			get { return this.possibleTypeReferences; }
 		}
 		
-		public FindTypeReferencesVisitor (IResolver resolver)
+		public FindTypeReferencesVisitor (TextEditorData data, IResolver resolver)
 		{
+			this.data = data;
 			this.resolver = resolver;
 		}
 		
@@ -71,10 +74,17 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		
 		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
 		{
+			string invocation = "";
+			if (!invocationExpression.StartLocation.IsEmpty) {
+				invocation = this.data.Document.GetTextBetween (this.data.Document.LocationToOffset (invocationExpression.StartLocation.Line - 1, invocationExpression.StartLocation.Column - 1),
+				                                                this.data.Document.LocationToOffset (invocationExpression.EndLocation.Line - 1, invocationExpression.EndLocation.Column - 1));
+			}
 			base.VisitInvocationExpression (invocationExpression, data);
-			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult ("GetInvoke"), new DomLocation (invocationExpression.StartLocation.Line - 1, invocationExpression.StartLocation.Column - 1)) as MethodResolveResult;
+			
+			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new DomLocation (invocationExpression.StartLocation.Line - 1, invocationExpression.StartLocation.Column - 1)) as MethodResolveResult;
 			if (mrr != null && mrr.MostLikelyMethod != null && mrr.MostLikelyMethod is ExtensionMethod) {
-				possibleTypeReferences.Add (new TypeReference (mrr.MostLikelyMethod.DeclaringType.Name));
+				IMethod originalMethod = ((ExtensionMethod)mrr.MostLikelyMethod).OriginalMethod;
+				possibleTypeReferences.Add (new TypeReference (originalMethod.DeclaringType.Name));
 			}
 			return null;
 		}

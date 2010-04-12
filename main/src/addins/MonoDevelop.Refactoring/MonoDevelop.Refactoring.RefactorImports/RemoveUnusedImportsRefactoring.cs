@@ -49,7 +49,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		{
 			List<Change> result = new List<Change> ();
 			ICSharpCode.NRefactory.Ast.CompilationUnit unit = options.GetASTProvider ().ParseFile (options.Document.TextEditor.Text);
-			FindTypeReferencesVisitor visitor = new FindTypeReferencesVisitor (options.GetResolver ());
+			FindTypeReferencesVisitor visitor = new FindTypeReferencesVisitor (options.GetTextEditorData (), options.GetResolver ());
 			visitor.VisitCompilationUnit (unit, null);
 
 			ProjectDom dom = options.Dom;

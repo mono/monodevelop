@@ -1,3 +1,10 @@
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
+	  Fixed 'Bug 595558 - "Remove unused usings" sometimes removes
+	  usings that aren't unused'.
+
 2010-04-09  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: Fixed 'Bug
