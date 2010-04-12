@@ -57,6 +57,7 @@ namespace MonoDevelop.CSharp.Completion
 		ProjectDom dom;
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		CSharpFormattingPolicy policy;
+		Mono.TextEditor.TextEditorData textEditorData;
 		
 		public ProjectDom Dom {
 			get { return this.dom; }
@@ -79,6 +80,7 @@ namespace MonoDevelop.CSharp.Completion
 			base.Initialize ();
 			InitTracker ();
 			dom = ProjectDomService.GetProjectDom (Document.Project);
+			textEditorData = ((Mono.TextEditor.ITextEditorDataProvider)Document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ()).GetTextEditorData ();
 			if (dom == null)
 				dom = ProjectDomService.GetFileDom (Document.FileName);
 			
@@ -497,7 +499,7 @@ namespace MonoDevelop.CSharp.Completion
 								varName = String.Join ("", names.ToArray ());
 							}
 								
-							completionList.Add (new EventCreationCompletionData (((Mono.TextEditor.ITextEditorDataProvider)Document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ()).GetTextEditorData (), varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
+							completionList.Add (new EventCreationCompletionData (textEditorData, varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
 						}
 						return completionList;
 					}
@@ -813,6 +815,8 @@ namespace MonoDevelop.CSharp.Completion
 					innerStack.Push (cls);
 					while (innerStack.Count > 0) {
 						IType curType = innerStack.Pop ();
+						if (curType == null)
+							continue;
 						foreach (IType innerType in curType.InnerTypes) {
 							if (innerType != cls)
 								// don't add the calling class as possible base type
@@ -1317,7 +1321,7 @@ namespace MonoDevelop.CSharp.Completion
 							continue;
 					
 						//System.Console.WriteLine("add");
-						NewOverrideCompletionData data = new NewOverrideCompletionData (dom, Editor, declarationBegin, type, m);
+						NewOverrideCompletionData data = new NewOverrideCompletionData (dom, textEditorData, declarationBegin, type, m);
 						string text = CompletionDataCollector.ambience.GetString (m, OutputFlags.ClassBrowserEntries);
 						// check if the member is already implemented
 						bool foundMember = false;
@@ -1488,7 +1492,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 
 				foreach (IMethod method in methods) {
-					NewOverrideCompletionData data = new NewOverrideCompletionData (dom, Editor, ctx.TriggerOffset, type, method);
+					NewOverrideCompletionData data = new NewOverrideCompletionData (dom, textEditorData, ctx.TriggerOffset, type, method);
 					data.GenerateBody = false;
 					result.Add (data);
 				}

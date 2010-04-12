@@ -1,3 +1,10 @@
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Implemented 'Bug 595198 - Override completion should select
+	  body so it can be deleted'.
+
 2010-04-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

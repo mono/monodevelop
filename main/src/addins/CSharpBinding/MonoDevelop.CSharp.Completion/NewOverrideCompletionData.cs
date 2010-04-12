@@ -37,18 +37,20 @@ using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using MonoDevelop.CSharp.Dom;
 using MonoDevelop.Projects.CodeGeneration;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class NewOverrideCompletionData : CompletionData, IActionCompletionData
 	{
-		MonoDevelop.Ide.Gui.TextEditor editor;
+		TextEditorData editor;
 		IMember member;
 		static Ambience ambience = new CSharpAmbience ();
 		string indent;
 		int    initialOffset;
 		int    declarationBegin;
 		int    targetCaretPositon = -1;
+		int    selectionEndPositon = -1;
 		bool   insertPrivate;
 		bool   insertSealed;
 		IType  type;
@@ -59,21 +61,21 @@ namespace MonoDevelop.CSharp.Completion
 			set;
 		}
 		
-		public NewOverrideCompletionData (ProjectDom dom, MonoDevelop.Ide.Gui.TextEditor editor, int declarationBegin, IType type, IMember member) : base (null)
+		public NewOverrideCompletionData (ProjectDom dom, TextEditorData editor, int declarationBegin, IType type, IMember member) : base (null)
 		{
 			this.editor = editor;
 			this.type   = type;
 			this.member = member;
 			
-			this.initialOffset = editor.CursorPosition;
+			this.initialOffset = editor.Caret.Offset;
 			this.declarationBegin = declarationBegin;
 			this.unit = type.CompilationUnit;
 			this.GenerateBody = true;
-			string declarationText = editor.GetText (declarationBegin, initialOffset);
+			string declarationText = editor.Document.GetTextBetween (declarationBegin, initialOffset);
 			insertPrivate = declarationText.Contains ("private");
 			insertSealed  = declarationText.Contains ("sealed");
 			
-			this.indent = GetIndentString (editor, editor.CursorPosition);
+			this.indent = editor.Document.GetLineIndent (editor.Caret.Line);
 			this.Icon = member.StockIcon;
 			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.IncludeMarkup | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;
@@ -115,23 +117,13 @@ namespace MonoDevelop.CSharp.Completion
 			} else if (member is IProperty) {
 				InsertProperty (sb, member as IProperty);
 			}
-
-			editor.DeleteText (declarationBegin, editor.CursorPosition - declarationBegin);
-			editor.InsertText (declarationBegin, sb.ToString ());
-			editor.CursorPosition = targetCaretPositon < 0 ? declarationBegin + sb.Length : targetCaretPositon;
-		}
-		
-		internal static string GetIndentString (MonoDevelop.Ide.Gui.TextEditor editor, int pos)
-		{
-			string ch = editor.GetText (pos - 1, pos);
-			int nwpos = pos;
-			while (ch.Length > 0 && ch != "\n" && ch != "\r") {
-				if (ch[0] != ' ' && ch[0] != '\t')
-					nwpos = pos;
-				pos--;
-				ch = editor.GetText (pos - 1, pos);
+			editor.Replace (declarationBegin, editor.Caret.Offset - declarationBegin, sb.ToString ());
+			if (selectionEndPositon >= 0) {
+				editor.Caret.Offset = selectionEndPositon;
+				editor.SetSelection (targetCaretPositon, selectionEndPositon);
+			} else {
+				editor.Caret.Offset = targetCaretPositon < 0 ? declarationBegin + sb.Length : targetCaretPositon;
 			}
-			return editor.GetText (pos, nwpos - 1);
 		}
 		
 		void GenerateMethodBody (StringBuilder sb, IMethod method)
@@ -193,7 +185,9 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				sb.Append (");");
 			} else {
+				targetCaretPositon = declarationBegin + sb.Length;
 				sb.Append ("throw new System.NotImplementedException ();");
+				selectionEndPositon = declarationBegin + sb.Length;
 			} 
 			sb.AppendLine ();
 		}
@@ -201,7 +195,7 @@ namespace MonoDevelop.CSharp.Completion
 		bool NamespaceImported (string namespaceName)
 		{
 			foreach (IUsing u in unit.Usings) {
-				if (!u.IsFromNamespace || u.Region.Contains (editor.CursorLine, editor.CursorColumn)) {
+				if (!u.IsFromNamespace || u.Region.Contains (editor.Caret.Line, editor.Caret.Column)) {
 					foreach (string n in u.Namespaces) {
 						if (n == namespaceName)
 							return true;
@@ -214,7 +208,7 @@ namespace MonoDevelop.CSharp.Completion
 		void InsertMethod (StringBuilder sb, IMethod method)
 		{
 			if (returnType != null) {
-				sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.CursorLine, editor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
+				sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.Caret.Line, editor.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
 				sb.Append (" ");
 			}
 			sb.Append (method.Name);
@@ -240,7 +234,7 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (this.indent);
 			sb.Append ("}");
 			sb.AppendLine ();
-			editor.InsertText (editor.CursorPosition, sb.ToString ());
+			sb.Append (indent);
 		}
 		
 		string SingleIndent {
@@ -263,12 +257,14 @@ namespace MonoDevelop.CSharp.Completion
 
 				if (BaseRefactorer.IsMonoTouchModelMember (property)) {
 					sb.Append ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
-				} else if (!property.IsAbstract) {
+				} else if (!property.IsAbstract && property.DeclaringType.ClassType != ClassType.Interface) {
 					sb.Append ("return base.");
 					sb.Append (property.Name);
 					sb.Append (";");
 				} else {
+					targetCaretPositon = declarationBegin + sb.Length;
 					sb.Append ("throw new System.NotImplementedException ();");
+					selectionEndPositon = declarationBegin + sb.Length;
 				}
 				sb.AppendLine ();
 				sb.Append (this.indent);
@@ -285,7 +281,7 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (SingleIndent);
 				if (BaseRefactorer.IsMonoTouchModelMember (property)) {
 					sb.Append ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
-				} else if (!property.IsAbstract) {
+				} else if (!property.IsAbstract && property.DeclaringType.ClassType != ClassType.Interface) {
 					sb.Append ("base.");
 					sb.Append (property.Name);
 					sb.AppendLine (" = value;");
@@ -299,7 +295,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		void InsertProperty (StringBuilder sb, IProperty property)
 		{
-			sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.CursorLine, editor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
+			sb.Append (ambience.GetString (unit.ShortenTypeName (returnType, editor.Caret.Line, editor.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
 			sb.Append (" ");
 			sb.Append (property.Name);
 			sb.AppendLine (" {");
@@ -308,7 +304,7 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (this.indent);
 			sb.Append ("}"); 
 			sb.AppendLine ();
-			editor.InsertText (editor.CursorPosition, sb.ToString ());
+			sb.Append (indent);
 		}
 		
 		string GetModifiers (IMember member)
