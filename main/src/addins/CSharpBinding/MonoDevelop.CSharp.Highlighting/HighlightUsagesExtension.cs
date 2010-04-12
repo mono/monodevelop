@@ -34,6 +34,7 @@ using Gdk;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Projects.Text;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -109,16 +110,20 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (resolveResult is LocalVariableResolveResult)
 				member = ((LocalVariableResolveResult)resolveResult).LocalVariable;
 			if (member != null) {
-				NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, Document.FileName);
-				FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, Document.GetContent<IEditableTextFile> (), member);
-				visitor.IncludeXmlDocumentation = true;
-				visitor.RunVisitor ();
-				RemoveMarkers ();
-				foreach (var r in visitor.FoundReferences) {
-					UsageMarker marker = GetMarker (r.Line - 1);
-					marker.Usages.Add (new Mono.TextEditor.Segment (textEditorData.Document.LocationToOffset (r.Line - 1, r.Column -1), visitor.SearchedMemberName.Length));
+				try {
+					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, Document.FileName);
+					FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, Document.GetContent<IEditableTextFile> (), member);
+					visitor.IncludeXmlDocumentation = true;
+					visitor.RunVisitor ();
+					RemoveMarkers ();
+					foreach (var r in visitor.FoundReferences) {
+						UsageMarker marker = GetMarker (r.Line - 1);
+						marker.Usages.Add (new Mono.TextEditor.Segment (textEditorData.Document.LocationToOffset (r.Line - 1, r.Column -1), visitor.SearchedMemberName.Length));
+					}
+					textEditorData.Document.CommitUpdateAll ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Error in highlight usages extension.", e);
 				}
-				textEditorData.Document.CommitUpdateAll ();
 			}
 			popupTimer = 0;
 			return false;

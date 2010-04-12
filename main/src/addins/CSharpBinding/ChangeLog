@@ -1,5 +1,11 @@
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Made usage highlighter more robust.
+
+2010-04-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* CSharpBinding.addin.xml:

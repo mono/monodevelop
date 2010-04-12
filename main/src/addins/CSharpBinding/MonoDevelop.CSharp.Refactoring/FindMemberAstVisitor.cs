@@ -554,7 +554,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					LocalVariable avar = searchedMember as LocalVariable;
 					LocalVariable var = ((LocalVariableResolveResult)result).LocalVariable;
 
-					if (var != null && avar.DeclaringMember.FullName == var.DeclaringMember.FullName) {
+					if (var != null && avar.DeclaringMember != null && var.DeclaringMember != null && avar.DeclaringMember.FullName == var.DeclaringMember.FullName) {
 //						Console.WriteLine (avar.Region.Start.Line + "---" +  var.Region.Start.Line);
 						if (Math.Abs (avar.Region.Start.Line - var.Region.Start.Line) <= 1)
 							AddUniqueReference (line, col, idExp.Identifier);
