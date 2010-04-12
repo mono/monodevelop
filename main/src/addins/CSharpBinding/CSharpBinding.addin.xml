@@ -94,6 +94,7 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">

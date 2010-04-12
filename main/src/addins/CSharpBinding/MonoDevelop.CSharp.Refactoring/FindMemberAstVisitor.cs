@@ -67,6 +67,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 		
+		public string SearchedMemberName {
+			get { return this.searchedMemberName; }
+		}
+		
 		public bool IncludeXmlDocumentation {
 			get;
 			set;

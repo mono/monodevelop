@@ -73,7 +73,7 @@ namespace MonoDevelop.CSharp.Completion
 			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + ";");
 			
 			// Search opening bracket of member
-			int pos = editor.Document.LocationToOffset (callingMember.BodyRegion.Start.Line - 1, callingMember.BodyRegion.Start.Column - 1);
+			int pos = callingMember != null ? editor.Document.LocationToOffset (callingMember.BodyRegion.Start.Line - 1, callingMember.BodyRegion.Start.Column - 1) : initialOffset;
 			while (pos < editor.Document.Length && editor.Document.GetCharAt (pos) != '{') {
 				pos++;
 			}

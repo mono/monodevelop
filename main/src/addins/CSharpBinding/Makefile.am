@@ -135,6 +135,7 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \
+	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Parser/CSharpParser.cs \
 	MonoDevelop.CSharp.Parser/NRefactoryParser.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
