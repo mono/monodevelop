@@ -1260,7 +1260,7 @@ namespace MonoDevelop.SourceEditor
 			triggerOffset += TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
 			this.widget.TextEditor.Document.EndAtomicUndo ();
 			this.widget.TextEditor.Replace (triggerOffset, length, complete_word);
-			this.widget.TextEditor.Caret.Offset += idx - length;
+			this.widget.TextEditor.Caret.Offset = triggerOffset + idx;
 			this.widget.TextEditor.Document.BeginAtomicUndo ();
 			this.widget.TextEditor.Document.CommitLineUpdate (this.widget.TextEditor.Caret.Line);
 		}
