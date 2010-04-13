@@ -101,9 +101,8 @@ namespace MonoDevelop.Refactoring
 				return null;
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == fileName) {
-					ITextEditorDataProvider data = doc.GetContent<ITextEditorDataProvider> ();
-					if (data != null) {
-						TextEditorData result = data.GetTextEditorData ();
+					TextEditorData result = doc.TextEditorData;
+					if (result != null) {
 						textEditorDatas.Add (result);
 						result.Document.BeginAtomicUndo ();
 						return result;

@@ -1,5 +1,12 @@
 2010-04-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Use the new TextEditorData property from Document.
+
+2010-04-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/QuickFixHandler.cs:
 	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
 	  Fixed unit tests

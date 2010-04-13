@@ -102,9 +102,8 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		{
 			base.Run (options);
 			MonoDevelop.Ide.Gui.Document document = IdeApp.Workbench.OpenDocument (fileName);
-			Mono.TextEditor.ITextEditorDataProvider view = document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ();
-			if (view != null) {
-				TextEditorData data = view.GetTextEditorData ();
+			TextEditorData data = document.TextEditorData;
+			if (data != null) {
 				data.ClearSelection ();
 				data.Caret.Offset = selectionEnd;
 				data.SetSelection (selectionStart, selectionEnd);
