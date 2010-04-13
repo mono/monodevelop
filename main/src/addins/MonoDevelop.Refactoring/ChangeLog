@@ -1,3 +1,9 @@
+2010-04-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  fixed 'Bug 595597 - "Create Method" refactoring uses full
+	  namespace'.
+
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:

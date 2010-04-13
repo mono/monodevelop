@@ -132,7 +132,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (resolver == null || provider == null)
 				return result;
-			
+			TextEditorData data = options.GetTextEditorData ();
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.InsertedText = "";
 			string indent = "";
@@ -200,9 +200,10 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				string lastName = output.Substring (idx + 1); // start from 0, if '.' wasn't found
 				if (IsValidIdentifier (lastName)) 
 					parameterName = lastName;
-
+				
 				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), options.ResolveResult.ResolvedExpression.Region.Start);
-				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? resolveResult2.ResolvedType.ToInvariantString () : "System.Object");
+				
+				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? options.Document.CompilationUnit.ShortenTypeName (resolveResult2.ResolvedType, data.Caret.Line, data.Caret.Column).ToInvariantString () : "System.Object");
 				typeReference.IsKeyword = true;
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
 				methodDecl.Parameters.Add (pde);
