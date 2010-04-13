@@ -1268,8 +1268,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (cond.Substring (0, i).Trim () == "'$(Configuration)|$(Platform)'") {
 				cond = cond.Substring (i+2).Trim (' ','\'');
 				i = cond.IndexOf ('|');
-				config = cond.Substring (0, i);
-				platform = cond.Substring (i+1);
+				if (i != -1) {
+					config = cond.Substring (0, i);
+					platform = cond.Substring (i+1);
+				} else {
+					// Invalid configuration
+					return false;
+				}
 				if (platform == "AnyCPU")
 					platform = string.Empty;
 				return true;
