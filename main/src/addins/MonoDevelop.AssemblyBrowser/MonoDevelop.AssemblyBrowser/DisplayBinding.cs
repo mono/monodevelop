@@ -57,7 +57,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override bool CanCreateContentForMimeType (string mimeType)
 		{
-			return mimeType == "application/x-ms-dos-executable" || mimeType == "application/x-executable";
+			return mimeType == "application/x-ms-dos-executable" || mimeType == "application/x-executable" || mimeType == "application/x-msdownload";
 		}
 		
 		public override IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)
