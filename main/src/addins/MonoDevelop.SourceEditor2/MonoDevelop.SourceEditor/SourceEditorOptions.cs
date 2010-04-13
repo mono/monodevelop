@@ -218,6 +218,7 @@ namespace MonoDevelop.SourceEditor
 			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", false);
 			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
+			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
 			this.enableCodeCompletion = PropertyService.Get ("EnableCodeCompletion", true);
 			this.enableParameterInsight = PropertyService.Get ("EnableParameterInsight", true);
 			this.enableQuickFinder = PropertyService.Get ("EnableQuickFinder", true);
@@ -356,6 +357,20 @@ namespace MonoDevelop.SourceEditor
 				if (value != this.autoInsertMatchingBracket) {
 					this.autoInsertMatchingBracket = value;
 					PropertyService.Set ("AutoInsertMatchingBracket", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool smartSemicolonPlacement;
+		public bool SmartSemicolonPlacement {
+			get {
+				return smartSemicolonPlacement;
+			}
+			set {
+				if (value != this.smartSemicolonPlacement) {
+					this.smartSemicolonPlacement= value;
+					PropertyService.Set ("SmartSemicolonPlacement", value);
 					OnChanged (EventArgs.Empty);
 				}
 			}
