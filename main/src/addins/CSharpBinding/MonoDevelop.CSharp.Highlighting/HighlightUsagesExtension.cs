@@ -54,12 +54,9 @@ namespace MonoDevelop.CSharp.Highlighting
 				dom = ProjectDomService.GetFileDom (Document.FileName);
 
 			textEditorResolver = base.Document.GetContent<ITextEditorResolver> ();
-			Mono.TextEditor.ITextEditorDataProvider view = base.Document.GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
-			if (view != null) {
-				textEditorData = view.GetTextEditorData ();
-				textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
-				textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
-			}
+			textEditorData = base.Document.TextEditorData;
+			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
+			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
 		}
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)

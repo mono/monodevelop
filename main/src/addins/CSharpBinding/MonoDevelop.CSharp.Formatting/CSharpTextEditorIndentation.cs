@@ -85,21 +85,20 @@ namespace MonoDevelop.CSharp.Formatting
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			InitTracker ();
 			
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			if (base.Document.Project != null && base.Document.Project.Policies != null)
 				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
 			
-			Mono.TextEditor.ITextEditorDataProvider view = base.Document.GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
-			
-			if (view != null) {
-				textEditorData = view.GetTextEditorData ();
-				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (view.GetTextEditorData (), new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), Editor));
+			textEditorData = Document.TextEditorData;
+			if (textEditorData != null) {
+				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData));
 				textEditorData.Caret.AllowCaretBehindLineEnd = true;
 				textEditorData.Paste += TextEditorDataPaste;
-			//	textEditorData.Document.TextReplaced += TextCut;
 			}
+			
+			InitTracker ();
+			
 		}
 
 /*		void TextCut (object sender, ReplaceEventArgs e)
@@ -175,7 +174,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (c != null && c.StateTracker != null) {
 				stateTracker = c.StateTracker;
 			} else {
-				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), Editor);
+				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData);
 			}
 		}
 		

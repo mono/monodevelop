@@ -78,12 +78,12 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			InitTracker ();
 			dom = ProjectDomService.GetProjectDom (Document.Project);
-			textEditorData = ((Mono.TextEditor.ITextEditorDataProvider)Document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ()).GetTextEditorData ();
+			textEditorData = Document.TextEditorData;
 			if (dom == null)
 				dom = ProjectDomService.GetFileDom (Document.FileName);
 			
+			InitTracker ();
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			if (dom != null && dom.Project != null)
 				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
@@ -103,7 +103,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (c != null && c.StateTracker != null) {
 				stateTracker = c.StateTracker;
 			} else {
-				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), Editor);
+				stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData);
 			}
 		}
 		

@@ -134,6 +134,29 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
+		public override void CorrectIndenting (object textEditorData, int line)
+		{
+			TextEditorData data = (TextEditorData)textEditorData;
+			LineSegment lineSegment = data.Document.GetLine (line);
+			if (lineSegment == null)
+				return;
+			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			var policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			DocumentStateTracker<CSharpIndentEngine> tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), data);
+			
+			string curIndent = lineSegment.GetIndentation (data.Document);
+			tracker.UpdateEngine (lineSegment.Offset);
+			string beginIndent = tracker.Engine.ThisLineIndent;
+			tracker.UpdateEngine (lineSegment.EndOffset);
+			string endIndent = tracker.Engine.ThisLineIndent;
+			
+			string indent = endIndent.Length < beginIndent.Length ? endIndent : beginIndent;
+			if (indent != curIndent)
+				data.Replace (lineSegment.Offset, curIndent.Length, indent);
+			
+			tracker.Dispose ();
+		}
+		
 		public override void OnTheFlyFormat (object textEditorData, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
 		{
 			Format ((TextEditorData)textEditorData, type, member, dom, unit, caretLocation);
