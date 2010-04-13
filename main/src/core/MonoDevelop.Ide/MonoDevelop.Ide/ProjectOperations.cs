@@ -172,6 +172,8 @@ namespace MonoDevelop.Ide
 		{
 			if (owner == target)
 				return true;
+			else if (target is RootWorkspace)
+				return ContainsTarget (owner, IdeApp.ProjectOperations.CurrentSelectedSolution);
 			else if (owner is WorkspaceItem)
 				return ((WorkspaceItem)owner).ContainsItem (target);
 			return false;
