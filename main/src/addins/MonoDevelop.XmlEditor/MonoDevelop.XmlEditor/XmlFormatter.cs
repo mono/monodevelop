@@ -46,6 +46,11 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
+		public void CorrectIndenting (object textEditorData, int line)
+		{
+			//TODO
+		}
+		
 		public virtual void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation)
 		{
 			throw new NotSupportedException ();

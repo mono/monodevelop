@@ -59,6 +59,10 @@ namespace MonoDevelop.Xml.Formatting
 			xmlWriter.Flush ();
 			return sw.ToString ();
 		}
+		public void CorrectIndenting (object textEditorData, int line)
+		{
+			// TODO
+		}
 		
 		public void OnTheFlyFormat (object textEditorData, MonoDevelop.Projects.Dom.IType callingType, MonoDevelop.Projects.Dom.IMember callingMember, MonoDevelop.Projects.Dom.Parser.ProjectDom dom, MonoDevelop.Projects.Dom.ICompilationUnit unit, MonoDevelop.Projects.Dom.DomLocation endLocation)
 		{

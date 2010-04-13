@@ -65,7 +65,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			base.Initialize ();
 			Parser parser = new Parser (CreateRootState (), false);
-			tracker = new DocumentStateTracker<Parser> (parser, Editor);
+			tracker = new DocumentStateTracker<Parser> (parser, TextEditorData);
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 			
 			lastCU = Document.ParsedDocument;
