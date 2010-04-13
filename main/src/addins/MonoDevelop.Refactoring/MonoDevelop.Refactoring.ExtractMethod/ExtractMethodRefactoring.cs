@@ -59,8 +59,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.SelectedItem != null)
-				return false;
+//			if (options.SelectedItem != null)
+//				return false;
 			var buffer = options.Document.TextEditor;
 			if (buffer.SelectionStartPosition - buffer.SelectionEndPosition != 0) {
 				ParsedDocument doc = options.ParseDocument ();
@@ -257,11 +257,13 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			string text = options.Document.TextEditor.GetText (options.Document.TextEditor.SelectionStartPosition, options.Document.TextEditor.SelectionEndPosition);
 			
 			TextEditorData data = options.GetTextEditorData ();
-			Console.WriteLine (data.Document.GetTextAt (0, data.SelectionRange.Offset) + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
-			var cu = provider.ParseFile (data.Document.GetTextAt (0, data.SelectionRange.Offset) + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
-			if (cu == null || provider.LastErrors.Count > 0) {
+			var cu = provider.ParseFile (data.Document.GetTextAt (0, data.SelectionRange.Offset) + "MethodCall ();" + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
+			
+			if (cu == null || provider.LastErrors.Count > 0) 
+				cu = provider.ParseFile (data.Document.GetTextAt (0, data.SelectionRange.Offset) + "MethodCall ()" + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
+			
+			if (cu == null || provider.LastErrors.Count > 0) 
 				return null;
-			}
 			
 			param.Text = RemoveIndent (text, GetIndent (text)).TrimEnd ('\n', '\r');
 			

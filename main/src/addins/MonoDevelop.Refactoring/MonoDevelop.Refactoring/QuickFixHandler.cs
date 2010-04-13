@@ -41,10 +41,13 @@ namespace MonoDevelop.Refactoring
 		{
 			IReturnType returnType = null; 
 			INRefactoryASTProvider astProvider = RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (options.Document.FileName));
-			if (astProvider != null) 
-				returnType = astProvider.ParseTypeReference (options.ResolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
-			if (returnType == null)
-				returnType = DomReturnType.FromInvariantString (options.ResolveResult.ResolvedExpression.Expression);
+			
+			if (options.ResolveResult != null && options.ResolveResult.ResolvedExpression != null) {
+				if (astProvider != null) 
+					returnType = astProvider.ParseTypeReference (options.ResolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
+				if (returnType == null)
+					returnType = DomReturnType.FromInvariantString (options.ResolveResult.ResolvedExpression.Expression);
+			}
 			
 			List<string> namespaces;
 			if (options.ResolveResult is UnresolvedMemberResolveResult) {
