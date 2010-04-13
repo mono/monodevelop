@@ -1,5 +1,10 @@
 2010-04-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: ContentName
+	  can be null if the file is not saved.
+
+2010-04-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Added some
 	  checks to avoid updating breakpoints when the editor has
 	  been disposed.
