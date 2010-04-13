@@ -39,6 +39,8 @@ namespace MonoDevelop.Projects.Text
 			get;
 		}
 		
+		void CorrectIndenting (object textEditorData, int line);
+		
 		/// <summary>
 		/// Formats a text document directly with insert/remove operations.
 		/// </summary>
@@ -74,6 +76,8 @@ namespace MonoDevelop.Projects.Text
 		{
 			throw new NotSupportedException ();
 		}
+		
+		public abstract void CorrectIndenting (object textEditorData, int line);
 		
 		protected abstract string InternalFormat (PolicyContainer policyParent, string mimeType, string text, int fromOffest, int toOffset);
 		
