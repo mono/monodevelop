@@ -1,5 +1,12 @@
 2010-04-13  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  Implemented 'Bug 595598 - Intelligent placing of
+	  semi-colons'.
+
+
+2010-04-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
 	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs:
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

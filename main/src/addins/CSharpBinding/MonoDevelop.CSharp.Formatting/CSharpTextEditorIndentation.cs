@@ -191,11 +191,34 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			return false;
 		}
-		
+		int lastInsertedSemicolon = -1;
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			cursorPositionBeforeKeyPress = Editor.CursorPosition;
 			bool isSomethingSelected = Editor.SelectionEndPosition - Editor.SelectionStartPosition > 0;
+			if (key == Gdk.Key.BackSpace && TextEditorData.Caret.Offset == lastInsertedSemicolon) {
+				TextEditorData.Document.Undo ();
+				lastInsertedSemicolon = -1;
+				return false;
+			}
+			lastInsertedSemicolon = -1;
+			
+			if (key == Gdk.Key.semicolon && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get ("AutoInsertMatchingBracket", false) && PropertyService.Get ("SmartSemicolonPlacement", false)) {
+				bool retval = base.KeyPress (key, keyChar, modifier);
+				LineSegment curLine = TextEditorData.Document.GetLine (TextEditorData.Caret.Line);
+				string text = TextEditorData.Document.GetTextAt (curLine);
+				if (text.EndsWith (";") || text.Trim ().StartsWith ("for"))
+					return retval;
+				if (curLine.Offset + curLine.EditableLength != TextEditorData.Caret.Offset) {
+					TextEditorData.Document.EndAtomicUndo ();
+					TextEditorData.Document.BeginAtomicUndo ();
+					TextEditorData.Remove (TextEditorData.Caret.Offset - 1, 1);
+					TextEditorData.Caret.Offset = curLine.Offset + curLine.EditableLength;
+					lastInsertedSemicolon = TextEditorData.Caret.Offset + 1;
+					retval = base.KeyPress (key, keyChar, modifier);
+				}
+				return retval;
+			}
 			
 			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = Editor.CursorPosition;
