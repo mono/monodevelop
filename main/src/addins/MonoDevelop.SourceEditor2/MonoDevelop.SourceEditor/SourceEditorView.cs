@@ -1657,16 +1657,33 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
 		}
 		
+		void CorrectIndenting ()
+		{
+			Formatter formatter = TextFileService.GetFormatter (Document.MimeType);
+			if (TextEditor.IsSomethingSelected) {
+				TextEditor.Document.BeginAtomicUndo ();
+				int max = TextEditor.MainSelection.MaxLine;
+				for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
+					formatter.CorrectIndenting (TextEditor.GetTextEditorData (), i);
+				}
+				TextEditor.Document.EndAtomicUndo ();
+			} else {
+				formatter.CorrectIndenting (TextEditor.GetTextEditorData (), TextEditor.Caret.Line);
+			}
+		}
+		
 		[CommandHandler (TextEditorCommands.MoveBlockUp)]
 		protected void OnMoveBlockUp ()
 		{
 			TextEditor.RunAction (MiscActions.MoveBlockUp);
+			CorrectIndenting ();
 		}
 		
 		[CommandHandler (TextEditorCommands.MoveBlockDown)]
 		protected void OnMoveBlockDown ()
 		{
 			TextEditor.RunAction (MiscActions.MoveBlockDown);
+			CorrectIndenting ();
 		}
 		
 		
