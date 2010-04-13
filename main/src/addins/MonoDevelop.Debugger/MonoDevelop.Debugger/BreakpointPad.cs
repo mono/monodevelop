@@ -169,7 +169,6 @@ namespace MonoDevelop.Debugger
 			DebuggingService.StoppedEvent += OnDebuggerStatusCheck;
 			
 			tree.RowActivated += OnRowActivated;
-			tree.KeyPressEvent += OnKeyPressed;
 			
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
 			toolbar.Add (toolbarSet, sw);
@@ -230,6 +229,7 @@ namespace MonoDevelop.Debugger
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
+		[CommandHandler (EditCommands.DeleteKey)]
 		protected void OnDeleted ()
 		{
 			TreeIter iter;
@@ -240,6 +240,7 @@ namespace MonoDevelop.Debugger
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
+		[CommandUpdateHandler (EditCommands.DeleteKey)]
 		[CommandUpdateHandler (LocalCommands.GoToFile)]
 		[CommandUpdateHandler (LocalCommands.Properties)]
 		[CommandUpdateHandler (DebugCommands.EnableDisableBreakpoint)]
@@ -341,16 +342,6 @@ namespace MonoDevelop.Debugger
 		public void RedrawContent ()
 		{
 			UpdateDisplay ();
-		}
-				
-		[GLib.ConnectBefore]
-		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
-		{
-			if (e.Event.Key != Gdk.Key.Delete){
-				return;
-			}
-			OnDeleted();
-			e.RetVal = true;
 		}
 		
 		protected void OnDeleteClicked (object o, EventArgs args)

@@ -1,3 +1,8 @@
+2010-04-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/BreakpointPad.cs: Use the delete key
+	  command to bind the delete key.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger.addin.xml:

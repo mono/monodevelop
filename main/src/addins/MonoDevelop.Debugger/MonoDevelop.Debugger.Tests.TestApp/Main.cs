@@ -166,6 +166,7 @@ class Thing<T>
 [Flags]
 enum SomeEnum
 {
+	none=0,
 	one=1,
 	two=2,
 	four=4
