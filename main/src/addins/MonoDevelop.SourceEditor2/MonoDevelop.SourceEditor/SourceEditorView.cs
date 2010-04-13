@@ -784,7 +784,8 @@ namespace MonoDevelop.SourceEditor
 			// Updated with a delay, to make sure it works when called as a
 			// result of inserting/removing lines before a breakpoint position
 			GLib.Timeout.Add (10, delegate {
-				UpdateBreakpoints ();
+				if (!isDisposed)
+					UpdateBreakpoints ();
 				return false;
 			});
 		}
@@ -796,7 +797,8 @@ namespace MonoDevelop.SourceEditor
 			// Updated with a delay, to make sure it works when called as a
 			// result of inserting/removing lines before a breakpoint position
 			GLib.Timeout.Add (10, delegate {
-				UpdateBreakpoints ();
+				if (!isDisposed)
+					UpdateBreakpoints ();
 				return false;
 			});
 		}
@@ -808,7 +810,8 @@ namespace MonoDevelop.SourceEditor
 			// Updated with a delay, to make sure it works when called as a
 			// result of inserting/removing lines before a breakpoint position
 			GLib.Timeout.Add (10, delegate {
-				UpdateBreakpoints ();
+				if (!isDisposed)
+					UpdateBreakpoints ();
 				return false;
 			});
 		}
