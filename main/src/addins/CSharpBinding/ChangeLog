@@ -1,3 +1,9 @@
+2010-04-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  Fixed 'Bug 595606 - Refactoring (renaming) can alter
+	  unrelated classes'.
+
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:

@@ -370,7 +370,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			CheckNode (constructorDeclaration);
 			if (this.searchedMember is IType) {
-				if (((IType)this.searchedMember).FullName == CurrentTypeFullName &&
+				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == file.Name) &&
+				    ((IType)this.searchedMember).FullName == CurrentTypeFullName &&
 				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count)
 					AddUniqueReference (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column, this.searchedMemberName);
 			}
@@ -388,7 +389,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			CheckNode (destructorDeclaration);
 			if (this.searchedMember is IType) {
-				if (((IType)this.searchedMember).FullName == CurrentTypeFullName && 
+				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == file.Name) &&
+				    ((IType)this.searchedMember).FullName == CurrentTypeFullName && 
 				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count)
 					AddUniqueReference (destructorDeclaration.StartLocation.Line, destructorDeclaration.StartLocation.Column + 1, this.searchedMemberName);
 			}
