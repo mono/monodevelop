@@ -1,3 +1,8 @@
+2010-04-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Fix bug
+	  #595270 - Flags enums in debugger show the zero value.
+
 2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/ObjectValue.cs:

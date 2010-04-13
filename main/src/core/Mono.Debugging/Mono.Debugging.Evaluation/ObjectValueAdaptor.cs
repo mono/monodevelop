@@ -674,7 +674,7 @@ namespace Mono.Debugging.Evaluation
 					if (em.Value == val)
 						return new EvaluationResult (typeName + "." + em.Name, em.Name);
 					else {
-						if ((rest & em.Value) == em.Value) {
+						if (em.Value != 0 && (rest & em.Value) == em.Value) {
 							rest &= ~em.Value;
 							if (composed.Length > 0) {
 								composed += "|";
