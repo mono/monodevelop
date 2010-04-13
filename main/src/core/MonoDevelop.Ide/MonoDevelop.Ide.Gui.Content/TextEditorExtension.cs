@@ -35,6 +35,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -59,6 +60,10 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		protected TextEditor Editor {
 			get { return document.TextEditor; }
+		}
+		
+		protected TextEditorData TextEditorData {
+			get { return document.TextEditorData; }
 		}
 		
 		protected FilePath FileName {

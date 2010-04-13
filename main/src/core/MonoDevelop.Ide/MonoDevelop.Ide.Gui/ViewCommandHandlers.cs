@@ -514,10 +514,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.RemoveTrailingWhiteSpaces)]
 		public void OnRemoveTrailingWhiteSpaces ()
 		{
-			Mono.TextEditor.ITextEditorDataProvider provider = GetContent<Mono.TextEditor.ITextEditorDataProvider> ();
-			if (provider == null)
-				return;
-			Mono.TextEditor.TextEditorData data = provider.GetTextEditorData ();
+			Mono.TextEditor.TextEditorData data = doc.TextEditorData;
 			if (data == null)
 				return;
 			

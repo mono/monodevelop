@@ -171,6 +171,18 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		Mono.TextEditor.TextEditorData data = null;
+		public Mono.TextEditor.TextEditorData TextEditorData {
+			get {
+				if (data == null) {
+					Mono.TextEditor.ITextEditorDataProvider view = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
+					data = view.GetTextEditorData ();
+				}
+				return data;
+			}
+		}
+		
+		
 		public bool IsViewOnly {
 			get { return Window.ViewContent.IsViewOnly; }
 		}

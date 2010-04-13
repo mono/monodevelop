@@ -350,8 +350,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);
 			MonoDevelop.Ide.Gui.TextEditor editor = document.TextEditor;
 
-			Mono.TextEditor.ITextEditorDataProvider provider = document.GetContent<Mono.TextEditor.ITextEditorDataProvider> ();
-			Mono.TextEditor.TextEditorData data = provider.GetTextEditorData ();
+			Mono.TextEditor.TextEditorData data = document.TextEditorData;
 
 			int offset = editor.CursorPosition;
 			int line, col;

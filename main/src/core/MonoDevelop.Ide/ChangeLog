@@ -1,3 +1,13 @@
+2010-04-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs:
+	* MonoDevelop.Ide.Gui.Content/DocumentStateTracker.cs: It's
+	  now possible to get the TextEditorData object from the
+	  Document.
+
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs: Implemented
