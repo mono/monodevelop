@@ -1,5 +1,10 @@
 2010-04-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	  Don't show empty tooltips.
+
+2010-04-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs: Fixed possible null
 	  reference exception.
 

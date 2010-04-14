@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Events = Gdk.EventMask.PropertyChangeMask;
 			WindowTransparencyDecorator.Attach (this);
 			DataProvider = this;
+			HideDeclarationView ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -423,8 +424,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideDeclarationView ();
 				return;
 			}
-			
-			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+			if (currentData != null)
+				declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
 		}
 		
 		void HideDeclarationView ()
