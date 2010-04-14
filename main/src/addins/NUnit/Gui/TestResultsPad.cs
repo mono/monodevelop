@@ -39,6 +39,7 @@ using MonoDevelop.NUnit.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.NUnit
 {
@@ -109,7 +110,7 @@ namespace MonoDevelop.NUnit
 			// Failures tree
 			failuresTreeView = new TreeView ();
 			failuresTreeView.HeadersVisible = false;
-			failuresStore = new TreeStore (typeof(Pixbuf), typeof (string), typeof(object));
+			failuresStore = new TreeStore (typeof(Pixbuf), typeof (string), typeof(object), typeof(string));
 			var pr = new CellRendererPixbuf ();
 			CellRendererText tr = new CellRendererText ();
 			TreeViewColumn col = new TreeViewColumn ();
@@ -338,7 +339,22 @@ namespace MonoDevelop.NUnit
 			TreeIter testRow = failuresStore.AppendValues (stock, msg, null);
 			failuresStore.AppendValues (testRow, null, Escape (error.GetType().Name + ": " + error.Message), null);
 			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null);
-			failuresStore.AppendValues (row, null, Escape (error.StackTrace), null);
+			AddStackTrace (row, error.StackTrace, null);
+		}
+		
+		void AddStackTrace (TreeIter row, string stackTrace, UnitTest test)
+		{
+			string[] stackLines = stackTrace.Replace ("\r","").Split ('\n');
+			foreach (string line in stackLines) {
+				Regex r = new Regex (@".*?\(.*?\)\s\[.*?\]\s.*?\s(?<file>.*)\:(?<line>\d*)");
+				Match m = r.Match (line);
+				string file;
+				if (m.Groups["file"] != null && m.Groups["line"] != null)
+					file = m.Groups["file"].Value + ":" + m.Groups["line"].Value;
+				else
+					file = null;
+				failuresStore.AppendValues (row, null, Escape (line), test, file);
+			}
 		}
 		
 		public void FinishTestRun ()
@@ -386,6 +402,20 @@ namespace MonoDevelop.NUnit
 
 		void OnRowActivated (object s, EventArgs a)
 		{
+			Gtk.TreeIter iter;
+			if (failuresTreeView.Selection.GetSelected (out iter)) {
+				string file = (string) failuresStore.GetValue (iter, 3);
+				if (file != null) {
+					int i = file.LastIndexOf (':');
+					if (i != -1) {
+						int line;
+						if (int.TryParse (file.Substring (i+1), out line)) {
+							IdeApp.Workbench.OpenDocument (file.Substring (0, i), line, -1, true);
+							return;
+						}
+					}
+				}
+			}
 			OnShowTest ();
 		}
 		
@@ -419,7 +449,7 @@ namespace MonoDevelop.NUnit
 			info.Enabled = test != null;
 		}
 		
-		[CommandHandler (TestCommands.ShowTestCode)]
+		[CommandHandler (TestCommands.GoToFailure)]
 		protected void OnShowTest ()
 		{
 			UnitTest test = GetSelectedTest ();
@@ -435,7 +465,19 @@ namespace MonoDevelop.NUnit
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
 		}
 		
+		[CommandHandler (TestCommands.ShowTestCode)]
+		protected void OnShowTestCode ()
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test == null)
+				return;
+			SourceCodeLocation loc = test.SourceCodeLocation;
+			if (loc != null)
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
+		}
+		
 		[CommandUpdateHandler (TestCommands.ShowTestCode)]
+		[CommandUpdateHandler (TestCommands.GoToFailure)]
 		protected void OnUpdateRunTest (CommandInfo info)
 		{
 			UnitTest test = GetSelectedTest ();
@@ -507,7 +549,7 @@ namespace MonoDevelop.NUnit
 					TreeIter row = testRow;
 					if (hasMessage)
 						row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), test);
-					failuresStore.AppendValues (row, null, Escape (result.StackTrace), test);
+					AddStackTrace (row, result.StackTrace, test);
 				}
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
 			}

@@ -104,6 +104,7 @@ namespace MonoDevelop.NUnit
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.noFilterRadio = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Don't apply any filter"));
 			this.noFilterRadio.Name = "noFilterRadio";
+			this.noFilterRadio.Active = true;
 			this.noFilterRadio.DrawIndicator = true;
 			this.noFilterRadio.UseUnderline = true;
 			this.noFilterRadio.Group = new global::GLib.SList (global::System.IntPtr.Zero);

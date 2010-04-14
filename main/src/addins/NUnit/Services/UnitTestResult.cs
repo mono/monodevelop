@@ -150,18 +150,19 @@ namespace MonoDevelop.NUnit
 		
 		public SourceCodeLocation GetFailureLocation ()
 		{
-/*			if (!String.IsNullOrEmpty (stackTrace)) {
-				Match match = Regex.Match (stackTrace, @"\s*?at\s(?!NUnit\.Framework).*?\sin\s(.*?):(\d+)", RegexOptions.Multiline);
-				while (match.Success) {
-					try	{
-						int line = Int32.Parse (match.Groups[2].Value);
-						return new SourceCodeLocation (match.Groups[1].Value, line, 1);
-					} catch (Exception) {
-					}
-					match = match.NextMatch ();
+			string[] stackLines = stackTrace.Replace ("\r","").Split ('\n');
+			foreach (string line in stackLines) {
+				if (line.IndexOf ("NUnit.Framework") != -1)
+					continue;
+				Regex r = new Regex (@".*?\(.*?\)\s\[.*?\]\s.*?\s(?<file>.*)\:(?<line>\d*)");
+				Match m = r.Match (line);
+				if (m.Groups["file"] != null && m.Groups["line"] != null && File.Exists (m.Groups["file"].Value)) {
+					int lin;
+					if (int.TryParse (m.Groups["line"].Value, out lin))
+						return new MonoDevelop.NUnit.SourceCodeLocation (m.Groups["file"].Value, lin, -1);
 				}
 			}
-*/			return null;
+			return null;
 		}
 	}
 }

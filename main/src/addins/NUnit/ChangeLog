@@ -1,3 +1,15 @@
+2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestResultsPad.cs:
+	* Commands/NUnitCommands.cs:
+	* MonoDevelopNUnit.addin.xml:
+	* Services/UnitTestResult.cs: In the results pad, allow
+	  jumping to a specific line of the call stack. When
+	  double-clicking in a test failure, jump to the location of
+	  the failure, if available.
+
+	* gtk-gui/MonoDevelop.NUnit.NUnitOptionsWidget.cs: Flush.
+
 2010-04-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelopNUnit.addin.xml: Fixed node set name.
