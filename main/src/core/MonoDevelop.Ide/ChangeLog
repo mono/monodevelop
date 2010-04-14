@@ -1,3 +1,9 @@
+2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components/GtkUtil.cs: Propagate the scroll
+	  event. Don't show the tooltip when clicking on the tree.
+	  Fixes issue with double click.
+
 2010-04-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:

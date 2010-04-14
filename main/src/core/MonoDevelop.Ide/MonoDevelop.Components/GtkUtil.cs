@@ -48,10 +48,18 @@ namespace MonoDevelop.Components
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();
 			treeData [tree] = data;
 			tree.MotionNotifyEvent += HandleMotionNotifyEvent;
-			tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;;
+			tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+			tree.ButtonPressEvent += HandleButtonPressEvent;
+			tree.ScrollEvent += HandleTreeScrollEvent;
 			tree.Destroyed += delegate {
 				treeData.Remove (tree);
 			};
+		}
+
+		[GLib.ConnectBeforeAttribute]
+		static void HandleTreeScrollEvent (object o, ScrollEventArgs args)
+		{
+			HideTooltip ((Gtk.TreeView)o);
 		}
 
 		[GLib.ConnectBeforeAttribute]
@@ -112,6 +120,21 @@ namespace MonoDevelop.Components
 				return false;
 			});
 		}
+		
+		[GLib.ConnectBeforeAttribute]
+		static void HandleButtonPressEvent (object o, Gtk.ButtonPressEventArgs ev)
+		{
+			UnscheduleTooltipShow (o);
+		}
+		
+		static void UnscheduleTooltipShow (object tree)
+		{
+			TreeViewTooltipsData data = treeData [(Gtk.TreeView)tree];
+			if (data.ShowingTooltip) {
+				GLib.Source.Remove (data.Timer);
+				data.ShowingTooltip = false;
+			}
+		}
 	}
 
 	class TreeViewTooltipsData
@@ -126,7 +149,6 @@ namespace MonoDevelop.Components
 	{
 		TreeViewColumn col;
 		TreeView tree;
-		TreePath path;
 		TreeIter iter;
 		
 		public bool MouseIsOver;
@@ -135,11 +157,10 @@ namespace MonoDevelop.Components
 		{
 			this.tree = tree;
 			this.col = col;
-			this.path = path;
 			
 			NudgeHorizontal = true;
 			
-			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
+			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			
 			Gdk.Rectangle rect = tree.GetCellArea (path, col);
 			rect.Inflate (2, 2);
@@ -195,6 +216,20 @@ namespace MonoDevelop.Components
 			return res;
 		}
 		
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
+		{
+			bool res = base.OnButtonReleaseEvent (evnt);
+			CreateEvent (evnt);
+			return res;
+		}
+		
+		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+		{
+			bool res = base.OnScrollEvent (evnt);
+			CreateEvent (evnt);
+			return res;
+		}
+		
 		void CreateEvent (Gdk.EventButton refEvent)
 		{
 			int rx, ry;
@@ -215,6 +250,32 @@ namespace MonoDevelop.Components
 			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
 			try {
 				Gdk.EventButton evnt = new Gdk.EventButton (ptr); 
+				Gdk.EventHelper.Put (evnt); 
+			} finally {
+				Marshal.FreeHGlobal (ptr);
+			}
+		}
+		
+		void CreateEvent (Gdk.EventScroll refEvent)
+		{
+			int rx, ry;
+			tree.BinWindow.GetOrigin (out rx, out ry);
+			NativeEventScrollStruct nativeEvent = new NativeEventScrollStruct (); 
+			nativeEvent.type = refEvent.Type;
+			nativeEvent.send_event = 1;
+			nativeEvent.window = tree.BinWindow.Handle;
+			nativeEvent.x = refEvent.XRoot - rx;
+			nativeEvent.y = refEvent.YRoot - ry;
+			nativeEvent.x_root = refEvent.XRoot;
+			nativeEvent.y_root = refEvent.YRoot;
+			nativeEvent.time = refEvent.Time;
+			nativeEvent.direction = refEvent.Direction;
+			nativeEvent.state = (uint) refEvent.State;
+			nativeEvent.device = refEvent.Device.Handle;
+
+			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
+			try {
+				Gdk.EventScroll evnt = new Gdk.EventScroll (ptr); 
 				Gdk.EventHelper.Put (evnt); 
 			} finally {
 				Marshal.FreeHGlobal (ptr);
@@ -246,6 +307,21 @@ namespace MonoDevelop.Components
 		public IntPtr axes; 
 		public uint state; 
 		public uint button; 
+		public IntPtr device; 
+		public double x_root; 
+		public double y_root; 
+	} 
+	
+	[StructLayout (LayoutKind.Sequential)] 
+	struct NativeEventScrollStruct { 
+		public Gdk.EventType type; 
+		public IntPtr window; 
+		public sbyte send_event; 
+		public uint time; 
+		public double x; 
+		public double y; 
+		public uint state; 
+		public Gdk.ScrollDirection direction;
 		public IntPtr device; 
 		public double x_root; 
 		public double y_root; 
