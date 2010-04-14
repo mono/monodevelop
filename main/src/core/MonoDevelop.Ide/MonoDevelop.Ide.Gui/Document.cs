@@ -176,7 +176,8 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (data == null) {
 					Mono.TextEditor.ITextEditorDataProvider view = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
-					data = view.GetTextEditorData ();
+					if (view != null)
+						data = view.GetTextEditorData ();
 				}
 				return data;
 			}
