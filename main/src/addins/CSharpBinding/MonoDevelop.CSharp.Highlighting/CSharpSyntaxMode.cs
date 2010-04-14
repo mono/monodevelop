@@ -54,7 +54,10 @@ namespace MonoDevelop.CSharp.Highlighting
 			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += (EventHandler<DocumentEventArgs>)DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
 			IdeApp.Workspace.ActiveConfigurationChanged += delegate {
 				foreach (var doc in IdeApp.Workbench.Documents) {
-					Mono.TextEditor.Document document = doc.TextEditorData.Document;
+					TextEditorData data = doc.TextEditorData;
+					if (data == null)
+						continue;
+					Mono.TextEditor.Document document = data.Document;
 					document.UpdateHighlighting ();
 					document.CommitUpdateAll ();
 				}
