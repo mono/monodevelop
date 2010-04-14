@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Monodevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-09 12:39:03+0100\n"
-"PO-Revision-Date: 2010-03-22 08:14:41+0100\n"
+"PO-Revision-Date: 2010-04-14 12:50:50+0200\n"
 "Last-Translator: Alexandra Diaconu <alexandra.diaconu@embarcadero.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -7419,8 +7419,9 @@ msgstr "_Versionskontrolle"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:195
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:202
+#, fuzzy
 msgid "Commit Message Style"
-msgstr "Stil der Übergabemeldungen"
+msgstr "Stil der Commit-Nachricht"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:55
 msgid "Retrieving history for {0}..."
@@ -7525,7 +7526,7 @@ msgstr "Inhalt von {0} bei Revision {1} abrufen..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:114
 msgid "Commit..."
-msgstr "Übergeben..."
+msgstr "Commit..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:124
 msgid "Revert"
@@ -7567,7 +7568,7 @@ msgstr "Remote-Status"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:244
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:98
 msgid "Commit message:"
-msgstr "Übergabemeldung:"
+msgstr "Commit-Nachricht:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:351
 msgid "Scanning for changes..."
@@ -7587,16 +7588,16 @@ msgstr "Keine Datei hat lokale oder Remote-Änderungen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:485
 msgid "Commit message for file '{0}':"
-msgstr "Übergabemeldung für Datei '{0}':"
+msgstr "Commit-Nachricht für Datei '{0}':"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:487
 msgid "Commit message (multiple selection):"
-msgstr "Übergabemeldung (Mehrfachauswahl):"
+msgstr "Commit-Nachricht (Mehrfachauswahl):"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:608
 msgid "Some of the files in this commit do not have ChangeLog messages."
 msgstr ""
-"Einige Dateien in dieser Übergabe haben keine Einträge im Änderungsprotokoll."
+"Einige Dateien in dieses Commits haben keine Einträge im Änderungsprotokoll."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:609
 msgid "You may have forgotten to unselect items."
@@ -7650,11 +7651,11 @@ msgstr "Auscheken von {0}..."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:28
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:40
 msgid "There are no changes to be committed."
-msgstr "Es sind keine Änderungen für die Übergabe vorhanden."
+msgstr "Es sind keine Änderungen für einen Commit vorhanden."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:89
 msgid "Committing {0}..."
-msgstr "{0} wird übergeben..."
+msgstr "{0} wird committed..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:42
 msgid "Initial check-in of module {0}"
@@ -7796,15 +7797,15 @@ msgstr "Passwort:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:32
 msgid "Commit Files"
-msgstr "Dateien übergeben"
+msgstr "Dateien committed"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:50
 msgid "The following files will be committed:"
-msgstr "Die folgenden Dateien werden übergeben:"
+msgstr "Die folgenden Dateien werden committed:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:144
 msgid "Commit"
-msgstr "Übergeben"
+msgstr "Commit"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:61
 msgid ""
@@ -7828,7 +7829,7 @@ msgid ""
 "to perform a commit to complete it."
 msgstr ""
 "Hinweis: Es werden nur die Änderungen in Ihrer Arbeitskopie zurückgenommen, "
-"daher müssen Sie eine Übergabe ausführen, um den Vorgang abzuschließen."
+"daher müssen Sie einen Commit ausführen, um den Vorgang abzuschließen."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:100
 msgid "Reverting to revision {0}..."
@@ -9276,8 +9277,7 @@ msgid ""
 "Some of the projects require that files have comments when they are "
 "committed."
 msgstr ""
-"Einige Projekte erfordern, dass Dateien bei der Übergabe Kommentare "
-"enthalten."
+"Einige Projekte erfordern, dass Dateien bei dem Commit Kommentare enthalten."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:119
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:127
@@ -9360,7 +9360,7 @@ msgid ""
 msgstr ""
 "<b>Nächstes Änderungsprotokoll aktualisieren</b>\n"
 "Die nächstliegende Änderungsprotokolldatei in der Verzeichnisebene wird "
-"aktualisiert (unterhalb des Übergabeverzeichnisses). Wenn keine gefunden wird, "
+"aktualisiert (unterhalb des Commit-Verzeichnisses). Wenn keine gefunden wird, "
 "wird eine Warnung angezeigt. Änderungsprotokolldateien werden nie automatisch "
 "erstellt."
 
@@ -9402,7 +9402,7 @@ msgstr "_In Versionskontrolle integrieren"
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:172
 msgid "_Require ChangeLog entries for all files when committing"
 msgstr ""
-"Ä_nderungsprotokoll-Einträge für alle Dateien bei der Übergabe erforderlich"
+"Ä_nderungsprotokoll-Einträge für alle Dateien bei dem Commit erforderlich"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:186
 msgid "ChangeLog Generation"
@@ -13245,7 +13245,7 @@ msgstr "_Codevervollständigungs-Liste auslösen"
 msgid "_Commit completion list selection with space or punctuation."
 msgstr ""
 "Auswahl aus _Codevervollständigungs-Liste mit Leerzeichen oder "
-"Interpunktionszeichen übergeben"
+"Interpunktionszeichen abschliessen"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:176
 msgid "Enable _parameter insight"
@@ -17215,7 +17215,6 @@ msgstr "Debugger"
 #~ msgstr "Testseite konnte im Browser nicht geöffnet werden."
 #~ msgid "Threads List"
 #~ msgstr "Thread-Liste"
-
 #~ msgid "Enum <b>{0}</b>"
 #~ msgstr "Aufzählung <b>{0}</b>"
 
@@ -18262,7 +18261,6 @@ msgstr "Debugger"
 #~ msgstr "Ausnahme aufgetreten: {0}"
 #~ msgid "Question"
 #~ msgstr "Frage"
-
 #~ msgid "Delete files"
 #~ msgstr "Dateien löschen"
 
