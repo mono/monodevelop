@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharp.Formatting
 			IType type = NRefactoryResolver.GetTypeAtCursor (unit, unit.FileName, caretLocation);
 			if (type == null)
 				return;
-			Format (data, type, NRefactoryResolver.GetMemberAt (type, caretLocation), dom, unit, caretLocation);
+			Format (data, type, NRefactoryResolver.GetMemberAt (type, unit.FileName, caretLocation), dom, unit, caretLocation);
 		}
 		
 		static string GetIndent (string text)

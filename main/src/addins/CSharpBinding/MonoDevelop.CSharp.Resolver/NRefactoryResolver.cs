@@ -148,9 +148,11 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 		}
 		
-		internal static IMember GetMemberAt (IType type, DomLocation location)
+		internal static IMember GetMemberAt (IType type, string fileName, DomLocation location)
 		{
 			foreach (IMember member in type.Members) {
+				if (member.DeclaringType.CompilationUnit.FileName != fileName)
+					continue;
 				if (!(member is IMethod || member is IProperty || member is IEvent || member is IField))
 					continue;
 				if (member.Location.Line == location.Line || (!member.BodyRegion.IsEmpty && member.BodyRegion.Start <= location && (location < member.BodyRegion.End || member.BodyRegion.End.IsEmpty))) {
@@ -167,11 +169,11 @@ namespace MonoDevelop.CSharp.Resolver
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			if (callingType != null) {
 				callingType = dom.ResolveType (callingType);
-				callingMember = GetMemberAt (callingType, resolvePosition);
+				callingMember = GetMemberAt (callingType, fileName, resolvePosition);
 				if (callingMember == null) {
 					DomLocation posAbove = resolvePosition;
 					posAbove.Line--;
-					callingMember = GetMemberAt (callingType, posAbove);
+					callingMember = GetMemberAt (callingType, fileName, posAbove);
 				}
 			}
 			
