@@ -139,6 +139,8 @@ namespace Mono.Debugging.Soft
 						obj = ((PrimitiveValue)obj).Value;
 					if (tt != typeof(string) && !(obj is string)) {
 						try {
+							if (obj == null)
+								return null;
 							object res = System.Convert.ChangeType (obj, tt);
 							return CreateValue (ctx, res);
 						} catch {
@@ -283,7 +285,27 @@ namespace Mono.Debugging.Soft
 
 		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags)
 		{
+			Dictionary<string, PropertyInfoMirror> subProps = new Dictionary<string, PropertyInfoMirror> ();
 			TypeMirror type = t as TypeMirror;
+			TypeMirror realType = null;
+			if (co != null && (bindingFlags & BindingFlags.Instance) != 0)
+				realType = GetValueType (ctx, co) as TypeMirror;
+
+			// First of all, get a list of properties overriden in sub-types
+			while (realType != null && realType != type) {
+				foreach (PropertyInfoMirror prop in realType.GetProperties (bindingFlags | BindingFlags.DeclaredOnly)) {
+					MethodMirror met = prop.GetGetMethod (true);
+					if (met == null || met.GetParameters ().Length != 0 || met.IsAbstract || !met.IsVirtual || met.IsStatic)
+						continue;
+					if (met.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+						continue;
+					if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+						continue;
+					subProps [prop.Name] = prop;
+				}
+				realType = realType.BaseType;
+			}
+			
 			while (type != null) {
 				foreach (FieldInfoMirror field in type.GetFields ()) {
 					if (field.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
@@ -308,7 +330,13 @@ namespace Mono.Debugging.Soft
 						continue;
 					if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
 						continue;
-					yield return new PropertyValueReference (ctx, prop, co, type, null);
+					
+					// If a property is overriden, return the override instead of the base property
+					PropertyInfoMirror overriden;
+					if (met.IsVirtual && subProps.TryGetValue (prop.Name, out overriden))
+						yield return new PropertyValueReference (ctx, overriden, co, overriden.DeclaringType, null);
+					else
+						yield return new PropertyValueReference (ctx, prop, co, type, null);
 				}
 				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
 					break;

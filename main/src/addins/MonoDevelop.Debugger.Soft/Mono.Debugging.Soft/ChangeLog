@@ -1,3 +1,9 @@
+2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: When getting the members of a type,
+	  take into account overriden virtual properties. Fixes bug
+	  #580994 - MD debugger hover window ignores virtual.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerSession.cs: Set the current request in the Step
