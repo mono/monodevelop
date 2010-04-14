@@ -74,9 +74,14 @@ namespace MonoDevelop.Debugger
 			}
 			
 			Project project = IdeApp.Workspace.GetProjectContainingFile (bp.FileName);
+			
 			if (project != null) {
-				boxConditionOptions.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.ConditionalBreakpoints);
-				boxAction.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.Tracepoints);
+				// Check the startup project of the solution too, since the current project may be a library
+				SolutionEntityItem startup = project.ParentSolution.StartupItem;
+				boxConditionOptions.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.ConditionalBreakpoints) ||
+					DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.ConditionalBreakpoints);
+				boxAction.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.Tracepoints) ||
+					DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.Tracepoints);
 			}
 			
 			UpdateControls ();

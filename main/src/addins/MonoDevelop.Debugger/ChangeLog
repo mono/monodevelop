@@ -1,3 +1,10 @@
+2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/BreakpointPropertiesDialog.cs: When
+	  checking if some breakpoint features are supported, check it
+	  for the startup project too, since the current project may
+	  be a library and not executable.
+
 2010-04-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/BreakpointPad.cs: Use the delete key
