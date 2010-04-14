@@ -1,10 +1,10 @@
 // 
-// MdbEvaluationTests.cs
+// MdbStackFrameTests.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,28 +30,11 @@ using NUnit.Framework;
 namespace MonoDevelop.Debugger.Tests.Mdb
 {
 	[TestFixture()]
-	public class MdbEvaluationTests: EvaluationTests
+	public class MdbStackFrameTests: StackFrameTests
 	{
-		public MdbEvaluationTests (): base ("Mono.Debugger.Mdb")
-		{
-		}
-		
-		[Test()]
-		[Ignore ("Not working due to bug #584306")]
-		public override void Assignment ()
-		{
-		}
-		
-		[Test()]
-		[Ignore ("Not working due to bug #584306")]
-		public override void AssignmentStatic ()
-		{
-		}
-		
-		[Test()]
-		[Ignore ("Not yet implemented")]
-		public override void TypeReferenceGeneric ()
+		public MdbStackFrameTests (): base ("Mono.Debugger.Mdb")
 		{
 		}
 	}
 }
+

@@ -107,10 +107,16 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 class A
 {
+	public virtual int Prop { get { return 1; } }
+	public int PropNoVirt1 { get { return 1; } }
+	public virtual int PropNoVirt2 { get { return 1; } }
 }
 
 class B: A
 {
+	public override int Prop { get { return 2; } }
+	public new int PropNoVirt1 { get { return 2; } }
+	public new int PropNoVirt2 { get { return 2; } }
 }
 
 class C: B

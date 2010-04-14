@@ -1,3 +1,8 @@
+2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.cs: Added new test suite for StackFrame. Reorganized a
+	  bit the namespaces. Added tests for bug #580994.
+
 2010-04-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.cs: Add unit test for bug 595270: Flags enums in

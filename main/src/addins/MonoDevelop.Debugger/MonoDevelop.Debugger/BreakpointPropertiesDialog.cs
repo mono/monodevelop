@@ -74,7 +74,6 @@ namespace MonoDevelop.Debugger
 			}
 			
 			Project project = IdeApp.Workspace.GetProjectContainingFile (bp.FileName);
-			
 			if (project != null) {
 				// Check the startup project of the solution too, since the current project may be a library
 				SolutionEntityItem startup = project.ParentSolution.StartupItem;

@@ -1,5 +1,11 @@
 2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/BreakpointPropertiesDialog.cs: Added
+	  new test suite for StackFrame. Reorganized a bit the
+	  namespaces. Added tests for bug #580994.
+
+2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/BreakpointPropertiesDialog.cs: When
 	  checking if some breakpoint features are supported, check it
 	  for the startup project too, since the current project may

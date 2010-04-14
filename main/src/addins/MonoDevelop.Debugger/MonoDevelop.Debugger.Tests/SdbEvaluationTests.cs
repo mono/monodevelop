@@ -27,7 +27,7 @@
 using System;
 using NUnit.Framework;
 
-namespace MonoDevelop.Debugger.Tests
+namespace MonoDevelop.Debugger.Tests.Soft
 {
 	[TestFixture()]
 	public class SdbEvaluationTests: EvaluationTests
