@@ -1,5 +1,11 @@
 2010-04-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs:
+	* MonoDevelop.Projects.Dom/ICompilationUnit.cs: Added Tag to
+	  compilation unit (to hold the original compilation unit).
+
+2010-04-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/LocalVariable.cs: Handled possible
 	  null ref.
 
