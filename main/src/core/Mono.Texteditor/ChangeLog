@@ -1,5 +1,10 @@
 2010-04-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 596511 - Code
+	  completion removes block selection and only affects 1 line'
+
+2010-04-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/ClipboardActions.cs: Fixed some block
 	  selection mode issues.

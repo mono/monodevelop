@@ -1595,6 +1595,11 @@ namespace Mono.TextEditor
 			this.textEditorData.DeleteSelectedText ();
 		}
 		
+		public void DeleteSelectedText (bool clearSelection)
+		{
+			this.textEditorData.DeleteSelectedText (clearSelection);
+		}
+		
 		public void RunEditAction (Action<TextEditorData> action)
 		{
 			action (this.textEditorData);
