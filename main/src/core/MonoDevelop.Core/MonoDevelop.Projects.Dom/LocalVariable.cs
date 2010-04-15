@@ -69,13 +69,19 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ICompilationUnit CompilationUnit {
 			get {
-				return DeclaringMember.DeclaringType.CompilationUnit;
+				IMember declaringMember = DeclaringMember;
+				if (declaringMember == null || declaringMember.DeclaringType == null)
+					return null;
+				return declaringMember.DeclaringType.CompilationUnit;
 			}
 		}
 		
 		public string FileName {
 			get {
-				return DeclaringMember.DeclaringType.CompilationUnit.FileName;
+				ICompilationUnit unit = CompilationUnit;
+				if (unit == null)
+					return null;
+				return unit.FileName;
 			}
 		}
 		
