@@ -46,7 +46,9 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			this.options = options;
 			this.rename = rename;
-
+			if (options.SelectedItem is IMethod && ((IMethod)options.SelectedItem).IsConstructor) {
+				options.SelectedItem = ((IMethod)options.SelectedItem).DeclaringType;
+			}
 			this.Build ();
 
 			if (options.SelectedItem is IType) {
