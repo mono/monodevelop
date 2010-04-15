@@ -1,3 +1,10 @@
+2010-04-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Fixed 'Bug 596511 - Code completion removes block selection
+	  and only affects 1 line'.
+
 2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/GtkUtil.cs: Propagate the scroll

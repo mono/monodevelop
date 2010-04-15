@@ -197,7 +197,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
 					UpdateWordSelection ();
-					initialWordLength = completionWidget.SelectedLength;
+					initialWordLength = 0;//completionWidget.SelectedLength;
 					ResetSizes ();
 					ShowAll ();
 					SetScrollbarVisibilty ();
@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return true;
 				}
 
-				initialWordLength = text.Length + completionWidget.SelectedLength;
+				initialWordLength = text.Length /*+ completionWidget.SelectedLength*/;
 				PartialWord = text;
 				UpdateWordSelection ();
 				
@@ -307,10 +307,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				ac.InsertCompletionText (CompletionWidget, CodeCompletionContext);
 				return;
 			}
-			
 			int partialWordLength = PartialWord != null ? PartialWord.Length : 0;
 			int replaceLength = CodeCompletionContext.TriggerWordLength + partialWordLength - initialWordLength;
-			string currentWord   = CompletionWidget.GetText (CodeCompletionContext.TriggerOffset, CodeCompletionContext.TriggerOffset + replaceLength);
+			string currentWord = CompletionWidget.GetText (CodeCompletionContext.TriggerOffset, CodeCompletionContext.TriggerOffset + replaceLength);
 			string completedWord = item.CompletionText;
 			AddWordToHistory (completedWord);
 			CompletionWidget.SetCompletionText (CodeCompletionContext, currentWord, completedWord);

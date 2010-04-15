@@ -86,14 +86,16 @@ namespace MonoDevelop.Ide.Gui.Content
 				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
 			if ((modifier & ignoreMods) != 0)
 				return res;
-			
-			int posChange = Editor.CursorPosition - oldPos;
-			if (currentCompletionContext != null && (Math.Abs (posChange) > 1 || (Editor.TextLength - oldLen) != posChange)) {
-				currentCompletionContext = null;
-				CompletionWindowManager.HideWindow ();
-				ParameterInformationWindowManager.HideWindow ();
-				return res;
-			}
+			/*
+			if (Document.TextEditorData == null || Document.TextEditorData.IsSomethingSelected && Document.TextEditorData.SelectionMode != Mono.TextEditor.SelectionMode.Block) {
+				int posChange = Editor.CursorPosition - oldPos;
+				if (currentCompletionContext != null && (Math.Abs (posChange) > 1 || (Editor.TextLength - oldLen) != posChange)) {
+					currentCompletionContext = null;
+					CompletionWindowManager.HideWindow ();
+					ParameterInformationWindowManager.HideWindow ();
+					return res;
+				}
+			}*/
 
 			if (!enableCodeCompletion)
 				return res;
