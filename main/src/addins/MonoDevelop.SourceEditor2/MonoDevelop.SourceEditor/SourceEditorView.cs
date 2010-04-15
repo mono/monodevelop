@@ -1183,7 +1183,12 @@ namespace MonoDevelop.SourceEditor
 		}
 		public int SelectedLength { 
 			get {
-				return TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0;
+				if (TextEditor.IsSomethingSelected) {
+					if (TextEditor.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+						return System.Math.Abs (TextEditor.MainSelection.Anchor.Column - TextEditor.MainSelection.Lead.Column);
+					return TextEditor.SelectionRange.Length;
+				}
+				return 0;
 			}
 		}
 //		public string GetText (int startOffset, int endOffset)
@@ -1244,11 +1249,21 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
+			TextEditorData data = this.GetTextEditorData ();
+			if (data == null)
+				return;
 			int triggerOffset = ctx.TriggerOffset;
-			if (TextEditor.IsSomethingSelected) {
-				if (TextEditor.SelectionRange.Offset < ctx.TriggerOffset)
-					triggerOffset = ctx.TriggerOffset - TextEditor.SelectionRange.Length;
-				TextEditor.DeleteSelectedText ();
+			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
+			
+			if (data.IsSomethingSelected) {
+				if (data.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block) {
+					data.Caret.PreserveSelection = true;
+					triggerOffset = data.Caret.Offset - length;
+				} else {
+					if (data.SelectionRange.Offset < ctx.TriggerOffset)
+						triggerOffset = ctx.TriggerOffset - data.SelectionRange.Length;
+					data.DeleteSelectedText ();
+				}
 			}
 
 			// | in the completion text now marks the caret position
@@ -1258,14 +1273,36 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				idx = complete_word.Length;
 			}
-			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
+			
+			triggerOffset += data.EnsureCaretIsNotVirtual ();
+			data.Document.EndAtomicUndo ();
+			if (data.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block) {
+				data.Document.BeginAtomicUndo ();
 
-			triggerOffset += TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
-			this.widget.TextEditor.Document.EndAtomicUndo ();
-			this.widget.TextEditor.Replace (triggerOffset, length, complete_word);
-			this.widget.TextEditor.Caret.Offset = triggerOffset + idx;
-			this.widget.TextEditor.Document.BeginAtomicUndo ();
-			this.widget.TextEditor.Document.CommitLineUpdate (this.widget.TextEditor.Caret.Line);
+				int minLine = data.MainSelection.MinLine;
+				int maxLine = data.MainSelection.MaxLine;
+				int column = triggerOffset - data.Document.GetLineByOffset (triggerOffset).Offset;
+				for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
+					LineSegment lineSegment = data.Document.GetLine (lineNumber);
+					if (lineSegment == null)
+						continue;
+					int offset = lineSegment.Offset + column;
+					data.Replace (offset, length, complete_word);
+				}
+				data.Caret.Offset = triggerOffset + idx;
+				int minColumn = System.Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
+				data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn);
+				data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, TextEditor.Caret.Column);
+				
+				data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+				data.Caret.PreserveSelection = false;
+			} else {
+				data.Replace (triggerOffset, length, complete_word);
+				data.Caret.Offset = triggerOffset + idx;
+				data.Document.BeginAtomicUndo ();
+			}
+			
+			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
 		
 		void FireCompletionContextChanged ()
