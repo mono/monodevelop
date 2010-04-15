@@ -344,11 +344,13 @@ namespace Mono.TextEditor
 					string text = System.Text.Encoding.UTF8.GetString (selBytes, 1, selBytes.Length - 1);
 					bool pasteBlock = (selBytes[0] & 1) == 1;
 					bool pasteLine = (selBytes[0] & 2) == 2;
-
+					if (!pasteBlock && !pasteLine)
+						return;
+					
 					data.Document.BeginAtomicUndo ();
 					if (preserveSelection && data.IsSomethingSelected)
 						data.DeleteSelectedText ();
-
+					
 					data.Caret.PreserveSelection = true;
 					if (pasteBlock) {
 						string[] lines = text.Split ('\r');
@@ -398,34 +400,56 @@ namespace Mono.TextEditor
 				clipboard.RequestText (delegate(Clipboard clp, string text) {
 					data.Document.BeginAtomicUndo ();
 					int caretPos = data.Caret.Offset;
-					ISegment selection = data.SelectionRange;
-					if (preserveSelection && data.IsSomethingSelected)
-						data.DeleteSelectedText ();
-
-					data.Caret.PreserveSelection = true;
-					//int oldLine = data.Caret.Line;
-					int textLength = data.Insert (insertionOffset, text);
-					result = textLength;
-
-					if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset)
-						data.SelectionRange.Offset += textLength;
-					if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset)
-						data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
-
-					data.Caret.PreserveSelection = false;
-					if (!preserveState) {
-						data.Caret.Offset = insertionOffset + textLength;
-					} else {
-						if (caretPos >= insertionOffset)
-							data.Caret.Offset = caretPos + textLength;
-						if (selection != null) {
-							int offset = selection.Offset;
-							if (offset >= insertionOffset)
-								offset += textLength;
-							data.SelectionRange = new Segment (offset, selection.Length);
+					if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
+						data.Caret.PreserveSelection = true;
+						if (!data.MainSelection.IsDirty) {
+							data.DeleteSelectedText (false);
+							data.MainSelection.IsDirty = true;
 						}
+						int textLength = 0;
+						int column = data.Caret.Column;
+						int minLine = data.MainSelection.MinLine;
+						int maxLine = data.MainSelection.MaxLine;
+						for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
+							int offset = data.Document.GetLine (lineNumber).Offset + column;
+							textLength = data.Insert (offset, text);
+							data.PasteText (offset, text);
+						}
+						
+						data.Caret.Offset = insertionOffset + textLength;
+						data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, data.Caret.Column - textLength);
+						data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, data.Caret.Column);
+						data.Caret.PreserveSelection = false;
+						data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+					} else {
+						ISegment selection = data.SelectionRange;
+						if (preserveSelection && data.IsSomethingSelected)
+							data.DeleteSelectedText ();
+						data.Caret.PreserveSelection = true;
+						//int oldLine = data.Caret.Line;
+						int textLength = data.Insert (insertionOffset, text);
+						result = textLength;
+	
+						if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset)
+							data.SelectionRange.Offset += textLength;
+						if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset)
+							data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
+						
+						data.Caret.PreserveSelection = false;
+						if (!preserveState) {
+							data.Caret.Offset = insertionOffset + textLength;
+						} else {
+							if (caretPos >= insertionOffset)
+								data.Caret.Offset = caretPos + textLength;
+							if (selection != null) {
+								int offset = selection.Offset;
+								if (offset >= insertionOffset)
+									offset += textLength;
+								data.SelectionRange = new Segment (offset, selection.Length);
+							}
+						}
+						data.PasteText (insertionOffset, text);
 					}
-					data.PasteText (insertionOffset, text);
 					data.Document.EndAtomicUndo ();
 				});
 			}

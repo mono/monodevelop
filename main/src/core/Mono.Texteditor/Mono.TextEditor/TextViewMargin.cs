@@ -1161,12 +1161,20 @@ namespace Mono.TextEditor
 			if (DecorateLineBg != null)
 				DecorateLineBg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
 		
-			if (layout.StartSet) {
-				var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
-				int startX = (int)(start.X / Pango.Scale.PangoScale);
+			if (layout.StartSet || selectionStart == offset + length) {
+				int startX;
+				int endX;
 				
-				var end = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
-				int endX = (int)(end.X / Pango.Scale.PangoScale);
+				if (selectionStart != offset + length) {
+					var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
+					startX = (int)(start.X / Pango.Scale.PangoScale);
+					var end = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
+					endX = (int)(end.X / Pango.Scale.PangoScale);
+				} else {
+					startX = width;
+					endX = startX;
+				}
+				
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
