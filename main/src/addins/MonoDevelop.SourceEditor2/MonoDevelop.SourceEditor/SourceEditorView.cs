@@ -1254,9 +1254,10 @@ namespace MonoDevelop.SourceEditor
 				return;
 			int triggerOffset = ctx.TriggerOffset;
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
-			
+			bool blockMode = false;
 			if (data.IsSomethingSelected) {
-				if (data.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block) {
+				blockMode = data.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block;
+				if (blockMode) {
 					data.Caret.PreserveSelection = true;
 					triggerOffset = data.Caret.Offset - length;
 				} else {
@@ -1276,7 +1277,7 @@ namespace MonoDevelop.SourceEditor
 			
 			triggerOffset += data.EnsureCaretIsNotVirtual ();
 			data.Document.EndAtomicUndo ();
-			if (data.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block) {
+			if (blockMode) {
 				data.Document.BeginAtomicUndo ();
 
 				int minLine = data.MainSelection.MinLine;
