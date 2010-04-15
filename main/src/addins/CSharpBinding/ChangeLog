@@ -1,3 +1,10 @@
+2010-04-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs:
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Optimized HighlightUsagesExtension (no additional re-parse).
+
 2010-04-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:

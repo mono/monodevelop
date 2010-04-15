@@ -111,7 +111,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, Document.FileName);
 					FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, Document.GetContent<IEditableTextFile> (), member);
 					visitor.IncludeXmlDocumentation = true;
-					visitor.RunVisitor ();
+					ICSharpCode.NRefactory.Ast.CompilationUnit unit = Document.CompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
+					if (unit == null)
+						return false;
+					visitor.RunVisitor (unit);
 					RemoveMarkers ();
 					foreach (var r in visitor.FoundReferences) {
 						UsageMarker marker = GetMarker (r.Line - 1);
@@ -193,7 +196,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (@from < to) {
 						using (Gdk.GC gc = new Gdk.GC(win)) {
 							gc.RgbFgColor = editor.ColorStyle.BracketHighlightRectangle.BackgroundColor;
-							win.DrawRectangle (gc, true, @from + 1, y + 1, to - @from - 2, editor.LineHeight - 2);
+							win.DrawRectangle (gc, true, @from + 1, y + 1, to - @from - 1, editor.LineHeight - 2);
 							gc.RgbFgColor = editor.ColorStyle.BracketHighlightRectangle.Color;
 							win.DrawRectangle (gc, false, @from, y, to - @from, editor.LineHeight - 1);
 						}

@@ -196,7 +196,29 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 		}
-
+		
+		public void RunVisitor (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit)
+		{
+			if (searchedMember == null)
+				return;
+			string text = file.Text;
+			
+			// search if the member name exists in the file (otherwise it doesn't make sense to search it)
+			FindReplace findReplace = new FindReplace ();
+			FilterOptions filterOptions = new FilterOptions {
+				CaseSensitive = true,
+				WholeWordsOnly = true
+			};
+			findReplace.CompilePattern (searchedMemberName, filterOptions);
+			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text, searchedMemberName, null, filterOptions);
+			if (result == null || !result.Any ()) {
+				return;
+			}
+			
+			resolver.SetupParsedCompilationUnit (compilationUnit);
+			VisitCompilationUnit (compilationUnit, null);
+		}
+		
 		class ExpressionVisitor : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 		{
 			HashSet<string> identifiers = new HashSet<string> ();

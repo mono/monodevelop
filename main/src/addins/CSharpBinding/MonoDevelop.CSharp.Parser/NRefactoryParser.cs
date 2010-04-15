@@ -214,7 +214,7 @@ namespace MonoDevelop.CSharp.Parser
 
 				ParsedDocument result = new ParsedDocument (fileName);
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
-
+				
 				parser.Errors.Error += delegate(int line, int col, string message) { result.Add (new Error (ErrorType.Error, line, col, message)); };
 				parser.Lexer.SpecialCommentTags = LexerTags;
 				parser.Lexer.EvaluateConditionalCompilation = true;
@@ -225,7 +225,7 @@ namespace MonoDevelop.CSharp.Parser
 						parser.Lexer.SetConditionalCompilationSymbols (par.DefineSymbols);
 				}
 				parser.Parse ();
-
+				
 				SpecialTracker tracker = new SpecialTracker (result);
 				foreach (ICSharpCode.NRefactory.ISpecial special in parser.Lexer.SpecialTracker.CurrentSpecials) {
 					special.AcceptVisitor (tracker, null);
@@ -236,6 +236,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				ConversionVisitior visitor = new ConversionVisitior (result, parser.Lexer.SpecialTracker.CurrentSpecials);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
+				result.CompilationUnit.Tag = parser.CompilationUnit;
 				LastUnit = parser.CompilationUnit;
 				return result;
 			}
