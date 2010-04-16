@@ -829,6 +829,8 @@ namespace Mono.TextEditor
 		public int EnsureCaretIsNotVirtual ()
 		{
 			LineSegment line = Document.GetLine (Caret.Line);
+			if (line == null)
+				return 0;
 			if (Caret.Column > line.EditableLength) {
 				string virtualSpace = GetVirtualSpaces (Caret.Line, Caret.Column);
 				Insert (Caret.Offset, virtualSpace);
