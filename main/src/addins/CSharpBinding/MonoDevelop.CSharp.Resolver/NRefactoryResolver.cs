@@ -578,7 +578,7 @@ namespace MonoDevelop.CSharp.Resolver
 					if (!lambda.ExpressionBody.IsNull) {
 						DomLocation old = resolver.resolvePosition;
 						try {
-							resolver.resolvePosition = new DomLocation (resolver.CallingMember.Location.Line + 
+							resolver.resolvePosition = new DomLocation ((resolver.CallingMember != null ? resolver.CallingMember.Location.Line : 0) + 
 							                                            lambda.ExpressionBody.StartLocation.Line - 2,
 							                                            lambda.ExpressionBody.StartLocation.Column - 1);
 							lambdaReturnType =  visitor.Resolve (lambda.ExpressionBody);

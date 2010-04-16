@@ -1,3 +1,8 @@
+2010-04-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Added
+	  null check.
+
 2010-04-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs:
