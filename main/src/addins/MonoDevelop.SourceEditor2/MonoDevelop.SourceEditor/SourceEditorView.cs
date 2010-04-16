@@ -1250,7 +1250,7 @@ namespace MonoDevelop.SourceEditor
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
 			TextEditorData data = this.GetTextEditorData ();
-			if (data == null)
+			if (data == null || data.Document == null)
 				return;
 			int triggerOffset = ctx.TriggerOffset;
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
