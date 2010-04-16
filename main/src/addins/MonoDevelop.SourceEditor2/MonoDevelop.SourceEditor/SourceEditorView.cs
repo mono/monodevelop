@@ -256,6 +256,7 @@ namespace MonoDevelop.SourceEditor
 			if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.Never)
 				return;
 			widget.Document.BeginAtomicUndo ();
+			int i= 0;
 			foreach (Task task in tasks) {
 				if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
 					if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
@@ -273,7 +274,7 @@ namespace MonoDevelop.SourceEditor
 						continue;
 					}
 					lineSegmentWithTasks.Add (lineSegment);
-					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description));
+					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description), false);
 				}
 			}
 			widget.Document.EndAtomicUndo ();

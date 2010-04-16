@@ -98,19 +98,21 @@ namespace MonoDevelop.SourceEditor
 			
 			return height;
 		}
-		static Dictionary<string, int> textWidthDictionary = new Dictionary<string, int> ();
+		static Dictionary<string, KeyValuePair<int, int>> textWidthDictionary = new Dictionary<string, KeyValuePair<int, int>> ();
 		void CalculateLineFit (TextEditor editor, Pango.Layout textLayout)
 		{
-			int textWidth, textHeight;
-			if (!textWidthDictionary.TryGetValue (textLayout.Text, out textWidth)) {
+			KeyValuePair<int, int> textSize;
+			if (!textWidthDictionary.TryGetValue (textLayout.Text, out textSize)) {
+				int textWidth, textHeight;
 				textLayout.GetPixelSize (out textWidth, out textHeight);
-				if (textWidthDictionary.Count > 10000)
+				textSize = new KeyValuePair<int, int> (textWidth, textHeight);
+				if (textWidthDictionary.Count > 10000) {
 					textWidthDictionary.Clear ();
-				textWidthDictionary[textLayout.Text] = textWidth;
-			}
-			
+				}
+				textWidthDictionary[textLayout.Text] = textSize;
+			} 
 			EnsureLayoutCreated (editor);
-			fitsInSameLine = editor.TextViewMargin.XOffset + textWidth + layouts[0].Width + errorPixbuf.Width + border + editor.LineHeight / 2  < editor.Allocation.Width;
+			fitsInSameLine = editor.TextViewMargin.XOffset + textSize.Key + layouts[0].Width + errorPixbuf.Width + border + editor.LineHeight / 2  < editor.Allocation.Width;
 		}
 		
 		public ErrorTextMarker (Task task, LineSegment lineSegment, bool isError, string errorMessage)
@@ -224,15 +226,19 @@ namespace MonoDevelop.SourceEditor
 			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
 			fontDescription.Family = "Sans";
 			fontDescription.Size = (int)(fontDescription.Size * 0.8f * editor.Options.Zoom);
-			
 			foreach (ErrorText errorText in errors) {
 				Pango.Layout layout = new Pango.Layout (editor.PangoContext);
 				layout.FontDescription = fontDescription;
 				layout.SetText (errorText.ErrorMessage);
 				
-				int layoutWidth, layoutHeight;
-				layout.GetPixelSize (out layoutWidth, out layoutHeight);
-				layouts.Add (new LayoutDescriptor (layout, layoutWidth, layoutHeight));
+				KeyValuePair<int, int> textSize;
+				if (!textWidthDictionary.TryGetValue (errorText.ErrorMessage, out textSize)) {
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					textSize = new KeyValuePair<int, int> (w, h);
+					textWidthDictionary[errorText.ErrorMessage] = textSize;
+				}
+				layouts.Add (new LayoutDescriptor (layout, textSize.Key, textSize.Value));
 			}
 			
 			if (errorCountLayout == null && errors.Count > 1) {
