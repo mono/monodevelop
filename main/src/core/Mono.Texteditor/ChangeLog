@@ -1,5 +1,9 @@
 2010-04-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Optimized error bubbles.
+
+2010-04-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: Handled possible null
 	  ref.
 

@@ -1141,6 +1141,11 @@ namespace Mono.TextEditor
 		
 		public void AddMarker (LineSegment line, TextMarker marker)
 		{
+			AddMarker (line, marker, true);
+		}
+		
+		public void AddMarker (LineSegment line, TextMarker marker, bool commitUpdate)
+		{
 			if (line == null || marker == null)
 				return;
 			if (marker is IExtendingTextMarker) {
@@ -1152,7 +1157,8 @@ namespace Mono.TextEditor
 				}
 			}
 			line.AddMarker (marker);
-			this.CommitLineUpdate (line);
+			if (commitUpdate)
+				this.CommitLineUpdate (line);
 		}
 		
 		public void RemoveMarker (int lineNumber, TextMarker marker)
