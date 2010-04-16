@@ -1,3 +1,9 @@
+2010-04-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GladeUtils.cs: Fix glade import. GtkWindow and GtkDialog
+	  need to be special cased, since we are not creating real
+	  Gtk.Window objects anymore.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* wrapper/Misc.cs: Show alignment buttons as toggles.

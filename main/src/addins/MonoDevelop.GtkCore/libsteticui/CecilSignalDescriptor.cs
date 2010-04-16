@@ -11,8 +11,9 @@ namespace Stetic
 		public CecilSignalDescriptor (CecilWidgetLibrary lib, XmlElement elem, Stetic.ItemGroup group, Stetic.ClassDescriptor klass, EventDefinition sinfo) : base (elem, group, klass)
 		{
 			if (sinfo != null) {
-				handlerTypeName = sinfo.EventType.FullName;
-				Type t = Registry.GetType (handlerTypeName, false);
+				string handler = sinfo.EventType.FullName;
+				handlerTypeName = handler.Replace ('/','+');
+				Type t = Registry.GetType (handler, false);
 				if (t != null) {
 					MethodInfo mi = t.GetMethod ("Invoke");
 					handlerReturnTypeName = mi.ReturnType.FullName;
@@ -22,13 +23,13 @@ namespace Stetic
 						handlerParameters [n] = new ParameterDescriptor (pars[n].Name, pars[n].ParameterType.FullName);
 				} else {
 					// If the type is generic, the type arguments must be ignored when looking for the type 
-					string tn = handlerTypeName;
-					int i = handlerTypeName.IndexOf ('<');
+					string tn = handler;
+					int i = handler.IndexOf ('<');
 					if (i != -1) {
-						tn = handlerTypeName.Substring (0, i);
+						tn = handler.Substring (0, i);
 						// Convert the type name to a type reference
-						handlerTypeName = handlerTypeName.Replace ('<', '[');
-						handlerTypeName = handlerTypeName.Replace ('>', ']');
+						handler = handler.Replace ('<', '[');
+						handler = handler.Replace ('>', ']');
 					}
 					TypeDefinition td = lib.FindTypeDefinition (tn);
 					if (td != null) {
@@ -47,6 +48,8 @@ namespace Stetic
 								handlerParameters [n] = new ParameterDescriptor (par.Name, CecilWidgetLibrary.GetInstanceType (td, sinfo.EventType, par.ParameterType));
 							}
 						}
+					} else {
+						handlerParameters = new ParameterDescriptor [0];
 					}
 				}
 				SaveCecilXml (elem);

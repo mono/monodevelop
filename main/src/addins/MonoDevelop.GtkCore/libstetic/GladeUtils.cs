@@ -474,17 +474,21 @@ namespace Stetic {
 			Gtk.Widget widget;
 
 			if (wrapper.Wrapped == null) {
-				IntPtr raw = gtksharp_object_newv (klass.GType.Val, propNames.Length, propNames, propVals);
-				if (raw == IntPtr.Zero)
-					throw new GladeException ("Could not create widget", className);
-
-				widget = (Gtk.Widget)GLib.Object.GetObject (raw, true);
-				
-				if (widget == null) {
-					gtk_object_sink (raw);
-					throw new GladeException ("Could not create gtk# wrapper", className);
+				if (className == "GtkWindow" || className == "GtkDialog") {
+					widget = (Gtk.Widget) klass.CreateInstance (wrapper.Project);
+					ObjectWrapper.Bind (wrapper.Project, klass, wrapper, widget, true);
+					SetProperties (klass, widget, propNames, propVals);
+				} else {
+					IntPtr raw = gtksharp_object_newv (klass.GType.Val, propNames.Length, propNames, propVals);
+					if (raw == IntPtr.Zero)
+						throw new GladeException ("Could not create widget", className);
+					widget = (Gtk.Widget)GLib.Object.GetObject (raw, true);
+					if (widget == null) {
+						gtk_object_sink (raw);
+						throw new GladeException ("Could not create gtk# wrapper", className);
+					}
+					ObjectWrapper.Bind (wrapper.Project, klass, wrapper, widget, true);
 				}
-				ObjectWrapper.Bind (wrapper.Project, klass, wrapper, widget, true);
 			} else {
 				widget = (Gtk.Widget)wrapper.Wrapped;
 				for (int i = 0; i < propNames.Length; i++)
@@ -497,6 +501,23 @@ namespace Stetic {
 			SetOverrideProperties (wrapper, overrideProps);
 			MarkTranslatables (widget, overrideProps);
 		}
+
+		static void SetProperties (TypedClassDescriptor klass, Gtk.Widget widget, string[] propNames, GLib.Value[] propVals)
+		{
+			for (int n=0; n<propNames.Length; n++) {
+				foreach (ItemGroup grp in klass.ItemGroups) {
+					foreach (ItemDescriptor it in grp) {
+						if (it is TypedPropertyDescriptor) {
+							TypedPropertyDescriptor prop = (TypedPropertyDescriptor)it;
+							if (prop.GladeName == propNames[n]) {
+								prop.SetValue (widget, propVals[n].Val);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		
 		static void SetOverrideProperties (ObjectWrapper wrapper, Hashtable overrideProps)
 		{

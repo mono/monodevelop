@@ -1,3 +1,8 @@
+2010-04-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CecilSignalDescriptor.cs: Cecil uses '/' as separator for
+	  inner classes. Convert to the standard '+' separator.
+
 2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
