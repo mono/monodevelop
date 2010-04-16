@@ -1834,11 +1834,17 @@ namespace Mono.TextEditor
 					th = (int) System.Math.Ceiling (ih * scale);
 					tx = rx - (int) System.Math.Ceiling ((double)(tw - iw) / 2) + border;
 					ty = ry - (int) System.Math.Ceiling ((double)(th - ih) / 2) + border;
-					using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) {
-						using (var gc = new Gdk.GC (drawable)) {
-							gc.ClipRectangle = new Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
-							scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
+					try {
+						using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) {
+							if (scaled != null) {
+								using (var gc = new Gdk.GC (drawable)) {
+									gc.ClipRectangle = new Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+									scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
+								}
+							}
 						}
+					} catch (Exception e) {
+						Console.WriteLine ("got exception in search result animation:" + e);
 					}
 				}
 				
