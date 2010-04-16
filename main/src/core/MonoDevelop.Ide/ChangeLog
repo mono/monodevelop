@@ -1,3 +1,13 @@
+2010-04-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: Give priority
+	  to items that have the match closer to the beginning of the
+	  string (see Bug 595240 - Completion list filtering should
+	  match on words not just at start).
+
+	* MonoDevelop.Ide.CodeCompletion/DeclarationViewWindow.cs:
+	  Added bounds check.
+
 2010-04-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:

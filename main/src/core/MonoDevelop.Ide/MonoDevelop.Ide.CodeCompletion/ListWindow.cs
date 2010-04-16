@@ -429,6 +429,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return 1;
 				if (xExact > yExact)
 					return -1;
+				
+				// favor words where the match starts sooner
+				if (xMatches.Length > 0 && yMatches.Length > 0 && xMatches[0] != yMatches[0])
+					return xMatches[0].CompareTo (yMatches[0]);
+				
 				int xIndex = xpair.Key;
 				int yIndex = ypair.Key;
 				

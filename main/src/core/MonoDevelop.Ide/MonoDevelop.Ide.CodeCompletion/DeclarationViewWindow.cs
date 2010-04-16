@@ -86,25 +86,31 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void ShowOverload ()
 		{
-			DescriptionMarkup = overloads[current_overload];
-			helplabel.Markup = string.Format ("<small>" + GettextCatalog.GetString ("{0} of {1} overloads") + "</small>", current_overload + 1, overloads.Count);
+			if (current_overload >= 0 && current_overload < overloads.Count) {
+				DescriptionMarkup = overloads[current_overload];
+				helplabel.Markup = string.Format ("<small>" + GettextCatalog.GetString ("{0} of {1} overloads") + "</small>", current_overload + 1, overloads.Count);
+			}
 		}
 
 		public void OverloadLeft ()
 		{
-			if (current_overload == 0)
-				current_overload = overloads.Count - 1;
-			else
+			if (current_overload == 0) {
+				if (overloads.Count > 0)
+					current_overload = overloads.Count - 1;
+			} else {
 				current_overload--;
+			}
 			ShowOverload ();
 		}
 
 		public void OverloadRight ()
 		{
-			if (current_overload == overloads.Count - 1)
+			if (current_overload == overloads.Count - 1) {
 				current_overload = 0;
-			else
-				current_overload++;
+			} else {
+				if (overloads.Count > 0)
+					current_overload++;
+			}
 			ShowOverload ();
 		}
 
