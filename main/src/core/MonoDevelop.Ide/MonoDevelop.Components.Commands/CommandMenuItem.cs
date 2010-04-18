@@ -71,6 +71,20 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		internal static CommandSource GetMenuCommandSource (Gtk.MenuItem item)
+		{
+			Gtk.Widget w = item.Parent;
+			while (w != null) {
+				if (w is Gtk.MenuBar)
+					return CommandSource.MainMenu;
+				else if (!(w is Gtk.MenuItem) && !(w is Gtk.MenuShell))
+					return CommandSource.ContextMenu;
+				else
+					w = w.Parent;
+			}
+			return CommandSource.Unknown;
+		}
+		
 		void ICommandMenuItem.SetUpdateInfo (CommandInfo cmdInfo, object initialTarget)
 		{
 			isArrayItem = true;
@@ -114,7 +128,7 @@ namespace MonoDevelop.Components.Commands
 					commandManager.DispatchCommandFromAccel (commandId, arrayDataItem, initialTarget);
 			} else {
 				wasButtonActivation = false;
-				commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget);
+				commandManager.DispatchCommand (commandId, arrayDataItem, initialTarget, GetMenuCommandSource (this));
 			}
 		}
 		

@@ -1,5 +1,18 @@
 2010-04-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs:
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs:
+	* MonoDevelop.Components.Commands/CommandToolButton.cs:
+	* MonoDevelop.Components.Commands/CommandCheckMenuItem.cs:
+	* MonoDevelop.Components.Commands/CommandToggleToolButton.cs:
+	  Pass source type to command dispatch.
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Add
+	  command dispatch events, and source type parameter and
+	  overloads.
+
+2010-04-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: Fix font size
 	  with small toolbar.
 

@@ -69,7 +69,7 @@ namespace MonoDevelop.Components.Commands
 			if (commandManager == null)
 				throw new InvalidOperationException ();
 				
-			commandManager.DispatchCommand (commandId, null, initialTarget);
+			commandManager.DispatchCommand (commandId, null, initialTarget, CommandSource.MainToolbar);
 		}
 		
 		IconId stockId = null;

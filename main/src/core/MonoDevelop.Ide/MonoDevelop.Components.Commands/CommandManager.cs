@@ -212,7 +212,7 @@ namespace MonoDevelop.Components.Commands
 			
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, null);
-				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id))
+				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
 					return;
 			}
 			
@@ -473,15 +473,30 @@ namespace MonoDevelop.Components.Commands
 		
 		public bool DispatchCommand (object commandId)
 		{
-			return DispatchCommand (commandId, null, null);
+			return DispatchCommand (commandId, null, null, CommandSource.Unknown);
+		}
+		
+		public bool DispatchCommand (object commandId, CommandSource source)
+		{
+			return DispatchCommand (commandId, null, null, source);
 		}
 		
 		public bool DispatchCommand (object commandId, object dataItem)
 		{
-			return DispatchCommand (commandId, dataItem, null);
+			return DispatchCommand (commandId, dataItem, null, CommandSource.Unknown);
+		}
+		
+		public bool DispatchCommand (object commandId, object dataItem, CommandSource source)
+		{
+			return DispatchCommand (commandId, dataItem, null, source);
 		}
 
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget)
+		{
+			return DispatchCommand (commandId, dataItem, initialTarget, CommandSource.Unknown);
+		}
+		
+		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source)
 		{
 			if (guiLock > 0)
 				return false;
@@ -537,12 +552,16 @@ namespace MonoDevelop.Components.Commands
 							object localTarget = cmdTarget;
 							if (cmd.CommandArray) {
 								handlers.Add (delegate {
+									OnCommandActivating (commandId, info, localTarget, source);
 									chi.Run (localTarget, cmd, dataItem);
+									OnCommandActivated (commandId, info, localTarget, source);
 								});
 							}
 							else {
 								handlers.Add (delegate {
+									OnCommandActivating (commandId, info, localTarget, source);
 									chi.Run (localTarget, cmd);
+									OnCommandActivated (commandId, info, localTarget, source);
 								});
 							}
 							handlerFoundInMulticast = true;
@@ -564,7 +583,9 @@ namespace MonoDevelop.Components.Commands
 				}
 	
 				if (cmd.DispatchCommand (dataItem)) {
+					OnCommandActivating (commandId, info, cmdTarget, source);
 					UpdateToolbars ();
+					OnCommandActivated (commandId, info, cmdTarget, source);
 					return true;
 				}
 			}
@@ -575,6 +596,21 @@ namespace MonoDevelop.Components.Commands
 			}
 			return false;
 		}
+		
+		void OnCommandActivating (object commandId, CommandInfo commandInfo, object target, CommandSource source)
+		{
+			if (CommandActivating != null)
+				CommandActivating (this, new CommandActivationEventArgs (commandId, commandInfo, target, source));
+		}
+		
+		void OnCommandActivated (object commandId, CommandInfo commandInfo, object target, CommandSource source)
+		{
+			if (CommandActivated != null)
+				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, target, source));
+		}
+		
+		public event EventHandler<CommandActivationEventArgs> CommandActivating;
+		public event EventHandler<CommandActivationEventArgs> CommandActivated;
 		
 		public CommandInfo GetCommandInfo (object commandId, object initialTarget)
 		{
@@ -697,16 +733,16 @@ namespace MonoDevelop.Components.Commands
 			
 			string accel = cmd.AccelKey;
 			if (accel == null)
-				return DispatchCommand (commandId, dataItem, initialTarget);
+				return DispatchCommand (commandId, dataItem, initialTarget, CommandSource.Keybinding);
 			
 			List<Command> list = bindings.Commands (accel);
 			if (list == null || list.Count == 1)
 				// The command is not overloaded, so it can be handled normally.
-				return DispatchCommand (commandId, dataItem, initialTarget);
+				return DispatchCommand (commandId, dataItem, initialTarget, CommandSource.Keybinding);
 			
 			// Get the accelerator used to fire the command and make sure it has not changed.
 			CommandInfo accelInfo = GetCommandInfo (commandId, initialTarget);
-			bool res = DispatchCommand (commandId, accelInfo.DataItem, initialTarget);
+			bool res = DispatchCommand (commandId, accelInfo.DataItem, initialTarget, CommandSource.Keybinding);
 
 			// If the accelerator has changed, we can't handle overloading.
 			if (res || accel != accelInfo.AccelKey)
@@ -723,7 +759,7 @@ namespace MonoDevelop.Components.Commands
 				if (cinfo.AccelKey != accel) // Key changed by a handler, just ignore the command.
 					continue;
 				
-				if (DispatchCommand (list[i].Id, cinfo.DataItem, initialTarget))
+				if (DispatchCommand (list[i].Id, cinfo.DataItem, initialTarget, CommandSource.Keybinding))
 					return true;
 			}
 			
@@ -1064,7 +1100,7 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
-		internal static object ToCommandId (object ob)
+		public static object ToCommandId (object ob)
 		{
 			// Include the type name when converting enum members to ids.
 			if (ob == null)
@@ -1444,5 +1480,31 @@ namespace MonoDevelop.Components.Commands
 	}
 
 	delegate void HandlerCallback ();
+		
+	public class CommandActivationEventArgs : EventArgs
+	{
+		public CommandActivationEventArgs (object commandId, CommandInfo commandInfo, object target, CommandSource source)
+		{
+			this.CommandId = commandId;
+			this.CommandInfo = commandInfo;
+			this.Target = target;
+			this.Source = source;
+		}			
+		
+		public object CommandId  { get; private set; }
+		public CommandInfo CommandInfo  { get; private set; }
+		public object Target  { get; private set; }
+		public CommandSource Source { get; private set; }
+	}
+	
+	public enum CommandSource
+	{
+		MainMenu,
+		ContextMenu,
+		MainToolbar,
+		Keybinding,
+		Unknown,
+		MacroPlayback
+	}
 }
 
