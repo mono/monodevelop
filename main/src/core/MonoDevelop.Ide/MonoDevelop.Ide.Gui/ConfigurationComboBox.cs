@@ -72,18 +72,22 @@ namespace MonoDevelop.Ide.Gui
 			get { return combo; }
 		}
 		
+		Pango.FontDescription fd;
+		
 		public override void SetToolbarStyle (Gtk.Toolbar toolbar)
 		{
-/*			if (Style != null) {
-				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
-					Pango.FontDescription fd = Style.FontDescription.Copy ();
-					fd.Size = (int) (fd.Size * Pango.Scale.Small);
-					ctx.FontDesc = fd;
-				} else {
-					ctx.FontDesc = Style.FontDescription;
+			if (Style != null) {
+				if (fd != null) {
+					fd.Dispose ();
+					fd = null;
 				}
+				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
+					fd = Style.FontDescription.Copy ();
+					fd.Size = (int) (fd.Size * Pango.Scale.Small);
+				}
+				combo.ModifyLabelFont (fd);
 			}
-*/		}
+		}
 		
 		void Reset ()
 		{
@@ -261,6 +265,11 @@ namespace MonoDevelop.Ide.Gui
 			hbox.PackEnd (new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.None), false, false, 1);
 			hbox.PackEnd (new Gtk.VSeparator (), false, false, 1);
 			Child = hbox;
+		}
+		
+		public void ModifyLabelFont (Pango.FontDescription font)
+		{
+			label.ModifyFont (font);
 		}
 		
 		public string ActiveText {

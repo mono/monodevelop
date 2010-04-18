@@ -1,3 +1,8 @@
+2010-04-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/ConfigurationComboBox.cs: Fix font size
+	  with small toolbar.
+
 2010-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: Give priority
