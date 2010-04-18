@@ -256,12 +256,8 @@ namespace MonoDevelop.Components.Docking
 			HslColor gcol = frame.Style.Background (Gtk.StateType.Normal);
 			
 			if (pointerHover)
-				gcol.L *= 1.1;
-			else
-				gcol.L *= 1;
-			
-			if (gcol.L > 1)
-				gcol.L = 1;
+				gcol.L *= 1.05;
+			gcol.L = Math.Min (1, gcol.L);
 				
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (a.Event.Window)) {
 				cr.NewPath ();
@@ -271,16 +267,10 @@ namespace MonoDevelop.Components.Docking
 				cr.RelLineTo (-rect.Width, 0);
 				cr.RelLineTo (0, -rect.Height);
 				cr.ClosePath ();
-				Cairo.Gradient pat = new Cairo.LinearGradient (0, 0, rect.Width, rect.Height);
-				Cairo.Color color1 = gcol;
-				pat.AddColorStop (0, color1);
-				color1.A = 0.3;
-				pat.AddColorStop (1, color1);
-				cr.Pattern = pat;
+				cr.Pattern = new Cairo.SolidPattern (gcol);
 				cr.FillPreserve ();
 			}
 			
-//			header.GdkWindow.DrawRectangle (gc, true, rect);
 			header.GdkWindow.DrawRectangle (frame.Style.DarkGC (Gtk.StateType.Normal), false, rect);
 			
 			foreach (Widget child in header.Children)

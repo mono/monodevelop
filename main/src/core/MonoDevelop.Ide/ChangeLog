@@ -1,5 +1,11 @@
 2010-04-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components.Docking/DockItemContainer.cs: Remove
+	  the horizontal gradient on the docked pad header, as it
+	  clashes with the vertical gradient on the pad toolbars.
+
+2010-04-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs:
 	* MonoDevelop.Components.Commands/CommandMenuItem.cs:
 	* MonoDevelop.Components.Commands/CommandToolButton.cs:
