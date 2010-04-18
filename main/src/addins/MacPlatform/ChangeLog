@@ -1,3 +1,15 @@
+2010-04-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Menus/OSXMenu.cs: Pass source type to command dispatch. Use
+	  command dispatch event to flash menubar when commands are
+	  triggered from a keybinding.
+
+	* MacPlatform.cs: Convert enum command IDs to strings in a
+	  compatible way so they can be matched against the values we
+	  get from the command service.
+
+	* Framework/HIToolbox.cs: Add P/Invoke sigs.
+
 2010-03-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs:

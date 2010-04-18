@@ -137,10 +137,10 @@ namespace MonoDevelop.Platform
 		}
 		
 		HashSet<object> ignoreCommands = new HashSet<object> () {
-			HelpCommands.About,
-			EditCommands.DefaultPolicies,
-			EditCommands.MonodevelopPreferences,
-			FileCommands.Exit,
+			CommandManager.ToCommandId (HelpCommands.About),
+			CommandManager.ToCommandId (EditCommands.DefaultPolicies),
+			CommandManager.ToCommandId (EditCommands.MonodevelopPreferences),
+			CommandManager.ToCommandId (FileCommands.Exit),
 		};
 		
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath)
@@ -171,28 +171,32 @@ namespace MonoDevelop.Platform
 			
 			OSXIntegration.OSXMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
 			{
-				{ EditCommands.Copy, CarbonCommandID.Copy },
-				{ EditCommands.Cut, CarbonCommandID.Cut },
+				{ CommandManager.ToCommandId (EditCommands.Copy), CarbonCommandID.Copy },
+				{ CommandManager.ToCommandId (EditCommands.Cut), CarbonCommandID.Cut },
 				//FIXME: for some reason mapping this causes two menu items to be created
-		//		{ EditCommands.MonodevelopPreferences, CarbonCommandID.Preferences }, 
-				{ EditCommands.Redo, CarbonCommandID.Redo },
-				{ EditCommands.Undo, CarbonCommandID.Undo },
-				{ EditCommands.SelectAll, CarbonCommandID.SelectAll },
-				{ FileCommands.NewFile, CarbonCommandID.New },
-				{ FileCommands.OpenFile, CarbonCommandID.Open },
-				{ FileCommands.Save, CarbonCommandID.Save },
-				{ FileCommands.SaveAs, CarbonCommandID.SaveAs },
-				{ FileCommands.CloseFile, CarbonCommandID.Close },
-				{ FileCommands.Exit, CarbonCommandID.Quit },
-				{ FileCommands.ReloadFile, CarbonCommandID.Revert },
-				{ HelpCommands.About, CarbonCommandID.About },
-				{ HelpCommands.Help, CarbonCommandID.AppHelp },
+				// { EditCommands.MonodevelopPreferences, CarbonCommandID.Preferences }, 
+				{ CommandManager.ToCommandId (EditCommands.Redo), CarbonCommandID.Redo },
+				{ CommandManager.ToCommandId (EditCommands.Undo), CarbonCommandID.Undo },
+				{ CommandManager.ToCommandId (EditCommands.SelectAll), CarbonCommandID.SelectAll },
+				{ CommandManager.ToCommandId (FileCommands.NewFile), CarbonCommandID.New },
+				{ CommandManager.ToCommandId (FileCommands.OpenFile), CarbonCommandID.Open },
+				{ CommandManager.ToCommandId (FileCommands.Save), CarbonCommandID.Save },
+				{ CommandManager.ToCommandId (FileCommands.SaveAs), CarbonCommandID.SaveAs },
+				{ CommandManager.ToCommandId (FileCommands.CloseFile), CarbonCommandID.Close },
+				{ CommandManager.ToCommandId (FileCommands.Exit), CarbonCommandID.Quit },
+				{ CommandManager.ToCommandId (FileCommands.ReloadFile), CarbonCommandID.Revert },
+				{ CommandManager.ToCommandId (HelpCommands.About), CarbonCommandID.About },
+				{ CommandManager.ToCommandId (HelpCommands.Help), CarbonCommandID.AppHelp },
 			});
 			
 			initedApp = true;
-			OSXIntegration.OSXMenu.SetAppQuitCommand (FileCommands.Exit);
-			OSXIntegration.OSXMenu.AddAppMenuItems (commandManager, HelpCommands.About, Command.Separator,
-			                                        EditCommands.DefaultPolicies, EditCommands.MonodevelopPreferences);
+			OSXIntegration.OSXMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
+			OSXIntegration.OSXMenu.AddAppMenuItems (
+				commandManager,
+			    CommandManager.ToCommandId (HelpCommands.About),
+				CommandManager.ToCommandId (Command.Separator),
+				CommandManager.ToCommandId (EditCommands.DefaultPolicies),
+				CommandManager.ToCommandId (EditCommands.MonodevelopPreferences));
 			
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 		}

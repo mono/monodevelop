@@ -55,6 +55,7 @@ namespace OSXIntegration
 		static HashSet<IntPtr> mainMenus = new HashSet<IntPtr> ();
 		static Dictionary<uint,object> commands = new Dictionary<uint,object> ();
 		static Dictionary<object,CarbonCommandID> cmdIdMap = new Dictionary<object, CarbonCommandID> ();
+		static Dictionary<object,uint> menuIdMap = new Dictionary<object, uint> ();
 		
 		static List<object> objectsToDestroyOnMenuClose = new List<object> ();
 		static List<string> linkCommands = new List<string> ();
@@ -97,7 +98,11 @@ namespace OSXIntegration
 		{
 			if (manager == null)
 				throw new ArgumentException ("manager");
+			if (OSXMenu.manager != null) {
+				OSXMenu.manager.CommandActivating -= OnCommandActivating;
+			}
 			OSXMenu.manager = manager;
+			OSXMenu.manager.CommandActivating += OnCommandActivating;
 			
 			if (rootMenu == IntPtr.Zero) {
 				rootMenu = HIToolbox.CreateMenu (idSeq++, GetName (entrySet), 0);
@@ -106,6 +111,24 @@ namespace OSXIntegration
 			} else {
 				Destroy (false);
 				CreateChildren (rootMenu, entrySet, ignoreCommands);
+			}
+		}
+
+		static void OnCommandActivating (object sender, CommandActivationEventArgs args)
+		{
+			uint menuId;
+			Console.WriteLine (args.Source);
+			if (args.Source == CommandSource.Keybinding && menuIdMap.TryGetValue (args.CommandId, out menuId)) {
+				//FIXME: for some reason we have to flash again after a delay to toggle the previous flash off?
+				//some flashes can be unreliable, e.g. minimize, and modal dialogs don't seem to run timeouts, so the flash comes late
+				GLib.Timeout.Add (50, delegate {
+					HIToolbox.FlashMenuBar (menuId);
+					return false;
+				});
+				GLib.Timeout.Add (250, delegate {
+					HIToolbox.FlashMenuBar (menuId);
+					return false;
+				});
 			}
 		}
 		
@@ -120,6 +143,7 @@ namespace OSXIntegration
 
 		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
 		{
+			var menuId = HIToolbox.GetMenuID (parentMenu);
 			foreach (CommandEntry entry in entrySet){
 				CommandEntrySet ces = entry as CommandEntrySet;
 
@@ -129,7 +153,7 @@ namespace OSXIntegration
 					if (ignoreCommands.Contains (entry.CommandId))
 						continue;
 
-					if (entry.CommandId == Command.Separator){
+					if (entry.CommandId == Command.Separator) {
 						HIToolbox.AppendMenuSeparator (parentMenu);
 						continue;
 					}
@@ -154,6 +178,8 @@ namespace OSXIntegration
 							"Mac main menu does not support custom command widgets for command '{0}'", entry.CommandId);
 						continue;
 					}
+					
+					menuIdMap[entry.CommandId] = menuId;
 					
 					ActionCommand acmd = cmd as ActionCommand;
 					if (acmd == null) {
@@ -412,8 +438,9 @@ namespace OSXIntegration
 			
 			HIMenuItem mnu = HIToolbox.GetMenuItem ((uint)CarbonCommandID.Hide);
 			appMenu = mnu.MenuRef;
+			var appMenuId = HIToolbox.GetMenuID (appMenu);
 			for (int i = cmdIds.Length - 1; i >= 0; i--) {
-				object cmdId = cmdIds[i];
+				var cmdId = cmdIds[i];
 				if (cmdId == Command.Separator) {
 					HIToolbox.InsertMenuSeparator (mnu.MenuRef, 0);
 					continue;
@@ -428,6 +455,7 @@ namespace OSXIntegration
 				uint macCmdId = GetNewMenuItemId (cmd);
 				ushort pos = HIToolbox.InsertMenuItem (mnu.MenuRef, (cmd.Text ?? "").Replace ("_", ""), 0, 0, macCmdId);
 				SetMenuAccelerator (new HIMenuItem (mnu.MenuRef, pos), cmd.AccelKey);
+				menuIdMap[cmdId] = appMenuId;
 			}
 		}
 		
@@ -469,6 +497,7 @@ namespace OSXIntegration
 						continue;
 					
 					CommandInfo cinfo = manager.GetCommandInfo (cmdID, null);
+					menuIdMap[cmdID] = HIToolbox.GetMenuID (menuRef);
 					UpdateMenuItem (menuRef, menuRef, ref i, ref count, macCmdID, cinfo);
 				}
 			} catch (Exception ex) {
@@ -598,9 +627,9 @@ namespace OSXIntegration
 					if (refCon > 0) {
 						object data = objectsToDestroyOnMenuClose[(int)refCon - 1];
 						//need to return before we execute the command, so that the menu unhighlights
-						Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID, data); });
+						Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID, data, CommandSource.MainMenu); });
 					} else {
-						Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID); });
+						Gtk.Application.Invoke (delegate { manager.DispatchCommand (cmdID, CommandSource.MainMenu); });
 					}
 					DestroyOldMenuObjects ();
 					return CarbonEventHandlerStatus.Handled;

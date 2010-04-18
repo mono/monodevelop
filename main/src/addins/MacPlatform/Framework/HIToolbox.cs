@@ -53,6 +53,12 @@ namespace OSXIntegration.Framework
 		internal static extern void DeleteMenu (IntPtr menuRef);
 
 		[DllImport (hiToolboxLib)]
+		internal static extern void FlashMenuBar (uint menuID);
+		
+		[DllImport (hiToolboxLib)]
+		internal static extern uint GetMenuID (IntPtr menuRef);
+		
+		[DllImport (hiToolboxLib)]
 		internal static extern void ClearMenuBar ();
 		
 		[DllImport (hiToolboxLib)]
