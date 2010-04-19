@@ -1,3 +1,8 @@
+2010-04-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Fixed unit
+	  tests.
+
 2010-04-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Gui/CompletionListWindowTests.cs: Added

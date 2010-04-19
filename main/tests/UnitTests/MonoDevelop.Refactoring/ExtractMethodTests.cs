@@ -106,7 +106,7 @@ namespace MonoDevelop.Refactoring.Tests
 			NRefactoryResolver resolver = new NRefactoryResolver (dom, 
 			                                                      doc.ParsedDocument.CompilationUnit, 
 			                                                      MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (sev), 
-			                                                      "a.cs");
+			                                                      file);
 			
 			ExpressionResult expressionResult;
 			if (selectionStart >= 0) {
