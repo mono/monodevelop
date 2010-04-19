@@ -117,7 +117,6 @@ namespace OSXIntegration
 		static void OnCommandActivating (object sender, CommandActivationEventArgs args)
 		{
 			uint menuId;
-			Console.WriteLine (args.Source);
 			if (args.Source == CommandSource.Keybinding && menuIdMap.TryGetValue (args.CommandId, out menuId)) {
 				//FIXME: for some reason we have to flash again after a delay to toggle the previous flash off?
 				//some flashes can be unreliable, e.g. minimize, and modal dialogs don't seem to run timeouts, so the flash comes late
