@@ -108,8 +108,8 @@ namespace MonoDevelop.Components
 		{
 			box = new HBox ();
 			entry = new FramelessEntry (this);
-			filter_button = new HoverImageButton (IconSize.Menu, new string[] { "edit-find", Stock.Find });
-			clear_button = new HoverImageButton (IconSize.Menu, new string[] { "edit-clear", Stock.Clear });
+			filter_button = new HoverImageButton (IconSize.Menu, new string[] { Stock.Find });
+			clear_button = new HoverImageButton (IconSize.Menu, new string[] { Stock.Clear });
 			
 			box.PackStart (filter_button, false, false, 0);
 			box.PackStart (entry, true, true, 0);

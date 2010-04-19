@@ -1,3 +1,8 @@
+2010-04-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/SearchEntry.cs: Fixed 'Bug 596635 -
+	  Missing icon error on OS X when showing search'.
+
 2010-04-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Docking/DockItemContainer.cs: Remove
