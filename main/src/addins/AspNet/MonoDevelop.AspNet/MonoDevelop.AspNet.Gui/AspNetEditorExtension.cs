@@ -192,9 +192,7 @@ namespace MonoDevelop.AspNet.Gui
 				viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
 				
 				viewContent.Text = localDocumentInfo.LocalDocument;
-				
-				viewContent.CursorPosition = viewContent.Text.Length;
-				
+				viewContent.GetTextEditorData ().Caret.Offset = localDocumentInfo.CaretPosition;
 				MonoDevelop.Ide.Gui.HiddenWorkbenchWindow workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 				workbenchWindow.ViewContent = viewContent;
 				hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);

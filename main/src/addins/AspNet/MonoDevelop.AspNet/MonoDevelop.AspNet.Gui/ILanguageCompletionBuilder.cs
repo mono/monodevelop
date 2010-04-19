@@ -55,6 +55,11 @@ namespace MonoDevelop.AspNet.Gui
 			get;
 			set;
 		}
+		
+		public int CaretPosition {
+			get;
+			set;
+		}
 	}
 	
 	public class DocumentInfo {
