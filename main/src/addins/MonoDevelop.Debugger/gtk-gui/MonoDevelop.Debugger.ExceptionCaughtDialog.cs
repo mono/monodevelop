@@ -64,6 +64,7 @@ namespace MonoDevelop.Debugger
 			this.valueView.AllowAdding = false;
 			this.valueView.AllowEditing = true;
 			this.valueView.AllowPinning = false;
+			this.valueView.AllowExpanding = false;
 			this.valueView.PinnedWatchLine = 0;
 			this.valueView.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueView);

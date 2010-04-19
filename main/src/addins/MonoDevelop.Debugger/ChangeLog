@@ -1,3 +1,25 @@
+2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger.addin.xml:
+	* MonoDevelop.Debugger.Visualizer:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs:
+	* MonoDevelop.Debugger.Visualizer/TextVisualizer.cs:
+	* MonoDevelop.Debugger.Visualizer/PixbufVisualizer.cs:
+	* MonoDevelop.Debugger.Visualizer/IValueVisualizer.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs:
+	* MonoDevelop.Debugger.Visualizer/ValueVisualizerDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:
+	* gtk-gui/MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs:
+	  Add basic support for custom visualizers.
+
+	* MonoDevelop.Debugger/PinnedWatch.cs: Set the correct
+	  expression name.
+
 2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/BreakpointPropertiesDialog.cs: Added

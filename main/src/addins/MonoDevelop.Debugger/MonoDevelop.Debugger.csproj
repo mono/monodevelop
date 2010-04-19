@@ -124,6 +124,11 @@
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineExtensionNode.cs" />
     <Compile Include="MonoDevelop.Debugger\ExceptionCaughtDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionCaughtDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizerDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\TextVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\PixbufVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\IValueVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -200,4 +205,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Debugger.Visualizer\" />
+  </ItemGroup>
 </Project>

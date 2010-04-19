@@ -31,6 +31,11 @@ FILES =  \
 	gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExceptionsDialog.cs \
 	gtk-gui/MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs \
+	gtk-gui/MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs \
+	MonoDevelop.Debugger.Visualizer/IValueVisualizer.cs \
+	MonoDevelop.Debugger.Visualizer/PixbufVisualizer.cs \
+	MonoDevelop.Debugger.Visualizer/TextVisualizer.cs \
+	MonoDevelop.Debugger.Visualizer/ValueVisualizerDialog.cs \
 	MonoDevelop.Debugger/AddTracePointDialog.cs \
 	MonoDevelop.Debugger/AttachToProcessDialog.cs \
 	MonoDevelop.Debugger/BreakpointPad.cs \

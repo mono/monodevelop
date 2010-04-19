@@ -72,6 +72,7 @@ namespace MonoDevelop.Debugger
 			if (DebuggingService.CurrentFrame != null) {
 				evaluated = true;
 				value = DebuggingService.CurrentFrame.GetExpressionValue (expression, true);
+				value.Name = expression;
 				if (notify)
 					NotifyChanged ();
 			}
@@ -126,6 +127,7 @@ namespace MonoDevelop.Debugger
 		internal void LoadValue (ObjectValue val)
 		{
 			this.value = val;
+			value.Name = expression;
 			evaluated = true;
 		}
 		
@@ -138,6 +140,7 @@ namespace MonoDevelop.Debugger
 			set {
 				evaluated = true;
 				this.value = value;
+				value.Name = expression;
 				NotifyChanged (); 
 			}
 		}

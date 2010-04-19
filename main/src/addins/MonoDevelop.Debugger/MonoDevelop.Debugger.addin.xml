@@ -18,6 +18,11 @@
 		<ExtensionNode name="DebuggerEngine" type="MonoDevelop.Debugger.DebuggerEngineExtensionNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path="/MonoDevelop/Debugging/ValueVisualizers">
+		<Description>Value visualizers. Specified classes must implement MonoDevelop.Debugger.IValueVisualizer</Description>
+		<ExtensionNode name="Type"/>
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
@@ -31,6 +36,11 @@
 	
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
 		<Layout id="Debug" _name="Debug" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Debugging/ValueVisualizers">
+		<Type class="MonoDevelop.Debugger.Visualizer.TextVisualizer" />
+		<Type class="MonoDevelop.Debugger.Visualizer.PixbufVisualizer" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

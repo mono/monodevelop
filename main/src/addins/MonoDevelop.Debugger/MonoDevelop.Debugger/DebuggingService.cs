@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Debugger.Viewers;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -160,6 +161,32 @@ namespace MonoDevelop.Debugger
 				string s = string.Join (",", value);
 				PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EnginePriority", s);
 				engines = null;
+			}
+		}
+		
+		internal static IEnumerable<IValueVisualizer> GetValueVisualizers (ObjectValue val)
+		{
+			foreach (IValueVisualizer v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false))
+				if (v.CanVisualize (val))
+					yield return v;
+		}
+		
+		internal static bool HasValueVisualizers (ObjectValue val)
+		{
+			foreach (IValueVisualizer v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false))
+				if (v.CanVisualize (val))
+					return true;
+			return false;
+		}
+		
+		public static void ShowValueVisualizer (ObjectValue val)
+		{
+			ValueVisualizerDialog dlg = new ValueVisualizerDialog ();
+			try {
+				dlg.Show (val);
+				dlg.Run ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 		
@@ -522,7 +549,8 @@ namespace MonoDevelop.Debugger
 		
 		static void NotifyCurrentFrameChanged ()
 		{
-			pinnedWatches.InvalidateAll ();
+			if (currentBacktrace != null)
+				pinnedWatches.InvalidateAll ();
 			if (CurrentFrameChanged != null)
 				CurrentFrameChanged (null, EventArgs.Empty);
 		}

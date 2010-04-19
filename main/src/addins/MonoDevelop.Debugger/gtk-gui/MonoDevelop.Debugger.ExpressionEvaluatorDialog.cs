@@ -77,6 +77,7 @@ namespace MonoDevelop.Debugger
 			this.valueTree.AllowAdding = false;
 			this.valueTree.AllowEditing = false;
 			this.valueTree.AllowPinning = false;
+			this.valueTree.AllowExpanding = false;
 			this.valueTree.PinnedWatchLine = 0;
 			this.valueTree.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueTree);
