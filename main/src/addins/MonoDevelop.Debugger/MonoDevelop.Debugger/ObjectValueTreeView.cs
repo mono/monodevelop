@@ -92,11 +92,10 @@ namespace MonoDevelop.Debugger
 		const int IconCol = 7;
 		const int NameColorCol = 8;
 		const int ValueColorCol = 9;
-		const int ValueButtonIconCol = 10;
-		const int ValueButtonVisibleCol = 11;
-		const int PinIconCol = 12;
-		const int LiveUpdateIconCol = 13;
-		const int ViewerButtonVisibleCol = 14;
+		const int ValueButtonVisibleCol = 10;
+		const int PinIconCol = 11;
+		const int LiveUpdateIconCol = 12;
+		const int ViewerButtonVisibleCol = 13;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -120,7 +119,7 @@ namespace MonoDevelop.Debugger
 		
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
 			Model = store;
 			RulesHint = true;
 			Selection.Mode = SelectionMode.Multiple;
@@ -153,17 +152,16 @@ namespace MonoDevelop.Debugger
 			crpViewer.IconId = Gtk.Stock.ZoomIn;
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleCol);
+			crpButton = new CellRendererIcon ();
+			crpButton.StockSize = (uint) Gtk.IconSize.Menu;
+			crpButton.IconId = Gtk.Stock.Refresh;
+			valueCol.PackStart (crpButton, false);
+			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleCol);
 			crtValue = new CellRendererText ();
-//			crtValue.Ellipsize = Pango.EllipsizeMode.End;
 			valueCol.PackStart (crtValue, true);
 			valueCol.AddAttribute (crtValue, "text", ValueCol);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableCol);
 			valueCol.AddAttribute (crtValue, "foreground", ValueColorCol);
-			crpButton = new CellRendererIcon ();
-			crpButton.StockSize = (uint) Gtk.IconSize.Menu;
-			valueCol.PackStart (crpButton, false);
-			valueCol.AddAttribute (crpButton, "stock_id", ValueButtonIconCol);
-			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleCol);
 			valueCol.Resizable = true;
 			valueCol.Expand = true;
 			valueCol.Sizing = TreeViewColumnSizing.Fixed;
@@ -281,12 +279,15 @@ namespace MonoDevelop.Debugger
 					expCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 300;
+					crpButton.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.Refresh).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
+					crpViewer.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.ZoomIn).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
 					ColumnsAutosize ();
 				} else {
 					newFont = this.Style.FontDescription;
 					expCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.MaxWidth = int.MaxValue;
+					ColumnsAutosize ();
 				}
 				typeCol.Visible = !compact;
 				crtExp.FontDesc = newFont;
@@ -598,7 +599,6 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconCol, icon);
 			store.SetValue (it, NameColorCol, nameColor);
 			store.SetValue (it, ValueColorCol, valueColor);
-			store.SetValue (it, ValueButtonIconCol, valueButton);
 			store.SetValue (it, ValueButtonVisibleCol, valueButton != null);
 			store.SetValue (it, ViewerButtonVisibleCol, showViewerButton);
 			
@@ -646,6 +646,7 @@ namespace MonoDevelop.Debugger
 		
 		void UpdateColumnSizes ()
 		{
+			ColumnsAutosize ();
 			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, int.MaxValue, 1);
 			int x, y, w, h;
 			valueCol.CellGetSize (rect, out x, out y, out w, out h);

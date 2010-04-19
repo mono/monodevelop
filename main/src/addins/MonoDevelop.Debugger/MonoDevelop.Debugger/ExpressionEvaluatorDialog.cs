@@ -35,6 +35,7 @@ namespace MonoDevelop.Debugger
 		{
 			this.Build();
 			valueTree.Frame = DebuggingService.CurrentFrame;
+			valueTree.AllowExpanding = true;
 		}
 
 		public string Expression {

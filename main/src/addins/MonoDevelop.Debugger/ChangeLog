@@ -1,5 +1,14 @@
 2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Reduce size of
+	  refresh and visualizer buttons. Moved refresh button to the
+	  front of the column.
+
+	* MonoDevelop.Debugger/ExpressionEvaluatorDialog.cs: Allow
+	  expanding.
+
+2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.Debugger.csproj:
