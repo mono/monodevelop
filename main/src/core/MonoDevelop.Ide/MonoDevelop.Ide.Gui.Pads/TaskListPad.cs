@@ -105,8 +105,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			switcherCombo.PackStart (cr, true);
 			switcherCombo.AddAttribute (cr, "text", 0);
 			
-			switcherCombo.Changed += new EventHandler (OnContentSwitched);
-			
 			sw = new Gtk.ScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			
@@ -135,6 +133,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar = window.GetToolbar (PositionType.Top);
 			toolbar.Add (switcherCombo);
 			toolbar.ShowAll ();
+			switcherCombo.Changed += new EventHandler (OnContentSwitched);
+			OnContentSwitched (null, null);
 			
 			separator = new VSeparator ();
 		}

@@ -45,11 +45,13 @@ namespace MonoDevelop.Ide
 		Label cursorLabel;
 		
 		HBox statusBox;
+		HBox messageBox;
 		Image currentStatusImage;
 		EventBox eventBox;
 		List<StatusBarContextImpl> contexts = new List<StatusBarContextImpl> ();
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
+		Pad sourcePad;
 		
 		public StatusBar MainContext {
 			get { return mainContext; }
@@ -89,8 +91,13 @@ namespace MonoDevelop.Ide
 			statusLabel.HeightRequest = h;
 			statusLabel.SetPadding (0, 0);
 			
-			statusBox.PackStart (progressBar, false, false, 0);
-			statusBox.PackStart (statusLabel, true, true, 0);
+			EventBox eventMessageBox = new EventBox ();
+			messageBox = new HBox ();
+			messageBox.PackStart (progressBar, false, false, 0);
+			messageBox.PackStart (statusLabel, true, true, 0);
+			eventMessageBox.Add (messageBox);
+			statusBox.PackStart (eventMessageBox, true, true, 0);
+			eventMessageBox.ButtonPressEvent += HandleEventMessageBoxButtonPressEvent;
 			
 			textStatusBarPanel.BorderWidth = 0;
 			textStatusBarPanel.ShadowType = ShadowType.None;
@@ -145,6 +152,12 @@ namespace MonoDevelop.Ide
 					completionStatus = null;
 				}
 			};
+		}
+
+		void HandleEventMessageBoxButtonPressEvent (object o, ButtonPressEventArgs args)
+		{
+			if (sourcePad != null)
+				sourcePad.BringToFront (true);
 		}
 		
 		internal bool IsCurrentContext (StatusBarContextImpl ctx)
@@ -242,16 +255,17 @@ namespace MonoDevelop.Ide
 		{
 			if (message == lastText)
 				return;
+			sourcePad = null;
 			lastText = message;
 			DispatchService.AssertGuiThread ();
 			if (currentStatusImage != image) {
 				if (currentStatusImage != null) 
-					statusBox.Remove (currentStatusImage);
+					messageBox.Remove (currentStatusImage);
 				currentStatusImage = image;
 				if (image != null) {
 					image.SetPadding (0, 0);
-					statusBox.PackStart (image, false, false, 3);
-					statusBox.ReorderChild (image, 1);
+					messageBox.PackStart (image, false, false, 3);
+					messageBox.ReorderChild (image, 1);
 					image.Show ();
 				}
 			}
@@ -262,6 +276,11 @@ namespace MonoDevelop.Ide
 			} else {
 				statusLabel.Text = txt;
 			}
+		}
+		
+		public void SetMessageSourcePad (Pad pad)
+		{
+			sourcePad = pad;
 		}
 		
 		public StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
@@ -413,7 +432,7 @@ namespace MonoDevelop.Ide
 	/// <summary>
 	/// The MonoDevelop status bar.
 	/// </summary>
-	public interface StatusBar: StatusBarContext
+	public interface StatusBar: StatusBarContextBase
 	{
 		/// <summary>
 		/// Show caret state information
@@ -440,9 +459,11 @@ namespace MonoDevelop.Ide
 		
 		// Clears the status bar information
 		void ShowReady ();
+		
+		void SetMessageSourcePad (Pad pad);
 	}
 	
-	public interface StatusBarContext: IDisposable
+	public interface StatusBarContextBase: IDisposable
 	{
 		/// <summary>
 		/// Shows a message with an error icon
@@ -495,6 +516,11 @@ namespace MonoDevelop.Ide
 		void Pulse ();
 	}
 	
+	public interface StatusBarContext: StatusBarContextBase
+	{
+		Pad StatusSourcePad { get; set; }
+	}
+	
 	public interface StatusBarIcon : IDisposable
 	{
 		/// <summary>
@@ -525,6 +551,7 @@ namespace MonoDevelop.Ide
 		bool isMarkup;
 		double progressFraction;
 		bool showProgress;
+		Pad sourcePad;
 		protected MonoDevelopStatusBar statusBar;
 		
 		internal bool StatusChanged { get; set; }
@@ -581,8 +608,11 @@ namespace MonoDevelop.Ide
 			this.isMarkup = isMarkup;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this))
+			if (statusBar.IsCurrentContext (this)) {
+				OnMessageChanged ();
 				statusBar.ShowMessage (image, message, isMarkup);
+				statusBar.SetMessageSourcePad (sourcePad);
+			}
 		}
 		
 		public void BeginProgress (string name)
@@ -594,8 +624,11 @@ namespace MonoDevelop.Ide
 			showProgress = true;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this))
+			if (statusBar.IsCurrentContext (this)) {
+				OnMessageChanged ();
 				statusBar.BeginProgress (name);
+				statusBar.SetMessageSourcePad (sourcePad);
+			}
 		}
 		
 		public void BeginProgress (Image image, string name)
@@ -607,8 +640,11 @@ namespace MonoDevelop.Ide
 			showProgress = true;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this))
+			if (statusBar.IsCurrentContext (this)) {
+				OnMessageChanged ();
 				statusBar.BeginProgress (name);
+				statusBar.SetMessageSourcePad (sourcePad);
+			}
 		}
 		
 		public void SetProgressFraction (double work)
@@ -645,10 +681,25 @@ namespace MonoDevelop.Ide
 			if (showProgress) {
 				statusBar.BeginProgress (image, message);
 				statusBar.SetProgressFraction (progressFraction);
+				statusBar.SetMessageSourcePad (sourcePad);
 			} else {
 				statusBar.EndProgress ();
 				statusBar.ShowMessage (image, message, isMarkup);
+				statusBar.SetMessageSourcePad (sourcePad);
 			}
+		}
+		
+		public Pad StatusSourcePad {
+			get {
+				return sourcePad;
+			}
+			set {
+				sourcePad = value;
+			}
+		}
+		
+		protected virtual void OnMessageChanged ()
+		{
 		}
 	}
 	
@@ -682,6 +733,18 @@ namespace MonoDevelop.Ide
 		public void ShowReady ()
 		{
 			statusBar.ShowReady ();
+		}
+		
+		public void SetMessageSourcePad (Pad pad)
+		{
+			StatusSourcePad = pad;
+			if (statusBar.IsCurrentContext (this))
+				statusBar.SetMessageSourcePad (pad);
+		}
+		
+		protected override void OnMessageChanged ()
+		{
+			StatusSourcePad = null;
 		}
 	}
 }

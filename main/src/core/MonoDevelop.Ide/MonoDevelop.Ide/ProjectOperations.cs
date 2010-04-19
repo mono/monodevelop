@@ -1085,7 +1085,6 @@ namespace MonoDevelop.Ide
 				
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					MonoDevelop.Ide.Gui.Pads.ErrorListPad content = (MonoDevelop.Ide.Gui.Pads.ErrorListPad)errorsPad.Content;
 					switch (IdeApp.Preferences.ShowErrorPadAfterBuild) {
 					case BuildResultStates.Always:
 						if (!errorsPad.Visible)

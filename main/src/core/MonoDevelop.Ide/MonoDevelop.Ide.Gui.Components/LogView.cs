@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
 		}
 		
-		public IProgressMonitor GetProgressMonitor ()
+		public LogViewProgressMonitor GetProgressMonitor ()
 		{
 			return new LogViewProgressMonitor (this);
 		}
@@ -340,7 +340,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 	}
 
-	internal class LogViewProgressMonitor : NullProgressMonitor, IConsole
+	public class LogViewProgressMonitor : NullProgressMonitor, IConsole
 	{
 		LogView outputPad;
 		event EventHandler stopRequested;

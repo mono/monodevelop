@@ -52,6 +52,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Button buttonClear;
 		bool progressStarted;
 		IAsyncOperation asyncOperation;
+		LogViewProgressMonitor monitor;
+		Pad statusSourcePad;
 		
 		string icon;
 		string id;
@@ -107,6 +109,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return this.window; }
 		}
 		
+		public Pad StatusSourcePad {
+			get { return this.statusSourcePad; }
+			set { this.statusSourcePad = value; }
+		}
+		
 		void OnButtonClearClick (object sender, EventArgs e)
 		{
 			logView.Clear ();
@@ -144,8 +151,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			progressStarted = true;
 			
 			logView.Clear ();
-			IProgressMonitor mon = logView.GetProgressMonitor ();
-			asyncOperation = mon.AsyncOperation;
+			monitor = logView.GetProgressMonitor ();
+			asyncOperation = monitor.AsyncOperation;
 			
 			Gtk.Application.Invoke (delegate {
 				window.HasNewData = false;
@@ -154,11 +161,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				buttonStop.Sensitive = true;
 			});
 			
-			mon.AsyncOperation.Completed += delegate {
+			monitor.AsyncOperation.Completed += delegate {
 				EndProgress ();
 			};
 			
-			return mon;
+			return monitor;
 		}
 
 		public void EndProgress ()
@@ -175,6 +182,19 @@ namespace MonoDevelop.Ide.Gui.Pads
 				progressStarted = false;
 				if (window == null)
 					buttonClear.Sensitive = false;
+				
+				if (monitor.Errors.Length > 0) {
+					Gtk.Image img = ImageService.GetImage (Stock.Error, Gtk.IconSize.Menu);
+					IdeApp.Workbench.StatusBar.ShowMessage (img, monitor.Errors [monitor.Errors.Length - 1].Message);
+					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+				} else if (monitor.Messages.Length > 0) {
+					IdeApp.Workbench.StatusBar.ShowMessage (monitor.Messages [monitor.Messages.Length - 1]);
+					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+				} else if (monitor.Warnings.Length > 0) {
+					Gtk.Image img = ImageService.GetImage (Stock.Warning, Gtk.IconSize.Menu);
+					IdeApp.Workbench.StatusBar.ShowMessage (img, monitor.Warnings [monitor.Warnings.Length - 1]);
+					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+				}
 			});
 		}
 	

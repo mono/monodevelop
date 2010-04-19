@@ -563,11 +563,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			DispatchService.BackgroundDispatch (delegate {
 				DateTime timer = DateTime.Now;
 				string errorMessage = null;
-				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), MonoDevelop.Ide.Gui.Stock.FindInFiles, false);
 				
 				try {
 					List<SearchResult> results = new List<SearchResult> ();
-					foreach (SearchResult result in find.FindAll (scope, monitor, pattern, replacePattern, options)) {
+					foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options)) {
 						if (searchMonitor.IsCancelRequested)
 							return;
 						results.Add (result);
@@ -585,19 +584,20 @@ namespace MonoDevelop.Ide.FindInFiles
 				} catch (Exception ex) {
 					errorMessage = ex.Message;
 					LoggingService.LogError ("Error while search", ex);
-				} finally {
-					monitor.Dispose ();
 				}
 				
 				string message;
 				if (errorMessage != null) {
 					message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
-				} else if (monitor.IsCancelRequested) {
+					searchMonitor.ReportError (message, null);
+				} else if (searchMonitor.IsCancelRequested) {
 					message = GettextCatalog.GetString ("Search cancelled.");
+					searchMonitor.ReportWarning (message);
 				} else {
 					string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
 					string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
 					message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
+					searchMonitor.ReportSuccess (message);
 				}
 				searchMonitor.ReportStatus (message);
 				searchMonitor.Log.WriteLine (message);

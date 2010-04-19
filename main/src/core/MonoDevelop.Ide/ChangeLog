@@ -1,3 +1,23 @@
+2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
+	* MonoDevelop.Ide.Gui.Components/LogView.cs:
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs:
+	* MonoDevelop.Ide.Gui/StatusProgressMonitor.cs:
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs: When
+	  clicking over the status bar, activate the pad that
+	  generated the status message being shown. For example, if
+	  the status bar shows "Build: 1 error", show the errors pad
+	  when clicking on that.
+
+	* MonoDevelop.Ide/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	  Fix warning.
+
+	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs: Fix nullref.
+
 2010-04-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide/IdePreferences.cs: Added command to turn off

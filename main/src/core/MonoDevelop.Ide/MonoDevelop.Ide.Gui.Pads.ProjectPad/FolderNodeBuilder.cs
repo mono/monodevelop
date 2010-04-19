@@ -363,7 +363,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			fdiag.TransientFor = IdeApp.Workbench.RootWindow;
 			fdiag.BuildActions = project.GetBuildActions ();	
 			
-			int result;
 			string[] files;
 			string overrideAction = null;
 			

@@ -41,15 +41,18 @@ namespace MonoDevelop.Ide.Gui
 		bool lockGui;
 		string title;
 		StatusBarContext statusBar;
+		Pad statusSourcePad;
 		
-		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui)
+		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad)
 		{
 			this.lockGui = lockGui;
 			this.showErrorDialogs = showErrorDialogs;
 			this.showTaskTitles = showTaskTitles;
 			this.title = title;
+			this.statusSourcePad = statusSourcePad;
 			icon = ImageService.GetImage (iconName, Gtk.IconSize.Menu);
 			statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
+			statusBar.StatusSourcePad = statusSourcePad;
 			statusBar.BeginProgress (icon, title);
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
@@ -104,12 +107,14 @@ namespace MonoDevelop.Ide.Gui
 					resultDialog.Run ();
 					resultDialog.Destroy ();
 				}
+				IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
 				return;
 			}
 			
 			if (SuccessMessages.Count > 0)
 				IdeApp.Workbench.StatusBar.ShowMessage (SuccessMessages [SuccessMessages.Count - 1]);
 			
+			IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
 			base.OnCompleted ();
 		}
 	}

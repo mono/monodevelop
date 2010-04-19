@@ -52,9 +52,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
 		{
-			ErrorListPad errorPad = (ErrorListPad) IdeApp.Workbench.GetPad<ErrorListPad> ().Content;
+			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
+			ErrorListPad errorPad = (ErrorListPad) pad.Content;
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
-			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), Stock.BuildCombine, false));
+			mon.AddSlaveMonitor (GetStatusProgressMonitor (GettextCatalog.GetString ("Building..."), Stock.BuildCombine, false, true, false, pad));
 			return mon;
 		}
 		
@@ -83,12 +84,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs)
 		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, true, false);
+			return new StatusProgressMonitor (title, icon, showErrorDialogs, true, false, null);
 		}
 		
 		public IProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui)
 		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui);
+			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, null);
+		}
+		
+		public IProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui, Pad statusSourcePad)
+		{
+			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, statusSourcePad);
 		}
 		
 		public IProgressMonitor GetBackgroundProgressMonitor (string title, IconId icon)
@@ -149,6 +155,7 @@ namespace MonoDevelop.Ide.Gui
 			else
 				pad = IdeApp.Workbench.AddPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", icon);
 			
+			monitorPad.StatusSourcePad = pad;
 			pad.Sticky = true;
 			outputMonitors.Add (pad);
 			
@@ -196,7 +203,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (pad != null) {
 				if (bringToFront) pad.BringToFront (focusPad);
-				return new SearchProgressMonitor ((SearchResultPad) pad.Content, pad.Title);
+				return new SearchProgressMonitor (pad);
 			}
 			
 			instanceNum++;
@@ -223,8 +230,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (bringToFront)
 				pad.BringToFront (focusPad);
-
-			return new SearchProgressMonitor ((SearchResultPad)pad.Content, pad.Title);
+			
+			return new SearchProgressMonitor (pad);
 		}
 	}
 }
