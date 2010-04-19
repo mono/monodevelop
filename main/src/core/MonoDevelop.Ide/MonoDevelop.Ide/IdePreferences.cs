@@ -160,6 +160,21 @@ namespace MonoDevelop.Ide
 			set { PropertyService.Set ("MonoDevelop.Ide.NewJumpToFirstErrorOrWarning", value); }
 		}
 		
+		public event EventHandler<PropertyChangedEventArgs> AutoHideMessageBubblesChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
+		}
+		
+		public bool DefaultHideMessageBubbles {
+			get { return PropertyService.Get ("MonoDevelop.Ide.DefaultHideMessageBubbles", false); }
+			set { PropertyService.Set ("MonoDevelop.Ide.DefaultHideMessageBubbles", value); }
+		}
+		
+		public event EventHandler<PropertyChangedEventArgs> DefaultHideMessageBubblesChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.DefaultHideMessageBubbles", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.DefaultHideMessageBubbles", value); }
+		}
+		
 		public ShowMessageBubbles ShowMessageBubbles {
 			get { return PropertyService.Get ("MonoDevelop.Ide.NewShowMessageBubbles", ShowMessageBubbles.ForErrorsAndWarnings); }
 			set { PropertyService.Set ("MonoDevelop.Ide.NewShowMessageBubbles", value); }
