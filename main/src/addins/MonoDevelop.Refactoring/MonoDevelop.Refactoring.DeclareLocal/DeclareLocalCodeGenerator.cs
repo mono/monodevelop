@@ -99,11 +99,13 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				Mono.TextEditor.TextEditor editor = MonoDevelop.Refactoring.Rename.RenameRefactoring.GetEditor (options.Document.ActiveView.Control);
 				TextEditorData data = options.GetTextEditorData ();
 				TextLink link = new TextLink ("name");
-				for (int i = selectionStart; i < data.Document.Length - varName.Length; i++) {
-					if (data.Document.GetTextAt (i, varName.Length) == varName && !IsIdentifierPart (data, i - 1) && !IsIdentifierPart (data, i + varName.Length)) {
-						link.AddLink (new Segment (i - selectionStart, varName.Length));
-						if (link.Count == 2)
-							break;
+				if (varName != null) {
+					for (int i = selectionStart; i < data.Document.Length - varName.Length; i++) {
+						if (data.Document.GetTextAt (i, varName.Length) == varName && !IsIdentifierPart (data, i - 1) && !IsIdentifierPart (data, i + varName.Length)) {
+							link.AddLink (new Segment (i - selectionStart, varName.Length));
+							if (link.Count == 2)
+								break;
+						}
 					}
 				}
 				List<TextLink> links = new List<TextLink> ();
@@ -147,11 +149,13 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			LineSegment lineSegment;
 			ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
 			MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor visitor = new MonoDevelop.Refactoring.ExtractMethod.VariableLookupVisitor (resolver, new DomLocation (data.Caret.Line, data.Caret.Column));
-			if (options.ResolveResult == null || options.ResolveResult.CallingMember == null) {
-				LoggingService.LogError ("resolve result == null or calling member == null:" + options.ResolveResult);
+			if (options.ResolveResult == null) {
+				LoggingService.LogError ("resolve result == null:" + options.ResolveResult);
 				return result;
 			}
-			visitor.MemberLocation = new Location (options.ResolveResult.CallingMember.Location.Column, options.ResolveResult.CallingMember.Location.Line);
+			IMember callingMember = options.ResolveResult.CallingMember;
+			if (callingMember != null)
+				visitor.MemberLocation = new Location (callingMember.Location.Column, callingMember.Location.Line);
 			unit.AcceptVisitor (visitor, null);
 			
 			if (data.IsSomethingSelected) {

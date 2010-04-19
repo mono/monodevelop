@@ -87,6 +87,8 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		{
 			ICSharpCode.NRefactory.Ast.INode memberNode = GetMemberBodyNode (options);
 			List<Change> changes = new List<Change> ();
+			if (memberNode == null)
+				return null;
 			try {
 				//				Console.WriteLine ("AcceptVisitor");
 				//				Console.WriteLine ("Start: " + memberNode.StartLocation.ToString () + " - End: " + memberNode.EndLocation.ToString ());
