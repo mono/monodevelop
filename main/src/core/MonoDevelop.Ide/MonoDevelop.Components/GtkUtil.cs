@@ -53,6 +53,10 @@ namespace MonoDevelop.Components
 			tree.ScrollEvent += HandleTreeScrollEvent;
 			tree.Destroyed += delegate {
 				treeData.Remove (tree);
+				if (data.ShowTimer != 0)
+					GLib.Source.Remove (data.ShowTimer);
+				if (data.LeaveTimer != 0)
+					GLib.Source.Remove (data.LeaveTimer);
 			};
 		}
 
@@ -65,9 +69,10 @@ namespace MonoDevelop.Components
 		[GLib.ConnectBeforeAttribute]
 		static void HandleLeaveNotifyEvent(object o, LeaveNotifyEventArgs args)
 		{
-			GLib.Timeout.Add (50, delegate {
-				Gtk.TreeView tree = (Gtk.TreeView) o;
-				TreeViewTooltipsData data = treeData [tree];
+			TreeView tree = (TreeView) o;
+			TreeViewTooltipsData data = treeData [tree];
+			data.LeaveTimer = GLib.Timeout.Add (50, delegate {
+				data.LeaveTimer = 0;
 				if (data != null && data.Tooltip != null && data.Tooltip.MouseIsOver)
 					return false;
 				HideTooltip (tree);
@@ -78,9 +83,9 @@ namespace MonoDevelop.Components
 		internal static void HideTooltip (TreeView tree)
 		{
 			TreeViewTooltipsData data = treeData [tree];
-			if (data.ShowingTooltip) {
-				GLib.Source.Remove (data.Timer);
-				data.ShowingTooltip = false;
+			if (data.ShowTimer != 0) {
+				GLib.Source.Remove (data.ShowTimer);
+				data.ShowTimer = 0;
 				return;
 			}
 			if (data.Tooltip != null) {
@@ -103,9 +108,8 @@ namespace MonoDevelop.Components
 			if (!tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy))
 				return;
 			data.Path = path;
-			data.ShowingTooltip = true;
-			data.Timer = GLib.Timeout.Add (300, delegate {
-				data.ShowingTooltip = false;
+			data.ShowTimer = GLib.Timeout.Add (300, delegate {
+				data.ShowTimer = 0;
 				int ox, oy;
 				tree.BinWindow.GetOrigin (out ox, out oy);
 				Gdk.Rectangle rect = tree.GetCellArea (path, col);
@@ -130,17 +134,17 @@ namespace MonoDevelop.Components
 		static void UnscheduleTooltipShow (object tree)
 		{
 			TreeViewTooltipsData data = treeData [(Gtk.TreeView)tree];
-			if (data.ShowingTooltip) {
-				GLib.Source.Remove (data.Timer);
-				data.ShowingTooltip = false;
+			if (data.ShowTimer != 0) {
+				GLib.Source.Remove (data.ShowTimer);
+				data.ShowTimer = 0;
 			}
 		}
 	}
 
 	class TreeViewTooltipsData
 	{
-		public bool ShowingTooltip;
-		public uint Timer;
+		public uint ShowTimer;
+		public uint LeaveTimer;
 		public TreePath Path;
 		public CellTooltipWindow Tooltip;
 	}
@@ -196,6 +200,8 @@ namespace MonoDevelop.Components
 			col.CellSetCellData (tree.Model, iter, false, false);
 			int x = 1;
 			foreach (CellRenderer cr in col.CellRenderers) {
+				if (!cr.Visible)
+					continue;
 				int sp, wi, he, xo, yo;
 				col.CellGetPosition (cr, out sp, out wi);
 				Gdk.Rectangle colcrect = new Gdk.Rectangle (x, rect.Y, wi, rect.Height - 2);
