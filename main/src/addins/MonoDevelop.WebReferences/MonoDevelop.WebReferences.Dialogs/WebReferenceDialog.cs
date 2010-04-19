@@ -12,6 +12,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.WebBrowser;
 using MonoDevelop.WebReferences;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.WebReferences.Dialogs
 {
@@ -24,6 +25,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		Label docLabel;
+		Project project;
 		
 		#region Properties
 		/// <summary>Gets or Sets whether the current location of the browser is a valid web service or not.</summary>
@@ -143,11 +145,12 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		/// <summary>Initializes a new instance of the AddWebReferenceDialog widget.</summary>
-		public WebReferenceDialog(string basePath)
+		public WebReferenceDialog (Project project)
 		{
 			Build();
-			this.basePath = basePath;
+			this.basePath = Library.GetWebReferencePath (project);
 			this.IsWebService = false;
+			this.project = project;
 			
 			// Add the mozilla control to the frame
 			if (WebBrowserService.CanGetWebBrowser) {
@@ -339,7 +342,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 					protocol = null;
 					serviceUrl = null;
 				}
-				catch (Exception ex) {
+				catch {
 					protocol = null;
 					serviceUrl = null;
 				}
@@ -364,7 +367,18 @@ namespace MonoDevelop.WebReferences.Dialogs
 			else {
 				// Set the Default Namespace and Reference
 				this.tbxNamespace.Text = this.DefaultNamespace;
-				this.tbxReferenceName.Text = this.DefaultReferenceName;
+				
+				string name = this.DefaultReferenceName;
+				
+				WebReferenceItemCollection items = new WebReferenceItemCollection (project);
+				if (items.Contains (name)) {
+					int num = 2;
+					while (items.Contains (name + "_" + num))
+						num++;
+					name = name + "_" + num;
+				}
+				this.tbxReferenceName.Text = name;
+				
 				this.IsWebService = true;
 				this.selectedService = protocol;
 				
@@ -389,6 +403,16 @@ namespace MonoDevelop.WebReferences.Dialogs
 			}
 			return;
 		}
+		
+		protected virtual void OnBtnOKClicked (object sender, System.EventArgs e)
+		{
+			WebReferenceItemCollection items = new WebReferenceItemCollection (project);
+			if (items.Contains (this.tbxReferenceName.Text)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Web reference already exists"), GettextCatalog.GetString ("A web service reference with the name '{0}' already exists in the project. Please use a different name.", this.tbxReferenceName.Text));
+				return;
+			}
+			Respond (Gtk.ResponseType.Ok);
+		}
 	}
 	
 	class AskCredentials: GuiSyncObject, ICredentials
@@ -396,9 +420,6 @@ namespace MonoDevelop.WebReferences.Dialogs
 		static Dictionary<string,NetworkCredential> credentials = new Dictionary<string, NetworkCredential> ();
 		
 		Dictionary<string,NetworkCredential> tempCredentials = new Dictionary<string, NetworkCredential> ();
-		
-		string user;
-		string password;
 		
 		public bool Canceled;
 		

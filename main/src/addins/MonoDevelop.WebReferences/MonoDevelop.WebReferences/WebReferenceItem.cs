@@ -92,7 +92,7 @@ namespace MonoDevelop.WebReferences
 					try {
 						remoteProtocol.DiscoverAny (url);
 						break;
-					} catch (WebException we) {
+					} catch (WebException) {
 						remoteProtocol = null;
 					}
 				}

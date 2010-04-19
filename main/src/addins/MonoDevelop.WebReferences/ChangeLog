@@ -1,3 +1,21 @@
+2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences/WebReferenceItem.cs: Fix warning.
+
+	* MonoDevelop.WebReferences/WebReferenceItemCollection.cs:
+	  Simplify.
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	  Ask for confirmation before deleting a web reference.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	  Don't allow duplicate reference names.
+
+	* gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:
+	  Don't allow duplicate reference names. Fixes bug #582487 -
+	  Web reference cannot be deleted.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

@@ -33,7 +33,7 @@ namespace MonoDevelop.WebReferences.Commands
 					return;
 			}
 			
-			WebReferenceDialog dialog = new WebReferenceDialog(Library.GetWebReferencePath(project));
+			WebReferenceDialog dialog = new WebReferenceDialog (project);
 			dialog.NamespacePrefix = project.Name;
 			
 			int response = dialog.Run();
@@ -120,6 +120,8 @@ namespace MonoDevelop.WebReferences.Commands
 		public void Delete()
 		{
 			WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
+			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the web service reference '{0}'?", item.Name), AlertButton.Delete))
+				return;
 			Project project = item.ProxyFile.Project;
 			item.Delete();
 			IdeApp.ProjectOperations.Save(project);

@@ -48,8 +48,7 @@ namespace MonoDevelop.WebReferences
 				if (file.FilePath.IsChildPathOf (webRefPath))
 				{
 					WebReferenceItem item;
-					FileInfo fileInfo = new FileInfo(file.FilePath); 
-					string refName = fileInfo.Directory.Name;
+					string refName = file.FilePath.ParentDirectory.FileName;
 					
 					// Add the item if it does not exist, otherwise get the current item
 					if (Contains(refName))
@@ -61,7 +60,7 @@ namespace MonoDevelop.WebReferences
 					}
 					
 					// Add the current project file to the web reference item
-					if (fileInfo.Extension == ".map")
+					if (file.FilePath.Extension == ".map")
 						item.MapFile = file;
 					else
 						item.ProxyFile = file;

@@ -228,7 +228,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.btnOK.UseStock = true;
 			this.btnOK.UseUnderline = true;
 			this.btnOK.Label = "gtk-ok";
-			this.AddActionWidget (this.btnOK, -5);
+			w15.Add (this.btnOK);
 			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w15[this.btnOK]));
 			w17.Position = 1;
 			w17.Expand = false;
@@ -246,6 +246,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.btnHome.Activated += new global::System.EventHandler (this.Browser_HomeButtonClicked);
 			this.tbxReferenceURL.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler (this.Browser_URLKeyReleased);
 			this.btnGO.Clicked += new global::System.EventHandler (this.Browser_GoButtonClicked);
+			this.btnOK.Clicked += new global::System.EventHandler (this.OnBtnOKClicked);
 		}
 	}
 }
