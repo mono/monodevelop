@@ -359,6 +359,15 @@ namespace MonoDevelop.Debugger.Gdb
 			
 			return buffer.GetLines (firstLine, firstLine + count - 1);
 		}
+		
+		public object GetRawValue (ObjectPath path)
+		{
+			return null;
+		}
+		
+		public void SetRawValue (ObjectPath path, object value)
+		{
+		}
 	}
 	
 	class GdbDissassemblyBuffer: DissassemblyBuffer
