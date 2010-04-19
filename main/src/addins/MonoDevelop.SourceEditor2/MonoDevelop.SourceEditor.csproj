@@ -164,6 +164,7 @@
     <Compile Include="MonoDevelop.SourceEditor\StatusBox.cs" />
     <Compile Include="MonoDevelop.SourceEditor\NavigationBar.cs" />
     <Compile Include="MonoDevelop.SourceEditor\NavigationBarCommands.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

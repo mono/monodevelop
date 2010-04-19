@@ -1,3 +1,13 @@
+2010-04-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor.addin.xml:
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/MessageBubbleCommands.cs: Worked on
+	  message bubbles/Added some bubble commands to the view menu.
+
 2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Unregister

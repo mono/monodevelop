@@ -234,6 +234,17 @@ namespace MonoDevelop.SourceEditor
 						marker.DisposeLayout ();
 				});
 			};
+			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
+		}
+
+		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
+		{
+			foreach (LineSegment line in lineSegmentWithTasks) {
+				foreach (ErrorTextMarker marker in line.Markers.Where (m => m is ErrorTextMarker)) {
+					marker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles;
+				}
+			}
+			this.TextEditor.Repaint ();
 		}
 
 		void HandleIdeAppPreferencesShowMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
@@ -274,7 +285,9 @@ namespace MonoDevelop.SourceEditor
 						continue;
 					}
 					lineSegmentWithTasks.Add (lineSegment);
-					widget.Document.AddMarker (lineSegment, new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description), false);
+					ErrorTextMarker errorTextMarker = new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
+					errorTextMarker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles;
+					widget.Document.AddMarker (lineSegment, errorTextMarker, false);
 				}
 			}
 			widget.Document.EndAtomicUndo ();
@@ -455,6 +468,7 @@ namespace MonoDevelop.SourceEditor
 			this.isDisposed= true;
 			Counters.LoadedEditors--;
 			
+			IdeApp.Preferences.DefaultHideMessageBubblesChanged -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled -= HandleErrorListPadTaskToggled;

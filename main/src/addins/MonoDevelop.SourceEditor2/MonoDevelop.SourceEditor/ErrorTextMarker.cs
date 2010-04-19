@@ -353,7 +353,7 @@ namespace MonoDevelop.SourceEditor
 					int rH = editor.LineHeight * 3 / 4;
 					BookmarkMarker.DrawRoundRectangle (g, rX, rY, 8, rW, rH);
 					
-					g.Color = new Cairo.Color (0.5, 0.5, 0.5);
+					g.Color = oldIsOver ? new Cairo.Color (0.3, 0.3, 0.3) : new Cairo.Color (0.5, 0.5, 0.5);
 					g.Fill ();
 					if (CollapseExtendedErrors) {
 						win.DrawLayout (gcLight, x2 + errorPixbuf.Width + border + layouts[0].Width + 4, y + (editor.LineHeight - eh) / 2, errorCountLayout);
@@ -505,11 +505,17 @@ namespace MonoDevelop.SourceEditor
 			}
 			return false;
 		}
-		
+		bool oldIsOver = false;
 		static Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
 		public bool MouseHover (TextEditor editor, MarginMouseEventArgs args, ref Gdk.Cursor cursor)
 		{
-			if (MouseIsOverMarker (editor, args)) {
+			bool isOver = MouseIsOverMarker (editor, args);
+			if (isOver != oldIsOver) {
+				editor.Document.CommitLineUpdate (this.LineSegment);
+				oldIsOver = isOver;
+			}
+			
+			if (isOver) {
 				cursor = arrowCursor;
 				return true;
 			}
