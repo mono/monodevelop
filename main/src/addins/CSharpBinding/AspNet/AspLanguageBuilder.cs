@@ -80,17 +80,20 @@ namespace MonoDevelop.CSharp.Completion
 					if (expressions.Key.BeginLine > location.BeginLine || expressions.Key.BeginLine == location.BeginLine && expressions.Key.BeginColumn > location.BeginColumn - 5) 
 						continue;
 					//Console.WriteLine ("take xprt:" + expressions.Key.BeginLine  +"/" +expressions.Key.BeginColumn);
-					result.Append (expressions.Value);
+					result.Append (expressions.Value.Trim ('='));
 				}
 			}
 			result.Append (expressionText);
-			Console.WriteLine ("----");
-			Console.WriteLine (result);
+			int caretPosition = result.Length;
+			result.AppendLine ();
+			result.AppendLine ("}");
+			result.AppendLine ("}");
+			
 			return new LocalDocumentInfo () {
 				LocalDocument = result.ToString (),
-				ParsedLocalDocument = Parse (documentInfo.AspNetParsedDocument.FileName + ".local.cs", result.ToString ())
+				CaretPosition = caretPosition,
+				ParsedLocalDocument = Parse (documentInfo.AspNetParsedDocument.FileName, result.ToString ())
 			};
-		
 		}
 		
 		
@@ -113,11 +116,10 @@ namespace MonoDevelop.CSharp.Completion
 		CSharpTextEditorCompletion CreateCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, out CodeCompletionContext codeCompletionContext)
 		{
 			codeCompletionContext = new CodeCompletionContext ();
-			codeCompletionContext.TriggerOffset = document.TextEditor.TextLength;
-			int line, column;
-			document.TextEditor.GetLineColumnFromPosition (codeCompletionContext.TriggerOffset, out line, out column);
-			codeCompletionContext.TriggerLine       = line;
-			codeCompletionContext.TriggerLineOffset = column - 1;
+			codeCompletionContext.TriggerOffset = document.TextEditorData.Caret.Offset;
+			
+			codeCompletionContext.TriggerLine       = document.TextEditorData.Caret.Line;
+			codeCompletionContext.TriggerLineOffset = document.TextEditorData.Caret.Column;
 			
 			CSharpTextEditorCompletion completion = new CSharpTextEditorCompletion (document);
 			
