@@ -709,9 +709,9 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnWatchRemoved (object s, PinnedWatchEventArgs args)
 		{
-			Console.WriteLine ("Remove watch !!!");
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
+					pinnedWatches.Remove (wi);
 					widget.TextEditorContainer.Remove (wi.Widget);
 					wi.Widget.Destroy ();
 					break;
@@ -725,7 +725,6 @@ namespace MonoDevelop.SourceEditor
 				if (wi.Watch == args.Watch) {
 					wi.Widget.ObjectValue = wi.Watch.Value;
 					widget.TextEditorContainer.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
-//					widget.TextEditor.Document.CommitLineUpdate (wi.Line);
 					break;
 				}
 			}

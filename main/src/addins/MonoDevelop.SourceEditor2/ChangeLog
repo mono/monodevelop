@@ -1,3 +1,12 @@
+2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Unregister
+	  pinned watch control when the watch is removed.
+
+	* MonoDevelop.SourceEditor/PinnedWatchWidget.cs: Embed an
+	  ObjectValueTreeView instance instead of a custom value
+	  viewer.
+
 2010-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: fixed warning.

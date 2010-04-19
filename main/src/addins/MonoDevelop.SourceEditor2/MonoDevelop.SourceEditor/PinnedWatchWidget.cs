@@ -39,10 +39,7 @@ namespace MonoDevelop.SourceEditor
 	public class PinnedWatchWidget : Gtk.EventBox
 	{
 		PinnedWatch watch;
-		Gtk.Image image = new Gtk.Image ();
-		Gtk.Label label = new Gtk.Label ();
-		Gtk.Label valueLabel = new Gtk.Label ();
-		Gtk.EventBox unpin = new Gtk.EventBox ();
+		ObjectValueTreeView valueTree;
 		
 		public PinnedWatch Watch {
 			get { return this.watch; }
@@ -53,19 +50,10 @@ namespace MonoDevelop.SourceEditor
 				return objectValue;
 			}
 			set {
-				if (this.objectValue == value)
-					return;
+				valueTree.ClearValues ();
 				this.objectValue = value;
-				if (this.objectValue != null) {
-					image.Pixbuf = ImageService.GetPixbuf (ObjectValueTreeView.GetIcon (this.objectValue.Flags), Gtk.IconSize.Menu);
-					label.Text = this.watch.Expression;
-					valueLabel.Text = GetString (this.objectValue);
-					this.QueueResize ();
-				} else {
-					/*label.Text = "";
-					valueLabel.Text = "";*/ 
-				}
-				
+				if (objectValue != null)
+					valueTree.AddValue (objectValue);
 			}
 		}
 		
@@ -79,52 +67,50 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		class Divider : Gtk.Widget
-		{
-			public Divider ()
-			{
-				WidthRequest = 1;
-				WidgetFlags |= Gtk.WidgetFlags.NoWindow;
-			}
-			
-			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-			{
-				evnt.Window.DrawLine (Style.BaseGC (Gtk.StateType.Normal), Allocation.X, Allocation.Top, Allocation.X, Allocation.Bottom);
-				int border = Allocation.Height / 5;
-				evnt.Window.DrawLine (Style.MidGC (Gtk.StateType.Normal), Allocation.X, Allocation.Top + border, Allocation.X, Allocation.Bottom - border - 1);
-				
-				evnt.Window.DrawLine (Style.MidGC (Gtk.StateType.Normal), Allocation.X, Allocation.Top, Allocation.Right, Allocation.Top);
-				evnt.Window.DrawLine (Style.MidGC (Gtk.StateType.Normal), Allocation.X, Allocation.Bottom - 1, Allocation.Right, Allocation.Bottom - 1);
-				return false;
-			}
-		}
-		Gtk.Image unpinImage;
 		public PinnedWatchWidget (TextEditorContainer container, PinnedWatch watch)
 		{
 			this.container = container;
 			this.watch = watch;
-			this.ObjectValue = watch.Value;
+			this.objectValue = watch.Value;
+			valueTree = new ObjectValueTreeView ();
+			valueTree.AllowAdding = false;
+			valueTree.AllowEditing = true;
+			valueTree.AllowPinning = true;
+			valueTree.HeadersVisible = false;
+			valueTree.CompactView = true;
+			valueTree.PinnedWatch = watch;
+			if (watch.Value != null)
+				valueTree.AddValue (watch.Value);
 			
-			Gtk.HBox box = new Gtk.HBox (false, 2);
-			box.BorderWidth = 2;
-			box.PackStart (image, false, false, 0);
-			box.PackStart (label, false, false, 0);
+			valueTree.ButtonPressEvent += HandleValueTreeButtonPressEvent;
+			valueTree.ButtonReleaseEvent += HandleValueTreeButtonReleaseEvent;
+			valueTree.MotionNotifyEvent += HandleValueTreeMotionNotifyEvent;
 			
-			box.PackStart (new Divider (), true, true, 0);
-			
-			box.PackStart (valueLabel, false, false, 0);
-			unpinImage = new Gtk.Image ();
-			unpinImage.Pixbuf = ImageService.GetPixbuf ("md-pin-down", Gtk.IconSize.Menu);
-			unpin.Child = unpinImage;
-			unpin.ButtonPressEvent += delegate {
-				DebuggingService.PinnedWatches.Remove (watch);
-			};
-			box.PackStart (unpin, false, false, 0);
-			this.Child = box;
+			Gtk.Frame fr = new Gtk.Frame ();
+			fr.ShadowType = Gtk.ShadowType.Out;
+			fr.Add (valueTree);
+			Add (fr);
 			HandleEditorOptionsChanged (null, null);
 			ShowAll ();
 			//unpin.Hide ();
 			Editor.EditorOptionsChanged += HandleEditorOptionsChanged;
+			
+			DebuggingService.PausedEvent += HandleDebuggingServicePausedEvent;
+			DebuggingService.ResumedEvent += HandleDebuggingServiceResumedEvent;
+		}
+
+		void HandleDebuggingServiceResumedEvent (object sender, EventArgs e)
+		{
+			valueTree.AllowEditing = false;
+			valueTree.AllowExpanding = false;
+			valueTree.CollapseAll ();
+			valueTree.ChangeCheckpoint ();
+		}
+
+		void HandleDebuggingServicePausedEvent (object sender, EventArgs e)
+		{
+			valueTree.AllowEditing = true;
+			valueTree.AllowExpanding = true;
 		}
 
 		void HandleEditorOptionsChanged (object sender, EventArgs e)
@@ -145,49 +131,61 @@ namespace MonoDevelop.SourceEditor
 		{
 			base.OnDestroyed ();
 			Editor.EditorOptionsChanged -= HandleEditorOptionsChanged;
-			
+			DebuggingService.PausedEvent -= HandleDebuggingServicePausedEvent;
+			DebuggingService.ResumedEvent -= HandleDebuggingServiceResumedEvent;
 		}
-
-		static string GetString (ObjectValue val)
+		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			if (val.IsUnknown) 
-				return GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
-			if (val.IsError) 
-				return val.Value;
-			if (val.IsNotSupported) 
-				return val.Value;
-			if (val.IsError) 
-				return val.Value;
-			if (val.IsEvaluating) 
-				return GettextCatalog.GetString ("Evaluating...");
-			return val.DisplayValue ?? "(null)";
+			base.OnSizeAllocated (allocation);
+		}
+		
+
+		[GLib.ConnectBeforeAttribute]
+		void HandleValueTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		{
+			originX = args.Event.XRoot;
+			originY = args.Event.YRoot;
+			
+			Gtk.TreePath path;
+			Gtk.TreeViewColumn col;
+			int cx, cy;
+			valueTree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy);
+			Gdk.Rectangle rect = valueTree.GetCellArea (path, col);
+			if (!mousePressed && valueTree.Columns[0] == col && cx >= rect.Left) {
+				mousePressed = true;
+				container.MoveToTop (this);
+//				Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
+//				Gtk.Grab.Add (this);
+			}
+		}
+		
+		[GLib.ConnectBeforeAttribute]
+		void HandleValueTreeButtonReleaseEvent (object o, Gtk.ButtonReleaseEventArgs args)
+		{
+			if (mousePressed) {
+//				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
+//				Gtk.Grab.Remove (this);
+				mousePressed = false;
+			}
+		}
+		
+
+		[GLib.ConnectBeforeAttribute]
+		void HandleValueTreeMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
+		{
+			if (mousePressed) {
+				watch.OffsetX += (int)(args.Event.XRoot - originX);
+				watch.OffsetY += (int)(args.Event.YRoot - originY);
+				
+				originX = args.Event.XRoot;
+				originY = args.Event.YRoot;
+			}
+			
 		}
 		
 		bool mousePressed = false;
 		double originX, originY;
-		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-		{
-			originX = evnt.XRoot;
-			originY = evnt.YRoot;
-			
-			if (!mousePressed) {
-				mousePressed = true;
-				container.MoveToTop (this);
-				Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
-				Gtk.Grab.Add (this);
-			}
-			return base.OnButtonPressEvent (evnt);
-		}
-		
-		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
-		{
-			if (mousePressed) {
-				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-				Gtk.Grab.Remove (this);
-				mousePressed = false;
-			}
-			return base.OnButtonReleaseEvent (evnt);
-		}
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
@@ -206,31 +204,5 @@ namespace MonoDevelop.SourceEditor
 			
 			return result;
 		}
- 
-		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
-		{
-			if (mousePressed) {
-				watch.OffsetX += (int)(evnt.XRoot - originX);
-				watch.OffsetY += (int)(evnt.YRoot - originY);
-				
-				originX = evnt.XRoot;
-				originY = evnt.YRoot;
-			}
-			
-			return base.OnMotionNotifyEvent (evnt);
-		}
-
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			int winWidth = Allocation.Width;
-			int winHeight = Allocation.Height;
-			evnt.Window.DrawRectangle (Style.BaseGC (Gtk.StateType.Normal), true, 0, 0, winWidth - 1, winHeight - 1);
-			evnt.Window.DrawRectangle (Style.MidGC (Gtk.StateType.Normal), false, 0, 0, winWidth - 1, winHeight - 1);
-			foreach (var child in this.Children)
-				this.PropagateExpose (child, evnt);
-			return false;
-		}
-
-		
 	}
 }
