@@ -223,7 +223,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		string IndicesToString (int[] indices)
+		internal static string IndicesToString (int[] indices)
 		{
 			StringBuilder sb = new StringBuilder ();
 			for (int n=0; n<indices.Length; n++) {
@@ -303,6 +303,27 @@ namespace Mono.Debugging.Evaluation
 			}
 			return val;
 		}
+		
+		public object GetRawValue (ObjectPath path)
+		{
+			if (path.Length != 2)
+				throw new NotSupportedException ();
+			
+			int[] idx = StringToIndices (path [1]);
+			object elem = array.GetElement (idx);
+			return ctx.Adapter.ToRawValue (ctx, new ArrayObjectSource (array, idx), elem);
+		}
+		
+		public void SetRawValue (ObjectPath path, object value)
+		{
+			if (path.Length != 2)
+				throw new NotSupportedException ();
+			
+			int[] idx = StringToIndices (path [1]);
+			
+			object val = ctx.Adapter.FromRawValue (ctx, value);
+			array.SetElement (idx, val);
+		}
 	}
 	
 	class ArrayObjectSource: IObjectSource
@@ -314,6 +335,12 @@ namespace Mono.Debugging.Evaluation
 		{
 			this.source = source;
 			this.path = path;
+		}
+		
+		public ArrayObjectSource (ICollectionAdaptor source, int[] index)
+		{
+			this.source = source;
+			this.path = ArrayElementGroup.IndicesToString (index);
 		}
 		
 		public object Value {

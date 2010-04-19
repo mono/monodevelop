@@ -35,6 +35,24 @@ namespace Mono.Debugging.Backend
 		ObjectValue[] GetChildren (ObjectPath path, int index, int count);
 		EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options);
 		ObjectValue GetValue (ObjectPath path, EvaluationOptions options);
+		
+		object GetRawValue (ObjectPath path);
+		void SetRawValue (ObjectPath path, object value);
+	}
+	
+	public interface IRawValue
+	{
+		object CallMethod (string name, object[] parameters);
+		object GetMemberValue (string name);
+		void SetMemberValue (string name, object value);
+	}
+	
+	public interface IRawValueArray
+	{
+		object GetValue (int[] index);
+		void SetValue (int[] index, object value);
+		int[] Dimensions { get; }
+		Array ToArray ();
 	}
 	
 	[Serializable]

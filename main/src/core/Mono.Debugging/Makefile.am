@@ -40,6 +40,7 @@ FILES =  \
 	Mono.Debugging.Client/ObjectValueFlags.cs \
 	Mono.Debugging.Client/ProcessEventArgs.cs \
 	Mono.Debugging.Client/ProcessInfo.cs \
+	Mono.Debugging.Client/RawValue.cs \
 	Mono.Debugging.Client/SourceLocation.cs \
 	Mono.Debugging.Client/StackFrame.cs \
 	Mono.Debugging.Client/TargetEventArgs.cs \
@@ -65,6 +66,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/ObjectValueAdaptor.cs \
 	Mono.Debugging.Evaluation/RawViewSource.cs \
 	Mono.Debugging.Evaluation/RemoteFrameObject.cs \
+	Mono.Debugging.Evaluation/RemoteRawValue.cs \
 	Mono.Debugging.Evaluation/TimedEvaluator.cs \
 	Mono.Debugging.Evaluation/TimeOutException.cs \
 	Mono.Debugging.Evaluation/TypeValueReference.cs \

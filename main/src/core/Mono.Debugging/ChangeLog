@@ -1,3 +1,20 @@
+2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/RawValue.cs:
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Evaluation/RemoteRawValue.cs:
+	* Mono.Debugging.Backend/IObjectValueSource.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/BaseTypeViewSource.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs: Add
+	  support for getting raw values of members and variables.
+
 2010-04-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs: Fix bug

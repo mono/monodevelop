@@ -206,6 +206,11 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public object RawValue {
+			get { return source.GetRawValue (path); }
+			set { source.SetRawValue (path, value); }
+		}
+		
 		public string DisplayValue {
 			get { return displayValue ?? Value; }
 			set { displayValue = value; }

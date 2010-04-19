@@ -81,5 +81,15 @@ namespace Mono.Debugging.Evaluation
 		{
 			throw new NotSupportedException ();
 		}
+		
+		public object GetRawValue (ObjectPath path)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		public void SetRawValue (ObjectPath path, object value)
+		{
+			throw new System.NotImplementedException ();
+		}
 	}
 }

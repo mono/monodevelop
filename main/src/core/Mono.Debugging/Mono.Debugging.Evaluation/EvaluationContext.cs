@@ -82,7 +82,7 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual void CopyFrom (EvaluationContext ctx)
 		{
-			options = ctx.options;
+			options = ctx.options.Clone ();
 			Evaluator = ctx.Evaluator;
 			Adapter = ctx.Adapter;
 		}
@@ -122,6 +122,16 @@ namespace Mono.Debugging.Evaluation
 			EvaluationContext c = ctx.Clone (options);
 			ObjectValue[] vals = c.Adapter.GetExpressionValuesAsync (c, new string[] { path.LastName });
 			return vals[0];
+		}
+		
+		public object GetRawValue (ObjectPath path)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+		public void SetRawValue (ObjectPath path, object value)
+		{
+			throw new System.NotImplementedException ();
 		}
 	}
 }

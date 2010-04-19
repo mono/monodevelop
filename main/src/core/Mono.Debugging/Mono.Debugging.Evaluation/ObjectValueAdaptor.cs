@@ -6,6 +6,7 @@ using System.Reflection;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
 using System.Diagnostics;
+using System.Collections;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -15,7 +16,7 @@ namespace Mono.Debugging.Evaluation
 
 		// Time to wait while evaluating before switching to async mode
 		public int DefaultEvaluationWaitTime = 100;
-
+		
 		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
 		
 		AsyncEvaluationTracker asyncEvaluationTracker = new AsyncEvaluationTracker ();
@@ -632,10 +633,73 @@ namespace Mono.Debugging.Evaluation
 		/// BindingFlags.Static, BindingFlags.Instance, BindingFlags.Public, BindingFlags.NonPublic, BindingFlags.DeclareOnly
 		/// </summary>
 		protected abstract IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags);
-
+		
 		public virtual IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
 		{
 			yield break;
+		}
+		
+		public virtual object CreateArray (EvaluationContext ctx, object type, object[] values)
+		{
+			object arrType = GetType (ctx, "System.Collections.ArrayList");
+			object arrayList = CreateValue (ctx, arrType, new object[0]);
+			object[] objTypes = new object[] { GetType (ctx, "System.Object") };
+			foreach (object value in values)
+				RuntimeInvoke (ctx, arrType, arrayList, "Add", objTypes, new object[] { value });
+			
+			object typof = CreateTypeObject (ctx, type);
+			objTypes = new object[] { GetType (ctx, "System.Type") };
+			return RuntimeInvoke (ctx, arrType, arrayList, "ToArray", objTypes, new object[] { typof });
+		}
+		
+		public virtual object ToRawValue (EvaluationContext ctx, IObjectSource source, object obj)
+		{
+			if (IsEnum (ctx, obj)) {
+				object longType = GetType (ctx, "System.Int64");
+				object c = Cast (ctx, obj, longType);
+				return TargetObjectToObject (ctx, c);
+			}
+			if (IsPrimitive (ctx, obj))
+				return TargetObjectToObject (ctx, obj);
+				
+			if (IsArray (ctx, obj)) {
+				ICollectionAdaptor adaptor = CreateArrayAdaptor (ctx, obj);
+				return new RawValueArray (new RemoteRawValueArray (ctx, source, adaptor, obj));
+			}
+			return new RawValue (new RemoteRawValue (ctx, source, obj));
+		}
+		
+		public virtual object FromRawValue (EvaluationContext ctx, object obj)
+		{
+			if (obj is RawValue) {
+				RemoteRawValue val = ((RawValue)obj).Source as RemoteRawValue;
+				if (val == null)
+					throw new InvalidOperationException ("Unknown RawValue source: " + ((RawValue)obj).Source);
+				return val.TargetObject;
+			}
+			else if (obj is RawValueArray) {
+				RemoteRawValueArray val = ((RawValueArray)obj).Source as RemoteRawValueArray;
+				if (val == null)
+					throw new InvalidOperationException ("Unknown RawValue source: " + ((RawValueArray)obj).Source);
+				return val.TargetObject;
+			}
+			else {
+				if (obj is Array) {
+					Array arr = (Array) obj;
+					if (obj.GetType ().GetElementType () == typeof(RawValue)) {
+						throw new NotSupportedException ();
+					} else {
+						object elemType = GetType (ctx, obj.GetType ().GetElementType ().FullName);
+						if (elemType == null)
+							throw new EvaluatorException ("Unknown target type: {0}", obj.GetType ().GetElementType ().FullName);
+						object[] values = new object [arr.Length];
+						for (int n=0; n<values.Length; n++)
+							values [n] = FromRawValue (ctx, arr.GetValue (n));
+						return CreateArray (ctx, elemType, values);
+					}
+				}
+				return CreateValue (ctx, obj);
+			}
 		}
 		
 		public virtual object TargetObjectToObject (EvaluationContext ctx, object obj)
