@@ -1,5 +1,12 @@
 2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:
+	  Report a better error when there are two projects with the
+	  same guid. Fixes bug #545285 - When opening another
+	  solution, sometimes i got an error.
+
+2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Use
 	  the new LoadClass method, which takes into account that the
 	  entry may already have been loaded. Fixes bug #586574 - Goto

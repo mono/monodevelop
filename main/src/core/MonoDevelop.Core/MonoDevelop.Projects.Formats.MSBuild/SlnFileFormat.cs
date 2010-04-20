@@ -762,10 +762,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					uitem.LoadError = e.Message;
 					item = uitem;
 				}
-					
-				items.Add (projectGuid, item);
-				sortedList.Add (item);
-				data.ItemsByGuid [projectGuid] = item;
+				
+				if (!items.ContainsKey (projectGuid)) {
+					items.Add (projectGuid, item);
+					sortedList.Add (item);
+					data.ItemsByGuid [projectGuid] = item;
+				} else {
+					monitor.ReportError (GettextCatalog.GetString ("Invalid solution file. There are two projects with the same GUID. The project {0} will be ignored.", projectPath), null);
+				}
 			}
 			monitor.EndTask ();
 
