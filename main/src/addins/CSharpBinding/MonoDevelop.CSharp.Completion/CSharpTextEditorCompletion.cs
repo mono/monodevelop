@@ -950,6 +950,16 @@ namespace MonoDevelop.CSharp.Completion
 				yieldDataList.Add ("break", "md-keyword");
 				yieldDataList.Add ("return", "md-keyword");
 				return yieldDataList;
+			case "where":
+				CompletionDataList whereDataList = new CompletionDataList ();
+				NRefactoryResolver constraintResolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+				constraintResolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+				if (constraintResolver.CallingMember is IMethod) {
+					foreach (ITypeParameter tp in ((IMethod)constraintResolver.CallingMember).TypeParameters) {
+						whereDataList.Add (tp.Name, "md-keyword");
+					}
+				}
+				return whereDataList;
 			}
 			return null;
 		}
@@ -1666,9 +1676,15 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				} else {
 					col.Add ("global", "md-keyword");
-					col.Add ("var", "md-keyword");
 					AddPrimitiveTypes (col);
 					resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
+					if (expressionResult.ExpressionContext == ExpressionContext.Constraints) {
+						col.Add ("struct", "md-keyword");
+						col.Add ("class", "md-keyword");
+						col.Add ("new()", "md-keyword");
+					} else {
+						col.Add ("var", "md-keyword");
+					}
 				}
 			} else if (expressionResult.ExpressionContext == ExpressionContext.TypeName) {
 				col.Add ("global", "md-keyword");

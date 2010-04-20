@@ -1,5 +1,11 @@
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Patch applied from Tom Spink <tspink@gmail.com>: Where
+	  Constraint Completion
+
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
 	  Fixed 'Bug 597717 - Incorrect indentation using smart
 	  indent'.
