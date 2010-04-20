@@ -42,6 +42,7 @@ using MonoDevelop.DesignerSupport;
 using S = MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
 using System.Text;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -85,11 +86,11 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		bool SupportsLanguage (string language);
 		
-		DocumentInfo BuildDocument (AspNetParsedDocument aspDocument);
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, ILocation location, string expressionText, bool isExpression);
+		DocumentInfo BuildDocument (AspNetParsedDocument aspDocument,  TextEditorData textEditorData);
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, bool isExpression);
 		
-		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char currentChar, ref int triggerWordLength);
-		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char completionChar);
+		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char currentChar, ref int triggerWordLength);
+		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char completionChar);
 	}
 	
 	public static class LanguageCompletionBuilderService

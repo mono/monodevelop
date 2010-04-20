@@ -80,12 +80,14 @@ namespace MonoDevelop.AspNet.Gui
 			{
 				this.doc = doc;
 				this.localDoc = localDoc;
-				
 			}
 			
 			MonoDevelop.Projects.Dom.IType CheckType (MonoDevelop.Projects.Dom.IType type)
 			{
+				if (type == null)
+					return null;
 				if (type.IsPartial && doc.CompilationUnit.Types[0].FullName == type.FullName) {
+					Console.WriteLine ("MERGE !!!");
 					IType result = CompoundType.Merge (type, doc.CompilationUnit.Types[0]);
 					result = CompoundType.Merge (type, localDoc.CompilationUnit.Types[0]);
 					return result;
@@ -169,13 +171,11 @@ namespace MonoDevelop.AspNet.Gui
 			//simple completion for ASP.NET expressions
 			documentBuilder = LanguageCompletionBuilderService.GetBuilder (AspCU.PageInfo.Language);
 			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null) {
-				bool isExpression = false;
 				int start = Document.TextEditor.CursorPosition - Tracker.Engine.CurrentStateLength;
-				
 				if (Document.TextEditor.GetCharAt (start) == '=') {
-					isExpression = true;
 					start++;
 				}
+				
 				string sourceText = Document.TextEditor.GetText (start, Document.TextEditor.CursorPosition);
 
 				MonoDevelop.AspNet.Parser.Internal.Location loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
@@ -184,8 +184,8 @@ namespace MonoDevelop.AspNet.Gui
 				loc.EndLine = loc.BeginLine = line;
 				loc.EndColumn = loc.BeginColumn = col;
 				
-				DocumentInfo documentInfo = documentBuilder.BuildDocument (AspCU);
-				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, loc, sourceText, isExpression);
+				DocumentInfo documentInfo = documentBuilder.BuildDocument (AspCU, TextEditorData);
+				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, true);
 				
 				MonoDevelop.Ide.Gui.HiddenTextEditorViewContent viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
 				viewContent.Project = Document.Project;
@@ -198,8 +198,7 @@ namespace MonoDevelop.AspNet.Gui
 				hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
 				
 				hiddenDocument.ParsedDocument = localDocumentInfo.ParsedLocalDocument;
-				
-				return documentBuilder.HandleCompletion (hiddenDocument, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), documentInfo.ParsedDocument, localDocumentInfo.ParsedLocalDocument), currentChar, ref triggerWordLength);
+				return documentBuilder.HandleCompletion (hiddenDocument, localDocumentInfo, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), documentInfo.ParsedDocument, localDocumentInfo.ParsedLocalDocument), currentChar, ref triggerWordLength);
 			}
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
@@ -208,7 +207,7 @@ namespace MonoDevelop.AspNet.Gui
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null)
-				return documentBuilder.HandleParameterCompletion (hiddenDocument, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), hiddenDocument.ParsedDocument, localDocumentInfo.ParsedLocalDocument), completionChar);
+				return documentBuilder.HandleParameterCompletion (hiddenDocument, localDocumentInfo, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), hiddenDocument.ParsedDocument, localDocumentInfo.ParsedLocalDocument), completionChar);
 			
 			return base.HandleParameterCompletion (completionContext, completionChar);
 		}
