@@ -76,11 +76,15 @@ namespace MonoDevelop.CSharp.Completion
 				result.AppendLine ("void Generated ()");
 				result.AppendLine ("{");
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
-				foreach (KeyValuePair<ILocation, string> expressions in documentInfo.Expressions) {
-					if (expressions.Key.BeginLine > location.BeginLine || expressions.Key.BeginLine == location.BeginLine && expressions.Key.BeginColumn > location.BeginColumn - 5) 
+				foreach (ExpressionNode expression in documentInfo.Expressions) {
+					if (expression.Location.BeginLine > location.BeginLine || expression.Location.BeginLine == location.BeginLine && expression.Location.BeginColumn > location.BeginColumn - 5) 
 						continue;
 					//Console.WriteLine ("take xprt:" + expressions.Key.BeginLine  +"/" +expressions.Key.BeginColumn);
-					result.Append (expressions.Value.Trim ('='));
+					if (expression.IsExpression)
+						result.Append ("WriteLine (");
+					result.Append (expression.Expression.Trim ('='));
+					if (expression.IsExpression)
+						result.Append (");");
 				}
 			}
 			result.Append (expressionText);
@@ -88,7 +92,7 @@ namespace MonoDevelop.CSharp.Completion
 			result.AppendLine ();
 			result.AppendLine ("}");
 			result.AppendLine ("}");
-			
+			Console.WriteLine (result);
 			return new LocalDocumentInfo () {
 				LocalDocument = result.ToString (),
 				CaretPosition = caretPosition,
@@ -198,14 +202,8 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Visit (ExpressionNode node)
 		{
 			string text = node.Expression;
-			StringBuilder sb;
-			if (node.IsExpression) {
-				documentInfo.Expressions.Add (new KeyValuePair<ILocation, string> (node.Location ,text));
-				sb = pageRenderer;
-			} else {
-				sb = document;
-			}
-			sb.AppendLine (text);
+			documentInfo.Expressions.Add (node);
+			pageRenderer.AppendLine (text);
 		}
 	}
 }

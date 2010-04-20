@@ -1,3 +1,7 @@
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* AspLanguageBuilder.cs: Fixed ASP.NET completion.
+
 2010-04-19  Mike Krüger  <mkrueger@novell.com>
 
 	* AspLanguageBuilder.cs: Worked on ASP.NET completion.
