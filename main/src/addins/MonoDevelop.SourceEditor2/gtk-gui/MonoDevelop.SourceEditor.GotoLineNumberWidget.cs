@@ -10,7 +10,13 @@ namespace MonoDevelop.SourceEditor
 
 		private global::Gtk.Button buttonGoToLine;
 
+		private global::Gtk.EventBox eventbox2;
+
+		private global::Gtk.Image image2;
+
 		private global::Gtk.Button closeButton;
+
+		private global::Gtk.EventBox eventbox1;
 
 		private global::Gtk.Image image1;
 
@@ -38,43 +44,46 @@ namespace MonoDevelop.SourceEditor
 			this.buttonGoToLine.CanDefault = true;
 			this.buttonGoToLine.CanFocus = true;
 			this.buttonGoToLine.Name = "buttonGoToLine";
-			this.buttonGoToLine.UseUnderline = true;
 			this.buttonGoToLine.Relief = ((global::Gtk.ReliefStyle)(2));
 			// Container child buttonGoToLine.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w2 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w3 = new global::Gtk.HBox ();
-			w3.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w4 = new global::Gtk.Image ();
-			w4.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-jump-to", global::Gtk.IconSize.Menu);
-			w3.Add (w4);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w6 = new global::Gtk.Label ();
-			w3.Add (w6);
-			w2.Add (w3);
-			this.buttonGoToLine.Add (w2);
+			this.eventbox2 = new global::Gtk.EventBox ();
+			this.eventbox2.Name = "eventbox2";
+			this.eventbox2.AboveChild = true;
+			this.eventbox2.VisibleWindow = false;
+			// Container child eventbox2.Gtk.Container+ContainerChild
+			this.image2 = new global::Gtk.Image ();
+			this.image2.Name = "image2";
+			this.image2.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-jump-to", global::Gtk.IconSize.Menu);
+			this.eventbox2.Add (this.image2);
+			this.buttonGoToLine.Add (this.eventbox2);
+			this.buttonGoToLine.Label = null;
 			this.hbox1.Add (this.buttonGoToLine);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonGoToLine]));
-			w10.Position = 1;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonGoToLine]));
+			w4.Position = 1;
+			w4.Expand = false;
+			w4.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.closeButton = new global::Gtk.Button ();
 			this.closeButton.CanFocus = true;
 			this.closeButton.Name = "closeButton";
 			this.closeButton.Relief = ((global::Gtk.ReliefStyle)(2));
 			// Container child closeButton.Gtk.Container+ContainerChild
+			this.eventbox1 = new global::Gtk.EventBox ();
+			this.eventbox1.Name = "eventbox1";
+			this.eventbox1.AboveChild = true;
+			this.eventbox1.VisibleWindow = false;
+			// Container child eventbox1.Gtk.Container+ContainerChild
 			this.image1 = new global::Gtk.Image ();
 			this.image1.Name = "image1";
 			this.image1.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-close", global::Gtk.IconSize.Menu);
-			this.closeButton.Add (this.image1);
+			this.eventbox1.Add (this.image1);
+			this.closeButton.Add (this.eventbox1);
 			this.closeButton.Label = null;
 			this.hbox1.Add (this.closeButton);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
-			w12.Position = 2;
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
+			w7.Position = 2;
+			w7.Expand = false;
+			w7.Fill = false;
 			this.Add (this.hbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

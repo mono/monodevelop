@@ -1,3 +1,11 @@
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	  Fixed 'Bug 597672 - Search bar icons vanish when moving
+	  across them mouse right to left'.
+
 2010-04-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
