@@ -355,7 +355,16 @@ namespace MonoDevelop.VersionControl.Views
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
 			
-			new Worker(vc, filepath, remoteStatus, this).Start();
+			ThreadPool.QueueUserWorkItem (delegate {
+				List<VersionInfo> newList = new List<VersionInfo> ();
+				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
+				DispatchService.GuiDispatch (delegate {
+					if (!disposed) {
+						statuses = newList;
+						Update();
+					}
+				});
+			});
 		}
 		
 		void UpdateControlStatus ()
@@ -978,37 +987,6 @@ namespace MonoDevelop.VersionControl.Views
 				rc.InitCell (filelist, false, lines, path);
 			} else {
 				rc.InitCell (filelist, true, lines, path);
-			}
-		}
-		
-		private class Worker : Task {
-			StatusView view;
-			Repository vc;
-			string filepath;
-			bool remoteStatus;
-			List<VersionInfo> newList = new List<VersionInfo> ();
-
-			public Worker(Repository vc, string filepath, bool remoteStatus, StatusView view) {
-				this.vc = vc;
-				this.filepath = filepath;
-				this.view = view;
-				this.remoteStatus = remoteStatus;
-			}
-			
-			protected override string GetDescription() {
-				return string.Format (GettextCatalog.GetString ("Retrieving status for {0}..."), Path.GetFileName (filepath));
-			}
-			
-			protected override void Run() {
-				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
-			}
-		
-			protected override void Finished()
-			{
-				if (!view.disposed) {
-					view.statuses = newList;
-					view.Update();
-				}
 			}
 		}
 	}

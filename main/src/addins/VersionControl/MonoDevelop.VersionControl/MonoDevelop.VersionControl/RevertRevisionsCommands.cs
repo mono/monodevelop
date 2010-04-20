@@ -97,8 +97,6 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				IProgressMonitor monitor = GetProgressMonitor ();
-				
 				// A revert operation can create or remove a directory, so the directory
 				// check must be done before and after the revert.
 
@@ -106,17 +104,18 @@ namespace MonoDevelop.VersionControl
 				
 				if (toRevision) {
 					//we discard working changes (we are warning the user), it's the more intuitive action
-					vc.Revert (path, true, monitor);
+					vc.Revert (path, true, Monitor);
 					
-					vc.RevertToRevision (path, revision, monitor);
+					vc.RevertToRevision (path, revision, Monitor);
 				}
 				else {
-					vc.RevertRevision (path, revision, monitor);
+					vc.RevertRevision (path, revision, Monitor);
 				}
 				
 				if (!(isDir || Directory.Exists (path)))
 					isDir = false;
 				
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 				Gtk.Application.Invoke (delegate {
 					if (!isDir) {
 						// Reload reverted files

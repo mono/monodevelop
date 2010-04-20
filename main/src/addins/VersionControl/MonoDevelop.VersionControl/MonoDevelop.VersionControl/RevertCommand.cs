@@ -60,8 +60,9 @@ namespace MonoDevelop.VersionControl
 			protected override void Run ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Revert (list.Paths, true, GetProgressMonitor ());
+					list[0].Repository.Revert (list.Paths, true, Monitor);
 				
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 				Gtk.Application.Invoke (delegate {
 					foreach (VersionControlItem item in items) {
 						if (!item.IsDirectory) {

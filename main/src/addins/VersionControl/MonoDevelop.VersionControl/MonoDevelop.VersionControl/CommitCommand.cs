@@ -75,6 +75,7 @@ namespace MonoDevelop.VersionControl
 			Repository vc;
 			ChangeSet changeSet;
 			CommitDialog dlg;
+			bool success;
 						
 			public CommitWorker (Repository vc, ChangeSet changeSet, CommitDialog dlg)
 			{
@@ -90,28 +91,30 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				bool success = true;
+				success = true;
 				try {
-					vc.Commit (changeSet, GetProgressMonitor ());
+					vc.Commit (changeSet, Monitor);
+					Monitor.ReportSuccess (GettextCatalog.GetString ("Commit operation completed."));
 				} catch {
 					success = false;
 					throw;
-				} finally {
-					Gtk.Application.Invoke (delegate {
-						dlg.EndCommit (success);
-						dlg.Dispose ();
-						VersionControlService.NotifyAfterCommit (vc, changeSet, success);
-						ArrayList dirs = new ArrayList ();
-						ArrayList files = new ArrayList ();
-						foreach (ChangeSetItem it in changeSet.Items)
-							if (it.IsDirectory) dirs.Add (it.LocalPath);
-							else files.Add (it.LocalPath);
-						foreach (FilePath path in dirs)
-							VersionControlService.NotifyFileStatusChanged (vc, path, true);
-						foreach (FilePath path in files)
-							VersionControlService.NotifyFileStatusChanged (vc, path, false);
-					});
 				}
+			}
+			
+			protected override void Finished ()
+			{
+				dlg.EndCommit (success);
+				dlg.Dispose ();
+				VersionControlService.NotifyAfterCommit (vc, changeSet, success);
+				ArrayList dirs = new ArrayList ();
+				ArrayList files = new ArrayList ();
+				foreach (ChangeSetItem it in changeSet.Items)
+					if (it.IsDirectory) dirs.Add (it.LocalPath);
+					else files.Add (it.LocalPath);
+				foreach (FilePath path in dirs)
+					VersionControlService.NotifyFileStatusChanged (vc, path, true);
+				foreach (FilePath path in files)
+					VersionControlService.NotifyFileStatusChanged (vc, path, false);
 			}
 		}
 	}

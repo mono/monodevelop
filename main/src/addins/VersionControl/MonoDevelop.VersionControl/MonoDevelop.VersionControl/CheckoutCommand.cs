@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Run () 
 		{
-			vc.Checkout (path, null, true, GetProgressMonitor ());
+			vc.Checkout (path, null, true, Monitor);
 			string projectFn = null;
 			
 			string[] list = System.IO.Directory.GetFiles(path);
@@ -72,6 +72,8 @@ namespace MonoDevelop.VersionControl
 			
 			if (projectFn != null)
 				IdeApp.Workspace.OpenWorkspaceItem (projectFn);
+			
+			Monitor.ReportSuccess (GettextCatalog.GetString ("Solution checked out"));
 		}
 	}
 }

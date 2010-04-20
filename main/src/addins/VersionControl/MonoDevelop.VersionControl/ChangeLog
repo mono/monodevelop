@@ -1,3 +1,20 @@
+2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Views/StatusView.cs: Don't show
+	  an output pad when updating the status view.
+
+	* MonoDevelop.VersionControl/Task.cs:
+	* MonoDevelop.VersionControl/LockCommand.cs:
+	* MonoDevelop.VersionControl/UnlockCommand.cs:
+	* MonoDevelop.VersionControl/UpdateCommand.cs:
+	* MonoDevelop.VersionControl/CommitCommand.cs:
+	* MonoDevelop.VersionControl/RevertCommand.cs:
+	* MonoDevelop.VersionControl/PublishCommand.cs:
+	* MonoDevelop.VersionControl/CheckoutCommand.cs:
+	* MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:
+	* MonoDevelop.VersionControl/RevertRevisionsCommands.cs:
+	  Improve success message. Small api simplification.
+
 2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VersionControl.addin.xml: Register data files.

@@ -59,10 +59,10 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				IProgressMonitor monitor = GetProgressMonitor ();
-				
 				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Lock (monitor, list.Paths);
+					list[0].Repository.Lock (Monitor, list.Paths);
+				
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Lock operation completed."));
 				
 				Gtk.Application.Invoke (delegate {
 					foreach (VersionControlItem item in items)
