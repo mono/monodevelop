@@ -32,10 +32,11 @@ using Gtk;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide
 {
-	class MonoDevelopStatusBar : Gtk.Statusbar, StatusBar
+	class MonoDevelopStatusBar : Gtk.Statusbar, StatusBar, IShadedWidget
 	{
 		ProgressBar progressBar = new ProgressBar ();
 		Frame textStatusBarPanel = new Frame ();
@@ -71,6 +72,7 @@ namespace MonoDevelop.Ide
 			BorderWidth = 0;
 			
 			DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
+			wb.DockFrame.ShadedContainer.Add (this);
 			Gtk.Widget dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
 			dockBar.NoShowAll = true;
 			PackStart (dockBar, false, false, 0);
@@ -427,6 +429,49 @@ namespace MonoDevelop.Ide
 				return true;
 			}
 		}
+		
+		Gdk.Rectangle GetGripRect ()
+		{
+			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, 18, Allocation.Height);
+			if (rect.Width > Allocation.Width)
+				rect.Width = Allocation.Width;
+			rect.Y = Allocation.Y + Allocation.Height - rect.Height;
+			if (Direction == TextDirection.Ltr)
+				rect.X = Allocation.X + Allocation.Width - rect.Width;
+			else
+				rect.X = Allocation.X + Style.XThickness;
+			return rect;
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			bool ret = base.OnExposeEvent (evnt);
+			if (HasResizeGrip) {
+				DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
+				wb.DockFrame.ShadedContainer.DrawBackground (this, GetGripRect ());
+				Gdk.Rectangle rect = GetGripRect ();
+				int w = rect.Width - Style.Xthickness;
+				int h = Allocation.Height - Style.YThickness;
+				if (h < 18 - Style.YThickness) h = 18 - Style.YThickness;
+				Gdk.WindowEdge edge = Direction == TextDirection.Ltr ? Gdk.WindowEdge.SouthEast : Gdk.WindowEdge.SouthWest;
+				Gtk.Style.PaintResizeGrip (Style, GdkWindow, State, evnt.Area, this, "statusbar", edge, rect.X, rect.Y, w, h);
+			}
+			return ret;
+		}
+		
+		public void NotifyShadedAreasChanged ()
+		{
+			if (AreasChanged != null)
+				AreasChanged (this, EventArgs.Empty);
+		}
+		
+		public IEnumerable<Gdk.Rectangle> GetShadedAreas ()
+		{
+			if (HasResizeGrip)
+				yield return GetGripRect ();
+		}
+		
+		public event EventHandler AreasChanged;
 	}
 	
 	/// <summary>
@@ -460,7 +505,16 @@ namespace MonoDevelop.Ide
 		// Clears the status bar information
 		void ShowReady ();
 		
+		/// <summary>
+		/// Sets a pad which has detailed information about the status message. When clicking on the
+		/// status bar, this pad will be activated. This source pad is reset at every ShowMessage call.
+		/// </summary>
 		void SetMessageSourcePad (Pad pad);
+		
+		/// <summary>
+		/// When set to true, the resize grip is shown
+		/// </summary>
+		bool HasResizeGrip { get; set; }
 	}
 	
 	public interface StatusBarContextBase: IDisposable
@@ -746,5 +800,16 @@ namespace MonoDevelop.Ide
 		{
 			StatusSourcePad = null;
 		}
+		
+		public bool HasResizeGrip {
+			get {
+				return statusBar.HasResizeGrip;
+			}
+			set {
+				statusBar.HasResizeGrip = value;
+				statusBar.NotifyShadedAreasChanged ();
+			}
+		}
+		
 	}
 }

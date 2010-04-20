@@ -832,19 +832,16 @@ namespace MonoDevelop.Ide.Gui
 			
 			fullViewVBox.PackEnd (this.StatusBar, false, true, 0);
 			
-			// the Mac has a resize grip by default, and the GTK+ one breaks it
-//			if (MonoDevelop.Core.PropertyService.IsMac)
-				this.StatusBar.HasResizeGrip = false;
-/*			else {
-				if (wbWindow.GdkWindow != null && wbWindow.GdkWindow.State == Gdk.WindowState.Maximized)
+			if (MonoDevelop.Core.PropertyService.IsMac)
+				this.StatusBar.HasResizeGrip = true;
+			else {
+				if (GdkWindow != null && GdkWindow.State == Gdk.WindowState.Maximized)
 					IdeApp.Workbench.StatusBar.HasResizeGrip = false;
-				wbWindow.SizeAllocated += delegate {
-					if (wbWindow.GdkWindow != null)
-						IdeApp.Workbench.StatusBar.HasResizeGrip = wbWindow.GdkWindow.State != Gdk.WindowState.Maximized;
+				SizeAllocated += delegate {
+					if (GdkWindow != null)
+						IdeApp.Workbench.StatusBar.HasResizeGrip = GdkWindow.State != Gdk.WindowState.Maximized;
 				};
 			}
-				IdeApp.Workbench.StatusBar.HasResizeGrip = false;
-			 */
 
 			// create DockItems for all the pads
 			foreach (PadCodon content in padContentCollection)

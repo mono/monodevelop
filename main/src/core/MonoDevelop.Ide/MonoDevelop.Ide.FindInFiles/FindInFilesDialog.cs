@@ -600,7 +600,6 @@ namespace MonoDevelop.Ide.FindInFiles
 					searchMonitor.ReportSuccess (message);
 				}
 				searchMonitor.ReportStatus (message);
-				searchMonitor.Log.WriteLine (message);
 				searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
 				searchMonitor.Dispose ();
 				lock (searchesInProgress)

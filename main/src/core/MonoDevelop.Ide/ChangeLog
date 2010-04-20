@@ -1,3 +1,15 @@
+2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Remove
+	  duplicate log write.
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Draw the resize
+	  grip using the shaded background color.
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: The resize grip
+	  must always be visible in Mac. On other platforms show it
+	  only when not maximized.
+
 2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui/ProgressMonitors.cs:
