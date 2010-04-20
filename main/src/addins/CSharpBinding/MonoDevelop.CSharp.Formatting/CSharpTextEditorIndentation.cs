@@ -441,40 +441,33 @@ namespace MonoDevelop.CSharp.Formatting
 		void DoReSmartIndent ()
 		{
 			string newIndent = string.Empty;
-			int cursor = Editor.CursorPosition;
+			int cursor = textEditorData.Caret.Offset;
+			
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
-			string line = Editor.GetLineText (ctx.LineNumber);
-
-			for (int i = ctx.LineOffset; i < line.Length; i++) {
-				ctx.Push (line[i]);
+			LineSegment line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
+			
+			for (int i = line.Offset; i < line.Offset + line.EditableLength; i++) {
+				ctx.Push (textEditorData.Document.GetCharAt (i));
 			}
-			//System.Console.WriteLine("Re-indenting line '{0}'", line);
-
-			// Measure the current indent
-			int nlwsp = 0;
-			while (nlwsp < line.Length && Char.IsWhiteSpace (line[nlwsp]))
-				nlwsp++;
-
-			int pos = Editor.GetPositionFromLineColumn (ctx.LineNumber, 1);
-			string curIndent = line.Substring (0, nlwsp);
-			int offset = cursor > pos + curIndent.Length ? cursor - (pos + curIndent.Length) : 0;
-			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.Length && line[nlwsp] == '*')) {
+			
+			int pos = line.Offset;
+			
+			string curIndent = line.GetIndentation (textEditorData.Document);
+						
+			int nlwsp = curIndent.Length;
+			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
+			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.Length && textEditorData.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
 				newIndent = ctx.ThisLineIndent;
 				int newIndentLength = newIndent.Length;
+				
 				if (newIndent != curIndent) {
-					if (textEditorData != null) {
-						textEditorData.Remove (pos, nlwsp);
-					} else {
-						Editor.DeleteText (pos, nlwsp);
-					}
 					if (CompletionWindowManager.IsVisible) {
 						if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
 							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 					}
-					
-					newIndentLength = Editor.InsertText (pos, newIndent);
+					newIndentLength = textEditorData.Replace (pos, nlwsp, newIndent);
 					// Engine state is now invalid
 					stateTracker.ResetEngineToPosition (pos);
 				}
@@ -482,14 +475,12 @@ namespace MonoDevelop.CSharp.Formatting
 			} else {
 				pos += curIndent.Length;
 			}
-
+			
 			pos += offset;
-
-			if (pos != Editor.CursorPosition) {
-				Editor.CursorPosition = pos;
-				Editor.Select (pos, pos);
-			}
+			
+			textEditorData.Caret.Offset = pos;
 		}
+		
 		/*
 		[MonoDevelop.Components.Commands.CommandHandler (MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer)]
 		public void FormatBuffer ()
