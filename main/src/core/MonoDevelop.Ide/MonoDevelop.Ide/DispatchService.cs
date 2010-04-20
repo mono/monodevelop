@@ -69,11 +69,21 @@ namespace MonoDevelop.Ide
 
 		public static void GuiDispatch (MessageHandler cb)
 		{
+			if (IsGuiThread) {
+				cb ();
+				return;
+			}
+
 			QueueMessage (new GenericMessageContainer (cb, false));
 		}
 
 		public static void GuiDispatch (StatefulMessageHandler cb, object state)
 		{
+			if (IsGuiThread) {
+				cb (state);
+				return;
+			}
+
 			QueueMessage (new StatefulMessageContainer (cb, state, false));
 		}
 

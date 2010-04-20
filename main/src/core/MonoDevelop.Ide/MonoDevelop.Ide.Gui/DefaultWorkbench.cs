@@ -454,12 +454,10 @@ namespace MonoDevelop.Ide.Gui
 				if (cmd != null)
 					IdeApp.CommandService.UnregisterCommand (cmd);
 			}
+			DockItem item = GetDockItem (codon);
 			padContentCollection.Remove (codon);
-			
 			PadWindow win = (PadWindow) padWindows [codon];
 			win.NotifyDestroyed ();
-			
-			DockItem item = GetDockItem (codon);
 			if (item != null)
 				dock.RemoveItem (item);
 			padWindows.Remove (codon);

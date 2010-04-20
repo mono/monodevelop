@@ -1,5 +1,14 @@
 2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide/DispatchService.cs:
+	* MonoDevelop.Ide.Gui.Pads/DefaultMonitorPad.cs: Don't queue
+	  gui calls if the current thread is already the gui thread.
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fix dock item
+	  removal. It was unregistered too early.
+
+2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.Docking/ShadedContainer.cs: Don't
 	  store screen coordinates because those may change if the
 	  main window is moved. Should fix bug #595192 - Pad shadow

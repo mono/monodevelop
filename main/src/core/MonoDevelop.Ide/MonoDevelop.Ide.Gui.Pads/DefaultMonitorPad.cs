@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		public void EndProgress ()
 		{
-			Gtk.Application.Invoke (delegate {
+			DispatchService.GuiDispatch (delegate {
 				if (window != null) {
 					window.IsWorking = false;
 					if (!asyncOperation.Success)
