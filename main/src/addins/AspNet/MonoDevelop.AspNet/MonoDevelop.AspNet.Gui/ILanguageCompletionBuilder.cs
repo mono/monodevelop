@@ -73,8 +73,8 @@ namespace MonoDevelop.AspNet.Gui
 			set;
 		}
 		
-		List<KeyValuePair<ILocation, string>> expressions = new List<KeyValuePair<ILocation, string>> ();
-		public List<KeyValuePair<ILocation, string>> Expressions {
+		List<ExpressionNode> expressions = new List<ExpressionNode> ();
+		public List<ExpressionNode> Expressions {
 			get {
 				return expressions;
 			}
