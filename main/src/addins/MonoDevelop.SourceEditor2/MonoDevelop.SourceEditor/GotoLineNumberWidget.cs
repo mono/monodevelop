@@ -61,7 +61,9 @@ namespace MonoDevelop.SourceEditor
 			this.widget = widget;
 			StoreWidgetState ();
 			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
-			
+			if (Platform.IsMac) {
+				eventbox1.VisibleWindow = eventbox2.VisibleWindow = true;
+			}
 			this.closeButton.Clicked += delegate {
 				RestoreWidgetState ();
 				widget.RemoveSearchWidget ();

@@ -1,5 +1,11 @@
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/GotoLineNumberWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Worked
+	  on mac disappearing buttons work around.
+
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs:
 	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:

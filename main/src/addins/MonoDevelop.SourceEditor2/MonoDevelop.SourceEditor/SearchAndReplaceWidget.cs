@@ -139,7 +139,10 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			this.widget = widget;
-			
+			if (Platform.IsMac) {
+				eventbox2.VisibleWindow = eventbox3.VisibleWindow = eventbox4.VisibleWindow = eventbox5.VisibleWindow = eventbox6.VisibleWindow = true;
+			}
+
 			if (String.IsNullOrEmpty (widget.TextEditor.SearchPattern)) {
 				widget.TextEditor.SearchPattern = searchPattern;
 			} else if (widget.TextEditor.SearchPattern != searchPattern) {
