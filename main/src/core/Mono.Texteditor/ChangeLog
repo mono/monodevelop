@@ -1,3 +1,7 @@
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/LineSegment.cs: fixed GetIndentation.
+
 2010-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: handled rare x11 exception.
