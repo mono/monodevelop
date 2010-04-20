@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -40,6 +41,7 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		StringBuilder document = new StringBuilder ();
 		StringBuilder pageRenderer = new StringBuilder ();
+		TextEditorData data;
 		bool hasNamespace = false;
 		
 		public bool SupportsLanguage (string language)
@@ -52,8 +54,9 @@ namespace MonoDevelop.CSharp.Completion
 			return new MonoDevelop.CSharp.Parser.NRefactoryParser ().Parse (null, fileName, text);
 		}
 		
-		public LocalDocumentInfo BuildLocalDocument (DocumentInfo documentInfo, ILocation location, string expressionText, bool isExpression)
+		public LocalDocumentInfo BuildLocalDocument (DocumentInfo documentInfo, TextEditorData data, string expressionText, bool isExpression)
 		{
+			this.data = data;
 			StringBuilder result = new StringBuilder ();
 			string typeName = "Generated";
 			if (documentInfo.AspNetParsedDocument.PageInfo != null && !string.IsNullOrEmpty (documentInfo.AspNetParsedDocument.PageInfo.InheritedClass))
@@ -77,7 +80,7 @@ namespace MonoDevelop.CSharp.Completion
 				result.AppendLine ("{");
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
 				foreach (ExpressionNode expression in documentInfo.Expressions) {
-					if (expression.Location.BeginLine > location.BeginLine || expression.Location.BeginLine == location.BeginLine && expression.Location.BeginColumn > location.BeginColumn - 5) 
+					if (expression.Location.BeginLine > data.Caret.Line || expression.Location.BeginLine == data.Caret.Line && expression.Location.BeginColumn > data.Caret.Column - 5) 
 						continue;
 					//Console.WriteLine ("take xprt:" + expressions.Key.BeginLine  +"/" +expressions.Key.BeginColumn);
 					if (expression.IsExpression)
@@ -92,7 +95,7 @@ namespace MonoDevelop.CSharp.Completion
 			result.AppendLine ();
 			result.AppendLine ("}");
 			result.AppendLine ("}");
-			Console.WriteLine (result);
+
 			return new LocalDocumentInfo () {
 				LocalDocument = result.ToString (),
 				CaretPosition = caretPosition,
@@ -101,29 +104,34 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		
-		public ICompletionDataList HandleCompletion (Document document, ProjectDom currentDom, char currentChar, ref int triggerWordLength)
+		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char currentChar, ref int triggerWordLength)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (CSharpTextEditorCompletion completion = CreateCompletion (document, currentDom, out codeCompletionContext)) {
+			using (CSharpTextEditorCompletion completion = CreateCompletion (document, info, currentDom, out codeCompletionContext)) {
 				return completion.HandleCodeCompletion (codeCompletionContext, currentChar, ref triggerWordLength);
 			}
 		}
 		
-		public IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, char completionChar)
+		public IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char completionChar)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (CSharpTextEditorCompletion completion = CreateCompletion (document, currentDom, out codeCompletionContext)) {
+			using (CSharpTextEditorCompletion completion = CreateCompletion (document, info, currentDom, out codeCompletionContext)) {
 				return completion.HandleParameterCompletion (codeCompletionContext, completionChar);
 			}
 		}
 
-		CSharpTextEditorCompletion CreateCompletion (MonoDevelop.Ide.Gui.Document document, ProjectDom currentDom, out CodeCompletionContext codeCompletionContext)
+		CSharpTextEditorCompletion CreateCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, out CodeCompletionContext codeCompletionContext)
 		{
 			codeCompletionContext = new CodeCompletionContext ();
-			codeCompletionContext.TriggerOffset = document.TextEditorData.Caret.Offset;
 			
-			codeCompletionContext.TriggerLine       = document.TextEditorData.Caret.Line;
-			codeCompletionContext.TriggerLineOffset = document.TextEditorData.Caret.Column;
+			codeCompletionContext.TriggerOffset = info.CaretPosition;
+			
+			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			doc.Text = info.LocalDocument;
+			DocumentLocation documentLocation = doc.OffsetToLocation (info.CaretPosition);
+			
+			codeCompletionContext.TriggerLine       = documentLocation.Line;
+			codeCompletionContext.TriggerLineOffset = documentLocation.Column;
 			
 			CSharpTextEditorCompletion completion = new CSharpTextEditorCompletion (document);
 			
@@ -131,9 +139,10 @@ namespace MonoDevelop.CSharp.Completion
 			return completion;
 		}
 		DocumentInfo documentInfo;
-		public DocumentInfo BuildDocument (MonoDevelop.AspNet.Parser.AspNetParsedDocument aspDocument)
+		public DocumentInfo BuildDocument (MonoDevelop.AspNet.Parser.AspNetParsedDocument aspDocument, TextEditorData data)
 		{
 			documentInfo = new DocumentInfo ();
+			this.data = data;
 			string typeName = "Generated";
 			if (aspDocument.PageInfo != null && !string.IsNullOrEmpty (aspDocument.PageInfo.InheritedClass))
 				typeName = aspDocument.PageInfo.InheritedClass;
@@ -152,7 +161,7 @@ namespace MonoDevelop.CSharp.Completion
 			document.Append ("{");
 			
 			aspDocument.Document.RootNode.AcceptVisit (this);
-			Finish ();
+			
 			documentInfo.AspNetParsedDocument = aspDocument;
 			documentInfo.ParsedDocument = Parse (aspDocument.FileName, document.ToString ());
 			return documentInfo;
@@ -197,6 +206,15 @@ namespace MonoDevelop.CSharp.Completion
 					break;
 				}
 			}*/
+		}
+		
+		public override void Visit (TagNode node)
+		{
+			if (node.TagName == "script") {
+				int start = data.Document.LocationToOffset (node.Location.EndLine - 1,  node.Location.EndColumn);
+				int end = data.Document.LocationToOffset (node.EndLocation.BeginLine - 1,  node.EndLocation.BeginColumn);
+				document.AppendLine (data.Document.GetTextBetween (start, end));
+			}
 		}
 		
 		public override void Visit (ExpressionNode node)
