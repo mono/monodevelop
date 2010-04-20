@@ -82,6 +82,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			get { return flags; }
 		}
 		
+		public bool Saved {
+			get { return position != -1; }
+		}
+		
 		public IType Class
 		{
 			get { 

@@ -1,3 +1,17 @@
+2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs: Use
+	  the new LoadClass method, which takes into account that the
+	  entry may already have been loaded. Fixes bug #586574 - Goto
+	  Type dialog throws a NullReferenceException.
+
+	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	  Simplified ReadClass. The new LoadClass assigns the loaded
+	  class and returns the existing class if it was already
+	  loaded. Also, don't unload classes which have not been
+	  saved.
+
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs: ShortenTypeName

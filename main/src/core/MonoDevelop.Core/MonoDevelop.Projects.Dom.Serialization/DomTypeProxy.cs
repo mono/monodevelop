@@ -44,8 +44,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				if (!isLoaded) {
 					isLoaded = true;
 					try {
-						wrappedType = db.ReadClass (entry);
-						entry.AttachClass (wrappedType);
+						wrappedType = db.LoadClass (entry);
 						if (wrappedType != null) {
 							base.fieldCount       = wrappedType.FieldCount;
 							base.methodCount      = wrappedType.MethodCount;

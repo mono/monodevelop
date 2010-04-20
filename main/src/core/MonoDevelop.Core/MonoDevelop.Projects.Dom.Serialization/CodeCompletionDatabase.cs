@@ -265,7 +265,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					foreach (ClassEntry ce in rootNamespace.GetAllClasses ()) {
 						classes.Add (ce);
 						try {
-							ReadClass (ce);
+							LoadClass (ce);
 						} catch (Exception ex) {
 							LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' could not be deserialized: " + ex.Message);
 						}
@@ -518,21 +518,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Write ();
 			
 			foreach (ClassEntry ce in GetAllClasses ()) {
-				if (ce.LastGetTime < currentGetTime - MIN_ACTIVE_COUNT) {
+				if (ce.Class != null && ce.LastGetTime < currentGetTime - MIN_ACTIVE_COUNT && ce.Saved) {
 					ce.Class = null;
 					Counters.LiveTypeObjects--;
 				}
 			}
 		}
 		
-		internal IType ReadClass (ClassEntry ce)
+		internal IType LoadClass (ClassEntry ce)
 		{
 			lock (rwlock) {
+				if (ce.Class != null)
+					return ce.Class;
 				dataFileStream.Position = ce.Position;
 				datareader.ReadInt32 ();// Length of data
 				DomType cls = DomPersistence.ReadType (datareader, pdb.CreateNameDecoder ());
 				cls.SourceProjectDom = SourceProjectDom;
 				cls.Resolved = true;
+				ce.Class = cls;
 				Counters.LiveTypeObjects++;
 				return cls;
 			}
@@ -922,7 +925,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				int te=0, tc=0;
 				
 				foreach (ClassEntry ce in fe.ClassEntries) {
-					if (ce.Class == null) ce.Class = ReadClass (ce);
+					LoadClass (ce);
 					tc++;
 					IType c = CompoundType.RemoveFile (ce.Class, fileName);
 					if (c == null) {
@@ -990,8 +993,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						
 						if (newClass != null) {
 							// Class already in the database, update it
-							if (ce.Class == null) 
-								ce.Class = ReadClass (ce);
+							LoadClass (ce);
 							RemoveSubclassReferences (ce);
 							
 							IType tp = CompoundType.RemoveFile (ce.Class, fileName);
@@ -1007,11 +1009,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							SourceProjectDom.ResetInstantiatedTypes (ce.Class);
 						} else {
 							// Database class not found in the new class list, it has to be deleted
-							IType c = ce.Class;
-							if  (c == null) {
-								ce.Class = ReadClass (ce);
-								c = ce.Class;
-							}
+							IType c = LoadClass (ce);
 							IType removed = CompoundType.RemoveFile (c, fileName);
 							if (removed != null) {
 								// It's still a compound class
@@ -1045,7 +1043,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						ClassEntry ce = newNss[n].GetClass (c.Name, c.TypeParameters.Count , true);
 						if (ce != null) {
 							// The entry exists, just update it
-							if (ce.Class == null) ce.Class = ReadClass (ce);
+							LoadClass (ce);
 							RemoveSubclassReferences (ce);
 							ce.Class = CompoundType.Merge (ce.Class, c);
 							res.Modified.Add (ce.Class);
