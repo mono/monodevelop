@@ -1,3 +1,9 @@
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Fixed 'Bug 597663 - Symbol highlight hides and re-shows at
+	  end of word'.
+
 2010-04-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Added

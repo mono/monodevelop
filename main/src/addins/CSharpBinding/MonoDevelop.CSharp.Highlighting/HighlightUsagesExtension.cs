@@ -81,7 +81,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void HandleTextEditorDataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
-			if (markers.Values.Any (m => m.Usages.Any (u => u.Contains (textEditorData.Caret.Offset))))
+			if (markers.Values.Any (m => m.Contains (textEditorData.Caret.Offset)))
 				return;
 			RemoveMarkers ();
 			RemoveTimer ();
@@ -159,6 +159,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			public List<ISegment> Usages {
 				get { return this.usages; }
+			}
+			
+			public bool Contains (int offset)
+			{
+				return usages.Any (u => u.Offset <= offset && offset <= u.EndOffset);
 			}
 			
 			public bool DrawBackground (TextEditor editor, Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
