@@ -184,10 +184,6 @@ namespace MonoDevelop.SourceEditor
 			args.RetVal = true;
 		}
 		
-		protected SourceEditorWidget (IntPtr raw) : base (raw)
-		{
-		}
-		
 		TextEditorContainer textEditorContainer;
 		public SourceEditorWidget (SourceEditorView view)
 		{
