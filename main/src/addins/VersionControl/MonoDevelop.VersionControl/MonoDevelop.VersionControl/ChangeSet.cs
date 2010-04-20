@@ -120,6 +120,11 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
+		public void RemoveItem (ChangeSetItem item)
+		{
+			items.Remove (item);
+		}
+		
 		public ChangeSet Clone ()
 		{
 			ChangeSet cs = (ChangeSet) MemberwiseClone ();

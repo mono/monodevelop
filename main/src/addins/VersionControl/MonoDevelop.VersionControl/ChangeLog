@@ -1,5 +1,13 @@
 2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl/ChangeSet.cs:
+	* MonoDevelop.VersionControl.Views/StatusView.cs: After
+	  updating status, remove from the changeset the files/folders
+	  which have been deleted. Fixes bug #582514 - VCS status view
+	  sometimes has hidden invalid items that obstruct commit.
+
+2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl.Views/StatusView.cs: Don't show
 	  an output pad when updating the status view.
 

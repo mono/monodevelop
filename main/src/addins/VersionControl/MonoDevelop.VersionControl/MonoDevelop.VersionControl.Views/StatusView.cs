@@ -359,12 +359,33 @@ namespace MonoDevelop.VersionControl.Views
 				List<VersionInfo> newList = new List<VersionInfo> ();
 				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
 				DispatchService.GuiDispatch (delegate {
-					if (!disposed) {
-						statuses = newList;
-						Update();
-					}
+					if (!disposed)
+						LoadStatus (newList);
 				});
 			});
+		}
+		
+		void LoadStatus (List<VersionInfo> newList)
+		{
+			statuses = newList;
+			
+			// Remove from the changeset files/folders which have been deleted
+			var toRemove = new List<ChangeSetItem> ();
+			foreach (ChangeSetItem item in changeSet.Items) {
+				bool found = false;
+				foreach (VersionInfo vi in statuses) {
+					if (vi.LocalPath == item.LocalPath) {
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					toRemove.Add (item);
+			}
+			foreach (var item in toRemove) 
+				changeSet.RemoveItem (item);
+			
+			Update();
 		}
 		
 		void UpdateControlStatus ()
