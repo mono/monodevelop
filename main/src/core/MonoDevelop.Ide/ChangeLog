@@ -1,5 +1,12 @@
 2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.Docking/ShadedContainer.cs: Don't
+	  store screen coordinates because those may change if the
+	  main window is moved. Should fix bug #595192 - Pad shadow
+	  rendering issues.
+
+2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs: Remove
 	  duplicate log write.
 

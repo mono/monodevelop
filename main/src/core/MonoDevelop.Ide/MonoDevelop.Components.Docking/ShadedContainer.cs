@@ -72,6 +72,7 @@ namespace MonoDevelop.Components.Docking
 			w.Shown += HandleWShown;
 			w.Hidden += HandleWHidden;
 			w.SizeAllocated += HandleWSizeAllocated;
+			w.Realized += HandleWRealized;
 			IShadedWidget sw = w as IShadedWidget;
 			if (sw != null)
 				sw.AreasChanged += HandleSwAreasChanged;
@@ -85,6 +86,7 @@ namespace MonoDevelop.Components.Docking
 			w.Destroyed -= HandleWDestroyed;
 			w.Shown -= HandleWShown;
 			w.Hidden -= HandleWHidden;
+			w.Realized -= HandleWRealized;
 			IShadedWidget sw = w as IShadedWidget;
 			if (sw != null)
 				sw.AreasChanged -= HandleSwAreasChanged;
@@ -94,24 +96,25 @@ namespace MonoDevelop.Components.Docking
 		void UpdateAllocation (Widget w)
 		{
 			if (w.IsRealized) {
-				int x, y;
-				w.GdkWindow.GetOrigin (out x, out y);
 				IShadedWidget sw = w as IShadedWidget;
 				if (sw != null) {
 					List<Gdk.Rectangle> rects = new List<Gdk.Rectangle> ();
-					foreach (Gdk.Rectangle ar in sw.GetShadedAreas ()) {
-						Gdk.Rectangle r = new Gdk.Rectangle (x + ar.X, y + ar.Y, ar.Width, ar.Height);
-						rects.Add (r);
-					}
+					foreach (Gdk.Rectangle ar in sw.GetShadedAreas ())
+						rects.Add (ar);
 					allocations [w] = rects.ToArray ();
 				} else {
-					Gdk.Rectangle r = new Gdk.Rectangle (x + w.Allocation.X, y + w.Allocation.Y, w.Allocation.Width, w.Allocation.Height);
-					allocations [w] = new Gdk.Rectangle [] { r };
+					allocations [w] = new Gdk.Rectangle [] { w.Allocation };
 				}
 			}
 			else {
 				allocations.Remove (w);
 			}
+		}
+
+		void HandleWRealized (object sender, EventArgs e)
+		{
+			UpdateAllocation ((Widget) sender);
+			RedrawAll ();
 		}
 
 		void HandleSwAreasChanged (object sender, EventArgs e)
@@ -181,11 +184,14 @@ namespace MonoDevelop.Components.Docking
 			secsL.Add (s);
 			secsR.Add (s);
 				
-			foreach (var rects in allocations.Values) {
-				foreach (Gdk.Rectangle sr in rects) {
-					if (sr == rect)
+			foreach (var rects in allocations) {
+				int sx, sy;
+				rects.Key.GdkWindow.GetOrigin (out sx, out sy);
+				foreach (Gdk.Rectangle srt in rects.Value) {
+					if (srt == rect)
 						continue;
-				
+					Gdk.Rectangle sr = srt;
+					sr.Offset (sx, sy);
 					if (sr.Right == rect.X)
 						RemoveSection (secsL, sr.Y - rect.Y, sr.Height);
 					if (sr.Bottom == rect.Y)
