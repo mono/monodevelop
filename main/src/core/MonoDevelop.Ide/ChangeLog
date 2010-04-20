@@ -1,3 +1,9 @@
+2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Add null check
+	  when adding type results. It may happen if the type failed
+	  to load for some reason. Added a timer.
+
 2010-04-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/DispatchService.cs:

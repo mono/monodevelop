@@ -43,6 +43,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -384,31 +385,38 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return list;
 		}
 		
+		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "GoToDialog");
+		
 		List<IType> GetTypes ()
 		{
 			List<IType> list = new List<IType> ();
-			foreach (Document doc in IdeApp.Workbench.Documents) {
-				// We only want to check it here if it's not part
-				// of the open combine.  Otherwise, it will get
-				// checked down below.
-				if (doc.Project == null && doc.IsFile) {
-					ICompilationUnit info = doc.CompilationUnit;
-					if (info != null) {
-						foreach (IType c in info.Types) {
-							list.Add (c);
+			getTypesTimer.BeginTiming ();
+			try {
+				foreach (Document doc in IdeApp.Workbench.Documents) {
+					// We only want to check it here if it's not part
+					// of the open combine.  Otherwise, it will get
+					// checked down below.
+					if (doc.Project == null && doc.IsFile) {
+						ICompilationUnit info = doc.CompilationUnit;
+						if (info != null) {
+							foreach (IType c in info.Types) {
+								list.Add (c);
+							}
 						}
 					}
 				}
-			}
-			
-			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
-
-			foreach (Project p in projects) {
-				ProjectDom dom = ProjectDomService.GetProjectDom (p);
-				if (dom == null)
-					continue;
-				foreach (IType c in dom.Types)
-					AddType (c, list);
+				
+				ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
+	
+				foreach (Project p in projects) {
+					ProjectDom dom = ProjectDomService.GetProjectDom (p);
+					if (dom == null)
+						continue;
+					foreach (IType c in dom.Types)
+						AddType (c, list);
+				}
+			} finally {
+				getTypesTimer.EndTiming ();
 			}
 			return list;
 		}
@@ -459,7 +467,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			string fname = c.FullName;
 			if (c.SourceProject != null)
 				fname = c.SourceProject.Name + ", " + fname;
-			results.AddResult (new TypeSearchResult (c, result, fullName, fname, rank));
+			if (c.CompilationUnit != null)
+				results.AddResult (new TypeSearchResult (c, result, fullName, fname, rank));
 			return true;
 		}
 
