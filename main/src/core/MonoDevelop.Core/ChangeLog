@@ -1,3 +1,8 @@
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs: ShortenTypeName
+	  now handles inner types.
+
 2010-04-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/CompilationUnit.cs:

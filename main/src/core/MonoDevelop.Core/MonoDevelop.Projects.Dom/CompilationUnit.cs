@@ -194,11 +194,12 @@ namespace MonoDevelop.Projects.Dom
 		{
 			ICompilationUnit unit;
 			DomLocation location;
-			
+			IType callingType;
 			public ShortenTypeNameVistior (ICompilationUnit unit, DomLocation location)
 			{
 				this.unit = unit;
 				this.location = location;
+				callingType = this.unit.GetTypeAt (location);
 			}
 			
 			public override INode Visit (IReturnType type, object data)
@@ -209,7 +210,16 @@ namespace MonoDevelop.Projects.Dom
 				
 				string longest = "";
 				string lastAlias = null;
-				
+				if (callingType != null && returnType.DecoratedFullName.StartsWith (callingType.FullName)) {
+					int p1 = callingType.FullName.Count (ch => ch == '.') + 1;
+					while (p1 > 0) {
+						returnType.Parts.RemoveAt (0);
+						p1--;
+					}
+					returnType.Namespace = "";
+					return returnType;
+				}
+					
 				foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
 					foreach (string ns in u.Namespaces.Where (ns => returnType.Namespace == ns || returnType.Namespace.StartsWith (ns + "."))) {
 						if (longest.Length < ns.Length)
