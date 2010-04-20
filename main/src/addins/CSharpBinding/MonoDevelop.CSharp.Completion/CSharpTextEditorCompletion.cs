@@ -472,7 +472,9 @@ namespace MonoDevelop.CSharp.Completion
 							for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
 								if (k > 0)
 									sb.Append (", ");
-								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (delegateMethod.Parameters[k].ReturnType, Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName));
+								IType parameterType = dom.GetType (delegateMethod.Parameters[k].ReturnType);
+								IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters[k].ReturnType;
+								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
 								sb.Append (" ");
 								sb.Append (delegateMethod.Parameters[k].Name);
 							}

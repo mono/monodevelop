@@ -1,6 +1,12 @@
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 597671 - The += completion does not handle inner
+	  class eventargs properly'.
+
+2010-04-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Patch applied from Tom Spink <tspink@gmail.com>: Where
 	  Constraint Completion
 
