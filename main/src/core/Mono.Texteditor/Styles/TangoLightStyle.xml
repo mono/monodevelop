@@ -94,7 +94,7 @@
 		<Style name="ruler" color="aluminium3"/>
 		<Style name="whitespace" color="aluminium3"/>
 		<Style name="invalidline" color="scarletred2"/>
-		<Style name="bracket" color="aluminium4" bgColor="aluminium1"/>
+		<Style name="bracket" color="aluminium2" bgColor="aluminium1"/>
 		
 		<Style name="bookmark.color1" color="white"/>
 		<Style name="bookmark.color2" color="skyblue1"/>
