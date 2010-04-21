@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			RemoveMarkers ();
 			RemoveTimer ();
-			popupTimer = GLib.Timeout.Add (500, DelayedTooltipShow);
+			popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
 		}
 		
 		bool DelayedTooltipShow ()

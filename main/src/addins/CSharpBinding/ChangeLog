@@ -1,3 +1,8 @@
+2010-04-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Raised highlight usages delay.
+
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
