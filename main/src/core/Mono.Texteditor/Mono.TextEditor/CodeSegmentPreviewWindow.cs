@@ -87,7 +87,9 @@ namespace Mono.TextEditor
 			                                                        true) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
 			CalculateSize ();
 		}
-		
+		public int PreviewInformStringHeight {
+			get; private set;
+		}
 		public void CalculateSize ()
 		{
 			int w, h;
@@ -96,6 +98,7 @@ namespace Mono.TextEditor
 			if (!HideCodeSegmentPreviewInformString) {
 				int w2, h2;
 				informLayout.GetPixelSize (out w2, out h2); 
+				PreviewInformStringHeight = h2;
 				w = System.Math.Max (w, w2);
 				h += h2;
 			}
@@ -140,7 +143,7 @@ namespace Mono.TextEditor
 				informLayout.SetText (CodeSegmentPreviewInformString);
 				int w, h;
 				informLayout.GetPixelSize (out w, out h); 
-				
+				PreviewInformStringHeight = h;
 				gc.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
 				ev.Window.DrawRectangle (gc, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
 				gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;

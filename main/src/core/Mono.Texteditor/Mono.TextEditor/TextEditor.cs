@@ -1281,7 +1281,9 @@ namespace Mono.TextEditor
 				return;
 			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
-				int maxX = longestLineWidth + 2 * this.textViewMargin.CharWidth;
+				int maxX = longestLineWidth;
+				if (maxX > Allocation.Width)
+					maxX += 2 * this.textViewMargin.CharWidth;
 				int width = Allocation.Width - this.TextViewMargin.XOffset;
 				this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
 				if (maxX < width)
@@ -1298,7 +1300,9 @@ namespace Mono.TextEditor
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			if (this.textEditorData.VAdjustment != null) {
-				int maxY = LineToVisualY (Document.LineCount - 1) + 5 * this.LineHeight;
+				int maxY = LineToVisualY (Document.LineCount - 1);
+				if (maxY > allocation.Height)
+					maxY += 5 * this.LineHeight;
 				this.textEditorData.VAdjustment.SetBounds (0, 
 				                                           maxY, 
 				                                           LineHeight,

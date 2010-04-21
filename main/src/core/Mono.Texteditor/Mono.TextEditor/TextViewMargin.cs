@@ -1481,7 +1481,8 @@ namespace Mono.TextEditor
 			this.previewWindow.GdkWindow.GetOrigin (out x, out y);
 			int w = previewWindow.Allocation.Width;
 			int h = previewWindow.Allocation.Height;
-			
+			if (!previewWindow.HideCodeSegmentPreviewInformString)
+				h -= previewWindow.PreviewInformStringHeight;
 			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);

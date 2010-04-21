@@ -53,7 +53,6 @@ namespace Mono.TextEditor
 		
 		public CodeSegmentEditorWindow (TextEditor editor) : base (Gtk.WindowType.Toplevel)
 		{
-			this.Events = Gdk.EventMask.AllEventsMask;
 			Gtk.ScrolledWindow scrolledWindow = new Gtk.ScrolledWindow ();
 			scrolledWindow.Child = codeSegmentEditor;
 			scrolledWindow.ShadowType = Gtk.ShadowType.In;
