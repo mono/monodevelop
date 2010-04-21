@@ -352,6 +352,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				serviceUrl = null;
 				this.IsWebService = false;
 				this.selectedService = null;
+				LoggingService.LogError ("Error while discovering web services", error);
 				ShowError (error.Message);
 				return;
 			}
