@@ -1,5 +1,14 @@
 2010-04-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide/ProjectOperations.cs: Make 'quit while
+	  running' question dialog clearer.
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Don't follow
+	  through with quitting if the workspace cancelled the close
+	  request.
+
+2010-04-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs:
 	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
 	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:

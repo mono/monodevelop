@@ -1466,7 +1466,10 @@ namespace MonoDevelop.Ide
 			if (IsBuilding (args.Item))
 				CurrentBuildOperation.Cancel ();
 			if (IsRunning (args.Item)) {
-				if (MessageService.Confirm (GettextCatalog.GetString ("The project '{0}' is currently running. It will have to be stopped. Do you want to continue?", currentRunOperationOwner.Name), AlertButton.Yes)) {
+				if (MessageService.Confirm (GettextCatalog.GetString (
+						"The project '{0}' is currently running and will have to be stopped. Do you want to continue closing it?",
+						currentRunOperationOwner.Name),
+						new AlertButton (GettextCatalog.GetString ("Close Project")))) {
 					CurrentRunOperation.Cancel ();
 				} else
 					args.Cancel = true;

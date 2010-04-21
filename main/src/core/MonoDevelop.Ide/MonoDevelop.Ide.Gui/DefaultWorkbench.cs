@@ -657,9 +657,11 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 			}
 			
+			if (!IdeApp.Workspace.Close (false))
+				return false;
+			
 			CloseAllViews ();
 			
-			IdeApp.Workspace.Close (false);
 			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
 			IdeApp.OnExited ();
 			OnClosed (null);
