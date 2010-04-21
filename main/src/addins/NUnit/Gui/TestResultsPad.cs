@@ -121,7 +121,7 @@ namespace MonoDevelop.NUnit
 			failuresTreeView.AppendColumn (col);
 			failuresTreeView.Model = failuresStore;
 		
-			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
+			var sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add(failuresTreeView);
 			book.Pack1 (sw, true, true);
@@ -131,7 +131,7 @@ namespace MonoDevelop.NUnit
 			bold = new TextTag ("bold");
 			bold.Weight = Pango.Weight.Bold;
 			outputView.Buffer.TagTable.Add (bold);
-			sw = new Gtk.ScrolledWindow ();
+			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add(outputView);
 			book.Pack2 (sw, true, true);

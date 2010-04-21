@@ -49,7 +49,7 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public partial class ExtensibleTreeView : Gtk.ScrolledWindow
+	public partial class ExtensibleTreeView : CompactScrolledWindow
 	{
 		internal const int TextColumn         = 0;
 		internal const int OpenIconColumn     = 1;

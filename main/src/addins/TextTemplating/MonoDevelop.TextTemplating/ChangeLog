@@ -1,3 +1,8 @@
+2010-04-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/T4EditorExtension.cs: Free up wasted space between
+	  scrollbars and treeview contents.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

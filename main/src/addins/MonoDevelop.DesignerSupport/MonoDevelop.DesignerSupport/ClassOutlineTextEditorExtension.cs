@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 
 namespace MonoDevelop.DesignerSupport
@@ -120,7 +121,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 
-			ScrolledWindow sw = new ScrolledWindow ();
+			var sw = new CompactScrolledWindow ();
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;

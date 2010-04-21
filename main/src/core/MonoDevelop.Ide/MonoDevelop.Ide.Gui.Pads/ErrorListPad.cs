@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			view.Columns[VisibleColumns.Project].SortColumnId = VisibleColumns.Project;
 			view.Columns[VisibleColumns.File].SortColumnId = VisibleColumns.File;
 			
-			sw = new Gtk.ScrolledWindow ();
+			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
 			TaskService.Errors.TasksRemoved      += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (ShowResults));

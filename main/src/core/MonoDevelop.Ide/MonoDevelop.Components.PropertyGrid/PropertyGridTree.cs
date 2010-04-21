@@ -37,7 +37,7 @@ using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
-	internal class PropertyGridTree: Gtk.ScrolledWindow
+	internal class PropertyGridTree: CompactScrolledWindow
 	{
 		Gtk.TreeStore store;
 		InternalTree tree;

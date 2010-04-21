@@ -1352,6 +1352,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\StringTagSelectorButton.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SolutionFolderFileNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Components\CompactScrolledWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

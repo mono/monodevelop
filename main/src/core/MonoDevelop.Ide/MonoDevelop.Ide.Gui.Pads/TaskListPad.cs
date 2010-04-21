@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			switcherCombo.PackStart (cr, true);
 			switcherCombo.AddAttribute (cr, "text", 0);
 			
-			sw = new Gtk.ScrolledWindow ();
+			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			
 			vbox.Add (sw);

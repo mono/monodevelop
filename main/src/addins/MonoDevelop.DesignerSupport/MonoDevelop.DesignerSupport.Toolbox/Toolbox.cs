@@ -116,7 +116,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			this.toolboxWidget.ButtonReleaseEvent += OnButtonRelease;
 			
-			scrolledWindow = new ScrolledWindow ();
+			scrolledWindow = new MonoDevelop.Components.CompactScrolledWindow ();
 			base.PackEnd (scrolledWindow, true, true, 0);
 			base.FocusChain = new Gtk.Widget [] { scrolledWindow };
 			

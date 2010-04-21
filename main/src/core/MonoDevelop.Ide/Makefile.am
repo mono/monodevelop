@@ -230,6 +230,7 @@ FILES =  \
 	MonoDevelop.Components/BaseFileEntry.cs \
 	MonoDevelop.Components/CairoExtensions.cs \
 	MonoDevelop.Components/CellRendererComboBox.cs \
+	MonoDevelop.Components/CompactScrolledWindow.cs \
 	MonoDevelop.Components/ConsoleView.cs \
 	MonoDevelop.Components/DataGrid.cs \
 	MonoDevelop.Components/FileEntry.cs \

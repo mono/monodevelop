@@ -1,3 +1,20 @@
+2010-04-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/TaskListPad.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:
+	* MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:
+	* MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs:
+	  Free up wasted space between scrollbars and treeview
+	  contents.
+
+	* MonoDevelop.Components/CompactScrolledWindow.cs: New widget,
+	  ScrolledWindow with style overridden to have less padding
+	  inside.
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj: Added file.
+
 2010-04-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:

@@ -170,8 +170,7 @@ namespace MonoDevelop.TextTemplating.Gui
 			};
 			
 			RefillOutlineStore ();
-			
-			Gtk.ScrolledWindow sw = new Gtk.ScrolledWindow ();
+			var sw = new MonoDevelop.Components.CompactScrolledWindow ();;
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
