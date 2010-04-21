@@ -1,3 +1,8 @@
+2010-04-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorContainer.cs: Fixed
+	  'SetChidrenPositions'
+
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/LineSegment.cs: fixed GetIndentation.

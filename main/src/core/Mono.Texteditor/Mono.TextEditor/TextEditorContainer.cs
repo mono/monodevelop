@@ -176,12 +176,14 @@ namespace Mono.TextEditor
 		
 		void SetChildrenPositions (Rectangle allocation)
 		{
+			//Console.WriteLine (textEditorWidget.VAdjustment.Value +"/" + textEditorWidget.HAdjustment.Value);
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
 				if (child.Child == textEditorWidget)
 					continue;
 				Requisition req = child.Child.SizeRequest ();
-				Rectangle childRectangle = new Gdk.Rectangle (allocation.X + (int)(child.FixedPosition ? child.X : child.X * textEditorWidget.Options.Zoom - textEditorWidget.HAdjustment.Value), 
-				                                              allocation.Y + (int)(child.FixedPosition ? child.Y : child.Y * textEditorWidget.Options.Zoom - textEditorWidget.VAdjustment.Value), req.Width, req.Height);
+				//Console.WriteLine (child.X + "x" + child.Y);
+				Rectangle childRectangle = new Gdk.Rectangle (/*allocation.X + */ (int)(child.FixedPosition ? child.X : child.X * textEditorWidget.Options.Zoom - textEditorWidget.HAdjustment.Value), 
+				                                              /*allocation.Y + */ (int)(child.FixedPosition ? child.Y : child.Y * textEditorWidget.Options.Zoom - textEditorWidget.VAdjustment.Value), req.Width, req.Height);
 			//	if (childRectangle != child.Child.Allocation)
 				child.Child.SizeAllocate (childRectangle);
 			}
