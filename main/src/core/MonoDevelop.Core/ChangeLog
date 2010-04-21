@@ -1,5 +1,9 @@
 2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Execution/ProcessService.cs: Fix build.
+
+2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core.Execution/ProcessService.cs: Added null
 	  check on the result of the external console handler.
 

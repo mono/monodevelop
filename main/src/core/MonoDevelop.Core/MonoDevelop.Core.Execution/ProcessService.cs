@@ -188,17 +188,17 @@ namespace MonoDevelop.Core.Execution
 		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
 			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
-				ProcessStartInfo psi = externalConsoleHandler (command, arguments, workingDirectory, environmentVariables,
+				ProcessStartInfo epsi = externalConsoleHandler (command, arguments, workingDirectory, environmentVariables,
 				    GettextCatalog.GetString ("MonoDevelop External Console"), console != null ? !console.CloseOnDispose : false);
 
-				if (psi != null) {
+				if (epsi != null) {
 					ProcessWrapper p = new ProcessWrapper();
 					
 					if (exited != null)
 						p.Exited += exited;
 	
-					psi.CreateNoWindow = true;
-					p.StartInfo = psi;
+					epsi.CreateNoWindow = true;
+					p.StartInfo = epsi;
 					ProcessEnvironmentVariableOverrides (p.StartInfo);
 					Counters.ProcessesStarted++;
 					p.Start();
