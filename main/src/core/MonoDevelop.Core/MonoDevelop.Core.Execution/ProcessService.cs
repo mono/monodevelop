@@ -187,30 +187,33 @@ namespace MonoDevelop.Core.Execution
 		
 		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
-			if (console == null || (console is ExternalConsole)) {
+			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
 				ProcessStartInfo psi = externalConsoleHandler (command, arguments, workingDirectory, environmentVariables,
 				    GettextCatalog.GetString ("MonoDevelop External Console"), console != null ? !console.CloseOnDispose : false);
 
-				ProcessWrapper p = new ProcessWrapper();
-				
-				if (exited != null)
-					p.Exited += exited;
-
-				psi.CreateNoWindow = true;
-				p.StartInfo = psi;
-				ProcessEnvironmentVariableOverrides (p.StartInfo);
-				Counters.ProcessesStarted++;
-				p.Start();
-				return p;
-			} else {
-				ProcessStartInfo psi = CreateProcessStartInfo (command, arguments, workingDirectory, false);
-				if (environmentVariables != null)
-					foreach (KeyValuePair<string, string> kvp in environmentVariables)
-						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
-				ProcessWrapper pw = StartProcess (psi, console.Out, console.Error, null);
-				new ProcessMonitor (console, pw, exited);
-				return pw;
+				if (psi != null) {
+					ProcessWrapper p = new ProcessWrapper();
+					
+					if (exited != null)
+						p.Exited += exited;
+	
+					psi.CreateNoWindow = true;
+					p.StartInfo = psi;
+					ProcessEnvironmentVariableOverrides (p.StartInfo);
+					Counters.ProcessesStarted++;
+					p.Start();
+					return p;
+				} else {
+					LoggingService.LogError ("Could not create external console for command: " + command + " " + arguments);
+				}
 			}
+			ProcessStartInfo psi = CreateProcessStartInfo (command, arguments, workingDirectory, false);
+			if (environmentVariables != null)
+				foreach (KeyValuePair<string, string> kvp in environmentVariables)
+					psi.EnvironmentVariables [kvp.Key] = kvp.Value;
+			ProcessWrapper pw = StartProcess (psi, console.Out, console.Error, null);
+			new ProcessMonitor (console, pw, exited);
+			return pw;
 		}
 		
 		public IExecutionHandler GetDefaultExecutionHandler (ExecutionCommand command)
