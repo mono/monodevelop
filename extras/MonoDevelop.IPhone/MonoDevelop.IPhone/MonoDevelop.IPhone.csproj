@@ -141,6 +141,9 @@
     <EmbeddedResource Include="Templates\IPhoneViewXib.xft.xml">
       <LogicalName>IPhoneViewXib.xft.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPadViewXib.xft.xml">
+      <LogicalName>IPadViewXib.xft.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneApplicationPList.xft.xml">
       <LogicalName>IPhoneApplicationPList.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -158,6 +161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneViewController.xft.xml">
       <LogicalName>IPhoneViewController.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPadViewController.xft.xml">
+      <LogicalName>IPadViewController.xft.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Icons\16x16\application-x-mono-develop-xib.png">
       <LogicalName>application-x-mono-develop-xib-16.png</LogicalName>
@@ -221,6 +227,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPadWindowBasedProject.xpt.xml">
       <LogicalName>IPadWindowBasedProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\UniversalWindowBasedProject.xpt.xml">
+      <LogicalName>UniversalWindowBasedProject.xpt.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneOpenGLProject.xpt.xml">
       <LogicalName>IPhoneOpenGLProject.xpt.xml</LogicalName>

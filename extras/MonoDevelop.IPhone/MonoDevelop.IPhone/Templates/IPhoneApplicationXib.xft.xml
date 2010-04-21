@@ -3,8 +3,8 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Main Window Definition</_Name>
-		<_Category>iPhone</_Category>
+		<_Name>iPhone Main Window Definition</_Name>
+		<_Category>iPhone and iPad</_Category>
 		<Icon>res:xib-template-application.png</Icon>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>IPhone</ProjectType>
