@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gtk;
+using Gdk;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -170,6 +171,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					md.CurrentOverload = bestOverload;
 			}
 		}
+		public static int X { get; private set; }
+		public static int Y { get; private set; }
 		
 		internal static void UpdateWindow ()
 		{
@@ -188,27 +191,37 @@ namespace MonoDevelop.Ide.CodeCompletion
 			MethodData md = methods[methods.Count - 1];
 			int cparam = md.MethodProvider.GetCurrentParameterIndex (md.CompletionContext);
 			Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
-			
-			int x = md.CompletionContext.TriggerXCoord;
-			int y;
-			
+			X = md.CompletionContext.TriggerXCoord;
 			if (CompletionWindowManager.IsVisible) {
 				// place above
-				y = CurrentCodeCompletionContext.TriggerYCoord - md.CompletionContext.TriggerTextHeight - reqSize.Height - 10;
+				Y = CurrentCodeCompletionContext.TriggerYCoord - md.CompletionContext.TriggerTextHeight - reqSize.Height - 10;
 			} else {
 				// place below
-				y = CurrentCodeCompletionContext.TriggerYCoord;
+				Y = CurrentCodeCompletionContext.TriggerYCoord;
 			}
 			
+			if (X + reqSize.Width > window.Screen.Width)
+				X = window.Screen.Width - reqSize.Width;
 			
+			if (Y < 0)
+				Y = CurrentCodeCompletionContext.TriggerYCoord;
 			
-			if (x + reqSize.Width > window.Screen.Width)
-				x = window.Screen.Width - reqSize.Width;
+			if (Y + reqSize.Height > window.Screen.Height) {
+				Y = Y - CurrentCodeCompletionContext.TriggerTextHeight - reqSize.Height - 4;
+			}
 			
-			if (y < 0)
-				y = CurrentCodeCompletionContext.TriggerYCoord;
+			if (CompletionWindowManager.IsVisible) {
+				Rectangle completionWindow = new Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y,
+				                                            CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height);
+				if (completionWindow.IntersectsWith (new Rectangle (X, Y, reqSize.Width, reqSize.Height))) {
+					X = completionWindow.X;
+					Y = completionWindow.Y - reqSize.Height - 6;
+					if (Y < 0)
+						Y = completionWindow.Bottom + 6;
+				}
+			}
 			
-			window.Move (x, y);
+			window.Move (X, Y);
 			window.Show ();
 			
 		}

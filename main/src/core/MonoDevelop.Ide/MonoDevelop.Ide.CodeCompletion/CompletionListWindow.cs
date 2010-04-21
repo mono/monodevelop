@@ -56,6 +56,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
+		public int X { get; private set; }
+		public int Y { get; private set; }
+		
 		IMutableCompletionDataList mutableList;
 		ICompletionDataList completionDataList;
 		public ICompletionDataList CompletionDataList {
@@ -261,8 +264,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void Reposition (bool force)
 		{
-			int x = CodeCompletionContext.TriggerXCoord - TextOffset;
-			int y = CodeCompletionContext.TriggerYCoord;
+			X = CodeCompletionContext.TriggerXCoord - TextOffset;
+			Y = CodeCompletionContext.TriggerYCoord;
 
 			int w, h;
 			GetSize (out w, out h);
@@ -273,15 +276,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			previousHeight = h;
 			previousWidth = w;
 
-			if (x + w > Screen.Width)
-				x = Screen.Width - w;
+			if (X + w > Screen.Width)
+				X = Screen.Width - w;
 
-			if (y + h > Screen.Height) {
-				y = y - CodeCompletionContext.TriggerTextHeight - h;
+			if (Y + h > Screen.Height) {
+				Y = Y - CodeCompletionContext.TriggerTextHeight - h;
 			}
-			curXPos = x;
-			curYPos = y;
-			Move (x, y);
+			curXPos = X;
+			curYPos = Y;
+			Move (X, Y);
 			UpdateDeclarationView ();
 		}
 		

@@ -1,3 +1,12 @@
+2010-04-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionWindowManager.cs:
+	* MonoDevelop.Ide.CodeCompletion/ParameterInformationWindowManager.cs:
+	  Fixed 'Bug 598199 - Parameters tooltip shows over completion
+	  list'.
+
 2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs: Add null check

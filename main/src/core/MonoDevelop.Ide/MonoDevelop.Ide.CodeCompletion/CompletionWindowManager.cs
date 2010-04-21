@@ -47,6 +47,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return wnd; }
 		}
 		
+		public static int X {
+			get {
+				return wnd.X;
+			}
+		}
+		
+		public static int Y {
+			get {
+				return wnd.Y;
+			}
+		}
+		
 		public static CodeCompletionContext CodeCompletionContext {
 			get {
 				return wnd.CodeCompletionContext;

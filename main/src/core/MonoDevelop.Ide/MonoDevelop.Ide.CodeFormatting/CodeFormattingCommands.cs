@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			int line = doc.TextEditor.CursorLine;
 			int column = doc.TextEditor.CursorColumn;
 			doc.TextEditor.Select (0, doc.TextEditor.TextLength);
-			doc.TextEditor.SelectedText = formatter.FormatText (doc.Project.Policies, doc.TextEditor.Text);
+			doc.TextEditor.SelectedText = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.TextEditor.Text);
 			doc.TextEditor.CursorLine = line ;
 			doc.TextEditor.CursorColumn = column;
 			doc.TextEditor.EndAtomicUndo ();
