@@ -324,6 +324,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			AskCredentials creds = new AskCredentials ();
 			protocol.Credentials = creds;
 			bool unauthorized;
+			Exception error = null;
 			
 			do {
 				unauthorized = false;
@@ -338,21 +339,38 @@ namespace MonoDevelop.WebReferences.Dialogs
 					if (!creds.Canceled && wr != null && wr.StatusCode == HttpStatusCode.Unauthorized) {
 						unauthorized = true;
 						continue;
-					}
-					protocol = null;
-					serviceUrl = null;
+					} else
+						error = wex;
 				}
-				catch {
-					protocol = null;
-					serviceUrl = null;
+				catch (Exception ex) {
+					error = ex;
 				}
 			} while (unauthorized);
 			
+			if (error != null) {
+				protocol = null;
+				serviceUrl = null;
+				this.IsWebService = false;
+				this.selectedService = null;
+				ShowError (error.Message);
+				return;
+			}
 			if (protocol != null)
 				creds.Store ();
 			
 			Application.Invoke (delegate {
 				UpdateService (protocol, url);
+			});
+		}
+		
+		void ShowError (string error)
+		{
+			Application.Invoke (delegate {
+				if (docLabel != null) {
+					docLabel.Text = error;
+					docLabel.LineWrapMode = Pango.WrapMode.Word;
+					docLabel.Wrap = true;
+				}
 			});
 		}
 		
@@ -383,6 +401,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				this.selectedService = protocol;
 				
 				if (docLabel != null) {
+					docLabel.Wrap = false;
 					foreach (object dd in protocol.Documents.Values) {
 						if (dd is ServiceDescription) {
 							Library.GenerateWsdlXml (text, protocol);
@@ -396,6 +415,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				}
 			}
 			if (docLabel != null) {
+				docLabel.Wrap = false;
 				if (text.Length >= 0)
 					docLabel.Markup = text.ToString ();
 				else

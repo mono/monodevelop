@@ -1,3 +1,9 @@
+2010-04-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	  Show an error message if DiscoverAny fails. Fixes bug
+	  #590375 - Add Web Reference dialog silently swallows errors.
+
 2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.WebReferences/WebReferenceItem.cs: Fix warning.
