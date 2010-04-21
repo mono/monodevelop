@@ -167,6 +167,7 @@ namespace MonoDevelop.CSharp.Resolver
 			this.resolvePosition = resolvePosition;
 			this.resultTable.Clear ();
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
+			
 			if (callingType != null) {
 				callingType = dom.ResolveType (callingType);
 				callingMember = GetMemberAt (callingType, fileName, resolvePosition);
@@ -177,7 +178,6 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 			
-			//System.Console.WriteLine("CallingMember: " + callingMember);
 			if (callingMember != null && !setupLookupTableVisitor ) {
 				string wrapper = CreateWrapperClassForMember (callingMember, fileName, editor);
 				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {

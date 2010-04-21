@@ -1153,7 +1153,7 @@ namespace MonoDevelop.CSharp.Completion
 					
 					if (Type.DecoratedFullName == compareCategory.Type.DecoratedFullName)
 						return 0;
-					if (Type.SourceProjectDom.GetInheritanceTree (Type).Any (t => t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
+					if (Type.SourceProjectDom != null && Type.SourceProjectDom.GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
 						return 1;
 					return -1;
 				}
@@ -1257,14 +1257,9 @@ namespace MonoDevelop.CSharp.Completion
 		ICompletionDataList CreateCompletionData (DomLocation location, ResolveResult resolveResult, 
 		                                          ExpressionResult expressionResult, NRefactoryResolver resolver)
 		{
-			if (resolveResult == null || expressionResult == null)
+			if (resolveResult == null || expressionResult == null || dom == null)
 				return null;
 			CompletionDataList result = new ProjectDomCompletionDataList ();
-			ProjectDom dom = ProjectDomService.GetProjectDom (Document.Project);
-			if (dom == null)
-				dom = ProjectDomService.GetFileDom (Document.FileName);
-			if (dom == null)
-				return null;
 			IEnumerable<object> objects = resolveResult.CreateResolveResult (dom, resolver != null ? resolver.CallingMember : null);
 			CompletionDataCollector col = new CompletionDataCollector (result, Document.CompilationUnit, location);
 			col.HideExtensionParameter = !resolveResult.StaticResolve;
