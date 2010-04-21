@@ -81,18 +81,25 @@ namespace MonoDevelop.AspNet.Gui
 				this.doc = doc;
 				this.localDoc = localDoc;
 			}
-			
+			IType constructedType = null;
 			MonoDevelop.Projects.Dom.IType CheckType (MonoDevelop.Projects.Dom.IType type)
 			{
 				if (type == null)
 					return null;
 				if (type.IsPartial && doc.CompilationUnit.Types[0].FullName == type.FullName) {
-					Console.WriteLine ("MERGE !!!");
-					IType result = CompoundType.Merge (type, doc.CompilationUnit.Types[0]);
-					result = CompoundType.Merge (type, localDoc.CompilationUnit.Types[0]);
-					return result;
+					if (constructedType == null) 
+						constructedType = CompoundType.Merge (CompoundType.Merge (doc.CompilationUnit.Types[0], type), localDoc.CompilationUnit.Types[0]);
+					constructedType.SourceProjectDom = this;
+					return constructedType;
 				}
 				return type;
+			}
+			
+			public override IType ResolveType (IType type)
+			{
+				if (type == constructedType)
+					return type;
+				return CheckType (base.ResolveType (type));
 			}
 			
 			public override MonoDevelop.Projects.Dom.IType GetType (IReturnType returnType)
@@ -185,6 +192,7 @@ namespace MonoDevelop.AspNet.Gui
 				loc.EndColumn = loc.BeginColumn = col;
 				
 				DocumentInfo documentInfo = documentBuilder.BuildDocument (AspCU, TextEditorData);
+				
 				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, true);
 				
 				MonoDevelop.Ide.Gui.HiddenTextEditorViewContent viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
