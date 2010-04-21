@@ -97,7 +97,7 @@ namespace Mono.TextEditor
 				int w2, h2;
 				informLayout.GetPixelSize (out w2, out h2); 
 				w = System.Math.Max (w, w2);
-				h = System.Math.Max (h, h2);
+				h += h2;
 			}
 			
 			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 3, Screen.Width * 2 / 5)), 

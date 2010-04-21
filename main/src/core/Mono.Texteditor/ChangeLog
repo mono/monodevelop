@@ -1,5 +1,11 @@
 2010-04-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Fixed 'Bug
+	  597668 - Focus message obscures text in small fold
+	  tooltips'.
+
+2010-04-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/OblivionStyle.xml:
 	* Styles/TangoLightStyle.xml: Fixed 'Bug 597662 - Symbol
 	  highlight makes caret hard to see'.
