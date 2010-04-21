@@ -400,15 +400,16 @@ namespace MonoDevelop.Ide.Gui
 				
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Opening {0}", fileName), Stock.OpenFileIcon, true);
-				FileInformation openFileInfo = new FileInformation();
-				openFileInfo.ProgressMonitor = pm;
-				openFileInfo.FileName = fileName;
-				openFileInfo.BringToFront = bringToFront;
-				openFileInfo.Line = line;
-				openFileInfo.Column = column;
-				openFileInfo.DisplayBinding = binding;
-				openFileInfo.Encoding = encoding;
-				openFileInfo.HighlightCaretLine = highlightCaretLine;
+				var openFileInfo = new FileOpenInformation () {
+					ProgressMonitor = pm,
+					FileName = fileName,
+					BringToFront = bringToFront,
+					Line = line,
+					Column = column,
+					DisplayBinding = binding,
+					Encoding = encoding,
+					HighlightCaretLine = highlightCaretLine,
+				};
 				RealOpenFile (openFileInfo);
 				
 				if (!pm.AsyncOperation.Success)
@@ -656,17 +657,16 @@ namespace MonoDevelop.Ide.Gui
 			documents.Remove (FindDocument (window)); 
 		}
 		
-		void RealOpenFile (object openFileInfo)
+		void RealOpenFile (FileOpenInformation openFileInfo)
 		{
 			FilePath fileName;
-			FileInformation oFileInfo = openFileInfo as FileInformation;
-			IProgressMonitor monitor = oFileInfo.ProgressMonitor;
+			IProgressMonitor monitor = openFileInfo.ProgressMonitor;
 
 			using (monitor)
 			{
 				Counters.OpenDocumentTimer.Trace ("Checking file");
 				
-				string origName = oFileInfo.FileName;
+				string origName = openFileInfo.FileName;
 
 				if (origName == null) {
 					monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
@@ -693,7 +693,7 @@ namespace MonoDevelop.Ide.Gui
 						foreach (Document doc in Documents) {
 							if (doc.Window.ViewContent.IsUntitled && doc.Window.ViewContent.UntitledName == origName) {
 								doc.Select ();
-								oFileInfo.NewContent = doc.Window.ViewContent;
+								openFileInfo.NewContent = doc.Window.ViewContent;
 								return;
 							}
 						}
@@ -706,14 +706,14 @@ namespace MonoDevelop.Ide.Gui
 				
 				foreach (Document doc in Documents) {
 					if (doc.FileName == fileName) {
-						if (oFileInfo.BringToFront) {
+						if (openFileInfo.BringToFront) {
 							doc.Select ();
 							IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
-							if (oFileInfo.Line != -1 && ipos != null) {
-								ipos.SetCaretTo (oFileInfo.Line, oFileInfo.Column != -1 ? oFileInfo.Column : 0, oFileInfo.HighlightCaretLine);
+							if (openFileInfo.Line != -1 && ipos != null) {
+								ipos.SetCaretTo (openFileInfo.Line, openFileInfo.Column != -1 ? openFileInfo.Column : 0, openFileInfo.HighlightCaretLine);
 							}
 						}
-						oFileInfo.NewContent = doc.Window.ViewContent;
+						openFileInfo.NewContent = doc.Window.ViewContent;
 						return;
 					}
 				}
@@ -722,8 +722,8 @@ namespace MonoDevelop.Ide.Gui
 				
 				IDisplayBinding binding;
 				
-				if (oFileInfo.DisplayBinding != null) {
-					binding = oFileInfo.DisplayBinding;
+				if (openFileInfo.DisplayBinding != null) {
+					binding = openFileInfo.DisplayBinding;
 				} else {
 					binding = DisplayBindingService.GetDefaultBinding (fileName, DesktopService.GetMimeTypeForUri (fileName));
 				}
@@ -750,7 +750,7 @@ namespace MonoDevelop.Ide.Gui
 						project = IdeApp.Workspace.GetProjectContainingFile (fileName);
 					}
 					
-					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, oFileInfo);
+					LoadFileWrapper fw = new LoadFileWrapper (workbench, binding, project, openFileInfo);
 					fw.Invoke (fileName);
 					
 					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
@@ -958,25 +958,28 @@ namespace MonoDevelop.Ide.Gui
 	}
 	
 
-	public class FileInformation
+	public class FileOpenInformation
 	{
-		public IProgressMonitor ProgressMonitor;
-		public string FileName;
-		public bool BringToFront;
-		public int Line;
-		public int Column;
-		public IDisplayBinding DisplayBinding;
-		public IViewContent NewContent;
-		public string Encoding;
-		public bool HighlightCaretLine;
+		public IProgressMonitor ProgressMonitor { get; set; }
+		public string FileName { get; set; }
+		public bool BringToFront { get; set; }
+		public int Line { get; set; }
+		public int Column { get; set; }
+		public IDisplayBinding DisplayBinding { get; set; }
+		public IViewContent NewContent { get; set; }
+		public string Encoding { get; set; }
+		public bool HighlightCaretLine { get; set; }
 		
-		public FileInformation () {}
-		public FileInformation (string FileName, int Line, int Column, bool BringToFront) 
+		public FileOpenInformation ()
 		{
-			this.FileName = FileName;
-			this.Line = Line;
-			this.Column = Column;
-			this.BringToFront = BringToFront;
+		}
+		
+		public FileOpenInformation (string fileName, int line, int column, bool bringToFront) 
+		{
+			this.FileName = fileName;
+			this.Line = line;
+			this.Column = column;
+			this.BringToFront = bringToFront;
 		}
 	}
 	
@@ -984,22 +987,20 @@ namespace MonoDevelop.Ide.Gui
 	{
 		IDisplayBinding binding;
 		Project project;
-		FileInformation fileInfo;
+		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
 		IViewContent newContent;
 		
-		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, FileInformation fileInfo)
+		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, FileOpenInformation fileInfo)
 		{
 			this.workbench = workbench;
 			this.fileInfo = fileInfo;
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, Project project, FileInformation fileInfo)
+		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, Project project, FileOpenInformation fileInfo)
+			: this (workbench, binding, fileInfo)
 		{
-			this.workbench = workbench;
-			this.fileInfo = fileInfo;
-			this.binding = binding;
 			this.project = project;
 		}
 		

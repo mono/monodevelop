@@ -1,3 +1,11 @@
+2010-04-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide/Ide.cs:
+	* MonoDevelop.Ide/IdeStartup.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/StartupInfo.cs: Remove unnecessary
+	  static data. Clean up some API.
+
 2010-04-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide/ProjectOperations.cs: Make 'quit while

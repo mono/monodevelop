@@ -34,39 +34,34 @@ using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class StartupInfo
+	internal class StartupInfo
 	{
-		static List<FileInformation> requestedFileList = new List<FileInformation> ();
-		static List<string> parameterList = new List<string> ();
+		List<FileOpenInformation> requestedFileList = new List<FileOpenInformation> ();
+		List<string> parameterList = new List<string> ();
 
+		public IList<string> ParameterList {
+			get { return parameterList; }
+		}
+		
+		public IEnumerable<FileOpenInformation> RequestedFileList {
+			get { return requestedFileList; }
+		}
+		
+		public bool HasFiles {
+			get { return requestedFileList.Count > 0; }
+		}
+		
 		/// <summary>
 		/// Matches a filename string with optional line and column 
 		/// (/foo/bar/blah.cs;22;31)
 		/// </summary>
-		public static Regex fileExpression = new Regex (@"^(?<filename>[^;]+)(;(?<line>\d+))?(;(?<column>\d+))?$", RegexOptions.Compiled);
+		public static readonly Regex FileExpression = new Regex (@"^(?<filename>[^;]+)(;(?<line>\d+))?(;(?<column>\d+))?$", RegexOptions.Compiled);
 		
-		public static string[] GetParameterList()
+		public StartupInfo (IEnumerable<string> args)
 		{
-			return parameterList.ToArray ();
-		}
-		
-		public static FileInformation[] GetRequestedFileList()
-		{
-			return requestedFileList.ToArray ();
-		}
-		
-		public static bool HasFiles {
-			get { return requestedFileList.Count > 0; }
-		}
-		
-		public static void SetCommandLineArgs(string[] args)
-		{
-			requestedFileList.Clear();
-			parameterList.Clear();
-			
 			foreach (string arg in args) {
 				string a = arg;
-				Match fileMatch = fileExpression.Match (a);
+				Match fileMatch = FileExpression.Match (a);
 				
 				// this does not yet work with relative paths
 				if (a[0] == '~') {
@@ -82,7 +77,7 @@ namespace MonoDevelop.Ide.Gui
 							int.TryParse (fileMatch.Groups["line"].Value, out line);
 						if (fileMatch.Groups["column"].Success)
 							int.TryParse (fileMatch.Groups["column"].Value, out column);
-						FileInformation file = new FileInformation (a, line, column, true);
+						var file = new FileOpenInformation (a, line, column, true);
 						requestedFileList.Add (file);
 					}
 				} else if (a[0] == '-' || a[0] == '/') {

@@ -41,6 +41,7 @@ using MonoDevelop.Ide.CustomTools;
 using System.Linq;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Desktop;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
@@ -253,10 +254,6 @@ namespace MonoDevelop.Ide
 			if (initializedEvent != null)
 				initializedEvent (null, EventArgs.Empty);
 			
-			// Load requested files
-			Counters.Initialization.Trace ("Opening Files");
-			OpenFiles (StartupInfo.GetRequestedFileList ());
-			
 			// load previous combine
 			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				RecentOpen recentOpen = Workbench.RecentOpen;
@@ -279,7 +276,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
-		public static void OpenFiles (System.Collections.Generic.IEnumerable<FileInformation> files)
+		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
 		{
 			if (files.Count() == 0)
 				return;
@@ -294,12 +291,12 @@ namespace MonoDevelop.Ide
 				return;
 			}
 			
-			var filteredFiles = new System.Collections.Generic.List<FileInformation> ();
+			var filteredFiles = new List<FileOpenInformation> ();
 			
 			//open the firsts sln/workspace file, and remove the others from the list
 		 	//FIXME: can we handle multiple slns?
 			bool foundSln = false;
-			foreach (FileInformation file in files) {
+			foreach (var file in files) {
 				if (Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
 					if (!foundSln) {
 						try {
@@ -315,7 +312,7 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
-			foreach (FileInformation file in filteredFiles) {
+			foreach (var file in filteredFiles) {
 				try {
 					Workbench.OpenDocument (file.FileName, file.Line, file.Column, file.BringToFront);
 				} catch (Exception ex) {

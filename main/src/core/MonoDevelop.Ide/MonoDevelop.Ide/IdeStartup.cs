@@ -92,16 +92,15 @@ namespace MonoDevelop.Ide
 			
 			AddinManager.AddinLoadError += OnAddinError;
 			
-			StartupInfo.SetCommandLineArgs (remainingArgs.ToArray ());
+			var startupInfo = new StartupInfo (remainingArgs);
 			
 			// If a combine was specified, force --newwindow.
 			
-			if(!options.NewWindow && StartupInfo.HasFiles) {
+			if(!options.NewWindow && startupInfo.HasFiles) {
 				Counters.Initialization.Trace ("Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
-				foreach (FileInformation file in StartupInfo.GetRequestedFileList ()) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName))
-					{
+				foreach (var file in startupInfo.RequestedFileList) {
+					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
 						options.NewWindow = true;
 						break;
 					}
@@ -148,10 +147,10 @@ namespace MonoDevelop.Ide
 			}
 				
 			// If not opening a combine, connect to existing monodevelop and pass filename(s) and exit
-			if (!options.NewWindow && StartupInfo.GetRequestedFileList ().Length > 0) {
+			if (!options.NewWindow && startupInfo.HasFiles) {
 				try {
 					StringBuilder builder = new StringBuilder ();
-					foreach (FileInformation file in StartupInfo.GetRequestedFileList ()) {
+					foreach (var file in startupInfo.RequestedFileList) {
 						builder.AppendFormat ("{0};{1};{2}\n", file.FileName, file.Line, file.Column);
 					}
 					listen_socket.Connect (ep);
@@ -205,6 +204,11 @@ namespace MonoDevelop.Ide
 
 				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);
+				
+				// Load requested files
+				Counters.Initialization.Trace ("Opening Files");
+				IdeApp.OpenFiles (startupInfo.RequestedFileList);
+				
 				monitor.Step (1);
 			
 			} catch (Exception e) {
@@ -287,7 +291,7 @@ namespace MonoDevelop.Ide
 			if (string.IsNullOrEmpty (file))
 				return false;
 			
-			Match fileMatch = StartupInfo.fileExpression.Match (file);
+			Match fileMatch = StartupInfo.FileExpression.Match (file);
 			if (null == fileMatch || !fileMatch.Success)
 				return false;
 				

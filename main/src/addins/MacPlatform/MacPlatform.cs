@@ -224,8 +224,7 @@ namespace MonoDevelop.Platform
 				};
 				
 				ApplicationEvents.OpenDocuments += delegate (object sender, ApplicationDocumentEventArgs e) {
-					//FIXME: make OpenFiles take the location too
-					IdeApp.OpenFiles (e.Documents.Select (doc => new FileInformation (doc.Key, doc.Value, 1, true)));
+					IdeApp.OpenFiles (e.Documents.Select (doc => new FileOpenInformation (doc.Key, doc.Value, 1, true)));
 					e.Handled = true;
 				};
 				
