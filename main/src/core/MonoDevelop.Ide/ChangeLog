@@ -1,3 +1,8 @@
+2010-04-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: Fixed 'Bug
+	  598728 - Code completion does not commit on generics >'.
+
 2010-04-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide/Ide.cs:

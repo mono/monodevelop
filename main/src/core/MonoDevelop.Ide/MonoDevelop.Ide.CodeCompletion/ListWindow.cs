@@ -356,14 +356,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				& modifier) != 0;
 			if (nonShiftModifierActive)
 				return KeyActions.Ignore;
-			
+			const string commitChars = " <>()[]{}";
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
 				UpdateWordSelection ();
 				curPos++;
 				return KeyActions.Process;
-			} else if (System.Char.IsPunctuation (keyChar) || keyChar == ' ' || keyChar == '<') {
+			} else if (System.Char.IsPunctuation (keyChar) || commitChars.Contains (keyChar)) {
 				//punctuation is only accepted if it actually matches an item in the list
 				word.Insert (curPos, keyChar);
 
