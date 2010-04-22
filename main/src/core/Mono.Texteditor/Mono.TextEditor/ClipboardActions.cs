@@ -416,7 +416,7 @@ namespace Mono.TextEditor
 							data.PasteText (offset, text);
 						}
 						
-						data.Caret.Offset = insertionOffset + textLength;
+						data.Caret.Offset += textLength;
 						data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, data.Caret.Column - textLength);
 						data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, data.Caret.Column);
 						data.Caret.PreserveSelection = false;
@@ -437,10 +437,10 @@ namespace Mono.TextEditor
 						
 						data.Caret.PreserveSelection = false;
 						if (!preserveState) {
-							data.Caret.Offset = insertionOffset + textLength;
+							data.Caret.Offset += textLength;
 						} else {
 							if (caretPos >= insertionOffset)
-								data.Caret.Offset = caretPos + textLength;
+								data.Caret.Offset += textLength;
 							if (selection != null) {
 								int offset = selection.Offset;
 								if (offset >= insertionOffset)
@@ -467,12 +467,10 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			int offset = data.Caret.Offset;
 			if (data.Caret.Column > line.EditableLength) {
 				string text = data.GetVirtualSpaces (data.Caret.Line, data.Caret.Column);
 				int textLength = data.Insert (data.Caret.Offset, text);
-				offset += textLength;
-				data.Caret.Offset = offset;
+				data.Caret.Offset += textLength;
 			}
 			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}

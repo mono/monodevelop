@@ -112,7 +112,7 @@ namespace Mono.TextEditor
 						Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 					} else {
 						int length = textEditorData.Insert (Caret.Offset, text);
-						Caret.Offset = offset + length - 1;
+						Caret.Offset += length - 1;
 					}
 				} else {
 					int length = textEditorData.Replace (Caret.Offset, 1, ch.ToString ());

@@ -308,6 +308,7 @@ namespace Mono.TextEditor
 					}
 				}
 			}
+			UpdateTextLinks ();
 		}
 		
 		void GotoNextLink (TextLink link)
@@ -396,10 +397,10 @@ namespace Mono.TextEditor
 				}
 				break;
 			}
-			if (link != null)
+/*			if (link != null)
 				UpdateTextLink (link);
 			UpdateTextLinks ();
-			Editor.Document.CommitUpdateAll ();
+			Editor.Document.CommitUpdateAll ();*/
 		}
 		
 		ListWindow<string> window;
@@ -454,8 +455,9 @@ namespace Mono.TextEditor
 				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
 					continue;
 				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText) {
-					Editor.Replace (s.Offset + baseOffset, s.Length, link.CurrentText); // <- updates caret postion as well
+					Editor.Replace (offset, s.Length, link.CurrentText); // <- updates caret postion as well
 					s.Length = link.CurrentText.Length;
+					Editor.Document.CommitLineUpdate (Editor.Document.OffsetToLineNumber (offset));
 				}
 			}
 		}
