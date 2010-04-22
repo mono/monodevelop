@@ -1,5 +1,10 @@
 2010-04-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 598203 - Tooltip
+	  shows too fast, follows mouse, and flickers'.
+
+2010-04-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/EditMode.cs:
 	* Mono.TextEditor/ClipboardActions.cs:
 	* Mono.TextEditor/TextLinkEditMode.cs: Optimized text link
