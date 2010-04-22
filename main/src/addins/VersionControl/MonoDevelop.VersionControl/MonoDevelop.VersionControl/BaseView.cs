@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl
 			get { return name; }
 		}
 
-		string IViewContent.StockIconId {
+		public virtual string StockIconId {
 			get { return null; }
 		}
 		
