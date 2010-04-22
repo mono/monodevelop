@@ -60,7 +60,7 @@ namespace MonoDevelop.WebReferences
 					}
 					
 					// Add the current project file to the web reference item
-					if (file.FilePath.Extension == ".map")
+					if (WebReferencesService.IsWebReferenceMapFile (file.FilePath))
 						item.MapFile = file;
 					else
 						item.ProxyFile = file;

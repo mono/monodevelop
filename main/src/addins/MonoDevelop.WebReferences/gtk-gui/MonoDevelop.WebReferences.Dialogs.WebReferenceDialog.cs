@@ -32,6 +32,12 @@ namespace MonoDevelop.WebReferences.Dialogs
 
 		private global::Gtk.Table tblReferenceName;
 
+		private global::Gtk.HBox hbox1;
+
+		private global::Gtk.ComboBox comboModel;
+
+		private global::Gtk.Label label1;
+
 		private global::Gtk.Label lblNamespace;
 
 		private global::Gtk.Label lblReference;
@@ -143,31 +149,62 @@ namespace MonoDevelop.WebReferences.Dialogs
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbxContainer[this.frmBrowser]));
 			w8.Position = 2;
 			// Container child vbxContainer.Gtk.Box+BoxChild
-			this.tblReferenceName = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
+			this.tblReferenceName = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
 			this.tblReferenceName.Name = "tblReferenceName";
 			this.tblReferenceName.RowSpacing = ((uint)(4));
 			this.tblReferenceName.ColumnSpacing = ((uint)(4));
 			this.tblReferenceName.BorderWidth = ((uint)(9));
+			// Container child tblReferenceName.Gtk.Table+TableChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.comboModel = global::Gtk.ComboBox.NewText ();
+			this.comboModel.AppendText (global::Mono.Unix.Catalog.GetString ("Windows Communication Foundation (WCF)"));
+			this.comboModel.AppendText (global::Mono.Unix.Catalog.GetString (".NET 2.0 Web Services"));
+			this.comboModel.Name = "comboModel";
+			this.comboModel.Active = 0;
+			this.hbox1.Add (this.comboModel);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboModel]));
+			w9.Position = 0;
+			w9.Expand = false;
+			w9.Fill = false;
+			this.tblReferenceName.Add (this.hbox1);
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.hbox1]));
+			w10.LeftAttach = ((uint)(1));
+			w10.RightAttach = ((uint)(2));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tblReferenceName.Gtk.Table+TableChild
+			this.label1 = new global::Gtk.Label ();
+			this.label1.Name = "label1";
+			this.label1.Xalign = 0f;
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Framework:");
+			this.tblReferenceName.Add (this.label1);
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.label1]));
+			w11.XOptions = ((global::Gtk.AttachOptions)(4));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tblReferenceName.Gtk.Table+TableChild
 			this.lblNamespace = new global::Gtk.Label ();
 			this.lblNamespace.Name = "lblNamespace";
 			this.lblNamespace.Xalign = 0f;
 			this.lblNamespace.LabelProp = global::Mono.Unix.Catalog.GetString ("Namespace: ");
 			this.tblReferenceName.Add (this.lblNamespace);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.lblNamespace]));
-			w9.TopAttach = ((uint)(1));
-			w9.BottomAttach = ((uint)(2));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.lblNamespace]));
+			w12.TopAttach = ((uint)(2));
+			w12.BottomAttach = ((uint)(3));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tblReferenceName.Gtk.Table+TableChild
 			this.lblReference = new global::Gtk.Label ();
 			this.lblReference.Name = "lblReference";
 			this.lblReference.Xalign = 0f;
 			this.lblReference.LabelProp = global::Mono.Unix.Catalog.GetString ("Reference: ");
 			this.tblReferenceName.Add (this.lblReference);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.lblReference]));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.lblReference]));
+			w13.TopAttach = ((uint)(1));
+			w13.BottomAttach = ((uint)(2));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tblReferenceName.Gtk.Table+TableChild
 			this.tbxNamespace = new global::Gtk.Entry ();
 			this.tbxNamespace.Sensitive = false;
@@ -176,12 +213,12 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.tbxNamespace.IsEditable = true;
 			this.tbxNamespace.InvisibleChar = '●';
 			this.tblReferenceName.Add (this.tbxNamespace);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.tbxNamespace]));
-			w11.TopAttach = ((uint)(1));
-			w11.BottomAttach = ((uint)(2));
-			w11.LeftAttach = ((uint)(1));
-			w11.RightAttach = ((uint)(2));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.tbxNamespace]));
+			w14.TopAttach = ((uint)(2));
+			w14.BottomAttach = ((uint)(3));
+			w14.LeftAttach = ((uint)(1));
+			w14.RightAttach = ((uint)(2));
+			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tblReferenceName.Gtk.Table+TableChild
 			this.tbxReferenceName = new global::Gtk.Entry ();
 			this.tbxReferenceName.CanFocus = true;
@@ -189,25 +226,27 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.tbxReferenceName.IsEditable = true;
 			this.tbxReferenceName.InvisibleChar = '●';
 			this.tblReferenceName.Add (this.tbxReferenceName);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.tbxReferenceName]));
-			w12.LeftAttach = ((uint)(1));
-			w12.RightAttach = ((uint)(2));
-			w12.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.tblReferenceName[this.tbxReferenceName]));
+			w15.TopAttach = ((uint)(1));
+			w15.BottomAttach = ((uint)(2));
+			w15.LeftAttach = ((uint)(1));
+			w15.RightAttach = ((uint)(2));
+			w15.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbxContainer.Add (this.tblReferenceName);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbxContainer[this.tblReferenceName]));
-			w13.Position = 3;
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbxContainer[this.tblReferenceName]));
+			w16.Position = 3;
+			w16.Expand = false;
+			w16.Fill = false;
 			w2.Add (this.vbxContainer);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(w2[this.vbxContainer]));
-			w14.Position = 0;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(w2[this.vbxContainer]));
+			w17.Position = 0;
 			// Internal child MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.ActionArea
-			global::Gtk.HButtonBox w15 = this.ActionArea;
-			w15.Events = ((global::Gdk.EventMask)(256));
-			w15.Name = "pnlActionArea";
-			w15.Spacing = 6;
-			w15.BorderWidth = ((uint)(5));
-			w15.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w18 = this.ActionArea;
+			w18.Events = ((global::Gdk.EventMask)(256));
+			w18.Name = "pnlActionArea";
+			w18.Spacing = 6;
+			w18.BorderWidth = ((uint)(5));
+			w18.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child pnlActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.btnCancel = new global::Gtk.Button ();
 			this.btnCancel.CanDefault = true;
@@ -217,9 +256,9 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.btnCancel.UseUnderline = true;
 			this.btnCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.btnCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w15[this.btnCancel]));
-			w16.Expand = false;
-			w16.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w19 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w18[this.btnCancel]));
+			w19.Expand = false;
+			w19.Fill = false;
 			// Container child pnlActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.btnOK = new global::Gtk.Button ();
 			this.btnOK.CanDefault = true;
@@ -228,16 +267,16 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.btnOK.UseStock = true;
 			this.btnOK.UseUnderline = true;
 			this.btnOK.Label = "gtk-ok";
-			w15.Add (this.btnOK);
-			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w15[this.btnOK]));
-			w17.Position = 1;
-			w17.Expand = false;
-			w17.Fill = false;
+			w18.Add (this.btnOK);
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w18[this.btnOK]));
+			w20.Position = 1;
+			w20.Expand = false;
+			w20.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 639;
-			this.DefaultHeight = 472;
+			this.DefaultWidth = 652;
+			this.DefaultHeight = 509;
 			this.Show ();
 			this.btnBack.Activated += new global::System.EventHandler (this.Browser_BackButtonClicked);
 			this.btnNext.Activated += new global::System.EventHandler (this.Browser_NextButtonClicked);
@@ -246,6 +285,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.btnHome.Activated += new global::System.EventHandler (this.Browser_HomeButtonClicked);
 			this.tbxReferenceURL.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler (this.Browser_URLKeyReleased);
 			this.btnGO.Clicked += new global::System.EventHandler (this.Browser_GoButtonClicked);
+			this.comboModel.Changed += new global::System.EventHandler (this.OnComboModelChanged);
 			this.btnOK.Clicked += new global::System.EventHandler (this.OnBtnOKClicked);
 		}
 	}

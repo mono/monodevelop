@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Web.Services.Description;
-using System.Web.Services.Discovery;
 using Gtk;
 
 using MonoDevelop.Core;
@@ -112,9 +110,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 			get { return this.tbxNamespace.Text; }
 		}
 		
-		/// <summary>Gets the selected service discovery client protocol.</summary>
-		/// <value>A DiscoveryClientProtocol containing the web reference information.</value>
-		public DiscoveryClientProtocol SelectedService
+		/// <summary>Gets the selected service discovery result.</summary>
+		public WebServiceDiscoveryResult SelectedService
 		{
 			get { return selectedService; }
 		}
@@ -139,7 +136,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		private string homeUrl = "http://www.w3schools.com/WebServices/TempConvert.asmx";
 		private string serviceUrl = "";
 		private string namespacePrefix = "";
-		private DiscoveryClientProtocol selectedService;
+		private WebServiceDiscoveryResult selectedService;
 		private string basePath = "";
 //		protected Gtk.Alignment frmBrowserAlign;
 		#endregion
@@ -319,48 +316,29 @@ namespace MonoDevelop.WebReferences.Dialogs
 				serviceUrl = url; 
 			}
 			
+			WebServiceEngine serviceEngine;
+			if (comboModel.Active == 0)
+				serviceEngine = WebReferencesService.WcfEngine;
+			else
+				serviceEngine = WebReferencesService.WsEngine;
+			
+			WebServiceDiscoveryResult service = null;
+			
 			// Checks the availablity of any services
-			DiscoveryClientProtocol protocol = new DiscoveryClientProtocol ();
-			AskCredentials creds = new AskCredentials ();
-			protocol.Credentials = creds;
-			bool unauthorized;
-			Exception error = null;
 			
-			do {
-				unauthorized = false;
-				creds.Reset ();
-				
-				try
-				{
-					protocol.DiscoverAny (url);
-				}
-				catch (WebException wex) {
-					HttpWebResponse wr = wex.Response as HttpWebResponse;
-					if (!creds.Canceled && wr != null && wr.StatusCode == HttpStatusCode.Unauthorized) {
-						unauthorized = true;
-						continue;
-					} else
-						error = wex;
-				}
-				catch (Exception ex) {
-					error = ex;
-				}
-			} while (unauthorized);
-			
-			if (error != null) {
-				protocol = null;
+			try {
+				service = serviceEngine.Discover (url);
+			} catch (Exception ex) {
 				serviceUrl = null;
 				this.IsWebService = false;
 				this.selectedService = null;
-				LoggingService.LogError ("Error while discovering web services", error);
-				ShowError (error.Message);
+				LoggingService.LogError ("Error while discovering web services", ex);
+				ShowError (ex.Message);
 				return;
 			}
-			if (protocol != null)
-				creds.Store ();
 			
 			Application.Invoke (delegate {
-				UpdateService (protocol, url);
+				UpdateService (service, url);
 			});
 		}
 		
@@ -375,11 +353,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 			});
 		}
 		
-		void UpdateService (DiscoveryClientProtocol protocol, string url)
+		void UpdateService (WebServiceDiscoveryResult service, string url)
 		{
 			StringBuilder text = new StringBuilder ();
 			
-			if (protocol == null) {
+			if (service == null) {
 				this.IsWebService = false;
 				this.selectedService = null;
 			}
@@ -399,20 +377,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 				this.tbxReferenceName.Text = name;
 				
 				this.IsWebService = true;
-				this.selectedService = protocol;
+				this.selectedService = service;
 				
 				if (docLabel != null) {
 					docLabel.Wrap = false;
-					foreach (object dd in protocol.Documents.Values) {
-						if (dd is ServiceDescription) {
-							Library.GenerateWsdlXml (text, protocol);
-							break;
-						}
-						else if (dd is DiscoveryDocument) {
-							Library.GenerateDiscoXml(text, (DiscoveryDocument)dd);
-							break;
-						}
-					}
+					text.Append (service.GetDescriptionMarkup ());
 				}
 			}
 			if (docLabel != null) {
@@ -433,6 +402,12 @@ namespace MonoDevelop.WebReferences.Dialogs
 				return;
 			}
 			Respond (Gtk.ResponseType.Ok);
+		}
+		
+		protected virtual void OnComboModelChanged (object sender, System.EventArgs e)
+		{
+			serviceUrl = null;
+			ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), this.tbxReferenceURL.Text);
 		}
 	}
 	

@@ -12,6 +12,8 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
+	-r:System.ServiceModel \
 	-r:System.Web \
 	-r:System.Web.Services \
 	-r:System.Xml
@@ -29,13 +31,15 @@ FILES =  \
 	MonoDevelop.WebReferences.NodeBuilders/ProjectNodeBuilder.cs \
 	MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs \
 	MonoDevelop.WebReferences.NodeBuilders/WebReferenceNodeBuilder.cs \
-	MonoDevelop.WebReferences/CodeGenerator.cs \
 	MonoDevelop.WebReferences/DiscoveryNetworkCredential.cs \
 	MonoDevelop.WebReferences/DiscoveryProtocol.cs \
 	MonoDevelop.WebReferences/Library.cs \
 	MonoDevelop.WebReferences/WebReferenceFolder.cs \
 	MonoDevelop.WebReferences/WebReferenceItem.cs \
-	MonoDevelop.WebReferences/WebReferenceItemCollection.cs
+	MonoDevelop.WebReferences/WebReferenceItemCollection.cs \
+	MonoDevelop.WebReferences/WebServiceEngine.cs \
+	MonoDevelop.WebReferences/WebServiceEngineWCF.cs \
+	MonoDevelop.WebReferences/WebServiceEngineWS.cs
 
 RES =  \
 	MonoDevelop.WebReferences.addin.xml \

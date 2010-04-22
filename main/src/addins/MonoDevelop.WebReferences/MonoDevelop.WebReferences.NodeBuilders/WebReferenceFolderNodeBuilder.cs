@@ -103,7 +103,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		public void OnRemoveFile (object sender, ProjectFileEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
-			if (e.ProjectFile.Name.EndsWith(".map") && e.ProjectFile.FilePath.IsChildPathOf (Library.GetWebReferencePath(e.Project)))
+			if (WebReferencesService.IsWebReferenceMapFile (e.ProjectFile.FilePath) && e.ProjectFile.FilePath.IsChildPathOf (Library.GetWebReferencePath(e.Project)))
 				tb.UpdateAll();
 		}
 	}

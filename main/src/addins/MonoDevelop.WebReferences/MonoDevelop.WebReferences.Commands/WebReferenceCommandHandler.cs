@@ -42,47 +42,7 @@ namespace MonoDevelop.WebReferences.Commands
 			{
 				try
 				{
-					CodeGenerator gen = new CodeGenerator(project, dialog.SelectedService);
-					
-					// Create the base directory if it does not exists
-					string basePath = dialog.ReferencePath;
-					if (!Directory.Exists(basePath))
-						Directory.CreateDirectory(basePath);
-					
-					// Generate the wsdl, disco and map files
-					string mapSpec = gen.CreateMapFile(basePath, "Reference.map");
-					
-					// Generate the proxy class
-					string proxySpec = gen.CreateProxyFile(basePath, dialog.Namespace + "." + dialog.ReferenceName, "Reference");
-					
-					ProjectFile mapFile = new ProjectFile(mapSpec);
-					mapFile.BuildAction = BuildAction.None;
-					mapFile.Subtype = Subtype.Code;
-					project.Files.Add(mapFile);
-			
-					ProjectFile proxyFile = new ProjectFile(proxySpec);
-					proxyFile.BuildAction = BuildAction.Compile;
-					proxyFile.Subtype = Subtype.Code;
-					project.Files.Add(proxyFile);
-					
-					// Add references to the project if they do not exist
-					string[] references = { 
-						"System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-						"System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-						"System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
-					};
-					ProjectReference gacRef;
-					
-					foreach(string refName in references) {
-						string targetName = project.TargetRuntime.AssemblyContext.GetAssemblyNameForVersion (refName, null, project.TargetFramework);
-						//FIXME: warn when we could not find a matching target assembly
-						if (targetName != null) {
-							gacRef = new ProjectReference (ReferenceType.Gac, targetName);
-							if (!project.References.Contains (gacRef))
-								project.References.Add (gacRef);
-						}
-					}
-
+					dialog.SelectedService.GenerateFiles (project, dialog.ReferencePath, dialog.Namespace, dialog.ReferenceName);
 					IdeApp.ProjectOperations.Save(project);
 				}
 				catch(Exception exception)
@@ -96,23 +56,30 @@ namespace MonoDevelop.WebReferences.Commands
 		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.Update)]
 		public void Update()
 		{
-			WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
-			item.Update();
-			IdeApp.Workbench.StatusBar.ShowMessage("Updated Web Reference " + item.Name);
+			using (StatusBarContext sbc = IdeApp.Workbench.StatusBar.CreateContext ()) {
+				sbc.BeginProgress (GettextCatalog.GetString ("Updating web reference"));
+				sbc.AutoPulse = true;
+				WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
+				DispatchService.BackgroundDispatchAndWait (item.Update);
+				IdeApp.Workbench.StatusBar.ShowMessage("Updated Web Reference " + item.Name);
+			}
 		}
 		
 		/// <summary>Execute the command for updating all web reference in a project.</summary>
 		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll)]
 		public void UpdateAll()
 		{
-			Project project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
-			WebReferenceItemCollection items = new WebReferenceItemCollection (project);
-			for (int index = 0; index < items.AllKeys.Length; index ++)
-			{
-				items[items.AllKeys[index]].Update();
-				IdeApp.Workbench.StatusBar.ShowMessage("Updated Web Reference " + items.AllKeys[index]);
+			using (StatusBarContext sbc = IdeApp.Workbench.StatusBar.CreateContext ()) {
+				sbc.BeginProgress (GettextCatalog.GetString ("Updating web references"));
+				sbc.AutoPulse = true;
+				Project project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
+				WebReferenceItemCollection items = new WebReferenceItemCollection (project);
+				DispatchService.BackgroundDispatchAndWait (delegate {
+					for (int index = 0; index < items.AllKeys.Length; index ++)
+						items[items.AllKeys[index]].Update();
+				});
+				IdeApp.Workbench.StatusBar.ShowMessage("Updated all Web References");
 			}
-			IdeApp.Workbench.StatusBar.ShowMessage("Updated all Web References");
 		}
 		
 		/// <summary>Execute the command for removing a web reference from a project.</summary>

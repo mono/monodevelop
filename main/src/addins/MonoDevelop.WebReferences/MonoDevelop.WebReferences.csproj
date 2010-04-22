@@ -60,6 +60,8 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -81,7 +83,6 @@
     <Compile Include="MonoDevelop.WebReferences\Library.cs" />
     <Compile Include="MonoDevelop.WebReferences.Commands\WebReferenceCommands.cs" />
     <Compile Include="MonoDevelop.WebReferences.NodeBuilders\WebReferenceFolderNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.WebReferences\CodeGenerator.cs" />
     <Compile Include="MonoDevelop.WebReferences.NodeBuilders\ProjectNodeBuilder.cs" />
     <Compile Include="MonoDevelop.WebReferences.Commands\WebReferenceCommandHandler.cs" />
     <Compile Include="MonoDevelop.WebReferences.NodeBuilders\ProjectFolderNodeBuilderExtension.cs" />
@@ -93,6 +94,9 @@
     <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs" />
     <Compile Include="MonoDevelop.WebReferences.Dialogs\UserPasswordDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs" />
+    <Compile Include="MonoDevelop.WebReferences\WebServiceEngine.cs" />
+    <Compile Include="MonoDevelop.WebReferences\WebServiceEngineWS.cs" />
+    <Compile Include="MonoDevelop.WebReferences\WebServiceEngineWCF.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml">

@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
 using System.IO;
-using System.Web.Services.Protocols;
-using System.Web.Services.Description;
-using System.Web.Services.Discovery;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -73,41 +70,9 @@ namespace MonoDevelop.WebReferences
 		/// <summary>Update the web reference item by using the map file.</summary>
 		public void Update()
 		{
-			// Read the map file into the discovery client protocol and setup the code generator
-			DiscoveryProtocol protocol = new DiscoveryProtocol(),
-			remoteProtocol = null;
-			protocol.ReadAllUseBasePath(MapFile.FilePath);
-
-			// Refresh the disco and wsdl from the server
-			foreach (object doc in protocol.References.Values) { 
-				string url = null;
-				if (doc is DiscoveryDocumentReference) {
-					url = ((DiscoveryDocumentReference)doc).Url;
-				} else if (doc is ContractReference) {
-					url = ((ContractReference)doc).Url;
-				}
-				
-				if (!string.IsNullOrEmpty (url)) {
-					remoteProtocol = new DiscoveryProtocol();
-					try {
-						remoteProtocol.DiscoverAny (url);
-						break;
-					} catch (WebException) {
-						remoteProtocol = null;
-					}
-				}
-			}
-
-			if(null != remoteProtocol){ protocol = remoteProtocol; }
-			
-			protocol.ResolveAll();
-			
-			// Re-generate the proxy and map files
-			string basePath = new FileInfo(MapFile.FilePath).Directory.FullName;
-			CodeGenerator codeGen = new CodeGenerator(ProxyFile.Project, (DiscoveryClientProtocol)protocol);
-			codeGen.CreateProxyFile(basePath, MapFile.Project.Name + "." + Name, "Reference");
-			protocol.WriteAll(basePath, "Reference.map");
-			protocol.Dispose();
+			WebServiceEngine engine = WebReferencesService.GetEngineForFile (MapFile.FilePath);
+			WebServiceDiscoveryResult service = engine.Load (this);
+			service.Update ();
 		}
 		
 		/// <summary>Delete the web reference from the project.</summary>
