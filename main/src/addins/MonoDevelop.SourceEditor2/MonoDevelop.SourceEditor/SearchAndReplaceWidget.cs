@@ -140,7 +140,10 @@ namespace MonoDevelop.SourceEditor
 			
 			this.widget = widget;
 			if (Platform.IsMac) {
-				eventbox2.VisibleWindow = eventbox3.VisibleWindow = eventbox4.VisibleWindow = eventbox5.VisibleWindow = eventbox6.VisibleWindow = true;
+				foreach (var eb in new [] { eventbox2, eventbox3, eventbox4, eventbox5, eventbox6 }) {
+					eb.VisibleWindow = true;
+					eb.ModifyBg (StateType.Normal, new Gdk.Color (230, 230, 230));
+				}
 			}
 
 			if (String.IsNullOrEmpty (widget.TextEditor.SearchPattern)) {

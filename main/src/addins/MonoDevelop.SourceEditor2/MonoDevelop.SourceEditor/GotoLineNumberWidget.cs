@@ -62,7 +62,10 @@ namespace MonoDevelop.SourceEditor
 			StoreWidgetState ();
 			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			if (Platform.IsMac) {
-				eventbox1.VisibleWindow = eventbox2.VisibleWindow = true;
+				foreach (var eb in new [] { eventbox1, eventbox2 }) {
+					eb.VisibleWindow = true;
+					eb.ModifyBg (StateType.Normal, new Gdk.Color (230, 230, 230));
+				}
 			}
 			this.closeButton.Clicked += delegate {
 				RestoreWidgetState ();
