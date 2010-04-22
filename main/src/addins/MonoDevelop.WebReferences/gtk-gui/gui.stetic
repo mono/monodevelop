@@ -50,7 +50,6 @@
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add Web Reference</property>
-    <property name="Icon">resource:WebReference.Service.png</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>

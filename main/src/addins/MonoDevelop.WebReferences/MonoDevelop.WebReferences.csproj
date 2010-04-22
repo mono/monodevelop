@@ -97,6 +97,7 @@
     <Compile Include="MonoDevelop.WebReferences\WebServiceEngine.cs" />
     <Compile Include="MonoDevelop.WebReferences\WebServiceEngineWS.cs" />
     <Compile Include="MonoDevelop.WebReferences\WebServiceEngineWCF.cs" />
+    <Compile Include="MonoDevelop.WebReferences\MoonlightChannelBaseExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml">
@@ -110,15 +111,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.WebReferences.Resources\WebReferenceItem.png">
       <LogicalName>WebReferenceItem.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.WebReferences.Resources\WebReference.File.Disco.png">
-      <LogicalName>WebReference.File.Disco.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.WebReferences.Resources\WebReference.File.Wsdl.png">
-      <LogicalName>WebReference.File.Wsdl.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.WebReferences.Resources\WebReference.Service.png">
-      <LogicalName>WebReference.Service.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

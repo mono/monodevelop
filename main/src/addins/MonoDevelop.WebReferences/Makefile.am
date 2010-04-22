@@ -34,6 +34,7 @@ FILES =  \
 	MonoDevelop.WebReferences/DiscoveryNetworkCredential.cs \
 	MonoDevelop.WebReferences/DiscoveryProtocol.cs \
 	MonoDevelop.WebReferences/Library.cs \
+	MonoDevelop.WebReferences/MoonlightChannelBaseExtension.cs \
 	MonoDevelop.WebReferences/WebReferenceFolder.cs \
 	MonoDevelop.WebReferences/WebReferenceItem.cs \
 	MonoDevelop.WebReferences/WebReferenceItemCollection.cs \
@@ -44,9 +45,6 @@ FILES =  \
 RES =  \
 	MonoDevelop.WebReferences.addin.xml \
 	MonoDevelop.WebReferences.Resources/disco.html \
-	MonoDevelop.WebReferences.Resources/WebReference.File.Disco.png \
-	MonoDevelop.WebReferences.Resources/WebReference.File.Wsdl.png \
-	MonoDevelop.WebReferences.Resources/WebReference.Service.png \
 	MonoDevelop.WebReferences.Resources/WebReferenceItem.png \
 	MonoDevelop.WebReferences.Resources/wsdl.html
 

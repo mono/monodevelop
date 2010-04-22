@@ -3,6 +3,25 @@
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.WebReferences.csproj:
+	* MonoDevelop.WebReferences.Resources/WebReference.png:
+	* MonoDevelop.WebReferences.Resources/WebReferenceItem.VS.png:
+	* MonoDevelop.WebReferences.Resources/WebReference.Service.png:
+	* MonoDevelop.WebReferences.Resources/WebReference.File.Wsdl.png:
+	* MonoDevelop.WebReferences.Resources/WebReference.File.Disco.png:
+	* MonoDevelop.WebReferences.Resources/WebReferenceFolder.Open.png:
+	* gtk-gui/MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.cs:
+	* MonoDevelop.WebReferences.Resources/WebReferenceFolder.Closed.png:
+	  Remove unused icons.
+
+	* MonoDevelop.WebReferences/WebServiceEngineWCF.cs:
+	* MonoDevelop.WebReferences/MoonlightChannelBaseExtension.cs:
+	  Add support for moonlight and monotouch proxies.
+
+2010-04-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.WebReferences.csproj:
 	* MonoDevelop.WebReferences/CodeGenerator.cs:
 	* MonoDevelop.WebReferences/WebServiceEngine.cs:
 	* MonoDevelop.WebReferences/WebReferenceItem.cs:

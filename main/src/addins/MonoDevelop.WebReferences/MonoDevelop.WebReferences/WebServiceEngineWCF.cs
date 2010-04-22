@@ -42,6 +42,7 @@ using System.Xml.Schema;
 
 using WSServiceDescription = System.Web.Services.Description.ServiceDescription;
 using System.Text;
+using Mono.ServiceContractTool;
 
 namespace MonoDevelop.WebReferences
 {
@@ -206,6 +207,9 @@ namespace MonoDevelop.WebReferences
 			CodeNamespace cns = new CodeNamespace (proxyNamespace);
 			ccu.Namespaces.Add (cns);
 			
+			bool targetMoonlight = dotNetProject.TargetFramework.Id.StartsWith ("SL");
+			bool targetMonoTouch = dotNetProject.TargetFramework.Id.StartsWith ("IPhone");
+			
 			ServiceContractGenerator generator = new ServiceContractGenerator (ccu);
 			generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;
 			if (refGroup.ClientOptions.GenerateAsynchronousMethods)
@@ -214,6 +218,8 @@ namespace MonoDevelop.WebReferences
 				generator.Options |= ServiceContractGenerationOptions.InternalTypes;
 			if (refGroup.ClientOptions.GenerateMessageContracts)
 				generator.Options |= ServiceContractGenerationOptions.TypedMessages;
+			if (targetMoonlight || targetMonoTouch)
+				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
 			
 			MetadataSet mset;
 			if (protocol != null)
@@ -231,7 +237,17 @@ namespace MonoDevelop.WebReferences
 			Collection<ContractDescription> contracts = importer.ImportAllContracts ();
 			
 			foreach (ContractDescription cd in contracts) {
-				generator.GenerateServiceContractType (cd);
+				cd.Namespace = proxyNamespace;
+				if (targetMoonlight || targetMonoTouch) {
+					var moonctx = new MoonlightChannelBaseContext ();
+					cd.Behaviors.Add (new MoonlightChannelBaseContractExtension (moonctx, targetMonoTouch));
+					foreach (var od in cd.Operations)
+						od.Behaviors.Add (new MoonlightChannelBaseOperationExtension (moonctx, targetMonoTouch));
+					generator.GenerateServiceContractType (cd);
+					moonctx.Fixup ();
+				}
+				else
+					generator.GenerateServiceContractType (cd);
 			}
 			
 			string fileSpec = Path.Combine (basePath, referenceName + "." + code_provider.FileExtension);
@@ -349,6 +365,8 @@ namespace MonoDevelop.WebReferences
 			UseSerializerForFaults = true;
 			ReferenceAllAssemblies = true;
 			Serializer = "Auto";
+			CollectionMappings = new List<CollectionMapping> ();
+			ReferencedAssemblies = new List<ReferencedAssembly> ();
 		}
 		
 		[XmlElement]
@@ -360,14 +378,28 @@ namespace MonoDevelop.WebReferences
 	    public bool GenerateInternalTypes { get; set; }
 	    public bool GenerateMessageContracts { get; set; }
 //	    string[] NamespaceMappings;
-//	    string[] CollectionMappings;
+	    List<CollectionMapping> CollectionMappings { get; set; }
 	    public bool GenerateSerializableTypes { get; set; }
 	    public string Serializer { get; set; }
 	    public bool UseSerializerForFaults { get; set; }
 	    public bool ReferenceAllAssemblies { get; set; }
-//	    string[] ReferencedAssemblies;
+	    List<ReferencedAssembly> ReferencedAssemblies { get; set; }
 //	    string[] ReferencedDataContractTypes;
 //	    string[] ServiceContractMappings;
+	}
+	
+	public class CollectionMapping
+	{
+		[XmlAttribute]
+		public string TypeName { get; set; }
+		[XmlAttribute]
+		public string Category { get; set; }
+	}
+	
+	public class ReferencedAssembly
+	{
+		[XmlAttribute]
+		public string AssemblyName { get; set; }
 	}
 	
 	public class MetadataSource

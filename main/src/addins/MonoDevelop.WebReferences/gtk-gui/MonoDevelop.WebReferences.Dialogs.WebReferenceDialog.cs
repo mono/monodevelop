@@ -71,7 +71,6 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.Events = ((global::Gdk.EventMask)(256));
 			this.Name = "MonoDevelop.WebReferences.Dialogs.WebReferenceDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Add Web Reference");
-			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("WebReference.Service.png");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.WebReferences.Dialogs.WebReferenceDialog.VBox
 			global::Gtk.VBox w2 = this.VBox;
