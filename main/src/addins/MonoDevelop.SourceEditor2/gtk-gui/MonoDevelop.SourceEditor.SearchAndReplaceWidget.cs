@@ -18,13 +18,19 @@ namespace MonoDevelop.SourceEditor
 
 		private global::Gtk.EventBox eventbox2;
 
+		private global::Gtk.Image image2;
+
 		private global::Gtk.Button buttonSearchForward;
 
 		private global::Gtk.EventBox eventbox3;
 
+		private global::Gtk.Image image3;
+
 		private global::Gtk.Button closeButton;
 
 		private global::Gtk.EventBox eventbox4;
+
+		private global::Gtk.Image image4;
 
 		private global::Gtk.HBox hbox2;
 
@@ -34,11 +40,15 @@ namespace MonoDevelop.SourceEditor
 
 		private global::Gtk.EventBox eventbox5;
 
+		private global::Gtk.Image image5;
+
 		private global::Gtk.Button buttonReplaceAll;
 
 		private global::Gtk.HBox hbox3;
 
 		private global::Gtk.EventBox eventbox6;
+
+		private global::Gtk.Image image6;
 
 		private global::Gtk.Label label1;
 
@@ -89,11 +99,18 @@ namespace MonoDevelop.SourceEditor
 			this.eventbox2.Name = "eventbox2";
 			this.eventbox2.AboveChild = true;
 			this.eventbox2.VisibleWindow = false;
+			// Container child eventbox2.Gtk.Container+ContainerChild
+			this.image2 = new global::Gtk.Image ();
+			this.image2.Name = "image2";
+			this.image2.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-up", global::Gtk.IconSize.Menu);
+			this.eventbox2.Add (this.image2);
 			this.buttonSearchBackward.Add (this.eventbox2);
 			this.buttonSearchBackward.Label = null;
 			this.hbox1.Add (this.buttonSearchBackward);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchBackward]));
-			w5.Position = 1;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchBackward]));
+			w6.Position = 1;
+			w6.Expand = false;
+			w6.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.buttonSearchForward = new global::Gtk.Button ();
 			this.buttonSearchForward.CanFocus = true;
@@ -104,11 +121,18 @@ namespace MonoDevelop.SourceEditor
 			this.eventbox3.Name = "eventbox3";
 			this.eventbox3.AboveChild = true;
 			this.eventbox3.VisibleWindow = false;
+			// Container child eventbox3.Gtk.Container+ContainerChild
+			this.image3 = new global::Gtk.Image ();
+			this.image3.Name = "image3";
+			this.image3.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-down", global::Gtk.IconSize.Menu);
+			this.eventbox3.Add (this.image3);
 			this.buttonSearchForward.Add (this.eventbox3);
 			this.buttonSearchForward.Label = null;
 			this.hbox1.Add (this.buttonSearchForward);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchForward]));
-			w7.Position = 2;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonSearchForward]));
+			w9.Position = 2;
+			w9.Expand = false;
+			w9.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.closeButton = new global::Gtk.Button ();
 			this.closeButton.CanFocus = true;
@@ -119,16 +143,23 @@ namespace MonoDevelop.SourceEditor
 			this.eventbox4.Name = "eventbox4";
 			this.eventbox4.AboveChild = true;
 			this.eventbox4.VisibleWindow = false;
+			// Container child eventbox4.Gtk.Container+ContainerChild
+			this.image4 = new global::Gtk.Image ();
+			this.image4.Name = "image4";
+			this.image4.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-close", global::Gtk.IconSize.Menu);
+			this.eventbox4.Add (this.image4);
 			this.closeButton.Add (this.eventbox4);
 			this.closeButton.Label = null;
 			this.hbox1.Add (this.closeButton);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
-			w9.Position = 3;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
+			w12.Position = 3;
+			w12.Expand = false;
+			w12.Fill = false;
 			this.table.Add (this.hbox1);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table[this.hbox1]));
-			w10.LeftAttach = ((uint)(1));
-			w10.RightAttach = ((uint)(2));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table[this.hbox1]));
+			w13.LeftAttach = ((uint)(1));
+			w13.RightAttach = ((uint)(2));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table.Gtk.Table+TableChild
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
@@ -139,8 +170,8 @@ namespace MonoDevelop.SourceEditor
 			this.entryReplace.IsEditable = true;
 			this.entryReplace.InvisibleChar = '●';
 			this.hbox2.Add (this.entryReplace);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.entryReplace]));
-			w11.Position = 0;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.entryReplace]));
+			w14.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.buttonReplace = new global::Gtk.Button ();
 			this.buttonReplace.CanFocus = true;
@@ -151,12 +182,18 @@ namespace MonoDevelop.SourceEditor
 			this.eventbox5.Name = "eventbox5";
 			this.eventbox5.AboveChild = true;
 			this.eventbox5.VisibleWindow = false;
+			// Container child eventbox5.Gtk.Container+ContainerChild
+			this.image5 = new global::Gtk.Image ();
+			this.image5.Name = "image5";
+			this.image5.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find-and-replace", global::Gtk.IconSize.Menu);
+			this.eventbox5.Add (this.image5);
 			this.buttonReplace.Add (this.eventbox5);
 			this.buttonReplace.Label = null;
 			this.hbox2.Add (this.buttonReplace);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonReplace]));
-			w13.Position = 1;
-			w13.Expand = false;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonReplace]));
+			w17.Position = 1;
+			w17.Expand = false;
+			w17.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.buttonReplaceAll = new global::Gtk.Button ();
 			this.buttonReplaceAll.CanFocus = true;
@@ -171,31 +208,39 @@ namespace MonoDevelop.SourceEditor
 			this.eventbox6.Name = "eventbox6";
 			this.eventbox6.AboveChild = true;
 			this.eventbox6.VisibleWindow = false;
+			// Container child eventbox6.Gtk.Container+ContainerChild
+			this.image6 = new global::Gtk.Image ();
+			this.image6.Name = "image6";
+			this.image6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find-and-replace", global::Gtk.IconSize.Menu);
+			this.eventbox6.Add (this.image6);
 			this.hbox3.Add (this.eventbox6);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.eventbox6]));
-			w14.Position = 0;
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.eventbox6]));
+			w19.Position = 0;
+			w19.Expand = false;
+			w19.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("All");
 			this.hbox3.Add (this.label1);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label1]));
-			w15.Position = 1;
-			w15.Expand = false;
-			w15.Fill = false;
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label1]));
+			w20.Position = 1;
+			w20.Expand = false;
+			w20.Fill = false;
 			this.buttonReplaceAll.Add (this.hbox3);
 			this.buttonReplaceAll.Label = null;
 			this.hbox2.Add (this.buttonReplaceAll);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonReplaceAll]));
-			w17.Position = 2;
-			w17.Expand = false;
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonReplaceAll]));
+			w22.Position = 2;
+			w22.Expand = false;
+			w22.Fill = false;
 			this.table.Add (this.hbox2);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table[this.hbox2]));
-			w18.TopAttach = ((uint)(1));
-			w18.BottomAttach = ((uint)(2));
-			w18.LeftAttach = ((uint)(1));
-			w18.RightAttach = ((uint)(2));
-			w18.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table[this.hbox2]));
+			w23.TopAttach = ((uint)(1));
+			w23.BottomAttach = ((uint)(2));
+			w23.LeftAttach = ((uint)(1));
+			w23.RightAttach = ((uint)(2));
+			w23.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
