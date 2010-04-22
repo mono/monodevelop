@@ -1,3 +1,8 @@
+2010-04-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Don't update
+	  cursor/mode labels when they're already empty.
+
 2010-04-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/DispatchService.cs: Added new

@@ -219,8 +219,10 @@ namespace MonoDevelop.Ide
 		
 		public void ClearCaretState ()
 		{
-			cursorLabel.Text = "";
-			modeLabel.Text = "";
+			if (cursorLabel.Text != "")
+				cursorLabel.Text = "";
+			if (modeLabel.Text != "")
+				modeLabel.Text = "";
 		}
 		
 		public void ShowReady ()
