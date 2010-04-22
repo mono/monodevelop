@@ -1,3 +1,13 @@
+2010-04-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport/DocumentOutlinePad.cs:
+	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
+	  Fixed 'GLib.MissingIntPtrCtorException: GLib.Object subclass
+	  MonoDevelop.Components.CompactScrolledWindow must provide a
+	  protected or public IntPtr ctor to support wrapping of
+	  native object handles.' exception.
+
+
 2010-04-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:

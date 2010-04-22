@@ -157,10 +157,8 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (outlineTreeView == null)
 				return;
-
 			ScrolledWindow w = (ScrolledWindow)outlineTreeView.Parent;
-			w.Dispose ();
-			outlineTreeView.Destroy ();
+			w.Destroy ();
 			outlineTreeStore.Dispose ();
 			outlineTreeStore = null;
 			outlineTreeView = null;
