@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
 		Pad sourcePad;
+		uint autoPulseTimeoutId;
 		
 		public StatusBar MainContext {
 			get { return mainContext; }
@@ -78,7 +79,7 @@ namespace MonoDevelop.Ide
 			PackStart (dockBar, false, false, 0);
 			
 			progressBar = new ProgressBar ();
-			progressBar.PulseStep = 0.3;
+			progressBar.PulseStep = 0.1;
 			progressBar.SizeRequest ();
 			progressBar.HeightRequest = 1;
 			
@@ -333,6 +334,7 @@ namespace MonoDevelop.Ide
 			ShowMessage ("");
 			this.progressBar.Fraction = 0.0;
 			this.progressBar.Visible = false;
+			AutoPulse = false;
 		}
 
 		public void Pulse ()
@@ -340,7 +342,28 @@ namespace MonoDevelop.Ide
 			DispatchService.AssertGuiThread ();
 			this.progressBar.Visible = true;
 			this.progressBar.Pulse ();
-		}		
+		}
+
+		public bool AutoPulse {
+			get { return autoPulseTimeoutId != 0; }
+			set {
+				DispatchService.AssertGuiThread ();
+				if (value) {
+					this.progressBar.Visible = true;
+					if (autoPulseTimeoutId == 0) {
+						autoPulseTimeoutId = GLib.Timeout.Add (100, delegate {
+							this.progressBar.Pulse ();
+							return true;
+						});
+					}
+				} else {
+					if (autoPulseTimeoutId != 0) {
+						GLib.Source.Remove (autoPulseTimeoutId);
+						autoPulseTimeoutId = 0;
+					}
+				}
+			}
+		}
 		#endregion
 		
 		public class StatusIcon : StatusBarIcon
@@ -568,6 +591,11 @@ namespace MonoDevelop.Ide
 		/// Pulses the progress bar shown with BeginProgress
 		/// </summary>
 		void Pulse ();
+		
+		/// <summary>
+		/// When set, the status bar progress will be automatically pulsed at short intervals
+		/// </summary>
+		bool AutoPulse { get; set; }
 	}
 	
 	public interface StatusBarContext: StatusBarContextBase
@@ -606,6 +634,7 @@ namespace MonoDevelop.Ide
 		double progressFraction;
 		bool showProgress;
 		Pad sourcePad;
+		bool autoPulse;
 		protected MonoDevelopStatusBar statusBar;
 		
 		internal bool StatusChanged { get; set; }
@@ -730,11 +759,28 @@ namespace MonoDevelop.Ide
 				statusBar.Pulse ();
 		}
 		
+		public bool AutoPulse {
+			get {
+				return autoPulse;
+			}
+			set {
+				if (value)
+					showProgress = true;
+				autoPulse = value;
+				if (InitialSetup ())
+					return;
+				if (statusBar.IsCurrentContext (this))
+					statusBar.AutoPulse = value;
+			}
+		}
+		
+		
 		internal void Update ()
 		{
 			if (showProgress) {
 				statusBar.BeginProgress (image, message);
 				statusBar.SetProgressFraction (progressFraction);
+				statusBar.AutoPulse = autoPulse;
 				statusBar.SetMessageSourcePad (sourcePad);
 			} else {
 				statusBar.EndProgress ();

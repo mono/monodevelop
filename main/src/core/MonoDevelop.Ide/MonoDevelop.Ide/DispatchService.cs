@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide
 			
 			DispatchDebug = Environment.GetEnvironmentVariable ("MONODEVELOP_DISPATCH_DEBUG") != null;
 		}
-
+		
 		public static void GuiDispatch (MessageHandler cb)
 		{
 			if (IsGuiThread) {
@@ -163,6 +163,36 @@ namespace MonoDevelop.Ide
 		{
 			Delegate del = (Delegate)(object)theDelegate;
 			return (T)(object)guiContext.CreateSynchronizedDelegate (del);
+		}
+		
+		/// <summary>
+		/// Runs the provided delegate in the background, but waits until finished, pumping the
+		/// message queue if necessary.
+		/// </summary>
+		public static void BackgroundDispatchAndWait (MessageHandler cb)
+		{
+			object eventObject = new object ();
+			lock (eventObject) {
+				BackgroundDispatch (delegate {
+					try {
+						cb ();
+					} finally {
+						lock (eventObject) {
+							Monitor.Pulse (eventObject);
+						}
+					}
+				});
+				if (IsGuiThread) {
+					while (true) {
+						if (Monitor.Wait (eventObject, 50))
+							return;
+						RunPendingEvents ();
+					}
+				}
+				else {
+					Monitor.Wait (eventObject);
+				}
+			}
 		}
 		
 		public static void BackgroundDispatch (MessageHandler cb)

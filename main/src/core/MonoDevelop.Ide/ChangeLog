@@ -1,3 +1,11 @@
+2010-04-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide/DispatchService.cs: Added new
+	  BackgroundDispatchAndWait method.
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Add support for
+	  progress bar with auto-pulse.
+
 2010-04-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: Fixed 'Bug
