@@ -1,3 +1,9 @@
+2010-04-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
+	  Fixed 'Bug 598203 - Tooltip shows too fast, follows mouse,
+	  and flickers'.
+
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Removed

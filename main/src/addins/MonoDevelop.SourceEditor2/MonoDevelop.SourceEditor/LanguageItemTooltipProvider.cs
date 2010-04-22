@@ -48,12 +48,20 @@ namespace MonoDevelop.SourceEditor
 			return ed.GetLanguageItem (offset);
 		}
 		
+		ResolveResult lastResult = null;
+		LanguageItemWindow lastWindow = null;
+		
 		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, object item)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, ed.Document.FileName);
 			
-			LanguageItemWindow result = new LanguageItemWindow (ed, modifierState, (ResolveResult)item, null, doc != null ? doc.CompilationUnit : null);
+			ResolveResult resolveResult = (ResolveResult)item;
+			if (lastResult != null  && lastWindow.IsRealized && lastResult.ResolvedExpression.Expression == resolveResult.ResolvedExpression.Expression)
+				return lastWindow;
+			LanguageItemWindow result = new LanguageItemWindow (ed, modifierState, resolveResult, null, doc != null ? doc.CompilationUnit : null);
+			lastWindow = result;
+			lastResult = resolveResult;
 			if (result.IsEmpty)
 				return null;
 			return result;
