@@ -1165,10 +1165,7 @@
                     <property name="AboveChild">True</property>
                     <property name="VisibleWindow">False</property>
                     <child>
-                      <widget class="Gtk.Image" id="image2">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-go-up Menu</property>
-                      </widget>
+                      <placeholder />
                     </child>
                   </widget>
                 </child>
@@ -1176,8 +1173,6 @@
               <packing>
                 <property name="Position">1</property>
                 <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
             <child>
@@ -1192,10 +1187,7 @@
                     <property name="AboveChild">True</property>
                     <property name="VisibleWindow">False</property>
                     <child>
-                      <widget class="Gtk.Image" id="image3">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-go-down Menu</property>
-                      </widget>
+                      <placeholder />
                     </child>
                   </widget>
                 </child>
@@ -1203,8 +1195,6 @@
               <packing>
                 <property name="Position">2</property>
                 <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
             <child>
@@ -1219,10 +1209,7 @@
                     <property name="AboveChild">True</property>
                     <property name="VisibleWindow">False</property>
                     <child>
-                      <widget class="Gtk.Image" id="image4">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-close Menu</property>
-                      </widget>
+                      <placeholder />
                     </child>
                   </widget>
                 </child>
@@ -1230,8 +1217,6 @@
               <packing>
                 <property name="Position">3</property>
                 <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
           </widget>
@@ -1275,19 +1260,15 @@
                     <property name="AboveChild">True</property>
                     <property name="VisibleWindow">False</property>
                     <child>
-                      <widget class="Gtk.Image" id="image5">
-                        <property name="MemberName" />
-                        <property name="Pixbuf">stock:gtk-find-and-replace Menu</property>
-                      </widget>
+                      <placeholder />
                     </child>
                   </widget>
                 </child>
               </widget>
               <packing>
                 <property name="Position">1</property>
-                <property name="AutoSize">True</property>
+                <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
             <child>
@@ -1306,17 +1287,12 @@
                         <property name="AboveChild">True</property>
                         <property name="VisibleWindow">False</property>
                         <child>
-                          <widget class="Gtk.Image" id="image6">
-                            <property name="MemberName" />
-                            <property name="Pixbuf">stock:gtk-find-and-replace Menu</property>
-                          </widget>
+                          <placeholder />
                         </child>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
                         <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
                       </packing>
                     </child>
                     <child>
@@ -1336,9 +1312,8 @@
               </widget>
               <packing>
                 <property name="Position">2</property>
-                <property name="AutoSize">True</property>
+                <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
           </widget>
@@ -1392,10 +1367,7 @@
                 <property name="AboveChild">True</property>
                 <property name="VisibleWindow">False</property>
                 <child>
-                  <widget class="Gtk.Image" id="image2">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-jump-to Menu</property>
-                  </widget>
+                  <placeholder />
                 </child>
               </widget>
             </child>
@@ -1403,8 +1375,6 @@
           <packing>
             <property name="Position">1</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
         <child>
@@ -1419,10 +1389,7 @@
                 <property name="AboveChild">True</property>
                 <property name="VisibleWindow">False</property>
                 <child>
-                  <widget class="Gtk.Image" id="image1">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-close Menu</property>
-                  </widget>
+                  <placeholder />
                 </child>
               </widget>
             </child>
@@ -1430,8 +1397,6 @@
           <packing>
             <property name="Position">2</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>

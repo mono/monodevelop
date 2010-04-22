@@ -30,6 +30,8 @@ using System;
 using Gtk;
 
 using Mono.TextEditor;
+using MonoDevelop.Ide;
+using Gdk;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -53,6 +55,26 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		// Used as work-around for a gtk/mac bug.
+		internal class IconDrawer
+		{
+			Gdk.Pixbuf icon;
+			
+			public IconDrawer (string iconName, EventBox box)
+			{
+				icon = ImageService.GetPixbuf (iconName, IconSize.Menu);
+				box.ExposeEvent += HandleEventbox1ExposeEvent;
+				box.SetSizeRequest (icon.Width, icon.Height);
+			}
+			
+			void HandleEventbox1ExposeEvent (object o, ExposeEventArgs args)
+			{
+				Widget w = (Widget)o;
+				args.Event.Window.DrawPixbuf (w.Style.BaseGC (w.State), icon, 0, 0, w.Allocation.X, w.Allocation.Y, icon.Width, icon.Height, RgbDither.None, 0, 0);
+			}
+		}
+		
+		
 		public GotoLineNumberWidget (SourceEditorWidget widget, Widget container)
 		{
 			this.container = container;
@@ -61,6 +83,9 @@ namespace MonoDevelop.SourceEditor
 			this.widget = widget;
 			StoreWidgetState ();
 			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
+			new IconDrawer ("gtk-jump-to", eventbox1);
+			new IconDrawer ("gtk-close", eventbox2);
+			
 			if (Platform.IsMac) {
 				eventbox1.VisibleWindow = eventbox2.VisibleWindow = true;
 			}
@@ -102,7 +127,7 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveSearchWidget ();
 			};
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();

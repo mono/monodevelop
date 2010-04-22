@@ -1,5 +1,15 @@
 2010-04-22  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.SourceEditor/GotoLineNumberWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.GotoLineNumberWidget.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:
+	  Found other solution to mac drawing problem.
+
+2010-04-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/LanguageItemTooltipProvider.cs:
 	  Fixed 'Bug 598203 - Tooltip shows too fast, follows mouse,
 	  and flickers'.

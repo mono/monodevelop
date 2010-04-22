@@ -12,13 +12,9 @@ namespace MonoDevelop.SourceEditor
 
 		private global::Gtk.EventBox eventbox2;
 
-		private global::Gtk.Image image2;
-
 		private global::Gtk.Button closeButton;
 
 		private global::Gtk.EventBox eventbox1;
-
-		private global::Gtk.Image image1;
 
 		protected virtual void Build ()
 		{
@@ -50,18 +46,11 @@ namespace MonoDevelop.SourceEditor
 			this.eventbox2.Name = "eventbox2";
 			this.eventbox2.AboveChild = true;
 			this.eventbox2.VisibleWindow = false;
-			// Container child eventbox2.Gtk.Container+ContainerChild
-			this.image2 = new global::Gtk.Image ();
-			this.image2.Name = "image2";
-			this.image2.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-jump-to", global::Gtk.IconSize.Menu);
-			this.eventbox2.Add (this.image2);
 			this.buttonGoToLine.Add (this.eventbox2);
 			this.buttonGoToLine.Label = null;
 			this.hbox1.Add (this.buttonGoToLine);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonGoToLine]));
-			w4.Position = 1;
-			w4.Expand = false;
-			w4.Fill = false;
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonGoToLine]));
+			w3.Position = 1;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.closeButton = new global::Gtk.Button ();
 			this.closeButton.CanFocus = true;
@@ -72,18 +61,11 @@ namespace MonoDevelop.SourceEditor
 			this.eventbox1.Name = "eventbox1";
 			this.eventbox1.AboveChild = true;
 			this.eventbox1.VisibleWindow = false;
-			// Container child eventbox1.Gtk.Container+ContainerChild
-			this.image1 = new global::Gtk.Image ();
-			this.image1.Name = "image1";
-			this.image1.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-close", global::Gtk.IconSize.Menu);
-			this.eventbox1.Add (this.image1);
 			this.closeButton.Add (this.eventbox1);
 			this.closeButton.Label = null;
 			this.hbox1.Add (this.closeButton);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
-			w7.Position = 2;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
+			w5.Position = 2;
 			this.Add (this.hbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

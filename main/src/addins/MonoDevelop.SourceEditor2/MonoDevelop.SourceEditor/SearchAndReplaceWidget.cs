@@ -139,9 +139,13 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			this.widget = widget;
-			if (Platform.IsMac) {
-				eventbox2.VisibleWindow = eventbox3.VisibleWindow = eventbox4.VisibleWindow = eventbox5.VisibleWindow = eventbox6.VisibleWindow = true;
-			}
+			new GotoLineNumberWidget.IconDrawer ("gtk-go-up", eventbox2);
+			new GotoLineNumberWidget.IconDrawer ("gtk-go-down", eventbox3);
+			new GotoLineNumberWidget.IconDrawer ("gtk-close", eventbox4);
+			
+			new GotoLineNumberWidget.IconDrawer ("gtk-find-and-replace", eventbox5);
+			new GotoLineNumberWidget.IconDrawer ("gtk-find-and-replace", eventbox6);
+			
 
 			if (String.IsNullOrEmpty (widget.TextEditor.SearchPattern)) {
 				widget.TextEditor.SearchPattern = searchPattern;
@@ -150,7 +154,7 @@ namespace MonoDevelop.SourceEditor
 				//FireSearchPatternChanged ();
 			}
 			UpdateSearchPattern ();
-			
+			 
 			//searchEntry.Model = searchHistory;
 			
 			searchEntry.Entry.KeyReleaseEvent += delegate {
