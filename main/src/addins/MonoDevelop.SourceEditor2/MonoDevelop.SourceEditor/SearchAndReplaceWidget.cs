@@ -139,6 +139,8 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			this.widget = widget;
+			
+			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
 			if (Platform.IsMac) {
 				foreach (var eb in new [] { eventbox2, eventbox3, eventbox4, eventbox5, eventbox6 }) {
 					eb.VisibleWindow = true;
