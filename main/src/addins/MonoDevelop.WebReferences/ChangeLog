@@ -1,3 +1,8 @@
+2010-04-23  Carlo Kok  <ck@remobjects.com>
+	* Makefile.am:
+	* MonoDevelop.WebReferences.csproj:
+	  Add missing System.Configuration reference.
+	  
 2010-04-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

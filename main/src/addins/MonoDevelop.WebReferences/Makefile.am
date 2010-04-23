@@ -16,6 +16,7 @@ REFS =  \
 	-r:System.ServiceModel \
 	-r:System.Web \
 	-r:System.Web.Services \
+	-r:System.Configuration \
 	-r:System.Xml
 
 FILES =  \
