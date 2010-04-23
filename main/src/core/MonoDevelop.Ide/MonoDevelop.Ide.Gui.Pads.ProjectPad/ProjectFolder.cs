@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			this.parent = parent;
 			this.parentWorkspaceObject = parentWorkspaceObject;
-			this.absolutePath = absolutePath;
+			this.absolutePath = absolutePath.CanonicalPath;
 		}
 		
 		public bool TrackChanges {
@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		public string Name {
-			get { return System.IO.Path.GetFileName (absolutePath); }
+			get { return absolutePath.FileName; }
 		}
 		
 		public IWorkspaceObject ParentWorkspaceObject {
