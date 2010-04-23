@@ -843,13 +843,11 @@
     <Compile Include="MonoDevelop.Ide.Gui\LayoutComboBox.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\UnknownEntryNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GoToDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\TextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\NavigationCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorProperties.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IndentStyle.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\InternalLogPad.cs" />
@@ -1353,6 +1351,9 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SolutionFolderFileNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Components\CompactScrolledWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1412,5 +1413,6 @@
     <Folder Include="MonoDevelop.Ide.Gui.Dialogs\" />
     <Folder Include="MonoDevelop.Ide.Projects\" />
     <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
+    <Folder Include="MonoDevelop.Ide.NavigateToDialog\" />
   </ItemGroup>
 </Project>

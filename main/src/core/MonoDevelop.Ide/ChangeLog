@@ -1,3 +1,21 @@
+2010-04-23  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.NavigateToDialog:
+	* MonoDevelop.Components/ListView.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs:
+	* MonoDevelop.Ide.Commands/SearchCommands.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs:
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs:
+	* gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs:
+	  Worked on go to dialog. (go to file/type are unaffected in
+	  function - only the gui changed). Added 'Navigate To'
+	  command which allows to navigate to any file/type/member.
+
 2010-04-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolder.cs: Use

@@ -43,7 +43,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ErrorDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GoToDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiMessageDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \
@@ -64,6 +63,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs \
@@ -426,7 +426,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/GoToDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/IOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ItemOptionsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ItemOptionsPanel.cs \
@@ -556,6 +555,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/WorkbenchContext.cs \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindow.cs \
+	MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs \
+	MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs \
 	MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \

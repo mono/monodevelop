@@ -507,7 +507,8 @@ namespace MonoDevelop.Components
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < RowCount)
 			{
-				bool hasMarkup = SetLayoutText (page + n);
+				bool isSelected = selectedRows.Contains (page + n);
+				bool hasMarkup = SetLayoutText (page + n, isSelected);
 				
 				Gdk.Pixbuf icon = dataProvider.GetIcon (page + n);
 				int iconHeight = icon != null? icon.Height : IconWidth;
@@ -518,7 +519,7 @@ namespace MonoDevelop.Components
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				
-				if (selectedRows.Contains (page + n)) {
+				if (isSelected) {
 					if (!disableSelection) {
 						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
 						                              true, margin, ypos, lineWidth, he + padding);
@@ -557,11 +558,11 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		bool SetLayoutText (int n)
+		bool SetLayoutText (int n, bool isSelected)
 		{
 			bool hasMarkup = dataProvider.UseMarkup (n);
 
-			string text = dataProvider.GetText (n);
+			string text = isSelected ? dataProvider.GetSelectedText (n) : dataProvider.GetText (n);
 			if (hasMarkup)
 				layout.SetMarkup (text ?? "&lt;null&gt;");
 			else
@@ -625,7 +626,7 @@ namespace MonoDevelop.Components
 			if (dataProvider != null) {
 				int maxr = Math.Min (page + visibleRows, dataProvider.ItemCount);
 				for (int n=page; n<maxr; n++) {
-					SetLayoutText (n);
+					SetLayoutText (n, false);
 					int rh, rw;
 					layout.GetPixelSize (out rw, out rh);
 					rw += (margin + padding) * 2 + IconWidth + ColumnGap;
@@ -653,6 +654,7 @@ namespace MonoDevelop.Components
 	{
 		int ItemCount { get; }
 		string GetText (int n);
+		string GetSelectedText (int n);
 		bool UseMarkup (int n);
 		Gdk.Pixbuf GetIcon (int n);
 	}
