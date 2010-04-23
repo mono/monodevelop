@@ -72,7 +72,6 @@ namespace Mono.Debugging.Soft
 		
 		bool loggedSymlinkedRuntimesBug = false;
 		
-		public readonly NRefactoryEvaluator Evaluator = new NRefactoryEvaluator ();
 		public readonly SoftDebuggerAdaptor Adaptor = new SoftDebuggerAdaptor ();
 		
 		public SoftDebuggerSession ()
@@ -893,7 +892,7 @@ namespace Mono.Debugging.Soft
 				EvaluationOptions ops = Options.EvaluationOptions;
 				ops.AllowTargetInvoke = true;
 				SoftEvaluationContext ctx = new SoftEvaluationContext (this, frames[0], ops);
-				ValueReference val = Evaluator.Evaluate (ctx, exp);
+				ValueReference val = ctx.Evaluator.Evaluate (ctx, exp);
 				return val.CreateObjectValue (false).Value;
 			} catch (Exception ex) {
 				OnDebuggerOutput (true, ex.ToString ());

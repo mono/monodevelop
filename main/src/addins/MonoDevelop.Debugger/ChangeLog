@@ -1,3 +1,12 @@
+2010-04-23  Carlo Kok  <ck@remobjects.com>
+	
+	* MakeFile.am:
+	* MonoDevelop.Debugger.csproj:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ExpressionEvaluatorExtensionNode.cs:
+	* MonoDevelop.Debugger/LocalsPad.cs:
+      Allow for custom debug expression evaluator plugins.
+	  
 2010-04-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Improved column

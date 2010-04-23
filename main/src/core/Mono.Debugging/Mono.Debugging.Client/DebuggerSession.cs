@@ -41,6 +41,7 @@ namespace Mono.Debugging.Client
 	public delegate bool ExceptionHandler (Exception ex);
 	public delegate string TypeResolverHandler (string identifier, SourceLocation location);
 	public delegate void BreakpointTraceHandler (BreakEvent be, string trace);
+	public delegate IExpressionEvaluator GetExpressionEvaluatorHandler (string extension);
 	
 	public abstract class DebuggerSession: IDisposable
 	{
@@ -117,6 +118,8 @@ namespace Mono.Debugging.Client
 		
 		public TypeResolverHandler TypeResolverHandler { get; set; }
 
+		public GetExpressionEvaluatorHandler GetExpressionEvaluator { get; set; }		
+		
 		public BreakpointStore Breakpoints {
 			get {
 				lock (slock) {
@@ -657,7 +660,38 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		Mono.Debugging.Evaluation.NRefactoryEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryEvaluator ();
+		Mono.Debugging.Evaluation.ExpressionEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryEvaluator ();
+		Dictionary <string, IExpressionEvaluator> evaluators = new Dictionary <string, IExpressionEvaluator> ();
+
+		public IExpressionEvaluator FindExpressionEvaluator (StackFrame frame)
+		{
+			if (GetExpressionEvaluator == null)
+				return null;
+
+			string fn = frame.SourceLocation == null ? null : frame.SourceLocation.Filename;
+			if (String.IsNullOrEmpty (fn))
+				return null;
+
+			fn = System.IO.Path.GetExtension (fn);
+			IExpressionEvaluator result;
+			if (evaluators.TryGetValue (fn, out result))
+				return result;
+
+			result = GetExpressionEvaluator(fn);
+
+			evaluators[fn] = result;
+
+			return result;
+		}
+
+		public Mono.Debugging.Evaluation.ExpressionEvaluator GetResolver (StackFrame frame)
+		{
+			IExpressionEvaluator result = FindExpressionEvaluator (frame);
+			if (result == null)
+				return defaultResolver;
+			return result.Evaluator;
+		}
+		
 		
 		protected virtual string OnResolveExpression (string expression, SourceLocation location)
 		{

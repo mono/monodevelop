@@ -33,7 +33,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
-	public class ExpressionEvaluator
+	public abstract class ExpressionEvaluator
 	{
 		public ValueReference Evaluate (EvaluationContext ctx, string exp)
 		{
@@ -158,6 +158,8 @@ namespace Mono.Debugging.Evaluation
 			}
 			return sb.ToString ();
 		}
+
+		public abstract string Resolve (DebuggerSession session, SourceLocation location, string exp);
 	}
 	
 	[Serializable]

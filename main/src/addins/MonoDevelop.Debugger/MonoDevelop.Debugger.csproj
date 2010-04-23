@@ -129,6 +129,7 @@
     <Compile Include="MonoDevelop.Debugger.Visualizer\TextVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\PixbufVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\IValueVisualizer.cs" />
+	<Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

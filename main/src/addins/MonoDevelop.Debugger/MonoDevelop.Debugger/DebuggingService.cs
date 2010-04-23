@@ -54,6 +54,9 @@ namespace MonoDevelop.Debugger
 		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerEngines";
 		static DebuggerEngine[] engines;
 		
+		const string EvaluatorsPath = "/MonoDevelop/Debugging/Evaluators";
+		static Dictionary<string, ExpressionEvaluatorExtensionNode> evaluators;
+		
 		static BreakpointStore breakpoints = new BreakpointStore ();
 		static PinnedWatchStore pinnedWatches = new PinnedWatchStore ();
 		
@@ -92,7 +95,11 @@ namespace MonoDevelop.Debugger
 				// Regresh the engine list
 				engines = null;
 			});
-		}
+			AddinManager.AddExtensionNodeHandler (EvaluatorsPath, delegate {
+				// Regresh the engine list
+				evaluators = null;
+			});
+        }
 
 		public static IExecutionHandler GetExecutionHandler ()
 		{
@@ -456,10 +463,12 @@ namespace MonoDevelop.Debugger
 			
 			if (DebugSessionStarted != null)
 				DebugSessionStarted (null, EventArgs.Empty);
-			
-			NotifyLocationChanged ();
-		}
+
+			session.GetExpressionEvaluator = new GetExpressionEvaluatorHandler (OnGetExpressionEvaluator);
 		
+            NotifyLocationChanged ();
+		}
+
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
 		{
 			DispatchService.GuiDispatch (delegate {
@@ -724,7 +733,19 @@ namespace MonoDevelop.Debugger
 				engines = engs.ToArray ();
 			}
 			return engines;
-		}		
+		}
+
+		public static Dictionary<string, ExpressionEvaluatorExtensionNode> GetExpressionEvaluators()
+		{
+			if (evaluators == null) {
+				Dictionary<string, ExpressionEvaluatorExtensionNode> evgs = new Dictionary<string, ExpressionEvaluatorExtensionNode> (StringComparer.InvariantCultureIgnoreCase);
+				foreach (ExpressionEvaluatorExtensionNode node in AddinManager.GetExtensionNodes (EvaluatorsPath))
+					evgs.Add (node.extension, node);
+				
+				evaluators = evgs;
+			}
+			return evaluators;
+		}
 		
 		static DebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
@@ -791,6 +812,22 @@ namespace MonoDevelop.Debugger
 						return result.ResolvedType.FullName;
 				}
 			}
+			return null;
+		}
+		
+		public static ExpressionEvaluatorExtensionNode EvaluatorForExtension (string extension)
+		{
+			ExpressionEvaluatorExtensionNode result;
+			if (GetExpressionEvaluators ().TryGetValue (extension, out result))
+				return result;
+			return null;
+		}
+
+		static IExpressionEvaluator OnGetExpressionEvaluator (string extension)
+		{
+			ExpressionEvaluatorExtensionNode info = EvaluatorForExtension (extension);
+			if (info != null)
+				return info.Evaluator;
 			return null;
 		}
 	}

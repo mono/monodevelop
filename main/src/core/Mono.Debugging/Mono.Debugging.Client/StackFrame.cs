@@ -100,6 +100,10 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetAllLocals ()
 		{
+			IExpressionEvaluator evaluator = session.FindExpressionEvaluator (this);
+			if (evaluator != null)
+				return evaluator.GetLocals (this);
+
 			return GetAllLocals (session.EvaluationOptions);
 		}
 		

@@ -97,7 +97,7 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		public string Resolve (DebuggerSession session, SourceLocation location, string exp)
+		public override string Resolve (DebuggerSession session, SourceLocation location, string exp)
 		{
 			return Resolve (session, location, exp, false);
 		}

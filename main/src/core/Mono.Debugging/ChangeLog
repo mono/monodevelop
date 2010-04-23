@@ -1,3 +1,12 @@
+2010-04-23  Carlo Kok  <ck@remobjects.com>
+
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Client/IExpressionEvaluator.cs:
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	  Allow for custom expression evaluators.
+	
+	
 2010-04-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

@@ -1,3 +1,8 @@
+2010-04-19  Carlo Kok  <ck@remobjects.com>
+	* SoftDebuggerSession.cs:
+	* SoftEvaluationContext.cs:
+	  Allow for custom expression evaluator.
+
 2010-04-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: When getting the members of a type,

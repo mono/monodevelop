@@ -35,6 +35,7 @@ FILES =  \
 	Mono.Debugging.Client/DebuggerSessionOptions.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
 	Mono.Debugging.Client/EvaluationOptions.cs \
+	Mono.Debugging.Client/IExpressionEvaluator.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \
 	Mono.Debugging.Client/ObjectValueFlags.cs \

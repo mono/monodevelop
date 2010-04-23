@@ -53,6 +53,7 @@ FILES =  \
 	MonoDevelop.Debugger/ExceptionCaughtDialog.cs \
 	MonoDevelop.Debugger/ExceptionsDialog.cs \
 	MonoDevelop.Debugger/ExpressionEvaluatorDialog.cs \
+	MonoDevelop.Debugger/ExpressionEvaluatorExtensionNode.cs \
 	MonoDevelop.Debugger/Extensions.cs \
 	MonoDevelop.Debugger/IDebuggerEngine.cs \
 	MonoDevelop.Debugger/ImmediatePad.cs \

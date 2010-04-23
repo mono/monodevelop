@@ -43,7 +43,15 @@ namespace Mono.Debugging.Soft
 		{
 			Frame = frame;
 			Thread = frame.Thread;
-			Evaluator = session.Evaluator;
+		
+		
+			string method = frame.Method.Name;
+			if (frame.Method.DeclaringType != null)
+				method = frame.Method.DeclaringType.FullName + "." + method;
+			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber);
+			var lang = frame.Method != null? "Managed" : "Native";
+			
+			Evaluator = session.GetResolver (new DC.StackFrame (frame.ILOffset, location, lang, session.IsExternalCode (frame)));
 			Adapter = session.Adaptor;
 			this.session = session;
 			this.stackVersion = session.StackVersion;

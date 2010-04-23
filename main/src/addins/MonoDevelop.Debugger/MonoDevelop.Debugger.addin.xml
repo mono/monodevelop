@@ -18,6 +18,11 @@
 		<ExtensionNode name="DebuggerEngine" type="MonoDevelop.Debugger.DebuggerEngineExtensionNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path="/MonoDevelop/Debugging/Evaluators">
+		<Description>Expression evaluator factories. Specified classes must implement MonoDevelop.Debugger.IExpressionEvaluator</Description>
+		<ExtensionNode name="ExpressionEvaluator" type="MonoDevelop.Debugger.ExpressionEvaluatorExtensionNode"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path="/MonoDevelop/Debugging/ValueVisualizers">
 		<Description>Value visualizers. Specified classes must implement MonoDevelop.Debugger.IValueVisualizer</Description>
 		<ExtensionNode name="Type"/>
