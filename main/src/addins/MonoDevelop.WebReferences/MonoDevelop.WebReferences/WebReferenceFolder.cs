@@ -9,19 +9,19 @@ namespace MonoDevelop.WebReferences
 		#region Properties
 		/// <summary>Gets the parent Project for the Web Reference Folder.</summary>
 		/// <value>A Project containing the parent project for the current Web Reference Folder.</value>
-		public Project Project
+		public DotNetProject Project
 		{
 			get { return project; }
 		}
 		#endregion
 		
 		#region Member Variables
-		private Project project;
+		private DotNetProject project;
 		#endregion
 		
 		/// <summary>Initializes a new instance of the WebReferenceFolder class by specifying the parent project.</summary>
 		/// <param name="project">A Project containing the parent project for the WebReferenceFolder.</param>
-		public WebReferenceFolder(Project project)
+		public WebReferenceFolder (DotNetProject project)
 		{
 			this.project = project;
 		}

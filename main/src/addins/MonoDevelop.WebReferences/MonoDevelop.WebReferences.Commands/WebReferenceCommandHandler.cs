@@ -6,6 +6,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.WebReferences.Dialogs;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.WebReferences.Commands
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.WebReferences.Commands
 			{
 				try
 				{
-					dialog.SelectedService.GenerateFiles (project, dialog.ReferencePath, dialog.Namespace, dialog.ReferenceName);
+					dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
 					IdeApp.ProjectOperations.Save(project);
 				}
 				catch(Exception exception)
@@ -61,6 +62,7 @@ namespace MonoDevelop.WebReferences.Commands
 				sbc.AutoPulse = true;
 				WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
 				DispatchService.BackgroundDispatchAndWait (item.Update);
+				IdeApp.ProjectOperations.Save (item.Project);
 				IdeApp.Workbench.StatusBar.ShowMessage("Updated Web Reference " + item.Name);
 			}
 		}
@@ -72,12 +74,13 @@ namespace MonoDevelop.WebReferences.Commands
 			using (StatusBarContext sbc = IdeApp.Workbench.StatusBar.CreateContext ()) {
 				sbc.BeginProgress (GettextCatalog.GetString ("Updating web references"));
 				sbc.AutoPulse = true;
-				Project project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
-				WebReferenceItemCollection items = new WebReferenceItemCollection (project);
+				DotNetProject project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
+				List<WebReferenceItem> items = new List<WebReferenceItem> (WebReferencesService.GetWebReferenceItems (project));
 				DispatchService.BackgroundDispatchAndWait (delegate {
-					for (int index = 0; index < items.AllKeys.Length; index ++)
-						items[items.AllKeys[index]].Update();
+					foreach (var item in items)
+						item.Update();
 				});
+				IdeApp.ProjectOperations.Save (project);
 				IdeApp.Workbench.StatusBar.ShowMessage("Updated all Web References");
 			}
 		}
@@ -89,9 +92,8 @@ namespace MonoDevelop.WebReferences.Commands
 			WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
 			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the web service reference '{0}'?", item.Name), AlertButton.Delete))
 				return;
-			Project project = item.ProxyFile.Project;
 			item.Delete();
-			IdeApp.ProjectOperations.Save(project);
+			IdeApp.ProjectOperations.Save (item.Project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + item.Name);
 		}
 		
@@ -99,13 +101,11 @@ namespace MonoDevelop.WebReferences.Commands
 		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.DeleteAll)]
 		public void DeleteAll()
 		{
-			Project project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
-			WebReferenceItemCollection items = new WebReferenceItemCollection (project);
-			for (int index = 0; index < items.AllKeys.Length; index ++)
-			{
-				items[items.AllKeys[index]].Delete();
-				IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + items.AllKeys[index]);
-			}
+			DotNetProject project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
+			List<WebReferenceItem> items = new List<WebReferenceItem> (WebReferencesService.GetWebReferenceItems (project));
+			foreach (var item in items)
+				item.Delete();
+
 			IdeApp.ProjectOperations.Save(project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted all Web References");
 		}

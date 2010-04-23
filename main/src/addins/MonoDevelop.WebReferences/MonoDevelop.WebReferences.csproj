@@ -88,7 +88,6 @@
     <Compile Include="MonoDevelop.WebReferences.Commands\WebReferenceCommandHandler.cs" />
     <Compile Include="MonoDevelop.WebReferences.NodeBuilders\ProjectFolderNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.WebReferences\WebReferenceItem.cs" />
-    <Compile Include="MonoDevelop.WebReferences\WebReferenceItemCollection.cs" />
     <Compile Include="MonoDevelop.WebReferences.NodeBuilders\WebReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.WebReferences\DiscoveryProtocol.cs" />
     <Compile Include="gtk-gui\generated.cs" />
@@ -96,9 +95,24 @@
     <Compile Include="MonoDevelop.WebReferences.Dialogs\UserPasswordDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs" />
     <Compile Include="MonoDevelop.WebReferences\WebServiceEngine.cs" />
-    <Compile Include="MonoDevelop.WebReferences\WebServiceEngineWS.cs" />
-    <Compile Include="MonoDevelop.WebReferences\WebServiceEngineWCF.cs" />
     <Compile Include="MonoDevelop.WebReferences\MoonlightChannelBaseExtension.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\ReferenceGroup.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\WebServiceEngineWCF.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\WebServiceDiscoveryResultWCF.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\ClientOptions.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\CollectionMapping.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\ReferencedAssembly.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\MetadataSource.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\MetadataFile.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\ExtensionFile.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WS\WebServiceEngineWS.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WS\WebReferences.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WS\WebReferenceUrl.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WS\WebServiceDiscoveryResultWS.cs" />
+    <Compile Include="MonoDevelop.WebReferences\WebServiceDiscoveryResult.cs" />
+    <Compile Include="MonoDevelop.WebReferences\WebReferencesService.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\WCFMetadata.cs" />
+    <Compile Include="MonoDevelop.WebReferences.WCF\WCFMetadataStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml">
@@ -137,4 +151,12 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.WebReferences.WCF\" />
+    <Folder Include="MonoDevelop.WebReferences\" />
+    <Folder Include="MonoDevelop.WebReferences\" />
+    <Folder Include="MonoDevelop.WebReferences.WS\" />
+    <Folder Include="MonoDevelop.WebReferences\" />
+    <Folder Include="MonoDevelop.WebReferences.WCF\" />
+  </ItemGroup>
 </Project>

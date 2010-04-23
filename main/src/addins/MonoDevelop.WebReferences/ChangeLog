@@ -1,3 +1,42 @@
+2010-04-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.WebReferences.WS:
+	* MonoDevelop.WebReferences.WCF:
+	* MonoDevelop.WebReferences.csproj:
+	* MonoDevelop.WebReferences.addin.xml:
+	* MonoDevelop.WebReferences.WCF/WCFMetadata.cs:
+	* MonoDevelop.WebReferences/WebReferenceItem.cs:
+	* MonoDevelop.WebReferences/WebServiceEngine.cs:
+	* MonoDevelop.WebReferences.WS/WebReferences.cs:
+	* MonoDevelop.WebReferences.WCF/MetadataFile.cs:
+	* MonoDevelop.WebReferences.WCF/ExtensionFile.cs:
+	* MonoDevelop.WebReferences.WCF/ClientOptions.cs:
+	* MonoDevelop.WebReferences/WebServiceEngineWS.cs:
+	* MonoDevelop.WebReferences.WS/WebReferenceUrl.cs:
+	* MonoDevelop.WebReferences/WebReferenceFolder.cs:
+	* MonoDevelop.WebReferences.WCF/ReferenceGroup.cs:
+	* MonoDevelop.WebReferences.WCF/MetadataSource.cs:
+	* MonoDevelop.WebReferences/WebServiceEngineWCF.cs:
+	* MonoDevelop.WebReferences/WebReferencesService.cs:
+	* MonoDevelop.WebReferences.WCF/CollectionMapping.cs:
+	* MonoDevelop.WebReferences.WS/WebServiceEngineWS.cs:
+	* MonoDevelop.WebReferences.WCF/WCFMetadataStorage.cs:
+	* MonoDevelop.WebReferences.WCF/ReferencedAssembly.cs:
+	* MonoDevelop.WebReferences.WCF/WebServiceEngineWCF.cs:
+	* MonoDevelop.WebReferences/WebServiceDiscoveryResult.cs:
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	* MonoDevelop.WebReferences/WebReferenceItemCollection.cs:
+	* MonoDevelop.WebReferences.WS/WebServiceDiscoveryResultWS.cs:
+	* MonoDevelop.WebReferences.NodeBuilders/ProjectNodeBuilder.cs:
+	* MonoDevelop.WebReferences.WCF/WebServiceDiscoveryResultWCF.cs:
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	* MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs:
+	* MonoDevelop.WebReferences.NodeBuilders/ProjectFolderNodeBuilderExtension.cs:
+	  Improved compatibility. VS can now properly open projects
+	  with web references created with MD, and vice-versa.
+	  Reorganized a bit the code.
+
 2010-04-23  Carlo Kok  <ck@remobjects.com>
 	* Makefile.am:
 	* MonoDevelop.WebReferences.csproj:

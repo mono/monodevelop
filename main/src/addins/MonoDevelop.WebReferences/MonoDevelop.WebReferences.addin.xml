@@ -73,4 +73,11 @@
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-webreference-item" resource = "WebReferenceItem.png" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.WebReferences.WCF.WCFMetadata" />
+		<DataType class = "MonoDevelop.WebReferences.WCF.WCFMetadataStorage" />
+		<DataType class = "MonoDevelop.WebReferences.WS.WebReferences" />
+		<DataType class = "MonoDevelop.WebReferences.WS.WebReferenceUrl" />
+	</Extension>
 </Addin>

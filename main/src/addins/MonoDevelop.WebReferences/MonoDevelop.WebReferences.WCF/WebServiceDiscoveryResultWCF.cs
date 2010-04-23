@@ -25,121 +25,41 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
-using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.Web.Services.Discovery;
-using System.Xml.Serialization;
-using System.Xml;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
-using MonoDevelop.Core;
 using System.CodeDom.Compiler;
 using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.Xml.Schema;
-
-using WSServiceDescription = System.Web.Services.Description.ServiceDescription;
 using System.Text;
 using Mono.ServiceContractTool;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.WebReferences
+namespace MonoDevelop.WebReferences.WCF
 {
-	public class WebServiceEngineWCF: WebServiceEngine
-	{
-		public override WebServiceDiscoveryResult Discover (string url)
-		{
-			DiscoveryClientProtocol prot;
-			try {
-				prot = DiscoResolve (url);
-				if (prot != null)
-					return new WebServiceDiscoveryResultWCF (prot, null, null, null);
-			} catch {
-				// Ignore?
-			}
-			
-			MetadataSet metadata = ResolveWithWSMex (url);
-			if (metadata != null)
-				return new WebServiceDiscoveryResultWCF (null, metadata, null, null);
-			else
-				return null;
-		}
-		
-		MetadataSet ResolveWithWSMex (string url)
-		{
-			MetadataSet metadata = null;
-			try {
-				MetadataExchangeClient client = new MetadataExchangeClient (new EndpointAddress (url));
-
-				Console.WriteLine ("\nAttempting to download metadata from {0} using WS-MetadataExchange..", url);
-				metadata = client.GetMetadata ();
-			} catch (InvalidOperationException e) {
-				//MetadataExchangeClient wraps exceptions, thrown while
-				//fetching the metadata, in an InvalidOperationException
-				string msg;
-				if (e.InnerException == null)
-					msg = e.Message;
-				else
-					msg = e.InnerException.ToString ();
-
-				Console.WriteLine ("WS-MetadataExchange query failed for the url '{0}' with exception :\n {1}",
-					url, msg);
-			}
-
-			return metadata;
-		}
-		
-		public override WebServiceDiscoveryResult Load (WebReferenceItem item)
-		{
-			FilePath basePath = item.MapFile.FilePath.ParentDirectory;
-			ReferenceGroup resfile = ReferenceGroup.Read (item.MapFile.FilePath);
-			
-			// TODO: Read as MetadataSet
-			
-			DiscoveryClientProtocol protocol = new DiscoveryClientProtocol ();
-			
-			foreach (MetadataFile dcr in resfile.Metadata)
-			{
-				DiscoveryReference dr;
-				switch (dcr.MetadataType) {
-					case "Wsdl":
-						dr = new System.Web.Services.Discovery.ContractReference ();
-						break;
-					case "Disco":
-						dr = new System.Web.Services.Discovery.DiscoveryDocumentReference ();
-						break;
-					case "Schema":
-						dr = new System.Web.Services.Discovery.SchemaReference ();
-						break;
-					default:
-						continue;
-				}
-
-				dr.Url = dcr.SourceUrl;
-				FileStream fs = new FileStream (basePath.Combine (dcr.FileName), FileMode.Open, FileAccess.Read);
-				protocol.Documents.Add (dr.Url, dr.ReadDocument (fs));
-				fs.Close ();
-				protocol.References.Add (dr.Url, dr);
-			}
-			return new WebServiceDiscoveryResultWCF (protocol, null, item, resfile);
-		}
-		
-	}
-	
 	class WebServiceDiscoveryResultWCF: WebServiceDiscoveryResult
 	{
 		MetadataSet metadata;
 		DiscoveryClientProtocol protocol;
 		ReferenceGroup refGroup;
 		
-		public WebServiceDiscoveryResultWCF (DiscoveryClientProtocol protocol, MetadataSet metadata, WebReferenceItem item, ReferenceGroup refGroup): base (item)
+		public WebServiceDiscoveryResultWCF (DiscoveryClientProtocol protocol, MetadataSet metadata, WebReferenceItem item, ReferenceGroup refGroup): base (WebReferencesService.WcfEngine, item)
 		{
 			this.refGroup = refGroup;
 			this.protocol = protocol;
 			this.metadata = metadata;
 		}
 
+		public override FilePath GetReferencePath (DotNetProject project, string refName)
+		{
+			return project.BaseDirectory.Combine ("Service References").Combine (refName);
+		}
+		
 		public override string GetDescriptionMarkup ()
 		{
 			StringBuilder text = new StringBuilder ();
@@ -160,8 +80,24 @@ namespace MonoDevelop.WebReferences
 			return text.ToString ();
 		}
 		
-		protected override string GenerateDescriptionFiles (string basePath)
+		public override string ProxyGenerator {
+			get {
+				return "WCF Proxy Generator";
+			}
+		}
+		
+		protected override string GenerateDescriptionFiles (DotNetProject project, FilePath basePath)
 		{
+			if (!project.Items.GetAll<WCFMetadata> ().Any ()) {
+				WCFMetadata met = new WCFMetadata ();
+				met.Path = basePath.ParentDirectory;
+				project.Items.Add (met);
+			}
+			
+			WCFMetadataStorage metStor = project.Items.GetAll<WCFMetadataStorage> ().FirstOrDefault (m => m.Path.CanonicalPath == basePath);
+			if (metStor == null)
+				project.Items.Add (new WCFMetadataStorage () { Path = basePath });
+			
 			string file = Path.Combine (basePath, "Reference.svcmap");
 			if (protocol != null) {
 				protocol.ResolveAll ();
@@ -172,8 +108,12 @@ namespace MonoDevelop.WebReferences
 				// TODO
 				ReferenceGroup map = new ReferenceGroup ();
 				map.Save (file);
+				map.ID = Guid.NewGuid ().ToString ();
 				refGroup = map;
 			}
+			foreach (MetadataFile mfile in refGroup.Metadata)
+				project.AddFile (new FilePath (mfile.FileName).ToAbsolute (basePath), BuildAction.None);
+			
 			return file;
 		}
 		
@@ -189,9 +129,8 @@ namespace MonoDevelop.WebReferences
 			
 			metadata = wref.metadata;
 			protocol = wref.protocol;
-			string basePath = new FileInfo (Item.MapFile.FilePath).Directory.FullName;
 			string ns = Item.MapFile.Project.Name + "." + Item.Name;
-			GenerateFiles ((DotNetProject)Item.ProxyFile.Project, basePath, ns, "Reference");
+			GenerateFiles (Item.Project, ns, Item.Name);
 		}
 		
 		public override System.Collections.Generic.IEnumerable<string> GetAssemblyReferences ()
@@ -201,7 +140,7 @@ namespace MonoDevelop.WebReferences
 			yield return "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 		}
 		
-		protected override string CreateProxyFile (DotNetProject dotNetProject, string basePath, string proxyNamespace, string referenceName)
+		protected override string CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
 		{
 			CodeCompileUnit ccu = new CodeCompileUnit ();
 			CodeNamespace cns = new CodeNamespace (proxyNamespace);
@@ -264,8 +203,11 @@ namespace MonoDevelop.WebReferences
 			
 			ReferenceGroup map = new ReferenceGroup ();
 			
-			if (refGroup != null)
+			if (refGroup != null) {
 				map.ClientOptions = refGroup.ClientOptions;
+				map.ID = refGroup.ID;
+			} else
+				map.ID = Guid.NewGuid ().ToString ();
 			
 			Dictionary<string,int> sources = new Dictionary<string, int> ();
 			foreach (DiscoveryClientResult res in files) {
@@ -316,122 +258,4 @@ namespace MonoDevelop.WebReferences
 			return metadata;
 		}		
 	}
-	
-	[XmlRoot (Namespace="urn:schemas-microsoft-com:xml-wcfservicemap")]
-	public class ReferenceGroup
-	{
-		ClientOptions options = new ClientOptions ();
-		List<MetadataSource> sources = new List<MetadataSource> ();
-		List<MetadataFile> metadata = new List<MetadataFile> ();
-		
-		public ClientOptions ClientOptions {
-			get { return options; }
-			set { options = value; }
-		}
-		
-		public List<MetadataSource> MetadataSources {
-			get { return sources; }
-		}
-		
-		public List<MetadataFile> Metadata {
-			get { return metadata; }
-		}
-		
-		public void Save (string file)
-		{
-			XmlSerializer ser = new XmlSerializer (typeof(ReferenceGroup));
-			XmlWriterSettings settings = new XmlWriterSettings ();
-			settings.Indent = true;
-			using (XmlWriter w = XmlWriter.Create (file, settings)) {
-				ser.Serialize (w, this);
-			}
-		}
-		
-		public static ReferenceGroup Read (string file)
-		{
-			using (StreamReader sr = new StreamReader (file)) {
-				XmlSerializer ser = new XmlSerializer (typeof (ReferenceGroup));
-				return (ReferenceGroup) ser.Deserialize (sr);
-			}
-		}
-	}
-	
-	public class ClientOptions
-	{
-		public ClientOptions ()
-		{
-			EnableDataBinding = true;
-			GenerateSerializableTypes = true;
-			UseSerializerForFaults = true;
-			ReferenceAllAssemblies = true;
-			Serializer = "Auto";
-			CollectionMappings = new List<CollectionMapping> ();
-			ReferencedAssemblies = new List<ReferencedAssembly> ();
-		}
-		
-		[XmlElement]
-	    public bool GenerateAsynchronousMethods { get; set; }
-		[XmlElement]
-	    public bool EnableDataBinding { get; set; }
-//	    string[] ExcludedTypes;
-	    public bool ImportXmlTypes { get; set; }
-	    public bool GenerateInternalTypes { get; set; }
-	    public bool GenerateMessageContracts { get; set; }
-//	    string[] NamespaceMappings;
-	    List<CollectionMapping> CollectionMappings { get; set; }
-	    public bool GenerateSerializableTypes { get; set; }
-	    public string Serializer { get; set; }
-	    public bool UseSerializerForFaults { get; set; }
-	    public bool ReferenceAllAssemblies { get; set; }
-	    List<ReferencedAssembly> ReferencedAssemblies { get; set; }
-//	    string[] ReferencedDataContractTypes;
-//	    string[] ServiceContractMappings;
-	}
-	
-	public class CollectionMapping
-	{
-		[XmlAttribute]
-		public string TypeName { get; set; }
-		[XmlAttribute]
-		public string Category { get; set; }
-	}
-	
-	public class ReferencedAssembly
-	{
-		[XmlAttribute]
-		public string AssemblyName { get; set; }
-	}
-	
-	public class MetadataSource
-	{
-		[XmlAttribute]
-		public string Address { get; set; }
-		[XmlAttribute]
-		public string Protocol { get; set; }
-		[XmlAttribute]
-		public string SourceId { get; set; }
-	}
-	
-	public class MetadataFile
-	{
-		[XmlAttribute]
-		public string FileName { get; set; }
-		[XmlAttribute]
-		public string MetadataType { get; set; }
-		[XmlAttribute]
-		public string ID { get; set; }
-		[XmlAttribute]
-		public string SourceId { get; set; }
-		[XmlAttribute]
-		public string SourceUrl { get; set; }
-	}
-	
-	public class ExtensionFile
-	{
-		[XmlAttribute]
-		public string FileName { get; set; }
-		[XmlAttribute]
-		public string Name { get; set; }
-	}
 }
-

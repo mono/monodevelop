@@ -25,47 +25,35 @@
 // THE SOFTWARE.
 
 using System.Web.Services.Discovery;
-using System.Net;
+using System.Linq;
 using System.Text;
 using MonoDevelop.Projects;
 using System.Web.Services.Description;
 using System.IO;
 using System.CodeDom.Compiler;
 using System.CodeDom;
+using MonoDevelop.Core;
+using WebReferencesDir = MonoDevelop.WebReferences.WS.WebReferences;
+using System.Collections.Generic;
 
-namespace MonoDevelop.WebReferences
+namespace MonoDevelop.WebReferences.WS
 {
-	public class WebServiceEngineWS : WebServiceEngine
-	{
-		public override WebServiceDiscoveryResult Discover (string url)
-		{
-			DiscoveryClientProtocol protocol = DiscoResolve (url);
-			if (protocol != null)
-				return new WebServiceDiscoveryResultWS (protocol, null);
-			else
-				return null;
-		}
-
-		public override WebServiceDiscoveryResult Load (WebReferenceItem item)
-		{
-			// Read the map file into the discovery client protocol and setup the code generator
-			DiscoveryProtocol protocol = new DiscoveryProtocol ();
-			protocol.ReadAllUseBasePath (item.MapFile.FilePath);
-			return new WebServiceDiscoveryResultWS (protocol, item);
-		}
-	}
-
 	class WebServiceDiscoveryResultWS : WebServiceDiscoveryResult
 	{
 		DiscoveryClientProtocol protocol;
 
-		public WebServiceDiscoveryResultWS (DiscoveryClientProtocol protocol, WebReferenceItem item): base (item)
+		public WebServiceDiscoveryResultWS (DiscoveryClientProtocol protocol, WebReferenceItem item): base (WebReferencesService.WsEngine, item)
 		{
 			this.protocol = protocol;
 		}
 		
 		public DiscoveryClientProtocol Protocol {
 			get { return this.protocol; }
+		}
+
+		public override FilePath GetReferencePath (DotNetProject project, string refName)
+		{
+			return project.BaseDirectory.Combine ("Web References").Combine (refName);
 		}
 
 		public override string GetDescriptionMarkup ()
@@ -83,40 +71,51 @@ namespace MonoDevelop.WebReferences
 			return text.ToString ();
 		}
 		
-		protected override string GenerateDescriptionFiles (string basePath)
+		public override string ProxyGenerator {
+			get {
+				return "MSDiscoCodeGenerator";
+			}
+		}
+		
+		protected override string GenerateDescriptionFiles (DotNetProject project, FilePath basePath)
 		{
+			if (!project.Items.GetAll<WebReferencesDir> ().Any ()) {
+				WebReferencesDir met = new WebReferencesDir ();
+				met.Path = basePath.ParentDirectory;
+				project.Items.Add (met);
+			}
+			
+			WebReferenceUrl wru = project.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == basePath);
+			if (wru == null) {
+				wru = new WebReferenceUrl (protocol.Url);
+				wru.RelPath = basePath;
+				project.Items.Add (wru);
+			}
+			
 			protocol.ResolveAll ();
-			protocol.WriteAll (basePath, "Reference.map");
+			DiscoveryClientResultCollection files = protocol.WriteAll (basePath, "Reference.map");
+			
+			foreach (DiscoveryClientResult dr in files)
+				project.AddFile (new FilePath (dr.Filename).ToAbsolute (basePath), BuildAction.None);
+			
 			return Path.Combine (basePath, "Reference.map");
 		}
 
 		public override void Update ()
 		{
-			// Refresh the disco and wsdl from the server
-			foreach (object doc in protocol.References.Values) {
-				string url = null;
-				if (doc is DiscoveryDocumentReference) {
-					url = ((DiscoveryDocumentReference)doc).Url;
-				} else if (doc is ContractReference) {
-					url = ((ContractReference)doc).Url;
-				}
-				
-				if (!string.IsNullOrEmpty (url)) {
-					try {
-						WebServiceEngine engine = WebReferencesService.WsEngine;
-						WebServiceDiscoveryResultWS ws = (WebServiceDiscoveryResultWS) engine.Discover (url);
-						protocol = ws.protocol;
-						break;
-					} catch (WebException) {
-					}
-				}
-			}
-			protocol.ResolveAll ();
+			WebReferenceUrl wru = Item.Project.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == Item.BasePath);
+			if (wru == null)
+				return;
+			
+			WebServiceDiscoveryResultWS wref = (WebServiceDiscoveryResultWS) WebReferencesService.WsEngine.Discover (wru.UpdateFromURL);
+			if (wref == null)
+				return;
+			
+			protocol = wref.protocol;
 			
 			// Re-generate the proxy and map files
-			string basePath = new FileInfo (Item.MapFile.FilePath).Directory.FullName;
-			CreateProxyFile ((DotNetProject)Item.ProxyFile.Project, basePath, Item.MapFile.Project.Name + "." + Item.Name, "Reference");
-			protocol.WriteAll (basePath, "Reference.map");
+			string ns = Item.MapFile.Project.Name + "." + Item.Name;
+			GenerateFiles (Item.Project, ns, Item.Name);
 		}
 		
 		public override System.Collections.Generic.IEnumerable<string> GetAssemblyReferences ()
@@ -126,7 +125,7 @@ namespace MonoDevelop.WebReferences
 			yield return "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 		}
 		
-		protected override string CreateProxyFile (DotNetProject dotNetProject, string basePath, string proxyNamespace, string referenceName)
+		protected override string CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
 		{
 			// Setup the proxy namespace and compile unit
 			ICodeGenerator codeGen = GetProvider (dotNetProject).CreateGenerator();
@@ -167,4 +166,3 @@ namespace MonoDevelop.WebReferences
 		}
 	}
 }
-

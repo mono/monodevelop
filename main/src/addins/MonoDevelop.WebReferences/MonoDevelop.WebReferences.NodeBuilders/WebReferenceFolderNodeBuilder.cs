@@ -34,13 +34,6 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		}
 		#endregion
 		
-		/// <summary>Initialize the WebReferenceFolder NodeBuilder.</summary>
-		protected override void Initialize()
-		{
-			base.Initialize();
-			IdeApp.Workspace.FileRemovedFromProject += (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
-		}
-		
 		/// <summary>Gets the node name for the current node.</summary>
 		/// <param name="thisNode">An ITreeNavigator containing the current node settings.</param>
 		/// <param name="dataObject">An object containing the data for the current object.</param>
@@ -68,7 +61,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="dataObject">An object containing the current activated node.</param> 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return Library.ProjectContainsWebReference(((WebReferenceFolder)dataObject).Project);
+			return true;
 		}
 		
 		/// <summary>Add entries for all the web references in the project to the tree builder.</summary>
@@ -76,14 +69,9 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="dataObject">An object containing the data for the current node in the tree.</param>
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			WebReferenceItemCollection items = new WebReferenceItemCollection(((WebReferenceFolder)dataObject).Project);
-			for (int index=0; index < items.AllKeys.Length; index++)
-			{
-				WebReferenceItem item = items[items.AllKeys[index]];
+			WebReferenceFolder folder = (WebReferenceFolder) dataObject;
+			foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItems (folder.Project))
 				builder.AddChild(item);
-			}
-			items.Clear();
-			items = null;
 		}
 		
 		/// <summary>Compare two object with one another and returns a number based on their sort order.</summary>
@@ -91,20 +79,6 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			return (otherNode.DataItem is ProjectReferenceCollection) ? 1 : -1;
-		}
-		
-		/// <summary>Executes whenever a file is removed from a project.</summary>
-		/// <param name="sender">An object containing the sender data.</param>
-		/// <param name="e">A ProjectFileEventArgs containing the event arguments.</param>
-		/// <remarks>
-		/// This event handler refresh the web reference folder node when a *.map project file 
-		/// has been removed from the project.
-		/// </remarks>
-		public void OnRemoveFile (object sender, ProjectFileEventArgs e)
-		{
-			ITreeBuilder tb = Context.GetTreeBuilder ();
-			if (WebReferencesService.IsWebReferenceMapFile (e.ProjectFile.FilePath) && e.ProjectFile.FilePath.IsChildPathOf (Library.GetWebReferencePath(e.Project)))
-				tb.UpdateAll();
 		}
 	}
 }

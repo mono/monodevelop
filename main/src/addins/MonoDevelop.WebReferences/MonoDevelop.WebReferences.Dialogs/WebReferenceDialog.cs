@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -23,7 +24,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		Label docLabel;
-		Project project;
+		DotNetProject project;
 		
 		#region Properties
 		/// <summary>Gets or Sets whether the current location of the browser is a valid web service or not.</summary>
@@ -142,7 +143,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		/// <summary>Initializes a new instance of the AddWebReferenceDialog widget.</summary>
-		public WebReferenceDialog (Project project)
+		public WebReferenceDialog (DotNetProject project)
 		{
 			Build();
 			this.basePath = Library.GetWebReferencePath (project);
@@ -367,10 +368,10 @@ namespace MonoDevelop.WebReferences.Dialogs
 				
 				string name = this.DefaultReferenceName;
 				
-				WebReferenceItemCollection items = new WebReferenceItemCollection (project);
-				if (items.Contains (name)) {
+				var items = WebReferencesService.GetWebReferenceItems (project);
+				if (items.Any (it => it.Name == name)) {
 					int num = 2;
-					while (items.Contains (name + "_" + num))
+					while (items.Any (it => it.Name == name + "_" + num))
 						num++;
 					name = name + "_" + num;
 				}
@@ -396,8 +397,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		protected virtual void OnBtnOKClicked (object sender, System.EventArgs e)
 		{
-			WebReferenceItemCollection items = new WebReferenceItemCollection (project);
-			if (items.Contains (this.tbxReferenceName.Text)) {
+			if (WebReferencesService.GetWebReferenceItems (project).Any (r => r.Name == this.tbxReferenceName.Text)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Web reference already exists"), GettextCatalog.GetString ("A web service reference with the name '{0}' already exists in the project. Please use a different name.", this.tbxReferenceName.Text));
 				return;
 			}

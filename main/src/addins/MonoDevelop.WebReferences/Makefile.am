@@ -32,16 +32,30 @@ FILES =  \
 	MonoDevelop.WebReferences.NodeBuilders/ProjectNodeBuilder.cs \
 	MonoDevelop.WebReferences.NodeBuilders/WebReferenceFolderNodeBuilder.cs \
 	MonoDevelop.WebReferences.NodeBuilders/WebReferenceNodeBuilder.cs \
+	MonoDevelop.WebReferences.WCF/ClientOptions.cs \
+	MonoDevelop.WebReferences.WCF/CollectionMapping.cs \
+	MonoDevelop.WebReferences.WCF/ExtensionFile.cs \
+	MonoDevelop.WebReferences.WCF/MetadataFile.cs \
+	MonoDevelop.WebReferences.WCF/MetadataSource.cs \
+	MonoDevelop.WebReferences.WCF/ReferencedAssembly.cs \
+	MonoDevelop.WebReferences.WCF/ReferenceGroup.cs \
+	MonoDevelop.WebReferences.WCF/WCFMetadata.cs \
+	MonoDevelop.WebReferences.WCF/WCFMetadataStorage.cs \
+	MonoDevelop.WebReferences.WCF/WebServiceDiscoveryResultWCF.cs \
+	MonoDevelop.WebReferences.WCF/WebServiceEngineWCF.cs \
+	MonoDevelop.WebReferences.WS/WebReferences.cs \
+	MonoDevelop.WebReferences.WS/WebReferenceUrl.cs \
+	MonoDevelop.WebReferences.WS/WebServiceDiscoveryResultWS.cs \
+	MonoDevelop.WebReferences.WS/WebServiceEngineWS.cs \
 	MonoDevelop.WebReferences/DiscoveryNetworkCredential.cs \
 	MonoDevelop.WebReferences/DiscoveryProtocol.cs \
 	MonoDevelop.WebReferences/Library.cs \
 	MonoDevelop.WebReferences/MoonlightChannelBaseExtension.cs \
 	MonoDevelop.WebReferences/WebReferenceFolder.cs \
 	MonoDevelop.WebReferences/WebReferenceItem.cs \
-	MonoDevelop.WebReferences/WebReferenceItemCollection.cs \
-	MonoDevelop.WebReferences/WebServiceEngine.cs \
-	MonoDevelop.WebReferences/WebServiceEngineWCF.cs \
-	MonoDevelop.WebReferences/WebServiceEngineWS.cs
+	MonoDevelop.WebReferences/WebReferencesService.cs \
+	MonoDevelop.WebReferences/WebServiceDiscoveryResult.cs \
+	MonoDevelop.WebReferences/WebServiceEngine.cs
 
 RES =  \
 	MonoDevelop.WebReferences.addin.xml \

@@ -27,10 +27,18 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		{
 			if (treeNavigator.Options ["ShowAllFiles"])
 				return;
-				
+			
 			ProjectFolder folder = dataObject as ProjectFolder;
-			if (folder != null && folder.Project != null && Library.GetWebReferencePath(folder.Project) == folder.Path)
-				attributes |= NodeAttributes.Hidden;
+			DotNetProject project = folder.Project as DotNetProject;
+			if (project == null)
+				return;
+			
+			foreach (var item in WebReferencesService.GetWebReferenceItems (project)) {
+				if (folder.Path == item.BasePath.ParentDirectory.CanonicalPath) {
+					attributes |= NodeAttributes.Hidden;
+					break;
+				}
+			}
 		}
 	}
 }
