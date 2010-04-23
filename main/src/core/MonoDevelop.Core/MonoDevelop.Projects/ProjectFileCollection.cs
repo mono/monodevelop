@@ -79,13 +79,11 @@ namespace MonoDevelop.Projects
 		}
 		
 		
-		public ProjectFile[] GetFilesInPath (string path)
+		public ProjectFile[] GetFilesInPath (FilePath path)
 		{
-			path = path + Path.DirectorySeparatorChar;
-			
 			List<ProjectFile> list = new List<ProjectFile> ();
 			foreach (ProjectFile file in Items) {
-				if ((file.Name + Path.DirectorySeparatorChar).StartsWith (path))
+				if (file.FilePath.IsChildPathOf (path))
 					list.Add (file);
 			}
 			return list.ToArray ();
