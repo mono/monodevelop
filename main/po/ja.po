@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-11-19 14:54:31+0900\n"
-"PO-Revision-Date: 2009-11-20 12:24:04+0900\n"
+"PO-Revision-Date: 2010-04-23 21:25:34+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
 "MIME-Version: 1.0\n"
@@ -6291,7 +6291,7 @@ msgstr "なし"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:85
 msgid "Compile"
-msgstr "完了"
+msgstr "コンパイル"
 
 #: ../src/core/MonoDevelop.Projects/MonoDevelop.Projects/BuildAction.cs:86
 msgid "Embed as resource"
@@ -16383,7 +16383,6 @@ msgstr "16進エディタ"
 #~ msgstr "<b>コメント生成オプション</b>"
 #~ msgid "Generate _documentation comments"
 #~ msgstr "ドキュメンテーション コメントを生成する (_d)"
-
 #~ msgid "Generate _additional comments"
 #~ msgstr "追加コメントを生成する (_a)"
 
