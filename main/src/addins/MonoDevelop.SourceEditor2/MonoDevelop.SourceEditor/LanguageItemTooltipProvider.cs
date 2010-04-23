@@ -57,7 +57,8 @@ namespace MonoDevelop.SourceEditor
 			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, ed.Document.FileName);
 			
 			ResolveResult resolveResult = (ResolveResult)item;
-			if (lastResult != null  && lastWindow.IsRealized && lastResult.ResolvedExpression.Expression == resolveResult.ResolvedExpression.Expression)
+			if (lastResult != null && lastResult.ResolvedExpression != null && lastWindow.IsRealized && 
+			    resolveResult != null && resolveResult.ResolvedExpression != null &&  lastResult.ResolvedExpression.Expression == resolveResult.ResolvedExpression.Expression)
 				return lastWindow;
 			LanguageItemWindow result = new LanguageItemWindow (ed, modifierState, resolveResult, null, doc != null ? doc.CompilationUnit : null);
 			lastWindow = result;
