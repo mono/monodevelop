@@ -35,5 +35,19 @@ namespace OSXIntegration.Framework
 		//[DllImport (AELib)]
 		//OSErr AECreateDesc (DescType typeCode, IntPtr dataPtr, Size dataSize, out AEDesc result);
 	}
+	
+	enum AESendMode {
+		NoReply = 0x00000001,
+		QueueReply = 0x00000002,
+		WaitReply = 0x00000003,
+		DontReconnect = 0x00000080,
+		WantReceipt = 0x00000200,
+		NeverInteract = 0x00000010,
+		CanInteract = 0x00000020,
+		AlwaysInteract = 0x00000030,
+		CanSwitchLayer = 0x00000040,
+		DontRecord = 0x00001000,
+		DontExecute = 0x00002000,
+		ProcessNonReplyEvents = 0x00008000,
+	}
 }
-

@@ -78,6 +78,8 @@
     <Compile Include="MacSelectFileDialogHandler.cs" />
     <Compile Include="Framework\NavDialog.cs" />
     <Compile Include="Framework\AppleEvent.cs" />
+    <Compile Include="Framework\AppleScript.cs" />
+    <Compile Include="Framework\ComponentManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

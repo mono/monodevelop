@@ -28,6 +28,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace OSXIntegration.Framework
 {
@@ -266,9 +267,11 @@ namespace OSXIntegration.Framework
 		
 		#region Char code conversion
 		
-		internal static int ConvertCharCode (string code)
+		internal static int ConvertCharCode (string fourcc)
 		{
-			return (code[3]) | (code[2] << 8) | (code[1] << 16) | (code[0] << 24);
+			Debug.Assert (fourcc != null);
+			Debug.Assert (fourcc.Length == 4);
+			return (fourcc[3]) | (fourcc[2] << 8) | (fourcc[1] << 16) | (fourcc[0] << 24);
 		}
 		
 		internal static string UnConvertCharCode (int i)
@@ -707,5 +710,38 @@ namespace OSXIntegration.Framework
 		uint catInfoType; // OSType
 		uint catInfoCreator; // OSType
 		*/
+	}
+	
+	struct OSType {
+		int value;
+		
+		public int Value {
+			get { return Value; }
+		}
+		
+		public OSType (int value)
+		{
+			this.value = value;
+		}
+		
+		public OSType (string fourcc)
+		{
+			value = Carbon.ConvertCharCode (fourcc);
+		}
+		
+		public static explicit operator OSType (string fourcc)
+		{
+			return new OSType (fourcc); 
+		}
+		
+		public static implicit operator int (OSType o)
+		{
+			return o.value;
+		}
+		
+		public static implicit operator OSType (int i)
+		{
+			return new OSType (i);
+		}
 	}
 }

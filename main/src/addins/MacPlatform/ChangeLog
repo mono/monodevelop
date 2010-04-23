@@ -1,3 +1,14 @@
+2010-04-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MacPlatform.csproj:
+	* Framework/Carbon.cs:
+	* Framework/NavDialog.cs:
+	* Framework/AppleEvent.cs:
+	* Framework/AppleScript.cs:
+	* Framework/ComponentManager.cs: Bind some OSA/AppleScript
+	  stuff.
+
 2010-04-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Track API.

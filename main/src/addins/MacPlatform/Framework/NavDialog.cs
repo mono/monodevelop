@@ -27,6 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace OSXIntegration.Framework
 {
@@ -158,7 +159,6 @@ namespace OSXIntegration.Framework
 	struct NavEventUPP { IntPtr ptr; }
 	struct NavObjectFilterUPP { IntPtr ptr; }
 	struct NavPreviewUPP { IntPtr ptr; }
-	struct OSType { int value; }
 	
 	class NavDialogCreationOptions : IDisposable
 	{

@@ -19,8 +19,10 @@ FILES =  \
 	AssemblyInfo.cs \
 	Commands.cs \
 	Framework/AppleEvent.cs \
+	Framework/AppleScript.cs \
 	Framework/ApplicationEvents.cs \
 	Framework/Carbon.cs \
+	Framework/ComponentManager.cs \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
 	Framework/NavDialog.cs \
