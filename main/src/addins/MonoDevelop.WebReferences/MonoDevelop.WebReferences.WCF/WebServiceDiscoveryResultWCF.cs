@@ -157,8 +157,8 @@ namespace MonoDevelop.WebReferences.WCF
 				generator.Options |= ServiceContractGenerationOptions.InternalTypes;
 			if (refGroup.ClientOptions.GenerateMessageContracts)
 				generator.Options |= ServiceContractGenerationOptions.TypedMessages;
-			if (targetMoonlight || targetMonoTouch)
-				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
+//			if (targetMoonlight || targetMonoTouch)
+//				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
 			
 			MetadataSet mset;
 			if (protocol != null)
