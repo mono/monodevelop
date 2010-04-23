@@ -5,6 +5,8 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.AttachToProcessDialog" design-size="656 413">
@@ -419,7 +421,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExpressionEvaluatorDialog" design-size="545 396">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExpressionEvaluatorDialog" design-size="716 410">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Expression Evaluator</property>
     <property name="WindowPosition">CenterOnParent</property>

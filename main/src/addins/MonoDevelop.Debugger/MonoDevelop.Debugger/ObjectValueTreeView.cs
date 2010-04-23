@@ -61,6 +61,13 @@ namespace MonoDevelop.Debugger
 		Gdk.Pixbuf noLiveIcon;
 		Gdk.Pixbuf liveIcon;
 		
+		bool columnsAdjusted;
+		bool columnSizesUpdating;
+		bool allowStoreColumnSizes;
+		double expColWidth;
+		double valueColWidth;
+		double typeColWidth;
+		
 		CellRendererText crtExp;
 		CellRendererText crtValue;
 		CellRendererText crtType;
@@ -123,6 +130,7 @@ namespace MonoDevelop.Debugger
 			Model = store;
 			RulesHint = true;
 			Selection.Mode = SelectionMode.Multiple;
+			ResetColumnSizes ();
 			
 			Pango.FontDescription newFont = this.Style.FontDescription.Copy ();
 			newFont.Size = (newFont.Size * 8) / 10;
@@ -142,11 +150,12 @@ namespace MonoDevelop.Debugger
 			expCol.AddAttribute (crtExp, "foreground", NameColorCol);
 			expCol.Resizable = true;
 			expCol.Sizing = TreeViewColumnSizing.Fixed;
-			expCol.Expand = true;
+			expCol.MinWidth = 15;
+			expCol.AddNotification ("width", OnColumnWidthChanged);
+//			expCol.Expand = true;
 			AppendColumn (expCol);
 			
 			valueCol = new TreeViewColumn ();
-			valueCol.Expand = true;
 			valueCol.Title = GettextCatalog.GetString ("Value");
 			crpViewer = new CellRendererIcon ();
 			crpViewer.IconId = Gtk.Stock.ZoomIn;
@@ -163,19 +172,22 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableCol);
 			valueCol.AddAttribute (crtValue, "foreground", ValueColorCol);
 			valueCol.Resizable = true;
-			valueCol.Expand = true;
+			valueCol.MinWidth = 15;
+			valueCol.AddNotification ("width", OnColumnWidthChanged);
+//			valueCol.Expand = true;
 			valueCol.Sizing = TreeViewColumnSizing.Fixed;
 			AppendColumn (valueCol);
 			
 			typeCol = new TreeViewColumn ();
-			typeCol.Expand = true;
 			typeCol.Title = GettextCatalog.GetString ("Type");
 			crtType = new CellRendererText ();
 			typeCol.PackStart (crtType, true);
 			typeCol.AddAttribute (crtType, "text", TypeCol);
 			typeCol.Resizable = true;
 			typeCol.Sizing = TreeViewColumnSizing.Fixed;
-			typeCol.Expand = true;
+			typeCol.MinWidth = 15;
+			typeCol.AddNotification ("width", OnColumnWidthChanged);
+//			typeCol.Expand = true;
 			AppendColumn (typeCol);
 			
 			pinCol = new TreeViewColumn ();
@@ -208,6 +220,79 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnDestroyed ();
 			disposed = true;
+		}
+		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			AdjustColumnSizes ();
+		}
+		
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			AdjustColumnSizes ();
+		}
+		
+		
+		void OnColumnWidthChanged (object o, GLib.NotifyArgs args)
+		{
+			if (!columnSizesUpdating && allowStoreColumnSizes) {
+				StoreColumnSizes ();
+			}
+		}
+		
+		
+		void AdjustColumnSizes ()
+		{
+			if (!IsRealized || !Visible || Allocation.Width == 0 || columnSizesUpdating || compact)
+				return;
+			
+			columnSizesUpdating = true;
+			
+			double width = (double) Allocation.Width;
+			
+			int texp = (int) (width * expColWidth);
+			if (texp != expCol.FixedWidth) {
+				expCol.FixedWidth = texp;
+			}
+			
+			int ttype = 0;
+			if (typeCol.Visible) {
+				ttype = (int) (width * typeColWidth);
+				if (ttype != typeCol.FixedWidth) {
+					typeCol.FixedWidth = ttype;
+				}
+			}
+			
+			int tval = (int) (width * valueColWidth);
+
+			if (tval != valueCol.FixedWidth) {
+				valueCol.FixedWidth = tval;
+				Application.Invoke (delegate { QueueResize (); });
+			}
+			
+			columnSizesUpdating = false;
+			columnsAdjusted = true;
+		}
+		
+		void StoreColumnSizes ()
+		{
+			if (!IsRealized || !Visible || !columnsAdjusted || compact)
+				return;
+			
+			double width = (double) Allocation.Width;
+			expColWidth = ((double) expCol.Width) / width;
+			valueColWidth = ((double) valueCol.Width) / width;
+			if (typeCol.Visible)
+				typeColWidth = ((double) typeCol.Width) / width;
+		}
+		
+		void ResetColumnSizes ()
+		{
+			expColWidth = 0.3;
+			valueColWidth = 0.5;
+			typeColWidth = 0.2;
 		}
 		
 		public StackFrame Frame {
@@ -278,7 +363,7 @@ namespace MonoDevelop.Debugger
 					newFont.Size = (newFont.Size * 8) / 10;
 					expCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.Sizing = TreeViewColumnSizing.Autosize;
-					valueCol.MaxWidth = 300;
+					valueCol.MaxWidth = 800;
 					crpButton.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.Refresh).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
 					crpViewer.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.ZoomIn).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
 					ColumnsAutosize ();
@@ -287,12 +372,13 @@ namespace MonoDevelop.Debugger
 					expCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.MaxWidth = int.MaxValue;
-					ColumnsAutosize ();
 				}
 				typeCol.Visible = !compact;
 				crtExp.FontDesc = newFont;
 				crtValue.FontDesc = newFont;
 				crtType.FontDesc = newFont;
+				ResetColumnSizes ();
+				AdjustColumnSizes ();
 			}
 		}
 		
@@ -389,7 +475,6 @@ namespace MonoDevelop.Debugger
 				store.AppendValues (createMsg, "", "", null, true, true, null, disabledColor, disabledColor);
 			
 			state.Load ();
-			UpdateColumnSizes ();
 		}
 		
 		void RefreshRow (TreeIter it)
@@ -415,7 +500,6 @@ namespace MonoDevelop.Debugger
 			
 			SetValues (parent, it, val.Name, val);
 			RegisterValue (val, it);
-			UpdateColumnSizes ();
 		}
 		
 		void RemoveChildren (TreeIter it)
@@ -479,7 +563,6 @@ namespace MonoDevelop.Debugger
 					}
 				}
 				UnregisterValue (val);
-				UpdateColumnSizes ();
 			});
 		}
 
@@ -644,21 +727,6 @@ namespace MonoDevelop.Debugger
 			return "md-" + access + stic + source;
 		}
 		
-		void UpdateColumnSizes ()
-		{
-			ColumnsAutosize ();
-			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, int.MaxValue, 1);
-			int x, y, w, h;
-			valueCol.CellGetSize (rect, out x, out y, out w, out h);
-			if (compact) {
-/*				if (valueCol.Width > 200) {
-					valueCol.Sizing = TreeViewColumnSizing.Fixed;
-					valueCol.FixedWidth = 200;
-				} else {
-				}*/
-			}
-		}
-		
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)
 		{
 			if (!allowExpanding)
@@ -672,7 +740,6 @@ namespace MonoDevelop.Debugger
 				ObjectValue val = (ObjectValue) store.GetValue (iter, ObjectCol);
 				foreach (ObjectValue cval in val.GetAllChildren ())
 					AppendValue (iter, null, cval);
-				UpdateColumnSizes ();
 				return base.OnTestExpandRow (iter, path);
 			}
 			else
@@ -881,6 +948,7 @@ namespace MonoDevelop.Debugger
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
+			allowStoreColumnSizes = true;
 			bool res = base.OnButtonPressEvent (evnt);
 			TreePath path;
 			TreeViewColumn col;
@@ -920,6 +988,13 @@ namespace MonoDevelop.Debugger
 			
 			return res;
 		}
+		
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
+		{
+			allowStoreColumnSizes = false;
+			return base.OnButtonReleaseEvent (evnt);
+		}
+		
 		
 		protected override bool OnPopupMenu ()
 		{
