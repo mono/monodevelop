@@ -38,6 +38,9 @@ namespace OSXIntegration.Framework
 		
 		[DllImport (Carbon.CarbonLib)]
 		public static extern ComponentErr CloseComponent (ComponentInstance componentInstance);
+		
+		[DllImport (Carbon.CarbonLib)]
+		public static extern int GetComponentInstanceError (ComponentInstance componentInstance); //returns an oserr
 	}
 	
 	struct ComponentInstance {

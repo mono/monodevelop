@@ -1,3 +1,11 @@
+2010-04-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/Carbon.cs:
+	* Framework/AppleEvent.cs:
+	* Framework/AppleScript.cs:
+	* Framework/ComponentManager.cs: Finally, working support for
+	  running AppleScript directly.
+
 2010-04-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

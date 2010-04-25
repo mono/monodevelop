@@ -220,6 +220,30 @@ namespace OSXIntegration.Framework
 			return null;
 		}
 		
+		[DllImport (CarbonLib)]
+		static extern AEDescStatus AEGetDescData (ref AEDesc desc, IntPtr ptr, int maximumSize);
+		
+		[DllImport (CarbonLib)]
+		static extern int AEGetDescDataSize (ref AEDesc desc);
+		
+		[DllImport (CarbonLib)]
+		static extern AEDescStatus AECoerceDesc (ref AEDesc theAEDesc, DescType toType, ref AEDesc result);
+		
+		public static string GetStringFromAEDesc (ref AEDesc desc)
+		{
+			int size = AEGetDescDataSize (ref desc);
+			if (size > 0) {
+				IntPtr buffer = Marshal.AllocHGlobal (size);
+				try {
+					if (AEGetDescData (ref desc, buffer, size) == AEDescStatus.Ok)
+						return Marshal.PtrToStringAuto (buffer, size);
+				} finally {
+					Marshal.FreeHGlobal (buffer);
+				}
+			}
+			return null;
+		}
+		
 		#endregion
 		
 		[DllImport (CarbonLib)]

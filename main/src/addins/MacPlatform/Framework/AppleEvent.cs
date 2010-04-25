@@ -28,12 +28,54 @@ using System.Runtime.InteropServices;
 
 namespace OSXIntegration.Framework
 {
-	public static class AppleEvent
+	static class AppleEvent
 	{
 		const string AELib = Carbon.CarbonLib;
 		
-		//[DllImport (AELib)]
-		//OSErr AECreateDesc (DescType typeCode, IntPtr dataPtr, Size dataSize, out AEDesc result);
+		//FIXME: is "int" correct for size?
+		[DllImport (AELib)]
+		static extern AEDescStatus AECreateDesc (OSType typeCode, IntPtr dataPtr, int dataSize, out AEDesc desc);
+		
+		[DllImport (AELib)]
+		static extern AEDescStatus AECreateDesc (OSType typeCode, byte[] data, int dataSize, out AEDesc desc);
+		
+		[DllImport (AELib)]
+		public static extern AEDescStatus AEDisposeDesc (ref AEDesc desc);
+		
+		public static void AECreateDesc (OSType typeCode, byte[] data, out AEDesc result)
+		{
+			Check (AECreateDesc (typeCode, data, data.Length, out result));
+		}
+		
+		public static void AECreateDescUtf8 (string value, out AEDesc result)
+		{
+			var type = (OSType)(int)CarbonEventParameterType.UnicodeText;
+			AECreateDescUtf8 (value, type, out result);
+		}
+		
+		public static void AECreateDescUtf8 (string value, OSType recordType, out AEDesc result)
+		{
+			var bytes = System.Text.Encoding.UTF8.GetBytes (value);
+			Check (AECreateDesc (recordType, bytes, bytes.Length, out result));
+		}
+		
+		public static void AECreateDescAscii (string value, OSType recordType, out AEDesc result)
+		{
+			var bytes = System.Text.Encoding.ASCII.GetBytes (value);
+			Check (AECreateDesc (recordType, bytes, bytes.Length, out result));
+		}
+		
+		public static void AECreateDescNull (out AEDesc desc)
+		{
+			Check (AECreateDesc ((OSType)0, IntPtr.Zero, 0, out desc));
+		}
+
+		static void Check (AEDescStatus status)
+		{
+			if (status != AEDescStatus.Ok)
+				throw new Exception ("Failed with code " + status.ToString ());
+		}
+
 	}
 	
 	enum AESendMode {

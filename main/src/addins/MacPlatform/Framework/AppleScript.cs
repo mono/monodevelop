@@ -56,30 +56,106 @@ namespace OSXIntegration.Framework
 		[DllImport (Carbon.CarbonLib)]
 		static extern OsaError OSACompile (ComponentInstance scriptingComponent, ref AEDesc sourceData,
 		                                   OsaMode modeFlags, ref OsaId previousAndResultingScriptID);
+		[DllImport (Carbon.CarbonLib)]
+		static extern OsaError OSALoad (ComponentInstance scriptingComponent, ref AEDesc sourceData,
+		                                OsaMode modeFlags, ref OsaId previousAndResultingScriptID);
 		
 		[DllImport (Carbon.CarbonLib)]
-		static extern OsaError  OSACompileExecute (ComponentInstance scriptingComponent, ref AEDesc sourceData,
+		static extern OsaError OSACompileExecute (ComponentInstance scriptingComponent, ref AEDesc sourceData,
 		                                           OsaId contextID, OsaMode modeFlags, ref OsaId resultingScriptValueID);
+		
+		[DllImport (Carbon.CarbonLib)]
+		static extern OsaError OSALoadExecute (ComponentInstance scriptingComponent, ref AEDesc scriptData,
+		                                       OsaId contextID, OsaMode modeFlags, ref OsaId resultingScriptValueID);
 		
 		[DllImport (Carbon.CarbonLib)]
 		static extern OsaError OSAScriptError (ComponentInstance scriptingComponent, OsaErrorSelector selector,
 		                                       DescType desiredType, out AEDesc resultingErrorDescription);
 		
-		public static string RunScript (string script)
+		public static string Run (string scriptSource)
 		{
-			throw new NotImplementedException ();
-			
-			var component = ComponentManager.OpenDefaultComponent ((OSType)"osa ", (OSType)"ascr");
+			AEDesc sourceData = new AEDesc ();
 			try {
-				//
-				AEDesc sourceData = new AEDesc (); //FIXME initialize with real data
-				AEDesc resultData = new AEDesc (); //FIXME initialize with real data
-				DescType resultType = new DescType ();
-				OsaId contextId = new OsaId (); // 0 = default
-				var result = OSADoScript (component, ref sourceData, contextId, resultType, OsaMode.Default, ref resultData);
-				if (result != OsaError.Success)
-					throw new InvalidOperationException (string.Format ("Unexpected result {0}", (long)result));
+				//apparently UnicodeText doesn't work
+				AppleEvent.AECreateDescAscii (scriptSource, (OSType)"TEXT", out sourceData);
+				return Run (true, ref sourceData);
 			} finally {
+				AppleEvent.AEDisposeDesc (ref sourceData);
+			}
+		}
+		
+		public static string Run (byte[] compiledBytes)
+		{
+			AEDesc sourceData = new AEDesc (), resultData = new AEDesc ();
+			try {
+				AppleEvent.AECreateDesc ((OSType)OsaType.OsaGenericStorage, compiledBytes, out sourceData);
+				return Run (false, ref sourceData);
+			} finally {
+				AppleEvent.AEDisposeDesc (ref sourceData);
+			}
+		}
+		
+		static string Run (bool compile, ref AEDesc scriptData)
+		{
+			string value;
+			var ret = Run (compile, ref scriptData, out value);
+			if (ret == OsaError.Success)
+				return value;
+			else
+				throw new Exception (string.Format ("Error {0}: {1}", ret, value));
+		}
+		
+		static OsaError Run (bool compile, ref AEDesc scriptData, out string value)
+		{
+			var component = ComponentManager.OpenDefaultComponent ((OSType)OsaType.OsaComponent, (OSType)OsaType.AppleScript);
+			if (component.IsNull)
+				throw new Exception ("Could not load component");
+			AEDesc resultData = new AEDesc ();
+			OsaId contextId = new OsaId (), scriptId = new OsaId (), resultId = new OsaId ();
+			try {
+				AppleEvent.AECreateDescNull (out resultData);
+				//apparently UnicodeText doesn't work
+				var resultType = new DescType () { Value = (OSType)"TEXT" };
+				
+				//var result = OSADoScript (component, ref sourceData, contextId, resultType, OsaMode.Default, ref resultData);
+				
+				OsaError result;
+				if (compile)
+					result = OSACompile (component, ref scriptData, OsaMode.Default, ref scriptId);
+				else
+					result = OSALoad (component, ref scriptData, OsaMode.Default, ref scriptId);
+				
+				if (result == OsaError.Success) {
+					result = OSAExecute (component, scriptId, contextId, OsaMode.Default, out resultId);
+					if (result == OsaError.Success) {
+						result = OSADisplay (component, resultId, resultType, OsaMode.Default, out resultData);
+						if (result == OsaError.Success) {
+							value = Carbon.GetStringFromAEDesc (ref resultData);
+							return result;
+						}
+					}
+				}
+				AEDesc errorDesc = new AEDesc ();
+				try {
+					AppleEvent.AECreateDescNull (out resultData);
+					if (OsaError.Success == OSAScriptError (component, OsaErrorSelector.Message, resultType, out errorDesc)) {
+						value = Carbon.GetStringFromAEDesc (ref errorDesc);
+						return result;
+					} else {
+						throw new InvalidOperationException (string.Format ("Unexpected result {0}", (long)result));
+					}
+				} finally {
+					AppleEvent.AEDisposeDesc (ref errorDesc);
+				}
+			} finally {
+				AppleEvent.AEDisposeDesc (ref scriptData);
+				AppleEvent.AEDisposeDesc (ref resultData);
+				if (!contextId.IsZero)
+					OSADispose (component, contextId);
+				if (!scriptId.IsZero)
+					OSADispose (component, scriptId);
+				if (!resultId.IsZero)
+					OSADispose (component, resultId);
 				if (!component.IsNull)
 					ComponentManager.CloseComponent (component);
 			}
@@ -93,6 +169,10 @@ namespace OSXIntegration.Framework
 		public bool Equals (OsaId other)
 		{
 			return other.value == value;
+		}
+		
+		public bool IsZero {
+			get { return value == IntPtr.Zero; }
 		}
 	}
 	
@@ -113,9 +193,54 @@ namespace OSXIntegration.Framework
 		public OSType Value;
 	}
 	
-	enum OsaError : long //this is a ComponentResult typedef
+	enum OsaError : int //this is a ComponentResult typedef - is it long on int64?
 	{
 		Success = 0,
+		CantCoerce = -1700,	
+		MissingParameter = -1701	,
+		CorruptData = -1702,	
+		TypeError = -1703,
+		MessageNotUnderstood = -1708,
+		UndefinedHandler = -1717,
+		IllegalIndex	 = -1719,
+		IllegalRange	 = -1720,
+		ParameterMismatch = -1721,
+		IllegalAccess = -1723,
+		CantAccess = -1728,
+		RecordingIsAlreadyOn = -1732,
+		SystemError = -1750,
+		InvalidID = -1751,
+		BadStorageType = -1752,
+		ScriptError = -1753,
+		BadSelector = -1754,
+		SourceNotAvailable = -1756,
+		NoSuchDialect = -1757,
+		DataFormatObsolete =-1758,
+		DataFormatTooNew = -1759,
+		ComponentMismatch = -1761,
+		CantOpenComponent = -1762,
+		GeneralError	 = -2700,
+		DivideByZero	 = -2701,
+		NumericOverflow = -2702,
+		CantLaunch = -2703,
+		AppNotHighLevelEventAware = -2704,
+		CorruptTerminology = -2705,
+		StackOverflow = -2706,
+		InternalTableOverflow = -2707,
+		DataBlockTooLarge = -2708,
+		CantGetTerminology = -2709,
+		CantCreate = -2710,
+		SyntaxError = -2740,
+		SyntaxTypeError = -2741,
+		TokenTooLong	 = -2742	,
+		DuplicateParameter = -2750,
+		DuplicateProperty = -2751,
+		DuplicateHandler = -2752,
+		UndefinedVariable = -2753,
+		InconsistentDeclarations = -2754	,
+		ControlFlowError = -2755	,
+		IllegalAssign = -10003,
+		CantAssign = -10006,
 	}
 	
 	enum OsaType : int
@@ -123,6 +248,9 @@ namespace OSXIntegration.Framework
 		OsaComponent	 = 0x6f736120, // 'osa '
 		OsaGenericScriptingComponent = 0x73637074, // 'scpt'
 		OsaFile = 0x6f736173, // 'osas'
+		AppleScript = 1634952050, // 'ascr'
+		OsaGenericStorage = OsaGenericScriptingComponent,
+		OsaResource = OsaGenericScriptingComponent,
 	}
 	
 	[Flags]
