@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace OSXIntegration.Framework
 {
@@ -38,44 +39,169 @@ namespace OSXIntegration.Framework
 		
 		[DllImport (AELib)]
 		static extern AEDescStatus AECreateDesc (OSType typeCode, byte[] data, int dataSize, out AEDesc desc);
+				
+		[DllImport (AELib)]
+		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, OSType desiredType, uint keyword,
+		                                        out CarbonEventParameterType actualType, IntPtr buffer, int bufferSize, out int actualSize);
+		
+		[DllImport (AELib)]
+		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, OSType desiredType, uint keyword,
+		                                        uint zero, IntPtr buffer, int bufferSize, int zero2);
+		
+		[DllImport (AELib)]
+		static extern AEDescStatus AECountItems (ref AEDesc descList, out int count); //return an OSErr
+		
+		[DllImport (AELib)]
+		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, OSType desiredType, uint keyword,
+		                                        uint zero, out IntPtr outPtr, int bufferSize, int zero2);
 		
 		[DllImport (AELib)]
 		public static extern AEDescStatus AEDisposeDesc (ref AEDesc desc);
 		
+		[DllImport (AELib)]
+		public static extern AEDescStatus AESizeOfNthItem  (ref AEDesc descList, int index, ref OSType type, out int size);
+		
+		[DllImport (AELib)]
+		static extern AEDescStatus AEGetDescData (ref AEDesc desc, IntPtr ptr, int maximumSize);
+		
+		[DllImport (AELib)]
+		static extern int AEGetDescDataSize (ref AEDesc desc);
+		
+		[DllImport (AELib)]
+		static extern AEDescStatus AECoerceDesc (ref AEDesc theAEDesc, DescType toType, ref AEDesc result);
+		
 		public static void AECreateDesc (OSType typeCode, byte[] data, out AEDesc result)
 		{
-			Check (AECreateDesc (typeCode, data, data.Length, out result));
+			CheckReturn (AECreateDesc (typeCode, data, data.Length, out result));
 		}
 		
 		public static void AECreateDescUtf8 (string value, out AEDesc result)
 		{
 			var type = (OSType)(int)CarbonEventParameterType.UnicodeText;
-			AECreateDescUtf8 (value, type, out result);
-		}
-		
-		public static void AECreateDescUtf8 (string value, OSType recordType, out AEDesc result)
-		{
 			var bytes = System.Text.Encoding.UTF8.GetBytes (value);
-			Check (AECreateDesc (recordType, bytes, bytes.Length, out result));
+			CheckReturn (AECreateDesc (type, bytes, bytes.Length, out result));
 		}
 		
-		public static void AECreateDescAscii (string value, OSType recordType, out AEDesc result)
+		public static void AECreateDescAscii (string value, out AEDesc result)
 		{
+			var type = (OSType)(int)CarbonEventParameterType.Char;
 			var bytes = System.Text.Encoding.ASCII.GetBytes (value);
-			Check (AECreateDesc (recordType, bytes, bytes.Length, out result));
+			CheckReturn (AECreateDesc (type, bytes, bytes.Length, out result));
 		}
 		
 		public static void AECreateDescNull (out AEDesc desc)
 		{
-			Check (AECreateDesc ((OSType)0, IntPtr.Zero, 0, out desc));
+			CheckReturn (AECreateDesc ((OSType)0, IntPtr.Zero, 0, out desc));
+		}
+		
+		public static int AECountItems (ref AEDesc descList)
+		{
+			int count;
+			CheckReturn (AECountItems (ref descList, out count));
+			return count;
 		}
 
-		static void Check (AEDescStatus status)
+		public static T AEGetNthPtr<T> (ref AEDesc descList, int index, OSType desiredType) where T : struct
+		{
+			int len = Marshal.SizeOf (typeof (T));
+			IntPtr bufferPtr = Marshal.AllocHGlobal (len);
+			try {
+				CheckReturn (AEGetNthPtr (ref descList, index, desiredType, 0, 0, bufferPtr, len, 0));
+				T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
+				return val;
+			} finally{ 
+				Marshal.FreeHGlobal (bufferPtr);
+			}
+		}
+		
+		public static IntPtr AEGetNthPtr (ref AEDesc descList, int index, OSType desiredType)
+		{
+			IntPtr ret;
+			CheckReturn (AEGetNthPtr (ref descList, index, desiredType, 0, 0, out ret, 4, 0));
+			return ret;
+		}
+		
+		//FIXME: this might not work in some encodings. need to test more.
+		static string GetUtfs8StringFromAEPtr (ref AEDesc descList, int index)
+		{
+			int size;
+			var type = (OSType)(int)CarbonEventParameterType.UnicodeText;
+			if (AESizeOfNthItem (ref descList, index, ref type, out size) == AEDescStatus.Ok) {
+				IntPtr buffer = Marshal.AllocHGlobal (size);
+				try {
+					if (AEGetNthPtr (ref descList, index, type, 0, 0, buffer, size, 0) == AEDescStatus.Ok)
+						return Marshal.PtrToStringAuto (buffer, size);
+				} finally {
+					Marshal.FreeHGlobal (buffer);
+				}
+			}
+			return null;
+		}
+		
+		public static string GetStringFromAEDesc (ref AEDesc desc)
+		{
+			int size = AEGetDescDataSize (ref desc);
+			if (size > 0) {
+				IntPtr buffer = Marshal.AllocHGlobal (size);
+				try {
+					if (AEGetDescData (ref desc, buffer, size) == AEDescStatus.Ok)
+						return Marshal.PtrToStringAuto (buffer, size);
+				} finally {
+					Marshal.FreeHGlobal (buffer);
+				}
+			}
+			return null;
+		}
+		
+		public static IList<string> GetUtf8StringListFromAEDesc (ref AEDesc list, bool skipEmpty)
+		{
+			long count = AppleEvent.AECountItems (ref list);
+			var items = new List<string> ();
+			for (int i = 1; i <= count; i++) {
+				string str = AppleEvent.GetUtfs8StringFromAEPtr (ref list, i); 
+				if (!string.IsNullOrEmpty (str))
+					items.Add (str);
+			}
+			return items;
+		}
+		
+		public static T[] GetListFromAEDesc<T,TRef> (ref AEDesc list, AEDescValueSelector<TRef,T> sel, OSType type)
+			where TRef : struct
+		{
+			long count = AppleEvent.AECountItems (ref list);
+			T[] arr = new T[count - 1];
+			for (int i = 1; i <= count; i++) {
+				TRef r = AppleEvent.AEGetNthPtr<TRef> (ref list, i, type);
+				arr [i - 1] = sel (ref r);
+			}
+			return arr;
+		}
+		
+		static void CheckReturn (AEDescStatus status)
 		{
 			if (status != AEDescStatus.Ok)
-				throw new Exception ("Failed with code " + status.ToString ());
+			throw new Exception ("Failed with code " + status.ToString ());
 		}
-
+	}
+	
+	public delegate T AEDescValueSelector<TRef,T> (ref TRef desc);
+	
+	[StructLayout(LayoutKind.Sequential, Pack = 2)]
+	struct AEDesc
+	{
+		uint descriptorType;
+		IntPtr dataHandle;
+	}
+	
+	enum AEDescStatus
+	{
+		Ok = 0,
+		MemoryFull = -108,
+		CoercionFail = -1700,
+		DescRecordNotFound = -1701,
+		WrongDataType = -1703,
+		NotAEDesc = -1704,
+		ReplyNotArrived = -1718,
 	}
 	
 	enum AESendMode {

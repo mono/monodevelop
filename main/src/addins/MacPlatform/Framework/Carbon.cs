@@ -153,99 +153,6 @@ namespace OSXIntegration.Framework
 		
 		#endregion
 		
-		#region AEList manipulation
-		
-		[DllImport (CarbonLib)]
-		static extern int AECountItems (ref AEDesc descList, out int count); //return an OSErr
-		
-		public static int AECountItems (ref AEDesc descList)
-		{
-			int count;
-			CheckReturn (AECountItems (ref descList, out count));
-			return count;
-		}
-		
-		[DllImport (CarbonLib)]
-		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType, uint keyword,
-		                                        out CarbonEventParameterType actualType, IntPtr buffer, int bufferSize, out int actualSize);
-		
-		[DllImport (CarbonLib)]
-		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType, uint keyword,
-		                                        uint zero, IntPtr buffer, int bufferSize, int zero2);
-		
-		public static T AEGetNthPtr<T> (ref AEDesc descList, int index, CarbonEventParameterType desiredType) where T : struct
-		{
-			int len = Marshal.SizeOf (typeof (T));
-			IntPtr bufferPtr = Marshal.AllocHGlobal (len);
-			try {
-				CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, bufferPtr, len, 0));
-				T val = (T)Marshal.PtrToStructure (bufferPtr, typeof (T));
-				return val;
-			} finally{ 
-				Marshal.FreeHGlobal (bufferPtr);
-			}
-		}
-		
-		[DllImport (CarbonLib)]
-		static extern AEDescStatus AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType, uint keyword,
-		                                        uint zero, out IntPtr outPtr, int bufferSize, int zero2);
-		
-		public static IntPtr AEGetNthPtr (ref AEDesc descList, int index, CarbonEventParameterType desiredType)
-		{
-			IntPtr ret;
-			CheckReturn ((int)AEGetNthPtr (ref descList, index, desiredType, 0, 0, out ret, 4, 0));
-			return ret;
-		}
-		
-		[DllImport (CarbonLib)]
-		public static extern int AEDisposeDesc (ref AEDesc desc);
-		
-		[DllImport (CarbonLib)]
-		public static extern AEDescStatus AESizeOfNthItem  (ref AEDesc descList, int index, ref CarbonEventParameterType type, out int size);
-		
-		//FIXME: this might not work in some encodings. need to test more.
-		static string GetStringFromAEPtr (ref AEDesc descList, int index)
-		{
-			int size;
-			CarbonEventParameterType type = CarbonEventParameterType.UnicodeText;
-			if (AESizeOfNthItem (ref descList, index, ref type, out size) == AEDescStatus.Ok) {
-				IntPtr buffer = Marshal.AllocHGlobal (size);
-				try {
-					if (AEGetNthPtr (ref descList, index, type, 0, 0, buffer, size, 0) == AEDescStatus.Ok)
-						return Marshal.PtrToStringAuto (buffer, size);
-				} finally {
-					Marshal.FreeHGlobal (buffer);
-				}
-			}
-			return null;
-		}
-		
-		[DllImport (CarbonLib)]
-		static extern AEDescStatus AEGetDescData (ref AEDesc desc, IntPtr ptr, int maximumSize);
-		
-		[DllImport (CarbonLib)]
-		static extern int AEGetDescDataSize (ref AEDesc desc);
-		
-		[DllImport (CarbonLib)]
-		static extern AEDescStatus AECoerceDesc (ref AEDesc theAEDesc, DescType toType, ref AEDesc result);
-		
-		public static string GetStringFromAEDesc (ref AEDesc desc)
-		{
-			int size = AEGetDescDataSize (ref desc);
-			if (size > 0) {
-				IntPtr buffer = Marshal.AllocHGlobal (size);
-				try {
-					if (AEGetDescData (ref desc, buffer, size) == AEDescStatus.Ok)
-						return Marshal.PtrToStringAuto (buffer, size);
-				} finally {
-					Marshal.FreeHGlobal (buffer);
-				}
-			}
-			return null;
-		}
-		
-		#endregion
-		
 		[DllImport (CarbonLib)]
 		static extern int FSRefMakePath (ref FSRef fsRef, IntPtr buffer, uint bufferSize);
 		
@@ -369,47 +276,36 @@ namespace OSXIntegration.Framework
 		public static Dictionary<string,int> GetFileListFromEventRef (IntPtr eventRef)
 		{
 			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
-			int line = 0;
-			
 			try {
-				SelectionRange range = GetEventParameter<SelectionRange> (eventRef, CarbonEventParameterName.AEPosition, CarbonEventParameterType.Char);
-				line = range.lineNum+1;
-			} catch {
+				int line = 0;
+				try {
+					SelectionRange range = GetEventParameter<SelectionRange> (eventRef, CarbonEventParameterName.AEPosition, CarbonEventParameterType.Char);
+					line = range.lineNum+1;
+				} catch {
+				}
+				
+				var arr = AppleEvent.GetListFromAEDesc<string,FSRef> (ref list, (ref FSRef t) => FSRefToPath (ref t),
+				                                                      (OSType)(int)CarbonEventParameterType.FSRef);
+				var files = new Dictionary<string,int> ();
+				foreach (var s in arr) {
+					if (!string.IsNullOrEmpty (s))
+						files[s] = line;
+				}
+				return files;
+			} finally {
+				CheckReturn ((int)AppleEvent.AEDisposeDesc (ref list));
 			}
-			
-			long count = AECountItems (ref list);
-			var files = new Dictionary<string,int> ();
-			for (int i = 1; i <= count; i++) {
-				FSRef fsRef = AEGetNthPtr<FSRef> (ref list, i, CarbonEventParameterType.FSRef);
-				string file = FSRefToPath (ref fsRef);
-				if (!string.IsNullOrEmpty (file))
-					files[file] = line;
-			}
-			CheckReturn (AEDisposeDesc (ref list));
-			return files;
 		}
 		
-		public static List<string> GetUrlListFromEventRef (IntPtr eventRef)
+		public static IList<string> GetUrlListFromEventRef (IntPtr eventRef)
 		{
 			AEDesc list = GetEventParameter<AEDesc> (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.AEList);
-			long count = AECountItems (ref list);
-			var files = new List<string> ();
-			for (int i = 1; i <= count; i++) {
-				string url = GetStringFromAEPtr (ref list, i); 
-				if (!string.IsNullOrEmpty (url))
-					files.Add (url);
+			try {
+				return AppleEvent.GetUtf8StringListFromAEDesc (ref list, true);
+			} finally {
+				Carbon.CheckReturn ((int)AppleEvent.AEDisposeDesc (ref list));
 			}
-			Carbon.CheckReturn (Carbon.AEDisposeDesc (ref list));
-			return files;
 		}
-	}
-	
-	
-	[StructLayout(LayoutKind.Sequential, Pack = 2)]
-	struct AEDesc
-	{
-		uint descriptorType;
-		IntPtr dataHandle;
 	}
 	
 	[StructLayout(LayoutKind.Sequential, Pack = 2, Size = 80)]
@@ -634,17 +530,6 @@ namespace OSXIntegration.Framework
 		EventNotInQueueErr = -9877,
 		EventHotKeyExistsErr = -9878,
 		EventHotKeyInvalidErr = -9879,
-	}
-	
-	enum AEDescStatus
-	{
-		Ok = 0,
-		MemoryFull = -108,
-		CoercionFail = -1700,
-		DescRecordNotFound = -1701,
-		WrongDataType = -1703,
-		NotAEDesc = -1704,
-		ReplyNotArrived = -1718,
 	}
 	
 	[StructLayout(LayoutKind.Explicit)]

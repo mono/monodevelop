@@ -2,6 +2,13 @@
 
 	* Framework/Carbon.cs:
 	* Framework/AppleEvent.cs:
+	* Framework/AppleScript.cs: Moved all the AE stuff from Carbon
+	  to AppleEvents.
+
+2010-04-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Framework/Carbon.cs:
+	* Framework/AppleEvent.cs:
 	* Framework/AppleScript.cs:
 	* Framework/ComponentManager.cs: Finally, working support for
 	  running AppleScript directly.

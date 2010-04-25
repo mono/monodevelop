@@ -77,7 +77,7 @@ namespace OSXIntegration.Framework
 			AEDesc sourceData = new AEDesc ();
 			try {
 				//apparently UnicodeText doesn't work
-				AppleEvent.AECreateDescAscii (scriptSource, (OSType)"TEXT", out sourceData);
+				AppleEvent.AECreateDescAscii (scriptSource, out sourceData);
 				return Run (true, ref sourceData);
 			} finally {
 				AppleEvent.AEDisposeDesc (ref sourceData);
@@ -130,7 +130,7 @@ namespace OSXIntegration.Framework
 					if (result == OsaError.Success) {
 						result = OSADisplay (component, resultId, resultType, OsaMode.Default, out resultData);
 						if (result == OsaError.Success) {
-							value = Carbon.GetStringFromAEDesc (ref resultData);
+							value = AppleEvent.GetStringFromAEDesc (ref resultData);
 							return result;
 						}
 					}
@@ -139,7 +139,7 @@ namespace OSXIntegration.Framework
 				try {
 					AppleEvent.AECreateDescNull (out resultData);
 					if (OsaError.Success == OSAScriptError (component, OsaErrorSelector.Message, resultType, out errorDesc)) {
-						value = Carbon.GetStringFromAEDesc (ref errorDesc);
+						value = AppleEvent.GetStringFromAEDesc (ref errorDesc);
 						return result;
 					} else {
 						throw new InvalidOperationException (string.Format ("Unexpected result {0}", (long)result));
