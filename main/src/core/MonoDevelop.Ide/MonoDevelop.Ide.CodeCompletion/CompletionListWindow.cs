@@ -262,6 +262,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return true;
 		}
 		
+		enum WindowPositonY {
+			None,
+			Top,
+			Bottom
+		}
+		WindowPositonY yPosition;
+		
 		void Reposition (bool force)
 		{
 			X = CodeCompletionContext.TriggerXCoord - TextOffset;
@@ -276,12 +283,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			previousHeight = h;
 			previousWidth = w;
 
-			if (X + w > Screen.Width)
+			if (X + w > Screen.Width )
 				X = Screen.Width - w;
 
-			if (Y + h > Screen.Height) {
+			if (Y + h > Screen.Height || yPosition == WindowPositonY.Top) {
 				Y = Y - CodeCompletionContext.TriggerTextHeight - h;
+				yPosition = WindowPositonY.Top;
+			} else {
+				yPosition = WindowPositonY.Bottom;
 			}
+			
 			curXPos = X;
 			curYPos = Y;
 			Move (X, Y);

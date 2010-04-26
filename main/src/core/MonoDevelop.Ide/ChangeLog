@@ -1,3 +1,9 @@
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	  Fixed 'Bug 598828 – Completion window should not move
+	  relative to caret as it shrinks'.
+
 2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Remove
