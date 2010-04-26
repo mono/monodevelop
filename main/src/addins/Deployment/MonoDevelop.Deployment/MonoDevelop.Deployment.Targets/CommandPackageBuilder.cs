@@ -101,12 +101,9 @@ namespace MonoDevelop.Deployment.Targets
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1} {2}", Command, Arguments, consMsg));
-			ProcessWrapper process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons, null);
+			IProcessAsyncOperation process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons, null);
 			
-			if (ExternalConsole)
-				process.WaitForExit ();
-			else
-				process.WaitForOutput ();
+			process.WaitForCompleted ();
 			
 			if (cons is MonitorConsole) {
 				((MonitorConsole)cons).Dispose ();
