@@ -1,5 +1,9 @@
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs: Set document tag.
+
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: changed navigate to mac shortcut.
 
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
