@@ -153,7 +153,11 @@ namespace MonoDevelop.GtkCore {
 				string version = sr.Substring (sr.IndexOf (",") + 1).Trim ();
 				if (version != assm_version) {
 					project.References.Remove (r);
-					project.References.Add (new ProjectReference (ReferenceType.Gac, name + ", " + assm_version));
+					if (name == "gnome-sharp" && assm_version == "Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f") {
+						project.References.Add (new ProjectReference (ReferenceType.Gac, name + ", Version=2.24.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f"));
+					} else {
+						project.References.Add (new ProjectReference (ReferenceType.Gac, name + ", " + assm_version));
+					}
 					changed = true;
 				}
 			}
@@ -186,7 +190,7 @@ namespace MonoDevelop.GtkCore {
 		static bool updating;
 		static string[] gnome_assemblies = new string [] { 
 			"art-sharp", "atk-sharp", "gconf-sharp", "gdk-sharp", 
-			"glade-sharp","glib-sharp", // "gnome-sharp", <-- gnome sharp versioning is different see Bug 599335 - Error CS0433: The imported type `Gtk.DeleteEventArgs' is defined multiple times (CS0433)
+			"glade-sharp","glib-sharp", "gnome-sharp",
 			"gnome-vfs-sharp", "gtk-dotnet", "gtkhtml-sharp", 
 			"gtk-sharp", "pango-sharp", "rsvg-sharp"
 		};
