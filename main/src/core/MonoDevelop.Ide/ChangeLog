@@ -1,5 +1,9 @@
 2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide/DesktopService.cs: Track last minute change.
+
+2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Desktop/PlatformService.cs: External console
 	  processes are now wrapped by a IProcessAsyncOperation
 	  interface, instead of a Process instance. In this way it is
