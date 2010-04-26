@@ -906,7 +906,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		internal static string GetRelProjectPath (ProjectFile file)
 		{
 			if (file.Project != null)
-				return System.IO.Path.Combine (System.IO.Path.GetFileName (file.Project.BaseDirectory), file.ProjectVirtualPath);
+				return file.ProjectVirtualPath;
 			return file.FilePath;
 		}
 	}

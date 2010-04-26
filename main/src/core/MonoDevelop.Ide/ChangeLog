@@ -1,5 +1,10 @@
 2010-04-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Don't
+	  include the project folder in the relative name.
+
+2010-04-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Order
 	  by rank.
 
