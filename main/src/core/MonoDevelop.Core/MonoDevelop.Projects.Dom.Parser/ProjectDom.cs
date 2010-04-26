@@ -768,7 +768,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				ProjectDomService.UnrefDom (dom.Uri); 
 		}
 
-		internal IReturnType GetSharedReturnType (IReturnType rt)
+		internal IReturnType GetSharedReturnType (DomReturnType rt)
 		{
 			return DomReturnType.GetSharedReturnType (rt);
 		}

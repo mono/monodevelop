@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				dims [n] = reader.ReadInt32 ();
 			
 			result.SetDimensions (dims);
-			return result;
+			return DomReturnType.GetSharedReturnType (result);
 		}
 		
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IReturnType returnType)

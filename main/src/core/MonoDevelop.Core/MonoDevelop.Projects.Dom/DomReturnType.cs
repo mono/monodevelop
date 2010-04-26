@@ -131,9 +131,6 @@ namespace MonoDevelop.Projects.Dom
 		
 		List<IReturnTypePart> parts = new List<IReturnTypePart> ();
 		
-		// TODO dom: free unused return types
-//		static Dictionary<string, IReturnType> returnTypeCache;
-		
 		public static readonly IReturnType Void;
 		public static readonly IReturnType Object;
 		public static readonly IReturnType Exception;
@@ -531,37 +528,36 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 #region shared return types
-
-		public static IReturnType GetSharedReturnType (string invariantString)
+		static Dictionary<string, DomReturnType> returnTypeCache = new Dictionary<string, DomReturnType> ();
+		
+		public static DomReturnType GetSharedReturnType (string invariantString)
 		{
 			if (string.IsNullOrEmpty (invariantString))
 				return null;
-			return new DomReturnType (invariantString);
-		/*	lock (returnTypeCache) {
-				IReturnType type;
+			lock (returnTypeCache) {
+				DomReturnType type;
 				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
 					DomReturnType newType = new DomReturnType (invariantString);
 					returnTypeCache[invariantString] = newType;
 					return newType;
 				}
 				return type;
-			}*/
+			}
 		}
 		
-		public static IReturnType GetSharedReturnType (IReturnType returnType)
+		public static DomReturnType GetSharedReturnType (DomReturnType returnType)
 		{
-			return returnType;
-/*			if (returnType == null)
+			if (returnType == null)
 				return null;
-			string invariantString = returnType.ToInvariantString();
+			string invariantString = returnType.ToInvariantString ();
 			lock (returnTypeCache) {
-				IReturnType type;
+				DomReturnType type;
 				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
 					returnTypeCache[invariantString] = returnType;
 					return returnType;
 				}
 				return type;
-			}*/
+			}
 		}
 #endregion
 	}

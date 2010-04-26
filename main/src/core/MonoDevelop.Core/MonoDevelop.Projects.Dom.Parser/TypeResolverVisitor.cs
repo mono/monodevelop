@@ -127,7 +127,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			if (lookupType == null) {
 				unresolvedCount++;
-				return db.GetSharedReturnType (type);
+				return type;
 			}
 			
 			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
@@ -154,7 +154,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			// Make sure the whole type is resolved
 			if (parts.Count > 1 && db.SearchType (unit, contextType, null, rt) == null) {
 				unresolvedCount++;
-				return db.GetSharedReturnType (type);
+				return type;
 			}
 			
 			rt.PointerNestingLevel = type.PointerNestingLevel;

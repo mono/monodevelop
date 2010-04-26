@@ -1,5 +1,13 @@
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/DomReturnType.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomPersistence.cs:
+	  Re-enabled return type sharing for code completion database.
+
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs: Print type
 	  name for constructors.
 
