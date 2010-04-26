@@ -1,3 +1,9 @@
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.GtkCore/ReferenceManager.cs: Fixed 'Bug 599335 -
+	  Error CS0433: The imported type `Gtk.DeleteEventArgs' is
+	  defined multiple times (CS0433)'.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs: Added

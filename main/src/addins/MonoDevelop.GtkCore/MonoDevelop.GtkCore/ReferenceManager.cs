@@ -186,7 +186,7 @@ namespace MonoDevelop.GtkCore {
 		static bool updating;
 		static string[] gnome_assemblies = new string [] { 
 			"art-sharp", "atk-sharp", "gconf-sharp", "gdk-sharp", 
-			"glade-sharp","glib-sharp","gnome-sharp",
+			"glade-sharp","glib-sharp", // "gnome-sharp", <-- gnome sharp versioning is different see Bug 599335 - Error CS0433: The imported type `Gtk.DeleteEventArgs' is defined multiple times (CS0433)
 			"gnome-vfs-sharp", "gtk-dotnet", "gtkhtml-sharp", 
 			"gtk-sharp", "pango-sharp", "rsvg-sharp"
 		};
