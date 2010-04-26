@@ -1,3 +1,8 @@
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	  Corrected member filtering.
+
 2010-04-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

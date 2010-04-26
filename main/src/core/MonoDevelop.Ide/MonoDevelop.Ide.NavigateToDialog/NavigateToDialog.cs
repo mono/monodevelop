@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				includeMembers.DrawAsRadio = false;
 				includeMembers.Active = (navigateTo & NavigateToType.Members) == NavigateToType.Members;
 				includeMembers.Toggled += delegate {
-					if (includeTypes.Active) {
+					if (includeMembers.Active) {
 						this.NavigateToType |= NavigateToType.Members;
 					} else {
 						this.NavigateToType &= ~NavigateToType.Members;
