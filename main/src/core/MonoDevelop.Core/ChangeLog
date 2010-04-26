@@ -1,3 +1,8 @@
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Output/NetAmbience.cs: Print type
+	  name for constructors.
+
 2010-04-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/ProjectFileCollection.cs: Properly

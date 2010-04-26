@@ -162,7 +162,11 @@ namespace MonoDevelop.Projects.Dom.Output
 			result.Append (settings.EmitModifiers (base.GetString (method.Modifiers)));
 			result.Append (settings.EmitKeyword (method.IsConstructor ? "Constructor" : "Method"));
 			
-			result.Append (Format (settings.UseFullName ? method.FullName : method.Name));
+			if (method.IsConstructor) {
+				result.Append (Format (method.DeclaringType.Name));
+			} else {
+				result.Append (Format (settings.UseFullName ? method.FullName : method.Name));
+			}
 			
 			if (settings.IncludeParameters) {
 				result.Append (settings.Markup ("("));
