@@ -1378,7 +1378,7 @@
 				_label = "Navigate To..." 
 				_description = "Jump to a item in the current workspace"
 				shortcut = "Control|,"
-				macShortcut = "Meta|,"
+				macShortcut = "Meta|."
 				icon  = "gtk-open" />
 		
 		<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
