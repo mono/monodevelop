@@ -1,3 +1,8 @@
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	  changed file search behavior to the old one.
+
 2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/DesktopService.cs: Track last minute change.

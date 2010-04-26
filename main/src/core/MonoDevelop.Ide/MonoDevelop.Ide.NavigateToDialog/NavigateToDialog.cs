@@ -541,9 +541,13 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		SearchResult CheckFile (ProjectFile file, string toMatch)
 		{
 			int rank;
-			if (!MatchName (FileSearchResult.GetRelProjectPath (file), toMatch, out rank)) 
-				return null;
-			return new FileSearchResult (toMatch, rank, file);
+			if (MatchName (System.IO.Path.GetFileName (file.FilePath), toMatch, out rank)) 
+				return new FileSearchResult (toMatch, rank, file, true);
+			
+			if (MatchName (FileSearchResult.GetRelProjectPath (file), toMatch, out rank)) 
+				return new FileSearchResult (toMatch, rank, file, false);
+			
+			return null;
 		}
 		
 		SearchResult CheckType (IType type, string toMatch)
@@ -791,7 +795,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public abstract string PlainText  { get; }
 		
 		public int Rank { get; private set; }
-		
+
 		public virtual int Row { get { return -1; } }
 		public virtual int Column { get { return -1; } }
 		
@@ -851,9 +855,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	class FileSearchResult: SearchResult
 	{
 		ProjectFile file;
+		bool useFileName;
 		
 		public override string PlainText {
 			get {
+				if (useFileName)
+					return System.IO.Path.GetFileName (file.FilePath);
 				return GetRelProjectPath (file);
 			}
 		}
@@ -872,13 +879,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 
 		public override string Description {
 			get {
-				return String.Format (GettextCatalog.GetString ("from \"{0}\""), GetRelProjectPath (file));
+				return String.Format (GettextCatalog.GetString ("from \"{0}\""), file.Project.Name);
 			}
 		}
 		
-		public FileSearchResult (string match, int rank, ProjectFile file) : base (match, rank)
+		public FileSearchResult (string match, int rank, ProjectFile file, bool useFileName) : base (match, rank)
 		{
 			this.file = file;
+			this.useFileName = useFileName;
 		}
 		
 		internal static string GetRelProjectPath (ProjectFile file)
