@@ -357,14 +357,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				return;
 			results.Sort (new DataItemComparer ());
 			
-			int best = results.IndexOf (results.BestResult);
-			if (best == -1)
-				best = 0;
-			
 			Application.Invoke (delegate {
 				list.DataSource = results;
 				currentResults = results;
-				list.SelectedRow = best;
+				list.SelectedRow = 0;
 				list.CenterViewToSelection ();
 				labelResults.LabelProp = String.Format (GettextCatalog.GetPluralString ("_Results: {0} match found.", "_Results: {0} matches found.", results.ItemCount), results.ItemCount);
 			});
@@ -469,7 +465,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			public int Compare (SearchResult o1, SearchResult o2)
 			{
-				return String.CompareOrdinal (o1.PlainText, o2.PlainText);
+				var r = o2.Rank.CompareTo (o1.Rank);
+				if (r == 0)
+					return String.CompareOrdinal (o1.PlainText, o2.PlainText);
+				return r;
 			}
 		}
 		
