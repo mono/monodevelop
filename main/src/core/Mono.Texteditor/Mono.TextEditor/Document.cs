@@ -78,6 +78,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public object Tag {
+			get;
+			set;
+		}
+		
 		public Document ()
 		{
 			buffer = new GapBuffer ();
