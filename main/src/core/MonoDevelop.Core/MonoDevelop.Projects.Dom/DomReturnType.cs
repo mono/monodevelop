@@ -528,7 +528,9 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 #region shared return types
+		const int maxSize = 10000;
 		static Dictionary<string, DomReturnType> returnTypeCache = new Dictionary<string, DomReturnType> ();
+		static List<string> returnTypeList = new List<string> ();
 		
 		public static DomReturnType GetSharedReturnType (string invariantString)
 		{
@@ -539,11 +541,27 @@ namespace MonoDevelop.Projects.Dom
 				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
 					DomReturnType newType = new DomReturnType (invariantString);
 					returnTypeCache[invariantString] = newType;
+					returnTypeList.Add (invariantString);
+					CheckSize ();
 					return newType;
 				}
+				returnTypeList.Remove (invariantString);
+				returnTypeList.Add (invariantString);
 				return type;
 			}
 		}
+
+		static void CheckSize ()
+		{
+			if (returnTypeList.Count > maxSize) {
+				int removeCount = maxSize / 10;
+				for (int i = 0; i < removeCount; i++) {
+					returnTypeCache.Remove (returnTypeList[i]);
+				}
+				returnTypeList.RemoveRange (0, removeCount);
+			}
+		}
+
 		
 		public static DomReturnType GetSharedReturnType (DomReturnType returnType)
 		{
@@ -554,8 +572,13 @@ namespace MonoDevelop.Projects.Dom
 				DomReturnType type;
 				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
 					returnTypeCache[invariantString] = returnType;
+					returnTypeList.Add (invariantString);
+					CheckSize ();
 					return returnType;
 				}
+				returnTypeList.Remove (invariantString);
+				returnTypeList.Add (invariantString);
+				CheckSize ();
 				return type;
 			}
 		}
