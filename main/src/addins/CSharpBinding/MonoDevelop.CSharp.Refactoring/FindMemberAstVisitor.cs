@@ -607,15 +607,19 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			string type = typeReference.Type;
 			if (searchedMember is IType && this.searchedMemberName == GetNameWithoutPrefix (type)) {
-				int line = typeReference.StartLocation.Y;
-				int col  = typeReference.StartLocation.X;
 				ExpressionResult res = new ExpressionResult ("new " + typeReference.ToString () + "()");
 				ResolveResult resolveResult = resolver.Resolve (res, ConvertLocation (typeReference.StartLocation));
 				
 				IReturnType cls = resolveResult != null ? resolveResult.ResolvedType : null;
 				IType resolvedType = cls != null ? resolver.SearchType (cls) : null;
-				if (resolvedType != null && resolvedType.FullName == ((IType)searchedMember).FullName) 
-					AddUniqueReference (line, col, typeReference.Type);
+				if (resolvedType != null && resolvedType.FullName == ((IType)searchedMember).FullName) {
+					int line, column;
+					if (!SearchText (searchedMemberName, typeReference.StartLocation.Line, typeReference.StartLocation.Column, out line, out column)) {
+						line = typeReference.StartLocation.Line;
+						column = typeReference.StartLocation.Column;
+					}
+					AddUniqueReference (line, column, typeReference.Type);
+				}
 			}
 			return base.VisitTypeReference (typeReference, data);
 		}
@@ -625,7 +629,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (!(searchedMember is IParameter) && fieldExp.MemberName == searchedMemberName) {
 				ResolveResult resolveResult = resolver.ResolveExpression (fieldExp, ConvertLocation (fieldExp.StartLocation));
 				MemberResolveResult mrr = resolveResult as MemberResolveResult;
-				//Console.WriteLine ("RR:" + resolveResult);
 				if (mrr != null) {
 					//Console.WriteLine ("resolved member:" + mrr.ResolvedMember);
 					if (mrr.ResolvedMember != null && mrr.ResolvedMember.DeclaringType != null && ((IMember)searchedMember).DeclaringType != null && mrr.ResolvedMember.Location == searchedMemberLocation && mrr.ResolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
@@ -642,7 +645,12 @@ namespace MonoDevelop.CSharp.Refactoring
 					int endpos = file.GetPositionFromLineColumn (fieldExp.EndLocation.Y, fieldExp.EndLocation.X);
 					string txt = file.GetText (pos, endpos);
 					if (txt == searchedMemberName) {
-						AddUniqueReference (fieldExp.StartLocation.Y, fieldExp.StartLocation.X, searchedMemberName);
+						int line, column;
+						if (!SearchText (searchedMemberName, fieldExp.StartLocation.Line, fieldExp.StartLocation.Column, out line, out column)) {
+							line = fieldExp.StartLocation.Line;
+							column = fieldExp.StartLocation.Column;
+						}
+						AddUniqueReference (line, column, searchedMemberName);
 					}
 				}
 			}
