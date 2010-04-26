@@ -553,9 +553,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		SearchResult CheckType (IType type, string toMatch)
 		{
 			int rank;
-			if (!MatchName (type.Name, toMatch, out rank))
-				return null;
-			return new TypeSearchResult (toMatch, rank, type);
+			if (MatchName (type.Name, toMatch, out rank))
+				return new TypeSearchResult (toMatch, rank, type, true);
+			if (MatchName (type.FullName, toMatch, out rank))
+				return new TypeSearchResult (toMatch, rank, type, false);
+			return null;
 		}
 		
 		SearchResult CheckMember (IMember member, string toMatch)
@@ -837,18 +839,29 @@ namespace MonoDevelop.Ide.NavigateToDialog
 
 	class TypeSearchResult : MemberSearchResult
 	{
+		bool useFullName;
+		
 		public override string File {
 			get { return ((IType)member).CompilationUnit.FileName; }
 		}
 		
-		public override string Description {
+		protected override OutputFlags Flags {
 			get {
-				return String.Format (GettextCatalog.GetString ("from Project \"{0}\""), ((IType)member).SourceProject.Name);
+				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | (useFullName  ? OutputFlags.None : OutputFlags.UseFullName);
 			}
 		}
 		
-		public TypeSearchResult (string match, int rank, IType type) : base (match, rank, type)
+		public override string Description {
+			get {
+				if (useFullName)
+					return String.Format (GettextCatalog.GetString ("from Project \"{0}\""), ((IType)member).SourceProject.Name);
+				return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), ((IType)member).SourceProject.Name, ((IType)member).Namespace);
+			}
+		}
+		
+		public TypeSearchResult (string match, int rank, IType type, bool useFullName) : base (match, rank, type)
 		{
+			this.useFullName = useFullName;
 		}
 	}
 	
@@ -901,9 +914,16 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		protected IMember member;
 		
+		protected virtual OutputFlags Flags {
+			get {
+				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics;
+			}
+		}
+		
 		public override string MarkupText {
 			get {
-				OutputSettings settings = new OutputSettings (OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.IncludeMarkup);
+				
+				OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
 				settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
 					if (domVisitable == member)
 						outString = HighlightMatch (outString, match);
@@ -914,7 +934,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string PlainText {
 			get {
-				return Ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics);
+				return Ambience.GetString (member, Flags);
 			}
 		}
 		

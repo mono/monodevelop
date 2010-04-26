@@ -1,5 +1,10 @@
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Worked
+	  on navigate to dialog.
+
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
 	  changed file search behavior to the old one.
 
