@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
 		{
-			RemoveMarkers ();
+			RemoveMarkers (false);
 		}
 		
 		public override void Dispose ()
@@ -81,11 +81,12 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void HandleTextEditorDataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
-			if (markers.Values.Any (m => m.Contains (textEditorData.Caret.Offset)))
+			if (!textEditorData.IsSomethingSelected && markers.Values.Any (m => m.Contains (textEditorData.Caret.Offset)))
 				return;
-			RemoveMarkers ();
+			RemoveMarkers (textEditorData.IsSomethingSelected);
 			RemoveTimer ();
-			popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
+			if (!textEditorData.IsSomethingSelected)
+				popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
 		}
 		
 		bool DelayedTooltipShow ()
@@ -115,7 +116,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (unit == null)
 						return false;
 					visitor.RunVisitor (unit);
-					RemoveMarkers ();
+					RemoveMarkers (false);
 					foreach (var r in visitor.FoundReferences) {
 						UsageMarker marker = GetMarker (r.Line - 1);
 						marker.Usages.Add (new Mono.TextEditor.Segment (textEditorData.Document.LocationToOffset (r.Line - 1, r.Column -1), visitor.SearchedMemberName.Length));
@@ -130,13 +131,16 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 		
 		Dictionary<int, UsageMarker> markers = new Dictionary<int, UsageMarker> ();
-		void RemoveMarkers ()
+		
+		void RemoveMarkers (bool updateLine)
 		{
 			if (markers.Count == 0)
 				return;
 			foreach (var pair in markers) {
 				textEditorData.Document.CommitLineUpdate (pair.Key);
 				textEditorData.Document.RemoveMarker (pair.Key, pair.Value);
+				if (updateLine)
+					textEditorData.Document.CommitLineUpdate (pair.Key);
 			}
 			markers.Clear ();
 		}
