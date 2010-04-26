@@ -892,7 +892,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 
 		public override string Description {
 			get {
-				return String.Format (GettextCatalog.GetString ("from \"{0}\""), file.Project.Name);
+				if (useFileName)
+					return String.Format (GettextCatalog.GetString ("from \"{0}\" in Project \"{1}\""), GetRelProjectPath (file), file.Project.Name);
+				return String.Format (GettextCatalog.GetString ("from Project \"{0}\""), file.Project.Name);
 			}
 		}
 		
