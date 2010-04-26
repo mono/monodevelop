@@ -1,5 +1,10 @@
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
 
+	* templates/GladeSharp2Project.xpt.xml:
+	* templates/GnomeSharp2Project.xpt.xml: Fixed some templates.
+
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
 	  Fixed 'Bug 598831 - Symbol highlight should not activate
 	  while there is a selection'.
