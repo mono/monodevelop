@@ -549,7 +549,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		SearchResult CheckType (IType type, string toMatch)
 		{
 			int rank;
-			if (type.CompilationUnit == null || !MatchName (type.Name, toMatch, out rank))
+			if (!MatchName (type.Name, toMatch, out rank))
 				return null;
 			return new TypeSearchResult (toMatch, rank, type);
 		}

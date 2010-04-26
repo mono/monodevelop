@@ -1,3 +1,8 @@
+2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Remove
+	  unnecessary check that forces the loading of the class.
+
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Set navigate to shortcut key.
