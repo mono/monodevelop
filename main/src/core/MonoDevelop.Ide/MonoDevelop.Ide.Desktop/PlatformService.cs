@@ -37,6 +37,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using Mono.Unix;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Core.Execution;
 
 
 namespace MonoDevelop.Ide.Desktop
@@ -293,8 +294,7 @@ namespace MonoDevelop.Ide.Desktop
 			info.FileAccessPermissions = (FileAccessPermissions)attributes;
 		}
 		
-		public virtual ProcessStartInfo CreateConsoleProcessInfo (string command, string commandArguments, 
-			string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished)
+		public virtual IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
 		{
 			return null;
 		}

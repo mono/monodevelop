@@ -180,28 +180,33 @@ namespace MonoDevelop.Core.Execution
 			return startInfo;
 		}
 		
-		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console, EventHandler exited)
+		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console, EventHandler exited)
 		{
 			return StartConsoleProcess (command, arguments, workingDirectory, null, console, exited);
 		}
 		
-		public ProcessWrapper StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
+		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
 			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
-				ProcessStartInfo epsi = externalConsoleHandler (command, arguments, workingDirectory, environmentVariables,
-				    GettextCatalog.GetString ("MonoDevelop External Console"), console != null ? !console.CloseOnDispose : false);
+				ProcessStartInfo epsi = new ProcessStartInfo (command, arguments);
+				epsi.WorkingDirectory = workingDirectory;
+				
+				if (environmentVariables != null)
+					foreach (KeyValuePair<string, string> kvp in environmentVariables)
+						epsi.EnvironmentVariables[kvp.Key] = kvp.Value;
+				
+				ProcessEnvironmentVariableOverrides (epsi);
+				
+				IProcessAsyncOperation p = externalConsoleHandler (epsi, GettextCatalog.GetString ("MonoDevelop External Console"), 
+				                                                   console != null ? !console.CloseOnDispose : false);
 
-				if (epsi != null) {
-					ProcessWrapper p = new ProcessWrapper();
-					
-					if (exited != null)
-						p.Exited += exited;
-	
-					epsi.CreateNoWindow = true;
-					p.StartInfo = epsi;
-					ProcessEnvironmentVariableOverrides (p.StartInfo);
+				if (p != null) {
+					if (exited != null) {
+						p.Completed += delegate {
+							exited (p, EventArgs.Empty);
+						};
+					}
 					Counters.ProcessesStarted++;
-					p.Start();
 					return p;
 				} else {
 					LoggingService.LogError ("Could not create external console for command: " + command + " " + arguments);
@@ -439,6 +444,5 @@ namespace MonoDevelop.Core.Execution
 		}
 	}
 	
-	public delegate ProcessStartInfo ExternalConsoleHandler (string command, string commandArguments, 
-			string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished);
+	public delegate IProcessAsyncOperation ExternalConsoleHandler (ProcessStartInfo psi, string title, bool pauseWhenFinished);
 }

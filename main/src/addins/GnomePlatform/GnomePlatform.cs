@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.IO;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Platform
 {
@@ -182,22 +183,21 @@ namespace MonoDevelop.Platform
 		bool terminal_probed;
 		TerminalRunnerHandler runner;
 		
-		public override ProcessStartInfo CreateConsoleProcessInfo (string command, string commandArguments, 
-			string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished)
+		public override IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
 		{
 			ProbeTerminal ();
 			
-			string exec = runner (command, commandArguments, workingDirectory, title, pauseWhenFinished);
+			string exec = runner (psi.FileName, psi.Arguments, psi.WorkingDirectory, title, pauseWhenFinished);
 			
-			ProcessStartInfo psi = new ProcessStartInfo (terminal_command, exec);
-			psi.WorkingDirectory = workingDirectory;
+			psi.FileName = terminal_command;
+			psi.Arguments = exec;
+			psi.CreateNoWindow = true;
 			psi.UseShellExecute = false;
-			
-			if (environmentVariables != null)
-				foreach (KeyValuePair<string, string> kvp in environmentVariables)
-					psi.EnvironmentVariables [kvp.Key] = kvp.Value;
-			
-			return psi;
+
+			ProcessWrapper proc = new ProcessWrapper ();
+			proc.StartInfo = psi;
+			proc.Start ();
+			return proc;
 		}
 		
 #region Terminal runner implementations

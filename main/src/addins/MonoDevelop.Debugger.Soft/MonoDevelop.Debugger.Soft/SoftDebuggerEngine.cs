@@ -81,8 +81,10 @@ namespace MonoDevelop.Debugger.Soft
 			
 			var varsCopy = new Dictionary<string, string> (cmd.EnvironmentVariables);
 			dsi.ExternalConsoleLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
-				return Runtime.ProcessService.StartConsoleProcess (info.FileName, info.Arguments, info.WorkingDirectory,
+				IProcessAsyncOperation oper;
+				oper = Runtime.ProcessService.StartConsoleProcess (info.FileName, info.Arguments, info.WorkingDirectory,
 					varsCopy, ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), null);
+				return new ProcessAdapter (oper, Path.GetFileName (info.FileName));
 			};
 
 			return dsi;
@@ -163,5 +165,69 @@ namespace MonoDevelop.Debugger.Soft
 				MonoDevelop.Core.LoggingService.LogInfo (messageFormat, args);
 			}
 		}
+	}
+	
+	class ProcessAdapter: Mono.Debugger.Soft.IProcess
+	{
+		IProcessAsyncOperation oper;
+		string name;
+		
+		public ProcessAdapter (IProcessAsyncOperation oper, string name)
+		{
+			this.oper = oper;
+			this.name = name;
+			oper.Completed += delegate {
+				if (Exited != null)
+					Exited (this, EventArgs.Empty);
+			};
+		}
+		
+		#region IProcess implementation
+		public event EventHandler Exited;
+		
+		
+		public void Kill ()
+		{
+			oper.Cancel ();
+		}
+		
+		
+		public StreamReader StandardOutput {
+			get {
+				// Not supported in external console
+				throw new System.NotSupportedException ();
+			}
+		}
+		
+		
+		public StreamReader StandardError {
+			get {
+				// Not supported in external console
+				throw new System.NotSupportedException ();
+			}
+		}
+		
+		
+		public bool HasExited {
+			get {
+				return oper.IsCompleted;
+			}
+		}
+		
+		
+		public int Id {
+			get {
+				return oper.ProcessId;
+			}
+		}
+		
+		
+		public string ProcessName {
+			get {
+				return name;
+			}
+		}
+		
+		#endregion
 	}
 }

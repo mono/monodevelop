@@ -1,3 +1,8 @@
+2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated.
+
 2010-04-19  Carlo Kok  <ck@remobjects.com>
 	* SoftDebuggerSession.cs:
 	* SoftEvaluationContext.cs:

@@ -1,3 +1,10 @@
+2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerEngine.cs: External console processes are now
+	  wrapped by a IProcessAsyncOperation interface, instead of a
+	  Process instance. In this way it is possible to create
+	  external consoles which are not directly bound to a process.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerEngine.cs: Fix external console support again.
