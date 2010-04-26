@@ -554,9 +554,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			int rank;
 			if (MatchName (type.Name, toMatch, out rank))
-				return new TypeSearchResult (toMatch, rank, type, true);
-			if (MatchName (type.FullName, toMatch, out rank))
 				return new TypeSearchResult (toMatch, rank, type, false);
+			if (MatchName (type.FullName, toMatch, out rank))
+				return new TypeSearchResult (toMatch, rank, type, true);
 			return null;
 		}
 		
@@ -847,7 +847,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		protected override OutputFlags Flags {
 			get {
-				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | (useFullName  ? OutputFlags.None : OutputFlags.UseFullName);
+				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | (useFullName  ? OutputFlags.UseFullName : OutputFlags.None);
 			}
 		}
 		
