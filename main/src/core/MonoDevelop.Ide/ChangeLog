@@ -1,5 +1,9 @@
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Set navigate to shortcut key.
+
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
 	  Corrected member filtering.
 
