@@ -177,7 +177,9 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//simple completion for ASP.NET expressions
 			documentBuilder = LanguageCompletionBuilderService.GetBuilder (AspCU.PageInfo.Language);
-			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null) {
+			
+			// TODO: Detect <script> state here !!!
+			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
 				int start = Document.TextEditor.CursorPosition - Tracker.Engine.CurrentStateLength;
 				if (Document.TextEditor.GetCharAt (start) == '=') {
 					start++;
@@ -214,7 +216,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null)
+			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null && hiddenDocument != null)
 				return documentBuilder.HandleParameterCompletion (hiddenDocument, localDocumentInfo, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), hiddenDocument.ParsedDocument, localDocumentInfo.ParsedLocalDocument), completionChar);
 			
 			return base.HandleParameterCompletion (completionContext, completionChar);

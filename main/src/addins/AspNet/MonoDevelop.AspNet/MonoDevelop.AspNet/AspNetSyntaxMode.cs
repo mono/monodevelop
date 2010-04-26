@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Mono.TextEditor;
 using System.Xml;
 using System.Text;
+using MonoDevelop.AspNet.Parser;
 
 namespace MonoDevelop.AspNet
 {
@@ -53,29 +54,19 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
+		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
 		{
 			return new ASPNetSpanParser (doc, mode, line, spanStack);
 		}
 
 		protected class ASPNetSpanParser : SpanParser
 		{
-			public ASPNetSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
+			public ASPNetSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
 			{}
 			
-			class CSharpSpan : Span
+			class CodeExpressionSpan : Span
 			{
-				public CSharpSpan ()
-				{
-					Rule = "mode:text/x-csharp";
-					Begin = new Regex ("<%");
-					End = new Regex ("<%");
-					Color = "";
-				}
-			}
-			class CodeDeclarationSpan : Span
-			{
-				public CodeDeclarationSpan (string language)
+				public CodeExpressionSpan (string language)
 				{
 					Rule = "mode:" + language;
 					Begin = new Regex ("<%");
@@ -84,17 +75,27 @@ namespace MonoDevelop.AspNet
 				}
 			}
 			
+			class CodeDeclarationSpan : Span
+			{
+				public CodeDeclarationSpan (string language)
+				{
+					Rule = "mode:" + language;
+					Begin = new Regex ("<script");
+					End = new Regex ("</script");
+					Color = "";
+					TagColor = "text.markup.tag";
+				}
+			}
+			
 			protected override void ScanSpan (ref int i)
 			{
 				if (i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
-					AspNetSyntaxMode.ASPNetSpanParser.CSharpSpan span = new CSharpSpan ();
+					AspNetSyntaxMode.ASPNetSpanParser.CodeExpressionSpan span = new CodeExpressionSpan (GetDefaultMime ());
 					spanStack.Push (span);
 					ruleStack.Push (GetRule (span));
 					OnFoundSpanBegin (span, i, 0);
 					return;
 				}
-
-
 				
 				base.ScanSpan (ref i);
 			}
@@ -112,13 +113,30 @@ namespace MonoDevelop.AspNet
 				return null;
 			}
 			
+			string GetDefaultMime ()
+			{
+				var ideDocument = doc.Tag as MonoDevelop.Ide.Gui.Document;
+				if (ideDocument != null && ideDocument.ParsedDocument != null) {
+					AspNetParsedDocument parsedDocument = ideDocument.ParsedDocument.CompilationUnit as AspNetParsedDocument;
+					if (parsedDocument != null && parsedDocument.PageInfo != null)
+						return GetMimeForLanguage (parsedDocument.PageInfo.Language) ?? "text/x-csharp";
+				}
+				return "text/x-csharp";
+			}
+			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
 			{
 				if (doc.GetCharAt (i) == '>') {
-					int j = i;
-					while (j > 0 && doc.GetCharAt (j) != '<')
+					int j = i - 1;
+					while (j > 0) {
+						char ch = doc.GetCharAt (j);
+						if (ch == '<')
+							break;
+						if (ch == '>')
+							break;
+							
 						j--;
-
+					}
 					if (j + 7 < doc.Length && doc.GetTextAt (j, 7) == "<script") {
 						StringBuilder langBuilder = new StringBuilder ();
 						j += 7;
@@ -143,7 +161,9 @@ namespace MonoDevelop.AspNet
 							}
 							j++;
 						}
-						string mime = GetMimeForLanguage (langBuilder.ToString ());
+						
+						string mime = langBuilder.Length != 0 ? GetMimeForLanguage (langBuilder.ToString ()) : GetDefaultMime ();
+						
 						if (mime != null) {
 							bool result = base.ScanSpanEnd (cur, i);
 							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
@@ -155,7 +175,7 @@ namespace MonoDevelop.AspNet
 					}
 				}
 				
-				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 < doc.Length && doc.GetTextAt (i, 9) == "</script>") {
+				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 10 < doc.Length && doc.GetTextAt (i + 1, 9) == "</script>") {
 					while (!(spanStack.Peek () is CodeDeclarationSpan)) {
 						OnFoundSpanEnd (spanStack.Peek (), i, 0);
 						spanStack.Pop ();
@@ -167,10 +187,11 @@ namespace MonoDevelop.AspNet
 					spanStack.Pop ();
 					if (ruleStack.Count > 1)
 						ruleStack.Pop ();
+					return true;
 				}
 				
-				if (spanStack.Any (s => s is CSharpSpan) && i + 2 < doc.Length && doc.GetTextAt (i, 2) == "%>") {
-					while (!(spanStack.Peek () is CSharpSpan)) {
+				if (spanStack.Any (s => s is CodeExpressionSpan) && i + 2 < doc.Length && doc.GetTextAt (i, 2) == "%>") {
+					while (!(spanStack.Peek () is CodeExpressionSpan)) {
 						OnFoundSpanEnd (spanStack.Peek (), i, 0);
 						spanStack.Pop ();
 						if (ruleStack.Count > 1)
