@@ -1,5 +1,10 @@
 2010-04-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Components.Commands/CommandManager.cs: Try to
+	  fix a intptr exception alan had.
+
+2010-04-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
 	  Corrected use full name for types.
 

@@ -1006,6 +1006,9 @@ namespace MonoDevelop.Components.Commands
 			lastFocused = newFocused;
 			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
 			
+			if (!win.IsRealized)
+				win = null;
+			
 			if (win != null) {
 				RegisterTopWindow (win);
 				Gtk.Widget widget = win;
