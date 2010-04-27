@@ -178,8 +178,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		void StartCollectMembers ()
 		{
 			collectMembers = new Thread (new ThreadStart (delegate {
-				Console.WriteLine ("start");
-				DateTime t = DateTime.Now;
 				getMembersTimer.BeginTiming ();
 				try {
 					members = new List<IMember> ();
@@ -192,7 +190,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					}
 				} finally {
 					getMembersTimer.EndTiming ();
-					Console.WriteLine ("done" + (DateTime.Now - t).TotalMilliseconds);
 				}
 			}));
 			collectMembers.IsBackground = true;
@@ -289,6 +286,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				list.DataSource = new ResultsDataSource ();
 				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Enter search term to start.");
 				return;
+			} else {
+				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Searching...");
 			}
 			
 			if (!string.IsNullOrEmpty (lastResult.pattern) && toMatch.StartsWith (lastResult.pattern))

@@ -1,5 +1,10 @@
 2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Show a
+	  message while searching. Remove debug code.
+
+2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs:
 	  Make IProcessAsyncOperation IDisposable.
 
