@@ -81,10 +81,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			ShadowType = ShadowType.None;
 			box = new VBox ();
-			box.Add (content.Control);
+			box.PackStart (content.Control);
 			Add (box);
-			
-			Show ();
+			box.Show ();
 			
 			SetTitleEvent(null, null);
 			
@@ -324,8 +323,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			content.Dispose ();
 			
-			tabLabel.Destroy ();
-			this.tabLabel = null;
 			
 			this.subViewToolbar = null;
 			this.separatorItem = null;
@@ -336,7 +333,8 @@ namespace MonoDevelop.Ide.Gui
 			this.content = null;
 			this.subViewNotebook = null;
 			this.tabControl = null;
-			
+			tabLabel.Destroy ();
+			this.tabLabel = null;
 			this.tabPage = null;
 			Destroy ();
 			return true;

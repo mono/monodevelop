@@ -1,5 +1,11 @@
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Changed
+	  destroying order. (tab label is used during the Close event
+	  chain).
+
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Destroying the
 	  tabLabel with destroy and not with dispose.
 
