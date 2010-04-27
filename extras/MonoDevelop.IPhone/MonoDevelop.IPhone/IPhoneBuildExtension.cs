@@ -931,7 +931,19 @@ namespace MonoDevelop.IPhone
 		
 		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
 		{
-			return allItems.OfType<ProjectFile> ().Where (pf => pf.BuildAction == BuildAction.Content)
+			//these are filenames that could overwrite important packaging files
+			//FIXME: warn if the user has marked these as content, or just ignore?
+			//FIXME: check for _CodeResources and dlls and binaries too?
+			var forbiddenNames = new HashSet<string> (new [] {
+				"Info.plist",
+				"Embedded.mobileprovision",
+				"ResourceRules.plist",
+				"PkgInfo",
+				"CodeResources"
+			}, StringComparer.OrdinalIgnoreCase);
+			
+			return allItems.OfType<ProjectFile> ()
+				.Where (pf => pf.BuildAction == BuildAction.Content && !forbiddenNames.Contains (pf.ProjectVirtualPath))
 				.Select (pf => new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (outputRoot)));
 		}
 		
