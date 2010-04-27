@@ -1,5 +1,10 @@
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Removed the
+	  box.Remove (control needs to be in the destroy chain).
+
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs: Corrected
 	  full name type highlighting.
 

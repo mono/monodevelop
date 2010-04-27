@@ -321,9 +321,8 @@ namespace MonoDevelop.Ide.Gui
 				}
 				this.subViewContents = null;
 				subViewNotebook.Remove (content.Control);
-			} else {
-				box.Remove (content.Control);
 			}
+			
 			content.Dispose ();
 			tabLabel.Dispose ();
 			
