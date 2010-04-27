@@ -133,13 +133,33 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static readonly IReturnType Void;
 		public static readonly IReturnType Object;
-		public static readonly IReturnType Exception;
-		public static readonly IReturnType Int32;
 		public static readonly IReturnType String;
 		public static readonly IReturnType Char;
+		public static readonly IReturnType Byte;
+		public static readonly IReturnType SByte;
 		public static readonly IReturnType Bool;
 		
+		public static readonly IReturnType Int16;
+		public static readonly IReturnType Int32;
+		public static readonly IReturnType Int64;
 		
+		public static readonly IReturnType UInt16;
+		public static readonly IReturnType UInt32;
+		public static readonly IReturnType UInt64;
+		
+		public static readonly IReturnType Float;
+		public static readonly IReturnType Double;
+		public static readonly IReturnType Decimal;
+		
+		public static readonly IReturnType IntPtr;
+		public static readonly IReturnType UIntPtr;
+		
+		public static readonly IReturnType Exception;
+		public static readonly IReturnType DateTime;
+		public static readonly IReturnType EventArgs;
+		public static readonly IReturnType StringBuilder;
+		public static readonly IReturnType TypeReturnType;
+	
 		public bool IsGenerated {
 			get;
 			set;
@@ -159,16 +179,58 @@ namespace MonoDevelop.Projects.Dom
 			// Initialization is done here instead of using field initializers to
 			// ensure that the returnTypeCache dictionary us properly initialized
 			// when calling GetSharedReturnType.
-
-//			returnTypeCache = new Dictionary<string, IReturnType> ();
-
-			Void = GetSharedReturnType ("System.Void");
-			String = GetSharedReturnType ("System.String");
-			Char = GetSharedReturnType ("System.Char");
-			Object = GetSharedReturnType ("System.Object");
-			Exception = GetSharedReturnType ("System.Exception");
-			Int32 = GetSharedReturnType ("System.Int32");
-			Bool = GetSharedReturnType ("System.Boolean");
+			
+			Void = CreateTableEntry ("System.Void");
+			Object = CreateTableEntry ("System.Object");
+			String = CreateTableEntry("System.String");
+			Bool = CreateTableEntry ("System.Boolean");
+			Char = CreateTableEntry ("System.Char");
+			Byte = CreateTableEntry ("System.Byte");
+			SByte = CreateTableEntry ("System.SByte");
+			Exception = CreateTableEntry ("System.Exception");
+			Int16 = CreateTableEntry ("System.Int16"); 
+			Int32 = CreateTableEntry ("System.Int32");
+			Int64 = CreateTableEntry ("System.Int64");
+			UInt16 = CreateTableEntry ("System.UInt16"); 
+			UInt32 = CreateTableEntry ("System.UInt32");
+			UInt64 = CreateTableEntry ("System.UInt64");
+			UInt64 = CreateTableEntry ("System.UInt64");
+			Float   = CreateTableEntry ("System.Single");
+			Double  = CreateTableEntry ("System.Double");
+			Decimal = CreateTableEntry ("System.Decimal");
+			IntPtr = CreateTableEntry ("System.IntPtr");
+			UIntPtr = CreateTableEntry ("System.UIntPtr");
+			
+			TypeReturnType = CreateTableEntry ("System.Type");
+			EventArgs = CreateTableEntry ("System.EventArgs");
+			StringBuilder = CreateTableEntry ("System.Text.StringBuilder");
+			DateTime = CreateTableEntry ("System.DateTime");
+			
+			// table entries for frequently used types
+			CreateTableEntry ("System.Runtime.InteropServices.DllImport");
+			CreateTableEntry ("System.EventHandler");
+			CreateTableEntry ("System.Runtime.InteropServices.ComVisibleAttribute");
+			CreateTableEntry ("System.CLSCompliantAttribute");
+			CreateTableEntry ("System.ObsoleteAttribute");
+			CreateTableEntry ("System.MonoTODOAttribute");
+			CreateTableEntry ("System.AttributeUsageAttribute");
+			CreateTableEntry ("System.ComponentModel.DefaultValueAttribute");
+			CreateTableEntry ("System.ComponentModel.BrowsableAttribute");
+			CreateTableEntry ("System.ComponentModel.DesignerSerializationVisibilityAttribute");
+			CreateTableEntry ("System.Web.WebCategoryAttribute");
+			CreateTableEntry ("System.Web.WebSysDescriptionAttribute");
+			CreateTableEntry ("System.Configuration.ConfigurationPropertyAttribute");
+			CreateTableEntry ("System.ComponentModel.EditorBrowsableAttribute");
+			CreateTableEntry ("System.Reflection.DefaultMemberAttribute");
+			CreateTableEntry ("System.ComponentModel.LocalizableAttribute");
+			CreateTableEntry ("System.FlagsAttribute");
+			CreateTableEntry ("System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+			CreateTableEntry ("System.ComponentModel.LocalizableAttribute");
+			CreateTableEntry ("GLib.PropertyAttribute");
+			CreateTableEntry ("GLib.SignalAttribute");
+			CreateTableEntry ("GLib.DefaultSignalHandlerAttribute");
+			CreateTableEntry ("Gtk.Widget");
+			CreateTableEntry ("Gtk.Label");
 		}
 
 		public List<IReturnTypePart> Parts {
@@ -444,11 +506,6 @@ namespace MonoDevelop.Projects.Dom
 			this.IsNullable     = isNullable;
 		}
 		
-		public static IReturnType FromInvariantString (string invariantString)
-		{
-			return GetSharedReturnType (invariantString);
-		}
-		
 		public static int num = 0;
 		string invariantString = null;
 		public string ToInvariantString ()
@@ -528,60 +585,81 @@ namespace MonoDevelop.Projects.Dom
 		}
 		
 #region shared return types
-		const int maxSize = 10000;
-		static Dictionary<string, DomReturnType> returnTypeCache = new Dictionary<string, DomReturnType> ();
-		static List<string> returnTypeList = new List<string> ();
+		static List<IReturnType> returnTypeTable = new List<IReturnType> ();
+		static Dictionary<string, int> tableIndex = new Dictionary<string, int> ();
 		
-		public static DomReturnType GetSharedReturnType (string invariantString)
+		static IReturnType CreateTableEntry (string fullName)
 		{
-			if (string.IsNullOrEmpty (invariantString))
-				return null;
-			lock (returnTypeCache) {
-				DomReturnType type;
-				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
-					DomReturnType newType = new DomReturnType (invariantString);
-					returnTypeCache[invariantString] = newType;
-					returnTypeList.Add (invariantString);
-					CheckSize ();
-					return newType;
-				}
-				returnTypeList.Remove (invariantString);
-				returnTypeList.Add (invariantString);
-				return type;
-			}
+			DomReturnType result = new DomReturnType (fullName);
+			tableIndex[fullName] = returnTypeTable.Count;
+			returnTypeTable.Add (result);
+			return result;
 		}
-
-		static void CheckSize ()
-		{
-			if (returnTypeList.Count > maxSize) {
-				int removeCount = maxSize / 10;
-				for (int i = 0; i < removeCount; i++) {
-					returnTypeCache.Remove (returnTypeList[i]);
-				}
-				returnTypeList.RemoveRange (0, removeCount);
-			}
-		}
-
 		
-		public static DomReturnType GetSharedReturnType (DomReturnType returnType)
+		internal static int GetIndex (IReturnType returnType)
+		{
+			if (returnType.PointerNestingLevel != 0 || returnType.ArrayDimensions != 0 || returnType.GenericArguments.Count != 0)
+				return -1;
+			
+			string invariantString = returnType.ToInvariantString ();
+			int index;
+			if (tableIndex.TryGetValue (invariantString, out index))
+				return index;
+			return -1;
+		}
+		
+		internal static IReturnType GetSharedReturnType (int index)
+		{
+			return returnTypeTable[index];
+		}
+		
+		public static IReturnType GetSharedReturnType (string invariantString)
+		{
+			int index;
+			if (tableIndex.TryGetValue (invariantString, out index))
+				return returnTypeTable[index];
+			
+/*			if (!table.ContainsKey (invariantString))
+				table[invariantString] = 0;
+			table[invariantString]++;*/
+			
+			return new DomReturnType (invariantString);
+		}
+		
+/*		static Dictionary<string, int> table = new Dictionary<string, int> ();
+		public static void PrintIndex ()
+		{
+			List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>> (table);
+			list.Sort (delegate (KeyValuePair<string, int> left, KeyValuePair<string, int> right) {
+				return left.Value.CompareTo (right.Value);
+			});
+			Console.WriteLine ("--------");
+			foreach (KeyValuePair<string, int> p in list) {
+				if (p.Value < 400)
+					continue;
+				Console.WriteLine (p.Key  + "-" + p.Value);
+			}
+		}*/
+		
+		public static IReturnType GetSharedReturnType (IReturnType returnType)
 		{
 			if (returnType == null)
 				return null;
+			if (returnType.PointerNestingLevel != 0 || returnType.ArrayDimensions != 0 || returnType.GenericArguments.Count != 0)
+				return returnType;
+			
 			string invariantString = returnType.ToInvariantString ();
-			lock (returnTypeCache) {
-				DomReturnType type;
-				if (!returnTypeCache.TryGetValue (invariantString, out type)) {
-					returnTypeCache[invariantString] = returnType;
-					returnTypeList.Add (invariantString);
-					CheckSize ();
-					return returnType;
-				}
-				returnTypeList.Remove (invariantString);
-				returnTypeList.Add (invariantString);
-				CheckSize ();
-				return type;
-			}
+			int index;
+			if (tableIndex.TryGetValue (invariantString, out index))
+				return returnTypeTable[index];
+			/*
+			if (!table.ContainsKey (invariantString))
+				table[invariantString] = 0;
+			table[invariantString]++;*/
+			
+			return returnType;
 		}
+		
 #endregion
 	}
 }

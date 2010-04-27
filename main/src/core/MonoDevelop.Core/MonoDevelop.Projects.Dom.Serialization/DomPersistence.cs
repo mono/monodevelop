@@ -103,10 +103,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			Write (writer, nameTable, field.ReturnType);
 		}
 		
-		public static DomReturnType ReadReturnType (BinaryReader reader, INameDecoder nameTable)
+		public static IReturnType ReadReturnType (BinaryReader reader, INameDecoder nameTable)
 		{
 			if (ReadNull (reader))
 				return null;
+			byte index = reader.ReadByte ();
+			if (index < 0xFF) 
+				return DomReturnType.GetSharedReturnType (index);
 			
 			string ns = ReadString (reader, nameTable);
 			List<IReturnTypePart> parts = new List<IReturnTypePart> ();
@@ -133,13 +136,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				dims [n] = reader.ReadInt32 ();
 			
 			result.SetDimensions (dims);
-			return DomReturnType.GetSharedReturnType (result);
+			return result;
 		}
 		
 		public static void Write (BinaryWriter writer, INameEncoder nameTable, IReturnType returnType)
 		{
 			if (WriteNull (writer, returnType))
 				return;
+			int index = DomReturnType.GetIndex (returnType);
+			if (index >= 0) {
+				writer.Write ((byte)index);
+				return;
+			}
+			
+			writer.Write ((byte)0xFF);
 			WriteString (returnType.Namespace, writer, nameTable);
 			writer.Write ((uint) returnType.Parts.Count);
 			foreach (ReturnTypePart part in returnType.Parts) {

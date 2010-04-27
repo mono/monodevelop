@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 76;
+		static protected readonly int FORMAT_VERSION   = 77;
 		
 		NamespaceEntry rootNamespace;
 		protected ArrayList references;
@@ -458,7 +458,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 					byte[] dataDump = tmpStream.ToArray ();
 					dataFileStream.Write (dataDump, 0, dataDump.Length);
-					
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 					dataFileStream.Close ();
