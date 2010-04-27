@@ -43,6 +43,7 @@ using Gtk;
 using MonoDevelop.Components;
 using IconView = MonoDevelop.Components.IconView;
 using Gdk;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -56,6 +57,7 @@ namespace MonoDevelop.Ide.Projects
 		Dictionary<string, bool> activeLangs = new Dictionary<string, bool> ();
 
 		TreeStore catStore;
+		TemplateView iconView;
 
 		// Add To Project widgets
 		string[] projectNames;
@@ -133,6 +135,7 @@ namespace MonoDevelop.Ide.Projects
 			if (catView.Selection.GetSelected (out treeModel, out treeIter)) {
 				okButton.Sensitive = false;
 				FillCategoryTemplates (treeIter);
+				catView.ExpandRow (treeModel.GetPath (treeIter), false);
 			}
 		}
 
@@ -333,7 +336,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			iconView.Clear ();
 			foreach (TemplateItem item in (List<TemplateItem>)(catStore.GetValue (iter, 2))) {
-				iconView.AddIcon (new Gtk.Image (ImageService.GetPixbuf (item.Template.Icon, Gtk.IconSize.Dnd)), GettextCatalog.GetString (item.Name), item);
+				iconView.Add (item);
 			}
 		}
 
@@ -354,13 +357,16 @@ namespace MonoDevelop.Ide.Projects
 				TemplateItem sel = (TemplateItem)iconView.CurrentlySelected;
 				if (sel == null) {
 					okButton.Sensitive = false;
+					infoLabel.Text = string.Empty;
+					labelTemplateTitle.Text = string.Empty;
 					return;
 				}
 
 				FileTemplate item = sel.Template;
 
 				if (item != null) {
-					infoLabel.Text = item.Description;
+					labelTemplateTitle.Markup = "<b>" + GettextCatalog.GetString (item.Name) + "</b>";
+					infoLabel.Text = GettextCatalog.GetString (item.Description);
 
 					//desensitise the text entry if the name is fixed
 					//careful to store user-entered text so we can replace it if they change their selection
@@ -387,6 +393,8 @@ namespace MonoDevelop.Ide.Projects
 				} else {
 					nameEntry.Sensitive = true;
 					okButton.Sensitive = false;
+					infoLabel.Text = string.Empty;
+					labelTemplateTitle.Text = string.Empty;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
@@ -522,6 +530,10 @@ namespace MonoDevelop.Ide.Projects
 
 		void InitializeComponents ()
 		{
+			iconView = new TemplateView ();
+			iconView.ShowAll ();
+			boxTemplates.PackStart (iconView, true, true, 0);
+			
 			catStore = new TreeStore (typeof(string), typeof(List<Category>), typeof(List<TemplateItem>), typeof(Pixbuf));
 
 			TreeViewColumn treeViewColumn = new TreeViewColumn ();
@@ -540,11 +552,14 @@ namespace MonoDevelop.Ide.Projects
 			nameEntry.Changed += new EventHandler (NameChanged);
 			nameEntry.Activated += new EventHandler (OpenEvent);
 
+			infoLabel.Text = string.Empty;
+			labelTemplateTitle.Text = string.Empty;
+			
 			ReadOnlyCollection<Project> projects = null;
 			if (parentProject == null)
 				projects = IdeApp.Workspace.GetAllProjects ();
 
-			if (projects != null) {
+			if (projects != null && projects.Count > 0) {
 				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 
 				boxProject.Visible = true;
@@ -590,13 +605,22 @@ namespace MonoDevelop.Ide.Projects
 
 			catView.Selection.Changed += new EventHandler (CategoryChange);
 			catView.RowActivated += new RowActivatedHandler (CategoryActivated);
-			iconView.IconSelected += new EventHandler (SelectedIndexChange);
-			iconView.IconDoubleClicked += new EventHandler (OpenEvent);
+			iconView.SelectionChanged += new EventHandler (SelectedIndexChange);
+			iconView.DoubleClicked += new EventHandler (OpenEvent);
 			InitializeDialog (false);
 			InitializeView ();
 			UpdateOkStatus ();
 		}
 
+		protected virtual void OnScrolledInfoSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+			if (infoLabel.WidthRequest != scrolledInfo.Allocation.Width) {
+				infoLabel.WidthRequest = scrolledInfo.Allocation.Width;
+				labelTemplateTitle.WidthRequest = scrolledInfo.Allocation.Width;
+			}
+		}
+		
+		
 		class Category
 		{
 			List<Category> categories = new List<Category> ();
@@ -630,7 +654,106 @@ namespace MonoDevelop.Ide.Projects
 				set { hasSelectedTemplate = value; }
 			}
 		}
+		
+		class TemplateView: ScrolledWindow
+		{
+			TemplateTreeView tree;
+			
+			public TemplateView ()
+			{
+				tree = new TemplateTreeView ();
+				tree.Selection.Changed += delegate {
+					if (SelectionChanged != null)
+						SelectionChanged (this, EventArgs.Empty);
+				};
+				tree.RowActivated += delegate {
+					if (DoubleClicked != null)
+						DoubleClicked (this, EventArgs.Empty);
+				};
+				Add (tree);
+				HscrollbarPolicy = PolicyType.Automatic;
+				VscrollbarPolicy = PolicyType.Automatic;
+				ShadowType = ShadowType.In;
+				ShowAll ();
+			}
+			
+			public TemplateItem CurrentlySelected {
+				get { return tree.CurrentlySelected; }
+				set { tree.CurrentlySelected = value; }
+			}
+			
+			public void Add (TemplateItem templateItem)
+			{
+				tree.Add (templateItem);
+			}
+			
+			public void Clear ()
+			{
+				tree.Clear ();
+			}
+			
+			public event EventHandler SelectionChanged;
+			public event EventHandler DoubleClicked;
+		}
+			
+		class TemplateTreeView: TreeView
+		{
+			Gtk.ListStore templateStore;
+			
+			public TemplateTreeView ()
+			{
+				HeadersVisible = false;
+				templateStore = new ListStore (typeof(string), typeof(string), typeof(TemplateItem));
+				Model = templateStore;
+				
+				TreeViewColumn col = new TreeViewColumn ();
+				CellRendererIcon crp = new CellRendererIcon ();
+				crp.StockSize = (uint) Gtk.IconSize.Dnd;
+				crp.Ypad = 2;
+				col.PackStart (crp, false);
+				col.AddAttribute (crp, "stock-id", 0);
+				
+				CellRendererText crt = new CellRendererText ();
+				col.PackStart (crt, false);
+				col.AddAttribute (crt, "markup", 1);
+				
+				AppendColumn (col);
+				ShowAll ();
+			}
+			
+			public TemplateItem CurrentlySelected {
+				get {
+					Gtk.TreeIter iter;
+					if (!Selection.GetSelected (out iter))
+						return null;
+					return (TemplateItem) templateStore.GetValue (iter, 2);
+				}
+				set {
+					Gtk.TreeIter iter;
+					if (templateStore.GetIterFirst (out iter)) {
+						do {
+							TemplateItem t = (TemplateItem) templateStore.GetValue (iter, 2);
+							if (t == value) {
+								Selection.SelectIter (iter);
+								return;
+							}
+						} while (templateStore.IterNext (ref iter));
+					}
+				}
+			}
+			
+			public void Add (TemplateItem templateItem)
+			{
+				string name = GLib.Markup.EscapeText (GettextCatalog.GetString (templateItem.Name));
+				if (!string.IsNullOrEmpty (templateItem.Language))
+					name += "\n<span foreground='darkgrey'><small>" + templateItem.Language + "</small></span>";
+				templateStore.AppendValues (templateItem.Template.Icon.IsNull ? "md-project" : templateItem.Template.Icon.ToString (), name, templateItem);
+			}
+			
+			public void Clear ()
+			{
+				templateStore.Clear ();
+			}
+		}
 	}
-
-
 }

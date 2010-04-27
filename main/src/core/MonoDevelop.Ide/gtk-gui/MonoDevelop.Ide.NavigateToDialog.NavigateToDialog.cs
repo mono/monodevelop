@@ -89,7 +89,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			global::Gtk.HButtonBox w7 = this.ActionArea;
 			w7.Name = "dialog1_ActionArea";
 			w7.Spacing = 10;
-			w7.BorderWidth = ((uint)(5));
 			w7.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
@@ -119,8 +118,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 565;
-			this.DefaultHeight = 438;
+			this.DefaultWidth = 597;
+			this.DefaultHeight = 465;
 			this.label1.MnemonicWidget = this.matchEntry;
 			this.labelResults.MnemonicWidget = this.scrolledwindow1;
 			this.Hide ();

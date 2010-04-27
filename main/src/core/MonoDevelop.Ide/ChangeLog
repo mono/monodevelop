@@ -1,3 +1,12 @@
+2010-04-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Projects/NewFileDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Projects.NewFileDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs:
+	  Improved look of the New File dialog.
+
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* gtk-gui/gui.stetic:

@@ -148,6 +148,7 @@ namespace MonoDevelop.Ide.Projects
 			this.boxInfo = new global::Gtk.VBox ();
 			this.boxInfo.Name = "boxInfo";
 			this.boxInfo.Spacing = 6;
+			this.boxInfo.BorderWidth = ((uint)(3));
 			// Container child boxInfo.Gtk.Box+BoxChild
 			this.labelTemplateTitle = new global::Gtk.Label ();
 			this.labelTemplateTitle.WidthRequest = 30;
