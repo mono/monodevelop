@@ -160,6 +160,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			};
 			
 			this.matchEntry.Entry.GrabFocus ();
+			
+			int width  = PropertyService.Get ("NavigateToDialog.Width", 400);
+			int height = PropertyService.Get ("NavigateToDialog.Height", 300);
+			this.Resize (width, height);
+			this.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
+				PropertyService.Set ("NavigateToDialog.Width", args.Allocation.Width);
+				PropertyService.Set ("NavigateToDialog.Height", args.Allocation.Height);
+			};
 		}
 		
 		Thread collectFiles, collectTypes, collectMembers;
@@ -852,9 +860,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string Description {
 			get {
-				if (useFullName)
-					return String.Format (GettextCatalog.GetString ("from Project \"{0}\""), ((IType)member).SourceProject.Name);
-				return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), ((IType)member).SourceProject.Name, ((IType)member).Namespace);
+				IType type = (IType)member;
+				if (useFullName) 
+					return type.SourceProject != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), type.SourceProject.Name) : String.Format (GettextCatalog.GetString ("from \"{0}\""), type.CompilationUnit.FileName);
+				if (type.SourceProject != null)
+					return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), type.SourceProject.Name, type.Namespace);
+				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), type.CompilationUnit.FileName, type.Namespace);
 			}
 		}
 		
@@ -892,8 +903,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string Description {
 			get {
 				if (useFileName)
-					return String.Format (GettextCatalog.GetString ("from \"{0}\" in Project \"{1}\""), GetRelProjectPath (file), file.Project.Name);
-				return String.Format (GettextCatalog.GetString ("from Project \"{0}\""), file.Project.Name);
+					return file.Project != null ? String.Format (GettextCatalog.GetString ("from \"{0}\" in Project \"{1}\""), GetRelProjectPath (file), file.Project.Name) : String.Format (GettextCatalog.GetString ("from \"{0}\""), GetRelProjectPath (file));
+				return file.Project != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), file.Project.Name) : "";
 			}
 		}
 		

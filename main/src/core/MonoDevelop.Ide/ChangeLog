@@ -1,3 +1,8 @@
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	  navigate to dialog now remembers the window size.
+
 2010-04-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Don't
