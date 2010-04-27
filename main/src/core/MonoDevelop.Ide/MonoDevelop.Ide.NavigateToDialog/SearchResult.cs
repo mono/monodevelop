@@ -122,6 +122,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
+		
+		public override string MarkupText {
+			get {
+				return useFullName ? HighlightMatch (Ambience.GetString (member, Flags | OutputFlags.IncludeMarkup), match) : base.MarkupText;
+			}
+		}
+		
+		
 		public TypeSearchResult (string match, int rank, IType type, bool useFullName) : base (match, rank, type)
 		{
 			this.useFullName = useFullName;

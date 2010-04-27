@@ -1,5 +1,10 @@
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs: Corrected
+	  full name type highlighting.
+
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:
