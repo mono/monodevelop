@@ -32,7 +32,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Core.Execution
 {
-	public interface IProcessAsyncOperation: IAsyncOperation
+	public interface IProcessAsyncOperation: IAsyncOperation, IDisposable
 	{
 		int ExitCode { get; }
 		
@@ -44,6 +44,8 @@ namespace MonoDevelop.Core.Execution
 		public NullProcessAsyncOperation (bool success) : base (success, false) {}
 		public int ExitCode { get { return ((IAsyncOperation)this).Success? 0 : 1; } }
 		public int ProcessId { get { return 0; } }
+		
+		void IDisposable.Dispose () {}
 		
 		public new static NullProcessAsyncOperation Success = new NullProcessAsyncOperation (true);
 		public new static NullProcessAsyncOperation Failure = new NullProcessAsyncOperation (false);

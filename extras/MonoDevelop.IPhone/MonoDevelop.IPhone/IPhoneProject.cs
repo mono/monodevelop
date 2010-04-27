@@ -327,7 +327,7 @@ namespace MonoDevelop.IPhone
 					using (var opMon = new AggregatedOperationMonitor (monitor)) {
 						using (var op = IPhoneUtility.Upload (TargetRuntime, TargetFramework, conf.AppDirectory)) {
 							opMon.AddOperation (op);
-							op.WaitForOutput ();
+							op.WaitForCompleted ();
 							if (op.ExitCode != 0)
 								return;
 						}

@@ -1,3 +1,8 @@
+2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs:
+	  Make IProcessAsyncOperation IDisposable.
+
 2010-04-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

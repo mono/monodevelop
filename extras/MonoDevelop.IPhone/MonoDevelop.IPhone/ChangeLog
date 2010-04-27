@@ -1,3 +1,8 @@
+2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* IPhoneCommands.cs: Track Console API.
+
 2010-04-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs: Fix command ID / enum mismatch.

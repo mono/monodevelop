@@ -126,5 +126,7 @@ namespace MonoDevelop.Ide.Execution
 		}
 		
 		#endregion
+		
+		void IDisposable.Dispose () {}
 	}
 }

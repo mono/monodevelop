@@ -222,7 +222,7 @@ namespace MonoDevelop.IPhone
 	
 	public static class IPhoneUtility
 	{
-		public static ProcessWrapper Upload (TargetRuntime runtime, TargetFramework fx, FilePath appBundle)
+		public static IProcessAsyncOperation Upload (TargetRuntime runtime, TargetFramework fx, FilePath appBundle)
 		{
 			string mtouchPath = GetMtouchPath (runtime, fx);
 			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (

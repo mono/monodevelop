@@ -140,5 +140,7 @@ namespace MonoDevelop.Debugger
 		}
 		
 		event OperationHandler completedEvent;
+		
+		void IDisposable.Dispose () {}
 	}
 }

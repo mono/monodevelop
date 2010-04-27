@@ -90,7 +90,8 @@ namespace MonoDevelop.Core.Execution
 						ErrorStreamChanged (this, new string (buffer, 0, nr));
 				}					
 			} finally {
-				endEventErr.Set ();
+				if (endEventErr != null)
+					endEventErr.Set ();
 			}
 		}
 		
