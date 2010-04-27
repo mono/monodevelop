@@ -169,8 +169,8 @@ namespace MonoDevelop.CSharp.Resolver
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			
 			if (callingType != null) {
-				callingType = dom.ResolveType (callingType);
 				callingMember = GetMemberAt (callingType, fileName, resolvePosition);
+				callingType = dom.ResolveType (callingType);
 				if (callingMember == null) {
 					DomLocation posAbove = resolvePosition;
 					posAbove.Line--;
