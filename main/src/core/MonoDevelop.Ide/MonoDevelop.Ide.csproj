@@ -1354,6 +1354,8 @@
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs" />
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToCommand.cs" />
+    <Compile Include="MonoDevelop.Ide.NavigateToDialog\SearchResult.cs" />
+    <Compile Include="MonoDevelop.Ide.NavigateToDialog\ResultsDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

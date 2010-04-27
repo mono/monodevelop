@@ -1,5 +1,15 @@
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	* MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs: Moved
+	  the navigate to threading model from semaphores to
+	  background workers.
+
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
 	  navigate to dialog now remembers the window size.
 

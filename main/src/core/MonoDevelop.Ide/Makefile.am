@@ -557,6 +557,8 @@ FILES =  \
 	MonoDevelop.Ide.Gui/WorkbenchWindow.cs \
 	MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs \
 	MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs \
+	MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs \
+	MonoDevelop.Ide.NavigateToDialog/SearchResult.cs \
 	MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \

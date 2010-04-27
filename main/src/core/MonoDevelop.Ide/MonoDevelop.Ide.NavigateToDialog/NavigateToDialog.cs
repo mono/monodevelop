@@ -45,6 +45,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.CodeCompletion;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -60,21 +61,15 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	partial class NavigateToDialog : Gtk.Dialog
 	{
 		ListView list;
-		ResultsDataSource currentResults;
 		
 		object matchLock = new object ();
 		string matchString = "";
-		
-		// Thread management
-		Thread searchThread;
-		AutoResetEvent searchThreadWait;
-		bool searchCycleActive;
-		bool searchThreadDispose;
 		
 		public NavigateToType NavigateToType {
 			get;
 			set;
 		}
+		
 		public struct OpenLocation
 		{
 			public string Filename;
@@ -95,6 +90,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				return locations.ToArray ();
 			}
 		}
+		
 		bool isAbleToSearchMembers;
 		public NavigateToDialog (NavigateToType navigateTo, bool isAbleToSearchMembers)
 		{
@@ -233,8 +229,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			list = new ListView ();
 			list.AllowMultipleSelection = true;
-			currentResults = new ResultsDataSource ();
-			list.DataSource = currentResults;
+			list.DataSource = new ResultsDataSource ();
 			list.Show ();
 			list.ItemActivated += delegate { 
 				OpenFile ();
@@ -247,7 +242,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			locations.Clear ();
 			if (list.SelectedRows.Count != 0) {
 				foreach (int sel in list.SelectedRows) {
-					SearchResult res = currentResults [sel];
+					SearchResult res = lastResult.results [sel];
 					OpenLocation loc = new OpenLocation (res.File, res.Row, res.Column);
 					if (loc.Line == -1) {
 						int i = matchEntry.Query.LastIndexOf (':');
@@ -264,14 +259,20 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			StopActiveSearch ();
+			
+			base.OnDestroyed ();
+		}
+		 
+		System.ComponentModel.BackgroundWorker searchWorker = null;
+
 		void StopActiveSearch ()
 		{
-			// Tell the thread's search code that it should stop working and 
-			// then have the thread wait on the handle until told to resume
-			if (searchCycleActive && searchThread != null && searchThreadWait != null) {
-				searchCycleActive = false;
-				searchThreadWait.Reset ();
-			}
+			if (searchWorker != null) 
+				searchWorker.CancelAsync ();
+			searchWorker = null;
 		}
 		
 		void PerformSearch ()
@@ -283,100 +284,79 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				matchString = toMatch;
 				savedMatches.Clear ();
 			}
+			
 			if (string.IsNullOrEmpty (toMatch)) {
-				list.DataSource = currentResults = new ResultsDataSource ();
+				list.DataSource = new ResultsDataSource ();
 				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Enter search term to start.");
 				return;
 			}
 			
-			if (!string.IsNullOrEmpty (previousPattern) && toMatch.StartsWith (previousPattern)) {
-				list.DataSource = currentResults = new ResultsDataSource ();
-			}
-
-			if (searchThread == null) {
-				// Create the handle the search thread will wait on when there is nothing to do
-				searchThreadWait = new AutoResetEvent (false);
-				
-				// Only a single thread will be used for searching
-				ThreadStart start = new ThreadStart (SearchThread);
-				searchThread = new Thread (start);
-				searchThread.IsBackground = true;
-				searchThread.Name = "Navigate to thread";
-				searchThread.Priority = ThreadPriority.Lowest;
-				searchThread.Start ();
-			}
+			if (!string.IsNullOrEmpty (lastResult.pattern) && toMatch.StartsWith (lastResult.pattern))
+				list.DataSource = new ResultsDataSource ();
 			
-			// Wake the handle up so the search thread can do some work
-			searchCycleActive = true;
-			searchThreadWait.Set ();
+			searchWorker = new System.ComponentModel.BackgroundWorker  ();
+			searchWorker.WorkerSupportsCancellation = true;
+			searchWorker.DoWork += SearchWorker;
+			
+			searchWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
+				if (e.Cancelled)
+					return;
+				Application.Invoke (delegate {
+					lastResult = e.Result as WorkerResult;
+					list.DataSource = lastResult.results;
+					list.SelectedRow = 0;
+					list.CenterViewToSelection ();
+					labelResults.LabelProp = String.Format (GettextCatalog.GetPluralString ("_Results: {0} match found.", "_Results: {0} matches found.", lastResult.results.ItemCount), lastResult.results.ItemCount);
+				});
+			};
+			
+			searchWorker.RunWorkerAsync (new KeyValuePair<string, WorkerResult> (matchString, lastResult));
 		}
 		
-		void SearchThread ()
+		class WorkerResult 
 		{
-			// The thread will remain active until the dialog goes away
-			while (true) {
-				searchThreadWait.WaitOne ();
-				if (searchThreadDispose) {
-					break;
-				}
-				
-				try {
-					SearchThreadCycle ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception in NavigateToDialog", ex);
-				}
-			}
+			public List<ProjectFile> filteredFiles = null;
+			public List<IType> filteredTypes = null;
+			public List<IMember> filteredMembers  = null;
 			
-			// Reset all thread state even though this shouldn't be
-			// necessary since we destroy and never reuse the dialog
-			searchCycleActive = false;
-			searchThreadDispose = false;
-			
-			searchThreadWait.Close ();
-			searchThreadWait = null;
-			searchThread = null;
+			public string pattern = null;
+			public ResultsDataSource results = new ResultsDataSource ();
 		}
-
+		
 		IEnumerable<ProjectFile> files;
 		List<IType> types;
 		List<IMember> members;
 		
-		List<ProjectFile> filteredFiles;
-		List<IType> filteredTypes;
-		List<IMember> filteredMembers;
+		WorkerResult lastResult = new WorkerResult ();
 		
-		string previousPattern;
-		
-		void SearchThreadCycle ()
+		void SearchWorker (object sender, DoWorkEventArgs e)
 		{
-			// This is the inner thread worker; it actually does the searching
-			// Any where we enter loop, a check is added to see if the search
-			// should be aborted entirely so we can return to the wait handle
-
-			ResultsDataSource results = new ResultsDataSource ();
+			BackgroundWorker worker = (BackgroundWorker)sender;
+			var arg = (KeyValuePair<string, WorkerResult>)e.Argument;
 			
-			foreach (SearchResult result in AllResults ()) {
-				if (!searchCycleActive) 
-					return;
-				results.AddResult (result);
+			WorkerResult lastResult = arg.Value;
+			
+			WorkerResult newResult = new WorkerResult ();
+			newResult.pattern = arg.Key;
+			
+			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
+				if (worker.CancellationPending)
+					break;
+				newResult.results.AddResult (result);
 			}
 			
-			if (!searchCycleActive) 
+			if (worker.CancellationPending) {
+				e.Cancel = true;
 				return;
-			results.Sort (new DataItemComparer ());
+			}
+			newResult.results.Sort (new DataItemComparer ());
 			
-			Application.Invoke (delegate {
-				list.DataSource = results;
-				currentResults = results;
-				list.SelectedRow = 0;
-				list.CenterViewToSelection ();
-				labelResults.LabelProp = String.Format (GettextCatalog.GetPluralString ("_Results: {0} match found.", "_Results: {0} matches found.", results.ItemCount), results.ItemCount);
-			});
+			e.Result = newResult;
 		}
 		
-		IEnumerable<SearchResult> AllResults ()
+		IEnumerable<SearchResult> AllResults (BackgroundWorker worker, WorkerResult lastResult, WorkerResult newResult)
 		{
-			string toMatch = matchString;
+			string toMatch = newResult.pattern;
 			int i = toMatch.IndexOf (':');
 			if (i != -1)
 				toMatch = toMatch.Substring (0,i);
@@ -384,64 +364,54 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			// Search files
 			if ((NavigateToType & NavigateToType.Files) == NavigateToType.Files) {
 				WaitForCollectFiles ();
-				List<ProjectFile> newFilteredFiles = new List<ProjectFile> ();
-				bool startsWithLastFilter = previousPattern != null && toMatch.StartsWith (previousPattern) && filteredFiles != null;
-				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? filteredFiles : files;
+				newResult.filteredFiles = new List<ProjectFile> ();
+				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
+				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
 				foreach (ProjectFile file in allFiles) {
-					if (!searchCycleActive) 
+					if (worker.CancellationPending) 
 						yield break;
 					SearchResult curResult = CheckFile (file, toMatch);
 					if (curResult != null) {
-						newFilteredFiles.Add (file);
+						newResult.filteredFiles.Add (file);
 						yield return curResult;
 					}
 				}
-				filteredFiles = newFilteredFiles;
-			} else {
-				filteredFiles = null;
 			}
 			
 			// Search Types
 			if ((NavigateToType & NavigateToType.Types) == NavigateToType.Types) {
 				WaitForCollectTypes ();
-				List<IType> newFilteredTypes = new List<IType> ();
-				bool startsWithLastFilter = previousPattern != null && toMatch.StartsWith (previousPattern) && filteredTypes != null;
-				List<IType> allTypes = startsWithLastFilter ? filteredTypes : types;
+				newResult.filteredTypes = new List<IType> ();
+				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
+				List<IType> allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (IType type in allTypes) {
-					if (!searchCycleActive) 
+					if (worker.CancellationPending)
 						yield break;
 					SearchResult curResult = CheckType (type, toMatch);
 					if (curResult != null) {
-						newFilteredTypes.Add (type);
+						newResult.filteredTypes.Add (type);
 						yield return curResult;
 					}
 				}
-				filteredTypes = newFilteredTypes;
-			} else {
-				filteredTypes = null;
 			}
 			
 			// Search members
 			if ((NavigateToType & NavigateToType.Members) == NavigateToType.Members) {
 				WaitForCollectMembers ();
-				List<IMember> newFilteredMembers = new List<IMember> ();
-				bool startsWithLastFilter = previousPattern != null && toMatch.StartsWith (previousPattern) && filteredMembers != null;
-				List<IMember> allMembers = startsWithLastFilter ? filteredMembers : members;
+				newResult.filteredMembers = new List<IMember> ();
+				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
+				List<IMember> allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
 				foreach (IMember member in allMembers) {
-					if (!searchCycleActive) 
+					if (worker.CancellationPending)
 						yield break;
 					SearchResult curResult = CheckMember (member, toMatch);
 					if (curResult != null) {
-						newFilteredMembers.Add (member);
+						newResult.filteredMembers.Add (member);
 						yield return curResult;
 					}
 				}
-				filteredMembers = newFilteredMembers;
-			} else {
-				filteredMembers = null;
 			}
 			
-			previousPattern = toMatch;
 		}
 		
 		void WaitForCollectMembers ()
@@ -790,261 +760,4 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 	}
-	
-	abstract class SearchResult
-	{
-		protected string match;
-		
-		public virtual string MarkupText {
-			get {
-				return HighlightMatch (PlainText, match);
-			}
-		}
-		
-		public abstract string PlainText  { get; }
-		
-		public int Rank { get; private set; }
-
-		public virtual int Row { get { return -1; } }
-		public virtual int Column { get { return -1; } }
-		
-		public abstract string File { get; }
-		public abstract Gdk.Pixbuf Icon { get; }
-		
-		public abstract string Description { get; }
-		
-		public SearchResult (string match, int rank)
-		{
-			this.match = match;
-			Rank = rank;
-		}
-		
-		protected static string HighlightMatch (string text, string toMatch)
-		{
-			var lane = !string.IsNullOrEmpty (toMatch) ? NavigateToDialog.MatchString (text, toMatch) : null;
-			if (lane != null) {
-				StringBuilder result = new StringBuilder ();
-				int lastPos = 0;
-				for (int n=0; n <= lane.Index; n++) {
-					int pos = lane.Positions [n];
-					int len = lane.Lengths [n];
-					if (pos - lastPos > 0)
-						result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, pos - lastPos)));
-					result.Append ("<span foreground=\"blue\">");
-					result.Append (GLib.Markup.EscapeText (text.Substring (pos, len)));
-					result.Append ("</span>");
-					lastPos = pos + len;
-				}
-				if (lastPos < text.Length)
-					result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, text.Length - lastPos)));
-				return result.ToString ();
-			}
-			
-			return GLib.Markup.EscapeText (text);
-		}
-	}
-
-	class TypeSearchResult : MemberSearchResult
-	{
-		bool useFullName;
-		
-		public override string File {
-			get { return ((IType)member).CompilationUnit.FileName; }
-		}
-		
-		protected override OutputFlags Flags {
-			get {
-				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | (useFullName  ? OutputFlags.UseFullName : OutputFlags.None);
-			}
-		}
-		
-		public override string Description {
-			get {
-				IType type = (IType)member;
-				if (useFullName) 
-					return type.SourceProject != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), type.SourceProject.Name) : String.Format (GettextCatalog.GetString ("from \"{0}\""), type.CompilationUnit.FileName);
-				if (type.SourceProject != null)
-					return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), type.SourceProject.Name, type.Namespace);
-				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), type.CompilationUnit.FileName, type.Namespace);
-			}
-		}
-		
-		public TypeSearchResult (string match, int rank, IType type, bool useFullName) : base (match, rank, type)
-		{
-			this.useFullName = useFullName;
-		}
-	}
-	
-	class FileSearchResult: SearchResult
-	{
-		ProjectFile file;
-		bool useFileName;
-		
-		public override string PlainText {
-			get {
-				if (useFileName)
-					return System.IO.Path.GetFileName (file.FilePath);
-				return GetRelProjectPath (file);
-			}
-		}
-		 
-		public override string File {
-			get {
-				return file.FilePath;
-			}
-		}
-		
-		public override Gdk.Pixbuf Icon {
-			get {
-				return DesktopService.GetPixbufForFile (file.FilePath, IconSize.Menu);
-			}
-		}
-
-		public override string Description {
-			get {
-				if (useFileName)
-					return file.Project != null ? String.Format (GettextCatalog.GetString ("from \"{0}\" in Project \"{1}\""), GetRelProjectPath (file), file.Project.Name) : String.Format (GettextCatalog.GetString ("from \"{0}\""), GetRelProjectPath (file));
-				return file.Project != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), file.Project.Name) : "";
-			}
-		}
-		
-		public FileSearchResult (string match, int rank, ProjectFile file, bool useFileName) : base (match, rank)
-		{
-			this.file = file;
-			this.useFileName = useFileName;
-		}
-		
-		internal static string GetRelProjectPath (ProjectFile file)
-		{
-			if (file.Project != null)
-				return file.ProjectVirtualPath;
-			return file.FilePath;
-		}
-	}
-	
-	class MemberSearchResult : SearchResult
-	{
-		protected IMember member;
-		
-		protected virtual OutputFlags Flags {
-			get {
-				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics;
-			}
-		}
-		
-		public override string MarkupText {
-			get {
-				
-				OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
-				settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
-					if (domVisitable == member)
-						outString = HighlightMatch (outString, match);
-				};
-				return Ambience.GetString (member, settings);
-			}
-		}
-		
-		public override string PlainText {
-			get {
-				return Ambience.GetString (member, Flags);
-			}
-		}
-		
-		public override string File {
-			get { return member.DeclaringType.CompilationUnit.FileName; }
-		}
-
-		public override Gdk.Pixbuf Icon {
-			get {
-				return ImageService.GetPixbuf (member.StockIcon, IconSize.Menu);
-			}
-		}
-		
-		public override int Row {
-			get { return member.Location.Line; }
-		}
-		
-		public override int Column {
-			get { return member.Location.Column; }
-		}
-		
-		public override string Description {
-			get {
-				return String.Format (GettextCatalog.GetString ("from Type \"{0}\""), member.DeclaringType.Name);
-			}
-		}
-		
-		public MemberSearchResult (string match, int rank, IMember member) : base (match, rank)
-		{
-			this.member= member;
-		}
-		
-		protected Ambience Ambience { 
-			get {
-				IType type = member is IType ? (IType)member : member.DeclaringType;
-				if (type.SourceProject is DotNetProject)
-					return ((DotNetProject)type.SourceProject).Ambience;
-				return AmbienceService.DefaultAmbience;
-			}
-		}
-	}
-	
-	class ResultsDataSource: List<SearchResult>, IListViewDataSource
-	{
-		SearchResult bestResult;
-		int bestRank = int.MinValue;
-		Dictionary<string,bool> names = new Dictionary<string,bool> ();
-
-		public string GetText (int n)
-		{
-			string descr = this[n].Description;
-			if (string.IsNullOrEmpty (descr))
-				return this[n].MarkupText;
-			return this[n].MarkupText + " <span foreground=\"darkgray\">[" + descr + "]</span>";
-		}
-		
-		public string GetSelectedText (int n)
-		{
-			string descr = this[n].Description;
-			if (string.IsNullOrEmpty (descr))
-				return GLib.Markup.EscapeText (this[n].PlainText);
-			return GLib.Markup.EscapeText (this[n].PlainText) + " [" + descr + "]";
-		}
-
-		public Pixbuf GetIcon (int n)
-		{
-			return this[n].Icon;
-		}
-		
-		public bool UseMarkup (int n)
-		{
-			return true;
-		}
-				
-		public int ItemCount {
-			get {
-				return Count;
-			}
-		}
-
-		public SearchResult BestResult {
-			get {
-				return bestResult;
-			}
-		}
-
-		public void AddResult (SearchResult res)
-		{
-			Add (res);
-			if (names.ContainsKey (res.PlainText))
-				names[res.PlainText] = true;
-			else
-				names.Add (res.PlainText, false);
-			if (res.Rank > bestRank) {
-				bestResult = res;
-				bestRank = res.Rank;
-			}
-		}
-	}
 }
-
