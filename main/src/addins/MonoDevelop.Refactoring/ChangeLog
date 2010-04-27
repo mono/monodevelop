@@ -1,3 +1,8 @@
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/QuickFixHandler.cs: track API
+	  changes.
+
 2010-04-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:

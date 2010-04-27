@@ -46,7 +46,7 @@ namespace MonoDevelop.Refactoring
 				if (astProvider != null) 
 					returnType = astProvider.ParseTypeReference (options.ResolveResult.ResolvedExpression.Expression).ConvertToReturnType ();
 				if (returnType == null)
-					returnType = DomReturnType.FromInvariantString (options.ResolveResult.ResolvedExpression.Expression);
+					returnType = DomReturnType.GetSharedReturnType (options.ResolveResult.ResolvedExpression.Expression);
 			}
 			
 			List<string> namespaces;
