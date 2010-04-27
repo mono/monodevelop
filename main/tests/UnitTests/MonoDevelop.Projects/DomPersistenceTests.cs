@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomReturnType result = DomPersistence.ReadReturnType (CreateReader (bytes), DefaultNameDecoder);
+			IReturnType result = DomPersistence.ReadReturnType (CreateReader (bytes), DefaultNameDecoder);
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual ("Namespace", result.Namespace);
 			Assert.AreEqual ("Namespace.Test", result.FullName);
