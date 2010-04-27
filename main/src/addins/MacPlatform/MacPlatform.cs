@@ -103,7 +103,8 @@ namespace MonoDevelop.Platform
 
 		public override void ShowUrl (string url)
 		{
-			Process.Start (url);
+			//don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
+			Process.Start ("open", System.Web.HttpUtility.UrlEncode (url));
 		}
 
 		public override string DefaultMonospaceFont {

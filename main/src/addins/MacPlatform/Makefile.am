@@ -12,6 +12,7 @@ REFS =  \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
+	-r:System.Web \
 	-r:System.Xml \
 	-r:System.Xml.Linq
 
