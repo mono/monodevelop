@@ -445,7 +445,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			{
 				var r = o2.Rank.CompareTo (o1.Rank);
 				if (r == 0)
-					return String.CompareOrdinal (o1.PlainText, o2.PlainText);
+					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
 				return r;
 			}
 		}
@@ -518,11 +518,13 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		SearchResult CheckFile (ProjectFile file, string toMatch)
 		{
 			int rank;
-			if (MatchName (System.IO.Path.GetFileName (file.FilePath), toMatch, out rank)) 
-				return new FileSearchResult (toMatch, rank, file, true);
+			string matchString = System.IO.Path.GetFileName (file.FilePath);
+			if (MatchName (matchString, toMatch, out rank)) 
+				return new FileSearchResult (toMatch, matchString, rank, file, true);
 			
+			matchString = FileSearchResult.GetRelProjectPath (file);
 			if (MatchName (FileSearchResult.GetRelProjectPath (file), toMatch, out rank)) 
-				return new FileSearchResult (toMatch, rank, file, false);
+				return new FileSearchResult (toMatch, matchString, rank, file, false);
 			
 			return null;
 		}
@@ -531,9 +533,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			int rank;
 			if (MatchName (type.Name, toMatch, out rank))
-				return new TypeSearchResult (toMatch, rank, type, false);
+				return new TypeSearchResult (toMatch, type.Name, rank, type, false);
 			if (MatchName (type.FullName, toMatch, out rank))
-				return new TypeSearchResult (toMatch, rank, type, true);
+				return new TypeSearchResult (toMatch, type.FullName, rank, type, true);
 			return null;
 		}
 		
@@ -543,7 +545,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			string memberName = (member is IMethod && ((IMethod)member).IsConstructor) ? member.DeclaringType.Name : member.Name;
 			if (!MatchName (memberName, toMatch, out rank))
 				return null;
-			return new MemberSearchResult (toMatch, rank, member);
+			return new MemberSearchResult (toMatch, memberName, rank, member);
 		}
 		
 		struct MatchResult 

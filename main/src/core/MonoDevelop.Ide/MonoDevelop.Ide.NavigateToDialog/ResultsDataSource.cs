@@ -41,9 +41,10 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.CodeCompletion;
+
 namespace MonoDevelop.Ide.NavigateToDialog
 {
-class ResultsDataSource: List<SearchResult>, IListViewDataSource
+	class ResultsDataSource: List<SearchResult>, IListViewDataSource
 	{
 		SearchResult bestResult;
 		int bestRank = int.MinValue;
@@ -90,10 +91,11 @@ class ResultsDataSource: List<SearchResult>, IListViewDataSource
 		public void AddResult (SearchResult res)
 		{
 			Add (res);
-			if (names.ContainsKey (res.PlainText))
-				names[res.PlainText] = true;
+			if (names.ContainsKey (res.MatchedString))
+				names[res.MatchedString] = true;
 			else
-				names.Add (res.PlainText, false);
+				names.Add (res.MatchedString, false);
+			
 			if (res.Rank > bestRank) {
 				bestResult = res;
 				bestRank = res.Rank;

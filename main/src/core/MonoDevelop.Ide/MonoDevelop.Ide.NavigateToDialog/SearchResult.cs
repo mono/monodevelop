@@ -65,10 +65,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public abstract Gdk.Pixbuf Icon { get; }
 		
 		public abstract string Description { get; }
+		public string MatchedString { get; private set;}
 		
-		public SearchResult (string match, int rank)
+		public SearchResult (string match, string matchedString, int rank)
 		{
 			this.match = match;
+			this.MatchedString = matchedString;
 			Rank = rank;
 		}
 		
@@ -130,7 +132,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		
-		public TypeSearchResult (string match, int rank, IType type, bool useFullName) : base (match, rank, type)
+		public TypeSearchResult (string match, string matchedString, int rank, IType type, bool useFullName) : base (match, matchedString, rank, type)
 		{
 			this.useFullName = useFullName;
 		}
@@ -169,7 +171,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public FileSearchResult (string match, int rank, ProjectFile file, bool useFileName) : base (match, rank)
+		public FileSearchResult (string match, string matchedString, int rank, ProjectFile file, bool useFileName) : base (match, matchedString, rank)
 		{
 			this.file = file;
 			this.useFileName = useFileName;
@@ -195,7 +197,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string MarkupText {
 			get {
-				
 				OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
 				settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
 					if (domVisitable == member)
@@ -235,7 +236,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public MemberSearchResult (string match, int rank, IMember member) : base (match, rank)
+		public MemberSearchResult (string match, string matchedString, int rank, IMember member) : base (match, matchedString, rank)
 		{
 			this.member= member;
 		}

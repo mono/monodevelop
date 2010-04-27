@@ -1,5 +1,12 @@
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	* MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs:
+	  Optimized ambience.GetString calls.
+
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Removed the
 	  box.Remove (control needs to be in the destroy chain).
 
