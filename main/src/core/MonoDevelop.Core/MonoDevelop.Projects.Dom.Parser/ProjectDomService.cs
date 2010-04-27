@@ -896,18 +896,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 				// information.
 				if (projects != null && projects.Length > 0 && parseInformation.CompilationUnit != null)
 					SetSourceProject (parseInformation.CompilationUnit, dom);
-				if (!parseInformation.HasErrors && parseInformation.CompilationUnit != null &&
+				if (parseInformation.CompilationUnit != null &&
 				    (parseInformation.Flags & ParsedDocumentFlags.NonSerializable) == 0) {
 					if (projects != null && projects.Length > 0) {
 						foreach (Project project in projects) {
 							ProjectDom db = GetProjectDom (project);
 							if (db != null) {
 								try {
-									db.UpdateTagComments (fileName, parseInformation.TagComments);
-									TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
-									if (res != null)
-										NotifyTypeUpdate (project, fileName, res);
-									UpdatedCommentTasks (fileName, parseInformation.TagComments, project);
+									if (parseInformation.HasErrors) {
+										db.UpdateTemporaryCompilationUnit (parseInformation.CompilationUnit);
+									} else {
+										db.UpdateTagComments (fileName, parseInformation.TagComments);
+										db.RemoveTemporaryCompilationUnit (parseInformation.CompilationUnit);
+										TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
+										if (res != null)
+											NotifyTypeUpdate (project, fileName, res);
+										UpdatedCommentTasks (fileName, parseInformation.TagComments, project);
+									}
 								} catch (Exception e) {
 									LoggingService.LogError (e.ToString ());
 								}

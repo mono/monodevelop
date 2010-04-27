@@ -195,6 +195,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				else
 					rtype = GetType (itype.UninstantiatedType.FullName, itype.GenericParameters, true, true);
 				
+				rtype = MergeTypeWithTemporary (rtype);
+				
 				if (type is CompoundType && rtype is CompoundType) {
 					IType mainPart = ((CompoundType)type).Parts.First ();
 					((CompoundType)rtype).SetMainPart (mainPart.CompilationUnit.FileName, mainPart.Location);
@@ -730,6 +732,30 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
 		{
 			return null;
+		}
+		
+		Dictionary<string, ICompilationUnit> temporaryCompilationUnits = new Dictionary<string, ICompilationUnit> ();
+		public void RemoveTemporaryCompilationUnit (ICompilationUnit unit)
+		{
+			if (temporaryCompilationUnits.ContainsKey (unit.FileName))
+				temporaryCompilationUnits.Remove (unit.FileName);
+		}
+		
+		public virtual void UpdateTemporaryCompilationUnit (ICompilationUnit unit)
+		{
+			temporaryCompilationUnits[unit.FileName] = unit;
+		}
+		
+		public IType MergeTypeWithTemporary (IType type)
+		{
+			if (type == null || type.CompilationUnit == null)
+				return type;
+			if (temporaryCompilationUnits.ContainsKey (type.CompilationUnit.FileName)) {
+				IType tmpType = type.CompilationUnit.Types.FirstOrDefault (t => t.DecoratedFullName == type.DecoratedFullName);
+				if (tmpType != null)
+					return CompoundType.Merge (type, tmpType);
+			}
+			return type;
 		}
 
 		internal virtual void Unload ()
