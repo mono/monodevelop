@@ -752,7 +752,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return type;
 			
 			if (temporaryCompilationUnits.ContainsKey (type.CompilationUnit.FileName)) {
-				IType tmpType = type.CompilationUnit.Types.FirstOrDefault (t => t.Location == type.Location || t.DecoratedFullName == type.DecoratedFullName);
+				var unit = temporaryCompilationUnits[type.CompilationUnit.FileName];
+				IType tmpType = unit.Types.FirstOrDefault (t => t.Location == type.Location || t.DecoratedFullName == type.DecoratedFullName);
 				
 				if (tmpType != null) {
 					CompoundType result = new CompoundType ();
