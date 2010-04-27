@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Gui
 			SetTitleEvent(null, null);
 			
 			commandHandler = new ViewCommandHandlers (this);
+			Show ();
 		}
 		
 		protected SdiWorkspaceWindow (IntPtr p): base (p)
