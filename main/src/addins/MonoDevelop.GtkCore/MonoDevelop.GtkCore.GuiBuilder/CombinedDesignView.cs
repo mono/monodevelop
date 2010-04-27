@@ -192,9 +192,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (lw != null)
 					lw.Destroy ();
 			}
-			
 			content = null;
-			box = null;
+			
+			if (box != null) {
+				box.Destroy ();
+				box = null;
+			}
+			
 			base.Dispose ();
 		}
 		
