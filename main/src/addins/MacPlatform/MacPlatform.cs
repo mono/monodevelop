@@ -38,6 +38,8 @@ using MonoDevelop.Ide.Gui;
 using OSXIntegration.Framework;
 using MonoDevelop.Ide; 
 using System.Linq;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Platform.Mac;
 
 namespace MonoDevelop.Platform
 {
@@ -56,6 +58,14 @@ namespace MonoDevelop.Platform
 			mimemap = new Dictionary<string, string> ();
 			LoadMimeMap ();
 			
+			//Console.WriteLine (AppleScript.Run ("tell application \"Terminal\" to do script \"sleep 10; exit\""));
+			//Console.WriteLine (AppleScript.Run (File.ReadAllBytes ("/Users/michael/Desktop/Untitled.scpt")));
+			/*
+			AppleScript.RunScript (
+@"tell application ""Terminal""
+	do script ""sleep 60""
+end tell");
+			*/
 			CheckGtkVersion (2, 17, 9);
 		}
 		
@@ -76,7 +86,8 @@ namespace MonoDevelop.Platform
 					"MonoDevelop requires a newer version of the Mono Framework.",
 					new AlertButton ("Cancel", null), downloadButton))
 				{
-					Process.Start (url);
+					//WORKAROUND: don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
+					Process.Start ("open", url);
 				}
 				
 				Environment.Exit (1);
@@ -103,8 +114,8 @@ namespace MonoDevelop.Platform
 
 		public override void ShowUrl (string url)
 		{
-			//don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
-			Process.Start ("open", System.Web.HttpUtility.UrlEncode (url));
+			//WORKAROUND: don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
+			Process.Start ("open", url);
 		}
 
 		public override string DefaultMonospaceFont {
@@ -240,6 +251,11 @@ namespace MonoDevelop.Platform
 		{
 			args.RetVal = true;
 			IdeApp.Workbench.RootWindow.Visible = false;
+		}
+		
+		public override IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
+		{
+			return new ExternalConsoleProcess (psi, title, pauseWhenFinished);
 		}
 	}
 }
