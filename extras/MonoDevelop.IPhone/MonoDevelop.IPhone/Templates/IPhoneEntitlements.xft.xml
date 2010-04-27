@@ -3,8 +3,8 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>iPhone Entitlements</_Name>
-		<_Category>iPhone</_Category>
+		<_Name>Entitlements</_Name>
+		<_Category>iPhone and iPad</_Category>
 		<Icon>md-xml-file-icon</Icon>
 		<LanguageName>*</LanguageName>
 		<ProjectType>IPhone</ProjectType>

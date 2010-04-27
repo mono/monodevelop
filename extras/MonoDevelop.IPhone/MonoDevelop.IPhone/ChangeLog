@@ -1,3 +1,24 @@
+2010-04-27  Geoff Norton  <gnorton@novell.com>
+
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneApplicationPList.xft.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/UniversalWindowBasedProject.xpt.xml:
+	* Templates/IPhoneProjectEmpty.xpt.xml:
+	* Templates/IPhoneEmptyXib.xft.xml:
+	* Templates/IPadApplicationXib.xft.xml:
+	* Templates/IPadWindowBasedProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneLibraryProject.xpt.xml:
+	* Templates/IPhoneApplicationXib.xft.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml:
+	* Templates/IPadViewXib.xft.xml:
+	* Templates/IPadViewController.xft.xml:
+	* Templates/IPhoneEntitlements.xft.xml:
+	* MonoDevelop.IPhone.csproj:
+	Updated templates for Universal applications
+
 2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneBuildExtension.cs: Don't allow files as content that

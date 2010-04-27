@@ -5,10 +5,10 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>MonoTouch Library Project</_Name>
-		<_Category>iPhone</_Category>
+		<_Category>iPhone and iPad</_Category>
 		<Icon>md-project-library</Icon>
 		<LanguageName>*</LanguageName>
-		<_Description>Creates a MonoTouch library project for iPhone and iPod Touch.</_Description>
+		<_Description>Creates a MonoTouch library project for iPhone/iPad and iPod Touch.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

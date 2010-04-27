@@ -5,7 +5,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>iPhone OpenGL Project</_Name>
-		<_Category>C#/iPhone</_Category>
+		<_Category>C#/iPhone and iPad</_Category>
 		<Icon>md-project-iphone</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>OpenGL project for iPhone and iPod Touch.</_Description>

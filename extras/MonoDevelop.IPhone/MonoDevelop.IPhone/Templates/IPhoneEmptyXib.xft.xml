@@ -6,7 +6,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Interface Definition</_Name>
 		<Icon>res:xib-template-empty.png</Icon>
-		<_Category>iPhone</_Category>
+		<_Category>iPhone and iPad</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>IPhone</ProjectType>
 		<_Description>Creates an empty Interface Builder document for MonoTouch.</_Description>

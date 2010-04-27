@@ -5,7 +5,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty MonoTouch Project</_Name>
-		<_Category>iPhone</_Category>
+		<_Category>iPhone and iPad</_Category>
 		<Icon>md-project-iphone</Icon>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty MonoTouch project for iPhone and iPod Touch.</_Description>
