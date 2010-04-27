@@ -85,8 +85,7 @@ namespace MonoDevelop.Ide.Gui
 			Add (box);
 			
 			Show ();
-			box.Show ();
-			content.Control.Show ();
+			
 			SetTitleEvent(null, null);
 			
 			commandHandler = new ViewCommandHandlers (this);
@@ -324,18 +323,20 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			content.Dispose ();
-			tabLabel.Dispose ();
+			
+			tabLabel.Destroy ();
+			this.tabLabel = null;
 			
 			this.subViewToolbar = null;
 			this.separatorItem = null;
 			DetachFromPathedDocument ();
-
+			
 			OnClosed (args);
 			
 			this.content = null;
 			this.subViewNotebook = null;
 			this.tabControl = null;
-			this.tabLabel = null;
+			
 			this.tabPage = null;
 			Destroy ();
 			return true;

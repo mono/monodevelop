@@ -1,5 +1,10 @@
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Destroying the
+	  tabLabel with destroy and not with dispose.
+
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
 	* MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs:
