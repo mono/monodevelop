@@ -750,10 +750,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			if (type == null || type.CompilationUnit == null)
 				return type;
+			
 			if (temporaryCompilationUnits.ContainsKey (type.CompilationUnit.FileName)) {
-				IType tmpType = type.CompilationUnit.Types.FirstOrDefault (t => t.DecoratedFullName == type.DecoratedFullName);
-				if (tmpType != null)
-					return CompoundType.Merge (type, tmpType);
+				IType tmpType = type.CompilationUnit.Types.FirstOrDefault (t => t.Location == type.Location || t.DecoratedFullName == type.DecoratedFullName);
+				
+				if (tmpType != null) {
+					CompoundType result = new CompoundType ();
+					result.AddPart (type);
+					result.AddPart (tmpType);
+					return result;
+				}
 			}
 			return type;
 		}
