@@ -1,5 +1,12 @@
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs:
+	  made the default size of the navigate to dialog bigger.
+
+2010-04-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Changed
 	  destroying order. (tab label is used during the Close event
 	  chain).

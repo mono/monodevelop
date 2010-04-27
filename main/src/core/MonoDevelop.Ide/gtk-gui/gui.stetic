@@ -11145,6 +11145,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.NavigateToDialog.NavigateToDialog" design-size="565 438">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Navigate to</property>
     <property name="TypeHint">Dialog</property>

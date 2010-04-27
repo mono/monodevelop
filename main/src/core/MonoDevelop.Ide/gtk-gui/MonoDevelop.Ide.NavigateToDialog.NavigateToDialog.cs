@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.DefaultHeight = 438;
 			this.label1.MnemonicWidget = this.matchEntry;
 			this.labelResults.MnemonicWidget = this.scrolledwindow1;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }
