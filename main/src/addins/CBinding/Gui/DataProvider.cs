@@ -192,7 +192,11 @@ namespace CBinding
 		public string Description {
 			get { return description; }
 		}
-
+		
+		public string DisplayDescription {
+			get { return null; }
+		}
+		
 		public string CompletionText {
 			get { return completion_string; }
 		}
