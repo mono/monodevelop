@@ -40,6 +40,7 @@ using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Platform.Mac;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Platform
 {
@@ -58,14 +59,6 @@ namespace MonoDevelop.Platform
 			mimemap = new Dictionary<string, string> ();
 			LoadMimeMap ();
 			
-			//Console.WriteLine (AppleScript.Run ("tell application \"Terminal\" to do script \"sleep 10; exit\""));
-			//Console.WriteLine (AppleScript.Run (File.ReadAllBytes ("/Users/michael/Desktop/Untitled.scpt")));
-			/*
-			AppleScript.RunScript (
-@"tell application ""Terminal""
-	do script ""sleep 60""
-end tell");
-			*/
 			CheckGtkVersion (2, 17, 9);
 		}
 		
@@ -86,8 +79,7 @@ end tell");
 					"MonoDevelop requires a newer version of the Mono Framework.",
 					new AlertButton ("Cancel", null), downloadButton))
 				{
-					//WORKAROUND: don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
-					Process.Start ("open", url);
+					OpenUrl (url);
 				}
 				
 				Environment.Exit (1);
@@ -114,8 +106,14 @@ end tell");
 
 		public override void ShowUrl (string url)
 		{
+			OpenUrl (url);
+		}
+		
+		internal static void OpenUrl (string url)
+		{
 			//WORKAROUND: don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
-			Process.Start ("open", url);
+			var psi = new ProcessStartInfo ("open", url) { UseShellExecute = false };
+			Process.Start (psi);
 		}
 
 		public override string DefaultMonospaceFont {
@@ -128,6 +126,8 @@ end tell");
 		
 		private static void LoadMimeMap ()
 		{
+			LoggingService.Trace ("Mac Platform Service", "Loading MIME map");
+			
 			// All recent Macs should have this file; if not we'll just die silently
 			if (!File.Exists ("/etc/apache2/mime.types")) {
 				MonoDevelop.Core.LoggingService.LogError ("Apache mime database is missing");
@@ -146,6 +146,8 @@ end tell");
 			} catch (Exception ex){
 				MonoDevelop.Core.LoggingService.LogError ("Could not load Apache mime database", ex);
 			}
+			
+			LoggingService.Trace ("Mac Platform Service", "Loaded MIME map");
 		}
 		
 		HashSet<object> ignoreCommands = new HashSet<object> () {

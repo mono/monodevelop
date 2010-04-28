@@ -33,6 +33,7 @@ using MonoDevelop.Components.Commands;
 using OSXIntegration.Framework;
 using System.Text;
 using MonoDevelop.Ide;
+using MonoDevelop.Platform;
 
 namespace OSXIntegration
 {
@@ -610,8 +611,7 @@ namespace OSXIntegration
 					string url = "";
 					try {
 						url = linkCommands[(int)refCon];
-						//WORKAROUND: don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
-						System.Diagnostics.Process.Start ("open", url);
+						MacPlatform.OpenUrl (url);
 					} catch (Exception ex) {
 						Gtk.Application.Invoke (delegate {
 							MonoDevelop.Ide.MessageService.ShowException (ex, MonoDevelop.Core.GettextCatalog.GetString ("Could not open the url {0}", url));
