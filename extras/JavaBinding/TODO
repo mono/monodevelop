@@ -1,7 +1,0 @@
- - fix regluar java templates
- - make classpath handling better
- - support turning a jar to a dll simply
- - support more java compilers (like ecj)
- - automatically copy IKVM.GNU.Classpath.dll and IKVM.Runtime.dll
-	to output dir
- - implement GenerateMakefiles perhaps
