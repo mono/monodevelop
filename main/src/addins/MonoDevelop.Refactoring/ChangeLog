@@ -1,5 +1,10 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: fixed
+	  'Bug 599635 - In-place rename should select name'.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Refactoring.csproj:
 	* MonoDevelop.Refactoring.addin.xml:

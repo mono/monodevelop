@@ -111,8 +111,8 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 				foreach (MemberReference r in col) {
 					Segment segment = new Segment (data.Document.LocationToOffset (r.Line - 1, r.Column - 1) - baseOffset, r.Name.Length);
-					Console.WriteLine ((data.Caret.Offset - baseOffset) + ":" + segment);
 					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
+						
 						link.Links.Insert (0, segment); 
 					} else {
 						link.AddLink (segment);
@@ -122,7 +122,7 @@ namespace MonoDevelop.Refactoring.Rename
 				links.Add (link);
 				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
 				tle.SetCaretPosition = false;
-				tle.SelectPrimaryLink = false;
+				tle.SelectPrimaryLink = true;
 				if (tle.ShouldStartTextLinkMode) {
 					tle.OldMode = data.CurrentMode;
 					tle.StartMode ();
