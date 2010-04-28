@@ -253,9 +253,9 @@ end tell");
 			IdeApp.Workbench.RootWindow.Visible = false;
 		}
 		
-		public override IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
-		{
-			return new ExternalConsoleProcess (psi, title, pauseWhenFinished);
-		}
+//		public override IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
+//		{
+//			return new ExternalConsoleProcess (psi, title, pauseWhenFinished);
+//		}
 	}
 }
