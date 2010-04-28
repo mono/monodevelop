@@ -29,7 +29,7 @@ class ShellProperties:
 	Font as FontDescription:
 		get:
 			if FontName == "__default_monospace":
-				return FontDescription.FromString (GConf.Client ().Get ("/desktop/gnome/interface/monospace_font_name"))
+				return FontDescription.FromString (MonoDevelop.Ide.DesktopService.DefaultMonospaceFont)
 			else:
 				return FontDescription.FromString (FontName)
 

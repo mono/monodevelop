@@ -91,9 +91,7 @@ EXTRAS = \
 REFERENCES =  \
 	build/BooShell.dll \
 	-pkg:boo \
-	-pkg:gconf-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
-	-pkg:gtksourceview-sharp-2.0 \
 	-pkg:mono-addins \
 	-pkg:monodevelop \
 	-pkg:monodevelop-core-addins \

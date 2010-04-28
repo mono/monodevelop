@@ -25,7 +25,6 @@ import System.IO
 
 import Gtk
 import Gdk
-import GtkSourceView
 
 import MonoDevelop.Components
 import MonoDevelop.Ide.CodeCompletion
@@ -40,7 +39,7 @@ import MonoDevelop.Projects.Dom.Parser
  * 1) Don't record lines with errors in the _scriptLines buffer
  */
 
-class ShellTextView (SourceView, ICompletionWidget):
+class ShellTextView (TextView, ICompletionWidget):
 	private static _promptRegular = ">>> "
 	private static _promptMultiline = "... "
 	
@@ -72,18 +71,6 @@ class ShellTextView (SourceView, ICompletionWidget):
 	
 	def constructor(model as IShellModel):
 		
-		manager = SourceLanguagesManager()
-		lang = manager.GetLanguageFromMimeType(model.MimeType)
-		if lang != null:
-			buf = SourceBuffer(lang)
-		else:
-			buf = SourceBuffer(GtkSourceView.SourceTagTable())
-
-		// This freaks out booc for some reason.
-		//super(buf, Highlight: true)
-		super(buf)
-		buf.Highlight = true
-
 		self.model = model
 		self.WrapMode = Gtk.WrapMode.Word
 		self.ModifyFont(Model.Properties.Font)
