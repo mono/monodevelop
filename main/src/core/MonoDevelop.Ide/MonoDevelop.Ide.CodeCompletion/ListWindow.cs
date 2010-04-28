@@ -451,12 +451,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			int idx = -1;
 			
 			List<KeyValuePair<int, string>> words = new List<KeyValuePair<int, string>> ();
-			for (int i = 0; i < list.filteredItems.Count; i++) {
-				int index = list.filteredItems[i];
-				string text = DataProvider.GetText (index);
-				if (!ListWidget.Matches (partialWord, text))
-					continue;
-				words.Add (new KeyValuePair <int,string> (i, text));
+			if (!string.IsNullOrEmpty (partialWord)) {
+				for (int i = 0; i < list.filteredItems.Count; i++) {
+					int index = list.filteredItems[i];
+					string text = DataProvider.GetText (index);
+					if (!ListWidget.Matches (partialWord, text))
+						continue;
+					words.Add (new KeyValuePair <int,string> (i, text));
+				}
 			}
 			
 			ListWindow.WordComparer comparer = new WordComparer (list.filteredItems, partialWord);
@@ -469,7 +471,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return idx;
 			}
 			
-			if (partialWord != null && partialWord.Length < 2) {
+			if (string.IsNullOrEmpty (partialWord) || partialWord.Length >= 2) {
 				// Search for history matches.
 				for (int i = 0; i < wordHistory.Count; i++) {
 					string historyWord = wordHistory[i];
