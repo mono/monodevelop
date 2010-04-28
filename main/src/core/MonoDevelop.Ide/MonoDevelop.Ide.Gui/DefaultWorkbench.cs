@@ -1302,7 +1302,7 @@ namespace MonoDevelop.Ide.Gui
 	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
 	// object of the selected document, which implement some default commands.
 	
-	class SdiDragNotebook: DragNotebook, ICommandDelegatorRouter
+	class SdiDragNotebook: DragNotebook, ICommandDelegatorRouter, IShadedWidget
 	{
 		ShadedContainer shadedContainer;
 		
@@ -1329,6 +1329,30 @@ namespace MonoDevelop.Ide.Gui
 			return base.OnExposeEvent (evnt);
 		}
 
+		public event EventHandler AreasChanged;
+		
+		public IEnumerable<Gdk.Rectangle> GetShadedAreas ()
+		{
+			Gdk.Rectangle rect = Allocation;
+			if (CurrentPageWidget != null && CurrentPageWidget.Visible)
+				rect.Height -= CurrentPageWidget.Allocation.Height;
+			yield return rect;
+		}
+		
+		protected override void OnPageAdded (Widget p0, uint p1)
+		{
+			base.OnPageAdded (p0, p1);
+			if (AreasChanged != null)
+				AreasChanged (this, EventArgs.Empty);
+		}
+		
+		protected override void OnPageRemoved (Widget p0, uint p1)
+		{
+			base.OnPageRemoved (p0, p1);
+			if (AreasChanged != null)
+				AreasChanged (this, EventArgs.Empty);
+		}
+		
 	}
 }
 

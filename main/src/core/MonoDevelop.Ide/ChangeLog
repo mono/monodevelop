@@ -1,3 +1,9 @@
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Components.Docking/ShadedContainer.cs: Optimize
+	  rendering of the shaded background.
+
 2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: Show a

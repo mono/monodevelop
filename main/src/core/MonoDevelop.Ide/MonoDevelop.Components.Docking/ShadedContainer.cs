@@ -93,40 +93,60 @@ namespace MonoDevelop.Components.Docking
 			RedrawAll ();
 		}
 		
-		void UpdateAllocation (Widget w)
+		bool UpdateAllocation (Widget w)
 		{
 			if (w.IsRealized) {
 				IShadedWidget sw = w as IShadedWidget;
+				Gdk.Rectangle[] newAllocations;
 				if (sw != null) {
 					List<Gdk.Rectangle> rects = new List<Gdk.Rectangle> ();
 					foreach (Gdk.Rectangle ar in sw.GetShadedAreas ())
 						rects.Add (ar);
-					allocations [w] = rects.ToArray ();
+					newAllocations = rects.ToArray ();
 				} else {
-					allocations [w] = new Gdk.Rectangle [] { w.Allocation };
+					newAllocations = new Gdk.Rectangle [] { w.Allocation };
 				}
+				Gdk.Rectangle[] oldAllocations;
+				if (allocations.TryGetValue (w, out oldAllocations)) {
+					if (oldAllocations.Length == newAllocations.Length) {
+						bool changed = false;
+						for (int n=0; n<oldAllocations.Length; n++) {
+							if (newAllocations[n] != oldAllocations[n]) {
+								changed = true;
+								break;
+							}
+						}
+						if (!changed)
+							return false;
+					}
+				}
+				allocations [w] = newAllocations;
+				return true;
 			}
 			else {
+				if (!allocations.ContainsKey (w))
+					return false;
 				allocations.Remove (w);
+				return true;
 			}
 		}
 
 		void HandleWRealized (object sender, EventArgs e)
 		{
-			UpdateAllocation ((Widget) sender);
-			RedrawAll ();
+			if (UpdateAllocation ((Widget) sender))
+				RedrawAll ();
 		}
 
 		void HandleSwAreasChanged (object sender, EventArgs e)
 		{
-			UpdateAllocation ((Gtk.Widget)sender);
-			RedrawAll ();
+			if (UpdateAllocation ((Gtk.Widget)sender))
+				RedrawAll ();
 		}
 		
 		void HandleWSizeAllocated (object o, SizeAllocatedArgs args)
 		{
-			UpdateAllocation ((Widget) o);
-			RedrawAll ();
+			if (UpdateAllocation ((Widget) o))
+				RedrawAll ();
 		}
 
 		void HandleWHidden (object sender, EventArgs e)
@@ -146,8 +166,17 @@ namespace MonoDevelop.Components.Docking
 		
 		void RedrawAll ()
 		{
-			foreach (Widget w in widgets)
-				w.QueueDraw ();
+			foreach (Widget w in widgets) {
+				if (!w.Visible)
+					continue;
+				IShadedWidget sw = w as IShadedWidget;
+				if (sw != null) {
+					foreach (Gdk.Rectangle rect in sw.GetShadedAreas ())
+						w.QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
+				}
+				else
+					w.QueueDraw ();
+			}
 		}
 		
 		public void DrawBackground (Gtk.Widget w)
