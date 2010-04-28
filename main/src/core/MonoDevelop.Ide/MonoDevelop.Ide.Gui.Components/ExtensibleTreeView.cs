@@ -27,6 +27,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//#define TREE_VERIFY_INTEGRITY
+
 using System;
 using System.IO;
 using System.ComponentModel;
@@ -70,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
 		bool editingText = false;
-		Pango.FontDescription customFont;
+		int customFontSize = -1;
 		
 		TreePadOption[] options;
 		TreeOptions globalOptions;
@@ -126,18 +128,20 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void CustomFontPropertyChanged (object sender, MonoDevelop.Core.PropertyChangedEventArgs prop)
 		{
-			string name = (string)prop.NewValue ?? tree.Style.FontDescription.ToString ();
+			string val = (string)prop.NewValue;
+			string name = !string.IsNullOrEmpty (val) ? val : tree.Style.FontDescription.ToString ();
 			UpdateCustomFont (name);
 		}
 		
 		void UpdateCustomFont (string name)
 		{
-			if (customFont != null)
-				customFont.Dispose ();
-			customFont = text_render.FontDesc = Pango.FontDescription.FromString (name);
-			if (Zoom != 1) {
+			Pango.FontDescription customFont = Pango.FontDescription.FromString (name);
+			customFontSize = customFont.Size;
+			if (Zoom != 1)
 				customFont.Size = (int) (((double) customFont.Size) * Zoom);
-			}
+			text_render.Family = customFont.Family;
+			text_render.Size = customFont.Size;
+			customFont.Dispose ();
 			tree.ColumnsAutosize ();
 		}
 		
@@ -192,9 +196,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			text_render = new Gtk.CellRendererText ();
 			var customFontName = IdeApp.Preferences.CustomPadFont;
 			if (customFontName != null) {
-				if (customFont != null)
-					customFont.Dispose ();
-				customFont = text_render.FontDesc = Pango.FontDescription.FromString (customFontName);
+				Pango.FontDescription customFont = Pango.FontDescription.FromString (customFontName);
+				text_render.Family = customFont.Family;
+				text_render.Size = customFont.Size;
+				customFontSize = customFont.Size;
+				customFont.Dispose ();
 			}
 			text_render.Ypad = 0;
 			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
@@ -236,11 +242,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			this.Add (tree);
 			this.ShowAll ();
-			
-//			GLib.Timeout.Add (3000, Checker);
+
+#if TREE_VERIFY_INTEGRITY
+			GLib.Timeout.Add (3000, Checker);
+#endif
 		}
-		
-		/* Verifies the consistency of the tree view. Disabled by default
+	
+#if TREE_VERIFY_INTEGRITY
+		// Verifies the consistency of the tree view. Disabled by default
 		HashSet<object> ochecked = new HashSet<object> ();
 		bool Checker ()
 		{
@@ -265,7 +274,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 			return true;
-		}*/
+		}
+#endif
 		
 		public void UpdateBuilders (NodeBuilder[] builders, TreePadOption[] options)
 		{
@@ -884,17 +894,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 			set {
 				if (pix_render.Zoom != value) {
-					var oldZoom = pix_render.Zoom;
 					pix_render.Zoom = value;
-					if (customFont == null) {
-						customFont = this.Style.FontDescription.Copy ();
-					} else if (oldZoom != 1) {
-						customFont.Size = (int) (((double) customFont.Size) / oldZoom);
+					if (customFontSize != -1) {
+						int newSize = customFontSize;
+						if (value != 1)
+							newSize = (int) (((double) customFontSize) * value);
+						text_render.Size = newSize;
 					}
-					if (value != 1) {
-						customFont.Size = (int) (((double) customFont.Size) * value);
-					}
-					text_render.FontDesc = customFont;
 					int expanderSize = (int) (12 * Zoom);
 					if (expanderSize < 3) expanderSize = 3;
 					if (expanderSize > 15) expanderSize = 15;
@@ -1901,10 +1907,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				Clear ();
 				store.Dispose ();
 				store = null;
-			}
-			if (customFont != null) {
-				customFont.Dispose ();
-				customFont = null;
 			}
 			
 			if (builders != null) {

@@ -1,3 +1,10 @@
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Don't
+	  use FontDesc to change the font of the text renderer, since
+	  it overrides the font weight specified using markup. Fixes
+	  bug #595975 - Start project is no longer highlighted.
+
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
