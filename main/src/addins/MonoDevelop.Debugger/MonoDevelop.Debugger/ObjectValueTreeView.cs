@@ -1355,6 +1355,12 @@ namespace MonoDevelop.Debugger
 			get {
 				return item.Name;
 			}
+		
+		}
+		public string DisplayDescription {
+			get {
+				return null;
+			}
 		}
 		
 		public CompletionCategory CompletionCategory  {
