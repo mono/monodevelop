@@ -241,7 +241,11 @@ namespace MonoDevelop.Ide.Execution
 			public override bool Equals (object obj)
 			{
 				CommandItem other = obj as CommandItem;
-				return other != null && other.Mode.Id == Mode.Id;
+				if (other == null)
+					return false;
+				if ((Mode == null || other.Mode == null) && Mode != other.Mode)
+					return false;
+				return other.Mode.Id == Mode.Id;
 			}
 			
 			public override int GetHashCode ()

@@ -1310,6 +1310,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.shadedContainer = shadedContainer;
 			shadedContainer.Add (this);
+			
+			PageAdded += delegate {
+				if (AreasChanged != null)
+					AreasChanged (this, EventArgs.Empty);
+			};
+			PageRemoved += delegate {
+				if (AreasChanged != null)
+					AreasChanged (this, EventArgs.Empty);
+			};
 		}
 		
 		public object GetNextCommandTarget ()
@@ -1338,21 +1347,6 @@ namespace MonoDevelop.Ide.Gui
 				rect.Height -= CurrentPageWidget.Allocation.Height;
 			yield return rect;
 		}
-		
-		protected override void OnPageAdded (Widget p0, uint p1)
-		{
-			base.OnPageAdded (p0, p1);
-			if (AreasChanged != null)
-				AreasChanged (this, EventArgs.Empty);
-		}
-		
-		protected override void OnPageRemoved (Widget p0, uint p1)
-		{
-			base.OnPageRemoved (p0, p1);
-			if (AreasChanged != null)
-				AreasChanged (this, EventArgs.Empty);
-		}
-		
 	}
 }
 
