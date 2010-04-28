@@ -145,7 +145,7 @@
 					defaultHandler = "MonoDevelop.Refactoring.ImportSymbolHandler"
 					_label = "Import Symbol..."
 					shortcut = "Control|Alt|space"
-					macShortcut = "Control|Meta|space" />
+					macShortcut = "Control|Alt|space" />
 					
 		</Category>
 	</Extension>
