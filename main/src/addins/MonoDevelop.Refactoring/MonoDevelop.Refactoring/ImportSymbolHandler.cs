@@ -123,19 +123,27 @@ namespace MonoDevelop.Refactoring
 				return type.StockIcon;
 			}
 		}
-		
+		string displayText = null;
 		public string DisplayText {
 			get {
-				return ambience.GetString (type, OutputFlags.IncludeGenerics);
+				if (displayText == null)
+					displayText = ambience.GetString (type, OutputFlags.IncludeGenerics);
+				return displayText;
 			}
 		}
 		
+		string displayDescription = null;
 		public string DisplayDescription {
 			get {
-				Initialize ();
-				if (generateUsing || insertNamespace)
-					return string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
-				return null;
+				if (displayDescription == null) {
+					Initialize ();
+					if (generateUsing || insertNamespace) {
+						displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
+					} else {
+						displayDescription = "";
+					}
+				}
+				return displayDescription;
 			}
 		}
 		
@@ -183,7 +191,8 @@ namespace MonoDevelop.Refactoring
 			
 			ProjectDom dom = ProjectDomService.GetProjectDom (doc.Project);
 			
-			ICompletionDataList completionList = new CompletionDataList ();
+			CompletionDataList completionList = new CompletionDataList ();
+			completionList.IsSorted = true;
 			foreach (IType type in dom.Types) {
 				completionList.Add (new ImportSymbolCompletionData (doc, dom, type));
 			}
