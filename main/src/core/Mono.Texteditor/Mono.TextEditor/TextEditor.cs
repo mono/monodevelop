@@ -280,6 +280,7 @@ namespace Mono.TextEditor
 			this.DoubleBuffered = true;
 			this.AppPaintable = false;
 			base.CanFocus = true;
+			this.RedrawOnAllocate = false;
 			WidgetFlags |= WidgetFlags.NoWindow;
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
@@ -1813,7 +1814,7 @@ namespace Mono.TextEditor
 					cr.Fill (); 
 					cr.Restore ();*/
 					
-					double scale = 1 + Percent / 6;
+					double scale = 1 + Percent / 12;
 					cr.Scale (scale, scale);
 					double textx = -rw / 2;
 					double texty = -rh / 2;
