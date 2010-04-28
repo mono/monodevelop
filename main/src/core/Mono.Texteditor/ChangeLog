@@ -1,5 +1,10 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 599633 -
+	  Convert to block selection includes unexpected line'.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: fixed block mode update.
 
 2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>

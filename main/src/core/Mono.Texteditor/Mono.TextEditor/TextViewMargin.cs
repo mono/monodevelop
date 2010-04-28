@@ -631,11 +631,11 @@ namespace Mono.TextEditor
 				if (textEditor.SelectionMode == SelectionMode.Block) {
 					DocumentLocation start = textEditor.MainSelection.Anchor;
 					DocumentLocation end = textEditor.MainSelection.Lead;
-
+					
 					DocumentLocation visStart = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), start);
 					DocumentLocation visEnd = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
-
-					if (segment.Contains (line.Offset) || segment.Contains (line.EndOffset)) {
+					int lineNumber = Document.OffsetToLineNumber (line.Offset);
+					if (textEditor.MainSelection.MinLine <= lineNumber && lineNumber <= textEditor.MainSelection.MaxLine) {
 						selectionStart = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Min (visStart.Column, visEnd.Column));
 						selectionEnd = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Max (visStart.Column, visEnd.Column));
 					}
