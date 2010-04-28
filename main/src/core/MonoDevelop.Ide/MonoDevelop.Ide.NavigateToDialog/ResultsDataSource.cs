@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			string descr = this[n].Description;
 			if (string.IsNullOrEmpty (descr))
 				return this[n].MarkupText;
-			return this[n].MarkupText + " <span foreground=\"darkgray\">(" + descr + ")</span>";
+			return this[n].MarkupText + " <span foreground=\"darkgray\">[" + descr + "]</span>";
 		}
 		
 		public string GetSelectedText (int n)
@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			string descr = this[n].Description;
 			if (string.IsNullOrEmpty (descr))
 				return GLib.Markup.EscapeText (this[n].PlainText);
-			return GLib.Markup.EscapeText (this[n].PlainText) + " (" + descr + ")";
+			return GLib.Markup.EscapeText (this[n].PlainText) + " [" + descr + "]";
 		}
 
 		public Pixbuf GetIcon (int n)

@@ -62,9 +62,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		ListView list;
 		
-		object matchLock = new object ();
-		string matchString = "";
-		
 		public NavigateToType NavigateToType {
 			get;
 			set;
@@ -166,7 +163,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			};
 		}
 		
-		Thread collectFiles, collectTypes, collectMembers;
+		Thread collectFiles, collectTypes;
 		void StartCollectThreads ()
 		{
 			StartCollectFiles ();
@@ -174,39 +171,29 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
-
-		void StartCollectMembers ()
-		{
-			collectMembers = new Thread (new ThreadStart (delegate {
-				getMembersTimer.BeginTiming ();
-				try {
-					members = new List<IMember> ();
-					foreach (IType type in types) {
-						foreach (IMember m in type.Members) {
-							if (m is IType)
-								continue;
-							members.Add (m);
-						}
-					}
-				} finally {
-					getMembersTimer.EndTiming ();
-				}
-			}));
-			collectMembers.IsBackground = true;
-			collectMembers.Name = "Navigate to: Collect Members";
-			collectMembers.Priority = ThreadPriority.Lowest;
-			collectMembers.Start ();
-		}
 		
 		void StartCollectTypes ()
 		{
 			collectTypes = new Thread (new ThreadStart (delegate {
 				types = GetTypes ();
-				if (isAbleToSearchMembers)
-					StartCollectMembers ();
+				if (isAbleToSearchMembers) {
+					getMembersTimer.BeginTiming ();
+					try {
+						members = new List<IMember> ();
+						foreach (IType type in types) {
+							foreach (IMember m in type.Members) {
+								if (m is IType)
+									continue;
+								members.Add (m);
+							}
+						}
+					} finally {
+						getMembersTimer.EndTiming ();
+					}
+				}
 			}));
 			collectTypes.IsBackground = true;
-			collectTypes.Name = "Navigate to: Collect Types";
+			collectTypes.Name = "Navigate to: Collect Types and members";
 			collectTypes.Priority = ThreadPriority.Lowest;
 			collectTypes.Start ();
 		}
@@ -276,11 +263,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			StopActiveSearch ();
 			
+			WaitForCollectFiles ();
+			WaitForCollectTypes ();
+			
 			string toMatch = matchEntry.Query.ToLower ();
-			lock (matchLock) {
-				matchString = toMatch;
-				savedMatches.Clear ();
-			}
 			
 			if (string.IsNullOrEmpty (toMatch)) {
 				list.DataSource = new ResultsDataSource ();
@@ -295,6 +281,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			searchWorker = new System.ComponentModel.BackgroundWorker  ();
 			searchWorker.WorkerSupportsCancellation = true;
+			searchWorker.WorkerReportsProgress = false;
 			searchWorker.DoWork += SearchWorker;
 			
 			searchWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
@@ -309,7 +296,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				});
 			};
 			
-			searchWorker.RunWorkerAsync (new KeyValuePair<string, WorkerResult> (matchString, lastResult));
+			searchWorker.RunWorkerAsync (new KeyValuePair<string, WorkerResult> (toMatch, lastResult));
 		}
 		
 		class WorkerResult 
@@ -320,6 +307,59 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			public string pattern = null;
 			public ResultsDataSource results = new ResultsDataSource ();
+			
+			public bool IncludeFiles, IncludeTypes, IncludeMembers;
+			
+			internal SearchResult CheckFile (ProjectFile file, string toMatch)
+			{
+				int rank;
+				string matchString = System.IO.Path.GetFileName (file.FilePath);
+				if (MatchName (matchString, toMatch, out rank)) 
+					return new FileSearchResult (toMatch, matchString, rank, file, true);
+				
+				matchString = FileSearchResult.GetRelProjectPath (file);
+				if (MatchName (FileSearchResult.GetRelProjectPath (file), toMatch, out rank)) 
+					return new FileSearchResult (toMatch, matchString, rank, file, false);
+				
+				return null;
+			}
+			
+			internal SearchResult CheckType (IType type, string toMatch)
+			{
+				int rank;
+				if (MatchName (type.Name, toMatch, out rank))
+					return new TypeSearchResult (toMatch, type.Name, rank, type, false);
+				if (MatchName (type.FullName, toMatch, out rank))
+					return new TypeSearchResult (toMatch, type.FullName, rank, type, true);
+				return null;
+			}
+			
+			internal SearchResult CheckMember (IMember member, string toMatch)
+			{
+				int rank;
+				string memberName = (member is IMethod && ((IMethod)member).IsConstructor) ? member.DeclaringType.Name : member.Name;
+				if (!MatchName (memberName, toMatch, out rank))
+					return null;
+				return new MemberSearchResult (toMatch, memberName, rank, member);
+			}
+			
+			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
+			bool MatchName (string name, string toMatch, out int matchRank)
+			{
+				MatchResult savedMatch;
+				if (!savedMatches.TryGetValue (name, out savedMatch)) {
+					if (MonoDevelop.Ide.CodeCompletion.ListWidget.Matches (toMatch, name)) {
+						CalcMatchRank (name, toMatch, out matchRank);
+						savedMatch = new MatchResult (true, matchRank);
+					} else {
+						savedMatch = new MatchResult (false, int.MinValue);
+					}
+					savedMatches[name] = savedMatch;
+				}
+				
+				matchRank = savedMatch.Rank;
+				return savedMatch.Match;
+			}
 		}
 		
 		IEnumerable<ProjectFile> files;
@@ -337,6 +377,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			WorkerResult newResult = new WorkerResult ();
 			newResult.pattern = arg.Key;
+			newResult.IncludeFiles = (NavigateToType & NavigateToType.Files) == NavigateToType.Files;
+			newResult.IncludeTypes = (NavigateToType & NavigateToType.Types) == NavigateToType.Types;
+			newResult.IncludeMembers = (NavigateToType & NavigateToType.Members) == NavigateToType.Members;
 			
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
 				if (worker.CancellationPending)
@@ -361,15 +404,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				toMatch = toMatch.Substring (0,i);
 			
 			// Search files
-			if ((NavigateToType & NavigateToType.Files) == NavigateToType.Files) {
-				WaitForCollectFiles ();
+			if (newResult.IncludeFiles) {
 				newResult.filteredFiles = new List<ProjectFile> ();
 				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
 				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
 				foreach (ProjectFile file in allFiles) {
 					if (worker.CancellationPending) 
 						yield break;
-					SearchResult curResult = CheckFile (file, toMatch);
+					SearchResult curResult = newResult.CheckFile (file, toMatch);
 					if (curResult != null) {
 						newResult.filteredFiles.Add (file);
 						yield return curResult;
@@ -378,15 +420,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 			
 			// Search Types
-			if ((NavigateToType & NavigateToType.Types) == NavigateToType.Types) {
-				WaitForCollectTypes ();
+			if (newResult.IncludeTypes) {
 				newResult.filteredTypes = new List<IType> ();
 				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
 				List<IType> allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (IType type in allTypes) {
 					if (worker.CancellationPending)
 						yield break;
-					SearchResult curResult = CheckType (type, toMatch);
+					SearchResult curResult = newResult.CheckType (type, toMatch);
 					if (curResult != null) {
 						newResult.filteredTypes.Add (type);
 						yield return curResult;
@@ -395,32 +436,22 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 			
 			// Search members
-			if ((NavigateToType & NavigateToType.Members) == NavigateToType.Members) {
-				WaitForCollectMembers ();
+			if (newResult.IncludeMembers) {
 				newResult.filteredMembers = new List<IMember> ();
 				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
 				List<IMember> allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
 				foreach (IMember member in allMembers) {
 					if (worker.CancellationPending)
 						yield break;
-					SearchResult curResult = CheckMember (member, toMatch);
+					SearchResult curResult = newResult.CheckMember (member, toMatch);
 					if (curResult != null) {
 						newResult.filteredMembers.Add (member);
 						yield return curResult;
 					}
 				}
 			}
-			
 		}
 		
-		void WaitForCollectMembers ()
-		{
-			WaitForCollectTypes ();
-			if (collectMembers != null) {
-				collectMembers.Join ();
-				collectMembers = null;
-			}
-		}
 		
 		void WaitForCollectTypes ()
 		{
@@ -514,38 +545,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				AddType (ct, list);
 		}
 		
-		SearchResult CheckFile (ProjectFile file, string toMatch)
-		{
-			int rank;
-			string matchString = System.IO.Path.GetFileName (file.FilePath);
-			if (MatchName (matchString, toMatch, out rank)) 
-				return new FileSearchResult (toMatch, matchString, rank, file, true);
-			
-			matchString = FileSearchResult.GetRelProjectPath (file);
-			if (MatchName (FileSearchResult.GetRelProjectPath (file), toMatch, out rank)) 
-				return new FileSearchResult (toMatch, matchString, rank, file, false);
-			
-			return null;
-		}
-		
-		SearchResult CheckType (IType type, string toMatch)
-		{
-			int rank;
-			if (MatchName (type.Name, toMatch, out rank))
-				return new TypeSearchResult (toMatch, type.Name, rank, type, false);
-			if (MatchName (type.FullName, toMatch, out rank))
-				return new TypeSearchResult (toMatch, type.FullName, rank, type, true);
-			return null;
-		}
-		
-		SearchResult CheckMember (IMember member, string toMatch)
-		{
-			int rank;
-			string memberName = (member is IMethod && ((IMethod)member).IsConstructor) ? member.DeclaringType.Name : member.Name;
-			if (!MatchName (memberName, toMatch, out rank))
-				return null;
-			return new MemberSearchResult (toMatch, memberName, rank, member);
-		}
 		
 		struct MatchResult 
 		{
@@ -559,24 +558,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
 		
-		bool MatchName (string name, string toMatch, out int matchRank)
-		{
-			MatchResult savedMatch;
-			if (!savedMatches.TryGetValue (name, out savedMatch)) {
-				if (MonoDevelop.Ide.CodeCompletion.ListWidget.Matches (toMatch, name)) {
-					CalcMatchRank (name, toMatch, out matchRank);
-					savedMatch = new MatchResult (true, matchRank);
-				} else {
-					savedMatch = new MatchResult (false, int.MinValue);
-				}
-				savedMatches[name] = savedMatch;
-			}
-			
-			matchRank = savedMatch.Rank;
-			return savedMatch.Match;
-		}
 		
 		static bool CalcMatchRank (string name, string toMatch, out int matchRank)
 		{

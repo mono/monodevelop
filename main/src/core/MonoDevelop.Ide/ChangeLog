@@ -1,5 +1,11 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:
+	* MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs:
+	  Ensured that the workers are working on a non-shared state.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs:
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:
 	* MonoDevelop.Ide.CodeCompletion/CompletionData.cs:
