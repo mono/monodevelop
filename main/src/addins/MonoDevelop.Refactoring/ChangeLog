@@ -1,3 +1,12 @@
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Refactoring.csproj:
+	* MonoDevelop.Refactoring.addin.xml:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Implemented
+	  'Bug 596515 - Import Symbol completion command'.
+
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/QuickFixHandler.cs: track API

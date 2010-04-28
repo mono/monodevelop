@@ -47,6 +47,7 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.RefactorImports;
 using MonoDevelop.Ide;
 using System.Linq;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Refactoring
 {
@@ -64,8 +65,12 @@ namespace MonoDevelop.Refactoring
 		ExtractMethod,
 		CreateMethod,
 		IntroduceConstant,
-		IntegrateTemporaryVariable
+		IntegrateTemporaryVariable,
+		ImportSymbol
 	}
+	
+	
+	
 	
 	public class CurrentRefactoryOperationsHandler: CommandHandler
 	{

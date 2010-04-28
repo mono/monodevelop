@@ -140,6 +140,13 @@
 					defaultHandler = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableHandler"
 					_label = "Integrate Temporary Variable"
 					shortcut = "Control|Alt|I" />
+					
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ImportSymbol"
+					defaultHandler = "MonoDevelop.Refactoring.ImportSymbolHandler"
+					_label = "Import Symbol..."
+					shortcut = "Control|Alt|space"
+					macShortcut = "Control|Meta|space" />
+					
 		</Category>
 	</Extension>
 	

@@ -128,6 +128,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

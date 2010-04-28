@@ -83,6 +83,7 @@ FILES =  \
 	MonoDevelop.Refactoring/FindReferencesHandler.cs \
 	MonoDevelop.Refactoring/GotoDeclarationHandler.cs \
 	MonoDevelop.Refactoring/HelperMethods.cs \
+	MonoDevelop.Refactoring/ImportSymbolHandler.cs \
 	MonoDevelop.Refactoring/INRefactoryASTProvider.cs \
 	MonoDevelop.Refactoring/OverridesImplementsDialog.cs \
 	MonoDevelop.Refactoring/QuickFixHandler.cs \
