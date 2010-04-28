@@ -1,3 +1,9 @@
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Src\PrettyPrinter\AbstractOutputFormatter.cs:
+	* Src\PrettyPrinter\AbstractPrettyPrintOptions.cs: Allow
+	  specifying the EOL marker.
+
 2010-04-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Parser/CSharp/cs.ATG:

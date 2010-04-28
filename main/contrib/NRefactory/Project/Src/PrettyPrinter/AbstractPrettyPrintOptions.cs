@@ -15,6 +15,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		char indentationChar = '\t';
 		int  tabSize         = 4;
 		int  indentSize      = 4;
+		string eolMarker     = System.Environment.NewLine;
 		
 		public char IndentationChar {
 			get {
@@ -42,5 +43,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				indentSize = value;
 			}
 		}
-	}
+        
+		public string EolMarker {
+			get {
+				return eolMarker;
+			}
+			set {
+				eolMarker = value;
+			}
+		}
+    }
 }

@@ -124,7 +124,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				if (!LastCharacterIsNewLine) {
 					lineBeforeLastStart = lastLineStart;
 				}
-				text.AppendLine();
+				text.Append(prettyPrintOptions.EolMarker);
 				lastLineStart = text.Length;
 				isIndented = false;
 			}
