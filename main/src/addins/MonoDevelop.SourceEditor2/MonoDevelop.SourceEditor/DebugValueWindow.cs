@@ -69,7 +69,9 @@ namespace MonoDevelop.SourceEditor
 		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch)
 		{
 			TransientFor = (Gtk.Window) editor.Toplevel;
-			AcceptFocus = true;
+			
+			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
+			AcceptFocus = false;
 			
 			sw = new ScrolledWindow ();
 			sw.HscrollbarPolicy = PolicyType.Never;
@@ -106,14 +108,15 @@ namespace MonoDevelop.SourceEditor
 			tree.EndEditing += delegate {
 				Modal = false;
 			};
-
-			// Avoid getting the focus when the window is shown, but allow it after a short wait.
-			AcceptFocus = false;
-			GLib.Timeout.Add (200, delegate {
-				AcceptFocus = true;
-				return false;
-			});
 		}
+		
+		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		{
+			if (!AcceptFocus)
+				AcceptFocus = true;
+			return base.OnEnterNotifyEvent (evnt);
+		}
+		
 		
 		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)
 		{
