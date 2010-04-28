@@ -528,7 +528,6 @@ namespace MonoDevelop.CSharp.Completion
 						result = FindExpression (dom, completionContext, -1);
 						if (result == null)
 							return null;
-						
 						if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 							triggerWordLength = 1;
 							bool autoSelect = true;
@@ -544,6 +543,8 @@ namespace MonoDevelop.CSharp.Completion
 									}
 								}
 							}
+							if (result.ExpressionContext == ExpressionContext.TypeName)
+								autoSelect = false;
 							CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
 							dataList.AutoSelect = autoSelect;
 							return dataList;
@@ -663,7 +664,6 @@ namespace MonoDevelop.CSharp.Completion
 			case '<':
 				if (string.IsNullOrEmpty (result.Expression))
 					return null;
-				Console.WriteLine (result.Expression);
 				return new NRefactoryTemplateParameterDataProvider (Editor, resolver, GetUsedNamespaces (), result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 			case '[': {
 				ResolveResult resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));

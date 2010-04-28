@@ -1,5 +1,11 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  fixed 'Bug 599632 – Completion list should be in suggest
+	  mode for generic parameter declaration'.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/CodeGenerator.cs: Fixed 'Bug
 	  599627 - Implement implicit interface generated wrong code'.
 
