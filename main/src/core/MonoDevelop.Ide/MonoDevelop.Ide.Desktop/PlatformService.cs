@@ -294,7 +294,9 @@ namespace MonoDevelop.Ide.Desktop
 			info.FileAccessPermissions = (FileAccessPermissions)attributes;
 		}
 		
-		public virtual IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
+		public virtual IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		                                                           IDictionary<string, string> environmentVariables, 
+		                                                           string title, bool pauseWhenFinished)
 		{
 			return null;
 		}

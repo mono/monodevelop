@@ -1,3 +1,8 @@
+2010-04-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Desktop/PlatformService.cs: Track API, build
+	  build.
+
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* BuildVariables.cs: Require Mono 2.6.1. Updated version
