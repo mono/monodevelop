@@ -1,5 +1,9 @@
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* monodevelop-core-addins.pc.in: Add Mono.Debugger.Soft.dll.
+
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* configure.in: Require Mono 2.6.1. Updated version label.
 
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
