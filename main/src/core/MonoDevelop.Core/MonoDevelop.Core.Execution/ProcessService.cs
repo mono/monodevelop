@@ -180,25 +180,28 @@ namespace MonoDevelop.Core.Execution
 			return startInfo;
 		}
 		
-		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console, EventHandler exited)
+		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console,
+		                                                   EventHandler exited)
 		{
 			return StartConsoleProcess (command, arguments, workingDirectory, null, console, exited);
 		}
 		
-		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
+		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		                                                   IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
 			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
-				ProcessStartInfo epsi = new ProcessStartInfo (command, arguments);
-				epsi.WorkingDirectory = workingDirectory;
 				
+				var dict = new Dictionary<string,string> ();
 				if (environmentVariables != null)
-					foreach (KeyValuePair<string, string> kvp in environmentVariables)
-						epsi.EnvironmentVariables[kvp.Key] = kvp.Value;
+					foreach (var kvp in environmentVariables)
+						dict[kvp.Key] = kvp.Value;
+				if (environmentVariableOverrides != null)
+					foreach (var kvp in environmentVariables)
+						dict[kvp.Key] = kvp.Value;
 				
-				ProcessEnvironmentVariableOverrides (epsi);
-				
-				IProcessAsyncOperation p = externalConsoleHandler (epsi, GettextCatalog.GetString ("MonoDevelop External Console"), 
-				                                                   console != null ? !console.CloseOnDispose : false);
+				var p = externalConsoleHandler (command, arguments, workingDirectory, dict,
+				                                GettextCatalog.GetString ("MonoDevelop External Console"), 
+				                                console != null ? !console.CloseOnDispose : false);
 
 				if (p != null) {
 					if (exited != null) {
@@ -444,5 +447,5 @@ namespace MonoDevelop.Core.Execution
 		}
 	}
 	
-	public delegate IProcessAsyncOperation ExternalConsoleHandler (ProcessStartInfo psi, string title, bool pauseWhenFinished);
+	public delegate IProcessAsyncOperation ExternalConsoleHandler (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished);
 }

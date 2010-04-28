@@ -141,7 +141,8 @@ namespace MonoDevelop.Platform
 				string icon = null;
 				Gnome.IconLookupResultFlags result;
 				try {
-					icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, Gnome.IconLookupFlags.None, out result);
+					icon = Gnome.Icon.LookupSync (IconTheme.Default, thumbnailFactory, filename, null, 
+					                              Gnome.IconLookupFlags.None, out result);
 				} catch {}
 				if (icon != null && icon.Length > 0)
 					return icon;
@@ -183,17 +184,20 @@ namespace MonoDevelop.Platform
 		bool terminal_probed;
 		TerminalRunnerHandler runner;
 		
-		public override IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
+		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		                                                            IDictionary<string, string> environmentVariables, 
+		                                                            string title, bool pauseWhenFinished)
 		{
 			ProbeTerminal ();
 			
-			string exec = runner (psi.FileName, psi.Arguments, psi.WorkingDirectory, title, pauseWhenFinished);
+			string exec = runner (command, arguments, workingDirectory, title, pauseWhenFinished);
+			var psi = new ProcessStartInfo (terminal_command, exec) {
+				CreateNoWindow = true,
+				UseShellExecute = false,
+			};
+			foreach (var env in environmentVariables)
+				psi.EnvironmentVariables [env.Key] = env.Value;
 			
-			psi.FileName = terminal_command;
-			psi.Arguments = exec;
-			psi.CreateNoWindow = true;
-			psi.UseShellExecute = false;
-
 			ProcessWrapper proc = new ProcessWrapper ();
 			proc.StartInfo = psi;
 			proc.Start ();

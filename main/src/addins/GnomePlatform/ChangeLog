@@ -1,3 +1,7 @@
+2010-04-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* GnomePlatform.cs: Track StartConsoleProcess API.
+
 2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GnomePlatform.cs: External console processes are now wrapped

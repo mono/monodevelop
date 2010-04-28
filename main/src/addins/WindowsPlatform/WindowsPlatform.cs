@@ -113,19 +113,23 @@ namespace MonoDevelop.Platform
 			ms.Position = 0;
 			return new Gdk.Pixbuf (ms);
 		}
-
-        public override IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
-        {
-            string args = "/C \"title " + title + " && \"" + psi.FileName + "\" " + psi.Arguments;
-            if (pauseWhenFinished)
-                args += " && pause\"";
-            else
-                args += "\"";
+		
+		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		                                                            IDictionary<string, string> environmentVariables, 
+		                                                            string title, bool pauseWhenFinished)
+		{
+			string args = "/C \"title " + title + " && \"" + psi.FileName + "\" " + psi.Arguments;
+			if (pauseWhenFinished)
+			    args += " && pause\"";
+			else
+			    args += "\"";
 			
-			psi.Arguments = args;
-			psi.FileName = "cmd.exe";
-			psi.CreateNoWindow = true;
-
+			var psi = new ProcessStartInfo ("cmd.exe", args) {
+				CreateNoWindow = true
+			};
+			foreach (var env in environmentVariables)
+				psi.EnvironmentVariables [env.Key] = env.Value;
+			
 			ProcessWrapper proc = new ProcessWrapper ();
 			proc.StartInfo = psi;
 			proc.Start ();
