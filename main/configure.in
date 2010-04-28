@@ -7,7 +7,7 @@ AM_MAINTAINER_MODE
 AC_SUBST(ACLOCAL_FLAGS)
 
 ASSEMBLY_VERSION=2.4.0.0
-PACKAGE_VERSION_LABEL="2.4 Alpha 1"
+PACKAGE_VERSION_LABEL="2.4 Beta 1"
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
@@ -77,7 +77,7 @@ if test "x$MSGMERGE" = "xno"; then
         AC_MSG_ERROR([You need to install msgmerge from intltool])
 fi
 
-MONO_REQUIRED_VERSION=2.4.2
+MONO_REQUIRED_VERSION=2.6.1
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 
 if test "x$has_mono" = "xfalse"; then

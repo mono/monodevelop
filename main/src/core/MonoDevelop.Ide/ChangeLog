@@ -1,5 +1,10 @@
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* BuildVariables.cs: Require Mono 2.6.1. Updated version
+	  label.
+
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide\IdeStartup.cs: Add missing unchecked block.
 
 2010-04-28  Mike Krüger  <mkrueger@novell.com>

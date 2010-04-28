@@ -1,3 +1,7 @@
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Require Mono 2.6.1. Updated version label.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Bumped MD version.
