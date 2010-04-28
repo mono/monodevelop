@@ -736,7 +736,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			string result = base.GenerateCodeFromMember (member);
 			// workaround for Bug 434240 - Cannot explicitly implement events
 			if (member is CodeMemberEvent) {
-				if (((CodeMemberEvent)member).Type != null) {
+				CodeTypeReference codeTypeReference = ((CodeMemberEvent)member).PrivateImplementationType;
+				if (codeTypeReference != null) {
+					result = result.TrimEnd (' ', '\t', '\n', '\r');
 					result = result.Substring (0, result.Length - 1) + " {" + Environment.NewLine +
 						"\tadd { /* TODO */ }" + Environment.NewLine +
 						"\tremove { /* TODO */ }" + Environment.NewLine +

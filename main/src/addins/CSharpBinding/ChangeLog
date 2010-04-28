@@ -1,3 +1,8 @@
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/CodeGenerator.cs: Fixed 'Bug
+	  599627 - Implement implicit interface generated wrong code'.
+
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: fixed
