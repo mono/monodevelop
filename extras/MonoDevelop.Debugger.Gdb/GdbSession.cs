@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger.Gdb
 		Process proc;
 		StreamReader sout;
 		StreamWriter sin;
-		ProcessWrapper console;
+		IProcessAsyncOperation console;
 		GdbCommandResult lastResult;
 		bool running;
 		Thread thread;
@@ -182,8 +182,8 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		public override void Dispose ()
 		{
-			if (console != null && !console.HasExited) {
-				console.Kill ();
+			if (console != null && !console.IsCompleted) {
+				console.Cancel ();
 				console = null;
 			}
 				
