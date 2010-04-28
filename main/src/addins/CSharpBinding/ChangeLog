@@ -1,5 +1,10 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs: Track
+	  API changes.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  fixed 'Bug 600273 - as/is completion too restrictive'.
 

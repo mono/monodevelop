@@ -77,6 +77,11 @@ namespace MonoDevelop.CSharp.Completion
 				return displayText; 
 			}
 		}
+		public string DisplayDescription {
+			get {
+				return null;
+			}
+		}
 		
 		public IconId Icon {
 			get {
