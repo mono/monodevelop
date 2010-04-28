@@ -491,6 +491,7 @@ namespace MonoDevelop.CSharp.Formatting
 			outputVisitor.Options.IndentationChar = currentPolicy.TabsToSpaces ? ' ' : '\t';
 			outputVisitor.Options.TabSize = currentPolicy.TabWidth;
 			outputVisitor.Options.IndentSize = currentPolicy.TabWidth;
+			outputVisitor.Options.EolMarker = TextStylePolicy.GetEolMarker(currentPolicy.EolMarker);
 
 			CodeFormatDescription descr = CSharpFormattingPolicyPanel.CodeFormatDescription;
 			Type optionType = outputVisitor.Options.GetType ();
