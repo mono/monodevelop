@@ -1,3 +1,9 @@
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* TestBase.cs:
+	* MonoDevelop.Projects\SolutionTests.cs: Fix Windows
+	  compatibility issues.
+
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/DomPersistenceTests.cs: track api

@@ -161,6 +161,8 @@ namespace MonoDevelop.Projects
 				nameChanges++;
 			};
 			
+			string tmp = Path.GetTempPath ();
+
 			sol.Name = "test1";
 			Assert.AreEqual ("test1", sol.Name);
 			Assert.AreEqual ("test1.sln", (string) sol.FileName);
@@ -171,19 +173,19 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("test2.sln", (string) sol.FileName);
 			Assert.AreEqual (2, nameChanges);
 			
-			sol.FileName = "/tmp/test3.sln";
+			sol.FileName = Path.Combine (tmp, "test3.sln");
 			Assert.AreEqual ("test3", sol.Name);
-			Assert.AreEqual ("/tmp/test3.sln", (string) sol.FileName);
+			Assert.AreEqual (Path.Combine (tmp, "test3.sln"), (string) sol.FileName);
 			Assert.AreEqual (3, nameChanges);
 			
 			sol.Name = "test4";
 			Assert.AreEqual ("test4", sol.Name);
-			Assert.AreEqual ("/tmp/test4.sln", (string) sol.FileName);
+			Assert.AreEqual (Path.Combine (tmp, "test4.sln"), (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
 			sol.ConvertToFormat (Util.FileFormatMD1, true);
 			Assert.AreEqual ("test4", sol.Name);
-			Assert.AreEqual ("/tmp/test4.mds", (string) sol.FileName);
+			Assert.AreEqual (Path.Combine (tmp, "test4.mds"), (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
 		}
 		
@@ -207,19 +209,20 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("test2.csproj", (string) prj.FileName);
 			Assert.AreEqual (2, nameChanges);
 			
-			prj.FileName = "/tmp/test3.csproj";
+			string fname = Path.Combine (Path.GetTempPath (), "test3.csproj");
+			prj.FileName = fname;
 			Assert.AreEqual ("test3", prj.Name);
-			Assert.AreEqual ("/tmp/test3.csproj", (string) prj.FileName);
+			Assert.AreEqual (fname, (string) prj.FileName);
 			Assert.AreEqual (3, nameChanges);
 			
 			prj.Name = "test4";
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.csproj", (string) prj.FileName);
+			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
 			prj.FileFormat = Util.FileFormatMD1;
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.mdp", (string) prj.FileName);
+			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.mdp"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			Assert.AreEqual ("MD1", prj.FileFormat.Id);
 			
@@ -227,7 +230,7 @@ namespace MonoDevelop.Projects
 			Solution sol = new Solution ();
 			sol.RootFolder.Items.Add (prj);
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.csproj", (string) prj.FileName);
+			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			Assert.AreEqual ("MSBuild05", prj.FileFormat.Id);
 
@@ -235,7 +238,7 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.Items.Remove (prj);
 			Assert.AreEqual ("MSBuild05", prj.FileFormat.Id);
 			Assert.AreEqual ("test4", prj.Name);
-			Assert.AreEqual ("/tmp/test4.csproj", (string) prj.FileName);
+			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 		}
 		
@@ -357,6 +360,8 @@ namespace MonoDevelop.Projects
 			// Build the project and the references
 			
 			BuildResult res = p.Build (Util.GetMonitor (), config, true);
+			foreach (BuildError er in res.Errors)
+				Console.WriteLine (er.ToString ());
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (3, res.BuildCount);
@@ -365,11 +370,11 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (lib2.NeedsBuilding (config));
 			
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs-mdp.exe"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 			
 			// Build the project, but not the references
 			
@@ -418,21 +423,21 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (3, res.BuildCount);
 			
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs-mdp.exe"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 			
 			// Clean the workspace
 			
 			ws.Clean (Util.GetMonitor (), "Debug");
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
-			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs-mdp.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 			
 			// Build the solution
 			
@@ -442,21 +447,21 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (3, res.BuildCount);
 			
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
-			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs-mdp.exe"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 			
 			// Clean the solution
 			
 			sol.Clean (Util.GetMonitor (), "Debug");
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
-			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs-mdp.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 			
 			// Build the solution folder
 			
@@ -466,17 +471,17 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, res.BuildCount);
 			
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
-			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs-mdp.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", GetMdb ("library1.dll"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+			Assert.IsTrue (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 			
 			// Clean the solution folder
 			
 			folder.Clean (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
-			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll.mdb")));
+			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 		}
 		
 		[Test()]
