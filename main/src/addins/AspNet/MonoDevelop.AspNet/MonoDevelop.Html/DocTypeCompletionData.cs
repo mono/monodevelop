@@ -60,6 +60,13 @@ namespace MonoDevelop.Html
 			get { return name; }
 		}
 		
+		public string DisplayDescription {
+			get {
+				return null;
+			}
+		}
+		
+		
 		public string CompletionText {
 			get { return name; }
 		}

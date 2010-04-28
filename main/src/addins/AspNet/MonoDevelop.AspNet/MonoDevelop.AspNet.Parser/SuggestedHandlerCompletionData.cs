@@ -65,6 +65,12 @@ namespace MonoDevelop.AspNet.Parser
 			get { return methodInfo.Name; }
 		}
 
+		public string DisplayDescription {
+			get {
+				return null;
+			}
+		}
+		
 		public string Description {
 			get {
 				//NOTE: code completion window emphasises first line, so is translated separately

@@ -95,6 +95,12 @@ namespace MonoDevelop.Html
 				get { return pathFunc (file); }
 			}
 			
+			public string DisplayDescription {
+				get {
+					return null;
+				}
+			}
+			
 			public DisplayFlags DisplayFlags {
 				get { return DisplayFlags.None; }
 			}
@@ -132,6 +138,12 @@ namespace MonoDevelop.Html
 			
 			public string Description {
 				get { return GettextCatalog.GetString ("Choose a file from the project.");; }
+			}
+			
+			public string DisplayDescription {
+				get {
+					return null;
+				}
 			}
 			
 			public string CompletionText {
