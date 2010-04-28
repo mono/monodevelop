@@ -88,7 +88,7 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			generateUsing = true;
-			string name = type.DecoratedFullName.Substring (type.Namespace.Length);
+			string name = type.DecoratedFullName.Substring (type.Namespace.Length + 1);
 			
 			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
 				foreach (string ns in u.Namespaces) {
@@ -107,7 +107,7 @@ namespace MonoDevelop.Refactoring
 			Initialize ();
 			string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
 			data.Replace (context.TriggerOffset, data.Caret.Offset - context.TriggerOffset, text);
-			data.Caret.Offset = context.TriggerOffset + CompletionText.Length;
+			data.Caret.Offset = context.TriggerOffset + text.Length;
 			if (generateUsing) {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				refactorer.AddGlobalNamespaceImport (dom, data.Document.FileName, type.Namespace);
