@@ -1,5 +1,10 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Generate
+	  descriptions for the types to insert.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: fixed
 	  'Bug 599635 - In-place rename should select name'.
 

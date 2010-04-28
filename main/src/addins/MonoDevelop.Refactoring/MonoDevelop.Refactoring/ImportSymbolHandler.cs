@@ -78,6 +78,8 @@ namespace MonoDevelop.Refactoring
 				return;
 			initialized = true;
 			insertNamespace = false;
+			if (string.IsNullOrEmpty (type.Namespace))
+				return;
 			DomLocation location = new DomLocation (data.Caret.Line, data.Caret.Column);
 			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
 				if (u.Namespaces.Any (ns => type.Namespace == ns)) {
@@ -128,13 +130,21 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
+		public string DisplayDescription {
+			get {
+				Initialize ();
+				if (generateUsing || insertNamespace)
+					return string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
+				return null;
+			}
+		}
+		
 		public string Description {
 			get {
 				Initialize ();
-				if (generateUsing) {
+				if (generateUsing)
 					return string.Format (GettextCatalog.GetString ("Add namespace import '{0}'"), type.Namespace);
-				} 
-				return null;;
+				return null;
 			}
 		}
 		
