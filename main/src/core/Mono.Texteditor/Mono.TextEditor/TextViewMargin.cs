@@ -1686,6 +1686,8 @@ namespace Mono.TextEditor
 			if ((args.ModifierState & blockSelModifier) != 0) {
 				textEditor.SelectionMode = SelectionMode.Block;
 			} else {
+				if (textEditor.SelectionMode == SelectionMode.Block)
+					Document.CommitMultipleLineUpdate (textEditor.MainSelection.MinLine, textEditor.MainSelection.MaxLine);
 				textEditor.SelectionMode = SelectionMode.Normal;
 			}
 			inSelectionDrag = true;
