@@ -70,6 +70,10 @@ namespace MonoDevelop.Ide.Gui
 			get;
 			set;
 		}
+		
+		public TextEditorExtension EditorExtension {
+			get { return this.editorExtension; }
+		}
  		
 		public object GetContent (Type type)
 		{

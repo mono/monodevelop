@@ -46,10 +46,19 @@ namespace MonoDevelop.Ide.Gui.Content
 		bool autoHideCompletionWindow = true;
 		bool enableCodeCompletion = false;
 		bool enableParameterInsight = false;
+		
 		protected ICompletionWidget CompletionWidget {
 			get {
 				return completionWidget;
 			}
+		}
+		
+		public void ShowCompletion (ICompletionDataList completionList)
+		{
+			completionWidget = Document.GetContent <ICompletionWidget> ();
+			currentCompletionContext = completionWidget.CreateCodeCompletionContext (Document.TextEditorData.Caret.Offset);
+			
+			CompletionWindowManager.ShowWindow ('\0', completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 		}
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.

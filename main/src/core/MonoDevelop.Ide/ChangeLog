@@ -1,5 +1,11 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  It's now possible to do custom code completion popups.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Changed shortcut.
 
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
