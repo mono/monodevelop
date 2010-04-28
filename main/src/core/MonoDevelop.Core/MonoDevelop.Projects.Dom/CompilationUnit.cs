@@ -129,6 +129,12 @@ namespace MonoDevelop.Projects.Dom
 			usings.Add (newUsing);
 		}
 		
+		public void AddAtTop (IUsing newUsing)
+		{
+			usings.Insert (0, newUsing);
+		}
+		
+		
 		public void Add (IAttribute newAttribute)
 		{
 			attributes.Add (newAttribute);
