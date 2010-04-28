@@ -274,13 +274,23 @@ namespace MonoDevelop.Ide.CodeTemplates
 		}
 
 		
-		public string IndentCode (string code, string indent)
+		public string IndentCode (string code, string eol, string indent)
 		{
 			StringBuilder result = new StringBuilder ();
 			for (int i = 0; i < code.Length; i++) {
-				result.Append (code[i]);
-				if (code[i] == '\n')
+				switch (code[i]) {
+				case '\r':
+					if (i + 1 < code.Length && code[i + 1] == '\n')
+						i++;
+					goto case '\n';
+				case '\n':
+					result.Append (eol);
 					result.Append (indent);
+					break;
+				default:
+					result.Append (code[i]);
+					break;
+				}
 			}
 			return result.ToString ();
 		}
@@ -364,7 +374,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				ParsedDocument = doc,
 				InsertPosition = new DomLocation (line, col),
 				LineIndent = GetIndent (editor, line, 0),
-				TemplateCode = IndentCode (Code, GetIndent (editor, line, 0))
+				TemplateCode = IndentCode (Code, document.TextEditorData.EolMarker, GetIndent (editor, line, 0))
 			};
 
 			if (data.IsSomethingSelected) {
@@ -388,12 +398,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			TemplateResult template = FillVariables (context);
 			template.InsertPosition = offset;
-			editor.InsertText (offset, template.Code);
+			document.TextEditorData.Insert (offset, template.Code);
 			
 			if (template.CaretEndOffset >= 0) {
-				editor.CursorPosition = offset + template.CaretEndOffset; 
+				document.TextEditorData.Caret.Offset = offset + template.CaretEndOffset; 
 			} else {
-				editor.CursorPosition = offset + template.Code.Length; 
+				document.TextEditorData.Caret.Offset= offset + template.Code.Length; 
 			}
 			return template;
 		}

@@ -1,3 +1,9 @@
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Fixed 'Bug
+	  599684 - Wrong text link in the 2,3,etc lines of the
+	  template'.
+
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
