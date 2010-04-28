@@ -214,6 +214,10 @@ namespace MonoDevelop.ValaBinding
 		public string DisplayText {
 			get { return text; }
 		}
+
+		public string DisplayDescription {
+			get { return null; }
+		}
 		
 		public string Description {
 			get { return description; }
