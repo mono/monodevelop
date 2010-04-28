@@ -63,7 +63,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		ICompletionDataList completionDataList;
 		public ICompletionDataList CompletionDataList {
 			get { return this.completionDataList; }
-			set { this.completionDataList = value; }
+			set {
+				this.completionDataList = value;
+				
+			}
 		}
 		
 		public CompletionListWindow ()
@@ -557,6 +560,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		string IListDataProvider.GetText (int n)
 		{
 			return completionDataList[n].DisplayText;
+		}
+		
+		string IListDataProvider.GetDescription (int n)
+		{
+			return completionDataList[n].DisplayDescription;
 		}
 		
 		bool IListDataProvider.HasMarkup (int n)

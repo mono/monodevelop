@@ -70,6 +70,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string DisplayText { get; set; }
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
+		public virtual string DisplayDescription { get; set; }
 		public virtual CompletionCategory CompletionCategory { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
 		

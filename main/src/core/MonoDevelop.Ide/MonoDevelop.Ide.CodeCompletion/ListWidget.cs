@@ -115,6 +115,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			page = 0;
 			AutoSelect = false;
 			CalcVisibleRows ();
+			
 			if (SelectionChanged != null)
 				SelectionChanged (this, EventArgs.Empty);
 		}
@@ -342,12 +343,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 				} else {
 					xpos = margin + padding;
 				}
-				bool hasMarkup = win.DataProvider.HasMarkup (itemIndex);
-				if (hasMarkup) {
-					layout.SetMarkup (win.DataProvider.GetMarkup (itemIndex) ?? "&lt;null&gt;");
+				string markup      = win.DataProvider.HasMarkup (itemIndex) ? (win.DataProvider.GetMarkup (itemIndex) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (itemIndex) ?? "<null>");
+				string description = win.DataProvider.GetDescription (itemIndex);
+				if (string.IsNullOrEmpty (description)) {
+					layout.SetMarkup (markup);
 				} else {
-					layout.SetText (win.DataProvider.GetText (itemIndex) ?? "<null>");
+					if (item == selection) {
+						layout.SetMarkup (markup + " " + description );
+					} else {
+						layout.SetMarkup (markup + " <span foreground=\"darkgray\">" + description + "</span>");
+					}
 				}
+				int mw, mh;
+				layout.GetPixelSize (out mw, out mh);
+				if (mw > Allocation.Width) {
+					WidthRequest = listWidth = mw;
+					win.Resize (win.Allocation.Width + mw - Allocation.Width, win.Allocation.Height);
+				}
+			
 				string text = win.DataProvider.GetText (itemIndex);
 				
 				if ((!SelectionEnabled || item != selection) && !string.IsNullOrEmpty (text)) {
@@ -391,8 +404,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (icon != null)
 					window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 				
-				if (hasMarkup)
-					layout.SetMarkup (string.Empty);
+				layout.SetMarkup ("");
 				if (layout.Attributes != null) {
 					layout.Attributes.Dispose ();
 					layout.Attributes = null;
@@ -629,6 +641,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (PreviewCompletionString) {
 				newHeight += rowHeight;
 			}
+			
 			if (lvWidth != listWidth || lvHeight != newHeight) 
 				this.SetSizeRequest (listWidth, newHeight);
 		}

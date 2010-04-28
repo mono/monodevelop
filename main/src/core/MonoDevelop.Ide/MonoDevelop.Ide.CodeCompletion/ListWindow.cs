@@ -580,6 +580,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		CompletionCategory GetCompletionCategory (int n);
 		bool HasMarkup (int n);
 		string GetCompletionText (int n);
+		string GetDescription (int n);
 		Gdk.Pixbuf GetIcon (int n);
 	}
 }

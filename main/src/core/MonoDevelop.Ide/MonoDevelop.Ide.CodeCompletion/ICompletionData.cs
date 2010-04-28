@@ -42,7 +42,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 	{
 		IconId Icon { get; }
 		string DisplayText { get; }
+		string DisplayDescription { get; }
+		
 		string Description { get; }
+		
 		string CompletionText { get; }
 		CompletionCategory CompletionCategory { get; }
 		DisplayFlags DisplayFlags { get; }

@@ -1,5 +1,16 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs:
+	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionData.cs:
+	* MonoDevelop.Ide.CodeCompletion/ICompletionData.cs:
+	* MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs: code
+	  completion list now can show descriptions & code completion
+	  list now has a width resize for long items.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs: Improved
 	  completion filtering.
 
