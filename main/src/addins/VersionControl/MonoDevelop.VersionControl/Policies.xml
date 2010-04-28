@@ -1,3 +1,0 @@
-<VersionControlPolicy id="Mono">
-	<CommitMessageStyle Header="" Indent="" FirstFilePrefix="* " FileSeparator=":&#xA;* " LastFilePostfix=": " LineAlign="2" InterMessageLines="1" />
-</VersionControlPolicy>
