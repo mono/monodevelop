@@ -86,6 +86,13 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return text; }
 		}
 		
+		public string DisplayDescription {
+			get {
+				return null;
+			}
+		}
+		
+		
 		public string CompletionText {
 			get {
 					if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue))

@@ -67,6 +67,13 @@ namespace MonoDevelop.XmlEditor.Completion
 			get { return description; }
 		}
 		
+		public string DisplayDescription {
+			get {
+				return null;
+			}
+		}
+		
+		
 		public string CompletionText {
 			get {
 				StringBuilder sb = new StringBuilder ();

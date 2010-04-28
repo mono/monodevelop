@@ -61,6 +61,13 @@ namespace MonoDevelop.XmlEditor.Completion
 		public string DisplayText {
 			get { return element; }
 		}
+		
+		public string DisplayDescription {
+			get {
+				return null;
+			}
+		}
+		
 
 		public string Description {
 			get { return null; }
