@@ -82,5 +82,10 @@ namespace MonoDevelop.Profiling
 			if (Completed != null)
 				Completed (this);
 		}
+		
+		public void Dispose ()
+		{
+			process.Dispose ();
+		}
 	}
 }
