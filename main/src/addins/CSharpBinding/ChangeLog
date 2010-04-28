@@ -1,6 +1,11 @@
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  fixed 'Bug 600273 - as/is completion too restrictive'.
+
+2010-04-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  fixed 'Bug 599632 – Completion list should be in suggest
 	  mode for generic parameter declaration'.
 

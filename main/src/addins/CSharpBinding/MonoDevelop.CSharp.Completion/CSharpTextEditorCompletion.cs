@@ -865,8 +865,8 @@ namespace MonoDevelop.CSharp.Completion
 								IType type = (IType)o;
 								if (type.ClassType != ClassType.Interface || type.IsSpecialName || type.Name.StartsWith ("<"))
 									continue;
-								if (foundType != null && !dom.GetInheritanceTree (foundType).Any (x => x.FullName == type.FullName))
-									continue;
+//								if (foundType != null && !dom.GetInheritanceTree (foundType).Any (x => x.FullName == type.FullName))
+//									continue;
 								AddAsCompletionData (col, type);
 								continue;
 							}
