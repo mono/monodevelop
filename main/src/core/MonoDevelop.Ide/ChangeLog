@@ -1,3 +1,7 @@
+2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide\IdeStartup.cs: Add missing unchecked block.
+
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:

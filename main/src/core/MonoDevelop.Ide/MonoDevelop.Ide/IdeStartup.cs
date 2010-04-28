@@ -440,8 +440,11 @@ namespace MonoDevelop.Ide
 			ulong hash = 0;
 
 			try {
-				foreach (char c in input)
-					hash = (ulong)char.GetNumericValue (c) + (hash << 6) + (hash << 16) - hash;
+				foreach (char c in input) {
+					unchecked {
+						hash = (ulong)char.GetNumericValue(c) + (hash << 6) + (hash << 16) - hash;
+					}
+				}
 			} catch {
 				// If we overflow, return the intermediate result
 			}
