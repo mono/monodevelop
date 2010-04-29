@@ -19,6 +19,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	Commands.cs \
+	ExternalConsoleProcess.cs \
 	Framework/AppleEvent.cs \
 	Framework/AppleScript.cs \
 	Framework/ApplicationEvents.cs \

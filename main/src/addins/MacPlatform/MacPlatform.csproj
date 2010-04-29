@@ -81,6 +81,7 @@
     <Compile Include="Framework\AppleEvent.cs" />
     <Compile Include="Framework\AppleScript.cs" />
     <Compile Include="Framework\ComponentManager.cs" />
+    <Compile Include="ExternalConsoleProcess.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

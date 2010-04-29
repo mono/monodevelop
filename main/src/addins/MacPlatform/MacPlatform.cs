@@ -255,9 +255,12 @@ namespace MonoDevelop.Platform
 			IdeApp.Workbench.RootWindow.Visible = false;
 		}
 		
-//		public override IProcessAsyncOperation StartConsoleProcess (ProcessStartInfo psi, string title, bool pauseWhenFinished)
-//		{
-//			return new ExternalConsoleProcess (psi, title, pauseWhenFinished);
-//		}
+		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		                                                            IDictionary<string, string> environmentVariables,
+		                                                            string title, bool pauseWhenFinished)
+		{
+			return new ExternalConsoleProcess (command, arguments, workingDirectory, environmentVariables,
+			                                   title, pauseWhenFinished);
+		}
 	}
 }
