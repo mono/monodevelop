@@ -225,7 +225,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnTextReplaced (ReplaceEventArgs args)
 		{
-			linesWithExtendingTextMarkers.RemoveAll (ls => args.Offset <= ls.Offset && ls.EndOffset < args.Offset + args.Count);
+			extendingTextMarkers.RemoveAll (em => args.Offset <= em.LineSegment.Offset && em.LineSegment.EndOffset < args.Offset + args.Count);
 				
 			if (TextReplaced != null)
 				TextReplaced (this, args);
@@ -1134,9 +1134,11 @@ namespace Mono.TextEditor
 			}
 		}
 		#endregion
-		List<LineSegment> linesWithExtendingTextMarkers = new List<LineSegment> ();
+		List<TextMarker> extendingTextMarkers = new List<TextMarker> ();
 		public IEnumerable<LineSegment> LinesWithExtendingTextMarkers {
-			get { return this.linesWithExtendingTextMarkers; }
+			get {
+				return from marker in extendingTextMarkers select marker.LineSegment;
+			}
 		}
 		
 		public void AddMarker (int lineNumber, TextMarker marker)
@@ -1154,16 +1156,20 @@ namespace Mono.TextEditor
 			if (line == null || marker == null)
 				return;
 			if (marker is IExtendingTextMarker) {
-				lock (linesWithExtendingTextMarkers) {
-					if (!linesWithExtendingTextMarkers.Contains (line)) {
-						HeightChanged = true;
-						linesWithExtendingTextMarkers.Add (line);
-					}
+				lock (extendingTextMarkers) {
+					HeightChanged = true;
+					extendingTextMarkers.Add (marker);
+					extendingTextMarkers.Sort (CompareMarkers);
 				}
 			}
 			line.AddMarker (marker);
 			if (commitUpdate)
 				this.CommitLineUpdate (line);
+		}
+		
+		static int CompareMarkers (TextMarker left, TextMarker right)
+		{
+			return left.LineSegment.Offset.CompareTo (right.LineSegment.Offset);
 		}
 		
 		public void RemoveMarker (int lineNumber, TextMarker marker)
@@ -1176,11 +1182,9 @@ namespace Mono.TextEditor
 			if (line == null || marker == null)
 				return;
 			if (marker is IExtendingTextMarker) {
-				lock (linesWithExtendingTextMarkers) {
-					if (!linesWithExtendingTextMarkers.Contains (line)) {
-						HeightChanged = true;
-						linesWithExtendingTextMarkers.Remove (line);
-					}
+				lock (extendingTextMarkers) {
+					HeightChanged = true;
+					extendingTextMarkers.Remove (marker);
 				}
 			}
 			line.RemoveMarker (marker);
@@ -1197,14 +1201,13 @@ namespace Mono.TextEditor
 			if (line == null || type == null)
 				return;
 			if (typeof(IExtendingTextMarker).IsAssignableFrom (type)) {
-				lock (linesWithExtendingTextMarkers) {
-					if (!linesWithExtendingTextMarkers.Contains (line)) {
-						HeightChanged = true;
-						linesWithExtendingTextMarkers.Remove (line);
+				lock (extendingTextMarkers) {
+					HeightChanged = true;
+					foreach (TextMarker marker in line.Markers.Where (marker => marker is IExtendingTextMarker)) {
+						extendingTextMarkers.Remove (marker);
 					}
 				}
 			}
-			
 			line.RemoveMarker (type);
 			this.CommitLineUpdate (line);
 		}

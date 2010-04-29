@@ -1,5 +1,10 @@
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Fixed 'Bug 600671 - Text
+	  painting gets into a weird state'.
+
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 600609 - Parameter
 	  tooltips should hide when scrolling editor'.
 
