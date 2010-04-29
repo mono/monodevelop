@@ -177,7 +177,7 @@ namespace Stetic.Editor
 					openSubmenu.OpenSubmenu = null;
 					IDesignArea area = wrapper.GetDesignArea ();
 					area.RemoveWidget (openSubmenu);
-					openSubmenu.Dispose ();
+					openSubmenu.Destroy ();
 				}
 				openSubmenu = value;
 			}

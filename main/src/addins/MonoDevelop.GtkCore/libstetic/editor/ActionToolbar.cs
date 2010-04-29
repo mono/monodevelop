@@ -531,7 +531,7 @@ namespace Stetic.Editor
 	{
 		public override void Dispose ()
 		{
-			ActionToolItem.Dispose ();
+			ActionToolItem.Destroy ();
 			base.Dispose ();
 		}
 		

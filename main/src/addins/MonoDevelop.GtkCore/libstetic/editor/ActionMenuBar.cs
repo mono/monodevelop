@@ -48,7 +48,6 @@ namespace Stetic.Editor
 			foreach (Gtk.Widget w in Children) {
 				Remove (w);
 				w.Destroy ();
-				w.Dispose ();
 			}
 
 			foreach (ActionTreeNode node in actionTree.Children) {
@@ -320,7 +319,7 @@ namespace Stetic.Editor
 					IDesignArea area = wrapper.GetDesignArea ();
 					if (area != null)
 						area.RemoveWidget (openSubmenu);
-					openSubmenu.Dispose ();
+					openSubmenu.Destroy ();
 				}
 				openSubmenu = value;
 			}
