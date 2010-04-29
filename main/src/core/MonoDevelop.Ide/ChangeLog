@@ -1,5 +1,10 @@
 2010-04-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs: Unbreak
+	  document navigation.
+
+2010-04-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
 	  Track AddFilesToProject API.
 

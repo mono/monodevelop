@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public override bool Show ()
 		{
-			if (!string.IsNullOrEmpty (fileName))
+			if (!string.IsNullOrEmpty (FileName))
 				return DoShow () != null;
 			return false;
 		}
