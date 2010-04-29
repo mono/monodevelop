@@ -1292,6 +1292,33 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		[CommandUpdateHandler (SourceEditorCommands.ToggleErrorTextMarker)]
+		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
+		{
+			LineSegment line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
+			if (line == null) {
+				info.Visible = false;
+				return;
+			}
+			var marker = (ErrorTextMarker)line.Markers.FirstOrDefault (m => m is ErrorTextMarker);
+			info.Visible = marker != null;
+		}
+		
+		[CommandHandler (SourceEditorCommands.ToggleErrorTextMarker)]
+		public void OnToggleErrorTextMarker ()
+		{
+			LineSegment line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
+			if (line == null)
+				return;
+			var marker = (ErrorTextMarker)line.Markers.FirstOrDefault (m => m is ErrorTextMarker);
+			if (marker != null) {
+				marker.IsExpanded = !marker.IsExpanded;
+				TextEditor.Repaint ();
+				MonoDevelop.Ide.Gui.Pads.ErrorListPad pad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
+				pad.Control.QueueDraw ();
+			}
+		}
+		
 		void CommentSelectedLines (string commentTag)
 		{
 			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;

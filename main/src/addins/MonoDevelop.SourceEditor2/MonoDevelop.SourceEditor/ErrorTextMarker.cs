@@ -460,12 +460,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void MousePress (MarginMouseEventArgs args)
 		{
-			if (DebuggingService.IsDebugging) 
-				return;
-			IsExpanded = !IsExpanded;
-			args.Editor.Repaint ();
-			MonoDevelop.Ide.Gui.Pads.ErrorListPad pad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
-			pad.Control.QueueDraw ();
+			
 		}
 		
 		public void MouseRelease (MarginMouseEventArgs args)

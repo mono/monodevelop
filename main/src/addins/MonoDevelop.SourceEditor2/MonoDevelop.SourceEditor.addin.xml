@@ -95,6 +95,9 @@
 				_description = "Animates the text editor caret to help find it"
 				shortcut = "Ctrl|Shift||"
 				macShortcut = "Meta|Shift||" />
+		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker"
+				_label = "Toggle message bubble"
+				_description = "Toggles message bubble on/off"/>
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus"
 				_label = "Toggle code focus"
 				_description = "Activates code focus on caret move"
@@ -166,6 +169,7 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpointProperties" />
+		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker" />
 	</Extension>
 	
 	
