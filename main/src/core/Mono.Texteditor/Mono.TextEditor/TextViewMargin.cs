@@ -1222,8 +1222,9 @@ namespace Mono.TextEditor
 			if (DecorateLineFg != null)
 				DecorateLineFg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
-
 			if (Document.GetLine (Caret.Line) == line) {
+				if (Platform.IsMac)
+					width++;
 				Pango.Rectangle strong_pos, weak_pos;
 				int index = Caret.Offset - offset;
 				if (offset <= textEditor.preeditOffset && textEditor.preeditOffset < offset + length) {
