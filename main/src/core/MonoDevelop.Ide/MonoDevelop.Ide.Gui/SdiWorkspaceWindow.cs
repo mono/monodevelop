@@ -321,14 +321,12 @@ namespace MonoDevelop.Ide.Gui
 				this.subViewContents = null;
 				subViewNotebook.Remove (content.Control);
 			}
-			
 			content.Dispose ();
-			
+			box.Destroy ();
 			
 			this.subViewToolbar = null;
 			this.separatorItem = null;
 			DetachFromPathedDocument ();
-			
 			OnClosed (args);
 			
 			this.content = null;
@@ -337,6 +335,7 @@ namespace MonoDevelop.Ide.Gui
 			tabLabel.Destroy ();
 			this.tabLabel = null;
 			this.tabPage = null;
+			
 			Destroy ();
 			return true;
 		}

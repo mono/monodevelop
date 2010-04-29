@@ -1,5 +1,10 @@
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Manually call
+	  'box.Destroy ()' (work around for the IntPtr bug).
+
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Components.Commands/CommandManager.cs: Try to
 	  fix an IntPtr exception caused by accessing a invalid
 	  FocusChild.
