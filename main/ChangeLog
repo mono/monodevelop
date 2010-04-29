@@ -1,3 +1,8 @@
+2010-04-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* monodevelop.desktop: Fixed exec command and added mimetypes.
+	  Thanks to Alexander M. Batishchev.
+
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com> 
 
 	* monodevelop-core-addins.pc.in: Add Mono.Debugger.Soft.dll
