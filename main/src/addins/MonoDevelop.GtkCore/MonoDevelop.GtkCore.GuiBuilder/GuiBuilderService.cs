@@ -493,12 +493,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			ProjectFile pfile = prj.Files.GetFile (file);
 			if (pfile == null) {
-				string[] files = IdeApp.ProjectOperations.AddFilesToProject (prj, new string[] { file }, prj.BaseDirectory);
-				if (files.Length == 0)
+				var files = IdeApp.ProjectOperations.AddFilesToProject (prj, new string[] { file }, prj.BaseDirectory);
+				if (files.Count == 0 || files[0] == null)
 					return null;
-				if (files [0] == null)
-					return null;
-				pfile = prj.Files.GetFile (files[0]);
+				pfile = files [0];
 			}
 			if (pfile.BuildAction == BuildAction.EmbeddedResource) {
 				AlertButton embedButton = new AlertButton (GettextCatalog.GetString ("_Use as Source"));

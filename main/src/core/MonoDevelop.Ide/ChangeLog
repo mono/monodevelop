@@ -1,5 +1,14 @@
 2010-04-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	  Track AddFilesToProject API.
+
+	* MonoDevelop.Ide/ProjectOperations.cs: Handle adding link
+	  files to subdirectories of a project in AddFilesToProject
+	  method. Tidy up a lot.
+
+2010-04-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Remove
 	  underscores from Page_Up/Page_Down when displaying.
 
