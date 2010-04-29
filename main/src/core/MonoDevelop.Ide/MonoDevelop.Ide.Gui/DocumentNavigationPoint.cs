@@ -64,10 +64,11 @@ namespace MonoDevelop.Ide.Gui
 			get { return doc != null? doc.FileName : fileName; }
 		}
 		
-		public override void Show ()
+		public override bool Show ()
 		{
 			if (!string.IsNullOrEmpty (fileName))
-				DoShow ();
+				return DoShow () != null;
+			return false;
 		}
 		
 		protected virtual Document DoShow ()

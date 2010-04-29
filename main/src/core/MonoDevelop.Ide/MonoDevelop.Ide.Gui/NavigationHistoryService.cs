@@ -374,7 +374,7 @@ namespace MonoDevelop.Ide.Gui
 		public abstract string DisplayName { get; }
 		public abstract string Tooltip { get; }
 		
-		public abstract void Show ();
+		public abstract bool Show ();
 		
 		// used for fuzzy matching to decide whether to replace an existing nav point
 		// e.g if user just moves around a little, we don't want to add too many points
