@@ -44,6 +44,6 @@ assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb           
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES)
+EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
