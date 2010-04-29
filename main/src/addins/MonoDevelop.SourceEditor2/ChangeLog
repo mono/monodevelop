@@ -1,5 +1,10 @@
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  600671 - Text painting gets into a weird state'.
+
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor.addin.xml: added the toggle message
 	  bubble command to the main menu message bubble submenu.
 

@@ -229,21 +229,14 @@ namespace MonoDevelop.SourceEditor
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += delegate {
-				lineSegmentWithTasks.ForEach (ls => {
-					foreach (ErrorTextMarker marker in ls.Markers.Where (marker => marker is ErrorTextMarker)) 
-						marker.DisposeLayout ();
-				});
+				currentErrorMarkers.ForEach (marker => marker.DisposeLayout ());
 			};
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 		}
 
 		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
 		{
-			foreach (LineSegment line in lineSegmentWithTasks) {
-				foreach (ErrorTextMarker marker in line.Markers.Where (m => m is ErrorTextMarker)) {
-					marker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles;
-				}
-			}
+			currentErrorMarkers.ForEach (marker => marker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles);
 			this.TextEditor.Repaint ();
 		}
 
@@ -257,7 +250,7 @@ namespace MonoDevelop.SourceEditor
 			this.TextEditor.Repaint ();
 		}
 		
-		List<LineSegment> lineSegmentWithTasks = new List<LineSegment> ();
+		List<ErrorTextMarker> currentErrorMarkers = new List<ErrorTextMarker> ();
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
 			Task[] tasks = TaskService.Errors.GetFileTasks (ContentName);
@@ -275,17 +268,15 @@ namespace MonoDevelop.SourceEditor
 					LineSegment lineSegment = widget.Document.GetLine (task.Line - 1);
 					if (lineSegment == null)
 						continue;
-					if (lineSegmentWithTasks.Contains (lineSegment)) {
-						foreach (var marker in lineSegment.Markers) {
-							if (marker is ErrorTextMarker) {
-								((ErrorTextMarker)marker).AddError (task.Severity == TaskSeverity.Error, task.Description);
-								break;
-							}
-						}
+					var marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == lineSegment);
+					if (marker != null) {
+						marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
 						continue;
 					}
-					lineSegmentWithTasks.Add (lineSegment);
+					
 					ErrorTextMarker errorTextMarker = new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
+					currentErrorMarkers.Add (errorTextMarker);
+					
 					errorTextMarker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles;
 					widget.Document.AddMarker (lineSegment, errorTextMarker, false);
 				}
@@ -296,12 +287,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void DisposeErrorMarkers ()
 		{
-			lineSegmentWithTasks.ForEach (ls => {
-				foreach (ErrorTextMarker marker in ls.Markers.Where (marker => marker is ErrorTextMarker)) 
-					marker.Dispose ();
-				widget.Document.RemoveMarker (ls, typeof (ErrorTextMarker));
+			currentErrorMarkers.ForEach (em => {
+				widget.Document.RemoveMarker (em.LineSegment, em);
+				em.Dispose ();
 			});
-			lineSegmentWithTasks.Clear ();
+			currentErrorMarkers.Clear ();
 		}
 		
 		AutoSave autoSave = new AutoSave ();
