@@ -481,8 +481,8 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
 				widget.TextEditor.Document.TextReplacing -= OnTextReplaced;
 				widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
-				
-				widget.Destroy ();
+				// widget is destroyed with it's parent.
+				// widget.Destroy ();
 				widget = null;
 			}
 			
