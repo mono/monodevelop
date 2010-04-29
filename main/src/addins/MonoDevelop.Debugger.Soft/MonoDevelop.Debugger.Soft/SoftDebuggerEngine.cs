@@ -167,7 +167,7 @@ namespace MonoDevelop.Debugger.Soft
 		}
 	}
 	
-	class ProcessAdapter: Mono.Debugger.Soft.IProcess
+	class ProcessAdapter: Mono.Debugger.Soft.ITargetProcess
 	{
 		IProcessAsyncOperation oper;
 		string name;

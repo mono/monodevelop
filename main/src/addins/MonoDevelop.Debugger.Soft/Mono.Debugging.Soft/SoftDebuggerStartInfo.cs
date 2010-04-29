@@ -50,7 +50,7 @@ namespace Mono.Debugging.Soft
 		/// </summary>
 		public string LogMessage { get; set; }
 		
-		public Mono.Debugger.Soft.LaunchOptions.ProcessLauncher ExternalConsoleLauncher;
+		public Mono.Debugger.Soft.LaunchOptions.TargetProcessLauncher ExternalConsoleLauncher;
 	}
 }
 

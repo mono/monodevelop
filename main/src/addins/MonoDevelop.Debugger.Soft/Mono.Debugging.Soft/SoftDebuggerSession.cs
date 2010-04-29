@@ -102,7 +102,7 @@ namespace Mono.Debugging.Soft
 			
 			if (dsi.UseExternalConsole && dsi.ExternalConsoleLauncher != null) {
 				options = new LaunchOptions ();
-				options.CustomProcessLauncher = dsi.ExternalConsoleLauncher;
+				options.CustomTargetProcessLauncher = dsi.ExternalConsoleLauncher;
 			}
 
 			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");

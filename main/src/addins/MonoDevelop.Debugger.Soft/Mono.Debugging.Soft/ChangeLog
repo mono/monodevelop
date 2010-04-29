@@ -1,3 +1,15 @@
+2010-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated from Mono.
+
+	* SoftDebuggerSession.cs:
+	* SoftDebuggerStartInfo.cs: Track API changes.
+
+	* SoftDebuggerAdaptor.cs: The call to ToString may return
+	  null. Return an empty string in this case. Fixes bug
+	  #599434.
+
 2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugger.Soft.dll:

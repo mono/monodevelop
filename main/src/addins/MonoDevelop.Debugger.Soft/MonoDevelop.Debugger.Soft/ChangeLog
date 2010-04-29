@@ -1,3 +1,7 @@
+2010-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerEngine.cs: Track API changes.
+
 2010-04-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerEngine.cs: External console processes are now

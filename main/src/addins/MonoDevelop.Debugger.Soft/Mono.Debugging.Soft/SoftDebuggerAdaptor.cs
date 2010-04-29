@@ -67,16 +67,16 @@ namespace Mono.Debugging.Soft
 				ObjectMirror ob = (ObjectMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.Object") {
-					StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
-					return res.Value;
+					StringMirror res = cx.RuntimeInvoke (method, obj, new Value[0]) as StringMirror;
+					return res != null ? res.Value : string.Empty;
 				}
 			}
 			else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
 				StructMirror ob = (StructMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.ValueType") {
-					StringMirror res = (StringMirror) cx.RuntimeInvoke (method, obj, new Value[0]);
-					return res.Value;
+					StringMirror res = cx.RuntimeInvoke (method, obj, new Value[0]) as StringMirror;
+					return res != null ? res.Value : string.Empty;
 				}
 			}
 			return GetDisplayTypeName (GetValueTypeName (ctx, obj));
