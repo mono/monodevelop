@@ -53,15 +53,6 @@ namespace MonoDevelop.CodeMetrics
 			base.ContentName = "Code Metrics";
 		}
 		
-		public override void Dispose ()
-		{
-			if (widget != null) {
-				widget.Destroy ();
-				widget = null;
-			}
-			base.Dispose ();
-		}
-
 		public override void Load (string fileName)
 		{
 			throw new System.InvalidOperationException (); 
