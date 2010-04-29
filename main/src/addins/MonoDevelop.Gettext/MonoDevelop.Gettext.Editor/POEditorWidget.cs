@@ -379,21 +379,21 @@ namespace MonoDevelop.Gettext
 				if (DoSearchIn != SearchIn.Both) {
 					DoSearchIn = SearchIn.Both;
 					UpdateFromCatalog ();
-					menu.Dispose ();
+					menu.Destroy ();
 				}
 			};
 			original.Activated += delegate {
 				if (DoSearchIn != SearchIn.Original) {
 					DoSearchIn = SearchIn.Original;
 					UpdateFromCatalog ();
-					menu.Dispose ();
+					menu.Destroy ();
 				}
 			};
 			translated.Activated += delegate {
 				if (DoSearchIn != SearchIn.Translated) {
 					DoSearchIn = SearchIn.Translated;
 					UpdateFromCatalog ();
-					menu.Dispose ();
+					menu.Destroy ();
 				}
 			};
 			
