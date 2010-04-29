@@ -157,7 +157,13 @@ namespace Mono.TextEditor
 			}
 		}
 		int oldHAdjustment = -1;
+		
 		void HAdjustmentValueChanged (object sender, EventArgs args)
+		{
+			HAdjustmentValueChanged ();
+		}
+		
+		protected virtual void HAdjustmentValueChanged ()
 		{
 			if (this.textEditorData.HAdjustment.Value != System.Math.Ceiling (this.textEditorData.HAdjustment.Value)) {
 				this.textEditorData.HAdjustment.Value = System.Math.Ceiling (this.textEditorData.HAdjustment.Value);
@@ -175,6 +181,11 @@ namespace Mono.TextEditor
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
+		{
+			VAdjustmentValueChanged ();
+		}
+		
+		protected virtual void VAdjustmentValueChanged ()
 		{
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
