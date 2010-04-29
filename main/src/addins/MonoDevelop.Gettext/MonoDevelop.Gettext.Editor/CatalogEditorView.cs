@@ -54,15 +54,6 @@ namespace MonoDevelop.Gettext.Editor
 			};
 		}
 		
-		public override void Dispose ()
-		{
-			if (this.poEditorWidget != null) {
-				this.poEditorWidget.Destroy ();
-				this.poEditorWidget = null;
-			}
-			base.Dispose ();
-		}
-		
 		public override void Load (string fileName)
 		{
 //			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
