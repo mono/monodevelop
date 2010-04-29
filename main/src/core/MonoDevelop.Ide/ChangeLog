@@ -1,5 +1,11 @@
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Components.Commands/CommandManager.cs: Try to
+	  fix an IntPtr exception caused by accessing a invalid
+	  FocusChild.
+
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs:
 	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: found

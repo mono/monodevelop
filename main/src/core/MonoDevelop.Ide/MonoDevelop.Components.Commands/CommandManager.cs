@@ -1013,6 +1013,8 @@ namespace MonoDevelop.Components.Commands
 				RegisterTopWindow (win);
 				Gtk.Widget widget = win;
 				while (widget is Gtk.Container) {
+					if (!widget.IsRealized || !widget.Visible)
+						return null;
 					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
 					if (child != null)
 						widget = child;
