@@ -784,7 +784,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			if (tooltipWindow != null) {
 				tooltipWindow.Destroy ();
-				tooltipWindow.Dispose ();
 				tooltipWindow = null;
 			}
 		}
