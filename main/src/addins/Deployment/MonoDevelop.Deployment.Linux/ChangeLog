@@ -1,3 +1,8 @@
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Deployment.Linux/DotDesktopView.cs: IViewContent
+	  widgets are now destroyed by the workspace window.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

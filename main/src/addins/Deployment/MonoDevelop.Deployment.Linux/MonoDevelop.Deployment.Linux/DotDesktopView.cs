@@ -35,12 +35,5 @@ namespace MonoDevelop.Deployment.Linux
 		public override Gtk.Widget Control {
 			get { return widget; }
 		}
-
-		public override void Dispose ()
-		{
-			widget.Destroy ();
-			base.Dispose ();
-		}
-
 	}
 }
