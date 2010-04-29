@@ -293,7 +293,6 @@ namespace MonoDevelop.Debugger
 		{
 			base.Dispose ();
 			DebuggingService.StoppedEvent -= OnStop;
-			sw.Destroy ();
 		}
 		
 		[CommandHandler (DebugCommands.StepOver)]

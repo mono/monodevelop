@@ -1,3 +1,8 @@
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/DisassemblyView.cs: ViewContent widgets
+	  are now destroyed by the workspace window.
+
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Track API
