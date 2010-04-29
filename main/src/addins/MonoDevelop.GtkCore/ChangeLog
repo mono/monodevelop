@@ -1,3 +1,10 @@
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs:
+	  ViewContent widgets are now destroyed by the workspace
+	  window.
+
+
 2010-04-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/CombinedDesignView.cs: call
