@@ -1,3 +1,11 @@
+2010-04-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Remove
+	  underscores from Page_Up/Page_Down when displaying.
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	  Use some generic API.
+
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs: ViewContent

@@ -441,6 +441,16 @@ namespace MonoDevelop.Components.Commands
 					return new string (appl, 1);
 				}
 			}
+			
+			switch (key) {
+			case Gdk.Key.Page_Down:
+			//Gdk.Key.Next:
+				return "Page Down";
+			case Gdk.Key.Page_Up:
+			//case Gdk.Key.Prior:
+				return "Page Up";
+			}
+			
 			return KeyToString (key);
 		}
 		
