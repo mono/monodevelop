@@ -75,8 +75,6 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual void Dispose ()
 		{
-			if (Control != null) 
-				Control.Destroy ();
 		}
 
 		#endregion

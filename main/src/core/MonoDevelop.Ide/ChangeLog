@@ -1,5 +1,10 @@
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs: ViewContent
+	  widgets are now destroyed by the workspace window.
+
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Manually call
 	  'box.Destroy ()' (work around for the IntPtr bug).
 
