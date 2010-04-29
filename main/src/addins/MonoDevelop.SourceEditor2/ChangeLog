@@ -1,3 +1,9 @@
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fixed 'Bug
+	  600609 - Parameter tooltips should hide when scrolling
+	  editor'.
+
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/DebugValueWindow.cs: Accept getting

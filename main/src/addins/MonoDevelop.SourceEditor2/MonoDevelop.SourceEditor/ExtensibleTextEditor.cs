@@ -544,13 +544,6 @@ namespace MonoDevelop.SourceEditor
 			return base.OnFocusOutEvent (evnt); 
 		}
 		
-		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
-		{
-			CompletionWindowManager.HideWindow ();
-			ParameterInformationWindowManager.HideWindow ();
-			return base.OnScrollEvent (evnt);
-		}
-		
 		void ShowPopup ()
 		{
 			HideTooltip ();
@@ -693,6 +686,21 @@ namespace MonoDevelop.SourceEditor
 			}
 			return j;
 		}
+		
+		protected override void HAdjustmentValueChanged ()
+		{
+			base.HAdjustmentValueChanged ();
+			CompletionWindowManager.HideWindow ();
+			ParameterInformationWindowManager.HideWindow ();
+		}
+		
+		protected override void VAdjustmentValueChanged ()
+		{
+			base.VAdjustmentValueChanged ();
+			CompletionWindowManager.HideWindow ();
+			ParameterInformationWindowManager.HideWindow ();
+		}
+		
 		
 #endregion
 		
