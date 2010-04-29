@@ -362,6 +362,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding, bool highlightCaretLine)
 		{
+			if (string.IsNullOrEmpty (fileName))
+				return null;
 			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + fileName)) {
 				NavigationHistoryService.LogActiveDocument ();
 				

@@ -1,3 +1,10 @@
+2010-04-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs: Fixed 'Bug
+	  600657 - "Show Previous Warning/Error" fails when there are
+	  warnings without file offsets'.
+
 2010-04-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Desktop/PlatformService.cs: Track API, build

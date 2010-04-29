@@ -66,7 +66,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public override void Show ()
 		{
-			DoShow ();
+			if (!string.IsNullOrEmpty (fileName))
+				DoShow ();
 		}
 		
 		protected virtual Document DoShow ()
