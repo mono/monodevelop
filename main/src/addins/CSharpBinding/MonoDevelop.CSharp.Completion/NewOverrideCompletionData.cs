@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			this.indent = editor.Document.GetLineIndent (editor.Caret.Line);
 			this.Icon = member.StockIcon;
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.IncludeMarkup | OutputFlags.HideExtensionsParameter);
+			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;
 			
 			ResolveReturnTypes ();
