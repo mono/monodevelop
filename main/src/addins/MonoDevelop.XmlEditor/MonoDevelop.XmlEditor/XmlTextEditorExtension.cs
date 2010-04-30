@@ -72,16 +72,14 @@ namespace MonoDevelop.XmlEditor
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			XmlEditorAddInOptions.PropertyChanged += XmlEditorPropertyChanged;
+			XmlEditorOptions.XmlSchemaAssociationChanged += HandleXmlSchemaAssociationChanged;
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
-			SetInitialValues();
+			SetDefaultSchema (FileExtension);
 			
-			MonoDevelop.SourceEditor.SourceEditorView view = 
-				Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (view != null && string.IsNullOrEmpty (view.Document.SyntaxMode.MimeType)) {
-				Mono.TextEditor.Highlighting.SyntaxMode mode = 
-					Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (ApplicationXmlMimeType);
+				var mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (ApplicationXmlMimeType);
 				if (mode != null)
 					view.Document.SyntaxMode = mode;
 				else
@@ -89,13 +87,19 @@ namespace MonoDevelop.XmlEditor
 					    + ApplicationXmlMimeType + "'.");
 			}
 		}
+
+		void HandleXmlSchemaAssociationChanged (object sender, XmlSchemaAssociationChangedEventArgs e)
+		{
+			if (e.Extension == FileExtension)
+				SetDefaultSchema (FileExtension);
+		}
 		
 		bool disposed;
 		public override void Dispose()
 		{
 			if (!disposed) {
 				disposed = false;
-				XmlEditorAddInOptions.PropertyChanged -= XmlEditorPropertyChanged;
+				XmlEditorOptions.XmlSchemaAssociationChanged -= HandleXmlSchemaAssociationChanged;
 				XmlSchemaManager.UserSchemaAdded -= UserSchemaAdded;
 				XmlSchemaManager.UserSchemaRemoved -= UserSchemaRemoved;
 				base.Dispose ();
@@ -391,12 +395,18 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Settings handling
 		
-		void SetDefaultSchema (string fileName)
-		{
-			if (fileName == null) {
-				return;
+		string FileExtension {
+			get {
+				var docName = Document.Name;
+				return string.IsNullOrEmpty (docName)? null : System.IO.Path.GetExtension (docName).ToLowerInvariant ();
 			}
-			string extension = System.IO.Path.GetExtension (fileName).ToLower ();
+		}
+		
+		void SetDefaultSchema (string extension)
+		{
+			if (extension == null)
+				return;
+			
 			defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData (extension);
 			if (defaultSchemaCompletionData != null)
 				inferredCompletionData = null;
@@ -408,40 +418,13 @@ namespace MonoDevelop.XmlEditor
 		/// Updates the default schema association since the schema may have been added.
 		void UserSchemaAdded (object source, EventArgs e)
 		{	
-			SetDefaultSchema (Document.Name);
+			SetDefaultSchema (FileExtension);
 		}
 		
 		// Updates the default schema association since the schema may have been removed.
 		void UserSchemaRemoved (object source, EventArgs e)
 		{
-			SetDefaultSchema (Document.Name);
-		}
-		
-		void XmlEditorPropertyChanged (object sender, PropertyChangedEventArgs args)
- 		{
-			switch (args.Key) {
-			case "AutoCompleteElements":
-				AutoCompleteClosingTags = XmlEditorAddInOptions.AutoCompleteElements;
-				break;
-			case "ShowSchemaAnnotation":
-//				showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
-				break;
-			default:
-				string extension = System.IO.Path.GetExtension (Document.Name).ToLower ();
-				if (args.Key == extension) {
-					SetDefaultSchema (Document.Name);
-				} else {
-					LoggingService.LogError ("Unhandled property change in XmlTextEditorExtension: " + args.Key);
-				}
-				break;
-			}
-		}
-		
-		void SetInitialValues()
-		{
-//			showSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
-			AutoCompleteClosingTags = XmlEditorAddInOptions.AutoCompleteElements;
-			SetDefaultSchema (Document.Name);
+			SetDefaultSchema (FileExtension);
 		}
 		
 		#endregion

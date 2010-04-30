@@ -95,13 +95,17 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		public string CompletionText {
 			get {
-					if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue))
-						return text;
-					if (dataType == DataType.NamespaceUri)
-						return String.Concat("\"", text, "\"");
-					
-					// Move caret in the middle of the attribute quotes.
-					return String.Concat (text, "=\"|\"");
+				if(!XmlEditorOptions.AutoInsertFragments)
+					return text;
+				
+				if ((dataType == DataType.XmlElement) || (dataType == DataType.XmlAttributeValue))
+					return text;
+				
+				if (dataType == DataType.NamespaceUri)
+					return String.Concat("\"", text, "\"");
+				
+				// Move caret in the middle of the attribute quotes.
+				return String.Concat (text, "=\"|\"");
 			}
 		}
 		

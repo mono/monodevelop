@@ -1,3 +1,17 @@
+2010-04-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs: Add
+	  settings to stop inserting snippets like ="" and />.
+
+	* MonoDevelop.XmlEditor/XmlSchemaManager.cs:
+	* MonoDevelop.XmlEditor/XmlFileExtensions.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs:
+	* MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs:
+	* MonoDevelop.XmlEditor/XmlTextEditorExtension.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs:
+	  Reorganized the XML editor settings.
+
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs:

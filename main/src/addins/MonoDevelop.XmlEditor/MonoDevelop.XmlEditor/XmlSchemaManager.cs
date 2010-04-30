@@ -77,7 +77,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlSchemaCompletionData data = null;
 			
-			XmlSchemaAssociation association = XmlEditorAddInOptions.GetSchemaAssociation (fileExtension);
+			var association = XmlEditorOptions.GetSchemaAssociation (fileExtension);
 			if (association != null)
 				if (association.NamespaceUri.Length > 0)
 					data = SchemaCompletionDataItems [association.NamespaceUri];
@@ -91,7 +91,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		public static string GetNamespacePrefix(string extension)
 		{
-			XmlSchemaAssociation association = XmlEditorAddInOptions.GetSchemaAssociation(extension);
+			var association = XmlEditorOptions.GetSchemaAssociation(extension);
 			if (association != null) {
 				return association.NamespacePrefix;
 			}
@@ -118,7 +118,7 @@ namespace MonoDevelop.XmlEditor
 		/// Adds the schema to the user schemas folder and makes the
 		/// schema available to the xml editor.
 		/// </summary>
-		public static void AddUserSchema(XmlSchemaCompletionData schemaData)
+		public static void AddUserSchema (XmlSchemaCompletionData schemaData)
 		{
 			if (UserSchemas [schemaData.NamespaceUri] == null) {
 

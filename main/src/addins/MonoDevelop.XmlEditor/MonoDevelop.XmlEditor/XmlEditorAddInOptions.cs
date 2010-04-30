@@ -34,21 +34,38 @@ namespace MonoDevelop.XmlEditor
 	/// <summary>
 	/// The Xml Editor options.
 	/// </summary>
-	public class XmlEditorAddInOptions
+	public static class XmlEditorOptions
 	{
 		public static readonly string OptionsProperty = "XmlEditor.AddIn.Options";
 		public static readonly string ShowSchemaAnnotationPropertyName = "ShowSchemaAnnotation";
 		public static readonly string AutoCompleteElementsPropertyName = "AutoCompleteElements";
+		public static readonly string AutoInsertFragmentsPropertyName = "AutoInsertFragment";
 		public static readonly string AssociationPrefix = "Association";
 		
 		static Properties properties;
 
-		static XmlEditorAddInOptions()
+		static XmlEditorOptions ()
  		{
- 			properties = PropertyService.Get(OptionsProperty, new Properties());
+ 			properties = PropertyService.Get (OptionsProperty, new Properties());
+			Properties.PropertyChanged += HandlePropertiesPropertyChanged;
 		}
 
- 		static Properties Properties {
+ 		static void HandlePropertiesPropertyChanged (object sender, PropertyChangedEventArgs e)
+ 		{
+			if (e.Key == ShowSchemaAnnotationPropertyName) {
+				ShowSchemaAnnotation = (bool)e.NewValue;
+			} else if (e.Key == AutoCompleteElementsPropertyName) {
+				AutoCompleteElements = (bool)e.NewValue;
+			} else if (e.Key == AutoInsertFragmentsPropertyName) {
+				AutoInsertFragments = (bool)e.NewValue;
+			} else if (XmlSchemaAssociationChanged != null && e.Key.StartsWith (AssociationPrefix)) {
+				var ext = e.Key.Substring (AssociationPrefix.Length);
+				var assoc = e.NewValue as XmlSchemaAssociation;
+				XmlSchemaAssociationChanged (null, new XmlSchemaAssociationChangedEventArgs (ext, assoc));
+			}
+ 		}
+
+ 		internal static Properties Properties {
 			get {
 				Debug.Assert(properties != null);
 				return properties;
@@ -60,15 +77,7 @@ namespace MonoDevelop.XmlEditor
 		/// <summary>
 		/// Raised when any xml editor property is changed.
 		/// </summary>
-		public static event EventHandler<PropertyChangedEventArgs> PropertyChanged {
-			add {
-				Properties.PropertyChanged += value;
-			}
-			
-			remove {
-				Properties.PropertyChanged -= value;
-			}
-		}
+		public static event EventHandler<XmlSchemaAssociationChangedEventArgs> XmlSchemaAssociationChanged;
 		
 		/// <summary>
 		/// Gets an association between a schema and a file extension.
@@ -103,7 +112,7 @@ namespace MonoDevelop.XmlEditor
 		/// </remarks>
 		public static XmlSchemaAssociation GetSchemaAssociation (string extension)
 		{
-			XmlSchemaAssociation association = Properties.Get<XmlSchemaAssociation> (AssociationPrefix + extension.ToLowerInvariant ());
+			var association = Properties.Get<XmlSchemaAssociation> (AssociationPrefix + extension.ToLowerInvariant ());
 			
 			if (association == null)
 				association = XmlSchemaAssociation.GetDefaultAssociation (extension);
@@ -121,37 +130,36 @@ namespace MonoDevelop.XmlEditor
 			Properties.Set (AssociationPrefix + association.Extension.ToLowerInvariant (), association);
 		}
 		
-		public static IEnumerable<string> RegisteredFileExtensions
+		public static IEnumerable<string> GetRegisteredFileExtensions ()
 		{
-			get {
-				//for some reason we get an out of sync error unless we copy the list
-				List<string> tempList = new List<string> (Properties.Keys);
-				foreach (string key in tempList)
-					if (key.StartsWith (AssociationPrefix))
-						yield return key.Substring (AssociationPrefix.Length);
-			}
+			//for some reason we get an out of sync error unless we copy the list
+			List<string> tempList = new List<string> (Properties.Keys);
+			foreach (string key in tempList)
+				if (key.StartsWith (AssociationPrefix))
+					yield return key.Substring (AssociationPrefix.Length);
 		}
 		
-		public static bool ShowSchemaAnnotation {
-			get {
-				return Properties.Get(ShowSchemaAnnotationPropertyName, true);
-			}
-			
-			set {
-				Properties.Set(ShowSchemaAnnotationPropertyName, value);
-			}
-		}
+		public static bool ShowSchemaAnnotation { get; private set; }
+		public static bool AutoCompleteElements { get; private set; }
 		
-		public static bool AutoCompleteElements {
-			get {
-				return Properties.Get(AutoCompleteElementsPropertyName, true);
-			}
-			
-			set {
-				Properties.Set(AutoCompleteElementsPropertyName, value);
-			}
-		}			
+		/// <summary>
+		/// Automatically insert fragments such as ="" when committing an attribute and > when pressing / in a tag.
+		/// Off by default since it forces the user to alter typing behaviour.
+		/// </summary>
+		public static bool AutoInsertFragments { get; private set; }
 		
 		#endregion
+	}
+	
+	public class XmlSchemaAssociationChangedEventArgs : EventArgs
+	{
+		public string Extension { get; private set; }
+		public XmlSchemaAssociation Association { get; private set; }
+		
+		public XmlSchemaAssociationChangedEventArgs (string extension, XmlSchemaAssociation association)
+		{
+			this.Extension = extension;
+			this.Association = association;
+		}		
 	}
 }

@@ -171,8 +171,6 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 		}
 		
-		protected bool AutoCompleteClosingTags { get; set; }
-
 		#region Code completion
 
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
@@ -220,7 +218,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				XElement el = tracker.Engine.Nodes.Peek () as XElement;
 				if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
 					string tag = String.Concat ("</", el.Name.FullName, ">");
-					if (AutoCompleteClosingTags) {
+					if (XmlEditorOptions.AutoCompleteElements) {
 						buf.BeginAtomicUndo ();
 						buf.InsertText (buf.CursorPosition, tag);
 						buf.CursorPosition -= tag.Length;
@@ -234,8 +232,10 @@ namespace MonoDevelop.XmlEditor.Gui
 				}
 				return null;
 			}
+			
 			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
-			if (tracker.Engine.CurrentState is XmlTagState && currentChar == '/') {
+			//FIXME: avoid doing this when the next non-whitespace char is ">" or ignore the next ">" typed
+			if (XmlEditorOptions.AutoInsertFragments && tracker.Engine.CurrentState is XmlTagState && currentChar == '/') {
 				buf.BeginAtomicUndo ();
 				buf.InsertText (buf.CursorPosition, ">");
 				buf.EndAtomicUndo ();
@@ -256,7 +256,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			{
 				CompletionDataList list = new CompletionDataList ();
 				
-				//todo: need to tweak semicolon insertion
+				//TODO: need to tweak semicolon insertion
 				list.Add ("apos").Description = "'";
 				list.Add ("quot").Description = "\"";
 				list.Add ("lt").Description = "<";

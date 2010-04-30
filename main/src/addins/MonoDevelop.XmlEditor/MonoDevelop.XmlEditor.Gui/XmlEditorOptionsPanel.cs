@@ -39,15 +39,17 @@ namespace MonoDevelop.XmlEditor.Gui
 		public override Widget CreatePanelWidget ()
 		{
 			widget = new XmlEditorOptionsPanelWidget();
-			widget.AutoCompleteElements = XmlEditorAddInOptions.AutoCompleteElements;
-			widget.ShowSchemaAnnotation = XmlEditorAddInOptions.ShowSchemaAnnotation;
+			widget.AutoCompleteElements = XmlEditorOptions.AutoCompleteElements;
+			//widget.AutoInsertFragments = XmlEditorOptions.AutoInsertFragments;
+			widget.ShowSchemaAnnotation = XmlEditorOptions.ShowSchemaAnnotation;
 			return widget;
 		}
 		
 		public override void ApplyChanges ()
 		{
-			XmlEditorAddInOptions.AutoCompleteElements = widget.AutoCompleteElements;
-			XmlEditorAddInOptions.ShowSchemaAnnotation = widget.ShowSchemaAnnotation;
+			XmlEditorOptions.Properties.Set (XmlEditorOptions.AutoCompleteElementsPropertyName, widget.AutoCompleteElements);
+			//XmlEditorOptions.Properties.Set (XmlEditorOptions.AutoInsertFragmentsPropertyName, widget.AutoInsertFragments);
+			XmlEditorOptions.Properties.Set (XmlEditorOptions.ShowSchemaAnnotationPropertyName, widget.ShowSchemaAnnotation);
 		}
 	}
 }
