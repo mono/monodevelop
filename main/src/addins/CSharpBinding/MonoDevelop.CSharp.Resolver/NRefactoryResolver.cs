@@ -228,7 +228,8 @@ namespace MonoDevelop.CSharp.Resolver
 				AddParameterList (col, property.Parameters);
 			if (CallingType == null)
 				return;
-			AddContentsFromOuterClass (CallingType.DeclaringType, context, col);
+			
+			AddContentsFromOuterClass (CallingType, context, col);
 			IType callingType = CallingType is InstantiatedType ? ((InstantiatedType)CallingType).UninstantiatedType : CallingType;
 			//bool isInStatic = CallingMember != null ? CallingMember.IsStatic : false;
 

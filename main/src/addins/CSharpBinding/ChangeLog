@@ -1,3 +1,8 @@
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: fixed
+	  'Bug 601169 - IntelliSense ignores inner classes'.
+
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs:
