@@ -356,7 +356,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				& modifier) != 0;
 			if (nonShiftModifierActive)
 				return KeyActions.Ignore;
-			const string commitChars = " <>()[]{}";
+			const string commitChars = " <>()[]{}=";
 			if (System.Char.IsLetterOrDigit (keyChar) || keyChar == '_') {
 				word.Insert (curPos, keyChar);
 				ResetSizes ();
