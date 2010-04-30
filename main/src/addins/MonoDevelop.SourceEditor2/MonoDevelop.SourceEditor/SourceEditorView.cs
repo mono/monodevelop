@@ -172,6 +172,7 @@ namespace MonoDevelop.SourceEditor
 			//			};
 			
 			widget.TextEditor.Caret.PositionChanged += delegate {
+				OnCaretPositionSet (EventArgs.Empty);
 				FireCompletionContextChanged ();
 			};
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
@@ -904,7 +905,6 @@ namespace MonoDevelop.SourceEditor
 					view.widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
 					view.widget.TextEditor.GrabFocus ();
 					view.widget.TextEditor.CenterToCaret ();
-					view.OnCaretPositionSet (EventArgs.Empty);
 					view.widget.ExposeEvent -= Run;
 				} finally {
 					view.widget.TextEditor.Caret.AutoScrollToCaret = true;
