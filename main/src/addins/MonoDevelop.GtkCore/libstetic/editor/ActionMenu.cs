@@ -45,11 +45,6 @@ namespace Stetic.Editor
 		
 		protected override void OnDestroyed ()
 		{
-			foreach (Gtk.Widget w in table.Children) {
-				table.Remove (w);
-				w.Destroy ();
-			}
-			
 			parentNode.ChildNodeAdded -= OnChildAdded;
 			parentNode.ChildNodeRemoved -= OnChildRemoved;
 			parentNode = null;
