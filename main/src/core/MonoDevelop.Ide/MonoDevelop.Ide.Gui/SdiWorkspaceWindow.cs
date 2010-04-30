@@ -321,12 +321,12 @@ namespace MonoDevelop.Ide.Gui
 				this.subViewContents = null;
 				subViewNotebook.Remove (content.Control);
 			}
+			DetachFromPathedDocument ();
 			content.Dispose ();
 			box.Destroy ();
 			
 			this.subViewToolbar = null;
 			this.separatorItem = null;
-			DetachFromPathedDocument ();
 			OnClosed (args);
 			
 			this.content = null;
