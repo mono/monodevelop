@@ -144,6 +144,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		int GetIndex (bool countCategories, int itemNumber)
 		{
+			if (!InCategoryMode || categories.Count == 1)
+				return itemNumber;
 			int result = -1;
 			int yPos = 0;
 			int curItem = 0;
@@ -163,6 +165,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		int GetItem (bool countCategories, int index)
 		{
+			if (!InCategoryMode || categories.Count == 1) 
+				return index;
 			int result = -1;
 			int curItem = 0;
 			int yPos = 0;
@@ -221,13 +225,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				Selection = newSelection;
 			}
-			this.UpdatePage ();
 		}
 		
 		public void UpdatePage ()
 		{
 			int index = GetIndex (true, Selection);
-			
 			if (index < page || index >= page + VisibleRows)
 				page = index - (VisibleRows / 2);
 			int itemCount = filteredItems.Count;
@@ -262,8 +264,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int Page {
 			get { return page; }
 			set {
-				page = value;
-				this.QueueDraw ();
+				if (page != value) {
+					page = value;
+					this.QueueDraw ();
+				}
 				if (SelectionChanged != null)
 					SelectionChanged (this, EventArgs.Empty);
 			}
@@ -666,6 +670,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int curItem = 0;
 			if (InCategoryMode) {
+				Console.WriteLine (1);
 				foreach (Category category in this.categories) {
 					if (category.CompletionCategory != null) {
 						if (!startAtPage || curItem >= page) {
@@ -681,16 +686,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 						break;
 				}
 			} else {
-				for (int item = 0; item < filteredItems.Count; item++) {
-					if (!startAtPage || curItem >= page) {
-						if (action != null) {
-							bool result = action (null, item, ypos);
-							if (!result)
-								break;
-						}
+				int startItem = 0;
+				if (startAtPage)
+					startItem = curItem = page;
+				if (action != null) {
+					for (int item = startItem; item < filteredItems.Count; item++) {
+						bool result = action (null, item, ypos);
+						if (!result)
+							break;
 						ypos += rowHeight;
+						curItem++;
 					}
-					curItem++;
+				} else {
+					int itemCount = (filteredItems.Count - startItem);
+					ypos += rowHeight * itemCount;
+					curItem += itemCount;
 				}
 			}
 		}
