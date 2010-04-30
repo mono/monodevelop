@@ -54,6 +54,15 @@ namespace MonoDevelop.Ide.Gui
 			snippet = file + ":" + line;
 		}
 		
+		public override bool ShouldReplace (NavigationPoint oldPoint)
+		{
+			TextFileNavigationPoint tf = oldPoint as TextFileNavigationPoint;
+			if (tf == null)
+				return false;
+			return Math.Abs (line - tf.line) < 5;
+		}
+		
+		
 		public int Line {
 			get { return line; }
 		}

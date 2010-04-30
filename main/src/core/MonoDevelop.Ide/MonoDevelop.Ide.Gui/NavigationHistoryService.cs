@@ -48,10 +48,9 @@ namespace MonoDevelop.Ide.Gui
 		static bool currentIsTransient;
 		
 		//the amount of time until a "transient" current node bevomes "permanent"
-		static uint TRANSIENT_TIMEOUT = 15000; //ms
+		static uint TRANSIENT_TIMEOUT = 10000; //ms
 		
 		static Document currentDoc;
-		static bool bufferTimeoutRunning = false;
 		
 		static NavigationHistoryService ()
 		{
@@ -99,7 +98,6 @@ namespace MonoDevelop.Ide.Gui
 				NavigationHistoryItem backOne = history[-1];
 				if (backOne != null && point.ShouldReplace (backOne.NavigationPoint)) {
 					history.MoveBack ();
-					history.ClearForward ();
 					currentIsTransient = false;
 				} else {
 					currentIsTransient = transient;
@@ -108,7 +106,7 @@ namespace MonoDevelop.Ide.Gui
 				history.ReplaceCurrent (item);
 			}
 			//if the new point wants to replace the old one, let it
-			else if (Current != null && point.ShouldReplace (Current.NavigationPoint))
+			else if (Current != null && !transient && point.ShouldReplace (Current.NavigationPoint))
 			{
 				history.ReplaceCurrent (item);
 				
@@ -168,6 +166,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void MoveForward ()
 		{
+			LogActiveDocument ();
 			history.MoveForward ();
 			SwitchToCurrent ();
 			OnHistoryChanged ();
@@ -175,6 +174,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static void MoveBack ()
 		{
+			// Log current point before moving back, to make sure a MoveForward will return to the same position
+			LogActiveDocument ();
 			history.MoveBack ();
 			SwitchToCurrent ();
 			OnHistoryChanged ();
@@ -253,10 +254,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			currentDoc.Closed += delegate { DetachFromCurrentDoc (); };
 			
-			IEditableTextBuffer buf	= currentDoc.GetContent<IEditableTextBuffer> ();
-			if (buf != null) {
-				buf.CaretPositionSet += BufferCaretPositionChanged;
-				buf.TextChanged += BufferTextChanged;
+			if (currentDoc.TextEditor != null) {
+				currentDoc.TextEditor.TextChanged += BufferTextChanged;
+				currentDoc.TextEditor.CursorPositionChanged += BufferCaretPositionChanged;
 			}
 		}
 		
@@ -265,38 +265,21 @@ namespace MonoDevelop.Ide.Gui
 			if (currentDoc == null)
 				return;
 						
-			IEditableTextBuffer buf	= currentDoc.GetContent<IEditableTextBuffer> ();
-			if (buf != null) {
-				buf.CaretPositionSet -= BufferCaretPositionChanged;
-				buf.TextChanged -= BufferTextChanged;
+			if (currentDoc.TextEditor != null) {
+				currentDoc.TextEditor.TextChanged -= BufferTextChanged;
+				currentDoc.TextEditor.CursorPositionChanged -= BufferCaretPositionChanged;
 			}
 			currentDoc = null;
 		}
 		
 		static void BufferCaretPositionChanged (object sender, EventArgs args)
 		{
-			DoBufferIdleHandler ();
+			LogActiveDocument (true);
 		}
 		
 		static void BufferTextChanged (object sender, TextChangedEventArgs args)
 		{
-			DoBufferIdleHandler ();
-		}
-		
-		//logs transient points when the text changes, then schdules a follow-up to make the point permanent if necessary
-		static void DoBufferIdleHandler ()
-		{
-			if (bufferTimeoutRunning)
-				return;
-			
-			LogActiveDocument (true);
-			bufferTimeoutRunning = true;
-			
-			GLib.Timeout.Add (TRANSIENT_TIMEOUT + 100, delegate
-			{
-				LogActiveDocument (true);
-				return false;
-			});
+			LogActiveDocument ();
 		}
 		
 		#endregion
@@ -374,7 +357,7 @@ namespace MonoDevelop.Ide.Gui
 		public abstract string DisplayName { get; }
 		public abstract string Tooltip { get; }
 		
-		public abstract bool Show ();
+		public abstract void Show ();
 		
 		// used for fuzzy matching to decide whether to replace an existing nav point
 		// e.g if user just moves around a little, we don't want to add too many points
@@ -482,9 +465,6 @@ namespace MonoDevelop.Ide.Gui
 			if (back.Count > maxLength)
 				back.RemoveFirst ();
 			current = point;
-			
-			//as soon as another point is added, the forward history becomes invalid
-			forward.Clear ();
 		}
 		
 		//used for editing out items that are no longer valid

@@ -133,6 +133,11 @@ namespace MonoDevelop.Ide.Gui
 			remove { textBuffer.TextChanged -= value; }
 		}
 		
+		public event EventHandler CursorPositionChanged {
+			add { textBuffer.CaretPositionSet += value; }
+			remove { textBuffer.CaretPositionSet -= value; }
+		}
+		
 		public int CursorPosition { 
 			get { return textBuffer.CursorPosition; }
 			set { textBuffer.CursorPosition = value; }

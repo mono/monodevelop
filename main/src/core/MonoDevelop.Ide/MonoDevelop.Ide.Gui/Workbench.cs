@@ -557,20 +557,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (activeLocationList != null) {
 				NavigationPoint next = activeLocationList.GetNextLocation ();
-				if (next != null) {
-					bool result = next.Show ();
-					if (!result) {
-						HashSet<NavigationPoint> visited = new HashSet<NavigationPoint> ();
-						visited.Add (next);
-						while (!result) {
-							next = activeLocationList.GetNextLocation ();
-							if (visited.Contains (next))
-								break;
-							visited.Add (next);
-							result = next.Show ();
-						}
-					}
-				}
+				if (next != null)
+					next.Show ();
 			}
 		}
 		
@@ -580,20 +568,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (activeLocationList != null) {
 				NavigationPoint next = activeLocationList.GetPreviousLocation ();
-				if (next != null) {
-					bool result = next.Show ();
-					if (!result) {
-						HashSet<NavigationPoint> visited = new HashSet<NavigationPoint> ();
-						visited.Add (next);
-						while (!result) {
-							next = activeLocationList.GetPreviousLocation ();
-							if (visited.Contains (next))
-								break;
-							visited.Add (next);
-							result = next.Show ();
-						}
-					}
-				}
+				if (next != null)
+					next.Show ();
 			}
 		}
 		

@@ -1,3 +1,18 @@
+2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Tasks/TaskStore.cs: Don't generate
+	  navigation points for tasks which don't have a file name.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs: Revert check
+	  for return value of Show, since it should always work.
+
+	* MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: Improved
+	  navigation point logging logic.
+
+	* MonoDevelop.Ide.Gui/TextEditor.cs: New event.
+
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:

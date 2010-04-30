@@ -377,7 +377,8 @@ namespace MonoDevelop.Ide.Tasks
 					n++;
 			}
 			
-			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity))
+			// Jump over tasks with different severity or with no file name
+			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity || string.IsNullOrEmpty (tasks [n].FileName)))
 				n++;
 			
 			Task ct = n != -1 && n < tasks.Count ? tasks [n] : null;
@@ -423,7 +424,7 @@ namespace MonoDevelop.Ide.Tasks
 					n--;
 			}
 			
-			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity))
+			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity || string.IsNullOrEmpty (tasks [n].FileName)))
 				n--;
 			
 			Task ct = n != -1 && n < tasks.Count ? tasks [n] : null;
