@@ -1,5 +1,11 @@
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  Fixed 'Bug 601028 - Move line reindenting flattens indents'.
+
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
 	  Fixed 'Bug 601007 - Error in highlight usages extension.'.
 

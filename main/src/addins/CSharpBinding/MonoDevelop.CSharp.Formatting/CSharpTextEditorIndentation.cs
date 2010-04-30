@@ -446,7 +446,7 @@ namespace MonoDevelop.CSharp.Formatting
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
 			LineSegment line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
-			
+
 			for (int i = line.Offset; i < line.Offset + line.EditableLength; i++) {
 				ctx.Push (textEditorData.Document.GetCharAt (i));
 			}
@@ -454,7 +454,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int pos = line.Offset;
 			
 			string curIndent = line.GetIndentation (textEditorData.Document);
-						
+			
 			int nlwsp = curIndent.Length;
 			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
 			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.Length && textEditorData.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
