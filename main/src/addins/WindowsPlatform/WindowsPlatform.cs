@@ -118,7 +118,7 @@ namespace MonoDevelop.Platform
 		                                                            IDictionary<string, string> environmentVariables, 
 		                                                            string title, bool pauseWhenFinished)
 		{
-			string args = "/C \"title " + title + " && \"" + psi.FileName + "\" " + psi.Arguments;
+			string args = "/C \"title " + title + " && \"" + command + "\" " + arguments;
 			if (pauseWhenFinished)
 			    args += " && pause\"";
 			else
