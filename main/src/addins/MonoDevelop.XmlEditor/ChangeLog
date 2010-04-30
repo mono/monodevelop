@@ -1,5 +1,24 @@
 2010-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanel.cs:
+	* MonoDevelop.XmlEditor.Gui/XmlEditorOptionsPanelWidget.cs:
+	* gtk-gui/MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget.cs:
+	  Added GUI for the 'auto insert punctuation' option.
+
+	* Makefile.am:
+	* MonoDevelop.XmlEditor.csproj:
+	* MonoDevelop.XmlEditor/XmlEditorOptions.cs:
+	* MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs: Renamed
+	  file.
+
+	* MonoDevelop.Xml.Formatting/XmlFormatterWriter.cs: Spelling.
+
+	* MonoDevelop.XmlEditor.addin.xml: Move panel from Style
+	  section to Behavior.
+
+2010-04-30  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs:
 	* MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs: Add
 	  settings to stop inserting snippets like ="" and />.

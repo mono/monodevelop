@@ -49,5 +49,10 @@ namespace MonoDevelop.XmlEditor.Gui
 			get { return showSchemaAnnotationCheck.Active; }
 			set { showSchemaAnnotationCheck.Active = value; }
 		}
+		
+		public bool AutoInsertFragments {
+			get { return autoAddPunctuationCheck.Active; }
+			set { autoAddPunctuationCheck.Active = value; }
+		}
 	}
 }

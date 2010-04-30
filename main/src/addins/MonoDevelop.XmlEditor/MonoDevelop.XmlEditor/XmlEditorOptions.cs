@@ -36,11 +36,11 @@ namespace MonoDevelop.XmlEditor
 	/// </summary>
 	public static class XmlEditorOptions
 	{
-		public static readonly string OptionsProperty = "XmlEditor.AddIn.Options";
-		public static readonly string ShowSchemaAnnotationPropertyName = "ShowSchemaAnnotation";
-		public static readonly string AutoCompleteElementsPropertyName = "AutoCompleteElements";
-		public static readonly string AutoInsertFragmentsPropertyName = "AutoInsertFragment";
-		public static readonly string AssociationPrefix = "Association";
+		internal static readonly string OptionsProperty = "XmlEditor.AddIn.Options";
+		internal static readonly string ShowSchemaAnnotationPropertyName = "ShowSchemaAnnotation";
+		internal static readonly string AutoCompleteElementsPropertyName = "AutoCompleteElements";
+		internal static readonly string AutoInsertFragmentsPropertyName = "AutoInsertFragment";
+		internal static readonly string AssociationPrefix = "Association";
 		
 		static Properties properties;
 
@@ -48,6 +48,10 @@ namespace MonoDevelop.XmlEditor
  		{
  			properties = PropertyService.Get (OptionsProperty, new Properties());
 			Properties.PropertyChanged += HandlePropertiesPropertyChanged;
+			
+			ShowSchemaAnnotation = properties.Get<bool> (ShowSchemaAnnotationPropertyName, false);
+			AutoCompleteElements = properties.Get<bool> (AutoCompleteElementsPropertyName, false);
+			AutoInsertFragments = properties.Get<bool> (AutoInsertFragmentsPropertyName, false);
 		}
 
  		static void HandlePropertiesPropertyChanged (object sender, PropertyChangedEventArgs e)

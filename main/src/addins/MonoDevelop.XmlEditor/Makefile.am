@@ -69,7 +69,7 @@ FILES =  \
 	MonoDevelop.XmlEditor/QualifiedName.cs \
 	MonoDevelop.XmlEditor/QualifiedNameCollection.cs \
 	MonoDevelop.XmlEditor/XmlDocumentParser.cs \
-	MonoDevelop.XmlEditor/XmlEditorAddInOptions.cs \
+	MonoDevelop.XmlEditor/XmlEditorOptions.cs \
 	MonoDevelop.XmlEditor/XmlEditorService.cs \
 	MonoDevelop.XmlEditor/XmlElementPath.cs \
 	MonoDevelop.XmlEditor/XmlFileExtensionNode.cs \

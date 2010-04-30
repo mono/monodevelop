@@ -113,7 +113,6 @@
     <Compile Include="MonoDevelop.XmlEditor\XmlParser.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlSchemaManager.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlSchemaAssociation.cs" />
-    <Compile Include="MonoDevelop.XmlEditor\XmlEditorAddInOptions.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlFileExtensions.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlEditorService.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlFileExtensionNode.cs" />
@@ -163,6 +162,7 @@
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormattingPolicyPanel.cs" />
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormattingPolicyPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanelWidget.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\XmlEditorOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="XmlEditor.glade">

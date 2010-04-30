@@ -13,7 +13,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanelWidget" design-size="367 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -23,13 +23,30 @@
           <widget class="Gtk.CheckButton" id="autoCompleteElementsCheck">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Autocomplete XML closing tags</property>
+            <property name="Label" translatable="yes">Automatically insert closing tags</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
             <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.CheckButton" id="autoAddPunctuationCheck">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Automatically insert punctuation (="", /&gt;, etc.)</property>
+            <property name="Active">True</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -46,7 +63,7 @@
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">2</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

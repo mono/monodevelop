@@ -99,7 +99,7 @@ namespace MonoDevelop.Xml.Formatting
 
 		Stream base_stream;
 		TextWriter source; // the input TextWriter to .ctor().
-		TextWritterWrapper writer;
+		TextWriterWrapper writer;
 		// It is used for storing xml:space, xml:lang and xmlns values.
 		StringWriter preserver;
 		string preserved_name;
@@ -165,7 +165,7 @@ namespace MonoDevelop.Xml.Formatting
 			if (writer == null)
 				throw new ArgumentNullException ("writer");
 			XmlNameTable name_table = new NameTable ();
-			this.writer = new TextWritterWrapper (writer, this);
+			this.writer = new TextWriterWrapper (writer, this);
 			if (writer is StreamWriter)
 				base_stream = ((StreamWriter) writer).BaseStream;
 			source = writer;
@@ -867,7 +867,7 @@ namespace MonoDevelop.Xml.Formatting
 					preserver = new StringWriter ();
 				else
 					preserver.GetStringBuilder ().Length = 0;
-				writer = new TextWritterWrapper (preserver, this);
+				writer = new TextWriterWrapper (preserver, this);
 
 				if (!isNSDecl) {
 					is_preserved_xmlns = false;
@@ -942,7 +942,7 @@ namespace MonoDevelop.Xml.Formatting
 				throw StateError ("End of attribute");
 
 			if (writer.Wrapped == preserver) {
-				writer = new TextWritterWrapper (source, this);
+				writer = new TextWriterWrapper (source, this);
 				string value = preserver.ToString ();
 				if (is_preserved_xmlns) {
 					if (preserved_name.Length > 0 &&
@@ -1893,7 +1893,7 @@ namespace MonoDevelop.Xml.Formatting
 		#endregion
 	}
 	
-	class TextWritterWrapper: TextWriter
+	class TextWriterWrapper: TextWriter
 	{
 		public TextWriter Wrapped;
 		XmlFormatterWriter formatter;
@@ -1904,7 +1904,7 @@ namespace MonoDevelop.Xml.Formatting
 		public int Column;
 		public int AttributesPerLine;
 		
-		public TextWritterWrapper (TextWriter wrapped, XmlFormatterWriter formatter)
+		public TextWriterWrapper (TextWriter wrapped, XmlFormatterWriter formatter)
 		{
 			this.Wrapped = wrapped;
 			this.formatter = formatter;

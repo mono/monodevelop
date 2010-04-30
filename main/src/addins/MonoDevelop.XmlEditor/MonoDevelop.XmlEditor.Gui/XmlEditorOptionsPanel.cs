@@ -40,7 +40,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			widget = new XmlEditorOptionsPanelWidget();
 			widget.AutoCompleteElements = XmlEditorOptions.AutoCompleteElements;
-			//widget.AutoInsertFragments = XmlEditorOptions.AutoInsertFragments;
+			widget.AutoInsertFragments = XmlEditorOptions.AutoInsertFragments;
 			widget.ShowSchemaAnnotation = XmlEditorOptions.ShowSchemaAnnotation;
 			return widget;
 		}
@@ -48,7 +48,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		public override void ApplyChanges ()
 		{
 			XmlEditorOptions.Properties.Set (XmlEditorOptions.AutoCompleteElementsPropertyName, widget.AutoCompleteElements);
-			//XmlEditorOptions.Properties.Set (XmlEditorOptions.AutoInsertFragmentsPropertyName, widget.AutoInsertFragments);
+			XmlEditorOptions.Properties.Set (XmlEditorOptions.AutoInsertFragmentsPropertyName, widget.AutoInsertFragments);
 			XmlEditorOptions.Properties.Set (XmlEditorOptions.ShowSchemaAnnotationPropertyName, widget.ShowSchemaAnnotation);
 		}
 	}
