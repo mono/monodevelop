@@ -49,7 +49,50 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring
 {
-	public class ImportSymbolCompletionData : IActionCompletionData
+	class GenerateNamespaceImport
+	{
+		public bool GenerateUsing { get; set; }
+		public bool InsertNamespace { get; set; }
+	}
+	
+	class ImportSymbolCache
+	{
+		Dictionary<string, GenerateNamespaceImport> cache = new Dictionary<string, GenerateNamespaceImport> ();
+		
+		public GenerateNamespaceImport GetResult (ProjectDom dom, ICompilationUnit unit, IType type, TextEditorData data)
+		{
+			GenerateNamespaceImport result;
+			if (cache.TryGetValue (type.Namespace, out result))
+				return result;
+			result = new GenerateNamespaceImport ();
+			cache[type.Namespace] = result;
+			
+			result.InsertNamespace  = false;
+			
+			DomLocation location = new DomLocation (data.Caret.Line, data.Caret.Column);
+			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
+				if (u.Namespaces.Any (ns => type.Namespace == ns)) {
+					result.GenerateUsing = false;
+					return result;
+				}
+			}
+			result.GenerateUsing = true;
+			string name = type.DecoratedFullName.Substring (type.Namespace.Length + 1);
+			
+			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
+				foreach (string ns in u.Namespaces) {
+					if (dom.SearchType (unit, unit.GetTypeAt (location), unit.GetMemberAt (location), ns + "." + name) != null) {
+						result.GenerateUsing = false;
+						result.InsertNamespace = true;
+						return result;
+					}
+				}
+			}
+			return result;
+		}
+	}
+		
+	class ImportSymbolCompletionData : IActionCompletionData
 	{
 		TextEditorData data;
 		IType type;
@@ -57,9 +100,12 @@ namespace MonoDevelop.Refactoring
 		ICompilationUnit unit;
 		ProjectDom dom;
 		MonoDevelop.Ide.Gui.Document doc;
-		public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, ProjectDom dom, IType type)
+		ImportSymbolCache cache;
+		
+		public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, ImportSymbolCache cache, ProjectDom dom, IType type)
 		{
 			this.doc = doc;
+			this.cache = cache;
 			this.dom = dom;
 			this.data = doc.TextEditorData;
 			this.ambience = doc.Project.Ambience;
@@ -68,37 +114,19 @@ namespace MonoDevelop.Refactoring
 		}
 		
 		bool initialized = false;
-		
-		bool generateUsing;
-		bool insertNamespace;
+		bool generateUsing, insertNamespace;
 		
 		void Initialize ()
 		{
 			if (initialized)
 				return;
 			initialized = true;
-			insertNamespace = false;
-			if (string.IsNullOrEmpty (type.Namespace))
+			if (string.IsNullOrEmpty (type.Namespace)) 
 				return;
-			DomLocation location = new DomLocation (data.Caret.Line, data.Caret.Column);
-			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
-				if (u.Namespaces.Any (ns => type.Namespace == ns)) {
-					generateUsing = false;
-					return;
-				}
-			}
-			generateUsing = true;
-			string name = type.DecoratedFullName.Substring (type.Namespace.Length + 1);
 			
-			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
-				foreach (string ns in u.Namespaces) {
-					if (dom.SearchType (unit, unit.GetTypeAt (location), unit.GetMemberAt (location), ns + "." + name) != null) {
-						generateUsing = false;
-						insertNamespace = true;
-						return;
-					}
-				}
-			}
+			var result = cache.GetResult (dom, unit, type, data);
+			generateUsing = result.GenerateUsing;
+			insertNamespace = result.InsertNamespace;
 		}
 		
 		#region IActionCompletionData implementation
@@ -177,7 +205,7 @@ namespace MonoDevelop.Refactoring
 	}
 	
 	public class ImportSymbolHandler: CommandHandler
-	{
+	{	
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -191,15 +219,16 @@ namespace MonoDevelop.Refactoring
 			
 			ProjectDom dom = ProjectDomService.GetProjectDom (doc.Project);
 			
+			ImportSymbolCache cache = new ImportSymbolCache ();
 			CompletionDataList completionList = new CompletionDataList ();
 			completionList.IsSorted = true;
 			foreach (IType type in dom.Types) {
-				completionList.Add (new ImportSymbolCompletionData (doc, dom, type));
+				completionList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
 			}
 			
 			foreach (var refDom in dom.References) {
 				foreach (IType type in refDom.Types) {
-					completionList.Add (new ImportSymbolCompletionData (doc, dom, type));
+					completionList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
 				}
 			}
 			
