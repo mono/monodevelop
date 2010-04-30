@@ -80,6 +80,9 @@ namespace MonoDevelop.Core.Assemblies
 			t.Start ();
 		}
 		
+		/// <summary>
+		/// Display name of the runtime. For example "The Mono Runtime 2.6"
+		/// </summary>
 		public virtual string DisplayName {
 			get {
 				if (string.IsNullOrEmpty (Version))
@@ -89,6 +92,9 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
+		/// <summary>
+		/// Unique identifier of this runtime. For example "Mono 2.6".
+		/// </summary>
 		public string Id {
 			get {
 				if (string.IsNullOrEmpty (Version))
@@ -97,36 +103,120 @@ namespace MonoDevelop.Core.Assemblies
 					return RuntimeId + " " + Version;
 			}
 		}
-		
+
+		/// <summary>
+		/// Core display name of the runtime. For example "The Mono Runtime"
+		/// </summary>
 		public virtual string DisplayRuntimeName {
 			get { return RuntimeId; }
 		}
 		
+		/// <summary>
+		/// Core identifier the runtime. For example, if there are several
+		/// versions of Mono installed, each of them will have "Mono" as RuntimeId
+		/// </summary>
 		public abstract string RuntimeId { get; }
 		
 		/// <summary>
+		/// Version of the runtime.
 		/// This string is strictly for displaying to the user or logging. It should never be used for version checks.
 		/// </summary>
 		public abstract string Version { get; }
 		
+		/// <summary>
+		/// Returns 'true' if this runtime is the one currently running MonoDevelop.
+		/// </summary>
 		public abstract bool IsRunning { get; }
 		
 		protected abstract void OnInitialize ();
 		
+		/// <summary>
+		/// Returns an IExecutionHandler which can be used to execute commands in this runtime.
+		/// </summary>
 		public abstract IExecutionHandler GetExecutionHandler ();
 		
+		/// <summary>
+		/// Returns an IAssemblyContext which can be used to discover assemblies through this runtime.
+		/// It includes assemblies from directories manually registered by the user.
+		/// </summary>
 		public IAssemblyContext AssemblyContext {
 			get { return composedAssemblyContext; }
 		}
 		
+		/// <summary>
+		/// Returns an IAssemblyContext which can be used to discover assemblies provided by this runtime
+		/// </summary>
 		public RuntimeAssemblyContext RuntimeAssemblyContext {
 			get { return assemblyContext; }
 		}
-		
+
+		/// <summary>
+		/// Given an assembly file name, returns the corresponding debug information file name.
+		/// (.mdb for Mono, .pdb for MS.NET)
+		/// </summary>
 		public abstract string GetAssemblyDebugInfoFile (string assemblyPath);
 		
+		/// <summary>
+		/// Executes an assembly using this runtime
+		/// </summary>
+		public Process ExecuteAssembly (string file, string arguments)
+		{
+			return ExecuteAssembly (file, arguments, null);
+		}
+		
+		/// <summary>
+		/// Executes an assembly using this runtime and the specified framework.
+		/// </summary>
+		public Process ExecuteAssembly (string file, string arguments, TargetFramework fx)
+		{
+			ProcessStartInfo pi = new ProcessStartInfo (file, arguments);
+			return ExecuteAssembly (pi, fx);
+		}
+
+		/// <summary>
+		/// Executes an assembly using this runtime.
+		/// </summary>
+		/// <param name="pinfo">
+		/// Information of the process to execute
+		/// </param>
+		/// <returns>
+		/// The started process.
+		/// </returns>
+		public Process ExecuteAssembly (ProcessStartInfo pinfo)
+		{
+			return ExecuteAssembly (pinfo, null);
+		}
+
+		/// <summary>
+		/// Executes an assembly using this runtime and the specified framework.
+		/// </summary>
+		/// <param name="pinfo">
+		/// Information of the process to execute
+		/// </param>
+		/// <param name="fx">
+		/// Framework on which the assembly has to be executed.
+		/// </param>
+		/// <returns>
+		/// The started process.
+		/// </returns>
 		public virtual Process ExecuteAssembly (ProcessStartInfo pinfo, TargetFramework fx)
 		{
+			if (fx == null) {
+				string fxId = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (this, pinfo.FileName);
+				fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);
+				if (!IsInstalled (fx)) {
+					// Look for a compatible framework which is installed
+					foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+						if (IsInstalled (f) && f.IsCompatibleWithFramework (fx.Id)) {
+							fx = f;
+							break;
+						}
+					}
+				}
+				if (!IsInstalled (fx))
+					throw new InvalidOperationException (string.Format ("No compatible framework found for assembly '{0}'", pinfo.FileName));
+			}
+			
 			// Make a copy of the ProcessStartInfo because we are going to modify it
 			
 			ProcessStartInfo cp = new ProcessStartInfo ();
@@ -196,28 +286,48 @@ namespace MonoDevelop.Core.Assemblies
 			return GetBackend (fx).GetFrameworkFolders ();
 		}
 		
-		//environment variables that should be set when running tools in this environment
+		/// <summary>
+		/// Returns a list of environment variables that should be set when running tools using this runtime
+		/// </summary>
 		public virtual Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
 		{
 			return GetBackend (fx).GetToolsEnvironmentVariables ();
 		}
 		
+		/// <summary>
+		/// Looks for the specified tool in this runtime. The name can be a script or a .exe.
+		/// </summary>
 		public virtual string GetToolPath (TargetFramework fx, string toolName)
 		{
 			return GetBackend (fx).GetToolPath (toolName);
 		}
 		
+		/// <summary>
+		/// Returns a list of paths which can contain tools for this runtime.
+		/// </summary>
 		public virtual IEnumerable<string> GetToolsPaths (TargetFramework fx)
 		{
 			return GetBackend (fx).GetToolsPaths ();
 		}
-		
+
+		/// <summary>
+		/// Returns the MSBuild bin path for this runtime.
+		/// </summary>
 		public abstract string GetMSBuildBinPath (TargetFramework fx);
-		
+
+		/// <summary>
+		/// Returns all GAC locations for this runtime.
+		/// </summary>
 		internal protected abstract IEnumerable<string> GetGacDirectories ();
 		
 		EventHandler initializedEvent;
-			
+
+		/// <summary>
+		/// This event is fired when the runtime has finished initializing. Runtimes are initialized
+		/// in a background thread, so they are not guaranteed to be ready just after the IDE has
+		/// finished loading. If the runtime is already initialized when the event is subscribed, then the
+		/// subscribed handler will be automatically invoked.
+		/// </summary>
 		public event EventHandler Initialized {
 			add {
 				lock (initEventLock) {
@@ -304,17 +414,54 @@ namespace MonoDevelop.Core.Assemblies
 					assemblyContext.UnregisterPackage (pi.Name, pi.Version);
 			}
 		}
-		
+
+		/// <summary>
+		/// Registers a package. It can be used by add-ins to register a package for a set of assemblies
+		/// they provide.
+		/// </summary>
+		/// <param name="pinfo">
+		/// Information about the package.
+		/// </param>
+		/// <param name="assemblyFiles">
+		/// Assemblies that belong to the package
+		/// </param>
+		/// <returns>
+		/// The registered package
+		/// </returns>
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, params string[] assemblyFiles)
 		{
 			return RegisterPackage (pinfo, true, assemblyFiles);
 		}
-		
+
+		/// <summary>
+		/// Registers a package.
+		/// </summary>
+		/// <param name="pinfo">
+		/// Information about the package.
+		/// </param>
+		/// <param name="isInternal">
+		/// Set to true if this package is provided by an add-in and is not installed in the system.
+		/// </param>
+		/// <param name="assemblyFiles">
+		/// A <see cref="System.String[]"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="SystemPackage"/>
+		/// </returns>
 		public SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, params string[] assemblyFiles)
 		{
 			return assemblyContext.RegisterPackage (pinfo, isInternal, assemblyFiles);
 		}
 		
+		/// <summary>
+		/// Checks if a framework is installed in this runtime.
+		/// </summary>
+		/// <param name="fx">
+		/// The runtime to check.
+		/// </param>
+		/// <returns>
+		/// True if the framework is installed
+		/// </returns>
 		public bool IsInstalled (TargetFramework fx)
 		{
 			return GetBackend (fx).IsInstalled;
