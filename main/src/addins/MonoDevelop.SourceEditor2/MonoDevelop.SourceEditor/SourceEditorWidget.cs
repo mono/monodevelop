@@ -915,7 +915,6 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		[CommandHandler (SearchCommands.EmacsFindNext)]
 		public void EmacsFindNext ()
 		{
 			if (searchAndReplaceWidget == null) {
@@ -925,7 +924,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		[CommandHandler (SearchCommands.EmacsFindPrevious)]
 		public void EmacsFindPrevious ()
 		{
 			if (searchAndReplaceWidget == null) {
@@ -935,37 +933,31 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		[CommandHandler (SearchCommands.Find)]
 		public void ShowSearchWidget ()
 		{
 			ShowSearchReplaceWidget (false);
 		}
 		
-		[CommandHandler (SearchCommands.Replace)]
 		public void ShowReplaceWidget ()
 		{
 			ShowSearchReplaceWidget (true);
 		}
 		
-		[CommandUpdateHandler (SearchCommands.UseSelectionForFind)]
-		protected void OnUpdateUseSelectionForFind (CommandInfo info)
+		internal void OnUpdateUseSelectionForFind (CommandInfo info)
 		{
 			info.Enabled = searchAndReplaceWidget != null && TextEditor.IsSomethingSelected;
 		}
 		
-		[CommandHandler (SearchCommands.UseSelectionForFind)]
 		public void UseSelectionForFind ()
 		{
 			SetSearchPatternToSelection ();
 		}
 		
-		[CommandUpdateHandler (SearchCommands.UseSelectionForReplace)]
-		protected void OnUpdateUseSelectionForReplace (CommandInfo info)
+		internal void OnUpdateUseSelectionForReplace (CommandInfo info)
 		{
 			info.Enabled = searchAndReplaceWidget != null && TextEditor.IsSomethingSelected;
 		}
 		
-		[CommandHandler (SearchCommands.UseSelectionForReplace)]
 		public void UseSelectionForReplace ()
 		{
 			SetReplacePatternToSelection ();
@@ -1019,7 +1011,6 @@ namespace MonoDevelop.SourceEditor
 			SetSearchOptions ();
 		}
 		
-		[CommandHandler (SearchCommands.GotoLineNumber)]
 		public void ShowGotoLineNumberWidget ()
 		{
 			if (gotoLineNumberWidget == null) {
@@ -1074,7 +1065,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		[CommandHandler (SearchCommands.FindNext)]
 		public SearchResult FindNext ()
 		{
 			return FindNext (true);
@@ -1098,7 +1088,6 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		[CommandHandler (SearchCommands.FindPrevious)]
 		public SearchResult FindPrevious ()
 		{
 			return FindPrevious (true);
@@ -1138,7 +1127,6 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidget.ReplacePattern = TextEditor.SelectedText;
 		}
 		
-		[CommandHandler (SearchCommands.FindNextSelection)]
 		public SearchResult FindNextSelection ()
 		{
 			SetSearchPatternToSelection ();
@@ -1149,7 +1137,6 @@ namespace MonoDevelop.SourceEditor
 			return FindNext ();
 		}
 	
-		[CommandHandler (SearchCommands.FindPreviousSelection)]
 		public SearchResult FindPreviousSelection ()
 		{
 			SetSearchPatternToSelection ();
@@ -1188,8 +1175,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region Help
-
-		[CommandHandler (HelpCommands.Help)]
 		internal void MonodocResolver ()
 		{
 			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
@@ -1198,7 +1183,6 @@ namespace MonoDevelop.SourceEditor
 				IdeApp.HelpOperations.ShowHelp (url);
 		}
 		
-		[CommandUpdateHandler (HelpCommands.Help)]
 		internal void MonodocResolverUpdate (CommandInfo cinfo)
 		{
 			ResolveResult res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset);
@@ -1209,8 +1193,7 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region commenting and indentation
-		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
-		protected void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
+		internal void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
 		{
 			List<string> lineComments;
 			if (Document.SyntaxMode.Properties.TryGetValue ("LineComment", out lineComments)) {
@@ -1268,7 +1251,6 @@ namespace MonoDevelop.SourceEditor
 			Document.EndAtomicUndo ();
 		}
 		
-		[CommandHandler (EditCommands.ToggleCodeComment)]
 		public void ToggleCodeComment ()
 		{
 			bool comment = false;
@@ -1294,7 +1276,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		[CommandUpdateHandler (SourceEditorCommands.ToggleErrorTextMarker)]
 		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
 		{
 			LineSegment line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
@@ -1306,7 +1287,6 @@ namespace MonoDevelop.SourceEditor
 			info.Visible = marker != null;
 		}
 		
-		[CommandHandler (SourceEditorCommands.ToggleErrorTextMarker)]
 		public void OnToggleErrorTextMarker ()
 		{
 			LineSegment line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
@@ -1406,17 +1386,6 @@ namespace MonoDevelop.SourceEditor
 			Document.CommitMultipleLineUpdate (startLineNr, endLineNr);
 		}
 		
-		[CommandHandler (EditCommands.IndentSelection)]
-		public void IndentSelection ()
-		{
-			MiscActions.IndentSelection (TextEditor.GetTextEditorData ());
-		}
-		
-		[CommandHandler (EditCommands.UnIndentSelection)]
-		public void UnIndentSelection ()
-		{
-			MiscActions.RemoveIndentSelection (TextEditor.GetTextEditorData ());
-		}
 		#endregion
 		
 	}

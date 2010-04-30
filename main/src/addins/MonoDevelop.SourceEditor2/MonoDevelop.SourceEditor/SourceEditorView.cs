@@ -1744,5 +1744,133 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.Repaint ();
 		}
 		
+		#region widget command handlers
+		[CommandHandler (SearchCommands.EmacsFindNext)]
+		public void EmacsFindNext ()
+		{
+			widget.EmacsFindNext ();
+		}
+		
+		[CommandHandler (SearchCommands.EmacsFindPrevious)]
+		public void EmacsFindPrevious ()
+		{
+			widget.EmacsFindPrevious ();
+		}
+		
+		[CommandHandler (SearchCommands.Find)]
+		public void ShowSearchWidget ()
+		{
+			widget.ShowSearchWidget ();
+		}
+		
+		[CommandHandler (SearchCommands.Replace)]
+		public void ShowReplaceWidget ()
+		{
+			widget.ShowReplaceWidget ();
+		}
+		
+		[CommandUpdateHandler (SearchCommands.UseSelectionForFind)]
+		protected void OnUpdateUseSelectionForFind (CommandInfo info)
+		{
+			widget.OnUpdateUseSelectionForFind (info);
+		}
+		
+		[CommandHandler (SearchCommands.UseSelectionForFind)]
+		public void UseSelectionForFind ()
+		{
+			widget.UseSelectionForFind ();
+		}
+		
+		[CommandUpdateHandler (SearchCommands.UseSelectionForReplace)]
+		protected void OnUpdateUseSelectionForReplace (CommandInfo info)
+		{
+			widget.OnUpdateUseSelectionForReplace (info);
+		}
+		
+		[CommandHandler (SearchCommands.UseSelectionForReplace)]
+		public void UseSelectionForReplace ()
+		{
+			widget.UseSelectionForReplace ();
+		}
+		
+		[CommandHandler (SearchCommands.GotoLineNumber)]
+		public void ShowGotoLineNumberWidget ()
+		{
+			widget.ShowGotoLineNumberWidget ();
+		}
+		
+		[CommandHandler (SearchCommands.FindNext)]
+		public SearchResult FindNext ()
+		{
+			return widget.FindNext ();
+		}
+		
+		[CommandHandler (SearchCommands.FindPrevious)]
+		public SearchResult FindPrevious ()
+		{
+			return widget.FindPrevious ();
+		}
+		
+		[CommandHandler (SearchCommands.FindNextSelection)]
+		public SearchResult FindNextSelection ()
+		{
+			return widget.FindNextSelection ();
+		}
+		
+		[CommandHandler (SearchCommands.FindPreviousSelection)]
+		public SearchResult FindPreviousSelection ()
+		{
+			return widget.FindPreviousSelection ();
+		}
+		
+		[CommandHandler (HelpCommands.Help)]
+		internal void MonodocResolver ()
+		{
+			widget.MonodocResolver ();
+		}
+		
+		[CommandUpdateHandler (HelpCommands.Help)]
+		internal void MonodocResolverUpdate (CommandInfo cinfo)
+		{
+			widget.MonodocResolverUpdate (cinfo);
+		}
+		
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
+		internal void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
+		{
+			widget.OnUpdateToggleComment (info);
+		}
+		
+		[CommandHandler (EditCommands.ToggleCodeComment)]
+		public void ToggleCodeComment ()
+		{
+			widget.ToggleCodeComment ();
+		}
+		
+		[CommandUpdateHandler (SourceEditorCommands.ToggleErrorTextMarker)]
+		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
+		{
+			widget.OnUpdateToggleErrorTextMarker (info);
+		}
+		
+		[CommandHandler (SourceEditorCommands.ToggleErrorTextMarker)]
+		public void OnToggleErrorTextMarker ()
+		{
+			widget.OnToggleErrorTextMarker ();
+		}
+
+		[CommandHandler (EditCommands.IndentSelection)]
+		public void IndentSelection ()
+		{
+			Mono.TextEditor.MiscActions.IndentSelection (widget.TextEditor.GetTextEditorData ());
+		}
+		
+		[CommandHandler (EditCommands.UnIndentSelection)]
+		public void UnIndentSelection ()
+		{
+			Mono.TextEditor.MiscActions.RemoveIndentSelection (widget.TextEditor.GetTextEditorData ());
+		}
+		
+		#endregion
 	}
 } 

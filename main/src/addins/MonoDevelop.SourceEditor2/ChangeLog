@@ -1,6 +1,12 @@
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Moved the
+	  command handlers to the view.
+
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/GotoLineNumberWidget.cs:
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
