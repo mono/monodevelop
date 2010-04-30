@@ -259,13 +259,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			if (fontChanger != null) {
 				fontChanger.Dispose ();
 				fontChanger = null;
 			}
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		#endregion
