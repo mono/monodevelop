@@ -177,7 +177,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			Project sourceProject;
 			System.Collections.Generic.IEnumerable<ProjectFile> groupedChildren = null;
-			bool isLink = false;
 			
 			bool ask;
 			
@@ -191,7 +190,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				ProjectFile file = (ProjectFile) dataObject;
 				sourceProject = file.Project;
 				if (sourceProject != null && file.IsLink) {
-					isLink = true;
 					source = sourceProject.BaseDirectory.Combine (file.ProjectVirtualPath);
 				} else {
 					source = file.FilePath;

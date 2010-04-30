@@ -99,7 +99,6 @@ namespace MonoDevelop.Ide.CustomTools
 			FilePath genFilePath = FilePath.Null;
 			string genFileName = null;
 			try {
-				string genNameStr;
 				errors = tool.Generate (file, out genFileName);
 				genFilePath = genFileName;
 				if (genFilePath.IsNullOrEmpty) {

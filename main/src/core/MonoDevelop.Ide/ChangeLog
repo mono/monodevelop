@@ -1,5 +1,18 @@
 2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components/PathBar.cs:
+	* MonoDevelop.Components/SearchEntry.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs:
+	* MonoDevelop.Ide.CustomTools/CustomToolService.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:
+	* MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Fix warnings.
+
+2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Tasks/TaskStore.cs: Don't generate
 	  navigation points for tasks which don't have a file name.
 

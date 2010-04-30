@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				Menu menu = new Menu ();
 				
 				bool itemsAdded = false;
-				bool extraItemsAdded = false;
 				
 				foreach (StringTagDescription[] tags in TagModel.GetTagsGrouped ()) {
 					if (itemsAdded) {

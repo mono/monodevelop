@@ -137,7 +137,6 @@ namespace MonoDevelop.Components
 			
 		}
 
-		Gtk.Label statusLabel;
 		Gtk.EventBox statusLabelEventBox;
 		public Gtk.EventBox AddLabelWidget (Gtk.Label label)
 		{

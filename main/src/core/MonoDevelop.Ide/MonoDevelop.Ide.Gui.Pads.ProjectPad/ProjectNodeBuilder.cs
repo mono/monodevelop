@@ -247,7 +247,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else {
 					// We can't use IsExternalToProject here since the ProjectFile has
 					// already been removed from the project
-					bool isLink = !file.Link.IsNullOrEmpty || !file.Name.StartsWith (project.BaseDirectory);
 					string parentPath = file.IsLink
 						? project.BaseDirectory.Combine (file.Link.IsNullOrEmpty? file.FilePath.FileName : file.Link.ToString ()).ParentDirectory
 						: file.FilePath.ParentDirectory;

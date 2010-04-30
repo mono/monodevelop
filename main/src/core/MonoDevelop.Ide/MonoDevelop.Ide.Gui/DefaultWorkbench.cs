@@ -956,9 +956,6 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
-			//FIXME: Mac-ify this. The control key use is hardcoded into DocumentSwitcher too
-			Gdk.ModifierType tabSwitchModifier = Gdk.ModifierType.ControlMask;
-			
 			// Handle Alt+1-0 keys
 			Gdk.ModifierType winSwitchModifier = PropertyService.IsMac
 				? KeyBindingManager.SelectionModifierControl

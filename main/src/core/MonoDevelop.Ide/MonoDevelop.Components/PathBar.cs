@@ -65,7 +65,7 @@ namespace MonoDevelop.Components
 			this.createMenuForItem = createMenuForItem;
 		}
 		
-		public string[] Path { get { return path; } }
+		public new string[] Path { get { return path; } }
 		public int ActiveIndex { get { return activeIndex; } }
 		
 		public void SetPath (string[] path)

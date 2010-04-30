@@ -91,8 +91,8 @@ namespace MonoDevelop.Ide.Gui.Content
 				autoHideCompletionWindow = false;
 			}
 			
-			int oldPos = Editor.CursorPosition;
-			int oldLen = Editor.TextLength;
+//			int oldPos = Editor.CursorPosition;
+//			int oldLen = Editor.TextLength;
 			
 			res = base.KeyPress (key, keyChar, modifier);
 			

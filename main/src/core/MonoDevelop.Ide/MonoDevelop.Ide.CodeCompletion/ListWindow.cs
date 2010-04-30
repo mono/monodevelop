@@ -398,10 +398,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		class WordComparer : IComparer <KeyValuePair<int, string>>
 		{
 			string filterWord;
-			List<int> filteredItems;
-			public WordComparer (List<int> filteredItems, string filterWord)
+
+			public WordComparer (string filterWord)
 			{
-				this.filteredItems = filteredItems;
 				this.filterWord = filterWord ?? "";
 			}
 			
@@ -461,7 +460,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 			
-			ListWindow.WordComparer comparer = new WordComparer (list.filteredItems, partialWord);
+			ListWindow.WordComparer comparer = new WordComparer (partialWord);
 			if (words.Count > 0) {
 				words.Sort (comparer);
 				idx = words[0].Key;
