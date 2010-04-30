@@ -1137,7 +1137,7 @@ namespace Mono.TextEditor
 		List<TextMarker> extendingTextMarkers = new List<TextMarker> ();
 		public IEnumerable<LineSegment> LinesWithExtendingTextMarkers {
 			get {
-				return from marker in extendingTextMarkers select marker.LineSegment;
+				return from marker in extendingTextMarkers where marker.LineSegment != null select marker.LineSegment;
 			}
 		}
 		
@@ -1169,6 +1169,8 @@ namespace Mono.TextEditor
 		
 		static int CompareMarkers (TextMarker left, TextMarker right)
 		{
+			if (left.LineSegment == null || right.LineSegment == null)
+				return 0;
 			return left.LineSegment.Offset.CompareTo (right.LineSegment.Offset);
 		}
 		
