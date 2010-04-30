@@ -670,7 +670,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int curItem = 0;
 			if (InCategoryMode) {
-				Console.WriteLine (1);
 				foreach (Category category in this.categories) {
 					if (category.CompletionCategory != null) {
 						if (!startAtPage || curItem >= page) {
