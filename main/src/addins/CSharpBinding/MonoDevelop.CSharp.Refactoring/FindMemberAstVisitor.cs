@@ -370,6 +370,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			return false;
 		}
 		
+		bool IsSearchTextAt (int startLine, int startColumn)
+		{
+			int position = file.GetPositionFromLineColumn (startLine, startColumn);
+			
+			if ((position == 0 || !IsIdentifierPart (file.GetCharAt (position - 1))) && 
+			    (position + searchedMemberName.Length >= file.Length  || !IsIdentifierPart (file.GetCharAt (position + searchedMemberName.Length))) &&
+			    file.GetText (position, position + searchedMemberName.Length) == searchedMemberName) {
+				return true;
+			}
+			return false;
+		}
+		
 		void CheckNode (ICSharpCode.NRefactory.Ast.INode node)
 		{
 			if (IsSearchedNode (node)) {
@@ -394,14 +406,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (this.searchedMember is IType) {
 				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == file.Name) &&
 				    ((IType)this.searchedMember).FullName == CurrentTypeFullName &&
-				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count)
+				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count &&
+				    IsSearchTextAt (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column))
 					AddUniqueReference (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column, this.searchedMemberName);
 			}
 			if (this.searchedMember is IMethod) {
 				IMethod method = (IMethod)this.searchedMember; 
-				if (method.IsConstructor)
+				if (method.IsConstructor &&
+				    IsSearchTextAt (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column))
 					CheckNode (constructorDeclaration);
-				
 			}
 			
 			return base.VisitConstructorDeclaration (constructorDeclaration, data);
@@ -413,7 +426,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (this.searchedMember is IType) {
 				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == file.Name) &&
 				    ((IType)this.searchedMember).FullName == CurrentTypeFullName && 
-				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count)
+				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count && 
+				    IsSearchTextAt (destructorDeclaration.StartLocation.Line, destructorDeclaration.StartLocation.Column + 1))
 					AddUniqueReference (destructorDeclaration.StartLocation.Line, destructorDeclaration.StartLocation.Column + 1, this.searchedMemberName);
 			}
 			

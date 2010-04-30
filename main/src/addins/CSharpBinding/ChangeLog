@@ -1,5 +1,11 @@
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  fixed 'Bug 601021 - Identifier highlighting assumes
+	  constructors but draws box incorrectly'.
+
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: fixed
 	  'Bug 601169 - IntelliSense ignores inner classes'.
 
