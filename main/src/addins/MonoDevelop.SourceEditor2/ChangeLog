@@ -1,3 +1,12 @@
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/GotoLineNumberWidget.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
+	  IntPtr exception.
+
 2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Always fire

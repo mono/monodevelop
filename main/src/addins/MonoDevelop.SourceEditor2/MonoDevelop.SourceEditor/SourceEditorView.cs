@@ -107,7 +107,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override Gtk.Widget Control {
 			get {
-				return widget;
+				return widget.Vbox;
 			}
 		}
 		
@@ -176,7 +176,6 @@ namespace MonoDevelop.SourceEditor
 				FireCompletionContextChanged ();
 			};
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
-			widget.ShowAll ();
 			
 			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
@@ -905,7 +904,7 @@ namespace MonoDevelop.SourceEditor
 					view.widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
 					view.widget.TextEditor.GrabFocus ();
 					view.widget.TextEditor.CenterToCaret ();
-					view.widget.ExposeEvent -= Run;
+					view.widget.Vbox.ExposeEvent -= Run;
 				} finally {
 					view.widget.TextEditor.Caret.AutoScrollToCaret = true;
 					if (highlightCaretLine) {
@@ -924,9 +923,9 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
-			if (widget.Allocation.Width <= 1) {
+			if (widget.Vbox.Allocation.Width <= 1) {
 				SetCaret setCaret = new SetCaret (this, line, column, highlight);
-				widget.ExposeEvent += setCaret.Run;
+				widget.Vbox.ExposeEvent += setCaret.Run;
 			} else {
 				GLib.Timeout.Add (20, delegate {
 					new SetCaret (this, line, column, highlight).Run (null, null);
@@ -1206,7 +1205,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Gtk.Style GtkStyle { 
 			get {
-				return widget.Style.Copy ();
+				return widget.Vbox.Style.Copy ();
 			}
 		}
 		public void Replace (int offset, int count, string text)
@@ -1228,7 +1227,7 @@ namespace MonoDevelop.SourceEditor
 			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (loc);
 			int tx, ty;
 			
-			widget.ParentWindow.GetOrigin (out tx, out ty);
+			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditorContainer.Allocation.X;
 			ty += widget.TextEditorContainer.Allocation.Y;
 			result.TriggerXCoord = tx + p.X + TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;

@@ -97,7 +97,7 @@ namespace MonoDevelop.SourceEditor
 			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
 			TextEditorContainer.EditorContainerChild containerChild = ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[container]);
 			if (newX != containerChild.X) {
-				this.searchEntry.WidthRequest = widget.Allocation.Width / 3;
+				this.searchEntry.WidthRequest = widget.Vbox.Allocation.Width / 3;
 				containerChild.X = newX;
 				widget.TextEditorContainer.QueueResize ();
 			}
@@ -120,7 +120,7 @@ namespace MonoDevelop.SourceEditor
 			this.buttonSearchMode.TooltipText = GettextCatalog.GetString ("Toggle between search and replace mode");
 			this.searchEntry.Ready = true;
 			this.searchEntry.Visible = true;
-			this.searchEntry.WidthRequest = widget.Allocation.Width / 3;
+			this.searchEntry.WidthRequest = widget.Vbox.Allocation.Width / 3;
 			this.searchEntry.ForceFilterButtonVisible = true;
 			replaceWidgets = new Widget [] {
 		//		labelReplace,

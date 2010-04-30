@@ -44,7 +44,7 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.SourceEditor
 {
 	
-	class SourceEditorWidget : Gtk.VBox, ITextEditorExtension
+	class SourceEditorWidget : ITextEditorExtension
 	{
 		SourceEditorView view;
 		ScrolledWindow mainsw;
@@ -122,13 +122,13 @@ namespace MonoDevelop.SourceEditor
 					classBrowser = new NavigationBar (this);
 					classBrowser.StatusBox.UpdateWidth ();
 					this.UpdateLineCol ();
-					this.PackStart (classBrowser, false, false, CHILD_PADDING);
-					this.ReorderChild (classBrowser, 0);
+					vbox.PackStart (classBrowser, false, false, CHILD_PADDING);
+					vbox.ReorderChild (classBrowser, 0);
 					PopulateClassCombo (threaded);
 				}
 			} else {
 				if (classBrowser != null) {
-					this.Remove (classBrowser);
+					vbox.Remove (classBrowser);
 					classBrowser.Destroy ();
 					classBrowser = null;
 				}
@@ -184,18 +184,23 @@ namespace MonoDevelop.SourceEditor
 			args.RetVal = true;
 		}
 		
+		Gtk.VBox vbox = new Gtk.VBox ();
+		public Gtk.VBox Vbox {
+			get { return this.vbox; }
+		}
+		
 		TextEditorContainer textEditorContainer;
 		public SourceEditorWidget (SourceEditorView view)
 		{
 			this.view = view;
-			this.SetSizeRequest (32, 32);
+			vbox.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
 			mainsw = new ScrolledWindow ();
 			mainsw.BorderWidth = 0;
 			mainsw.ShadowType = ShadowType.In;
 			this.textEditorContainer = new TextEditorContainer (textEditor);
 			mainsw.Child = textEditorContainer;
-			this.PackStart (mainsw, true, true, 0);
+			vbox.PackStart (mainsw, true, true, 0);
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			this.textEditor.Errors = errors;
 			options = this.textEditor.Options;
@@ -214,17 +219,27 @@ namespace MonoDevelop.SourceEditor
 			UpdateLineCol ();
 			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 			//			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
-			this.BorderWidth = 0;
-			this.Spacing = 0;
+			vbox.BorderWidth = 0;
+			vbox.Spacing = 0;
+			vbox.Focused += delegate {
+				UpdateLineCol ();
+			};
+			vbox.Destroyed += delegate {
+						isDisposed = true;
+				StopParseInfoThread ();
+				KillWidgets ();
+				mainsw.ButtonPressEvent -= PrepareEvent;
+				
+				this.textEditor = null;
+				this.lastActiveEditor = null;
+				this.splittedTextEditor = null;
+				view = null;
+				
+				ProjectDomService.ParsedDocumentUpdated -= OnParseInformationChanged;
+				IdeApp.Workbench.StatusBar.ClearCaretState ();
+			};
+			vbox.ShowAll ();
 		}
-		
-		protected override bool OnFocused (DirectionType direction)
-		{
-			bool res = base.OnFocused (direction);
-			UpdateLineCol ();
-			return res;
-		}
-		
 		
 		void ResetFocusChain ()
 		{
@@ -240,7 +255,12 @@ namespace MonoDevelop.SourceEditor
 			if (this.classBrowser != null) {
 				focusChain.Add (this.classBrowser);
 			}
-			this.FocusChain = focusChain.ToArray ();
+			vbox.FocusChain = focusChain.ToArray ();
+		}
+		
+		public void Dispose ()
+		{
+			// nothing
 		}
 		
 		#region Error underlining
@@ -503,25 +523,7 @@ namespace MonoDevelop.SourceEditor
 			error.AddToLine (this.TextEditor.Document);
 		}
 		#endregion
-		
-		protected override void OnDestroyed ()
-		{
-			if (!isDisposed) {
-				isDisposed = true;
-				StopParseInfoThread ();
-				KillWidgets ();
-				mainsw.ButtonPressEvent -= PrepareEvent;
-				
-				this.textEditor = null;
-				this.lastActiveEditor = null;
-				this.splittedTextEditor = null;
-				view = null;
-				
-				ProjectDomService.ParsedDocumentUpdated -= OnParseInformationChanged;
-				IdeApp.Workbench.StatusBar.ClearCaretState ();
-			}			
-			base.OnDestroyed ();
-		}
+	
 		
 		Gtk.Paned splitContainer = null;
 		public bool IsSplitted {
@@ -532,7 +534,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool EditorHasFocus {
 			get {
-				Gtk.Container c = this;
+				Gtk.Container c = vbox;
 				while (c != null) {
 					if (c.FocusChild == textEditor)
 						return true;
@@ -572,13 +574,13 @@ namespace MonoDevelop.SourceEditor
 				lastActiveEditor = this.textEditor = splittedTextEditor;
 				splittedTextEditor = null;
 			}
-			this.Remove (splitContainer);
+			vbox.Remove (splitContainer);
 			splitContainer.Destroy ();
 			splitContainer = null;
 			
 			RecreateMainSw ();
-			this.PackStart (mainsw, true, true, 0);
-			this.ShowAll ();
+			vbox.PackStart (mainsw, true, true, 0);
+			vbox.ShowAll ();
 			mainsw.Vadjustment.Value = vadjustment; 
 			mainsw.Hadjustment.Value = hadjustment;
 		}
@@ -601,7 +603,7 @@ namespace MonoDevelop.SourceEditor
 			
 			if (splitContainer != null)
 				Unsplit ();
-			this.Remove (this.mainsw);
+			vbox.Remove (this.mainsw);
 			
 			RecreateMainSw ();
 
@@ -631,10 +633,10 @@ namespace MonoDevelop.SourceEditor
 			secondsw.Child = this.splittedTextEditorContainer;
 			splitContainer.Add2 (secondsw);
 			
-			this.PackStart (splitContainer, true, true, 0);
-			this.splitContainer.Position = (vSplit ? this.Allocation.Height : this.Allocation.Width) / 2 - 1;
+			vbox.PackStart (splitContainer, true, true, 0);
+			this.splitContainer.Position = (vSplit ? vbox.Allocation.Height : vbox.Allocation.Width) / 2 - 1;
 			
-			this.ShowAll ();
+			vbox.ShowAll ();
 			secondsw.Vadjustment.Value = mainsw.Vadjustment.Value = vadjustment; 
 			secondsw.Hadjustment.Value = mainsw.Hadjustment.Value = hadjustment;
 		}
@@ -704,8 +706,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			view.WarnOverwrite = true;
-			this.PackStart (messageBar, false, false, CHILD_PADDING);
-			this.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
+			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
+			vbox.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
 			messageBar.ShowAll ();
 
 			messageBar.QueueDraw ();
@@ -761,8 +763,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			view.WarnOverwrite = true;
-			this.PackStart (messageBar, false, false, CHILD_PADDING);
-			this.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
+			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
+			vbox.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
 			messageBar.ShowAll ();
 
 			messageBar.QueueDraw ();
@@ -774,8 +776,8 @@ namespace MonoDevelop.SourceEditor
 		public void RemoveMessageBar ()
 		{
 			if (messageBar != null) {
-				if (messageBar.Parent == this)
-					this.Remove (messageBar);
+				if (messageBar.Parent == vbox)
+					vbox.Remove (messageBar);
 				messageBar.Destroy ();
 				messageBar = null;
 			}
@@ -986,7 +988,7 @@ namespace MonoDevelop.SourceEditor
 				KillWidgets ();
 				searchAndReplaceWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
 				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
-				searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (vbox.Style.Background (StateType.Normal)));
 				
 				searchAndReplaceWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (this, searchAndReplaceWidgetFrame);
 				
@@ -1026,7 +1028,7 @@ namespace MonoDevelop.SourceEditor
 				
 				gotoLineNumberWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
 				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
-				gotoLineNumberWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				gotoLineNumberWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (vbox.Style.Background (StateType.Normal)));
 				
 				gotoLineNumberWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (this, gotoLineNumberWidgetFrame);
 				gotoLineNumberWidgetFrame.ShowAll ();
@@ -1455,8 +1457,5 @@ namespace MonoDevelop.SourceEditor
 				doc.RemoveMarker (Line, marker);
 			}
 		}
-		
-		
 	}
-	
 }

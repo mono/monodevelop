@@ -190,7 +190,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OptionsChanged (object sender, EventArgs args)
 		{
 			if (view.Control != null) {
-				((SourceEditorWidget)view.Control).ShowClassBrowser = Options.EnableQuickFinder;
+				((SourceEditorView)view).SourceEditorWidget.ShowClassBrowser = Options.EnableQuickFinder;
 				if (!Options.ShowFoldMargin)
 					this.Document.ClearFoldSegments ();
 			}
