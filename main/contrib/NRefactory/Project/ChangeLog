@@ -1,3 +1,7 @@
+2010-04-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* NRefactory.csproj: Emit debug symbols.
+
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Src\PrettyPrinter\AbstractOutputFormatter.cs:

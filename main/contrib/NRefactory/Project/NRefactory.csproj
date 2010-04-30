@@ -31,8 +31,9 @@
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <DefineConstants>TEST;DEBUG;NET35</DefineConstants>
     <OutputPath>..\..\..\build\bin\</OutputPath>
-    <DebugType>none</DebugType>
+    <DebugType>full</DebugType>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
