@@ -454,7 +454,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!string.IsNullOrEmpty (partialWord)) {
 				for (int i = 0; i < list.filteredItems.Count; i++) {
 					int index = list.filteredItems[i];
-					string text = DataProvider.GetText (index);
+					string text = DataProvider.GetCompletionText (index);
 					if (!ListWidget.Matches (partialWord, text))
 						continue;
 					words.Add (new KeyValuePair <int,string> (i, text));
@@ -478,7 +478,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					
 					if (ListWidget.Matches (partialWord, historyWord)) {
 						for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
-							string currentWord = DataProvider.GetText (list.filteredItems[xIndex]);
+							string currentWord = DataProvider.GetCompletionText (list.filteredItems[xIndex]);
 							if (currentWord == historyWord) {
 								idx = xIndex;
 								break;
