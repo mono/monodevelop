@@ -420,7 +420,6 @@ namespace MonoDevelop.Ide.Gui
 				if (openFileInfo.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
-					NavigationHistoryService.LogActiveDocument ();
 					if (bringToFront)
 						Present ();
 					return doc;

@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Gui
 	public static class NavigationHistoryService
 	{
 		
-		static HistoryList<NavigationHistoryItem> history = new HistoryList<NavigationHistoryItem> ();
+		static HistoryList history = new HistoryList ();
 		
 		//used to prevent re-logging the current point during a switch
 		static bool switching;
@@ -97,13 +97,13 @@ namespace MonoDevelop.Ide.Gui
 				//collapse down possible extra point in history
 				NavigationHistoryItem backOne = history[-1];
 				if (backOne != null && point.ShouldReplace (backOne.NavigationPoint)) {
-					history.MoveBack ();
+					// The new node is the same as the last permanent, so we can discard it
+					history.RemoveCurrent ();
 					currentIsTransient = false;
 				} else {
 					currentIsTransient = transient;
+					history.ReplaceCurrent (item);
 				}
-				
-				history.ReplaceCurrent (item);
 			}
 			//if the new point wants to replace the old one, let it
 			else if (Current != null && !transient && point.ShouldReplace (Current.NavigationPoint))
@@ -347,6 +347,13 @@ namespace MonoDevelop.Ide.Gui
 			get { return created; }
 		}
 		
+		internal DateTime Visited { get; private set; }
+		
+		internal void SetVisited ()
+		{
+			Visited = DateTime.Now;
+		}
+		
 		internal NavigationPoint NavigationPoint {
 			get { return navPoint; }
 		}
@@ -383,14 +390,15 @@ namespace MonoDevelop.Ide.Gui
 	
 	//the list may only contain reference types, because it uses reference equality to ensure
 	//that otherwise equal items may appear in the list more than once
-	class HistoryList<T> : IEnumerable<T> where T : class
+	class HistoryList : IEnumerable<NavigationHistoryItem>
 	{
 		const int DEFAULT_MAX_LENGTH = 30;
+		const int FORWARD_HISTORY_TIMEOUT_SECONDS = 60;
 		int maxLength;
 		
-		LinkedList<T> forward = new LinkedList<T> ();
-		T current;
-		LinkedList<T> back = new LinkedList<T> ();
+		LinkedList<NavigationHistoryItem> forward = new LinkedList<NavigationHistoryItem> ();
+		NavigationHistoryItem current;
+		LinkedList<NavigationHistoryItem> back = new LinkedList<NavigationHistoryItem> ();
 		
 		public HistoryList () : this (DEFAULT_MAX_LENGTH) {}
 		
@@ -407,16 +415,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public T Current { get { return current; } }
+		public NavigationHistoryItem Current { get { return current; } }
 		
-		public void ReplaceCurrent (T newCurrent)
+		public void ReplaceCurrent (NavigationHistoryItem newCurrent)
 		{
 			current = newCurrent;
+			current.SetVisited ();
 		}
 		
-		public IEnumerable<T> ForwardPoints {
+		public IEnumerable<NavigationHistoryItem> ForwardPoints {
 			get {
-				LinkedListNode<T> node = forward.First;
+				LinkedListNode<NavigationHistoryItem> node = forward.First;
 				while (node != null) {
 					yield return node.Value;
 					node = node.Next;
@@ -424,12 +433,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		IEnumerator<T> IEnumerable<T>.GetEnumerator ()
+		IEnumerator<NavigationHistoryItem> IEnumerable<NavigationHistoryItem>.GetEnumerator ()
 		{
 			if (current == null)
 				yield break;
 			
-			LinkedListNode<T> node = back.First;
+			LinkedListNode<NavigationHistoryItem> node = back.First;
 			while (node != null) {
 				yield return node.Value;
 				node = node.Next;
@@ -444,12 +453,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 		{
-			return ((IEnumerable<T>)this).GetEnumerator ();
+			return ((IEnumerable<NavigationHistoryItem>)this).GetEnumerator ();
 		}
 		
-		public IEnumerable<T> BackPoints {
+		public IEnumerable<NavigationHistoryItem> BackPoints {
 			get {
-				LinkedListNode<T> node = back.Last;
+				LinkedListNode<NavigationHistoryItem> node = back.Last;
 				while (node != null) {
 					yield return node.Value;
 					node = node.Previous;
@@ -457,7 +466,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void AddPoint (T point)
+		public void AddPoint (NavigationHistoryItem point)
 		{
 			if (current != null)
 				back.AddLast (current);
@@ -465,10 +474,14 @@ namespace MonoDevelop.Ide.Gui
 			if (back.Count > maxLength)
 				back.RemoveFirst ();
 			current = point;
+			current.SetVisited ();
+			
+			if (forward.First != null && (DateTime.Now - forward.First.Value.Visited).TotalSeconds > FORWARD_HISTORY_TIMEOUT_SECONDS)
+				forward.Clear ();
 		}
 		
 		//used for editing out items that are no longer valid
-		public void Remove (T point)
+		public void Remove (NavigationHistoryItem point)
 		{
 			if (object.ReferenceEquals (current, point)) {
 				current = null;
@@ -478,15 +491,15 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			
-			LinkedListNode<T> node = back.Last;
+			LinkedListNode<NavigationHistoryItem> node = back.Last;
 			while (node != null) {
 				if (object.ReferenceEquals (node.Value, point)) {
-					LinkedListNode<T> next = node.Previous;
+					LinkedListNode<NavigationHistoryItem> next = node.Previous;
 					back.Remove (node);
 					
 					//remove the next node if the node we removed was between identical nodes
 					if (next != null) {
-						T compareTo = next.Next != null? next.Next.Value : current;
+						NavigationHistoryItem compareTo = next.Next != null? next.Next.Value : current;
 						if (object.Equals (compareTo, next.Value))
 							back.Remove (next);
 					}
@@ -498,12 +511,12 @@ namespace MonoDevelop.Ide.Gui
 			node = forward.First;
 			while (node != null) {
 				if (object.ReferenceEquals (node.Value, point)) {
-					LinkedListNode<T> next = node.Next;
+					LinkedListNode<NavigationHistoryItem> next = node.Next;
 					forward.Remove (node);
 					
 					//remove the next node if the node we removed was between identical nodes
 					if (next != null) {
-						T compareTo = next.Previous != null? next.Previous.Value : current;
+						NavigationHistoryItem compareTo = next.Previous != null? next.Previous.Value : current;
 						if (object.Equals (compareTo, next.Value))
 							forward.Remove (next);
 					}
@@ -513,17 +526,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public IList<T> GetList (int desiredLength)
+		public IList<NavigationHistoryItem> GetList (int desiredLength)
 		{
 			int currentIndex;
 			return GetList (desiredLength, out currentIndex);
 		}
 		
-		public IList<T> GetList (int desiredLength, out int currentIndex)
+		public IList<NavigationHistoryItem> GetList (int desiredLength, out int currentIndex)
 		{
 			if (current == null) {
 				currentIndex = -1;
-				return new T[0];
+				return new NavigationHistoryItem[0];
 			}
 			
 			//balance the list around the central item
@@ -537,14 +550,14 @@ namespace MonoDevelop.Ide.Gui
 			
 			//create the array
 			int length = forwardNeeded + backNeeded + 1;
-			T[] list = new T[length];
+			NavigationHistoryItem[] list = new NavigationHistoryItem[length];
 			
 			//add the current point
 			list[backNeeded] = current;
 			currentIndex = backNeeded;
 			
 			//add the backwards points
-			LinkedListNode<T> pointer = back.Last;
+			LinkedListNode<NavigationHistoryItem> pointer = back.Last;
 			for (int i = backNeeded - 1; i >= 0; i--) {
 				list[i] = pointer.Value;
 				pointer = pointer.Previous;
@@ -575,6 +588,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			back.AddLast (current);
 			current = forward.First.Value;
+			current.SetVisited ();
 			forward.RemoveFirst ();
 		}
 		
@@ -585,15 +599,25 @@ namespace MonoDevelop.Ide.Gui
 			
 			forward.AddFirst (current);
 			current = back.Last.Value;
+			current.SetVisited ();
 			back.RemoveLast ();
 		}
 		
-		public T this [int index] {
+		public void RemoveCurrent ()
+		{
+			if (CanMoveBack) {
+				current = back.Last.Value;
+				current.SetVisited ();
+				back.RemoveLast ();
+			}
+		}
+		
+		public NavigationHistoryItem this [int index] {
 			get {
 				if (index == 0)
 					return current;
 				
-				IEnumerator<T> enumerator = (index < 0)?
+				IEnumerator<NavigationHistoryItem> enumerator = (index < 0)?
 					BackPoints.GetEnumerator () : ForwardPoints.GetEnumerator ();
 				
 				int i = Math.Abs (index); 
@@ -605,12 +629,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void MoveTo (T point)
+		public void MoveTo (NavigationHistoryItem point)
 		{
 			if (IsCurrent (point))
 				return;
 			
-			LinkedListNode<T> searchPointer;
+			LinkedListNode<NavigationHistoryItem> searchPointer;
 			
 			//look for the node in the "forward" list, walking forward
 			searchPointer = forward.First;
@@ -630,6 +654,7 @@ namespace MonoDevelop.Ide.Gui
 					
 					//set it as the current node
 					current = forward.First.Value;
+					current.SetVisited ();
 					forward.RemoveFirst ();
 					
 					return;
@@ -657,6 +682,7 @@ namespace MonoDevelop.Ide.Gui
 					
 					//set it as the current node
 					current = back.Last.Value;
+					current.SetVisited ();
 					back.RemoveLast ();
 					
 					return;
@@ -668,7 +694,7 @@ namespace MonoDevelop.Ide.Gui
 			throw new InvalidOperationException ("The item is not in the history");
 		}
 		
-		public bool IsCurrent (T point)
+		public bool IsCurrent (NavigationHistoryItem point)
 		{
 			return object.ReferenceEquals (point, current);
 		}

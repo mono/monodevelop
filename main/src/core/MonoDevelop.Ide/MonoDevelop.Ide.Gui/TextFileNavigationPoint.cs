@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui
 			TextFileNavigationPoint tf = oldPoint as TextFileNavigationPoint;
 			if (tf == null)
 				return false;
-			return Math.Abs (line - tf.line) < 5;
+			return base.Equals (tf) && Math.Abs (line - tf.line) < 5;
 		}
 		
 		

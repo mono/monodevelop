@@ -1,5 +1,12 @@
 2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: Navigation
+	  point log fixes.
+
+2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components/PathBar.cs:
 	* MonoDevelop.Components/SearchEntry.cs:
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
