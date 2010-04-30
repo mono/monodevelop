@@ -73,6 +73,6 @@ iconsdir = $(MD_ADDIN_DIR)/MonoDevelop.Database/icons
 icons_DATA = $(DATA_FILE_BUILD)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD)
-EXTRA_DIST = $(FILES) $(RES)
+EXTRA_DIST = $(FILES) $(RES) $(DATA_FILES)
 
 include $(top_srcdir)/Makefile.include
