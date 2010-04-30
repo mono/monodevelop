@@ -57,6 +57,13 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			completionWidget = Document.GetContent <ICompletionWidget> ();
 			currentCompletionContext = completionWidget.CreateCodeCompletionContext (Document.TextEditorData.Caret.Offset);
+			int cpos, wlen;
+			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+				cpos = Document.TextEditorData.Caret.Offset;
+				wlen = 0;
+			}
+			currentCompletionContext.TriggerOffset = cpos;
+			currentCompletionContext.TriggerWordLength = wlen;
 			
 			CompletionWindowManager.ShowWindow ('\0', completionList, completionWidget, currentCompletionContext, OnCompletionWindowClosed);
 		}

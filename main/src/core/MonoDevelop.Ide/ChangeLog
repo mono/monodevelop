@@ -1,5 +1,10 @@
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Custom completion lists now support trigger words.
+
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs: Did some
 	  performance optimizations on the completion list.
 
