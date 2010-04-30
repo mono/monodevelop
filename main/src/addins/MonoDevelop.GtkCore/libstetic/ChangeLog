@@ -1,3 +1,7 @@
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
+	* editor/ActionMenu.cs: moved code from dispose -> destroy.
+
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* editor/ActionMenu.cs:

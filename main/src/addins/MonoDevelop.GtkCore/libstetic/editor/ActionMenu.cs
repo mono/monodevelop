@@ -43,7 +43,7 @@ namespace Stetic.Editor
 			parentNode.ChildNodeRemoved += OnChildRemoved;
 		}
 		
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			foreach (Gtk.Widget w in table.Children) {
 				table.Remove (w);
@@ -53,7 +53,8 @@ namespace Stetic.Editor
 			parentNode.ChildNodeAdded -= OnChildAdded;
 			parentNode.ChildNodeRemoved -= OnChildRemoved;
 			parentNode = null;
-			base.Dispose ();
+			
+			base.OnDestroyed ();
 		}
 		
 		public void Select (ActionTreeNode node)
