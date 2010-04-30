@@ -72,6 +72,11 @@ namespace OSXIntegration.Framework
 		static extern OsaError OSAScriptError (ComponentInstance scriptingComponent, OsaErrorSelector selector,
 		                                       DescType desiredType, out AEDesc resultingErrorDescription);
 		
+		public static string Run (string scriptSourceFormat, params object[] args)
+		{
+			return Run (string.Format (scriptSourceFormat, args));
+		}
+		
 		public static string Run (string scriptSource)
 		{
 			AEDesc sourceData = new AEDesc ();
