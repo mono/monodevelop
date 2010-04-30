@@ -1,5 +1,11 @@
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  Fixed 'Bug 600994 - Method highlight should match all
+	  methods of the generic class'.
+
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
 	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
 	  Fixed 'Bug 601028 - Move line reindenting flattens indents'.

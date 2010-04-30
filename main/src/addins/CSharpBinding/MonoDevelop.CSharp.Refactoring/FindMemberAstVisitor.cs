@@ -75,12 +75,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			get;
 			set;
 		}
+		
 		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, MonoDevelop.Projects.Dom.INode searchedMember)
 		{
 			this.file = file;
 			this.resolver = resolver;
+			if (searchedMember is IMember) 
+				searchedMember = GetUnderlyingMember ((IMember)searchedMember);
+			
 			this.searchedMember = searchedMember;
 			this.IncludeXmlDocumentation = false;
+			
+			
 			if (searchedMember is IMethod) {
 				IMethod method = (IMethod)searchedMember;
 				this.searchedMemberName = method.IsConstructor ? method.DeclaringType.Name : method.Name;
@@ -108,6 +114,38 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (((LocalVariable)searchedMember).CompilationUnit != null)
 					this.searchedMemberFile = ((LocalVariable)searchedMember).CompilationUnit.FileName;
 			}
+		}
+		
+		// if a member is a member of an instantiated class search for the 'real' uninstantiated member
+		// ex. List<string> a; a.Count<-;  should search for List<T>.Count instead of List<string>.Count
+		static IMember GetUnderlyingMember (IMember member)
+		{
+			if (member == null)
+				return null;
+			
+			if (member.DeclaringType is InstantiatedType && member.ReturnType != null) {
+				IType uninstantiatedType = ((InstantiatedType)member.DeclaringType).UninstantiatedType;
+				foreach (IMember realMember in uninstantiatedType.SearchMember (member.Name, true)) {
+					if (realMember.ReturnType == null)
+						continue;
+					if (realMember.MemberType == member.MemberType) {
+						switch (member.MemberType) {
+						case MemberType.Method:
+							if (((IMethod)member).TypeParameters.Count !=  ((IMethod)realMember).TypeParameters.Count)
+								continue;
+							if (!DomMethod.ParameterListEquals (((IMethod)member).Parameters, ((IMethod)realMember).Parameters))
+								continue;
+							break;
+						case MemberType.Property:
+							if (!DomMethod.ParameterListEquals (((IProperty)member).Parameters, ((IProperty)realMember).Parameters))
+								continue;
+							break;
+						}
+						return realMember;
+					}
+				}
+			}
+			return member;
 		}
 		
 		static readonly Regex paramRegex    = new Regex ("\\<param\\s+name\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
@@ -607,12 +645,12 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (param != null && ((IParameter)searchedMember).DeclaringMember.Location == param.DeclaringMember.Location)
 						AddUniqueReference (line, col, idExp.Identifier);
 				} else if (searchedMember is IMember && result is MemberResolveResult) {
-					IMember item = ((MemberResolveResult)result).ResolvedMember;
-					IMember m = item as IMember;
+					IMember m = GetUnderlyingMember (((MemberResolveResult)result).ResolvedMember);
+					
 					//Console.WriteLine (searchedMember +  "/" + item);
-					if (m != null /*&& IsExpectedClass (m.DeclaringType)*/ && ((IMember)searchedMember).DeclaringType.FullName == item.DeclaringType.FullName &&
-						((searchedMember is IField && item is IField) || (searchedMember is IMethod && item is IMethod) ||
-						 (searchedMember is IProperty && item is IProperty) || (searchedMember is IEvent && item is IEvent))) {
+					if (m != null /*&& IsExpectedClass (m.DeclaringType)*/ && ((IMember)searchedMember).DeclaringType.FullName == m.DeclaringType.FullName &&
+						((searchedMember is IField && m is IField) || (searchedMember is IMethod && m is IMethod) ||
+						 (searchedMember is IProperty && m is IProperty) || (searchedMember is IEvent && m is IEvent))) {
 						//Debug ("adding IdentifierExpression searchedMember", searchedMember.Name, idExp);
 						AddUniqueReference (line, col, searchedMemberName);
 					}
@@ -649,8 +687,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				ResolveResult resolveResult = resolver.ResolveExpression (fieldExp, ConvertLocation (fieldExp.StartLocation));
 				MemberResolveResult mrr = resolveResult as MemberResolveResult;
 				if (mrr != null) {
-					//Console.WriteLine ("resolved member:" + mrr.ResolvedMember);
-					if (mrr.ResolvedMember != null && mrr.ResolvedMember.DeclaringType != null && ((IMember)searchedMember).DeclaringType != null && mrr.ResolvedMember.Location == searchedMemberLocation && mrr.ResolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
+					IMember resolvedMember = GetUnderlyingMember (mrr.ResolvedMember);
+					
+					if (resolvedMember != null && resolvedMember.DeclaringType != null && ((IMember)searchedMember).DeclaringType != null && resolvedMember.Location == searchedMemberLocation && resolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
 						int line, column;
 						if (SearchText (searchedMemberName, fieldExp.StartLocation.Line, fieldExp.StartLocation.Column, out line, out column))
 							AddUniqueReference (line, column, searchedMemberName);
@@ -696,7 +735,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						MethodResolveResult mrr = (MethodResolveResult)resolveResult;
 						resolvedMethod = mrr.MostLikelyMethod;
 					} else if (resolveResult is MemberResolveResult) {
-						resolvedMethod = ((MemberResolveResult)resolveResult).ResolvedMember as IMethod;
+						resolvedMethod = GetUnderlyingMember (((MemberResolveResult)resolveResult).ResolvedMember) as IMethod;
 					}
 					if (resolvedMethod != null) {
 						if (resolvedMethod.FullName == method.FullName && resolvedMethod.TypeParameters.Count == method.TypeParameters.Count) {
