@@ -69,16 +69,6 @@ namespace Mono.TextEditor
 		
 	//	string currentModeStatus;
 		
-		// Tooltip fields
-		const int TooltipTimer = 200;
-		object tipItem;
-		bool showTipScheduled;
-		bool hideTipScheduled;
-		int tipX, tipY;
-		uint tipTimeoutId;
-		Gtk.Window tipWindow;
-		List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
-		ITooltipProvider currentTooltipProvider;
 		double mx, my;
 		
 		public Document Document {
@@ -543,11 +533,7 @@ namespace Mono.TextEditor
 		protected override void OnUnrealized ()
 		{
 			imContext.ClientWindow = null;
-			DisposeTooltip ();
-			if (showTipScheduled || hideTipScheduled) {
-				RemoveTipTimer ();
-				showTipScheduled = hideTipScheduled = false;
-			}
+			CancelScheduledHide ();
 			if (this.GdkWindow != null) {
 				this.GdkWindow.UserData = IntPtr.Zero;
 				this.GdkWindow.Destroy ();
@@ -1050,14 +1036,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void RemoveTipTimer ()
-		{
-			if (tipTimeoutId != 0) {
-				GLib.Source.Remove (tipTimeoutId);
-				tipTimeoutId = 0;
-			}
-		}
-		
 		Gdk.ModifierType lastState = ModifierType.None;
 		void FireMotionEvent (double x, double y, Gdk.ModifierType state)
 		{
@@ -1065,7 +1043,7 @@ namespace Mono.TextEditor
 			mx = x - textViewMargin.XOffset;
 			my = y;
 
-			UpdateTooltip (state);
+			ShowTooltip (state);
 
 			int startPos;
 			Margin margin;
@@ -2069,34 +2047,20 @@ namespace Mono.TextEditor
 		#endregion
 	
 		#region Tooltips
-
+		
+		// Tooltip fields
+		const int TooltipTimer = 200;
+		object tipItem;
+		
+		int tipX, tipY;
+		uint tipHideTimeoutId = 0;
+		uint tipShowTimeoutId = 0;
+		Gtk.Window tipWindow;
+		List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
+		ITooltipProvider currentTooltipProvider;
+		
 		public List<ITooltipProvider> TooltipProviders {
 			get { return tooltipProviders; }
-		}
-		Timer tooltipTimer = null;
-		void UpdateTooltip (Gdk.ModifierType modifierState)
-		{
-			if (tipWindow != null) {
-				// Tip already being shown. Update it.
-				ShowTooltip (modifierState);
-			} else {
-				DisposeTooltip ();
-				tooltipTimer = new Timer (delegate { Application.Invoke (delegate { ShowTooltip (modifierState); }); }, null, TooltipTimer, System.Threading.Timeout.Infinite);
-
-				// for some reason this leaks memory:
-/*				// Tip already scheduled. Reset the timer.
-				if (showTipScheduled)
-					GLib.Source.Remove (tipTimeoutId);
-				
-				showTipScheduled = true;
-				tipTimeoutId = GLib.Timeout.Add (TooltipTimer, delegate { return ShowTooltip (modifierState); });*/
-			}
-		}
-
-		void DisposeTooltip ()
-		{
-			if (tooltipTimer != null)
-				tooltipTimer.Dispose ();
 		}
 		
 		bool ShowTooltip (Gdk.ModifierType modifierState)
@@ -2110,7 +2074,6 @@ namespace Mono.TextEditor
 		bool ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc)
 		{
 			CancelSheduledShow ();
-			showTipScheduled = false;
 			
 			if (tipWindow != null && currentTooltipProvider.IsInteractive (this, tipWindow)) {
 				int wx, ww, wh;
@@ -2147,8 +2110,7 @@ namespace Mono.TextEditor
 				tipX = xloc;
 				tipY = yloc;
 				tipItem = item;
-
-
+				
 				Gtk.Window tw = provider.CreateTooltipWindow (this, offset, modifierState, item);
 				if (tw == tipWindow)
 					return false;
@@ -2156,7 +2118,8 @@ namespace Mono.TextEditor
 				if (tw == null)
 					return false;
 				
-				tipShowTimeoutId = GLib.Timeout.Add (500, delegate {
+				CancelSheduledShow ();
+				tipShowTimeoutId = GLib.Timeout.Add (650, delegate {
 					DoShowTooltip (provider, tw, tipX, tipY);
 					tipShowTimeoutId = 0;
 					return false;
@@ -2166,7 +2129,7 @@ namespace Mono.TextEditor
 			
 			return false;
 		}
-		uint tipShowTimeoutId = 0;
+		
 		void DoShowTooltip (ITooltipProvider provider, Gtk.Window liw, int xloc, int yloc)
 		{
 			CancelSheduledShow ();
@@ -2200,12 +2163,8 @@ namespace Mono.TextEditor
 		public void HideTooltip ()
 		{
 			CancelScheduledHide ();
+			CancelSheduledShow ();
 			
-			DisposeTooltip ();
-			if (showTipScheduled) {
-				GLib.Source.Remove (tipTimeoutId);
-				showTipScheduled = false;
-			}
 			if (tipWindow != null) {
 				tipWindow.Destroy ();
 				tipWindow = null;
@@ -2215,9 +2174,7 @@ namespace Mono.TextEditor
 		void DelayedHideTooltip ()
 		{
 			CancelScheduledHide ();
-			hideTipScheduled = true;
-			RemoveTipTimer ();
-			tipTimeoutId = GLib.Timeout.Add (300, delegate {
+			tipHideTimeoutId = GLib.Timeout.Add (300, delegate {
 				HideTooltip ();
 				return false;
 			});
@@ -2226,9 +2183,9 @@ namespace Mono.TextEditor
 		void CancelScheduledHide ()
 		{
 			CancelSheduledShow ();
-			if (hideTipScheduled) {
-				hideTipScheduled = false;
-				GLib.Source.Remove (tipTimeoutId);
+			if (tipHideTimeoutId != 0) {
+				GLib.Source.Remove (tipHideTimeoutId);
+				tipHideTimeoutId = 0;
 			}
 		}
 		

@@ -1,5 +1,10 @@
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 601184 -
+	  Flickering tooltips'.
+
+2010-04-30  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed 'Bug 601189 –
 	  Deindent on selection loses last line'.
