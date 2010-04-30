@@ -358,8 +358,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			int position = file.GetPositionFromLineColumn (startLine, startColumn);
 			line = column = -1;
+			if (position < 0)
+				return false;
+			
 			while (position + searchedMemberName.Length < file.Length) {
-				if ((position == 0 || !IsIdentifierPart (file.GetCharAt (position - 1))) && 
+				bool isIdentifierStart = position <= 0 || !IsIdentifierPart (file.GetCharAt (position - 1));
+				
+				if (isIdentifierStart && 
 				    (position + searchedMemberName.Length >= file.Length  || !IsIdentifierPart (file.GetCharAt (position + searchedMemberName.Length))) &&
 				    file.GetText (position, position + searchedMemberName.Length) == searchedMemberName) {
 					file.GetLineColumnFromPosition (position, out line, out column);
