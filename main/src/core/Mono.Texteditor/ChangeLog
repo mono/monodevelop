@@ -1,5 +1,10 @@
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DashedLineMargin.cs: release resources in
+	  dashed line margin.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: Cleanly unregister from
 	  document & caret on dispose.
 

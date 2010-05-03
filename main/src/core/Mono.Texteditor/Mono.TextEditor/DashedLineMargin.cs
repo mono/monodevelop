@@ -70,6 +70,7 @@ namespace Mono.TextEditor
 		{
 			base.Dispose ();
 			DisposeGCs ();
+			editor = null;
 		}
 		
 		void DisposeGCs ()
@@ -77,6 +78,7 @@ namespace Mono.TextEditor
 			foldDashedLineGC = foldDashedLineGC.Kill ();
 			foldDashedLineGC2 = foldDashedLineGC2.Kill ();
 			bgGC = bgGC.Kill ();
+			bgGC2 = bgGC2.Kill ();
 		}
 		
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
