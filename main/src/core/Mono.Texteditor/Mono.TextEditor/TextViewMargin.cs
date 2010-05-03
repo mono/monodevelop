@@ -1738,11 +1738,11 @@ namespace Mono.TextEditor
 			if (column < lineText.Length)
 				lineText = lineText.Substring (0, column);
 			layout.SetText (lineText);
-			Pango.AttrList attributes = new Pango.AttrList ();
+		
 
 			int startOffset = line.Offset, endOffset = line.Offset + line.EditableLength;
 			uint curIndex = 0, byteIndex = 0;
-
+			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
 			uint oldEndIndex = 0;
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
@@ -1771,13 +1771,13 @@ namespace Mono.TextEditor
 						foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 
-						attributes.Insert (foreGround);
+						attributes.Add (foreGround);
 
 					}, delegate(int start, int end) {
 						Pango.AttrForeground selectedForeground = new Pango.AttrForeground (ColorStyle.Selection.Color.Red, ColorStyle.Selection.Color.Green, ColorStyle.Selection.Color.Blue);
 						selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						attributes.Insert (selectedForeground);
+						attributes.Add (selectedForeground);
 
 					});
 
@@ -1785,28 +1785,31 @@ namespace Mono.TextEditor
 						Pango.AttrWeight attrWeight = new Pango.AttrWeight (Pango.Weight.Bold);
 						attrWeight.StartIndex = startIndex;
 						attrWeight.EndIndex = endIndex;
-						attributes.Insert (attrWeight);
+						attributes.Add (attrWeight);
 					}
 
 					if (chunkStyle.Italic) {
 						Pango.AttrStyle attrStyle = new Pango.AttrStyle (Pango.Style.Italic);
 						attrStyle.StartIndex = startIndex;
 						attrStyle.EndIndex = endIndex;
-						attributes.Insert (attrStyle);
+						attributes.Add (attrStyle);
 					}
 
 					if (chunkStyle.Underline) {
 						Pango.AttrUnderline attrUnderline = new Pango.AttrUnderline (Pango.Underline.Single);
 						attrUnderline.StartIndex = startIndex;
 						attrUnderline.EndIndex = endIndex;
-						attributes.Insert (attrUnderline);
+						attributes.Add (attrUnderline);
 					}
 				}
 			}
-			layout.Attributes = attributes;
+			Pango.AttrList attributeList = new Pango.AttrList ();
+			attributes.ForEach (attr => attributeList.Insert (attr));
+			layout.Attributes = attributeList;
 			Pango.Rectangle ink_rect, logical_rect;
 			layout.GetExtents (out ink_rect, out logical_rect);
-			attributes.Dispose ();
+			attributes.ForEach (attr => attr.Dispose ());
+			attributeList.Dispose ();
 			layout.Dispose ();
 			return (int)((logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale);
 		}
