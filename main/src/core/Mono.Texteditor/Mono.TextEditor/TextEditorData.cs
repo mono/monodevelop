@@ -85,17 +85,13 @@ namespace Mono.TextEditor
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
 			SelectionChanging += HandleSelectionChanging;
-			Caret.PositionChanged += delegate(object sender, DocumentLocationEventArgs e) {
-				if (Options.RemoveTrailingWhitespaces && e.Location.Line != Caret.Line) {
-					LineSegment line = Document.GetLine (e.Location.Line);
-					if (line != null && line.WasChanged)
-						Document.RemoveTrailingWhitespaces (this, line);
-				}
-			};
-			doc.LineChanged += delegate(object sender, LineEventArgs e) {
-				e.Line.WasChanged = true;
-			};
 		}
+
+		void HandleDocLineChanged (object sender, LineEventArgs e)
+		{
+			e.Line.WasChanged = true;
+		}
+
 		
 		public Document Document {
 			get {
@@ -110,6 +106,7 @@ namespace Mono.TextEditor
 				
 				this.document.Undone += DocumentHandleUndone;
 				this.document.Redone += DocumentHandleRedone;
+				this.document.LineChanged += HandleDocLineChanged;
 			}
 		}
 
@@ -222,8 +219,12 @@ namespace Mono.TextEditor
 			options = options.Kill ();
 			
 			if (document != null) {
+				document.LineChanged -= HandleDocLineChanged;
 				document.BeginUndo -= OnBeginUndo;
 				document.EndUndo   -= OnEndUndo;
+				document.Undone -= DocumentHandleUndone;
+				document.Redone -= DocumentHandleRedone;
+				
 				// DOCUMENT MUST NOT BE DISPOSED !!! (Split View shares document)
 				document = null;
 			}
@@ -231,10 +232,16 @@ namespace Mono.TextEditor
 			SelectionChanging -= HandleSelectionChanging;
 		}
 		
-		void CaretPositionChanged (object sender, EventArgs args)
+		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
 		{
 			if (!caret.PreserveSelection)
 				this.ClearSelection ();
+			
+			if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
+				LineSegment line = Document.GetLine (args.Location.Line);
+				if (line != null && line.WasChanged)
+					Document.RemoveTrailingWhitespaces (this, line);
+			}
 		}
 		
 		public bool CanEdit (int line)

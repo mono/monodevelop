@@ -1,3 +1,8 @@
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs: Cleanly unregister from
+	  document & caret on dispose.
+
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 601184 -
