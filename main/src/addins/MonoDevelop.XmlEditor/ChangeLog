@@ -1,3 +1,9 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Xml.Formatting/MonoXmlPolicy.xml: Added
+	  attribute to explicitly allow differential serialization for
+	  a policy (which is disabled by default).
+
 2010-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

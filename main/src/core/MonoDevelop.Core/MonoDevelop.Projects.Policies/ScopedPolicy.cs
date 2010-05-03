@@ -39,6 +39,8 @@ namespace MonoDevelop.Projects.Policies
 		public string Scope { get; internal set; }
 		public T Policy { get; internal set; }
 		
+		internal bool SupportsDiffSerialize { get; set; }
+		
 		public virtual Type PolicyType {
 			get { return typeof(T); }
 		}
@@ -51,6 +53,12 @@ namespace MonoDevelop.Projects.Policies
 		public ScopedPolicy (Type type, object ob, string scope): base (ob, scope)
 		{
 			this.type = type;
+		}
+		
+		internal ScopedPolicy (Type type, object ob, string scope, bool supportsDiffSerialize): base (ob, scope)
+		{
+			this.type = type;
+			SupportsDiffSerialize = supportsDiffSerialize;
 		}
 		
 		public override Type PolicyType {

@@ -1,3 +1,9 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Policies.xml: Added attribute to explicitly allow
+	  differential serialization for a policy (which is disabled
+	  by default).
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:

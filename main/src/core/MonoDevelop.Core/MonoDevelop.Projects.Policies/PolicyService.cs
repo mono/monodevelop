@@ -179,17 +179,20 @@ namespace MonoDevelop.Projects.Policies
 				UnknownPolicy up = new UnknownPolicy (data);
 				return new ScopedPolicy (typeof(UnknownPolicy), up, up.Scope);
 			}
+			bool allowDiff = false;
 			DataItem di = data as DataItem;
 			if (di != null) {
+				DataValue allowDiffData = di ["allowDiffSerialize"] as DataValue;
+				allowDiff = allowDiffData != null && allowDiffData.Value == "True";
 				DataValue val = di ["scope"] as DataValue;
 				if (val != null)
 					scope = val.Value;
 				DataValue inh = di ["inheritsSet"] as DataValue;
 				if (inh != null && inh.Value == "null")
-					return new ScopedPolicy (t, null, scope);
+					return new ScopedPolicy (t, null, scope, allowDiff);
 			}
 			object o = Serializer.Deserialize (t, data);
-			return new ScopedPolicy (t, o, scope);
+			return new ScopedPolicy (t, o, scope, allowDiff);
 		}
 		
 		static Type GetRegisteredType (string name)
@@ -283,6 +286,8 @@ namespace MonoDevelop.Projects.Policies
 					if (set.Id == "Invariant")
 						continue;
 					foreach (ScopedPolicy sp in set.GetScoped (policyType)) {
+						if (!set.SupportsDiffSerialize (sp))
+							continue;
 						DataNode baseline = RawSerialize (policyType, sp.Policy);
 						int size = 0;
 						DataNode tempNode = ExtractOverlay (baseline, raw, ref size);

@@ -1,4 +1,4 @@
-<XmlFormattingPolicy scope="application/xml">
+<XmlFormattingPolicy scope="application/xml" allowDiffSerialize="True">
 	<DefaultFormat 
 		OmitXmlDeclaration="False" 
 		NewLineChars="&#xA;" 

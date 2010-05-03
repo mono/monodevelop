@@ -1,4 +1,4 @@
-<TextStylePolicy scope="text/plain">
+<TextStylePolicy scope="text/plain" allowDiffSerialize="True">
 	<FileWidth>80</FileWidth>
 	<TabWidth>4</TabWidth>
 	<TabsToSpaces>True</TabsToSpaces>

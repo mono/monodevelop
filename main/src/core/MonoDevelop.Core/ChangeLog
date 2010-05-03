@@ -1,3 +1,11 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Policies/PolicySet.cs:
+	* MonoDevelop.Projects.Policies/ScopedPolicy.cs:
+	* MonoDevelop.Projects.Policies/PolicyService.cs: Added
+	  attribute to explicitly allow differential serialization for
+	  a policy (which is disabled by default).
+
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Fixed

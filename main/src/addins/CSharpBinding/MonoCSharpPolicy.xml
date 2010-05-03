@@ -1,4 +1,4 @@
-<CSharpFormattingPolicy scope="text/x-csharp">
+<CSharpFormattingPolicy scope="text/x-csharp" allowDiffSerialize="True">
 	<IndentNamespaceBody>True</IndentNamespaceBody>
 	<IndentClassBody>True</IndentClassBody>
 	<IndentInterfaceBody>True</IndentInterfaceBody>

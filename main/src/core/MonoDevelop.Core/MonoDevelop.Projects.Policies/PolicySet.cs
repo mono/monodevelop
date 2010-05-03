@@ -32,6 +32,7 @@ using System.IO;
 using System.Xml;
 
 using MonoDevelop.Core.Serialization;
+using Mono.Addins;
 
 namespace MonoDevelop.Projects.Policies
 {
@@ -40,6 +41,8 @@ namespace MonoDevelop.Projects.Policies
 	/// </summary>
 	public class PolicySet: PolicyContainer
 	{
+		HashSet<PolicyKey> externalPolicies = new HashSet<PolicyKey> ();
+		
 		internal PolicySet (string id, string name)
 		{
 			this.Id = id;
@@ -78,6 +81,8 @@ namespace MonoDevelop.Projects.Policies
 					throw new InvalidOperationException ("Cannot add second policy of type '" +  
 					                                     key.ToString () + "' to policy set '" + Id + "'");
 				policies[key] = policyPair.Policy;
+				if (!policyPair.SupportsDiffSerialize)
+					externalPolicies.Add (key);
 			}
 		}
 		
@@ -89,6 +94,12 @@ namespace MonoDevelop.Projects.Policies
 			// full deserialisation
 			foreach (ScopedPolicy policyPair in PolicyService.RawDeserializeXml (reader))
 				policies.Remove (new PolicyKey (policyPair.PolicyType, policyPair.Scope));
+		}
+		
+		internal bool SupportsDiffSerialize (ScopedPolicy pol)
+		{
+			PolicyKey pk = new PolicyKey (pol.PolicyType, pol.Scope);
+			return !externalPolicies.Contains (pk);
 		}
 		
 		internal void SaveToFile (StreamWriter writer)
