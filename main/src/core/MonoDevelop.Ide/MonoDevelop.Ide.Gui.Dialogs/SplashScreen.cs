@@ -53,19 +53,30 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				this.Resize (bitmap.Width, bitmap.Height);
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (bitmap != null) {
+				bitmap.Dispose ();
+				bitmap = null;
+			}
+		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose evt)
 		{
 			if (bitmap != null) {
 				Gdk.GC gc = Style.LightGC (StateType.Normal);
 				GdkWindow.DrawPixbuf (gc, bitmap, 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
 
-				Pango.Layout pl = new Pango.Layout (PangoContext);
-				Pango.FontDescription des = this.Style.FontDescription.Copy();
-				pl.FontDescription = des;
-				//pl.SetMarkup("<b><span foreground='#cccccc'>" + BuildVariables.PackageVersionLabel + "</span></b>");
-				int w,h;
-				pl.GetPixelSize (out w, out h);
-				GdkWindow.DrawLayout (gc, bitmap.Width - w - 75, 90, pl);
+				using (Pango.Layout pl = new Pango.Layout (PangoContext)) {
+					Pango.FontDescription des = this.Style.FontDescription.Copy();
+					pl.FontDescription = des;
+					//pl.SetMarkup("<b><span foreground='#cccccc'>" + BuildVariables.PackageVersionLabel + "</span></b>");
+					int w,h;
+					pl.GetPixelSize (out w, out h);
+					GdkWindow.DrawLayout (gc, bitmap.Width - w - 75, 90, pl);
+					des.Dispose ();
+				}
 			}
 			return base.OnExposeEvent (evt);
 		}
@@ -153,6 +164,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		void IDisposable.Dispose ()
 		{
 			Destroy ();
+			splashScreen = null;
 		}
 	}
 }
