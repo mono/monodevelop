@@ -443,6 +443,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			int xpos = spacing;
 			int ypos = spacing;
 			HideTooltipWindow ();
+			var oldItem = mouseOverItem;
 			mouseOverItem = null;
 			this.mouseX = (int)e.X + (int)(this.hAdjustement != null ? this.hAdjustement.Value : 0);
 			this.mouseY = (int)e.Y + (int)(this.vAdjustement != null ? this.vAdjustement.Value : 0);
@@ -460,7 +461,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				}
 			});
 			
-			this.QueueDraw ();
+			if (oldItem != mouseOverItem)
+				this.QueueDraw ();
 			
 			return base.OnMotionNotifyEvent (e);
 		}
