@@ -153,10 +153,12 @@
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToPrevUsageHandler"
 		         shortcut = "Ctrl|Shift|Up"
+		         macShortcut = "Meta|Shift|Up"
 		         _label = "_Move to prev usage"/>
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToNextUsageHandler"
 		         shortcut = "Ctrl|Shift|Down"
+		         macShortcut = "Meta|Shift|Down"
 		         _label = "_Move to next usage"/>
 	</Extension>
 	

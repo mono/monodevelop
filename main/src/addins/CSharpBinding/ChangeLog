@@ -1,5 +1,9 @@
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
+	* CSharpBinding.addin.xml: Set mac shortcut.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* CSharpBinding.csproj:
 	* CSharpBinding.addin.xml:
