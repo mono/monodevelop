@@ -42,7 +42,8 @@ namespace Mono.TextEditor
 		Document   document; 
 		Caret      caret;
 		
-		Adjustment hadjustment = new Adjustment (0, 0, 0, 0, 0, 0); 
+		static Adjustment emptyAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+		Adjustment hadjustment = emptyAdjustment; 
 		public Adjustment HAdjustment {
 			get {
 				return hadjustment;
@@ -52,7 +53,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Adjustment vadjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+		Adjustment vadjustment = emptyAdjustment;
 		public Adjustment VAdjustment {
 			get {
 				return vadjustment;

@@ -1,5 +1,10 @@
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs: Don't create empty
+	  gtk.adjustments on every text editor data creation.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DashedLineMargin.cs: release resources in
 	  dashed line margin.
 
