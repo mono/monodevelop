@@ -100,6 +100,15 @@ namespace MonoDevelop.Components
 			QueueResize ();
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+		}
+		
 		void UpdateLayout ()
 		{
 			if (layout == null) {
