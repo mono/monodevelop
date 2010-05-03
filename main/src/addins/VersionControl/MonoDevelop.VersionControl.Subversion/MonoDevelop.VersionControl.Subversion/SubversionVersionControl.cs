@@ -225,7 +225,14 @@ namespace MonoDevelop.VersionControl.Subversion
 			return List (path, recurse, SvnRevision.Head);
 		}
 
+		public IEnumerable<DirectoryEntry> ListUrl (string url, bool recurse)
+		{
+			return ListUrl (url, recurse, SvnRevision.Head);
+		}
+
 		public abstract IEnumerable<DirectoryEntry> List (FilePath path, bool recurse, SvnRevision rev);
+
+		public abstract IEnumerable<DirectoryEntry> ListUrl (string url, bool recurse, SvnRevision rev);
 
 		public void Move (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
 		{

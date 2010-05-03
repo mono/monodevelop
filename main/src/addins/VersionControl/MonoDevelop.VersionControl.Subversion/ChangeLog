@@ -1,3 +1,10 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Split List method into List and ListUrl.
+
 2010-03-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs: Add

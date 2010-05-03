@@ -317,9 +317,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return ver.major + "." + ver.minor + "." + ver.patch;
 		}
 
-		public override IEnumerable<DirectoryEntry> List (FilePath pathorurl, bool recurse, SvnRevision rev)
+		public override IEnumerable<DirectoryEntry> List (FilePath path, bool recurse, SvnRevision rev)
 		{
-			if (pathorurl == FilePath.Null)
+			return ListUrl (path, recurse, rev);
+		}
+		
+		public override IEnumerable<DirectoryEntry> ListUrl (string pathorurl, bool recurse, SvnRevision rev)
+		{
+			if (pathorurl == null)
 				throw new ArgumentNullException ();
 			
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
