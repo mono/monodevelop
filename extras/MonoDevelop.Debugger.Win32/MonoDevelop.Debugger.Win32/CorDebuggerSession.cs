@@ -52,6 +52,7 @@ namespace MonoDevelop.Debugger.Win32
 			public ISymbolReader Reader;
 			public CorModule Module;
 			public CorMetadataImport Importer;
+			public int References;
 		}
 
 		public CorDebuggerSession ( )
@@ -292,11 +293,19 @@ namespace MonoDevelop.Debugger.Win32
 					e.Module.SetJmcStatus (false, null);
 				}
 
-				ModuleInfo moi = new ModuleInfo ();
-				moi.Module = e.Module;
-				moi.Reader = reader;
-				moi.Importer = mi;
-				modules[e.Module.Name] = moi;
+				ModuleInfo moi;
+
+				if (modules.TryGetValue (e.Module.Name, out moi)) {
+					moi.References++;
+				}
+				else {
+					moi = new ModuleInfo ();
+					moi.Module = e.Module;
+					moi.Reader = reader;
+					moi.Importer = mi;
+					moi.References = 1;
+					modules[e.Module.Name] = moi;
+				}
 			}
 			e.Continue = true;
 		}
@@ -304,6 +313,11 @@ namespace MonoDevelop.Debugger.Win32
 		void OnModuleUnload (object sender, CorModuleEventArgs e)
 		{
 			lock (documents) {
+				ModuleInfo moi;
+				modules.TryGetValue (e.Module.Name, out moi);
+				if (moi == null || --moi.References > 0)
+					return;
+
 				modules.Remove (e.Module.Name);
 				List<string> toRemove = new List<string> ();
 				foreach (KeyValuePair<string, DocInfo> di in documents) {
