@@ -1368,6 +1368,9 @@ namespace MonoDevelop.Components.Commands
 		{
 			lastSize = toolbar.IconSize;
 			toolbar.AddNotification (OnToolbarPropChanged);
+			toolbar.Destroyed += delegate {
+				toolbar.RemoveNotification (OnToolbarPropChanged);
+			};
 		}
 		
 		void OnToolbarPropChanged (object ob, GLib.NotifyArgs args)
