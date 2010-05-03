@@ -1,5 +1,15 @@
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Fixed 'Bug 601436 - Command to cycle through highlighted
+	  references'.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug
 	  601350 - Null ref in highlighting/tooltips'.
 

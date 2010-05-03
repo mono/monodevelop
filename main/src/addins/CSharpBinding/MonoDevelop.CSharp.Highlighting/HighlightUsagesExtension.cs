@@ -132,6 +132,10 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		Dictionary<int, UsageMarker> markers = new Dictionary<int, UsageMarker> ();
 		
+		public Dictionary<int, UsageMarker> Markers {
+			get { return this.markers; }
+		}
+		
 		void RemoveMarkers (bool updateLine)
 		{
 			if (markers.Count == 0)
