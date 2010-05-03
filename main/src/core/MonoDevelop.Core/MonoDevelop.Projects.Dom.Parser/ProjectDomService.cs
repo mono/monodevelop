@@ -48,8 +48,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public static class ProjectDomService
 	{
-		static List<IParser> parsers;
-		
 		//static IParserDatabase parserDatabase = new MonoDevelop.Projects.Dom.MemoryDatabase.MemoryDatabase ();
 		
 		static bool threadRunning;
@@ -129,7 +127,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		public static List<IParser> Parsers {
+		static List<IParser> parsers;
+		static IParser[] cachedParsers = new IParser [0];
+		public static IEnumerable<IParser> Parsers {
 			get {
 				if (parsers == null) {
 					LoggingService.Trace ("ProjectDomService", "Initializing");
@@ -143,30 +143,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 							parsers.Remove ((IParser) args.ExtensionObject);
 							break;
 						}
+						cachedParsers = parsers.ToArray ();
 					});
 					LoggingService.Trace ("ProjectDomService", "Initialized");
 				}
-				return parsers;
+				return cachedParsers;
 			}
 		}
 		
 		public static IParser GetParserByMime (string mimeType)
 		{
-			foreach (IParser parser in Parsers) {
-				if (parser.CanParseMimeType (mimeType))
-					return parser;
-			}
-			return null;
+			return Parsers.FirstOrDefault (p => p.CanParseMimeType (mimeType));
 		}
 		
 		public static IParser GetParserByFileName (string fileName)
 		{
-			foreach (IParser parser in Parsers) {
-				if (parser.CanParse (fileName)) {
-					return parser;
-				}
-			}
-			return null;
+			return Parsers.FirstOrDefault (p => p.CanParse (fileName));
 		}
 		
 		public static IParser GetParser (string fileName, string mimeType)
