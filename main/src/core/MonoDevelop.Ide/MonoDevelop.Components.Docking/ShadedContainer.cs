@@ -286,6 +286,7 @@ namespace MonoDevelop.Components.Docking
 				ctx.Rectangle (r.X, r.Y, r.Width, r.Height);
 				ctx.Pattern = pat;
 				ctx.Fill ();
+				pat.Dispose ();
 			}
 		}
 		
