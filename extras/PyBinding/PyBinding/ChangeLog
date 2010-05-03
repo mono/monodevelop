@@ -1,3 +1,8 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PyBinding.csproj: Updated. Text style policy doesn't inherit
+	  python policy anymore.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
