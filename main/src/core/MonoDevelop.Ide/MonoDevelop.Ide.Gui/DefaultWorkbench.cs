@@ -174,13 +174,8 @@ namespace MonoDevelop.Ide.Gui
 				
 				InitializeLayout (value);
 				toolbarFrame.CurrentLayout = dock.CurrentLayout = value;
-
-				//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
-				//else they will diverge
-				if (oldLayout != null && oldLayout.EndsWith (fullViewModeTag)) {
-					dock.DeleteLayout (oldLayout);
-					toolbarFrame.DeleteLayout (oldLayout);
-				}
+				
+				DestroyFullViewLayouts (oldLayout);
 				
 				// persist the selected layout
 				PropertyService.Set ("MonoDevelop.Core.Gui.CurrentWorkbenchLayout", value);
@@ -953,12 +948,24 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
+		//else they will diverge
+		void DestroyFullViewLayouts (string oldLayout)
+		{
+			if (oldLayout != null && oldLayout.EndsWith (fullViewModeTag)) {
+				dock.DeleteLayout (oldLayout);
+				toolbarFrame.DeleteLayout (oldLayout);
+			}
+		}
+		
 		public void ToggleFullViewMode ()
 		{
 			this.tabControl.LeaveDragMode (0);
 			
 			if (IsInFullViewMode) {
+				var oldLayout = dock.CurrentLayout;
 				toolbarFrame.CurrentLayout = dock.CurrentLayout = CurrentLayout;
+				DestroyFullViewLayouts (oldLayout);
 			} else {
 				string fullViewLayout = CurrentLayout + fullViewModeTag;
 				if (!dock.HasLayout (fullViewLayout))
@@ -969,7 +976,7 @@ namespace MonoDevelop.Ide.Gui
 						it.Status = DockItemStatus.AutoHide;
 				}
 				foreach (var tb in toolbarFrame.Toolbars)
-					tb.Status.Visible = false;
+					tb.Status = new DockToolbarStatus (tb.Id, false, tb.Position);
 			}
 		}
 

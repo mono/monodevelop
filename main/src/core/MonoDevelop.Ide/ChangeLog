@@ -1,5 +1,10 @@
 2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fix hiding toolbars
+	  in full view mode, and destroying of toolbar layouts.
+
+2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Commands/ViewCommands.cs: Simplify.
 
 	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs: Use
