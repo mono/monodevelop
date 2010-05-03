@@ -40,6 +40,8 @@ namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
 	{
+		Pango.FontDescription fontDescription;
+		
 		public bool IsEmpty { get; set; }
 		
 		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, ICompilationUnit unit)
@@ -88,25 +90,25 @@ namespace MonoDevelop.SourceEditor
 			UpdateFont (Child as MonoDevelop.Components.FixedWidthWrapLabel);
 		}
 		
-		static void UpdateFont (MonoDevelop.Components.FixedWidthWrapLabel label)
+		void UpdateFont (MonoDevelop.Components.FixedWidthWrapLabel label)
 		{
 			if (label == null)
 				return;
-			if (label.FontDescription != null) {
-				label.FontDescription.Dispose ();
-				label.FontDescription = null;
+			if (fontDescription != null) {
+				fontDescription.Dispose ();
 			}
-			label.FontDescription = new Gtk.Label ("").Style.FontDescription.Copy ();
-			label.FontDescription.Size = DefaultSourceEditorOptions.Instance.Font.Size;
+			fontDescription = new Gtk.Label ("").Style.FontDescription.Copy ();
+			fontDescription.Size = DefaultSourceEditorOptions.Instance.Font.Size;
+			label.FontDescription = fontDescription;
 		}
 		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			var label = Child as MonoDevelop.Components.FixedWidthWrapLabel;
-			if (label != null && label.FontDescription != null) {
-				label.FontDescription.Dispose ();
-				label.FontDescription = null;
+			
+			if (fontDescription != null) {
+				fontDescription.Dispose ();
+				fontDescription = null;
 			}
 		}
 		
