@@ -152,6 +152,10 @@ namespace MonoDevelop.Core
 				return ((sbyte)val).ToString (format);
 			else if (val is decimal)
 				return ((decimal)val).ToString (format);
+			else if (val is float)
+				return ((float)val).ToString (format);
+			else if (val is double)
+				return ((double)val).ToString (format);
 			else
 				return val.ToString ();
 		}

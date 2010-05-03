@@ -1,5 +1,10 @@
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core/StringParserService.cs: Added formatting
+	  support for float and double.
+
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Policies/PolicySet.cs:
 	* MonoDevelop.Projects.Policies/ScopedPolicy.cs:
 	* MonoDevelop.Projects.Policies/PolicyService.cs: Added
