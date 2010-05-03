@@ -1,3 +1,9 @@
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide/ImageService.cs:
+	* MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs: Dispose created
+	  pixbufs.
+
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml:

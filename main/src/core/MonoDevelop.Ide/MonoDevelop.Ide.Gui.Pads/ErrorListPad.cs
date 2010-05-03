@@ -831,9 +831,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			box.Spacing = 3;
 			
 			Gdk.Pixbuf errorIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu);
-			Gdk.Pixbuf noErrorIcon = ImageService.MakeGrayscale (errorIcon);
+			Gdk.Pixbuf noErrorIcon = ImageService.MakeGrayscale (errorIcon); // creates a new pixbuf instance
 			Gdk.Pixbuf warningIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu);
-			Gdk.Pixbuf noWarningIcon = ImageService.MakeGrayscale (warningIcon);
+			Gdk.Pixbuf noWarningIcon = ImageService.MakeGrayscale (warningIcon); // creates a new pixbuf instance
 			
 			Gtk.Image errorImage = new Gtk.Image (errorIcon);
 			Gtk.Image warningImage = new Gtk.Image (warningIcon);
@@ -866,6 +866,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			TaskService.Errors.TasksRemoved += updateHandler;
 			
 			box.Destroyed += delegate {
+				noErrorIcon.Dispose ();
+				noWarningIcon.Dispose ();
 				TaskService.Errors.TasksAdded -= updateHandler;
 				TaskService.Errors.TasksRemoved -= updateHandler;
 			};

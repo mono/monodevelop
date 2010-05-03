@@ -112,6 +112,15 @@ namespace MonoDevelop.Ide
 			return result;
 		}
 
+		/// <summary>
+		/// This creates a new gray scale pixbuf. Note that this pixbuf needs to be disposed.
+		/// </summary>
+		/// <param name="icon">
+		/// A <see cref="Gdk.Pixbuf"/>.
+		/// </param>
+		/// <returns>
+		/// A <see cref="Gdk.Pixbuf"/> gray scale version of "icon".
+		/// </returns>
 		public static Gdk.Pixbuf MakeGrayscale (Gdk.Pixbuf icon)
 		{
 			Gdk.Pixbuf copy = icon.Copy ();
