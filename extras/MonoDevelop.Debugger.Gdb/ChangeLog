@@ -1,3 +1,7 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GdbSession.cs: Increased console creation timeout.
+
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GdbSession.cs: Track api changes.

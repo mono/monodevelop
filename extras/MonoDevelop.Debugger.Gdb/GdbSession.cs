@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger.Gdb
 					DateTime tim = DateTime.Now;
 					while (!File.Exists (ttyfileDone)) {
 						System.Threading.Thread.Sleep (100);
-						if ((DateTime.Now - tim).TotalSeconds > 4)
+						if ((DateTime.Now - tim).TotalSeconds > 10)
 							throw new InvalidOperationException ("Console could not be created.");
 					}
 					tty = File.ReadAllText (ttyfile).Trim (' ','\n');
