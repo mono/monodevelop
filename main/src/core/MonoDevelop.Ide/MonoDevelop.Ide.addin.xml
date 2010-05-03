@@ -2033,8 +2033,10 @@
 			<SeparatorItem id = "Separator6" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
 			<SeparatorItem id = "optionssep5" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
+			<Condition id="Platform" value="!windows">
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
+			</Condition>
 		</ItemSet>
 		
 		<ItemSet id = "View" _label = "_View">
@@ -2138,6 +2140,11 @@
 			<SeparatorItem id ="AddinManagerSeparator" /> 
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
+			<SeparatorItem id = "OptionsSection" />
+			<Condition id="Platform" value="windows">
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
+			</Condition>
 		</ItemSet>
 
 		<ItemSet id = "Window" _label = "_Window">
