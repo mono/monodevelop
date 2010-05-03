@@ -1,3 +1,10 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.csproj: Flush.
+
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Properly update
+	  expanders visibility when refreshing a row.
+
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Debugger/DisassemblyView.cs: ViewContent widgets
