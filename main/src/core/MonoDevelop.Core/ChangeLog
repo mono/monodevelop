@@ -1,3 +1,8 @@
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Core/Properties.cs: Dispose stream reader after
+	  use.
+
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:

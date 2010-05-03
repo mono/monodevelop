@@ -270,14 +270,16 @@ namespace MonoDevelop.Core
 			{
 				try {
 					if (typeof(ICustomXmlSerializer).IsAssignableFrom (typeof(T))) {
-						XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" )));
-						object result = ((ICustomXmlSerializer)typeof(T).Assembly.CreateInstance (typeof(T).FullName)).ReadFrom (reader);
-						reader.Close ();
-						return (T)result;
+						using (XmlReader reader = new XmlTextReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes ("<" + Properties.SerializedNode + ">" + xml + "</" + Properties.SerializedNode + ">" )))) {
+							return (T)((ICustomXmlSerializer)typeof(T).Assembly.CreateInstance (typeof(T).FullName)).ReadFrom (reader);
+						}
 					}
 					
 					XmlSerializer serializer = new XmlSerializer (typeof(T));
-					return (T)serializer.Deserialize (new StreamReader(new MemoryStream(System.Text.Encoding.UTF8.GetBytes (xml))));
+					using (StreamReader sr = new StreamReader (new MemoryStream (System.Text.Encoding.UTF8.GetBytes (xml)))) {
+						return (T)serializer.Deserialize (sr);
+					}
+					
 				} catch (Exception e) {
 					LoggingService.LogWarning ("Caught exception while deserializing:" + typeof(T), e);
 					return default(T);
