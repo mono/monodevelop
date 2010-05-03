@@ -458,11 +458,14 @@ namespace MonoDevelop.Projects.Dom
 
 		public void AddMethods (IEnumerable members) 
 		{
+			if (members == null)
+				return;
 			foreach (object member in members) {
-				if (member is IMethod) {
-					methods.Add ((IMethod)member);
-					originalMethods.Add ((IMethod)member);
-				}
+				IMethod method = member as IMethod;
+				if (method == null)
+					continue;
+				methods.Add (method);
+				originalMethods.Add (method);
 			}
 		}
 		

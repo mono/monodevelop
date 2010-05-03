@@ -1,3 +1,8 @@
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 601350
+	  - Null ref in highlighting/tooltips'.
+
 2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Assemblies/TargetRuntime.cs: Added
