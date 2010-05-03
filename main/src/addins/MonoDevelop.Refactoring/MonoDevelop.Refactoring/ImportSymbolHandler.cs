@@ -102,6 +102,10 @@ namespace MonoDevelop.Refactoring
 		MonoDevelop.Ide.Gui.Document doc;
 		ImportSymbolCache cache;
 		
+		public IType Type {
+			get { return this.type; }
+		}
+		
 		public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, ImportSymbolCache cache, ProjectDom dom, IType type)
 		{
 			this.doc = doc;
@@ -220,17 +224,25 @@ namespace MonoDevelop.Refactoring
 			ProjectDom dom = ProjectDomService.GetProjectDom (doc.Project);
 			
 			ImportSymbolCache cache = new ImportSymbolCache ();
-			CompletionDataList completionList = new CompletionDataList ();
-			completionList.IsSorted = true;
-			foreach (IType type in dom.Types) {
-				completionList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
-			}
 			
+			List<ImportSymbolCompletionData> typeList = new List<ImportSymbolCompletionData> ();
+			foreach (IType type in dom.Types) {
+				typeList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
+			}
 			foreach (var refDom in dom.References) {
 				foreach (IType type in refDom.Types) {
-					completionList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
+					typeList.Add (new ImportSymbolCompletionData (doc, cache, dom, type));
 				}
 			}
+			
+			typeList.Sort (delegate (ImportSymbolCompletionData left, ImportSymbolCompletionData right) {
+				return left.Type.Name.CompareTo (right.Type.Name);
+			});
+			
+			
+			CompletionDataList completionList = new CompletionDataList ();
+			completionList.IsSorted = true;
+			typeList.ForEach (cd => completionList.Add (cd));
 			
 			((CompletionTextEditorExtension)ext).ShowCompletion (completionList);
 		}

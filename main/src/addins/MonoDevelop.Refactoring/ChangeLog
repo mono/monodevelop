@@ -1,3 +1,8 @@
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Fixed 'Bug
+	  601738 - Import Type list not sorted'.
+
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Cached
