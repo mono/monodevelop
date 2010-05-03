@@ -698,46 +698,50 @@ namespace MonoDevelop.CSharp.Resolver
 		public ExpressionResult FindExpression (string text, int offset)
 		{
 			Init (text, offset);
-			Token token;
-			Location lastError = Location.Empty;
-			lexer.Errors.Error = delegate(int errorLine, int errorCol, string errorMsg) { lastError = new Location (errorCol, errorLine); };
-			while ((token = lexer.NextToken ()) != null) {
-				if (token.Kind == Tokens.EOF)
-					break;
-				
-				if (targetPosition <= token.Location) {
-					break;
-				}
-				ApplyToken (token);
-				if (targetPosition <= token.EndLocation) {
-					if (token.Kind == Tokens.Literal) {
-						// do not return string literal as expression if offset was inside the literal,
-						// or if it was at the end of the literal when the literal was not terminated correctly.
-						if (targetPosition < token.EndLocation || lastError == token.Location) {
-							frame.lastExpressionStart = Location.Empty;
-						}
+			try {
+				Token token;
+				Location lastError = Location.Empty;
+				lexer.Errors.Error = delegate(int errorLine, int errorCol, string errorMsg) { lastError = new Location (errorCol, errorLine); };
+				while ((token = lexer.NextToken ()) != null) {
+					if (token.Kind == Tokens.EOF)
+						break;
+					
+					if (targetPosition <= token.Location) {
+						break;
 					}
-					break;
+					ApplyToken (token);
+					if (targetPosition <= token.EndLocation) {
+						if (token.Kind == Tokens.Literal) {
+							// do not return string literal as expression if offset was inside the literal,
+							// or if it was at the end of the literal when the literal was not terminated correctly.
+							if (targetPosition < token.EndLocation || lastError == token.Location) {
+								frame.lastExpressionStart = Location.Empty;
+							}
+						}
+						break;
+					}
+					lastToken = token.Kind;
 				}
-				lastToken = token.Kind;
-			}
-			
-			int tokenOffset;
-			if (token == null || token.Kind == Tokens.EOF)
-				tokenOffset = text.Length;
-			else
-				tokenOffset = LocationToOffset (token.Location);
-			int lastExpressionStartOffset = LocationToOffset (frame.lastExpressionStart);
-			if (lastExpressionStartOffset >= 0) {
-				if (offset < tokenOffset) {
-					// offset is in front of this token
-					return MakeResult (text, lastExpressionStartOffset, tokenOffset, frame.contexts);
+				
+				int tokenOffset;
+				if (token == null || token.Kind == Tokens.EOF)
+					tokenOffset = text.Length;
+				else
+					tokenOffset = LocationToOffset (token.Location);
+				int lastExpressionStartOffset = LocationToOffset (frame.lastExpressionStart);
+				if (lastExpressionStartOffset >= 0) {
+					if (offset < tokenOffset) {
+						// offset is in front of this token
+						return MakeResult (text, lastExpressionStartOffset, tokenOffset, frame.contexts);
+					} else {
+						// offset is IN this token
+						return MakeResult (text, lastExpressionStartOffset, offset, frame.contexts);
+					}
 				} else {
-					// offset is IN this token
-					return MakeResult (text, lastExpressionStartOffset, offset, frame.contexts);
+					return new ExpressionResult (null, frame.contexts);
 				}
-			} else {
-				return new ExpressionResult (null, frame.contexts);
+			} finally {
+				lexer.Dispose ();
 			}
 		}
 
