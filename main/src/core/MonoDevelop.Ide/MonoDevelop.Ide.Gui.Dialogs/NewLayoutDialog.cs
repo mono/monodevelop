@@ -5,12 +5,14 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide.Gui;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal partial class NewLayoutDialog : Gtk.Dialog
 	{
-		string[] existentLayouts;
+		IList<string> existentLayouts;
 
 		public NewLayoutDialog ()
 		{
@@ -30,8 +32,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void OnNameChanged (object obj, EventArgs args)
 		{
-			newButton.Sensitive = (layoutName.Text != "" &&
-			                       Array.IndexOf (existentLayouts, layoutName.Text) == -1);
+			var txt = LayoutName;
+			//FIXME: add message when name invalid
+			var valid = !string.IsNullOrEmpty (txt) && txt.All (ch => Char.IsLetterOrDigit (ch) || ch == ' ');
+			newButton.Sensitive = valid && !existentLayouts.Contains (layoutName.Text);
 		}
 	}
 }

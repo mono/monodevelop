@@ -47,11 +47,12 @@ namespace MonoDevelop.Ide.Gui
 		void OnConfigurationsChanged (object sender, EventArgs e)
 		{
 			((ListStore)Combo.Model).Clear ();
+			var layouts = IdeApp.Workbench.Layouts;
 			int active = 0;
-			for (int i = 0; i < IdeApp.Workbench.Layouts.Length; i++)
+			for (int i = 0; i < layouts.Count; i++)
 			{
-				Combo.AppendText (IdeApp.Workbench.Layouts[i]);
-				if (IdeApp.Workbench.Layouts[i] == IdeApp.Workbench.CurrentLayout)
+				Combo.AppendText (layouts[i]);
+				if (layouts[i] == IdeApp.Workbench.CurrentLayout)
 					active = i;
 			}
 			changingHere = true;

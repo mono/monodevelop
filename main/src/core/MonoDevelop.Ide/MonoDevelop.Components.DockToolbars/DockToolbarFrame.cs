@@ -32,6 +32,7 @@ using Gdk;
 using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.DockToolbars
 {
@@ -43,9 +44,9 @@ namespace MonoDevelop.Components.DockToolbars
 		VBox contentBox;
 		DockToolbar dragBar;
 		int xDragDif, yDragDif;
-		ArrayList bars = new ArrayList ();
+		List<DockToolbar> bars = new List<DockToolbar> ();
 		
-		Hashtable layouts = new Hashtable ();
+		Dictionary<string,DockToolbarStatus[]> layouts = new Dictionary<string,DockToolbarStatus[]> ();
 		string currentLayout = "";
 		
 		Cursor handCursor = new Cursor (CursorType.Fleur);
@@ -108,11 +109,11 @@ namespace MonoDevelop.Components.DockToolbars
 			DockToolbarFrameStatus col = new DockToolbarFrameStatus ();
 			col.Version = DockToolbarFrameStatus.CurrentVersion;
 			
-			foreach (DictionaryEntry e in layouts) {
-				DockToolbarFrameLayout ctx = new DockToolbarFrameLayout ();
-				ctx.Id = (string)e.Key;
-				ctx.Bars = (DockToolbarStatus[]) e.Value;
-				col.Status.Add (ctx);
+			foreach (var layout in layouts) {
+				col.Status.Add (new DockToolbarFrameLayout () {
+					Id = layout.Key,
+					Bars = layout.Value,
+				});
 			}
 			return col;
 		}
@@ -211,7 +212,7 @@ namespace MonoDevelop.Components.DockToolbars
 			return null;
 		}
 		
-		public ICollection Toolbars {
+		public ICollection<DockToolbar> Toolbars {
 			get { return bars; }
 		}
 		
@@ -229,9 +230,16 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		void RestoreLayout (string layout)
 		{
-			DockToolbarStatus[] status = (DockToolbarStatus[]) layouts [layout];
+			DockToolbarStatus[] status;
+			layouts.TryGetValue (layout, out status);
 			RestoreStatus (status);
 			currentLayout = layout;
+		}
+		
+		internal void DeleteLayout (string layout)
+		{
+			if (layouts.ContainsKey (layout))
+				layouts.Remove (layout);
 		}
 		
 		DockToolbarStatus[] SaveStatus ()

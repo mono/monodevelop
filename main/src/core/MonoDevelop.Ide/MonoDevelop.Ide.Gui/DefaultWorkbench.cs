@@ -148,9 +148,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public string[] Layouts {
+		public IList<string> Layouts {
 			get {
-				return layouts.ToArray ();
+				return layouts;
 			}
 		}
 		
@@ -169,12 +169,19 @@ namespace MonoDevelop.Ide.Gui
 			set {
 				// Leave dragging mode, to avoid problems due to widget relocating
 				tabControl.LeaveDragMode (0);
-				isInFullViewMode = false;
+				
+				var oldLayout = dock.CurrentLayout;
 				
 				InitializeLayout (value);
-				dock.CurrentLayout = value;
-				toolbarFrame.CurrentLayout = value;
+				toolbarFrame.CurrentLayout = dock.CurrentLayout = value;
 
+				//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
+				//else they will diverge
+				if (oldLayout != null && oldLayout.EndsWith (fullViewModeTag)) {
+					dock.DeleteLayout (oldLayout);
+					toolbarFrame.DeleteLayout (oldLayout);
+				}
+				
 				// persist the selected layout
 				PropertyService.Set ("MonoDevelop.Core.Gui.CurrentWorkbenchLayout", value);
 			}
@@ -499,7 +506,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				} else {
 					SetDefaultTitle ();
-					if (isInFullViewMode)
+					if (IsInFullViewMode)
 						this.ToggleFullViewMode ();
 				}
 			} catch (Exception) {
@@ -618,8 +625,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		protected /*override*/ void OnClosed(EventArgs e)
+		protected void OnClosed(EventArgs e)
 		{
+			//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
+			foreach (var fv in dock.Layouts)
+				if (fv.EndsWith (fullViewModeTag))
+					dock.DeleteLayout (fv);
+			
 			dock.SaveLayouts (configFile);
 			UninstallMenuBar ();
 			Remove (rootWidget);
@@ -851,7 +863,7 @@ namespace MonoDevelop.Ide.Gui
 				if (System.IO.File.Exists (configFile)) {
 					dock.LoadLayouts (configFile);
 					foreach (string layout in dock.Layouts) {
-						if (!layouts.Contains (layout))
+						if (!layouts.Contains (layout) && !layout.EndsWith (fullViewModeTag))
 							layouts.Add (layout);
 					}
 				}
@@ -935,22 +947,29 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.ResetToolbarPositions ();
 		}
 		
+		bool IsInFullViewMode {
+			get {
+				return dock.CurrentLayout.EndsWith (fullViewModeTag);
+			}
+		}
+		
 		public void ToggleFullViewMode ()
 		{
-			isInFullViewMode = !isInFullViewMode;
 			this.tabControl.LeaveDragMode (0);
 			
-			if (isInFullViewMode) {
-				string fullViewLayout = "Edit." + CurrentLayout + fullViewModeTag;
+			if (IsInFullViewMode) {
+				toolbarFrame.CurrentLayout = dock.CurrentLayout = CurrentLayout;
+			} else {
+				string fullViewLayout = CurrentLayout + fullViewModeTag;
 				if (!dock.HasLayout (fullViewLayout))
 					dock.CreateLayout (fullViewLayout, true);
-				dock.CurrentLayout = fullViewLayout;
+				toolbarFrame.CurrentLayout = dock.CurrentLayout = fullViewLayout;
 				foreach (DockItem it in dock.GetItems ()) {
 					if (it.Behavior != DockItemBehavior.Locked && it.Visible)
 						it.Status = DockItemStatus.AutoHide;
 				}
-			} else {
-				dock.CurrentLayout = "Edit." + CurrentLayout;
+				foreach (var tb in toolbarFrame.Toolbars)
+					tb.Status.Visible = false;
 			}
 		}
 

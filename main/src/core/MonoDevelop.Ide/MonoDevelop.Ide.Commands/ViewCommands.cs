@@ -119,9 +119,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			string[] layouts = IdeApp.Workbench.Layouts;
-			for (int i = 0; i < layouts.Length; i++) {
-				string name = layouts[i];
+			foreach (var name in IdeApp.Workbench.Layouts) {
 				CommandInfo item = new CommandInfo(GettextCatalog.GetString (name));
 				item.Checked = IdeApp.Workbench.CurrentLayout == name;
 				item.Description = GettextCatalog.GetString ("Switch to layout '{0}'", name);

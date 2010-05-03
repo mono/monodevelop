@@ -1,3 +1,23 @@
+2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Commands/ViewCommands.cs: Simplify.
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarFrame.cs: Use
+	  generics. Add API for removing layouts.
+
+	* MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs: Restrict the
+	  names users can give layouts.
+
+	* MonoDevelop.Ide.Gui/LayoutComboBox.cs: Track API, don't call
+	  costly property multiple times.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs: Tweak API.
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fix full view mode
+	  switching. Hide toolbars in full view mode. Destroy full
+	  view layouts after use so they don't diverge from the normal
+	  layouts.
+
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/FixedWidthWrapLabel.cs: Dispose

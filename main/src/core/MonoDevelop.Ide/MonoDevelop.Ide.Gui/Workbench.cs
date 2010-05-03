@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public string[] Layouts {
+		public IList<string> Layouts {
 			get { return workbench.Layouts; }
 		}
 		
