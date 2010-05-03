@@ -173,7 +173,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static void SetDesignerLayout ()
 		{
 			if (AutoSwitchGuiLayout && IdeApp.Workbench.CurrentLayout != GuiBuilderLayout) {
-				bool exists = Array.IndexOf (IdeApp.Workbench.Layouts, GuiBuilderLayout) != -1;
+				bool exists = IdeApp.Workbench.Layouts.Contains (GuiBuilderLayout);
 				defaultLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = GuiBuilderLayout;
 				if (!exists) {
