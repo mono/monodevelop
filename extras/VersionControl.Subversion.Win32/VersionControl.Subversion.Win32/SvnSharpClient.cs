@@ -163,12 +163,24 @@ namespace SubversionAddinWindows
 			return SvnClient.Version.ToString ();
 		}
 
+		public override IEnumerable<DirectoryEntry> ListUrl (string url, bool recurse, SvnRevision rev)
+		{
+			return List (new SvnUriTarget (url, GetRevision (rev)), recurse);
+		}
+
 		public override IEnumerable<DirectoryEntry> List (FilePath path, bool recurse, SvnRevision rev)
+		{
+			return List (new SvnPathTarget (path, GetRevision (rev)), recurse);
+		}
+
+		IEnumerable<DirectoryEntry> List (SvnTarget target, bool recurse)
 		{
 			List<DirectoryEntry> list = new List<DirectoryEntry> ();
 			SvnListArgs args = new SvnListArgs ();
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
-			client.List (new SvnPathTarget (path, GetRevision (rev)), args, delegate (object o, SvnListEventArgs a) {
+			client.List (target, args, delegate (object o, SvnListEventArgs a) {
+				if (string.IsNullOrEmpty (a.Path))
+					return;
 				DirectoryEntry de = new DirectoryEntry ();
 				de.CreatedRevision = ToBaseRevision (a.Entry.Revision).Rev;
 				de.HasProps = a.Entry.HasProperties;
