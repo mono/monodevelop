@@ -1,3 +1,8 @@
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug
+	  601350 - Null ref in highlighting/tooltips'.
+
 2010-04-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:

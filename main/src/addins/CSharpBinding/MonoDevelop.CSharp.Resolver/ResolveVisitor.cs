@@ -637,8 +637,12 @@ namespace MonoDevelop.CSharp.Resolver
 					targetResult.CallingMember = resolver.CallingMember;
 				} else if (targetResult is BaseResolveResult) {
 					System.Collections.IEnumerable baseConstructors = null;
+					IType firstBaseType = null;
 					foreach (IReturnType bT in this.resolver.CallingType.BaseTypes) {
-						foreach (IType baseType in resolver.Dom.GetInheritanceTree (resolver.SearchType (bT))) {
+						IType resolvedBaseType = resolver.SearchType (bT);
+						if (firstBaseType == null && resolvedBaseType.ClassType != MonoDevelop.Projects.Dom.ClassType.Interface)
+							firstBaseType = resolvedBaseType;
+						foreach (IType baseType in resolver.Dom.GetInheritanceTree (resolvedBaseType)) {
 							if (baseType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface)
 								break;
 							baseConstructors = baseType.Methods.Where (method => method.IsConstructor);
@@ -646,6 +650,23 @@ namespace MonoDevelop.CSharp.Resolver
 						}
 					}
 				bailOut:
+					if (baseConstructors == null) {
+						if (firstBaseType != null) {
+							// if there is a real base type without a .ctor a default .ctor for this type is generated.
+							DomMethod constructedConstructor;
+							constructedConstructor = new DomMethod ();
+							constructedConstructor.Name = ".ctor";
+							constructedConstructor.MethodModifier = MethodModifier.IsConstructor;
+							constructedConstructor.DeclaringType = firstBaseType;
+							constructedConstructor.Modifiers = MonoDevelop.Projects.Dom.Modifiers.Public;
+							baseConstructors = new IMethod[] {
+								constructedConstructor
+							};
+						} else {
+							baseConstructors = resolver.SearchType (DomReturnType.Object).SearchMember (".ctor", true);
+						}
+						
+					}
 					targetResult = new MethodResolveResult (baseConstructors);
 					((MethodResolveResult)targetResult).Type = this.resolver.CallingType;
 					targetResult.CallingType   = resolver.CallingType;
