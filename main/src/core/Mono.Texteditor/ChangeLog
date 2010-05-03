@@ -1,5 +1,10 @@
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.PopupWindow/TooltipWindow.cs: Dispose
+	  Pango.Layout.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Dispose pango attributes.
 
 2010-05-03  Mike Krüger  <mkrueger@novell.com>

@@ -238,6 +238,15 @@ namespace Mono.TextEditor.PopupWindow
 				QueueResize ();
 			}
 			
+			protected override void OnDestroyed ()
+			{
+				base.OnDestroyed ();
+				if (layout != null) {
+					layout.Dispose ();
+					layout = null;
+				}
+			}
+			
 			private void UpdateLayout ()
 			{
 				if (layout == null) {
