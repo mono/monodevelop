@@ -29,7 +29,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
-		<CommandItem id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit" />
+		<CommandItem id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit" insertbefore="OptionsSection" />
 	</Extension>
 
 </Addin>

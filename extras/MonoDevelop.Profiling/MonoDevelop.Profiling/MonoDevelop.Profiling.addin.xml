@@ -108,7 +108,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
 		<!--<CommandItem id = "MonoDevelop.Profiling.ToolCommands.ProfileExecutable" />-->
-		<CommandItem id = "MonoDevelop.Profiling.ToolCommands.ProfileProcess" />
+		<CommandItem id = "MonoDevelop.Profiling.ToolCommands.ProfileProcess" insertbefore="OptionsSection" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Profiling/ToolBar/ProfilingPad">
