@@ -367,8 +367,12 @@ namespace MonoDevelop.Core.Assemblies
 					Monitor.PulseAll (initLock);
 					lock (initEventLock) {
 						initialized = true;
-						if (initializedEvent != null && !ShuttingDown)
-							initializedEvent (this, EventArgs.Empty);
+						try {
+							if (initializedEvent != null && !ShuttingDown)
+								initializedEvent (this, EventArgs.Empty);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while initializing the runtime: " + Id, ex);
+						}
 					}
 					timer.End ();
 				}

@@ -49,6 +49,7 @@ namespace MonoDevelop.Core.Assemblies
 						pendingUpdate = true;
 						Runtime.SystemAssemblyService.CurrentRuntime.Initialized += OnUpdatePackages;
 					}
+					NotifyChanged ();
 				}
 			}
 		}
@@ -63,12 +64,20 @@ namespace MonoDevelop.Core.Assemblies
 				packages.Clear ();
 				
 				foreach (string dir in directories) {
-					foreach (string file in Directory.GetFiles (dir)) {
-						string ext = Path.GetExtension (file);
-						if (ext == ".dll")
-							RegisterAssembly (file);
-						else if (ext == ".pc")
-							RegisterPcFile (file);
+					if (Directory.Exists (dir)) {
+						try {
+							foreach (string file in Directory.GetFiles (dir)) {
+								string ext = Path.GetExtension (file);
+								if (ext == ".dll")
+									RegisterAssembly (file);
+								else if (ext == ".pc")
+									RegisterPcFile (file);
+							}
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while updating assemblies from directory: " + dir, ex);
+						}
+					} else {
+						LoggingService.LogWarning ("User defined assembly forlder doesn't exist: " + dir);
 					}
 				}
 				pendingUpdate = false;

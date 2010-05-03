@@ -88,8 +88,7 @@ namespace MonoDevelop.Core.Assemblies
 			packages.Add (p);
 			packagesHash [pinfo.Name] = p;
 			
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
+			NotifyChanged ();
 			
 			return p;
 		}
@@ -115,7 +114,11 @@ namespace MonoDevelop.Core.Assemblies
 			
 			packages.Remove (p);
 			packagesHash.Remove (p.Name);
-
+			NotifyChanged ();
+		}
+		
+		protected void NotifyChanged ()
+		{
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);
 		}

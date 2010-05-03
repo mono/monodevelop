@@ -1,5 +1,14 @@
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Assemblies/AssemblyContext.cs:
+	* MonoDevelop.Core.Assemblies/DirectoryAssemblyContext.cs:
+	  Don't crash if there is some error while scanning an
+	  assembly folder. Fire the Changed event if the directory
+	  list of DirectoryAssemblyContext changes.
+
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Core/StringParserService.cs: Added formatting
 	  support for float and double.
 
