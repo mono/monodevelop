@@ -34,6 +34,7 @@ using System.IO;
 using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -58,10 +59,10 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 			});
 			IdeApp.Workspace.FileChangedInProject += delegate (object sender, ProjectFileEventArgs e) {
-				Update (e.ProjectFile);
+				Update (e.ProjectFile, false);
 			};
 			IdeApp.Workspace.FilePropertyChangedInProject += delegate (object sender, ProjectFileEventArgs e) {
-				Update (e.ProjectFile);
+				Update (e.ProjectFile, false);
 			};
 			//FIXME: handle the rename
 			//MonoDevelop.Ide.Gui.IdeApp.Workspace.FileRenamedInProject
@@ -72,7 +73,7 @@ namespace MonoDevelop.Ide.CustomTools
 			//forces static ctor to run
 		}
 		
-		static CustomTool GetGenerator (ProjectFile file)
+		static ISingleFileCustomTool GetGenerator (ProjectFile file)
 		{
 			CustomToolExtensionNode node;
 			if (!string.IsNullOrEmpty (file.Generator) && nodes.TryGetValue (file.Generator, out node))
@@ -80,66 +81,102 @@ namespace MonoDevelop.Ide.CustomTools
 			return null;
 		}
 		
-		public static void Update (ProjectFile file)
+		public static void Update (ProjectFile file, bool force)
 		{
 			var tool = GetGenerator (file);
 			if (tool == null)
 				return;
+			
 			ProjectFile genFile = null;
 			if (!string.IsNullOrEmpty (file.LastGenOutput))
 				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
 			
-			if (genFile != null && File.Exists (genFile.FilePath) && 
+			if (!force && genFile != null && File.Exists (genFile.FilePath) && 
 			    File.GetLastWriteTime (file.FilePath) < File.GetLastWriteTime (genFile.FilePath)) {
 				return;
 			}
 			
-			CompilerErrorCollection errors = null;
-			bool broken = false;
-			FilePath genFilePath = FilePath.Null;
-			string genFileName = null;
+			string title = GettextCatalog.GetString ("Custom tool");
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (title, null, false, true);
+			var result = new SingleFileCustomToolResult ();
+			var aggOp = new AggregatedOperationMonitor (monitor);
 			try {
-				errors = tool.Generate (file, out genFileName);
-				genFilePath = genFileName;
-				if (genFilePath.IsNullOrEmpty) {
-					genFileName = null;
-				} else {
-					genFileName = genFilePath.ToRelative (file.FilePath.ParentDirectory).ToString ();
-				}
+				monitor.BeginTask (GettextCatalog.GetString ("Updating file {0}...", file.Name), 1);
+				var op = tool.Generate (monitor, file, result);
+				aggOp.AddOperation (op);
+				op.Completed += delegate {
+					UpdateCompleted (monitor, aggOp, file, genFile, result);
+				};
 			} catch (Exception ex) {
-				broken = true;
-				(errors ?? (errors = new CompilerErrorCollection ())) .Add (
-					new CompilerError (file.Name, 0, 0, "",
-						string.Format ("The '{0}' code generator crashed: {1}", file.Generator, ex.Message)));
-				LoggingService.LogError (string.Format ("The '{0}' code generator crashed: {1}", file.Generator), ex);
+				result.UnhandledException = ex;
+				UpdateCompleted (monitor, aggOp, file, genFile, result);
 			}
-			if (string.IsNullOrEmpty (genFileName) ||
-				genFileName.IndexOfAny (new char[] { '/', '\\' }) >= 0 ||
-				!FileService.IsValidFileName (genFileName))
-			{
-				broken = true;
-				(errors ?? (errors = new CompilerErrorCollection ())).Add (
-					new CompilerError (file.Name, 0, 0, "",
-						string.Format ("The '{0}' code generator output invalid filename '{1}'", file.Generator, genFileName)));
-			}
+		}
+		
+		static void UpdateCompleted (IProgressMonitor monitor, AggregatedOperationMonitor aggOp,
+		                             ProjectFile file, ProjectFile genFile, SingleFileCustomToolResult result)
+		{
+			monitor.EndTask ();
+			aggOp.Dispose ();
 			
-			TaskService.Errors.ClearByOwner (file);
-			if (errors.Count > 0) {
-				foreach (CompilerError err in errors)
-					TaskService.Errors.Add (new Task (file.FilePath, err.ErrorText, err.Column, err.Line,
-						                                  err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
-						                                  TaskPriority.Normal, file.Project.ParentSolution, file));
-			}
-			if (broken)
+			if (monitor.IsCancelRequested) {
+				monitor.ReportError ("Cancelled", null);
+				monitor.Dispose ();
 				return;
+			}
 			
-			if (!genFilePath.IsNullOrEmpty && File.Exists (genFilePath)) {
-				if (genFile == null) {
-					genFile = file.Project.AddFile (genFilePath);
-				} else if (genFilePath != genFile.FilePath) {
-					genFile.Name = genFilePath;
+			string genFileName;
+			try {
+				
+				bool broken = false;
+				
+				if (result.UnhandledException != null) {
+					broken = true;
+					result.Errors.Add (new CompilerError (file.Name, 0, 0, "",
+						string.Format ("The '{0}' code generator crashed: {1}", file.Generator, result.UnhandledException.Message)));
+					monitor.ReportError (string.Format ("The '{0}' code generator crashed", file.Generator), result.UnhandledException);
 				}
-				file.LastGenOutput =  genFileName;
+				
+				genFileName = result.GeneratedFilePath.IsNullOrEmpty?
+					null : result.GeneratedFilePath.ToRelative (file.FilePath.ParentDirectory);
+				
+				bool validName = !string.IsNullOrEmpty (genFileName)
+					&& genFileName.IndexOfAny (new char[] { '/', '\\' }) < 0
+					&& FileService.IsValidFileName (genFileName);
+				
+				if (!validName) {
+					broken = true;
+					result.Errors.Add (new CompilerError (file.Name, 0, 0, "",
+						string.Format ("The '{0}' code generator output invalid filename '{1}'", file.Generator, result.GeneratedFilePath)));
+				}
+				
+				TaskService.Errors.ClearByOwner (file);
+				if (result.Errors.Count > 0) {
+					foreach (CompilerError err in result.Errors)
+						TaskService.Errors.Add (new Task (file.FilePath, err.ErrorText, err.Column, err.Line,
+							                                  err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
+							                                  TaskPriority.Normal, file.Project.ParentSolution, file));
+				}
+				
+				if (broken)
+					return;
+				
+				if (result.Success)
+					monitor.ReportSuccess ("Generated file successfully.");
+				else
+					monitor.ReportError ("Failed to generate file. See error pad for details.", null);
+				
+			} finally {
+				monitor.Dispose ();
+			}
+			
+			if (!result.GeneratedFilePath.IsNullOrEmpty && File.Exists (result.GeneratedFilePath)) {
+				if (genFile == null) {
+					genFile = file.Project.AddFile (result.GeneratedFilePath);
+				} else if (result.GeneratedFilePath != genFile.FilePath) {
+					genFile.Name = result.GeneratedFilePath;
+				}
+				file.LastGenOutput = genFileName;
 				genFile.DependsOn = file.FilePath.FileName; 
 			}
 		}

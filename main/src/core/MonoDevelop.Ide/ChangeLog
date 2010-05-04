@@ -1,3 +1,11 @@
+2010-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.CustomTools/CustomTool.cs:
+	* MonoDevelop.Ide.CustomTools/CustomToolService.cs:
+	* MonoDevelop.Ide.Extensions/CustomToolExtensionNode.cs: Make
+	  custom tools cancellable, and add an output pad for viewing
+	  their output and cancelling them.
+
 2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/Workspace.xpt.xml: Set correct assembly name for

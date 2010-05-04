@@ -30,28 +30,90 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using System.IO;
 using Mono.TextTemplating;
+using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.TextTemplating
 {
-	public class TextTemplatingTool : CustomTool
+	public class TextTemplatingTool : ISingleFileCustomTool
 	{
-		public override CompilerErrorCollection Generate (ProjectFile file, out string generatedFileName)
+		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			using (var h = TextTemplatingService.GetTemplatingDomain ()) {
-				var host =  (MonoDevelopTemplatingHost) h.Domain.CreateInstanceAndUnwrap (
-					typeof (MonoDevelopTemplatingHost).Assembly.FullName,
-					typeof (MonoDevelopTemplatingHost).FullName);
-				var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
-				host.ProcessTemplate (file.FilePath, defaultOutputName);
-				generatedFileName = host.OutputFile;
-				return host.Errors;
+			return new ThreadAsyncOperation (delegate {
+				using (var h = TextTemplatingService.GetTemplatingDomain ()) {
+					var host = (MonoDevelopTemplatingHost) h.Domain.CreateInstanceAndUnwrap (
+						typeof (MonoDevelopTemplatingHost).Assembly.FullName,
+						typeof (MonoDevelopTemplatingHost).FullName);
+					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
+					host.ProcessTemplate (file.FilePath, defaultOutputName);
+					result.GeneratedFilePath = host.OutputFile;
+					result.Errors.AddRange (host.Errors);
+					foreach (var err in host.Errors)
+						monitor.Log.WriteLine (err.ToString ());
+				}
+			}, result);
+		}
+	}
+	
+	class ThreadAsyncOperation : IAsyncOperation
+	{
+		Thread thread;
+		bool cancelled;
+		SingleFileCustomToolResult result;
+		Action task;
+		
+		public ThreadAsyncOperation (Action task, SingleFileCustomToolResult result)
+		{
+			if (result == null)
+				throw new ArgumentNullException ("result");
+			
+			this.task = task;
+			this.result = result;
+			thread = new Thread (Run);
+			thread.Start ();
+		}
+		
+		void Run ()
+		{
+			try {
+				task ();
+			} catch (ThreadAbortException ex) {
+				result.UnhandledException = ex;
+				Thread.ResetAbort ();
+			} catch (Exception ex) {
+				result.UnhandledException = ex;
 			}
+			if (Completed != null)
+				Completed (this);
+		}
+		
+		public event OperationHandler Completed;
+		
+		public void Cancel ()
+		{
+			thread.Abort ();
+		}
+		
+		public void WaitForCompleted ()
+		{
+			thread.Join ();
+		}
+		
+		public bool IsCompleted {
+			get { return !thread.IsAlive; }
+		}
+		
+		public bool Success {
+			get { return !cancelled && result.Success; }
+		}
+		
+		public bool SuccessWithWarnings {
+			get { return !cancelled && result.SuccessWithWarnings; }
 		}
 	}
 	
 	class MonoDevelopTemplatingHost : TemplateGenerator
 	{
-		
 	}
 }
 

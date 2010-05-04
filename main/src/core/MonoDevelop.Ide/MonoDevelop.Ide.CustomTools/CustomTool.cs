@@ -27,12 +27,45 @@
 using System;
 using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CustomTools
 {
-	public abstract class CustomTool
+	public interface ISingleFileCustomTool
 	{
-		public abstract CompilerErrorCollection Generate (ProjectFile file, out string generatedFileName);
+		IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result);
+	}
+	
+	public class SingleFileCustomToolResult
+	{
+		CompilerErrorCollection errors = new CompilerErrorCollection ();
+		
+		/// <summary>
+		/// Errors and warnings from the generator.
+		/// </summary>
+		public CompilerErrorCollection Errors { get { return errors; } }
+		
+		/// <summary>
+		/// The absolute name of the generated file. Must be in same directory as source file.
+		/// </summary>
+		public FilePath GeneratedFilePath { get; set; }
+		
+		/// <summary>
+		/// Any unhandled exception from the generator.
+		/// </summary>
+		public Exception UnhandledException { get; set; }
+		
+		public bool Success {
+			get {
+				return UnhandledException == null && !Errors.HasErrors && !Errors.HasWarnings;
+			}
+		}
+		
+		public bool SuccessWithWarnings {
+			get {
+				return UnhandledException == null && !Errors.HasErrors;
+			}
+		}
 	}
 }
 
