@@ -1,3 +1,24 @@
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components.Docking/DockItemContainer.cs: Destroy
+	  allocated pattern.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components.Docking/ShadedContainer.cs: Call
+	  Destroy instead of Dispose - dispose seems not to be
+	  available for windows.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/SplashScreen.cs: Correctly
+	  release splash-screen resources.
+
+2010-05-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components.Docking/ShadedContainer.cs: Dispose
+	  pattern after use.
+
 2010-04-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Desktop/PlatformService.cs: Track API, build

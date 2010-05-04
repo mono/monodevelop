@@ -267,8 +267,10 @@ namespace MonoDevelop.Components.Docking
 				cr.RelLineTo (-rect.Width, 0);
 				cr.RelLineTo (0, -rect.Height);
 				cr.ClosePath ();
-				cr.Pattern = new Cairo.SolidPattern (gcol);
+				Cairo.SolidPattern solidPattern = new Cairo.SolidPattern (gcol);
+				cr.Pattern = solidPattern;
 				cr.FillPreserve ();
+				solidPattern.Destroy ();
 			}
 			
 			header.GdkWindow.DrawRectangle (frame.Style.DarkGC (Gtk.StateType.Normal), false, rect);

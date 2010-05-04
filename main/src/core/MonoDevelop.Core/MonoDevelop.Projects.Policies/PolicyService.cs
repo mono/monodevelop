@@ -809,6 +809,8 @@ namespace MonoDevelop.Projects.Policies
 				
 				writer = new StreamWriter (tempFileName, false, System.Text.Encoding.UTF8);
 				write (writer);
+				writer.Close ();
+				writer = null;
 				
 				//write was successful (no exception)
 				//so move the file to the real location, overwriting the old file

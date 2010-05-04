@@ -1,3 +1,10 @@
+2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextEditorContainer.cs: Don't create a text
+	  editor unless required. Unsubscribe adjustment events when
+	  the container is destroyed. All this fixes some memory
+	  leaks.
+
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: fixed 'Bug 599633 -

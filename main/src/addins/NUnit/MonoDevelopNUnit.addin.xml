@@ -203,5 +203,9 @@
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.NUnit.NUnitAssemblyGroupProject" />
+	</Extension>
 
 </Addin>

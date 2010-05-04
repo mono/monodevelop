@@ -1,3 +1,8 @@
+2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs: Fix crash in
+	  toolbox. Fixes bug #586776 - Toolbox search widget broken.
+
 2010-04-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport/DocumentOutlinePad.cs:

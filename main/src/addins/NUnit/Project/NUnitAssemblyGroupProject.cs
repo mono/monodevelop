@@ -159,6 +159,13 @@ namespace MonoDevelop.NUnit
 			UpdateTests ();
 		}
 		
+		public override bool HasTests {
+			get {
+				return true;
+			}
+		}
+		
+		
 		protected override void OnActiveConfigurationChanged ()
 		{
 			if (lastConfig != null)

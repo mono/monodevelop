@@ -500,6 +500,9 @@ namespace MonoDevelop.Debugger
 			
 			SetValues (parent, it, val.Name, val);
 			RegisterValue (val, it);
+			
+			if (val.HasChildren && !ShowExpanders)
+				ShowExpanders = true;
 		}
 		
 		void RemoveChildren (TreeIter it)

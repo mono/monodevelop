@@ -54,6 +54,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		ToggleButton catToggleButton;
 		ToggleButton compactModeToggleButton;
 		Entry filterEntry;
+		bool filterVisible;
 		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
 		
 		public Toolbox (ToolboxService toolboxService, IPadWindow container)
@@ -150,14 +151,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void toggleFiltering (object sender, EventArgs e)
 		{
-			if (!filterToggleButton.Active && (base.Children.Length == 3)) {
+			if (filterVisible) {
 				filterEntry.Text = "";
 				base.Remove (filterEntry);
-			} else if (base.Children.Length == 2) {
+			} else {
 				base.PackStart (filterEntry, false, false, 4);
 				filterEntry.Show ();
 				filterEntry.GrabFocus ();
-			} else throw new Exception ("Unexpected number of widgets");
+			}
+			filterVisible = !filterVisible;
 		}
 		
 		void toggleCategorisation (object sender, EventArgs e)
