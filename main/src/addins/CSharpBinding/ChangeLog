@@ -1,3 +1,9 @@
+2010-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs: Fixed
+	  'Bug 596609 - Parameters tooltips not escaping generics in
+	  markup'.
+
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
