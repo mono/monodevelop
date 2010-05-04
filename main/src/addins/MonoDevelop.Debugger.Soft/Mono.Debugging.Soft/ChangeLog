@@ -1,3 +1,9 @@
+2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerSession.cs: Don't redirect output/error when
+	  using an external console. Use TargetProcess instead of
+	  Process, since Process doesn't work for external consoles.
+
 2010-04-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugger.Soft.dll:

@@ -103,6 +103,8 @@ namespace Mono.Debugging.Soft
 			if (dsi.UseExternalConsole && dsi.ExternalConsoleLauncher != null) {
 				options = new LaunchOptions ();
 				options.CustomTargetProcessLauncher = dsi.ExternalConsoleLauncher;
+				psi.RedirectStandardOutput = false;
+				psi.RedirectStandardError = false;
 			}
 
 			var sdbLog = Environment.GetEnvironmentVariable ("MONODEVELOP_SDB_LOG");
@@ -362,8 +364,8 @@ namespace Mono.Debugging.Soft
 		protected virtual void EnsureExited ()
 		{
 			try {
-				if (vm != null && vm.Process != null && !vm.Process.HasExited)
-					vm.Process.Kill ();
+				if (vm != null && vm.TargetProcess != null && !vm.TargetProcess.HasExited)
+					vm.TargetProcess.Kill ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error force-terminating soft debugger process", ex);
 			}
@@ -390,7 +392,7 @@ namespace Mono.Debugging.Soft
 		{
 			if (procs == null) {
 				try {
-					procs = new ProcessInfo[] { new ProcessInfo (vm.Process.Id, vm.Process.ProcessName) };
+					procs = new ProcessInfo[] { new ProcessInfo (vm.TargetProcess.Id, vm.TargetProcess.ProcessName) };
 				} catch (Exception ex) {
 					if (!loggedSymlinkedRuntimesBug) {
 						loggedSymlinkedRuntimesBug = true;
