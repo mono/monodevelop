@@ -93,7 +93,7 @@ namespace OSXIntegration.Framework
 		{
 			AEDesc sourceData = new AEDesc (), resultData = new AEDesc ();
 			try {
-				AppleEvent.AECreateDesc ((OSType)OsaType.OsaGenericStorage, compiledBytes, out sourceData);
+				AppleEvent.AECreateDesc ((OSType)(int)OsaType.OsaGenericStorage, compiledBytes, out sourceData);
 				return Run (false, ref sourceData);
 			} finally {
 				AppleEvent.AEDisposeDesc (ref sourceData);
@@ -112,7 +112,7 @@ namespace OSXIntegration.Framework
 		
 		static OsaError Run (bool compile, ref AEDesc scriptData, out string value)
 		{
-			var component = ComponentManager.OpenDefaultComponent ((OSType)OsaType.OsaComponent, (OSType)OsaType.AppleScript);
+			var component = ComponentManager.OpenDefaultComponent ((OSType)(int)OsaType.OsaComponent, (OSType)(int)OsaType.AppleScript);
 			if (component.IsNull)
 				throw new Exception ("Could not load component");
 			AEDesc resultData = new AEDesc ();
