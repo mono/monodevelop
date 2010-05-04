@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.CustomTools
 							//it was cancelled because another was run for the same file, so just clean up
 							aggOp.Dispose ();
 							monitor.EndTask ();
-							monitor.ReportWarning (GettextCatalog.GetString ("Cancelled because generator was run again before it finished"));
+							monitor.ReportWarning (GettextCatalog.GetString ("Cancelled because generator ran again for the same file"));
 							monitor.Dispose ();
 						}
 					}
