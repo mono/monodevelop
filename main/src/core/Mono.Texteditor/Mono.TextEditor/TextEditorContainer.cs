@@ -19,9 +19,14 @@ namespace Mono.TextEditor
 	/// </summary>
 	public class TextEditorContainer : Gtk.Container
 	{
-		TextEditor textEditorWidget = new TextEditor ();
+		TextEditor textEditorWidget;
+		
 		public TextEditor TextEditorWidget {
-			get { return this.textEditorWidget; }
+			get {
+				if (textEditorWidget == null)
+					textEditorWidget = new TextEditor ();
+				return this.textEditorWidget;
+			}
 		}
 		
 		public override ContainerChild this [Widget w] {
@@ -296,12 +301,23 @@ namespace Mono.TextEditor
 		}
 		#endregion
 	
+		Adjustment editorHAdjustement;
+		Adjustment editorVAdjustement;
+		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
-			if (hAdjustement != null) 
+			if (editorHAdjustement != null)
+				editorHAdjustement.ValueChanged -= HandleHAdjustementValueChanged;
+			if (editorVAdjustement != null)
+				editorVAdjustement.ValueChanged -= HandleHAdjustementValueChanged;
+			
+			if (hAdjustement != null)
 				hAdjustement.ValueChanged += HandleHAdjustementValueChanged;
-			if (vAdjustement != null) 
+			if (vAdjustement != null)
 				vAdjustement.ValueChanged += HandleHAdjustementValueChanged;
+			
+			editorHAdjustement = hAdjustement;
+			editorVAdjustement = vAdjustement;
 			textEditorWidget.SetScrollAdjustments (hAdjustement, vAdjustement);
 		}
 		
@@ -309,5 +325,15 @@ namespace Mono.TextEditor
 		{
 			SetChildrenPositions (Allocation);
 		}
+		
+		protected override void OnDestroyed ()
+		{
+			if (editorHAdjustement != null)
+				editorHAdjustement.ValueChanged -= HandleHAdjustementValueChanged;
+			if (editorVAdjustement != null)
+				editorVAdjustement.ValueChanged -= HandleHAdjustementValueChanged;
+			base.OnDestroyed ();
+		}
+		
 	}
 }
