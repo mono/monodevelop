@@ -1,5 +1,11 @@
 2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* templates/Workspace.xpt.xml: Set correct assembly name for
+	  the Workspace type. Fixes bug #602522 - Can't create a
+	  workspace.
+
+2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Components/FileBrowser.cs: Properly
 	  start the file browser. Fixes bug #484598 - Attempting to
 	  open folder with Nautilus in XFCE.

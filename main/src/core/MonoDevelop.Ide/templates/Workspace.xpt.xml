@@ -11,6 +11,6 @@
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = "." type = "MonoDevelop.Projects.Workspace, MonoDevelop.Projects" />
+	<Combine name = "${ProjectName}" directory = "." type = "MonoDevelop.Projects.Workspace, MonoDevelop.Core" />
 	
 </Template>
