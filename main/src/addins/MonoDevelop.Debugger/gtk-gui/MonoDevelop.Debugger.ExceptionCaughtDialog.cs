@@ -45,9 +45,11 @@ namespace MonoDevelop.Debugger
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.labelMessage = new global::Gtk.Label ();
+			this.labelMessage.WidthRequest = 500;
 			this.labelMessage.Name = "labelMessage";
 			this.labelMessage.Xalign = 0f;
-			this.labelMessage.LabelProp = "label2";
+			this.labelMessage.LabelProp = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
+			this.labelMessage.Wrap = true;
 			this.vbox2.Add (this.labelMessage);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelMessage]));
 			w3.Position = 1;
@@ -95,8 +97,8 @@ namespace MonoDevelop.Debugger
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 475;
-			this.DefaultHeight = 285;
+			this.DefaultWidth = 527;
+			this.DefaultHeight = 311;
 			this.Show ();
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}

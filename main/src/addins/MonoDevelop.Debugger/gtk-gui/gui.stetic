@@ -1742,7 +1742,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExceptionCaughtDialog" design-size="475 285">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExceptionCaughtDialog" design-size="527 311">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Exception Caught</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1774,8 +1774,10 @@
             <child>
               <widget class="Gtk.Label" id="labelMessage">
                 <property name="MemberName" />
+                <property name="WidthRequest">500</property>
                 <property name="Xalign">0</property>
-                <property name="LabelProp">label2</property>
+                <property name="LabelProp">test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test</property>
+                <property name="Wrap">True</property>
               </widget>
               <packing>
                 <property name="Position">1</property>

@@ -35,7 +35,7 @@ namespace MonoDevelop.Debugger
 		public ExceptionCaughtDialog (ObjectValue val)
 		{
 			this.Build ();
-			
+			valueView.AllowExpanding = true;
 			labelType.Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", val.TypeName);
 			ObjectValue msg = val.GetChild ("Message");
 			if (msg != null)

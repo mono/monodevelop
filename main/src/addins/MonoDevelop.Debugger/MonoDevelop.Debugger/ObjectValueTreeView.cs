@@ -671,6 +671,8 @@ namespace MonoDevelop.Debugger
 					nameColor = valueColor = modifiedColor;
 			}
 			
+			strval = strval.Replace (Environment.NewLine, " ");
+			
 			bool showViewerButton = DebuggingService.HasValueVisualizers (val);
 			
 			string icon = GetIcon (val.Flags);
