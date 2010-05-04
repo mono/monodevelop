@@ -234,16 +234,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		private void OpenFileBrowser (object o, EventArgs args)
 		{
 			TreeIter iter;
-			TreeModel model;
-			// FIXME: look in GConf for the settings
-			// but strangely there is not one
-			string commandline = "nautilus \"";
-
-			if (tv.Selection.GetSelected (out model, out iter))
-			{
+			if (tv.Selection.GetSelected (out iter)) {
 				string selection = (string) store.GetValue (iter, 1);
-				commandline += System.IO.Path.Combine (currentDir, selection) + "\"";
-				Process.Start (commandline);
+				System.Diagnostics.Process.Start ("file://" + System.IO.Path.Combine (currentDir, selection));
 			}
 		}
 		

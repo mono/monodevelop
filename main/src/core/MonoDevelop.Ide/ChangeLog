@@ -1,3 +1,9 @@
+2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/FileBrowser.cs: Properly
+	  start the file browser. Fixes bug #484598 - Attempting to
+	  open folder with Nautilus in XFCE.
+
 2010-05-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components.Commands/CommandManager.cs: Remove
