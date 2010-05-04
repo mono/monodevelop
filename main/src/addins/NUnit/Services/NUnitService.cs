@@ -54,6 +54,8 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
+			IdeApp.Workspace.ItemAddedToSolution += OnWorkspaceChanged;
+			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			
 			ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));

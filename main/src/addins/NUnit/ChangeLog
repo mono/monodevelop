@@ -1,3 +1,14 @@
+2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelopNUnit.addin.xml: Register nunit project as
+	  serializable.
+
+	* Services/NUnitService.cs:
+	* Project/NUnitAssemblyGroupProject.cs: Ensure that tests are
+	  always shown for nunit assembly projects, when created and
+	  when added. Fixes bug #602143 - Unit tests don't show up in
+	  the Unit Tests pane.
+
 2010-04-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/TestResultsPad.cs: Free up wasted space between
