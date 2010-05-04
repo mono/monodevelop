@@ -42,6 +42,8 @@ namespace MonoDevelop.Ide.CustomTools
 	{
 		static Dictionary<string,CustomToolExtensionNode> nodes = new Dictionary<string,CustomToolExtensionNode> ();
 		
+		static Dictionary<string,IAsyncOperation> runningTasks = new Dictionary<string, IAsyncOperation> ();
+		
 		static CustomToolService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CustomTools", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -96,16 +98,40 @@ namespace MonoDevelop.Ide.CustomTools
 				return;
 			}
 			
-			string title = GettextCatalog.GetString ("Custom tool");
+			TaskService.Errors.ClearByOwner (file);
+			
+			//if this file is already being run, cancel it
+			lock (runningTasks) {
+				IAsyncOperation runningTask;
+				if (runningTasks.TryGetValue (file.FilePath, out runningTask)) {
+					runningTask.Cancel ();
+					runningTasks.Remove (file.FilePath);
+				}
+			}
+			
+			string title = GettextCatalog.GetString ("Custom Tool");
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (title, null, false, true);
 			var result = new SingleFileCustomToolResult ();
 			var aggOp = new AggregatedOperationMonitor (monitor);
 			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Updating file {0}...", file.Name), 1);
+				monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
 				var op = tool.Generate (monitor, file, result);
+				runningTasks.Add (file.FilePath, op);
 				aggOp.AddOperation (op);
 				op.Completed += delegate {
-					UpdateCompleted (monitor, aggOp, file, genFile, result);
+					lock (runningTasks) {
+						IAsyncOperation runningTask;
+						if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask == op) {
+							runningTasks.Remove (file.FilePath);
+							UpdateCompleted (monitor, aggOp, file, genFile, result);
+						} else {
+							//it was cancelled because another was run for the same file, so just clean up
+							aggOp.Dispose ();
+							monitor.EndTask ();
+							monitor.ReportWarning (GettextCatalog.GetString ("Cancelled because generator was run again before it finished"));
+							monitor.Dispose ();
+						}
+					}
 				};
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
@@ -120,7 +146,7 @@ namespace MonoDevelop.Ide.CustomTools
 			aggOp.Dispose ();
 			
 			if (monitor.IsCancelRequested) {
-				monitor.ReportError ("Cancelled", null);
+				monitor.ReportError (GettextCatalog.GetString ("Cancelled"), null);
 				monitor.Dispose ();
 				return;
 			}
@@ -132,9 +158,9 @@ namespace MonoDevelop.Ide.CustomTools
 				
 				if (result.UnhandledException != null) {
 					broken = true;
-					result.Errors.Add (new CompilerError (file.Name, 0, 0, "",
-						string.Format ("The '{0}' code generator crashed: {1}", file.Generator, result.UnhandledException.Message)));
-					monitor.ReportError (string.Format ("The '{0}' code generator crashed", file.Generator), result.UnhandledException);
+					string msg = GettextCatalog.GetString ("The '{0}' code generator crashed", file.Generator);
+					result.Errors.Add (new CompilerError (file.Name, 0, 0, "", msg + ": " + result.UnhandledException.Message));
+					monitor.ReportError (msg, result.UnhandledException);
 				}
 				
 				genFileName = result.GeneratedFilePath.IsNullOrEmpty?
@@ -146,11 +172,12 @@ namespace MonoDevelop.Ide.CustomTools
 				
 				if (!validName) {
 					broken = true;
-					result.Errors.Add (new CompilerError (file.Name, 0, 0, "",
-						string.Format ("The '{0}' code generator output invalid filename '{1}'", file.Generator, result.GeneratedFilePath)));
+					string msg = GettextCatalog.GetString ("The '{0}' code generator output invalid filename '{1}'",
+					                                       file.Generator, result.GeneratedFilePath);
+					result.Errors.Add (new CompilerError (file.Name, 0, 0, "", msg));
+					monitor.ReportError (msg, null);
 				}
 				
-				TaskService.Errors.ClearByOwner (file);
 				if (result.Errors.Count > 0) {
 					foreach (CompilerError err in result.Errors)
 						TaskService.Errors.Add (new Task (file.FilePath, err.ErrorText, err.Column, err.Line,
