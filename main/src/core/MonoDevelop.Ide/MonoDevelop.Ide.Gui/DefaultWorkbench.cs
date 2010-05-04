@@ -74,7 +74,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool closeAll;
 		bool ignorePageSwitch;
-		bool isInFullViewMode;
 
 		bool fullscreen;
 		Rectangle normalBounds = new Rectangle(0, 0, 640, 480);

@@ -1,5 +1,18 @@
 2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	  Show validation messages for new layout names.
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Remove unused
+	  variable.
+
+	* gtk-gui/objects.xml: Flush.
+
+2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Fix hiding toolbars
 	  in full view mode, and destroying of toolbar layouts.
 

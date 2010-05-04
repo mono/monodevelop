@@ -4,11 +4,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal partial class NewLayoutDialog
 	{
+		private global::Gtk.Alignment alignment1;
+
+		private global::Gtk.VBox vbox2;
+
 		private global::Gtk.HBox hbox45;
 
 		private global::Gtk.Label label72;
 
 		private global::Gtk.Entry layoutName;
+
+		private global::Gtk.Label validationMessage;
 
 		private global::Gtk.Button button309;
 
@@ -30,10 +36,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog-vbox4.Gtk.Box+BoxChild
+			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1.Name = "alignment1";
+			// Container child alignment1.Gtk.Container+ContainerChild
+			this.vbox2 = new global::Gtk.VBox ();
+			this.vbox2.Name = "vbox2";
+			this.vbox2.Spacing = 6;
+			this.vbox2.BorderWidth = ((uint)(6));
+			// Container child vbox2.Gtk.Box+BoxChild
 			this.hbox45 = new global::Gtk.HBox ();
 			this.hbox45.Name = "hbox45";
 			this.hbox45.Spacing = 6;
-			this.hbox45.BorderWidth = ((uint)(6));
 			// Container child hbox45.Gtk.Box+BoxChild
 			this.label72 = new global::Gtk.Label ();
 			this.label72.Name = "label72";
@@ -46,6 +59,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w2.Fill = false;
 			// Container child hbox45.Gtk.Box+BoxChild
 			this.layoutName = new global::Gtk.Entry ();
+			this.layoutName.WidthRequest = 320;
 			this.layoutName.Name = "layoutName";
 			this.layoutName.IsEditable = true;
 			this.layoutName.ActivatesDefault = true;
@@ -53,15 +67,32 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.hbox45.Add (this.layoutName);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox45[this.layoutName]));
 			w3.Position = 1;
-			w1.Add (this.hbox45);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(w1[this.hbox45]));
+			this.vbox2.Add (this.hbox45);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox45]));
 			w4.Position = 0;
+			w4.Expand = false;
+			w4.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.validationMessage = new global::Gtk.Label ();
+			this.validationMessage.Name = "validationMessage";
+			this.validationMessage.Xalign = 0f;
+			this.vbox2.Add (this.validationMessage);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.validationMessage]));
+			w5.Position = 1;
+			w5.Expand = false;
+			w5.Fill = false;
+			this.alignment1.Add (this.vbox2);
+			w1.Add (this.alignment1);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1[this.alignment1]));
+			w7.Position = 0;
+			w7.Expand = false;
+			w7.Fill = false;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.ActionArea
-			global::Gtk.HButtonBox w5 = this.ActionArea;
-			w5.Name = "GtkDialog_ActionArea";
-			w5.Spacing = 6;
-			w5.BorderWidth = ((uint)(5));
-			w5.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w8 = this.ActionArea;
+			w8.Name = "GtkDialog_ActionArea";
+			w8.Spacing = 6;
+			w8.BorderWidth = ((uint)(5));
+			w8.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.button309 = new global::Gtk.Button ();
 			this.button309.CanFocus = true;
@@ -70,26 +101,42 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.button309.UseUnderline = true;
 			this.button309.Label = "gtk-cancel";
 			this.AddActionWidget (this.button309, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w6 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w5[this.button309]));
-			w6.Expand = false;
-			w6.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.button309]));
+			w9.Expand = false;
+			w9.Fill = false;
 			// Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.newButton = new global::Gtk.Button ();
+			this.newButton.CanDefault = true;
 			this.newButton.CanFocus = true;
 			this.newButton.Name = "newButton";
-			this.newButton.UseStock = true;
 			this.newButton.UseUnderline = true;
-			this.newButton.Label = "gtk-new";
+			// Container child newButton.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w10 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w11 = new global::Gtk.HBox ();
+			w11.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w12 = new global::Gtk.Image ();
+			w12.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-new", global::Gtk.IconSize.Menu);
+			w11.Add (w12);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w14 = new global::Gtk.Label ();
+			w14.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Create _Layout");
+			w14.UseUnderline = true;
+			w11.Add (w14);
+			w10.Add (w11);
+			this.newButton.Add (w10);
 			this.AddActionWidget (this.newButton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w5[this.newButton]));
-			w7.Position = 1;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.newButton]));
+			w18.Position = 1;
+			w18.Expand = false;
+			w18.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 363;
-			this.DefaultHeight = 131;
+			this.DefaultWidth = 459;
+			this.DefaultHeight = 162;
+			this.newButton.HasDefault = true;
 			this.Show ();
 		}
 	}

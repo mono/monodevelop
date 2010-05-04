@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.conflicButton.CanFocus = true;
 			this.conflicButton.Name = "conflicButton";
 			this.conflicButton.UseMarkup = false;
-			this.conflicButton.Label = "View Conflicts";
+			this.conflicButton.Label = null;
 			this.warningBox.Add (this.conflicButton);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.warningBox[this.conflicButton]));
 			w12.Position = 2;
