@@ -1,3 +1,8 @@
+2010-05-04  Jonathan Pobst  <monkey@jpobst.com>
+
+	* WindowsPlatform.cs: Respect the workingDirectory parameter
+	in StartConsoleProcess.
+
 2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WindowsPlatform.cs: Fix build.
