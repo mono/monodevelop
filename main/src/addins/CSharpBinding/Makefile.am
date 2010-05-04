@@ -170,9 +170,8 @@ RES =  \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \
 	templates/EmptyProject.xpt.xml \
-	templates/GladeSharp2Project.xpt.xml \
-	templates/GnomeSharp2Project.xpt.xml \
 	templates/GtkSharp2Project.xpt.xml \
+	templates/GtkSharp2ProjectMac.xpt.xml \
 	templates/Library.xpt.xml
 
 TESTFILES =  \

@@ -33,9 +33,12 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "CSharpConsoleProject" resource = "ConsoleProject.xpt.xml"/>
 		<ProjectTemplate id = "CSharpEmptyProject" resource = "EmptyProject.xpt.xml"/>
-		<ProjectTemplate id = "CSharpGladeSharp2Project" resource = "GladeSharp2Project.xpt.xml"/>
-		<ProjectTemplate id = "CSharpGnomeSharp2Project" resource = "GnomeSharp2Project.xpt.xml"/>
-		<ProjectTemplate id = "CSharpGtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
+		<Condition id="Platform" value="!mac">
+			<ProjectTemplate id = "CSharpGtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
+		</Condition>
+		<Condition id="Platform" value="mac">
+			<ProjectTemplate id = "CSharpGtkSharp2ProjectMac" resource = "GtkSharp2ProjectMac.xpt.xml"/>
+		</Condition>
 		<ProjectTemplate id = "CSharpLibrary" resource = "Library.xpt.xml"/>
 	</Extension>
 	

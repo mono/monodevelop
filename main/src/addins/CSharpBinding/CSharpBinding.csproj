@@ -119,12 +119,6 @@
     <EmbeddedResource Include="templates\EmptyProject.xpt.xml">
       <LogicalName>EmptyProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\GladeSharp2Project.xpt.xml">
-      <LogicalName>GladeSharp2Project.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\GnomeSharp2Project.xpt.xml">
-      <LogicalName>GnomeSharp2Project.xpt.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\GtkSharp2Project.xpt.xml">
       <LogicalName>GtkSharp2Project.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -160,6 +154,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
       <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\GtkSharp2ProjectMac.xpt.xml">
+      <LogicalName>GtkSharp2ProjectMac.xpt.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
