@@ -1,3 +1,12 @@
+2010-05-04  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: Remove
+	  unnecessary fix for the IntPtr problem.
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Status bar
+	  status boxes are no longer overwriting each other & fixed
+	  little status bar leak.
+
 2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:
