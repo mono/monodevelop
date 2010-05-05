@@ -785,17 +785,37 @@ namespace MonoDevelop.IPhone
 			
 			//insert the app ID into the plist at the beginning
 			var oldDict = doc.Root as PlistDictionary;
-			var newDict = new PropertyList.PlistDictionary ();
+			var newDict = new PlistDictionary ();
 			doc.Root = newDict;
 			newDict["application-identifier"] = identity.AppID;
+			var keychainGroups = new PlistArray (new [] { identity.AppID } );
+			newDict["keychain-access-groups"] = keychainGroups;
 			
-			//merge in the settings from the provisioning profile
+			//merge in the settings from the provisioning profile, skipping some
 			foreach (var item in identity.Profile.Entitlements)
 				if (item.Key != "application-identifier" && item.Key != "keychain-access-groups")
 					newDict.Add (item.Key, item.Value);
 			
 			//and merge in the user's values
 			foreach (var item in oldDict) {
+				//FIXME: we currently ignore these items, and write our own, but maybe we should do substitutes
+				//i.e. $(AppIdentifierPrefix)$(CFBundleIdentifier)
+				if (item.Key == "application-identifier") {
+					var str = item.Value as PlistString;
+					if (str == null || string.IsNullOrEmpty (str.Value) || str.Value.Contains ('$'))
+						continue;
+				} else if (item.Key == "keychain-access-groups") {
+					//special handling, merge into the array
+					var keyArr = item.Value as PlistArray;
+					foreach (var key in keyArr) {
+						var str = key as PlistString;
+						if (str != null && !string.IsNullOrEmpty (str.Value) && !str.Value.Contains ('$')) {
+							keychainGroups.Add (str.Value);
+						}
+					}
+					continue;
+				}
+				
 				if (newDict.ContainsKey (item.Key))
 					newDict[item.Key] = item.Value;
 				else

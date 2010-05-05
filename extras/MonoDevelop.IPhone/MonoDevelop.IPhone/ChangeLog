@@ -1,3 +1,8 @@
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Ignore template values in Apple
+	  entitlement templates, but merge other values.
+
 2010-04-27  Geoff Norton  <gnorton@novell.com>
 
 	* MonoDevelop.IPhone.addin.xml:
