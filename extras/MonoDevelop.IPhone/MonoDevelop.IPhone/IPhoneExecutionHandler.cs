@@ -54,7 +54,7 @@ namespace MonoDevelop.IPhone
 			var cmd = command as IPhoneExecutionCommand;
 			if (cmd == null)
 				return false;
-			if (SimulatorTarget != null && (!cmd.Simulator || !SimulatorTarget.Supports (cmd.MinSdkVersion, cmd.SupportedDevices)))
+			if (SimulatorTarget != null && (!cmd.Simulator || !SimulatorTarget.Supports (cmd.MinimumOSVersion, cmd.SupportedDevices)))
 				return false;
 			return true;
 		}

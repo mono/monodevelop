@@ -292,7 +292,8 @@ namespace MonoDevelop.IPhone
 			var conf = (IPhoneProjectConfiguration) configuration;
 			
 			IPhoneSimulatorTarget simTarget = null;
-			var minSdk = string.IsNullOrEmpty (conf.MtouchMinimumOSVersion)?
+			
+			var minOS = string.IsNullOrEmpty (conf.MtouchMinimumOSVersion)?
 				IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
 			
 			if (conf.Platform != PLAT_IPHONE) {
@@ -300,13 +301,14 @@ namespace MonoDevelop.IPhone
 				if (simTarget == null) {
 					var defaultDevice = ((IPhoneProject)conf.ParentItem).SupportedDevices == TargetDevice.IPad?
 						TargetDevice.IPad : TargetDevice.IPhone;
-					simTarget = new IPhoneSimulatorTarget (defaultDevice, minSdk);
+					var sdk = string.IsNullOrEmpty (conf.MtouchSdkVersion)?
+						IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+					simTarget = new IPhoneSimulatorTarget (defaultDevice, sdk);
 				}
 			}
 			
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.DebugMode && conf.MtouchDebug, simTarget, minSdk,
-			                                   ((IPhoneProject)conf.ParentItem).SupportedDevices) {
+			                                   conf.DebugMode && conf.MtouchDebug, simTarget, minOS, SupportedDevices) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}

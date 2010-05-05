@@ -1,6 +1,14 @@
 2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs:
+	* IPhoneExecutionCommand.cs:
+	* IPhoneExecutionHandler.cs: Pass min OS to the execution
+	  command instead of min SDK. Default sim target still uses
+	  SDK version.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
 	* gtk-gui/gui.stetic:
 	* IPhoneBuildExtension.cs:
 	* IPhoneProjectConfiguration.cs:
