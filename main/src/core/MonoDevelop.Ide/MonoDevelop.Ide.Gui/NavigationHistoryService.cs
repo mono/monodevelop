@@ -252,19 +252,25 @@ namespace MonoDevelop.Ide.Gui
 			
 			currentDoc = document;
 			
-			currentDoc.Closed += delegate { DetachFromCurrentDoc (); };
+			currentDoc.Closed += HandleCurrentDocClosed;
 			
 			if (currentDoc.TextEditor != null) {
 				currentDoc.TextEditor.TextChanged += BufferTextChanged;
 				currentDoc.TextEditor.CursorPositionChanged += BufferCaretPositionChanged;
 			}
 		}
+
+		static void HandleCurrentDocClosed (object sender, EventArgs e)
+		{
+			DetachFromCurrentDoc ();
+		}
 		
 		static void DetachFromCurrentDoc ()
 		{
 			if (currentDoc == null)
 				return;
-						
+			
+			currentDoc.Closed -= HandleCurrentDocClosed;
 			if (currentDoc.TextEditor != null) {
 				currentDoc.TextEditor.TextChanged -= BufferTextChanged;
 				currentDoc.TextEditor.CursorPositionChanged -= BufferCaretPositionChanged;

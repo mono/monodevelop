@@ -1,5 +1,10 @@
 2010-05-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: Take out
+	  event handler.
+
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Components/TooltipWindow.cs: FIX leak caused by
 	  transparency decorators.
 
