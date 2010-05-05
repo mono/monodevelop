@@ -171,19 +171,19 @@ namespace Mono.TextEditor
 			TextViewMargin.caretY -= delta;
 			
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+				TextViewMargin.VAdjustmentValueChanged ();
 				this.QueueDraw ();
 				return;
 			}
 			
 			GdkWindow.Scroll (0, -delta);
-			renderedLines.Clear ();
-			if (delta > 0) {
+/*			if (delta > 0) {
 				delta += LineHeight;
-				QueueDrawArea (0, Allocation.Height - delta, Allocation.Width, delta);
+//				QueueDrawArea (0, Allocation.Height - delta, Allocation.Width, delta);
 			} else {
 				delta -= LineHeight;
-				QueueDrawArea (0, 0, Allocation.Width, -delta);
-			}
+//				QueueDrawArea (0, 0, Allocation.Width, -delta);
+			}*/
 			TextViewMargin.VAdjustmentValueChanged ();
 		}
 		
@@ -1243,7 +1243,7 @@ namespace Mono.TextEditor
 		}
 		
 		
-		Dictionary<Margin, HashSet<int>> renderedLines = new Dictionary<Margin, HashSet<int>> ();
+//		Dictionary<Margin, HashSet<int>> renderedLines = new Dictionary<Margin, HashSet<int>> ();
 		
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
@@ -1267,8 +1267,8 @@ namespace Mono.TextEditor
 						marginsToRender.Add (margin);
 					}
 					curX += margin.Width;
-					if (!renderedLines.ContainsKey (margin))
-						renderedLines.Add (margin, new HashSet<int> ());
+//					if (!renderedLines.ContainsKey (margin))
+//						renderedLines.Add (margin, new HashSet<int> ());
 				}
 			}
 			
@@ -1288,10 +1288,10 @@ namespace Mono.TextEditor
 				if (lastFold > 0) 
 					visualLineNumber = Document.OffsetToLineNumber (lastFold);
 				foreach (Margin margin in marginsToRender) {
-					HashSet<int> linesAlreadyRendered = renderedLines[margin];
-					if (linesAlreadyRendered.Contains (logicalLineNumber))
-						continue;
-					linesAlreadyRendered.Add (logicalLineNumber);
+//					HashSet<int> linesAlreadyRendered = renderedLines[margin];
+//					if (linesAlreadyRendered.Contains (logicalLineNumber))
+//						continue;
+//					linesAlreadyRendered.Add (logicalLineNumber);
 /*					if (margin.Width > 0 && area.Left > margin.XOffset + margin.Width)
 						continue;
 					if (area.Right <= margin.XOffset)
@@ -1346,7 +1346,7 @@ namespace Mono.TextEditor
 				return true;
 			UpdateAdjustments ();
 			
-			renderedLines.Clear ();
+//			renderedLines.Clear ();
 			RenderMargins (e.Window, e.Region.Clipbox);
 			
 			if (requestResetCaretBlink) {

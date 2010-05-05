@@ -1,5 +1,9 @@
 2010-05-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Made scrolling faster.
+
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/FoldMarkerMargin.cs: fixed little issue with
 	  toggle code focus command.
 
