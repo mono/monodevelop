@@ -1,5 +1,10 @@
 2010-05-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs: Removed some event
+	  handlers on close.
+
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: Take out
 	  event handler.
 
