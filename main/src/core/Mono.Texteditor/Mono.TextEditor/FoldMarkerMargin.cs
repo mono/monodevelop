@@ -57,6 +57,7 @@ namespace Mono.TextEditor
 				if (!isInCodeFocusMode) {
 					RemoveBackgroundRenderer ();
 				} else {
+					foldings = null;
 					HandleEditorCaretPositionChanged (null, null);
 				}
 			}

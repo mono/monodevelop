@@ -1,5 +1,10 @@
 2010-05-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/FoldMarkerMargin.cs: fixed little issue with
+	  toggle code focus command.
+
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/FoldMarkerMargin.cs:
 	* Mono.TextEditor/DocumentUpdateRequest.cs: Fixed 'Bug 602615
