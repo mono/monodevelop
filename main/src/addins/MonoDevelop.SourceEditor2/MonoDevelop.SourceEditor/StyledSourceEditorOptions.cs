@@ -335,6 +335,7 @@ namespace MonoDevelop.SourceEditor
 
 		public void Dispose ()
 		{
+			mimeTypes = null;
 			if (policyContainer != null)
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 			if (changed != null) {
