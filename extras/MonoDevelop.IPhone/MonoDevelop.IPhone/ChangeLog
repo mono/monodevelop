@@ -1,5 +1,15 @@
 2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* IPhoneBuildExtension.cs:
+	* IPhoneProjectConfiguration.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:
+	  Add support for setting and handling minimum OS version.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Ignore template values in Apple
 	  entitlement templates, but merge other values.
 

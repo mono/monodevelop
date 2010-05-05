@@ -60,7 +60,8 @@ namespace MonoDevelop.IPhone
 			
 			if (!IPhoneFramework.SdkIsInstalled (conf.MtouchSdkVersion)) {
 				var r = new BuildResult ();
-				r.AddError (string.Format ("Apple iPhone SDK for target OS version '{0}' is not installed", conf.MtouchSdkVersion));
+				//FIXME: fall back to higher SDK?
+				r.AddError (string.Format ("Apple iPhone SDK version '{0}' is not installed", conf.MtouchSdkVersion));
 				return r;
 			}
 			
@@ -206,6 +207,10 @@ namespace MonoDevelop.IPhone
 			if (conf.MtouchSdkVersion != "3.0")
 				args.AppendFormat (" -sdk=\"{0}\"", conf.MtouchSdkVersion);
 			
+			if (conf.MtouchMinimumOSVersion != "3.0")
+				args.AppendFormat (" -targetver=\"{0}\"", conf.MtouchMinimumOSVersion);
+			
+			
 			AppendExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
 		
@@ -268,9 +273,7 @@ namespace MonoDevelop.IPhone
 					SetIfNotPresent (dict,  "UIDeviceFamily", GetSupportedDevices (proj.SupportedDevices));
 				SetIfNotPresent (dict, "DTPlatformVersion", conf.MtouchSdkVersion);
 				
-				if (!sim)
-					//FIXME allow user to choose version?
-					SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchSdkVersion);
+				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchMinimumOSVersion);
 				
 				SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile");
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)

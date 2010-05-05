@@ -219,8 +219,8 @@ namespace MonoDevelop.IPhone
 				deviceConf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 				Configurations.Add (deviceConf);
 				
-				if (sdkVersion != null)
-					deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = sdkVersion;
+				deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = (sdkVersion != null)?
+					sdkVersion : IPhoneSdkVersion.Default.ToString ();
 				
 				if (simConf.Name == "Debug")
 					simConf.MtouchDebug = deviceConf.MtouchDebug = true;
@@ -292,8 +292,8 @@ namespace MonoDevelop.IPhone
 			var conf = (IPhoneProjectConfiguration) configuration;
 			
 			IPhoneSimulatorTarget simTarget = null;
-			var minSdk = string.IsNullOrEmpty (conf.MtouchSdkVersion)?
-				IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+			var minSdk = string.IsNullOrEmpty (conf.MtouchMinimumOSVersion)?
+				IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
 			
 			if (conf.Platform != PLAT_IPHONE) {
 				simTarget = GetSimulatorTarget (conf);

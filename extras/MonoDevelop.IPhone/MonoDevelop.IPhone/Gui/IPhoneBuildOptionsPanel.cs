@@ -113,6 +113,7 @@ namespace MonoDevelop.IPhone.Gui
 			debugCheck.Active = cfg.MtouchDebug;
 			linkCombo.Active = (int) cfg.MtouchLink;
 			sdkComboEntry.Entry.Text = cfg.MtouchSdkVersion;
+			minOSComboEntry.Entry.Text = cfg.MtouchMinimumOSVersion;
 			LoadI18nValues (cfg.MtouchI18n);
 		}
 		
@@ -120,6 +121,7 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			cfg.MtouchExtraArgs = NullIfEmpty (extraArgsEntry.Entry.Text);
 			cfg.MtouchSdkVersion = sdkComboEntry.Entry.Text; //FIXME: validate this?
+			cfg.MtouchMinimumOSVersion = minOSComboEntry.Entry.Text; //FIXME: validate this?
 			cfg.MtouchDebug = debugCheck.Active;
 			cfg.MtouchLink = (MtouchLinkMode) linkCombo.Active;
 			cfg.MtouchI18n = GetI18nValues ();
