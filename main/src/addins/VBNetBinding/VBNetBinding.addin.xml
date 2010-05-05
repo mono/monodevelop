@@ -44,14 +44,6 @@
 		<ProjectTemplate id = "VBGtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
 	</Extension>
   
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
-		<Condition id="ActiveLanguage" value="VBNet">
-			<Section id = "VBNetOutputOptionsPanel"
-				_label = "Output Options" 
-				class = "MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanel"/>
-		</Condition>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
 		<Condition id="ActiveLanguage" value="VBNet">
 			<Panel id = "VBNetProjectOptionsPanel"

@@ -1,5 +1,9 @@
 2010-05-05  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* VBNetBinding.addin.xml: Remove duplicated options section.
+
+2010-05-05  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* VBNetBinding.addin.xml: Fix type reference. Fixes bug
 	  #602452 - VB project options fail.
 
