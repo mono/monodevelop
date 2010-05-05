@@ -1,3 +1,7 @@
+2010-05-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* JavaBinding.addin.xml: Remove duplicated options section.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure:
