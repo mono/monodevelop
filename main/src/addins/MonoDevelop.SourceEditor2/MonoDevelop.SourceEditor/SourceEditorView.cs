@@ -740,7 +740,7 @@ namespace MonoDevelop.SourceEditor
 			int i = 0, count = 0;
 			bool mismatch = false;
 			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
-				if (i > breakpointSegments.Count)
+				if (i >= breakpointSegments.Count)
 					break;
 				count++;
 				int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments[i].Offset);
