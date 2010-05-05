@@ -98,11 +98,6 @@
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker"
 				_label = "Toggle message bubble"
 				_description = "Toggles message bubble on/off"/>
-		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus"
-				_label = "Toggle code focus"
-				_description = "Activates code focus on caret move"
-				shortcut = "Ctrl|Shift|k"
-				macShortcut = "Meta|Shift|k" />
 		
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus"
 				_label = "Toggle code focus"
@@ -114,12 +109,7 @@
 				defaultHandler = "MonoDevelop.SourceEditor.ToggleNavPanelViewsHandler"
 				_label = ""
 				type="array"/>
-		
-		<Command id = "MonoDevelop.SourceEditor.NavigationBarCommands.ToggleNavPanelViews"
-				defaultHandler = "MonoDevelop.SourceEditor.ToggleNavPanelViewsHandler"
-				_label = ""
-				type="array"/>
-		
+				
 		<Command id = "MonoDevelop.SourceEditor.MessageBubbleCommands.HideIssues"
 				defaultHandler = "MonoDevelop.SourceEditor.HideIssuesHandler"
 				_label = "_Hide Issues"/>
@@ -150,6 +140,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 	</Extension>
 	
@@ -187,6 +178,7 @@
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.ToggleIssues" />
 		</ItemSet>
+
 	</Extension>
 	
 </Addin>

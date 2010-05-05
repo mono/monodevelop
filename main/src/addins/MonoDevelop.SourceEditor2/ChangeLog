@@ -1,5 +1,11 @@
 2010-05-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor.addin.xml: Removed some duplicate
+	  entries/put toggle code focus command into the text editor
+	  context menu.
+
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs: free
 	  delegate reference.
 
