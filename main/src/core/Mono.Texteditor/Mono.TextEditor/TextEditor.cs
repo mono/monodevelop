@@ -123,29 +123,6 @@ namespace Mono.TextEditor
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 		}
 		
-		Gdk.Pixmap buffer = null, flipBuffer = null;
-		
-		void DoFlipBuffer ()
-		{
-			Gdk.Pixmap tmp = buffer;
-			buffer = flipBuffer;
-			flipBuffer = tmp;
-		}
-		
-		void DisposeBgBuffer ()
-		{
-			buffer = buffer.Kill ();
-			flipBuffer = flipBuffer.Kill ();
-		}
-		
-		void AllocateWindowBuffer (Rectangle allocation)
-		{
-			DisposeBgBuffer ();
-			if (this.IsRealized) {
-				buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
-				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
-			}
-		}
 		int oldHAdjustment = -1;
 		
 		void HAdjustmentValueChanged (object sender, EventArgs args)
@@ -180,9 +157,6 @@ namespace Mono.TextEditor
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
-			if (buffer == null)
-				AllocateWindowBuffer (this.Allocation);
-			
 			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
 				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
 				return;
@@ -204,21 +178,7 @@ namespace Mono.TextEditor
 				this.Repaint ();
 				return;
 			}
-			int from, to;
-			if (delta > 0) {
-				from = delta;
-				to   = 0;
-			} else {
-				from = 0;
-				to   = -delta;
-			}
 			
-			DoFlipBuffer ();
-			this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                          this.flipBuffer,
-			                          0, from, 
-			                          0, to, 
-			                          Allocation.Width, Allocation.Height - from - to);
 			GdkWindow.Scroll (0, -delta);
 			renderedLines.Clear ();
 			if (delta > 0) {
@@ -278,7 +238,7 @@ namespace Mono.TextEditor
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
-			this.DoubleBuffered = true;
+			this.DoubleBuffered = false;
 			this.AppPaintable = false;
 			base.CanFocus = true;
 			this.RedrawOnAllocate = false;
@@ -637,10 +597,6 @@ namespace Mono.TextEditor
 				this.margins = null;
 			}
 
-			// Dispose the buffer after disposing the margins. Gdk will crash when trying to dispose
-			// a drawable if a Win32 hdc is bound to it.
-			DisposeBgBuffer ();
-			
 			iconMargin = null; 
 			gutterMargin = null;
 			dashedLineMargin = null;
@@ -1224,29 +1180,11 @@ namespace Mono.TextEditor
 						longestLine = line;
 				}
 			}*/
-			if (IsRealized)
-				AllocateWindowBuffer (Allocation);
 			if (this.GdkWindow != null) 
 				this.GdkWindow.MoveResize (allocation);
 			SetAdjustments (Allocation);
 			Repaint ();
 			textViewMargin.SetClip ();
-		}
-		
-		protected override void OnMapped ()
-		{
-			if (buffer == null) {
-				AllocateWindowBuffer (this.Allocation);
-				if (Allocation.Width != 1 || Allocation.Height != 1)
-					Repaint ();
-			}
-			base.OnMapped (); 
-		}
-
-		protected override void OnUnmapped ()
-		{
-			DisposeBgBuffer ();
-			base.OnUnmapped (); 
 		}
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
@@ -1411,8 +1349,7 @@ namespace Mono.TextEditor
 
 		public void RepaintArea (int x, int y, int width, int height)
 		{
-			if (this.buffer == null)
-				return;
+			
 //			Console.WriteLine ("RepaintArea: x={0}, y={1}, width={2}, height={3}", x, y, width, height);
 //			Console.WriteLine (Environment.StackTrace);
 			y = System.Math.Max (0, y);
@@ -1432,10 +1369,6 @@ namespace Mono.TextEditor
 		
 		public void Repaint ()
 		{
-			if (buffer == null)
-				return;
-//			Console.WriteLine ("REPAINT");
-//			Console.WriteLine (Environment.StackTrace);
 			lock (redrawList) {
 				redrawList.Clear ();
 				redrawList.Add (new Gdk.Rectangle (0, 0, this.Allocation.Width, this.Allocation.Height));
@@ -1450,10 +1383,7 @@ namespace Mono.TextEditor
 //			Console.WriteLine ("Expose:" + e.Area);
 			UpdateAdjustments ();
 			RenderPendingUpdates (e.Window);
-			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                       buffer,
-			                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
-			                       e.Area.Width, e.Area.Height + 1);
+			
 			if (requestResetCaretBlink) {
 				textViewMargin.ResetCaretBlink ();
 				requestResetCaretBlink = false;
@@ -1473,8 +1403,7 @@ namespace Mono.TextEditor
 //			Console.WriteLine ("Pending updates: " + redrawList.Count);
 			renderedLines.Clear ();
 			foreach (Gdk.Rectangle updateRect in redrawList.ToArray ()) {
-				RenderMargins (this.buffer, updateRect);
-				window.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer, updateRect.X, updateRect.Y, updateRect.X, updateRect.Y, updateRect.Width, updateRect.Height);
+				RenderMargins (window, updateRect);
 			}
 			redrawList.Clear ();
 		}
