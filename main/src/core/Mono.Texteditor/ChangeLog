@@ -1,3 +1,11 @@
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs:
+	* Mono.TextEditor/DocumentUpdateRequest.cs: Fixed 'Bug 602615
+	  - Editor responds very slowly to quick mousewheel
+	  scrolling'.
+
 2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor/TextEditorContainer.cs: Don't create a text

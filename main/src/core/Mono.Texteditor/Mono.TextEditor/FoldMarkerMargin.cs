@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 			}
 			editor.SetAdjustments ();
 			editor.Caret.MoveCaretBeforeFoldings ();
-			editor.Repaint ();
+			editor.QueueDraw ();
 		}
 		
 		internal protected override void MouseHover (MarginMouseEventArgs args)
@@ -162,14 +162,14 @@ namespace Mono.TextEditor
 		void DelayTimerElapsed (object sender, ElapsedEventArgs e)
 		{
 			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
-			editor.Repaint ();
+			editor.QueueDraw ();
 		}
 		
 		void RemoveBackgroundRenderer ()
 		{
 			if (editor.TextViewMargin.BackgroundRenderer != null) {
 				editor.TextViewMargin.BackgroundRenderer = null;
-				editor.Repaint ();
+				editor.QueueDraw ();
 			}
 		}
 		
