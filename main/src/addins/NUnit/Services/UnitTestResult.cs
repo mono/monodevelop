@@ -150,6 +150,8 @@ namespace MonoDevelop.NUnit
 		
 		public SourceCodeLocation GetFailureLocation ()
 		{
+			if (string.IsNullOrEmpty (stackTrace))
+				return null;
 			string[] stackLines = stackTrace.Replace ("\r","").Split ('\n');
 			foreach (string line in stackLines) {
 				if (line.IndexOf ("NUnit.Framework") != -1)

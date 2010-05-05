@@ -1,3 +1,7 @@
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Services/UnitTestResult.cs: handled possible null ref.
+
 2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelopNUnit.addin.xml: Register nunit project as
