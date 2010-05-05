@@ -84,6 +84,16 @@ namespace MonoDevelop.Components
 			return false;
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (decorator != null) {
+				decorator.Detach ();
+				decorator = null;
+			}
+		}
+		
+		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			if (nudgeHorizontal || nudgeVertical) {
