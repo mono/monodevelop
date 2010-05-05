@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//#define DEBUG_EXPOSE
+
 using System;
 using System.Linq;
 using System.Diagnostics;
@@ -144,7 +146,7 @@ namespace Mono.TextEditor
 			if (oldHAdjustment == curHAdjustment)
 				return;
 			
-			this.QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
+			QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
@@ -606,7 +608,7 @@ namespace Mono.TextEditor
 		{
 			if (isDisposed)
 				return;
-			this.QueueDrawArea (margin.XOffset, 0, GetMarginWidth (margin),  this.Allocation.Height);
+			QueueDrawArea (margin.XOffset, 0, GetMarginWidth (margin),  this.Allocation.Height);
 		}
 		
 		public void RedrawMarginLine (Margin margin, int logicalLine)
@@ -614,10 +616,11 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			
-			this.QueueDrawArea (margin.XOffset, 
-			                  LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value, 
-			                  GetMarginWidth (margin), 
-			                  GetLineHeight (logicalLine));
+			int y = LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value;
+			int h = GetLineHeight (logicalLine);
+			
+			if (y + h > 0)
+				QueueDrawArea (margin.XOffset, y, GetMarginWidth (margin), h);
 		}
 
 		int GetMarginWidth (Margin margin)
@@ -626,13 +629,35 @@ namespace Mono.TextEditor
 				return Allocation.Width - margin.XOffset;
 			return margin.Width;
 		}
-
 		
 		internal void RedrawLine (int logicalLine)
 		{
 			if (isDisposed)
 				return;
-			this.QueueDrawArea (0, LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value,  this.Allocation.Width, GetLineHeight (logicalLine));
+			
+			int y = LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value;
+			int h = GetLineHeight (logicalLine);
+			
+			if (y + h > 0)
+				QueueDrawArea (0, y, this.Allocation.Width, h);
+		}
+		
+		public new void QueueDrawArea (int x, int y, int w, int h)
+		{
+			if (GdkWindow != null) {
+				GdkWindow.InvalidateRect (new Rectangle (x, y, w, h), false);
+#if DEBUG_EXPOSE
+				Console.WriteLine ("invalidated {0},{1} {2}x{3}", x, y, w, h);
+#endif
+			}
+		}
+		
+		public new void QueueDraw ()
+		{
+			base.QueueDraw ();
+#if DEBUG_EXPOSE
+				Console.WriteLine ("invalidated entire widget");
+#endif
 		}
 		
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
@@ -653,7 +678,7 @@ namespace Mono.TextEditor
 			if (end < 0)
 				end = Document.LineCount - 1;
 			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (end) + GetLineHeight (end);
-			this.QueueDrawArea (margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart );
+			QueueDrawArea (margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart);
 		}
 			
 		internal void RedrawLines (int start, int end)
@@ -667,7 +692,7 @@ namespace Mono.TextEditor
 			if (end < 0)
 				end = Document.LineCount - 1;
 			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
-			this.QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart );
+			QueueDrawArea (0, visualStart, this.Allocation.Width, visualEnd - visualStart);
 		}
 		
 		public void RedrawFromLine (int logicalLine)
@@ -675,7 +700,8 @@ namespace Mono.TextEditor
 //			Console.WriteLine ("Redraw from line: logicalLine={0}", logicalLine);
 			if (isDisposed)
 				return;
-			this.QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (logicalLine) , this.Allocation.Width, this.Allocation.Height);
+			QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (logicalLine),
+			               this.Allocation.Width, this.Allocation.Height);
 		}
 		
 		public void RunAction (Action<TextEditorData> action)
@@ -1339,7 +1365,10 @@ namespace Mono.TextEditor
 				oldRequest = lastVisibleLine;
 			}
 		}
-		
+
+#if DEBUG_EXPOSE
+		DateTime started = DateTime.Now;
+#endif
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
@@ -1349,6 +1378,10 @@ namespace Mono.TextEditor
 //			renderedLines.Clear ();
 			RenderMargins (e.Window, e.Region.Clipbox);
 			
+#if DEBUG_EXPOSE
+			Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
+			                   e.Area.X, e.Area.Y, e.Area.Width, e.Area.Height);
+#endif
 			if (requestResetCaretBlink) {
 				textViewMargin.ResetCaretBlink ();
 				requestResetCaretBlink = false;
