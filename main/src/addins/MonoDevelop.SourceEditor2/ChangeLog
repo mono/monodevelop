@@ -1,3 +1,11 @@
+2010-05-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Track
+	  API changes.
+
 2010-05-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Ensure that

@@ -237,7 +237,7 @@ namespace MonoDevelop.SourceEditor
 		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
 		{
 			currentErrorMarkers.ForEach (marker => marker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles);
-			this.TextEditor.Repaint ();
+			this.TextEditor.QueueDraw ();
 		}
 
 		void HandleIdeAppPreferencesShowMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
@@ -247,7 +247,7 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleErrorListPadTaskToggled (object sender, TaskEventArgs e)
 		{
-			this.TextEditor.Repaint ();
+			this.TextEditor.QueueDraw ();
 		}
 		
 		List<ErrorTextMarker> currentErrorMarkers = new List<ErrorTextMarker> ();
@@ -282,7 +282,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			widget.Document.EndAtomicUndo ();
-			widget.TextEditor.Repaint ();
+			widget.TextEditor.QueueDraw ();
 		}
 		
 		void DisposeErrorMarkers ()
@@ -1741,7 +1741,7 @@ namespace MonoDevelop.SourceEditor
 		protected void OnToggleBlockSelectionMode ()
 		{
 			TextEditor.SelectionMode = TextEditor.SelectionMode == Mono.TextEditor.SelectionMode.Normal ? Mono.TextEditor.SelectionMode.Block : Mono.TextEditor.SelectionMode.Normal;
-			TextEditor.Repaint ();
+			TextEditor.QueueDraw ();
 		}
 		
 		#region widget command handlers

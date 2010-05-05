@@ -474,7 +474,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (MouseIsOverMarker (editor, args)) {
 				CollapseExtendedErrors = !CollapseExtendedErrors;
-				editor.Repaint ();
+				editor.QueueDraw ();
 				return true;
 			}
 			MouseIsOverMarker (editor, args);

@@ -493,7 +493,7 @@ But I leave it in in the case I've missed something. Mike
 				this.widget.TextEditor.IsSomethingSelected && this.widget.TextEditor.SelectionRange.Offset == mainResult.Offset && this.widget.TextEditor.SelectionRange.EndOffset == mainResult.EndOffset;
 			
 			if (this.widget.TextEditor.TextViewMargin.HideSelection)
-				this.widget.TextEditor.Repaint ();
+				this.widget.TextEditor.QueueDraw ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -516,7 +516,7 @@ But I leave it in in the case I've missed something. Mike
 				replaceHistory = null;
 			}
 			if (widget != null) {
-				widget.TextEditor.Repaint ();
+				widget.TextEditor.QueueDraw ();
 				widget = null;
 			}
 			base.OnDestroyed ();

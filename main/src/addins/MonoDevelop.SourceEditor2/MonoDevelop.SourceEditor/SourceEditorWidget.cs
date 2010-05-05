@@ -1295,7 +1295,7 @@ namespace MonoDevelop.SourceEditor
 			var marker = (ErrorTextMarker)line.Markers.FirstOrDefault (m => m is ErrorTextMarker);
 			if (marker != null) {
 				marker.IsExpanded = !marker.IsExpanded;
-				TextEditor.Repaint ();
+				TextEditor.QueueDraw ();
 				MonoDevelop.Ide.Gui.Pads.ErrorListPad pad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 				pad.Control.QueueDraw ();
 			}
