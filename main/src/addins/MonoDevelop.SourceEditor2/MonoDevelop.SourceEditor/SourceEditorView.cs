@@ -150,6 +150,7 @@ namespace MonoDevelop.SourceEditor
 				if (TextChanged != null)
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 			};
+			
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
 				UpdateBreakpoints ();
 			};
@@ -736,6 +737,21 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateBreakpoints ()
 		{
+			int i = 0, count = 0;
+			bool mismatch = false;
+			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
+				count++;
+				int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments[i].Offset);
+				if (lineNumber != bp.Line - 1) {
+					mismatch = true;
+					break;
+				}
+				i++;
+			}
+			mismatch &= count == breakpointSegments.Count;
+			if (!mismatch)
+				return;
+			
 			foreach (LineSegment line in breakpointSegments) {
 				widget.TextEditor.Document.RemoveMarker (line, breakpointMarker);
 				widget.TextEditor.Document.RemoveMarker (line, breakpointDisabledMarker);
@@ -743,9 +759,11 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.Document.RemoveMarker (line, tracepointMarker);
 				widget.TextEditor.Document.RemoveMarker (line, tracepointDisabledMarker);
 			}
+			
 			breakpointSegments.Clear ();
 			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ())
 				AddBreakpoint (bp);
+			
 			widget.TextEditor.QueueDraw ();
 			
 			// Ensure the current line marker is drawn at the top
