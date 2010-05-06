@@ -11,7 +11,8 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:System
+	-r:System \
+	-r:System.Core
 
 FILES =  \
 	AssemblyInfo.cs \

@@ -1,3 +1,9 @@
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.TextTemplating.csproj: Added missing core
+	  reference (required for System.Action).
+
 2010-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* TextTemplatingTool.cs: Make cancellable, so bad user code
