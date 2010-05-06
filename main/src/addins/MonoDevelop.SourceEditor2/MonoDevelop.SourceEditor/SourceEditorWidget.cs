@@ -806,13 +806,28 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region Status Bar Handling
+		MonoDevelop.SourceEditor.ErrorTextMarker oldExpandedMarker;
 		void CaretPositionChanged (object o, DocumentLocationEventArgs args)
 		{
 			UpdateLineCol ();
 			
-			if (classBrowser != null) {
+			if (classBrowser != null) 
 				classBrowser.UpdatePosition (TextEditor.Caret.Line + 1, TextEditor.Caret.Column + 1);
+			
+			LineSegment curLine = TextEditor.Document.GetLine (TextEditor.Caret.Line);
+			MonoDevelop.SourceEditor.ErrorTextMarker marker = null;
+			if (curLine != null && curLine.Markers.Any (m => m is MonoDevelop.SourceEditor.ErrorTextMarker)) {
+				marker = (MonoDevelop.SourceEditor.ErrorTextMarker)curLine.Markers.First (m => m is MonoDevelop.SourceEditor.ErrorTextMarker);
+				marker.CollapseExtendedErrors = false;
+				if (oldExpandedMarker == null)
+					Document.CommitLineToEndUpdate (Document.OffsetToLineNumber (curLine.Offset));
 			}
+			
+			if (oldExpandedMarker != null && oldExpandedMarker != marker) {
+				oldExpandedMarker.CollapseExtendedErrors = true;
+				Document.CommitLineToEndUpdate (Document.OffsetToLineNumber (Math.Min (marker != null ? marker.LineSegment.Offset : Int32.MaxValue, oldExpandedMarker.LineSegment.Offset)));
+			}
+			oldExpandedMarker = marker;
 		}
 		
 //		void OnChanged (object o, EventArgs e)
