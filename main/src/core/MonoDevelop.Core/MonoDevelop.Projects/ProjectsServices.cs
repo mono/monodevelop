@@ -29,6 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
+using System;
 
 namespace MonoDevelop.Projects
 {
@@ -38,12 +39,15 @@ namespace MonoDevelop.Projects
 	
 		public static ProjectService ProjectService {
 			get {
-				if (projectService == null)
+				if (projectService == null) {
 					projectService = new ProjectService ();
+					if (ProjectServiceLoaded != null)
+						ProjectServiceLoaded (projectService, EventArgs.Empty);
+				}
 				return projectService;
 			}
 		}
-	
 		
+		public static event EventHandler ProjectServiceLoaded;
 	}
 }
