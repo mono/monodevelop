@@ -710,7 +710,7 @@ class B : Base
 			LocalVariable localVariable = new LocalVariable (null,
 			                                  "t",
 			                                  DomReturnType.Int32,
-			                                  new DomRegion (11, 7, 13, 1));
+			                                  new DomRegion (12, 8, 13, 1));
 			RunTest (
 @"using System;
 
