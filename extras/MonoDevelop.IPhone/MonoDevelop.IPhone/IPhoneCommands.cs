@@ -44,6 +44,7 @@ namespace MonoDevelop.IPhone
 		UploadToDevice,
 		ExportToXcode,
 		SelectSimulatorTarget,
+		ViewDeviceConsole
 	}
 	
 	class SelectSimulatorTargetHandler : CommandHandler
@@ -217,6 +218,18 @@ namespace MonoDevelop.IPhone
 				GettextCatalog.GetString ("Generate Xcode project"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
 			console.Log.WriteLine (mtouchPath + " " + argStr);
 			Runtime.ProcessService.StartConsoleProcess (mtouchPath, argStr, conf.OutputDirectory, console, null);
+		}
+	}
+	
+	class ViewDeviceConsoleHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+		}
+		
+		protected override void Run ()
+		{
+			IPhoneDeviceConsole.Run ();
 		}
 	}
 	

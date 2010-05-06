@@ -149,6 +149,15 @@
 		</Condition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands/Tools">
+		<Condition id="MonoTouchInstalled">
+		<Command id = "MonoDevelop.IPhone.IPhoneCommands.ViewDeviceConsole"
+				_description = "View the console of a connected iPhone/iPad device" 
+				defaultHandler = "MonoDevelop.IPhone.ViewDeviceConsoleHandler"
+				_label = "View iPhone Console" />
+		</Condition>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="MonoTouchInstalled">
 			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode"
@@ -159,6 +168,13 @@
 			</ItemSet>
 		</Condition>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
+		<Condition id="MonoTouchInstalled">
+			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ViewDeviceConsole" />
+		</Condition>
+	</Extension>
+	
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<Condition id="MonoTouchInstalled">

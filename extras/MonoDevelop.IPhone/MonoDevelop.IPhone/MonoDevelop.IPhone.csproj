@@ -112,6 +112,7 @@
     <Compile Include="IPhoneFramework.cs" />
     <Compile Include="IPhoneSdkVersion.cs" />
     <Compile Include="IPhoneSimulatorTarget.cs" />
+    <Compile Include="IPhoneDeviceConsole.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

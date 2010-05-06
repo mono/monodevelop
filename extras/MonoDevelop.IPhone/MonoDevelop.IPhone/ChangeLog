@@ -1,3 +1,11 @@
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs:
+	* IPhoneDeviceConsole.cs:
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml: Added a console for viewing
+	  device output.
+
 2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs: Change key, as it confused the
