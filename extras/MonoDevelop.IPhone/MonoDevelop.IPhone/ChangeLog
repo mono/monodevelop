@@ -1,5 +1,10 @@
 2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Change key, as it confused the
+	  propertybag.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs: Use min OS for the list of allowed
 	  simulators.
 

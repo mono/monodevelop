@@ -288,7 +288,7 @@ namespace MonoDevelop.IPhone
 		
 		string GetSimulatorTargetKey (IPhoneProjectConfiguration conf)
 		{
-			return "IPhoneSimulatorTarget-" + conf.Id.Replace ('|', '_');
+			return "IPhoneSimulatorTarget-" + conf.Id;
 		}
 		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
