@@ -72,12 +72,9 @@ namespace Mono.TextEditor
 		#region back buffer hack
 		
 		// This hack uses a large, shared Pixmap for double buffering drawing, instead of GTK's built-in double buffering.
-		// It shouldn't cost more than about 7MB of memory.
+		// It shouldn't cost more than about 7MB of memory, but it's also slower.
 		
-		//HACK: use the hack back buffer on mac for GTK 2.20.x because pango renders all fonts bold with GTK's buffering
-		static bool useHackBackBuffer = Platform.IsMac
-			&& Gtk.Global.CheckVersion (2, 20, 0) == null
-			&& Gtk.Global.CheckVersion (2, 21, 0) != null;
+		static bool useHackBackBuffer = false;
 		
 		static Pixmap hackSharedBackbuffer;
 		static int hackSharedBackBufferRefcount;

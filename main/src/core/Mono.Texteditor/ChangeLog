@@ -1,5 +1,10 @@
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Disable back buffer hack as
+	  it's very slow on Mac, which is where we used it.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Added an alternative expose
 	  buffering system to hack around GTK 2.20 issues on Mac.
 
