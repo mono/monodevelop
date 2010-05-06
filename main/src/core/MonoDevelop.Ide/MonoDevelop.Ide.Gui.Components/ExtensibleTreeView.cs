@@ -1842,12 +1842,17 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
 		{
-			var modifier = PropertyService.IsMac? Gdk.ModifierType.MetaMask : Gdk.ModifierType.ControlMask;
-			if ((evnt.State & modifier) != 0) {
-				if (evnt.Direction == Gdk.ScrollDirection.Down)
+			var modifier = !PropertyService.IsMac? Gdk.ModifierType.ControlMask
+				//Mac window manager already uses control-scroll, so use command
+				//Command might be either meta or mod1, depending on GTK version
+				: (Gdk.ModifierType.MetaMask | Gdk.ModifierType.Mod1Mask);
+			
+			if ((evnt.State & modifier) !=0) {
+				if (evnt.Direction == Gdk.ScrollDirection.Up)
 					ZoomIn ();
-				else
+				else if (evnt.Direction == Gdk.ScrollDirection.Down)
 					ZoomOut ();
+				
 				return true;
 			}
 			return base.OnScrollEvent (evnt);

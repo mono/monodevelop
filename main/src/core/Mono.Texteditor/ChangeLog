@@ -1,3 +1,8 @@
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Fix cmd-scroll zoom on Mac.
+	  Use more conventional direction for zooming.
+
 2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Add some (disabled) debug

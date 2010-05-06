@@ -1210,12 +1210,17 @@ namespace Mono.TextEditor
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
-			var modifier = Platform.IsMac? Gdk.ModifierType.MetaMask : Gdk.ModifierType.ControlMask;
+			var modifier = !Platform.IsMac? Gdk.ModifierType.ControlMask
+				//Mac window manager already uses control-scroll, so use command
+				//Command might be either meta or mod1, depending on GTK version
+				: (Gdk.ModifierType.MetaMask | Gdk.ModifierType.Mod1Mask);
+			
 			if ((evnt.State & modifier) !=0) {
-				if (evnt.Direction == ScrollDirection.Down)
+				if (evnt.Direction == ScrollDirection.Up)
 					Options.ZoomIn ();
-				else
+				else if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomOut ();
+				
 				this.QueueDraw ();
 				if (isMouseTrapped)
 					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);

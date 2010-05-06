@@ -1,3 +1,9 @@
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Fix
+	  cmd-scroll zoom on Mac. Use more conventional direction for
+	  zooming.
+
 2010-05-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Workbench.cs: Removed some event
