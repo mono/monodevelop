@@ -509,12 +509,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				while (parent != null && !(parent is MemberNode) && !(parent is ParametrizedNode)) {
 					parent = parent.Parent;
 				}
+				
 				if (parent != null &&
-					localVariableDeclaration.StartLocation.Line - 1 == searchedVariable.Location.Line && 
-					localVariableDeclaration.StartLocation.Column - 1 == searchedVariable.Location.Column && 
+					localVariableDeclaration.StartLocation.Line == searchedVariable.Location.Line && 
+					localVariableDeclaration.StartLocation.Column == searchedVariable.Location.Column && 
 				    parent.StartLocation.Line == searchedVariable.DeclaringMember.Location.Line && 
-				    parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column &&
-				    searchedVariable.Region.Start != ConvertLocation (localVariableDeclaration.StartLocation)) {
+				    parent.StartLocation.Column == searchedVariable.DeclaringMember.Location.Column) {
 					foreach (VariableDeclaration decl in localVariableDeclaration.Variables) {
 						if (decl.Name == searchedMemberName) 
 							AddUniqueReference (decl.StartLocation.Y, decl.StartLocation.X, searchedMemberName);
