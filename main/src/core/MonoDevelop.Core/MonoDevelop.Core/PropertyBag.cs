@@ -226,15 +226,17 @@ namespace MonoDevelop.Core
 				if (c == '_') {
 					if (n + 1 >= str.Length)
 						return sb.ToString ();
-					if (str [n + 1] == '_')
+					if (str [n + 1] == '_') {
 						sb.Append (c);
-					else {
+						n++;
+					} else {
 						int len = int.Parse (str.Substring (n+1,1));
 						if (n + 2 + len - 1 >= str.Length)
 							return sb.ToString ();
 						int ic;
 						if (int.TryParse (str.Substring (n + 2, len), NumberStyles.HexNumber, null, out ic))
 							sb.Append ((char)ic);
+						n+=2;
 					}
 				} else
 					sb.Append (c);
