@@ -97,6 +97,7 @@ public static class IPhoneFramework
 		
 		public static IList<IPhoneSdkVersion> InstalledSdkVersions {
 			get {
+				EnsureSdkVersions ();
 				return installedSdkVersions;
 			}
 		}

@@ -1,5 +1,9 @@
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneFramework.cs: Fix NRE.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneFramework.cs:
 	* Gui/IPhoneBuildOptionsPanel.cs: Add values for known OS
 	  versions.
