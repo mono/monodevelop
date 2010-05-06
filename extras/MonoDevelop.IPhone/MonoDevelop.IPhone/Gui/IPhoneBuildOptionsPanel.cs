@@ -91,6 +91,9 @@ namespace MonoDevelop.IPhone.Gui
 			foreach (var v in IPhoneFramework.InstalledSdkVersions)
 				sdkComboEntry.AppendText (v.ToString ());
 			
+			foreach (var v in IPhoneFramework.KnownOSVersions)
+				minOSComboEntry.AppendText (v.ToString ());
+			
 			store = new ListStore (typeof (string), typeof (bool));
 			i18nTreeView.Model = store;
 			

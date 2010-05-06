@@ -1,5 +1,11 @@
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneFramework.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs: Add values for known OS
+	  versions.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneCommands.cs:
 	* IPhoneDeviceConsole.cs:
 	* MonoDevelop.IPhone.csproj:

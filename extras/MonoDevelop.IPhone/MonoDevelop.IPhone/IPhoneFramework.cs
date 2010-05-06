@@ -40,7 +40,7 @@ public static class IPhoneFramework
 	{
 		static bool? isInstalled = null;
 		static bool? simOnly = null;
-		static IPhoneSdkVersion[] installedSdkVersions;
+		static IPhoneSdkVersion[] installedSdkVersions, knownOSVersions;
 		
 		public static bool IsInstalled {
 			get {
@@ -97,8 +97,14 @@ public static class IPhoneFramework
 		
 		public static IList<IPhoneSdkVersion> InstalledSdkVersions {
 			get {
-				EnsureSdkVersions ();
 				return installedSdkVersions;
+			}
+		}
+		
+		public static IList<IPhoneSdkVersion> KnownOSVersions {
+			get {
+				EnsureSdkVersions ();
+				return knownOSVersions;
 			}
 		}
 		
@@ -119,8 +125,20 @@ public static class IPhoneFramework
 		
 		static void EnsureSdkVersions ()
 		{
-			if (installedSdkVersions != null)
-				return;
+			if (installedSdkVersions == null)
+				Init ();
+		}
+		
+		static void Init ()
+		{
+			knownOSVersions = new [] {
+				new IPhoneSdkVersion (new [] { 3, 0 }),
+				new IPhoneSdkVersion (new [] { 3, 1 }),
+				new IPhoneSdkVersion (new [] { 3, 1, 2 }),
+				new IPhoneSdkVersion (new [] { 3, 1, 3 }),
+				new IPhoneSdkVersion (new [] { 3, 2 }),
+				new IPhoneSdkVersion (new [] { 4, 0 }),
+			};
 			
 			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
 			if (!Directory.Exists (sdkDir)) {
