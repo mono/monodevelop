@@ -236,7 +236,7 @@ namespace MonoDevelop.Core
 						int ic;
 						if (int.TryParse (str.Substring (n + 2, len), NumberStyles.HexNumber, null, out ic))
 							sb.Append ((char)ic);
-						n+=2;
+						n+=len+1;
 					}
 				} else
 					sb.Append (c);

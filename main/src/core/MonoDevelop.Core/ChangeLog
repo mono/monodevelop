@@ -1,5 +1,9 @@
 2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Core/PropertyBag.cs: Really fix unescaping of keys.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Core/PropertyBag.cs: Fix unescaping of keys.
 
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
