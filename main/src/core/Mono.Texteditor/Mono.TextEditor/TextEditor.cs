@@ -1162,7 +1162,6 @@ namespace Mono.TextEditor
 				return;
 			inCaretScroll = true;
 			try {
-				UpdateAdjustments ();
 				if (this.textEditorData.VAdjustment.Upper < Allocation.Height) {
 					this.textEditorData.VAdjustment.Value = 0;
 				} else {
@@ -1257,6 +1256,7 @@ namespace Mono.TextEditor
 				int maxY = LineToVisualY (Document.LineCount - 1);
 				if (maxY > allocation.Height)
 					maxY += 5 * this.LineHeight;
+				
 				this.textEditorData.VAdjustment.SetBounds (0, 
 				                                           maxY, 
 				                                           LineHeight,

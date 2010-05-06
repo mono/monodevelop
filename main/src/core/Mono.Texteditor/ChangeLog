@@ -1,5 +1,10 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Removed adjustment update on
+	  scroll to caret.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 603110 - Margin
 	  doesn't redraw after damaged'.
 
