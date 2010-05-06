@@ -659,10 +659,12 @@ namespace Mono.TextEditor
 				return searchEngine;
 			}
 			set {
-				value.TextEditorData = this;
-				value.SearchRequest = SearchRequest;
-				searchEngine = value;
-				OnSearchChanged (EventArgs.Empty);
+				if (searchEngine != value) {
+					value.TextEditorData = this;
+					value.SearchRequest = SearchRequest;
+					searchEngine = value;
+					OnSearchChanged (EventArgs.Empty);
+				}
 			}
 		}
 		

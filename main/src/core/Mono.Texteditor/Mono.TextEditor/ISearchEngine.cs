@@ -49,6 +49,9 @@ namespace Mono.TextEditor
 		SearchResult GetMatchAt (int offset);
 		SearchResult GetMatchAt (int offset, int length);
 		
+		SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, int fromOffset);
+		SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, int fromOffset);
+		
 		SearchResult SearchForward (int fromOffset);
 		SearchResult SearchBackward (int fromOffset);
 		
@@ -106,8 +109,17 @@ namespace Mono.TextEditor
 		public abstract SearchResult GetMatchAt (int offset);
 		public abstract SearchResult GetMatchAt (int offset, int length);
 		
-		public abstract SearchResult SearchForward (int fromOffset);
-		public abstract SearchResult SearchBackward (int fromOffset);
+		public abstract SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, int fromOffset);
+		public abstract SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, int fromOffset);
+		
+		public SearchResult SearchForward (int fromOffset)
+		{
+			return SearchForward (null, fromOffset);
+		}
+		public SearchResult SearchBackward (int fromOffset)
+		{
+			return SearchBackward (null, fromOffset);
+		}
 		public abstract void Replace (SearchResult result, string pattern);
 	}
 	
@@ -159,11 +171,13 @@ namespace Mono.TextEditor
 			return null;
 		}
 		
-		public override SearchResult SearchForward (int fromOffset)
+		public override SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, int fromOffset)
 		{
 			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
 				for (int i = 0; i < this.textEditorData.Document.Length; i++) {
 					int offset = (fromOffset + i) % this.textEditorData.Document.Length;
+					if (worker != null && worker.CancellationPending)
+						return null;
 					if (IsMatchAt (offset))
 						return new SearchResult (offset, searchRequest.SearchPattern.Length, offset < fromOffset);
 				}
@@ -171,11 +185,13 @@ namespace Mono.TextEditor
 			return null;
 		}
 		
-		public override SearchResult SearchBackward (int fromOffset)
+		public override SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, int fromOffset)
 		{
 			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
 				for (int i = 0; i < this.textEditorData.Document.Length; i++) {
 					int offset = (fromOffset + this.textEditorData.Document.Length * 2 - 1 - i) % this.textEditorData.Document.Length;
+					if (worker != null && worker.CancellationPending)
+						return null;
 					if (IsMatchAt (offset))
 						return new SearchResult (offset, searchRequest.SearchPattern.Length, offset > fromOffset);
 				}
@@ -242,7 +258,7 @@ namespace Mono.TextEditor
 			return null;
 		}
 		
-		public override SearchResult SearchForward (int fromOffset)
+		public override SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, int fromOffset)
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
@@ -259,7 +275,7 @@ namespace Mono.TextEditor
 			return null;
 		}
 		
-		public override SearchResult SearchBackward (int fromOffset)
+		public override SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, int fromOffset)
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;

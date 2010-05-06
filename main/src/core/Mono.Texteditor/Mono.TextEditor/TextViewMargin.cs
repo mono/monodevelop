@@ -137,11 +137,8 @@ namespace Mono.TextEditor
 					return;
 				List<ISegment> newRegions = new List<ISegment> (this.selectedRegions);
 				Document.UpdateSegments (newRegions, e);
-				
-				if (searchPatternWorker == null || !searchPatternWorker.IsBusy) {
-					this.selectedRegions = newRegions;
-					HandleSearchChanged (this, EventArgs.Empty);
-				}
+				this.selectedRegions = newRegions;
+				RefreshSearchMarker ();
 			};
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
@@ -184,22 +181,52 @@ namespace Mono.TextEditor
 			selectedRegions.Clear ();
 		}
 		
-		
+		public class SearchWorkerArguments {
+			public int FirstLine { get; set; }
+			public int LastLine { get; set; }
+			public List<ISegment> OldRegions { get; set; }
+		}
 		public void RefreshSearchMarker ()
 		{
 			if (textEditor.HighlightSearchPattern) {
 				DisposeSearchPatternWorker ();
+				
+				SearchWorkerArguments args = new SearchWorkerArguments () {
+					FirstLine = this.textEditor.CalculateLineNumber ((int)textEditor.VAdjustment.Value),
+					LastLine = this.textEditor.CalculateLineNumber (textEditor.Allocation.Height + (int)textEditor.VAdjustment.Value),
+					OldRegions = selectedRegions
+				};
+				
 				if (string.IsNullOrEmpty (this.textEditor.SearchPattern)) {
-					selectedRegions.Clear ();
-					DisposeLayoutDict ();
-					textEditor.RedrawMargin (this);
+					if (selectedRegions.Count > 0) {
+						UpdateRegions (selectedRegions, args);
+						selectedRegions.Clear ();
+					}
 					return;
 				}
+				
 				searchPatternWorker = new System.ComponentModel.BackgroundWorker ();
 				searchPatternWorker.WorkerSupportsCancellation = true;
 				searchPatternWorker.DoWork += SearchPatternWorkerDoWork;
-				searchPatternWorker.RunWorkerAsync ();
+				searchPatternWorker.RunWorkerAsync (args );
 			}
+		}
+		
+		void UpdateRegions (List<ISegment> regions, SearchWorkerArguments args)
+		{
+			int oldLineNumber = -1;
+			foreach (ISegment region in regions) {
+				int lineNumber = Document.OffsetToLineNumber (region.Offset);
+				if (oldLineNumber == lineNumber && lineNumber >= args.FirstLine)
+					continue;
+				if (lineNumber > args.LastLine)
+					break;
+				oldLineNumber = lineNumber;
+				RemoveCachedLine (Document.GetLine (lineNumber));
+				textEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
+			}
+			if (oldLineNumber > 0)
+				textEditor.Document.CommitDocumentUpdate ();
 		}
 		
 		void HandleSearchChanged (object sender, EventArgs args)
@@ -209,6 +236,8 @@ namespace Mono.TextEditor
 
 		void SearchPatternWorkerDoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
 		{
+			SearchWorkerArguments args = (SearchWorkerArguments)e.Argument;
+			
 			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
 			List<ISegment> newRegions = new List<ISegment> ();
 			int offset = 0;
@@ -217,21 +246,46 @@ namespace Mono.TextEditor
 					return;
 				SearchResult result = null;
 				try {
-					result = this.textEditor.GetTextEditorData ().SearchEngine.SearchForward (offset);
+					result = this.textEditor.GetTextEditorData ().SearchEngine.SearchForward (worker, offset);
 				} catch (Exception ex) {
 					Console.WriteLine ("Got exception while search forward:" + ex);
 					break;
 				}
+				if (worker.CancellationPending)
+					return;
 				if (result == null || result.SearchWrapped)
 					break;
 				offset = result.EndOffset;
 				newRegions.Add (result);
 			} while (true);
+			HashSet<int> updateLines = null;
+			if (args.OldRegions.Count == newRegions.Count) {
+				updateLines = new HashSet<int> ();
+				for (int i = 0; i < newRegions.Count; i++) {
+					if (worker.CancellationPending)
+						return;
+					if (args.OldRegions[i].Offset != newRegions[i].Offset || args.OldRegions[i].Length != newRegions[i].Length) {
+						int lineNumber = Document.OffsetToLineNumber (args.OldRegions[i].Offset);
+						if (lineNumber > args.LastLine)
+							break;
+						if (lineNumber >= args.FirstLine)
+							updateLines.Add (lineNumber);
+					}
+				}
+			}
+			
 			Application.Invoke (delegate {
 				this.selectedRegions = newRegions;
-				
-				DisposeLayoutDict ();
-				textEditor.RedrawMargin (this);
+				if (updateLines != null) {
+					foreach (int lineNumber in updateLines) {
+						RemoveCachedLine (Document.GetLine (lineNumber));
+						textEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
+					}
+					textEditor.Document.CommitDocumentUpdate ();
+				} else {
+					UpdateRegions (args.OldRegions, args);
+					UpdateRegions (newRegions, args);
+				}
 				OnSearchRegionsUpdated (EventArgs.Empty);
 			});
 		}

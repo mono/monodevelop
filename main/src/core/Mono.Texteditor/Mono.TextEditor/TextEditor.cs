@@ -1280,9 +1280,7 @@ namespace Mono.TextEditor
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
-//			int firstLine = CalculateLineNumber ((int)this.textEditorData.VAdjustment.Value);
 			int startLine = CalculateLineNumber (area.Top - reminder + (int)this.textEditorData.VAdjustment.Value);
-		//	int endLine   = CalculateLineNumber (area.Bottom + reminder + (int)this.textEditorData.VAdjustment.Value) - 1;
 			
 	//		if ((area.Bottom + reminder) % this.LineHeight != 0)
 	//			endLine++;
@@ -1586,9 +1584,6 @@ namespace Mono.TextEditor
 			set {
 				if (this.textEditorData.SearchRequest.SearchPattern != value) {
 					this.textEditorData.SearchRequest.SearchPattern = value;
-					this.textViewMargin.ClearSearchMaker ();
-					this.textViewMargin.DisposeLayoutDict ();
-					this.QueueDraw ();
 				}
 			}
 		}
@@ -1600,7 +1595,6 @@ namespace Mono.TextEditor
 			set {
 				Debug.Assert (value != null);
 				this.textEditorData.SearchEngine = value;
-				this.QueueDraw ();
 			}
 		}
 		
