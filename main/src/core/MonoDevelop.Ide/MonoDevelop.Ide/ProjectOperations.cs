@@ -218,6 +218,8 @@ namespace MonoDevelop.Ide
 				return ((MonoDevelop.Projects.Dom.IType)visitable).CompilationUnit != null;
 			if (visitable is LocalVariable)
 				return true;
+			if (visitable is IParameter)
+				return true;
 			IMember member = visitable as MonoDevelop.Projects.Dom.IMember;
 			if (member == null || member.DeclaringType == null) 
 				return false ;
@@ -227,13 +229,23 @@ namespace MonoDevelop.Ide
 		public void JumpToDeclaration (MonoDevelop.Projects.Dom.INode visitable)
 		{
 			if (visitable is LocalVariable) {
-				LocalVariable var = (LocalVariable)visitable;
-				IdeApp.Workbench.OpenDocument (var.FileName,
-				                                                   var.Region.Start.Line,
-				                                                   var.Region.Start.Column,
-				                                                   true);
+				LocalVariable localVar = (LocalVariable)visitable;
+				IdeApp.Workbench.OpenDocument (localVar.FileName,
+				                               localVar.Region.Start.Line,
+				                               localVar.Region.Start.Column,
+				                               true);
 				return;
 			}
+			
+			if (visitable is IParameter) {
+				IParameter para = (IParameter)visitable;
+				IdeApp.Workbench.OpenDocument (para.DeclaringMember.DeclaringType.CompilationUnit.FileName,
+				                               para.Location.Line,
+				                               para.Location.Column,
+				                               true);
+				return;
+			}
+			
 			IMember member = visitable as MonoDevelop.Projects.Dom.IMember;
 			if (member == null) 
 				return;
