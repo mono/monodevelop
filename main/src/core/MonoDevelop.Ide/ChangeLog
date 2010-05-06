@@ -1,5 +1,14 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs: Added Dom
+	  property to document. This is the safest way to get the Dom
+	  assoziated with an open document. It NEVER returns null. It
+	  creates a special file only dom for files that are not bound
+	  to a project.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs: Fix 'Bug
 	  603344 - Matching in completion list'.
 

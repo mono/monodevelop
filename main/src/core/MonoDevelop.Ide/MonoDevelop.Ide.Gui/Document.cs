@@ -141,6 +141,19 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.Project; }
 		}
 		
+		ProjectDom fileDom;
+		public ProjectDom Dom {
+			get {
+				ProjectDom result = ProjectDomService.GetProjectDom (Project);
+				if (result != null)
+					return result;
+				
+				if (fileDom == null) 
+					fileDom = ProjectDomService.GetFileDom (FileName);
+				return fileDom ?? ProjectDom.Empty;
+			}
+		}
+		
 		public string PathRelativeToProject {
 			get { return Window.ViewContent.PathRelativeToProject; }
 		}
@@ -409,6 +422,11 @@ namespace MonoDevelop.Ide.Gui
 					ProjectDomService.Parse (curentParseProject, currentParseFile, DesktopService.GetMimeTypeForUri (currentParseFile));
 				});
 			}
+			if (fileDom != null) {
+				ProjectDomService.RemoveFileDom (FileName);
+				fileDom = null;
+			}
+			
 			Counters.OpenDocuments--;
 		}
 #region document tasks
