@@ -1677,10 +1677,12 @@ namespace Mono.TextEditor
 			}
 			Caret.PreserveSelection = false;
 			
-			//HACK: use command as block select modifier on Mac because GTK currently makes it impossible to access alt
-			//HACK: Mac command seems to be mapped as ControlMask from mouse events
-			var blockSelModifier = Platform.IsMac? ModifierType.ControlMask : ModifierType.Mod1Mask;
-			//HACK: also allow super for block seelct on X11 because most window managers use the alt modifier already
+			//HACK: use cmd as Mac block select modifier because GTK currently makes it impossible to access alt/mod1
+			//NOTE: Mac cmd seems to be mapped as ControlMask from mouse events on older GTK, mod1 on newer
+			var blockSelModifier = !Platform.IsMac? ModifierType.Mod1Mask
+				: (ModifierType.ControlMask | ModifierType.Mod1Mask);
+			
+			//NOTE: also allow super for block select on X11 because most window managers use the alt modifier already
 			if (Platform.IsX11)
 				blockSelModifier |= ModifierType.SuperMask;
 			
