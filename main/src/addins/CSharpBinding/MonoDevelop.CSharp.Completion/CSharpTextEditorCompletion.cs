@@ -499,6 +499,12 @@ namespace MonoDevelop.CSharp.Completion
 									varName = GetPreviousToken (ref tokenIndex, false);
 								}
 								varName = String.Join ("", names.ToArray ());
+								foreach (char ch in varName) {
+									if (!char.IsLetterOrDigit (ch) && ch != '_') {
+										varName = "";
+										break;
+									}
+								}
 							}
 								
 							completionList.Add (new EventCreationCompletionData (textEditorData, varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
