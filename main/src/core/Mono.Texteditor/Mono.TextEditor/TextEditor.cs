@@ -1273,40 +1273,18 @@ namespace Mono.TextEditor
 			return this.textViewMargin.GetWidth (text);
 		}
 		
-		
-//		Dictionary<Margin, HashSet<int>> renderedLines = new Dictionary<Margin, HashSet<int>> ();
-		
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int startLine = CalculateLineNumber (area.Top - reminder + (int)this.textEditorData.VAdjustment.Value);
 			
-	//		if ((area.Bottom + reminder) % this.LineHeight != 0)
-	//			endLine++;
-			// Initialize the rendering of the margins. Determine wether each margin has to be
-			// rendered or not and calculate the X offset.
-			List<Margin> marginsToRender = new List<Margin> (this.margins.Count);
-			int curX = 0;
-			foreach (Margin margin in this.margins) {
-				if (margin.IsVisible) {
-					margin.XOffset = curX;
-					if (curX >= area.X || margin.Width < 0) {
-						margin.BeginRender (win, area, margin.XOffset);
-						marginsToRender.Add (margin);
-					}
-					curX += margin.Width;
-//					if (!renderedLines.ContainsKey (margin))
-//						renderedLines.Add (margin, new HashSet<int> ());
-				}
-			}
-			
 			int startY = LineToVisualY (startLine);
+			int curX = 0;
 			int curY = startY - (int)this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
-			//Console.WriteLine ("Render margins: startLine={0}, curY={1}, endY={2}", startLine, curY, area.Bottom);
+			bool renderFirstLine = true;
 			for (int visualLineNumber = startLine; ; visualLineNumber++) {
-				//Console.WriteLine ("Render:" + visualLineNumber + " at " + curY);
 				int logicalLineNumber = visualLineNumber;
 				int lineHeight        = GetLineHeight (logicalLineNumber);
 				LineSegment line = Document.GetLine (logicalLineNumber);
@@ -1316,22 +1294,19 @@ namespace Mono.TextEditor
 				}
 				if (lastFold > 0) 
 					visualLineNumber = Document.OffsetToLineNumber (lastFold);
-				foreach (Margin margin in marginsToRender) {
-//					HashSet<int> linesAlreadyRendered = renderedLines[margin];
-//					if (linesAlreadyRendered.Contains (logicalLineNumber))
-//						continue;
-//					linesAlreadyRendered.Add (logicalLineNumber);
-/*					if (margin.Width > 0 && area.Left > margin.XOffset + margin.Width)
-						continue;
-					if (area.Right <= margin.XOffset)
-						break;*/
-					//Console.WriteLine ("Render margin :" + margin);
+				foreach (Margin margin in this.margins) {
 					try {
+						if (renderFirstLine)
+							margin.XOffset = curX;
 						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY, lineHeight);
+						margin.EndRender (win, area, margin.XOffset);
+						if (renderFirstLine)
+							curX += margin.Width;
 					} catch (Exception e) {
 						System.Console.WriteLine (e);
 					}
 				}
+				renderFirstLine = false;
 				// take the line real render width from the text view margin rendering (a line can consist of more than 
 				// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
 				int lineWidth = textViewMargin.lastLineRenderWidth + (int)HAdjustment.Value;
@@ -1348,8 +1323,6 @@ namespace Mono.TextEditor
 			if (setLongestLine) 
 				SetHAdjustment ();
 
-			foreach (Margin margin in marginsToRender)
-				margin.EndRender (win, area, margin.XOffset);
 		}
 		/*
 		protected override bool OnWidgetEvent (Event evnt)
