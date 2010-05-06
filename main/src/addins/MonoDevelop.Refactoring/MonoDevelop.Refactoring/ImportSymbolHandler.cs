@@ -127,7 +127,6 @@ namespace MonoDevelop.Refactoring
 			initialized = true;
 			if (string.IsNullOrEmpty (type.Namespace)) 
 				return;
-			
 			var result = cache.GetResult (dom, unit, type, data);
 			generateUsing = result.GenerateUsing;
 			insertNamespace = result.InsertNamespace;
@@ -213,7 +212,7 @@ namespace MonoDevelop.Refactoring
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null || doc.CompilationUnit == null)
 				return;
 			ITextEditorExtension ext = doc.EditorExtension;
 			while (ext != null && !(ext is CompletionTextEditorExtension))
