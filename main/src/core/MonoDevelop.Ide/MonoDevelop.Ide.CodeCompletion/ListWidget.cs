@@ -521,7 +521,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					continue;
 				} else {
 					for (; newSelection < text.Length; newSelection++) {
-						if (char.IsUpper (text[newSelection]) && newSelection + 1 < text.Length && (!char.IsUpper (text[newSelection + 1]) || !char.IsLetter (text[newSelection + 1])) && ch2 == text[newSelection]) {
+						if (char.IsUpper (text[newSelection]) /*&& newSelection + 1 < text.Length && (!char.IsUpper (text[newSelection + 1]) || !char.IsLetter (text[newSelection + 1]))*/ && ch2 == text[newSelection]) {
 							matchIndices.Add (newSelection);
 							itemIndex++;
 							wasMatch = true;
