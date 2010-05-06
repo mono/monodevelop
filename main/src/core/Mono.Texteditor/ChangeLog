@@ -1,3 +1,8 @@
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Added an alternative expose
+	  buffering system to hack around GTK 2.20 issues on Mac.
+
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
