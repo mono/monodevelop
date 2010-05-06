@@ -743,8 +743,8 @@ namespace MonoDevelop.CSharp.Resolver
 					varType = ResolveType (varType);
 					result = new LocalVariableResolveResult (
 						new LocalVariable (CallingMember, identifier, varType,
-							new DomRegion (lookupVariableLine + var.StartPos.Line - 1, var.StartPos.Column - 1, 
-							               lookupVariableLine + var.StartPos.Line - 1, var.EndPos.Column - 1)),
+							new DomRegion (lookupVariableLine + var.StartPos.Line, var.StartPos.Column, 
+							               lookupVariableLine + var.StartPos.Line, var.EndPos.Column)),
 							var.IsLoopVariable);
 					
 					result.ResolvedType = varType;
