@@ -278,12 +278,17 @@ namespace MonoDevelop.IPhone
 		/// </summary>
 		public IPhoneSimulatorTarget GetSimulatorTarget (IPhoneProjectConfiguration conf)
 		{
-			return UserProperties.GetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget-" + conf.Id);
+			return UserProperties.GetValue<IPhoneSimulatorTarget> (GetSimulatorTargetKey (conf));
 		}
 		
 		public void SetSimulatorTarget (IPhoneProjectConfiguration conf, IPhoneSimulatorTarget value)
 		{
-			UserProperties.SetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget-" + conf.Id, value);
+			UserProperties.SetValue<IPhoneSimulatorTarget> (GetSimulatorTargetKey (conf), value);
+		}
+		
+		string GetSimulatorTargetKey (IPhoneProjectConfiguration conf)
+		{
+			return "IPhoneSimulatorTarget-" + conf.Id.Replace ('|', '_');
 		}
 		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,

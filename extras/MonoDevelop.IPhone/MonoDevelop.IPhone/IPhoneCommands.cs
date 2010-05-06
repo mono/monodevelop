@@ -65,7 +65,7 @@ namespace MonoDevelop.IPhone
 			if (projSetting == null)
 				def.Checked  = true;
 			
-			foreach (var st in IPhoneFramework.GetSimulatorTargets (IPhoneSdkVersion.Parse (conf.MtouchSdkVersion), proj.SupportedDevices)) {
+			foreach (var st in IPhoneFramework.GetSimulatorTargets (IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion), proj.SupportedDevices)) {
 				var i = info.Add (st.ToString (), st);
 				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;

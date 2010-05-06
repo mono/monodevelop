@@ -1,5 +1,12 @@
 2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneCommands.cs: Use min OS for the list of allowed
+	  simulators.
+
+	* IPhoneProject.cs: Attempt to fix storing target sim.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs:
 	* IPhoneExecutionCommand.cs:
 	* IPhoneExecutionHandler.cs: Pass min OS to the execution
