@@ -151,7 +151,8 @@ namespace MonoDevelop.Core.Execution
 			// p.EnableRaisingEvents = true;
 			
 			if (exited != null) {
-				MonoDevelop.Core.OperationHandler handler = delegate (MonoDevelop.Core.IAsyncOperation op) {
+				MonoDevelop.Core.OperationHandler handler = null;
+				handler = delegate (MonoDevelop.Core.IAsyncOperation op) {
 					op.Completed -= handler;
 					exited (p, EventArgs.Empty);
 				};

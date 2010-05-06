@@ -1,3 +1,13 @@
+2010-05-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Execution/ProcessService.cs: Fix Windows
+	  build.
+
+	* MonoDevelop.Core.Instrumentation/Counter.cs:
+	* MonoDevelop.Core.Instrumentation/TimerCounter.cs:
+	* MonoDevelop.Core.Instrumentation/InstrumentationService.cs:
+	  Add support for counter data serialization.
+
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects/ProjectsServices.cs: Delay project

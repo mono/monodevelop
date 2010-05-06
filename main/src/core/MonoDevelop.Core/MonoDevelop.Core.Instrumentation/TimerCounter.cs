@@ -28,8 +28,10 @@ using System;
 
 namespace MonoDevelop.Core.Instrumentation
 {
+	[Serializable]
 	public class TimerCounter: Counter
 	{
+		[NonSerialized]
 		TimeCounter lastTimer;
 		double minSeconds;
 		TimeSpan totalTime;

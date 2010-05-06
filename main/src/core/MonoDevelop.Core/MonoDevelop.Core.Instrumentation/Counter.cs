@@ -26,9 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MonoDevelop.Core.Instrumentation
 {
+	[Serializable]
 	public class Counter: MarshalByRefObject
 	{
 		internal int count;

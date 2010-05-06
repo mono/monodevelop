@@ -36,6 +36,9 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
+using System.Threading;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -46,6 +49,9 @@ namespace MonoDevelop.Core.Instrumentation
 		static bool enabled = true;
 		static DateTime startTime;
 		static int publicPort = -1;
+		static Thread autoSaveThread;
+		static bool stopping;
+		static int autoSaveInterval;
 		
 		static InstrumentationService ()
 		{
@@ -95,9 +101,62 @@ namespace MonoDevelop.Core.Instrumentation
 			Process.Start (pi);
 		}
 		
+		public static void StartAutoSave (string file, int interval)
+		{
+			autoSaveInterval = interval;
+			autoSaveThread = new Thread (delegate () {
+				AutoSave (file, interval);
+			});
+			autoSaveThread.IsBackground = true;
+			autoSaveThread.Start ();
+		}
+		
+		public static void Stop ()
+		{
+			stopping = true;
+			if (autoSaveThread != null)
+				autoSaveThread.Join (autoSaveInterval*3);
+		}
+		
+		static void AutoSave (string file, int interval)
+		{
+			while (!stopping) {
+				Thread.Sleep (interval);
+				try {
+					lock (counters) {
+						InstrumentationServiceData data = new InstrumentationServiceData ();
+						data.EndTime = DateTime.Now;
+						data.StartTime = StartTime;
+						data.Counters = counters;
+						data.Categories = categories;
+						FilePath path = file + ".tmp";
+						using (Stream fs = File.OpenWrite (path)) {
+							BinaryFormatter f = new BinaryFormatter ();
+							f.Serialize (fs, data);
+						}
+						FileService.SystemRename (path, file);
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Instrumentation service data could not be saved", ex);
+				}
+			}
+			autoSaveThread = null;
+		}
+		
 		public static IInstrumentationService GetRemoteService (string hostAndPort)
 		{
 			return (IInstrumentationService) Activator.GetObject (typeof(IInstrumentationService), "tcp://" + hostAndPort + "/InstrumentationService");
+		}
+		
+		public static IInstrumentationService LoadServiceDataFromFile (string file)
+		{
+			using (Stream s = File.OpenRead (file)) {
+				BinaryFormatter f = new BinaryFormatter ();
+				IInstrumentationService data = f.Deserialize (s) as IInstrumentationService;
+				if (data == null)
+					throw new Exception ("Invalid instrumentation service data file");
+				return data;
+			}
 		}
 		
 		public static bool Enabled {
@@ -319,6 +378,7 @@ namespace MonoDevelop.Core.Instrumentation
 	public interface IInstrumentationService
 	{
 		DateTime StartTime { get; }
+		DateTime EndTime { get; }
 		IEnumerable<Counter> GetCounters ();
 		Counter GetCounter (string name);
 		CounterCategory GetCategory (string name);
@@ -330,6 +390,12 @@ namespace MonoDevelop.Core.Instrumentation
 		public DateTime StartTime {
 			get {
 				return InstrumentationService.StartTime;
+			}
+		}
+		
+		public DateTime EndTime {
+			get {
+				return DateTime.Now;
 			}
 		}
 
@@ -356,6 +422,40 @@ namespace MonoDevelop.Core.Instrumentation
 		public override object InitializeLifetimeService ()
 		{
 			return null;
+		}
+	}
+	
+	[Serializable]
+	class InstrumentationServiceData: IInstrumentationService
+	{
+		public DateTime StartTime { get; set; }
+		public DateTime EndTime { get; set; }
+		public Dictionary <string, Counter> Counters { get; set; }
+		public List<CounterCategory> Categories { get; set; }
+		
+		public IEnumerable<Counter> GetCounters ()
+		{
+			return Counters.Values;
+		}
+		
+		public Counter GetCounter (string name)
+		{
+			Counter c;
+			if (Counters.TryGetValue (name, out c))
+				return c;
+			c = new Counter (name, null);
+			Counters [name] = c;
+			return c;
+		}
+		
+		public CounterCategory GetCategory (string name)
+		{
+			return Categories.FirstOrDefault (c => c.Name == name);
+		}
+		
+		public IEnumerable<CounterCategory> GetCategories ()
+		{
+			return Categories;
 		}
 	}
 }
