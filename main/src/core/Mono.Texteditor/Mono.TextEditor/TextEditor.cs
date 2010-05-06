@@ -1295,6 +1295,8 @@ namespace Mono.TextEditor
 				if (lastFold > 0) 
 					visualLineNumber = Document.OffsetToLineNumber (lastFold);
 				foreach (Margin margin in this.margins) {
+					if (!margin.IsVisible)
+						continue;
 					try {
 						if (renderFirstLine)
 							margin.XOffset = curX;

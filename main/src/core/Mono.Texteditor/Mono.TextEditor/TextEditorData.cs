@@ -841,9 +841,11 @@ namespace Mono.TextEditor
 			LineSegment line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return 0;
+			
 			if (Caret.Column > line.EditableLength) {
 				string virtualSpace = GetVirtualSpaces (Caret.Line, Caret.Column);
-				Insert (Caret.Offset, virtualSpace);
+				if (!string.IsNullOrEmpty (virtualSpace))
+					Insert (Caret.Offset, virtualSpace);
 				// No need to reposition the caret, because it's already at the correct position
 				// The only difference is that the position is not virtual anymore.
 				return virtualSpace.Length;

@@ -1,5 +1,11 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorData.cs: Check the IsVisible flag
+	  for margins.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 603274 - Caret
 	  is moved to incorrect position when typing'.
 
