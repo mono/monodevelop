@@ -142,7 +142,7 @@ namespace Mono.TextEditor
 			};
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
-			markerLayout = new Pango.Layout (textEditor.PangoContext);
+			markerLayout = textEditor.CreatePangoLayout (null);
 			
 			textEditor.Document.EndUndo += UpdateBracketHighlighting;
 			textEditor.Document.Undone += delegate {
@@ -424,10 +424,9 @@ namespace Mono.TextEditor
 			
 			EnsureCaretGc ();
 			
-			Pango.Layout tabWidthLayout = new Pango.Layout (textEditor.PangoContext);
+			var tabWidthLayout = textEditor.CreatePangoLayout (new string (' ', textEditor.Options.TabSize));
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
 			tabWidthLayout.FontDescription = textEditor.Options.Font;
-			tabWidthLayout.SetText (new string (' ', textEditor.Options.TabSize));
 			int tabWidth, h;
 			tabWidthLayout.GetPixelSize (out tabWidth, out h);
 			tabWidthLayout.Dispose ();
@@ -801,7 +800,7 @@ namespace Mono.TextEditor
 				layoutDict.Remove (line);
 			}
 			
-			LayoutWrapper wrapper = new LayoutWrapper (new Pango.Layout (textEditor.PangoContext));
+			var wrapper = new LayoutWrapper (textEditor.CreatePangoLayout (null));
 			wrapper.IsUncached = containsPreedit;
 			createNew (wrapper);
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
@@ -1764,10 +1763,6 @@ namespace Mono.TextEditor
 		{
 			if (line == null || line.EditableLength == 0 || column < 0)
 				return 0;
-
-			Pango.Layout layout = new Pango.Layout (textEditor.PangoContext);
-			layout.Alignment = Pango.Alignment.Left;
-			layout.FontDescription = textEditor.Options.Font;
 			
 			StringBuilder textBuilder = new StringBuilder ();
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
@@ -1780,8 +1775,6 @@ namespace Mono.TextEditor
 					return 0;
 				}
 			}
-			layout.Tabs = tabArray;
-
 			string lineText = textBuilder.ToString ();
 			char[] lineChars = lineText.ToCharArray ();
 			bool containsPreedit = line.Offset <= textEditor.preeditOffset && textEditor.preeditOffset <= line.Offset + line.EditableLength;
@@ -1792,9 +1785,12 @@ namespace Mono.TextEditor
 				preeditLength = (uint)textEditor.preeditString.Length;
 			}
 			if (column < lineText.Length)
-				lineText = lineText.Substring (0, column);
-			layout.SetText (lineText);
-		
+				lineText = lineText.Substring (0, column);	
+			
+			var layout = textEditor.CreatePangoLayout (lineText);
+			layout.Alignment = Pango.Alignment.Left;
+			layout.FontDescription = textEditor.Options.Font;
+			layout.Tabs = tabArray;
 
 			int startOffset = line.Offset, endOffset = line.Offset + line.EditableLength;
 			uint curIndex = 0, byteIndex = 0;
@@ -2251,11 +2247,10 @@ namespace Mono.TextEditor
 					layoutWrapper.Layout.GetPixelSize (out width, out height);
 					xPos += width * (int)Pango.Scale.PangoScale;
 					if (measueLayout == null) {
-						measueLayout = new Pango.Layout (margin.textEditor.PangoContext);
+						measueLayout = margin.textEditor.CreatePangoLayout (folding.Description);
 						measueLayout.FontDescription = margin.textEditor.Options.Font;
 					}
 
-					measueLayout.SetText (folding.Description);
 					int delta;
 					measueLayout.GetPixelSize (out delta, out height);
 					delta *= (int)Pango.Scale.PangoScale;

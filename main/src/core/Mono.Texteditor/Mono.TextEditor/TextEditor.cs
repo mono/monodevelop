@@ -975,8 +975,11 @@ namespace Mono.TextEditor
 				Caret.Offset = dragOffset;
 				if (CanEdit (dragCaretPos.Line)) {
 					int offset = Caret.Offset;
-					if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset)
-						selection = new Selection (Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length), Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length));
+					if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset) {
+						var start = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length);
+						var end = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length);
+						selection = new Selection (start, end);
+					}
 					textEditorData.Insert (offset, selection_data.Text);
 					Caret.Offset = offset + selection_data.Text.Length;
 					MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
@@ -1727,7 +1730,7 @@ namespace Mono.TextEditor
 							using (var bgGc = new Gdk.GC(pixmap)) {
 								bgGc.RgbFgColor = editor.ColorStyle.SearchTextMainBg;
 								pixmap.DrawRectangle (bgGc, true, 0, 0, iw, ih);
-								using (Pango.Layout layout = new Pango.Layout (editor.PangoContext)) {
+								using (var layout = editor.CreatePangoLayout (null)) {
 									layout.FontDescription = editor.Options.Font;
 									layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
 									pixmap.DrawLayout (bgGc, 0, 0, layout);
