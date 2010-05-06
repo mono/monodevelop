@@ -853,6 +853,9 @@ namespace MonoDevelop.CSharp.Completion
 							foundType = resolver.SearchType (resolveResult.ResolvedType);
 					
 						if (foundType != null) {
+							if (foundType.ClassType == ClassType.Interface)
+								foundType = resolver.SearchType (DomReturnType.Object);
+						
 							foreach (IType type in dom.GetSubclasses (foundType)) {
 								if (type.IsSpecialName || type.Name.StartsWith ("<"))
 									continue;

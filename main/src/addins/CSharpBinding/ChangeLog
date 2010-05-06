@@ -1,5 +1,10 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  fixed 'Bug 603344 - Matching in completion list'.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
 	  fixed find member references for local variables.
 
