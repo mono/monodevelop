@@ -272,9 +272,13 @@ namespace MonoDevelop.WelcomePage
 				try {
 					if (!System.IO.File.Exists (ri.LocalPath))
 						continue;
-					
+/* delay project service creation. 
 					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
 							(ri.LocalPath, typeof(Solution)).Length > 0
+								? "md-solution"
+								: "md-workspace";*/
+					
+					icon = System.IO.Path.GetExtension (ri.LocalPath) != ".mdw"
 								? "md-solution"
 								: "md-workspace";
 				}

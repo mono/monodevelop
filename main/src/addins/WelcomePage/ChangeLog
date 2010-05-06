@@ -1,3 +1,9 @@
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
+	* WelcomePageWidget.cs: Delay project service loading -
+	  replacing the file format check with a simple extension
+	  check.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs:
