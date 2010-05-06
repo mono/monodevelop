@@ -1,5 +1,10 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed
+	  possible null ref.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Auto expand
 	  multiple error bubbles when the caret is in a line that
 	  contains a multi error bubble.

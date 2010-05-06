@@ -825,7 +825,9 @@ namespace MonoDevelop.SourceEditor
 			
 			if (oldExpandedMarker != null && oldExpandedMarker != marker) {
 				oldExpandedMarker.CollapseExtendedErrors = true;
-				Document.CommitLineToEndUpdate (Document.OffsetToLineNumber (Math.Min (marker != null ? marker.LineSegment.Offset : Int32.MaxValue, oldExpandedMarker.LineSegment.Offset)));
+				int markerOffset = marker != null && marker.LineSegment != null ? marker.LineSegment.Offset : Int32.MaxValue;
+				int oldMarkerOffset = oldExpandedMarker.LineSegment != null ? oldExpandedMarker.LineSegment.Offset : Int32.MaxValue;
+				Document.CommitLineToEndUpdate (Document.OffsetToLineNumber (Math.Min (markerOffset, oldMarkerOffset)));
 			}
 			oldExpandedMarker = marker;
 		}
