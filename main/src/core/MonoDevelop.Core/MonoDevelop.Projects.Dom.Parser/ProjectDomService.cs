@@ -302,6 +302,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return ParseFile (dom, fileName);
 		}
 		
+		public static void RemoveFileDom (string file)
+		{
+			if (singleDatabases.ContainsKey (file)) {
+				singleDatabases[file].Database.Unload ();
+				singleDatabases.Remove (file);
+			}
+		}
+		
 		public static ProjectDom GetFileDom (string file)
 		{
 			if (file == null)
