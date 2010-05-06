@@ -445,15 +445,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public ProjectDom ProjectDom {
 			get {
-				ProjectDom result = null;
 				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null || doc.Project == null) 
-					result = ProjectDomService.GetProjectDom (doc.Project);
-				
-				if (result == null)
-					result = ProjectDomService.GetFileDom (View.ContentName);
-				
-				return result;
+				if (doc != null) 
+					return doc.Dom;
+				return null;
 			}
 		}
 		

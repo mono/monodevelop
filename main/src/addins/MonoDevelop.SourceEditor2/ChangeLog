@@ -1,5 +1,10 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Make use
+	  of the new Document.Dom property.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Fix auto
 	  insert bracket issue.
 
