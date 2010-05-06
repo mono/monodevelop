@@ -377,15 +377,20 @@ namespace MonoDevelop.SourceEditor
 
 					if (count >= 0) {
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
+						
+						int offset = Caret.Offset;
 						insertionChar = closingBrace;
-						Insert (Caret.Offset, closingBrace.ToString ());
+						Insert (offset, closingBrace.ToString ());
+						Caret.Offset = offset;
 					}
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
 					if (!inString && !inComment && !inChar && ch == '"' && charBefore != '\\') {
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						insertionChar = '"';
+						int offset = Caret.Offset;
 						Insert (Caret.Offset, "\"");
+						Caret.Offset = offset;
 					}
 				}
 			}
