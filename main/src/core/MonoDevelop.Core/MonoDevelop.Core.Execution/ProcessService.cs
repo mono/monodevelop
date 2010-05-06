@@ -137,18 +137,26 @@ namespace MonoDevelop.Core.Execution
 				
 			if (errorStreamChanged != null)
 				p.ErrorStreamChanged += errorStreamChanged;
-			
-			if (exited != null)
-				p.Exited += exited;
 
 			startInfo.CreateNoWindow = true;
 			p.StartInfo = startInfo;
 			ProcessEnvironmentVariableOverrides (p.StartInfo);
 			
+			// FIXME: the bug is long gone, but removing the hacks in ProcessWrapper w/o bugs will be tricky
 			// WORKAROUND for "Bug 410743 - wapi leak in System.Diagnostic.Process"
 			// Process leaks when an exit event is registered
 			// instead we use another thread to monitor I/O and wait for exit
+			// if (exited != null)
+			// 	p.Exited += exited;
 			// p.EnableRaisingEvents = true;
+			
+			if (exited != null) {
+				MonoDevelop.Core.OperationHandler handler = delegate (MonoDevelop.Core.IAsyncOperation op) {
+					op.Completed -= handler;
+					exited (p, EventArgs.Empty);
+				};
+				((MonoDevelop.Core.IAsyncOperation)p).Completed += handler;
+			}
 			
 			Counters.ProcessesStarted++;
 			p.Start ();
