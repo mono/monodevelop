@@ -36,7 +36,7 @@ namespace MonoDevelop.Components
 		{
 			Gtk.Rc.ParseString (@"style """ + styleName + @"""
 {
-	GtkScrolledWindow::scrollbar-spacing = 1
+	GtkScrolledWindow::scrollbar-spacing = 0
 }");
 		}
 		
