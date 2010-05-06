@@ -1,5 +1,10 @@
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Only check for PkgInfo in device
+	  builds.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Fix NeedsBuilding check.
 
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
