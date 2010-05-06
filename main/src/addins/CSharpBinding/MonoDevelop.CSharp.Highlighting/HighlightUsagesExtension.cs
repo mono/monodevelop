@@ -49,9 +49,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			base.Initialize ();
 			
-			dom = ProjectDomService.GetProjectDom (Document.Project);
-			if (dom == null)
-				dom = ProjectDomService.GetFileDom (Document.FileName);
+			dom = Document.Dom;
 
 			textEditorResolver = base.Document.GetContent<ITextEditorResolver> ();
 			textEditorData = base.Document.TextEditorData;

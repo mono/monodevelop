@@ -78,10 +78,8 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			dom = ProjectDomService.GetProjectDom (Document.Project);
+			dom = Document.Dom;
 			textEditorData = Document.TextEditorData;
-			if (dom == null)
-				dom = ProjectDomService.GetFileDom (Document.FileName);
 			
 			InitTracker ();
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
