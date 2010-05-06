@@ -1,3 +1,7 @@
+2010-05-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Startup.csproj: Disable overflow checks.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Bumped MD version.

@@ -25,7 +25,6 @@
         <Variable name="XDG_CONFIG_HOME" value="./local" />
       </EnvironmentVariables>
     </EnvironmentVariables>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
