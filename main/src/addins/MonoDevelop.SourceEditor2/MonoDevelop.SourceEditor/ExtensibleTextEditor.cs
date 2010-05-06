@@ -197,27 +197,32 @@ namespace MonoDevelop.SourceEditor
 			UpdateEditMode ();
 			base.OptionsChanged (sender, args);
 		}
-		
+		bool isInKeyStroke = false;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
-			// Handle keyboard menu popup
-			if (evnt.Key == Gdk.Key.Menu || (evnt.Key == Gdk.Key.F10 && (evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
-				this.menuPopupLocation = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
-				this.menuPopupLocation.Y += this.TextViewMargin.LineHeight;
-				this.ShowPopup ();
-				return true;
+			isInKeyStroke = true;
+			try {
+				// Handle keyboard menu popup
+				if (evnt.Key == Gdk.Key.Menu || (evnt.Key == Gdk.Key.F10 && (evnt.State & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
+					this.menuPopupLocation = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
+					this.menuPopupLocation.Y += this.TextViewMargin.LineHeight;
+					this.ShowPopup ();
+					return true;
+				}
+				
+				// Handle keyboard toolip popup
+	/*			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
+					Gdk.Point p = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
+					this.mx = p.X;
+					this.my = p.Y;
+					this.ShowTooltip ();
+					return true;
+				}
+	*/			
+				return base.OnKeyPressEvent (evnt);
+			} finally {
+				isInKeyStroke = false;
 			}
-			
-			// Handle keyboard toolip popup
-/*			if ((evnt.Key == Gdk.Key.F1 && (evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask)) {
-				Gdk.Point p = this.TextViewMargin.LocationToDisplayCoordinates (this.Caret.Location);
-				this.mx = p.X;
-				this.my = p.Y;
-				this.ShowTooltip ();
-				return true;
-			}
-*/			
-			return base.OnKeyPressEvent (evnt);
 		}
 		
 		bool ExtensionKeyPress (Gdk.Key key, uint ch, Gdk.ModifierType state)
@@ -690,8 +695,10 @@ namespace MonoDevelop.SourceEditor
 		protected override void HAdjustmentValueChanged ()
 		{
 			base.HAdjustmentValueChanged ();
-			CompletionWindowManager.HideWindow ();
-			ParameterInformationWindowManager.HideWindow ();
+			if (!isInKeyStroke) {
+				CompletionWindowManager.HideWindow ();
+				ParameterInformationWindowManager.HideWindow ();
+			}
 		}
 		
 		protected override void VAdjustmentValueChanged ()
