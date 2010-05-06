@@ -1,5 +1,11 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide/Ide.cs:
+	* MonoDevelop.Ide/ProjectOperations.cs: Delay project service
+	  loading.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide/ProjectOperations.cs: Fixed 'Bug 603119 -
 	  Go-to-definition doesn't work with locals'.
 

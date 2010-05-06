@@ -56,7 +56,6 @@ namespace MonoDevelop.Ide
 	/// </summary>
 	public class ProjectOperations
 	{
-		ProjectService projectService = MonoDevelop.Projects.Services.ProjectService;
 		IAsyncOperation currentBuildOperation = NullAsyncOperation.Success;
 		IAsyncOperation currentRunOperation = NullAsyncOperation.Success;
 		IBuildTarget currentBuildOperationOwner;
@@ -873,7 +872,7 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation BuildFile (string file)
 		{
-			Project tempProject = projectService.CreateSingleFileProject (file);
+			Project tempProject = MonoDevelop.Projects.Services.ProjectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Build (tempProject);
 				aop.Completed += delegate { tempProject.Dispose (); };
@@ -886,7 +885,7 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation ExecuteFile (string file)
 		{
-			Project tempProject = projectService.CreateSingleFileProject (file);
+			Project tempProject = MonoDevelop.Projects.Services.ProjectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Execute (tempProject);
 				aop.Completed += delegate { tempProject.Dispose (); };
@@ -910,7 +909,7 @@ namespace MonoDevelop.Ide
 		
 		public bool CanExecuteFile (string file, ExecutionContext context)
 		{
-			Project tempProject = projectService.CreateSingleFileProject (file);
+			Project tempProject = MonoDevelop.Projects.Services.ProjectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				bool res = CanExecute (tempProject, context);
 				tempProject.Dispose ();
@@ -928,7 +927,7 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation ExecuteFile (string file, ExecutionContext context)
 		{
-			Project tempProject = projectService.CreateSingleFileProject (file);
+			Project tempProject = MonoDevelop.Projects.Services.ProjectService.CreateSingleFileProject (file);
 			if (tempProject != null) {
 				IAsyncOperation aop = Execute (tempProject, context);
 				aop.Completed += delegate { tempProject.Dispose (); };

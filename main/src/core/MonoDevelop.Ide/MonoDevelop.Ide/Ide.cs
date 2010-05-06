@@ -186,8 +186,10 @@ namespace MonoDevelop.Ide
 			commandService.EnableIdleUpdate = true;
 			
 			// Default file format
+			MonoDevelop.Projects.Services.ProjectServiceLoaded += delegate(object sender, EventArgs e) {
+				((ProjectService)sender).DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
+			};
 			
-			IdeApp.Services.ProjectService.DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
 			IdeApp.Preferences.DefaultProjectFileFormatChanged += delegate {
 				IdeApp.Services.ProjectService.DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
 			};
