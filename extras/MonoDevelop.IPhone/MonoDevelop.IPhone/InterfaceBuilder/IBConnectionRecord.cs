@@ -112,6 +112,7 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 		public NSMutableDictionary Actions { get; set; }
 		public NSMutableDictionary Outlets { get; set; }
 		public Unref<IBClassDescriptionSource> SourceIdentifier { get; set; }
+		public NSMutableDictionary ToOneOutletInfosByName { get; set; }
 		
 		protected override void OnPropertyDeserialized (string name, object value)
 		{
@@ -125,6 +126,8 @@ namespace MonoDevelop.IPhone.InterfaceBuilder
 				Outlets = (NSMutableDictionary) value;
 			else if (name == "sourceIdentifier")
 				SourceIdentifier = new Unref<IBClassDescriptionSource> (value);
+			else if (name == "toOneOutletInfosByName")
+				ToOneOutletInfosByName = (NSMutableDictionary) value;
 			else
 				base.OnPropertyDeserialized (name, value);
 		}
