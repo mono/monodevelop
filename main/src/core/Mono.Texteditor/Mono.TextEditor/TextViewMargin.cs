@@ -2126,12 +2126,13 @@ namespace Mono.TextEditor
 				DrawEolMarker (win, isEolSelected, xPos, y);
 			
 			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
-				/*		string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
+				string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
 				int visibleColumn = line.EditableLength;
 				for (int endX = 0; endX < virtualText.Length; endX++) {
 					if (virtualText[endX] != '\t') {
-						textRenderer.SetText (virtualText[endX].ToString ());
-						textRenderer.GetPixelSize (out width, out height, out xadv);
+						markerLayout.SetText (virtualText[endX].ToString ());
+						int xadv, h;
+						markerLayout.GetPixelSize (out xadv, out h);
 						if (textEditor.Options.ShowSpaces)
 							DrawSpaceMarker (win, isEolSelected, xPos, y);
 						xPos += xadv;
@@ -2145,8 +2146,7 @@ namespace Mono.TextEditor
 						visibleColumn = newColumn;
 					}
 				}
-				SetVisibleCaretPosition (win, ' ', xPos, y);*/
-
+				SetVisibleCaretPosition (win, ' ', xPos, y);
 			} else {
 				if (caretOffset == line.Offset + line.EditableLength)
 					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
