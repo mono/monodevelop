@@ -100,7 +100,6 @@ namespace Mono.TextEditor
 				LineSegment line = Document.GetLine (Caret.Line);
 				if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
 					string text = Caret.Column > line.EditableLength ? textEditorData.GetVirtualSpaces (Caret.Line, Caret.Column) + ch.ToString () : ch.ToString ();
-					int offset = Caret.Offset;
 					if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 						int length = 0;
 						for (int lineNumber = textEditorData.MainSelection.MinLine; lineNumber <= textEditorData.MainSelection.MaxLine; lineNumber++) {
@@ -112,7 +111,7 @@ namespace Mono.TextEditor
 						Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 					} else {
 						int length = textEditorData.Insert (Caret.Offset, text);
-						Caret.Offset += length - 1;
+						Caret.Column += length - 1;
 					}
 				} else {
 					int length = textEditorData.Replace (Caret.Offset, 1, ch.ToString ());
