@@ -86,7 +86,7 @@ namespace MonoDevelop.CodeGeneration
 		public static CodeGenerationOptions CreateCodeGenerationOptions (Document document)
 		{
 			var options = new CodeGenerationOptions () {
-				Dom = document.Project != null ? ProjectDomService.GetProjectDom (document.Project) : ProjectDom.Empty,
+				Dom = document.Dom,
 				Document = document,
 			};
 			if (document.ParsedDocument != null && document.ParsedDocument.CompilationUnit != null) {

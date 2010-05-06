@@ -149,9 +149,7 @@ namespace MonoDevelop.Refactoring
 			bool added = false;
 			int line, column;
 			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
-			if (ctx == null)
-				return;
+			ProjectDom ctx = doc.Dom;
 			ResolveResult resolveResult;
 			INode item;
 			GetItem (ctx, doc, editor, out resolveResult, out item);

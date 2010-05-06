@@ -41,8 +41,8 @@ using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Refactoring.RefactorImports;
 using MonoDevelop.Ide;
+using MonoDevelop.Refactoring.RefactorImports;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.TextEditor;
@@ -112,7 +112,7 @@ namespace MonoDevelop.Refactoring
 			this.cache = cache;
 			this.dom = dom;
 			this.data = doc.TextEditorData;
-			this.ambience = doc.Project.Ambience;
+			this.ambience = doc.Project != null ? doc.Project.Ambience : AmbienceService.GetAmbienceForFile (doc.FileName);
 			this.type = type;
 			this.unit = doc.CompilationUnit;
 		}
@@ -212,18 +212,15 @@ namespace MonoDevelop.Refactoring
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null || doc.CompilationUnit == null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.CompilationUnit == null)
 				return;
 			ITextEditorExtension ext = doc.EditorExtension;
 			while (ext != null && !(ext is CompletionTextEditorExtension))
 				ext = ext.Next;
 			if (ext == null)
 				return;
-			
-			ProjectDom dom = ProjectDomService.GetProjectDom (doc.Project);
-			if (dom == null || dom.Types == null)
-				return;
-			
+		
+			ProjectDom dom = doc.Dom;
 			ImportSymbolCache cache = new ImportSymbolCache ();
 			
 			List<ImportSymbolCompletionData> typeList = new List<ImportSymbolCompletionData> ();

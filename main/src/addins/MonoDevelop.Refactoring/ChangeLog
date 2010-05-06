@@ -1,5 +1,16 @@
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs:
+	* MonoDevelop.Refactoring/FindReferencesHandler.cs:
+	* MonoDevelop.Refactoring/GotoDeclarationHandler.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs:
+	* MonoDevelop.Refactoring/FindDerivedClassesHandler.cs:
+	* MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs:
+	  Make use of the Document.Dom property.
+
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Check if the
 	  file has a valid compilation unit.
 

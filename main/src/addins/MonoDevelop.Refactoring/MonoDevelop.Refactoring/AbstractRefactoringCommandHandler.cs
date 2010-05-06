@@ -50,9 +50,7 @@ namespace MonoDevelop.Refactoring
 			if (editor == null)
 				return;
 			
-			ProjectDom dom = doc.Project != null ? ProjectDomService.GetProjectDom (doc.Project) : ProjectDom.Empty;
-			if (dom == null)
-				return;
+			ProjectDom dom = doc.Dom;
 			
 			ResolveResult result;
 			INode item;
