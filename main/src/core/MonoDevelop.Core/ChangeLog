@@ -1,3 +1,8 @@
+2010-05-06  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: fix null ref
+	  if returnType == null.
+
 2010-05-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Execution/ProcessService.cs: Fix Windows

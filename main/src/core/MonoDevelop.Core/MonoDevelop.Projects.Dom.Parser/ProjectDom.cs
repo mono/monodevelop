@@ -60,6 +60,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 
 		protected virtual IEnumerable<string> InternalResolvePossibleNamespaces (IReturnType returnType)
 		{
+			if (returnType == null) 
+				yield break;
+			
 			foreach (IType type in Types) {
 				if (type.DecoratedFullName == type.Namespace + "." + returnType.DecoratedFullName) {
 					yield return type.Namespace;
