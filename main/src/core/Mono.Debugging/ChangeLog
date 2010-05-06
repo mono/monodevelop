@@ -1,3 +1,8 @@
+2010-05-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/BaseBacktrace.cs: Use async
+	  evaluation when getting the This and Execption values.
+
 2010-04-23  Carlo Kok  <ck@remobjects.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs:

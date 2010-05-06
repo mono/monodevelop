@@ -103,7 +103,7 @@ namespace Mono.Debugging.Evaluation
 				});
 			}
 			if (frame.This != null)
-				return frame.This.CreateObjectValue ();
+				return frame.This.CreateObjectValue (true, options);
 			else
 				return null;
 		}
@@ -123,7 +123,7 @@ namespace Mono.Debugging.Evaluation
 				});
 			}
 			if (frame.Exception != null)
-				return frame.Exception.CreateObjectValue ();
+				return frame.Exception.CreateObjectValue (true, options);
 			else
 				return null;
 		}
