@@ -222,6 +222,8 @@ namespace MonoDevelop.Refactoring
 				return;
 			
 			ProjectDom dom = ProjectDomService.GetProjectDom (doc.Project);
+			if (dom == null || dom.Types == null)
+				return;
 			
 			ImportSymbolCache cache = new ImportSymbolCache ();
 			
