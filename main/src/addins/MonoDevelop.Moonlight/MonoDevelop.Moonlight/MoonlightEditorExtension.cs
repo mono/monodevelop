@@ -117,11 +117,7 @@ namespace MonoDevelop.Moonlight
 		
 		ProjectDom GetDb ()
 		{
-			if (this.Document.Project != null)
-				return ProjectDomService.GetProjectDom (this.Document.Project);
-			else
-				//FIXME: add fallback
-				return null;
+			return Document.Dom;
 		}
 		
 		void GetType (IAttributedXObject attributedOb, Action<IType, ProjectDom> action)
