@@ -96,7 +96,7 @@ namespace MonoDevelop.Debugger
 			if (string.IsNullOrEmpty (result)) {
 				if (val.IsNotSupported)
 					result = GettextCatalog.GetString ("Expression not supported.");
-				if (val.IsError || val.IsUnknown)
+				else if (val.IsError || val.IsUnknown)
 					result = GettextCatalog.GetString ("Evaluation failed.");
 				else
 					result = string.Empty;
