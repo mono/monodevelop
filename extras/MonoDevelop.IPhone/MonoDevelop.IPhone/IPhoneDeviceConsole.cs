@@ -29,12 +29,16 @@ using Gtk;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace MonoDevelop.IPhone
 {
 	public class IPhoneDeviceConsole : Window
 	{
 		TextBuffer buffer = new TextBuffer (null);
+		
+		Queue<ConsoleMessage> queue = new Queue<ConsoleMessage> ();
+		bool handlerRunning;
 		
 		ProcessWrapper process;
 		
@@ -95,12 +99,12 @@ namespace MonoDevelop.IPhone
 			if (process == null)
 				return;
 			
-			InsertText ("\nDisconnected\n", false);
+			AppendText ("\nDisconnected\n", false);
 			
 			if (!process.HasExited)
 				process.Kill ();
 			else if (process.ExitCode != 0)
-				InsertText (string.Format ("Unknown error {0}\n", process.ExitCode), true);
+				AppendText (string.Format ("Unknown error {0}\n", process.ExitCode), true);
 			
 			process.Dispose ();
 			
@@ -109,7 +113,7 @@ namespace MonoDevelop.IPhone
 		
 		void Connect ()
 		{
-			InsertText ("Connecting...\n", false);
+			AppendText ("Connecting...\n", false);
 			var mtouch = "/Developer/MonoTouch/usr/bin/mtouch";
 			var psi = new ProcessStartInfo (mtouch, "-logdev") {
 				UseShellExecute = false,
@@ -122,27 +126,43 @@ namespace MonoDevelop.IPhone
 			process.EnableRaisingEvents = true;
 		}
 		
-		//TODO: prune old text from the buffer, different color for error, maybe some processing and highlighting
-		void InsertText (string text, bool error)
+		void AppendText (string text, bool error)
 		{
-			TextIter iter = buffer.EndIter;
-			buffer.Insert (ref iter, text);
+			//FIXME: discard items if queue too big
+			lock (queue) {
+				queue.Enqueue (new ConsoleMessage (text, error));
+				if (!handlerRunning) {
+					handlerRunning = true;
+					GLib.Idle.Add (IdleHandler);
+				}
+			}
 		}
 		
+		bool IdleHandler ()
+		{
+			ConsoleMessage item;
+			bool moreinQueue;
+			lock (queue) {
+				item = queue.Dequeue ();
+				moreinQueue = queue.Count > 0;
+				handlerRunning = !moreinQueue;
+			}
+			
+			//TODO: prune old text from the buffer, different color for error, maybe some processing and highlighting
+			var iter = buffer.EndIter;
+			buffer.Insert (ref iter, item.Message);
+			
+			return moreinQueue;
+		}
 		
 		void OnProcessOutput (object sender, string message)
 		{
-			//FIXME: use a queue and a rate-limited consuming timeout handler
-			Gtk.Application.Invoke (delegate {
-				InsertText (message, false);
-			});
+			AppendText (message, false);
 		}
 		
 		void OnProcessError (object sender, string message)
 		{
-			Gtk.Application.Invoke (delegate {
-				InsertText (message, true);
-			});
+			AppendText (message, true);
 		}
 		
 		protected override void OnDestroyed ()
@@ -160,6 +180,18 @@ namespace MonoDevelop.IPhone
 				instance = new IPhoneDeviceConsole ();
 			instance.Show ();
 			instance.Present ();
+		}
+		
+		class ConsoleMessage
+		{
+			public ConsoleMessage (string message, bool isError)
+			{
+				this.Message = message;
+				this.IsError = isError;
+			}
+			
+			public string Message { get; private set; }
+			public bool IsError { get; private set; }
 		}
 	}
 }

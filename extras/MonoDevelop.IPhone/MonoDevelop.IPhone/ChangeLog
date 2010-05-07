@@ -1,5 +1,10 @@
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDeviceConsole.cs: Use a queue and idle handler instead
+	  of application.invoke.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* InterfaceBuilder/IBConnectionRecord.cs: Added missing
 	  property.
 
