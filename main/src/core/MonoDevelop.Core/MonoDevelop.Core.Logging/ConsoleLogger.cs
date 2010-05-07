@@ -46,39 +46,39 @@ namespace MonoDevelop.Core.Logging
 			
 			switch (level) {
 			case LogLevel.Fatal:
-				header = GettextCatalog.GetString ("FATAL ERROR");
+				header = "FATAL ERROR";
 				if (useColour) {
 					ConsoleCrayon.ForegroundColor = ConsoleColor.Yellow;
 					ConsoleCrayon.BackgroundColor = ConsoleColor.Red;
 				}
 				break;
 			case LogLevel.Error:
-				header = GettextCatalog.GetString ("ERROR");
+				header = "ERROR";
 				if (useColour) {
 					ConsoleCrayon.ForegroundColor = ConsoleColor.Red;
 					ConsoleCrayon.BackgroundColor = ConsoleColor.Yellow;
 				}
 				break;
 			case LogLevel.Warn:
-				header = GettextCatalog.GetString ("WARNING");
+				header = "WARNING";
 				if (useColour) {
 					ConsoleCrayon.ForegroundColor = ConsoleColor.Red;
 				}
 				break;
 			case LogLevel.Info:
-				header = GettextCatalog.GetString ("INFO");
+				header = "INFO";
 				if (useColour) {
 					ConsoleCrayon.ForegroundColor = ConsoleColor.Green;
 				}
 				break;
 			case LogLevel.Debug:
-				header = GettextCatalog.GetString ("DEBUG");
+				header = "DEBUG";
 				if (useColour) {
 					ConsoleCrayon.ForegroundColor = ConsoleColor.Blue;
 				}
 				break;
 			default:
-				header = GettextCatalog.GetString ("LOG");
+				header = "LOG";
 				break;
 			}
 			
