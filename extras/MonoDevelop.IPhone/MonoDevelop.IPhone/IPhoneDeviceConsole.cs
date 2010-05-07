@@ -144,8 +144,7 @@ namespace MonoDevelop.IPhone
 			bool moreinQueue;
 			lock (queue) {
 				item = queue.Dequeue ();
-				moreinQueue = queue.Count > 0;
-				handlerRunning = !moreinQueue;
+				handlerRunning = moreinQueue = queue.Count > 0;
 			}
 			
 			//TODO: prune old text from the buffer, different color for error, maybe some processing and highlighting

@@ -1,5 +1,9 @@
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDeviceConsole.cs: Fix idle handler.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneDeviceConsole.cs: Use a queue and idle handler instead
 	  of application.invoke.
 
