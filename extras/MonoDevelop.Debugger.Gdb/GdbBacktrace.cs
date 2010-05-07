@@ -241,7 +241,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return val;
 		}
 
-		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			List<ObjectValue> children = new List<ObjectValue> ();
 			session.SelectThread (threadId);
@@ -269,7 +269,7 @@ namespace MonoDevelop.Debugger.Gdb
 				// "public", "private" and "protected".
 				if (child.GetValue("type") == null) {
 					ObjectPath childPath = new ObjectPath (child.GetValue ("name").Split ('.'));
-					ObjectValue[] subchildren = GetChildren (childPath, -1, -1);
+					ObjectValue[] subchildren = GetChildren (childPath, -1, -1, options);
 					children.AddRange(subchildren);
 				} else {
 					ObjectValue val = CreateObjectValue (name, child);
@@ -360,12 +360,12 @@ namespace MonoDevelop.Debugger.Gdb
 			return buffer.GetLines (firstLine, firstLine + count - 1);
 		}
 		
-		public object GetRawValue (ObjectPath path)
+		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
 			return null;
 		}
 		
-		public void SetRawValue (ObjectPath path, object value)
+		public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
 		}
 	}
