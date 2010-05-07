@@ -1,5 +1,10 @@
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/ImmediatePad.cs: Improve error message
+	  when an expression is not supported.
+
+2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/ObjectValuePad.cs:
 	* MonoDevelop.Debugger/DebuggingService.cs:
 	* MonoDevelop.Debugger.Visualizer/TextVisualizer.cs:
