@@ -304,6 +304,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public static void RemoveFileDom (string file)
 		{
+			if (string.IsNullOrEmpty (file))
+				return;
 			if (singleDatabases.ContainsKey (file)) {
 				singleDatabases[file].Database.Unload ();
 				singleDatabases.Remove (file);
