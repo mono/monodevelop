@@ -113,9 +113,9 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
-		protected override bool CanEvaluate ()
+		protected override bool CanEvaluate (EvaluationOptions options)
 		{
-			return Context.Options.AllowTargetInvoke;
+			return options.AllowTargetInvoke;
 		}
 	}
 }
