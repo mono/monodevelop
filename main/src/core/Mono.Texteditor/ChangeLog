@@ -1,6 +1,13 @@
 2010-05-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorContainer.cs: Fixed mac drawing
+	  bug & added v/hscroll events in the text editor widget.
+
+2010-05-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/IAnimationDrawer.cs: Speed up the animation
 	  process.
 

@@ -50,6 +50,20 @@ namespace Mono.TextEditor
 			AddTopLevelWidget (textEditorWidget, 0, 0);
 			stage.ActorStep += OnActorStep;
 			ShowAll ();
+			
+			// bug on mac: search widget gets overdrawn in the scroll event.
+			if (Platform.IsMac) {
+				textEditorWidget.VScroll += delegate {
+					for (int i = 1; i < containerChildren.Count; i++) {
+						containerChildren[i].Child.QueueDraw ();
+					}
+				};
+				textEditorWidget.HScroll += delegate {
+					for (int i = 1; i < containerChildren.Count; i++) {
+						containerChildren[i].Child.QueueDraw ();
+					}
+				};
+			}
 		}
 		
 		public class EditorContainerChild : Container.ContainerChild

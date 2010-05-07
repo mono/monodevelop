@@ -152,6 +152,7 @@ namespace Mono.TextEditor
 				UpdateBracketHighlighting (this, EventArgs.Empty);
 			};
 			Caret.PositionChanged += UpdateBracketHighlighting;
+			textEditor.VScroll += HandleVAdjustmentValueChanged;
 		}
 		
 		void TextEditorDocumentLineChanged (object sender, LineEventArgs e)
@@ -160,7 +161,7 @@ namespace Mono.TextEditor
 		}
 		
 		List<LineSegment> linesToRemove = new List<LineSegment> ();
-		internal void VAdjustmentValueChanged ()
+		void HandleVAdjustmentValueChanged (object sender, EventArgs e)
 		{
 			int startLine = (int)(textEditor.GetTextEditorData ().VAdjustment.Value / lineHeight);
 			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / lineHeight) + 1;
@@ -487,6 +488,7 @@ namespace Mono.TextEditor
 			lock (lockObject) {
 				if (caretTimer != null) {
 					StopCaretThread ();
+					caretTimer.Elapsed -= UpdateCaret; 
 					caretTimer.Dispose ();
 					caretTimer = null;
 				}

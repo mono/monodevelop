@@ -186,6 +186,7 @@ namespace Mono.TextEditor
 				return;
 			
 			QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
+			OnHScroll (EventArgs.Empty);
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
@@ -205,15 +206,14 @@ namespace Mono.TextEditor
 
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
-			textViewMargin.VAdjustmentValueChanged ();
 			
 			int delta = (int)(this.textEditorData.VAdjustment.Value - this.oldVadjustment);
 			oldVadjustment = this.textEditorData.VAdjustment.Value;
 			TextViewMargin.caretY -= delta;
 			
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
-				TextViewMargin.VAdjustmentValueChanged ();
 				this.QueueDraw ();
+				OnVScroll (EventArgs.Empty);
 				return;
 			}
 			
@@ -225,8 +225,26 @@ namespace Mono.TextEditor
 				delta -= LineHeight;
 //				QueueDrawArea (0, 0, Allocation.Width, -delta);
 			}*/
-			TextViewMargin.VAdjustmentValueChanged ();
+			
+			OnVScroll (EventArgs.Empty);
 		}
+		
+		protected virtual void OnVScroll (EventArgs e)
+		{
+			EventHandler handler = this.VScroll;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		protected virtual void OnHScroll (EventArgs e)
+		{
+			EventHandler handler = this.HScroll;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler VScroll;
+		public event EventHandler HScroll;
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
