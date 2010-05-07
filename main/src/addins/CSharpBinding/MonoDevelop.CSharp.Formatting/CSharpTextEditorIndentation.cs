@@ -229,7 +229,7 @@ namespace MonoDevelop.CSharp.Formatting
 				} else if (TextEditorProperties.TabIsReindent && cursor >= 1) {
 					if (Editor.CursorColumn > 2) {
 						int delta = cursor - this.cursorPositionBeforeKeyPress;
-						if (delta < 2) {
+						if (delta < 2 && delta > 0) {
 							Editor.DeleteText (cursor - delta, delta);
 							Editor.CursorPosition = cursor - delta;
 						}
@@ -457,7 +457,6 @@ namespace MonoDevelop.CSharp.Formatting
 				// Possibly replace the indent
 				newIndent = ctx.ThisLineIndent;
 				int newIndentLength = newIndent.Length;
-				
 				if (newIndent != curIndent) {
 					if (CompletionWindowManager.IsVisible) {
 						if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
