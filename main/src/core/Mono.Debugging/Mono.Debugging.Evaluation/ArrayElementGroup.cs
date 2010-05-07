@@ -92,18 +92,19 @@ namespace Mono.Debugging.Evaluation
 			return res;
 		}
 
-		public ObjectValue[] GetChildren ()
+		public ObjectValue[] GetChildren (EvaluationOptions options)
 		{
-			return GetChildren (new ObjectPath ("this"), -1, -1);
+			return GetChildren (new ObjectPath ("this"), -1, -1, options);
 		}
 		
-		public ObjectValue[] GetChildren (ObjectPath path, int firstItemIndex, int count)
+		public ObjectValue[] GetChildren (ObjectPath path, int firstItemIndex, int count, EvaluationOptions options)
 		{
+			EvaluationContext cctx = ctx.WithOptions (options);
 			if (path.Length > 1) {
 				// Looking for children of an array element
 				int[] idx = StringToIndices (path [1]);
 				object obj = array.GetElement (idx);
-				return ctx.Adapter.GetObjectValueChildren (ctx, new ArrayObjectSource (array, path[1]), obj, firstItemIndex, count);
+				return cctx.Adapter.GetObjectValueChildren (cctx, new ArrayObjectSource (array, path[1]), obj, firstItemIndex, count);
 			}
 			
 			int lowerBound;
@@ -164,11 +165,11 @@ namespace Mono.Debugging.Evaluation
 					else {
 						curIndex [curIndex.Length - 1] = index;
 						object elem = array.GetElement (curIndex);
-						val = ctx.Adapter.CreateObjectValue (ctx, this, newPath.Append (sidx), elem, ObjectValueFlags.ArrayElement);
-						if (elem != null && !ctx.Adapter.IsNull (ctx, elem)) {
-							TypeDisplayData tdata = ctx.Adapter.GetTypeDisplayData (ctx, ctx.Adapter.GetValueType (ctx, elem));
+						val = cctx.Adapter.CreateObjectValue (cctx, this, newPath.Append (sidx), elem, ObjectValueFlags.ArrayElement);
+						if (elem != null && !cctx.Adapter.IsNull (cctx, elem)) {
+							TypeDisplayData tdata = cctx.Adapter.GetTypeDisplayData (cctx, cctx.Adapter.GetValueType (cctx, elem));
 							if (!string.IsNullOrEmpty (tdata.NameDisplayString))
-								ename = ctx.Adapter.EvaluateDisplayString (ctx, elem, tdata.NameDisplayString);
+								ename = cctx.Adapter.EvaluateDisplayString (cctx, elem, tdata.NameDisplayString);
 						}
 					}
 					val.Name = ename;
@@ -193,7 +194,7 @@ namespace Mono.Debugging.Evaluation
 					if (index > upperBound)
 						val = ObjectValue.CreateUnknown ("");
 					else {
-						ArrayElementGroup grp = new ArrayElementGroup (ctx, array, curIndex);
+						ArrayElementGroup grp = new ArrayElementGroup (cctx, array, curIndex);
 						val = grp.CreateObjectValue ();
 					}
 					list.Add (val);
@@ -215,7 +216,7 @@ namespace Mono.Debugging.Evaluation
 					int end = i + div - 1;
 					if (end > len)
 						end = len - 1;
-					ArrayElementGroup grp = new ArrayElementGroup (ctx, array, baseIndices, i, end);
+					ArrayElementGroup grp = new ArrayElementGroup (cctx, array, baseIndices, i, end);
 					list.Add (grp.CreateObjectValue ());
 					i += div;
 				}
@@ -294,7 +295,7 @@ namespace Mono.Debugging.Evaluation
 			
 			int[] idx = StringToIndices (path [1]);
 			object elem = array.GetElement (idx);
-			EvaluationContext cctx = ctx.Clone (options);
+			EvaluationContext cctx = ctx.WithOptions (options);
 			ObjectValue val = cctx.Adapter.CreateObjectValue (cctx, this, path, elem, ObjectValueFlags.ArrayElement);
 			if (elem != null && !cctx.Adapter.IsNull (cctx, elem)) {
 				TypeDisplayData tdata = cctx.Adapter.GetTypeDisplayData (cctx, cctx.Adapter.GetValueType (cctx, elem));
@@ -304,24 +305,26 @@ namespace Mono.Debugging.Evaluation
 			return val;
 		}
 		
-		public object GetRawValue (ObjectPath path)
+		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
 			if (path.Length != 2)
 				throw new NotSupportedException ();
 			
 			int[] idx = StringToIndices (path [1]);
 			object elem = array.GetElement (idx);
-			return ctx.Adapter.ToRawValue (ctx, new ArrayObjectSource (array, idx), elem);
+			EvaluationContext cctx = ctx.WithOptions (options);
+			return cctx.Adapter.ToRawValue (cctx, new ArrayObjectSource (array, idx), elem);
 		}
 		
-		public void SetRawValue (ObjectPath path, object value)
+		public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
 			if (path.Length != 2)
 				throw new NotSupportedException ();
 			
 			int[] idx = StringToIndices (path [1]);
 			
-			object val = ctx.Adapter.FromRawValue (ctx, value);
+			EvaluationContext cctx = ctx.WithOptions (options);
+			object val = cctx.Adapter.FromRawValue (cctx, value);
 			array.SetElement (idx, val);
 		}
 	}

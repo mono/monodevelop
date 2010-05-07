@@ -550,7 +550,7 @@ namespace Mono.Debugging.Evaluation
 		public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			ValueReference vref = (ValueReference) memberReferenceExpression.TargetObject.AcceptVisitor (this, data);
-			ValueReference ch = vref.GetChild (memberReferenceExpression.MemberName);
+			ValueReference ch = vref.GetChild (memberReferenceExpression.MemberName, ctx.Options);
 			if (ch == null)
 				throw CreateParseError ("Unknown member: {0}", memberReferenceExpression.MemberName);
 			return ch;

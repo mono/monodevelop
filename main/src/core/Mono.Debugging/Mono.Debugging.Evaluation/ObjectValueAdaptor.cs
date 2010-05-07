@@ -211,7 +211,7 @@ namespace Mono.Debugging.Evaluation
 		{
 			object longType = GetType (ctx, "System.Int64");
 			TypeValueReference tref = new TypeValueReference (ctx, type);
-			foreach (ValueReference cr in tref.GetChildReferences ()) {
+			foreach (ValueReference cr in tref.GetChildReferences (ctx.Options)) {
 				object c = TryCast (ctx, cr.Value, longType);
 				if (c == null)
 					continue;
@@ -328,7 +328,7 @@ namespace Mono.Debugging.Evaluation
 		{
 			if (IsArray (ctx, obj)) {
 				ArrayElementGroup agroup = new ArrayElementGroup (ctx, CreateArrayAdaptor (ctx, obj));
-				return agroup.GetChildren ();
+				return agroup.GetChildren (ctx.Options);
 			}
 
 			if (IsPrimitive (ctx, obj))
@@ -403,7 +403,7 @@ namespace Mono.Debugging.Evaluation
 					ObjectValue val = ObjectValue.CreateObject (null, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.ReadOnly, values.ToArray ());
 					values = new List<ObjectValue> ();
 					values.Add (val);
-					values.AddRange (agroup.GetChildren ());
+					values.AddRange (agroup.GetChildren (ctx.Options));
 				}
 				else {
 					if (ctx.Options.GroupStaticMembers && HasMembers (ctx, type, proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | flattenFlag)) {
@@ -518,7 +518,7 @@ namespace Mono.Debugging.Evaluation
 						vr = ctx.Evaluator.Evaluate (ctx, exp.Substring (i), null);
 						if (vr != null) {
 							CompletionData data = new CompletionData ();
-							foreach (ValueReference cv in vr.GetChildReferences ())
+							foreach (ValueReference cv in vr.GetChildReferences (ctx.Options))
 								data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
 							data.ExpressionLenght = 0;
 							return data;
@@ -928,7 +928,7 @@ namespace Mono.Debugging.Evaluation
 			try {
 				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp);
 				if (var != null) {
-					return var.CreateObjectValue ();
+					return var.CreateObjectValue (ctx.Options);
 				}
 				else
 					return ObjectValue.CreateUnknown (exp);

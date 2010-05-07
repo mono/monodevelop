@@ -54,7 +54,7 @@ namespace Mono.Debugging.Evaluation
 			if (thisVar != null) {
 				if (thisVar.Name == exp)
 					return thisVar;
-				foreach (ValueReference cv in thisVar.GetChildReferences ())
+				foreach (ValueReference cv in thisVar.GetChildReferences (ctx.Options))
 					if (cv.Name == exp)
 						return cv;
 			}

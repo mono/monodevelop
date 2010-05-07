@@ -79,18 +79,18 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		protected override ObjectValue OnCreateObjectValue ()
+		protected override ObjectValue OnCreateObjectValue (EvaluationOptions options)
 		{
-			string tn = Context.Adapter.GetTypeName (Context, Type);
+			string tn = Context.Adapter.GetTypeName (GetContext (options), Type);
 			return Mono.Debugging.Client.ObjectValue.CreateObject (null, new ObjectPath (Name), tn, "null", Flags, null);
 		}
 
-		public override ValueReference GetChild (string name)
+		public override ValueReference GetChild (string name, EvaluationOptions options)
 		{
 			return null;
 		}
 
-		public override ObjectValue[] GetChildren (Mono.Debugging.Client.ObjectPath path, int index, int count)
+		public override ObjectValue[] GetChildren (Mono.Debugging.Client.ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			return new ObjectValue [0];
 		}

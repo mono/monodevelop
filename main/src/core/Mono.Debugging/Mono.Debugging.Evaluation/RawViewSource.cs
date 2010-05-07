@@ -53,9 +53,10 @@ namespace Mono.Debugging.Evaluation
 			return val;
 		}
 		
-		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
-			return ctx.Adapter.GetObjectValueChildren (ctx, objectSource, ctx.Adapter.GetValueType (ctx, obj), obj, index, count, false);
+			EvaluationContext cctx = ctx.WithOptions (options);
+			return cctx.Adapter.GetObjectValueChildren (cctx, objectSource, cctx.Adapter.GetValueType (cctx, obj), obj, index, count, false);
 		}
 		
 		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
@@ -68,12 +69,12 @@ namespace Mono.Debugging.Evaluation
 			throw new NotSupportedException ();
 		}
 		
-		public void SetRawValue (ObjectPath path, object value)
+		public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
 			throw new System.NotImplementedException ();
 		}
 		
-		public object GetRawValue (ObjectPath path)
+		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
 			throw new System.NotImplementedException ();
 		}

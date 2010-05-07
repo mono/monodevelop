@@ -106,14 +106,14 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		protected override ObjectValue OnCreateObjectValue ( )
+		protected override ObjectValue OnCreateObjectValue (EvaluationOptions options)
 		{
 			if (ObjectValue is EvaluationResult) {
 				EvaluationResult exp = (EvaluationResult) ObjectValue;
 				return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "", exp, Flags, null);
 			}
 			else
-				return base.OnCreateObjectValue ();
+				return base.OnCreateObjectValue (options);
 		}
 	}
 }

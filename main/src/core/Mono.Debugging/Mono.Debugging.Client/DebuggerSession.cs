@@ -551,6 +551,7 @@ namespace Mono.Debugging.Client
 
 		public EvaluationOptions EvaluationOptions {
 			get { return options.EvaluationOptions; }
+			set { options.EvaluationOptions = value; }
 		}
 
 		public void Continue ()

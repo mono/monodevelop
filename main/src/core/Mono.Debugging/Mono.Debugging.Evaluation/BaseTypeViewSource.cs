@@ -56,9 +56,10 @@ namespace Mono.Debugging.Evaluation
 		}
 		
 		#region IObjectValueSource implementation
-		public ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
-			return ctx.Adapter.GetObjectValueChildren (ctx, objectSource, type, obj, index, count, false);
+			EvaluationContext cctx = ctx.WithOptions (options);
+			return cctx.Adapter.GetObjectValueChildren (cctx, objectSource, type, obj, index, count, false);
 		}
 		
 		
@@ -73,12 +74,12 @@ namespace Mono.Debugging.Evaluation
 			throw new NotSupportedException();
 		}
 		
-		public object GetRawValue (ObjectPath path)
+		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
 			throw new System.NotImplementedException ();
 		}
 		
-		public void SetRawValue (ObjectPath path, object value)
+		public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
 			throw new System.NotImplementedException ();
 		}

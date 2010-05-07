@@ -72,6 +72,11 @@ namespace Mono.Debugging.Evaluation
 				return ctx;
 			}
 		}
+		
+		public EvaluationContext GetContext (EvaluationOptions options)
+		{
+			return ctx.WithOptions (options);
+		}
 
 		public ObjectValue CreateObjectValue (bool withTimeout)
 		{
@@ -80,34 +85,29 @@ namespace Mono.Debugging.Evaluation
 		
 		public ObjectValue CreateObjectValue (bool withTimeout, EvaluationOptions options)
 		{
-			EvaluationContext oldCtx = ctx;
-			ctx = ctx.Clone (options);
-			try {
-				if (!CanEvaluate ())
-					return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
-				if (withTimeout) {
-					return ctx.Adapter.CreateObjectValueAsync (Name, Flags, delegate {
-						return CreateObjectValue ();
-					});
-				} else
-					return CreateObjectValue ();
-			} finally {
-				ctx = oldCtx;
-			}
+			if (!CanEvaluate (options))
+				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (GetContext (options), Type), Flags);
+			if (withTimeout) {
+				options = options.Clone ();
+				return ctx.Adapter.CreateObjectValueAsync (Name, Flags, delegate {
+					return CreateObjectValue (options);
+				});
+			} else
+				return CreateObjectValue (options);
 		}
 		
-		public ObjectValue CreateObjectValue ()
+		public ObjectValue CreateObjectValue (EvaluationOptions options)
 		{
-			if (!CanEvaluate ())
-				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
+			if (!CanEvaluate (options))
+				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (GetContext (options), Type), Flags);
 			
 			Connect ();
 			try {
-				return OnCreateObjectValue ();
+				return OnCreateObjectValue (options);
 			} catch (ImplicitEvaluationDisabledException) {
-				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (Context, Type), Flags);
+				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (GetContext (options), Type), Flags);
 			} catch (NotSupportedExpressionException ex) {
-				return DC.ObjectValue.CreateNotSupported (this, new ObjectPath (Name), ex.Message, ctx.Adapter.GetTypeName (Context, Type), Flags);
+				return DC.ObjectValue.CreateNotSupported (this, new ObjectPath (Name), ex.Message, ctx.Adapter.GetTypeName (GetContext (options), Type), Flags);
 			} catch (EvaluatorException ex) {
 				return DC.ObjectValue.CreateError (this, new ObjectPath (Name), "", ex.Message, Flags);
 			} catch (Exception ex) {
@@ -116,42 +116,39 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 		
-		protected virtual bool CanEvaluate ()
+		protected virtual bool CanEvaluate (EvaluationOptions options)
 		{
 			return true;
 		}
 		
-		protected virtual ObjectValue OnCreateObjectValue ()
+		protected virtual ObjectValue OnCreateObjectValue (EvaluationOptions options)
 		{
 			string name = Name;
 			if (string.IsNullOrEmpty (name))
 				name = "?";
 			
+			EvaluationContext newCtx = GetContext (options);
 			object val = Value;
 			if (val != null)
-				return ctx.Adapter.CreateObjectValue (ctx, this, new ObjectPath (name), val, Flags);
+				return newCtx.Adapter.CreateObjectValue (newCtx, this, new ObjectPath (name), val, Flags);
 			else
-				return Mono.Debugging.Client.ObjectValue.CreateNullObject (this, name, ctx.Adapter.GetTypeName (Context, Type), Flags);
+				return Mono.Debugging.Client.ObjectValue.CreateNullObject (this, name, newCtx.Adapter.GetTypeName (newCtx, Type), Flags);
 		}
 
 		ObjectValue IObjectValueSource.GetValue (ObjectPath path, EvaluationOptions options)
 		{
-			ctx = ctx.Clone ();
-			ctx.Options = options;
-			return CreateObjectValue (true);
+			return CreateObjectValue (true, options);
 		}
 		
 		EvaluationResult IObjectValueSource.SetValue (ObjectPath path, string value, EvaluationOptions options)
 		{
 			try {
 				ctx.WaitRuntimeInvokes ();
-				EvaluationContext cctx = ctx.Clone ();
-				EvaluationOptions ops = options ?? cctx.Options;
-				ops.AllowMethodEvaluation = true;
-				ops.AllowTargetInvoke = true;
-				cctx.Options = ops;
-				ValueReference vref = ctx.Evaluator.Evaluate (ctx, value, Type);
-				object newValue = ctx.Adapter.Convert (ctx, vref.Value, Type);
+				EvaluationContext cctx = GetContext (options);
+				cctx.Options.AllowMethodEvaluation = true;
+				cctx.Options.AllowTargetInvoke = true;
+				ValueReference vref = cctx.Evaluator.Evaluate (cctx, value, Type);
+				object newValue = cctx.Adapter.Convert (cctx, vref.Value, Type);
 				Value = newValue;
 			} catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
@@ -168,19 +165,19 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 		
-		object IObjectValueSource.GetRawValue (ObjectPath path)
+		object IObjectValueSource.GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
-			return ctx.Adapter.ToRawValue (ctx, this, Value);
+			return ctx.Adapter.ToRawValue (GetContext (options), this, Value);
 		}
 
-		void IObjectValueSource.SetRawValue (ObjectPath path, object value)
+		void IObjectValueSource.SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
-			Value = ctx.Adapter.FromRawValue (ctx, value);
+			Value = ctx.Adapter.FromRawValue (GetContext (options), value);
 		}
 
-		ObjectValue[] IObjectValueSource.GetChildren (ObjectPath path, int index, int count)
+		ObjectValue[] IObjectValueSource.GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
-			return GetChildren (path, index, count);
+			return GetChildren (path, index, count, options);
 		}
 		
 		public virtual string CallToString ( )
@@ -188,22 +185,22 @@ namespace Mono.Debugging.Evaluation
 			return ctx.Adapter.CallToString (ctx, Value);
 		}
 
-		public virtual ObjectValue[] GetChildren (ObjectPath path, int index, int count)
+		public virtual ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			try {
-				return ctx.Adapter.GetObjectValueChildren (GetChildrenContext (), this, Value, index, count);
+				return ctx.Adapter.GetObjectValueChildren (GetChildrenContext (options), this, Value, index, count);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				return new ObjectValue [] { Mono.Debugging.Client.ObjectValue.CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly) };
 			}
 		}
 
-		public virtual IEnumerable<ValueReference> GetChildReferences ( )
+		public virtual IEnumerable<ValueReference> GetChildReferences (EvaluationOptions options)
 		{
 			try {
 				object val = Value;
 				if (ctx.Adapter.IsClassInstance (Context, val))
-					return ctx.Adapter.GetMembersSorted (GetChildrenContext (), this, ctx.Adapter.GetValueType (Context, val), val);
+					return ctx.Adapter.GetMembersSorted (GetChildrenContext (options), this, ctx.Adapter.GetValueType (Context, val), val);
 			} catch {
 				// Ignore
 			}
@@ -212,28 +209,28 @@ namespace Mono.Debugging.Evaluation
 		
 		public IObjectSource ParentSource { get; internal set; }
 
-		EvaluationContext GetChildrenContext ( )
+		EvaluationContext GetChildrenContext (EvaluationOptions options)
 		{
-			EvaluationContext newCtx = Context.Clone ();
-			EvaluationOptions ops = originalOptions;
-			ops.EvaluationTimeout = originalOptions.MemberEvaluationTimeout;
-			newCtx.Options = ops;
+			EvaluationContext newCtx = ctx.Clone ();
+			if (options != null)
+				newCtx.Options = options;
+			newCtx.Options.EvaluationTimeout = originalOptions.MemberEvaluationTimeout;
 			return newCtx;
 		}
 
-		public virtual ValueReference GetChild (ObjectPath vpath)
+		public virtual ValueReference GetChild (ObjectPath vpath, EvaluationOptions options)
 		{
 			if (vpath.Length == 0)
 				return this;
 
-			ValueReference val = GetChild (vpath[0]);
+			ValueReference val = GetChild (vpath[0], options);
 			if (val != null)
-				return val.GetChild (vpath.GetSubpath (1));
+				return val.GetChild (vpath.GetSubpath (1), options);
 			else
 				return null;
 		}
 
-		public virtual ValueReference GetChild (string name)
+		public virtual ValueReference GetChild (string name, EvaluationOptions options)
 		{
 			object obj = Value;
 			
@@ -251,7 +248,7 @@ namespace Mono.Debugging.Evaluation
 			}
 			
 			if (ctx.Adapter.IsClassInstance (Context, obj)) {
-				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (), this, obj, name);
+				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (options), this, obj, name);
 				return val;
 			}
 					

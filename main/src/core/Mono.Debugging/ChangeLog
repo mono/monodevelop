@@ -1,3 +1,29 @@
+2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/StackFrame.cs:
+	* Mono.Debugging.Client/ObjectValue.cs:
+	* Mono.Debugging.Client/DebuggerSession.cs:
+	* Mono.Debugging.Evaluation/RawViewSource.cs:
+	* Mono.Debugging.Evaluation/ValueReference.cs:
+	* Mono.Debugging.Backend/IObjectValueSource.cs:
+	* Mono.Debugging.Evaluation/EvaluationContext.cs:
+	* Mono.Debugging.Evaluation/ArrayElementGroup.cs:
+	* Mono.Debugging.Evaluation/TypeValueReference.cs:
+	* Mono.Debugging.Evaluation/NullValueReference.cs:
+	* Mono.Debugging.Evaluation/BaseTypeViewSource.cs:
+	* Mono.Debugging.Evaluation/ObjectValueAdaptor.cs:
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs:
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs:
+	* Mono.Debugging.Evaluation/LiteralValueReference.cs:
+	* Mono.Debugging.Evaluation/FilteredMembersSource.cs:
+	* Mono.Debugging.Evaluation/NamespaceValueReference.cs: Added
+	  an EvaluationOptions argument to all methods in
+	  IObjectValueSource. With this change options are not cached
+	  anymore in ValueReference objects. This fixes bug #602894
+	  and allows MD to change the evaluation options in the middle
+	  of a debugging session.
+
 2010-05-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/BaseBacktrace.cs: Use async

@@ -82,7 +82,7 @@ namespace Mono.Debugging.Client
 		public ObjectValue[] GetLocalVariables (EvaluationOptions options)
 		{
 			ObjectValue[] values = sourceBacktrace.GetLocalVariables (index, options);
-			ObjectValue.ConnectCallbacks (values);
+			ObjectValue.ConnectCallbacks (this, values);
 			return values;
 		}
 		
@@ -94,7 +94,7 @@ namespace Mono.Debugging.Client
 		public ObjectValue[] GetParameters (EvaluationOptions options)
 		{
 			ObjectValue[] values = sourceBacktrace.GetParameters (index, options);
-			ObjectValue.ConnectCallbacks (values);
+			ObjectValue.ConnectCallbacks (this, values);
 			return values;
 		}
 		
@@ -110,7 +110,7 @@ namespace Mono.Debugging.Client
 		public ObjectValue[] GetAllLocals (EvaluationOptions options)
 		{
 			ObjectValue[] values = sourceBacktrace.GetAllLocals (index, options);
-			ObjectValue.ConnectCallbacks (values);
+			ObjectValue.ConnectCallbacks (this, values);
 			return values;
 		}
 		
@@ -122,7 +122,7 @@ namespace Mono.Debugging.Client
 		public ObjectValue GetThisReference (EvaluationOptions options)
 		{
 			ObjectValue value = sourceBacktrace.GetThisReference (index, options);
-			ObjectValue.ConnectCallbacks (value);
+			ObjectValue.ConnectCallbacks (this, value);
 			return value;
 		}
 		
@@ -135,7 +135,7 @@ namespace Mono.Debugging.Client
 		{
 			ObjectValue value = sourceBacktrace.GetException (index, options);
 			if (value != null)
-				ObjectValue.ConnectCallbacks (value);
+				ObjectValue.ConnectCallbacks (this, value);
 			return value;
 		}
 		
@@ -160,7 +160,7 @@ namespace Mono.Debugging.Client
 				expressions = resolved;
 			}
 			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, expressions, options);
-			ObjectValue.ConnectCallbacks (values);
+			ObjectValue.ConnectCallbacks (this, values);
 			return values;
 		}
 		
@@ -176,7 +176,7 @@ namespace Mono.Debugging.Client
 			if (options.UseExternalTypeResolver)
 				expression = ResolveExpression (expression);
 			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, options);
-			ObjectValue.ConnectCallbacks (values);
+			ObjectValue.ConnectCallbacks (this, values);
 			return values [0];
 		}
 		

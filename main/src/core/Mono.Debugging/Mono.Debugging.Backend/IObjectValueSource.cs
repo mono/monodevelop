@@ -32,12 +32,12 @@ namespace Mono.Debugging.Backend
 {
 	public interface IObjectValueSource
 	{
-		ObjectValue[] GetChildren (ObjectPath path, int index, int count);
+		ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options);
 		EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options);
 		ObjectValue GetValue (ObjectPath path, EvaluationOptions options);
 		
-		object GetRawValue (ObjectPath path);
-		void SetRawValue (ObjectPath path, object value);
+		object GetRawValue (ObjectPath path, EvaluationOptions options);
+		void SetRawValue (ObjectPath path, object value, EvaluationOptions options);
 	}
 	
 	public interface IRawValue

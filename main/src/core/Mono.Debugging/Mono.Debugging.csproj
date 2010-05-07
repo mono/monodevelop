@@ -46,7 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mono.Debugging.Client\IExpressionEvaluator.cs" />  
+    <Compile Include="Mono.Debugging.Client\IExpressionEvaluator.cs" />
     <Compile Include="Mono.Debugging.Client\Breakpoint.cs" />
     <Compile Include="Mono.Debugging.Client\DebuggerSession.cs" />
     <Compile Include="Mono.Debugging.Client\Backtrace.cs" />
