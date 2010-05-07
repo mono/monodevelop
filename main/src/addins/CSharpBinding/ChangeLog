@@ -1,5 +1,11 @@
 2010-05-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 603733 - Pressing '!' with the autocomplete
+	  window open breaks'.
+
+2010-05-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
 	  speed up the findmemberastvisitor.
 

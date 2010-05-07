@@ -1105,6 +1105,40 @@ namespace MonoDevelop.CSharp.Completion
 					
 					CodeCompletionContext ctx = window.CodeCompletionContext;
 					int offset = ctx.TriggerOffset;
+					
+					while (offset > 0) {
+						char ch = window.CompletionWidget.GetChar (offset - 1);
+						if (ch != '.') 
+							break;
+						offset--;
+						while (offset > 0) {
+							ch = window.CompletionWidget.GetChar (offset - 1);
+							if (ch != '_' && !Char.IsLetterOrDigit (ch))
+								break;
+							offset--;
+						}
+					}
+					
+					keyAction = KeyActions.CloseWindow | KeyActions.Ignore | KeyActions.Complete;
+					window.CompletionWidget.Replace (offset, 0, "!");
+					
+					ctx.TriggerOffset++;
+					ctx.TriggerLineOffset++;
+					
+					return true;
+				}
+				/*
+				public bool ProcessKey (CompletionListWindow window, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction)
+				{
+					if (keyChar != '!') {
+						keyAction = KeyActions.None;
+						return false;
+					}
+					
+					keyAction = KeyActions.CloseWindow;
+					
+					CodeCompletionContext ctx = window.CodeCompletionContext;
+					int offset = ctx.TriggerOffset;
 					while (offset > 0) {
 						char ch = window.CompletionWidget.GetChar (offset);
 						if (ch != '.' && ch != '_' && !Char.IsLetterOrDigit (ch)) {
@@ -1118,7 +1152,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					
 					return true;
-				}
+				}*/
 				
 			}
 			public CompletionDataCollector (CompletionDataList completionList, ICompilationUnit unit, DomLocation location)
