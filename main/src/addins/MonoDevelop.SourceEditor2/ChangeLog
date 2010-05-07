@@ -1,3 +1,8 @@
+2010-05-07  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Check for
+	  empty and null.
+
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Make use
