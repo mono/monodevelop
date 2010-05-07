@@ -470,11 +470,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return idx;
 			}
 			
-			if (string.IsNullOrEmpty (partialWord) || partialWord.Length >= 2) {
+			if (string.IsNullOrEmpty (partialWord) || partialWord.Length <= 2) {
 				// Search for history matches.
 				for (int i = 0; i < wordHistory.Count; i++) {
 					string historyWord = wordHistory[i];
-					
 					if (ListWidget.Matches (partialWord, historyWord)) {
 						for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
 							string currentWord = DataProvider.GetCompletionText (list.filteredItems[xIndex]);
