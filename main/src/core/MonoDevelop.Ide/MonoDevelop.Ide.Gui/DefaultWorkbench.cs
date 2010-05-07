@@ -338,7 +338,8 @@ namespace MonoDevelop.Ide.Gui
 				List<IViewContent> fullList = new List<IViewContent>(viewContentCollection);
 				foreach (IViewContent content in fullList) {
 					IWorkbenchWindow window = content.WorkbenchWindow;
-					window.CloseWindow(true, true, 0);
+					if (window != null)
+						window.CloseWindow(true, true, 0);
 				}
 			} finally {
 				closeAll = false;
