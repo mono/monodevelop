@@ -1,5 +1,11 @@
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Client/StackFrame.cs: Added HasDebugInfo
+	  argument. When set to true, the stack frame won't try to get
+	  any information from the underlaying frame.
+
+2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Fix
 	  support for variable definition. Implement support for
 	  pre/post increment/decrement.

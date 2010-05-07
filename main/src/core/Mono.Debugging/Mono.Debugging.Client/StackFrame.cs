@@ -13,20 +13,22 @@ namespace Mono.Debugging.Client
 		string language;
 		int index;
 		bool isExternalCode;
+		bool hasDebugInfo;
 		
 		[NonSerialized]
 		DebuggerSession session;
 
-		public StackFrame (long address, SourceLocation location, string language, bool isExternalCode)
+		public StackFrame (long address, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo)
 		{
 			this.address = address;
 			this.location = location;
 			this.language = language;
 			this.isExternalCode = isExternalCode;
+			this.hasDebugInfo = hasDebugInfo;
 		}
 		
 		public StackFrame (long address, SourceLocation location, string language)
-			: this (address, location, language, string.IsNullOrEmpty (location.Filename))
+			: this (address, location, language, string.IsNullOrEmpty (location.Filename), true)
 		{
 		}
 
@@ -74,6 +76,10 @@ namespace Mono.Debugging.Client
 			get { return isExternalCode; }
 		}
 		
+		public bool HasDebugInfo {
+			get { return this.hasDebugInfo; }
+		}
+		
 		public ObjectValue[] GetLocalVariables ()
 		{
 			return GetLocalVariables (session.EvaluationOptions);
@@ -81,6 +87,8 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetLocalVariables (EvaluationOptions options)
 		{
+			if (!hasDebugInfo)
+				return new ObjectValue [0];
 			ObjectValue[] values = sourceBacktrace.GetLocalVariables (index, options);
 			ObjectValue.ConnectCallbacks (this, values);
 			return values;
@@ -93,6 +101,8 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetParameters (EvaluationOptions options)
 		{
+			if (!hasDebugInfo)
+				return new ObjectValue [0];
 			ObjectValue[] values = sourceBacktrace.GetParameters (index, options);
 			ObjectValue.ConnectCallbacks (this, values);
 			return values;
@@ -100,15 +110,18 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetAllLocals ()
 		{
+			if (!hasDebugInfo)
+				return new ObjectValue [0];
 			IExpressionEvaluator evaluator = session.FindExpressionEvaluator (this);
 			if (evaluator != null)
 				return evaluator.GetLocals (this);
-
 			return GetAllLocals (session.EvaluationOptions);
 		}
 		
 		public ObjectValue[] GetAllLocals (EvaluationOptions options)
 		{
+			if (!hasDebugInfo)
+				return new ObjectValue [0];
 			ObjectValue[] values = sourceBacktrace.GetAllLocals (index, options);
 			ObjectValue.ConnectCallbacks (this, values);
 			return values;
@@ -121,6 +134,8 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue GetThisReference (EvaluationOptions options)
 		{
+			if (!hasDebugInfo)
+				return null;
 			ObjectValue value = sourceBacktrace.GetThisReference (index, options);
 			ObjectValue.ConnectCallbacks (this, value);
 			return value;
@@ -133,6 +148,8 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue GetException (EvaluationOptions options)
 		{
+			if (!hasDebugInfo)
+				return null;
 			ObjectValue value = sourceBacktrace.GetException (index, options);
 			if (value != null)
 				ObjectValue.ConnectCallbacks (this, value);
@@ -153,6 +170,12 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue[] GetExpressionValues (string[] expressions, EvaluationOptions options)
 		{
+			if (!hasDebugInfo) {
+				ObjectValue[] vals = new ObjectValue [expressions.Length];
+				for (int n=0; n<expressions.Length; n++)
+					vals [n] = ObjectValue.CreateUnknown (expressions [n]);
+				return vals;
+			}
 			if (options.UseExternalTypeResolver) {
 				string[] resolved = new string [expressions.Length];
 				for (int n=0; n<expressions.Length; n++)
@@ -173,6 +196,8 @@ namespace Mono.Debugging.Client
 		
 		public ObjectValue GetExpressionValue (string expression, EvaluationOptions options)
 		{
+			if (!hasDebugInfo)
+				return ObjectValue.CreateUnknown (expression);
 			if (options.UseExternalTypeResolver)
 				expression = ResolveExpression (expression);
 			ObjectValue[] values = sourceBacktrace.GetExpressionValues (index, new string[] { expression }, options);
@@ -200,6 +225,8 @@ namespace Mono.Debugging.Client
 		
 		public CompletionData GetExpressionCompletionData (string exp)
 		{
+			if (!hasDebugInfo)
+				return null;
 			return sourceBacktrace.GetExpressionCompletionData (index, exp);
 		}
 		
