@@ -505,11 +505,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			while (lvWidth == 0)
 				this.GdkWindow.GetSize (out lvWidth, out lvHeight);
 			
-			if (vert >= listpos_y + lvHeight - 2) {
+			if (vert >= listpos_y + lvHeight - 2 || vert < listpos_y) {
+				HideDeclarationView ();
+				return false;
+			}
+			
+/*			if (vert >= listpos_y + lvHeight - 2) {
 				vert = listpos_y + lvHeight - rect.Height;
 			} else if (vert < listpos_y) {
 				vert = listpos_y;
-			}
+			}*/
 			
 			if (declarationViewHidden) {
 				declarationviewwindow.Move (this.Screen.Width + 1, vert);
