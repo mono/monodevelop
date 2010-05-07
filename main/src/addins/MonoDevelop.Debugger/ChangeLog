@@ -1,3 +1,12 @@
+2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/ObjectValuePad.cs:
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger.Visualizer/TextVisualizer.cs:
+	* MonoDevelop.Debugger.Visualizer/PixbufVisualizer.cs: Track
+	  api changes. When evaluation options change, update the
+	  value pads.
+
 2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:

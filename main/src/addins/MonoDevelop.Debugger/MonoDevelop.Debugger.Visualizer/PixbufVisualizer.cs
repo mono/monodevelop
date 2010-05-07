@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			Gdk.Pixbuf pixbuf;
 			string file = Path.GetTempFileName ();
 			try {
-				RawValue pix = (RawValue) val.RawValue;
+				RawValue pix = (RawValue) val.GetRawValue ();
 				pix.CallMethod ("Save", file, "png");
 				pixbuf = new Gdk.Pixbuf (file);
 			} finally {

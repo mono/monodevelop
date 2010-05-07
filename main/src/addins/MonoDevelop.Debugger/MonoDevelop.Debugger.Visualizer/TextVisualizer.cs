@@ -55,7 +55,7 @@ namespace MonoDevelop.Debugger.Visualizer
 		{
 			VBox box = new VBox (false, 6);
 			textView = new TextView ();
-			textView.Buffer.Text = val.RawValue as string;
+			textView.Buffer.Text = val.GetRawValue () as string;
 			textView.WrapMode = WrapMode.Char;
 			Gtk.ScrolledWindow scrolled = new Gtk.ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
@@ -78,7 +78,7 @@ namespace MonoDevelop.Debugger.Visualizer
 		
 		public bool StoreValue (ObjectValue val)
 		{
-			val.RawValue = textView.Buffer.Text;
+			val.SetRawValue (textView.Buffer.Text);
 			return true;
 		}
 	}

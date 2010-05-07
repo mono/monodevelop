@@ -81,6 +81,8 @@ namespace MonoDevelop.Debugger
 		static public event EventHandler DisassemblyRequested;
 		static public event EventHandler<DocumentEventArgs> DisableConditionalCompilation;
 			
+		static public event EventHandler EvaluationOptionsChanged;
+		
 		static DebuggingService()
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
@@ -394,6 +396,12 @@ namespace MonoDevelop.Debugger
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.FlattenHierarchy", options.EvaluationOptions.FlattenHierarchy);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", options.EvaluationOptions.GroupPrivateMembers);
 			PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", options.EvaluationOptions.GroupStaticMembers);
+			
+			if (session != null) {
+				session.Options.EvaluationOptions = GetUserOptions ().EvaluationOptions;
+				if (EvaluationOptionsChanged != null)
+					EvaluationOptionsChanged (null, EventArgs.Empty);
+			}
 		}
 		
 		public static void ShowDisassembly ()
