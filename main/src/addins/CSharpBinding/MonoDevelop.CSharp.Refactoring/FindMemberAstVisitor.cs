@@ -154,11 +154,14 @@ namespace MonoDevelop.CSharp.Refactoring
 		static readonly Regex seeRegex       = new Regex ("\\<see\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 		static readonly Regex seeAlsoRegRegex = new Regex ("\\<seealso\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 
+		Mono.TextEditor.Document text;
+		
 		public void RunVisitor ()
 		{
 			if (searchedMember == null)
 				return;
-			string text = file.Text;
+			text = new Mono.TextEditor.Document ();
+			text.Text = file.Text;
 			
 			// search if the member name exists in the file (otherwise it doesn't make sense to search it)
 			FindReplace findReplace = new FindReplace ();
@@ -167,13 +170,13 @@ namespace MonoDevelop.CSharp.Refactoring
 				WholeWordsOnly = true
 			};
 			findReplace.CompilePattern (searchedMemberName, filterOptions);
-			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text, searchedMemberName, null, filterOptions);
+			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text.Text, searchedMemberName, null, filterOptions);
 			if (result == null || !result.Any ()) {
 				return;
 			}
 			
 			// It exists -> now looking with the parser
-			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (text));
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (text.Text));
 			parser.Lexer.EvaluateConditionalCompilation = true;
 			parser.Parse ();
 			resolver.SetupParsedCompilationUnit (parser.CompilationUnit);
@@ -239,7 +242,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (searchedMember == null)
 				return;
-			string text = file.Text;
+			text = new Mono.TextEditor.Document ();
+			text.Text = file.Text;
 			
 			// search if the member name exists in the file (otherwise it doesn't make sense to search it)
 			FindReplace findReplace = new FindReplace ();
@@ -248,7 +252,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				WholeWordsOnly = true
 			};
 			findReplace.CompilePattern (searchedMemberName, filterOptions);
-			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text, searchedMemberName, null, filterOptions);
+			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text.Text, searchedMemberName, null, filterOptions);
 			if (result == null || !result.Any ()) {
 				return;
 			}
@@ -327,10 +331,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		MemberReference CreateReference (int line, int col, string name)
 		{
-			int pos = file.GetPositionFromLineColumn (line, col);
-			int spos = file.GetPositionFromLineColumn (line, 1);
-			int epos = file.GetPositionFromLineColumn (line + 1, 1);
-			if (epos == -1) epos = file.Length - 1;
+			int pos = text.LocationToOffset (line - 1, col - 1);
+			int spos = text.LocationToOffset (line - 1, 0);
+			int epos = text.LocationToOffset (line, 0);
+			if (epos == -1) epos = text.Length - 1;
 			
 			string txt;
 			
@@ -342,12 +346,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			// update @pos to point to the actual identifier and not the 
 			// public/private/whatever modifier.
 			int i;
-			txt = file.GetText (pos, file.Length - 1);
+			txt = text.GetTextBetween (pos, text.Length - 1);
 			if (txt != null && (i = txt.IndexOf (name)) > 0)
 				pos += i;
 			
 			if (spos != -1)
-				txt = file.GetText (spos, epos - 1);
+				txt = text.GetTextBetween (spos, epos - 1);
 			else
 				txt = null;
 			
@@ -394,18 +398,20 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		bool SearchText (string text, int startLine, int startColumn, out int line, out int column)
 		{
-			int position = file.GetPositionFromLineColumn (startLine, startColumn);
+			int position = this.text.LocationToOffset (startLine - 1, startColumn - 1);
 			line = column = -1;
 			if (position < 0)
 				return false;
 			
-			while (position + searchedMemberName.Length < file.Length) {
-				bool isIdentifierStart = position <= 0 || !IsIdentifierPart (file.GetCharAt (position - 1));
+			while (position + searchedMemberName.Length < this.text.Length) {
+				bool isIdentifierStart = position <= 0 || !IsIdentifierPart (this.text.GetCharAt (position - 1));
 				
-				if (isIdentifierStart && 
-				    (position + searchedMemberName.Length >= file.Length  || !IsIdentifierPart (file.GetCharAt (position + searchedMemberName.Length))) &&
-				    file.GetText (position, position + searchedMemberName.Length) == searchedMemberName) {
-					file.GetLineColumnFromPosition (position, out line, out column);
+				if (isIdentifierStart &&
+				    (position + searchedMemberName.Length >= this.text.Length  || !IsIdentifierPart (this.text.GetCharAt (position + searchedMemberName.Length))) &&
+				    (this.text.GetTextAt (position, searchedMemberName.Length) == searchedMemberName)) { 
+					var location = this.text.OffsetToLocation (position);
+					line = location.Line + 1;
+					column = location.Column + 1;
 					return true;
 				}
 				position ++;
@@ -415,11 +421,11 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		bool IsSearchTextAt (int startLine, int startColumn)
 		{
-			int position = file.GetPositionFromLineColumn (startLine, startColumn);
+			int position = this.text.LocationToOffset (startLine - 1, startColumn - 1);
 			
-			if ((position == 0 || !IsIdentifierPart (file.GetCharAt (position - 1))) && 
-			    (position + searchedMemberName.Length >= file.Length  || !IsIdentifierPart (file.GetCharAt (position + searchedMemberName.Length))) &&
-			    file.GetText (position, position + searchedMemberName.Length) == searchedMemberName) {
+			if ((position == 0 || !IsIdentifierPart (this.text.GetCharAt (position - 1))) && 
+			    (position + searchedMemberName.Length >= this.text.Length  || !IsIdentifierPart (this.text.GetCharAt (position + searchedMemberName.Length))) &&
+			    this.text.GetTextAt (position, searchedMemberName.Length) == searchedMemberName) {
 				return true;
 			}
 			return false;
@@ -699,9 +705,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				IType cls = resolveResult != null ? resolver.Dom.GetType (resolveResult.ResolvedType) : null;
 				if (cls != null) {
-					int pos = file.GetPositionFromLineColumn (fieldExp.StartLocation.Y, fieldExp.StartLocation.X);
-					int endpos = file.GetPositionFromLineColumn (fieldExp.EndLocation.Y, fieldExp.EndLocation.X);
-					string txt = file.GetText (pos, endpos);
+					int pos = text.LocationToOffset (fieldExp.StartLocation.Y - 1, fieldExp.StartLocation.X - 1);
+					int endpos = text.LocationToOffset (fieldExp.EndLocation.Y - 1, fieldExp.EndLocation.X - 1);
+					string txt = text.GetTextBetween (pos, endpos);
 					if (txt == searchedMemberName) {
 						int line, column;
 						if (!SearchText (searchedMemberName, fieldExp.StartLocation.Line, fieldExp.StartLocation.Column, out line, out column)) {
