@@ -98,9 +98,9 @@ namespace DebuggerServer
 			}
 		}
 		
-		protected override bool CanEvaluate ()
+		protected override bool CanEvaluate (EvaluationOptions options)
 		{
-			return Context.Options.AllowTargetInvoke;
+			return options.AllowTargetInvoke;
 		}
 		
 		public override object Type {
