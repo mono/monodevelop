@@ -1,5 +1,10 @@
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SoftEvaluationContext.cs:
+	* SoftDebuggerBacktrace.cs: Track api changes.
+
+2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* PropertyValueReference.cs: Track api changes.
 
 2010-05-04  Lluis Sanchez Gual  <lluis@novell.com>

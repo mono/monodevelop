@@ -83,7 +83,7 @@ namespace Mono.Debugging.Soft
 				method = frame.Method.DeclaringType.FullName + "." + method;
 			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber);
 			var lang = frame.Method != null? "Managed" : "Native";
-			return new DC.StackFrame (frame.ILOffset, location, lang, session.IsExternalCode (frame));
+			return new DC.StackFrame (frame.ILOffset, location, lang, session.IsExternalCode (frame), true);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
