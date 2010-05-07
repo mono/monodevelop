@@ -83,7 +83,15 @@ namespace ICSharpCode.NRefactory.Parser
 			int val = reader.Read();
 			if (recordRead)
 				recordedText.Append ((char)val);
-			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
+			if (val == '\r') {
+				if (reader.Peek() == '\n')
+					reader.Read ();
+				++line;
+				col = 1;
+				LineBreak ();
+				return '\n';
+			}
+			if (val == '\n') {
 				++line;
 				col = 1;
 				LineBreak ();
@@ -282,17 +290,21 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected void SkipToEndOfLine()
 		{
-			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
-				if (nextChar == '\r') {
-					if (reader.Peek() == '\n')
-						reader.Read();
-					nextChar = '\n';
-				}
-				if (nextChar == '\n') {
-					++line;
-					col = 1;
-					break;
+			while (true) {
+				int nextChar = reader.Read ();
+				if (nextChar == -1)
+					return;
+				switch (nextChar) {
+					case '\r':
+						if (reader.Peek() == '\n') {
+							reader.Read();
+							goto case '\n';
+						}
+						break;
+					case '\n':
+						++line;
+						col = 1;
+						return;
 				}
 			}
 		}

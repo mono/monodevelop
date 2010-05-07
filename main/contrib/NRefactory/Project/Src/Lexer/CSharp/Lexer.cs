@@ -1072,7 +1072,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				} else if (c == '#') {
 					break;
 				} else {
-					SkipToEndOfLine();
+					if (c != '\n') // only skip non empty lines.
+						SkipToEndOfLine();
 				}
 			}
 			return ReadPreProcessingDirectiveInternal(parseIfExpression, parseElifExpression);

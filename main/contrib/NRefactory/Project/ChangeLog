@@ -1,3 +1,9 @@
+2010-05-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Lexer/CSharp/Lexer.cs:
+	* Src/Lexer/AbstractLexer.cs: Fixed 'Bug 603535 - Class &
+	  method combo doesn't work'.
+
 2010-04-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* NRefactory.csproj: Emit debug symbols.
