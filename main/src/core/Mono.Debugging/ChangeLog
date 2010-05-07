@@ -1,5 +1,11 @@
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Debugging.Evaluation/NRefactoryEvaluator.cs: Fix
+	  support for variable definition. Implement support for
+	  pre/post increment/decrement.
+
+2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Debugging.csproj:
 	* Mono.Debugging.Client/StackFrame.cs:
 	* Mono.Debugging.Client/ObjectValue.cs:

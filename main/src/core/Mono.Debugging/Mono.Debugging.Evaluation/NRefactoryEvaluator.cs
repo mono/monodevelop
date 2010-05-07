@@ -51,6 +51,7 @@ namespace Mono.Debugging.Evaluation
 		
 		ValueReference Evaluate (EvaluationContext ctx, string exp, object expectedType, bool tryTypeOf)
 		{
+			exp = exp.TrimStart ();
 			if (exp.StartsWith ("?"))
 				exp = exp.Substring (1).Trim ();
 			if (exp.StartsWith ("var ")) {
@@ -104,6 +105,7 @@ namespace Mono.Debugging.Evaluation
 		
 		string Resolve (DebuggerSession session, SourceLocation location, string exp, bool tryTypeOf)
 		{
+			exp = exp.TrimStart ();
 			if (exp.StartsWith ("?"))
 				return "?" + Resolve (session, location, exp.Substring (1).Trim ());
 			if (exp.StartsWith ("var "))
@@ -131,8 +133,11 @@ namespace Mono.Debugging.Evaluation
 		
 		public override ValidationResult ValidateExpression (EvaluationContext ctx, string exp)
 		{
+			exp = exp.TrimStart ();
 			if (exp.StartsWith ("?"))
 				exp = exp.Substring (1).Trim ();
+			if (exp.StartsWith ("var "))
+				exp = exp.Substring (4).Trim ();
 			
 			exp = ReplaceExceptionTag (exp, ctx.Options.CurrentExceptionTag);
 			
@@ -259,31 +264,68 @@ namespace Mono.Debugging.Evaluation
 			this.tryTypeOf = tryTypeOf;
 		}
 		
+		long GetInteger (object val)
+		{
+			try {
+				return Convert.ToInt64 (val);
+			} catch {
+				throw CreateParseError ("Expected integer value");
+			}
+		}
+		
 		public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.Ast.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			ValueReference vref = (ValueReference) unaryOperatorExpression.Expression.AcceptVisitor (this, null);
 			object val = vref.ObjectValue;
 			
 			switch (unaryOperatorExpression.Op) {
-				case UnaryOperatorType.BitNot: {
-					long num = Convert.ToInt64 (val);
-					num = ~num;
-					val = Convert.ChangeType (num, val.GetType ());
-					break;
-				}
-				case UnaryOperatorType.Minus: {
-					long num = Convert.ToInt64 (val);
-					num = -num;
-					val = Convert.ChangeType (num, val.GetType ());
-					break;
-				}
-				case UnaryOperatorType.Not:
-					val = !(bool) val;
-					break;
-				case UnaryOperatorType.Plus:
-					break;
-				default:
-					throw CreateNotSupportedError ();
+			case UnaryOperatorType.BitNot: {
+				long num = GetInteger (val);
+				num = ~num;
+				val = Convert.ChangeType (num, val.GetType ());
+				break;
+			}
+			case UnaryOperatorType.Minus: {
+				long num = GetInteger (val);
+				num = -num;
+				val = Convert.ChangeType (num, val.GetType ());
+				break;
+			}
+			case UnaryOperatorType.Not: {
+				if (!(val is bool))
+					throw CreateParseError ("Expected boolean type in Not operator");
+				
+				val = !(bool) val;
+				break;
+			}
+			case UnaryOperatorType.Decrement: {
+				long num = GetInteger (val);
+				val = Convert.ChangeType (num - 1, val.GetType ());
+				vref.Value = ctx.Adapter.CreateValue (ctx, val);
+				break;
+			}
+			case UnaryOperatorType.Increment: {
+				long num = GetInteger (val);
+				val = Convert.ChangeType (num + 1, val.GetType ());
+				vref.Value = ctx.Adapter.CreateValue (ctx, val);
+				break;
+			}
+			case UnaryOperatorType.PostDecrement: {
+				long num = GetInteger (val);
+				object newVal = Convert.ChangeType (num - 1, val.GetType ());
+				vref.Value = ctx.Adapter.CreateValue (ctx, newVal);
+				break;
+			}
+			case UnaryOperatorType.PostIncrement: {
+				long num = GetInteger (val);
+				object newVal = Convert.ChangeType (num + 1, val.GetType ());
+				vref.Value = ctx.Adapter.CreateValue (ctx, newVal);
+				break;
+			}
+			case UnaryOperatorType.Plus:
+				break;
+			default:
+				throw CreateNotSupportedError ();
 			}
 			
 			return LiteralValueReference.CreateObjectLiteral (ctx, name, val);
