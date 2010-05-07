@@ -30,16 +30,13 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
 using System.Diagnostics;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.IPhone
 {
 	public class IPhoneDeviceConsole : Window
 	{
-		TextBuffer buffer = new TextBuffer (null);
-		
-		Queue<ConsoleMessage> queue = new Queue<ConsoleMessage> ();
-		bool handlerRunning;
-		
+		LogView log;
 		ProcessWrapper process;
 		
 		public IPhoneDeviceConsole () : base ("iPhone Device Console")
@@ -58,23 +55,16 @@ namespace MonoDevelop.IPhone
 				Layout = ButtonBoxStyle.End,
 			};
 			
-			var view = new TextView (buffer);
-			view.Editable = false;
-			
-			var sw = new ScrolledWindow () { 
-				ShadowType = ShadowType.In,
-			};
-			
 			var closeButton = new Button (Gtk.Stock.Close);
 			var reconnectButton = new Button () {
 				Label = "Reconnect"
 			};
 			
-			sw.Add (view);
+			log = new LogView ();
 			
 			this.Add (vbox);
 			vbox.PackEnd (bbox, false, false, 0);
-			vbox.PackEnd (sw, true, true, 0);
+			vbox.PackEnd (log, true, true, 0);
 			
 			bbox.PackEnd (reconnectButton);
 			bbox.PackEnd (closeButton);
@@ -99,12 +89,12 @@ namespace MonoDevelop.IPhone
 			if (process == null)
 				return;
 			
-			AppendText ("\nDisconnected\n", false);
+			log.WriteConsoleLogText ("\nDisconnected\n");
 			
 			if (!process.HasExited)
 				process.Kill ();
 			else if (process.ExitCode != 0)
-				AppendText (string.Format ("Unknown error {0}\n", process.ExitCode), true);
+				log.WriteError (string.Format ("Unknown error {0}\n", process.ExitCode));
 			
 			process.Dispose ();
 			
@@ -113,7 +103,7 @@ namespace MonoDevelop.IPhone
 		
 		void Connect ()
 		{
-			AppendText ("Connecting...\n", false);
+			log.WriteConsoleLogText ("Connecting...\n");
 			var mtouch = "/Developer/MonoTouch/usr/bin/mtouch";
 			var psi = new ProcessStartInfo (mtouch, "-logdev") {
 				UseShellExecute = false,
@@ -126,42 +116,14 @@ namespace MonoDevelop.IPhone
 			process.EnableRaisingEvents = true;
 		}
 		
-		void AppendText (string text, bool error)
-		{
-			//FIXME: discard items if queue too big
-			lock (queue) {
-				queue.Enqueue (new ConsoleMessage (text, error));
-				if (!handlerRunning) {
-					handlerRunning = true;
-					GLib.Idle.Add (IdleHandler);
-				}
-			}
-		}
-		
-		bool IdleHandler ()
-		{
-			ConsoleMessage item;
-			bool moreinQueue;
-			lock (queue) {
-				item = queue.Dequeue ();
-				handlerRunning = moreinQueue = queue.Count > 0;
-			}
-			
-			//TODO: prune old text from the buffer, different color for error, maybe some processing and highlighting
-			var iter = buffer.EndIter;
-			buffer.Insert (ref iter, item.Message);
-			
-			return moreinQueue;
-		}
-		
 		void OnProcessOutput (object sender, string message)
 		{
-			AppendText (message, false);
+			log.WriteText (message);
 		}
 		
 		void OnProcessError (object sender, string message)
 		{
-			AppendText (message, true);
+			log.WriteText (message);
 		}
 		
 		protected override void OnDestroyed ()
@@ -179,18 +141,6 @@ namespace MonoDevelop.IPhone
 				instance = new IPhoneDeviceConsole ();
 			instance.Show ();
 			instance.Present ();
-		}
-		
-		class ConsoleMessage
-		{
-			public ConsoleMessage (string message, bool isError)
-			{
-				this.Message = message;
-				this.IsError = isError;
-			}
-			
-			public string Message { get; private set; }
-			public bool IsError { get; private set; }
 		}
 	}
 }
