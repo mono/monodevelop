@@ -465,7 +465,7 @@ namespace MonoDevelop.Core
 
 		public FilePath FullPath {
 			get {
-				return new FilePath (Path.GetFullPath (fileName));
+				return new FilePath (!string.IsNullOrEmpty (fileName) ? Path.GetFullPath (fileName) : "");
 			}
 		}
 		
