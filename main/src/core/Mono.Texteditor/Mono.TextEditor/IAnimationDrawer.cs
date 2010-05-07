@@ -31,6 +31,9 @@ namespace Mono.TextEditor
 {
 	public interface IAnimationDrawer
 	{
+		Gdk.Rectangle AnimationBounds {
+			get;
+		}
 		double Percent { get; set; }
 		void Draw (Drawable drawable);
 	}

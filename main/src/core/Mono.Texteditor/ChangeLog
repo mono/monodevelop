@@ -1,3 +1,9 @@
+2010-05-07  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/IAnimationDrawer.cs: Speed up the animation
+	  process.
+
 2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:

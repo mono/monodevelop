@@ -1689,6 +1689,15 @@ namespace Mono.TextEditor
 				this.result = result;
 			}
 			
+			public Gdk.Rectangle AnimationBounds {
+				get {
+//					LineSegment line = editor.Document.GetLineByOffset (result.Offset);
+					int lineNr = editor.Document.OffsetToLineNumber (result.Offset);
+					int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
+					return new Gdk.Rectangle (0, y - editor.LineHeight , editor.Allocation.Width, editor.LineHeight * 3);
+				}
+			}
+			
 			public void Draw (Drawable drawable)
 			{
 				LineSegment line = editor.Document.GetLineByOffset (result.Offset);
@@ -1810,6 +1819,19 @@ namespace Mono.TextEditor
 			
 			public double Percent { get; set; }
 			
+			public Gdk.Rectangle AnimationBounds {
+				get {
+					int x = editor.TextViewMargin.caretX;
+					int y = editor.TextViewMargin.caretY;
+					double extend = 100 * 5;
+					int width = (int)(editor.TextViewMargin.charWidth + 2 * extend * editor.Options.Zoom / 2);
+					return new Gdk.Rectangle ((int)(x - extend * editor.Options.Zoom / 2), 
+					                          (int)(y - extend * editor.Options.Zoom),
+					                          width,
+					                          (int)(editor.LineHeight + 2 * extend * editor.Options.Zoom));
+				}
+			}
+			
 			public CaretPulseAnimation (TextEditor editor)
 			{
 				this.editor = editor;
@@ -1854,6 +1876,20 @@ namespace Mono.TextEditor
 			public double Percent { get; set; }
 			
 			Gdk.Rectangle region;
+			
+			public Gdk.Rectangle AnimationBounds {
+				get {
+					int x = region.X;
+					int y = region.Y;
+					int animationPosition = (int)(100 * 100);
+					int width = (int)(region.Width + 2 * animationPosition * editor.Options.Zoom / 2);
+					
+					return new Gdk.Rectangle ((int)(x - animationPosition * editor.Options.Zoom / 2), 
+					                          (int)(y - animationPosition * editor.Options.Zoom),
+					                          width,
+					                          (int)(region.Height + 2 * animationPosition * editor.Options.Zoom));
+				}
+			}
 			
 			public RegionPulseAnimation (TextEditor editor, Gdk.Point position, Gdk.Size size)
 				: this (editor, new Gdk.Rectangle (position, size)) {}
@@ -2327,14 +2363,19 @@ namespace Mono.TextEditor
 		{
 			if (animation == null)
 				return;
+			Rectangle bounds = animation.Drawer.AnimationBounds;
 			actors.Remove (animation);
 			if (animation is IDisposable)
 				((IDisposable)animation).Dispose ();
+			QueueDrawArea (bounds.X, bounds.Y, bounds.Width, bounds.Height);
 		}
 		
 		void OnAnimationIteration (object sender, EventArgs args)
 		{
-			QueueDraw ();
+			foreach (Animation actor in actors) {
+				Rectangle bounds = actor.Drawer.AnimationBounds;
+				QueueDrawArea (bounds.X, bounds.Y, bounds.Width, bounds.Height);
+			}
 		}
 		#endregion
 		
