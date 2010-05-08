@@ -147,5 +147,15 @@ namespace Mono.TextEditor
 			ChunkStyle c = o as ChunkStyle;
 			return c != null && Bold == c.Bold && Italic == c.Italic && Color.GetHashCode () == c.Color.GetHashCode ();
 		}
+		
+		public Gdk.GC CreateBgGC (Gdk.Drawable drawable)
+		{
+			return new Gdk.GC (drawable) { RgbBgColor = Color, RgbFgColor = BackgroundColor };
+		}
+		
+		public Gdk.GC CreateFgGC (Gdk.Drawable drawable)
+		{
+			return new Gdk.GC (drawable) { RgbBgColor = BackgroundColor, RgbFgColor = Color };
+		}
 	}
 }

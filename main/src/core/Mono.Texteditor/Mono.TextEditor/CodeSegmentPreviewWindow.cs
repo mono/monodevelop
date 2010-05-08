@@ -112,42 +112,45 @@ namespace Mono.TextEditor
 			layout = layout.Kill ();
 			informLayout = informLayout.Kill ();
 			fontDescription = fontDescription.Kill ();
-			gc = gc.Kill ();
+			if (textGC != null) {
+				textGC.Dispose ();
+				textBgGC.Dispose ();
+				foldGC.Dispose ();
+				foldBgGC.Dispose ();
+				textGC = textBgGC = foldGC = foldBgGC = null;
+			}
 			base.OnDestroyed ();
 		}
+		
 		protected override bool OnKeyPressEvent (EventKey evnt)
 		{
 			Console.WriteLine (evnt.Key);
 			return base.OnKeyPressEvent (evnt);
 		}
-
 		
-		Gdk.GC gc = null;
-		
+		Gdk.GC textGC, foldGC, textBgGC, foldBgGC;
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
-			if (gc == null) {
-				gc = new Gdk.GC (ev.Window);
+			if (textGC == null) {
+				textGC = editor.ColorStyle.Default.CreateFgGC (ev.Window);
+				textBgGC = editor.ColorStyle.Default.CreateBgGC (ev.Window);
+				foldGC = editor.ColorStyle.FoldLine.CreateFgGC (ev.Window);
+				foldBgGC = editor.ColorStyle.FoldLine.CreateBgGC (ev.Window);
 			}
 			
-			gc.RgbFgColor = editor.ColorStyle.Default.BackgroundColor;
-			ev.Window.DrawRectangle (gc, true, ev.Area);
-			ev.Window.DrawLayout (Style.TextGC (StateType.Normal), 1, 1, layout);
-		
-			ev.Window.DrawRectangle (gc, false, 1, 1, this.Allocation.Width - 3, this.Allocation.Height - 3);
-			gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
-			ev.Window.DrawRectangle (gc, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
+			ev.Window.DrawRectangle (textBgGC, true, ev.Area);
+			ev.Window.DrawLayout (textGC, 1, 1, layout);
+			ev.Window.DrawRectangle (textBgGC, false, 1, 1, this.Allocation.Width - 3, this.Allocation.Height - 3);
+			ev.Window.DrawRectangle (foldGC, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
 			
 			if (!HideCodeSegmentPreviewInformString) {
 				informLayout.SetText (CodeSegmentPreviewInformString);
 				int w, h;
 				informLayout.GetPixelSize (out w, out h); 
 				PreviewInformStringHeight = h;
-				gc.RgbFgColor = editor.ColorStyle.FoldLine.BackgroundColor;
-				ev.Window.DrawRectangle (gc, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
-				gc.RgbFgColor = editor.ColorStyle.FoldLine.Color;
-				ev.Window.DrawLayout (gc, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
+				ev.Window.DrawRectangle (foldBgGC, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
+				ev.Window.DrawLayout (foldGC, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
 			}
 			return true;
 		}

@@ -1,3 +1,12 @@
+2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Highlighting/ChunkStyle.cs: Added methods
+	  for creating Gdk GCs.
+
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Use GCs with
+	  the background set when rendering text. Fixes Mac rendering
+	  issues.
+
 2010-05-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
