@@ -252,7 +252,7 @@ namespace Mono.TextEditor
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
-			this.DoubleBuffered = false;
+			this.DoubleBuffered = true;
 			this.AppPaintable = false;
 			base.CanFocus = true;
 			this.RedrawOnAllocate = false;
@@ -1970,7 +1970,7 @@ namespace Mono.TextEditor
 				if (searchResultAnimation != null) 
 					RemoveAnimation (searchResultAnimation);
 				var anim = new TextEditor.HighlightSearchResultAnimation (this, result);
-				searchResultAnimation = StartAnimation (anim, 120, Easing.QuadraticInOut);
+				searchResultAnimation = StartAnimation (anim, 180, Easing.Sine);
 			}
 		}
 	

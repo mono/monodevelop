@@ -1,3 +1,9 @@
+2010-05-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Tune search result animation.
+	  Restore double buffering accidentally disabled in earlier
+	  commit.
+
 2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Highlighting/DefaultStyle.cs: Tone down the
