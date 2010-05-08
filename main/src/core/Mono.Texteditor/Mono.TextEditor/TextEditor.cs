@@ -69,47 +69,6 @@ namespace Mono.TextEditor
 		
 		string currentStyleName;
 		
-		#region back buffer hack
-		
-		// This hack uses a large, shared Pixmap for double buffering drawing, instead of GTK's built-in double buffering.
-		// It shouldn't cost more than about 7MB of memory, but it's also slower.
-		
-		static bool useHackBackBuffer = false;
-		
-		static Pixmap hackSharedBackbuffer;
-		static int hackSharedBackBufferRefcount;
-		
-		void RefBackBuffer ()
-		{
-			hackSharedBackBufferRefcount++;
-		}
-		
-		void UpdateBackBufferSize ()
-		{
-			int ww, wh;
-			GdkWindow.GetSize (out ww, out wh);
-			
-			if (hackSharedBackbuffer != null) {
-				int bw, bh;
-				hackSharedBackbuffer.GetSize (out bw, out bh);
-				if (ww <= bw || wh <= bh)
-					return;
-				hackSharedBackbuffer.Dispose ();
-			}
-			hackSharedBackbuffer = new Pixmap (GdkWindow, ww, wh);
-		}
-		
-		void UnrefBackBuffer ()
-		{
-			hackSharedBackBufferRefcount--;
-			if (hackSharedBackBufferRefcount == 0) {
-				hackSharedBackbuffer.Dispose ();
-				hackSharedBackbuffer = null;
-			}
-		}
-		
-		#endregion
-		
 		double mx, my;
 		
 		public Document Document {
@@ -293,7 +252,7 @@ namespace Mono.TextEditor
 			
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
-			this.DoubleBuffered = !useHackBackBuffer;
+			this.DoubleBuffered = false;
 			this.AppPaintable = false;
 			base.CanFocus = true;
 			this.RedrawOnAllocate = false;
@@ -543,14 +502,10 @@ namespace Mono.TextEditor
 			imContext.ClientWindow = this.GdkWindow;
 			OptionsChanged (this, EventArgs.Empty);
 			Caret.PositionChanged += CaretPositionChanged;
-			if (useHackBackBuffer)
-				RefBackBuffer ();
 		}
 		
 		protected override void OnUnrealized ()
 		{
-			if (useHackBackBuffer)
-				UnrefBackBuffer ();
 			imContext.ClientWindow = null;
 			CancelScheduledHide ();
 			if (this.GdkWindow != null) {
@@ -1267,8 +1222,6 @@ namespace Mono.TextEditor
 			if (this.GdkWindow != null) 
 				this.GdkWindow.MoveResize (allocation);
 			SetAdjustments (Allocation);
-			if (useHackBackBuffer)
-				UpdateBackBufferSize ();
 			QueueDraw ();
 			textViewMargin.SetClip ();
 		}
@@ -1419,9 +1372,7 @@ namespace Mono.TextEditor
 				return true;
 			UpdateAdjustments ();
 			
-			var window = useHackBackBuffer? (Drawable) hackSharedBackbuffer : (Drawable) e.Window;
-			
-			RenderMargins (window, e.Region.Clipbox);
+			RenderMargins (e.Window, e.Region.Clipbox);
 			
 #if DEBUG_EXPOSE
 			Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
@@ -1433,18 +1384,11 @@ namespace Mono.TextEditor
 			}
 			
 			foreach (Animation animation in actors) {
-				animation.Drawer.Draw (window);
+				animation.Drawer.Draw (e.Window);
 			}
 			
 			if (e.Area.Contains (TextViewMargin.caretX, TextViewMargin.caretY))
-				textViewMargin.DrawCaret (window);
-			
-			if (useHackBackBuffer) {
-				var box = e.Region.Clipbox;
-				e.Window.DrawDrawable (Style.ForegroundGC (StateType.Normal),  hackSharedBackbuffer, 
-				                       box.X, box.Y, box.X, box.Y, box.Width, box.Height);
-			}
-				                       
+				textViewMargin.DrawCaret (e.Window);
 			
 			return true;
 		}
