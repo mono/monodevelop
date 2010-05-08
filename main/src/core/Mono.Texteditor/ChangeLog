@@ -1,5 +1,10 @@
 2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Highlighting/DefaultStyle.cs: Tone down the
+	  current line marker a bit.
+
+2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Remove the backbuffer hack.
 
 2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>

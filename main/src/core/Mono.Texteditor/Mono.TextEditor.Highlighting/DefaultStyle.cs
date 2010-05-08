@@ -91,7 +91,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public override Color LineMarker {
 			get {
-				return new Gdk.Color (172, 168, 153);
+				return new Gdk.Color (212, 208, 193);
 			}
 		}
 
