@@ -376,155 +376,182 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected Style ()
 		{
-			SetStyle (DefaultString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (255, 255, 255)));
+			SetStyle (DefaultString, 0, 0, 0, 255, 255, 255);
 			GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
 			
-			SetStyle (CaretString, new ReferencedChunkStyle (this, DefaultString));
+			SetStyle (CaretString, DefaultString);
 
-			SetStyle (LineNumberString, new ChunkStyle (new Gdk.Color (172, 168, 153), new Gdk.Color (255, 255, 255)));
-			SetStyle (LineNumberFgHighlightedString, new ChunkStyle (new Gdk.Color (122, 118, 103)));
+			SetStyle (LineNumberString, 172, 168, 153, 255, 255, 255);
+			SetStyle (LineNumberFgHighlightedString, 122, 118, 103);
 			
-			SetStyle (IconBarBgString, new ChunkStyle (new Gdk.Color (255, 255, 255)));
-			SetStyle (IconBarSeperatorString, new ChunkStyle (new Gdk.Color (172, 168, 153)));
+			SetStyle (IconBarBgString,        255, 255, 255);
+			SetStyle (IconBarSeperatorString, 172, 168, 153);
 			
-			SetStyle (FoldLineString, new ReferencedChunkStyle (this, LineNumberString));
-			SetStyle (FoldLineHighlightedString, new ReferencedChunkStyle (this, IconBarSeperatorString));
-			SetStyle (FoldToggleMarkerString, new ReferencedChunkStyle (this, DefaultString));
+			SetStyle (FoldLineString, LineNumberString);
+			SetStyle (FoldLineHighlightedString, IconBarSeperatorString);
+			SetStyle (FoldToggleMarkerString, DefaultString);
 			
-			SetStyle (LineDirtyBgString, new ChunkStyle (new Gdk.Color (255, 238, 98)));
-			SetStyle (LineChangedBgString, new ChunkStyle (new Gdk.Color (108, 226, 108)));
+			SetStyle (LineDirtyBgString,   255, 238, 98);
+			SetStyle (LineChangedBgString, 108, 226, 108);
 			
-			SetStyle (SelectionString, new ChunkStyle (new Gdk.Color (255, 255, 255), new Gdk.Color (96, 87, 210)));
+			SetStyle (SelectionString,     255, 255, 255, 96, 87, 210);
 			
-			SetStyle (LineMarkerString, new ChunkStyle (new Gdk.Color (200, 255, 255)));
-			SetStyle (RulerString, new ChunkStyle (new Gdk.Color (187, 187, 187)));
-			SetStyle (WhitespaceMarkerString, new ReferencedChunkStyle (this, RulerString));
+			SetStyle (LineMarkerString,    200, 255, 255);
+			SetStyle (RulerString,         187, 187, 187);
+			SetStyle (WhitespaceMarkerString, RulerString);
 			
-			SetStyle (InvalidLineMarkerString, new ChunkStyle (new Gdk.Color (210, 0, 0)));
+			SetStyle (InvalidLineMarkerString,     210,   0,   0);
 			
-			SetStyle (BreakpointString, new ChunkStyle (new Gdk.Color (255, 255, 255), new Gdk.Color (125, 0, 0)));
+			SetStyle (BreakpointString,            255, 255, 255, 125, 0, 0);
 			
-			SetStyle (BreakpointMarkerColor1String, new ChunkStyle (new Gdk.Color (255, 255, 255)));
-			SetStyle (BreakpointMarkerColor2String, new ChunkStyle (new Gdk.Color (125, 0, 0)));
+			SetStyle (BreakpointMarkerColor1String, 255, 255, 255);
+			SetStyle (BreakpointMarkerColor2String, 125, 0, 0);
 
-			SetStyle (DisabledBreakpointBgString, new ChunkStyle (new Gdk.Color (237, 220, 220)));
+			SetStyle (DisabledBreakpointBgString,   237, 220, 220);
 			
-			SetStyle (CurrentDebugLineString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (255, 255, 0)));
-			SetStyle (CurrentDebugLineMarkerColor1String, new ChunkStyle (new Gdk.Color (255, 255, 0)));
-			SetStyle (CurrentDebugLineMarkerColor2String, new ChunkStyle (new Gdk.Color (255, 255, 204)));
-			SetStyle (CurrentDebugLineMarkerBorderString, new ChunkStyle (new Gdk.Color (102, 102, 0)));
+			SetStyle (CurrentDebugLineString,               0,   0,   0, 255, 255, 0);
+			SetStyle (CurrentDebugLineMarkerColor1String, 255, 255,   0);
+			SetStyle (CurrentDebugLineMarkerColor2String, 255, 255, 204);
+			SetStyle (CurrentDebugLineMarkerBorderString, 102, 102,   0);
 			
-			SetStyle (DebugStackLineString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (128, 255, 128)));
-			SetStyle (DebugStackLineMarkerColor1String, new ChunkStyle (new Gdk.Color (128, 255, 128)));
-			SetStyle (DebugStackLineMarkerColor2String, new ChunkStyle (new Gdk.Color (204, 255, 204)));
-			SetStyle (DebugStackLineMarkerBorderString, new ChunkStyle (new Gdk.Color (51, 102, 51))); 
+			SetStyle (DebugStackLineString,               0,   0,   0, 128, 255, 128);
+			SetStyle (DebugStackLineMarkerColor1String, 128, 255, 128);
+			SetStyle (DebugStackLineMarkerColor2String, 204, 255, 204);
+			SetStyle (DebugStackLineMarkerBorderString,  51, 102,  51); 
 			
-			SetStyle (InvalidBreakpointBgString, new ChunkStyle (new Gdk.Color (237, 220, 220)));
-			SetStyle (InvalidBreakpointMarkerColor1String, new ChunkStyle (new Gdk.Color (237, 220, 220)));
-			SetStyle (InvalidBreakpointMarkerBorderString, new ChunkStyle (new Gdk.Color (125, 0, 0)));
-			SetStyle (SearchTextBgString, new ChunkStyle (new Gdk.Color (255, 226, 185)));
-			SetStyle (SearchTextMainBgString, new ChunkStyle (new Gdk.Color (243, 221, 72)));
+			SetStyle (InvalidBreakpointBgString, 237, 220, 220);
+			SetStyle (InvalidBreakpointMarkerColor1String, 237, 220, 220);
+			SetStyle (InvalidBreakpointMarkerBorderString, 125, 0, 0);
+			SetStyle (SearchTextBgString, 255, 226, 185);
+			SetStyle (SearchTextMainBgString, 243, 221, 72);
 			
-			SetStyle (BracketHighlightRectangleString, new ChunkStyle (new Gdk.Color (128, 128, 128), new Gdk.Color (196, 196, 196)));
+			SetStyle (BracketHighlightRectangleString, 128, 128, 128, 196, 196, 196);
 			
-			SetStyle (BookmarkColor1String, new ChunkStyle (new Gdk.Color (255, 255, 255)));
-			SetStyle (BookmarkColor2String, new ChunkStyle (new Gdk.Color (105, 156, 235)));
+			SetStyle (BookmarkColor1String, 255, 255, 255);
+			SetStyle (BookmarkColor2String, 105, 156, 235);
 			
-			SetStyle (ErrorUnderlineString, new ChunkStyle (new Gdk.Color (255, 0, 0)));
-			SetStyle (WarningUnderlineString, new ChunkStyle (new Gdk.Color (30, 30, 255)));
+			SetStyle (ErrorUnderlineString, 255, 0, 0);
+			SetStyle (WarningUnderlineString, 30, 30, 255);
 			
-			SetStyle ("diff.line-added", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0,  0x8B,  0x8B), ChunkProperties.None));
-			SetStyle ("diff.line-removed", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0x6A, 0x5A, 0xCD), ChunkProperties.None));
-			SetStyle ("diff.line-changed", new ReferencedChunkStyle (this, "text.preprocessor"));
-			SetStyle ("diff.header", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128,  0), ChunkProperties.Bold));
-			SetStyle ("diff.header-seperator", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0,  0,  255)));
-			SetStyle ("diff.header-oldfile", new ReferencedChunkStyle (this, "diff.header"));
-			SetStyle ("diff.header-newfile", new ReferencedChunkStyle (this, "diff.header"));
-			SetStyle ("diff.location", new ReferencedChunkStyle (this, "keyword.misc"));
+			SetStyle ("diff.line-added",          0, 0x8B, 0x8B, ChunkProperties.None);
+			SetStyle ("diff.line-removed",     0x6A, 0x5A, 0xCD, ChunkProperties.None);
+			SetStyle ("diff.line-changed",     "text.preprocessor");
+			SetStyle ("diff.header",              0, 128,     0, BOLD);
+			SetStyle ("diff.header-seperator",    0,   0,   255);
+			SetStyle ("diff.header-oldfile",   "diff.header");
+			SetStyle ("diff.header-newfile",   "diff.header");
+			SetStyle ("diff.location",         "keyword.misc");
 			
-			SetStyle (PrimaryTemplateColorString, new ChunkStyle (new Gdk.Color (0xB4, 0xE4, 0xB4), new Gdk.Color (0xB4, 0xE4, 0xB4)));
-			SetStyle (PrimaryTemplateHighlightedColorString, new ChunkStyle (new Gdk.Color (0, 0, 0), new Gdk.Color (0xB4, 0xE4, 0xB4)));
+			SetStyle (PrimaryTemplateColorString, 0xB4, 0xE4, 0xB4, 0xB4, 0xE4, 0xB4);
+			SetStyle (PrimaryTemplateHighlightedColorString, 0, 0, 0, 0xB4, 0xE4, 0xB4);
 			 
-			SetStyle (SecondaryTemplateColorString, new ChunkStyle (new Gdk.Color (0xFF, 0xFF, 0xFF), new Gdk.Color (0xFF, 0xFF, 0xFF)));
-			SetStyle (SecondaryTemplateHighlightedColorString, new ChunkStyle (new Gdk.Color (0x7F, 0x7F, 0x7F), new Gdk.Color (0xFF, 0xFF, 0xFF)));
+			SetStyle (SecondaryTemplateColorString,            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+			SetStyle (SecondaryTemplateHighlightedColorString, 0x7F, 0x7F, 0x7F, 0xFF, 0xFF, 0xFF);
 			
-			SetStyle ("warning.light.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (250, 250, 210)));
-			SetStyle ("warning.light.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (230, 230, 190)));
+			SetStyle ("warning.light.color1", 250, 250, 210);
+			SetStyle ("warning.light.color2", 230, 230, 190);
 			
-			SetStyle ("warning.dark.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (235, 235, 180)));
-			SetStyle ("warning.dark.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (215, 215, 160)));
+			SetStyle ("warning.dark.color1",  235, 235, 180);
+			SetStyle ("warning.dark.color2",  215, 215, 160);
 			
-			SetStyle ("warning.line.top", new Mono.TextEditor.ChunkStyle (new Gdk.Color (199, 199, 141)));
-			SetStyle ("warning.line.bottom", new Mono.TextEditor.ChunkStyle (new Gdk.Color (199, 199, 141)));
-			SetStyle ("warning.text", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0)));
+			SetStyle ("warning.line.top",     199, 199, 141);
+			SetStyle ("warning.line.bottom",  199, 199, 141);
+			SetStyle ("warning.text",           0,   0,   0);
 
-			SetStyle ("error.light.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (240, 200, 200)));
-			SetStyle ("error.light.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (230, 180, 180)));
+			SetStyle ("error.light.color1",   240, 200, 200);
+			SetStyle ("error.light.color2",   230, 180, 180);
 			
-			SetStyle ("error.dark.color1", new Mono.TextEditor.ChunkStyle (new Gdk.Color (235, 180, 180)));
-			SetStyle ("error.dark.color2", new Mono.TextEditor.ChunkStyle (new Gdk.Color (215, 160, 160)));
+			SetStyle ("error.dark.color1",    235, 180, 180);
+			SetStyle ("error.dark.color2",    215, 160, 160);
 			
-			SetStyle ("error.line.top", new Mono.TextEditor.ChunkStyle (new Gdk.Color (193, 143, 143)));
-			SetStyle ("error.line.bottom", new Mono.TextEditor.ChunkStyle (new Gdk.Color (193, 143, 143)));
-			SetStyle ("error.text", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0)));
+			SetStyle ("error.line.top",       193, 143, 143);
+			SetStyle ("error.line.bottom",    193, 143, 143);
+			SetStyle ("error.text",             0,    0,   0);
 		}
 		
 		protected void PopulateDefaults ()
 		{
-			SetStyle ("text", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0)));
-			SetStyle ("text.punctuation", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0)));
-			SetStyle ("text.link", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255)));
-			SetStyle ("text.preprocessor", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128 , 0)));
-			SetStyle ("text.preprocessor.keyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 128, 0), ChunkProperties.Bold));
-			SetStyle ("text.markup", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0x8A , 0x8C)));
-			SetStyle ("text.markup.tag", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0x6A, 0x5A, 0xCD)));
+			SetStyle ("text",                      0,    0,    0);
+			SetStyle ("text.punctuation",          0,    0,    0);
+			SetStyle ("text.link",                 0,    0,  255);
+			SetStyle ("text.preprocessor",         0,  128,    0);
+			SetStyle ("text.preprocessor.keyword", 0,  128,    0, BOLD);
+			SetStyle ("text.markup",               0, 0x8A, 0x8C);
+			SetStyle ("text.markup.tag",        0x6A, 0x5A, 0xCD);
 			
-			SetStyle ("comment", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255)));
-			SetStyle ("comment.line", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255)));
-			SetStyle ("comment.block", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255)));
-			SetStyle ("comment.doc", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255)));
-			SetStyle ("comment.tag", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), ChunkProperties.Italic));
-			SetStyle ("comment.tag.line", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), ChunkProperties.Italic));
-			SetStyle ("comment.tag.block", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), ChunkProperties.Italic));
-			SetStyle ("comment.tag.doc", new Mono.TextEditor.ChunkStyle (new Gdk.Color (128, 128, 128), ChunkProperties.Italic));
-			SetStyle ("comment.keyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0,255), ChunkProperties.Italic));
-			SetStyle ("comment.keyword.todo", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 255), ChunkProperties.Bold));
+			SetStyle ("comment",              0,   0, 255);
+			SetStyle ("comment.line",         0,   0, 255);
+			SetStyle ("comment.block",        0,   0, 255);
+			SetStyle ("comment.doc",          0,   0, 255);
+			SetStyle ("comment.tag",        128, 128, 128, ITALIC);
+			SetStyle ("comment.tag.line",   128, 128, 128, ITALIC);
+			SetStyle ("comment.tag.block" , 128, 128, 128, ITALIC);
+			SetStyle ("comment.tag.doc",    128, 128, 128, ITALIC);
+			SetStyle ("comment.keyword",      0,   0, 255, ITALIC);
+			SetStyle ("comment.keyword.todo", 0,   0, 255, BOLD);
 			
-			SetStyle ("constant", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
-			SetStyle ("constant.digit", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
-			SetStyle ("constant.language", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("constant.language.void", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
+			SetStyle ("constant",               255,   0, 255);
+			SetStyle ("constant.digit",         255,   0, 255);
+			SetStyle ("constant.language",      165,  42,  42, BOLD);
+			SetStyle ("constant.language.void", 165,  42,  42, BOLD);
 			
-			SetStyle ("string", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
-			SetStyle ("string.single", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
-			SetStyle ("string.double", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
-			SetStyle ("string.other", new Mono.TextEditor.ChunkStyle (new Gdk.Color (255, 0, 255)));
+			SetStyle ("string",        255, 0, 255);
+			SetStyle ("string.single", 255, 0, 255);
+			SetStyle ("string.double", 255, 0, 255);
+			SetStyle ("string.other",  255, 0, 255);
 			
-			SetStyle ("keyword.semantic.type", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0x8A , 0x8C)));
+			SetStyle ("keyword.semantic.type", 0, 0x8A , 0x8C);
 			
-			SetStyle ("keyword", new Mono.TextEditor.ChunkStyle (new Gdk.Color (0, 0, 0), ChunkProperties.Bold));
+			SetStyle ("keyword", 0, 0, 0, BOLD);
 			
-			SetStyle ("keyword.access", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.operator", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.operator.declaration", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.selection", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.iteration", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.jump", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.context", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.exceptions", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.modifier", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.type", new Mono.TextEditor.ChunkStyle (new Gdk.Color ( 46, 139,  87), ChunkProperties.Bold));
-			SetStyle ("keyword.namespace", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.property", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.declaration", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.parameter", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			SetStyle ("keyword.misc", new Mono.TextEditor.ChunkStyle (new Gdk.Color (165,  42,  42), ChunkProperties.Bold));
-			
+			SetStyle ("keyword.access",      165,  42,  42, BOLD);
+			SetStyle ("keyword.operator",    165,  42,  42, BOLD);
+			SetStyle ("keyword.operator.declaration", 165,  42,  42, BOLD);
+			SetStyle ("keyword.selection",   165,  42,  42, BOLD);
+			SetStyle ("keyword.iteration",   165,  42,  42, BOLD);
+			SetStyle ("keyword.jump",        165,  42,  42, BOLD);
+			SetStyle ("keyword.context",     165,  42,  42, BOLD);
+			SetStyle ("keyword.exceptions",  165,  42,  42, BOLD);
+			SetStyle ("keyword.modifier",    165,  42,  42, BOLD);
+			SetStyle ("keyword.type",         46, 139,  87, BOLD);
+			SetStyle ("keyword.namespace",   165,  42,  42, BOLD);
+			SetStyle ("keyword.property",    165,  42,  42, BOLD);
+			SetStyle ("keyword.declaration", 165,  42,  42, BOLD);
+			SetStyle ("keyword.parameter",   165,  42,  42, BOLD);
+			SetStyle ("keyword.misc",        165,  42,  42, BOLD);
 		}
+		
+		const ChunkProperties BOLD   = ChunkProperties.Bold;
+		const ChunkProperties ITALIC = ChunkProperties.Bold;
 		
 		void SetStyle (string name, ChunkStyle style)
 		{
 			styleLookupTable[name] = style;
+		}
+		
+		void SetStyle (string name, string referencedStyleName)
+		{
+			styleLookupTable[name] = new ReferencedChunkStyle (this, referencedStyleName);
+		}
+		
+		void SetStyle (string name, byte r, byte g, byte b)
+		{
+			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b)));
+		}
+		
+		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b)
+		{
+			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), new Gdk.Color (bg_r, bg_g, bg_b)));
+		}
+			
+		void SetStyle (string name, byte r, byte g, byte b, ChunkProperties properties)
+		{
+			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), properties));
+		}
+			
+		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b, ChunkProperties properties)
+		{
+			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), new Gdk.Color (bg_r, bg_g, bg_b), properties));
 		}
 		
 		public ChunkStyle GetDefaultChunkStyle ()
@@ -572,7 +599,7 @@ namespace Mono.TextEditor.Highlighting
 				if (weight.ToUpper ().IndexOf ("UNDERLINE") >= 0)
 					properties |= ChunkProperties.Underline;
 			}
-			SetStyle (name, new Mono.TextEditor.ChunkStyle (color, bgColor, properties));
+			SetStyle (name, new ChunkStyle (color, bgColor, properties));
 		}
 		
 		public Gdk.Color GetColorFromString (string colorString)

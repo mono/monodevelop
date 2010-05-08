@@ -1,5 +1,11 @@
 2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Highlighting/Style.cs: Make the default
+	  colour definitions a lot easier to read by adding some
+	  overloads and constants.
+
+2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Highlighting/ChunkStyle.cs: Added methods
 	  for creating Gdk GCs.
 
