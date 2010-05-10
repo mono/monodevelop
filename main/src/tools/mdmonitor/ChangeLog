@@ -1,5 +1,9 @@
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* mdmonitor.csproj: Target x86.
+
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Main.cs:
 	* gtk-gui/gui.stetic:
 	* InstrumenationChartView.cs:
