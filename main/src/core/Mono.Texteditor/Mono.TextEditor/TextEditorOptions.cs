@@ -99,7 +99,7 @@ namespace Mono.TextEditor
 		
 		public bool CanResetZoom {
 			get {
-				return zoom != 1.0;
+				return true; //zoom != 1.0;
 			}
 		}
 		
