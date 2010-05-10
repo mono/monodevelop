@@ -1151,13 +1151,13 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
 				_label = "Browse Next" 
 				_description = "Move cursor to next error or search match"
-				macShortcut = "Meta|="
+				macShortcut = "Alt|Meta|G"
 				shortcut = "F4" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious"
 				defaultHandler = "MonoDevelop.Ide.Commands.ShowPreviousHandler"
 				_label = "Browse Previous" 
 				_description = "Move cursor to previous error or search match"
-				macShortcut = "Meta|Shift|="
+				macShortcut = "Shift|Alt|Meta|G"
 				shortcut = "Shift|F4" />
 		
 		<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"

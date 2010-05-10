@@ -1,5 +1,10 @@
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Changed the key for shownext/prev
+	  on mac.
+
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Search
 	  results now have exacter navigation points.
 
