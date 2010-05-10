@@ -1,3 +1,8 @@
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fixed
+	  'Bug 604085 - Renaming C# method inserts wrong name.'.
+
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:

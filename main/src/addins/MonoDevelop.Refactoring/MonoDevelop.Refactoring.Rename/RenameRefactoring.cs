@@ -225,10 +225,16 @@ namespace MonoDevelop.Refactoring.Rename
 				return refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem, true);
 			} else if (options.SelectedItem is IMember) {
 				IMember member = (IMember)options.SelectedItem;
-				
+				Dictionary<string, HashSet<DomLocation>> foundLocations = new Dictionary <string, HashSet<DomLocation>> ();
 				MemberReferenceCollection result = new MemberReferenceCollection ();
 				foreach (IMember m in CollectMembers (member.DeclaringType.SourceProjectDom, member)) {
 					foreach (MemberReference r in refactorer.FindMemberReferences (monitor, m.DeclaringType, m, true)) {
+						DomLocation location = new DomLocation (r.Line, r.Column);
+						if (!foundLocations.ContainsKey (r.FileName))
+							foundLocations[r.FileName] = new HashSet<DomLocation> ();
+						if (foundLocations[r.FileName].Contains (location))
+							continue;
+						foundLocations[r.FileName].Add (location);
 						result.Add (r);
 					}
 				}
