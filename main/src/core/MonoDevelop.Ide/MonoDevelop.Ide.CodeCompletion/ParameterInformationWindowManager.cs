@@ -173,17 +173,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		public static int X { get; private set; }
 		public static int Y { get; private set; }
-		
+		public static bool wasAbove = false;
 		internal static void UpdateWindow ()
 		{
 			// Updates the parameter information window from the information
 			// of the current method overload
-			if (window == null && methods.Count > 0)
+			if (window == null && methods.Count > 0) {
 				window = new ParameterInformationWindow ();
+				wasAbove = false;
+			}
 			
 			if (methods.Count == 0) {
 				if (window != null) {
 					window.Hide ();
+					wasAbove = false;
 				}
 				return;
 			}
@@ -206,8 +209,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (Y < 0)
 				Y = CurrentCodeCompletionContext.TriggerYCoord;
 			
-			if (Y + reqSize.Height > window.Screen.Height) {
+			if (wasAbove || Y + reqSize.Height > window.Screen.Height) {
 				Y = Y - CurrentCodeCompletionContext.TriggerTextHeight - reqSize.Height - 4;
+				wasAbove = true;
 			}
 			
 			if (CompletionWindowManager.IsVisible) {

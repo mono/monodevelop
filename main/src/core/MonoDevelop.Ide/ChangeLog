@@ -1,3 +1,10 @@
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	* MonoDevelop.Ide.CodeCompletion/ParameterInformationWindowManager.cs:
+	  Fixed 'Bug 603987 - Parameters tooltip shows over completion
+	  list'/parameter list now doesn't jump anymore.
+
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads/FileScout.cs: Fix incorrect check

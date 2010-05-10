@@ -300,6 +300,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			curYPos = Y;
 			Move (X, Y);
 			UpdateDeclarationView ();
+			ParameterInformationWindowManager.UpdateWindow ();
 		}
 		
 		//smaller lists get size reallocated after FillList, so we have to reposition them
