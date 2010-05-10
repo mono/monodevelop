@@ -1,3 +1,8 @@
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Search
+	  results now have exacter navigation points.
+
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/ImageService.cs: When creating internal ids

@@ -639,7 +639,26 @@ namespace MonoDevelop.Ide.FindInFiles
 			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			Mono.TextEditor.Document doc = GetDocument (searchResult);
 			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);
-			return new TextFileNavigationPoint (searchResult.FileName, location.Line, location.Column);
+			return new SearchTextFileNavigationPoint (searchResult.FileName, location.Line + 1, location.Column + 1);
+		}
+		
+		class SearchTextFileNavigationPoint : TextFileNavigationPoint 
+		{
+			public SearchTextFileNavigationPoint (FilePath file, int line, int column) : base (file, line, column)
+			{
+			}
+			
+			protected override MonoDevelop.Ide.Gui.Document DoShow ()
+			{
+				var doc = base.DoShow ();
+				if (doc != null) {
+					IEditableTextBuffer buf = doc.GetContent<IEditableTextBuffer> ();
+					if (buf != null)
+						buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
+				}
+				return doc;
+			}
+			
 		}
 	}
 }
