@@ -1014,6 +1014,11 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				ResetFocusChain ();
+			} else {
+				if (TextEditor.IsSomethingSelected) {
+					TextEditor.SearchPattern = TextEditor.SelectedText;
+					TextEditor.TextViewMargin.MainSearchResult = TextEditor.SelectionRange;
+				}
 			}
 			searchAndReplaceWidget.UpdateSearchPattern ();
 			searchAndReplaceWidget.IsReplaceMode = replace;
