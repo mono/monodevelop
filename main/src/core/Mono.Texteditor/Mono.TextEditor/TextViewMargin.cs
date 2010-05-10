@@ -70,6 +70,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public bool AlphaBlendSearchResults {
+			get;
+			set;
+		}
+		
 		/// <summary>
 		/// Set to true to highlight the caret line temporarly. It's
 		/// the same as the option, but is unset when the caret moves.
@@ -1260,7 +1265,7 @@ namespace Mono.TextEditor
 							x1 /= (int)Pango.Scale.PangoScale;
 							x2 /= (int)Pango.Scale.PangoScale;
 							
-							cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (MainSearchResult == null || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg, 0.4);
+							cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (MainSearchResult == null || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg, AlphaBlendSearchResults ? 0.6 : 1.0);
 							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x + x1, y, (int)(System.Math.Min (10, width) * textEditor.Options.Zoom), x2 - x1, textEditor.LineHeight);
 							cr.Fill ();
 						}

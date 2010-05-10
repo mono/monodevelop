@@ -75,6 +75,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public TextEditor Parent {
+			get;
+			set;
+		}
+		
 		public TextEditorData () : this (new Document ())
 		{
 			

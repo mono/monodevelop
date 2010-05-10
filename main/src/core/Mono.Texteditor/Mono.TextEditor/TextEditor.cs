@@ -241,6 +241,7 @@ namespace Mono.TextEditor
 		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			textEditorData = new TextEditorData (doc);
+			textEditorData.Parent = this;
 			textEditorData.RecenterEditor += delegate {
 				CenterToCaret ();
 				StartCaretPulseAnimation ();
