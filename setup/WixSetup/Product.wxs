@@ -49,6 +49,7 @@
               <File Name="mdrun.exe" Source="$(var.BuildRoot)\bin\mdrun.exe" />
               <File Name="Mono.Cecil.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.dll" />
               <File Name="Mono.Cecil.Mdb.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.Mdb.dll" />
+              <File Name="Cecil.Decompiler.dll" Source="$(var.BuildRoot)\bin\Cecil.Decompiler.dll" />
               <File Name="Mono.Debugging.dll" Source="$(var.BuildRoot)\bin\Mono.Debugging.dll" />
               <File Name="Mono.TextEditor.dll" Source="$(var.BuildRoot)\bin\Mono.TextEditor.dll" />
               <File Name="MonoDevelop.Core.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Core.dll" />
