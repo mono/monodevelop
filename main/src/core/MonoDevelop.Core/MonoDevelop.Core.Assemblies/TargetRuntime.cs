@@ -170,6 +170,7 @@ namespace MonoDevelop.Core.Assemblies
 		public Process ExecuteAssembly (string file, string arguments, TargetFramework fx)
 		{
 			ProcessStartInfo pi = new ProcessStartInfo (file, arguments);
+			pi.UseShellExecute = false;
 			return ExecuteAssembly (pi, fx);
 		}
 

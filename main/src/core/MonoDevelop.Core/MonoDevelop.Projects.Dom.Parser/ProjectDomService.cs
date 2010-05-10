@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static string codeCompletionPath;
 
 		static Dictionary<string,ProjectDom> databases = new Dictionary<string,ProjectDom>();
-		static Dictionary<string,SingleFileCacheEntry> singleDatabases = new Dictionary<string,SingleFileCacheEntry> ();		
+		static Dictionary<FilePath,SingleFileCacheEntry> singleDatabases = new Dictionary<FilePath,SingleFileCacheEntry> ();		
 		
 		static ProjectDomService ()
 		{
@@ -302,20 +302,23 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return ParseFile (dom, fileName);
 		}
 		
-		public static void RemoveFileDom (string file)
+		public static void RemoveFileDom (FilePath file)
 		{
-			if (string.IsNullOrEmpty (file))
+			if (file.IsNullOrEmpty)
 				return;
+			file = file.CanonicalPath;
 			if (singleDatabases.ContainsKey (file)) {
 				singleDatabases[file].Database.Unload ();
 				singleDatabases.Remove (file);
 			}
 		}
 		
-		public static ProjectDom GetFileDom (string file)
+		public static ProjectDom GetFileDom (FilePath file)
 		{
-			if (file == null)
+			if (file.IsNull)
 				file = Path.GetTempFileName ();
+			
+			file = file.CanonicalPath;
 			
 			lock (singleDatabases)
 			{
@@ -330,7 +333,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					{
 						DateTime tim = DateTime.MaxValue;
 						string toDelete = null;
-						foreach (KeyValuePair<string,SingleFileCacheEntry> pce in singleDatabases)
+						foreach (KeyValuePair<FilePath,SingleFileCacheEntry> pce in singleDatabases)
 						{
 							DateTime ptim = pce.Value.AccessTime;
 							if (ptim < tim) {

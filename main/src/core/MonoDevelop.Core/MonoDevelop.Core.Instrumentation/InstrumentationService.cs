@@ -88,17 +88,9 @@ namespace MonoDevelop.Core.Instrumentation
 			if (publicPort == -1)
 				throw new InvalidOperationException ("Service not published");
 			
-			ProcessStartInfo pi = new ProcessStartInfo ();
 			string exe = Path.Combine (Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location), "mdmonitor.exe");
-			string args = "localhost:" + publicPort;
-			if (File.Exists (exe)) {
-				pi.FileName = "mono";
-				pi.Arguments = exe + " " + args;
-			} else {
-				pi.FileName = "mdmonitor";
-				pi.Arguments = args;
-			}
-			Process.Start (pi);
+			string args = "-c localhost:" + publicPort;
+			Runtime.SystemAssemblyService.CurrentRuntime.ExecuteAssembly (exe, args);
 		}
 		
 		public static void StartAutoSave (string file, int interval)

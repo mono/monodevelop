@@ -1,3 +1,15 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Use
+	  FilePath to index the file database dictionary.
+
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	  ExecuteAssembly sets env vars, so UseShellExecute must be
+	  false.
+
+	* MonoDevelop.Core.Instrumentation/InstrumentationService.cs:
+	  Start the monitor process using a cross platform method.
+
 2010-05-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Core/FileService.cs: Check empty file name.
