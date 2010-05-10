@@ -629,7 +629,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				ResolveResult result = resolver.ResolveIdentifier (idExp.Identifier, ConvertLocation (idExp.StartLocation));
 				
 				if (searchedMember is IType) {
-					IMember item = result != null ? ((MemberResolveResult)result).ResolvedMember : null;
+					IMember item = result != null && result is MemberResolveResult ? ((MemberResolveResult)result).ResolvedMember : null;
 					if (item == null && result != null)
 						item = resolver.Dom.GetType (result.ResolvedType);
 					
