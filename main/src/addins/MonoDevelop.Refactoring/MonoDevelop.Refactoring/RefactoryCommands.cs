@@ -233,13 +233,13 @@ namespace MonoDevelop.Refactoring
 			if (doc.CompilationUnit != null && doc.CompilationUnit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (line, column))) {
 				CommandInfoSet organizeUsingsMenu = new CommandInfoSet ();
 				organizeUsingsMenu.Text = GettextCatalog.GetString ("_Organize Usings");
-				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.RemoveUnusedImports, null), new RefactoryOperation (delegate {
+				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.RemoveUnusedImports), new RefactoryOperation (delegate {
 					new RemoveUnusedImportsHandler ().Start (options);
 				}));
-				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Refactoring.RefactoryCommands.SortImports, null), new RefactoryOperation (delegate {
+				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Refactoring.RefactoryCommands.SortImports), new RefactoryOperation (delegate {
 					new SortImportsHandler ().Start (options);
 				}));
-				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports, null), new RefactoryOperation (delegate {
+				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Refactoring.RefactoryCommands.RemoveSortImports), new RefactoryOperation (delegate {
 					new RemoveSortImportsHandler ().Start (options);
 				}));
 				ainfo.Add (organizeUsingsMenu, null);
@@ -278,13 +278,13 @@ namespace MonoDevelop.Refactoring
 					}
 					ainfo.Add (declSet);
 				} else {
-					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration, null), new RefactoryOperation (refactorer.GoToDeclaration));
+					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new RefactoryOperation (refactorer.GoToDeclaration));
 				}
 				added = true;
 			}
 			
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences, null), new RefactoryOperation (refactorer.FindReferences));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new RefactoryOperation (refactorer.FindReferences));
 			
 			Ambience ambience = AmbienceService.GetAmbienceForFile (pinfo.FileName);
 			bool includeModifyCommands = this.IsModifiable (item);
@@ -346,7 +346,7 @@ namespace MonoDevelop.Refactoring
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
 				}
 				
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences, null), new RefactoryOperation (refactorer.FindReferences));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new RefactoryOperation (refactorer.FindReferences));
 				
 //				if (canRename)
 //					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
@@ -624,13 +624,13 @@ namespace MonoDevelop.Refactoring
 					}
 					ciset.CommandInfos.Add (declSet);
 				} else {
-					ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration, null), new RefactoryOperation (refactorer.GoToDeclaration));
+					ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new RefactoryOperation (refactorer.GoToDeclaration));
 				}
 			}
 			
 
 			if ((item is IMember || item is LocalVariable || item is IParameter) && !(item is IType))
-				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences, null), new RefactoryOperation (refactorer.FindReferences));
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new RefactoryOperation (refactorer.FindReferences));
 			
 			// We can rename local variables (always), method params (always), 
 			// or class/members (if they belong to a project)
@@ -694,7 +694,7 @@ namespace MonoDevelop.Refactoring
 					ciset.CommandInfos.Add (GettextCatalog.GetString ("Override/Implement members..."), new RefactoryOperation (refactorer.OverrideOrImplementMembers));
 				}
 				
-				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences, null), new RefactoryOperation (refactorer.FindReferences));
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new RefactoryOperation (refactorer.FindReferences));
 				
 //				if (canRename)
 //					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));

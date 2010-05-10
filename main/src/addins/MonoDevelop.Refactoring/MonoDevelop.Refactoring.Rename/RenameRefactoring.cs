@@ -41,7 +41,7 @@ namespace MonoDevelop.Refactoring.Rename
 	{
 		public override string AccelKey {
 			get {
-				var key = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).AccelKey;
+				var key = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename).AccelKey;
 				return key == null ? null : key.Replace ("dead_circumflex", "^");
 			}
 		}
@@ -68,7 +68,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
-			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename, null).Text;
+			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename).Text;
 		}
 		
 		internal static Mono.TextEditor.TextEditor GetEditor (Gtk.Widget widget)

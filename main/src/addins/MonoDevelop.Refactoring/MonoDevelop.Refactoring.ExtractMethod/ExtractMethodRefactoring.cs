@@ -45,7 +45,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 	{
 		public override string AccelKey {
 			get {
-				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.ExtractMethod, null);
+				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.ExtractMethod);
 				if (cmdInfo != null && cmdInfo.AccelKey != null)
 					return cmdInfo.AccelKey.Replace ("dead_circumflex", "^");
 				return null;

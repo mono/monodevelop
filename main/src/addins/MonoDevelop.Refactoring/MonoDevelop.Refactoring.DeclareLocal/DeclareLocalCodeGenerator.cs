@@ -42,7 +42,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 	{
 		public override string AccelKey {
 			get {
-				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.DeclareLocal, null);
+				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.DeclareLocal);
 				if (cmdInfo != null && cmdInfo.AccelKey != null)
 					return cmdInfo.AccelKey.Replace ("dead_circumflex", "^");
 				return null;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				options.ParseMember (resolveResult.CallingMember);
 				
 				TextReplaceChange insert = new TextReplaceChange ();
-				string str = insert.FileName = options.Document.FileName;
+				insert.FileName = options.Document.FileName;
 				insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 				
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (returnType);

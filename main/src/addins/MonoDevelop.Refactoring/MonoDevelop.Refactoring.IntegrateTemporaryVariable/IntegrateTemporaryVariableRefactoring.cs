@@ -38,7 +38,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 	{
 		public override string AccelKey {
 			get {
-				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.IntegrateTemporaryVariable, null);
+				var cmdInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.IntegrateTemporaryVariable);
 				if (cmdInfo != null && cmdInfo.AccelKey != null)
 					return cmdInfo.AccelKey.Replace ("dead_circumflex", "^");
 				return null;
