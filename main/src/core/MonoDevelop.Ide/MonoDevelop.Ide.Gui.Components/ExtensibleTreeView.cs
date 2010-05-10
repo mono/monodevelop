@@ -937,6 +937,24 @@ namespace MonoDevelop.Ide.Gui.Components
 			Zoom = 1;
 		}
 
+		[CommandUpdateHandler (ViewCommands.ZoomIn)]
+		protected void UpdateZoomIn (CommandInfo cinfo)
+		{
+			cinfo.Enabled = Zoom != 8.0;
+		}
+
+		[CommandUpdateHandler (ViewCommands.ZoomOut)]
+		protected void UpdateZoomOut (CommandInfo cinfo)
+		{
+			cinfo.Enabled = Zoom != 0.3;
+		}
+		
+		[CommandUpdateHandler (ViewCommands.ZoomReset)]
+		protected void UpdateZoomReset (CommandInfo cinfo)
+		{
+			cinfo.Enabled = Zoom != 1;
+		}
+
 		[CommandHandler (EditCommands.Copy)]
 		public void CopyCurrentItem ()
 		{

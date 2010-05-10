@@ -1,3 +1,8 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Update
+	  zoom commands according to the zoom status.
+
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide/ProjectOperations.cs: Fixed 'Bug 604040 - Go
