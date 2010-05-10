@@ -442,6 +442,11 @@ namespace MonoDevelop.Ide
 
 		public bool Close (bool saveWorkspacePreferencies)
 		{
+			return Close (saveWorkspacePreferencies, true);
+		}
+		
+		internal bool Close (bool saveWorkspacePreferencies, bool closeProjectFiles)
+		{
 			if (Items.Count > 0) {
 				
 				// Request permission for unloading the items
@@ -453,12 +458,14 @@ namespace MonoDevelop.Ide
 				if (saveWorkspacePreferencies)
 					SavePreferences ();
 
-				Document[] docs = new Document[IdeApp.Workbench.Documents.Count];
-				IdeApp.Workbench.Documents.CopyTo (docs, 0);
-				foreach (Document doc in docs) {
-					if (doc.HasProject) {
-						if (!doc.Close ())
-							return false;
+				if (closeProjectFiles) {
+					Document[] docs = new Document[IdeApp.Workbench.Documents.Count];
+					IdeApp.Workbench.Documents.CopyTo (docs, 0);
+					foreach (Document doc in docs) {
+						if (doc.HasProject) {
+							if (!doc.Close ())
+								return false;
+						}
 					}
 				}
 				

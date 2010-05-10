@@ -664,7 +664,7 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 			}
 			
-			if (!IdeApp.Workspace.Close (false))
+			if (!IdeApp.Workspace.Close (false, false))
 				return false;
 			
 			CloseAllViews ();

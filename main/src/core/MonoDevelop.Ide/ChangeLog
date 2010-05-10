@@ -1,5 +1,13 @@
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Don't close
+	  documents when closing the workspace, since they are closed
+	  later on. Fixes bug #603720 - quiting edited project -- MD
+	  asks twice to quit.
+
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs: Update
 	  zoom commands according to the zoom status.
 
