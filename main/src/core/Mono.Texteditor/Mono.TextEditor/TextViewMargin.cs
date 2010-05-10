@@ -1252,7 +1252,7 @@ namespace Mono.TextEditor
 				HandleSelection (line, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 					uint startIndex = (uint)(start - offset);
 					uint endIndex = (uint)(end - offset);
-					if (startIndex < endIndex && endIndex < layout.LineChars.Length) {
+					if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {
 						uint startTranslated = TranslateToUTF8Index (layout.LineChars, startIndex, ref curIndex, ref byteIndex);
 						uint endTranslated = TranslateToUTF8Index (layout.LineChars, endIndex, ref curIndex, ref byteIndex);
 						using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {

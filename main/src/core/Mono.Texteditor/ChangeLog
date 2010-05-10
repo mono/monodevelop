@@ -1,5 +1,10 @@
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed little search
+	  highlighting display bug.
+
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorOptions.cs: Fixed 'Bug 604052 -
 	  View->Normal Size sensitivity is inconsistent'.
 
