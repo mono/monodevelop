@@ -75,12 +75,12 @@
 					defaultHandler = "MonoDevelop.Refactoring.GotoDeclarationHandler"
 					_label = "_Go to declaration" 
 					shortcut = "F12"
-					macShortcut = "F12"/>
+					macShortcut = "Meta|D"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
 					defaultHandler = "MonoDevelop.Refactoring.FindReferencesHandler"
 					_label = "_Find references" 
 					shortcut = "Shift|F12"
-					macShortcut = "Shift|F12"/>
+					macShortcut = "Shift|Meta|D"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
 					defaultHandler = "MonoDevelop.Refactoring.FindDerivedClassesHandler"
 					_label = "Find _derived classes" />
@@ -91,7 +91,7 @@
 					defaultHandler = "MonoDevelop.Refactoring.Rename.RenameHandler"
 					_label = "_Rename..." 
 					shortcut = "F2"
-					macShortcut = "F2"/>
+					macShortcut = "Meta|R"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
