@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide
 			iconSet.AddSource (source);
 		}
 
-		static string InternalGetStockIdFromResource (RuntimeAddin addin, string id)
+		static string InternalGetStockIdFromResource (RuntimeAddin addin, string id, Gtk.IconSize size)
 		{
 			if (!id.StartsWith ("res:"))
 				return id;
@@ -337,12 +337,12 @@ namespace MonoDevelop.Ide
 			id = id.Substring (4);
 			int addinId = GetAddinId (addin);
 			Dictionary<string, string> hash = addinIcons[addinId];
-			string stockId = "__asm" + addinId + "__" + id;
+			string stockId = "__asm" + addinId + "__" + id + "__" + size;
 			if (!hash.ContainsKey (stockId)) {
 				System.IO.Stream stream = addin.GetResource (id);
 				if (stream != null) {
 					using (stream) {
-						AddToIconFactory (stockId, new Gdk.Pixbuf (stream), Gtk.IconSize.Invalid);
+						AddToIconFactory (stockId, new Gdk.Pixbuf (stream), size);
 					}
 				}
 				hash[stockId] = stockId;
@@ -417,19 +417,19 @@ namespace MonoDevelop.Ide
 		static string InternalGetStockId (RuntimeAddin addin, string filename, Gtk.IconSize size)
 		{
 			if (filename.IndexOf ('|') == -1)
-				return PrivGetStockId (addin, filename);
+				return PrivGetStockId (addin, filename, size);
 
 			string[] parts = filename.Split ('|');
 			for (int n = 0; n < parts.Length; n++) {
-				parts[n] = PrivGetStockId (addin, parts[n]);
+				parts[n] = PrivGetStockId (addin, parts[n], size);
 			}
 			return GetComposedIcon (parts, size);
 		}
 
-		static string PrivGetStockId (RuntimeAddin addin, string filename)
+		static string PrivGetStockId (RuntimeAddin addin, string filename, Gtk.IconSize size)
 		{
 			if (addin != null && filename.StartsWith ("res:"))
-				return InternalGetStockIdFromResource (addin, filename);
+				return InternalGetStockIdFromResource (addin, filename, size);
 
 			return filename;
 		}

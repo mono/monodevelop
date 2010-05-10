@@ -1,5 +1,13 @@
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide/ImageService.cs: When creating internal ids
+	  for icons loaded from resources, take into account the
+	  requested size, since the same resource may be used to
+	  create icons for different sizes. Fixes bug #603709 -
+	  Missing Debug Icon.
+
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide/RootWorkspace.cs:
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Don't close
 	  documents when closing the workspace, since they are closed
