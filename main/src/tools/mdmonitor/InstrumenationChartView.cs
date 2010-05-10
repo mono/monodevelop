@@ -155,8 +155,16 @@ namespace Mono.Instrumentation.Monitor
 			frameCharts.PackStart (timeChart, true, true, 0);
 			frameCharts.ShowAll ();
 			
-			endTime = DateTime.Now;
-			startTime = endTime - visibleTime;
+			if (App.FromFile) {
+				if (visibleTime > App.Service.EndTime - App.Service.StartTime)
+					visibleTime = App.Service.EndTime - App.Service.StartTime;
+				startTime = App.Service.StartTime;
+				endTime = startTime + visibleTime;
+			}
+			else {
+				endTime = DateTime.Now;
+				startTime = endTime - visibleTime;
+			}
 			
 			DateTime st = App.Service.StartTime;
 			if (st > startTime) st = startTime;
@@ -165,7 +173,9 @@ namespace Mono.Instrumentation.Monitor
 			
 			UpdateCharts ();
 			chartScroller.Value = chartScroller.Adjustment.Upper;
-			StartAutoscroll ();
+			
+			if (!App.FromFile)
+				StartAutoscroll ();
 			
 			toggleTimeView.Active = true;
 		}

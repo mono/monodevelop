@@ -37,7 +37,6 @@ namespace Mono.Instrumentation.Monitor
 	public partial class TimeStatisticsView : Gtk.Bin
 	{
 		TreeStore store;
-		Gtk.Widget parent;
 		Gdk.Color normalColor;
 		
 		const int ColFilled = 7;
@@ -66,7 +65,6 @@ namespace Mono.Instrumentation.Monitor
                typeof(Gdk.Color)); // Color
 			
 			treeView.Model = store;
-			this.parent = parent;
 			normalColor = parent.Style.Foreground (StateType.Normal);
 			
 			CellRendererText crt = new CellRendererText ();

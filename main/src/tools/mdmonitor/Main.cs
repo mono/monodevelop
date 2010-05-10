@@ -37,17 +37,27 @@ namespace Mono.Instrumentation.Monitor
 		{
 			Application.Init ();
 			if (args.Length == 0) {
-				Console.WriteLine ("Usage: mdmonitor host:port");
+				ShowHelp ();
 				return;
 			}
-			
-			service = InstrumentationService.GetRemoteService (args[0]);
-			try {
-				service.GetCategories ();
-			} catch (Exception ex) {
-				MessageDialog md = new MessageDialog (null, DialogFlags.Modal, MessageType.Error, ButtonsType.Close, "Could not connect to instrumentation service: " + ex.Message);
-				md.Run ();
-				md.Destroy ();
+			if (args [0] == "-c") {
+				if (args.Length != 2) {
+					ShowHelp ();
+					return;
+				}
+				service = InstrumentationService.GetRemoteService (args[1]);
+				try {
+					service.GetCategories ();
+				} catch (Exception ex) {
+					MessageDialog md = new MessageDialog (null, DialogFlags.Modal, MessageType.Error, ButtonsType.Close, "Could not connect to instrumentation service: " + ex.Message);
+					md.Run ();
+					md.Destroy ();
+					return;
+				}
+			} else if (args.Length == 1) {
+				LoadServiceData (args[0]);
+			} else {
+				ShowHelp ();
 				return;
 			}
 			
@@ -56,11 +66,29 @@ namespace Mono.Instrumentation.Monitor
 			Application.Run ();
 		}
 		
+		static void ShowHelp ()
+		{
+			Console.WriteLine ("Usage:");
+			Console.WriteLine ("  mdmonitor <log-file>       : Open log file");
+			Console.WriteLine ("  mdmonitor -c <host>:<port> : Connect to running service");
+		}
+		
 		public static IInstrumentationService Service {
 			get {
 				return service;
 			}
+			set {
+				service = value;
+			}
 		}
+		
+		public static void LoadServiceData (string file)
+		{
+			service = InstrumentationService.LoadServiceDataFromFile (file);
+			FromFile = true;
+		}
+		
+		public static bool FromFile { get; private set; }
 	}
 	
 }

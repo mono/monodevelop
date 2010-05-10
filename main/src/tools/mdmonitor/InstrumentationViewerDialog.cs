@@ -34,6 +34,7 @@ using Gtk;
 using System.Globalization;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace Mono.Instrumentation.Monitor
 {
@@ -117,6 +118,7 @@ namespace Mono.Instrumentation.Monitor
 			foreach (ChartView view in views) {
 				store.AppendValues (iterViews, view.Name, view);
 			}
+			hpaned.Sensitive = (App.Service != null);
 		}
 		
 		internal void NewView (ChartView source)
@@ -182,8 +184,10 @@ namespace Mono.Instrumentation.Monitor
 		void HandleTreeCountersSelectionChanged (object sender, EventArgs e)
 		{
 			TreeIter it;
-			if (!treeCounters.Selection.GetSelected (out it))
+			if (!treeCounters.Selection.GetSelected (out it)) {
+				SetView (null, null, false);
 				return;
+			}
 			
 			if (store.GetPath (it).Equals (store.GetPath (iterTimers))) {
 				if (timersWidget == null) {
@@ -276,6 +280,24 @@ namespace Mono.Instrumentation.Monitor
 		protected virtual void OnExitActionActivated (object sender, System.EventArgs e)
 		{
 			Gtk.Application.Quit ();
+		}
+		
+		protected virtual void OnOpenActionActivated (object sender, System.EventArgs e)
+		{
+			FileChooserDialog fdiag  = new FileChooserDialog ("Open Data File", this, FileChooserAction.Open);
+			fdiag.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
+			fdiag.AddButton (Gtk.Stock.Open, ResponseType.Ok);
+			fdiag.SelectMultiple = false;
+			
+			try {
+				if (fdiag.Run () == (int) Gtk.ResponseType.Ok && fdiag.Filenames.Length > 0) {
+					treeCounters.Selection.UnselectAll ();
+					App.LoadServiceData (fdiag.Filenames[0]);
+					UpdateViews ();
+				}
+			} finally {
+				fdiag.Destroy ();
+			}
 		}
 	}		
 	

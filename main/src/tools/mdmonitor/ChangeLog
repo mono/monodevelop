@@ -1,3 +1,14 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.cs:
+	* gtk-gui/gui.stetic:
+	* InstrumenationChartView.cs:
+	* InstrumentationViewerDialog.cs:
+	* gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:
+	  Allow loading intrumentation service log data from a file.
+
+	* TimeStatisticsView.cs: Fix warning.
+
 2010-04-29  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: dist resources also

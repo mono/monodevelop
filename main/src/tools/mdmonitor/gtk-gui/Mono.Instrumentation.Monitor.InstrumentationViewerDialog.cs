@@ -242,6 +242,7 @@ namespace Mono.Instrumentation.Monitor
 			this.DefaultHeight = 587;
 			this.Show ();
 			this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
+			this.openAction.Activated += new global::System.EventHandler (this.OnOpenActionActivated);
 			this.ExitAction.Activated += new global::System.EventHandler (this.OnExitActionActivated);
 			this.FlushMemoryAction.Activated += new global::System.EventHandler (this.OnFlushMemoryActionActivated);
 			this.buttonSave.Clicked += new global::System.EventHandler (this.OnButtonSaveClicked);
