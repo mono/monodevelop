@@ -1,3 +1,8 @@
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Track API
+	  changes.
+
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Policies.xml: Added attribute to explicitly allow

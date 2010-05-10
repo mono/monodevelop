@@ -391,16 +391,16 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#region ITooltipProvider implementation
 		
-		public object GetItem (Mono.TextEditor.TextEditor editor, int offset)
+		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
 			DocumentLocation location = editor.Document.OffsetToLocation (offset);
-			return (0 >= location.Column)? margin.GetCommitMessage (location.Line): null;
+			return (0 >= location.Column)? new TooltipItem (margin.GetCommitMessage (location.Line), editor.Document.GetLine (location.Line)) : null;
 		}
 		
 		
-		public Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, object item)
+		public Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
-			return new LanguageItemWindow (editor as ExtensibleTextEditor, modifierState,  null, item as string, null);
+			return new LanguageItemWindow (editor as ExtensibleTextEditor, modifierState,  null, item.Item as string, null);
 		}
 		
 		
