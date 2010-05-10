@@ -1,3 +1,11 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugger.Soft.dll:
+	* Mono.Debugger.Soft.dll.mdb: Updated to latest.
+
+	* SoftDebuggerAdaptor.cs: Handle the new
+	  AbsentInformationException.
+
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftEvaluationContext.cs:

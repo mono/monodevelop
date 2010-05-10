@@ -250,18 +250,27 @@ namespace Mono.Debugging.Soft
 
 		public override ValueReference GetLocalVariable (EvaluationContext ctx, string name)
 		{
-			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			LocalVariable local = cx.Frame.Method.GetLocal (name);
-			if (local != null)
-				return new VariableValueReference (ctx, name, local);
-			else
+			try {
+				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+				LocalVariable local = cx.Frame.Method.GetLocal (name);
+				if (local != null)
+					return new VariableValueReference (ctx, name, local);
+				else
+					return null;
+			} catch (AbsentInformationException) {
 				return null;
+			}
 		}
 
 		public override IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			LocalVariable[] locals = cx.Frame.Method.GetLocals ();
+			LocalVariable[] locals;
+			try {
+				locals = cx.Frame.Method.GetLocals ();
+			} catch (AbsentInformationException) {
+				yield break;
+			}
 			foreach (LocalVariable var in locals) {
 				if (!var.IsArg)
 					yield return new VariableValueReference (ctx, var.Name, var);
@@ -343,7 +352,7 @@ namespace Mono.Debugging.Soft
 				type = type.BaseType;
 			}
 		}
-
+		
 		public override void GetNamespaceContents (EvaluationContext ctx, string namspace, out string[] childNamespaces, out string[] childTypes)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
@@ -366,7 +375,13 @@ namespace Mono.Debugging.Soft
 		public override IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			LocalVariable[] locals = cx.Frame.Method.GetLocals ();
+			LocalVariable[] locals;
+			try {
+				locals = cx.Frame.Method.GetLocals ();
+			} catch (AbsentInformationException) {
+				yield break;
+			}
+				
 			foreach (LocalVariable var in locals) {
 				if (var.IsArg)
 					yield return new VariableValueReference (ctx, var.Name, var);
@@ -375,21 +390,29 @@ namespace Mono.Debugging.Soft
 
 		public override ValueReference GetThisReference (EvaluationContext ctx)
 		{
-			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			if (cx.Frame.Method.IsStatic)
+			try {
+				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+				if (cx.Frame.Method.IsStatic)
+					return null;
+				Value val = cx.Frame.GetThis ();
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, "this", val);
+			} catch (AbsentInformationException) {
 				return null;
-			Value val = cx.Frame.GetThis ();
-			return LiteralValueReference.CreateTargetObjectLiteral (ctx, "this", val);
+			}
 		}
 		
 		public override ValueReference GetCurrentException (EvaluationContext ctx)
 		{
-			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-			ObjectMirror exc = cx.Session.GetExceptionObject (cx.Thread);
-			if (exc != null)
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, exc);
-			else
+			try {
+				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+				ObjectMirror exc = cx.Session.GetExceptionObject (cx.Thread);
+				if (exc != null)
+					return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, exc);
+				else
+					return null;
+			} catch (AbsentInformationException) {
 				return null;
+			}
 		}
 
 
