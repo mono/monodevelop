@@ -1,3 +1,9 @@
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/Style.cs: Fixed 'Bug 603971 -
+	  Symbol highlight combined with search highlight looks ugly'.
+
 2010-05-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Tune search result animation.

@@ -374,6 +374,14 @@ namespace Mono.TextEditor.Highlighting
 			                        (double)color.Blue / ushort.MaxValue);
 		}
 		
+		public static Cairo.Color ToCairoColor (Gdk.Color color, double alpha)
+		{
+			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
+			                        (double)color.Green / ushort.MaxValue,
+			                        (double)color.Blue / ushort.MaxValue,
+			                        alpha);
+		}
+		
 		protected Style ()
 		{
 			SetStyle (DefaultString, 0, 0, 0, 255, 255, 255);
