@@ -706,7 +706,8 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Rename"
 				_label = "Re_name"
 				_description = "Rename the selection"
-				shortcut = "F2" />
+				shortcut = "F2"
+				macShortcut = "Meta|R"/>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Undo"
 				_label = "_Undo" 
 				icon = "gtk-undo" 
