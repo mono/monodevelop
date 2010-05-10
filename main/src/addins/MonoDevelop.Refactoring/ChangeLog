@@ -1,5 +1,11 @@
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.Rename/RenameItemDialog.cs: Improved
+	  the class renaming behaviour. (Bug 603938 - Renaming a Class
+	  in a file with multiple classes renames the file)
+
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs: Fixed
 	  'Bug 604085 - Renaming C# method inserts wrong name.'.
 

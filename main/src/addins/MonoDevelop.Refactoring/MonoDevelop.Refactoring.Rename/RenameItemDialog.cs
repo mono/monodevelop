@@ -57,6 +57,10 @@ namespace MonoDevelop.Refactoring.Rename
 					// not supported for inner types
 					this.renameFileFlag.Visible = true;
 					this.renameFileFlag.Active = true;
+					// if more than one type is in the file, only rename the file as defilt if the file name contains the type name
+					// see Bug 603938 - Renaming a Class in a file with multiple classes renames the file
+					if (options.Document.CompilationUnit != null && options.Document.CompilationUnit.Types.Count > 1) 
+						this.renameFileFlag.Active = options.Document.FileName.FileNameWithoutExtension.Contains (type.Name);
 				} else {
 					this.renameFileFlag.Active = false;
 				}
