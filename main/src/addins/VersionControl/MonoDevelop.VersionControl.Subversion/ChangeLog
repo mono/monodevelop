@@ -1,3 +1,11 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/LibSvnClient.cs: Get
+	  the description of errors reported using an error code.
+	  Fixes bug #602762 - No details supplied when svn connection
+	  fails.
+
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:

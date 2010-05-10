@@ -7,6 +7,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
+using System.Text;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
@@ -922,9 +923,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			while (error != IntPtr.Zero) {
 				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
 				if (msg != null)
-					msg += "\n" + error_t.message;
+					msg += "\n" + GetErrorMessage (error_t);
 				else
-					msg = error_t.message;
+					msg = GetErrorMessage (error_t);
 				error = error_t.svn_error_t_child;
 			}
 			
@@ -932,6 +933,17 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				msg = GettextCatalog.GetString ("Unknown error");
 			
 			throw new SubversionException (msg);
+		}
+		
+		string GetErrorMessage (LibSvnClient.svn_error_t error)
+		{
+			if (error.message != null)
+				return error.message;
+			else {
+				byte[] buf = new byte [300];
+				svn.strerror (error.apr_err, buf, buf.Length);
+				return Encoding.UTF8.GetString (buf);
+			}
 		}
 		
 		private VersionInfo CreateNode (LibSvnClient.StatusEnt ent, Repository repo) 

@@ -137,6 +137,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public abstract IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 		
+		public abstract void strerror (int statcode, byte[] buf, int bufsize);
+		
 		public class DirEnt {
 			public readonly string Name;
 			public readonly bool IsDirectory;
@@ -827,6 +829,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			return svn_client_blame (path, ref rev_start, ref rev_end, receiver, baton, ctx, pool);
 		}
+		
+		public override void strerror (int statcode, byte[] buf, int bufsize)
+		{
+			svn_strerror (statcode, buf, bufsize);
+		}
+		
 
 		
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
@@ -936,6 +944,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
 
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern void svn_strerror (int statcode, byte[] buf, int bufsize);
 	}
 	
 	public class LibSvnClient1 : LibSvnClient {
@@ -1187,6 +1197,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			return svn_client_blame (path, ref rev_start, ref rev_end, receiver, baton, ctx, pool);
 		}
+		
+		public override void strerror (int statcode, byte[] buf, int bufsize)
+		{
+			svn_strerror (statcode, buf, bufsize);
+		}
 
 
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
@@ -1297,5 +1312,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
+		
+		[DllImport(svnclientlib)] static extern void svn_strerror (int statcode, byte[] buf, int bufsize);
 	}
 }
