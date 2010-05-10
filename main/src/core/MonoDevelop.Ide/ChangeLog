@@ -1,3 +1,24 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide/IdeStartup.cs: Add command line argument to
+	  enable instrumentation service logging.
+
+	* MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs:
+	* MonoDevelop.Components.Commands/CommandMenu.cs:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands/CommandToolbar.cs:
+	* MonoDevelop.Components.Commands/CommandMenuItem.cs:
+	* MonoDevelop.Components.Commands/ICommandUserItem.cs:
+	* MonoDevelop.Components.Commands/CommandToolButton.cs:
+	* MonoDevelop.Components.Commands/CommandCheckMenuItem.cs:
+	* MonoDevelop.Components.Commands/CommandToggleToolButton.cs:
+	  Added CommandTargetRoute type, which will be used to cache
+	  information command target chains.
+
+	* MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs: Improved
+	  handling of status icons. Avoid creating too many images
+	  when animating.
+
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.addin.xml: Changed some mac shortcuts.

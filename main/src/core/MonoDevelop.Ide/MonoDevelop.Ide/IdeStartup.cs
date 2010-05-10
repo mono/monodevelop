@@ -45,6 +45,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide
 {
@@ -66,6 +67,8 @@ namespace MonoDevelop.Ide
 				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => options.IpcTcp = true },
 				{ "newwindow", "Do not open in an existing instance of MonoDevelop", s => options.NewWindow = true },
 				{ "h|?|help", "Show help", s => options.ShowHelp = true },
+				{ "clog", "Log internal counter data", s => options.LogCounters = true },
+				{ "clog-interval=", "Interval between counter logs (in miliseconds)", s => options.LogCountersInterval = int.Parse (s) },
 			};
 			var remainingArgs = optionsSet.Parse (args);
 			if (options.ShowHelp) {
@@ -73,6 +76,12 @@ namespace MonoDevelop.Ide
 				Console.WriteLine ("Options:");
 				optionsSet.WriteOptionDescriptions (Console.Out);
 				return 0;
+			}
+			
+			if (options.LogCounters) {
+				string logFile = Path.Combine (Environment.CurrentDirectory, "monodevelop.clog");
+				LoggingService.LogInfo ("Logging instrumentation service data to file: " + logFile);
+				InstrumentationService.StartAutoSave (logFile, 1000);
 			}
 			
 			Counters.Initialization.Trace ("Initializing GTK");
@@ -252,6 +261,8 @@ namespace MonoDevelop.Ide
 				File.Delete (socket_filename);
 			
 			Runtime.Shutdown ();
+			InstrumentationService.Stop ();
+			
 			System.Environment.Exit (0);
 			return 0;
 		}
@@ -465,6 +476,8 @@ namespace MonoDevelop.Ide
 		public bool IpcTcp { get; set; }
 		public bool NewWindow { get; set; }
 		public bool ShowHelp { get; set; }
+		public bool LogCounters { get; set; }
+		public int LogCountersInterval { get; set; }
 	}
 	
 #pragma warning restore 0618

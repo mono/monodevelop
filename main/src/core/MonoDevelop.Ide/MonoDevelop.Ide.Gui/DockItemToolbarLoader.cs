@@ -85,8 +85,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Update (object activeTarget)
 		{
+			CommandTargetRoute route = new CommandTargetRoute (initialTarget ?? activeTarget);
 			foreach (ToolButtonStatus bs in buttons)
-				bs.Update (initialTarget ?? activeTarget);
+				bs.Update (route);
 		}
 		
 		public void SetEnabled (bool enabled)
@@ -147,9 +148,9 @@ namespace MonoDevelop.Ide.Gui
 			this.button = button;
 		}
 		
-		public void Update (object initialTarget)
+		public void Update (CommandTargetRoute targetRoute)
 		{
-			CommandInfo cmdInfo = IdeApp.CommandService.GetCommandInfo (cmdId, initialTarget);
+			CommandInfo cmdInfo = IdeApp.CommandService.GetCommandInfo (cmdId, targetRoute);
 			
 			if (lastDesc != cmdInfo.Description) {
 				string toolTip;

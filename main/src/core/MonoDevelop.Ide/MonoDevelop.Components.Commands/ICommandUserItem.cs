@@ -32,6 +32,6 @@ namespace MonoDevelop.Components.Commands
 {
 	public interface ICommandUserItem 
 	{
-		void Update (object initialTarget);
+		void Update (CommandTargetRoute targetChain);
 	}
 }

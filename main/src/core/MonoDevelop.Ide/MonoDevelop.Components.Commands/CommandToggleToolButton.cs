@@ -49,14 +49,14 @@ namespace MonoDevelop.Components.Commands
 			base.OnParentSet (parent);
 			if (Parent == null) return;
 
-			((ICommandUserItem)this).Update (null);
+			((ICommandUserItem)this).Update (new CommandTargetRoute ());
 		}
 		
-		void ICommandUserItem.Update (object initialTarget)
+		void ICommandUserItem.Update (CommandTargetRoute targetRoute)
 		{
 			if (commandManager != null) {
-				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, initialTarget);
-				this.initialTarget = initialTarget;
+				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, targetRoute);
+				this.initialTarget = targetRoute.InitialTarget;
 				Update (cinfo);
 			}
 		}

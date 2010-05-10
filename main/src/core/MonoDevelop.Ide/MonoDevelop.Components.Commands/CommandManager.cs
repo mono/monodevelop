@@ -211,7 +211,7 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			for (int i = 0; i < commands.Count; i++) {
-				CommandInfo cinfo = GetCommandInfo (commands[i].Id, null);
+				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
 				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
 					return;
 			}
@@ -400,6 +400,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public void InsertOptions (Gtk.Menu menu, CommandEntrySet entrySet, int index)
 		{
+			CommandTargetRoute route = new CommandTargetRoute ();
 			foreach (CommandEntry entry in entrySet) {
 				Gtk.MenuItem item = entry.CreateMenuItem (this);
 				CustomItem ci = item.Child as CustomItem;
@@ -408,7 +409,7 @@ namespace MonoDevelop.Components.Commands
 				int n = menu.Children.Length;
 				menu.Insert (item, index);
 				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update (null);
+					((ICommandUserItem)item).Update (route);
 				else
 					item.Show ();
 				index += menu.Children.Length - n;
@@ -508,7 +509,8 @@ namespace MonoDevelop.Components.Commands
 				if (cmd == null)
 					return false;
 				
-				object cmdTarget = GetFirstCommandTarget (initialTarget);
+				CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
+				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				CommandInfo info = new CommandInfo (cmd);
 
 				while (cmdTarget != null)
@@ -565,14 +567,14 @@ namespace MonoDevelop.Components.Commands
 								});
 							}
 							handlerFoundInMulticast = true;
-							cmdTarget = NextMulticastTarget ();
+							cmdTarget = NextMulticastTarget (targetRoute);
 							if (cmdTarget == null)
 								break;
 							else
 								continue;
 						}
 					}
-					cmdTarget = GetNextCommandTarget (cmdTarget);
+					cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
 				}
 
 				if (handlers.Count > 0) {
@@ -612,7 +614,12 @@ namespace MonoDevelop.Components.Commands
 		public event EventHandler<CommandActivationEventArgs> CommandActivating;
 		public event EventHandler<CommandActivationEventArgs> CommandActivated;
 		
-		public CommandInfo GetCommandInfo (object commandId, object initialTarget)
+		public CommandInfo GetCommandInfo (object commandId)
+		{
+			return GetCommandInfo (commandId, new CommandTargetRoute ());
+		}
+		
+		public CommandInfo GetCommandInfo (object commandId, CommandTargetRoute targetRoute)
 		{
 			ActionCommand cmd = GetActionCommand (commandId);
 			if (cmd == null)
@@ -622,9 +629,10 @@ namespace MonoDevelop.Components.Commands
 			CommandInfo info = new CommandInfo (cmd);
 			
 			try {
-				object cmdTarget = GetFirstCommandTarget (initialTarget);
 				bool multiCastEnabled = true;
 				bool multiCastVisible = false;
+				
+				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				
 				while (cmdTarget != null)
 				{
@@ -663,7 +671,7 @@ namespace MonoDevelop.Components.Commands
 							multiCastEnabled = false;
 						if (info.Visible)
 							multiCastVisible = true;
-						cmdTarget = NextMulticastTarget ();
+						cmdTarget = NextMulticastTarget (targetRoute);
 						if (cmdTarget == null) {
 							if (!multiCastEnabled)
 								info.Enabled = false;
@@ -679,7 +687,7 @@ namespace MonoDevelop.Components.Commands
 						return info;
 					}
 					
-					cmdTarget = GetNextCommandTarget (cmdTarget);
+					cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
 				}
 				
 				cmd.UpdateCommandInfo (info);
@@ -702,14 +710,15 @@ namespace MonoDevelop.Components.Commands
 		
 		public object VisitCommandTargets (ICommandTargetVisitor visitor, object initialTarget)
 		{
-			object cmdTarget = GetFirstCommandTarget (initialTarget);
+			CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
+			object cmdTarget = GetFirstCommandTarget (targetRoute);
 			
 			while (cmdTarget != null)
 			{
 				if (visitor.Visit (cmdTarget))
 					return cmdTarget;
 
-				cmdTarget = GetNextCommandTarget (cmdTarget);
+				cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
 			}
 			
 			visitor.Visit (null);
@@ -740,8 +749,10 @@ namespace MonoDevelop.Components.Commands
 				// The command is not overloaded, so it can be handled normally.
 				return DispatchCommand (commandId, dataItem, initialTarget, CommandSource.Keybinding);
 			
+			CommandTargetRoute targetChain = new CommandTargetRoute (initialTarget);
+			
 			// Get the accelerator used to fire the command and make sure it has not changed.
-			CommandInfo accelInfo = GetCommandInfo (commandId, initialTarget);
+			CommandInfo accelInfo = GetCommandInfo (commandId, targetChain);
 			bool res = DispatchCommand (commandId, accelInfo.DataItem, initialTarget, CommandSource.Keybinding);
 
 			// If the accelerator has changed, we can't handle overloading.
@@ -755,7 +766,7 @@ namespace MonoDevelop.Components.Commands
 				if (list[i].Id == commandId) // already handled above.
 					continue;
 				
-				CommandInfo cinfo = GetCommandInfo (list[i].Id, initialTarget);
+				CommandInfo cinfo = GetCommandInfo (list[i].Id, targetChain);
 				if (cinfo.AccelKey != accel) // Key changed by a handler, just ignore the command.
 					continue;
 				
@@ -916,14 +927,14 @@ namespace MonoDevelop.Components.Commands
 			return h;
 		}
 		
-		object GetFirstCommandTarget (object initialTarget)
+		object GetFirstCommandTarget (CommandTargetRoute targetRoute)
 		{
 			delegatorStack.Clear ();
 			visitedTargets.Clear ();
 			handlerFoundInMulticast = false;
 			object cmdTarget;
-			if (initialTarget != null)
-				cmdTarget = initialTarget;
+			if (targetRoute.InitialTarget != null)
+				cmdTarget = targetRoute.InitialTarget;
 			else {
 				cmdTarget = GetActiveWidget (rootWidget);
 				if (cmdTarget == null) {
@@ -934,10 +945,10 @@ namespace MonoDevelop.Components.Commands
 			return cmdTarget;
 		}
 		
-		object GetNextCommandTarget (object cmdTarget)
+		object GetNextCommandTarget (CommandTargetRoute targetRoute, object cmdTarget)
 		{
 			if (cmdTarget is IMultiCastCommandRouter) 
-				cmdTarget = new MultiCastDelegator (this, (IMultiCastCommandRouter)cmdTarget);
+				cmdTarget = new MultiCastDelegator (this, (IMultiCastCommandRouter)cmdTarget, targetRoute);
 			
 			if (cmdTarget is ICommandDelegatorRouter) {
 				object oldCmdTarget = cmdTarget;
@@ -968,12 +979,12 @@ namespace MonoDevelop.Components.Commands
 				return cmdTarget;
 		}
 
-		internal object NextMulticastTarget ()
+		internal object NextMulticastTarget (CommandTargetRoute targetRoute)
 		{
 			while (delegatorStack.Count > 0) {
 				MultiCastDelegator del = delegatorStack.Pop () as MultiCastDelegator;
 				if (del != null) {
-					object cmdTarget = GetNextCommandTarget (del);
+					object cmdTarget = GetNextCommandTarget (targetRoute, del);
 					return cmdTarget == globalHandlerChain ? null : cmdTarget;
 				}
 			}
@@ -1394,11 +1405,13 @@ namespace MonoDevelop.Components.Commands
 		object nextTarget;
 		CommandManager manager;
 		bool done;
+		CommandTargetRoute route;
 		
-		public MultiCastDelegator (CommandManager manager, IMultiCastCommandRouter mcr)
+		public MultiCastDelegator (CommandManager manager, IMultiCastCommandRouter mcr, CommandTargetRoute route)
 		{
 			this.manager = manager;
 			enumerator = mcr.GetCommandTargets ().GetEnumerator ();
+			this.route = route;
 		}
 		
 		public object GetNextCommandTarget ()
@@ -1407,7 +1420,7 @@ namespace MonoDevelop.Components.Commands
 				return this;
 			else {
 				if (manager.handlerFoundInMulticast)
-					return manager.NextMulticastTarget ();
+					return manager.NextMulticastTarget (route);
 				else
 					return null;
 			}
@@ -1510,6 +1523,33 @@ namespace MonoDevelop.Components.Commands
 		Keybinding,
 		Unknown,
 		MacroPlayback
+	}
+	
+	public class CommandTargetRoute
+	{
+		List<object> targets = new List<object> ();
+		
+		public CommandTargetRoute ()
+		{
+		}
+		
+		public CommandTargetRoute (object initialTarget)
+		{
+			InitialTarget = initialTarget;
+		}
+		
+		public object InitialTarget { get; internal set; }
+		
+		internal bool Initialized { get; set; }
+		
+		internal void AddTarget (object obj)
+		{
+			targets.Add (obj);
+		}
+		
+		internal IEnumerable<object> Targets {
+			get { return targets; }
+		}
 	}
 }
 

@@ -59,9 +59,10 @@ namespace MonoDevelop.Components.Commands
 			if (initialCommandTarget != null)
 				defaultTarget = initialCommandTarget;
 
+			CommandTargetRoute targetRoute = new CommandTargetRoute (defaultTarget);
 			foreach (Gtk.Widget item in Children) {
 				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update (defaultTarget);
+					((ICommandUserItem)item).Update (targetRoute);
 				else
 					item.Show ();
 			}

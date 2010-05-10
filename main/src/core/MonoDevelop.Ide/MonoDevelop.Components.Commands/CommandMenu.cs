@@ -92,9 +92,10 @@ namespace MonoDevelop.Components.Commands
 
 		internal void Update ()
 		{
+			CommandTargetRoute targetRoute = new CommandTargetRoute (initialCommandTarget);
 			foreach (Gtk.Widget item in Children) {
 				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update (initialCommandTarget);
+					((ICommandUserItem)item).Update (targetRoute);
 				else if (item is Gtk.MenuItem) {
 					Gtk.MenuItem mitem = (Gtk.MenuItem) item;
 					CommandMenu men = mitem.Submenu as CommandMenu;

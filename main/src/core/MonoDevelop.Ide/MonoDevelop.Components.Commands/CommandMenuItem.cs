@@ -62,11 +62,11 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 
-		void ICommandUserItem.Update (object initialTarget)
+		void ICommandUserItem.Update (CommandTargetRoute targetRoute)
 		{
 			if (commandManager != null && !isArrayItem) {
-				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, initialTarget);
-				this.initialTarget = initialTarget;
+				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, targetRoute);
+				this.initialTarget = targetRoute.InitialTarget;
 				Update (cinfo);
 			}
 		}
@@ -99,7 +99,7 @@ namespace MonoDevelop.Components.Commands
 			if (Parent == null)
 				return;
 			
-			((ICommandUserItem)this).Update (null);
+			((ICommandUserItem)this).Update (new CommandTargetRoute ());
 			
 			if (!isArrayItem) {
 				// Make sure the accelerators always work for this item

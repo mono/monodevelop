@@ -58,11 +58,11 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 		
-		void ICommandUserItem.Update (object initialTarget)
+		void ICommandUserItem.Update (CommandTargetRoute targetChain)
 		{
 			if (commandManager != null && !isArrayItem) {
-				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, initialTarget);
-				this.initialTarget = initialTarget;
+				CommandInfo cinfo = commandManager.GetCommandInfo (commandId, targetChain);
+				this.initialTarget = targetChain.InitialTarget;
 				Update (cinfo);
 			}
 		}
@@ -81,7 +81,7 @@ namespace MonoDevelop.Components.Commands
 			if (Parent == null)
 				return;
 			
-			((ICommandUserItem)this).Update (null);
+			((ICommandUserItem)this).Update (new CommandTargetRoute ());
 			
 			// Make sure the accelerators always work for this item
 			// while the menu is hidden

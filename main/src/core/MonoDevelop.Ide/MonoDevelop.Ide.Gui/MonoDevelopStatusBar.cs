@@ -119,6 +119,7 @@ namespace MonoDevelop.Ide
 			
 			statusIconBox = new HBox ();
 			statusIconBox.BorderWidth = 0;
+			statusIconBox.Spacing = 3;
 			statusBox.PackEnd (statusIconBox, false, false, 4);
 			
 			this.PackStart (textStatusBarPanel, true, true, 0);
@@ -147,7 +148,7 @@ namespace MonoDevelop.Ide
 				if (wnd != null && wnd.List != null && wnd.List.CategoryCount > 1) {
 					if (completionStatus == null)
 						completionStatus = CreateContext ();
-					completionStatus.ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (Commands.TextEditorCommands.ShowCompletionWindow, null).AccelKey));
+					completionStatus.ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (Commands.TextEditorCommands.ShowCompletionWindow).AccelKey));
 				}
 			};
 			
@@ -293,14 +294,10 @@ namespace MonoDevelop.Ide
 		public StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
 		{
 			DispatchService.AssertGuiThread ();
-			
-			Gtk.Image image = new Gtk.Image (pixbuf);
-			image.SetPadding (0, 0);
-			EventBox eventBox = new EventBox ();
-			eventBox.Child = image;
-			statusIconBox.PackEnd (eventBox);
+			StatusIcon icon = new StatusIcon (this, pixbuf);
+			statusIconBox.PackEnd (icon.box);
 			statusIconBox.ShowAll ();
-			return new StatusIcon (this, eventBox, pixbuf);
+			return icon;
 		}
 		
 		void HideStatusIcon (StatusIcon icon)
@@ -372,24 +369,33 @@ namespace MonoDevelop.Ide
 			string tip;
 			DateTime alertEnd;
 			Gdk.Pixbuf icon;
+			uint animation;
+			Gtk.Image image;
 			
 			int astep;
-			Gtk.Image[] images;
+			Gdk.Pixbuf[] images;
 			
-			public StatusIcon (MonoDevelopStatusBar statusBar, EventBox box, Gdk.Pixbuf icon)
+			public StatusIcon (MonoDevelopStatusBar statusBar, Gdk.Pixbuf icon)
 			{
 				this.statusBar = statusBar;
-				this.box = box;
 				this.icon = icon;
+				box = new EventBox ();
+				image = new Image (icon);
+				image.SetPadding (0, 0);
+				box.Child = image;
 			}
 			
 			public void Dispose ()
 			{
 				statusBar.HideStatusIcon (this);
 				if (images != null) {
-					foreach (Gtk.Image img in images) {
+					foreach (Gdk.Pixbuf img in images) {
 						img.Dispose ();
 					}
+				}
+				if (animation != 0) {
+					GLib.Source.Remove (animation);
+					animation = 0;
 				}
 			}
 			
@@ -408,9 +414,7 @@ namespace MonoDevelop.Ide
 				get { return icon; }
 				set {
 					icon = value;
-					Gtk.Image i = new Gtk.Image (icon);
-					i.SetPadding (0, 0);
-					box.Child = i;
+					image.Pixbuf = icon;
 				}
 			}
 			
@@ -419,33 +423,29 @@ namespace MonoDevelop.Ide
 				astep = 0;
 				alertEnd = DateTime.Now.AddSeconds (seconds);
 				
-				if (images == null)
-					GLib.Timeout.Add (60, new GLib.TimeoutHandler (AnimateIcon));
+				if (animation != 0)
+					GLib.Source.Remove (animation);
 				
-				images = new Gtk.Image [10];
-				for (int n=0; n<10; n++) {
-					images [n] = new Image (ImageService.MakeTransparent (icon, ((double)(9-n))/10.0));
-					images [n].SetPadding (0, 0);
-					images [n].Show ();
+				animation = GLib.Timeout.Add (60, new GLib.TimeoutHandler (AnimateIcon));
+				
+				if (images == null) {
+					images = new Gdk.Pixbuf [10];
+					for (int n=0; n<10; n++)
+						images [n] = ImageService.MakeTransparent (icon, ((double)(9-n))/10.0);
 				}
 			}
 			
 			bool AnimateIcon ()
 			{
-				box.Remove (box.Child);
-				
 				if (DateTime.Now >= alertEnd && astep == 0) {
-					Gtk.Image i = new Gtk.Image (icon);
-					i.SetPadding (0, 0);
-					box.Child = i;
-					images = null;
-					box.Child.Show ();
+					image.Pixbuf = icon;
+					animation = 0;
 					return false;
 				}
 				if (astep < 10)
-					box.Child = images [astep];
+					image.Pixbuf = images [astep];
 				else
-					box.Child = images [20 - astep - 1];
+					image.Pixbuf = images [20 - astep - 1];
 					
 				astep = (astep + 1) % 20;
 				return true;
