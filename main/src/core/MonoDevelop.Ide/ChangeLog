@@ -1,5 +1,11 @@
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide/ProjectOperations.cs: Fixed 'Bug 604040 - Go
+	  to declaration doesn't work for a property which is from a
+	  base partial class'.
+
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
 	* MonoDevelop.Ide.CodeCompletion/ParameterInformationWindowManager.cs:
 	  Fixed 'Bug 603987 - Parameters tooltip shows over completion

@@ -259,9 +259,8 @@ namespace MonoDevelop.Ide
 			} else {
 				if (member.DeclaringType == null) 
 					return;
-				fileName = member.DeclaringType.CompilationUnit.FileName;
-				if (member is ExtensionMethod)
-					fileName = ((ExtensionMethod)member).OriginalMethod.DeclaringType.CompilationUnit.FileName;
+				IType declaringType = SearchContainingPart (member);
+				fileName = declaringType.CompilationUnit.FileName;
 			}
 			Document doc = IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
 			if (doc != null) {
@@ -270,6 +269,26 @@ namespace MonoDevelop.Ide
 					handler.Open (member.HelpUrl);
 			}
 		}
+
+		static IType SearchContainingPart (IMember member)
+		{
+			IType declaringType = member.DeclaringType;
+			if (member is ExtensionMethod)
+				declaringType = ((ExtensionMethod)member).OriginalMethod.DeclaringType;
+			
+			if (declaringType is InstantiatedType)
+				declaringType = ((InstantiatedType)declaringType).UninstantiatedType;
+			if (declaringType.HasParts) {
+				foreach (IType part in declaringType.Parts) {
+					IMember searchedMember = part.SearchMember (member.Name, true).FirstOrDefault (m => m.Location == member.Location);
+					if (searchedMember != null) 
+						return part;
+				}
+			}
+			
+			return declaringType;
+		}
+
 		
 		public void RenameItem (IWorkspaceFileObject item, string newName)
 		{
