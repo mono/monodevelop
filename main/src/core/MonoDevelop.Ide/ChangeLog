@@ -1,3 +1,8 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads/FileScout.cs: Fix incorrect check
+	  when setting the sensitivity of the Go Up button.
+
 2010-05-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: only use

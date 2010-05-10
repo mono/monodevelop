@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			fb.DirectoryChangedEvent += delegate {
 				entry.Text = fb.CurrentDir;
-				goUp.Sensitive = System.IO.Path.GetPathRoot (fb.CurrentDir) == fb.CurrentDir;
+				goUp.Sensitive = System.IO.Path.GetPathRoot (fb.CurrentDir) != fb.CurrentDir;
 			};
 			toolbar.Add (entry, true);
 			toolbar.ShowAll ();
