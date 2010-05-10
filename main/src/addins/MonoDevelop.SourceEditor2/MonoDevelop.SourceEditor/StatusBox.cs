@@ -97,6 +97,7 @@ namespace MonoDevelop.SourceEditor
 				layout.Dispose ();
 				layout = null;
 			}
+			Editor = null;
 			PropertyService.RemovePropertyHandler ("CaretStatusBoxShowRealColumns", PropertyHandler);
 		}
 		
