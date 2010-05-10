@@ -50,11 +50,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			base.Initialize ();
 			
 			dom = Document.Dom;
-
+			
 			textEditorResolver = base.Document.GetContent<ITextEditorResolver> ();
 			textEditorData = base.Document.TextEditorData;
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
+			
 		}
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
@@ -115,9 +116,15 @@ namespace MonoDevelop.CSharp.Highlighting
 						return false;
 					visitor.RunVisitor (unit);
 					RemoveMarkers (false);
+					bool alphaBlend = false;
 					foreach (var r in visitor.FoundReferences) {
 						UsageMarker marker = GetMarker (r.Line - 1);
-						marker.Usages.Add (new Mono.TextEditor.Segment (textEditorData.Document.LocationToOffset (r.Line - 1, r.Column -1), visitor.SearchedMemberName.Length));
+						int offset = textEditorData.Document.LocationToOffset (r.Line - 1, r.Column - 1);
+						if (!alphaBlend && textEditorData.Parent.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (offset + visitor.SearchedMemberName.Length) ||
+						                                                        offset < sr.Offset && sr.EndOffset < offset + visitor.SearchedMemberName.Length)) {
+							textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
+						}
+						marker.Usages.Add (new Mono.TextEditor.Segment (offset, visitor.SearchedMemberName.Length));
 					}
 					textEditorData.Document.CommitUpdateAll ();
 				} catch (Exception e) {
@@ -136,8 +143,10 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		void RemoveMarkers (bool updateLine)
 		{
+			textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = false;
 			if (markers.Count == 0)
 				return;
+			
 			foreach (var pair in markers) {
 				textEditorData.Document.CommitLineUpdate (pair.Key);
 				textEditorData.Document.RemoveMarker (pair.Key, pair.Value);

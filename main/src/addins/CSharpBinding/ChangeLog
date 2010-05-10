@@ -1,3 +1,9 @@
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Fixed 'Bug 603971 - Symbol highlight combined with search
+	  highlight looks ugly'.
+
 2010-05-07  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
