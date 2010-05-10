@@ -487,7 +487,7 @@ namespace Mono.TextEditor
 		{
 			if (arrowCursor == null)
 				return;
-			
+			CancelCodeSegmentTooltip ();
 			DisposeHighightBackgroundWorker ();
 			DisposeSearchPatternWorker ();
 			lock (lockObject) {
@@ -1569,35 +1569,47 @@ namespace Mono.TextEditor
 			codeSegmentEditorWindow.GrabFocus ();
 			
 		}
-
+		
+		uint codeSegmentTooltipTimeoutId = 0;
 		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
 		{
 			if (previewSegment == segment)
 				return;
+			CancelCodeSegmentTooltip ();
 			HideCodeSegmentPreviewWindow ();
 			previewSegment = segment;
-			if (segment == null) {
+			if (segment == null) 
 				return;
-			}
-			previewWindow = new CodeSegmentPreviewWindow (this.textEditor, false, segment);
-			int ox = 0, oy = 0;
-			this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
-			
-			int x = hintRectangle.Right;
-			int y = hintRectangle.Bottom;
-			previewWindow.CalculateSize ();
-			int w = previewWindow.SizeRequest ().Width;
-			int h = previewWindow.SizeRequest ().Height;
-			if (x + ox + w > this.textEditor.GdkWindow.Screen.Width)
-				x = hintRectangle.Left - w;
-			if (y + oy + h > this.textEditor.GdkWindow.Screen.Height)
-				y = hintRectangle.Top - h;
-			int destX = System.Math.Max (0, ox + x);
-			int destY = System.Math.Max (0, oy + y);
-			previewWindow.Move (destX, destY);
-			previewWindow.ShowAll ();
+			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
+				previewWindow = new CodeSegmentPreviewWindow (this.textEditor, false, segment);
+				int ox = 0, oy = 0;
+				this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
+				
+				int x = hintRectangle.Right;
+				int y = hintRectangle.Bottom;
+				previewWindow.CalculateSize ();
+				int w = previewWindow.SizeRequest ().Width;
+				int h = previewWindow.SizeRequest ().Height;
+				if (x + ox + w > this.textEditor.GdkWindow.Screen.Width)
+					x = hintRectangle.Left - w;
+				if (y + oy + h > this.textEditor.GdkWindow.Screen.Height)
+					y = hintRectangle.Top - h;
+				int destX = System.Math.Max (0, ox + x);
+				int destY = System.Math.Max (0, oy + y);
+				previewWindow.Move (destX, destY);
+				previewWindow.ShowAll ();
+				return false;
+			});
 		}
 
+		void CancelCodeSegmentTooltip ()
+		{
+			if (codeSegmentTooltipTimeoutId != 0) {
+				GLib.Source.Remove (codeSegmentTooltipTimeoutId);
+				codeSegmentTooltipTimeoutId = 0;
+			}
+		}
+		
 		string GetLink (MarginMouseEventArgs args)
 		{
 			LineSegment line = args.LineSegment;
