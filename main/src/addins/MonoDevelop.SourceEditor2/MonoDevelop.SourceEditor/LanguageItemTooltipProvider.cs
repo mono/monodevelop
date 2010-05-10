@@ -46,12 +46,12 @@ namespace MonoDevelop.SourceEditor
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
 			ResolveResult resolveResult = ed.GetLanguageItem (offset);
-			
+			if (resolveResult == null)
+				return null;
 			int startOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, 
 			                                                    resolveResult.ResolvedExpression.Region.Start.Column - 1);
 			int endOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line - 1, 
 			                                                    resolveResult.ResolvedExpression.Region.End.Column - 1);
-			Console.WriteLine (startOffset +"-" + endOffset + ":" + resolveResult.ResolvedExpression.Region);
 			return new TooltipItem (resolveResult, startOffset, endOffset - startOffset);
 		}
 		
