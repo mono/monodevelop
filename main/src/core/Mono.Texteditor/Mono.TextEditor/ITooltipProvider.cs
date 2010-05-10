@@ -29,10 +29,33 @@ using System;
 
 namespace Mono.TextEditor
 {
+	public class TooltipItem
+	{
+		public ISegment ItemSegment { get; set; }
+		public object Item { get; set; }
+		
+		public TooltipItem (object item)
+		{
+			this.Item = item;
+		}
+		
+		public TooltipItem (object item, ISegment itemSegment)
+		{
+			this.ItemSegment = itemSegment;
+			this.Item = item;
+		}
+		
+		public TooltipItem (object item, int offset, int length)
+		{
+			this.ItemSegment = new Segment (offset, length);
+			this.Item = item;
+		}
+	}
+	
 	public interface ITooltipProvider
 	{
-		object GetItem (TextEditor editor, int offset);
-		Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, object item);
+		TooltipItem GetItem (TextEditor editor, int offset);
+		Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item);
 		void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign);
 		bool IsInteractive (TextEditor editor, Gtk.Window tipWindow);
 	}

@@ -1997,7 +1997,7 @@ namespace Mono.TextEditor
 		
 		// Tooltip fields
 		const int TooltipTimer = 200;
-		object tipItem;
+		TooltipItem tipItem;
 		
 		int tipX, tipY;
 		uint tipHideTimeoutId = 0;
@@ -2029,10 +2029,12 @@ namespace Mono.TextEditor
 				if (xloc >= wx && xloc < wx + ww && yloc >= tipY && yloc < tipY + 20 + wh)
 					return;
 			}
+			if (tipItem != null && tipItem.ItemSegment != null && !tipItem.ItemSegment.Contains (offset)) 
+				HideTooltip ();
 			tipShowTimeoutId = GLib.Timeout.Add (650, delegate {
 				// Find a provider
 				ITooltipProvider provider = null;
-				object item = null;
+				TooltipItem item = null;
 				
 				foreach (ITooltipProvider tp in tooltipProviders) {
 					try {

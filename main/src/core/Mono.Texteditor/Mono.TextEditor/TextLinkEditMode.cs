@@ -474,21 +474,21 @@ namespace Mono.TextEditor
 		}
 
 		#region ITooltipProvider implementation 
-		public object GetItem (TextEditor Editor, int offset)
+		public TooltipItem GetItem (TextEditor Editor, int offset)
 		{
 			int o = offset - mode.BaseOffset;
 			for (int i = 0; i < mode.Links.Count; i++) {
 				TextLink l = mode.Links[i];
 				if (l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
-					return l;
+					return new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length);
 			}
 			return null;
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 		
-		public Gtk.Window CreateTooltipWindow (TextEditor Editor, int offset, Gdk.ModifierType modifierState, object item)
+		public Gtk.Window CreateTooltipWindow (TextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
-			TextLink link = item as TextLink;
+			TextLink link = item.Item as TextLink;
 			if (link == null || string.IsNullOrEmpty (link.Tooltip))
 				return null;
 			

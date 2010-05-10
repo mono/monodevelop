@@ -1,5 +1,13 @@
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/ITooltipProvider.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs: Implemented 'Bug 603988
+	  - Symbol tooltips do not hide when mouse moves away from
+	  symbol'.
+
+2010-05-10  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 603982 - Fold
 	  tooltips flash up briefly on mouseover'.
 
