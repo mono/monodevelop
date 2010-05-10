@@ -47,6 +47,7 @@
               </File>
               <File Name="mdhost.exe" Source="$(var.BuildRoot)\bin\mdhost.exe" />
               <File Name="mdrun.exe" Source="$(var.BuildRoot)\bin\mdrun.exe" />
+              <File Name="mdmonitor.exe" Source="$(var.BuildRoot)\bin\mdmonitor.exe" />
               <File Name="Mono.Cecil.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.dll" />
               <File Name="Mono.Cecil.Mdb.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.Mdb.dll" />
               <File Name="Cecil.Decompiler.dll" Source="$(var.BuildRoot)\bin\Cecil.Decompiler.dll" />
