@@ -1,5 +1,14 @@
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/DebuggingService.cs: Unsubscribe all
+	  events from the session when stopping the debugger. Ensures
+	  that the old session is completely disconnected from the
+	  debugging service, so if something goes wrong while shutting
+	  down, it will not interfere with a new session. This might
+	  be a fix for bug #602476.
+
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger/DebuggingService.cs:
 	* MonoDevelop.Debugger/BusyEvaluatorDialog.cs: Dont re-show
 	  the busy dialog if the user clicks on Keep Waiting. Instead,

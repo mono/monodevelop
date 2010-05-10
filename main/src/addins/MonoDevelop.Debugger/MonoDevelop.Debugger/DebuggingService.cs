@@ -293,6 +293,28 @@ namespace MonoDevelop.Debugger
 			dlg.Destroy ();
 		}
 		
+		static void SetupSession ()
+		{
+			isBusy = false;
+			session.Breakpoints = breakpoints;
+			session.TargetEvent += OnTargetEvent;
+			session.TargetStarted += OnStarted;
+			session.OutputWriter = OutputWriter;
+			session.LogWriter = LogWriter;
+			session.ExceptionHandler = ExceptionHandler;
+			session.BusyStateChanged += OnBusyStateChanged;
+			session.TypeResolverHandler = ResolveType;
+			session.BreakpointTraceHandler = BreakpointTraceHandler;
+			session.GetExpressionEvaluator = OnGetExpressionEvaluator;
+
+			console.CancelRequested += OnCancelRequested;
+			
+			if (DebugSessionStarted != null)
+				DebugSessionStarted (null, EventArgs.Empty);
+
+			NotifyLocationChanged ();
+		}
+		
 		static void Cleanup ()
 		{
 			currentBacktrace = null;
@@ -304,6 +326,17 @@ namespace MonoDevelop.Debugger
 				busyStatusIcon.Dispose ();
 				busyStatusIcon = null;
 			}
+			
+			session.TargetEvent -= OnTargetEvent;
+			session.TargetStarted -= OnStarted;
+			session.OutputWriter = null;
+			session.LogWriter = null;
+			session.ExceptionHandler = null;
+			session.BusyStateChanged -= OnBusyStateChanged;
+			session.TypeResolverHandler = null;
+			session.BreakpointTraceHandler = null;
+			session.GetExpressionEvaluator = null;
+			console.CancelRequested -= OnCancelRequested;
 			
 			// Dispose the session at the end, since it may take a while.
 			DebuggerSession oldSession = session;
@@ -440,46 +473,31 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		static void SetupSession ()
+		static bool ExceptionHandler (Exception ex)
 		{
-			session.Breakpoints = breakpoints;
-			session.TargetEvent += OnTargetEvent;
-			session.TargetStarted += OnStarted;
-			session.OutputWriter = delegate (bool iserr, string text) {
-				if (iserr)
-					console.Error.Write (text);
+			Gtk.Application.Invoke (delegate {
+				if (ex is DebuggerException)
+					MessageService.ShowError (ex.Message);
 				else
-					console.Out.Write (text);
-			};
-			session.LogWriter = delegate (bool iserr, string text) {
-				// Events may come with a bit of delay, so the debug session
-				// may already have been cleaned up
-				if (console != null)
-					console.Log.Write (text);
-			};
-			session.ExceptionHandler = delegate (Exception ex) {
-				Gtk.Application.Invoke (delegate {
-					if (ex is DebuggerException)
-						MessageService.ShowError (ex.Message);
-					else
-						MessageService.ShowException (ex);
-				});
-				return true;
-			};
-			isBusy = false;
-			session.BusyStateChanged += OnBusyStateChanged;
-			
-			session.TypeResolverHandler = ResolveType;
-			session.BreakpointTraceHandler = BreakpointTraceHandler;
-
-			console.CancelRequested += new EventHandler (OnCancelRequested);
-			
-			if (DebugSessionStarted != null)
-				DebugSessionStarted (null, EventArgs.Empty);
-
-			session.GetExpressionEvaluator = new GetExpressionEvaluatorHandler (OnGetExpressionEvaluator);
+					MessageService.ShowException (ex);
+			});
+			return true;
+		}
 		
-            NotifyLocationChanged ();
+		static void LogWriter (bool iserr, string text)
+		{
+			// Events may come with a bit of delay, so the debug session
+			// may already have been cleaned up
+			if (console != null)
+				console.Log.Write (text);
+		}
+		
+		static void OutputWriter (bool iserr, string text)
+		{
+			if (iserr)
+				console.Error.Write (text);
+			else
+				console.Out.Write (text);
 		}
 
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
