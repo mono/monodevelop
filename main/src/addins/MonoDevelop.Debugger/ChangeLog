@@ -1,3 +1,7 @@
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger.addin.xml: Remove unused icon sizes.
+
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/ImmediatePad.cs: Really fix not
