@@ -845,11 +845,22 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			EventAccessorDecls<out addBlock, out removeBlock> 
 			"}" (. eventDecl.BodyEnd   = t.EndLocation; .)
 		]
-		[ ";" ]
 		(. compilationUnit.BlockEnd();
 		   eventDecl.AddRegion = addBlock;
 		   eventDecl.RemoveRegion = removeBlock;
 		.)
+		{ "," Identifier (. EventDeclaration additionalEventDeclaration = new EventDeclaration {
+		                         Modifier = eventDecl.Modifier, 
+		                         Attributes = eventDecl.Attributes,
+		                         StartLocation = eventDecl.StartLocation,
+		                         TypeReference = eventDecl.TypeReference,
+		                         Name = t.val
+		                     };
+		                     compilationUnit.AddChild (additionalEventDeclaration);
+		                 .)
+		}
+		[ ";" ]
+		
 	
 |   /*--- constructor or static contructor declaration: */
 	IF (IdentAndLPar())                  (. m.Check(Modifiers.Constructors | Modifiers.StaticConstructors); .)
