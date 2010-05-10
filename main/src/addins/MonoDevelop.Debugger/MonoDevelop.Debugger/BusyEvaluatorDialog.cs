@@ -31,8 +31,6 @@ namespace MonoDevelop.Debugger
 {
 	public partial class BusyEvaluatorDialog : Gtk.Dialog
 	{
-		uint showAgainTimer;
-		
 		public BusyEvaluatorDialog ()
 		{
 			this.Build ();
@@ -41,15 +39,10 @@ namespace MonoDevelop.Debugger
 		public void UpdateBusyState (BusyStateEventArgs args)
 		{
 			if (!args.IsBusy) {
-				if (showAgainTimer != 0) {
-					GLib.Source.Remove (showAgainTimer);
-					showAgainTimer = 0;
-				}
 				Hide ();
 			} else {
 				labelMethod.Text = args.Description;
-				if (showAgainTimer == 0)
-					Show ();
+				Show ();
 			}
 		}
 		
@@ -62,11 +55,6 @@ namespace MonoDevelop.Debugger
 		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
 		{
 			Hide ();
-			showAgainTimer = GLib.Timeout.Add (5000, delegate {
-				showAgainTimer = 0;
-				Show ();
-				return false;
-			});
 		}
 	}
 }

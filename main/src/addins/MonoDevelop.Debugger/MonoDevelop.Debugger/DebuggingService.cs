@@ -69,6 +69,8 @@ namespace MonoDevelop.Debugger
 		static int currentFrame;
 
 		static BusyEvaluatorDialog busyDialog;
+		static bool isBusy;
+		static StatusBarIcon busyStatusIcon;
 
 		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
@@ -298,6 +300,11 @@ namespace MonoDevelop.Debugger
 			if (!IsDebugging)
 				return;
 
+			if (busyStatusIcon != null) {
+				busyStatusIcon.Dispose ();
+				busyStatusIcon = null;
+			}
+			
 			// Dispose the session at the end, since it may take a while.
 			DebuggerSession oldSession = session;
 			session = null;
@@ -334,11 +341,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		static void KillApplication (object obj)
-		{
-			Cleanup ();
-		}
-
 		public static void Pause ()
 		{
 			session.Stop ();
@@ -346,6 +348,8 @@ namespace MonoDevelop.Debugger
 
 		public static void Resume ()
 		{
+			if (CheckIsBusy ())
+				return;
 			session.Continue ();
 			NotifyLocationChanged ();
 		}
@@ -462,6 +466,7 @@ namespace MonoDevelop.Debugger
 				});
 				return true;
 			};
+			isBusy = false;
 			session.BusyStateChanged += OnBusyStateChanged;
 			
 			session.TypeResolverHandler = ResolveType;
@@ -479,9 +484,32 @@ namespace MonoDevelop.Debugger
 
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
 		{
+			isBusy = args.IsBusy;
 			DispatchService.GuiDispatch (delegate {
 				busyDialog.UpdateBusyState (args);
+				if (args.IsBusy) {
+					if (busyStatusIcon == null) {
+						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetPixbuf ("md-execute-debug", Gtk.IconSize.Menu));
+						busyStatusIcon.SetAlertMode (100);
+						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The Debugger is waiting for an expression evaluation to finish.");
+						busyStatusIcon.EventBox.ButtonPressEvent += delegate {
+							busyDialog.Show ();
+						};
+					}
+				} else {
+					if (busyStatusIcon != null) {
+						busyStatusIcon.Dispose ();
+						busyStatusIcon = null;
+					}
+				}
 			});
+		}
+		
+		static bool CheckIsBusy ()
+		{
+			if (isBusy && !busyDialog.Visible)
+				busyDialog.Show ();
+			return isBusy;
 		}
 		
 		static void OnStarted (object s, EventArgs a)
@@ -506,7 +534,7 @@ namespace MonoDevelop.Debugger
 
 				switch (args.Type) {
 					case TargetEventType.TargetExited:
-						KillApplication (null);
+						Cleanup ();
 						break;
 					case TargetEventType.TargetSignaled:
 					case TargetEventType.TargetStopped:
@@ -594,12 +622,8 @@ namespace MonoDevelop.Debugger
 
 		public static void StepInto ()
 		{
-			if (!IsDebugging)
-				//throw new Exception ("Can't step without running debugger.");
+			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
-
-			if (IsRunning)
-				throw new Exception ("Can't step unless paused.");
 
 			session.StepLine ();
 			NotifyLocationChanged ();
@@ -607,12 +631,7 @@ namespace MonoDevelop.Debugger
 
 		public static void StepOver ()
 		{
-			if (!IsDebugging)
-				//throw new Exception ("Can't step without running debugger.");
-				return;
-
-			if (IsRunning)
-				//throw new Exception ("Can't step unless paused.");
+			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
 			session.NextLine ();
@@ -621,10 +640,7 @@ namespace MonoDevelop.Debugger
 
 		public static void StepOut ()
 		{
-			if (!IsDebugging)
-				return;
-
-			if (IsRunning)
+			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
 			session.Finish ();

@@ -1,5 +1,13 @@
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/BusyEvaluatorDialog.cs: Dont re-show
+	  the busy dialog if the user clicks on Keep Waiting. Instead,
+	  show it when the user tries to continue debugging. Also show
+	  a flashing status icon while in busy mode.
+
+2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Debugger.addin.xml: Remove unused icon sizes.
 
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
