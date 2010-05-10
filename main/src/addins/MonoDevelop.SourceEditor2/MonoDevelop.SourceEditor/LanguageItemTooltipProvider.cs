@@ -41,22 +41,29 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation 
 		
-		public object GetItem (Mono.TextEditor.TextEditor editor, int offset)
+		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
-			return ed.GetLanguageItem (offset);
+			ResolveResult resolveResult = ed.GetLanguageItem (offset);
+			
+			int startOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, 
+			                                                    resolveResult.ResolvedExpression.Region.Start.Column - 1);
+			int endOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line - 1, 
+			                                                    resolveResult.ResolvedExpression.Region.End.Column - 1);
+			Console.WriteLine (startOffset +"-" + endOffset + ":" + resolveResult.ResolvedExpression.Region);
+			return new TooltipItem (resolveResult, startOffset, endOffset - startOffset);
 		}
 		
 		ResolveResult lastResult = null;
 		LanguageItemWindow lastWindow = null;
 		
-		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, object item)
+		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, ed.Document.FileName);
 			
-			ResolveResult resolveResult = (ResolveResult)item;
+			ResolveResult resolveResult = (ResolveResult)item.Item;
 			if (lastResult != null && lastResult.ResolvedExpression != null && lastWindow.IsRealized && 
 			    resolveResult != null && resolveResult.ResolvedExpression != null &&  lastResult.ResolvedExpression.Expression == resolveResult.ResolvedExpression.Expression)
 				return lastWindow;

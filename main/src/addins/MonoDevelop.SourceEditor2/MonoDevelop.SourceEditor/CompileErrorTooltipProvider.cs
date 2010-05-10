@@ -41,15 +41,15 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation 
 		
-		public object GetItem (Mono.TextEditor.TextEditor editor, int offset)
+		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
-			return ed.GetErrorInformationAt (offset);
+			return new TooltipItem (ed.GetErrorInformationAt (offset), editor.Document.GetLineByOffset (offset));
 		}
 		
-		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, object item)
+		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
-			LanguageItemWindow result = new LanguageItemWindow ((ExtensibleTextEditor) editor, modifierState, null, (string)item, null);
+			LanguageItemWindow result = new LanguageItemWindow ((ExtensibleTextEditor) editor, modifierState, null, (string)item.Item, null);
 			if (result.IsEmpty)
 				return null;
 			return result;
