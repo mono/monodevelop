@@ -114,7 +114,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			return new CompletionDataList (from DocTypeCompletionData dat
 			                               in HtmlSchemaService.DocTypeCompletionData
-			                               select (ICompletionData) dat);
+			                               select (CompletionData) dat);
 		}
 		
 		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
@@ -156,7 +156,7 @@ namespace MonoDevelop.AspNet.Gui
 		    XName tagName, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not aready in the tag
-			foreach (ICompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName))
+			foreach (CompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName))
 				if (existingAtts == null || !existingAtts.ContainsKey (datum.DisplayText))
 					list.Add (datum);
 		}

@@ -68,7 +68,7 @@ namespace MonoDevelop.Html
 			return list;
 		}
 		
-		class FileCompletionData : ICompletionData, IComparable<ICompletionData>
+		class FileCompletionData : CompletionData, IComparable<CompletionData>
 		{
 			ProjectFile file;
 			Func<ProjectFile,string> pathFunc;
@@ -79,43 +79,21 @@ namespace MonoDevelop.Html
 				this.pathFunc = pathFunc;
 			}
 			
-			public IconId Icon {
-				get { return null; }
-			}
-			
-			public string DisplayText {
+			public override string DisplayText {
 				get { return file.FilePath.FileName; }
 			}
 			
-			public string Description {
-				get { return null; }
-			}
-			
-			public string CompletionText {
+			public override string CompletionText {
 				get { return pathFunc (file); }
 			}
 			
-			public string DisplayDescription {
-				get {
-					return null;
-				}
-			}
-			
-			public DisplayFlags DisplayFlags {
-				get { return DisplayFlags.None; }
-			}
-			
-			public CompletionCategory CompletionCategory  {
-				get { return null; }
-			}
-			
-			public int CompareTo (ICompletionData other)
+			public int CompareTo (CompletionData other)
 			{
 				return DisplayText.CompareTo (other.DisplayText);
 			}
 		}
 		
-		class FilePickerCompletionData : IActionCompletionData
+		class FilePickerCompletionData : CompletionData
 		{
 			Project proj;
 			string pattern;
@@ -128,39 +106,19 @@ namespace MonoDevelop.Html
 				this.pathFunc = pathFunc;
 			}
 			
-			public IconId Icon {
-				get { return null; }
-			}
-			
-			public string DisplayText {
+			public override string DisplayText {
 				get { return GettextCatalog.GetString ("Choose file..."); }
 			}
 			
-			public string Description {
+			public override string Description {
 				get { return GettextCatalog.GetString ("Choose a file from the project.");; }
-			}
-			
-			public string DisplayDescription {
-				get {
-					return null;
-				}
 			}
 			
 			public string CompletionText {
 				get { throw new InvalidOperationException (); }
 			}
 			
-			public DisplayFlags DisplayFlags {
-				get { return DisplayFlags.None; }
-			}
-			
-			public CompletionCategory CompletionCategory  {
-				get {
-					return null;
-				}
-			}
-			
-			public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
+			public override void InsertCompletionText (CompletionListWindow window)
 			{
 				string text;
 				using (var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (proj, "", pattern)) {
@@ -168,7 +126,7 @@ namespace MonoDevelop.Html
 						return;
 					text = pathFunc (dialog.SelectedFile);
 				}
-				widget.SetCompletionText (context, "", text);
+				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, "", text);
 			}
 		}
 	}

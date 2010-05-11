@@ -36,9 +36,7 @@ using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	
-	
-	public class SuggestedHandlerCompletionData : IActionCompletionData
+	public class SuggestedHandlerCompletionData : CompletionData
 	{
 		Project project;
 		CodeMemberMethod methodInfo;
@@ -53,25 +51,19 @@ namespace MonoDevelop.AspNet.Parser
 			this.codeBehindClassPart = codeBehindClassPart;
 		}
 		
-		public IconId Icon {
+		public override IconId Icon {
 			get { return "md-method"; }
 		}
 
-		public string DisplayText {
+		public override string DisplayText {
 			get { return methodInfo.Name; }
 		}
 		
-		public string CompletionText {
+		public override string CompletionText {
 			get { return methodInfo.Name; }
 		}
 
-		public string DisplayDescription {
-			get {
-				return null;
-			}
-		}
-		
-		public string Description {
+		public override string Description {
 			get {
 				//NOTE: code completion window emphasises first line, so is translated separately
 				return GettextCatalog.GetString ("A suggested event handler method name.\n") +
@@ -81,23 +73,13 @@ namespace MonoDevelop.AspNet.Parser
 			}
 		}
 		
-		public DisplayFlags DisplayFlags {
-			get { return DisplayFlags.None; }
-		}
-		
-		public CompletionCategory CompletionCategory  {
-			get {
-				return null;
-			}
-		}
-		
-		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
+		public override void InsertCompletionText (CompletionListWindow window)
 		{
 			//insert the method name
-			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = widget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
+			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = window.CompletionWidget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
 			if (buf != null) {
 				buf.BeginAtomicUndo ();
-				buf.DeleteText (context.TriggerOffset, buf.CursorPosition - context.TriggerOffset);
+				buf.DeleteText (window.CodeCompletionContext.TriggerOffset, buf.CursorPosition - window.CodeCompletionContext.TriggerOffset);
 				buf.InsertText (buf.CursorPosition, methodInfo.Name);
 				buf.EndAtomicUndo ();
 			}
@@ -107,6 +89,6 @@ namespace MonoDevelop.AspNet.Parser
 				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClassPart, methodInfo, false);
 			else
 				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClass, methodInfo, false);
-		}	
+		}
 	}
 }

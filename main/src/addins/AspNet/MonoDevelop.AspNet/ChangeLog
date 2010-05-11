@@ -1,3 +1,11 @@
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Html/PathCompletion.cs:
+	* MonoDevelop.Html/DocTypeCompletionData.cs:
+	* MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs:
+	* MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:
+	  Track API changes.
+
 2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs:
