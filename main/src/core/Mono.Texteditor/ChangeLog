@@ -1,5 +1,11 @@
 2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Re-use the scrollwindowtimer
+	  to avoid creating so many thousands of objects while
+	  drag-selecting. 
+
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/PangoUtil.cs:

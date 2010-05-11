@@ -993,7 +993,7 @@ namespace Mono.TextEditor
 		}
 		
 		Margin oldMargin = null;
-		uint   scrollWindowTimer = 0;
+		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
 			RemoveScrollWindowTimer ();
@@ -1014,14 +1014,28 @@ namespace Mono.TextEditor
 			} else {
 				FireMotionEvent (x, y, mod);
 				if (mouseButtonPressed != 0) {
-					RemoveScrollWindowTimer ();
-					scrollWindowTimer = GLib.Timeout.Add (50, delegate {
-						FireMotionEvent (x, y, mod);
-						return true;
-					});
+					UpdateScrollWindowTimer (x, y, mod);
 				}
 			}
 			return base.OnMotionNotifyEvent (e);
+		}
+		
+		uint   scrollWindowTimer = 0;
+		double scrollWindowTimer_x;
+		double scrollWindowTimer_y;
+		Gdk.ModifierType scrollWindowTimer_mod;
+		
+		void UpdateScrollWindowTimer (double x, double y, Gdk.ModifierType mod)
+		{
+			scrollWindowTimer_x = x;
+			scrollWindowTimer_y = y;
+			scrollWindowTimer_mod = mod;
+			if (scrollWindowTimer == 0) {
+				scrollWindowTimer = GLib.Timeout.Add (50, delegate {
+					FireMotionEvent (scrollWindowTimer_x, scrollWindowTimer_y, scrollWindowTimer_mod);
+					return true;
+				});
+			}
 		}
 		
 		void RemoveScrollWindowTimer ()
