@@ -1,5 +1,10 @@
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  set text editor for the resolver.
+
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
 	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs:
 	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
