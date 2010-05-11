@@ -348,12 +348,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			{
 				MatchResult savedMatch;
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					if (MonoDevelop.Ide.CodeCompletion.ListWidget.Matches (toMatch, name)) {
+//					if (MonoDevelop.Ide.CodeCompletion.ListWidget.Matches (toMatch, name)) {
 						CalcMatchRank (name, toMatch, out matchRank);
 						savedMatch = new MatchResult (true, matchRank);
-					} else {
+/*					} else {
 						savedMatch = new MatchResult (false, int.MinValue);
-					}
+					}*/
 					savedMatches[name] = savedMatch;
 				}
 				
