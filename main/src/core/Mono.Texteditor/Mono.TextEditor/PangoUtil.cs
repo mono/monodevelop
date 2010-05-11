@@ -61,8 +61,17 @@ namespace Mono.TextEditor
 			return ptr == IntPtr.Zero? null : new Pango.Layout (ptr);
 		}
 		
+		public static Pango.Layout CreateLayout (PrintContext context)
+		{
+			var ptr = gtk_print_context_create_pango_layout (context.Handle);
+			return ptr == IntPtr.Zero? null : new Pango.Layout (ptr);
+		}
+		
 		[DllImport (LIBGTK)]
 		static extern IntPtr gtk_widget_create_pango_layout (IntPtr widget, IntPtr text);
+		
+		[DllImport (LIBGTK)]
+		static extern IntPtr gtk_print_context_create_pango_layout (IntPtr context);
 	}
 	
 	/// <summary>
