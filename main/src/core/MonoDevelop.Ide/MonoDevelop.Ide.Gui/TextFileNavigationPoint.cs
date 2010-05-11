@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			int col;
 			buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out col);
-			UpdateSnippet (buffer);
 		}
 		
 		public TextFileNavigationPoint (FilePath file, int line, int column)
@@ -51,7 +50,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.line = line;
 			this.column = column;
-			snippet = file + ":" + line;
 		}
 		
 		public override bool ShouldReplace (NavigationPoint oldPoint)
@@ -77,10 +75,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public override string Tooltip {
-			get { return snippet; }
-		}
-
 		protected override Document DoShow ()
 		{
 			Document doc = base.DoShow ();
@@ -90,6 +84,15 @@ namespace MonoDevelop.Ide.Gui
 					buf.SetCaretTo (Math.Max (line, 1), 1);
 			}
 			return doc;
+		}
+		
+		/*
+		
+		//FIXME: this currently isn't hooked up to any GUI. In addition, it should be done lazily, since it's expensive 
+		// and the nav menus are shown much less frequently than nav points are created.
+		
+		public override string Tooltip {
+			get { return snippet; }
 		}
 		
 		public void UpdateLine (int line, MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buffer)
@@ -148,7 +151,7 @@ namespace MonoDevelop.Ide.Gui
 					break;
 			}
 			return indent;
-		}
+		}*/
 		
 		public override bool Equals (object o)
 		{

@@ -368,7 +368,7 @@ namespace MonoDevelop.Ide.Gui
 	public abstract class NavigationPoint
 	{
 		public abstract string DisplayName { get; }
-		public abstract string Tooltip { get; }
+		//public abstract string Tooltip { get; }
 		
 		public abstract void Show ();
 		

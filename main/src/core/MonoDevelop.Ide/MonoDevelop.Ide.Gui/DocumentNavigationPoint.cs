@@ -56,10 +56,6 @@ namespace MonoDevelop.Ide.Gui
 			doc = null;
 		}
 		
-		public override string Tooltip {
-			get { return doc != null? doc.Name : (string) fileName; }
-		}
-		
 		FilePath FileName {
 			get { return doc != null? doc.FileName : fileName; }
 		}

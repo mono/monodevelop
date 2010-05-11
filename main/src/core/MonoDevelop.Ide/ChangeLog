@@ -1,3 +1,11 @@
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs: Disable nav
+	  point snippets as they currently aren't used - and they
+	  should really be created lazily.
+
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/CompletionDataList.cs: fixed
