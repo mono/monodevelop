@@ -318,7 +318,9 @@ namespace Mono.TextEditor.PopupWindow
 		void UpdateStyle ()
 		{
 			this.GdkWindow.Background = this.Style.Base (StateType.Normal);
-			layout = new Pango.Layout (this.PangoContext);
+			if (layout != null)
+				layout.Dispose ();
+			layout = PangoUtil.CreateLayout (this);
 			layout.Wrap = Pango.WrapMode.Char;
 			
 			FontDescription des = this.Style.FontDescription.Copy();

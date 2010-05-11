@@ -150,7 +150,7 @@ namespace Mono.TextEditor
 			};
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
-			markerLayout = CreatePangoLayout (null);
+			markerLayout = PangoUtil.CreateLayout (textEditor);
 			
 			textEditor.Document.EndUndo += UpdateBracketHighlighting;
 			textEditor.SelectionChanged += UpdateBracketHighlighting;
@@ -399,11 +399,6 @@ namespace Mono.TextEditor
 			highlightBracketWorker = null;
 		}
 		
-		Pango.Layout CreatePangoLayout (string text)
-		{
-			return PangoUtils.CreateLayout (textEditor, text);
-		}
-		
 		protected internal override void OptionsChanged ()
 		{
 			DisposeGCs ();
@@ -443,7 +438,7 @@ namespace Mono.TextEditor
 			
 			EnsureCaretGc ();
 			
-			var tabWidthLayout = CreatePangoLayout (new string (' ', textEditor.Options.TabSize));
+			var tabWidthLayout = PangoUtil.CreateLayout (textEditor, (new string (' ', textEditor.Options.TabSize)));
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
 			tabWidthLayout.FontDescription = textEditor.Options.Font;
 			int tabWidth, h;
@@ -678,9 +673,8 @@ namespace Mono.TextEditor
 		
 		void DrawPreeditString (Gdk.Drawable win, string style, ref int xPos, int y)
 		{
-			var preEditLayout = CreatePangoLayout (null);
+			var preEditLayout = PangoUtil.CreateLayout (textEditor, textEditor.preeditString);
 			preEditLayout.Attributes = textEditor.preeditAttrs;
-			preEditLayout.SetText (textEditor.preeditString);
 			ChunkStyle chunkStyle = ColorStyle.GetChunkStyle (style);
 			int cWidth, cHeight;
 			preEditLayout.GetPixelSize (out cWidth, out cHeight);
@@ -820,7 +814,7 @@ namespace Mono.TextEditor
 				layoutDict.Remove (line);
 			}
 			
-			var wrapper = new LayoutWrapper (CreatePangoLayout (null));
+			var wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 			wrapper.IsUncached = containsPreedit;
 			createNew (wrapper);
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
@@ -1802,7 +1796,7 @@ namespace Mono.TextEditor
 			if (column < lineText.Length)
 				lineText = lineText.Substring (0, column);	
 			
-			var layout = CreatePangoLayout (lineText);
+			var layout = PangoUtil.CreateLayout (textEditor);
 			layout.Alignment = Pango.Alignment.Left;
 			layout.FontDescription = textEditor.Options.Font;
 			layout.Tabs = tabArray;
@@ -2262,7 +2256,7 @@ namespace Mono.TextEditor
 					layoutWrapper.Layout.GetPixelSize (out width, out height);
 					xPos += width * (int)Pango.Scale.PangoScale;
 					if (measueLayout == null) {
-						measueLayout = margin.CreatePangoLayout (folding.Description);
+						measueLayout = PangoUtil.CreateLayout (margin.textEditor, folding.Description);
 						measueLayout.FontDescription = margin.textEditor.Options.Font;
 					}
 

@@ -516,11 +516,6 @@ namespace Mono.TextEditor
 			}
 			base.OnUnrealized ();
 		}
-
-		public new Pango.Layout CreatePangoLayout (string text)
-		{
-			return PangoUtils.CreateLayout (this, text);
-		}
 		
 		void DocumentUpdatedHandler (object sender, EventArgs args)
 		{
@@ -1706,7 +1701,7 @@ namespace Mono.TextEditor
 							using (var bgGc = new Gdk.GC(pixmap)) {
 								bgGc.RgbFgColor = editor.ColorStyle.SearchTextMainBg;
 								pixmap.DrawRectangle (bgGc, true, 0, 0, iw, ih);
-								using (var layout = editor.CreatePangoLayout (null)) {
+								using (var layout = PangoUtil.CreateLayout (editor)) {
 									layout.FontDescription = editor.Options.Font;
 									layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
 									pixmap.DrawLayout (bgGc, 0, 0, layout);

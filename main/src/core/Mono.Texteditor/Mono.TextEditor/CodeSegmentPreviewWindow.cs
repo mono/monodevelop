@@ -62,8 +62,8 @@ namespace Mono.TextEditor
 			this.HideCodeSegmentPreviewInformString = hideCodeSegmentPreviewInformString;
 			this.editor = editor;
 			this.AppPaintable = true;
-			layout = new Pango.Layout (PangoContext);
-			informLayout = new Pango.Layout (PangoContext);
+			layout = PangoUtil.CreateLayout (this);
+			informLayout = PangoUtil.CreateLayout (this);
 			informLayout.SetText (CodeSegmentPreviewInformString);
 			
 			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);

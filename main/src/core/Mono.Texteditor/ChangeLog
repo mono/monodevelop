@@ -1,3 +1,18 @@
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/PangoUtils.cs:
+	* Mono.TextEditor/IconMargin.cs:
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs:
+	* Mono.TextEditor.PopupWindow/ListWidget.cs:
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs:
+	* Mono.TextEditor.PopupWindow/TooltipWindow.cs: More layout
+	  leak fixing.
+
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Vi/ViMark.cs:

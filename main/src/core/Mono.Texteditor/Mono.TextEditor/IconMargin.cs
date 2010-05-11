@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 		public IconMargin (TextEditor editor)
 		{
 			this.editor = editor;
-			layout = new Pango.Layout (editor.PangoContext);
+			layout = PangoUtil.CreateLayout (editor);
 		}
 		
 		public override int Width {

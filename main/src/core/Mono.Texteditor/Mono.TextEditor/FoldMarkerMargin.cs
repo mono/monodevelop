@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 		public FoldMarkerMargin (TextEditor editor)
 		{
 			this.editor = editor;
-			layout = new Pango.Layout (editor.PangoContext);
+			layout = PangoUtil.CreateLayout (editor);
 			delayTimer = new Timer (150);
 			delayTimer.AutoReset = false;
 			delayTimer.Elapsed += DelayTimerElapsed;
