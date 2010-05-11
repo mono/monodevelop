@@ -1,3 +1,7 @@
+2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Cecil.Decompiler.csproj: Sign Mono.Cecil.
+
 2010-01-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Cecil.Decompiler.csproj: Fix output dir.

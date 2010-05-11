@@ -10,7 +10,8 @@
     <AssemblyName>Mono.Cecil</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>Mono.Cecil</RootNamespace>
-    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>cecil.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,6 +39,7 @@
     <None Include="Mono.Cecil\ChangeLog" />
     <None Include="Mono.Cecil\Mono.Xml\ChangeLog" />
     <None Include="ChangeLog" />
+    <None Include="cecil.snk" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Cecil\Mono.Cecil.Cil\OpCodeNames.cs" />

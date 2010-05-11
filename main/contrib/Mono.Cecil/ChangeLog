@@ -1,3 +1,10 @@
+2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* cecil.snk:
+	* Makefile.am:
+	* Mono.Cecil.csproj:
+	* Mono.Cecil.Mdb.csproj: Sign Mono.Cecil.
+
 2010-01-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

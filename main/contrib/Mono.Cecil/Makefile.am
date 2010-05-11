@@ -11,7 +11,7 @@ CECIL_DIST= $(CECIL_CSFILES)
 
 $(CECIL): $(CECIL_CSFILES)
 	mkdir -p $(BINDIR)
-	mcs $(CECIL_CSFILES) /debug /target:library /out:$(CECIL)
+	mcs $(CECIL_CSFILES) /keyfile:cecil.snk /debug /target:library /out:$(CECIL)
 
 $(CECIL_DEBUG): $(CECIL)
 
@@ -24,7 +24,7 @@ CECIL_MDB_DIST= $(CECIL_MDB_CSFILES)
 
 $(CECIL_MDB): $(CECIL_MDB_CSFILES) $(CECIL)
 	mkdir -p $(BINDIR)
-	gmcs $(CECIL_MDB_CSFILES) /debug /target:library /r:$(CECIL) /d:CECIL /out:$(CECIL_MDB)
+	gmcs $(CECIL_MDB_CSFILES) /debug /target:library /keyfile:cecil.snk /r:$(CECIL) /d:CECIL /out:$(CECIL_MDB)
 
 $(CECIL_MDB_DEBUG): $(CECIL_MDB)
 
