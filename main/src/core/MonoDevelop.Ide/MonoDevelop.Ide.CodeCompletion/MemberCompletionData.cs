@@ -29,9 +29,9 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface IMemberCompletionData : ICompletionData
+	public class MemberCompletionData : CompletionData
 	{
-		INode Member {
+		public INode Member {
 			get;
 			set;
 		}

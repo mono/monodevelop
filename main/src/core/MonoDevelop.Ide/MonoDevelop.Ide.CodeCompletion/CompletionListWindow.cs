@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		const int declarationWindowMargin = 3;
 		
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
-		ICompletionData currentData;
+		CompletionData currentData;
 		Widget parsingMessage;
 		System.Action closedDelegate;
 		int initialWordLength;
@@ -58,6 +58,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public int X { get; private set; }
 		public int Y { get; private set; }
+		
+		public int InitialWordLength {
+			get { return this.initialWordLength; }
+		}
 		
 		IMutableCompletionDataList mutableList;
 		ICompletionDataList completionDataList;
@@ -237,9 +241,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		class DataItemComparer : IComparer<ICompletionData>
+		class DataItemComparer : IComparer<CompletionData>
 		{
-			public int Compare (ICompletionData a, ICompletionData b)
+			public int Compare (CompletionData a, CompletionData b)
 			{
 				return ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
 					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
@@ -316,22 +320,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (SelectionIndex == -1 || completionDataList == null)
 				return;
-			ICompletionData item = completionDataList[SelectionIndex];
+			CompletionData item = completionDataList[SelectionIndex];
 			if (item == null)
 				return;
 			
-			IActionCompletionData ac = item as IActionCompletionData;
-			if (ac != null) {
-				ac.InsertCompletionText (CompletionWidget, CodeCompletionContext);
-				return;
-			}
-			int partialWordLength = PartialWord != null ? PartialWord.Length : 0;
-			int replaceLength = CodeCompletionContext.TriggerWordLength + partialWordLength - initialWordLength;
-			string currentWord = CompletionWidget.GetText (CodeCompletionContext.TriggerOffset, CodeCompletionContext.TriggerOffset + replaceLength);
-			string completedWord = item.CompletionText;
-			AddWordToHistory (completedWord);
-			CompletionWidget.SetCompletionText (CodeCompletionContext, currentWord, completedWord);
-			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, completedWord));
+			item.InsertCompletionText (this);
+			AddWordToHistory (item.CompletionText);
+			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
 		}
 		
 		protected virtual void OnWordCompleted (CodeCompletionContextEventArgs e)
@@ -410,14 +405,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideDeclarationView ();
 				return;
 			}
-			ICompletionData data = completionDataList[List.SelectionIndex];
-			IOverloadedCompletionData overloadedData = data as IOverloadedCompletionData;
-
-			IList<ICompletionData> overloads;
-			if (overloadedData != null) {
-				overloads = new List<ICompletionData> (overloadedData.GetOverloadedData ());
+			CompletionData data = completionDataList[List.SelectionIndex];
+			
+			IList<CompletionData> overloads;
+			if (data.IsOverloaded) {
+				overloads = new List<CompletionData> (data.OverloadedData);
 			} else {
-				overloads = new ICompletionData[] { data };
+				overloads = new CompletionData[] { data };
 			}
 			
 			if (data != currentData) {
@@ -426,14 +420,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Clear ();
 				declarationviewwindow.Realize ();
 				
-				foreach (ICompletionData overload in overloads) {
+				foreach (CompletionData overload in overloads) {
 					bool oDataHasMarkup = (overload.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
 						declarationviewwindow.AddOverload (oDataHasMarkup
 							? overload.Description
 							: GLib.Markup.EscapeText (overload.Description));
 				}
 				
-				declarationviewwindow.Multiple = (overloadedData != null && overloadedData.IsOverloaded);
+				declarationviewwindow.Multiple = data.IsOverloaded;
 				currentData = data;
 			}
 			

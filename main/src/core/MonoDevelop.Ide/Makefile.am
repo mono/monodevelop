@@ -264,17 +264,18 @@ FILES =  \
 	MonoDevelop.Components/WindowTransparencyDecorator.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContext.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContextEventArgs.cs \
+	MonoDevelop.Ide.CodeCompletion/CompletionCategory.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionData.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionDataList.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionWindowManager.cs \
 	MonoDevelop.Ide.CodeCompletion/DeclarationViewWindow.cs \
-	MonoDevelop.Ide.CodeCompletion/ICompletionData.cs \
+	MonoDevelop.Ide.CodeCompletion/DisplayFlags.cs \
 	MonoDevelop.Ide.CodeCompletion/ICompletionWidget.cs \
-	MonoDevelop.Ide.CodeCompletion/IMemberCompletionData.cs \
 	MonoDevelop.Ide.CodeCompletion/IParameterDataProvider.cs \
 	MonoDevelop.Ide.CodeCompletion/ListWidget.cs \
 	MonoDevelop.Ide.CodeCompletion/ListWindow.cs \
+	MonoDevelop.Ide.CodeCompletion/MemberCompletionData.cs \
 	MonoDevelop.Ide.CodeCompletion/MutableCompletionDataList.cs \
 	MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs \
 	MonoDevelop.Ide.CodeCompletion/ParameterInformationWindowManager.cs \

@@ -1212,11 +1212,9 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\IParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindowManager.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterInformationWindow.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionDataList.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\MutableCompletionDataList.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeCompletion\IMemberCompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionWindowManager.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ListWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CodeCompletionContext.cs" />
@@ -1355,6 +1353,9 @@
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToCommand.cs" />
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\SearchResult.cs" />
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\ResultsDataSource.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\DisplayFlags.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\MemberCompletionData.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

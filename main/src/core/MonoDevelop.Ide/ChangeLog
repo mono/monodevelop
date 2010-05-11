@@ -1,5 +1,26 @@
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.CodeCompletion/DisplayFlags.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionData.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.CodeCompletion/ICompletionData.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionDataList.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionCategory.cs:
+	* MonoDevelop.Ide.CodeCompletion/MemberCompletionData.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	* MonoDevelop.Ide.CodeCompletion/IMemberCompletionData.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs:
+	  Made the code completion system a more consistent (Removed
+	  interfaces, provided common base class - easier to extend),
+	  ActionCompletionData in conjunction with completion history
+	  now works correctly. Custom CompletionData now has access to
+	  the list window as well (Required for more complex insert
+	  actions).
+
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: filter
 	  matches.
 

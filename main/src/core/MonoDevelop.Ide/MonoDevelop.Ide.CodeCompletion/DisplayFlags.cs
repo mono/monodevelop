@@ -32,30 +32,6 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface IOverloadedCompletionData : ICompletionData
-	{
-		IEnumerable<ICompletionData> GetOverloadedData ();
-		bool IsOverloaded { get; }
-	}
-	
-	public interface ICompletionData
-	{
-		IconId Icon { get; }
-		string DisplayText { get; }
-		string DisplayDescription { get; }
-		
-		string Description { get; }
-		
-		string CompletionText { get; }
-		CompletionCategory CompletionCategory { get; }
-		DisplayFlags DisplayFlags { get; }
-	}
-	
-	public interface IActionCompletionData : ICompletionData
-	{
-		void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context);
-	}
-	
 	[Flags]
 	public enum DisplayFlags
 	{

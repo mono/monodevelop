@@ -1,10 +1,10 @@
 // 
-// CodeTemplateCompletionData.cs
+// CompletionData.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,41 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Ide.CodeCompletion;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
-
-namespace MonoDevelop.Ide.CodeTemplates
+namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface ICodeTemplateWidget
+public abstract class CompletionCategory : IComparable<CompletionCategory>
 	{
-		void InsertTemplate (CodeTemplate template, Document document);
-	}
-	
-	public class CodeTemplateCompletionData : CompletionData
-	{
-		Document doc;
-		CodeTemplate template;
+		public string DisplayText { get; set; }
+		public IconId Icon { get; set; }
 		
-		public CodeTemplateCompletionData (Document doc, CodeTemplate template)
+		public CompletionCategory ()
 		{
-			this.doc      = doc;
-			this.template = template;
-			this.CompletionText = "test";
-			this.Icon        = template.Icon;
-			this.DisplayText = template.Shortcut;
-			this.Description = template.Shortcut + Environment.NewLine + GettextCatalog.GetString (template.Description);
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window)
+		public CompletionCategory (string displayText, IconId icon)
 		{
-			if (window.CompletionWidget is ICodeTemplateWidget) {
-				((ICodeTemplateWidget)window.CompletionWidget).InsertTemplate (template, doc);
-			} else {
-				template.InsertTemplate (doc);
-			}
+			this.DisplayText = displayText;
+			this.Icon = icon;
 		}
 		
+		public abstract int CompareTo (CompletionCategory other);
 	}
 }

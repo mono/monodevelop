@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
 				
 				foreach (object o in list) {
-					MonoDevelop.Ide.CodeCompletion.IMemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.IMemberCompletionData;
+					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;
 					if (data == null)
 						continue;
 					
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				
 				foreach (object o in list) {
-					MonoDevelop.Ide.CodeCompletion.IMemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.IMemberCompletionData;
+					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;
 					if (data == null)
 						continue;
 					if (data.Member is IParameter) {
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				
 				foreach (object o in list) {
-					MonoDevelop.Ide.CodeCompletion.IMemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.IMemberCompletionData;
+					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;
 					if (data == null)
 						continue;
 					if (data.Member is LocalVariable) {

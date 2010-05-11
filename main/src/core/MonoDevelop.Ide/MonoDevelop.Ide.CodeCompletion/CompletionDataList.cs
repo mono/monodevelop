@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface ICompletionDataList : IList<ICompletionData>
+	public interface ICompletionDataList : IList<CompletionData>
 	{
 		bool IsSorted { get; }
 		bool AutoCompleteUniqueMatch { get; }
@@ -42,8 +42,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		bool AutoSelect { get; }
 		string DefaultCompletionString { get; }
 		CompletionSelectionMode CompletionSelectionMode { get; }
-		void Sort (Comparison<ICompletionData> comparison);
-		void Sort (IComparer<ICompletionData> comparison);
+		void Sort (Comparison<CompletionData> comparison);
+		void Sort (IComparer<CompletionData> comparison);
 		
 		IEnumerable<ICompletionKeyHandler> KeyHandler { get; }
 	}
@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		OwnTextField
 	}
 	
-	public class CompletionDataList : List<ICompletionData>, ICompletionDataList
+	public class CompletionDataList : List<CompletionData>, ICompletionDataList
 	{
 		public bool IsSorted { get; set; }
 		
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AutoSelect = true;
 		}
 		
-		public CompletionDataList (IEnumerable<ICompletionData> data) : base(data)
+		public CompletionDataList (IEnumerable<CompletionData> data) : base(data)
 		{
 			this.AutoSelect = true;
 		}
@@ -116,9 +116,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return datum;
 		}
 		
-		public ICompletionData Find (string name)
+		public CompletionData Find (string name)
 		{
-			foreach (ICompletionData datum in this)
+			foreach (CompletionData datum in this)
 				if (datum.CompletionText == name)
 					return datum;
 			return null;
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		public void RemoveWhere (Func<ICompletionData,bool> shouldRemove)
+		public void RemoveWhere (Func<CompletionData,bool> shouldRemove)
 		{
 			for (int i = 0; i < this.Count;) {
 				if (shouldRemove (this[i]))

@@ -1,5 +1,5 @@
 // 
-// SimpleCompletionData.cs
+// CompletionData.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -33,27 +33,30 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public abstract class CompletionCategory : IComparable<CompletionCategory>
-	{
-		public string DisplayText { get; set; }
-		public IconId Icon { get; set; }
-		
-		public CompletionCategory ()
-		{
-		}
-		
-		public CompletionCategory (string displayText, IconId icon)
-		{
-			this.DisplayText = displayText;
-			this.Icon = icon;
-		}
-		
-		public abstract int CompareTo (CompletionCategory other);
-	}
-	
-	public class CompletionData : ICompletionData
+	public class CompletionData
 	{
 		protected CompletionData () {}
+		
+		public virtual IconId Icon { get; set; }
+		public virtual string DisplayText { get; set; }
+		public virtual string Description { get; set; }
+		public virtual string CompletionText { get; set; }
+		public virtual string DisplayDescription { get; set; }
+		public virtual CompletionCategory CompletionCategory { get; set; }
+		public virtual DisplayFlags DisplayFlags { get; set; }
+		
+		public virtual bool IsOverloaded { 
+			get {
+				return false;
+			}
+		}
+		
+		public virtual IEnumerable<CompletionData> OverloadedData {
+			get {
+				throw new System.InvalidOperationException ();
+			}
+		}
+		
 		public CompletionData (string text) : this (text, null, null) {}
 		public CompletionData (string text, IconId icon) : this (text, icon, null) {}
 		public CompletionData (string text, IconId icon, string description) : this (text, icon, description, text) {}
@@ -66,13 +69,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.CompletionText = completionText;
 		}
 		
-		public virtual IconId Icon { get; set; }
-		public virtual string DisplayText { get; set; }
-		public virtual string Description { get; set; }
-		public virtual string CompletionText { get; set; }
-		public virtual string DisplayDescription { get; set; }
-		public virtual CompletionCategory CompletionCategory { get; set; }
-		public virtual DisplayFlags DisplayFlags { get; set; }
+		public virtual void InsertCompletionText (CompletionListWindow window)
+		{
+			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
+			
+			int replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
+			string currentWord = window.CompletionWidget.GetText (window.CodeCompletionContext.TriggerOffset, window.CodeCompletionContext.TriggerOffset + replaceLength);
+			
+			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
+		}
 		
 		public override string ToString ()
 		{
