@@ -92,7 +92,7 @@ namespace MonoDevelop.Refactoring
 		}
 	}
 		
-	class ImportSymbolCompletionData : IActionCompletionData
+	class ImportSymbolCompletionData : CompletionData
 	{
 		TextEditorData data;
 		IType type;
@@ -133,12 +133,12 @@ namespace MonoDevelop.Refactoring
 		}
 		
 		#region IActionCompletionData implementation
-		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
+		public override void InsertCompletionText (CompletionListWindow window)
 		{
 			Initialize ();
 			string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
-			data.Replace (context.TriggerOffset, data.Caret.Offset - context.TriggerOffset, text);
-			data.Caret.Offset = context.TriggerOffset + text.Length;
+			data.Replace (window.CodeCompletionContext.TriggerOffset, data.Caret.Offset - window.CodeCompletionContext.TriggerOffset, text);
+			data.Caret.Offset = window.CodeCompletionContext.TriggerOffset + text.Length;
 			if (generateUsing) {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				refactorer.AddGlobalNamespaceImport (dom, data.Document.FileName, type.Namespace);
@@ -149,13 +149,13 @@ namespace MonoDevelop.Refactoring
 		#endregion
 		
 		#region ICompletionData implementation
-		public IconId Icon {
+		public override IconId Icon {
 			get {
 				return type.StockIcon;
 			}
 		}
 		string displayText = null;
-		public string DisplayText {
+		public override string DisplayText {
 			get {
 				if (displayText == null)
 					displayText = ambience.GetString (type, OutputFlags.IncludeGenerics);
@@ -164,7 +164,7 @@ namespace MonoDevelop.Refactoring
 		}
 		
 		string displayDescription = null;
-		public string DisplayDescription {
+		public override string DisplayDescription {
 			get {
 				if (displayDescription == null) {
 					Initialize ();
@@ -178,7 +178,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public string Description {
+		public override string Description {
 			get {
 				Initialize ();
 				if (generateUsing)
@@ -187,21 +187,9 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public string CompletionText {
+		public override string CompletionText {
 			get {
 				return type.Name;
-			}
-		}
-		
-		public CompletionCategory CompletionCategory {
-			get {
-				return null;
-			}
-		}
-		
-		public DisplayFlags DisplayFlags {
-			get {
-				return DisplayFlags.None;
 			}
 		}
 		#endregion
