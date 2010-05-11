@@ -86,7 +86,7 @@ namespace PyBinding.Gui
 			}
 		}
 		
-		public IEnumerable<ICompletionData> SelfDotCompletionData (PythonClass klass)
+		public IEnumerable<CompletionData> SelfDotCompletionData (PythonClass klass)
 		{
 			foreach (var attr in klass.Attributes)
 				yield return new CompletionData (attr.Name, s_ImgAttr, attr.Documentation);
@@ -134,7 +134,7 @@ namespace PyBinding.Gui
 			
 			// "from blah "
 			if (inFrom && parts.Length == 2 && parts [parts.Length-1].Trim ().Length > 0 && completionChar == ' ') {
-				return new CompletionDataList (new ICompletionData[] { new CompletionData ("import") });
+				return new CompletionDataList (new CompletionData[] { new CompletionData ("import") });
 			}
 			// "from blah import "
 			else if (inFrom && parts.Length > 2) {
@@ -190,12 +190,12 @@ namespace PyBinding.Gui
 				;
 		}
 		
-		static ICompletionData CreateCompletionData (ParserItem item, string triggerWord)
+		static CompletionData CreateCompletionData (ParserItem item, string triggerWord)
 		{
 			return CreateCompletionData (item, triggerWord, "");
 		}
 		
-		static ICompletionData CreateCompletionData (ParserItem item, string triggerWord, string suffix)
+		static CompletionData CreateCompletionData (ParserItem item, string triggerWord, string suffix)
 		{
 			var name = item.FullName.Substring (triggerWord.Length);
 			return new CompletionData (name, IconForType (item), item.Documentation, name + suffix);

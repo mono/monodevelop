@@ -84,9 +84,9 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class id = "PyBinding.Gui.PythonEditorCompletion" class = "PyBinding.Gui.PythonEditorCompletion" />
-		<Class id = "PyBinding.Gui.PythonEditorIndentation" class = "PyBinding.Gui.PythonEditorIndentation" />
-		<Class id = "PyBinding.Gui.PythonEditorOutline" class = "PyBinding.Gui.PythonEditorOutline" />
+		<Class fileExtensions = ".py" id = "PyBinding.Gui.PythonEditorCompletion" class = "PyBinding.Gui.PythonEditorCompletion" />
+		<Class fileExtensions = ".py" id = "PyBinding.Gui.PythonEditorIndentation" class = "PyBinding.Gui.PythonEditorIndentation" />
+		<Class fileExtensions = ".py" id = "PyBinding.Gui.PythonEditorOutline" class = "PyBinding.Gui.PythonEditorOutline" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">

@@ -1,3 +1,10 @@
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PyBinding.addin.xml: Restrict editor extensions by file
+	  type.
+
+	* PyBinding.Gui/PythonEditorCompletion.cs: Track API.
+
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* PyBinding.csproj: Updated. Text style policy doesn't inherit
