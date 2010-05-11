@@ -1297,7 +1297,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataList: List<ICompletionData>, ICompletionDataList
+	class DebugCompletionDataList: List<MonoDevelop.Ide.CodeCompletion.CompletionData>, ICompletionDataList
 	{
 		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)
@@ -1329,7 +1329,7 @@ namespace MonoDevelop.Debugger
 		public IEnumerable<ICompletionKeyHandler> KeyHandler { get { return keyHandler;} }
 	}
 	
-	class DebugCompletionData: ICompletionData
+	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
 		CompletionItem item;
 		
@@ -1338,44 +1338,22 @@ namespace MonoDevelop.Debugger
 			this.item = item;
 		}
 		
-		public IconId Icon {
+		public override IconId Icon {
 			get {
 				return ObjectValueTreeView.GetIcon (item.Flags);
 			}
 		}
 		
-		public string DisplayText {
+		public override string DisplayText {
 			get {
 				return item.Name;
 			}
 		}
 		
-		public string Description {
-			get {
-				return string.Empty;
-			}
-		}
-		
-		public string CompletionText {
+		public override string CompletionText {
 			get {
 				return item.Name;
 			}
-		
-		}
-		public string DisplayDescription {
-			get {
-				return null;
-			}
-		}
-		
-		public CompletionCategory CompletionCategory  {
-			get {
-				return null;
-			}
-		}
-		
-		public DisplayFlags DisplayFlags {
-			get { return DisplayFlags.None; }
 		}
 	}
 }
