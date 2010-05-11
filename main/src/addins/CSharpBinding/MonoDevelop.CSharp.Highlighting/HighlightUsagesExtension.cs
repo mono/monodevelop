@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (member != null) {
 				try {
 					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, null, Document.FileName);
-					FindMemberAstVisitor visitor = new FindMemberAstVisitor (resolver, Document.GetContent<IEditableTextFile> (), member);
+					FindMemberAstVisitor visitor = new FindMemberAstVisitor (textEditorData.Document, resolver, member);
 					visitor.IncludeXmlDocumentation = true;
 					ICSharpCode.NRefactory.Ast.CompilationUnit unit = Document.CompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 					if (unit == null)

@@ -1,5 +1,15 @@
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
+	* MonoDevelop.CSharp.Dom/Expressions/QueryExpression.cs: Fixed
+	  compile warnings.
+
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Optimized highlight usages extension & find member visitor.
+
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:
 	  Fixed 'Bug 604558 - Wrong code syntax highlighting when
 	  previous line have a comment'.

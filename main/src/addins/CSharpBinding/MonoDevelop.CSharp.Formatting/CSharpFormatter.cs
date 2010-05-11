@@ -151,8 +151,8 @@ namespace MonoDevelop.CSharp.Formatting
 			string curIndent = lineSegment.GetIndentation (data.Document);
 			
 			int nlwsp = curIndent.Length;
-			int cursor = data.Caret.Offset;
-			int pos = lineSegment.Offset;
+//			int cursor = data.Caret.Offset;
+//			int pos = lineSegment.Offset;
 //			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
 			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.Length && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent

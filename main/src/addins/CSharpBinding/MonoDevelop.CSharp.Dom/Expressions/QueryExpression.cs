@@ -34,7 +34,7 @@ namespace MonoDevelop.CSharp.Dom
 	public class QueryExpressionFromClause : AbstractCSharpNode
 	{
 		public const int FromKeywordRole = 100;
-		public const int InKeywordRole = 100;
+		public const int InKeywordRole = 101;
 		
 		public ICSharpNode Type {
 			get {
@@ -71,10 +71,27 @@ namespace MonoDevelop.CSharp.Dom
 		public const int IntoIdentifierRole   = 102;
 		
 		public const int JoinKeywordRole     = 110;
-		public const int InKeywordRole       = 111;
+		public new const int InKeywordRole       = 111;
 		public const int OnKeywordRole       = 112;
 		public const int EqualsKeywordRole   = 113;
 		public const int IntoKeywordRole     = 114;
+		
+		public CSharpTokenNode JoinKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (JoinKeywordRole); }
+		}
+		public CSharpTokenNode InKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (InKeywordRole); }
+		}
+		public CSharpTokenNode OnKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (OnKeywordRole); }
+		}
+		public CSharpTokenNode EqualsKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (EqualsKeywordRole); }
+		}
+		public CSharpTokenNode IntoKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (IntoKeywordRole); }
+		}
+		
 		
 		public INode OnExpression {
 			get {

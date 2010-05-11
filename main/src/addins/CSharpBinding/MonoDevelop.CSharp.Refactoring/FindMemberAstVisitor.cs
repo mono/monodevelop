@@ -58,12 +58,14 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 		
 		NRefactoryResolver resolver;
-		IEditableTextFile file;
 		
 		MonoDevelop.Projects.Dom.INode searchedMember;
 		DomLocation   searchedMemberLocation;
 		string        searchedMemberName;
 		string        searchedMemberFile = null;
+		
+		string fileName;
+		Mono.TextEditor.Document text;
 		
 		Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 		
@@ -76,16 +78,29 @@ namespace MonoDevelop.CSharp.Refactoring
 			set;
 		}
 		
+		public FindMemberAstVisitor (Mono.TextEditor.Document document, NRefactoryResolver resolver, MonoDevelop.Projects.Dom.INode searchedMember)
+		{
+			fileName = document.FileName;
+			this.text = document;
+			Init (resolver, searchedMember);
+		}
+		
 		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, MonoDevelop.Projects.Dom.INode searchedMember)
 		{
-			this.file = file;
+			fileName = file.Name;
+			text = new Mono.TextEditor.Document ();
+			text.Text = file.Text;
+			Init (resolver, searchedMember);
+		}
+		
+		void Init (NRefactoryResolver resolver, MonoDevelop.Projects.Dom.INode searchedMember)
+		{
 			this.resolver = resolver;
 			if (searchedMember is IMember) 
 				searchedMember = GetUnderlyingMember ((IMember)searchedMember);
 			
 			this.searchedMember = searchedMember;
 			this.IncludeXmlDocumentation = false;
-			
 			
 			if (searchedMember is IMethod) {
 				IMethod method = (IMethod)searchedMember;
@@ -153,15 +168,11 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		static readonly Regex seeRegex       = new Regex ("\\<see\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
 		static readonly Regex seeAlsoRegRegex = new Regex ("\\<seealso\\s+cref\\s*=\\s*\"(.*)\"", RegexOptions.Compiled);
-
-		Mono.TextEditor.Document text;
 		
 		public void RunVisitor ()
 		{
 			if (searchedMember == null)
 				return;
-			text = new Mono.TextEditor.Document ();
-			text.Text = file.Text;
 			
 			// search if the member name exists in the file (otherwise it doesn't make sense to search it)
 			FindReplace findReplace = new FindReplace ();
@@ -175,8 +186,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				return;
 			}
 			
-			// It exists -> now looking with the parser
-			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (text.Text));
+			string parseText = text.Text;
+			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (parseText));
 			parser.Lexer.EvaluateConditionalCompilation = true;
 			parser.Parse ();
 			resolver.SetupParsedCompilationUnit (parser.CompilationUnit);
@@ -187,11 +198,13 @@ namespace MonoDevelop.CSharp.Refactoring
 				parser.Lexer.ConditionalCompilationSymbols.Clear ();
 				foreach (string define in usedIdentifiers[i])
 					parser.Lexer.ConditionalCompilationSymbols.Add (define, true);
-				parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (file.Text));
+				parser.Dispose ();
+				parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (parseText));
 				parser.Parse ();
 				
 				VisitCompilationUnit (parser.CompilationUnit, null);
 			}
+			
 			if (IncludeXmlDocumentation) {
 				if (searchedMember is IParameter) {
 					IParameter parameter = (IParameter)searchedMember;
@@ -236,15 +249,14 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 				}
 			}
+			parser.Dispose ();
 		}
+		
 		
 		public void RunVisitor (ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit)
 		{
 			if (searchedMember == null)
 				return;
-			text = new Mono.TextEditor.Document ();
-			text.Text = file.Text;
-			
 			// search if the member name exists in the file (otherwise it doesn't make sense to search it)
 			FindReplace findReplace = new FindReplace ();
 			FilterOptions filterOptions = new FilterOptions {
@@ -355,7 +367,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			else
 				txt = null;
 			
-			return new MemberReference (null, file.Name, pos, line, col, name, txt);
+			return new MemberReference (null, fileName, pos, line, col, name, txt);
 		}
 		
 		HashSet<MemberReference> unique = new HashSet<MemberReference> ();
@@ -379,14 +391,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			if (searchedMember is CompoundType) {
 				foreach (IType part in ((CompoundType)searchedMember).Parts) {
-					if (file.Name == part.CompilationUnit.FileName &&
+					if (fileName == part.CompilationUnit.FileName &&
 					    node.StartLocation.Line == part.Location.Line && 
 					    node.StartLocation.Column == part.Location.Column)
 						return true;
 				}
 			}
 			
-			return (string.IsNullOrEmpty (searchedMemberFile) || file.Name == searchedMemberFile) && 
+			return (string.IsNullOrEmpty (searchedMemberFile) || fileName == searchedMemberFile) && 
 			       node.StartLocation.Line == this.searchedMemberLocation.Line && 
 			       node.StartLocation.Column == this.searchedMemberLocation.Column;
 		}
@@ -453,7 +465,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			CheckNode (constructorDeclaration);
 			if (this.searchedMember is IType) {
-				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == file.Name) &&
+				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == fileName) &&
 				    ((IType)this.searchedMember).FullName == CurrentTypeFullName &&
 				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count &&
 				    IsSearchTextAt (constructorDeclaration.StartLocation.Line, constructorDeclaration.StartLocation.Column))
@@ -473,7 +485,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			CheckNode (destructorDeclaration);
 			if (this.searchedMember is IType) {
-				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == file.Name) &&
+				if (((IType)this.searchedMember).Parts.Any (t => t.CompilationUnit.FileName == fileName) &&
 				    ((IType)this.searchedMember).FullName == CurrentTypeFullName && 
 				    ((IType)this.searchedMember).TypeParameters.Count == typeStack.Peek ().Templates.Count && 
 				    IsSearchTextAt (destructorDeclaration.StartLocation.Line, destructorDeclaration.StartLocation.Column + 1))
