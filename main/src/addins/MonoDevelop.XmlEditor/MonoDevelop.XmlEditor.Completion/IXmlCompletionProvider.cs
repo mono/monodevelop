@@ -35,15 +35,15 @@ namespace MonoDevelop.XmlEditor.Completion
 	
 	public interface IXmlCompletionProvider
 	{
-		ICompletionData[] GetElementCompletionData ();
-		ICompletionData[] GetElementCompletionData (string namespacePrefix);
+		CompletionData[] GetElementCompletionData ();
+		CompletionData[] GetElementCompletionData (string namespacePrefix);
 		
-		ICompletionData[] GetChildElementCompletionData (XmlElementPath path);
-		ICompletionData[] GetAttributeCompletionData (XmlElementPath path);
-		ICompletionData[] GetAttributeValueCompletionData (XmlElementPath path, string name);
+		CompletionData[] GetChildElementCompletionData (XmlElementPath path);
+		CompletionData[] GetAttributeCompletionData (XmlElementPath path);
+		CompletionData[] GetAttributeValueCompletionData (XmlElementPath path, string name);
 		
-		ICompletionData[] GetChildElementCompletionData (string tagName);
-		ICompletionData[] GetAttributeCompletionData (string tagName);
-		ICompletionData[] GetAttributeValueCompletionData (string tagName, string name);
+		CompletionData[] GetChildElementCompletionData (string tagName);
+		CompletionData[] GetAttributeCompletionData (string tagName);
+		CompletionData[] GetAttributeValueCompletionData (string tagName, string name);
 	}
 }

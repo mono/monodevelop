@@ -184,7 +184,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		///   Copies the <see cref='XmlCompletionDataCollection'/> values to a one-dimensional <see cref='Array'/> instance at the 
 		///    specified index.
 		/// </summary>
-		public void CopyTo(ICompletionData[] array, int index)
+		public void CopyTo(CompletionData[] array, int index)
 		{
 			List.CopyTo(array, index);
 		}		
@@ -216,12 +216,12 @@ namespace MonoDevelop.XmlEditor.Completion
 		}
 		
 		/// <summary>
-		/// Returns an array of <see cref="ICompletionData"/> items.
+		/// Returns an array of <see cref="CompletionData"/> items.
 		/// </summary>
 		/// <returns></returns>
-		public ICompletionData[] ToArray()
+		public CompletionData[] ToArray()
 		{
-			ICompletionData[] data = new ICompletionData[Count];
+			CompletionData[] data = new CompletionData[Count];
 			CopyTo(data, 0);
 			return data;
 		}

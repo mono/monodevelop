@@ -35,44 +35,46 @@ namespace MonoDevelop.XmlEditor.Completion
 	
 	public class EmptyXmlCompletionProvider : IXmlCompletionProvider
 	{
-		public ICompletionData[] GetElementCompletionData ()
+		static CompletionData[] emptyData = new CompletionData [] {};
+
+		public CompletionData[] GetElementCompletionData ()
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 
-		public ICompletionData[] GetElementCompletionData (string namespacePrefix)
+		public CompletionData[] GetElementCompletionData (string namespacePrefix)
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 
-		public ICompletionData[] GetChildElementCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
+		public CompletionData[] GetChildElementCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 
-		public ICompletionData[] GetAttributeCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
+		public CompletionData[] GetAttributeCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 
-		public ICompletionData[] GetAttributeValueCompletionData (MonoDevelop.XmlEditor.XmlElementPath path, string name)
+		public CompletionData[] GetAttributeValueCompletionData (MonoDevelop.XmlEditor.XmlElementPath path, string name)
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 
-		public ICompletionData[] GetChildElementCompletionData (string tagName)
+		public CompletionData[] GetChildElementCompletionData (string tagName)
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 
-		public ICompletionData[] GetAttributeCompletionData (string tagName)
+		public CompletionData[] GetAttributeCompletionData (string tagName)
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 
-		public ICompletionData[] GetAttributeValueCompletionData (string tagName, string name)
+		public CompletionData[] GetAttributeValueCompletionData (string tagName, string name)
 		{
-			return new ICompletionData [] {};
+			return emptyData;
 		}
 	}
 }

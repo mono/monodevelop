@@ -154,7 +154,7 @@ namespace MonoDevelop.XmlEditor
 				if (schema == null)
 					schema = inferredCompletionData;
 				if (schema != null) {
-					ICompletionData[] completionData = schema.GetChildElementCompletionData (path);
+					CompletionData[] completionData = schema.GetChildElementCompletionData (path);
 					if (completionData != null)
 						list.AddRange (completionData);
 				}
@@ -174,7 +174,7 @@ namespace MonoDevelop.XmlEditor
 				if (schema == null)
 					schema = inferredCompletionData;
 				if (schema != null) {
-					ICompletionData[] completionData = schema.GetAttributeCompletionData (path);
+					CompletionData[] completionData = schema.GetAttributeCompletionData (path);
 					if (completionData != null)
 						return new CompletionDataList (completionData);
 				}
@@ -188,7 +188,7 @@ namespace MonoDevelop.XmlEditor
 			if (path.Elements.Count > 0) {
 				XmlSchemaCompletionData schema = FindSchema (path);
 				if (schema != null) {
-					ICompletionData[] completionData = schema.GetAttributeValueCompletionData (path, att.Name.FullName);
+					CompletionData[] completionData = schema.GetAttributeValueCompletionData (path, att.Name.FullName);
 					if (completionData != null)
 						return new CompletionDataList (completionData);
 				}

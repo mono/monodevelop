@@ -73,62 +73,62 @@ namespace MonoDevelop.XmlEditor.Completion
 			}
 		}
 		
-		public ICompletionData[] GetElementCompletionData ()
+		public CompletionData[] GetElementCompletionData ()
 		{
 			return GetChildElementCompletionData ("");
 		}
 		
-		public ICompletionData[] GetElementCompletionData (string namespacePrefix)
+		public CompletionData[] GetElementCompletionData (string namespacePrefix)
 		{
-			return new ICompletionData[0];
+			return new CompletionData[0];
 		}
 		
-		public ICompletionData[] GetChildElementCompletionData (XmlElementPath path)
+		public CompletionData[] GetChildElementCompletionData (XmlElementPath path)
 		{
 			return GetCompletions (elementCompletions, path, XmlCompletionData.DataType.XmlElement);
 		}
 		
-		public ICompletionData[] GetAttributeCompletionData (XmlElementPath path)
+		public CompletionData[] GetAttributeCompletionData (XmlElementPath path)
 		{
 			return GetCompletions (attributeCompletions, path, XmlCompletionData.DataType.XmlAttribute);
 		}
 		
-		public ICompletionData[] GetAttributeValueCompletionData (XmlElementPath path, string name)
+		public CompletionData[] GetAttributeValueCompletionData (XmlElementPath path, string name)
 		{
-			return new ICompletionData [0];
+			return new CompletionData [0];
 		}
 		
-		public ICompletionData[] GetChildElementCompletionData (string tagName)
+		public CompletionData[] GetChildElementCompletionData (string tagName)
 		{
 			return GetCompletions (elementCompletions, tagName, XmlCompletionData.DataType.XmlElement);
 		}
 		
-		public ICompletionData[] GetAttributeCompletionData (string tagName)
+		public CompletionData[] GetAttributeCompletionData (string tagName)
 		{
 			return GetCompletions (attributeCompletions, tagName, XmlCompletionData.DataType.XmlAttribute);
 		}
 		
-		public ICompletionData[] GetAttributeValueCompletionData (string tagName, string name)
+		public CompletionData[] GetAttributeValueCompletionData (string tagName, string name)
 		{
-			return new ICompletionData [0];
+			return new CompletionData [0];
 		}
 		
-		static ICompletionData[] GetCompletions (Dictionary<string,HashSet<string>> map, string tagName, XmlCompletionData.DataType type)
+		static CompletionData[] GetCompletions (Dictionary<string,HashSet<string>> map, string tagName, XmlCompletionData.DataType type)
 		{
 			HashSet<string> values;
 			if (!map.TryGetValue (tagName, out values))
-				return new ICompletionData [0];
-			ICompletionData[] data = new ICompletionData[values.Count];
+				return new CompletionData [0];
+			CompletionData[] data = new CompletionData[values.Count];
 			int i = 0;
 			foreach (string s in values)
 				data[i++] = new XmlCompletionData (s, type);
 			return data;
 		}
 		
-		static ICompletionData[] GetCompletions (Dictionary<string,HashSet<string>> map, XmlElementPath path, XmlCompletionData.DataType type)
+		static CompletionData[] GetCompletions (Dictionary<string,HashSet<string>> map, XmlElementPath path, XmlCompletionData.DataType type)
 		{
 			if (path == null || path.Elements.Count == 0)
-				return new ICompletionData[0];
+				return new CompletionData[0];
 			return GetCompletions (map, path.Elements[path.Elements.Count - 1].Name, type);
 		}
 	}

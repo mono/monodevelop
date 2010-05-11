@@ -168,7 +168,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		#region Simplified API, useful for e.g. HTML
 		
-		public ICompletionData[] GetChildElementCompletionData (string tagName)
+		public CompletionData[] GetChildElementCompletionData (string tagName)
 		{
 			EnsureLoaded();
 			
@@ -176,10 +176,10 @@ namespace MonoDevelop.XmlEditor.Completion
 			if (element != null)
 				return GetChildElementCompletionData (element, string.Empty).ToArray ();
 			else
-				return new ICompletionData[0];
+				return new CompletionData[0];
 		}
 		
-		public ICompletionData[] GetAttributeCompletionData (string tagName)
+		public CompletionData[] GetAttributeCompletionData (string tagName)
 		{
 			EnsureLoaded();
 			
@@ -188,11 +188,11 @@ namespace MonoDevelop.XmlEditor.Completion
 				prohibitedAttributes.Clear();
 				return GetAttributeCompletionData (element).ToArray ();
 			} else {
-				return new ICompletionData[0];
+				return new CompletionData[0];
 			}
 		}
 		
-		public ICompletionData[] GetAttributeValueCompletionData (string tagName, string name)
+		public CompletionData[] GetAttributeValueCompletionData (string tagName, string name)
 		{
 			EnsureLoaded();
 			
@@ -200,7 +200,7 @@ namespace MonoDevelop.XmlEditor.Completion
 			if (element != null)
 				return GetAttributeValueCompletionData (element, name).ToArray ();
 			else
-				return new ICompletionData[0];
+				return new CompletionData[0];
 		}
 		
 //		XmlElementPath CreateSimplePath (string tagName)
@@ -221,7 +221,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public ICompletionData[] GetElementCompletionData()
+		public CompletionData[] GetElementCompletionData()
 		{
 			EnsureLoaded();
 			return GetElementCompletionData(String.Empty);
@@ -230,7 +230,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public ICompletionData[] GetElementCompletionData(string namespacePrefix)
+		public CompletionData[] GetElementCompletionData(string namespacePrefix)
 		{
 			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
@@ -250,7 +250,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// Gets the attribute completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public ICompletionData[] GetAttributeCompletionData(XmlElementPath path)
+		public CompletionData[] GetAttributeCompletionData(XmlElementPath path)
 		{
 			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
@@ -271,7 +271,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// Gets the child element completion data for the xml element that exists
 		/// at the end of the specified path.
 		/// </summary>
-		public ICompletionData[] GetChildElementCompletionData(XmlElementPath path)
+		public CompletionData[] GetChildElementCompletionData(XmlElementPath path)
 		{
 			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
@@ -290,7 +290,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// <summary>
 		/// Gets the autocomplete data for the specified attribute value.
 		/// </summary>
-		public ICompletionData[] GetAttributeValueCompletionData(XmlElementPath path, string name)
+		public CompletionData[] GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
 			EnsureLoaded();
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();

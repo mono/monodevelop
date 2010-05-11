@@ -38,7 +38,7 @@ namespace MonoDevelop.XmlEditor.Completion
 {
 	
 	
-	public class XmlMultipleClosingTagCompletionData : ICompletionData
+	public class XmlMultipleClosingTagCompletionData : CompletionData
 	{
 		string name, description;
 		XElement finalEl;
@@ -55,26 +55,19 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		#region ICompletionData implementation 
 				
-		public IconId Icon {
+		public override IconId Icon {
 			get { return Gtk.Stock.GoBack; }
 		}
 		
-		public string DisplayText {
+		public override string DisplayText {
 			get { return name; }
 		}
 		
-		public string Description {
+		public override string Description {
 			get { return description; }
 		}
 		
-		public string DisplayDescription {
-			get {
-				return null;
-			}
-		}
-		
-		
-		public string CompletionText {
+		public override string CompletionText {
 			get {
 				StringBuilder sb = new StringBuilder ();
 				sb.AppendFormat ("/{0}>", intEls[0].Name.FullName);
@@ -85,15 +78,6 @@ namespace MonoDevelop.XmlEditor.Completion
 				return sb.ToString ();
 			}
 		}
-		
-		public DisplayFlags DisplayFlags {
-			get { return DisplayFlags.None; }
-		}
-
-		public CompletionCategory CompletionCategory {
-			get { return null; }
-		}
-		
 		#endregion
 		
 		#region IActionCompletionData implementation 
