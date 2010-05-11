@@ -1,5 +1,9 @@
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/RefactoryCommands.cs: fixed warning.
+
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Track API
 	  changes.
 

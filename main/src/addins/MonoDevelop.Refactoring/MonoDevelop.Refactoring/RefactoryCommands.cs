@@ -557,7 +557,7 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
-		string EscapeName (string name)
+	/*	string EscapeName (string name)
 		{
 			if (name.IndexOf ('_') == -1)
 				return name;
@@ -570,7 +570,7 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			return sb.ToString ();
-		}
+		}*/
 		
 		static string FormatFileName (string fileName)
 		{
