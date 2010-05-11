@@ -47,14 +47,13 @@ namespace Mono.TextEditor.PopupWindow
 		bool buttonPressed;
 		bool disableSelection;
 
-		public event EventHandler SelectionChanged;
-		
 		protected virtual void OnSelectionChanged (EventArgs e)
 		{
 			EventHandler handler = this.SelectionChanged;
 			if (handler != null)
 				handler (this, e);
 		}
+		public event EventHandler SelectionChanged;
 		
 		public ListWidget (ListWindow<T> win)
 		{

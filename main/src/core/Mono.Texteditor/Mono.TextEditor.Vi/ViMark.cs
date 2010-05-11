@@ -76,7 +76,7 @@ namespace Mono.TextEditor.Vi
 			}
 		}
 		
-		public virtual ChunkStyle GetStyle (ChunkStyle baseStyle) {
+		public override ChunkStyle GetStyle (ChunkStyle baseStyle) {
 			return baseStyle;
 		}
 		

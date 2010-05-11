@@ -413,13 +413,10 @@ namespace Mono.TextEditor.Vi
 							Status = "q";
 							state = State.NameMacro;
 							return;
-						} else {
-							currentMacro = null;
-							Reset("Macro Recorded");
-							return;
-						}
-						break;
-						
+						} 
+						currentMacro = null;
+						Reset("Macro Recorded");
+						return;
 					}
 					
 				}

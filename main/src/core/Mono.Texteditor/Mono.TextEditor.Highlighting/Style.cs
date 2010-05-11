@@ -557,10 +557,10 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), properties));
 		}
 			
-		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b, ChunkProperties properties)
+/*		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b, ChunkProperties properties)
 		{
 			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), new Gdk.Color (bg_r, bg_g, bg_b), properties));
-		}
+		}*/
 		
 		public ChunkStyle GetDefaultChunkStyle ()
 		{

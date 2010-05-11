@@ -1,5 +1,14 @@
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Vi/ViMark.cs:
+	* Mono.TextEditor.Vi/ViMode.cs:
+	* Mono.TextEditor/DefaultEditActions.cs:
+	* Mono.TextEditor.Highlighting/Style.cs:
+	* Mono.TextEditor.PopupWindow/ListWidget.cs: Fixed some
+	  compiler warnings.
+
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Optimized text editor
 	  selection drawing a bit.
 
