@@ -1,3 +1,13 @@
+2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Docking/DockGroup.cs: In
+	  RestoreAllocation, make a copy of the items list because
+	  RestoreAllocation can fire events such as VisibleChanged,
+	  and subscribers may do changes in the list. Should fix bug
+	  #600869 - Exception while switching layout from 'Solution'
+	  to 'Default' using the tool bar.
+
+
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/IdeStartup.cs: Add command line argument to
