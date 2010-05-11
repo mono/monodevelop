@@ -1,3 +1,8 @@
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Optimized text editor
+	  selection drawing a bit.
+
 2010-05-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/GutterMargin.cs:

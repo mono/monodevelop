@@ -86,9 +86,11 @@ namespace Mono.TextEditor
 				return highlightCaretLine; 
 			}
 			set {
-				highlightCaretLine = value; 
-				RemoveCachedLine (Document.GetLine (Caret.Line)); 
-				Document.CommitLineUpdate (Caret.Line);
+				if (highlightCaretLine != value) {
+					highlightCaretLine = value; 
+					RemoveCachedLine (Document.GetLine (Caret.Line)); 
+					Document.CommitLineUpdate (Caret.Line);
+				}
 			}
 		}
 		
@@ -151,6 +153,7 @@ namespace Mono.TextEditor
 			markerLayout = CreatePangoLayout (null);
 			
 			textEditor.Document.EndUndo += UpdateBracketHighlighting;
+			textEditor.SelectionChanged += UpdateBracketHighlighting;
 			textEditor.Document.Undone += delegate {
 				UpdateBracketHighlighting (this, EventArgs.Empty);
 			};
@@ -327,19 +330,23 @@ namespace Mono.TextEditor
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
 			HighlightCaretLine = false;
-			if (!textEditor.Options.HighlightMatchingBracket)
+			if (!textEditor.Options.HighlightMatchingBracket || textEditor.IsSomethingSelected) {
+				if (highlightBracketOffset >= 0) {
+					textEditor.RedrawLine (Document.OffsetToLineNumber (highlightBracketOffset));
+					highlightBracketOffset = -1;
+				}
 				return;
+			}
 			
 			int offset = Caret.Offset - 1;
 			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset))))
 				offset++;
 			offset = System.Math.Max (0, offset);
-			if (offset >= Document.Length || !Document.IsBracket (Document.GetCharAt (offset))) {
+			if (highlightBracketOffset >= 0 && (offset >= Document.Length || !Document.IsBracket (Document.GetCharAt (offset)))) {
 				int old = highlightBracketOffset;
 				highlightBracketOffset = -1;
-				if (old >= 0) {
+				if (old >= 0)
 					textEditor.RedrawLine (Document.OffsetToLineNumber (old));
-				}
 				return;
 			}
 			if (offset < 0)
