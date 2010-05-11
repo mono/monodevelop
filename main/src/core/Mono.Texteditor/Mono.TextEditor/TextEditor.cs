@@ -517,6 +517,10 @@ namespace Mono.TextEditor
 			base.OnUnrealized ();
 		}
 
+		public new Pango.Layout CreatePangoLayout (string text)
+		{
+			return PangoUtils.CreateLayout (this, text);
+		}
 		
 		void DocumentUpdatedHandler (object sender, EventArgs args)
 		{

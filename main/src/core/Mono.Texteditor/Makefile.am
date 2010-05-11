@@ -11,6 +11,8 @@ REFS =  \
 	-r:System.Drawing \
 	-r:System.Xml
 
+CONFIG=Mono.TextEditor.dll.config
+
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
@@ -95,6 +97,7 @@ FILES =  \
 	Mono.TextEditor/LineSplitter.cs \
 	Mono.TextEditor/LinkEventArgs.cs \
 	Mono.TextEditor/Margin.cs \
+	Mono.TextEditor/PangoUtils.cs \
 	Mono.TextEditor/PieceTable.cs \
 	Mono.TextEditor/Platform.cs \
 	Mono.TextEditor/RedBlackTree.cs \
@@ -153,7 +156,7 @@ RES =  \
 	SyntaxModes/VBNetSyntaxMode.xml \
 	SyntaxModes/XmlSyntaxMode.xml
 
-all: $(ASSEMBLY) $(ASSEMBLY).mdb
+all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 $(ADDIN_BUILD)/%: $(srcdir)/lib/%
 	mkdir -p $(ADDIN_BUILD)
@@ -165,10 +168,13 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
+$(ASSEMBLY).config: $(srcdir)/$(CONFIG)
+	cp "$(srcdir)/$(CONFIG)" $(ASSEMBLY).config
+
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
-EXTRA_DIST = $(FILES) $(RES)
+EXTRA_DIST = $(FILES) $(RES) $(CONFIG)
 
 include $(top_srcdir)/Makefile.include

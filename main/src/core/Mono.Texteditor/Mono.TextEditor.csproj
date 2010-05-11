@@ -160,9 +160,13 @@
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
     <Compile Include="Mono.TextEditor\PieceTable.cs" />
+    <Compile Include="Mono.TextEditor\PangoUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
+    <None Include="Mono.TextEditor.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SyntaxModes\MakefileSyntaxMode.xml">

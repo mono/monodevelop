@@ -1,5 +1,15 @@
 2010-05-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.dll.config:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/PangoUtils.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Work around massive
+	  memory leak in Gtk.Widget.CreatePangoLayout.
+
+2010-05-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextEditorOptions.cs: Store the zoom
 	  internally as a power, so that steps are always consistent.
 
