@@ -142,7 +142,7 @@ namespace CBinding
 		}
 	}
 	
-	public class CompletionData : ICompletionData
+	public class CompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
 		private IconId image;
 		private string text;
@@ -181,34 +181,20 @@ namespace CBinding
 			this.description = string.Empty;
 		}
 		
-		public IconId Icon {
+		public override IconId Icon {
 			get { return image; }
 		}
 		
-		public string DisplayText {
+		public override string DisplayText {
 			get { return text; }
 		}
 		
-		public string Description {
+		public override string Description {
 			get { return description; }
 		}
 		
-		public string DisplayDescription {
-			get { return null; }
-		}
-		
-		public string CompletionText {
+		public override string CompletionText {
 			get { return completion_string; }
-		}
-		
-		public DisplayFlags DisplayFlags {
-			get { return DisplayFlags.None; }
-		}
-		
-		public CompletionCategory CompletionCategory  {
-			get {
-				return null;
-			}
 		}
 	}
 

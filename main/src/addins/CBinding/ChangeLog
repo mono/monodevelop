@@ -1,3 +1,7 @@
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/DataProvider.cs: Track API changes.
+
 2010-04-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/DataProvider.cs: Track API changes.
