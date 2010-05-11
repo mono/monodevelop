@@ -1,3 +1,7 @@
+2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Menus/OSXMenu.cs: Track api changes.
+
 2010-05-04  Jonathan Pobst  <monkey@jpobst.com>
 
 	* Framework/AppleScript.cs: csc can't do Enum->Struct cast,

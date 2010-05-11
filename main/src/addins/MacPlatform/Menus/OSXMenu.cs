@@ -477,6 +477,7 @@ namespace OSXIntegration
 				
 			//	uint cmd = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, 0));
 				
+				CommandTargetRoute route = new CommandTargetRoute ();
 				ushort count = HIToolbox.CountMenuItems (menuRef);
 				for (ushort i = 1; i <= count; i++) {
 					HIMenuItem mi = new HIMenuItem (menuRef, i);
@@ -496,7 +497,7 @@ namespace OSXIntegration
 					if (!commands.TryGetValue (macCmdID, out cmdID) || cmdID == null)
 						continue;
 					
-					CommandInfo cinfo = manager.GetCommandInfo (cmdID, null);
+					CommandInfo cinfo = manager.GetCommandInfo (cmdID, route);
 					menuIdMap[cmdID] = HIToolbox.GetMenuID (menuRef);
 					UpdateMenuItem (menuRef, menuRef, ref i, ref count, macCmdID, cinfo);
 				}
