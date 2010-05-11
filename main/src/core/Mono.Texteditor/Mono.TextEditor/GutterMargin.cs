@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 		public GutterMargin (TextEditor editor)
 		{
 			this.editor = editor;
-			layout = new Pango.Layout (editor.PangoContext);
+			layout = PangoUtils.CreateLayout (editor, null);
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
 			this.editor.Document.LineChanged += UpdateWidth;
 			this.editor.Document.TextSet += delegate {

@@ -223,7 +223,7 @@ namespace Mono.TextEditor.PopupWindow
 					layout.Dispose ();
 				}
 				
-				layout = new Pango.Layout (PangoContext);
+				layout = PangoUtils.CreateLayout (this, null);
 				if (use_markup) {
 					layout.SetMarkup (brokentext != null? brokentext : (text ?? string.Empty));
 				} else {

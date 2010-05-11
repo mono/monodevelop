@@ -1,5 +1,11 @@
 2010-05-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor.PopupWindow/TooltipWindow.cs: Fix more
+	  leaks.
+
+2010-05-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fix crasher introduced by
 	  disposing attribute too early.
 
