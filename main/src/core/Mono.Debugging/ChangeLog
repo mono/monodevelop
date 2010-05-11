@@ -1,3 +1,8 @@
+2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/AsyncOperationManager.cs: Fixed
+	  deadlock while shuting down.
+
 2010-05-07  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/StackFrame.cs: Added HasDebugInfo
