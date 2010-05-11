@@ -162,7 +162,7 @@
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
     <Compile Include="Mono.TextEditor\PieceTable.cs" />
-    <Compile Include="Mono.TextEditor\PangoUtils.cs" />
+    <Compile Include="Mono.TextEditor\PangoUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

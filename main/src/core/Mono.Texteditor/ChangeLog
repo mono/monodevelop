@@ -2,6 +2,15 @@
 
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/PangoUtil.cs:
+	* Mono.TextEditor/PangoUtils.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Much more efficient
+	  setting of Pango attributes.
+
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/PangoUtils.cs:
 	* Mono.TextEditor/IconMargin.cs:

@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 	}
 	
 	/// <summary>
-	/// This creates a Pango list and applies attributes to it with much less overhead than the GTK# version.
+	/// This creates a Pango list and applies attributes to it with *much* less overhead than the GTK# version.
 	/// </summary>
 	class FastPangoAttrList : IDisposable
 	{
@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 		
 		public FastPangoAttrList ()
 		{
-			
+			list = pango_attr_list_new ();
 		}
 		
 		public void AddStyleAttribute (Pango.Style style, uint start, uint end)
@@ -87,14 +87,14 @@ namespace Mono.TextEditor
 			Add (pango_attr_weight_new (weight), start, end);
 		}
 		
-		public void AddForegroundAttribute (ushort r, ushort g, ushort b, uint start, uint end)
+		public void AddForegroundAttribute (Gdk.Color color, uint start, uint end)
 		{
-			Add (pango_attr_foreground_new (r, g, b), start, end);
+			Add (pango_attr_foreground_new (color.Red, color.Green, color.Blue), start, end);
 		}
 		
-		public void AddBackgroundAttribute (ushort r, ushort g, ushort b, uint start, uint end)
+		public void AddBackgroundAttribute (Gdk.Color color, uint start, uint end)
 		{
-			Add (pango_attr_background_new (r, g, b), start, end);
+			Add (pango_attr_background_new (color.Red, color.Green, color.Blue), start, end);
 		}
 		
 		public void AddUnderlineAttribute (Pango.Underline underline, uint start, uint end)
@@ -109,6 +109,7 @@ namespace Mono.TextEditor
 				attPtr->start_index = start;
 				attPtr->end_index = end;
 			}
+			pango_attr_list_insert (list, attribute);
 		}
 		
 		[DllImport (PangoUtil.LIBPANGO)]
@@ -129,6 +130,23 @@ namespace Mono.TextEditor
 		[DllImport (PangoUtil.LIBPANGO)]
 		static extern IntPtr pango_attr_underline_new (Pango.Underline underline);
 		
+		[DllImport (PangoUtil.LIBPANGO)]
+		static extern IntPtr pango_attr_list_new ();
+
+		[DllImport (PangoUtil.LIBPANGO)]
+		static extern void pango_attr_list_unref (IntPtr list);
+		
+		[DllImport (PangoUtil.LIBPANGO)]
+		static extern void pango_attr_list_insert (IntPtr list, IntPtr attr);
+		
+		[DllImport (PangoUtil.LIBPANGO)]
+		static extern void pango_layout_set_attributes (IntPtr layout, IntPtr attrList);
+		
+		public void AssignTo (Pango.Layout layout)
+		{
+			pango_layout_set_attributes (layout.Handle, list);
+		}
+		
 		struct PangoAttribute
 		{
 			IntPtr klass;
@@ -138,18 +156,25 @@ namespace Mono.TextEditor
 		
 		public void Dispose ()
 		{
-			GC.SuppressFinalize (this);
-			Destroy ();
+			if (list != IntPtr.Zero) {
+				GC.SuppressFinalize (this);
+				Destroy ();
+			}
 		}
 		
+		//NOTE: the list destroys all its attributes when the ref count reaches zero
 		void Destroy ()
 		{
-			
+			pango_attr_list_unref (list);
+			list = IntPtr.Zero;
 		}
 		
 		~FastPangoAttrList ()
 		{
-			Destroy ();
+			GLib.Idle.Add (delegate {
+				Destroy ();
+				return false;
+			});
 		}
 	}
 }

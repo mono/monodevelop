@@ -1014,7 +1014,7 @@ namespace Mono.TextEditor
 		public LayoutWrapper CreateLinePartLayout (SyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate (LayoutWrapper wrapper) {
-				Pango.AttrList atts = new Pango.AttrList ();
+				var atts = new FastPangoAttrList ();
 				wrapper.Layout.Alignment = Pango.Alignment.Left;
 				wrapper.Layout.FontDescription = textEditor.Options.Font;
 				wrapper.Layout.Tabs = tabArray;
@@ -1062,66 +1062,40 @@ namespace Mono.TextEditor
 						}
 						
 						HandleSelection (line, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
-							
-							Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
-							foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-							atts.Insert (foreGround);
+							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							atts.AddForegroundAttribute (chunkStyle.Color, si, ei);
 							
 							if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
-								Pango.AttrBackground backGround = new Pango.AttrBackground (chunkStyle.BackgroundColor.Red, chunkStyle.BackgroundColor.Green, chunkStyle.BackgroundColor.Blue);
-								backGround.StartIndex = foreGround.StartIndex;
-								backGround.EndIndex = foreGround.EndIndex;
-								atts.Insert (backGround);
-								backGround.Dispose ();
+								atts.AddBackgroundAttribute (chunkStyle.BackgroundColor, si, ei);
 							}
-							foreGround.Dispose ();
 						}, delegate(int start, int end) {
-							Pango.AttrForeground selectedForeground = new Pango.AttrForeground (ColorStyle.Selection.Color.Red, ColorStyle.Selection.Color.Green, ColorStyle.Selection.Color.Blue);
-							selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-							selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-							atts.Insert (selectedForeground);
+							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
+							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+							atts.AddForegroundAttribute (ColorStyle.Selection.Color, si, ei);
 							if (!wrapper.StartSet) 
-								wrapper.SelectionStartIndex = (int)selectedForeground.StartIndex;
-							wrapper.SelectionEndIndex   = (int)selectedForeground.EndIndex;
-							selectedForeground.Dispose ();
+								wrapper.SelectionStartIndex = (int)si;
+							wrapper.SelectionEndIndex   = (int)ei;
 						});
 
-						if (chunkStyle.Bold) {
-							Pango.AttrWeight attrWeight = new Pango.AttrWeight (Pango.Weight.Bold);
-							attrWeight.StartIndex = startIndex;
-							attrWeight.EndIndex = endIndex;
-							atts.Insert (attrWeight);
-							attrWeight.Dispose ();
-						}
+						if (chunkStyle.Bold)
+							atts.AddWeightAttribute (Pango.Weight.Bold, startIndex, endIndex);
 
-						if (chunkStyle.Italic) {
-							Pango.AttrStyle attrStyle = new Pango.AttrStyle (Pango.Style.Italic);
-							attrStyle.StartIndex = startIndex;
-							attrStyle.EndIndex = endIndex;
-							atts.Insert (attrStyle);
-							attrStyle.Dispose ();
-						}
-
-						if (chunkStyle.Underline) {
-							Pango.AttrUnderline attrUnderline = new Pango.AttrUnderline (Pango.Underline.Single);
-							attrUnderline.StartIndex = startIndex;
-							attrUnderline.EndIndex = endIndex;
-							atts.Insert (attrUnderline);
-							attrUnderline.Dispose ();
-						}
+						if (chunkStyle.Italic)
+							atts.AddStyleAttribute (Pango.Style.Italic, startIndex, endIndex);
+						
+						if (chunkStyle.Underline)
+							atts.AddUnderlineAttribute (Pango.Underline.Single, startIndex, endIndex);
 					}
 				}
 				if (containsPreedit) {
-					Pango.AttrUnderline underline = new Pango.AttrUnderline (Pango.Underline.Single);
-					underline.StartIndex = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
-					underline.EndIndex = TranslateToUTF8Index (lineChars, (uint)(underline.StartIndex + preeditLength), ref curIndex, ref byteIndex);
-					atts.Insert (underline);
-					underline.Dispose ();
+					var si = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
+					var ei = TranslateToUTF8Index (lineChars, (uint)(si + preeditLength), ref curIndex, ref byteIndex);
+					atts.AddUnderlineAttribute (Pango.Underline.Single, si, ei);
 				}
 				wrapper.LineChars = lineChars;
 				wrapper.Layout.SetText (lineText);
-				wrapper.Layout.Attributes = atts;
+				atts.AssignTo (wrapper.Layout);
 				atts.Dispose ();
 			});
 		}
