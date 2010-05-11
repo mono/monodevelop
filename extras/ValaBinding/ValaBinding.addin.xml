@@ -128,7 +128,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.ValaBinding.ValaTextEditorExtension" />
+		<Class fileExtensions = ".vala,.vapi" class = "MonoDevelop.ValaBinding.ValaTextEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
