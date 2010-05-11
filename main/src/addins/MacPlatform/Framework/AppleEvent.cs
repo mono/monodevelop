@@ -169,7 +169,7 @@ namespace OSXIntegration.Framework
 			where TRef : struct
 		{
 			long count = AppleEvent.AECountItems (ref list);
-			T[] arr = new T[count - 1];
+			T[] arr = new T[count];
 			for (int i = 1; i <= count; i++) {
 				TRef r = AppleEvent.AEGetNthPtr<TRef> (ref list, i, type);
 				arr [i - 1] = sel (ref r);

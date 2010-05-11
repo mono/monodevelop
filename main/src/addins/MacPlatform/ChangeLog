@@ -1,3 +1,7 @@
+2010-05-11  Levi Bard  <levi@unity3d.com>
+
+	* Framework/AppleEvent.cs: Off-by-one.
+
 2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Menus/OSXMenu.cs: Track api changes.
