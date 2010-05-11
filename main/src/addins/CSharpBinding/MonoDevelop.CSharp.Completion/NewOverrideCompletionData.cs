@@ -41,7 +41,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class NewOverrideCompletionData : CompletionData, IActionCompletionData
+	public class NewOverrideCompletionData : CompletionData
 	{
 		TextEditorData editor;
 		IMember member;
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
+		public override void InsertCompletionText (CompletionListWindow window)
 		{
 			string mod = GetModifiers (member);
 			StringBuilder sb = new StringBuilder ();

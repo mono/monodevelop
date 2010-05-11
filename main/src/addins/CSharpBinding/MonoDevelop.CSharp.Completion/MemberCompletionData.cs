@@ -39,7 +39,7 @@ using MonoDevelop.CSharp.Dom;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class MemberCompletionData : IMemberCompletionData, IOverloadedCompletionData
+	public class MemberCompletionData : MonoDevelop.Ide.CodeCompletion.MemberCompletionData
 	{
 		OutputFlags flags;
 		bool hideExtensionParameter = true;
@@ -49,26 +49,21 @@ namespace MonoDevelop.CSharp.Completion
 		string description, completionString;
 		string displayText;
 		
-		Dictionary<string, ICompletionData> overloads;
+		Dictionary<string, CompletionData> overloads;
 		
-		public string Description {
+		public override string Description {
 			get {
 				CheckDescription ();
 				return description;
 			}
 		}
 		
-		public string CompletionText {
+		public override string CompletionText {
 			get { return completionString; }
 			set { completionString = value; }
 		}
 		
-		public INode Member {
-			get;
-			set;
-		}
-		
-		public string DisplayText {
+		public override string DisplayText {
 			get {
 				if (displayText == null) {
 					displayText = ambience.GetString (Member, flags | OutputFlags.HideGenericParameterNames);
@@ -77,13 +72,8 @@ namespace MonoDevelop.CSharp.Completion
 				return displayText; 
 			}
 		}
-		public string DisplayDescription {
-			get {
-				return null;
-			}
-		}
 		
-		public IconId Icon {
+		public override IconId Icon {
 			get {
 				if (Member is IMember)
 					return ((IMember)Member).StockIcon;
@@ -94,8 +84,6 @@ namespace MonoDevelop.CSharp.Completion
 				return "md-literal"; 
 			}
 		}
-		
-		public DisplayFlags DisplayFlags { get; set; }
 		
 		public bool HideExtensionParameter {
 			get {
@@ -160,12 +148,12 @@ namespace MonoDevelop.CSharp.Completion
 		
 
 		#region IOverloadedCompletionData implementation 
-		
-		class OverloadSorter : IComparer<ICompletionData>
+	
+		class OverloadSorter : IComparer<CompletionData>
 		{
 			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
 			
-			public int Compare (ICompletionData x, ICompletionData y)
+			public int Compare (CompletionData x, CompletionData y)
 			{
 				INode mx = ((MemberCompletionData)x).Member;
 				INode my = ((MemberCompletionData)y).Member;
@@ -193,31 +181,26 @@ namespace MonoDevelop.CSharp.Completion
 				return result == 0? string.Compare (sx, sy) : result;
 			}
 		}
-		
-		public IEnumerable<ICompletionData> GetOverloadedData ()
-		{
-			if (overloads == null)
-				return new ICompletionData[] { this };
-			
-			List<ICompletionData> sorted = new List<ICompletionData> (overloads.Values);
-			sorted.Add (this);
-			sorted.Sort (new OverloadSorter ());
-			return sorted;
+		public override IEnumerable<CompletionData> OverloadedData {
+			get {
+				if (overloads == null)
+					return new CompletionData[] { this };
+				
+				List<CompletionData> sorted = new List<CompletionData> (overloads.Values);
+				sorted.Add (this);
+				sorted.Sort (new OverloadSorter ());
+				return sorted;
+			}
 		}
 		
-		public bool IsOverloaded {
+		public override bool IsOverloaded {
 			get { return overloads != null && overloads.Count > 0; }
-		}
-		
-		public CompletionCategory CompletionCategory  {
-			get;
-			set;
 		}
 		
 		public void AddOverload (MemberCompletionData overload)
 		{
 			if (overloads == null)
-				overloads = new Dictionary<string, ICompletionData> ();
+				overloads = new Dictionary<string, CompletionData> ();
 			
 			// always set the member with the least type parameters as the main member.
 			if (Member is ITypeParameterMember && overload.Member is ITypeParameterMember) {

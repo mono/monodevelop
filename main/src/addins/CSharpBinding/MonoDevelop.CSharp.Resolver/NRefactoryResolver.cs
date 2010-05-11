@@ -343,7 +343,7 @@ namespace MonoDevelop.CSharp.Resolver
 						if (t != null && !t.IsBaseType (attributeType))
 							continue;
 					}
-					ICompletionData data = col.Add (o);
+					CompletionData data = col.Add (o);
 					if (data != null && context == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {
 						string newText = data.CompletionText.Substring (0, data.CompletionText.Length - "Attribute".Length);
 						data.SetText (newText);
@@ -917,12 +917,12 @@ namespace MonoDevelop.CSharp.Resolver
 	}
 	static class HelperMethods
 	{
-		public static void SetText (this ICompletionData data, string text)
+		public static void SetText (this CompletionData data, string text)
 		{
 			if (data is CompletionData) {
 				((CompletionData)data).CompletionText = text;
-			} else if (data is MemberCompletionData) {
-				((MemberCompletionData)data).CompletionText = text;
+			} else if (data is MonoDevelop.Ide.CodeCompletion.MemberCompletionData) {
+				((MonoDevelop.Ide.CodeCompletion.MemberCompletionData)data).CompletionText = text;
 			} else {
 				System.Console.WriteLine("Unknown completion data:" + data);
 			}

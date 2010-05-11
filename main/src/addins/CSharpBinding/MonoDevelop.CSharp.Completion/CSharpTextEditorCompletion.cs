@@ -458,7 +458,7 @@ namespace MonoDevelop.CSharp.Completion
 						foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
 							foreach (IMethod method in type.Methods) {
 								if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) && MatchDelegate (delegateType, method)) {
-									ICompletionData data = cdc.Add (method);
+									CompletionData data = cdc.Add (method);
 									data.SetText (data.CompletionText + ";");
 								}
 							}
@@ -1230,7 +1230,7 @@ namespace MonoDevelop.CSharp.Completion
 				return newData;
 			}
 			
-			public ICompletionData Add (string name, string icon)
+			public CompletionData Add (string name, string icon)
 			{
 				if (data.ContainsKey (name))
 					return null;
@@ -1239,7 +1239,7 @@ namespace MonoDevelop.CSharp.Completion
 				return CompletionList.Add (name, icon);
 			}
 			
-			public ICompletionData Add (object obj)
+			public CompletionData Add (object obj)
 			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
@@ -1311,7 +1311,7 @@ namespace MonoDevelop.CSharp.Completion
 						continue;
 					if (expressionResult.ExpressionContext == ExpressionContext.NamespaceNameExcepted && !(obj is Namespace))
 						continue;
-					ICompletionData data = col.Add (obj);
+					CompletionData data = col.Add (obj);
 					if (data != null && expressionResult.ExpressionContext == ExpressionContext.Attribute && data.CompletionText != null && data.CompletionText.EndsWith ("Attribute")) {
 						string newText = data.CompletionText.Substring (0, data.CompletionText.Length - "Attribute".Length);
 						data.SetText (newText);
@@ -1417,11 +1417,11 @@ namespace MonoDevelop.CSharp.Completion
 				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, callingType, type, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == type.FullName)))) {
 					if (returnTypeUnresolved != null) {
 						col.FullyQualify = true;
-						ICompletionData unresovedCompletionData = col.Add (returnTypeUnresolved);
+						CompletionData unresovedCompletionData = col.Add (returnTypeUnresolved);
 						col.FullyQualify = false;
 						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					} else {
-						ICompletionData unresovedCompletionData = col.Add (returnType);
+						CompletionData unresovedCompletionData = col.Add (returnType);
 						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					}
 				}

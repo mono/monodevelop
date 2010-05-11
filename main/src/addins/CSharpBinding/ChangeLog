@@ -1,5 +1,14 @@
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Completion/MemberCompletionData.cs:
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs:
+	  Track API changes.
+
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpFormatter.cs:
 	* MonoDevelop.CSharp.Dom/Expressions/QueryExpression.cs: Fixed
 	  compile warnings.

@@ -39,7 +39,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class EventCreationCompletionData : CompletionData, IActionCompletionData
+	public class EventCreationCompletionData : CompletionData
 	{
 		string parameterList;
 		IMember callingMember;
@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.initialOffset = editor.Caret.Offset;
 		}
 		
-		public void InsertCompletionText (ICompletionWidget widget, CodeCompletionContext context)
+		public override void InsertCompletionText (CompletionListWindow window)
 		{
 			// insert add/remove event handler code after +=/-=
 			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + ";");
