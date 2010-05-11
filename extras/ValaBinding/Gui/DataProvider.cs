@@ -190,7 +190,7 @@ namespace MonoDevelop.ValaBinding
 	/// <summary>
 	/// Data for Vala completion
 	/// </summary>
-	internal class CompletionData : ICompletionData
+	internal class CompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
 		private string image;
 		private string text;
@@ -207,32 +207,20 @@ namespace MonoDevelop.ValaBinding
 			CompletionCategory = new ValaCompletionCategory (text, image);
 		}
 		
-		public IconId Icon {
+		public override IconId Icon {
 			get { return image; }
 		}
 		
-		public string DisplayText {
+		public override string DisplayText {
 			get { return text; }
 		}
 
-		public string DisplayDescription {
-			get { return null; }
-		}
-		
-		public string Description {
+		public override string Description {
 			get { return description; }
 		}
 
-		public string CompletionText {
+		public override string CompletionText {
 			get { return completion_string; }
-		}
-		
-		public DisplayFlags DisplayFlags {
-			get; set;
-		}
-		
-		public CompletionCategory CompletionCategory  {
-			get; set; 
 		}
 	}
 
