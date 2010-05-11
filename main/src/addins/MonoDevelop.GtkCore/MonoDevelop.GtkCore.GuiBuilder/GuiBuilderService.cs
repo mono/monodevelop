@@ -61,8 +61,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		static Stetic.Application steticApp;
 		
 		static bool generating;
-		static Stetic.CodeGenerationResult generationResult = null;
-		static Exception generatedException = null;
 		
 		static Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.None;
 //		static Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.ProcessUnix;
@@ -404,8 +402,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			projects.Add (info.GuiBuilderProject.File);
 			
 			generating = true;
-			generationResult = null;
-			generatedException = null;
+			Stetic.CodeGenerationResult generationResult = null;
+			Exception generatedException = null;
 			
 			bool canGenerateInProcess = IsolationMode != Stetic.IsolationMode.None || info.GuiBuilderProject.SteticProject.CanGenerateCode;
 			

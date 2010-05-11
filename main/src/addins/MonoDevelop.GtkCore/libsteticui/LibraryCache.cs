@@ -129,16 +129,19 @@ namespace Stetic {
 				}
 			}
 			
-			internal ToolboxItemInfo GetToolboxItem (string name)
+			internal ToolboxItemInfo GetToolboxItem (string name, string asmName)
 			{
 				XmlDocument doc = ObjectsDocument;
 				if (doc != null) {
 					XmlElement elem = (XmlElement) doc.SelectSingleNode ("/objects/object[@type='" + name + "']");
+					if (elem == null)
+						elem = (XmlElement) doc.SelectSingleNode ("/objects/object[@type='" + name + "," + asmName + "']");
 					if (elem != null) {
 						ToolboxItemInfo info = new ToolboxItemInfo (elem.GetAttribute ("base-type"));
 						info.PaletteCategory = elem.GetAttribute ("palette-category");
 						return info;
 					}
+					
 				}
 				return null;
 			}
@@ -326,7 +329,7 @@ namespace Stetic {
 			public string PaletteCategory;
 		}
 
-		ToolboxItemInfo GetToolboxItemInfo (AssemblyResolver resolver, string baseDirectory, AssemblyDefinition asm, TypeDefinition tdef)
+		ToolboxItemInfo GetToolboxItemInfo (AssemblyResolver resolver, string baseDirectory, AssemblyDefinition asm, TypeDefinition tdef, bool checkBaseType)
 		{
 			if (tdef == null)
 				return null;
@@ -374,16 +377,15 @@ namespace Stetic {
 				default:
 					continue;
 				}
-
 			}
 
-			if (info == null && tdef.BaseType != null) {
+			if (info == null && checkBaseType && tdef.BaseType != null) {
 				string baseName = tdef.BaseType.FullName;
 
 				foreach (AssemblyNameReference aref in asm.MainModule.AssemblyReferences) {
 					LibraryInfo libInfo = GetInfo (resolver, aref.FullName, baseDirectory);
 					if (libInfo != null && libInfo.HasWidgets) {
-						ToolboxItemInfo binfo = libInfo.GetToolboxItem (baseName);
+						ToolboxItemInfo binfo = libInfo.GetToolboxItem (baseName, aref.Name);
 						if (binfo != null) {
 							info = new ToolboxItemInfo (baseName);
 							category = binfo.PaletteCategory;
@@ -429,7 +431,7 @@ namespace Stetic {
 				obj.AppendChild (groups);
 			}
 			
-			XmlElement group = GetItemGroup (groups, cat, prop.DeclaringType.FullName + " Properties");
+			XmlElement group = GetItemGroup (groups, cat, prop.DeclaringType.Name + " Properties");
 			XmlElement elem = group.OwnerDocument.CreateElement ("property");
 			elem.SetAttribute ("name", prop.Name);
 			group.AppendChild (elem);
@@ -501,7 +503,7 @@ namespace Stetic {
 				obj.AppendChild (groups);
 			}
 			
-			XmlElement group = GetItemGroup (groups, cat, ev.DeclaringType.FullName + " Signals");
+			XmlElement group = GetItemGroup (groups, cat, ev.DeclaringType.Name + " Signals");
 			XmlElement elem = group.OwnerDocument.CreateElement ("signal");
 			elem.SetAttribute ("name", ev.Name);
 			group.AppendChild (elem);
@@ -546,28 +548,65 @@ namespace Stetic {
 	
 		void AddObjects (XmlDocument doc, AssemblyResolver resolver, string basePath, AssemblyDefinition adef)
 		{
+			Dictionary<TypeDefinition,ToolboxItemInfo> localObjects = new Dictionary<TypeDefinition, ToolboxItemInfo> ();
+			
 			foreach (TypeDefinition tdef in adef.MainModule.Types) {
 				if (tdef.IsAbstract || !tdef.IsClass) 
 					continue;
 
-				ToolboxItemInfo tbinfo = GetToolboxItemInfo (resolver, basePath, adef, tdef);
+				ToolboxItemInfo tbinfo = GetToolboxItemInfo (resolver, basePath, adef, tdef, true);
 				if (tbinfo == null)
 					continue;
-
+				
+				localObjects [tdef] = tbinfo;
+			}
+			
+			foreach (KeyValuePair<TypeDefinition,ToolboxItemInfo> item in localObjects) {
+				TypeDefinition tdef = item.Key;
+				ToolboxItemInfo tbinfo = item.Value;
 				XmlElement elem = doc.CreateElement ("object");
 				elem.SetAttribute ("type", tdef.FullName);
 				elem.SetAttribute ("allow-children", "false");
-				elem.SetAttribute ("base-type", tbinfo.BaseType);
 				elem.SetAttribute ("palette-category", tbinfo.PaletteCategory);
 				if (tdef.IsNotPublic)
 					elem.SetAttribute ("internal", "true");
 				doc.DocumentElement.AppendChild (elem);
-				AddProperties (tdef, elem);
-				AddEvents (tdef, elem);
+				
+				TypeDefinition curDef = tdef;
+				while (curDef != null && curDef.FullName != tbinfo.BaseType) {
+					if (curDef != tdef && localObjects.ContainsKey (curDef)) {
+						tbinfo.BaseType = curDef.FullName;
+						break;
+					}
+					else if (curDef.Module.Assembly.Name.Name == "gtk-sharp") {
+						tbinfo.BaseType = curDef.FullName;
+						break;
+					}
+					else if (curDef != tdef && GetToolboxItemInfo (resolver, basePath, curDef.Module.Assembly, curDef, false) != null) {
+						tbinfo.BaseType = curDef.FullName;
+						break;
+					}
+					if (curDef.Module.Assembly != adef) {
+						
+						LibraryInfo li = Refresh (resolver, curDef.Module.Image.FileInformation.FullName, basePath);
+						if (li.HasWidgets && li.GetToolboxItem (curDef.FullName, curDef.Module.Assembly.Name.Name) != null) {
+							tbinfo.BaseType = curDef.FullName;
+							break;
+						}
+					}
+					AddProperties (curDef, elem);
+					AddEvents (curDef, elem);
+					if (curDef.BaseType != null && curDef.BaseType.FullName != tbinfo.BaseType)
+						curDef = FindTypeDefinition (resolver, adef, basePath, curDef.BaseType.FullName);
+					else
+						curDef = null;
+				}
+				
+				elem.SetAttribute ("base-type", tbinfo.BaseType);
 			}
 		}
 
-		XmlDocument GetObjectsDoc (AssemblyResolver resolver, AssemblyDefinition adef, string path)
+		XmlDocument GetObjectsDoc (AssemblyResolver resolver, AssemblyDefinition adef, string path, string baseDirectory)
 		{
 			XmlDocument doc = null;
 			bool isMainLib = Path.GetFileName (path) == "libstetic.dll";
@@ -584,7 +623,7 @@ namespace Stetic {
 				if (resolver == null)
 					resolver = new AssemblyResolver (null);
 
-				string baseDirectory = Path.GetDirectoryName (path);
+				baseDirectory = baseDirectory ?? Path.GetDirectoryName (path);
 				
 				if (!isMainLib) {
 					// Make sure all referenced assemblies are up to date.
@@ -670,7 +709,7 @@ namespace Stetic {
 			info.Guid = Guid.NewGuid ();
 			Save ();
 			AssemblyDefinition adef = AssemblyFactory.GetAssembly (info.File);
-			XmlDocument objects = GetObjectsDoc (resolver, adef, info.File);
+			XmlDocument objects = GetObjectsDoc (resolver, adef, info.File, baseDirectory);
 			if (objects != null) {
 				info.ObjectsDocument = objects;
 				XmlDocument gui = GetGuiDoc (adef);
@@ -723,5 +762,32 @@ namespace Stetic {
 			return new LibraryCache ();
 		}
 
+		internal TypeDefinition FindTypeDefinition (AssemblyResolver resolver, AssemblyDefinition assembly, string basePath, string fullName)
+		{
+			TypeDefinition t = FindTypeDefinition (new Hashtable (), resolver, basePath, assembly, fullName);
+			return t;
+		}
+		
+		TypeDefinition FindTypeDefinition (Hashtable visited, AssemblyResolver resolver, string basePath, AssemblyDefinition asm, string fullName)
+		{
+			if (visited.Contains (asm))
+				return null;
+				
+			visited [asm] = asm;
+			
+			TypeDefinition cls = asm.MainModule.Types [fullName];
+			if (cls != null)
+				return cls;
+			
+			foreach (AssemblyNameReference aref in asm.MainModule.AssemblyReferences) {
+				AssemblyDefinition basm = resolver.Resolve (aref, basePath);
+				if (basm != null) {
+					cls = basm.MainModule.Types [fullName];
+					if (cls != null)
+						return cls;
+				}
+			}
+			return null;
+		}
 	}
 }

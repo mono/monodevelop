@@ -1,3 +1,9 @@
+2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:
+	  Converted some static fields which don't need to be static
+	  into local vars.
+
 2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs: Track
