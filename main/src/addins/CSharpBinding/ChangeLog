@@ -1,3 +1,9 @@
+2010-05-11  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs:
+	  Fixed 'Bug 604558 - Wrong code syntax highlighting when
+	  previous line have a comment'.
+
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:

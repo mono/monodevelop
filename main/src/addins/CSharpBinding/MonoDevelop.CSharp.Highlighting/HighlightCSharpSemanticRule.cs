@@ -106,6 +106,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					int bracketCount = 0;
 					while (start > 0) {
 						char ch = doc.GetCharAt (start);
+						if (ch == '\n' || ch == '\r')
+							break;
 						if (wasWhitespace && IsNamePart(ch)) {
 							start++;
 							if (start < chunk.Offset)
