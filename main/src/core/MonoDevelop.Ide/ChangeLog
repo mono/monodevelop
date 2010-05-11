@@ -1,5 +1,12 @@
 2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: When
+	  converting an acronym match to a substring match, include
+	  the original acronym char in the current substring. Fixes
+	  bug #485376 - Go-to-file acronym matching inconsistent.
+
+2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.Docking/DockGroup.cs: In
 	  RestoreAllocation, make a copy of the items list because
 	  RestoreAllocation can fire events such as VisibleChanged,

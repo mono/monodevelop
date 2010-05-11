@@ -643,9 +643,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 							// Possible substring match after an acronim. Start a new lane.
 							MatchLane newLane = lane.Clone ();
 							newLane.MatchMode = MatchMode.Substring;
-							newLane.Index++;
-							newLane.Positions [newLane.Index] = tn;
-							newLane.Lengths [newLane.Index] = 1;
+							newLane.Lengths [newLane.Index]++;
 							newLane.MatchIndex++;
 							matchLanes.Add (newLane);
 							if (newLane.MatchIndex == toMatch.Length)
