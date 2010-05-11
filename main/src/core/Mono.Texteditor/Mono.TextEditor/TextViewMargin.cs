@@ -1080,11 +1080,10 @@ namespace Mono.TextEditor
 							selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							atts.Insert (selectedForeground);
-							selectedForeground.Dispose ();
 							if (!wrapper.StartSet) 
 								wrapper.SelectionStartIndex = (int)selectedForeground.StartIndex;
 							wrapper.SelectionEndIndex   = (int)selectedForeground.EndIndex;
-						
+							selectedForeground.Dispose ();
 						});
 
 						if (chunkStyle.Bold) {

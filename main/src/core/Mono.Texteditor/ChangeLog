@@ -1,5 +1,10 @@
 2010-05-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fix crasher introduced by
+	  disposing attribute too early.
+
+2010-05-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor.dll.config:
