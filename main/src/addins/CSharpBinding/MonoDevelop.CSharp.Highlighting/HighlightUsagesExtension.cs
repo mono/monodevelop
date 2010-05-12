@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		bool DelayedTooltipShow ()
 		{
 			int caretOffset = textEditorData.Caret.Offset;
-			int start = caretOffset;
+			int start = Math.Min (caretOffset, textEditorData.Document.Length - 1);
 			while (start > 0) {
 				char ch = textEditorData.Document.GetCharAt (start);
 				if (!char.IsLetterOrDigit (ch) && ch != '_' && ch != '.') {
@@ -114,14 +114,14 @@ namespace MonoDevelop.CSharp.Highlighting
 				start--;
 			}
 			
-			int end = caretOffset;
+			int end = Math.Max (caretOffset, 0);
 			while (end < textEditorData.Document.Length) {
 				char ch = textEditorData.Document.GetCharAt (end);
 				if (!char.IsLetterOrDigit (ch) && ch != '_')
 					break;
 				end++;
 			}
-			if (start >= end) {
+			if (start < 0 || start >= end) {
 				popupTimer = 0;
 				return false;
 			}
