@@ -1247,24 +1247,27 @@ namespace Mono.TextEditor
 				DecorateLineFg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
 			if (Document.GetLine (Caret.Line) == line) {
-				if (Platform.IsMac)
-					width++;
-				Pango.Rectangle strong_pos, weak_pos;
-				int index = Caret.Offset - offset;
-				if (offset <= textEditor.preeditOffset && textEditor.preeditOffset < offset + length) {
-					index += textEditor.preeditString.Length;
-				}
-				if (index >= 0 && index < length) {
-					curIndex = byteIndex = 0;
-					layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.Layout.Text.ToCharArray (), (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
-					char caretChar = Document.GetCharAt (Caret.Offset);
-					if (textEditor.Options.ShowSpaces && caretChar == ' ')
-						caretChar = spaceMarkerChar;
-					if (textEditor.Options.ShowTabs && caretChar == '\t')
-						caretChar = tabMarkerChar;
-					SetVisibleCaretPosition (win, caretChar, (int)(xPos + strong_pos.X / Pango.Scale.PangoScale), y);
-				} else if (index == length) {
-					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos + width, y);
+				int caretOffset = Caret.Offset;
+				if (offset <= caretOffset && caretOffset <= offset + length) {
+					if (Platform.IsMac)
+						width++;
+					Pango.Rectangle strong_pos, weak_pos;
+					int index = caretOffset- offset;
+					if (offset <= textEditor.preeditOffset && textEditor.preeditOffset < offset + length) {
+						index += textEditor.preeditString.Length;
+					}
+					if (index >= 0 && index < length) {
+						curIndex = byteIndex = 0;
+						layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.Layout.Text.ToCharArray (), (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
+						char caretChar = Document.GetCharAt (caretOffset);
+						if (textEditor.Options.ShowSpaces && caretChar == ' ')
+							caretChar = spaceMarkerChar;
+						if (textEditor.Options.ShowTabs && caretChar == '\t')
+							caretChar = tabMarkerChar;
+						SetVisibleCaretPosition (win, caretChar, (int)(xPos + strong_pos.X / Pango.Scale.PangoScale), y);
+					} else if (index == length) {
+						SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos + width, y);
+					}
 				}
 			}
 
@@ -2103,33 +2106,6 @@ namespace Mono.TextEditor
 			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);
-			
-			if (Caret.Line == lineNr && Caret.Column > line.EditableLength) {
-				string virtualText = textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
-				int visibleColumn = line.EditableLength;
-				for (int endX = 0; endX < virtualText.Length; endX++) {
-					if (virtualText[endX] != '\t') {
-						markerLayout.SetText (virtualText[endX].ToString ());
-						int xadv, h;
-						markerLayout.GetPixelSize (out xadv, out h);
-						if (textEditor.Options.ShowSpaces)
-							DrawSpaceMarker (win, isEolSelected, xPos, y);
-						xPos += xadv;
-						visibleColumn++;
-					} else {
-						int newColumn = GetNextTabstop (this.textEditor.GetTextEditorData (), visibleColumn);
-						int delta = (newColumn - visibleColumn) * CharWidth;
-						if (textEditor.Options.ShowTabs)
-							DrawTabMarker (win, isEolSelected, xPos, y);
-						xPos += delta;
-						visibleColumn = newColumn;
-					}
-				}
-				SetVisibleCaretPosition (win, ' ', xPos, y);
-			} else {
-				if (caretOffset == line.Offset + line.EditableLength)
-					SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos, y);
-			}
 			lastLineRenderWidth = xPos;
 		}
 		
