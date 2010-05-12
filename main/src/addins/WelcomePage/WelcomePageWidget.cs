@@ -97,6 +97,10 @@ namespace MonoDevelop.WelcomePage
 		
 		public void Rebuild ()
 		{
+			//this can get called by async dispatch after the widget is destroyed
+			if (parentView == null)
+				return;
+			
 			clearContainer (actionBox);
 			clearContainer (newsLinkBox);
 			clearContainer (supportLinkBox);
@@ -255,6 +259,10 @@ namespace MonoDevelop.WelcomePage
 		
 		public void LoadRecent ()
 		{
+			//this can get called by async dispatch after the widget is destroyed
+			if (parentView == null)
+				return;
+			
 			Widget[] oldChildren = (Widget[]) recentFilesTable.Children.Clone ();
 			foreach (Widget w in oldChildren) {
 				Gtk.Table.TableChild tc = (Gtk.Table.TableChild) recentFilesTable [w];

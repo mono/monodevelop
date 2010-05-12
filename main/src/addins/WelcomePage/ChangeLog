@@ -1,5 +1,9 @@
 2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* WelcomePageWidget.cs: Fix a couple of races.
+
+2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* WelcomePageView.cs:
 	* WelcomePageCommands.cs:
 	* WelcomePageOptionPanel.cs: Move settings to a class.
