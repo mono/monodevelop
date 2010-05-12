@@ -1,5 +1,11 @@
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 604593 - Autocomplete list sorting wrong when
+	  grouping by class.'.
+
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
 	  fixed 'Bug 605134 - NRE when using (an abstract class ctor?)
 	  MulticastDelegate ctor'.

@@ -1194,9 +1194,23 @@ namespace MonoDevelop.CSharp.Completion
 					
 					if (Type.DecoratedFullName == compareCategory.Type.DecoratedFullName)
 						return 0;
-					if (Type.SourceProjectDom != null && Type.SourceProjectDom.GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
+					
+					// System.Object is always the smallest
+					if (Type.DecoratedFullName == DomReturnType.Object.DecoratedFullName) 
+						return -1;
+					if (compareCategory.Type.DecoratedFullName == DomReturnType.Object.DecoratedFullName)
 						return 1;
-					return -1;
+					
+					if (Type.SourceProjectDom != null) {
+						if (Type.SourceProjectDom.GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
+							return 1;
+						return -1;
+					}
+					
+					// source project dom == null - try to make the opposite comparison
+					if (compareCategory.Type.SourceProjectDom != null && compareCategory.Type.SourceProjectDom.GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == Type.DecoratedFullName))
+						return -1;
+					return 1;
 				}
 			}
 			
