@@ -32,6 +32,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
+using System.Globalization;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -51,17 +52,17 @@ namespace MonoDevelop.DesignerSupport
 			langExt = langExt.Substring (1, langExt.Length - 1);
 			
 			//if filename ends with lang extension, it could be a child file
-			if (file.Name.EndsWith (langExt, StringComparison.InvariantCultureIgnoreCase)) {
+			if (file.Name.EndsWith (langExt, StringComparison.OrdinalIgnoreCase)) {
 				
 				//get the parent's name, amputating ".designer" if encountered
 				string parentName = Path.GetFileName (file.Name);
 				parentName = parentName.Substring (0, parentName.Length - langExt.Length);
-				if (parentName.EndsWith (".designer", StringComparison.InvariantCultureIgnoreCase))
+				if (parentName.EndsWith (".designer", StringComparison.OrdinalIgnoreCase))
 					parentName = parentName.Substring (0, parentName.Length - 9);
 				
 				//for each ASP.NET extension that allows codebehind, check whether the filename matches this extension
 				foreach (string ext in groupedExtensions) {
-					if (!parentName.EndsWith (ext, StringComparison.InvariantCultureIgnoreCase))
+					if (!parentName.EndsWith (ext, StringComparison.OrdinalIgnoreCase))
 						continue;
 					
 					//if the file exists, set the dependency
@@ -76,7 +77,7 @@ namespace MonoDevelop.DesignerSupport
 			else {
 				//check whether its extension matches known parent extensions
 				foreach (string ext in groupedExtensions) {
-					if (!file.FilePath.ToString ().EndsWith (ext, StringComparison.InvariantCultureIgnoreCase))
+					if (!file.FilePath.ToString ().EndsWith (ext, StringComparison.OrdinalIgnoreCase))
 						continue;
 					
 					//check for codebehind files
@@ -131,5 +132,10 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 
+		public static bool IsDesignerFile (string name)
+		{
+			var ext = Path.GetExtension (name);
+			return !string.IsNullOrEmpty (ext) && name.EndsWith (".designer" + ext, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 }

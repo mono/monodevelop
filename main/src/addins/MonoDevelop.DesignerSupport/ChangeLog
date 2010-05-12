@@ -1,3 +1,15 @@
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.csproj:
+	* MonoDevelop.DesignerSupport.addin.xml:
+	* MonoDevelop.DesignerSupport/Commands.cs:
+	* MonoDevelop.DesignerSupport/CodeBehind.cs:
+	* MonoDevelop.DesignerSupport/SwapCodeBehindCommand.cs:
+	  Implemented a command for cycling between grouped files,
+	  based on a patch from Curtis Wensley
+	  <curtis.wensley@gmail.com>.
+
 2010-05-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs: Reduce

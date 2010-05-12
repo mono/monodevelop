@@ -36,7 +36,8 @@ namespace MonoDevelop.DesignerSupport
 {
 	public enum Commands
 	{
-		SelectItems
+		SelectItems,
+		SwitchBetweenRelatedFiles
 	}
 	
 	public class SelectItemsCommandHandler: CommandHandler

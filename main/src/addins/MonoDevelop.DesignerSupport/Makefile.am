@@ -69,6 +69,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport/PropertyPad.cs \
 	MonoDevelop.DesignerSupport/PropertyPadVisitor.cs \
 	MonoDevelop.DesignerSupport/RemoteDesignerProcess.cs \
+	MonoDevelop.DesignerSupport/SwapCodeBehindCommand.cs \
 	MonoDevelop.DesignerSupport/ToolboxPad.cs \
 	MonoDevelop.DesignerSupport/ToolboxService.cs \
 	MonoDevelop.DesignerSupport/TypeNotFoundException.cs \

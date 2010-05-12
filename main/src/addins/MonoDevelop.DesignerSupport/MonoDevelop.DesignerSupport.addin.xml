@@ -115,7 +115,15 @@
 		<Command id = "MonoDevelop.DesignerSupport.Commands.SelectItems"
 				defaultHandler = "MonoDevelop.DesignerSupport.SelectItemsCommandHandler"
 				_label = "Add Items..." />
+		<Command id = "MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles" 
+		         _label = "Switch between related files "
+		         _description = "Switch between related files, such as CodeBehind, headers, etc."
+		         defaultHandler="MonoDevelop.DesignerSupport.SwitchBetweenRelatedFilesCommand" />
 	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/ContextMenu/DocumentTab">
+		<CommandItem id = "MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles" />
+	</Extension>	
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu">
 		<CommandItem id = "MonoDevelop.DesignerSupport.Commands.SelectItems" />
