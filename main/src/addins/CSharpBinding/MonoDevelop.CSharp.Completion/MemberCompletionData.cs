@@ -134,6 +134,7 @@ namespace MonoDevelop.CSharp.Completion
 				if ((Member as IMember).IsObsolete) {
 					sb.AppendLine ();
 					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
+					DisplayFlags |= DisplayFlags.Obsolete;
 				}
 				string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Member) + "</summary>", new AmbienceService.DocumentationFormatOptions {
 					Ambience = ambience
