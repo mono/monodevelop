@@ -153,18 +153,18 @@ namespace MonoDevelop.AspNet
 		public AspNetAppProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
-			foreach (AspNetAppProjectConfiguration conf in Configurations)
-				conf.OutputDirectory = "bin";
 			Init ();
+			
+			var binPath = info == null? (FilePath)"bin" : info.BinPath;
+			foreach (AspNetAppProjectConfiguration cfg in Configurations)
+				cfg.OutputDirectory = binPath;
 		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
-			AspNetAppProjectConfiguration conf = new AspNetAppProjectConfiguration ();
-			conf.Name = name;
-			conf.OutputDirectory = String.IsNullOrEmpty (BaseDirectory)? "bin" : Path.Combine (BaseDirectory, "bin");
-			if (LanguageBinding != null)
-				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);			
+			var conf = new AspNetAppProjectConfiguration (name);
+			conf.CopyFrom (base.CreateConfiguration (name));
+			conf.OutputDirectory = BaseDirectory.IsNullOrEmpty? "bin" : (string)BaseDirectory.Combine ("bin");			
 			return conf;
 		}
 		

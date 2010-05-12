@@ -61,8 +61,10 @@ namespace MonoDevelop.AspNet
 		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
-			var cfg = (AspNetAppProjectConfiguration) configuration;
 			base.CopyFrom (configuration);
+			var cfg = configuration as AspNetAppProjectConfiguration;
+			if (cfg == null)
+				return;
 			disableCodeBehindGeneration = cfg.disableCodeBehindGeneration;
 		}
 	}

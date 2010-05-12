@@ -1,3 +1,10 @@
+2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/AspNetAppProjectConfiguration.cs: Fix Bug
+	  602154 - bin/ directory not created when building ASP.Net
+	  Web Application template.
+
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Html/PathCompletion.cs:
