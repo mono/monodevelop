@@ -1,5 +1,11 @@
 2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Navigation/NavigationHistoryItem.cs:
+	  Intercept dispose event and change the sender so the
+	  HistoryList doesn't explode.
+
+2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Change 'Browse Next/Previous'
 	  command names to 'Show Next/Previous' to match the name that
 	  the search and error pads set.

@@ -73,8 +73,23 @@ namespace MonoDevelop.Ide.Navigation
 		}
 		
 		public event EventHandler Destroyed {
-			add { navPoint.Destroyed += value; }
-			remove { navPoint.Destroyed -= value; }
+			add {
+				if (destroyed == null)
+					navPoint.Destroyed += OnDestroyed;
+				destroyed += value;
+			}
+			remove {
+				destroyed -= value;
+				if (destroyed == null)
+					navPoint.Destroyed -= OnDestroyed;
+			}
+		}
+		
+		EventHandler destroyed;
+
+		void OnDestroyed (object sender, EventArgs e)
+		{
+			destroyed (this, e);
 		}
 	}
 }
