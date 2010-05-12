@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Navigation;
 
 namespace MonoDevelop.Ide.Commands
 {

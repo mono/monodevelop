@@ -40,6 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Navigation;
 
 namespace MonoDevelop.Ide.Tasks
 {

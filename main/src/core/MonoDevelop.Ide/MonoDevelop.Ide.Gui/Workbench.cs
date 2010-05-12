@@ -46,6 +46,7 @@ using MonoDevelop.Ide.Desktop;
 using Mono.Addins;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Ide.Navigation;
 
 namespace MonoDevelop.Ide.Gui
 {

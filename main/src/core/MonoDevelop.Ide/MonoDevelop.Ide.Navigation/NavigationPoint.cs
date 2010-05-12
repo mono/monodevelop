@@ -1,10 +1,11 @@
 // 
-// ILocationList.cs
+// NavigationHistoryService.cs
 //  
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+//   Michael Hutchinson <mhutchinson@novell.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,30 +26,37 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Navigation;
+using System.Collections.Generic;
+using MonoDevelop.Ide.Gui.Content;
 
-namespace MonoDevelop.Ide.Gui.Content
+namespace MonoDevelop.Ide.Navigation
 {
-	/// <summary>
-	/// This interface can be implemented to provide a list of locations through which the
-	/// user can browse with F4. To set the active list, set IdeApp.Workbench.ActiveLocationList
-	/// </summary>
-	public interface ILocationList
+	public abstract class NavigationPoint: IDisposable
 	{
-		/// <summary>
-		/// Return the name of items that this list enumerates. For example 'error' or 'search result'
-		/// </summary>
-		string ItemName { get; }
+		public abstract string DisplayName { get; }
+		//public abstract string Tooltip { get; }
 		
-		/// <summary>
-		/// Returns the next location in the list. Null if there are no more locations.
-		/// </summary>
-		NavigationPoint GetNextLocation ();
+		public abstract void Show ();
 		
-		/// <summary>
-		/// Returns the previous location in the list. Null if there are no more locations.
-		/// </summary>
-		NavigationPoint GetPreviousLocation ();
+		// used for fuzzy matching to decide whether to replace an existing nav point
+		// e.g if user just moves around a little, we don't want to add too many points
+		public virtual bool ShouldReplace (NavigationPoint oldPoint)
+		{
+			return this.Equals (oldPoint);
+		}
+		
+		// To be called by subclass when the navigation point is not valid anymore
+		public virtual void Dispose ()
+		{
+			if (Destroyed != null)
+				Destroyed (this, EventArgs.Empty);
+		}
+		
+		public event EventHandler Destroyed;
+		
+		public override string ToString ()
+		{
+			return string.Format ("[NavigationPoint {0}]", DisplayName);
+		}
 	}
 }
-

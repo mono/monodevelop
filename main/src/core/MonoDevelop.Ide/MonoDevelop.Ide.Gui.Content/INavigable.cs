@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Ide.Navigation;
 
 namespace MonoDevelop.Ide.Gui.Content
 {

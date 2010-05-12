@@ -518,7 +518,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
-	MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
 	MonoDevelop.Ide.Gui/DragNotebook.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
@@ -537,7 +536,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/IWorkbenchWindow.cs \
 	MonoDevelop.Ide.Gui/LayoutComboBox.cs \
 	MonoDevelop.Ide.Gui/MonoDevelopStatusBar.cs \
-	MonoDevelop.Ide.Gui/NavigationHistoryService.cs \
 	MonoDevelop.Ide.Gui/Pad.cs \
 	MonoDevelop.Ide.Gui/PadFontChanger.cs \
 	MonoDevelop.Ide.Gui/ProgressMonitors.cs \
@@ -549,7 +547,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/SyncContextAttribute.cs \
 	MonoDevelop.Ide.Gui/SyncObject.cs \
 	MonoDevelop.Ide.Gui/TextEditor.cs \
-	MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \
@@ -560,6 +557,12 @@ FILES =  \
 	MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs \
 	MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs \
 	MonoDevelop.Ide.NavigateToDialog/SearchResult.cs \
+	MonoDevelop.Ide.Navigation/DocumentNavigationPoint.cs \
+	MonoDevelop.Ide.Navigation/HistoryList.cs \
+	MonoDevelop.Ide.Navigation/NavigationHistoryItem.cs \
+	MonoDevelop.Ide.Navigation/NavigationHistoryService.cs \
+	MonoDevelop.Ide.Navigation/NavigationPoint.cs \
+	MonoDevelop.Ide.Navigation/TextFileNavigationPoint.cs \
 	MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \

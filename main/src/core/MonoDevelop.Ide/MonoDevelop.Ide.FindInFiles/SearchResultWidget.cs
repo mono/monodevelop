@@ -37,6 +37,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using System.IO;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Navigation;
 
 
 namespace MonoDevelop.Ide.FindInFiles

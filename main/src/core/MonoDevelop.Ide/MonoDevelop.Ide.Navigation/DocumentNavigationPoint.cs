@@ -3,8 +3,9 @@
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,8 +29,9 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Navigation
 {
 	public class DocumentNavigationPoint : NavigationPoint
 	{
@@ -46,14 +48,27 @@ namespace MonoDevelop.Ide.Gui
 		{
 			this.fileName = fileName;
 		}
+		
+		public override void Dispose ()
+		{
+			if (doc != null) {
+				doc.Closed -= HandleClosed;
+				doc = null;
+			}
+			base.Dispose ();
+		}
+		
 
 		void HandleClosed (object sender, EventArgs e)
 		{
-			doc.Closed -= HandleClosed;
 			fileName = doc.FileName;
-			if (fileName == FilePath.Null)
-				OnDestroyed ();
-			doc = null;
+			if (fileName == FilePath.Null) {
+				// If the document is not a file, dispose the navigation point because the document can't be reopened
+				Dispose ();
+			} else {
+				doc.Closed -= HandleClosed;
+				doc = null;
+			}
 		}
 		
 		FilePath FileName {

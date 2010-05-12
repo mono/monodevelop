@@ -1,3 +1,27 @@
+2010-05-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Navigation:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Tasks/TaskStore.cs:
+	* MonoDevelop.Ide.Gui.Content/INavigable.cs:
+	* MonoDevelop.Ide.Gui.Content/ILocationList.cs:
+	* MonoDevelop.Ide.Commands/NavigationCommands.cs:
+	* MonoDevelop.Ide.Gui/DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.Gui/NavigationHistoryService.cs:
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Moved
+	  navigation service to a new namespace.
+
+	* MonoDevelop.Ide.Navigation/HistoryList.cs:
+	* MonoDevelop.Ide.Navigation/NavigationPoint.cs:
+	* MonoDevelop.Ide.Navigation/NavigationHistoryItem.cs:
+	* MonoDevelop.Ide.Navigation/TextFileNavigationPoint.cs:
+	* MonoDevelop.Ide.Navigation/DocumentNavigationPoint.cs:
+	* MonoDevelop.Ide.Navigation/NavigationHistoryService.cs:
+	  Properly dispose navigation points.
+
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:

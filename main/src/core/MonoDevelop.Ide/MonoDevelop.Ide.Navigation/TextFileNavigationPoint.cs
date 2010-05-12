@@ -3,6 +3,7 @@
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 // 
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 // 
@@ -29,14 +30,14 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
-namespace MonoDevelop.Ide.Gui
+namespace MonoDevelop.Ide.Navigation
 {
 	public class TextFileNavigationPoint : DocumentNavigationPoint
 	{
 		int line;
 		int column;
-		string snippet;
 		
 		public TextFileNavigationPoint (Document doc, IEditableTextBuffer buffer)
 			: base (doc)

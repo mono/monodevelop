@@ -902,8 +902,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ProjectNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\PropertyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ClassPad\SolutionNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\NavigationHistoryService.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\TextFileNavigationPoint.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ExtensibleTreeView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ITreeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\ITreeBuilderContext.cs" />
@@ -930,7 +928,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISmartIndenter.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BuildVariables.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DocumentNavigationPoint.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ITextEditorResolver.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AuthorInformationPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AuthorInformation.cs" />
@@ -1356,6 +1353,12 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\DisplayFlags.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\MemberCompletionData.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCategory.cs" />
+    <Compile Include="MonoDevelop.Ide.Navigation\DocumentNavigationPoint.cs" />
+    <Compile Include="MonoDevelop.Ide.Navigation\NavigationHistoryService.cs" />
+    <Compile Include="MonoDevelop.Ide.Navigation\TextFileNavigationPoint.cs" />
+    <Compile Include="MonoDevelop.Ide.Navigation\NavigationHistoryItem.cs" />
+    <Compile Include="MonoDevelop.Ide.Navigation\NavigationPoint.cs" />
+    <Compile Include="MonoDevelop.Ide.Navigation\HistoryList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1416,5 +1419,6 @@
     <Folder Include="MonoDevelop.Ide.Projects\" />
     <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
     <Folder Include="MonoDevelop.Ide.NavigateToDialog\" />
+    <Folder Include="MonoDevelop.Ide.Navigation\" />
   </ItemGroup>
 </Project>
