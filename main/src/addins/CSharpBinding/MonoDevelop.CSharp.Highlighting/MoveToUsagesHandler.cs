@@ -64,8 +64,13 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
 			HighlightUsagesExtension ext = GetHighlightUsageExtension (doc);
-			if (ext == null || ext.Markers.Count == 0)
+			if (ext == null)
 				return;
+			if (ext.IsTimerOnQueue)
+				ext.ForceUpdate ();
+			if (ext.Markers.Count == 0)
+				return;
+			
 			
 			if (ext.Markers.ContainsKey (doc.TextEditorData.Caret.Line)) {
 				var marker = ext.Markers[doc.TextEditorData.Caret.Line];
@@ -110,6 +115,10 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
 			HighlightUsagesExtension ext = MoveToPrevUsageHandler.GetHighlightUsageExtension (doc);
+			if (ext == null)
+				return;
+			if (ext.IsTimerOnQueue)
+				ext.ForceUpdate ();
 			if (ext == null || ext.Markers.Count == 0)
 				return;
 			

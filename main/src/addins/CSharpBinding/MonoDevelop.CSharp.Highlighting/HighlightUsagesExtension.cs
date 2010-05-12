@@ -70,6 +70,19 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 		
 		uint popupTimer = 0;
+		
+		public bool IsTimerOnQueue {
+			get {
+				return popupTimer != 0;
+			}
+		}
+		
+		public void ForceUpdate ()
+		{
+			RemoveTimer ();
+			DelayedTooltipShow ();
+		}
+		
 		void RemoveTimer ()
 		{
 			if (popupTimer != 0) {
