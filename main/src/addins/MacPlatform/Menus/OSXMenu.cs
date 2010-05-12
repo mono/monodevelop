@@ -204,22 +204,26 @@ namespace OSXIntegration
 		
 		static void SetMenuAccelerator (HIMenuItem item, string accelKey)
 		{
-			ushort key;
 			MenuAccelModifier mod;
-			bool isVirtualKeycode;
-			if (GetAcceleratorKeys (accelKey, out key, out mod, out isVirtualKeycode)) {
-				HIToolbox.SetMenuItemCommandKey (item.MenuRef, item.Index, isVirtualKeycode, key);
+			ushort glyphCode, charCode, hardwareCode; 
+			if (GetAcceleratorKeys (accelKey, out glyphCode, out charCode, out hardwareCode, out mod)) {
+				if (glyphCode != 0)
+					HIToolbox.SetMenuItemKeyGlyph (item.MenuRef, item.Index, (short)glyphCode);
+				else if (hardwareCode != 0)
+					HIToolbox.SetMenuItemCommandKey (item.MenuRef, item.Index, true, hardwareCode);
+				else
+					HIToolbox.SetMenuItemCommandKey (item.MenuRef, item.Index, false, charCode);
 				HIToolbox.SetMenuItemModifiers (item.MenuRef, item.Index, mod);
 			}
 		}
 		
 		//FIXME: handle the mode key
-		static bool GetAcceleratorKeys (string accelKey, out ushort outKey, out MenuAccelModifier outMod, out bool isVirtual)
+		static bool GetAcceleratorKeys (string accelKey, out ushort glyphCode, out ushort charCode, out ushort virtualHardwareCode,
+		                                out MenuAccelModifier outMod)
 		{
 			uint modeKey, key;
 			Gdk.ModifierType modeMod, mod;
-			isVirtual = false;
-			outKey = 0;
+			glyphCode = charCode = virtualHardwareCode = 0;
 			outMod = (MenuAccelModifier) 0;
 			
 			if (!KeyBindingManager.BindingToKeys (accelKey, out modeKey, out modeMod, out key, out mod))
@@ -230,17 +234,19 @@ namespace OSXIntegration
 				return false;
 			}
 			
-			MenuGlyphs glyphMapping = GlyphMappings ((Gdk.Key)key);
-			if (glyphMapping != MenuGlyphs.None) {
-				outKey = (ushort)glyphMapping;
-			} else {
-				Gdk.KeymapKey [] map = keymap.GetEntriesForKeyval (key);
-				if (map == null || map.Length == 0) {
-					System.Console.WriteLine("WARNING: Could not map key ({0})", key);
-					return false;
+			glyphCode = (ushort)GlyphMappings ((Gdk.Key)key);
+			if (glyphCode == 0) {
+				charCode = (ushort)Gdk.Keyval.ToUnicode (key);
+				if (charCode == 0) {
+					var map = keymap.GetEntriesForKeyval (key);
+					if (map != null && map.Length > 0)
+						virtualHardwareCode = (ushort) map [0].Keycode;
+					
+					if (virtualHardwareCode == 0) {
+						System.Console.WriteLine("WARNING: Could not map key ({0})", key);
+						return false;
+					}
 				}
-				isVirtual = true;
-				outKey = (ushort) map [0].Keycode;
 			}
 			
 			if ((mod & Gdk.ModifierType.Mod1Mask) != 0) {
@@ -343,16 +349,19 @@ namespace OSXIntegration
 					if (disabled)
 						data.Attributes |= MenuItemAttributes.Disabled;
 					
-					ushort key;
+					ushort glyphCode, charCode, hardwareCode; 
 					MenuAccelModifier mod;
 					bool isVirtual;
-					if (GetAcceleratorKeys (ci.AccelKey, out key, out mod, out isVirtual)) {
+					if (GetAcceleratorKeys (ci.AccelKey, out glyphCode, out charCode, out hardwareCode, out mod)) {
 						data.CommandKeyModifiers = mod;
-						if (isVirtual) {
+						if (glyphCode != 0) {
+							data.CommandKeyGlyph = glyphCode;
+							data.Attributes ^= MenuItemAttributes.UseVirtualKey;
+						} else if (hardwareCode != 0) {
+							data.CommandVirtualKey = (char)hardwareCode;
 							data.Attributes |= MenuItemAttributes.UseVirtualKey;
-							data.CommandVirtualKey = key;
 						} else {
-							data.CommandKeyGlyph = key;
+							data.CommandKey = (char)charCode;
 							data.Attributes ^= MenuItemAttributes.UseVirtualKey;
 						}
 					}

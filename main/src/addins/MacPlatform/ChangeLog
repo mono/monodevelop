@@ -1,3 +1,8 @@
+2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Menus/OSXMenu.cs: Attempt to fix keyval->menu accel mapping
+	  for non-English keyboards.
+
 2010-05-11  Levi Bard  <levi@unity3d.com>
 
 	* Framework/AppleEvent.cs: Off-by-one.
