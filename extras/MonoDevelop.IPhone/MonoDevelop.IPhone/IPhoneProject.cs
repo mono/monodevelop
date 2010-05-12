@@ -377,12 +377,6 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		public override ClrVersion[] SupportedClrVersions {
-			get {
-				return new ClrVersion[] { ClrVersion.Clr_2_1 };
-			}
-		}
-		
 		#endregion
 		
 		#region CodeBehind files
