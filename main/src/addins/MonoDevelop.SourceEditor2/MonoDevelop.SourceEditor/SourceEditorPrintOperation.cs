@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnBeginPrint (PrintContext context)
 		{
-			layout = context.CreatePangoLayout ();
+			layout = PangoUtil.CreateLayout (context);
 			layout.FontDescription = settings.Font;
 			
 			layout.FontDescription.Weight = Pango.Weight.Bold;

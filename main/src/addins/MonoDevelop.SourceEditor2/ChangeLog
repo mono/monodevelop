@@ -1,3 +1,8 @@
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorPrintOperation.cs: Use
+	  PangoUtil to create the PangoLayout to avoid a leak.
+
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.SourceEditor/StatusBox.cs: Nullify editor
