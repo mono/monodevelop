@@ -582,5 +582,23 @@ namespace CBinding
 			
 			return whitespaces.ToString ();
 		}
+		
+		[CommandHandler (MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles)]
+		protected void Run ()
+		{
+			var cp = this.Document.Project as CProject;
+			if (cp != null) {
+				string match = cp.MatchingFile (this.Document.FileName);
+				if (match != null)
+					MonoDevelop.Ide.IdeApp.Workbench.OpenDocument (match, true);
+			}
+		}
+		
+		[CommandUpdateHandler (MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles)]
+		protected void Update (CommandInfo info)
+		{
+			var cp = this.Document.Project as CProject;
+			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.Document.FileName) != null;
+		}
 	}
 }

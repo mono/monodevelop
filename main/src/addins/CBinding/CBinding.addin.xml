@@ -14,6 +14,7 @@
 		<Addin id = "Deployment" version = "2.4"/>
 		<Addin id = "Deployment.Linux" version = "2.4"/>
 		<Addin id = "SourceEditor2" version = "2.4" />
+		<Addin id = "DesignerSupport" version = "2.4" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -156,12 +157,6 @@
 		<Category _name = "C/C++" id = "C/C++">
 			<Command id = "CBinding.CProjectCommands.AddPackage" _label = "Edit Packages..." />
 			<Command id = "CBinding.CProjectCommands.UpdateClassPad" _label = "Update class pad" icon = "res:update" />
-			<Command id = "CBinding.CProjectCommands.SwapSourceHeader" 
-				_label = "Swap Source/Header"
-				shortcut = "Shift|F12"
-				_description = "Swap source/header file display"
-				defaultHandler="CBinding.Gui.SwapSourceHeaderCommand"
-			/>
 			<Command id = "CBinding.CProjectCommands.ShowPackageDetails" _label = "Details..." />
 		</Category>
 	</Extension>
@@ -181,14 +176,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete"/>
 	</Extension>
-
-	<Extension path="/MonoDevelop/Ide/ContextMenu/DocumentTab">
-		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
-	</Extension>	
-	
-	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<CommandItem id = "CBinding.CProjectCommands.SwapSourceHeader" />
-	</Extension>	
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Condition id="ItemType" value="CBinding.CProject">

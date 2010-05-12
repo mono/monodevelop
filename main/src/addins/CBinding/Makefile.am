@@ -5,6 +5,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CBinding.dll
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll \
+	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
@@ -46,7 +47,6 @@ FILES =  \
 	Gui/GeneralOptionsPanel.cs \
 	Gui/OutputOptionsPanel.cs \
 	Gui/PackageDetails.cs \
-	Gui/SwapSourceHeaderCommand.cs \
 	Navigation/ClassNodeBuilder.cs \
 	Navigation/ClassPadEventArgs.cs \
 	Navigation/EnumerationNodeBuilder.cs \

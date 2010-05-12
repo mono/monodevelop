@@ -57,7 +57,6 @@ namespace CBinding
 	public enum CProjectCommands {
 		AddPackage,
 		UpdateClassPad,
-		SwapSourceHeader,
 		ShowPackageDetails
 	}
 	
