@@ -9,6 +9,7 @@ namespace MonoDevelop.WelcomePage
 	{
 		CheckButton showOnStartCheckButton = new CheckButton ();
 		CheckButton internetUpdateCheckButton = new CheckButton ();
+		CheckButton closeOnOpenSlnCheckButton = new CheckButton ();
 		
 		public override Widget CreatePanelWidget ()
 		{
@@ -21,6 +22,10 @@ namespace MonoDevelop.WelcomePage
 			internetUpdateCheckButton.Active = PropertyService.Get("WelcomePage.UpdateFromInternet", true);
 			vbox.PackStart(internetUpdateCheckButton, false, false, 0);
 			
+			closeOnOpenSlnCheckButton.Label = GettextCatalog.GetString ("Close welcome page after opening a solution");
+			closeOnOpenSlnCheckButton.Active = PropertyService.Get("WelcomePage.CloseWhenSolutionOpened", true);
+			vbox.PackStart(closeOnOpenSlnCheckButton, false, false, 0);
+			
 			vbox.ShowAll ();
 			return vbox;
 		}
@@ -29,6 +34,7 @@ namespace MonoDevelop.WelcomePage
 		{
 			PropertyService.Set ("WelcomePage.ShowOnStartup", showOnStartCheckButton.Active);
 			PropertyService.Set ("WelcomePage.UpdateFromInternet", internetUpdateCheckButton.Active);
+			PropertyService.Set ("WelcomePage.CloseWhenSolutionOpened", closeOnOpenSlnCheckButton.Active);
 		}
 	}
 

@@ -1,3 +1,11 @@
+2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* WelcomePage.csproj:
+	* WelcomePageCommands.cs:
+	* WelcomePageOptionPanel.cs: Added option for closing welcome
+	  page after opening a solution.
+
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
 	* WelcomePageWidget.cs: Delay project service loading -
