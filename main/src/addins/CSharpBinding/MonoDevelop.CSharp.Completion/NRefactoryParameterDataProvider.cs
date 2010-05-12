@@ -136,7 +136,11 @@ namespace MonoDevelop.CSharp.Completion
 					} else {
 						this.delegateName = type.Name;
 					}
-					methods.Add (invokeMethod);
+					if (invokeMethod != null) {
+						methods.Add (invokeMethod);
+					} else {
+						// no invoke method -> tried to create an abstract delegate
+					}
 					return;
 				}
 				bool includeProtected = DomType.IncludeProtected (resolver.Dom, type, resolver.CallingType);
@@ -166,6 +170,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (method.Name == "Invoke")
 					return method;
 			}
+			
 			return null;
 		}
 		
@@ -295,12 +300,15 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public int GetParameterCount (int overload)
 		{
-			return methods[overload].Parameters.Count;
+			if (overload >= OverloadCount)
+				return -1;
+			IMethod method = methods[overload];
+			return method != null && method.Parameters != null ? method.Parameters.Count : 0;
 		}
 		
 		public int OverloadCount {
 			get {
-				return methods.Count;
+				return methods != null ? methods.Count : 0;
 			}
 		}
 

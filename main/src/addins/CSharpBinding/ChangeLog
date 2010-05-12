@@ -1,5 +1,11 @@
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
+	  fixed 'Bug 605134 - NRE when using (an abstract class ctor?)
+	  MulticastDelegate ctor'.
+
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
 	  Added some bounds checking.
 
