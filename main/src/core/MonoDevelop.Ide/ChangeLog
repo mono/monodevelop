@@ -1,3 +1,7 @@
+2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: (Revert revision 157026)
+
 2010-05-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
