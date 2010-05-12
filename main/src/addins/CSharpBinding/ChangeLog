@@ -1,3 +1,8 @@
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Fixed 'Bug 605008 - Weird symbol highlighting'.
+
 2010-05-11  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
