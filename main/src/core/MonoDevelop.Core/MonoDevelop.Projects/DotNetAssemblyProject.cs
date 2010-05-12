@@ -48,8 +48,8 @@ namespace MonoDevelop.Projects
 		
 		public override bool SupportsFramework (TargetFramework framework)
 		{
-			// By default, DotNetProject can only generate assemblies for the regular framework.
-			// Special frameworks such as Moonlight or MonoTouch must be supported in subclasses.
+			// DotNetAssemblyProject can only generate assemblies for the regular framework.
+			// Special frameworks such as Moonlight or MonoTouch must subclass DotNetProject directly.
 			if (!framework.IsCompatibleWithFramework ("1.1"))
 				return false;
 			else

@@ -318,8 +318,8 @@ namespace MonoDevelop.Projects
 			get { return dependentChildren != null && dependentChildren.Count > 0; }
 		}
 
-		public IEnumerable<ProjectFile> DependentChildren {
-			get { return ((IEnumerable<ProjectFile>)dependentChildren) ?? new ProjectFile[0]; }
+		public IList<ProjectFile> DependentChildren {
+			get { return ((IList<ProjectFile>)dependentChildren) ?? new ProjectFile[0]; }
 		}
 
 		internal bool ResolveParent ()

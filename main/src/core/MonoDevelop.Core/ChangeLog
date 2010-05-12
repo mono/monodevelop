@@ -1,3 +1,11 @@
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects/ProjectFile.cs: Expose
+	  DependentChildren as an IList not an IEnumerable.
+
+	* MonoDevelop.Projects/DotNetAssemblyProject.cs: Improve
+	  comment.
+
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Use
