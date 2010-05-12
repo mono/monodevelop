@@ -1150,13 +1150,13 @@
 				_label = "List of programs to open with" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext"
 				defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
-				_label = "Browse Next" 
+				_label = "Show Next" 
 				_description = "Move cursor to next error or search match"
 				macShortcut = "Meta|="
 				shortcut = "F4" />
 		<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious"
 				defaultHandler = "MonoDevelop.Ide.Commands.ShowPreviousHandler"
-				_label = "Browse Previous" 
+				_label = "Show Previous" 
 				_description = "Move cursor to previous error or search match"
 				macShortcut = "Meta|Shift|="
 				shortcut = "Shift|F4" />
