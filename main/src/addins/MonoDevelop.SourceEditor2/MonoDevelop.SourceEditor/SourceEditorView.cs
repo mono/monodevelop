@@ -153,6 +153,18 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
 				UpdateBreakpoints ();
+				int oldHeight;
+				Console.WriteLine (e.Line.Offset);
+				if (ErrorTextMarker.RemoveLine (e.Line, out oldHeight)) {
+					ErrorTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
+					if (marker != null) {
+						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); // ensure that the line cache is renewed
+						int newHeight = marker.GetLineHeight (widget.TextEditor);
+						if (oldHeight != newHeight) {
+							widget.Document.CommitLineToEndUpdate (widget.TextEditor.Document.OffsetToLineNumber (e.Line.Offset));
+						}
+					}
+				}
 			};
 			
 			widget.TextEditor.Document.BeginUndo += delegate {

@@ -87,7 +87,7 @@ namespace MonoDevelop.SourceEditor
 			if (editorAllocHeight == editor.Allocation.Width && lastLineLength == lineSegment.EditableLength)
 				return lastHeight;
 			
-			CalculateLineFit (editor, editor.TextViewMargin.GetLayout (lineSegment).Layout);
+			CalculateLineFit (editor, lineSegment);
 			int height = CollapseExtendedErrors ? editor.LineHeight : editor.LineHeight * errors.Count;
 			if (!fitsInSameLine)
 				height += editor.LineHeight;
@@ -98,18 +98,22 @@ namespace MonoDevelop.SourceEditor
 			
 			return height;
 		}
-		static Dictionary<string, KeyValuePair<int, int>> textWidthDictionary = new Dictionary<string, KeyValuePair<int, int>> ();
-		void CalculateLineFit (TextEditor editor, Pango.Layout textLayout)
+		
+		static Dictionary<string, KeyValuePair<int, int>> textWidthDictionary = new Dictionary<string, KeyValuePair<int, int>>();
+		static Dictionary<LineSegment, KeyValuePair<int, int>> lineWidthDictionary = new Dictionary<LineSegment, KeyValuePair<int, int>>();
+		
+		void CalculateLineFit(TextEditor editor, LineSegment lineSegment)
 		{
 			KeyValuePair<int, int> textSize;
-			if (!textWidthDictionary.TryGetValue (textLayout.Text, out textSize)) {
+			if (!lineWidthDictionary.TryGetValue(lineSegment, out textSize)) {
+				Pango.Layout textLayout = editor.TextViewMargin.GetLayout(lineSegment).Layout;
 				int textWidth, textHeight;
 				textLayout.GetPixelSize (out textWidth, out textHeight);
 				textSize = new KeyValuePair<int, int> (textWidth, textHeight);
 				if (textWidthDictionary.Count > 10000) {
 					textWidthDictionary.Clear ();
 				}
-				textWidthDictionary[textLayout.Text] = textSize;
+				lineWidthDictionary[lineSegment] = textSize;
 			} 
 			EnsureLayoutCreated (editor);
 			fitsInSameLine = editor.TextViewMargin.XOffset + textSize.Key + layouts[0].Width + errorPixbuf.Width + border + editor.LineHeight / 2  < editor.Allocation.Width;
@@ -132,7 +136,19 @@ namespace MonoDevelop.SourceEditor
 			CollapseExtendedErrors = errors.Count > 1;
 			DisposeLayout ();
 		}
-		
+
+		public static bool RemoveLine (LineSegment line, out int oldHeight)
+		{
+			KeyValuePair<int, int> result;
+			if (!lineWidthDictionary.TryGetValue (line, out result)) {
+				oldHeight = -1;
+				return false;
+			}
+			oldHeight = result.Value;
+			lineWidthDictionary.Remove (line);
+			return true;
+		}
+
 		public void DisposeLayout ()
 		{
 			if (layouts != null) {
@@ -254,7 +270,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 			
 			EnsureLayoutCreated (editor);
-			CalculateLineFit (editor, layout2);
+//			CalculateLineFit (editor, layout2);
 			int x = editor.TextViewMargin.XOffset;
 			int right = editor.Allocation.Width;
 			int errorCounterWidth = 0;

@@ -1,5 +1,11 @@
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Optimized
+	  speed of message bubbles.
+
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
 	* MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs: Fixed
 	  'Bug 605000 - Search history does not include recent
