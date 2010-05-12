@@ -41,18 +41,18 @@ namespace MonoDevelop.WelcomePage
 		protected override void Run()
 		{
 			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
-				if (PropertyService.Get("WelcomePage.CloseWhenSolutionOpened", true)) {
+				if (WelcomePageOptions.CloseWhenSolutionOpened) {
 					var doc = ShowWelcomePageHandler.GetWelcomePageDoc ();
 					if (doc != null)
 						doc.Close ();
 				}
 			};
 			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				if (PropertyService.Get("WelcomePage.CloseWhenSolutionOpened", true))
+				if (WelcomePageOptions.CloseWhenSolutionOpened && WelcomePageOptions.ShowOnStartup)
 					ShowWelcomePageHandler.Show ();
 			};
 			
-			if (PropertyService.Get("WelcomePage.ShowOnStartup", true))
+			if (WelcomePageOptions.ShowOnStartup)
 				IdeApp.Workbench.OpenDocument (new WelcomePageView (), true);
 		}
 	}
@@ -85,6 +85,24 @@ namespace MonoDevelop.WelcomePage
 		protected override void Update (CommandInfo info)
 		{
 			base.Update (info);
+		}
+	}
+	
+	static class WelcomePageOptions
+	{
+		public static bool ShowOnStartup {
+			get { return PropertyService.Get ("WelcomePage.ShowOnStartup", true); }
+			set { PropertyService.Set ("WelcomePage.ShowOnStartup", value); }
+		}
+		
+		public static bool CloseWhenSolutionOpened {
+			get { return PropertyService.Get ("WelcomePage.CloseWhenSolutionOpened", true); }
+			set { PropertyService.Set ("WelcomePage.CloseWhenSolutionOpened", value); }
+		}
+		
+		public static bool UpdateFromInternet {
+			get { return PropertyService.Get ("WelcomePage.UpdateFromInternet", true); }
+			set { PropertyService.Set ("WelcomePage.UpdateFromInternet", value); }
 		}
 	}
 }

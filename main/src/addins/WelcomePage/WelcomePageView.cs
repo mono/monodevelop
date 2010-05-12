@@ -170,7 +170,7 @@ namespace MonoDevelop.WelcomePage
 		
 		public static void UpdateNews ()
 		{
-			if (!PropertyService.Get<bool>("WelcomePage.UpdateFromInternet", true))
+			if (!WelcomePageOptions.UpdateFromInternet)
 				return;
 			
 			lock (updateLock) {
