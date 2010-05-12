@@ -38,6 +38,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		List<string> overloads = new List<string> ();
 		int current_overload;
 		
+		public int CurrentOverload {
+			get {
+				return this.current_overload; 
+			}
+			set {
+				this.current_overload = value;
+				ShowOverload ();
+			}
+		}
+		
 		MonoDevelop.Components.FixedWidthWrapLabel headlabel, bodylabel;
 		Label helplabel;
 		Arrow left, right;

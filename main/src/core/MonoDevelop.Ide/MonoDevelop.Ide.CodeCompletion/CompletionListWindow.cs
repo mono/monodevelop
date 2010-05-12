@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -69,7 +70,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return this.completionDataList; }
 			set {
 				this.completionDataList = value;
-				
 			}
 		}
 		
@@ -421,14 +421,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Realize ();
 				
 				foreach (CompletionData overload in overloads) {
-					bool oDataHasMarkup = (overload.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
-						declarationviewwindow.AddOverload (oDataHasMarkup
-							? overload.Description
-							: GLib.Markup.EscapeText (overload.Description));
+					bool hasMarkup = (overload.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
+					declarationviewwindow.AddOverload (hasMarkup ? overload.Description : GLib.Markup.EscapeText (overload.Description));
 				}
 				
 				declarationviewwindow.Multiple = data.IsOverloaded;
 				currentData = data;
+				if (data.IsOverloaded) {
+					for (int i = 0; i < overloads.Count; i++) {
+						if ((overloads[i].DisplayFlags & DisplayFlags.Obsolete) != DisplayFlags.Obsolete) {
+							declarationviewwindow.CurrentOverload = i;
+							break;
+						}
+					}
+				}
 			}
 			
 			if (declarationviewwindow.DescriptionMarkup.Length == 0) {
@@ -575,7 +581,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		//NOTE: we only ever return markup for items marked as obsolete
 		string IListDataProvider.GetMarkup (int n)
 		{
-			return "<s>" + GLib.Markup.EscapeText (completionDataList[n].DisplayText) + "</s>";
+			CompletionData completionData = completionDataList[n];
+			if (!completionData.IsOverloaded && (completionData.DisplayFlags & DisplayFlags.Obsolete) == DisplayFlags.Obsolete || 
+			    completionData.OverloadedData.All (data => (data.DisplayFlags & DisplayFlags.Obsolete) == DisplayFlags.Obsolete))
+				return "<s>" + GLib.Markup.EscapeText (completionDataList[n].DisplayText) + "</s>";
+			return GLib.Markup.EscapeText (completionDataList[n].DisplayText);
 		}
 		
 		string IListDataProvider.GetCompletionText (int n)
