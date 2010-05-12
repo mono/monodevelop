@@ -732,7 +732,30 @@ t < 10;
 ", localVariable);
 		}
 
-		
+		/// <summary>
+		/// Bug 605104 - Highlighter fails to find an instance of my method
+		/// </summary>
+		[Test()]
+		public void TestBug605104 ()
+		{
+			RunTest (
+@"class TestClass
+{
+	bool $@RemoveFromFiltered (
+object item)
+	{
+		return item != null;
+	}
+
+	void RemoveFromFilteredAndGroup (object item)
+	{
+		if (@RemoveFromFiltered (item) && item != null)
+			;
+	}
+}
+");
+		}
+
 		
 		/*
 		[Test()]
