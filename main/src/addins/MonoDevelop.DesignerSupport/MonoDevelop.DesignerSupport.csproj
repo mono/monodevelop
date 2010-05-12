@@ -134,7 +134,7 @@
     <Compile Include="MonoDevelop.DesignerSupport.Projects\WorkspaceItemDescriptor.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\IPropertyPadProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehindWriter.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\SwapCodeBehindCommand.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\SwitchBetweenRelatedFilesCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">
