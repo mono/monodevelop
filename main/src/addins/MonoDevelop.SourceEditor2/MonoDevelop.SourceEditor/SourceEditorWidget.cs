@@ -871,7 +871,8 @@ namespace MonoDevelop.SourceEditor
 			if (!String.IsNullOrEmpty (selectedText)) {
 				this.SetSearchPattern (selectedText);
 				SearchAndReplaceWidget.searchPattern = selectedText;
-//				SearchAndReplaceWidget.FireSearchPatternChanged ();
+				SearchAndReplaceWidget.UpdateSearchHistory (selectedText);
+				TextEditor.TextViewMargin.MainSearchResult = TextEditor.SelectionRange;
 			}
 		}
 		
@@ -988,8 +989,7 @@ namespace MonoDevelop.SourceEditor
 				// reset pattern, to force an update
 				
 				if (TextEditor.IsSomethingSelected) {
-					TextEditor.SearchPattern = TextEditor.SelectedText;
-					TextEditor.TextViewMargin.MainSearchResult = TextEditor.SelectionRange;
+					SetSearchPattern ();
 				}
 				
 				if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true))
@@ -1016,8 +1016,7 @@ namespace MonoDevelop.SourceEditor
 				ResetFocusChain ();
 			} else {
 				if (TextEditor.IsSomethingSelected) {
-					TextEditor.SearchPattern = TextEditor.SelectedText;
-					TextEditor.TextViewMargin.MainSearchResult = TextEditor.SelectionRange;
+					SetSearchPattern ();
 				}
 			}
 			searchAndReplaceWidget.UpdateSearchPattern ();
@@ -1136,8 +1135,10 @@ namespace MonoDevelop.SourceEditor
 		
 		void SetSearchPatternToSelection ()
 		{
+			SetSearchPattern ();
 			if (TextEditor.IsSomethingSelected) {
 				TextEditor.SearchPattern = TextEditor.SelectedText;
+				SearchAndReplaceWidget.UpdateSearchHistory (TextEditor.SearchPattern);
 			}
 			if (searchAndReplaceWidget != null)
 				searchAndReplaceWidget.UpdateSearchPattern ();

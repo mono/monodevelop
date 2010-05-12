@@ -49,8 +49,6 @@ namespace MonoDevelop.SourceEditor
 		internal static string replacePattern = String.Empty;
 
 		SourceEditorWidget widget;
-		ListStore searchHistory = new ListStore (typeof (string));
-		ListStore replaceHistory = new ListStore (typeof (string));
 		
 		bool isReplaceMode = true;
 		Widget [] replaceWidgets;
@@ -139,7 +137,8 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			this.widget = widget;
-			
+			FilterHistory (seachHistoryProperty);
+			FilterHistory (replaceHistoryProperty);
 			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
 			if (Platform.IsMac) {
 				foreach (var eb in new [] { eventbox2, eventbox3, eventbox4, eventbox5, eventbox6 }) {
@@ -167,11 +166,16 @@ namespace MonoDevelop.SourceEditor
 			
 			searchEntry.Entry.Changed += delegate {
 				widget.SetSearchPattern (SearchPattern);
+				string oldPattern = searchPattern;
 				searchPattern = SearchPattern;
 				UpdateSearchEntry ();
+				var history = GetHistory (seachHistoryProperty);
+				if (history.Count > 0 && history[0] == oldPattern) {
+					ChangeHistory (seachHistoryProperty, searchPattern);
+				} else {
+					UpdateSearchHistory (searchPattern);
+				}
 			};
-			
-			RestoreSearchHistory ();
 			
 			entryReplace.Text = replacePattern;
 //			entryReplace.Model = replaceHistory;
@@ -205,8 +209,6 @@ namespace MonoDevelop.SourceEditor
 			searchEntry.Entry.Activated += delegate {
 				UpdateSearchHistory (SearchPattern);
 				widget.FindNext (false);
-//				UpdateSearchHistory (SearchPattern);
-//				buttonSearchForward.GrabFocus ();
 			};
 			
 			buttonSearchForward.Clicked += delegate {
@@ -304,11 +306,15 @@ namespace MonoDevelop.SourceEditor
 				searchEntry.Menu.Add (recentSearches);
 				
 				foreach (string item in history) {
+					if (item == searchEntry.Entry.Text)
+						continue;
 					MenuItem recentItem = new MenuItem (item);
 					recentItem.Name = item;
 					recentItem.Activated += delegate (object mySender, EventArgs myE) {
 						MenuItem cur = (MenuItem)mySender;
+						searchPattern = ""; // force that the current pattern is stored in history and not replaced
 						searchEntry.Entry.Text = cur.Name;
+						FilterHistory (seachHistoryProperty);
 					};
 					searchEntry.Menu.Add (recentItem);
 				}
@@ -506,15 +512,6 @@ But I leave it in in the case I've missed something. Mike
 			// SearchPatternChanged -= UpdateSearchPattern;
 			ReplacePatternChanged -= UpdateReplacePattern;
 			
-			if (searchHistory != null) {
-				searchHistory.Dispose ();
-				searchHistory = null;
-			}
-			
-			if (replaceHistory != null) {
-				replaceHistory.Dispose ();
-				replaceHistory = null;
-			}
 			if (widget != null) {
 				widget.TextEditor.QueueDraw ();
 				widget = null;
@@ -560,12 +557,12 @@ But I leave it in in the case I've missed something. Mike
 			return new List<string> (stringArray.Split (historySeparator));
 		}
 		
-		void StoreHistory (string propertyKey, List<string> history)
+		static void StoreHistory (string propertyKey, List<string> history)
 		{
 			PropertyService.Set (propertyKey, history != null ? String.Join (historySeparator.ToString (), history.ToArray ()) : null);
 		}
 		
-		void UpdateHistory (string propertyKey, string item)
+		static void UpdateHistory (string propertyKey, string item)
 		{
 			List<string> history = GetHistory (propertyKey);
 			history.Remove (item);
@@ -576,19 +573,34 @@ But I leave it in in the case I've missed something. Mike
 			StoreHistory (propertyKey, history);
 		}
 		
-		void UpdateSearchHistory (string item)
+		static void FilterHistory (string propertyKey)
 		{
-			UpdateHistory (seachHistoryProperty, item);
-			RestoreSearchHistory ();
+			List<string> history = GetHistory (propertyKey);
+			List<string> newHistory = new List<string> ();
+			HashSet<string> filter = new HashSet<string> ();
+			foreach (string str in history) {
+				if (filter.Contains (str))
+					continue;
+				filter.Add (str);
+				newHistory.Add (str);
+			}
+			StoreHistory (propertyKey, newHistory);
 		}
 		
-		void RestoreSearchHistory ()
+		internal static void UpdateSearchHistory (string item)
 		{
-			this.searchHistory.Clear ();
-			foreach (string item in GetHistory (seachHistoryProperty)) {
-				this.searchHistory.AppendValues (item);
-			}
+			UpdateHistory (seachHistoryProperty, item);
 		}
+		
+		static void ChangeHistory (string propertyKey, string item)
+		{
+			List<string> history = GetHistory (propertyKey);
+			history.RemoveAt (0);
+			history.Insert (0, item);
+			StoreHistory (propertyKey, history);
+		}
+		
+		
 		
 		void SetIsCaseSensitive (bool value)
 		{
@@ -681,16 +693,8 @@ But I leave it in in the case I've missed something. Mike
 		void UpdateReplaceHistory (string item)
 		{
 			UpdateHistory (replaceHistoryProperty, item);
-			RestoreReplaceHistory ();
 		}
 		
-		void RestoreReplaceHistory ()
-		{
-			replaceHistory.Clear ();
-			foreach (string item in GetHistory (replaceHistoryProperty)) {
-				replaceHistory.AppendValues (item);
-			}
-		}
 		
 		void UpdateReplacePattern (object sender, EventArgs args)
 		{
