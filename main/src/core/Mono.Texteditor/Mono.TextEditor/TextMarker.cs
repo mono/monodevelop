@@ -225,53 +225,57 @@ namespace Mono.TextEditor
 		public int EndCol { get; set; }
 		public bool Wave { get; set; }
 		
-	public override void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
-	{
-		int markerStart = LineSegment.Offset + System.Math.Max (StartCol, 0);
-		int markerEnd = LineSegment.Offset + (EndCol < 0 ? LineSegment.Length : EndCol);
-		if (markerEnd < startOffset || markerStart > endOffset) 
-			return; 
-
-		int @from;
-		int to;
-
-		if (markerStart < startOffset && endOffset < markerEnd) {
-			@from = startXPos;
-			to = endXPos;
-		} else {
-			int start = startOffset < markerStart ? markerStart : startOffset;
-			int end = endOffset < markerEnd ? endOffset : markerEnd;
-			int /*lineNr,*/ x_pos;
-			
-			x_pos = layout.IndexToPos (start - startOffset).X;
-			@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-
-			x_pos = layout.IndexToPos (end - startOffset).X;
-
-			to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-		}
-		@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
-		to = System.Math.Max (to, editor.TextViewMargin.XOffset);
-		if (@from >= to) {
-			return;
-		}
-
-		using (Gdk.GC gc = new Gdk.GC(win)) {
-			gc.RgbFgColor = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
-			int drawY = y + editor.LineHeight - 1;
-			const int length = 6;
-			const int height = 2;
-			if (Wave) {
-				startXPos = System.Math.Max (startXPos, editor.TextViewMargin.XOffset);
-				for (int i = @from; i < to; i += length) {
-					win.DrawLine (gc, i, drawY, i + length / 2, drawY - height);
-					win.DrawLine (gc, i + length / 2, drawY - height, i + length, drawY);
-				}
+		public override void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		{
+			int markerStart = LineSegment.Offset + System.Math.Max (StartCol, 0);
+			int markerEnd = LineSegment.Offset + (EndCol < 0 ? LineSegment.Length : EndCol);
+			if (markerEnd < startOffset || markerStart > endOffset) 
+				return; 
+	
+			int @from;
+			int to;
+				
+			if (markerStart < startOffset && endOffset < markerEnd) {
+				@from = startXPos;
+				to = endXPos;
 			} else {
-				win.DrawLine (gc, @from, drawY, to, drawY);
+				int start = startOffset < markerStart ? markerStart : startOffset;
+				int end = endOffset < markerEnd ? endOffset : markerEnd;
+				int /*lineNr,*/ x_pos;
+				
+				x_pos = layout.IndexToPos (start - startOffset).X;
+				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+	
+				x_pos = layout.IndexToPos (end - startOffset).X;
+	
+				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}
-		}
-	}
+			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
+			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
+			if (@from >= to) {
+				return;
+			}
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+				int height = editor.LineHeight / 4;
+				cr.LineWidth = 0.5;
+				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
+			}
+	/*		
+			using (Gdk.GC gc = new Gdk.GC(win)) {
+				gc.RgbFgColor = ;
+				const int length = 6;
+				const int height = 2;
+				if (Wave) {
+					startXPos = System.Math.Max (startXPos, editor.TextViewMargin.XOffset);
+					for (int height = @from; height < to; height += length) {
+						win.DrawLine (gc, height, drawY, height + length / 2, drawY - height);
+						win.DrawLine (gc, height + length / 2, drawY - height, height + length, drawY);
+					}
+				} else {
+					win.DrawLine (gc, @from, drawY, to, drawY);
+				}
+			}	*/		
+		} 
 	}
 	
 	public class StyleTextMarker: TextMarker

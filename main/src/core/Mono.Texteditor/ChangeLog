@@ -1,5 +1,14 @@
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor.Highlighting/SemanticRule.cs: Use pango
+	  function to draw the squiggly lines - should be faster than
+	  the custom version.
+	(Bug 604983 - Moving the cursor on a line that has red
+	  squiggles is slooooooow)
+
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 605118 - Caret
 	  position is incorrect with folded code'.
 

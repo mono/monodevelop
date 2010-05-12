@@ -52,7 +52,7 @@ namespace Mono.TextEditor
 		
 		public override void Analyze (Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
 		{
-			if (endOffset <= startOffset)
+			if (endOffset <= startOffset || startOffset >= doc.Length)
 				return;
 			
 			string text = doc.GetTextAt (startOffset, endOffset - startOffset);
