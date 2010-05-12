@@ -1770,7 +1770,7 @@ namespace Mono.TextEditor
 			if (column < lineText.Length)
 				lineText = lineText.Substring (0, column);	
 			
-			var layout = PangoUtil.CreateLayout (textEditor);
+			var layout = PangoUtil.CreateLayout (textEditor, lineText);
 			layout.Alignment = Pango.Alignment.Left;
 			layout.FontDescription = textEditor.Options.Font;
 			layout.Tabs = tabArray;
