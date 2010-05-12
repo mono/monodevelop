@@ -1011,6 +1011,7 @@ namespace Mono.TextEditor
 				Gtk.Drag.SetIconWidget (context, window, 0, 0);
 				selection = Selection.Clone (MainSelection);
 				textViewMargin.inDrag = false;
+				
 			} else {
 				FireMotionEvent (x, y, mod);
 				if (mouseButtonPressed != 0) {
@@ -1042,6 +1043,7 @@ namespace Mono.TextEditor
 		{
 			if (scrollWindowTimer != 0) {
 				GLib.Source.Remove (scrollWindowTimer);
+				
 				scrollWindowTimer = 0;
 			}
 		}

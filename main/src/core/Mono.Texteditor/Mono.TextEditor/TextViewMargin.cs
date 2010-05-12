@@ -1994,7 +1994,7 @@ namespace Mono.TextEditor
 			// background will be drawn when rendering the text chunks.
 			
 			if (BackgroundRenderer != null)
-				BackgroundRenderer.Draw (win, area, line, x, y);
+				BackgroundRenderer.Draw (win, area, line, x, y, _lineHeight);
 			
 			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNr)
 				defaultBgColor = ColorStyle.LineMarker;

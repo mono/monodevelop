@@ -1,3 +1,12 @@
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/IBackgroundRenderer.cs:
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Fixed
+	  'Bug 604980 – Code bubbles are draw incorrectly when there
+	  is a highlighted region of code'.
+
 2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/PangoUtil.cs: Added CreateLayout overload

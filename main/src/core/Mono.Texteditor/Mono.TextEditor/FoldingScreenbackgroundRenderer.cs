@@ -55,7 +55,7 @@ namespace Mono.TextEditor
 			this.roles = new Roles[this.foldSegments.Count];
 		}
 
-		public void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, LineSegment lineSegment, int x, int y)
+		public void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, LineSegment lineSegment, int x, int y, int lineHeight)
 		{
 			int foundSegment = -1;
 			if (lineSegment != null) {
@@ -116,7 +116,7 @@ namespace Mono.TextEditor
 						rectangleWidth = (int)(width - xPos - 6 * (segment + 1));
 						role = roles[segment];
 					}
-					DrawRoundRectangle (cr, (role & Roles.Start) == Roles.Start, (role & Roles.End) == Roles.End, xPos, y, editor.LineHeight / 2, rectangleWidth, editor.LineHeight);
+					DrawRoundRectangle (cr, (role & Roles.Start) == Roles.Start, (role & Roles.End) == Roles.End, xPos, y, editor.LineHeight / 2, rectangleWidth, lineHeight);
 					cr.Color = Style.ToCairoColor (hslColor);
 					cr.Fill ();
 			/*		if (segment == foldSegments.Count - 1) {
