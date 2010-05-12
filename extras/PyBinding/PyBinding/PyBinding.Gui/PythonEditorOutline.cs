@@ -32,9 +32,5 @@ namespace PyBinding.Gui
 {
 	public class PythonEditorOutline : ClassOutlineTextEditorExtension
 	{
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
-		{
-			return System.IO.Path.GetExtension (doc.Name).ToLower () == ".py";
-		}
 	}
 }

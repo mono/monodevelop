@@ -61,13 +61,6 @@ namespace PyBinding.Gui
 				m_site = new PythonSite (PythonHelper.FindPreferedRuntime ());
 		}
 
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
-		{
-			if (doc == null || String.IsNullOrEmpty (doc.Name))
-				return false;
-			return Path.GetExtension (doc.Name) == ".py";
-		}
-
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			switch (completionChar) {

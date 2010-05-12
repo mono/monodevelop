@@ -1,5 +1,12 @@
 2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* PyBinding.Gui/PythonEditorOutline.cs:
+	* PyBinding.Gui/PythonEditorCompletion.cs:
+	* PyBinding.Gui/PythonEditorIndentation.cs: Remove unneeded
+	  filename checks, now it's handled by the addin tree.
+
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* PyBinding.addin.xml: Restrict editor extensions by file
 	  type.
 

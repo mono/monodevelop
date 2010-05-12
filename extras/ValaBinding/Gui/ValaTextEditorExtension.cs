@@ -65,12 +65,6 @@ namespace MonoDevelop.ValaBinding
 			}
 		}// Parser
 		
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
-		{
-			return (Path.GetExtension (doc.FileName).ToUpper () == ".VALA"   ||
-			        Path.GetExtension (doc.FileName).ToUpper () == ".VAPI" );
-		}
-		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			int line, column;

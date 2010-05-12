@@ -36,11 +36,6 @@ namespace PyBinding.Gui
 {
 	public class PythonEditorIndentation : TextEditorExtension
 	{
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
-		{
-			return !String.IsNullOrEmpty (doc.Name) && Path.GetExtension (doc.Name) == ".py";
-		}
-		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.Return)
