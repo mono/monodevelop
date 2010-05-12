@@ -1,5 +1,11 @@
 2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects/DotNetProject.cs: Remove
+	  SupportedClrVersions, as it's been superseded by
+	  SupportsFramework.
+
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects/ProjectFile.cs: Expose
 	  DependentChildren as an IList not an IEnumerable.
 

@@ -117,14 +117,9 @@ namespace MonoDevelop.Moonlight
 			return conf;
 		}
 		
-		public override ClrVersion[] SupportedClrVersions {
-			get {
-				return new ClrVersion[] { ClrVersion.Clr_2_1 };
-			}
-		}
-		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
+			//framework.ClrVersion == ClrVersion.Clr_2_1;
 			return framework.Id == "SL2.0" || framework.Id == "SL3.0";
 		}
 		

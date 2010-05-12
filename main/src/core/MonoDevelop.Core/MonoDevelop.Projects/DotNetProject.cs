@@ -325,7 +325,9 @@ namespace MonoDevelop.Projects
 
 		public virtual bool SupportsFramework (TargetFramework framework)
 		{
-			ClrVersion[] versions = SupportedClrVersions;
+			if (LanguageBinding == null)
+				return false;
+			ClrVersion[] versions = LanguageBinding.GetSupportedClrVersions ();
 			if (versions != null && versions.Length > 0 && framework != null) {
 				foreach (ClrVersion v in versions) {
 					if (v == framework.ClrVersion)
@@ -361,14 +363,6 @@ namespace MonoDevelop.Projects
 				return oneSupported;
 
 			return null;
-		}
-
-		public virtual ClrVersion[] SupportedClrVersions {
-			get {
-				if (LanguageBinding != null)
-					return LanguageBinding.GetSupportedClrVersions ();
-				return null;
-			}
 		}
 
 		[ItemProperty(DefaultValue = true)]

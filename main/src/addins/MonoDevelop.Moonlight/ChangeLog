@@ -1,3 +1,9 @@
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Moonlight/MoonlightProject.cs: Remove
+	  SupportedClrVersions, as it's been superseded by
+	  SupportsFramework.
+
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Moonlight/MoonlightEditorExtension.cs: Make use
