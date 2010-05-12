@@ -4701,7 +4701,7 @@ out pexpr, pexpr);
 				List<Expression> parameters = new List<Expression>(); 
 
 #line  1984 "Frames/cs.ATG" 
-				pexpr = new InvocationExpression(pexpr, parameters); 
+				pexpr = new InvocationExpression(pexpr, parameters); pexpr.StartLocation = startLocation; 
 				if (StartOf(26)) {
 					Argument(
 #line  1985 "Frames/cs.ATG" 

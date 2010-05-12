@@ -1,3 +1,9 @@
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Parser/CSharp/cs.ATG:
+	* Src/Parser/CSharp/Parser.cs: Fixed 'Bug 605104 - Highlighter
+	  fails to find an instance of my method'.
+
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Parser/CSharp/cs.ATG:

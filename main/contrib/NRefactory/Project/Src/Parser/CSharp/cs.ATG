@@ -1981,7 +1981,7 @@ PrimaryExpr<out Expression pexpr>
 		/*--- invocation expression: */
 		| "("
 			(. List<Expression> parameters = new List<Expression>(); .)
-			(. pexpr = new InvocationExpression(pexpr, parameters); .)
+			(. pexpr = new InvocationExpression(pexpr, parameters); pexpr.StartLocation = startLocation; .)
 			[ Argument<out expr>     (. SafeAdd(pexpr, parameters, expr); .)
 			  { "," Argument<out expr> (. SafeAdd(pexpr, parameters, expr); .)
 			  }
