@@ -256,8 +256,8 @@ namespace Mono.TextEditor
 				return;
 			}
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
-				int height = editor.LineHeight / 4;
-				cr.LineWidth = 0.5;
+				int height = editor.LineHeight / 5;
+				cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName));
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
 			}
 	/*		

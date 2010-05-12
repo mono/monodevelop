@@ -1,5 +1,10 @@
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextMarker.cs: made the squiggly lines a bit
+	  smaller / fixed cut&paste error.
+
+2010-05-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextMarker.cs:
 	* Mono.TextEditor.Highlighting/SemanticRule.cs: Use pango
 	  function to draw the squiggly lines - should be faster than
