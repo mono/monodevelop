@@ -102,7 +102,7 @@ namespace MonoDevelop.IPhone.Gui
 				targetDevicesCombo.Active = 2;
 				break;
 			default:
-				LoggingService.LogWarning ("Unknown value '{0}' in SupportedDevices. sChanging to default.");
+				LoggingService.LogWarning ("Unknown value '{0}' in SupportedDevices. Changing to default.");
 				goto case TargetDevice.IPhone;
 			}
 			
