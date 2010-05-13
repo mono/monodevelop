@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
+using System.Reflection;
 
 namespace MonoDevelop.IPhone
 {
@@ -238,14 +239,35 @@ namespace MonoDevelop.IPhone
 			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
 		}
 		
-//		protected override void OnEndLoad ()
-//		{
-//			//fix target framework if it's incorrect
-//			if (TargetFramework != null && TargetFramework.Id != FX_IPHONE)
-//				TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
-//			
-//			base.OnEndLoad ();
-//		}
+		protected override void OnEndLoad ()
+		{
+			//fix target framework if it's incorrect
+			//if (TargetFramework != null && TargetFramework.Id != FX_IPHONE)
+			//	TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
+			
+			FixCSharpPlatformTarget ();
+			
+			base.OnEndLoad ();
+		}
+		
+		// HACK: Using older MD, C# projects may have become created with the wrong platform target
+		// Fix this without adding a hard dependency on the C# addin
+		void FixCSharpPlatformTarget ()
+		{
+			if (LanguageName != "C#")
+				return;
+			PropertyInfo prop = null;
+			foreach (IPhoneProjectConfiguration cfg in Configurations) {
+				if (prop == null) {
+					if (cfg.CompilationParameters == null)
+						return;
+					prop = cfg.CompilationParameters.GetType ().GetProperty ("PlatformTarget");
+					if (prop == null)
+						return;
+				}
+				prop.SetValue (cfg.CompilationParameters, "anycpu", null);
+			}
+		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
