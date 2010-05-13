@@ -1,3 +1,8 @@
+2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CecilWidgetLibrary.cs: Fix potential null ref. Fixes bug
+	  #583516 - Stetic breaks building MonoDevelop.IPhone.
+
 2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* LibraryCache.cs: Fixed problem with resolution of base

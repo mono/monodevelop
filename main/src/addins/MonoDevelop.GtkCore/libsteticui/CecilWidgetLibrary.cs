@@ -257,7 +257,9 @@ namespace Stetic
 		
 		public static bool IsWidgetLibrary (string path)
 		{
-			return cache [path].HasWidgets;
+			// Info can be null if the library could not be scanned for some reason
+			var info = cache [path];
+			return info != null && info.HasWidgets;
 		}
 		
 		public static string GetInstanceType (TypeDefinition td, TypeReference sourceType, TypeReference tref)
