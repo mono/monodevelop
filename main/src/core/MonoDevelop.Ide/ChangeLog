@@ -1,5 +1,12 @@
 2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:
+	  If a folder can't be deleted, show the error and just remove
+	  it from the project. Added support for 'apply to all' in the
+	  confirmation dialog.
+
+2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Don't dispose the
 	  command manager until we know for sure that we are exiting.
 	  Should fix bug #605393 - Error while building code.
