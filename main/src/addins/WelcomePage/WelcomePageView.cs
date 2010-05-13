@@ -121,7 +121,7 @@ namespace MonoDevelop.WelcomePage
 			return contentDoc;
 		}
 		
-		static void updateNewsXmlThread ()
+		static void UpdateNewsXmlAsync ()
 		{
 			//check to see if the online news file has been modified since it was last downloaded
 			string netNewsXml = WelcomePageView.netNewsXml;
@@ -134,38 +134,48 @@ namespace MonoDevelop.WelcomePage
 				request.IfModifiedSince = localNewsXml.LastWriteTime;
 			
 			try {
-				HttpWebResponse response = (HttpWebResponse) request.GetResponse ();
-				if (response.StatusCode ==  HttpStatusCode.OK) {
-					Stream responseStream = response.GetResponseStream ();
-					using (FileStream fs = File.Create (localCachedNewsFile)) {
-						long avail = response.ContentLength;
-						int position = 0;
-						int readBytes = -1;
-						byte[] buffer = new byte[2048];
-						while (readBytes != 0) {							
-							readBytes = responseStream.Read
-								(buffer, position, (int) (avail > 2048 ? 2048 : avail));
-							position += readBytes;
-							avail -= readBytes;
-							fs.Write (buffer, 0, readBytes);
+				request.BeginGetResponse (delegate (IAsyncResult ar) {
+					try {
+						var response = (HttpWebResponse) request.EndGetResponse (ar);
+						if (response.StatusCode == HttpStatusCode.OK) {
+							using (var fs = File.Create (localCachedNewsFile))
+								CopyStream (fs, response.GetResponseStream (), response.ContentLength);
 						}
+						NewsUpdated (null, EventArgs.Empty);
+					} catch (System.Net.WebException wex) {
+						var httpResp = wex.Response as HttpWebResponse;
+						if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotModified) {
+							LoggingService.LogInfo ("Welcome Page already up-to-date.");
+						} else if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotFound) {
+							LoggingService.LogInfo ("Welcome Page update file not found.", netNewsXml);
+						} else {
+							LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", wex);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
+					} finally {
+						lock (updateLock)
+							isUpdating = false;
 					}
-				}
-				NewsUpdated (null, EventArgs.Empty);
-			} catch (System.Net.WebException wex) {
-				HttpWebResponse httpResp = wex.Response as HttpWebResponse;
-				if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotModified) {
-					LoggingService.LogInfo ("Welcome Page already up-to-date.");
-				} else if (httpResp != null && httpResp.StatusCode == HttpStatusCode.NotFound) {
-					LoggingService.LogInfo ("Welcome Page update file not found.", netNewsXml);
-				} else {
-					LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", wex);
-				}
+				}, null);
 			} catch (Exception ex) {
 				LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
+				lock (updateLock)
+					isUpdating = false;
 			}
-			lock (updateLock)
-				isUpdating = false;
+		}
+		
+		static void CopyStream (Stream fr, Stream to, long remaining)
+		{
+			int position = 0;
+			int readBytes = -1;
+			byte[] buffer = new byte[2048];
+			while (readBytes != 0) {							
+				readBytes = fr.Read (buffer, position, (int) (remaining > 2048 ? 2048 : remaining));
+				position += readBytes;
+				remaining -= readBytes;
+				to.Write (buffer, 0, readBytes);
+			}
 		}
 		
 		public static void UpdateNews ()
@@ -179,10 +189,8 @@ namespace MonoDevelop.WelcomePage
 				else
 					isUpdating = true;
 			}
-			System.Threading.ThreadStart ts = new System.Threading.ThreadStart (updateNewsXmlThread);
-			System.Threading.Thread updateThread = new System.Threading.Thread (ts);
-			updateThread.IsBackground = true;
-			updateThread.Start ();
+			
+			UpdateNewsXmlAsync ();
 		}
 		
 		static object updateLock = new object ();
