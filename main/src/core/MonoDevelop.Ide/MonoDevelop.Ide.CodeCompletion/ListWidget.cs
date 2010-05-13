@@ -305,10 +305,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			Gdk.Window window = args.Window;
-			int winWidth = window.ClipRegion.Clipbox.Width;
-			int winHeight = window.ClipRegion.Clipbox.Height;
+			var alloc = Allocation;
+			int width = alloc.Width;
+			int height = alloc.Height;
 			
-			int lineWidth = winWidth - margin * 2;
+			int lineWidth = width - margin * 2;
 			int xpos = margin + padding;
 			int yPos = margin;
 			
@@ -324,30 +325,34 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (filteredItems.Count == 0) {
 				Gdk.GC gc = new Gdk.GC (window);
 				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
-				window.DrawRectangle (gc, true, 0, yPos, Allocation.Width, Allocation.Height - yPos);
+				window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
 				gc.Dispose ();
 				layout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"));
-				int width, height;
-				layout.GetPixelSize (out width, out height);
-				window.DrawLayout (this.Style.TextGC (StateType.Normal), (Allocation.Width - width) / 2, yPos + (Allocation.Height - height - yPos) / 2, layout);
+				int lWidth, lHeight;
+				layout.GetPixelSize (out lWidth, out lHeight);
+				window.DrawLayout (this.Style.TextGC (StateType.Normal), (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2, layout);
 				return true;
 			}
 			
+			var textGCInsensitive = this.Style.TextGC (StateType.Insensitive);
+			var textGCNormal = this.Style.TextGC (StateType.Normal);
+			var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
+			
 			Iterate (true, ref yPos, delegate (Category category, int ypos) {
-				if (ypos >= winHeight - margin)
+				if (ypos >= height - margin)
 					return;
 				
-			//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, Allocation.Width, rowHeight);
+			//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, width, rowHeight);
 				
 				Gdk.Pixbuf icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
-				window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+				window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
 				
 				layout.SetMarkup ("<span weight='bold'>" + category.CompletionCategory.DisplayText + "</span>");
-				window.DrawLayout (this.Style.TextGC (StateType.Insensitive), icon.Width + 4, ypos, layout);
+				window.DrawLayout (textGCInsensitive, icon.Width + 4, ypos, layout);
 				layout.SetMarkup ("");
 			}, delegate (Category curCategory, int item, int ypos) {
 				
-				if (ypos >= winHeight - margin)
+				if (ypos >= height - margin)
 					return false;
 				int itemIndex = filteredItems[item];
 				if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null) {
@@ -371,7 +376,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				layout.GetPixelSize (out mw, out mh);
 				if (mw > listWidth) {
 					WidthRequest = listWidth = mw;
-					win.WidthRequest = win.Allocation.Width + mw - Allocation.Width;
+					win.WidthRequest = win.Allocation.Width + mw - width;
 					win.QueueResize ();
 				}
 			
@@ -411,12 +416,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 						window.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
 					} else {
 						window.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
-						window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 					}
 				} else
-					window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+					window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 				if (icon != null)
-					window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+					window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 				
 				layout.SetMarkup ("");
 				if (layout.Attributes != null) {

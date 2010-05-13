@@ -491,19 +491,27 @@ namespace MonoDevelop.Components
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
-			DrawList ();
+			DrawList (args);
 	  		return true;
 		}
 
-		void DrawList ()
+		
+		//FIXME: we could use the expose event's clipbox to make the drawing more efficient
+		void DrawList (Gdk.EventExpose args)
 		{
+			var window = args.Window;
+			
 			int winWidth, winHeight;
-			this.GdkWindow.GetSize (out winWidth, out winHeight);
+			window.GetSize (out winWidth, out winHeight);
 			
 			int ypos = margin;
 			int lineWidth = winWidth - margin*2;
 			int xpos = margin + padding - (int) hAdjustement.Value;
 
+			//avoid recreating the GC objects that we use multiple times
+			var textGCNormal = this.Style.TextGC (StateType.Normal);
+			var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
+			
 			int n = 0;
 			while (ypos < winHeight - margin && (page + n) < RowCount)
 			{
@@ -521,33 +529,30 @@ namespace MonoDevelop.Components
 				
 				if (isSelected) {
 					if (!disableSelection) {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
-						                              true, margin, ypos, lineWidth, he + padding);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected),
-							                           xpos + iconWidth + ColumnGap, typos, layout);
+						window.DrawRectangle (this.Style.BaseGC (StateType.Selected),
+						                      true, margin, ypos, lineWidth, he + padding);
+						window.DrawLayout (this.Style.TextGC (StateType.Selected),
+						                   xpos + iconWidth + ColumnGap, typos, layout);
 					}
 					else {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
-						                              false, margin, ypos, lineWidth, he + padding);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 
-						                           xpos + iconWidth + ColumnGap, typos, layout);
+						window.DrawRectangle (this.Style.BaseGC (StateType.Selected),
+					                          false, margin, ypos, lineWidth, he + padding);
+						window.DrawLayout (textGCNormal, xpos + iconWidth + ColumnGap, typos, layout);
 					}
 					
 					// Draw a 'most recent selection' rectangle.
 					if (this.SelectedRow == page + n) {
-						this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Active),
-						                              false, margin, ypos, lineWidth, he + padding - 1);
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Active),
-							                           xpos + iconWidth + ColumnGap, typos, layout);
+						window.DrawRectangle (this.Style.BaseGC (StateType.Active),
+					                          false, margin, ypos, lineWidth, he + padding - 1);
+						window.DrawLayout (this.Style.TextGC (StateType.Active),
+					                       xpos + iconWidth + ColumnGap, typos, layout);
 					}
 				}
 				else
-					this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal),
-					                           xpos + iconWidth + ColumnGap, typos, layout);
+					window.DrawLayout (textGCNormal, xpos + iconWidth + ColumnGap, typos, layout);
 				
 				if (icon != null)
-					this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0,
-					                           xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+					window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, RgbDither.None, 0, 0);
 				
 				ypos += rowHeight;
 				n++;

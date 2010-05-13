@@ -1,3 +1,14 @@
+2010-05-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs: Don't use
+	  expose clipbox as the window width. Fixes redrawing issue.
+	  Also cache Allocation and GCs to avoid wasteful transitions
+	  and allocations.
+
+	* MonoDevelop.Components/ListView.cs: Draw on the expose
+	  event's Window. Also cache Allocation and GCs to avoid
+	  wasteful transitions and allocations.
+
 2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Projects/NewProjectDialog.cs: Added new
