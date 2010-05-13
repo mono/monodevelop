@@ -1,3 +1,12 @@
+2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs:
+	* MonoDevelop.Projects/DotNetAssemblyProject.cs:
+	* MonoDevelop.Projects/ProjectCreateInformation.cs: Added new
+	  GetDefaultTargetPlatform virtual to DotNetProject. It is
+	  overriden in DotNetAssemblyProject to set the default
+	  configuration for exes (x86).
+
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Output/AmbienceService.cs: Added

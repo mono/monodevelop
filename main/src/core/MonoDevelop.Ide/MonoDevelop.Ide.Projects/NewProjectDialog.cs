@@ -441,31 +441,12 @@ namespace MonoDevelop.Ide.Projects {
 		ProjectCreateInformation CreateProjectCreateInformation ()
 		{
 			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
-			cinfo.SolutionPath     = SolutionLocation;
+			cinfo.SolutionPath = SolutionLocation;
 			cinfo.ProjectBasePath = ProjectLocation;
-			cinfo.ProjectName     = txt_name.Text;
-			cinfo.SolutionName     = CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
-			
-			// Guess a good default platform for the project
-			
-			if (parentFolder != null && parentFolder.ParentSolution != null) {
-				ItemConfiguration conf = parentFolder.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				if (conf != null)
-					cinfo.DefaultPlatform = conf.Platform;
-				else {
-					string curName, curPlatform;
-					ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out curName, out curPlatform);
-					foreach (ItemConfiguration ic in parentFolder.ParentSolution.Configurations) {
-						if (ic.Platform == curPlatform) {
-							cinfo.DefaultPlatform = curPlatform;
-							break;
-						}
-						if (ic.Name == curName)
-							cinfo.DefaultPlatform = ic.Platform;
-					}
-				}
-			}
-			
+			cinfo.ProjectName = txt_name.Text;
+			cinfo.SolutionName = CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
+			cinfo.ParentFolder = parentFolder;
+			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
 			return cinfo;
 		}
 

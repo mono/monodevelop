@@ -104,13 +104,8 @@ namespace MonoDevelop.Projects
 				if (projectOptions != null) {
 					projectOptions.SetAttribute ("DefineDebug", "True");
 					if (!projectOptions.HasAttribute ("Platform")) {
-						if (CompileTarget == CompileTarget.Library)
-						    platform = string.Empty;
-						else if (projectCreateInfo.DefaultPlatform != null)
-							platform = projectCreateInfo.DefaultPlatform;
-						else
-							platform = Services.ProjectService.DefaultPlatformTarget;
 						// Clone the element since we are going to change it
+						platform = GetDefaultTargetPlatform (projectCreateInfo);
 						projectOptions = (XmlElement) projectOptions.CloneNode (true);
 						projectOptions.SetAttribute ("Platform", platform);
 					} else
@@ -180,6 +175,11 @@ namespace MonoDevelop.Projects
 
 		public virtual bool GeneratesDebugInfoFile {
 			get { return true; }
+		}
+		
+		protected virtual string GetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
+		{
+			return string.Empty;
 		}
 		
 		public ProjectReferenceCollection References {

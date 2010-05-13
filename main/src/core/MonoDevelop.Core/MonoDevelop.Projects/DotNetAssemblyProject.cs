@@ -55,5 +55,32 @@ namespace MonoDevelop.Projects
 			else
 				return base.SupportsFramework (framework);
 		}
+		
+		protected override string GetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
+		{
+			if (CompileTarget == CompileTarget.Library)
+				return string.Empty;
+			
+			// Guess a good default platform for the project
+			if (projectCreateInfo.ParentFolder != null && projectCreateInfo.ParentFolder.ParentSolution != null) {
+				ItemConfiguration conf = projectCreateInfo.ParentFolder.ParentSolution.GetConfiguration (projectCreateInfo.ActiveConfiguration);
+				if (conf != null)
+					return conf.Platform;
+				else {
+					string curName, curPlatform, bestPlatform = null;
+					string sconf = projectCreateInfo.ActiveConfiguration.ToString ();
+					ItemConfiguration.ParseConfigurationId (sconf, out curName, out curPlatform);
+					foreach (ItemConfiguration ic in projectCreateInfo.ParentFolder.ParentSolution.Configurations) {
+						if (ic.Platform == curPlatform)
+							return curPlatform;
+						if (ic.Name == curName)
+							bestPlatform = ic.Platform;
+					}
+					if (bestPlatform != null)
+						return bestPlatform;
+				}
+			}
+			return Services.ProjectService.DefaultPlatformTarget;
+		}
 	}
 }

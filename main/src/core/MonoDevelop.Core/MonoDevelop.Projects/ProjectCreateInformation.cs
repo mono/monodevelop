@@ -60,7 +60,10 @@ namespace MonoDevelop.Projects
 			set { projectBasePath = value; }
 		}
 		
-		public string DefaultPlatform { get; set; }
+		public SolutionFolder ParentFolder { get; set; }
+		
+		public ConfigurationSelector ActiveConfiguration { get; set; }
+		
 
 		public ProjectCreateInformation ()
 		{
@@ -72,7 +75,8 @@ namespace MonoDevelop.Projects
 			solutionName = projectCreateInformation.SolutionName;
 			solutionPath = projectCreateInformation.SolutionPath;
 			projectBasePath = projectCreateInformation.ProjectBasePath;
-			DefaultPlatform = projectCreateInformation.DefaultPlatform;
+			ParentFolder = projectCreateInformation.ParentFolder;
+			ActiveConfiguration = projectCreateInformation.ActiveConfiguration;
 		}
 	}
 }
