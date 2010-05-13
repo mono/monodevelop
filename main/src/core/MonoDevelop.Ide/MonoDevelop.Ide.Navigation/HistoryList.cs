@@ -327,12 +327,12 @@ namespace MonoDevelop.Ide.Navigation
 		
 		void AttachItem (NavigationHistoryItem item)
 		{
-			item.Destroyed += HandleItemDestroyed;
+			item.SetParentList (this);
 		}
 		
 		void DetachItem (NavigationHistoryItem item)
 		{
-			item.Destroyed -= HandleItemDestroyed;
+			item.SetParentList (null);
 		}
 		
 		void DestroyItem (NavigationHistoryItem item)
@@ -341,9 +341,8 @@ namespace MonoDevelop.Ide.Navigation
 			item.Dispose ();
 		}
 
-		void HandleItemDestroyed (object sender, EventArgs e)
+		internal void NotifyDestroyed (NavigationHistoryItem item)
 		{
-			NavigationHistoryItem item = (NavigationHistoryItem) sender;
 			DetachItem (item);
 			Remove (item);
 		}

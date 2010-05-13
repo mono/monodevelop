@@ -35,10 +35,17 @@ namespace MonoDevelop.Ide.Navigation
 	{
 		DateTime created = DateTime.Now;
 		NavigationPoint navPoint;
+		HistoryList list;
 		
 		internal NavigationHistoryItem (NavigationPoint navPoint)
 		{
 			this.navPoint = navPoint;
+			navPoint.ParentItem = this;
+		}
+		
+		internal void SetParentList (HistoryList list)
+		{
+			this.list = list;
 		}
 		
 		public void Dispose ()
@@ -72,24 +79,10 @@ namespace MonoDevelop.Ide.Navigation
 			get { return navPoint; }
 		}
 		
-		public event EventHandler Destroyed {
-			add {
-				if (destroyed == null)
-					navPoint.Destroyed += OnDestroyed;
-				destroyed += value;
-			}
-			remove {
-				destroyed -= value;
-				if (destroyed == null)
-					navPoint.Destroyed -= OnDestroyed;
-			}
-		}
-		
-		EventHandler destroyed;
-
-		void OnDestroyed (object sender, EventArgs e)
+		internal void NotifyDestroyed ()
 		{
-			destroyed (this, e);
+			if (list != null)
+				list.NotifyDestroyed (this);
 		}
 	}
 }

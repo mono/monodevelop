@@ -48,6 +48,8 @@ namespace MonoDevelop.Ide.Navigation
 		// To be called by subclass when the navigation point is not valid anymore
 		public virtual void Dispose ()
 		{
+			if (ParentItem != null)
+				ParentItem.NotifyDestroyed ();
 			if (Destroyed != null)
 				Destroyed (this, EventArgs.Empty);
 		}
@@ -58,5 +60,7 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			return string.Format ("[NavigationPoint {0}]", DisplayName);
 		}
+		
+		internal NavigationHistoryItem ParentItem;
 	}
 }
