@@ -1,5 +1,11 @@
 2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Don't dispose the
+	  command manager until we know for sure that we are exiting.
+	  Should fix bug #605393 - Error while building code.
+
+2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Navigation/HistoryList.cs:
 	* MonoDevelop.Ide.Navigation/NavigationPoint.cs:
 	* MonoDevelop.Ide.Navigation/NavigationHistoryItem.cs:

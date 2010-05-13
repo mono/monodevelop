@@ -643,7 +643,6 @@ namespace MonoDevelop.Ide.Gui
 				return false;
 
 			IdeApp.Workspace.SavePreferences ();
-			IdeApp.CommandService.Dispose ();
 
 			bool showDirtyDialog = false;
 
@@ -672,6 +671,9 @@ namespace MonoDevelop.Ide.Gui
 			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
 			IdeApp.OnExited ();
 			OnClosed (null);
+			
+			IdeApp.CommandService.Dispose ();
+			
 			return true;
 		}
 		
