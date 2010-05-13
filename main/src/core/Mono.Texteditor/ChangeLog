@@ -1,3 +1,9 @@
+2010-05-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.PopupWindow/ListWidget.cs: Draw on the
+	  expose event's Window. Also cache Allocation and GCs to
+	  avoid wasteful transitions and allocations.
+
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextMarker.cs: made the squiggly lines a bit
