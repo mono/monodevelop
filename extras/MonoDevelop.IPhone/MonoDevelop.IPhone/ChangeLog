@@ -1,5 +1,10 @@
 2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Templates/IPhoneLibraryProject.xpt.xml: Set anycpu as target
+	  plaform.
+
+2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Templates/IPhoneProjectEmpty.xpt.xml:
 	* Templates/IPhoneOpenGLProject.xpt.xml:
 	* Templates/IPhoneUtilityProject.xpt.xml:
