@@ -240,6 +240,7 @@ namespace MonoDevelop.IPhone
 			return CreateMergedPlist (monitor, conf, template, plistOut, 
 				(IPhoneProjectConfiguration config, PlistDocument doc) => 
 			{
+				var result = new BuildResult ();
 				var dict = doc.Root as PlistDictionary;
 				if (dict == null)
 					doc.Root = dict = new PropertyList.PlistDictionary ();
@@ -252,9 +253,30 @@ namespace MonoDevelop.IPhone
 				SetIfNotPresent (dict, "CFBundleDisplayName", proj.BundleDisplayName ?? proj.Name);
 				SetIfNotPresent (dict, "CFBundleExecutable", conf.NativeExe.FileName);
 				
-				FilePath icon = proj.BundleIcon.ToRelative (proj.BaseDirectory);
-				if (!(icon.IsNullOrEmpty || icon.ToString () == "."))
-					SetIfNotPresent (dict, "CFBundleIconFile", icon.FileName);
+				//iphone icons
+				if ((proj.SupportedDevices & TargetDevice.IPhone) != 0) {
+					if (!dict.ContainsKey ("CFBundleIconFile")) {
+						var icon = proj.BundleIcon.ToRelative (proj.BaseDirectory);
+						if (icon.IsNullOrEmpty || icon.ToString () == ".")
+							result.AddWarning ("Application bundle icon has not been set");
+						else
+							dict ["CFBundleIconFile"] = icon.FileName;
+					}
+				}
+				
+				//ipad and universal icons
+				if ((proj.SupportedDevices & TargetDevice.IPad) != 0 && !dict.ContainsKey ("CFBundleIconFiles")) {
+					var arr = new PlistArray ();
+					dict["CFBundleIconFiles"] = arr;
+					//universal only
+					if ((proj.SupportedDevices & TargetDevice.IPhone) != 0)
+						AddRelativeIfNotEmpty (proj, arr, proj.BundleIcon);
+					//ipad and universal
+					AddRelativeIfNotEmpty (proj, arr, proj.BundleIconSpotlight);
+					AddRelativeIfNotEmpty (proj, arr, proj.BundleIconIPadSpotlight);
+					if (!AddRelativeIfNotEmpty (proj, arr, proj.BundleIconIPad))
+						result.AddWarning ("iPad bundle icon has not been set");
+				}
 				
 				SetIfNotPresent (dict, "CFBundleIdentifier", identity.BundleID);
 				SetIfNotPresent (dict, "CFBundleInfoDictionaryVersion", "6.0");
@@ -275,22 +297,38 @@ namespace MonoDevelop.IPhone
 				
 				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchMinimumOSVersion);
 				
-				SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile");
+				if (!SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile"))
+					result.AddError ("The 'Main interface file' value in iPhone Application settings is empty");
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)
-					SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
+					if (!SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad"))
+						result.AddError ("The 'iPad interface file' value in iPhone Application settings is empty");
 				
-				return null;
+				return result;
 			});
 		}
 		
-		static void SetNibProperty (PlistDictionary dict, IPhoneProject proj, FilePath mainNibProp, string propName)
+		static bool AddRelativeIfNotEmpty (IPhoneProject proj, PlistArray arr, FilePath iconFullPath)
 		{
-			if (!mainNibProp.IsNullOrEmpty) {
-				string mainNib = mainNibProp.ToRelative (proj.BaseDirectory);
-				if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
-				    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
-				SetIfNotPresent (dict, propName, mainNib);
-			};
+			var icon = iconFullPath.ToRelative (proj.BaseDirectory).ToString ();
+			if (string.IsNullOrEmpty (icon) || icon == ".")
+				return false;
+			arr.Add (icon);
+			return true;
+		}
+		
+		static bool SetNibProperty (PlistDictionary dict, IPhoneProject proj, FilePath mainNibProp, string propName)
+		{
+			if (!dict.ContainsKey (propName)) {
+				if (mainNibProp.IsNullOrEmpty) {
+					return false;
+				} else {
+					string mainNib = mainNibProp.ToRelative (proj.BaseDirectory);
+					if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
+					    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
+					dict[propName] = mainNib;
+				}
+			}
+			return true;
 		}
 		
 		static PlistArray GetSupportedDevices (TargetDevice devices)

@@ -1,3 +1,8 @@
+2010-05-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs:
+	* Gui/IPhoneOptionsPanel.cs: Finished icon support.
+
 2010-05-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs:
