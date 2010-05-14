@@ -1,3 +1,8 @@
+2010-05-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: Fixed selection
+	  drawing error.
+
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:

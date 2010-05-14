@@ -268,7 +268,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!IsExpanded || DebuggingService.IsDebugging) 
 				return true;
-			
 			EnsureLayoutCreated (editor);
 //			CalculateLineFit (editor, layout2);
 			int x = editor.TextViewMargin.XOffset;
@@ -282,7 +281,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			int x2 = System.Math.Max (right - layouts[0].Width - border - errorPixbuf.Width - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
-			bool isEolSelected = editor.IsSomethingSelected ? editor.SelectionRange.Contains (lineSegment.EndOffset) : false;
+			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset  + lineSegment.EditableLength) : false;
 			bool isError = errors.Any (e => e.IsError);
 			
 			
