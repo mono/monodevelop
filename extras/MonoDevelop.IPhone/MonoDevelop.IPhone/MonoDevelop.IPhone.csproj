@@ -113,6 +113,7 @@
     <Compile Include="IPhoneSimulatorTarget.cs" />
     <Compile Include="IPhoneDeviceConsole.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs" />
+    <Compile Include="IPhoneSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

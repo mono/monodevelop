@@ -1,5 +1,15 @@
 2010-05-14  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneExecutionHandler.cs: Added the ability not to show the
+	  'start app on device' message again.
+
+	* Keychain.cs:
+	* IPhoneSettings.cs:
+	* IPhoneBuildExtension.cs:
+	* MonoDevelop.IPhone.csproj: Moved settings to a static class.
+
+2010-05-14  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs:
 	* Gui/IPhoneOptionsPanel.cs: Finished icon support.
 

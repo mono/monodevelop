@@ -1142,7 +1142,7 @@ namespace MonoDevelop.IPhone
 				bool sim = config.Platform == IPhoneProject.PLAT_SIM;
 				
 				try {
-					debuggerIP = GetDebuggerIP (sim);
+					debuggerIP = IPhoneSettings.GetDebuggerHostIP (sim);
 				} catch {
 					br.AddWarning (GettextCatalog.GetString ("Could not resolve host IP for debugger settings"));
 				}
@@ -1187,7 +1187,7 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_debug_port" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", DebuggerPort.ToString () }
+					{ "DefaultValue", IPhoneSettings.DebuggerPort.ToString () }
 				});
 					
 				arr.Add (new PlistDictionary (true) {
@@ -1196,39 +1196,11 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_output_port" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", DebuggerOutputPort.ToString () }
+					{ "DefaultValue", IPhoneSettings.DebuggerOutputPort.ToString () }
 				});
 				
 				return br;
 			});
-		}
-		
-		public static System.Net.IPAddress GetDebuggerIP (bool simulator)
-		{
-			if (simulator)
-				return System.Net.IPAddress.Loopback;
-			
-			var ipStr = MonoDevelop.Core.PropertyService.Get<string> ("MonoTouch.Debugger.HostIP", "");
-			try {
-				if (!string.IsNullOrEmpty (ipStr))
-					return System.Net.IPAddress.Parse (ipStr);
-			} catch (Exception e) {
-				LoggingService.LogInfo ("Error parsing Debugger HostIP: {0}: {1}", ipStr, e);
-			}
-			
-			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
-		}
-		
-		public static int DebuggerPort {
-			get {
-				return MonoDevelop.Core.PropertyService.Get<int> ("MonoTouch.Debugger.Port", 10000);
-			}
-		}
-		
-		public static int DebuggerOutputPort {
-			get {
-				return MonoDevelop.Core.PropertyService.Get<int> ("MonoTouch.Debugger.OutputPort", 10001);
-			}
 		}
 	}
 }

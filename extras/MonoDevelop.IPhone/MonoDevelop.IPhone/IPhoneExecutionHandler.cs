@@ -99,19 +99,35 @@ namespace MonoDevelop.IPhone
 			return psi;
 		}
 		
+		const string DoNotShowAgainKey = "DoNotShowAgain";
+
+		void TellUserToStartApplication ()
+		{
+			var message = new GenericMessage () {
+				Text = GettextCatalog.GetString ("Please Start Application"),
+				SecondaryText = GettextCatalog.GetString (
+					"The application has been built and uploaded, or is already up to date.\n" +
+					"Please start it by tapping the application icon on the device."),
+				Icon = "phone-apple-iphone",
+				DefaultButton = 0,
+			};
+			
+			message.AddOption (DoNotShowAgainKey, GettextCatalog.GetString ("Do not show this message again"),
+			                   !IPhoneSettings.ShowStartOnDeviceMessage);
+			message.Buttons.Add (AlertButton.Ok);
+			MessageService.GenericAlert (message);
+			IPhoneSettings.ShowStartOnDeviceMessage = !message.GetOptionValue (DoNotShowAgainKey);
+		}
+		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			IPhoneExecutionCommand cmd = (IPhoneExecutionCommand) command;
 			if (!cmd.Simulator) {
-				Gtk.Application.Invoke (delegate {
-					MessageService.GenericAlert (
-						"phone-apple-iphone", 
-						GettextCatalog.GetString ("Please Start Application"),
-						GettextCatalog.GetString (
-							"The application has been built and uploaded, or is already up to date.\n" +
-							"Please start it by tapping the application icon on the device."),
-						AlertButton.Ok);
-				});
+				if (IPhoneSettings.ShowStartOnDeviceMessage) {
+					Gtk.Application.Invoke (delegate {
+						TellUserToStartApplication ();
+					});
+				}
 				return NullProcessAsyncOperation.Success;
 			}
 			
