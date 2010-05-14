@@ -52,6 +52,20 @@ namespace MonoDevelop.SourceEditor
 			string tooltip = null;
 			if (result != null && ed.TextEditorResolverProvider != null) {
 				tooltip = ed.TextEditorResolverProvider.CreateTooltip (dom, unit, result, errorInformations, ambience, modifierState);
+				if (result.ResolveErrors.Count > 0) {
+					StringBuilder sb = new StringBuilder ();
+					sb.Append (tooltip);
+					sb.AppendLine ();
+					sb.AppendLine ();
+					sb.AppendLine (GettextCatalog.GetPluralString ("Error:", "Errors:", result.ResolveErrors.Count));
+					for (int i = 0; i < result.ResolveErrors.Count; i++) {
+						sb.Append ('\t');
+						sb.Append (result.ResolveErrors[i]);
+						if (i + 1 < result.ResolveErrors.Count) 
+							sb.AppendLine ();
+					}
+					tooltip = sb.ToString ();
+				}
 			} else {
 				tooltip = errorInformations;
 			}

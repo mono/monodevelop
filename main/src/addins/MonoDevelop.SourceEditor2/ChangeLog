@@ -1,5 +1,10 @@
 2010-05-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/LanguageItemWindow.cs: Display
+	  resolve errors in the tooltip.
+
+2010-05-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: Fixed selection
 	  drawing error.
 
