@@ -2068,8 +2068,9 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			// Draw remaining line
-			if (line.EndOffset - offset > 0)
+			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon 
+			// and the caret position is calculated in DrawLinePart.
+			if (line.EndOffset - offset >= 0)
 				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
 			
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
