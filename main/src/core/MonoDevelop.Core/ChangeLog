@@ -1,3 +1,8 @@
+2010-05-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Resolve results
+	  can now contain errors.
+
 2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs:

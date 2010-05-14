@@ -70,6 +70,13 @@ namespace MonoDevelop.Projects.Dom
 			get { yield return this; }
 		}
 		
+		List<string> resolveErrors = new List<string> ();
+		public List<string> ResolveErrors {
+			get {
+				return resolveErrors;
+			}
+		}
+		
 		public ResolveResult () : this (false)
 		{
 		}
