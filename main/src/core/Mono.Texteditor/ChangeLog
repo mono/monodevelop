@@ -1,3 +1,8 @@
+2010-05-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Improve the tooltip handling
+	  code so that it doesn't create so many glib timeouts. 
+
 2010-05-14  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 604978 - Error

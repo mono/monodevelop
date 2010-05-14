@@ -2015,7 +2015,7 @@ namespace Mono.TextEditor
 		#region Tooltips
 		
 		// Tooltip fields
-		const int TooltipTimer = 200;
+		const int TooltipTimeout = 650;
 		TooltipItem tipItem;
 		
 		int tipX, tipY;
@@ -2025,10 +2025,17 @@ namespace Mono.TextEditor
 		List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
 		ITooltipProvider currentTooltipProvider;
 		
+		// Data for the next tooltip to be shown
+		int nextTipOffset = 0;
+		int nextTipX=0; int nextTipY=0;
+		Gdk.ModifierType nextTipModifierState = ModifierType.None;
+		DateTime nextTipScheduledTime; // Time at which we want the tooltip to show
+		
 		public List<ITooltipProvider> TooltipProviders {
 			get { return tooltipProviders; }
 		}
 		
+
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
 			ShowTooltip (modifierState, 
@@ -2050,49 +2057,75 @@ namespace Mono.TextEditor
 			}
 			if (tipItem != null && tipItem.ItemSegment != null && !tipItem.ItemSegment.Contains (offset)) 
 				HideTooltip ();
-			tipShowTimeoutId = GLib.Timeout.Add (650, delegate {
-				// Find a provider
-				ITooltipProvider provider = null;
-				TooltipItem item = null;
-				
-				foreach (ITooltipProvider tp in tooltipProviders) {
-					try {
-						item = tp.GetItem (this, offset);
-					} catch (Exception e) {
-						System.Console.WriteLine ("Exception in tooltip provider " + tp + " GetItem:");
-						System.Console.WriteLine (e);
-					}
-					if (item != null) {
-						provider = tp;
-						break;
-					}
+			
+			nextTipX = xloc;
+			nextTipY = yloc;
+			nextTipOffset = offset;
+			nextTipModifierState = modifierState;
+			nextTipScheduledTime = DateTime.Now + TimeSpan.FromMilliseconds (TooltipTimeout);
+
+			// If a tooltip is already scheduled, there is no need to create a new timer.
+			if (tipShowTimeoutId == 0)
+				tipShowTimeoutId = GLib.Timeout.Add (TooltipTimeout, TooltipTimer);
+		}
+		
+		bool TooltipTimer ()
+		{
+			// This timer can't be reused, so reset the var now
+			tipShowTimeoutId = 0;
+			
+			// Cancelled?
+			if (nextTipOffset == -1)
+				return false;
+			
+			int remainingMs = (int) (nextTipScheduledTime - DateTime.Now).TotalMilliseconds;
+			if (remainingMs > 50) {
+				// Still some significant time left. Re-schedule the timer
+				tipShowTimeoutId = GLib.Timeout.Add ((uint) remainingMs, TooltipTimer);
+				return false;
+			}
+			
+			// Find a provider
+			ITooltipProvider provider = null;
+			TooltipItem item = null;
+			
+			foreach (ITooltipProvider tp in tooltipProviders) {
+				try {
+					item = tp.GetItem (this, nextTipOffset);
+				} catch (Exception e) {
+					System.Console.WriteLine ("Exception in tooltip provider " + tp + " GetItem:");
+					System.Console.WriteLine (e);
+				}
+				if (item != null) {
+					provider = tp;
+					break;
+				}
+			}
+			
+			if (item != null) {
+				// Tip already being shown for this item?
+				if (tipWindow != null && tipItem != null && tipItem.Equals (item)) {
+					CancelScheduledHide ();
+					return false;
 				}
 				
-				if (item != null) {
-					// Tip already being shown for this item?
-					if (tipWindow != null && tipItem != null && tipItem.Equals (item)) {
-						CancelScheduledHide ();
-						return false;
-					}
-					
-					tipX = xloc;
-					tipY = yloc;
-					tipItem = item;
-					
-					Gtk.Window tw = provider.CreateTooltipWindow (this, offset, modifierState, item);
-					if (tw == tipWindow)
-						return false;
-					HideTooltip ();
-					if (tw == null)
-						return false;
-					
-					CancelSheduledShow ();
-					DoShowTooltip (provider, tw, tipX, tipY);
-					tipShowTimeoutId = 0;
-				} else
-					HideTooltip ();
-				return false;
-			});
+				tipX = nextTipX;
+				tipY = nextTipY;
+				tipItem = item;
+				
+				Gtk.Window tw = provider.CreateTooltipWindow (this, nextTipOffset, nextTipModifierState, item);
+				if (tw == tipWindow)
+					return false;
+				HideTooltip ();
+				if (tw == null)
+					return false;
+				
+				CancelSheduledShow ();
+				DoShowTooltip (provider, tw, tipX, tipY);
+				tipShowTimeoutId = 0;
+			} else
+				HideTooltip ();
+			return false;
 		}
 		
 		void DoShowTooltip (ITooltipProvider provider, Gtk.Window liw, int xloc, int yloc)
@@ -2156,10 +2189,8 @@ namespace Mono.TextEditor
 		
 		void CancelSheduledShow ()
 		{
-			if (tipShowTimeoutId != 0) {
-				GLib.Source.Remove (tipShowTimeoutId);
-				tipShowTimeoutId = 0;
-			}
+			// Don't remove the timeout handler since it may be reused
+			nextTipOffset = -1;
 		}
 		
 		void OnDocumentStateChanged (object s, EventArgs a)
@@ -2406,6 +2437,7 @@ namespace Mono.TextEditor
 		{
 			int logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
 			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
+			
 			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
 				if (logicalLineSegment != null && extendedTextMarkerLine.Offset >= logicalLineSegment.Offset)
 					continue;
@@ -2414,7 +2446,8 @@ namespace Mono.TextEditor
 					logicalLine -= curLineHeight / LineHeight;
 					logicalLineSegment = Document.GetLine (logicalLine - 1);
 				}
-			} 
+			}
+			
 			return logicalLine;
 		}
 		
