@@ -1,3 +1,9 @@
+2010-05-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug
+	  605235 - Inaccessible functions do not show "Goto
+	  Declaration" in context menu'.
+
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:

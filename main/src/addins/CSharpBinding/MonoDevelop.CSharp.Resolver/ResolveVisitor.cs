@@ -36,6 +36,8 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Refactoring;
+using MonoDevelop.CSharp.Completion;
+using MonoDevelop.Projects.Dom.Output;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -514,7 +516,7 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			return null;
 		}
-		
+		static MonoDevelop.CSharp.Dom.CSharpAmbience ambience = new MonoDevelop.CSharp.Dom.CSharpAmbience ();
 		ResolveResult ResolveMemberReference (ResolveResult result, MemberReferenceExpression memberReferenceExpression)
 		{
 			IType type = resolver.Dom.GetType (result.ResolvedType);
@@ -546,6 +548,7 @@ namespace MonoDevelop.CSharp.Resolver
 				if (member[0] is IMethod) {
 					bool isStatic = result.StaticResolve;
 					List<IMember> nonMethodMembers = new List<IMember> ();
+					List<string> errors = new List<string> ();
 					int typeParameterCount = 0;
 					if (memberReferenceExpression.TypeArguments != null)
 						typeParameterCount = memberReferenceExpression.TypeArguments.Count;
@@ -554,10 +557,15 @@ namespace MonoDevelop.CSharp.Resolver
 						IMethod method = member[i] as IMethod;
 						if (method == null)
 							nonMethodMembers.Add (member[i]);
-						if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended) && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true))
+						
+						if (!member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected))
+							errors.Add (string.Format (MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to it's protection level."), ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics)));
+						
+						if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended)/* && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true)*/) {
 							continue;
+						}
 						if ((member[i].IsStatic ^ isStatic) || 
-						    !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || 
+/*						    !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || */
 						    (method != null && (method.IsFinalizer || typeParameterCount > 0 && method.TypeParameters.Count != typeParameterCount))) {
 							member.RemoveAt (i);
 							i--;
@@ -569,6 +577,7 @@ namespace MonoDevelop.CSharp.Resolver
 					((MethodResolveResult)result).Type = type;
 					result.CallingType   = resolver.CallingType;
 					result.CallingMember = resolver.CallingMember;
+					result.ResolveErrors.AddRange (errors);
 					//result.StaticResolve = isStatic;
 					//result.UnresolvedType = result.ResolvedType  = member[0].ReturnType;
 					foreach (TypeReference typeReference in memberReferenceExpression.TypeArguments) {
@@ -591,6 +600,9 @@ namespace MonoDevelop.CSharp.Resolver
 					result = CreateResult (member[0].DeclaringType.CompilationUnit, member[0].ReturnType);
 					((MemberResolveResult)result).ResolvedMember = member[0];
 				}
+				if (!member[0].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected))
+					result.ResolveErrors.Add (string.Format (MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to it's protection level."), ambience.GetString (member[0], OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics)));
+			
 				return result;
 			}
 			return new UnresolvedMemberResolveResult (result, memberReferenceExpression.MemberName) {
