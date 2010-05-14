@@ -1,5 +1,15 @@
 2010-05-13  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* Gui/IPhoneOptionsPanel.cs:
+	* MonoDevelop.IPhone.csproj:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	  Add settings for more icons (currently unused).
+
+2010-05-13  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs: Overwrite the C# platform target in case
 	  it's been mistakenly set to x86 by older MD versions.
 

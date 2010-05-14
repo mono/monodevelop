@@ -96,7 +96,6 @@
     <Compile Include="InterfaceBuilder\IBConnectionRecord.cs" />
     <Compile Include="InterfaceBuilder\Collections.cs" />
     <Compile Include="InterfaceBuilder\IBObjectRecord.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs" />
     <Compile Include="Keychain.cs" />
     <Compile Include="Gui\IPhoneSigningKeyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs" />
@@ -113,6 +112,7 @@
     <Compile Include="IPhoneSdkVersion.cs" />
     <Compile Include="IPhoneSimulatorTarget.cs" />
     <Compile Include="IPhoneDeviceConsole.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

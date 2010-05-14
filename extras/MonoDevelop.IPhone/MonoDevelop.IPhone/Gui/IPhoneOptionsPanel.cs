@@ -30,16 +30,17 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.IPhone.Gui
 {
 	public class IPhoneOptionsPanel : ItemOptionsPanel
 	{
-		IPhoneOptionsPanelWidget panel;
+		IPhoneOptionsWidget panel;
 		
 		public override Widget CreatePanelWidget ()
 		{
-			panel = new IPhoneOptionsPanelWidget ();
+			panel = new IPhoneOptionsWidget ();
 			panel.Load ((IPhoneProject) ConfiguredProject);
 			return panel;
 		}
@@ -56,10 +57,10 @@ namespace MonoDevelop.IPhone.Gui
 		}
 	}
 
-	internal partial class IPhoneOptionsPanelWidget : Gtk.Bin
+	internal partial class IPhoneOptionsWidget : Gtk.Bin
 	{
 
-		public IPhoneOptionsPanelWidget ()
+		public IPhoneOptionsWidget ()
 		{
 			this.Build ();
 			targetDevicesCombo.Changed += HandleTargetDevicesComboChanged;
@@ -108,10 +109,17 @@ namespace MonoDevelop.IPhone.Gui
 			
 			HandleTargetDevicesComboChanged (null, null);
 			
-			appIconPicker.Project = proj;
-			appIconPicker.DefaultFilter = "*.png";
-			appIconPicker.DialogTitle = GettextCatalog.GetString ("Select application icon...");
-			appIconPicker.SelectedFile = proj.BundleIcon.ToString () ?? "";
+			ProjectFileEntry [] pickers = { iphoneIconPicker, ipadIconPicker, settingsIconPicker, ipadSpotlightIconPicker };
+			foreach (var p in pickers) {
+				p.Project = proj;
+				p.DefaultFilter = "*.png";
+				p.DialogTitle = GettextCatalog.GetString ("Select icon...");
+			}
+			
+			iphoneIconPicker.SelectedFile = proj.BundleIcon.ToString () ?? "";
+			ipadIconPicker.SelectedFile = proj.BundleIconIPad.ToString () ?? "";
+			settingsIconPicker.SelectedFile = proj.BundleIconSpotlight.ToString () ?? "";
+			ipadSpotlightIconPicker.SelectedFile = proj.BundleIconIPadSpotlight.ToString () ?? "";
 		}
 		
 		public void Store (IPhoneProject proj)
@@ -122,7 +130,11 @@ namespace MonoDevelop.IPhone.Gui
 			proj.BundleDisplayName = NullIfEmpty (displayNameEntry.Text);
 			proj.MainNibFile = NullIfEmpty (mainNibPicker.SelectedFile);
 			proj.MainNibFileIPad = NullIfEmpty (iPadNibPicker.SelectedFile);
-			proj.BundleIcon = NullIfEmpty (appIconPicker.SelectedFile);
+			
+			proj.BundleIcon = NullIfEmpty (iphoneIconPicker.SelectedFile);
+			proj.BundleIconIPad = NullIfEmpty (ipadIconPicker.SelectedFile);
+			proj.BundleIconSpotlight = NullIfEmpty (settingsIconPicker.SelectedFile);
+			proj.BundleIconIPadSpotlight = NullIfEmpty (ipadSpotlightIconPicker.SelectedFile);
 			
 			switch (targetDevicesCombo.Active) {
 			case 0:

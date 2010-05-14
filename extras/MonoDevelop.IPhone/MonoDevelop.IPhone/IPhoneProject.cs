@@ -79,6 +79,15 @@ namespace MonoDevelop.IPhone
 		[ProjectPathItemProperty ("BundleIcon")]
 		string bundleIcon;
 		
+		[ProjectPathItemProperty ("BundleIconIPad")]
+		string bundleIconIPad;
+		
+		[ProjectPathItemProperty ("BundleIconSpotlight")]
+		string bundleIconSpotlight;
+		
+		[ProjectPathItemProperty ("BundleIconIPadSpotlight")]
+		string bundleIconIPadSpotlight;
+		
 		public override string ProjectType {
 			get { return "IPhone"; }
 		}
@@ -168,6 +177,36 @@ namespace MonoDevelop.IPhone
 					return;
 				NotifyModified ("BundleIcon");
 				bundleIcon = value;
+			}
+		}
+		
+		public FilePath BundleIconIPad {
+			get { return bundleIconIPad; }
+			set {
+				if (value == (FilePath) bundleIconIPad)
+					return;
+				NotifyModified ("BundleIconIPad");
+				bundleIconIPad = value;
+			}
+		}
+		
+		public FilePath BundleIconSpotlight {
+			get { return bundleIconSpotlight; }
+			set {
+				if (value == (FilePath) bundleIconSpotlight)
+					return;
+				NotifyModified ("BundleIconSpotlight");
+				bundleIconSpotlight = value;
+			}
+		}
+		
+		public FilePath BundleIconIPadSpotlight {
+			get { return bundleIconIPadSpotlight; }
+			set {
+				if (value == (FilePath) bundleIconIPadSpotlight)
+					return;
+				NotifyModified ("BundleIconIPadSpotlight");
+				bundleIconIPadSpotlight = value;
 			}
 		}
 		
