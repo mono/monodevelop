@@ -1315,6 +1315,10 @@ namespace Mono.TextEditor
 			int startLine = CalculateLineNumber (area.Top - reminder + (int)this.textEditorData.VAdjustment.Value);
 			
 			int startY = LineToVisualY (startLine);
+			if (area.Top == 0 && startY > 0) {
+				startLine--;
+				startY -= GetLineHeight (Document.GetLine (startLine));
+			}
 			int curX = 0;
 			int curY = startY - (int)this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
@@ -2402,17 +2406,15 @@ namespace Mono.TextEditor
 		{
 			int logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
 			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
-			
 			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
 				if (logicalLineSegment != null && extendedTextMarkerLine.Offset >= logicalLineSegment.Offset)
 					continue;
 				int curLineHeight = GetLineHeight (extendedTextMarkerLine) - LineHeight;
 				if (curLineHeight != 0) {
 					logicalLine -= curLineHeight / LineHeight;
-					logicalLineSegment = Document.GetLine (logicalLine);
+					logicalLineSegment = Document.GetLine (logicalLine - 1);
 				}
-			}
-			
+			} 
 			return logicalLine;
 		}
 		

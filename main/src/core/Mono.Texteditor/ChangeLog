@@ -1,5 +1,10 @@
 2010-05-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 604978 - Error
+	  bubbles prevent mouse clicking to move cursor'.
+
+2010-05-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 605710 - Caret
 	  not deleted when clicking out of the text area'.
 
