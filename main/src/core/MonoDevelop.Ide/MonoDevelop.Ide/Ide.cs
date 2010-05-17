@@ -42,6 +42,7 @@ using System.Linq;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
+using MonoDevelop.Components.AutoTest;
 
 namespace MonoDevelop.Ide
 {
@@ -146,6 +147,7 @@ namespace MonoDevelop.Ide
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
 			CustomToolService.Init ();
+			AutoTestService.Start (commandService);
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
 			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
@@ -275,6 +277,7 @@ namespace MonoDevelop.Ide
 			IdeApp.Preferences.EnableInstrumentationChanged += delegate {
 				UpdateInstrumentationIcon ();
 			};
+			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell

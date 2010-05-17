@@ -1359,6 +1359,9 @@
     <Compile Include="MonoDevelop.Ide.Navigation\NavigationHistoryItem.cs" />
     <Compile Include="MonoDevelop.Ide.Navigation\NavigationPoint.cs" />
     <Compile Include="MonoDevelop.Ide.Navigation\HistoryList.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AutoTestService.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSession.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AutoTestClientSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1420,5 +1423,6 @@
     <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
     <Folder Include="MonoDevelop.Ide.NavigateToDialog\" />
     <Folder Include="MonoDevelop.Ide.Navigation\" />
+    <Folder Include="MonoDevelop.Components.AutoTest\" />
   </ItemGroup>
 </Project>

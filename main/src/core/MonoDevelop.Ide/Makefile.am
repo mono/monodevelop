@@ -94,6 +94,9 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.SelectReferenceDialog.cs \
 	gtk-gui/MonoDevelop.Ide.SelectEncodingsDialog.cs \
 	gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs \
+	MonoDevelop.Components.AutoTest/AutoTestClientSession.cs \
+	MonoDevelop.Components.AutoTest/AutoTestService.cs \
+	MonoDevelop.Components.AutoTest/AutoTestSession.cs \
 	MonoDevelop.Components.Chart/Axis.cs \
 	MonoDevelop.Components.Chart/AxisDimension.cs \
 	MonoDevelop.Components.Chart/AxisPosition.cs \

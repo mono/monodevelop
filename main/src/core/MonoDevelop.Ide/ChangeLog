@@ -1,5 +1,18 @@
 2010-05-17  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide/Ide.cs:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Components.AutoTest:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.AutoTest/AutoTestSession.cs:
+	* MonoDevelop.Components.AutoTest/AutoTestService.cs:
+	* MonoDevelop.Components.AutoTest/AutoTestClientSession.cs:
+	  Added some experimental and basic support for automated gui
+	  testing.
+
+2010-05-17  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Emit the Closed
 	  event before disposing the view. In this way other
 	  extensions can properly unsubsribe events bound to the view.

@@ -502,6 +502,8 @@ namespace MonoDevelop.Components.Commands
 			if (guiLock > 0)
 				return false;
 
+			commandId = CommandManager.ToCommandId (commandId);
+			
 			List<HandlerCallback> handlers = new List<HandlerCallback> ();
 			ActionCommand cmd = null;
 			try {
@@ -621,6 +623,7 @@ namespace MonoDevelop.Components.Commands
 		
 		public CommandInfo GetCommandInfo (object commandId, CommandTargetRoute targetRoute)
 		{
+			commandId = CommandManager.ToCommandId (commandId);
 			ActionCommand cmd = GetActionCommand (commandId);
 			if (cmd == null)
 				throw new InvalidOperationException ("Invalid action command id: " + commandId);
