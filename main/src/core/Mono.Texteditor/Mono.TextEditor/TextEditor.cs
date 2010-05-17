@@ -580,6 +580,8 @@ namespace Mono.TextEditor
 				return;
 			this.isDisposed = true;
 			
+			DisposeAnimations ();
+			
 			RemoveScrollWindowTimer ();
 			if (invisibleCursor != null) {
 				invisibleCursor.Dispose ();
@@ -2330,6 +2332,25 @@ namespace Mono.TextEditor
 		{
 			animationStage.ActorStep += OnAnimationActorStep;
 			animationStage.Iteration += OnAnimationIteration;
+		}
+		
+		void DisposeAnimations ()
+		{
+			if (animationStage != null) {
+				animationStage.Playing = false;
+				animationStage.ActorStep -= OnAnimationActorStep;
+				animationStage.Iteration -= OnAnimationIteration;
+				animationStage = null;
+			}
+			
+			if (actors != null) {
+				foreach (Animation actor in actors) {
+					if (actor is IDisposable)
+						((IDisposable)actor).Dispose ();
+				}
+				actors.Clear ();
+				actors = null;
+			}
 		}
 		
 		Animation StartAnimation (IAnimationDrawer drawer)
