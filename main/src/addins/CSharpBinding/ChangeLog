@@ -1,5 +1,11 @@
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  Fixed 'Bug 606217 - Auto-placed semi-colon doesn't take
+	  account of comments'
+
+2010-05-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Fixed 'Bug 606048 - Parameter insight re-shows on every
 	  newline even when disabled'.

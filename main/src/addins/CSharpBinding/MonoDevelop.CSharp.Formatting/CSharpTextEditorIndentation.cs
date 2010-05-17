@@ -205,11 +205,14 @@ namespace MonoDevelop.CSharp.Formatting
 				string text = TextEditorData.Document.GetTextAt (curLine);
 				if (text.EndsWith (";") || text.Trim ().StartsWith ("for"))
 					return retval;
-				if (curLine.Offset + curLine.EditableLength != TextEditorData.Caret.Offset) {
+				
+				int guessedOffset = GuessSemicolonInsertionOffset (TextEditorData, curLine);
+				
+				if (guessedOffset != TextEditorData.Caret.Offset) {
 					TextEditorData.Document.EndAtomicUndo ();
 					TextEditorData.Document.BeginAtomicUndo ();
 					TextEditorData.Remove (TextEditorData.Caret.Offset - 1, 1);
-					TextEditorData.Caret.Offset = curLine.Offset + curLine.EditableLength;
+					TextEditorData.Caret.Offset = guessedOffset;
 					lastInsertedSemicolon = TextEditorData.Caret.Offset + 1;
 					retval = base.KeyPress (key, keyChar, modifier);
 				}
@@ -294,6 +297,70 @@ namespace MonoDevelop.CSharp.Formatting
 			//and calls HandleCodeCompletion etc to handles completion
 			return base.KeyPress (key, keyChar, modifier);
 		}
+
+		static int GuessSemicolonInsertionOffset (TextEditorData data, LineSegment curLine)
+		{
+			int offset = data.Caret.Offset;
+			int lastNonWsOffset = offset;
+			
+			int max = curLine.Offset + curLine.EditableLength;
+			
+			bool isInString = false, isInChar = false, isVerbatimString = false;
+			bool isInLineComment  = false, isInBlockComment = false;
+			
+			for (int pos = offset; pos < max; pos++) {
+				char ch = data.Document.GetCharAt (pos);
+				switch (ch) {
+				case '/':
+					if (isInBlockComment) {
+						if (pos > 0 && data.Document.GetCharAt (pos - 1) == '*') 
+							isInBlockComment = false;
+					} else  if (!isInString && !isInChar && pos + 1 < max) {
+						char nextChar = data.Document.GetCharAt (pos + 1);
+						if (nextChar == '/') {
+							isInLineComment = true;
+							return lastNonWsOffset;
+						}
+						if (!isInLineComment && nextChar == '*') {
+							isInBlockComment = true;
+							return lastNonWsOffset;
+						}
+					}
+					break;
+				case '\\':
+					if (isInChar || (isInString && !isVerbatimString))
+						pos++;
+					break;
+				case '@':
+					if (!(isInString || isInChar || isInLineComment || isInBlockComment) && pos + 1 < max && data.Document.GetCharAt (pos + 1) == '"') {
+						isInString = true;
+						isVerbatimString = true;
+						pos++;
+					}
+					break;
+				case '"':
+					if (!(isInChar || isInLineComment || isInBlockComment)) {
+						if (isInString && isVerbatimString && pos + 1 < max && data.Document.GetCharAt (pos + 1) == '"') {
+							pos++;
+						} else {
+							isInString = !isInString;
+							isVerbatimString = false;
+						}
+					}
+					break;
+				case '\'':
+					if (!(isInString || isInLineComment || isInBlockComment)) 
+						isInChar = !isInChar;
+					break;
+				}
+				if (!char.IsWhiteSpace (ch))
+					lastNonWsOffset = pos;
+			}
+			
+			return lastNonWsOffset;
+			
+		}
+
 		
 		static char TranslateKeyCharForIndenter (Gdk.Key key, char keyChar, char docChar)
 		{
@@ -321,8 +388,8 @@ namespace MonoDevelop.CSharp.Formatting
 			if (ch == '"') {
 				int sgn = Math.Sign (end - start);
 				bool foundPlus = false;
-				for (int i = start + sgn; i != end && i >= 0 && i < Editor.TextLength; i += sgn) {
-					ch = Editor.GetCharAt (i);
+				for (int max = start + sgn; max != end && max >= 0 && max < Editor.TextLength; max += sgn) {
+					ch = Editor.GetCharAt (max);
 					if (Char.IsWhiteSpace (ch))
 						continue;
 					if (ch == '+') {
@@ -333,10 +400,10 @@ namespace MonoDevelop.CSharp.Formatting
 						if (!foundPlus)
 							break;
 						if (sgn < 0) {
-							Editor.DeleteText (i, start - i);
-							Editor.CursorPosition = i + 1;
+							Editor.DeleteText (max, start - max);
+							Editor.CursorPosition = max + 1;
 						} else {
-							Editor.DeleteText (start + sgn, i - start);
+							Editor.DeleteText (start + sgn, max - start);
 							Editor.CursorPosition = start;
 						}
 						break;
@@ -443,8 +510,8 @@ namespace MonoDevelop.CSharp.Formatting
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
 			LineSegment line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 
-			for (int i = line.Offset; i < line.Offset + line.EditableLength; i++) {
-				ctx.Push (textEditorData.Document.GetCharAt (i));
+			for (int max = line.Offset; max < line.Offset + line.EditableLength; max++) {
+				ctx.Push (textEditorData.Document.GetCharAt (max));
 			}
 			
 			int pos = line.Offset;
