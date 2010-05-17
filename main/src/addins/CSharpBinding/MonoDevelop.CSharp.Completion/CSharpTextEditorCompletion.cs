@@ -152,15 +152,14 @@ namespace MonoDevelop.CSharp.Completion
 			
 			if (stateTracker.Engine.IsInsideComment) {
 				ParameterInformationWindowManager.HideWindow ();
-			} else {
+			}/* else {
 				int cpos;
 				if (key == Gdk.Key.Return && CanRunParameterCompletionCommand () && GetParameterCompletionCommandOffset (out cpos))  {
 					base.RunParameterCompletionCommand ();
 					ParameterInformationWindowManager.CurrentCodeCompletionContext = Editor.CurrentCodeCompletionContext;
 					ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
 				}
-					
-			}
+			}*/
 			return result;
 		}
 		
