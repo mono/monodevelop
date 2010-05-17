@@ -154,7 +154,6 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
 				UpdateBreakpoints ();
 				int oldHeight;
-				Console.WriteLine (e.Line.Offset);
 				if (ErrorTextMarker.RemoveLine (e.Line, out oldHeight)) {
 					ErrorTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
