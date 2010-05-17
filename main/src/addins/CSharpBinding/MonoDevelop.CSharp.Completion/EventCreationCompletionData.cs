@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -94,7 +95,9 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (indent);
 			if (callingMember.IsStatic)
 				sb.Append ("static ");
-			sb.Append ("void ");sb.Append (this.DisplayText);sb.Append (' ');sb.Append (this.parameterList);sb.AppendLine ();
+			sb.Append ("void ");
+			int pos2 = sb.Length;
+			sb.Append (this.DisplayText);sb.Append (' ');sb.Append (this.parameterList);sb.AppendLine ();
 			sb.Append (indent);sb.Append ("{");sb.AppendLine ();
 			sb.Append (indent);sb.Append (TextEditorProperties.IndentString);
 			int cursorPos = pos + sb.Length;
@@ -102,7 +105,20 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (indent);sb.Append ("}");
 			editor.Insert (pos, sb.ToString ());
 			editor.Caret.Offset = cursorPos;
+			
+			// start text link mode after insert
+			List<TextLink> links = new List<TextLink> ();
+			TextLink link = new TextLink ("name");
+			link.AddLink (new Segment (0, this.DisplayText.Length));
+			link.AddLink (new Segment (pos + pos2 - initialOffset, this.DisplayText.Length));
+			links.Add (link);
+			
+			TextLinkEditMode tle = new TextLinkEditMode (editor.Parent, initialOffset, links);
+			tle.SetCaretPosition = true;
+			tle.SelectPrimaryLink = true;
+			tle.OldMode = editor.CurrentMode;
+			tle.StartMode ();
+			editor.CurrentMode = tle;
 		}
-		
 	}
 }

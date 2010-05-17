@@ -439,10 +439,9 @@ namespace MonoDevelop.CSharp.Completion
 					if (resolveResult is MemberResolveResult) {
 						MemberResolveResult mrr = resolveResult as MemberResolveResult;
 						IEvent evt = mrr.ResolvedMember as IEvent;
-						
 						if (evt == null)
 							return null;
-						IType delegateType = dom.GetType (evt.ReturnType);
+						IType delegateType = resolver.SearchType (evt.ReturnType);
 						if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
 							return null;
 						CompletionDataList completionList = new ProjectDomCompletionDataList ();

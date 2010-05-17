@@ -1,6 +1,13 @@
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs:
+	  Fixed 'Bug 606212 - Allow delegate renaming straight after
+	  creation'.
+
+2010-05-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Implemented 'Bug 606227 - Search reodering not available for
 	  "override" completions.'.
 
