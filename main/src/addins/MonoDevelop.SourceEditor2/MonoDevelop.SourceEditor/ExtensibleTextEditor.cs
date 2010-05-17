@@ -1030,6 +1030,17 @@ namespace MonoDevelop.SourceEditor
 			RunAction (MiscActions.RecenterEditor);
 		}
 		
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine)]
+		internal void JoinLines ()
+		{
+			try {
+				Document.BeginAtomicUndo ();
+				RunAction (Mono.TextEditor.Vi.ViActions.Join);
+			} finally {
+				Document.EndAtomicUndo ();
+			}
+		}
+		
 #endregion
 		
 	}
