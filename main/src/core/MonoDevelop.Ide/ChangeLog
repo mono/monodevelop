@@ -1,3 +1,9 @@
+2010-05-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs: Emit the Closed
+	  event before disposing the view. In this way other
+	  extensions can properly unsubsribe events bound to the view.
+
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:

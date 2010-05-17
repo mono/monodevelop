@@ -306,6 +306,7 @@ namespace MonoDevelop.Ide.Gui
 			} else {
 				workbench.RemoveTab (pageNum);
 			}
+			OnClosed (args);
 			
 			content.ContentNameChanged -= new EventHandler(SetTitleEvent);
 			content.DirtyChanged       -= new EventHandler(SetTitleEvent);
@@ -327,7 +328,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			this.subViewToolbar = null;
 			this.separatorItem = null;
-			OnClosed (args);
 			
 			this.content = null;
 			this.subViewNotebook = null;
