@@ -238,6 +238,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public KeyActions ProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			switch (key) {
+			case Gdk.Key.Home:
+				List.Selection = 0;
+				return KeyActions.Ignore;
+			case Gdk.Key.End:
+				List.Selection = List.filteredItems.Count - 1;
+				return KeyActions.Ignore;
+				
 			case Gdk.Key.Up:
 				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
 					if (!SelectionEnabled && !CompletionWindowManager.ForceSuggestionMode)
@@ -329,10 +336,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			case Gdk.Key.Escape:
 				return KeyActions.CloseWindow | KeyActions.Ignore;
-
-			case Gdk.Key.Home:
-			case Gdk.Key.End:
-				return KeyActions.CloseWindow | KeyActions.Process;
 
 			case Gdk.Key.Control_L:
 			case Gdk.Key.Control_R:

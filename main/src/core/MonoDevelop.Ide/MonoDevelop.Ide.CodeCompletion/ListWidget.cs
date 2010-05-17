@@ -187,6 +187,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			return result;
 		}
+		
 		public void MoveToCategory (int relative)
 		{
 			int current = CurrentCategory ();
@@ -211,12 +212,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void MoveCursor (int relative)
 		{
 			int newIndex = GetIndex (false, Selection) + relative;
-			if (Math.Abs (relative) == 1) {
+		/*	if (Math.Abs (relative) == 1) {
 				if (newIndex < 0)
 					newIndex = filteredItems.Count - 1;
 				if (newIndex >= filteredItems.Count)
 					newIndex = 0;
-			}
+			}*/
 			int newSelection = GetItem (false, System.Math.Min (filteredItems.Count - 1, System.Math.Max (0, newIndex)));
 			if (newSelection < 0) 
 				return;
