@@ -180,6 +180,9 @@ namespace Mono.TextEditor
 				for (int i = 0; i < value.Length; i++) {
 					char ch = value[i];
 					switch (ch) {
+					case '\u00A0': // convert non breaking spaces to standard spaces.
+						sb.Append (' ');
+						break;
 					case '\t':
 						if (convertTabs) {
 							int tabWidth = TextViewMargin.GetNextTabstop (this, loc.Column) - loc.Column;

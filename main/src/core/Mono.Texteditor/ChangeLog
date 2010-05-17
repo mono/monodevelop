@@ -1,5 +1,10 @@
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs: Improved type flow on the
+	  mac: convert non breaking space -> standard space.
+
+2010-05-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Dispose animations & fixing
 	  'Bug 606206 - Null ref in highlighting'.
 
