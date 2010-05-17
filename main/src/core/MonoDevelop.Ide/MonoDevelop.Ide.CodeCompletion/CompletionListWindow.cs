@@ -85,7 +85,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			HideDeclarationView ();
-			RemoveDeclarationViewTimer ();
 			
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Destroy ();
@@ -447,6 +446,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void HideDeclarationView ()
 		{
+			RemoveDeclarationViewTimer ();
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Hide ();
 				declarationviewwindow.Opacity = 0;
@@ -457,7 +457,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void RemoveDeclarationViewTimer ()
 		{
-			if (declarationViewHidden && declarationViewWindowOpacityTimer != 0) {
+			if (declarationViewWindowOpacityTimer != 0) {
 				GLib.Source.Remove (declarationViewWindowOpacityTimer);
 				declarationViewWindowOpacityTimer = 0;
 			}
