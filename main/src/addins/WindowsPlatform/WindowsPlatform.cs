@@ -126,7 +126,8 @@ namespace MonoDevelop.Platform
 			
 			var psi = new ProcessStartInfo ("cmd.exe", args) {
 				CreateNoWindow = true,
-				WorkingDirectory = workingDirectory
+				WorkingDirectory = workingDirectory,
+				UseShellExecute = false,
 			};
 			foreach (var env in environmentVariables)
 				psi.EnvironmentVariables [env.Key] = env.Value;

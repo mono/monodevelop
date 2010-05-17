@@ -1,3 +1,8 @@
+2010-05-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* WindowsPlatform.cs: Fixed Bug 606364 - Cannot execute
+	  program in external console.
+
 2010-05-04  Jonathan Pobst  <monkey@jpobst.com>
 
 	* WindowsPlatform.cs: Respect the workingDirectory parameter
