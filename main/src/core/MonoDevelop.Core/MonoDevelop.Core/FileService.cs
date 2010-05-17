@@ -439,6 +439,7 @@ namespace MonoDevelop.Core
 		}
 	}
 
+	[Serializable]
 	public struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
 	{
 		string fileName;

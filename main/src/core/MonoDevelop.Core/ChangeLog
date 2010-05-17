@@ -1,3 +1,8 @@
+2010-05-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core/FileService.cs: FilePath should be
+	  serializable.
+
 2010-05-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Resolve results
