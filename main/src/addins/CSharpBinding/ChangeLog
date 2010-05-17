@@ -1,3 +1,10 @@
+2010-05-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Implemented 'Bug 606227 - Search reodering not available for
+	  "override" completions.'.
+
+
 2010-05-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:

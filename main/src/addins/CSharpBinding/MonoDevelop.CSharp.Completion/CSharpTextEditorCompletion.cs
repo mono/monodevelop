@@ -1213,7 +1213,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			CompletionCategory GetCompletionCategory (IType type)
+			internal CompletionCategory GetCompletionCategory (IType type)
 			{
 				if (type == null)
 					return null;
@@ -1368,6 +1368,7 @@ namespace MonoDevelop.CSharp.Completion
 						return; // don't add override completion for static members
 				}
 			}
+			CompletionDataCollector col = new CompletionDataCollector (completionList, Document.CompilationUnit, DomLocation.Empty);
 			foreach (IType t in this.dom.GetInheritanceTree (searchType)) {
 				//System.Console.WriteLine("t:" + t);
 				foreach (IMember m in t.Members) {
@@ -1395,6 +1396,7 @@ namespace MonoDevelop.CSharp.Completion
 						
 						if (!foundMember && !alreadyInserted.ContainsKey (text)) {
 							alreadyInserted[text] = true;
+							data.CompletionCategory = col.GetCompletionCategory (t);
 							completionList.Add (data);
 						}
 					}
