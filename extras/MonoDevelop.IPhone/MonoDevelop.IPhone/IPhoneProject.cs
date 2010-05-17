@@ -44,7 +44,7 @@ namespace MonoDevelop.IPhone
 		NotSet = 0,
 		IPhone = 1,
 		IPad =   1 << 1,
-		IPhoneAndIPad = IPhone & IPad,
+		IPhoneAndIPad = IPhone | IPad,
 	}
 	
 	public class IPhoneProject : DotNetProject
