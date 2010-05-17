@@ -442,9 +442,9 @@ namespace Mono.TextEditor
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
 			tabWidthLayout.FontDescription = textEditor.Options.Font;
 			int tabWidth, h;
-			tabWidthLayout.GetPixelSize (out tabWidth, out h);
+			tabWidthLayout.GetSize (out tabWidth, out h);
 			tabWidthLayout.Dispose ();
-			tabArray = new Pango.TabArray (1, true);
+			tabArray = new Pango.TabArray (1, false);
 			tabArray.SetTab (0, Pango.TabAlign.Left, tabWidth);
 			
 			DisposeLayoutDict ();

@@ -1,5 +1,11 @@
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 538800 - Tab
+	  positions are at wrong offsets'.
+
+
+2010-05-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: Improved type flow on the
 	  mac: convert non breaking space -> standard space.
 
