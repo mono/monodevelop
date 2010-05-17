@@ -65,6 +65,8 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public override void Dispose ()
 		{
+			textEditorData.Caret.PositionChanged -= HandleTextEditorDataCaretPositionChanged;
+			textEditorData.Document.TextReplaced -= HandleTextEditorDataDocumentTextReplaced;
 			base.Dispose ();
 			RemoveTimer ();
 		}
