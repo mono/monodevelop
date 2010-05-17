@@ -103,46 +103,49 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		bool DelayedTooltipShow ()
 		{
-			int caretOffset = textEditorData.Caret.Offset;
-			int start = Math.Min (caretOffset, textEditorData.Document.Length - 1);
-			while (start > 0) {
-				char ch = textEditorData.Document.GetCharAt (start);
-				if (!char.IsLetterOrDigit (ch) && ch != '_' && ch != '.') {
-					start++;
-					break;
-				}
-				start--;
-			}
-			
-			int end = Math.Max (caretOffset, 0);
-			while (end < textEditorData.Document.Length) {
-				char ch = textEditorData.Document.GetCharAt (end);
-				if (!char.IsLetterOrDigit (ch) && ch != '_')
-					break;
-				end++;
-			}
-			if (start < 0 || start >= end) {
-				popupTimer = 0;
-				return false;
-			}
-			string expression = textEditorData.Document.GetTextBetween (start, end);
-			ResolveResult resolveResult = textEditorResolver.GetLanguageItem (caretOffset, expression);
-			if (resolveResult == null) {
-				popupTimer = 0;
-				return false;
-			}
-			if (resolveResult is AggregatedResolveResult) {
-				foreach (var curResult in ((AggregatedResolveResult)resolveResult).ResolveResults) {
-					var references = GetReferences (curResult);
-					if (references.Any (r => r.Position <= caretOffset && caretOffset <= r.Position  + r.Name.Length )) {
-						ShowReferences (references);
+			try {
+				int caretOffset = textEditorData.Caret.Offset;
+				int start = Math.Min (caretOffset, textEditorData.Document.Length - 1);
+				while (start > 0) {
+					char ch = textEditorData.Document.GetCharAt (start);
+					if (!char.IsLetterOrDigit (ch) && ch != '_' && ch != '.') {
+						start++;
 						break;
 					}
+					start--;
 				}
-			} else {
-				ShowReferences (GetReferences (resolveResult));
+				
+				int end = Math.Max (caretOffset, 0);
+				while (end < textEditorData.Document.Length) {
+					char ch = textEditorData.Document.GetCharAt (end);
+					if (!char.IsLetterOrDigit (ch) && ch != '_')
+						break;
+					end++;
+				}
+				
+				if (start < 0 || start >= end) 
+					return false;
+				
+				string expression = textEditorData.Document.GetTextBetween (start, end);
+				ResolveResult resolveResult = textEditorResolver.GetLanguageItem (caretOffset, expression);
+				if (resolveResult == null)
+					return false;
+				if (resolveResult is AggregatedResolveResult) {
+					foreach (var curResult in ((AggregatedResolveResult)resolveResult).ResolveResults) {
+						var references = GetReferences (curResult);
+						if (references.Any (r => r.Position <= caretOffset && caretOffset <= r.Position  + r.Name.Length )) {
+							ShowReferences (references);
+							break;
+						}
+					}
+				} else {
+					ShowReferences (GetReferences (resolveResult));
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);
+			} finally {
+				popupTimer = 0;
 			}
-			popupTimer = 0;
 			return false;
 		}
 		

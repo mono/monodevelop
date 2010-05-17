@@ -1,5 +1,10 @@
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  catch exception in highighit usages extension.
+
+2010-05-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
 	  Fixed 'Bug 606217 - Auto-placed semi-colon doesn't take
 	  account of comments'
