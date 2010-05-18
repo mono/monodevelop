@@ -131,10 +131,14 @@ namespace MonoDevelop.CodeGeneration
 
 			int w, h;
 			GetSize (out w, out h);
-			if (x + w > Screen.Width)
-				x = Screen.Width - w;
+			
+			int myMonitor = Screen.GetMonitorAtPoint (x, y);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (myMonitor);
 
-			if (y + h > Screen.Height)
+			if (x + w > geometry.Right)
+				x = geometry.Right - w;
+
+			if (y + h > geometry.Bottom)
 				y = y - completionContext.TriggerTextHeight - h;
 			
 			Move (x, y);
