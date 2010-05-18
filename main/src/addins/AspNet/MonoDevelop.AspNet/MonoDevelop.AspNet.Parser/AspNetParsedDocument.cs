@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.AspNet.Parser.Dom;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -37,22 +38,25 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class AspNetParsedDocument : ParsedDocument
 	{
-		public AspNetParsedDocument (string fileName) : base (fileName)
+		
+		public AspNetParsedDocument (string fileName, RootNode rootNode, PageInfo info) : base (fileName)
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
 			Type = AspNetAppProject.DetermineWebSubtype (fileName);
+			Info = info;
+			RootNode = rootNode;
 		}
 		
-		public PageInfo PageInfo { get; set; }
-		public Document Document { get; set; }
-		public WebSubtype Type { get; set; }
+		public WebSubtype Type { get; private set; }
+		public PageInfo Info { get; private set; }
+		public RootNode RootNode { get; private set; }
 		
 		public override IEnumerable<FoldingRegion> GenerateFolds ()
 		{
-			if (Document != null) {
-				List<FoldingRegion> regions = new List<FoldingRegion> ();
-				CompilationUnitVisitor cuVisitor = new CompilationUnitVisitor (regions);
-				Document.RootNode.AcceptVisit (cuVisitor);
+			if (RootNode != null) {
+				var regions = new List<FoldingRegion> ();
+				var cuVisitor = new CompilationUnitVisitor (regions);
+				RootNode.AcceptVisit (cuVisitor);
 				return regions;
 			}
 			return new FoldingRegion [0];

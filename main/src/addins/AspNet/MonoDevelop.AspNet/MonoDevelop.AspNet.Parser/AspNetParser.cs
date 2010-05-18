@@ -31,6 +31,9 @@ using System.IO;
 
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.AspNet.Parser.Dom;
+using System.Collections.Generic;
+using MonoDevelop.Core;
 
 
 namespace MonoDevelop.AspNet.Parser
@@ -50,22 +53,55 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
 		{
-			using (TextReader tr = new StringReader (fileContent)) {
-				Document doc = new Document (tr, null, fileName);
-				AspNetParsedDocument result = new AspNetParsedDocument (fileName) {
-					PageInfo = new PageInfo (),
-					Document = doc
-				};
+			using (var tr = new StringReader (fileContent)) {
+				var info = new PageInfo ();
+				var rootNode = new RootNode ();
+				var errors = new List<Error> ();
 				
-				doc.RootNode.AcceptVisit (new PageInfoVisitor (result.PageInfo));
+				try {
+					rootNode.Parse (fileName, tr);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
+					errors.Add (new Error (ErrorType.Error, 0, 0, "Unhandled error parsing ASP.NET document: " + ex.Message));
+				}
 				
-				foreach (ParserException pe in doc.ParseErrors)
-					result.Add (new Error (
-						pe.IsWarning? ErrorType.Warning : ErrorType.Error,
-						pe.Line, pe.Column, pe.Message));
+				foreach (var pe in rootNode.ParseErrors)
+					errors.Add (new Error (ErrorType.Error, pe.Location.BeginLine, pe.Location.BeginColumn, pe.Message));
+				
+				info.Populate (rootNode, errors);
+				
+				var result = new AspNetParsedDocument (fileName, rootNode, info);
+				result.Add (errors);
+								
+				/*
+				if (MonoDevelop.Core.LoggingService.IsLevelEnabled (MonoDevelop.Core.Logging.LogLevel.Debug)) {
+					DebugStringVisitor dbg = new DebugStringVisitor ();
+					rootNode.AcceptVisit (dbg);
+					System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+					sb.AppendLine ("Parsed AspNet file:");
+					sb.AppendLine (dbg.DebugString);
+					if (errors.Count > 0) {
+						sb.AppendLine ("Errors:");
+						foreach (ParserException ex in errors)
+							sb.AppendLine (ex.ToString ());
+					}
+					MonoDevelop.Core.LoggingService.LogDebug (sb.ToString ());
+				}*/
 				
 				return result;
 			}
+		}
+		
+		internal void AddError (ErrorType type, ILocation location, string message)
+		{
+			
+		}
+		
+		void Init (TextReader sr)
+		{
+			
+			
+			
 		}
 	}
 }

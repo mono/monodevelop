@@ -90,7 +90,7 @@ namespace MonoDevelop.AspNet
 			protected override void ScanSpan (ref int i)
 			{
 				if (i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
-					AspNetSyntaxMode.ASPNetSpanParser.CodeExpressionSpan span = new CodeExpressionSpan (GetDefaultMime ());
+					var span = new CodeExpressionSpan (GetDefaultMime ());
 					spanStack.Push (span);
 					ruleStack.Push (GetRule (span));
 					OnFoundSpanBegin (span, i, 0);
@@ -117,9 +117,9 @@ namespace MonoDevelop.AspNet
 			{
 				var ideDocument = doc.Tag as MonoDevelop.Ide.Gui.Document;
 				if (ideDocument != null && ideDocument.ParsedDocument != null) {
-					AspNetParsedDocument parsedDocument = ideDocument.ParsedDocument.CompilationUnit as AspNetParsedDocument;
-					if (parsedDocument != null && parsedDocument.PageInfo != null)
-						return GetMimeForLanguage (parsedDocument.PageInfo.Language) ?? "text/x-csharp";
+					var parsedDocument = ideDocument.ParsedDocument as AspNetParsedDocument;
+					if (parsedDocument != null)
+						return GetMimeForLanguage (parsedDocument.Info.Language) ?? "text/x-csharp";
 				}
 				return "text/x-csharp";
 			}

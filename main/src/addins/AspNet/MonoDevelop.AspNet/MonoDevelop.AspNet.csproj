@@ -220,9 +220,7 @@
     <Compile Include="MonoDevelop.AspNet.Parser.Internal\TagAttributes.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser.Dom\ServerCommentNode.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\MemberListVisitor.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser\PageInfoVisitor.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\WebFormReferenceManager.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser\Document.cs" />
     <Compile Include="MonoDevelop.AspNet\XspParameters.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\XspOptionsPanel.cs" />
     <Compile Include="MonoDevelop.AspNet\VerifyCodeBehindBuildStep.cs" />

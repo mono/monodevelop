@@ -47,8 +47,7 @@ namespace MonoDevelop.AspNet.Parser
 	{
 		int prefixIndex = 0;
 		
-		public WebFormReferenceManager (Document parent)
-			: base (parent)
+		public WebFormReferenceManager ()
 		{
 		}
 		
@@ -67,10 +66,10 @@ namespace MonoDevelop.AspNet.Parser
 
 		public string GetRegisterDirectives ()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+			var sb = new System.Text.StringBuilder ();
 			
-			foreach (RegisterDirective directive in pageRefsList) {
-				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
+			foreach (var directive in RegisteredTags) {
+				var ard = directive as AssemblyRegisterDirective;
 				
 				if (ard != null)
 					sb.AppendFormat ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", ard.TagPrefix, "Namespace", ard.Namespace, "Assembly", ard.Assembly);
@@ -88,7 +87,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (objectType.Namespace.StartsWith ("System.Web.UI"))
 				return "asp";
 			
-			foreach (RegisterDirective directive in pageRefsList) {
+			foreach (var directive in RegisteredTags) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				
 				if (ard != null)
@@ -113,7 +112,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (type.Assembly == typeof(System.Web.UI.WebControls.WebControl).Assembly)
 				return;
 
-			//check namespace is not already registered			foreach (RegisterDirective directive in pageRefsList) {
+			//check namespace is not already registered			foreach (var directive in RegisteredTags) {
 				AssemblyRegisterDirective ard = directive as AssemblyRegisterDirective;
 				if (0 == string.Compare (ard.Namespace, type.Namespace, StringComparison.Ordinal))
 					throw new Exception ("That namespace is already registered with another prefix");
@@ -126,8 +125,7 @@ namespace MonoDevelop.AspNet.Parser
 				}
 			}
 			
-			doc.Project.References.Add (
-			    new ProjectReference (ReferenceType.Assembly, type.Assembly.ToString ()));
+			Project.References.Add (new ProjectReference (ReferenceType.Assembly, type.Assembly.ToString ()));
 		/*
 		TODO: insert the reference into the document tree 
 		*/
@@ -145,8 +143,8 @@ namespace MonoDevelop.AspNet.Parser
 			string prefix = null;
 
 			//check if there's a prefix for this namespace in the assembly
-			TagPrefixAttribute[] atts = (TagPrefixAttribute[]) type.Assembly.GetCustomAttributes (typeof (TagPrefixAttribute), true);
-			foreach (TagPrefixAttribute tpa in atts)
+			var atts = (TagPrefixAttribute[]) type.Assembly.GetCustomAttributes (typeof (TagPrefixAttribute), true);
+			foreach (var tpa in atts)
 				if (0 == string.Compare (tpa.NamespaceName, type.Namespace, StringComparison.Ordinal))
 					prefix = tpa.TagPrefix;
 			
@@ -163,8 +161,8 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public string GetUserControlPath (string tagPrefix, string tagName)
 		{
-			foreach (RegisterDirective directive in pageRefsList) {
-				ControlRegisterDirective crd = directive as ControlRegisterDirective;
+			foreach (var directive in RegisteredTags) {
+				var crd = directive as ControlRegisterDirective;
 				
 				if (crd != null && (string.Compare (crd.TagPrefix, tagPrefix, StringComparison.OrdinalIgnoreCase) == 0)
 						&& (string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) == 0))

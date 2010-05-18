@@ -43,7 +43,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override void Visit (DirectiveNode node)
 		{
-			switch (node.Name.ToLower ()) {
+			switch (node.Name.ToLowerInvariant ()) {
 			case "page":
 			case "control":
 			case "webservice":

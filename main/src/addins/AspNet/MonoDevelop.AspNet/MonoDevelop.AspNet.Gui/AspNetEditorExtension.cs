@@ -48,16 +48,20 @@ using MonoDevelop.DesignerSupport;
 using S = MonoDevelop.Xml.StateEngine; 
 using MonoDevelop.AspNet.StateEngine;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.AspNet.Gui
 {
 	public class AspNetEditorExtension : BaseHtmlEditorExtension
 	{
-		AspNetParsedDocument AspCU { get { return CU as AspNetParsedDocument; } }
-		Document AspDocument { get { return AspCU == null? null : AspCU.Document; } }
+		AspNetParsedDocument aspDoc;
+		AspNetAppProject project;
+		DocumentReferenceManager refman = new DocumentReferenceManager ();
+		
+		bool HasDoc { get { return aspDoc != null; } }
+		bool HasProject { get { return project != null; } }
 		 
-		System.Text.RegularExpressions.Regex DocTypeRegex =
-				new System.Text.RegularExpressions.Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+		Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 		
 		#region Setup and teardown
 		
@@ -67,6 +71,17 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		#endregion
+		
+		protected override void OnParsedDocumentUpdated ()
+		{
+			base.OnParsedDocumentUpdated ();
+			aspDoc = CU as AspNetParsedDocument;
+			project = base.Document.Project as AspNetAppProject;
+			if (HasProject)
+				refman.Project = project;
+			if (HasDoc)
+				refman.Doc = aspDoc;
+		}
 		
 		/// <summary>
 		/// This wraps a project dom and adds the compilation information from the ASP.NET page to the DOM to lookup members
@@ -141,42 +156,42 @@ namespace MonoDevelop.AspNet.Gui
 			//directive names
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
-				if (directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
+				if (HasDoc && directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
 				    directive.Region.Start.Column + 4 == completionContext.TriggerLineOffset)
 				{
-					return DirectiveCompletion.GetDirectives (AspCU.Type);
+					return DirectiveCompletion.GetDirectives (aspDoc.Type);
 				}
 				return null;
 			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
 				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
-				if (directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
+				if (HasDoc && directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
 				    directive.Region.Start.Column + 5 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
 				{
 					triggerWordLength = 1;
-					return DirectiveCompletion.GetDirectives (AspCU.Type);
+					return DirectiveCompletion.GetDirectives (aspDoc.Type);
 				}
 				return null;
 			}
 
 			//non-xml tag completion
 			if (currentChar == '<' && !(Tracker.Engine.CurrentState is S.XmlFreeState)) {
-				CompletionDataList list = new CompletionDataList ();
-				AddAspBeginExpressions (list, AspDocument);
+				var list = new CompletionDataList ();
+				AddAspBeginExpressions (list);
 				return list;
 			}
 
-			if (AspCU == null || AspCU.PageInfo.DocType == null) {
+			if (!HasDoc || aspDoc.Info.DocType == null) {
 				//FIXME: get doctype from master page
 				DocType = null;
 			} else {
 				DocType = new MonoDevelop.Xml.StateEngine.XDocType (DomLocation.Empty);
-				System.Text.RegularExpressions.Match matches = DocTypeRegex.Match (AspCU.PageInfo.DocType);
+				var matches = DocTypeRegex.Match (aspDoc.Info.DocType);
 				DocType.PublicFpi = matches.Groups["fpi"].Value;
 				DocType.Uri = matches.Groups["uri"].Value;
 			}
 			
 			//simple completion for ASP.NET expressions
-			documentBuilder = LanguageCompletionBuilderService.GetBuilder (AspCU.PageInfo.Language);
+			documentBuilder = HasDoc? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
@@ -193,7 +208,7 @@ namespace MonoDevelop.AspNet.Gui
 				loc.EndLine = loc.BeginLine = line;
 				loc.EndColumn = loc.BeginColumn = col;
 				
-				DocumentInfo documentInfo = documentBuilder.BuildDocument (AspCU, TextEditorData);
+				var documentInfo = documentBuilder.BuildDocument (aspDoc, TextEditorData);
 				
 				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, true);
 				
@@ -227,15 +242,11 @@ namespace MonoDevelop.AspNet.Gui
 			S.XName parentName = GetParentElementName (0);
 			
 			//fallback
-			if (AspDocument == null)
-			{
-				AddAspBeginExpressions (list, AspDocument);
+			if (!HasDoc) {
+				AddAspBeginExpressions (list);
 				string aspPrefix = "asp:";
-				foreach (IType cls in WebTypeManager.ListSystemControlClasses (
-					new DomType ("System.Web.UI.Control"), this.Document.Project as AspNetAppProject))
-				{
+				foreach (IType cls in WebTypeManager.ListSystemControlClasses (new DomType ("System.Web.UI.Control"), project))
 					list.Add (new AspTagCompletionData (aspPrefix, cls));
-				}
 				
 				base.GetElementCompletions (list);
 				return;
@@ -244,36 +255,30 @@ namespace MonoDevelop.AspNet.Gui
 			IType controlClass = null;
 			
 			if (parentName.HasPrefix) {
-				controlClass = AspDocument.ReferenceManager.GetControlType (parentName.Prefix, parentName.Name);
+				controlClass = refman.GetControlType (parentName.Prefix, parentName.Name);
 			} else {
 				S.XName grandparentName = GetParentElementName (1);
-				if (grandparentName.IsValid && grandparentName.HasPrefix) {
-					controlClass = AspDocument.ReferenceManager.GetControlType (grandparentName.Prefix,
-					                                                            grandparentName.Name);
-				}
+				if (grandparentName.IsValid && grandparentName.HasPrefix)
+					controlClass = refman.GetControlType (grandparentName.Prefix, grandparentName.Name);
 			}
 			
 			//we're just in HTML
-			if (controlClass == null)
-			{
+			if (controlClass == null) {
 				//root element?
 				if (!parentName.IsValid) {
-					if (AspCU.PageInfo.Subtype == WebSubtype.WebControl)
-					{
+					if (aspDoc.Info.Subtype == WebSubtype.WebControl) {
 						AddHtmlTagCompletionData (list, Schema, new S.XName ("div"));
-						AddAspBeginExpressions (list, AspDocument);
-						list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+						AddAspBeginExpressions (list);
+						list.AddRange (refman.GetControlCompletionData ());
 						AddMiscBeginTags (list);
-					}
-					else if (!string.IsNullOrEmpty (AspCU.PageInfo.MasterPageFile))
-					{
+					} else if (!string.IsNullOrEmpty (aspDoc.Info.MasterPageFile)) {
 						//FIXME: add the actual region names
 						list.Add (new CompletionData ("asp:Content"));
 					}
 				}
 				else {
-					AddAspBeginExpressions (list, AspDocument);
-					list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+					AddAspBeginExpressions (list);
+					list.AddRange (refman.GetControlCompletionData ());
 					base.GetElementCompletions (list);
 				}
 				return;
@@ -285,10 +290,9 @@ namespace MonoDevelop.AspNet.Gui
 				defaultProp = null;
 			
 			//parent permits child controls directly
-			if (!childrenAsProperties)
-			{
-				AddAspBeginExpressions (list, AspDocument);
-				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+			if (!childrenAsProperties) {
+				AddAspBeginExpressions (list);
+				list.AddRange (refman.GetControlCompletionData ());
 				AddMiscBeginTags (list);
 				//TODO: get correct parent for Content tags
 				AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
@@ -330,20 +334,20 @@ namespace MonoDevelop.AspNet.Gui
 				
 				//check if allows freeform ASP/HTML content
 				if (property.ReturnType.FullName == "System.Web.UI.ITemplate") {
-					AddAspBeginExpressions (list, AspDocument);
+					AddAspBeginExpressions (list);
 					AddMiscBeginTags (list);
 					AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
-					list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+					list.AddRange (refman.GetControlCompletionData ());
 					return;
 				}
 				
-				//FIXME:unfortunately ASP.NEt doesn't seem to have enough type information / attributes
+				//FIXME:unfortunately ASP.NET doesn't seem to have enough type information / attributes
 				//to be able to resolve the correct child types here
 				//so we assume it's a list and have a quick hack to find arguments of strongly typed ILists
 				
 				IType collectionType = controlClass.SourceProjectDom.GetType (property.ReturnType);
 				if (collectionType == null) {
-					list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+					list.AddRange (refman.GetControlCompletionData ());
 					return;
 				}
 				
@@ -354,12 +358,12 @@ namespace MonoDevelop.AspNet.Gui
 				if (meth != null) {
 					IType argType = controlClass.SourceProjectDom.GetType (meth.Parameters[0].ReturnType);
 					if (argType != null && argType.IsBaseType (new DomReturnType ("System.Web.UI.Control"))) {
-						list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData (argType));
+						list.AddRange (refman.GetControlCompletionData (argType));
 						return;
 					}
 				}
 				
-				list.AddRange (AspDocument.ReferenceManager.GetControlCompletionData ());
+				list.AddRange (refman.GetControlCompletionData ());
 				return;
 			}
 			
@@ -400,11 +404,11 @@ namespace MonoDevelop.AspNet.Gui
 				
 				existingAtts["ID"] = "";
 				if (attributedOb.Name.HasPrefix) {
-					AddAspAttributeCompletionData (list, AspDocument, attributedOb.Name, existingAtts);
+					AddAspAttributeCompletionData (list, attributedOb.Name, existingAtts);
 				}
 				
 			} else if (attributedOb is AspNetDirective) {
-				return DirectiveCompletion.GetAttributes (Project, attributedOb.Name.FullName, existingAtts);
+				return DirectiveCompletion.GetAttributes (project, attributedOb.Name.FullName, existingAtts);
 			}
 			return list.Count > 0? list : null;
 		}
@@ -418,25 +422,16 @@ namespace MonoDevelop.AspNet.Gui
 					string id = idAtt == null? null : idAtt.Value;
 					if (string.IsNullOrEmpty (id) || string.IsNullOrEmpty (id.Trim ()))
 						id = null;
-					AddAspAttributeValueCompletionData (list, AspCU, ob.Name, att.Name, id);
+					AddAspAttributeValueCompletionData (list, ob.Name, att.Name, id);
 				}
 			} else if (ob is AspNetDirective) {
-				return DirectiveCompletion.GetAttributeValues (Project, Document.FileName, ob.Name.FullName, att.Name.FullName);
+				return DirectiveCompletion.GetAttributeValues (project, Document.FileName, ob.Name.FullName, att.Name.FullName);
 			}
 			return list.Count > 0? list : null;
 		}
 		
 		ClrVersion ProjClrVersion {
-			get {
-				var proj = Project;
-				return proj != null? proj.TargetFramework.ClrVersion : ClrVersion.Net_2_0;
-			}
-		}
-		
-		public AspNetAppProject Project {
-			get {
-				return this.Document.Project as AspNetAppProject;
-			}
+			get { return HasProject? project.TargetFramework.ClrVersion : ClrVersion.Net_2_0; }
 		}
 		
 		CompletionDataList HandleExpressionCompletion (AspNetExpression expr)
@@ -445,7 +440,7 @@ namespace MonoDevelop.AspNet.Gui
 				return null;
 			IType codeBehindClass;
 			ProjectDom projectDatabase;
-			GetCodeBehind (AspCU, out codeBehindClass, out projectDatabase);
+			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			
 			if (codeBehindClass == null)
 				return null;
@@ -462,24 +457,21 @@ namespace MonoDevelop.AspNet.Gui
 			return list.Count > 0? list : null;
 		}
 		
-		static void GetCodeBehind (AspNetParsedDocument cu, out IType codeBehindClass,
-		                           out ProjectDom projectDatabase)
+		void GetCodeBehind (out IType codeBehindClass, out ProjectDom projectDatabase)
 		{
 			codeBehindClass = null;
 			projectDatabase = null;
 			
-			if (cu != null && cu.Document.Project != null) {
-				projectDatabase = ProjectDomService.GetProjectDom
-					(cu.Document.Project);
-				
-				if (projectDatabase != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-					codeBehindClass = projectDatabase.GetType (cu.PageInfo.InheritedClass, false, false);
+			if (HasDoc && HasProject && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
+				projectDatabase = ProjectDomService.GetProjectDom (project);
+				if (projectDatabase != null)
+					codeBehindClass = projectDatabase.GetType (aspDoc.Info.InheritedClass, false, false);
 			}
 		}
 		
 		#region ASP.NET data
 		
-		static void AddAspBeginExpressions (CompletionDataList list, Document doc)
+		void AddAspBeginExpressions (CompletionDataList list)
 		{
 			list.Add ("%",  "md-literal", GettextCatalog.GetString ("ASP.NET render block"));
 			list.Add ("%=", "md-literal", GettextCatalog.GetString ("ASP.NET render expression"));
@@ -487,33 +479,25 @@ namespace MonoDevelop.AspNet.Gui
 			list.Add ("%#", "md-literal", GettextCatalog.GetString ("ASP.NET databinding expression"));
 			list.Add ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"));
 			
-			//valid on 2.0 runtime only
-			if (doc.Project == null || doc.Project.TargetFramework.ClrVersion == ClrVersion.Net_2_0) {
+			//valid on 2.0+ runtime only
+			if (ProjClrVersion != ClrVersion.Net_1_1)
 				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
-			}
 		}
 		
-		static void AddAspAttributeCompletionData (CompletionDataList list,
-		    Document doc, S.XName name, Dictionary<string, string> existingAtts)
+		void AddAspAttributeCompletionData (CompletionDataList list, S.XName name, Dictionary<string, string> existingAtts)
 		{
 			Debug.Assert (name.IsValid);
 			Debug.Assert (name.HasPrefix);
-			Debug.Assert (doc != null);
 			
 			//get a parser database
-			ProjectDom database = null;
-			
-			if (doc.Project != null)
-				database = ProjectDomService.GetProjectDom (doc.Project);
-			else
-				database = WebTypeManager.GetSystemWebDom (null);
+			var database = HasProject? ProjectDomService.GetProjectDom (project) : WebTypeManager.GetSystemWebDom (null);
 			
 			if (database == null) {
 				LoggingService.LogWarning ("Could not obtain project DOM in AddAspAttributeCompletionData");
 				return;
 			}
 			
-			IType controlClass = doc.ReferenceManager.GetControlType (name.Prefix, name.Name);
+			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
 			if (controlClass == null) {
 				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl");
 				if (controlClass == null) {
@@ -522,44 +506,39 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			}
 			
-			AddControlMembers (list, database, doc, controlClass, existingAtts);
+			AddControlMembers (list, database, controlClass, existingAtts);
 		}
 		
-		static void AddControlMembers (CompletionDataList list,
-		    ProjectDom database, Document doc,
-		    IType controlClass, Dictionary<string, string> existingAtts)
+		void AddControlMembers (CompletionDataList list, ProjectDom database, IType controlClass, 
+		                        Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
-			foreach (IProperty prop in GetUniqueMembers<IProperty> (GetAllProperties (database, controlClass)))
+			foreach (var prop in GetUniqueMembers<IProperty> (GetAllProperties (database, controlClass)))
 				if (prop.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
 					if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
 						list.Add (prop.Name, prop.StockIcon, prop.Documentation);
 			
 			//similarly add events
-			foreach (IEvent eve in GetUniqueMembers<IEvent> (GetAllEvents (database, controlClass))) {
+			foreach (var eve in GetUniqueMembers<IEvent> (GetAllEvents (database, controlClass))) {
 				string eveName = "On" + eve.Name;
 				if (eve.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
 					list.Add (eveName, eve.StockIcon, eve.Documentation);
 			}
 		}
 		
-		static void AddAspAttributeValueCompletionData (CompletionDataList list,
-		    MonoDevelop.AspNet.Parser.AspNetParsedDocument cu, S.XName tagName, S.XName attName, string id)
+		void AddAspAttributeValueCompletionData (CompletionDataList list, S.XName tagName, S.XName attName, string id)
 		{
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);
 			
-			IType controlClass = null;
-			if (cu != null)
-				controlClass = cu.Document.ReferenceManager.GetControlType (tagName.Prefix, tagName.Name);
+			IType controlClass = HasDoc? refman.GetControlType (tagName.Prefix, tagName.Name) : null;
 			
 			if (controlClass == null) {
 				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
 				
-				ProjectDom database =
-					WebTypeManager.GetSystemWebDom (cu == null? null : cu.Document.Project);
+				var database = WebTypeManager.GetSystemWebDom (project);
 				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", true, false);
-				
+
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 					return;
@@ -569,7 +548,7 @@ namespace MonoDevelop.AspNet.Gui
 			//find the codebehind class
 			IType codeBehindClass;
 			ProjectDom projectDatabase;
-			GetCodeBehind (cu, out codeBehindClass, out projectDatabase);
+			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attName.Name.StartsWith ("On")) {
@@ -577,8 +556,7 @@ namespace MonoDevelop.AspNet.Gui
 				
 				foreach (IEvent ev in GetAllEvents (projectDatabase, controlClass)) {
 					if (ev.Name == eventName) {
-						System.CodeDom.CodeMemberMethod domMethod = 
-							BindingService.MDDomToCodeDomMethod (projectDatabase, ev);
+						var domMethod = BindingService.MDDomToCodeDomMethod (projectDatabase, ev);
 						if (domMethod == null)
 							return;
 						
@@ -602,7 +580,7 @@ namespace MonoDevelop.AspNet.Gui
 							| System.CodeDom.MemberAttributes.Family;
 						
 						list.Add (
-						    new SuggestedHandlerCompletionData (cu.Document.Project, domMethod, codeBehindClass,
+						    new SuggestedHandlerCompletionData (project, domMethod, codeBehindClass,
 						        MonoDevelop.DesignerSupport.CodeBehind.GetNonDesignerClass (codeBehindClass))
 						    );
 						return;
@@ -611,7 +589,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			if (projectDatabase == null) {
-				projectDatabase = WebTypeManager.GetSystemWebDom (cu == null? null : cu.Document.Project);
+				projectDatabase = WebTypeManager.GetSystemWebDom (project);
 				
 				if (projectDatabase == null) {
 					LoggingService.LogWarning ("Could not obtain type database in AddAspAttributeCompletionData");
@@ -809,7 +787,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
 		{
-			ParentNode p = ((AspNetParsedDocument)doc).Document.RootNode;
+			ParentNode p = ((AspNetParsedDocument)doc).RootNode;
 //			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
 			BuildTreeChildren (store, Gtk.TreeIter.Zero, p);
 		}

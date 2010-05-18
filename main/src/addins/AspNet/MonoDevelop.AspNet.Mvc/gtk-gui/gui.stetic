@@ -10,7 +10,6 @@
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
-    <widget-library name="../../../../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.AspNet.Mvc/MonoDevelop.AspNet.Mvc.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.AspNet.Mvc.Gui.AddViewDialog" design-size="470 387">

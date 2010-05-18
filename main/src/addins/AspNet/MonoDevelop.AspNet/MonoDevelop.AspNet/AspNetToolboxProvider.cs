@@ -30,6 +30,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -45,23 +46,31 @@ namespace MonoDevelop.AspNet
 	{
 		public IEnumerable<string> GetDefaultFiles ()
 		{
-			string location;
+			return GetFxAssemblies ().Where (s => !string.IsNullOrEmpty (s));
+		}
+		
+		IEnumerable<string> GetFxAssemblies ()
+		{
+			var ctx = Runtime.SystemAssemblyService.DefaultAssemblyContext;
 			
 			TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework ("1.1");
 			
-			location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation ("System.Web, Version=1.0.5000.0", fx);
-			if (!string.IsNullOrEmpty (location))
-				yield return location;
+			yield return ctx.GetAssemblyLocation ("System.Web, Version=1.0.5000.0", fx);
 			
 			fx = Runtime.SystemAssemblyService.GetTargetFramework ("3.5");
 			
-			location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation ("System.Web, Version=2.0.0.0", fx);
-			if (!string.IsNullOrEmpty (location))
-				yield return location;
+			yield return ctx.GetAssemblyLocation ("System.Web, Version=2.0.0.0", fx);
 			
-			location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation ("System.Web.Extensions", fx);
-			if (!string.IsNullOrEmpty (location))
-				yield return location;
+			fx = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
+			
+			yield return ctx.GetAssemblyLocation ("System.Web.Extensions, Version=3.5.0.0", fx);
+			yield return ctx.GetAssemblyLocation ("System.Web.Mvc, Version=1.0.0.0", fx);
+			
+			fx = Runtime.SystemAssemblyService.GetTargetFramework ("4.0");
+			
+			yield return ctx.GetAssemblyLocation ("System.Web, Version=4.0.0.0", fx);
+			yield return ctx.GetAssemblyLocation ("System.Web.Extensions, Version=4.0.0.0", fx);
+			yield return ctx.GetAssemblyLocation ("System.Web.Mvc, Version=2.0.0.0", fx);
 		}
 		
 		public IEnumerable<ItemToolboxNode> GetDefaultItems ()

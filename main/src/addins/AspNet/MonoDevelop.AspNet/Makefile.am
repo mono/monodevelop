@@ -82,13 +82,11 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/ContentPlaceHolderVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Directive.cs \
-	MonoDevelop.AspNet.Parser/Document.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
 	MonoDevelop.AspNet.Parser/LocatedParserException.cs \
 	MonoDevelop.AspNet.Parser/MemberListVisitor.cs \
 	MonoDevelop.AspNet.Parser/PageDirectiveVisitor.cs \
 	MonoDevelop.AspNet.Parser/PageInfo.cs \
-	MonoDevelop.AspNet.Parser/PageInfoVisitor.cs \
 	MonoDevelop.AspNet.Parser/Regexes.cs \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \
 	MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs \

@@ -35,6 +35,8 @@ using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
+using MonoDevelop.AspNet.Parser;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet
 {
@@ -114,22 +116,28 @@ namespace MonoDevelop.AspNet
 			//register the assembly and look up the class
 			RegisterReference (project);
 			
-			MonoDevelop.Projects.Dom.Parser.ProjectDom database =
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
+			var database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
 			
-			MonoDevelop.Projects.Dom.IType cls = database.GetType (Type.TypeName);
+			var cls = database.GetType (Type.TypeName);
 			if (cls == null)
 				return tag;
 			
 			//look up the control prefix
 			string mime = DesktopService.GetMimeTypeForUri (path);
-			MonoDevelop.AspNet.Parser.AspNetParsedDocument cu = 
-				MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
-					as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
+			var doc = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
+				as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 			
-			System.Reflection.AssemblyName assemName = SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
+			if (doc == null)
+				return tag;
 			
-			string prefix = cu.Document.ReferenceManager.AddAssemblyReferenceToDocument (cls, assemName.Name);
+			var assemName = SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
+			
+			var refMan = new DocumentReferenceManager () {
+				Project = project as AspNetAppProject,
+				Doc = doc,
+			};
+			
+			string prefix = refMan.AddAssemblyReferenceToDocument (cls, assemName.Name);
 			
 			if (prefix != null)
 				return string.Format (tag, prefix);
@@ -141,35 +149,35 @@ namespace MonoDevelop.AspNet
 			get { return aspNetDomain; }
 		}
 		
-		public bool IsCompatibleWith (string fileName, MonoDevelop.Projects.Project project)
+		public bool IsCompatibleWith (string fileName, Project project)
 		{
-			ClrVersion clrVersion = ClrVersion.Net_2_0;
-			MonoDevelop.Projects.DotNetProject dnp = project as MonoDevelop.Projects.DotNetProject;
-			if (dnp != null && dnp.TargetFramework.ClrVersion != ClrVersion.Default)
-				clrVersion = dnp.TargetFramework.ClrVersion;
+			var clrVersion = ClrVersion.Net_2_0;
+			var aspProj = project as AspNetAppProject;
+			if (project != null && aspProj.TargetFramework.ClrVersion != ClrVersion.Default)
+				clrVersion = aspProj.TargetFramework.ClrVersion;
 			
-			bool allow = false;
-			foreach (ToolboxItemFilterAttribute tbfa in ItemFilters) {
-				if (tbfa.FilterString == "ClrVersion.Net_1_1") {
-					if (tbfa.FilterType == ToolboxItemFilterType.Require) {
-						if (clrVersion == ClrVersion.Net_1_1 || clrVersion == ClrVersion.Net_2_0)
-							allow = true;
-					} else if (tbfa.FilterType == ToolboxItemFilterType.Prevent) {
-						if (clrVersion == ClrVersion.Net_1_1)
-							return false;
-					}
-				} else if (tbfa.FilterString == "ClrVersion.Net_2_0") {
-					if (tbfa.FilterType == ToolboxItemFilterType.Require) {
-						if (clrVersion == ClrVersion.Net_2_0)
-							allow = true;
-					} else if (tbfa.FilterType == ToolboxItemFilterType.Prevent) {
-						if (clrVersion == ClrVersion.Net_2_0)
-							return false;
-					}
+			foreach (var tbfa in ItemFilters) {
+				ClrVersion filterVersion;
+				switch (tbfa.FilterString) {
+				case "ClrVersion.Net_1_1":
+					filterVersion = ClrVersion.Net_1_1;
+					break;
+				case "ClrVersion.Net_2_0":
+					filterVersion = ClrVersion.Net_2_0;
+					break;
+				case "ClrVersion.Net_4_0":
+					filterVersion = ClrVersion.Net_4_0;
+					break;
+				default:
+					continue;
 				}
+				
+				if (tbfa.FilterType == ToolboxItemFilterType.Require && filterVersion != clrVersion)
+					return false;
+				
+				if (tbfa.FilterType == ToolboxItemFilterType.Prevent && filterVersion == clrVersion)
+					return false;
 			}
-			if (!allow)
-				return false;
 			
 			if (fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master"))
 				return true;

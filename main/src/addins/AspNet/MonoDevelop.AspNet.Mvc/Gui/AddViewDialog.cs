@@ -26,11 +26,16 @@
 
 using System;
 using System.Linq;
+using System.IO;
 using System.Collections.Generic;
+using PP = System.IO.Path;
+
 using MonoDevelop.AspNet.Gui;
 using MonoDevelop.Projects.Dom.Parser;
-using PP = System.IO.Path;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.AspNet.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -182,18 +187,16 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			ContentPlaceHolders.Clear ();
 			
 			string realPath = project.VirtualToLocalPath (oldMaster, null);
-			if (!System.IO.File.Exists (realPath))
+			if (!File.Exists (realPath))
 				return;
 			
-			MonoDevelop.AspNet.Parser.AspNetParsedDocument pd
-				= ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (project), realPath)
-				as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
+			var pd = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (project), realPath)
+				as AspNetParsedDocument;
 			
-			if (pd != null && pd.Document != null) {
+			if (pd != null) {
 				try {
-					MonoDevelop.AspNet.Parser.ContentPlaceHolderVisitor visitor
-						= new MonoDevelop.AspNet.Parser.ContentPlaceHolderVisitor ();
-					pd.Document.RootNode.AcceptVisit (visitor);
+					var visitor = new ContentPlaceHolderVisitor ();
+					pd.RootNode.AcceptVisit (visitor);
 					ContentPlaceHolders.AddRange (visitor.PlaceHolders);
 					
 					for (int i = 0; i < ContentPlaceHolders.Count; i++) {
@@ -205,8 +208,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 							primaryPlaceholderCombo.Active = i;
 					}
 				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Unhandled exception getting master regions for '" + 
-					                                          realPath + "'", ex);
+					LoggingService.LogError ("Unhandled exception getting master regions for '" + realPath + "'", ex);
 				}
 			}
 			
@@ -276,11 +278,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
-				List = new List<MonoDevelop.Projects.Dom.IType> ();
-				MonoDevelop.Projects.Dom.Parser.ProjectDom dom =
-						MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
-				List.AddRange (dom.Types);
-				this.ambience = MonoDevelop.Projects.Dom.Output.AmbienceService.GetAmbienceForLanguage (project.LanguageName);
+				var dom = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
+				List = new List<MonoDevelop.Projects.Dom.IType> (dom.Types);
+				this.ambience = AmbienceService.GetAmbienceForLanguage (project.LanguageName);
 			}
 			
 			public int IconCount { get { return List.Count; } }
@@ -292,8 +292,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			public string GetText (int n)
 			{
-				return ambience.GetString (List[n], MonoDevelop.Projects.Dom.Output.OutputFlags.IncludeGenerics
-				                           | MonoDevelop.Projects.Dom.Output.OutputFlags.UseFullName);
+				return ambience.GetString (List[n], OutputFlags.IncludeGenerics | OutputFlags.UseFullName);
 			}
 			
 			public Gdk.Pixbuf GetIcon (int n)

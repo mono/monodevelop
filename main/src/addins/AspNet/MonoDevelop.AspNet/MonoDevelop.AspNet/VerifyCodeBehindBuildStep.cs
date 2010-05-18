@@ -117,12 +117,11 @@ namespace MonoDevelop.AspNet
 				}
 				
 				//parse the ASP.NET file
-				AspNetParsedDocument parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null)
-					as AspNetParsedDocument;
-				if (parsedDocument == null || parsedDocument.Document == null)
+				var parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null) as AspNetParsedDocument;
+				if (parsedDocument == null)
 					continue;
 				
-				System.CodeDom.CodeCompileUnit ccu = CodeBehind.GenerateCodeBehind (aspProject, parsedDocument, errors);
+				var ccu = CodeBehind.GenerateCodeBehind (aspProject, parsedDocument, errors);
 				if (ccu == null)
 					continue;
 				

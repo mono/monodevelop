@@ -678,7 +678,7 @@ namespace MonoDevelop.AspNet
 			}
 			return null;
 		}
-
+		
 		public string GetCodebehindTypeName (string fileName)
 		{
 			lock (codebehindTypeNameCache)
@@ -696,9 +696,9 @@ namespace MonoDevelop.AspNet
 			
 			protected override string GenerateInfo (string fileName)
 			{
-				var cu = ProjectDomService.Parse (proj, fileName, null) as AspNetParsedDocument;
-				if (cu != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))
-					return cu.PageInfo.InheritedClass;
+				var doc = ProjectDomService.Parse (proj, fileName, null) as AspNetParsedDocument;
+				if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
+					return doc.Info.InheritedClass;
 				return null;
 			}
 			

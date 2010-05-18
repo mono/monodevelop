@@ -74,7 +74,7 @@ namespace MonoDevelop.AspNet
 					return;
 				
 				ContentPlaceHolderVisitor visitor = new ContentPlaceHolderVisitor ();
-				pd.Document.RootNode.AcceptVisit (visitor);
+				pd.RootNode.AcceptVisit (visitor);
 				
 				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 				foreach (string id in visitor.PlaceHolders) {

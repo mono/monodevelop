@@ -12,6 +12,7 @@
     <widget-library name="../../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
     <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
+    <widget-library name="../../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget" design-size="496 300">

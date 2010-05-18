@@ -1,3 +1,8 @@
+2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AspLanguageBuilder.cs: Heavy refactoring and tidying of
+	  ASP.NET parser code to support future changes.
+
 2010-04-20  Mike Krüger  <mkrueger@novell.com>
 
 	* AspLanguageBuilder.cs: Worked on ASP.NET completion.

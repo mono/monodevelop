@@ -41,6 +41,8 @@ using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
+using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -48,21 +50,17 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class DocumentReferenceManager
 	{
-		protected List<RegisterDirective> pageRefsList = new List<RegisterDirective> ();
-		protected Document doc;
-		
-		public DocumentReferenceManager (Document doc)
+		public DocumentReferenceManager ()
 		{
-			this.doc = doc;
-			updateList ();
 		}
 		
-		void updateList ()
-		{
-			ReferenceVisitor visitor = new ReferenceVisitor (this);
-			pageRefsList.Clear ();
-			doc.RootNode.AcceptVisit (visitor);
+		protected IEnumerable<RegisterDirective> RegisteredTags {
+			get { return Doc.Info.RegisteredTags; }
 		}
+		
+		public AspNetParsedDocument Doc { get; set; }
+		public AspNetAppProject Project { get; set; }
+		string DirectoryPath { get { return Path.GetDirectoryName (Doc.FileName); } }
 		
 		public string GetTypeName (string tagPrefix, string tagName)
 		{
@@ -75,18 +73,18 @@ namespace MonoDevelop.AspNet.Parser
 				return WebTypeManager.HtmlControlLookup (tagName, htmlTypeAttribute);
 			
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
-				string systemType = WebTypeManager.SystemTypeNameLookup (tagName, doc.Project);
+				string systemType = WebTypeManager.SystemTypeNameLookup (tagName, Project);
 				if (!string.IsNullOrEmpty (systemType))
 					return systemType;
 			}
 			
-			foreach (RegisterDirective rd in pageRefsList) {
+			foreach (var rd in RegisteredTags) {
 				if (string.Compare (rd.TagPrefix, tagPrefix, StringComparison.OrdinalIgnoreCase) != 0)
 					continue;
 				
 				var ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
-					ProjectDom dom = WebTypeManager.ResolveAssembly (doc.Project, ard.Assembly);
+					ProjectDom dom = WebTypeManager.ResolveAssembly (Project, ard.Assembly);
 					if (dom == null)
 						continue;
 					
@@ -97,17 +95,14 @@ namespace MonoDevelop.AspNet.Parser
 				
 				var crd = rd as ControlRegisterDirective;
 				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) == 0) {
-					string fullName =  WebTypeManager.GetUserControlTypeName (doc.Project, crd.Src, doc.FilePath);
+					string fullName =  WebTypeManager.GetUserControlTypeName (Project, crd.Src, Doc.FileName);
 					if (fullName != null)
 						return fullName;
 				}
 			}
 			
-			string globalLookup = WebTypeManager.GetRegisteredTypeName (doc.Project, 
-			    System.IO.Path.GetDirectoryName (doc.FilePath), tagPrefix, tagName);
-			
 			//returns null if type not found
-			return globalLookup;
+			return WebTypeManager.GetRegisteredTypeName (Project, DirectoryPath, tagPrefix, tagName);
 		}
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
@@ -120,16 +115,16 @@ namespace MonoDevelop.AspNet.Parser
 			bool isSWC = baseType.FullName == "System.Web.UI.Control";
 			
 			string aspPrefix = "asp:";
-			foreach (IType cls in WebTypeManager.ListSystemControlClasses (baseType, doc.Project))
+			foreach (IType cls in WebTypeManager.ListSystemControlClasses (baseType, Project))
 				yield return new AspTagCompletionData (aspPrefix, cls);
 			
-			foreach (RegisterDirective rd in pageRefsList) {
+			foreach (var rd in RegisteredTags) {
 				if (!rd.IsValid ())
 					continue;
 				
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
-					ProjectDom dom = WebTypeManager.ResolveAssembly (doc.Project, ard.Assembly);
+					ProjectDom dom = WebTypeManager.ResolveAssembly (Project, ard.Assembly);
 					if (dom == null)
 						continue;
 					
@@ -150,10 +145,8 @@ namespace MonoDevelop.AspNet.Parser
 			}
 			
 			//return controls from web.config
-			string webDirectory = System.IO.Path.GetDirectoryName (doc.FilePath);
-			foreach (CompletionData cd in WebTypeManager.GetRegisteredTypeCompletionData (doc.Project, webDirectory, baseType)) {
+			foreach (var cd in WebTypeManager.GetRegisteredTypeCompletionData (Project, DirectoryPath, baseType))
 				yield return cd;
-			}
 		}
 		
 		public IType GetControlType (string tagPrefix, string tagName)
@@ -163,19 +156,19 @@ namespace MonoDevelop.AspNet.Parser
 			
 			IType type = null;
 			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
-				type = WebTypeManager.SystemTypeLookup (tagName, doc.Project);
+				type = WebTypeManager.SystemTypeLookup (tagName, Project);
 				if (type != null)
 					return type;
 			}
 			
-			foreach (RegisterDirective rd in pageRefsList) {
+			foreach (var rd in RegisteredTags) {
 				if (string.Compare (rd.TagPrefix, tagPrefix, StringComparison.OrdinalIgnoreCase) != 0)
 					continue;
 				
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
 					string assembly = ard.Assembly;
-					ProjectDom dom = WebTypeManager.ResolveAssembly (doc.Project, ard.Assembly);
+					ProjectDom dom = WebTypeManager.ResolveAssembly (Project, ard.Assembly);
 					if (dom == null)
 						continue;
 					type = WebTypeManager.AssemblyTypeLookup (dom, ard.Namespace, tagName);
@@ -186,15 +179,12 @@ namespace MonoDevelop.AspNet.Parser
 				
 				ControlRegisterDirective crd = rd as ControlRegisterDirective;
 				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) == 0) {
-					return WebTypeManager.GetUserControlType (doc.Project, crd.Src, doc.FilePath);
+					return WebTypeManager.GetUserControlType (Project, crd.Src, Doc.FileName);
 				}	
 			}
 			
-			IType globalLookup = WebTypeManager.GetRegisteredType (doc.Project, 
-			    System.IO.Path.GetDirectoryName (doc.FilePath), tagPrefix, tagName);
-			
 			//returns null if type not found
-			return globalLookup;
+			return WebTypeManager.GetRegisteredType (Project, DirectoryPath, tagPrefix, tagName);
 		}
 		
 		public string GetTagPrefix (IType control)
@@ -204,24 +194,19 @@ namespace MonoDevelop.AspNet.Parser
 			else if (control.Namespace == "System.Web.UI.HtmlControls")
 				return string.Empty;
 			
-			foreach (RegisterDirective rd in pageRefsList) {
+			foreach (var rd in RegisteredTags) {
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null && ard.Namespace == control.Namespace)
 					return ard.TagPrefix;
 			}
 			
-			string globalPrefix = WebTypeManager.GetControlPrefix (doc.Project, System.IO.Path.GetDirectoryName (doc.FilePath), control);
-			if (globalPrefix != null)
-				return globalPrefix;
-			
-			return null;
+			// returns null if no result found
+			return WebTypeManager.GetControlPrefix (Project, DirectoryPath, control);
 		}
 		
 		IEnumerable<RegisterDirective> GetDirectivesForPrefix (string prefix)
 		{
-			foreach (RegisterDirective rd in pageRefsList)
-				if (string.Equals (rd.TagPrefix, prefix, StringComparison.OrdinalIgnoreCase))
-					yield return rd;
+			return RegisteredTags.Where (t => string.Equals (t.TagPrefix, prefix, StringComparison.OrdinalIgnoreCase));
 		}
 		
 		#region "Refactoring" operations -- things that modify the file
@@ -242,7 +227,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (desiredPrefix == null)
 				prefix = GetPrefix (control);
 			
-			System.Reflection.AssemblyName an = MonoDevelop.Core.Assemblies.SystemAssemblyService.ParseAssemblyName (assemblyName);
+			var an = MonoDevelop.Core.Assemblies.SystemAssemblyService.ParseAssemblyName (assemblyName);
 			
 			string directive = string.Format ("{0}<%@ Register TagPrefix=\"{1}\" Namespace=\"{2}\" Assembly=\"{3}\" %>",
 			    Environment.NewLine, prefix, control.Namespace, an.Name);
@@ -267,11 +252,11 @@ namespace MonoDevelop.AspNet.Parser
 			
 			//add the reference if it doesn't match an existing one
 			bool match = false;
-			foreach (MonoDevelop.Projects.ProjectReference p in doc.Project.References)
+			foreach (var p in Project.References)
 				if (p.Equals (pr))
 					match = true;
 			if (!match)
-				doc.Project.References.Add (pr);
+				Project.References.Add (pr);
 		}
 		
 		string GetPrefix (IType control)
@@ -338,10 +323,9 @@ namespace MonoDevelop.AspNet.Parser
 			if (node == null)
 				return;
 			
-			IEditableTextFile textFile = 
-				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (doc.FilePath);
+			var textFile = MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (Doc.FileName);
 			if (textFile == null)
-				textFile = new TextFile (doc.FilePath);
+				textFile = new TextFile (Doc.FileName);
 			
 			int pos = textFile.GetPositionFromLineColumn (node.Location.EndLine, node.Location.EndColumn);
 			textFile.InsertText (pos, directive);
@@ -349,128 +333,12 @@ namespace MonoDevelop.AspNet.Parser
 		
 		DirectiveNode GetPageDirective ()
 		{
-			PageDirectiveVisitor v = new PageDirectiveVisitor ();
-			doc.RootNode.AcceptVisit (v);
+			var v = new PageDirectiveVisitor ();
+			Doc.RootNode.AcceptVisit (v);
 			return v.DirectiveNode;
 		}
 		
 		#endregion
-		
-		#region directive classes
-		
-		protected abstract class RegisterDirective
-		{
-			private DirectiveNode node;
-			
-			public RegisterDirective (DirectiveNode node)
-			{
-				this.node = node;
-			}
-			
-			public DirectiveNode Node {
-				get { return node; }
-			}
-			
-			public string TagPrefix {
-				get { return (string) node.Attributes ["TagPrefix"]; }
-				set { node.Attributes ["TagPrefix"] = value; }
-			}
-			
-			public virtual bool IsValid ()
-			{
-				if (string.IsNullOrEmpty (TagPrefix))
-					return false;
-				
-				foreach (char c in TagPrefix)
-					if (!Char.IsLetterOrDigit (c))
-						return false;
-				
-				return true;
-			}
-		}
-		
-		protected class AssemblyRegisterDirective : RegisterDirective
-		{
-			public AssemblyRegisterDirective (DirectiveNode node)
-				: base (node)
-			{
-			}
-			
-			public string Namespace {
-				get { return (string) Node.Attributes ["Namespace"]; }
-				set { Node.Attributes ["Namespace"] = value; }
-			}
-			
-			public string Assembly {
-				get { return (string) Node.Attributes ["Assembly"]; }
-				set { Node.Attributes ["Assembly"] = value; }
-			}
-			
-			public override string ToString ()
-			{	
-				return String.Format ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", TagPrefix, "Namespace", Namespace, "Assembly", Assembly);
-			}
-			
-			public override bool IsValid ()
-			{
-				if (string.IsNullOrEmpty (Assembly) || string.IsNullOrEmpty (Namespace) || !base.IsValid ())
-					return false;
-				return true;
-			}
-		}
-		
-		protected class ControlRegisterDirective : RegisterDirective
-		{			
-			public ControlRegisterDirective (DirectiveNode node)
-				: base (node)
-			{
-			}
-			
-			public string TagName {
-				get { return (string) Node.Attributes ["TagName"]; }
-				set { Node.Attributes ["TagName"] = value; }
-			}
-			
-			public string Src {
-				get { return (string) Node.Attributes ["Src"]; }
-				set { Node.Attributes ["Src"] = value; }
-			}
-			
-			public override string ToString ()
-			{	
-				return String.Format ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", TagPrefix, "TagName", TagName, "Src", Src);
-			}
-			
-			public override bool IsValid ()
-			{
-				if (string.IsNullOrEmpty (TagName) || string.IsNullOrEmpty (Src) || !base.IsValid ())
-					return false;
-				return true;
-			}
-		}
-		
-		private class ReferenceVisitor : Visitor
-		{
-			DocumentReferenceManager parent;
-			
-			public ReferenceVisitor (DocumentReferenceManager parent)
-			{
-				this.parent = parent;
-			}
-			
-			public override void Visit (DirectiveNode node)
-			{
-				if ((String.Compare (node.Name, "register", true) != 0) || (node.Attributes ["TagPrefix"] == null))
-					return;
-				
-				if ((node.Attributes ["TagName"] != null) && (node.Attributes ["Src"] != null))
-					parent.pageRefsList.Add (new ControlRegisterDirective (node));
-				else if ((node.Attributes ["Namespace"] != null) && (node.Attributes ["Assembly"] != null))
-					parent.pageRefsList.Add (new AssemblyRegisterDirective (node));
-			}	
-		}
-		
-		#endregion classes
 	}
 	
 	//lazily loads docs

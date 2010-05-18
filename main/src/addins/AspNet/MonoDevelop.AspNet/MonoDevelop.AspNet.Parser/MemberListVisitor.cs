@@ -36,18 +36,22 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AspNet.Parser
 {
 	//purpose is to find all named tags for code completion and compilation of base class
 	public class MemberListVisitor : Visitor
 	{
-		private Dictionary<string,CodeMemberField> members = new Dictionary<string,CodeMemberField> ();
-		Document doc;
+		Dictionary<string,CodeMemberField> members = new Dictionary<string,CodeMemberField> ();
+		List<Error> errors = new List<Error> ();
+		AspNetParsedDocument doc;
+		DocumentReferenceManager refMan;
 		
-		public MemberListVisitor (Document parent)
+		public MemberListVisitor (AspNetParsedDocument doc, DocumentReferenceManager refMan)
 		{
-			this.doc = parent;	
+			this.doc = doc;
+			this.refMan = refMan;
 		}
 		
 		public override void Visit (TagNode node)
@@ -61,7 +65,7 @@ namespace MonoDevelop.AspNet.Parser
 				return;
 			
 			if (members.ContainsKey (id)) {
-				doc.ParseErrors.Add (new ParserException (node.Location, GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id)));
+				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id));
 				return;
 			}
 			
@@ -69,20 +73,20 @@ namespace MonoDevelop.AspNet.Parser
 			string prefix = (s.Length == 1)? "" : s[0];
 			string name = (s.Length == 1)? s[0] : s[1];
 			if (s.Length > 2) {
-				doc.ParseErrors.Add (new ParserException (node.Location, GettextCatalog.GetString ("Malformed tag name: '{0}'.", node.TagName)));
+				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("Malformed tag name: '{0}'.", node.TagName));
 				return;
 			}
 			
 			string typeName = null;
 			try {
-				typeName = doc.ReferenceManager.GetTypeName (prefix, name, node.Attributes ["type"] as string);
+				typeName = refMan.GetTypeName (prefix, name, node.Attributes ["type"] as string);
 			} catch (Exception e) {
-				doc.ParseErrors.Add (new ParserException (node.Location, "Unknown parser error:" + e.ToString ()));
+				AddError (ErrorType.Error, node.Location, "Unknown parser error:" + e.ToString ());
 				return;
 			}
 			
 			if (typeName == null) {
-				doc.ParseErrors.Add (new ParserException (node.Location, GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name)));
+				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name));
 				return;
 			}
 			
@@ -93,8 +97,12 @@ namespace MonoDevelop.AspNet.Parser
 			members [id] = member;
 		}
 		
-		public IDictionary<string,CodeMemberField> Members {
-			get { return members; }
+		internal void AddError (ErrorType type, ILocation location, string message)
+		{
+			Errors.Add (new Error (type, location.BeginLine, location.BeginColumn, message));
 		}
+		
+		public IDictionary<string,CodeMemberField> Members { get { return members; } }
+		public IList<Error> Errors { get { return errors; } }
 	}
 }

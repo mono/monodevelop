@@ -30,6 +30,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -56,33 +57,35 @@ namespace MonoDevelop.AspNet
 			return proj.GetCodebehindTypeName (file.Name);
 		}
 		
-		public static System.CodeDom.CodeCompileUnit GenerateCodeBehind (
-			AspNetAppProject aspProject, AspNetParsedDocument parsedDocument, List<CodeBehindWarning> errors)
+		static void AddFail (List<CodeBehindWarning> errors, AspNetParsedDocument document, Error err)
 		{
-			string className = parsedDocument.PageInfo.InheritedClass;
+			errors.Add (new CodeBehindWarning (GettextCatalog.GetString (
+					"Parser failed with error {0}. CodeBehind members for this file will not be added.", err.Message),
+					document.FileName, err.Region.Start.Line, err.Region.Start.Column));
+		}
+		
+		public static System.CodeDom.CodeCompileUnit GenerateCodeBehind (AspNetAppProject project, AspNetParsedDocument document, 
+		                                                                 List<CodeBehindWarning> errors)
+		{
+			string className = document.Info.InheritedClass;
 			
-			//initialising this list may generate more errors so we do it here
-			MemberListVisitor memberList = null;
-			if (!string.IsNullOrEmpty (className))
-				memberList = parsedDocument.Document.MemberList;
-			
-			//log errors
-			if (parsedDocument.Document.ParseErrors.Count > 0) {
-				foreach (Exception e in parsedDocument.Document.ParseErrors) {
-					CodeBehindWarning cbw;
-					ErrorInFileException eife = e as ErrorInFileException;
-					if (eife != null)
-						cbw = new CodeBehindWarning (eife);
-					else
-						cbw = new CodeBehindWarning (
-						    GettextCatalog.GetString ("Parser failed with error {0}. CodeBehind members for this file will not be added.", e.ToString ()),
-						    parsedDocument.FileName);
-					errors.Add (cbw);
-				}
+			if (document.HasErrors) {
+				AddFail (errors, document, document.Errors.Where (x => x.ErrorType == ErrorType.Error).First ());
+				return null;
 			}
 			
 			if (string.IsNullOrEmpty (className))
 				return null;
+			
+			var refman = new DocumentReferenceManager () { Doc = document, Project = project };
+			var memberList = new MemberListVisitor (document, refman );
+			document.RootNode.AcceptVisit (memberList);
+			
+			var err = memberList.Errors.Where (x => x.ErrorType == ErrorType.Error).FirstOrDefault ();
+			if (err != null) {
+				AddFail (errors, document, err);
+				return null;
+			}
 			
 			//initialise the generated type
 			System.CodeDom.CodeCompileUnit ccu = new System.CodeDom.CodeCompileUnit ();
@@ -97,44 +100,45 @@ namespace MonoDevelop.AspNet
 			int namespaceSplit = className.LastIndexOf ('.');
 			string namespaceName = null;
 			if (namespaceSplit > -1) {
-				namespac.Name = aspProject.StripImplicitNamespace (className.Substring (0, namespaceSplit));
+				namespac.Name = project.StripImplicitNamespace (className.Substring (0, namespaceSplit));
 				typeDecl.Name = className.Substring (namespaceSplit + 1);
 			} else {
 				typeDecl.Name = className;
 			}
 			
 			string masterTypeName = null;
-			if (!String.IsNullOrEmpty (parsedDocument.PageInfo.MasterPageTypeName)) {
-				masterTypeName = parsedDocument.PageInfo.MasterPageTypeName;
-			} else if (!String.IsNullOrEmpty (parsedDocument.PageInfo.MasterPageTypeVPath)) {
+			if (!String.IsNullOrEmpty (document.Info.MasterPageTypeName)) {
+				masterTypeName = document.Info.MasterPageTypeName;
+			} else if (!String.IsNullOrEmpty (document.Info.MasterPageTypeVPath)) {
 				try {
-					ProjectFile resolvedMaster = aspProject.ResolveVirtualPath (parsedDocument.PageInfo.MasterPageTypeVPath, parsedDocument.FileName);
+					ProjectFile resolvedMaster = project.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
 					AspNetParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)
-						masterParsedDocument = ProjectDomService.Parse (aspProject, resolvedMaster.FilePath, null)	as AspNetParsedDocument;
-					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.PageInfo.InheritedClass)) {
-						masterTypeName = masterParsedDocument.PageInfo.InheritedClass;
+						masterParsedDocument = ProjectDomService.Parse (project, resolvedMaster.FilePath, null)	as AspNetParsedDocument;
+					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.Info.InheritedClass)) {
+						masterTypeName = masterParsedDocument.Info.InheritedClass;
 					} else {
 						errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
-						                                                  parsedDocument.PageInfo.MasterPageTypeVPath),
-						                                   parsedDocument.FileName));
+						                                                  document.Info.MasterPageTypeVPath),
+						                                   document.FileName));
 					}
 				} catch (Exception ex) {
 					errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
-					                                                  parsedDocument.PageInfo.MasterPageTypeVPath),
-					                                   parsedDocument.FileName));
+					                                                  document.Info.MasterPageTypeVPath),
+					                                   document.FileName));
 					LoggingService.LogWarning ("Error resolving master page type", ex);
 				}
 			}
 			
 			if (masterTypeName != null) {
-				System.CodeDom.CodeMemberProperty masterProp = new System.CodeDom.CodeMemberProperty ();
-				masterProp.Name = "Master";
-				masterProp.Type = new System.CodeDom.CodeTypeReference (masterTypeName);
-				masterProp.HasGet = true;
-				masterProp.HasSet = false;
-				masterProp.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.New 
-					| System.CodeDom.MemberAttributes.Final;
+				var masterProp = new System.CodeDom.CodeMemberProperty () {
+					Name = "Master",
+					Type = new System.CodeDom.CodeTypeReference (masterTypeName),
+					HasGet = true,
+					HasSet = false,
+					Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.New 
+						| System.CodeDom.MemberAttributes.Final,
+				};
 				masterProp.GetStatements.Add (new System.CodeDom.CodeMethodReturnStatement (
 						new System.CodeDom.CodeCastExpression (masterTypeName, 
 							new System.CodeDom.CodePropertyReferenceExpression (
@@ -143,7 +147,7 @@ namespace MonoDevelop.AspNet
 			}
 			
 			//add fields for each control in the page
-			foreach (System.CodeDom.CodeMemberField member in memberList.Members.Values)
+			foreach (var member in memberList.Members.Values)
 				typeDecl.Members.Add (member);
 			
 			return ccu;

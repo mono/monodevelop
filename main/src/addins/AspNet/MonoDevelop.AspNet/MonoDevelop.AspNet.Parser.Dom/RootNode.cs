@@ -91,6 +91,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		public void Parse (string fileName, TextReader textStream)
 		{
 			AspParser parser = new AspParser (fileName, textStream);
+			this.fileName = fileName;
 			
 			parser.Error += new ParseErrorHandler (ParseError);
 			parser.TagParsed += new TagParsedHandler (TagParsed);

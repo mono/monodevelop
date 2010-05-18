@@ -1,3 +1,29 @@
+2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.AspNet.csproj:
+	* MonoDevelop.AspNet/CodeBehind.cs:
+	* MonoDevelop.AspNet.Parser/Document.cs:
+	* MonoDevelop.AspNet.Parser/PageInfo.cs:
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/AspNetSyntaxMode.cs:
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs:
+	* MonoDevelop.AspNet.Parser/AspNetParser.cs:
+	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs:
+	* MonoDevelop.AspNet/AspNetToolboxProvider.cs:
+	* MonoDevelop.AspNet.Parser/PageInfoVisitor.cs:
+	* MonoDevelop.AspNet.Parser/MemberListVisitor.cs:
+	* MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs:
+	* MonoDevelop.AspNet.Parser/PageDirectiveVisitor.cs:
+	* MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs:
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs:
+	* MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs:
+	  Heavy refactoring and tidying of ASP.NET parser code to
+	  support future changes.
+
 2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs:

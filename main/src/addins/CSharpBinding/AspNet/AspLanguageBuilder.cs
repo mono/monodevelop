@@ -59,8 +59,8 @@ namespace MonoDevelop.CSharp.Completion
 			this.data = data;
 			StringBuilder result = new StringBuilder ();
 			string typeName = "Generated";
-			if (documentInfo.AspNetParsedDocument.PageInfo != null && !string.IsNullOrEmpty (documentInfo.AspNetParsedDocument.PageInfo.InheritedClass))
-				typeName = documentInfo.AspNetParsedDocument.PageInfo.InheritedClass;
+			if (documentInfo.AspNetParsedDocument.Info != null && !string.IsNullOrEmpty (documentInfo.AspNetParsedDocument.Info.InheritedClass))
+				typeName = documentInfo.AspNetParsedDocument.Info.InheritedClass;
 			
 			int idx = typeName.LastIndexOf ('.');
 			if (idx > 0) {
@@ -144,8 +144,8 @@ namespace MonoDevelop.CSharp.Completion
 			documentInfo = new DocumentInfo ();
 			this.data = data;
 			string typeName = "Generated";
-			if (aspDocument.PageInfo != null && !string.IsNullOrEmpty (aspDocument.PageInfo.InheritedClass))
-				typeName = aspDocument.PageInfo.InheritedClass;
+			if (!string.IsNullOrEmpty (aspDocument.Info.InheritedClass))
+				typeName = aspDocument.Info.InheritedClass;
 			
 			int idx = typeName.LastIndexOf ('.');
 			if (idx > 0) {
@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharp.Completion
 			document.Append (typeName);
 			document.Append ("{");
 			
-			aspDocument.Document.RootNode.AcceptVisit (this);
+			aspDocument.RootNode.AcceptVisit (this);
 			
 			documentInfo.AspNetParsedDocument = aspDocument;
 			documentInfo.ParsedDocument = Parse (aspDocument.FileName, document.ToString ());
