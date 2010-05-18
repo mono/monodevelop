@@ -39,17 +39,17 @@ namespace MonoDevelop.AspNet.Parser
 	public class AspNetParsedDocument : ParsedDocument
 	{
 		
-		public AspNetParsedDocument (string fileName, RootNode rootNode, PageInfo info) : base (fileName)
+		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
-			Type = AspNetAppProject.DetermineWebSubtype (fileName);
 			Info = info;
 			RootNode = rootNode;
+			Type = type;
 		}
 		
-		public WebSubtype Type { get; private set; }
 		public PageInfo Info { get; private set; }
 		public RootNode RootNode { get; private set; }
+		public WebSubtype Type { get; private set; }
 		
 		public override IEnumerable<FoldingRegion> GenerateFolds ()
 		{

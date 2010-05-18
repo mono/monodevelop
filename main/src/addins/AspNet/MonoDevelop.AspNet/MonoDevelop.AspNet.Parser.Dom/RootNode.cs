@@ -43,16 +43,8 @@ namespace MonoDevelop.AspNet.Parser.Dom
 	{
 		string fileName;
 		List<ParseException> errors = new List<ParseException> ();
-		
-		public RootNode (string fileName, StreamReader textStream)
-			: base (null)
-		{
-			Parse (fileName, textStream);
-			this.fileName = fileName;
-		}
-		
-		public RootNode ()
-			: base (null)
+				
+		public RootNode () : base (null)
 		{
 		}
 		
@@ -90,12 +82,12 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		
 		public void Parse (string fileName, TextReader textStream)
 		{
-			AspParser parser = new AspParser (fileName, textStream);
-			this.fileName = fileName;
+			var parser = new AspParser (fileName, textStream);
+			fileName = fileName;
 			
-			parser.Error += new ParseErrorHandler (ParseError);
-			parser.TagParsed += new TagParsedHandler (TagParsed);
-			parser.TextParsed += new TextParsedHandler (TextParsed);
+			parser.Error      += ParseError;
+			parser.TagParsed  += TagParsed;
+			parser.TextParsed += TextParsed;
 			
 			currentNode = this;
 			

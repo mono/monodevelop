@@ -40,10 +40,13 @@ namespace MonoDevelop.AspNet.Parser
 		{
 		}
 		
-		protected List<RegisterDirective> registeredTags = new List<RegisterDirective> ();
-		protected List<string> imports = new List<string> ();
+		List<RegisterDirective> registeredTags = new List<RegisterDirective> ();
+		List<string> imports = new List<string> ();
+		List<string> implements = new List<string> ();
+		List<AssemblyDirective> assemblies = new List<AssemblyDirective> ();
 		
 		public string InheritedClass { get; private set; }
+		public string ClassName { get; private set; }
 		public string CodeBehindFile { get; private set; }
 		public string CodeFile { get; private set; }
 		public string Language { get; private set; }
@@ -54,6 +57,8 @@ namespace MonoDevelop.AspNet.Parser
 		public WebSubtype Subtype { get; private set; }
 		public IEnumerable<RegisterDirective> RegisteredTags { get { return registeredTags; } }
 		public IEnumerable<string> Imports { get { return imports; } }
+		public IEnumerable<string> Implements { get { return imports; } }
+		public IEnumerable<AssemblyDirective> Assemblies { get { return assemblies; } }
 		
 		public IEnumerable<Error> Populate (RootNode node, List<Error> errors)
 		{
@@ -77,10 +82,11 @@ namespace MonoDevelop.AspNet.Parser
 			
 			public override void Visit (DirectiveNode node)
 			{
+				var atts = node.Attributes;
 				switch (node.Name.ToLowerInvariant ()) {
 				case "page":
 					SetSubtype (WebSubtype.WebForm, node);
-					info.MasterPageFile = node.Attributes ["masterpagefile"] as string;
+					info.MasterPageFile = atts ["masterpagefile"] as string;
 					break;
 				case "control":
 					SetSubtype (WebSubtype.WebControl, node);
@@ -102,20 +108,39 @@ namespace MonoDevelop.AspNet.Parser
 						Add (ErrorType.Error, node, "Unexpected second mastertype directive", node.Name);
 						return;
 					}
-					info.MasterPageTypeName = node.Attributes["typename"] as string;
-					info.MasterPageTypeVPath = node.Attributes["virtualpath"] as string;
+					info.MasterPageTypeName = atts["typename"] as string;
+					info.MasterPageTypeVPath = atts["virtualpath"] as string;
+					if (string.IsNullOrEmpty (info.MasterPageTypeName) == string.IsNullOrEmpty (info.MasterPageTypeVPath))
+						Add (ErrorType.Error, node, "Mastertype directive must have non-empty 'typename' or 'virtualpath' attribute");
 					break;
 				case "register":
-					if (node.Attributes ["TagPrefix"] != null) {
-						if ((node.Attributes ["TagName"] != null) && (node.Attributes ["Src"] != null))
+					if (atts ["TagPrefix"] != null) {
+						if ((atts ["TagName"] != null) && (atts ["Src"] != null))
 							info.registeredTags.Add (new ControlRegisterDirective (node));
-						else if ((node.Attributes ["Namespace"] != null) && (node.Attributes ["Assembly"] != null))
+						else if ((atts ["Namespace"] != null) && (atts ["Assembly"] != null))
 							info.registeredTags.Add (new AssemblyRegisterDirective (node));
 					}
 					break;
 				case "assembly":
+					var assembly = new AssemblyDirective (atts ["name"] as string, atts ["src"] as string);
+					if (assembly.IsValid ())
+						info.assemblies.Add (assembly);
+					else
+						Add (ErrorType.Error, node, "Assembly directive must have non-empty 'name' or 'src' attribute");
 					break;
 				case "import":
+					var ns = atts ["namespace"] as string;
+					if (!string.IsNullOrEmpty (ns))
+						info.imports.Add (ns);
+					else
+						Add (ErrorType.Error, node, "Import directive must have non-empty 'namespace' attribute");
+					break;
+				case "implements":
+					var interf = atts ["interface"] as string;
+					if (!string.IsNullOrEmpty (interf))
+						info.implements.Add (interf);
+					else
+						Add (ErrorType.Error, node, "Implements directive must have non-empty 'interface' attribute");
 					break;
 				default:
 					break;
@@ -136,8 +161,8 @@ namespace MonoDevelop.AspNet.Parser
 				
 				info.Subtype = type;
 				info.InheritedClass = node.Attributes ["inherits"] as string;
-				if (info.InheritedClass == null)
-					info.InheritedClass = node.Attributes ["class"] as string;
+				if (info.ClassName == null)
+					info.ClassName = node.Attributes ["classname"] as string;
 				info.CodeBehindFile = node.Attributes ["codebehind"] as string;
 				info.Language = node.Attributes ["language"] as string;
 				info.CodeFile = node.Attributes ["codefile"] as string;
@@ -233,6 +258,23 @@ namespace MonoDevelop.AspNet.Parser
 			if (string.IsNullOrEmpty (TagName) || string.IsNullOrEmpty (Src) || !base.IsValid ())
 				return false;
 			return true;
+		}
+	}
+	
+	public class AssemblyDirective
+	{			
+		public AssemblyDirective (string name, string src)
+		{
+			this.Name = name;
+			this.Src = src;
+		}		
+		
+		public string Name { get; private set; }
+		public string Src { get; private set; }
+		
+		public bool IsValid ()
+		{
+			return string.IsNullOrEmpty (Name) ^ string.IsNullOrEmpty (Src);
 		}
 	}
 		

@@ -42,7 +42,6 @@ namespace MonoDevelop.CSharp.Completion
 		StringBuilder document = new StringBuilder ();
 		StringBuilder pageRenderer = new StringBuilder ();
 		TextEditorData data;
-		bool hasNamespace = false;
 		
 		public bool SupportsLanguage (string language)
 		{
@@ -54,25 +53,48 @@ namespace MonoDevelop.CSharp.Completion
 			return new MonoDevelop.CSharp.Parser.NRefactoryParser ().Parse (null, fileName, text);
 		}
 		
+		static string GetDefaultBaseClass (MonoDevelop.AspNet.WebSubtype type)
+		{
+			switch (type) {
+			case MonoDevelop.AspNet.WebSubtype.WebForm:
+				return "System.Web.UI.Page";
+			case MonoDevelop.AspNet.WebSubtype.MasterPage:
+				return "System.Web.UI.MasterPage";
+			case MonoDevelop.AspNet.WebSubtype.WebControl:
+				return "System.Web.UI.UserControl";
+			}
+			throw new InvalidOperationException (string.Format ("Unexpected filetype '{0}'", type));
+		}
+		
+		static void WriteUsings (MonoDevelop.AspNet.Parser.AspNetParsedDocument doc, StringBuilder builder)
+		{
+			foreach (var u in doc.Info.Imports) {
+				builder.Append ("using ");
+				builder.Append (u);
+				builder.AppendLine (";");
+			}
+		}
+		
+		static void WriteClassDeclaration (MonoDevelop.AspNet.Parser.AspNetParsedDocument doc, StringBuilder builder)
+		{
+			string typeName = string.IsNullOrEmpty (doc.Info.ClassName)? "Generated" : doc.Info.ClassName;
+			
+			string baseClass = string.IsNullOrEmpty (doc.Info.InheritedClass)?
+				GetDefaultBaseClass (doc.Type) : doc.Info.InheritedClass;
+			
+			builder.Append ("partial class ");
+			builder.Append (typeName);
+			builder.Append (" : ");
+			builder.AppendLine (baseClass);
+		}
+		
 		public LocalDocumentInfo BuildLocalDocument (DocumentInfo documentInfo, TextEditorData data, string expressionText, bool isExpression)
 		{
 			this.data = data;
-			StringBuilder result = new StringBuilder ();
-			string typeName = "Generated";
-			if (documentInfo.AspNetParsedDocument.Info != null && !string.IsNullOrEmpty (documentInfo.AspNetParsedDocument.Info.InheritedClass))
-				typeName = documentInfo.AspNetParsedDocument.Info.InheritedClass;
+			var result = new StringBuilder ();
 			
-			int idx = typeName.LastIndexOf ('.');
-			if (idx > 0) {
-				result.Append ("namespace ");
-				result.Append (typeName.Substring (0, idx));
-				result.AppendLine (" {");
-				typeName = typeName.Substring (idx + 1);
-				hasNamespace = true;
-			}
-			
-			result.Append ("partial class ");
-			result.AppendLine (typeName);
+			WriteUsings (documentInfo.AspNetParsedDocument, result);
+			WriteClassDeclaration (documentInfo.AspNetParsedDocument, result);
 			result.AppendLine ("{");
 		
 			if (isExpression) {
@@ -95,7 +117,7 @@ namespace MonoDevelop.CSharp.Completion
 			result.AppendLine ();
 			result.AppendLine ("}");
 			result.AppendLine ("}");
-
+			
 			return new LocalDocumentInfo () {
 				LocalDocument = result.ToString (),
 				CaretPosition = caretPosition,
@@ -138,27 +160,15 @@ namespace MonoDevelop.CSharp.Completion
 			completion.Dom = currentDom;
 			return completion;
 		}
+		
 		DocumentInfo documentInfo;
 		public DocumentInfo BuildDocument (MonoDevelop.AspNet.Parser.AspNetParsedDocument aspDocument, TextEditorData data)
 		{
 			documentInfo = new DocumentInfo ();
 			this.data = data;
-			string typeName = "Generated";
-			if (!string.IsNullOrEmpty (aspDocument.Info.InheritedClass))
-				typeName = aspDocument.Info.InheritedClass;
 			
-			int idx = typeName.LastIndexOf ('.');
-			if (idx > 0) {
-				document.Append ("namespace ");
-				document.Append (typeName.Substring (0, idx));
-				document.Append (" {");
-				typeName = typeName.Substring (idx + 1);
-				hasNamespace = true;
-			}
-			
-			document.Append ("partial class ");
-			document.Append (typeName);
-			document.Append ("{");
+			WriteUsings (aspDocument, document);
+			WriteClassDeclaration (aspDocument, document);
 			
 			aspDocument.RootNode.AcceptVisit (this);
 			
@@ -174,8 +184,6 @@ namespace MonoDevelop.CSharp.Completion
 			document.Append ("}");
 			
 			document.Append ("}");
-			if (hasNamespace)
-				document.Append ("}");
 			/*
 			CursorPosition = buildCursorPosition;
 			if (buildCursorIsExpression)

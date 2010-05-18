@@ -1,5 +1,10 @@
 2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* AspLanguageBuilder.cs: Fix type name and base class, and add
+	  usings.
+
+2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* AspLanguageBuilder.cs: Heavy refactoring and tidying of
 	  ASP.NET parser code to support future changes.
 

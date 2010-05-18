@@ -1,5 +1,13 @@
 2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Parser/PageInfo.cs:
+	* MonoDevelop.AspNet.Parser/AspNetParser.cs:
+	* MonoDevelop.AspNet.Parser.Dom/RootNode.cs:
+	* MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs: Collect
+	  more information from the document for C# completion.
+
+2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* MonoDevelop.AspNet.csproj:
