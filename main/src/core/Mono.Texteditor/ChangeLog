@@ -1,3 +1,8 @@
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Fixed 'Bug 604999 -
+	  Horizontal scrolling during search is annoying'.
+
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 538800 - Tab

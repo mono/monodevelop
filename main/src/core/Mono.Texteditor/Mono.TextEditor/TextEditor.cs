@@ -1228,6 +1228,14 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public void TryToResetHorizontalScrollPosition ()
+		{
+			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
+			int textWith = Allocation.Width - textViewMargin.XOffset;
+			if (caretX < textWith - TextViewMargin.CharWidth) 
+				this.textEditorData.HAdjustment.Value = 0;
+		}
+		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
@@ -1975,7 +1983,9 @@ namespace Mono.TextEditor
 		public SearchResult FindNext (bool setSelection)
 		{
 			SearchResult result = textEditorData.FindNext (setSelection);
+			TryToResetHorizontalScrollPosition ();
 			AnimateSearchResult (result);
+			
 			return result;
 		}
 
@@ -1999,6 +2009,7 @@ namespace Mono.TextEditor
 		public SearchResult FindPrevious (bool setSelection)
 		{
 			SearchResult result = textEditorData.FindPrevious (setSelection);
+			TryToResetHorizontalScrollPosition ();
 			AnimateSearchResult (result);
 			return result;
 		}
