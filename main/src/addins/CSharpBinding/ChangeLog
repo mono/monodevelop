@@ -1,3 +1,8 @@
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: Fixed 'Bug 606506
+	  - Types of fields are not shown'
+
 2010-05-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
