@@ -569,8 +569,10 @@ namespace MonoDevelop.SourceEditor
 			x += this.menuPopupLocation.X;
 			y += this.menuPopupLocation.Y;
 			Requisition request = menu.SizeRequest ();
-			y = Math.Min (y, GdkWindow.Screen.Height - request.Height);
-			x = Math.Min (x, GdkWindow.Screen.Width - request.Width);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
+			
+			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom - request.Height));
+			x = Math.Max (geometry.Left, Math.Min (x, geometry.Right - request.Width));
 			pushIn = true;
 		}
 		

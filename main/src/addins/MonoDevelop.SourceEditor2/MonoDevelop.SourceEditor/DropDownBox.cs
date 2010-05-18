@@ -107,11 +107,12 @@ namespace MonoDevelop.SourceEditor
 			window.WidthRequest = Allocation.Width;
 			int width, height;
 			window.GetSizeRequest (out width, out height);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (dx, dy));
 			
-			if (dy + height > Screen.Height)
+			if (dy + height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - height;
-			if (dx + width > Screen.Width)
-				dx = Screen.Width - width;
+			if (dx + width > geometry.Right)
+				dx = geometry.Right - width;
 			
 			window.Move (dx, dy);
 			window.GetSizeRequest (out width, out height);

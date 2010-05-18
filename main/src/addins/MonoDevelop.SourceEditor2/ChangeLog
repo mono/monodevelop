@@ -1,3 +1,10 @@
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/DropDownBox.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs: Improved
+	  multi monitor support.
+
 2010-05-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Use

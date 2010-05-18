@@ -464,7 +464,8 @@ namespace MonoDevelop.SourceEditor
 			
 			void CalcVisibleRows ()
 			{
-				int winHeight = win.parent.GdkWindow.Screen.Height / 2;
+				Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (win.parent.GdkWindow));
+				int winHeight = geometry.Height / 2;
 				int lvWidth, lvHeight;
 				this.GetSizeRequest (out lvWidth, out lvHeight);
 				if (layout == null)
