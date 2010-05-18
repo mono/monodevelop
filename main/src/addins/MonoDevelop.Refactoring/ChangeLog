@@ -1,5 +1,10 @@
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  handle invalid regions.
+
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CodeGeneration/GenerateCodeWindow.cs: Added
 	  multi monitor support.
 
