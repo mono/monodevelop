@@ -1557,9 +1557,12 @@ namespace Mono.TextEditor
 				previewWindow.CalculateSize ();
 				int w = previewWindow.SizeRequest ().Width;
 				int h = previewWindow.SizeRequest ().Height;
-				if (x + ox + w > this.textEditor.GdkWindow.Screen.Width)
+				
+				Gdk.Rectangle geometry = this.textEditor.Screen.GetMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
+				
+				if (x + ox + w > geometry.Right)
 					x = hintRectangle.Left - w;
-				if (y + oy + h > this.textEditor.GdkWindow.Screen.Height)
+				if (y + oy + h > geometry.Bottom)
 					y = hintRectangle.Top - h;
 				int destX = System.Math.Max (0, ox + x);
 				int destY = System.Math.Max (0, oy + y);

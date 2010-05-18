@@ -102,9 +102,9 @@ namespace Mono.TextEditor
 				w = System.Math.Max (w, w2);
 				h += h2;
 			}
-			
-			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 3, Screen.Width * 2 / 5)), 
-			                     System.Math.Max (1, System.Math.Min (h + 3, Screen.Height * 2 / 5)));
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (editor.GdkWindow));
+			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 3, geometry.Width * 2 / 5)), 
+			                     System.Math.Max (1, System.Math.Min (h + 3, geometry.Height * 2 / 5)));
 		}
 		
 		protected override void OnDestroyed ()

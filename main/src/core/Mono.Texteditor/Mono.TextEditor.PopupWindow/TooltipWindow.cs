@@ -132,20 +132,19 @@ namespace Mono.TextEditor.PopupWindow
 //					LimitWidth (fittedWidth);
 //				}
 				
+				Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (GdkWindow));
 				if (nudgeHorizontal) {
-					int screenW = Screen.Width;
-					if (allocation.Width <= screenW && x + allocation.Width >= screenW - edgeGap)
-						x = (screenW - allocation.Height - edgeGap);
-					if (x <= 0)
-						x = 0;
+					if (allocation.Width <= geometry.Width && x + allocation.Width >= geometry.Width - edgeGap)
+						x = geometry.Left + (geometry.Width - allocation.Height - edgeGap);
+					if (x <= geometry.Left)
+						x = geometry.Left;
 				}
 				
 				if (nudgeVertical) {
-					int screenH = Screen.Height;
-					if (allocation.Height <= screenH && y + allocation.Height >= screenH - edgeGap)
-						y = (screenH - allocation.Height - edgeGap);
-					if (y <= 0)
-						y = 0;
+					if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Height - edgeGap)
+						y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
+					if (y <= geometry.Top)
+						y = geometry.Top;
 				}
 				
 				if (y != oldY || x != oldX)
