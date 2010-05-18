@@ -37,7 +37,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest
 {
-	public class AutoTestClientSession: MarshalByRefObject
+	public class AutoTestClientSession: MarshalByRefObject, IAutoTestClient
 	{
 		Process process;
 		AutoTestSession session;
@@ -172,20 +172,26 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			eventQueue.Clear ();
 		}
-		
-		internal void Connect (AutoTestSession session)
+
+		void IAutoTestClient.Connect (AutoTestSession session)
 		{
 			this.session = session;
 			waitEvent.Set ();
 		}
-		
-		internal void NotifyEvent (string eventName)
+
+		void IAutoTestClient.NotifyEvent (string eventName)
 		{
 			lock (eventQueue) {
 				eventQueue.Enqueue (eventName);
 				Monitor.PulseAll (eventQueue);
 			}
 		}
+	}
+
+	public interface IAutoTestClient
+	{
+		void Connect (AutoTestSession session);
+		void NotifyEvent (string eventName);
 	}
 }
 

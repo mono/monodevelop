@@ -38,7 +38,7 @@ namespace MonoDevelop.Components.AutoTest
 	{
 		static CommandManager manager;
 		static AutoTestSession currentSession;
-		static AutoTestClientSession currentClient;
+		static IAutoTestClient currentClient;
 		
 		public static void Start (CommandManager manager)
 		{
@@ -55,7 +55,7 @@ namespace MonoDevelop.Components.AutoTest
 				byte[] data = Convert.FromBase64String (sref);
 				MemoryStream ms = new MemoryStream (data);
 				BinaryFormatter bf = new BinaryFormatter ();
-				currentClient = (AutoTestClientSession) bf.Deserialize (ms);
+				currentClient = (IAutoTestClient)bf.Deserialize (ms);
 				currentSession = new AutoTestSession ();
 				currentClient.Connect (currentSession);
 			}

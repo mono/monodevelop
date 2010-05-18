@@ -1,3 +1,9 @@
+2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.AutoTest\AutoTestService.cs:
+	* MonoDevelop.Components.AutoTest\AutoTestClientSession.cs:
+	  Access to the test server using an interface.
+
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/TooltipWindow.cs:
