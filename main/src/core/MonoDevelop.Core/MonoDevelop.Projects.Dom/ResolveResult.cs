@@ -391,26 +391,45 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-
+		public bool ExactMethodMatch {
+			get {
+				if (methods.Count == 0)
+					return false;
+				foreach (IMethod method in methods) {
+					Console.WriteLine (arguments.Count  + "/" + genericArguments.Count);
+					if (method.TypeParameters.Count != genericArguments.Count || method.Parameters.Count != arguments.Count)
+						continue;
+					bool match = true;
+					for (int i = 0; i < method.Parameters.Count; i++) {
+						Console.WriteLine (method.Parameters[i].ReturnType.ToInvariantString () +"///" + arguments[i].ToInvariantString ());
+						if (method.Parameters[i].ReturnType.ToInvariantString () != arguments[i].ToInvariantString ()) {
+							match = false;
+							break;
+						}
+					}
+					if (match)
+						return true;
+				}
+				return false;
+			}
+		}
 		public IMethod MostLikelyMethod {
 			get {
 				if (methods.Count == 0)
 					return null;
 				IMethod result = methods [0];
 				foreach (IMethod method in methods) {
-					if (method.TypeParameters.Count == genericArguments.Count) {
-						if (method.Parameters.Count == arguments.Count) {
-							bool match = true;
-							for (int i = 0; i < method.Parameters.Count; i++) {
-								if (method.Parameters[i].ReturnType.FullName != arguments[i].FullName) {
-									match = false;
-								}
-							}
-							if (match)
-								return method;
-							result = method;
+					if (method.TypeParameters.Count != genericArguments.Count || method.Parameters.Count != arguments.Count)
+						continue;
+					bool match = true;
+					for (int i = 0; i < method.Parameters.Count; i++) {
+						if (method.Parameters[i].ReturnType.ToInvariantString () != arguments[i].ToInvariantString ()) {
+							match = false;
 						}
 					}
+					if (match)
+						return method;
+					result = method;
 				}
 				return result;
 			}
