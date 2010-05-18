@@ -1,5 +1,10 @@
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Removed some
+	  debug code.
+
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Added a property
 	  to determine, if a method resove result matches exactly one
 	  of the found methods.

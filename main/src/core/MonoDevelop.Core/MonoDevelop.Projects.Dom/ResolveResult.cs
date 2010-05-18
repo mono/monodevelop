@@ -396,12 +396,10 @@ namespace MonoDevelop.Projects.Dom
 				if (methods.Count == 0)
 					return false;
 				foreach (IMethod method in methods) {
-					Console.WriteLine (arguments.Count  + "/" + genericArguments.Count);
 					if (method.TypeParameters.Count != genericArguments.Count || method.Parameters.Count != arguments.Count)
 						continue;
 					bool match = true;
 					for (int i = 0; i < method.Parameters.Count; i++) {
-						Console.WriteLine (method.Parameters[i].ReturnType.ToInvariantString () +"///" + arguments[i].ToInvariantString ());
 						if (method.Parameters[i].ReturnType.ToInvariantString () != arguments[i].ToInvariantString ()) {
 							match = false;
 							break;
