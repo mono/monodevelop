@@ -32,7 +32,7 @@ using System.Threading;
 
 namespace MonoDevelop.Components.AutoTest
 {
-	class AutoTestSession: MarshalByRefObject
+	public class AutoTestSession: MarshalByRefObject
 	{
 		object currentObject;
 		ManualResetEvent syncEvent = new ManualResetEvent (false);

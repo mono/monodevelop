@@ -31,22 +31,19 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting.Channels;
 using System.Collections;
 using System.Runtime.Remoting.Channels.Ipc;
+using System.Runtime.Remoting;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest
 {
 	public static class AutoTestService
 	{
-		static CommandManager manager;
-		static AutoTestSession currentSession;
-		static IAutoTestClient currentClient;
+		static CommandManager commandManager;
+		static AutoTestServiceManager manager = new AutoTestServiceManager ();
 		
-		public static void Start (CommandManager manager)
+		public static void Start (CommandManager commandManager, bool publishServer)
 		{
-			Console.WriteLine ("pp111:");
-			if (currentSession != null)
-				throw new InvalidOperationException ("Test session already started");
-			
-			AutoTestService.manager = manager;
+			AutoTestService.commandManager = commandManager;
 			
 			string sref = Environment.GetEnvironmentVariable ("MONO_AUTOTEST_CLIENT");
 			if (!string.IsNullOrEmpty (sref)) {
@@ -55,23 +52,34 @@ namespace MonoDevelop.Components.AutoTest
 				byte[] data = Convert.FromBase64String (sref);
 				MemoryStream ms = new MemoryStream (data);
 				BinaryFormatter bf = new BinaryFormatter ();
-				currentClient = (IAutoTestClient)bf.Deserialize (ms);
-				currentSession = new AutoTestSession ();
-				currentClient.Connect (currentSession);
+				IAutoTestClient client = (IAutoTestClient) bf.Deserialize (ms);
+				client.Connect (manager.AttachClient (client));
+			}
+			if (publishServer && !manager.IsClientConnected) {
+				SetupRemoting ();
+				BinaryFormatter bf = new BinaryFormatter ();
+				ObjRef oref = RemotingServices.Marshal (manager);
+				MemoryStream ms = new MemoryStream ();
+				bf.Serialize (ms, oref);
+				sref = Convert.ToBase64String (ms.ToArray ());
+				File.WriteAllText (SessionReferenceFile, sref);
+			}
+		}
+		
+		internal static string SessionReferenceFile {
+			get {
+				return Path.Combine (Path.GetTempPath (), "monodevelop-autotest-objref");
 			}
 		}
 		
 		internal static CommandManager CommandManager {
-			get { return manager; }
+			get { return commandManager; }
 		}
 		
 		public static void NotifyEvent (string eventName)
 		{
-			if (currentClient != null) {
-				try {
-					currentClient.NotifyEvent (eventName);
-				} catch {}
-			}
+			if (manager.IsClientConnected)
+				manager.NotifyEvent (eventName);
 		}
 		
 		internal static void SetupRemoting ()
@@ -88,5 +96,58 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 	}
+	
+	class AutoTestServiceManager: MarshalByRefObject, IAutoTestService
+	{
+		IAutoTestClient client;
+		AutoTestSession currentSession;
+		
+		public override object InitializeLifetimeService ()
+		{
+			return null;
+		}
+		
+		public bool IsClientConnected {
+			get { return client != null; }
+		}
+		
+		public void NotifyEvent (string eventName)
+		{
+			try {
+				client.NotifyEvent (eventName);
+			}
+			catch (Exception ex) {
+				Console.WriteLine ("Dropping autotest client: " + ex.Message);
+				client = null;
+			}
+		}
+			
+		public AutoTestSession AttachClient (IAutoTestClient client)
+		{
+			if (this.client != null) {
+				// Make sure the current client is alive
+				NotifyEvent ("Ping");
+				if (this.client != null)
+					throw new InvalidOperationException ("A client is already connected");
+			}
+			this.client = client;
+			if (currentSession == null)
+				currentSession = new AutoTestSession ();
+			return currentSession;
+		}
+		
+		public void DetachClient (IAutoTestClient client)
+		{
+			if (client == this.client)
+				this.client = null;
+			else
+				throw new InvalidOperationException ("Not connected");
+		}
+	}
+	
+	public interface IAutoTestService
+	{
+		AutoTestSession AttachClient (IAutoTestClient client);
+		void DetachClient (IAutoTestClient client);
+	}
 }
-

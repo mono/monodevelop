@@ -44,6 +44,7 @@ namespace MonoDevelop.Components.AutoTest
 		ManualResetEvent waitEvent = new ManualResetEvent (false);
 		int defaultEventWaitTimeout = 20000;
 		Queue<string> eventQueue = new Queue<string> ();
+		IAutoTestService service;
 		
 		public AutoTestClientSession ()
 		{
@@ -77,6 +78,18 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 		
+		public void AttachApplication ()
+		{
+			AutoTestService.SetupRemoting ();
+
+			string sref = File.ReadAllText (AutoTestService.SessionReferenceFile);
+			byte[] data = Convert.FromBase64String (sref);
+			MemoryStream ms = new MemoryStream (data);
+			BinaryFormatter bf = new BinaryFormatter ();
+			service = (IAutoTestService) bf.Deserialize (ms);
+			session = service.AttachClient (this);
+		}
+		
 		public override object InitializeLifetimeService ()
 		{
 			return null;
@@ -84,7 +97,10 @@ namespace MonoDevelop.Components.AutoTest
 		
 		public void Stop ()
 		{
-			process.Kill ();
+			if (service != null)
+				service.DetachClient (this);
+			else
+				process.Kill ();
 		}
 		
 		public void ExecuteCommand (object cmd)

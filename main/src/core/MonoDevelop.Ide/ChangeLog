@@ -1,5 +1,12 @@
 2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.AutoTest/AutoTestSession.cs:
+	* MonoDevelop.Components.AutoTest/AutoTestService.cs:
+	* MonoDevelop.Components.AutoTest/AutoTestClientSession.cs:
+	  Allow attaching to a running test service.
+
+2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.AutoTest\AutoTestService.cs:
 	* MonoDevelop.Components.AutoTest\AutoTestClientSession.cs:
 	  Access to the test server using an interface.
