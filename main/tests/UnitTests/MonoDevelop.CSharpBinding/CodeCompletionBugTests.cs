@@ -2539,5 +2539,24 @@ class Test
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 534680 - LINQ keywords missing from Intellisense
+		/// </summary>
+		[Test()]
+		public void TestBug534680 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class Foo
+{
+	public static void Main (string[] args)
+	{
+		$from str in args $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("select"), "keyword 'select' not found.");
+		}
 	}
 }

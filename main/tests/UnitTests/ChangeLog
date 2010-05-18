@@ -1,3 +1,9 @@
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  test for 'Bug 534680 - LINQ keywords missing from
+	  Intellisense'.
+
 2010-05-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
