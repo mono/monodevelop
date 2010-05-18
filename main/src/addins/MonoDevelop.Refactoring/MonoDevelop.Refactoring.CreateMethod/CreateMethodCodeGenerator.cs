@@ -48,18 +48,29 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null || options.ResolveResult.ResolvedType == null || !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName))
+			INRefactoryASTProvider provider = options.GetASTProvider ();
+			IResolver resolver = options.GetResolver ();
+			if (provider == null || resolver == null)
 				return false;
+			
 			invoke = GetInvocationExpression (options);
 			if (invoke == null)
 				return false;
-			if (invoke.TargetObject is MemberReferenceExpression) {
-				INRefactoryASTProvider provider = options.GetASTProvider ();
-				IResolver resolver = options.GetResolver ();
-				if (provider == null || resolver == null)
+			returnType = DomReturnType.Void;
+			modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
+			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (provider.OutputNode (options.Dom, invoke)), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+			
+			if (resolveResult is MethodResolveResult) {
+				MethodResolveResult mrr = (MethodResolveResult)resolveResult ;
+				if (mrr.ExactMethodMatch)
 					return false;
+				returnType = mrr.MostLikelyMethod.ReturnType;
+				modifiers = (ICSharpCode.NRefactory.Ast.Modifiers)mrr.MostLikelyMethod.Modifiers;
+			}
+			
+			if (invoke.TargetObject is MemberReferenceExpression) {
 				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
 				if (resolveResult == null || resolveResult.ResolvedType == null || resolveResult.CallingType == null)
 					return false;
 				IType type = options.Dom.GetType (resolveResult.ResolvedType);
@@ -69,11 +80,13 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		}
 		
 		InvocationExpression invoke;
+		IReturnType returnType = DomReturnType.Void;
+		ICSharpCode.NRefactory.Ast.Modifiers modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
 		
 		InvocationExpression GetInvocationExpression (RefactoringOptions options)
 		{
 			TextEditorData data = options.GetTextEditorData ();
-			if (data == null)
+			if (data == null || options.ResolveResult == null)
 				return null;
 			string expression = options.ResolveResult.ResolvedExpression.Expression;
 			if (!expression.Contains ("(")) {
@@ -183,8 +196,8 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				}
 				
 			}
-			methodDecl.TypeReference = new TypeReference ("System.Void");
-			methodDecl.TypeReference.IsKeyword = true;
+			methodDecl.Modifier = modifiers;
+			methodDecl.TypeReference = HelperMethods.ConvertToTypeReference (returnType);
 			if (!isInInterface) {
 				methodDecl.Body = new BlockStatement ();
 				methodDecl.Body.AddChild (new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null)));

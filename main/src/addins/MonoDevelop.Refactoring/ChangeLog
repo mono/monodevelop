@@ -1,5 +1,12 @@
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Implemented 'Bug 580806 - Feature request: Show resolve-menu
+	  (extract method) when calling method with wrong signature'.
+
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:
 	  Fixed 'Bug 593525 - Moving a class to a separate file causes
 	  attributes for that class, in the original source file...'.
