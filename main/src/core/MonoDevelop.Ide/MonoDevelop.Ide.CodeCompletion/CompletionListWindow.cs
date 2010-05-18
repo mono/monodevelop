@@ -285,14 +285,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (!force && previousHeight != h && previousWidth != w)
 				return;
-
+			
+			int myMonitor = Screen.GetMonitorAtPoint (X, Y);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (myMonitor);
+			
 			previousHeight = h;
 			previousWidth = w;
+			if (X + w > geometry.Right)
+				X = geometry.Right - w;
 
-			if (X + w > Screen.Width )
-				X = Screen.Width - w;
-
-			if (Y + h > Screen.Height || yPosition == WindowPositonY.Top) {
+			if (Y + h > geometry.Bottom || yPosition == WindowPositonY.Top) {
 				Y = Y - CodeCompletionContext.TriggerTextHeight - h;
 				yPosition = WindowPositonY.Top;
 			} else {
@@ -528,12 +530,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationViewHidden = false;
 			}
 			
+			int myMonitor = Screen.GetMonitorAtWindow (GdkWindow);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (myMonitor);
+		
 			Requisition req = declarationviewwindow.SizeRequest ();
 			int dvwWidth = req.Width;
 			int horiz = listpos_x + lvWidth + declarationWindowMargin;
-			if (this.Screen.Width - horiz >= lvWidth) {
-				if (this.Screen.Width - horiz < dvwWidth)
-					declarationviewwindow.SetFixedWidth (this.Screen.Width - horiz);
+			if (geometry.Right - horiz >= lvWidth) {
+				if (geometry.Right - horiz < dvwWidth)
+					declarationviewwindow.SetFixedWidth (geometry.Right - horiz);
 			} else {
 				if (listpos_x - dvwWidth - declarationWindowMargin < 0) {
 					declarationviewwindow.SetFixedWidth (listpos_x - declarationWindowMargin);
