@@ -792,6 +792,9 @@ namespace MonoDevelop.CSharp.Resolver
 					frame = frame.parent;
 				}
 				break;
+			case Tokens.From:
+				frame.SetContext (ExpressionContext.LinqContext);
+				break;
 			case Tokens.LessThan:
 				if (Tokens.ValidInsideTypeName[lastToken]) {
 					frame = new Frame (frame, '<');

@@ -550,6 +550,23 @@ namespace MonoDevelop.CSharp.Completion
 							CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
 							dataList.AutoSelect = autoSelect;
 							return dataList;
+						} else if (result.Contexts != null && result.Contexts.Any (ctx => ctx == ExpressionContext.LinqContext)) {
+							tokenIndex = completionContext.TriggerOffset;
+							token = GetPreviousToken (ref tokenIndex, false); // token last typed
+							token = GetPreviousToken (ref tokenIndex, false); // possible linq keyword ?
+							triggerWordLength = 1;
+							if (linqKeywords.Contains (token)) {
+								if (token == "from") // after from no auto code completion.
+									return null;
+								result.Expression = "";
+								return CreateCtrlSpaceCompletionData (completionContext, result);
+							}
+							CompletionDataList dataList = new ProjectDomCompletionDataList ();
+							CompletionDataCollector col = new CompletionDataCollector (dataList, Document.CompilationUnit, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+							foreach (string kw in linqKeywords) {
+								col.Add (kw, "md-keyword");
+							}
+							return dataList;
 						}
 					}
 				}
@@ -563,7 +580,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return null;
 		}
-
+		
+		static string[] linqKeywords = new string[] { "from", "where", "select", "group", "into", "orderby", "join", "let", "in", "on", "equals", "by", "ascending", "descending" };
+		
 		int GetMemberStartPosition (IMember mem)
 		{
 			if (mem is IField)
@@ -967,6 +986,21 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 				return whereDataList;
+			}
+			
+			if (result.Contexts != null && result.Contexts.Any (ctx => ctx == ExpressionContext.LinqContext)) {
+				if (linqKeywords.Contains (word)) {
+					if (word == "from") // after from no auto code completion.
+						return null;
+					result.Expression = "";
+					return CreateCtrlSpaceCompletionData (completionContext, result);
+				}
+				CompletionDataList dataList = new ProjectDomCompletionDataList ();
+				CompletionDataCollector col = new CompletionDataCollector (dataList, Document.CompilationUnit, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+				foreach (string kw in linqKeywords) {
+					col.Add (kw, "md-keyword");
+				}
+				return dataList;
 			}
 			return null;
 		}
@@ -1591,7 +1625,6 @@ namespace MonoDevelop.CSharp.Completion
 			
 			DomLocation cursorLocation = new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
 			resolver.SetupResolver (cursorLocation);
-//			System.Console.WriteLine ("ctrl+space expression result:" + expressionResult);
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			CompletionDataCollector col = new CompletionDataCollector (result, Document.CompilationUnit, cursorLocation);
 			

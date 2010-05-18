@@ -1,5 +1,12 @@
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 534680 - LINQ keywords missing from
+	  Intellisense'.
+
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: Fixed 'Bug 606506
 	  - Types of fields are not shown'
 
