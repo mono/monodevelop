@@ -802,9 +802,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			public void CommitChanges ()
 			{
 				// First of all, mark as deleted the children of deleted nodes
-				// This avoids trying to delete nodes that have already been deleted (it set DeletedDone flag)
+				// This avoids trying to delete nodes that have already been deleted (it sets the DeletedDone flag)
 				foreach (TreeNode node in iterToNode.Values) {
-					if (node.Deleted)
+					if (node.Deleted || (node.Reset && !node.Filled))
 						MarkChildrenDeleted (node);
 				}
 				foreach (TreeNode node in iterToNode.Values) {

@@ -1,3 +1,10 @@
+2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs: In
+	  CommitChanges, mark children of a node as deleted if the
+	  node has been reset. Should fix bug #553903 - Solution pad
+	  treeview crash.
+
 2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/Ide.cs: Track api change.
