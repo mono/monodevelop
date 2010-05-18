@@ -286,8 +286,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!force && previousHeight != h && previousWidth != w)
 				return;
 			
-			int myMonitor = Screen.GetMonitorAtPoint (X, Y);
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (myMonitor);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (X, Y));
 			
 			previousHeight = h;
 			previousWidth = w;
@@ -530,8 +529,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationViewHidden = false;
 			}
 			
-			int myMonitor = Screen.GetMonitorAtWindow (GdkWindow);
-			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (myMonitor);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (GdkWindow));
 		
 			Requisition req = declarationviewwindow.SizeRequest ();
 			int dvwWidth = req.Width;

@@ -203,13 +203,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Y = CurrentCodeCompletionContext.TriggerYCoord;
 			}
 			
-			if (X + reqSize.Width > window.Screen.Width)
-				X = window.Screen.Width - reqSize.Width;
+			Gdk.Rectangle geometry = window.Screen.GetMonitorGeometry (window.Screen.GetMonitorAtPoint (X, Y));
+		
+			if (X + reqSize.Width > geometry.Right)
+				X = geometry.Right - reqSize.Width;
 			
-			if (Y < 0)
+			if (Y < geometry.Top)
 				Y = CurrentCodeCompletionContext.TriggerYCoord;
 			
-			if (wasAbove || Y + reqSize.Height > window.Screen.Height) {
+			if (wasAbove || Y + reqSize.Height > geometry.Bottom) {
 				Y = Y - CurrentCodeCompletionContext.TriggerTextHeight - reqSize.Height - 4;
 				wasAbove = true;
 			}
