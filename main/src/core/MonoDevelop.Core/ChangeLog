@@ -1,3 +1,8 @@
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ExpressionContext.cs: Added LINQ
+	  context.
+
 2010-05-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core/FileService.cs: FilePath should be
