@@ -1,3 +1,35 @@
+2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* UserInterfaceTests: Some preliminary code for running stress
+	  tests. Still far from complete.
+
+	* test-projects/ContactBook:
+	* test-projects/ContactBook/ContactBook:
+	* test-projects/ContactBook/CustomWidgets:
+	* test-projects/ContactBook/ContactBook.mds:
+	* test-projects/ContactBook/ContactBook/gtk-gui:
+	* test-projects/ContactBook/ContactBook/Main.cs:
+	* test-projects/ContactBook/CustomWidgets/gtk-gui:
+	* test-projects/ContactBook/CustomWidgets/MyClass.cs:
+	* test-projects/ContactBook/ContactBook/MainWindow.cs:
+	* test-projects/ContactBook/ContactBook/ContactBook.mdp:
+	* test-projects/ContactBook/ContactBook/AssemblyInfo.cs:
+	* test-projects/ContactBook/CustomWidgets/TextSelector.cs:
+	* test-projects/ContactBook/CustomWidgets/AssemblyInfo.cs:
+	* test-projects/ContactBook/ContactBook/gtk-gui/gui.stetic:
+	* test-projects/ContactBook/CustomWidgets/CustomWidgets.mdp:
+	* test-projects/ContactBook/ContactBook/gtk-gui/generated.cs:
+	* test-projects/ContactBook/CustomWidgets/gtk-gui/gui.stetic:
+	* test-projects/ContactBook/ContactBook/GlobalActionGroup.cs:
+	* test-projects/ContactBook/ContactBook/gtk-gui/MainWindow.cs:
+	* test-projects/ContactBook/CustomWidgets/gtk-gui/library.dat:
+	* test-projects/ContactBook/CustomWidgets/gtk-gui/objects.xml:
+	* test-projects/ContactBook/CustomWidgets/gtk-gui/generated.cs:
+	* test-projects/ContactBook/CustomWidgets/gtk-gui/objects.xml.dat:
+	* test-projects/ContactBook/CustomWidgets/gtk-gui/CustomWidgets.TextSelector.cs:
+	* test-projects/ContactBook/ContactBook/gtk-gui/ContactBook.GlobalActionGroup.cs:
+	  New test project.
+
 2010-04-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* test-projects\test-build-configs\Lib1\AssemblyInfo.cs:

@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stetic-interface>
+  <configuration>
+    <images-root-path>..</images-root-path>
+  </configuration>
+  <import>
+    <widget-library name="../bin/Debug/CustomWidgets.dll" internal="true" />
+  </import>
+  <widget class="Gtk.Bin" id="CustomWidgets.TextSelector" design-size="583 40">
+    <action-group name="Default">
+      <action id="UnaOpci">
+        <property name="Type">Action</property>
+        <property name="Label">Una opció</property>
+        <property name="ShortLabel">Una opció</property>
+      </action>
+      <action id="UnaMs">
+        <property name="Type">Action</property>
+        <property name="Label">Una més</property>
+        <property name="ShortLabel">Una més</property>
+        <signal name="Activated" handler="OnUnaMsActivated" />
+      </action>
+      <action id="IUnaAltre">
+        <property name="Type">Action</property>
+        <property name="Label">I Una altre</property>
+        <property name="ShortLabel">I Una altre</property>
+      </action>
+    </action-group>
+    <property name="MemberName" />
+    <property name="Events">ButtonPressMask</property>
+    <child>
+      <widget class="Gtk.HBox" id="hbox1">
+        <property name="MemberName" />
+        <property name="Spacing">3</property>
+        <child>
+          <widget class="Gtk.Entry" id="entry">
+            <property name="MemberName">entry</property>
+            <property name="CanFocus">True</property>
+            <property name="Text">fadabona</property>
+            <property name="IsEditable">True</property>
+            <property name="InvisibleChar">●</property>
+            <signal name="Changed" handler="OnEntryChanged" />
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ComboBox" id="combobox">
+            <property name="MemberName">combobox</property>
+            <property name="IsTextCombo">True</property>
+            <property name="Items" translatable="yes" />
+            <signal name="Changed" handler="OnComboboxChanged" />
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.MenuBar" id="menubar1">
+            <property name="MemberName" />
+            <node name="menubar1" type="Menubar">
+              <node type="Menu" action="UnaOpci">
+                <node type="Menuitem" action="UnaMs" />
+                <node type="Menuitem" action="IUnaAltre" />
+              </node>
+            </node>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="label1">
+            <property name="MemberName" />
+            <property name="LabelProp">Texte</property>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</stetic-interface>

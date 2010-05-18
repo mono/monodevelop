@@ -1,0 +1,10 @@
+<objects attr-sync="on">
+  <object type="CustomWidgets.TextSelector" palette-category="widget" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="TextSelector Properties">
+        <property name="Values" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+</objects>

@@ -1,0 +1,13 @@
+<objects>
+  <object type="CustomWidgets.TextSelector" palette-category="widget" allow-children="false">
+    <itemgroups>
+      <itemgroup ref="Gtk.Widget" />
+      <itemgroup label="TextSelector Properties">
+        <property name="Values" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup ref="Gtk.Widget" />
+    </signals>
+  </object>
+</objects>

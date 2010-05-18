@@ -1,0 +1,18 @@
+2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.cs:
+	* UserInterfaceTests.csproj:
+	* MonoDevelop.UserInterfaceTests:
+	* MonoDevelop.Components.AutoTest:
+	* MonoDevelop.UserInterfaceTests/Ide.cs:
+	* MonoDevelop.UserInterfaceTests/Util.cs:
+	* MonoDevelop.UserInterfaceTests/IdeApi.cs:
+	* MonoDevelop.Components.AutoTest/TestStep.cs:
+	* MonoDevelop.UserInterfaceTests/SimpleTest.cs:
+	* MonoDevelop.Components.AutoTest/StressTest.cs:
+	* MonoDevelop.Components.AutoTest/TestService.cs:
+	* MonoDevelop.UserInterfaceTests/BaseStressTest.cs:
+	* MonoDevelop.Components.AutoTest/UndoTestStepAttribute.cs:
+	  Some preliminary code for running stress tests. Still far
+	  from complete.
+
