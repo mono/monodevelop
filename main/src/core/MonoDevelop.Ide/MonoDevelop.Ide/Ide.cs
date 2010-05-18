@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide
 			commandService = new CommandManager ();
 			ideServices = new IdeServices ();
 			CustomToolService.Init ();
-			AutoTestService.Start (commandService);
+			AutoTestService.Start (commandService, Preferences.EnableAutomatedTesting);
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
 			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;

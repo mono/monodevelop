@@ -246,6 +246,16 @@ namespace MonoDevelop.Ide
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.EnableInstrumentation", value); }
 		}
 		
+		public bool EnableAutomatedTesting {
+			get { return PropertyService.Get ("MonoDevelop.EnableAutomatedTesting", false); }
+			set { PropertyService.Set ("MonoDevelop.EnableAutomatedTesting", value); }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> EnableAutomatedTestingChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.EnableAutomatedTesting", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.EnableAutomatedTesting", value); }
+		}
+		
 		/// <summary>
 		/// Font to use for treeview pads. Returns null if no custom font is set.
 		/// </summary>

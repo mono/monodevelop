@@ -8,6 +8,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		private global::Gtk.CheckButton checkInstr;
 
+		private global::Gtk.CheckButton checkAutoTest;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -30,6 +32,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.checkAutoTest = new global::Gtk.CheckButton ();
+			this.checkAutoTest.CanFocus = true;
+			this.checkAutoTest.Name = "checkAutoTest";
+			this.checkAutoTest.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Enable automated test support");
+			this.checkAutoTest.DrawIndicator = true;
+			this.checkAutoTest.UseUnderline = true;
+			this.vbox2.Add (this.checkAutoTest);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.checkAutoTest]));
+			w2.Position = 1;
+			w2.Expand = false;
+			w2.Fill = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

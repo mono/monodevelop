@@ -1,5 +1,15 @@
 2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide/Ide.cs: Track api change.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide/IdePreferences.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/MaintenanceOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanelWidget.cs:
+	  Added option for enabling automated testing.
+
+2010-05-18  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.AutoTest/AutoTestSession.cs:
 	* MonoDevelop.Components.AutoTest/AutoTestService.cs:
 	* MonoDevelop.Components.AutoTest/AutoTestClientSession.cs:
