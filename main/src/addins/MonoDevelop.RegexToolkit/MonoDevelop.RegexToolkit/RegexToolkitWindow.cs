@@ -296,8 +296,11 @@ namespace MonoDevelop.RegexToolkit
 			this.GdkWindow.GetOrigin (out ox, out oy);
 			int w = tooltipWindow.Child.SizeRequest().Width;
 			int h = tooltipWindow.Child.SizeRequest().Height;
-			if (ox + x + w + tooltipXOffset >= this.GdkWindow.Screen.Width ||
-			    oy + y + h >= this.GdkWindow.Screen.Height) {
+			
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (this.GdkWindow));
+			
+			if (ox + x + w + tooltipXOffset >= geometry.Right ||
+			    oy + y + h >= geometry.Bottom) {
 				tooltipWindow.Move (ox + x - w, oy + altY - h);
 			} else 
 				tooltipWindow.Move (ox + x + tooltipXOffset, oy + y);

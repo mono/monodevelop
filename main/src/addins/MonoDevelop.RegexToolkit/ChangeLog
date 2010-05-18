@@ -1,3 +1,8 @@
+2010-05-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Added multi
+	  monitor support.
+
 2010-05-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.RegexToolkit.addin.xml: On Windows, show the
