@@ -592,7 +592,7 @@ namespace Mono.Debugging.Soft
 
 		public override bool IsNull (EvaluationContext ctx, object val)
 		{
-			return val == null;
+			return val == null || ((val is PrimitiveValue) && ((PrimitiveValue)val).Value == null);
 		}
 
 		public override bool IsPrimitive (EvaluationContext ctx, object val)

@@ -1,3 +1,7 @@
+2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SoftDebuggerAdaptor.cs: Improved detection of null values.
+
 2010-05-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugger.Soft.dll:
