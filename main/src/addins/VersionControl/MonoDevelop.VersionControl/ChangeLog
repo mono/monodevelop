@@ -1,3 +1,8 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Show a
+	  status message while getting annotations.
+
 2010-05-10  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Track API

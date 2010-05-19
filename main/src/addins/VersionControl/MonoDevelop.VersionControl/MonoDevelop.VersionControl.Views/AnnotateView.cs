@@ -192,18 +192,22 @@ namespace MonoDevelop.VersionControl.Views
 		/// </summary>
 		private void UpdateAnnotations (object sender, EventArgs e)
 		{
+			StatusBarContext ctx = IdeApp.Workbench.StatusBar.CreateContext ();
+			ctx.AutoPulse = true;
+			ctx.ShowMessage (ImageService.GetImage ("md-version-control", IconSize.Menu), "Retrieving history");
+			
 			ThreadPool.QueueUserWorkItem (delegate {
-				annotations = new List<string> (repo.GetAnnotations (editor.Document.FileName));
-				if (null == history) {
-					try {
+				try {
+					annotations = new List<string> (repo.GetAnnotations (editor.Document.FileName));
+					if (null == history)
 						history = repo.GetHistory (editor.Document.FileName, null);
-					} catch (Exception ex) {
-						LoggingService.LogError ("Error retrieving history", ex);
-					}
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error retrieving history", ex);
 				}
 				
 				bool redrawAll = (0 == width);
 				DispatchService.GuiDispatch (delegate {
+					ctx.Dispose ();
 					UpdateWidth ();
 					if (redrawAll) {
 						editor.RedrawFromLine (0);
