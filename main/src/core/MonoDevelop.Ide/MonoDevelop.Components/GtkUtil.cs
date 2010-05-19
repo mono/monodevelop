@@ -51,13 +51,30 @@ namespace MonoDevelop.Components
 			tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 			tree.ButtonPressEvent += HandleButtonPressEvent;
 			tree.ScrollEvent += HandleTreeScrollEvent;
+			tree.Hidden += HandleTreeHidden;
+			tree.Unrealized += HandleTreeHidden;
 			tree.Destroyed += delegate {
+				ResetTooltip (tree);
 				treeData.Remove (tree);
-				if (data.ShowTimer != 0)
-					GLib.Source.Remove (data.ShowTimer);
-				if (data.LeaveTimer != 0)
-					GLib.Source.Remove (data.LeaveTimer);
 			};
+		}
+		
+		static void ResetTooltip (Gtk.TreeView tree)
+		{
+			TreeViewTooltipsData data;
+			if (!treeData.TryGetValue (tree, out data))
+				return;
+			if (data.ShowTimer != 0)
+				GLib.Source.Remove (data.ShowTimer);
+			if (data.LeaveTimer != 0)
+				GLib.Source.Remove (data.LeaveTimer);
+			if (data.Tooltip != null)
+				data.Tooltip.Destroy ();
+		}
+
+		static void HandleTreeHidden (object sender, EventArgs e)
+		{
+			ResetTooltip ((Gtk.TreeView) sender);
 		}
 
 		[GLib.ConnectBeforeAttribute]
@@ -70,7 +87,9 @@ namespace MonoDevelop.Components
 		static void HandleLeaveNotifyEvent(object o, LeaveNotifyEventArgs args)
 		{
 			TreeView tree = (TreeView) o;
-			TreeViewTooltipsData data = treeData [tree];
+			TreeViewTooltipsData data;
+			if (!treeData.TryGetValue (tree, out data))
+				return;
 			data.LeaveTimer = GLib.Timeout.Add (50, delegate {
 				data.LeaveTimer = 0;
 				if (data != null && data.Tooltip != null && data.Tooltip.MouseIsOver)
@@ -82,7 +101,9 @@ namespace MonoDevelop.Components
 
 		internal static void HideTooltip (TreeView tree)
 		{
-			TreeViewTooltipsData data = treeData [tree];
+			TreeViewTooltipsData data;
+			if (!treeData.TryGetValue (tree, out data))
+				return;
 			if (data.ShowTimer != 0) {
 				GLib.Source.Remove (data.ShowTimer);
 				data.ShowTimer = 0;
@@ -98,7 +119,9 @@ namespace MonoDevelop.Components
 		static void HandleMotionNotifyEvent(object o, MotionNotifyEventArgs args)
 		{
 			TreeView tree = (TreeView) o;
-			TreeViewTooltipsData data = treeData [tree];
+			TreeViewTooltipsData data;
+			if (!treeData.TryGetValue (tree, out data))
+				return;
 
 			HideTooltip (tree);
 
@@ -133,7 +156,9 @@ namespace MonoDevelop.Components
 		
 		static void UnscheduleTooltipShow (object tree)
 		{
-			TreeViewTooltipsData data = treeData [(Gtk.TreeView)tree];
+			TreeViewTooltipsData data;
+			if (!treeData.TryGetValue ((Gtk.TreeView)tree, out data))
+				return;
 			if (data.ShowTimer != 0) {
 				GLib.Source.Remove (data.ShowTimer);
 				data.ShowTimer = 0;

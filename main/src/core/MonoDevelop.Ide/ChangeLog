@@ -1,5 +1,12 @@
 2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components/GtkUtil.cs: Hide the tooltip when the
+	  tree is hidden. Made the code more robust. Fixes bug #606191
+	  - Null reference "Unhandled Exception" caused by auto-hide
+	  panel hiding while tooltip shows.
+
+2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Set the
 	  active location list every time a search is started.
 
