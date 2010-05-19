@@ -55,7 +55,12 @@ namespace MonoDevelop.Refactoring.RefactorImports
 				return 1;
 			if (right.Aliases.Any ())
 				return -1;
-			
+			bool leftIsSystem = left.Namespaces.First ().StartsWith ("System");
+			bool rightIsSystem = right.Namespaces.First ().StartsWith ("System");
+			if (leftIsSystem && !rightIsSystem)
+				return -1;
+			if (!leftIsSystem && rightIsSystem)
+				return 1;
 			return left.Namespaces.First ().CompareTo (right.Namespaces.First ());
 		}
 		

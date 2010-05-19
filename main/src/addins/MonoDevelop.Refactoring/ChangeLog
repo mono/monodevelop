@@ -1,3 +1,9 @@
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.RefactorImports/SortImportsRefactoring.cs:
+	  Implemented 'Bug 606848 - Organize Usings does not order
+	  System before other elements'.
+
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
