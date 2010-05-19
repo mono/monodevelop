@@ -130,13 +130,33 @@ namespace Mono.Debugging.Evaluation
 			return new ExceptionInfo (val);
 		}
 		
+		public virtual ObjectValue GetExceptionInstance (int frameIndex, EvaluationOptions options)
+		{
+			FrameInfo frame = GetFrameInfo (frameIndex, options, false);
+			if (frame == null) {
+				return Adaptor.CreateObjectValueAsync (options.CurrentExceptionTag, ObjectValueFlags.EvaluatingGroup, delegate {
+					frame = GetFrameInfo (frameIndex, options, true);
+					ObjectValue[] vals;
+					if (frame.Exception != null)
+						vals = new ObjectValue[] { frame.Exception.Exception.CreateObjectValue (false, options) };
+					else
+						vals = new ObjectValue [0];
+					return ObjectValue.CreateArray (null, new ObjectPath (options.CurrentExceptionTag), "", vals.Length, ObjectValueFlags.EvaluatingGroup, vals);
+				});
+			}
+			else if (frame.Exception != null)
+				return frame.Exception.Exception.CreateObjectValue (true, options);
+			else
+				return null;
+		}
+		
 		public virtual ObjectValue[] GetAllLocals (int frameIndex, EvaluationOptions options)
 		{
 			List<ObjectValue> locals = new List<ObjectValue> ();
 			
-			ExceptionInfo excObj = GetException (frameIndex, options);
+			ObjectValue excObj = GetExceptionInstance (frameIndex, options);
 			if (excObj != null)
-				locals.Insert (0, excObj.Instance);
+				locals.Insert (0, excObj);
 			
 			locals.AddRange (GetLocalVariables (frameIndex, options));
 			locals.AddRange (GetParameters (frameIndex, options));

@@ -42,6 +42,10 @@ namespace Mono.Debugging.Evaluation
 			this.ctx = ctx;
 		}
 		
+		public ValueReference Exception {
+			get { return this.exception; }
+		}
+		
 		public ObjectValue CreateObjectValue (bool withTimeout, EvaluationOptions options)
 		{
 			string type = ctx.Adapter.GetTypeName (ctx, exception.Type);

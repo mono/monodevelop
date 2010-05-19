@@ -1,3 +1,9 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Debugging.Evaluation/BaseBacktrace.cs:
+	* Mono.Debugging.Evaluation/ExceptionInfoSource.cs: Fix crash
+	  when getting locals which include the last thrown exception.
+
 2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
