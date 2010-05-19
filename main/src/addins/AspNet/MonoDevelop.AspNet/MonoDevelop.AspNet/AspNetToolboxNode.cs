@@ -91,56 +91,66 @@ namespace MonoDevelop.AspNet
 		
 		void RegisterReference (MonoDevelop.Projects.Project project)
 		{
-			MonoDevelop.Projects.DotNetProject dnp = (MonoDevelop.Projects.DotNetProject) project;
-			MonoDevelop.Projects.ProjectReference pr = base.Type.GetProjectReference ();
+			var dnp = (MonoDevelop.Projects.DotNetProject) project;
+			var pr = base.Type.GetProjectReference ();
 			
 			//add the reference if it doesn't match an existing one
 			bool match = false;
-			foreach (MonoDevelop.Projects.ProjectReference p in dnp.References)
+			foreach (var p in dnp.References)
 				if (p.Equals (pr))
 					match = true;
 			if (!match)
 				dnp.References.Add (pr);
 		}
-
-		public string GetTextForFile (string path, MonoDevelop.Projects.Project project)
+		
+		public void InsertAtCaret (MonoDevelop.Ide.Gui.Document document)
+		{
+			var tag = GetTextWithDirective (document, true);
+			document.TextEditor.InsertText (document.TextEditor.CursorPosition, tag);
+		}
+		
+		string GetTextWithDirective (MonoDevelop.Ide.Gui.Document document, bool insertDirective)
 		{
 			string tag = Text;
 			
-			if  (!tag.Contains ("{0}"))
+			if (!tag.Contains ("{0}"))
 				return tag;
 			
 			if (base.Type.AssemblyName.StartsWith ("System.Web.UI.WebControls"))
 				return string.Format (tag, "asp");
 			
 			//register the assembly and look up the class
-			RegisterReference (project);
+			//FIXME: only do this on the insert, not the preview - or remove it afterwards
+			RegisterReference (document.Project);
 			
-			var database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (project);
+			var database = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetProjectDom (document.Project);
 			
 			var cls = database.GetType (Type.TypeName);
 			if (cls == null)
 				return tag;
 			
-			//look up the control prefix
-			string mime = DesktopService.GetMimeTypeForUri (path);
-			var doc = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (project, path, mime)
-				as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
-			
+			var doc = document.ParsedDocument as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 			if (doc == null)
 				return tag;
 			
 			var assemName = SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
 			
 			var refMan = new DocumentReferenceManager () {
-				Project = project as AspNetAppProject,
+				Project = document.Project as AspNetAppProject,
 				Doc = doc,
 			};
 			
-			string prefix = refMan.AddAssemblyReferenceToDocument (cls, assemName.Name);
+			RegisterDirective directive;
+			string prefix = refMan.GetTagPrefixWithNewDirective (cls, assemName.Name, null, out directive);
 			
-			if (prefix != null)
-				return string.Format (tag, prefix);
+			if (prefix == null)
+				return tag;
+			
+			tag = string.Format (tag, prefix);
+			
+			if (directive != null && insertDirective)
+				refMan.AddRegisterDirective (directive, document.TextEditor, true);
+			
 			return tag;
 		}
 		
@@ -149,11 +159,20 @@ namespace MonoDevelop.AspNet
 			get { return aspNetDomain; }
 		}
 		
-		public bool IsCompatibleWith (string fileName, Project project)
+		public bool IsCompatibleWith (MonoDevelop.Ide.Gui.Document document)
 		{
+			switch (AspNetAppProject.DetermineWebSubtype (document.FileName)) {
+			case WebSubtype.WebForm:
+			case WebSubtype.MasterPage:
+			case WebSubtype.WebControl:
+				break;
+			default:
+				return false;
+			}
+			
 			var clrVersion = ClrVersion.Net_2_0;
-			var aspProj = project as AspNetAppProject;
-			if (project != null && aspProj.TargetFramework.ClrVersion != ClrVersion.Default)
+			var aspProj = document.Project as AspNetAppProject;
+			if (aspProj != null && aspProj.TargetFramework.ClrVersion != ClrVersion.Default)
 				clrVersion = aspProj.TargetFramework.ClrVersion;
 			
 			foreach (var tbfa in ItemFilters) {
@@ -178,11 +197,12 @@ namespace MonoDevelop.AspNet
 				if (tbfa.FilterType == ToolboxItemFilterType.Prevent && filterVersion == clrVersion)
 					return false;
 			}
-			
-			if (fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master"))
-				return true;
-			else
-				return false;
+			return true;
+		}
+		
+		public string GetDragPreview (MonoDevelop.Ide.Gui.Document document)
+		{
+			return GetTextWithDirective (document, false);
 		}
 	}
 }

@@ -28,15 +28,28 @@ using System;
 using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
 	[Serializable]
-	public class TemplateToolboxNode : ItemToolboxNode
+	public class TemplateToolboxNode : ItemToolboxNode, ITextToolboxNode
 	{
-		public CodeTemplate Template {
-			get;
-			set;
+		public CodeTemplate Template { get; set; }
+		
+		public string GetDragPreview (Document document)
+		{
+			return Template.Shortcut;
+		}
+		
+		public bool IsCompatibleWith (Document document)
+		{
+			return true;
+		}
+		
+		public void InsertAtCaret (Document document)
+		{
+			Template.Insert (document);
 		}
 		
 		public TemplateToolboxNode (CodeTemplate template)

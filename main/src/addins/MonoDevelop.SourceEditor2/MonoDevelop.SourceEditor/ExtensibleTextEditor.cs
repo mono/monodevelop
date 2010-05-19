@@ -636,10 +636,10 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
+		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
 			Document.BeginAtomicUndo ();
-			CodeTemplate.TemplateResult result = template.InsertTemplate (document);
+			var result = template.InsertTemplateContents (document);
 			TextLinkEditMode tle = new TextLinkEditMode (this, 
 			                                             result.InsertPosition,
 			                                             result.TextLinks);

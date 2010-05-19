@@ -1,3 +1,23 @@
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Make
+	  prefix generation and directive insertion APIs more
+	  flexible.
+
+	* MonoDevelop.AspNet.Parser/PageInfo.cs: Make it possible to
+	  inject directives to an existing info.
+
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj:
+	* MonoDevelop.AspNet.Parser/PageDirectiveVisitor.cs: Removed
+	  unneeded class.
+
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs: Use new
+	  ItextToolboxItem and DocumentReferenceManager APIs to insert
+	  new directives into the DOM only when the item is actually
+	  inserted into the editor. Fixes Bug 543721 - Auto-added
+	  control directives sometimes fail.
+
 2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Parser/PageInfo.cs:

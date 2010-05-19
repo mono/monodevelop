@@ -1,3 +1,11 @@
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs: Track code
+	  template API.
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Track code
+	  template API and toolbox API.
+
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/DropDownBox.cs:

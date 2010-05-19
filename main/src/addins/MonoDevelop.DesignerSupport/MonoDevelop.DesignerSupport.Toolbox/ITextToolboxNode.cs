@@ -27,15 +27,14 @@
 //
 
 using System;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	
-	
 	public interface ITextToolboxNode
 	{
-		string GetTextForFile (string fileName, MonoDevelop.Projects.Project project);
-		
-		bool IsCompatibleWith (string fileName, MonoDevelop.Projects.Project project);
+		string GetDragPreview (Document document);
+		bool IsCompatibleWith (Document document);
+		void InsertAtCaret (Document document);
 	}
 }

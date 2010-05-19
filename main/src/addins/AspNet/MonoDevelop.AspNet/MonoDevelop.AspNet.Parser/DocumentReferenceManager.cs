@@ -195,7 +195,7 @@ namespace MonoDevelop.AspNet.Parser
 				return string.Empty;
 			
 			foreach (var rd in RegisteredTags) {
-				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
+				var ard = rd as AssemblyRegisterDirective;
 				if (ard != null && ard.Namespace == control.Namespace)
 					return ard.TagPrefix;
 			}
@@ -209,15 +209,13 @@ namespace MonoDevelop.AspNet.Parser
 			return RegisteredTags.Where (t => string.Equals (t.TagPrefix, prefix, StringComparison.OrdinalIgnoreCase));
 		}
 		
-		#region "Refactoring" operations -- things that modify the file
-		
-		public string AddAssemblyReferenceToDocument (IType control, string assemblyName)
+		/// <summary>
+		/// Gets a tag prefix, also returning the directive that would have to be added if necessary.
+		/// </summary>
+		public string GetTagPrefixWithNewDirective (IType control, string assemblyName, string desiredPrefix, 
+		                                            out RegisterDirective directiveNeededToAdd)
 		{
-			return AddAssemblyReferenceToDocument (control, assemblyName, null);
-		}
-		
-		public string AddAssemblyReferenceToDocument (IType control, string assemblyName, string desiredPrefix)
-		{
+			directiveNeededToAdd = null;
 			string existingPrefix = GetTagPrefix (control);
 			if (existingPrefix != null)
 				return existingPrefix;
@@ -229,14 +227,12 @@ namespace MonoDevelop.AspNet.Parser
 			
 			var an = MonoDevelop.Core.Assemblies.SystemAssemblyService.ParseAssemblyName (assemblyName);
 			
-			string directive = string.Format ("{0}<%@ Register TagPrefix=\"{1}\" Namespace=\"{2}\" Assembly=\"{3}\" %>",
-			    Environment.NewLine, prefix, control.Namespace, an.Name);
-			
-			//inset a directive into the document
-			InsertDirective (directive);
+			directiveNeededToAdd = new AssemblyRegisterDirective (prefix, control.Namespace, an.Name);
 			
 			return prefix;
 		}
+		
+		#region "Refactoring" operations -- things that modify the file
 		
 		public void AddAssemblyReferenceToProject (string assemblyName, string assemblyLocation)
 		{
@@ -317,25 +313,53 @@ namespace MonoDevelop.AspNet.Parser
 			return p != null? p.Value as string : null;
 		}
 		
-		void InsertDirective (string directive)
+		public void AddRegisterDirective (RegisterDirective directive, TextEditor editor, bool preserveCaretPosition)
 		{
-			DirectiveNode node = GetPageDirective ();
+			var node = GetRegisterInsertionPointNode ();
 			if (node == null)
 				return;
 			
-			var textFile = MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (Doc.FileName);
-			if (textFile == null)
-				textFile = new TextFile (Doc.FileName);
+			Doc.Info.RegisteredTags.Add (directive);
 			
-			int pos = textFile.GetPositionFromLineColumn (node.Location.EndLine, node.Location.EndColumn);
-			textFile.InsertText (pos, directive);
+			var line = Math.Max (node.Location.EndLine, node.Location.BeginLine);
+			var pos = editor.GetPositionFromLineColumn (line, editor.GetLineLength (line) + 1);
+			if (pos < 0)
+				return;
+			
+			editor.BeginAtomicUndo ();
+			var oldCaret = editor.CursorPosition;
+			
+			var inserted = editor.InsertText (pos, editor.NewLine + directive.ToString ());
+			if (preserveCaretPosition) {
+				editor.CursorPosition = (pos < oldCaret)? oldCaret + inserted : oldCaret;
+			}
+			editor.EndAtomicUndo ();
 		}
 		
-		DirectiveNode GetPageDirective ()
+		DirectiveNode GetRegisterInsertionPointNode ()
 		{
-			var v = new PageDirectiveVisitor ();
+			var v = new RegisterDirectiveInsertionPointVisitor ();
 			Doc.RootNode.AcceptVisit (v);
-			return v.DirectiveNode;
+			return v.Node;
+		}
+		
+		class RegisterDirectiveInsertionPointVisitor: Visitor
+		{
+			public DirectiveNode Node { get; private set; }
+			
+			public override void Visit (DirectiveNode node)
+			{
+				switch (node.Name.ToLowerInvariant ()) {
+				case "page": case "control": case "master": case "register":
+					Node = node;
+					return;
+				}
+			}
+			
+			public override void Visit (TagNode node)
+			{
+				QuickExit = true;
+			}
 		}
 		
 		#endregion

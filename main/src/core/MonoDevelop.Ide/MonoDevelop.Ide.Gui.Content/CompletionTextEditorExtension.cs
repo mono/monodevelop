@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			CompletionDataList list = new CompletionDataList ();
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
-			ITemplateWidget templateWidget = Document.GetContent<ITemplateWidget> ();
+			var templateWidget = Document.GetContent<ICodeTemplateContextProvider> ();
 			CodeTemplateContext ctx = CodeTemplateContext.Standard;
 			if (templateWidget != null)
 				ctx = templateWidget.GetCodeTemplateContext ();

@@ -31,6 +31,7 @@
 using System;
 using System.ComponentModel;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -72,19 +73,24 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set { text = value; }
 		}
 		
-		public virtual string GetTextForFile (string path, MonoDevelop.Projects.Project project)
-		{
-			return text;
-		}
-		
 		[Browsable(false)]
 		public override string ItemDomain {
 			get { return domain; }
 		}
 		
-		public bool IsCompatibleWith (string fileName, MonoDevelop.Projects.Project project)
+		public bool IsCompatibleWith (Document document)
 		{
 			return true;
+		}
+		
+		public string GetDragPreview (Document document)
+		{
+			return text;
+		}
+		
+		public void InsertAtCaret (Document document)
+		{
+			document.TextEditor.InsertText (document.TextEditor.CursorPosition, text);
 		}
 	}
 }

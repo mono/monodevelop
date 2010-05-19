@@ -270,7 +270,6 @@
     <Compile Include="MonoDevelop.AspNet\AspNetToolboxNode.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetParserService.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetToolboxProvider.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser\PageDirectiveVisitor.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetExpressionState.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetDom.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetDirectiveState.cs" />

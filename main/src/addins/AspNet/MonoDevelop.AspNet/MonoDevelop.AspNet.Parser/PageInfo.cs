@@ -55,10 +55,10 @@ namespace MonoDevelop.AspNet.Parser
 		public string MasterPageTypeName { get; private set; }
 		public string MasterPageTypeVPath { get; private set; }
 		public WebSubtype Subtype { get; private set; }
-		public IEnumerable<RegisterDirective> RegisteredTags { get { return registeredTags; } }
-		public IEnumerable<string> Imports { get { return imports; } }
-		public IEnumerable<string> Implements { get { return imports; } }
-		public IEnumerable<AssemblyDirective> Assemblies { get { return assemblies; } }
+		public IList<RegisterDirective> RegisteredTags { get { return registeredTags; } }
+		public IList<string> Imports { get { return imports; } }
+		public IList<string> Implements { get { return imports; } }
+		public IList<AssemblyDirective> Assemblies { get { return assemblies; } }
 		
 		public IEnumerable<Error> Populate (RootNode node, List<Error> errors)
 		{
@@ -189,7 +189,10 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public abstract class RegisterDirective
 	{
-		private DirectiveNode node;
+		public RegisterDirective (string tagPrefix)
+		{
+			this.TagPrefix = tagPrefix;
+		}		
 		
 		public RegisterDirective (DirectiveNode node)
 		{
@@ -213,6 +216,12 @@ namespace MonoDevelop.AspNet.Parser
 	
 	public class AssemblyRegisterDirective : RegisterDirective
 	{
+		public AssemblyRegisterDirective (string tagPrefix, string @namespace, string assembly) : base (tagPrefix)
+		{
+			this.Namespace = @namespace;
+			this.Assembly = assembly;
+		}
+		
 		public AssemblyRegisterDirective (DirectiveNode node)
 			: base (node)
 		{
@@ -225,7 +234,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override string ToString ()
 		{	
-			return String.Format ("<%@ Register {0}=\"{1}\" {2}=\"{3}\" {4}=\"{5}\" %>", "TagPrefix", TagPrefix, "Namespace", Namespace, "Assembly", Assembly);
+			return String.Format ("<%@ Register TagPrefix=\"{0}\" Namespace=\"{1}\" Assembly=\"{2}\" %>", TagPrefix, Namespace, Assembly);
 		}
 		
 		public override bool IsValid ()
@@ -237,7 +246,13 @@ namespace MonoDevelop.AspNet.Parser
 	}
 	
 	public class ControlRegisterDirective : RegisterDirective
-	{			
+	{
+		public ControlRegisterDirective (string tagPrefix, string tagName, string src) : base (tagPrefix)
+		{
+			this.TagName = tagName;
+			this.Src = src;
+		}
+		
 		public ControlRegisterDirective (DirectiveNode node)
 			: base (node)
 		{

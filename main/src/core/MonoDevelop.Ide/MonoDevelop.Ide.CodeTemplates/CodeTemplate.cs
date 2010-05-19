@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		InExpression
 	}
 	
-	public interface ITemplateWidget 
+	public interface ICodeTemplateContextProvider
 	{
 		CodeTemplateContext GetCodeTemplateContext ();
 	}
@@ -354,7 +354,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return result.ToString ();
 		}
 		
-		public TemplateResult InsertTemplate (MonoDevelop.Ide.Gui.Document document)
+		public void Insert (MonoDevelop.Ide.Gui.Document document)
+		{
+			var handler = document.GetContent<ICodeTemplateHandler> ();
+			if (handler != null) {
+				handler.InsertTemplate (this, document);
+			} else {
+				InsertTemplateContents (document);
+			}	
+		}
+		
+		/// <summary>
+		/// Don't use this unless you're implementing ICodeTemplateWidget. Use Insert instead.
+		/// </summary>
+		public TemplateResult InsertTemplateContents (MonoDevelop.Ide.Gui.Document document)
 		{
 			ProjectDom dom = document.Dom;
 			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);

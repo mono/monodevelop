@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	public interface ICodeTemplateWidget
+	public interface ICodeTemplateHandler
 	{
 		void InsertTemplate (CodeTemplate template, Document document);
 	}
@@ -54,12 +54,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public override void InsertCompletionText (CompletionListWindow window)
 		{
-			if (window.CompletionWidget is ICodeTemplateWidget) {
-				((ICodeTemplateWidget)window.CompletionWidget).InsertTemplate (template, doc);
-			} else {
-				template.InsertTemplate (doc);
-			}
+			template.Insert (doc);
 		}
-		
 	}
 }

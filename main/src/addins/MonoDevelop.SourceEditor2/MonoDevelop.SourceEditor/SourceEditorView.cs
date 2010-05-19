@@ -55,7 +55,7 @@ namespace MonoDevelop.SourceEditor
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
-		ICodeTemplateWidget, ITemplateWidget, ISupportsProjectReload, IPrintable
+		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -1564,16 +1564,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void IToolboxConsumer.ConsumeItem (ItemToolboxNode item)
 		{
-			if (item is TemplateToolboxNode) {
-				InsertTemplate (((TemplateToolboxNode)item).Template, new MonoDevelop.Ide.Gui.Document (base.WorkbenchWindow));
+			var tn = item as ITextToolboxNode;
+			if (tn != null) {
+				tn.InsertAtCaret (base.WorkbenchWindow.Document);
 				TextEditor.GrabFocus ();
-				return;
 			}
-			string text = GetText (item);
-			if (string.IsNullOrEmpty (text))
-				return;
-			TextEditor.InsertAtCaret (text);
-			TextEditor.GrabFocus ();
 		}
 		
 		#region dnd
@@ -1581,7 +1576,8 @@ namespace MonoDevelop.SourceEditor
 		ItemToolboxNode dragItem;
 		void IToolboxConsumer.DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
 		{
-			string text = GetText (item);
+			//FIXME: use the preview text
+			string text = GetDragPreviewText (item);
 			if (string.IsNullOrEmpty (text))
 				return;
 			dragItem = item;
@@ -1609,19 +1605,14 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
-		string GetText (ItemToolboxNode item)
+		string GetDragPreviewText (ItemToolboxNode item)
 		{
-			TemplateToolboxNode templateToolboxNode = item as TemplateToolboxNode;
-			if (templateToolboxNode != null)
-				return templateToolboxNode.Template.Shortcut;
-			
 			ITextToolboxNode tn = item as ITextToolboxNode;
 			if (tn == null) {
 				LoggingService.LogWarning ("Cannot use non-ITextToolboxNode toolbox items in the text editor.");
 				return null;
 			}
-			string filename = this.IsUntitled ? UntitledName : ContentName;
-			return tn.GetTextForFile (filename, this.Project);
+			return tn.GetDragPreview (base.WorkbenchWindow.Document);
 		}
 		
 		System.ComponentModel.ToolboxItemFilterAttribute[] IToolboxConsumer.ToolboxFilterAttributes {
@@ -1640,7 +1631,7 @@ namespace MonoDevelop.SourceEditor
 			//int i = filename.LastIndexOf ('.');
 			//string ext = i < 0? null : filename.Substring (i + 1);
 			
-			return textNode.IsCompatibleWith (filename, this.Project);
+			return textNode.IsCompatibleWith (base.WorkbenchWindow.Document);
 		}
 
 		
