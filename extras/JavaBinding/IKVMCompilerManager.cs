@@ -254,10 +254,14 @@ namespace JavaBinding
 			string s2 = next.Substring (index1 + 6);									
 			int index2  = s2.IndexOf (":");				
 			int line = Int32.Parse (next.Substring (index1 + 6, index2));
-						
+			string msg = next.Substring (index1 + index2 + 7).Trim ();
+			if (msg.StartsWith ("warning:")) {
+				result.IsWarning = true;
+				msg = msg.Substring (8).Trim ();
+			}
 			result.Column = errorCol;
 			result.Line = line;
-			result.ErrorText = next.Substring (index1 + index2 + 7);
+			result.ErrorText = msg;
 			result.FileName = Path.GetFullPath (next.Substring (0, index1) + ".java");
 			return result;
 		}

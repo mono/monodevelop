@@ -1,3 +1,10 @@
+2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IKVMCompilerManager.cs: Properly detect warnings. Fixes bug
+	  #602528 - java warnings taken as errors.
+
+	* gtk-gui/gui.stetic: Flush.
+
 2010-05-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* JavaBinding.addin.xml: Remove duplicated options section.
