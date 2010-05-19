@@ -67,7 +67,13 @@ namespace MonoDevelop.Components.Commands
 				SelectionModifierControl = Gdk.ModifierType.ControlMask;
 				SelectionModifierSuper = Gdk.ModifierType.SuperMask;
 			}
+			
+			keymap.KeysChanged += delegate {
+				groupZeroMappings.Clear ();
+			};
 		}
+		
+		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		
 		static bool isMac {
 			get { return MonoDevelop.Core.PropertyService.IsMac; }
@@ -131,7 +137,9 @@ namespace MonoDevelop.Components.Commands
 			return key.ToString ();
 		}
 		
-		//USED INTERNALLY ONLY
+		/// <summary>
+		/// Used for canonicalizing bindings after parsing them
+		/// </summary>
 		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			bool complete;
@@ -284,11 +292,25 @@ namespace MonoDevelop.Components.Commands
 			return mode + "|" + accel;
 		}
 		
-		
+		// NOTE: changes in this should be mirrored in to Mono.TextEditor/Platform.cs
 		static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod)
 		{
-			key = evt.Key;
 			mod = evt.State;
+			key = evt.Key;
+			
+			uint keyval;
+			int effectiveGroup, level;
+			Gdk.ModifierType consumedModifiers;
+			keymap.TranslateKeyboardState (evt.HardwareKeycode, evt.State, evt.Group, out keyval, out effectiveGroup,
+			                               out level, out consumedModifiers);
+			
+			key = (Gdk.Key)keyval;
+			mod = evt.State & ~consumedModifiers;
+			
+			//we restore the shift modifier if it was a letter, since those always get displayed uppercase
+			//Gdk.Keyval.IsUpper doesn't seem to work properly, so we use Char.IsUpper
+			if (char.IsUpper ((char)Gdk.Keyval.ToUnicode (keyval)) && ((consumedModifiers & Gdk.ModifierType.ShiftMask) != 0))
+				mod |= Gdk.ModifierType.ShiftMask;
 			
 			if (isX11) {
 				//this is a workaround for a common X mapping issue
@@ -317,57 +339,39 @@ namespace MonoDevelop.Components.Commands
 					mod |= Gdk.ModifierType.Mod1Mask;
 				}
 				
-				// When shift or opt modifiers are active, we need to decompose keys down to the 
-				// "root" physical key to make the command appear correct for Mac.
-				if (evt.Group == (byte) 1 || (mod & Gdk.ModifierType.ShiftMask) != 0)
-					key = GetRootKey (evt);
-				
+				// When opt modifier is active, we need to decompose this to make the command appear correct for Mac.
 				// In addition, we can only inspect whether the opt/alt key is pressed by examining
 				// the key's "group", because the Mac GTK+ treats opt as a group modifier and does
 				// not expose it as an actual GDK modifier.
-				if (evt.Group == (byte) 1)
+				if (evt.Group == (byte) 1) {
 					mod |= Gdk.ModifierType.Mod1Mask;
+					key = GetGroupZeroKey (key, evt);
+				}
 			}
 		}
 		
-		static Dictionary<Gdk.Key,Gdk.Key> hardwareMappings;
-		static Gdk.Keymap keymap;
+		static Dictionary<Gdk.Key,Gdk.Key> groupZeroMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
 		
-		static void InitKeymaps ()
+		static Gdk.Key GetGroupZeroKey (Gdk.Key mappedKey, Gdk.EventKey evt)
 		{
-			if (keymap != null) 
-				return;
-			
-			keymap = Gdk.Keymap.Default;
-			keymap.KeysChanged += delegate {
-				hardwareMappings.Clear ();
-			};
-			hardwareMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
-		}
-		
-		static Gdk.Key GetRootKey (Gdk.EventKey evt)
-		{
-			InitKeymaps ();
 			Gdk.Key ret;
-			if (hardwareMappings.TryGetValue (evt.Key, out ret))
+			if (groupZeroMappings.TryGetValue (mappedKey, out ret))
 				return ret;
 			
-			//FIXME: LookupKey isn't implemented on Mac, so we have to use this workaround
+			//LookupKey isn't implemented on Mac, so we have to use this workaround
 			uint[] keyvals;
 			Gdk.KeymapKey [] keys;
 			keymap.GetEntriesForKeycode (evt.HardwareKeycode, out keys, out keyvals);
 			
-			for (uint i = 0; i < keys.Length; i++) {
-				if (keys[i].Group == 0 && keys[i].Level == 0) {
-					ret = (Gdk.Key)keyvals[i];
-					foreach (Gdk.Key key in keyvals)
-						hardwareMappings[key] = ret;
-					return ret;
-				}
-			}
+			//find the key that has the same level (so we preserve shift) but with group 0
+			for (uint i = 0; i < keyvals.Length; i++)
+				if (keyvals[i] == (uint)mappedKey)
+					for (uint j = 0; j < keys.Length; j++)
+						if (keys[j].Group == 0 && keys[j].Level == keys[i].Level)
+							return groupZeroMappings[mappedKey] = ret = (Gdk.Key)keyvals[j];
 			
 			//failed, but avoid looking it up again
-			return hardwareMappings[evt.Key] = evt.Key;
+			return groupZeroMappings[mappedKey] = mappedKey;
 		}
 		
 		static string ModifierToPartialAccel (Gdk.ModifierType mod, Gdk.Key key, out bool keyIsModifier)
@@ -557,6 +561,7 @@ namespace MonoDevelop.Components.Commands
 			return i < shortcut.Length && shortcut[i] == '|' && ModifierMask (shortcut.Substring (0, i)) != Gdk.ModifierType.None;
 		}
 		
+		//FIXME: run bindings through the keymap and MapRawKeys to consume shift modifier if possible
 		public static string CanonicalizeBinding (string binding)
 		{
 			Gdk.ModifierType modeMod, mod;
@@ -688,7 +693,7 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			SetBinding (command, null, null, BindingMode (command.AccelKey), command.AccelKey);
-			command.KeyBindingChanged += new KeyBindingChangedEventHandler (OnKeyBindingChanged);
+			command.KeyBindingChanged += OnKeyBindingChanged;
 			commands.Add (command);
 		}
 		

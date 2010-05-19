@@ -1,3 +1,12 @@
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Better
+	  handling of mapping raw keys to commands. We now use the
+	  keymap to consume shift keys when possible, except for
+	  letters. This means commands should remain sane across
+	  different keyboards, and will always be stored and displayed
+	  concisely.
+
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Components/TooltipWindow.cs: Try to fix
