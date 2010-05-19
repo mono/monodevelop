@@ -799,7 +799,7 @@ namespace Mono.TextEditor
 			return base.OnKeyPressEvent (evt);
 		}
 		
-		/// <<remarks>
+		/// <remarks>
 		/// The Key may be null if it has been handled by the IMContext. In such cases, the char is the value.
 		/// </remarks>
 		protected virtual bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)

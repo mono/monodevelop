@@ -1,3 +1,10 @@
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Fix typo.
+
+	* Mono.TextEditor/Platform.cs: Copy MapRawKeys changes from
+	  KeyBindingManager.
+
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextMarker.cs:
