@@ -1,5 +1,10 @@
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/HslColor.cs: Now supports cairo color
+	  conversion.
+
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextMarker.cs:
 	* Mono.TextEditor/TextViewMargin.cs: Added basic support for

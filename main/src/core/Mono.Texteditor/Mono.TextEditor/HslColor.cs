@@ -46,21 +46,20 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		static Gdk.Color black = new  Gdk.Color (0, 0, 0);
-		public static implicit operator Color (HslColor hsl)
+		void ToRgb(out double r, out double g, out double b)
 		{
-			double r = 0, g = 0, b = 0;
+			if (L == 0) {
+				r = g = b = 0;
+				return;
+			}
 			
-			if (hsl.L == 0)
-				return black;
-			
-			if (hsl.S == 0) {
-				r = g = b = hsl.L;
+			if (S == 0) {
+				r = g = b = L;
 			} else {
-				double temp2 = hsl.L <= 0.5 ? hsl.L * (1.0 + hsl.S) : hsl.L + hsl.S -(hsl.L * hsl.S);
-				double temp1 = 2.0 * hsl.L - temp2;
+				double temp2 = L <= 0.5 ? L * (1.0 + S) : L + S -(L * S);
+				double temp1 = 2.0 * L - temp2;
 				
-				double[] t3 = new double[] { hsl.H + 1.0 / 3.0, hsl.H, hsl.H - 1.0 / 3.0};
+				double[] t3 = new double[] { H + 1.0 / 3.0, H, H - 1.0 / 3.0};
 				double[] clr= new double[] { 0, 0, 0};
 				for (int i = 0; i < 3; i++) {
 					if (t3[i] < 0)
@@ -81,9 +80,22 @@ namespace Mono.TextEditor
 				g = clr[1];
 				b = clr[2];
 			}
+		}
+		
+		public static implicit operator Color (HslColor hsl)
+		{
+			double r = 0, g = 0, b = 0;
+			hsl.ToRgb (out r, out g, out b);
 			return new Color ((byte)(255 * r), 
 			                  (byte)(255 * g), 
 			                  (byte)(255 * b));
+		}
+		
+		public static implicit operator Cairo.Color (HslColor hsl)
+		{
+			double r = 0, g = 0, b = 0;
+			hsl.ToRgb (out r, out g, out b);
+			return new Cairo.Color (r, g, b);
 		}
 		
 		public static implicit operator HslColor (Color color)
@@ -91,12 +103,13 @@ namespace Mono.TextEditor
 			return new HslColor (color);
 		}
 		
-		public HslColor (Color color) : this ()
+		public static implicit operator HslColor (Cairo.Color color)
 		{
-			double r = color.Red   / (double)ushort.MaxValue;
-			double g = color.Green / (double)ushort.MaxValue;
-			double b = color.Blue  / (double)ushort.MaxValue;
-
+			return new HslColor (color);
+		}
+		
+		public HslColor (double r, double g, double b) : this ()
+		{
 			double v = System.Math.Max (r, g);
 			v = System.Math.Max (v, b);
 
@@ -127,6 +140,14 @@ namespace Mono.TextEditor
 				this.H = (r == m ? 3.0 + g2 : 5.0 - r2);
 			}
 			this.H /= 6.0;
+		}
+		
+		public HslColor (Color color) : this (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue, color.Blue / (double)ushort.MaxValue)
+		{
+		}
+		
+		public HslColor (Cairo.Color color) : this (color.R, color.G, color.B)
+		{
 		}
 		
 		public static double Brightness (Gdk.Color c)
