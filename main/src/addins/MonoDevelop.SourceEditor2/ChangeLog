@@ -1,6 +1,12 @@
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Improved the
+	  error bubble drawing.
+
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Expanded
 	  message bubbles now overdraw lines instead of inserting
 	  virtual space.

@@ -1637,7 +1637,7 @@ namespace MonoDevelop.SourceEditor
 			if (textNode == null)
 				return false;
 			
-			string filename = this.IsUntitled ? UntitledName : ContentName;
+			//string filename = this.IsUntitled ? UntitledName : ContentName;
 			//int i = filename.LastIndexOf ('.');
 			//string ext = i < 0? null : filename.Substring (i + 1);
 			
