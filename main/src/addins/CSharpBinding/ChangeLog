@@ -1,3 +1,8 @@
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	  Improved semicolon auto placement.
+
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:

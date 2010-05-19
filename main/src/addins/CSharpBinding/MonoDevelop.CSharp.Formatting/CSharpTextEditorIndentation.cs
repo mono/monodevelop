@@ -305,9 +305,12 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			int max = curLine.Offset + curLine.EditableLength;
 			
+			// if the line ends with ';' the line end is not the correct place for a new semicolon.
+			if (curLine.EditableLength > 0 && data.Document.GetCharAt (max - 1) == ';')
+				return offset;
+			
 			bool isInString = false, isInChar = false, isVerbatimString = false;
 			bool isInLineComment  = false, isInBlockComment = false;
-			
 			for (int pos = offset; pos < max; pos++) {
 				char ch = data.Document.GetCharAt (pos);
 				switch (ch) {
