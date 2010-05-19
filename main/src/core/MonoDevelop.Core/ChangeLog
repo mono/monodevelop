@@ -1,5 +1,10 @@
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/CompilationUnit.cs: fixed
+	  collection already modified exception.
+
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/ParsedDocument.cs: Implemented 'Bug
 	  606544 - Better comment fold markers'.
 
