@@ -146,15 +146,21 @@ namespace Mono.TextEditor
 		}
 		
 		void IBuffer.Insert (int offset, string text)
+
 		{
 			((IBuffer)this).Replace (offset, 0, text);
 		}
 		
+
 		void IBuffer.Remove (int offset, int count)
+
 		{
+
 			((IBuffer)this).Replace (offset, count, null);
+
 		}
 		
+
 		void IBuffer.Replace (int offset, int count, string value)
 		{
 			if (atomicUndoLevel == 0) {
@@ -216,6 +222,7 @@ namespace Mono.TextEditor
 		public string GetTextAt (ISegment segment)
 		{
 			return GetTextAt (segment.Offset, segment.Length);
+
 		}
 		
 		public char GetCharAt (int offset)
@@ -266,23 +273,35 @@ namespace Mono.TextEditor
 		{
 			return LocationToOffset (new DocumentLocation (line, column));
 		}
+
 		
 		public int LocationToOffset (DocumentLocation location)
+
 		{
 			if (location.Line >= this.splitter.LineCount) 
+
 				return -1;
+
 			LineSegment line = GetLine (location.Line);
+
 			return System.Math.Min (Length, line.Offset + System.Math.Min (line.EditableLength, location.Column));
+
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)
+
 		{
+
 			int lineNr = splitter.OffsetToLineNumber (offset);
+
 			if (lineNr < 0)
 				return DocumentLocation.Empty;
 			LineSegment line = GetLine (lineNr);
+
 			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset));
+
 		}
+
 		
 		public string GetLineIndent (int lineNumber)
 		{
@@ -1328,11 +1347,17 @@ namespace Mono.TextEditor
 		}
 		
 		public static bool IsWordSeparator (char ch)
+
 		{
+
 			return Char.IsWhiteSpace (ch) || (Char.IsPunctuation (ch) && ch != '_');
+
 		}
+
 		
+
 		public bool IsWholeWordAt (int offset, int length)
+
 		{
 			return (offset == 0 || IsWordSeparator (GetCharAt (offset - 1))) &&
 				   (offset + length == Length || IsWordSeparator (GetCharAt (offset + length)));
@@ -1347,6 +1372,7 @@ namespace Mono.TextEditor
 			}
 			return true;
 		}
+
 		
 		public int GetMatchingBracketOffset (int offset)
 		{
@@ -1396,17 +1422,24 @@ namespace Mono.TextEditor
 	
 		public enum CharacterClass {
 			Unknown,
+
 			Whitespace,
+
 			IdentifierPart
+
 		}
 		
+
 		public static CharacterClass GetCharacterClass (char ch)
+
 		{
 			if (Char.IsWhiteSpace (ch))
 				return CharacterClass.Whitespace;
 			if (Char.IsLetterOrDigit (ch) || ch == '_')
 				return CharacterClass.IdentifierPart;
+
 			return CharacterClass.Unknown;
+
 		}
 		
 		public static void UpdateSegments (IEnumerable<ISegment> segments, ReplaceEventArgs args)
@@ -1448,6 +1481,26 @@ namespace Mono.TextEditor
 			get {
 				return isInUndo;
 			}
+		}
+		
+		Dictionary<int, IExtendingTextMarker> virtualTextMarkers = new Dictionary<int, IExtendingTextMarker> ();
+		public void RegisterVirtualTextMarker (int lineNumber, IExtendingTextMarker marker)
+		{
+			virtualTextMarkers[lineNumber] = marker;
+		}
+		
+		public IExtendingTextMarker GetExtendingTextMarker (int lineNumber)
+		{
+			IExtendingTextMarker result;
+			if (virtualTextMarkers.TryGetValue (lineNumber, out result))
+				return result;
+			return null;
+		}
+
+		public void UnRegisterVirtualTextMarker (IExtendingTextMarker marker)
+		{
+			List<int> keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);
+			keys.ForEach (key => virtualTextMarkers.Remove (key));
 		}
 	}
 	

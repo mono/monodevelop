@@ -28,10 +28,10 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	
 	public interface IExtendingTextMarker 
 	{
 		int GetLineHeight (TextEditor editor);
+		void Draw (TextEditor editor, Gdk.Drawable win, int lineNr, Rectangle lineArea);
 	}
 	
 	public interface IActionTextMarker

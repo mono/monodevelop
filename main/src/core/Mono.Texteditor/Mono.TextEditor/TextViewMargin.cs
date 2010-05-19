@@ -2014,6 +2014,9 @@ namespace Mono.TextEditor
 				if (textEditor.Options.ShowInvalidLines) {
 					DrawInvalidLineMarker (win, xPos, y);
 				}
+				var marker = Document.GetExtendingTextMarker (lineNr);
+				if (marker != null) 
+					marker.Draw (textEditor, win, lineNr, lineArea);
 				return;
 			}
 			//selectedRegions.Clear ();
@@ -2110,6 +2113,10 @@ namespace Mono.TextEditor
 			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, xPos, y);
+			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
+			if (extendingMarker != null) 
+				extendingMarker.Draw (textEditor, win, lineNr, lineArea);
+			
 			lastLineRenderWidth = xPos;
 		}
 		
