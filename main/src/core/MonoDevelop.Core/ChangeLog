@@ -1,3 +1,8 @@
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Dom/ParsedDocument.cs: Implemented 'Bug
+	  606544 - Better comment fold markers'.
+
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Removed some

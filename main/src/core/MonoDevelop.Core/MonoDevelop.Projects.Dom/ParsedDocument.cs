@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -299,7 +300,28 @@ namespace MonoDevelop.Projects.Dom
 				Comment comment = comments[i];
 				
 				if (comment.CommentType == CommentType.MultiLine) {
-					yield return new FoldingRegion ("/* */", comment.Region, FoldType.Comment);
+					int startOffset = 0;
+					while (startOffset < comment.Text.Length) {
+						char ch = comment.Text[startOffset];
+						if (!char.IsWhiteSpace (ch) && ch != '*')
+							break;
+						startOffset++;
+					}
+					int endOffset = startOffset;
+					while (endOffset < comment.Text.Length) {
+						char ch = comment.Text[endOffset];
+						if (ch == '\r' || ch == '\n' || ch == '*')
+							break;
+						endOffset++;
+					}
+					
+					string txt;
+					if (endOffset > startOffset) {
+						txt = "/* " + comment.Text.Substring (startOffset, endOffset - startOffset) +  "... */";
+					} else {
+						txt = "/* */";
+					}
+					yield return new FoldingRegion (txt, comment.Region, FoldType.Comment);
 					continue;
 				}
 				
@@ -308,20 +330,50 @@ namespace MonoDevelop.Projects.Dom
 				int j = i;
 				int curLine = comment.Region.Start.Line - 1;
 				DomLocation end = comment.Region.End;
-				
+				StringBuilder commentText = new StringBuilder ();
 				for (; j < comments.Count; j++) {
 					Comment  curComment  = comments[j];
 					if (curComment == null || !curComment.CommentStartsLine 
 					    || curComment.CommentType != comment.CommentType 
 					    || curLine + 1 != curComment.Region.Start.Line)
 						break;
+					commentText.Append(curComment.Text);
 					end = curComment.Region.End;
 					curLine = curComment.Region.Start.Line;
 				}
 				
 				if (j - i > 1) {
-					yield return new FoldingRegion (
-						comment.IsDocumentation  ? "/// " : "// "  + comment.Text + "...",
+					string txt;
+					if (comment.IsDocumentation) {
+						txt = "/// "; 
+						string cmtText = commentText.ToString ();
+						int idx = cmtText.IndexOf ("<summary>");
+						if (idx >= 0) {
+							int maxOffset = cmtText.IndexOf ("</summary>");
+							if (maxOffset < 0)
+								maxOffset = cmtText.Length;
+							int startOffset = idx + "<summary>".Length;
+							while (startOffset < maxOffset) {
+								char ch = cmtText[startOffset];
+								if (!char.IsWhiteSpace (ch) && ch != '/')
+									break;
+								startOffset++;
+							}
+							int endOffset = startOffset;
+							while (endOffset < maxOffset) {
+								char ch = cmtText[endOffset];
+								if (ch == '\r' || ch == '\n')
+									break;
+								endOffset++;
+							}
+							if (endOffset > startOffset) 
+								txt = "/// " + cmtText.Substring (startOffset, endOffset - startOffset) +  "...";
+						}
+					} else {
+						txt = "// " + comment.Text + "...";
+					}
+					
+					yield return new FoldingRegion (txt,
 						new DomRegion (comment.Region.Start.Line,
 							comment.Region.Start.Column, end.Line, end.Column),
 						FoldType.Comment);
