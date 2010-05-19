@@ -1742,7 +1742,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExceptionCaughtDialog" design-size="527 311">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExceptionCaughtDialog" design-size="541 358">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Exception Caught</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1787,21 +1787,65 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+              <widget class="Gtk.Notebook" id="notebook1">
                 <property name="MemberName" />
-                <property name="ShadowType">In</property>
+                <property name="CanFocus">True</property>
+                <property name="CurrentPage">0</property>
                 <child>
-                  <widget class="MonoDevelop.Debugger.ObjectValueTreeView" id="valueView">
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShowScrollbars">True</property>
-                    <property name="AllowAdding">False</property>
-                    <property name="AllowEditing">True</property>
-                    <property name="AllowPinning">False</property>
-                    <property name="AllowExpanding">False</property>
-                    <property name="PinnedWatchLine">0</property>
-                    <property name="CompactView">False</property>
+                    <property name="ShadowType">In</property>
+                    <property name="BorderWidth">3</property>
+                    <child>
+                      <widget class="Gtk.TreeView" id="treeStack">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">True</property>
+                        <property name="HeadersVisible">False</property>
+                      </widget>
+                    </child>
                   </widget>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="label2">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Stack Trace</property>
+                  </widget>
+                  <packing>
+                    <property name="type">tab</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+                    <property name="MemberName" />
+                    <property name="ShadowType">In</property>
+                    <property name="BorderWidth">3</property>
+                    <child>
+                      <widget class="MonoDevelop.Debugger.ObjectValueTreeView" id="valueView">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">True</property>
+                        <property name="AllowAdding">False</property>
+                        <property name="AllowEditing">True</property>
+                        <property name="AllowPinning">False</property>
+                        <property name="AllowExpanding">False</property>
+                        <property name="PinnedWatchLine">0</property>
+                        <property name="CompactView">False</property>
+                      </widget>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Label" id="page1">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">Details</property>
+                  </widget>
+                  <packing>
+                    <property name="type">tab</property>
+                  </packing>
                 </child>
               </widget>
               <packing>

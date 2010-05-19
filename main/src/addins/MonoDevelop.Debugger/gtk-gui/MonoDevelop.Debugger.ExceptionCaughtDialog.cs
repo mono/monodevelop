@@ -10,9 +10,19 @@ namespace MonoDevelop.Debugger
 
 		private global::Gtk.Label labelMessage;
 
+		private global::Gtk.Notebook notebook1;
+
+		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
+
+		private global::Gtk.TreeView treeStack;
+
+		private global::Gtk.Label label2;
+
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 
 		private global::MonoDevelop.Debugger.ObjectValueTreeView valueView;
+
+		private global::Gtk.Label page1;
 
 		private global::Gtk.Button buttonOk;
 
@@ -56,9 +66,33 @@ namespace MonoDevelop.Debugger
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
+			this.notebook1 = new global::Gtk.Notebook ();
+			this.notebook1.CanFocus = true;
+			this.notebook1.Name = "notebook1";
+			this.notebook1.CurrentPage = 0;
+			// Container child notebook1.Gtk.Notebook+NotebookChild
+			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
+			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
+			this.GtkScrolledWindow1.ShadowType = ((global::Gtk.ShadowType)(1));
+			this.GtkScrolledWindow1.BorderWidth = ((uint)(3));
+			// Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
+			this.treeStack = new global::Gtk.TreeView ();
+			this.treeStack.CanFocus = true;
+			this.treeStack.Name = "treeStack";
+			this.treeStack.HeadersVisible = false;
+			this.GtkScrolledWindow1.Add (this.treeStack);
+			this.notebook1.Add (this.GtkScrolledWindow1);
+			// Notebook tab
+			this.label2 = new global::Gtk.Label ();
+			this.label2.Name = "label2";
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Stack Trace");
+			this.notebook1.SetTabLabel (this.GtkScrolledWindow1, this.label2);
+			this.label2.ShowAll ();
+			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			this.GtkScrolledWindow.BorderWidth = ((uint)(3));
 			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
 			this.valueView = new global::MonoDevelop.Debugger.ObjectValueTreeView ();
 			this.valueView.CanFocus = true;
@@ -70,18 +104,27 @@ namespace MonoDevelop.Debugger
 			this.valueView.PinnedWatchLine = 0;
 			this.valueView.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueView);
-			this.vbox2.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.GtkScrolledWindow]));
-			w5.Position = 2;
+			this.notebook1.Add (this.GtkScrolledWindow);
+			global::Gtk.Notebook.NotebookChild w7 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.GtkScrolledWindow]));
+			w7.Position = 1;
+			// Notebook tab
+			this.page1 = new global::Gtk.Label ();
+			this.page1.Name = "page1";
+			this.page1.LabelProp = global::Mono.Unix.Catalog.GetString ("Details");
+			this.notebook1.SetTabLabel (this.GtkScrolledWindow, this.page1);
+			this.page1.ShowAll ();
+			this.vbox2.Add (this.notebook1);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.notebook1]));
+			w8.Position = 2;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
-			w6.Position = 0;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			w9.Position = 0;
 			// Internal child MonoDevelop.Debugger.ExceptionCaughtDialog.ActionArea
-			global::Gtk.HButtonBox w7 = this.ActionArea;
-			w7.Name = "dialog1_ActionArea";
-			w7.Spacing = 10;
-			w7.BorderWidth = ((uint)(5));
-			w7.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w10 = this.ActionArea;
+			w10.Name = "dialog1_ActionArea";
+			w10.Spacing = 10;
+			w10.BorderWidth = ((uint)(5));
+			w10.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -91,14 +134,14 @@ namespace MonoDevelop.Debugger
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-close";
 			this.AddActionWidget (this.buttonOk, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+			w11.Expand = false;
+			w11.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 527;
-			this.DefaultHeight = 311;
+			this.DefaultWidth = 541;
+			this.DefaultHeight = 358;
 			this.Show ();
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}

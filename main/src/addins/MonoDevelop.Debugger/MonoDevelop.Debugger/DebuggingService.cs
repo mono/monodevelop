@@ -594,7 +594,7 @@ namespace MonoDevelop.Debugger
 			if (args.Type == TargetEventType.UnhandledException || args.Type == TargetEventType.ExceptionThrown) {
 				DispatchService.GuiDispatch (delegate {
 					if (CurrentFrame != null) {
-						ObjectValue val = CurrentFrame.GetException ();
+						ExceptionInfo val = CurrentFrame.GetException ();
 						if (val != null) {
 							ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
 							dlg.Show ();

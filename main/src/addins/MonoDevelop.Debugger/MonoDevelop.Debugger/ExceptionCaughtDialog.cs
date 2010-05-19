@@ -27,22 +27,72 @@
 using System;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
+using Gtk;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
 	public partial class ExceptionCaughtDialog : Gtk.Dialog
 	{
-		public ExceptionCaughtDialog (ObjectValue val)
+		Gtk.TreeStore stackStore;
+		ExceptionInfo exception;
+		
+		public ExceptionCaughtDialog (ExceptionInfo exception)
 		{
 			this.Build ();
+			HasSeparator = false;
+			
+			stackStore = new TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
+			treeStack.Model = stackStore;
+			treeStack.AppendColumn ("", new CellRendererText (), "text", 0);
+			treeStack.ShowExpanders = false;
+			
 			valueView.AllowExpanding = true;
-			labelType.Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", val.TypeName);
-			ObjectValue msg = val.GetChild ("Message");
-			if (msg != null)
-				labelMessage.Text = msg.Value;
-			else
-				labelMessage.Hide ();
-			valueView.AddValue (val);
+			valueView.Frame = DebuggingService.CurrentFrame;
+			this.exception = exception;
+			
+			exception.Changed += delegate {
+				Gtk.Application.Invoke (delegate {
+					Fill ();
+				});
+			};
+			
+			Fill ();
+		}
+		
+		void Fill ()
+		{
+			stackStore.Clear ();
+			valueView.ClearValues ();
+
+			labelType.Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type);
+			labelMessage.Text = exception.Message;
+			
+			ShowStackTrace (exception, false);
+			
+			valueView.AddValue (exception.Instance);
+			valueView.ExpandRow (new TreePath ("0"), false);
+		}
+		
+		void ShowStackTrace (ExceptionInfo exc, bool showExceptionNode)
+		{
+			TreeIter it = TreeIter.Zero;
+			if (showExceptionNode) {
+				treeStack.ShowExpanders = true;
+				string tn = exc.Type + ": " + exc.Message;
+				it = stackStore.AppendValues (tn, null, 0, 0);
+			}
+
+			foreach (ExceptionStackFrame frame in exc.StackTrace) {
+				if (!it.Equals (TreeIter.Zero))
+					stackStore.AppendValues (it, frame.DisplayText, frame.File, frame.Line, frame.Column);
+				else
+					stackStore.AppendValues (frame.DisplayText, frame.File, frame.Line, frame.Column);
+			}
+			
+			ExceptionInfo inner = exc.InnerException;
+			if (inner != null)
+				ShowStackTrace (inner, true);
 		}
 		
 		protected override bool OnDeleteEvent (Gdk.Event evnt)
