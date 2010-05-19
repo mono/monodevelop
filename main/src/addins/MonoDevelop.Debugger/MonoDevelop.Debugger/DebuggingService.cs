@@ -285,6 +285,15 @@ namespace MonoDevelop.Debugger
 			dlg.Run ();
 			dlg.Destroy ();
 		}
+		
+		public static void ShowExceptionCaughtDialog ()
+		{
+			ExceptionInfo val = CurrentFrame.GetException ();
+			if (val != null) {
+				ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
+				dlg.Show ();
+			}
+		}
 
 		public static void ShowExceptionsFilters ()
 		{
@@ -594,11 +603,7 @@ namespace MonoDevelop.Debugger
 			if (args.Type == TargetEventType.UnhandledException || args.Type == TargetEventType.ExceptionThrown) {
 				DispatchService.GuiDispatch (delegate {
 					if (CurrentFrame != null) {
-						ExceptionInfo val = CurrentFrame.GetException ();
-						if (val != null) {
-							ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
-							dlg.Show ();
-						}
+						ShowExceptionCaughtDialog ();
 					}
 				});
 			}

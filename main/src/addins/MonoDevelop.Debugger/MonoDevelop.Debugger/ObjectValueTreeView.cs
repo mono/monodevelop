@@ -1091,6 +1091,19 @@ namespace MonoDevelop.Debugger
 			cinfo.Enabled = Selection.GetSelectedRows ().Length == 1;
 		}
 		
+		protected override void OnRowActivated (TreePath path, TreeViewColumn column)
+		{
+			base.OnRowActivated (path, column);
+			TreeIter it;
+			TreePath[] sel = Selection.GetSelectedRows ();
+			if (store.GetIter (out it, sel[0])) {
+				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
+				if (val.Name == DebuggingService.DebuggerSession.EvaluationOptions.CurrentExceptionTag)
+					DebuggingService.ShowExceptionCaughtDialog ();
+			}
+		}
+		
+		
 		bool GetCellAtPos (int x, int y, out TreePath path, out TreeViewColumn col, out CellRenderer cellRenderer)
 		{
 			int cx, cy;

@@ -36,6 +36,7 @@ namespace MonoDevelop.Debugger
 	{
 		Gtk.TreeStore stackStore;
 		ExceptionInfo exception;
+		bool destroyed;
 		
 		public ExceptionCaughtDialog (ExceptionInfo exception)
 		{
@@ -51,17 +52,23 @@ namespace MonoDevelop.Debugger
 			valueView.Frame = DebuggingService.CurrentFrame;
 			this.exception = exception;
 			
-			exception.Changed += delegate {
-				Gtk.Application.Invoke (delegate {
-					Fill ();
-				});
-			};
+			exception.Changed += HandleExceptionChanged;
 			
 			Fill ();
+		}
+
+		void HandleExceptionChanged (object sender, EventArgs e)
+		{
+			Gtk.Application.Invoke (delegate {
+				Fill ();
+			});
 		}
 		
 		void Fill ()
 		{
+			if (destroyed)
+				return;
+			
 			stackStore.Clear ();
 			valueView.ClearValues ();
 
@@ -105,6 +112,14 @@ namespace MonoDevelop.Debugger
 		{
 			Destroy ();
 		}
+		
+		protected override void OnDestroyed ()
+		{
+			destroyed = true;
+			exception.Changed -= HandleExceptionChanged;
+			base.OnDestroyed ();
+		}
+		
 	}
 }
 

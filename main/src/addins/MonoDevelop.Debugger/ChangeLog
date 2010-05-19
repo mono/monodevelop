@@ -1,3 +1,13 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Debugger/DebuggingService.cs:
+	* MonoDevelop.Debugger/ObjectValueTreeView.cs: Show the
+	  exception information when double clicking on it in the
+	  locals or watch pads.
+
+	* MonoDevelop.Debugger/ExceptionCaughtDialog.cs: Don't crash
+	  if there is a change event after the dialog is closed.
+
 2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
