@@ -328,7 +328,7 @@ namespace MonoDevelop.SourceEditor
 			int x = editor.TextViewMargin.XOffset;
 			int right = editor.Allocation.Width;
 			int errorCounterWidth = 0;
-			bool isCaretInLine = startOffset <= editor.Caret.Offset && editor.Caret.Offset < endOffset;
+			bool isCaretInLine = startOffset <= editor.Caret.Offset && editor.Caret.Offset <= endOffset;
 			int ew = 0, eh = 0;
 			if (errors.Count > 1 && errorCountLayout != null) {
 				errorCountLayout.GetPixelSize (out ew, out eh);
@@ -604,12 +604,13 @@ namespace MonoDevelop.SourceEditor
 		bool MouseIsOverMarker (TextEditor editor, MarginMouseEventArgs args)
 		{
 			int ew = 0, eh = 0;
-			int y = editor.LineToVisualY (args.LineNumber) - (int)editor.VAdjustment.Value;
+			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
+			int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
 			if (fitsInSameLine) {
-				if (args.Y > y + editor.LineHeight)
+				if (args.Y < y + 2 ||  args.Y > y + editor.LineHeight - 2)
 					return false;
 			} else {
-				if (args.Y < y + editor.LineHeight || args.Y > y + editor.LineHeight * 2)
+				if (args.Y < y + editor.LineHeight + 2 || args.Y > y + editor.LineHeight * 2 - 2)
 					return false;
 			}
 			
@@ -621,29 +622,61 @@ namespace MonoDevelop.SourceEditor
 			}
 			return false;
 		}
-		bool oldIsOver = false;
-//		static Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
-		public bool MouseHover (TextEditor editor, MarginMouseEventArgs args, ref Gdk.Cursor cursor)
+		
+		int MouseIsOverError (TextEditor editor, MarginMouseEventArgs args)
 		{
-			bool isOver = MouseIsOverMarker (editor, args);
-			if (isOver != oldIsOver) {
-				editor.Document.CommitLineUpdate (this.LineSegment);
-				oldIsOver = isOver;
+			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
+			int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
+			int height = editor.LineHeight * errors.Count;
+			if (!fitsInSameLine)
+				height += editor.LineHeight;
+			if (y > args.Y || args.Y > y + height)
+				return -1;
+			int error = (args.Y - y) / editor.LineHeight;
+			if (error >= errors.Count)
+				return -1;
+			int errorCounterWidth = 0;
+			
+			int ew = 0, eh = 0;
+			if (error == 0 && errors.Count > 1 && errorCountLayout != null) {
+				errorCountLayout.GetPixelSize (out ew, out eh);
+				errorCounterWidth = ew + 10;
 			}
 			
-/*			if (isOver) {
-				cursor = arrowCursor;
-				return true;
-			}*/
-			return false;
+			int labelWidth = layouts[error].Width + border + errorPixbuf.Width + errorCounterWidth + editor.LineHeight / 2;
+			
+			if (editor.Allocation.Width - editor.TextViewMargin.XOffset - args.X < labelWidth)
+				return error;
+		
+			return -1;
 		}
+		
+		bool oldIsOver = false;
+		
+		Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
+		public void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextMarkerHoverResult result)
+		{
+			bool isOver = MouseIsOverMarker (editor, args);
+			if (isOver != oldIsOver) 
+				editor.Document.CommitLineUpdate (this.LineSegment);
+			oldIsOver = isOver;
+			
+			int errorNumber = MouseIsOverError (editor, args);
+			if (errorNumber >= 0) {
+				result.Cursor = arrowCursor;
+				if (!isOver) // don't show tooltip when hovering over error counter layout.
+					result.TooltipMarkup = GLib.Markup.EscapeText (errors[errorNumber].ErrorMessage);
+			}
+			
+		}
+
 		#endregion
 		
 		#region IExtendingTextMarker implementation
 		public void Draw (TextEditor editor, Gdk.Drawable win, int lineNr, Gdk.Rectangle lineArea)
 		{
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
-			int i = lineNr - lineNumber;
+			int errorNumber = lineNr - lineNumber;
 			int x = editor.TextViewMargin.XOffset;
 			int y = lineArea.Y;
 			int right = editor.Allocation.Width;
@@ -658,7 +691,7 @@ namespace MonoDevelop.SourceEditor
 			int x2 = System.Math.Max (right - layouts[0].Width - border - errorPixbuf.Width - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset  + lineSegment.EditableLength) : false;
 			
-			LayoutDescriptor layout = layouts[i];
+			LayoutDescriptor layout = layouts[errorNumber];
 			x2 = right - layouts[0].Width - border - errorPixbuf.Width;
 			
 			x2 -= errorCounterWidth;
@@ -673,18 +706,18 @@ namespace MonoDevelop.SourceEditor
 					g.ClosePath ();
 					if (CollapseExtendedErrors) {
 						Cairo.Gradient pat = new Cairo.LinearGradient (x2, y, x2, y + editor.LineHeight);
-						pat.AddColorStop (0, errors[i].IsError ? errorLightBg : warningLightBg);
-						pat.AddColorStop (1, errors[i].IsError ? errorDarkBg : warningDarkBg);
+						pat.AddColorStop (0, errors[errorNumber].IsError ? errorLightBg : warningLightBg);
+						pat.AddColorStop (1, errors[errorNumber].IsError ? errorDarkBg : warningDarkBg);
 						g.Pattern = pat;
 					} else {
-						g.Color = errors[i].IsError ? errorLightBg : warningLightBg;
+						g.Color = errors[errorNumber].IsError ? errorLightBg : warningLightBg;
 					}
 					g.Fill ();
 					g.Color = bottomLine;
 					g.LineWidth = 1;
 					g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
 					g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
-					if (i == errors.Count - 1)
+					if (errorNumber == errors.Count - 1)
 						g.LineTo (new Cairo.PointD (lineArea.Right, y + editor.LineHeight));
 					g.Stroke ();
 					
@@ -693,7 +726,7 @@ namespace MonoDevelop.SourceEditor
 						if (divider >= x2) {
 							g.MoveTo (new Cairo.PointD (divider + 0.5, y));
 							g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
-							g.Color = errors[i].IsError ? errorDarkBg2 : warningDarkBg2;
+							g.Color = errors[errorNumber].IsError ? errorDarkBg2 : warningDarkBg2;
 							g.LineWidth = 1;
 							g.Stroke ();
 						}
@@ -704,7 +737,7 @@ namespace MonoDevelop.SourceEditor
 			if (!isEolSelected) {
 				win.DrawLayout (gc, x2 + errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2, layout.Layout);
 				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), 
-				                errors[i].IsError ? errorPixbuf : warningPixbuf, 
+				                errors[errorNumber].IsError ? errorPixbuf : warningPixbuf, 
 				                0, 0, 
 				                x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, 
 				                errorPixbuf.Width, errorPixbuf.Height, 
