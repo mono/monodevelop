@@ -1,5 +1,12 @@
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Expanded
+	  message bubbles now overdraw lines instead of inserting
+	  virtual space.
+
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Implemented
 	  'Bug 606978 - Warning message when undoing past save point'.
 

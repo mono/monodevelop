@@ -286,7 +286,7 @@ namespace MonoDevelop.SourceEditor
 						continue;
 					}
 					
-					ErrorTextMarker errorTextMarker = new ErrorTextMarker (task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
+					ErrorTextMarker errorTextMarker = new ErrorTextMarker (widget.TextEditor, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
 					currentErrorMarkers.Add (errorTextMarker);
 					
 					errorTextMarker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles;
@@ -801,7 +801,9 @@ namespace MonoDevelop.SourceEditor
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
+
 				if (line == null)
+
 					return;
 				if (!bp.Enabled) {
 					if (bp.HitAction == HitAction.Break)
