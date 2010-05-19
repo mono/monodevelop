@@ -1,3 +1,8 @@
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/TooltipWindow.cs: Try to fix
+	  criticals.
+
 2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components/GtkUtil.cs: Hide the tooltip when the
