@@ -41,10 +41,13 @@ namespace Mono.TextEditor
 		/// </returns>
 		bool MousePressed (TextEditor editor, MarginMouseEventArgs args);
 		
-		/// <returns>
-		/// true, if the mouse hover was handled - false otherwise.
-		/// </returns>
-		bool MouseHover (TextEditor editor, MarginMouseEventArgs args, ref Gdk.Cursor cursor);
+		void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextMarkerHoverResult result);
+	}
+	
+	public class TextMarkerHoverResult 
+	{
+		public Gdk.Cursor Cursor { get; set; }
+		public string TooltipMarkup { get; set; }
 	}
 	
 	public class TextMarker

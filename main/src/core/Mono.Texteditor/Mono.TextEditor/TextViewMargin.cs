@@ -1619,38 +1619,47 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 		
+		List<IActionTextMarker> oldMarkers = new List<IActionTextMarker> ();
+		List<IActionTextMarker> newMarkers = new List<IActionTextMarker> ();
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
 			if (textEditor.IsSomethingSelected && textEditor.MainSelection.SelectionMode == SelectionMode.Block) {
 				Caret.AllowCaretBehindLineEnd = true;
 			}
-			bool isHandled = false;
+			
 			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
 			
 			LineSegment line = Document.GetLine (loc.Line);
 			LineSegment oldHoveredLine = HoveredLine;
 			HoveredLine = line;
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
-			if (line != null) {
-				foreach (TextMarker marker in line.Markers) {
-					if (marker is IActionTextMarker) {
-						Gdk.Cursor markerCursor = null;
-						isHandled |= ((IActionTextMarker)marker).MouseHover (this.textEditor, args, ref markerCursor);
-						if (isHandled) {
-							if (markerCursor != null)
-								base.cursor = markerCursor;
-							break;
-						}
-					}
-				}
-			}
-			if (isHandled) {
-				return;
-			} else {
-				base.cursor = xtermCursor;
-			}
+		
+			TextMarkerHoverResult hoverResult = new TextMarkerHoverResult ();
+			oldMarkers.ForEach (m => m.MouseHover (this.textEditor, args, hoverResult));
 			
+			if (line != null) {
+				newMarkers.Clear ();
+				newMarkers.AddRange (line.Markers.Where (m => m is IActionTextMarker).Cast <IActionTextMarker> ());
+				IActionTextMarker extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextMarker;
+				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
+					newMarkers.Add (extraMarker);
+				foreach (var marker in newMarkers.Where (m => !oldMarkers.Contains (m))) {
+					marker.MouseHover (this.textEditor, args, hoverResult);
+				}
+				oldMarkers.Clear();
+				var tmp = oldMarkers;
+				oldMarkers = newMarkers;
+				newMarkers = tmp;
+			} else {
+				oldMarkers.Clear ();
+			}
+			base.cursor = hoverResult.Cursor ?? xtermCursor;
+			if (textEditor.TooltipMarkup != hoverResult.TooltipMarkup) {
+				textEditor.TooltipMarkup = null;
+				textEditor.TriggerTooltipQuery ();
+			}
+			textEditor.TooltipMarkup = hoverResult.TooltipMarkup;
 			
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker 
@@ -1661,13 +1670,14 @@ namespace Mono.TextEditor
 						return;
 					}
 				}
+				
 				ShowTooltip (null, Gdk.Rectangle.Zero);
 				string link = GetLink (args);
 				
 				if (!String.IsNullOrEmpty (link)) {
 					base.cursor = arrowCursor;
 				} else {
-					base.cursor = xtermCursor;
+					base.cursor = hoverResult.Cursor ?? xtermCursor;
 				}
 				return;
 			}

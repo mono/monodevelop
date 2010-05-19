@@ -1,5 +1,11 @@
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Advanced text markers can
+	  now provide tooltips.
+
+2010-05-19  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/HslColor.cs: Now supports cairo color
 	  conversion.
 
