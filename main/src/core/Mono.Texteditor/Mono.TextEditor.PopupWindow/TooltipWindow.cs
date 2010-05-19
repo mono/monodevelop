@@ -132,7 +132,7 @@ namespace Mono.TextEditor.PopupWindow
 //					LimitWidth (fittedWidth);
 //				}
 				
-				Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtWindow (GdkWindow));
+				Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
 				if (nudgeHorizontal) {
 					if (allocation.Width <= geometry.Width && x + allocation.Width >= geometry.Width - edgeGap)
 						x = geometry.Left + (geometry.Width - allocation.Height - edgeGap);
