@@ -138,8 +138,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			store.SetSortColumnId (3, SortType.Ascending);
 			ShowAll ();
 			
-			IdeApp.Workbench.ActiveLocationList = this;
-			
 			scrolledwindowLogView.Hide ();
 		}
 		
@@ -188,6 +186,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void BeginProgress ()
 		{
+			IdeApp.Workbench.ActiveLocationList = this;
+			
 			Reset ();
 			buttonStop.Sensitive = true;
 			treeviewSearchResults.FreezeChildNotify ();

@@ -1,3 +1,8 @@
+2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs: Set the
+	  active location list every time a search is started.
+
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
