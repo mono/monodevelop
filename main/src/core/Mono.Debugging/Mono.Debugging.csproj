@@ -107,6 +107,8 @@
     <Compile Include="Mono.Debugging.Evaluation\NRefactoryResolverVisitor.cs" />
     <Compile Include="Mono.Debugging.Client\RawValue.cs" />
     <Compile Include="Mono.Debugging.Evaluation\RemoteRawValue.cs" />
+    <Compile Include="Mono.Debugging.Client\ExceptionInfo.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\ExceptionInfoSource.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

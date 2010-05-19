@@ -141,18 +141,18 @@ namespace Mono.Debugging.Client
 			return value;
 		}
 		
-		public ObjectValue GetException ()
+		public ExceptionInfo GetException ()
 		{
 			return GetException (session.EvaluationOptions);
 		}
 		
-		public ObjectValue GetException (EvaluationOptions options)
+		public ExceptionInfo GetException (EvaluationOptions options)
 		{
 			if (!hasDebugInfo)
 				return null;
-			ObjectValue value = sourceBacktrace.GetException (index, options);
+			ExceptionInfo value = sourceBacktrace.GetException (index, options);
 			if (value != null)
-				ObjectValue.ConnectCallbacks (this, value);
+				value.ConnectCallback (this);
 			return value;
 		}
 		

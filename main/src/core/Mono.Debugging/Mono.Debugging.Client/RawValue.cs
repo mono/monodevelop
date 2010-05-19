@@ -33,6 +33,7 @@ namespace Mono.Debugging.Client
 	public class RawValue
 	{
 		IRawValue source;
+		internal EvaluationOptions options;
 		
 		public RawValue (IRawValue source)
 		{
@@ -48,17 +49,25 @@ namespace Mono.Debugging.Client
 		
 		public object CallMethod (string methodName, params object[] parameters)
 		{
-			return source.CallMethod (methodName, parameters);
+			object res = source.CallMethod (methodName, parameters, options);
+			RawValue val = res as RawValue;
+			if (val != null)
+				val.options = options;
+			return res;
 		}
 		
 		public object GetMemberValue (string name)
 		{
-			return source.GetMemberValue (name);
+			object res = source.GetMemberValue (name, options);
+			RawValue val = res as RawValue;
+			if (val != null)
+				val.options = options;
+			return res;
 		}
 		
 		public void SetMemberValue (string name, object value)
 		{
-			source.SetMemberValue (name, value);
+			source.SetMemberValue (name, value, options);
 		}
 	}
 	

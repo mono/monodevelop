@@ -221,7 +221,11 @@ namespace Mono.Debugging.Client
 		
 		public object GetRawValue (EvaluationOptions options)
 		{
-			return source.GetRawValue (path, options);
+			object res = source.GetRawValue (path, options);
+			RawValue val = res as RawValue;
+			if (val != null)
+				val.options = options;
+			return res;
 		}
 		
 		public void SetRawValue (object value)
@@ -503,7 +507,9 @@ namespace Mono.Debugging.Client
 		internal static void ConnectCallbacks (StackFrame parentFrame, params ObjectValue[] values)
 		{
 			Dictionary<IObjectValueUpdater, List<UpdateCallback>> callbacks = null;
-			foreach (ObjectValue val in values) {
+			List<ObjectValue> valueList = new List<ObjectValue> (values);
+			for (int n=0; n<valueList.Count; n++) {
+				ObjectValue val = valueList [n];
 				val.parentFrame = parentFrame;
 				UpdateCallback cb = val.GetUpdateCallback ();
 				if (cb != null) {
@@ -516,6 +522,8 @@ namespace Mono.Debugging.Client
 					}
 					list.Add (cb);
 				}
+				if (val.children != null)
+					valueList.AddRange (val.children);
 			}
 			if (callbacks != null) {
 				// Do the callback connection in a background thread

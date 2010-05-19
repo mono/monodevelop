@@ -1,3 +1,24 @@
+2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Debugging.csproj:
+	* Mono.Debugging.Client/StackFrame.cs:
+	* Mono.Debugging.Backend/IBacktrace.cs:
+	* Mono.Debugging.Client/ExceptionInfo.cs:
+	* Mono.Debugging.Evaluation/BaseBacktrace.cs:
+	* Mono.Debugging.Evaluation/ExceptionInfoSource.cs: Introduced
+	  ExceptionInfo, which provides information about a caught
+	  exception, including description and stack traces.
+
+	* Mono.Debugging.Client/RawValue.cs:
+	* Mono.Debugging.Evaluation/RemoteRawValue.cs:
+	* Mono.Debugging.Backend/IObjectValueSource.cs: Added
+	  evaluation options to raw value methods.
+
+	* Mono.Debugging.Client/ObjectValue.cs: Connect children
+	  directly added to the object value. Propagate eval options
+	  to raw value objects.
+
 2010-05-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Evaluation/AsyncOperationManager.cs: Fixed

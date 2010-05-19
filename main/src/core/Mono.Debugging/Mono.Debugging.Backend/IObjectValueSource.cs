@@ -42,9 +42,9 @@ namespace Mono.Debugging.Backend
 	
 	public interface IRawValue
 	{
-		object CallMethod (string name, object[] parameters);
-		object GetMemberValue (string name);
-		void SetMemberValue (string name, object value);
+		object CallMethod (string name, object[] parameters, EvaluationOptions options);
+		object GetMemberValue (string name, EvaluationOptions options);
+		void SetMemberValue (string name, object value, EvaluationOptions options);
 	}
 	
 	public interface IRawValueArray

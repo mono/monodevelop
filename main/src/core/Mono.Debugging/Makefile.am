@@ -35,6 +35,7 @@ FILES =  \
 	Mono.Debugging.Client/DebuggerSessionOptions.cs \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
 	Mono.Debugging.Client/EvaluationOptions.cs \
+	Mono.Debugging.Client/ExceptionInfo.cs \
 	Mono.Debugging.Client/IExpressionEvaluator.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \
@@ -55,6 +56,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/BaseBacktrace.cs \
 	Mono.Debugging.Evaluation/BaseTypeViewSource.cs \
 	Mono.Debugging.Evaluation/EvaluationContext.cs \
+	Mono.Debugging.Evaluation/ExceptionInfoSource.cs \
 	Mono.Debugging.Evaluation/ExpressionEvaluator.cs \
 	Mono.Debugging.Evaluation/FilteredMembersSource.cs \
 	Mono.Debugging.Evaluation/ICollectionAdaptor.cs \

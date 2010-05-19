@@ -27,6 +27,7 @@
 using System;
 using Mono.Debugging.Backend;
 using System.Collections;
+using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -52,35 +53,39 @@ namespace Mono.Debugging.Evaluation
 		}
 		
 		#region IRawValue implementation
-		public object CallMethod (string name, object[] parameters)
+		public object CallMethod (string name, object[] parameters, EvaluationOptions options)
 		{
+			EvaluationContext localContext = ctx.WithOptions (options);
+			
 			object[] argValues = new object [parameters.Length];
 			object[] argTypes = new object [parameters.Length];
 			for (int n=0; n<argValues.Length; n++) {
-				argValues[n] = ctx.Adapter.FromRawValue (ctx, parameters[n]);
-				argTypes[n] = ctx.Adapter.GetValueType (ctx, argValues[n]);
+				argValues[n] = localContext.Adapter.FromRawValue (localContext, parameters[n]);
+				argTypes[n] = localContext.Adapter.GetValueType (localContext, argValues[n]);
 			}
-			object type = ctx.Adapter.GetValueType (ctx, targetObject);
-			object res = ctx.Adapter.RuntimeInvoke (ctx, type, targetObject, name, argTypes, argValues);
-			return ctx.Adapter.ToRawValue (ctx, null, res);
+			object type = localContext.Adapter.GetValueType (localContext, targetObject);
+			object res = localContext.Adapter.RuntimeInvoke (localContext, type, targetObject, name, argTypes, argValues);
+			return localContext.Adapter.ToRawValue (localContext, null, res);
 		}
 		
-		public object GetMemberValue (string name)
+		public object GetMemberValue (string name, EvaluationOptions options)
 		{
-			object type = ctx.Adapter.GetValueType (ctx, targetObject);
-			ValueReference val = ctx.Adapter.GetMember (ctx, source, type, targetObject, name);
+			EvaluationContext localContext = ctx.WithOptions (options);
+			object type = localContext.Adapter.GetValueType (localContext, targetObject);
+			ValueReference val = localContext.Adapter.GetMember (localContext, source, type, targetObject, name);
 			if (val == null)
 				throw new EvaluatorException ("Member '{0}' not found", name);
-			return ctx.Adapter.ToRawValue (ctx, val, val.Value);
+			return localContext.Adapter.ToRawValue (localContext, val, val.Value);
 		}
 		
-		public void SetMemberValue (string name, object value)
+		public void SetMemberValue (string name, object value, EvaluationOptions options)
 		{
-			object type = ctx.Adapter.GetValueType (ctx, targetObject);
-			ValueReference val = ctx.Adapter.GetMember (ctx, source, type, targetObject, name);
+			EvaluationContext localContext = ctx.WithOptions (options);
+			object type = localContext.Adapter.GetValueType (localContext, targetObject);
+			ValueReference val = localContext.Adapter.GetMember (localContext, source, type, targetObject, name);
 			if (val == null)
 				throw new EvaluatorException ("Member '{0}' not found", name);
-			val.Value = ctx.Adapter.FromRawValue (ctx, value);
+			val.Value = localContext.Adapter.FromRawValue (localContext, value);
 		}
 		
 		#endregion
