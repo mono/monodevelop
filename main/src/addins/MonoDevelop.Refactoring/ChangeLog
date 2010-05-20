@@ -1,3 +1,8 @@
+2010-05-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.RefactorImports/FindTypeReferencesVisitor.cs:
+	  Check for valid end position before cutting text.
+
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.RefactorImports/SortImportsRefactoring.cs:

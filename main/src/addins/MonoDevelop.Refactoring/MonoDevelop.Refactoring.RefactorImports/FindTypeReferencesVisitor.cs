@@ -75,7 +75,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
 		{
 			string invocation = "";
-			if (!invocationExpression.StartLocation.IsEmpty) {
+			if (!invocationExpression.StartLocation.IsEmpty && !invocationExpression.EndLocation.IsEmpty) {
 				invocation = this.data.Document.GetTextBetween (this.data.Document.LocationToOffset (invocationExpression.StartLocation.Line - 1, invocationExpression.StartLocation.Column - 1),
 				                                                this.data.Document.LocationToOffset (invocationExpression.EndLocation.Line - 1, invocationExpression.EndLocation.Column - 1));
 			}
