@@ -195,8 +195,8 @@ namespace Mono.TextEditor
 			}
 			
 			buffer.Replace (offset, count, value);
-			OnTextReplaced (args);
 			splitter.TextReplaced (this, args);
+			OnTextReplaced (args);
 			
 			UpdateUndoStackOnReplace (args);
 			if (operation != null)

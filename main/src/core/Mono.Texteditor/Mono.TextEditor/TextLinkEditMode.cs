@@ -285,6 +285,7 @@ namespace Mono.TextEditor
 		
 		bool isExited = false;
 		bool wasReplaced = false;
+		
 		void UpdateLinksOnTextReplace (object sender, ReplaceEventArgs e)
 		{
 			wasReplaced = true;
@@ -297,6 +298,12 @@ namespace Mono.TextEditor
 				ExitTextLinkMode ();
 				return;
 			}
+			AdjustLinkOffsets (offset, delta);
+			UpdateTextLinks ();
+		}
+		
+		void AdjustLinkOffsets (int offset, int delta)
+		{
 			foreach (TextLink link in links) {
 				foreach (Segment s in link.Links) {
 					if (offset < s.Offset) {
@@ -308,7 +315,6 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			UpdateTextLinks ();
 		}
 		
 		void GotoNextLink (TextLink link)
@@ -449,19 +455,21 @@ namespace Mono.TextEditor
 
 		public void UpdateLinkText (TextLink link)
 		{
+			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
 				Segment s = link.Links[i];
 				int offset = s.Offset + baseOffset;
 				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
 					continue;
 				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText) {
-					Editor.Replace (offset, s.Length, link.CurrentText); // <- updates caret postion as well
-					s.Length = link.CurrentText.Length;
+					Editor.Replace (offset, s.Length, link.CurrentText);
+					int delta = link.CurrentText.Length - s.Length;
+					AdjustLinkOffsets (s.Offset, delta);
 					Editor.Document.CommitLineUpdate (Editor.Document.OffsetToLineNumber (offset));
 				}
 			}
+			Editor.Document.TextReplaced += UpdateLinksOnTextReplace;
 		}
-		
 	}
 	
 	public class TextLinkTooltipProvider : ITooltipProvider
