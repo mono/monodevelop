@@ -1,5 +1,9 @@
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MacPlatform.cs: More Macification.
+
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MacPlatform.cs: Macify some command names.
 
 2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
