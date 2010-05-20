@@ -121,9 +121,9 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		void TextEditorDataPaste (int insertionOffset, string text)
 		{
-			if (string.IsNullOrEmpty (text) || text.Length < 2)
-				return;
-			RunFormatterAt (insertionOffset);
+//			if (string.IsNullOrEmpty (text) || text.Length < 2)
+//				return;
+//			RunFormatterAt (insertionOffset);
 		}
 
 		class IndentVirtualSpaceManager : Mono.TextEditor.TextEditorData.IVirtualSpaceManager
