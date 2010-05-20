@@ -98,6 +98,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.matchEntry.Ready = true;
 			this.matchEntry.Visible = true;
 			this.matchEntry.IsCheckMenu = true;
+			HasSeparator = false;
 			
 			CheckMenuItem includeFilesItem = this.matchEntry.AddFilterOption (0, GettextCatalog.GetString ("Include _Files"));
 			includeFilesItem.DrawAsRadio = false;
