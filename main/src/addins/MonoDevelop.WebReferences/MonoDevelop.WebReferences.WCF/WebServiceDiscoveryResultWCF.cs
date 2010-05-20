@@ -129,8 +129,7 @@ namespace MonoDevelop.WebReferences.WCF
 			
 			metadata = wref.metadata;
 			protocol = wref.protocol;
-			string ns = Item.MapFile.Project.Name + "." + Item.Name;
-			GenerateFiles (Item.Project, ns, Item.Name);
+			GenerateFiles (Item.Project, Item.MapFile.Project.Name, Item.Name);
 		}
 		
 		public override System.Collections.Generic.IEnumerable<string> GetAssemblyReferences ()

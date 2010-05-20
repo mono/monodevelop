@@ -114,8 +114,7 @@ namespace MonoDevelop.WebReferences.WS
 			protocol = wref.protocol;
 			
 			// Re-generate the proxy and map files
-			string ns = Item.MapFile.Project.Name + "." + Item.Name;
-			GenerateFiles (Item.Project, ns, Item.Name);
+			GenerateFiles (Item.Project, Item.MapFile.Project.Name, Item.Name);
 		}
 		
 		public override System.Collections.Generic.IEnumerable<string> GetAssemblyReferences ()
