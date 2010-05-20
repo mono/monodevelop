@@ -101,12 +101,12 @@ namespace Mono.Debugging.Client
 		
 		public virtual void Dispose ()
 		{
-			lock (slock) {
+			Dispatch (delegate {
 				if (!disposed) {
 					disposed = true;
 					Breakpoints = null;
 				}
-			}
+			});
 		}
 		
 		public ExceptionHandler ExceptionHandler {
