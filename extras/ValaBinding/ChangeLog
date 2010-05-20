@@ -1,3 +1,7 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Bump MD version.
+
 2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/ValaTextEditorExtension.cs: Remove unneeded filename

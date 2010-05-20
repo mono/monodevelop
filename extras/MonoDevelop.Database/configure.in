@@ -1,9 +1,9 @@
-AC_INIT([monodevelop-database], 2.3, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop-database], 2.3.1, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 AM_MAINTAINER_MODE
 
-ASSEMBLY_VERSION=2.3.0.0
+ASSEMBLY_VERSION=2.4.0.0
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
@@ -18,7 +18,7 @@ fi
 AC_SUBST(PATH)
 AC_SUBST(LD_LIBRARY_PATH)
 
-MONO_REQUIRED_VERSION=2.3
+MONO_REQUIRED_VERSION=2.6.1
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 
 if test "x$has_mono" = "xfalse"; then
@@ -52,7 +52,7 @@ fi
 
 dnl hard dependencies
 MONOADDINS_REQUIRED_VERSION=0.4
-MONODEVELOP_REQUIRED_VERSION=2.3
+MONODEVELOP_REQUIRED_VERSION=2.3.1
 GTKSHARP_REQUIRED_VERSION=2.12.8
 
 PKG_CHECK_MODULES(MONO_ADDINS, mono-addins >= $MONOADDINS_REQUIRED_VERSION)

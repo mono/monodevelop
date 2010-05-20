@@ -1,3 +1,7 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bump MD version.
+
 2010-04-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.MeeGo.addin.xml: Fix debugger feature set

@@ -1,3 +1,7 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure: Bump MD version.
+
 2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* IKVMCompilerManager.cs: Properly detect warnings. Fixes bug
