@@ -1,5 +1,10 @@
 2010-05-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextLinkEditMode.cs: Correctly adjust end
+	  offset.
+
+2010-05-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextLinkEditMode.cs: Fixed 'Bug 607154 -
 	  Negative column on rename refactoring'.

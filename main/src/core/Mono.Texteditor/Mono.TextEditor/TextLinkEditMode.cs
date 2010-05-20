@@ -291,8 +291,6 @@ namespace Mono.TextEditor
 			wasReplaced = true;
 			int offset = e.Offset - baseOffset;
 			int delta = -e.Count + (!string.IsNullOrEmpty (e.Value) ? e.Value.Length : 0);
-			if (e.Offset < endOffset)
-				endOffset += delta;
 			if (!IsInUpdate && !links.Where (link => link.Links.Where (segment => segment.Contains (offset) || segment.EndOffset == offset).Any ()).Any ()) {
 				SetCaretPosition = false;
 				ExitTextLinkMode ();
@@ -315,6 +313,8 @@ namespace Mono.TextEditor
 					}
 				}
 			}
+			if (baseOffset + offset < endOffset)
+				endOffset += delta;
 		}
 		
 		void GotoNextLink (TextLink link)
