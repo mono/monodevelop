@@ -138,6 +138,7 @@ namespace Mono.TextEditor
 			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += delegate { 
 				selectedRegions.Clear (); 
+				RefreshSearchMarker ();
 			};
 			//			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
