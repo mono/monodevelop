@@ -1,5 +1,9 @@
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.SourceEditor.addin.xml: Fix keybindings.
+
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Escape in a
 	  'do you want to continue' dialog should cancel.
 

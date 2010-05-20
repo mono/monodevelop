@@ -1,5 +1,9 @@
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Fix keybindings.
+
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Better
 	  handling of mapping raw keys to commands. We now use the
 	  keymap to consume shift keys when possible, except for

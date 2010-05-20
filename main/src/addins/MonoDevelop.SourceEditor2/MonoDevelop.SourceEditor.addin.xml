@@ -93,8 +93,8 @@
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PulseCaret"
 				_label = "Find caret"
 				_description = "Animates the text editor caret to help find it"
-				shortcut = "Ctrl|Shift||"
-				macShortcut = "Meta|Shift||" />
+				shortcut = "Ctrl||"
+				macShortcut = "Meta||" />
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker"
 				_label = "Toggle message bubble"
 				_description = "Toggles message bubble on/off"/>
