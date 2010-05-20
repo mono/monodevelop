@@ -947,7 +947,7 @@ namespace MonoDevelop.SourceEditor
 				this.highlightCaretLine = highlightCaretLine;
  			}
 			
-			public void Run (object sender, ExposeEventArgs e)
+			public void Run (object sender, EventArgs e)
 			{
 				if (view.isDisposed)
 					return;
@@ -957,7 +957,9 @@ namespace MonoDevelop.SourceEditor
 					view.widget.TextEditor.Caret.Location = new DocumentLocation (line - 1, column - 1);
 					view.widget.TextEditor.GrabFocus ();
 					view.widget.TextEditor.CenterToCaret ();
-					view.widget.Vbox.ExposeEvent -= Run;
+					if (view.widget.TextEditor.TextViewMargin.XOffset == 0)
+						view.widget.TextEditor.HAdjustment.Value = 0;
+					view.widget.Vbox.SizeAllocated -= Run;
 				} finally {
 					view.widget.TextEditor.Caret.AutoScrollToCaret = true;
 					if (highlightCaretLine) {
@@ -966,7 +968,6 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
-			
 		}
 		
 		public void SetCaretTo (int line, int column)
@@ -978,12 +979,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (widget.Vbox.Allocation.Width <= 1) {
 				SetCaret setCaret = new SetCaret (this, line, column, highlight);
-				widget.Vbox.ExposeEvent += setCaret.Run;
+				widget.Vbox.SizeAllocated += setCaret.Run;
 			} else {
-				GLib.Timeout.Add (20, delegate {
+//				GLib.Timeout.Add (20, delegate {
 					new SetCaret (this, line, column, highlight).Run (null, null);
-					return false;
-				});
+//					return false;
+//				});
 			}
 		}
 		

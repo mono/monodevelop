@@ -1,3 +1,9 @@
+2010-05-20  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  533918 - Scroll position "jumps" first time editor tab is
+	  shown'.
+
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor.addin.xml: Fix keybindings.
