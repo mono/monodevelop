@@ -96,8 +96,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public MemberCompletionData (INode member, OutputFlags flags) 
 		{
-			SetMember (member);
 			this.flags = flags;
+			SetMember (member);
 			DisplayFlags = DisplayFlags.DescriptionHasMarkup;
 			IMember m = Member as IMember;
 			if (m != null && m.IsObsolete)
