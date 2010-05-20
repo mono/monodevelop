@@ -915,10 +915,12 @@ namespace MonoDevelop.SourceEditor
 		public void Undo()
 		{
 			if (this.Document.GetCurrentUndoDepth () > 0 && !this.Document.IsDirty) {
-				AlertButton buttonCancel = new AlertButton (GettextCatalog.GetString ("Don't Undo")); 
-				AlertButton buttonOk = new AlertButton (GettextCatalog.GetString ("Undo")); 
-				AlertButton result = MessageService.GenericAlert (Gtk.Stock.DialogWarning, GettextCatalog.GetString ("Warning"), GettextCatalog.GetString ("You are about to undo past the last point this file was saved. Do you want to do this?"), 1, buttonCancel, buttonOk);
-				if (result == buttonCancel)
+				var buttonCancel = new AlertButton (GettextCatalog.GetString ("Don't Undo")); 
+				var buttonOk = new AlertButton (GettextCatalog.GetString ("Undo")); 
+				var question = GettextCatalog.GetString ("You are about to undo past the last point this file was saved. Do you want to do this?");
+				var result = MessageService.GenericAlert (Gtk.Stock.DialogWarning, GettextCatalog.GetString ("Warning"),
+				                                          question, 1, buttonCancel, buttonOk);
+				if (result != buttonOk)
 					return;
 			}
 			
