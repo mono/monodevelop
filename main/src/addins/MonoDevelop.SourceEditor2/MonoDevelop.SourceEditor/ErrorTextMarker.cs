@@ -625,6 +625,8 @@ namespace MonoDevelop.SourceEditor
 		
 		int MouseIsOverError (TextEditor editor, MarginMouseEventArgs args)
 		{
+			if (layouts == null)
+				return -1;
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 			int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
 			int height = editor.LineHeight * errors.Count;
@@ -633,7 +635,7 @@ namespace MonoDevelop.SourceEditor
 			if (y > args.Y || args.Y > y + height)
 				return -1;
 			int error = (args.Y - y) / editor.LineHeight;
-			if (error >= errors.Count)
+			if (error >= layouts.Count)
 				return -1;
 			int errorCounterWidth = 0;
 			

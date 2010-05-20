@@ -1,5 +1,10 @@
 2010-05-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: Fixed 'Bug
+	  607311 - MouseOver cause MD to crash'.
+
+2010-05-20  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
 	  533918 - Scroll position "jumps" first time editor tab is
 	  shown'.
