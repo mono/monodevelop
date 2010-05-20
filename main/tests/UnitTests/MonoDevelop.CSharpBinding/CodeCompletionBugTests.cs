@@ -2556,7 +2556,7 @@ class Foo
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNull (provider.Find ("select"), "keyword 'select' not found.");
+			Assert.IsNotNull (provider.Find ("select"), "keyword 'select' not found.");
 		}
 	}
 }
