@@ -996,6 +996,11 @@ namespace Mono.TextEditor
 				set;
 			}
 			
+			public int PangoWidth {
+				get;
+				set;
+			}
+			
 			public LayoutWrapper (Pango.Layout layout)
 			{
 				this.Layout = layout;
@@ -1095,6 +1100,9 @@ namespace Mono.TextEditor
 				}
 				wrapper.LineChars = lineChars;
 				wrapper.Layout.SetText (lineText);
+				int w, h;
+				wrapper.Layout.GetSize (out w, out h);
+				wrapper.PangoWidth = w;
 				atts.AssignTo (wrapper.Layout);
 				atts.Dispose ();
 			});
@@ -1153,7 +1161,7 @@ namespace Mono.TextEditor
 			return CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
 		}
 		
-		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int xPos, int y, int maxX)
+		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int pangoPosition, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
@@ -1166,12 +1174,8 @@ namespace Mono.TextEditor
 			
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
-			int width, ph;
-			layout.Layout.GetPixelSize (out width, out ph);
-			// work around for Bug 591459 - Visual glitches when highlighting text
-			// on mac the width is always 1 pixel too wide.
-			if (Platform.IsMac)
-				width--;
+			int width = (int)(layout.PangoWidth / Pango.Scale.PangoScale);
+			int xPos = (int)(pangoPosition / Pango.Scale.PangoScale);
 			bool drawBg = true;
 			bool drawText = true;
 			
@@ -1212,7 +1216,7 @@ namespace Mono.TextEditor
 			uint curIndex = 0, byteIndex = 0;
 			
 			while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
-				int x = xPos;
+				int x = pangoPosition;
 				HandleSelection (line, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 					uint startIndex = (uint)(start - offset);
 					uint endIndex = (uint)(end - offset);
@@ -1226,11 +1230,13 @@ namespace Mono.TextEditor
 							int l, x1, x2;
 							layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
 							layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
+							x1 += x; 
+							x2 += x;
 							x1 /= (int)Pango.Scale.PangoScale;
 							x2 /= (int)Pango.Scale.PangoScale;
 							
 							cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (MainSearchResult == null || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg, AlphaBlendSearchResults ? 0.6 : 1.0);
-							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x + x1, y, (int)(System.Math.Min (10, width) * textEditor.Options.Zoom), x2 - x1, textEditor.LineHeight);
+							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, (int)(System.Math.Min (10, width) * textEditor.Options.Zoom), x2 - x1, textEditor.LineHeight);
 							cr.Fill ();
 						}
 						
@@ -1249,8 +1255,6 @@ namespace Mono.TextEditor
 			if (Document.GetLine (Caret.Line) == line) {
 				int caretOffset = Caret.Offset;
 				if (offset <= caretOffset && caretOffset <= offset + length) {
-					if (Platform.IsMac)
-						width++;
 					Pango.Rectangle strong_pos, weak_pos;
 					int index = caretOffset- offset;
 					if (offset <= textEditor.preeditOffset && textEditor.preeditOffset < offset + length) {
@@ -1274,8 +1278,8 @@ namespace Mono.TextEditor
 			foreach (TextMarker marker in line.Markers) {
 				marker.Draw (textEditor, win, layout.Layout, false, 				/*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
-
-			xPos += width;
+			
+			pangoPosition += layout.PangoWidth;
 			if (layout.IsUncached)
 				layout.Dispose ();
 		}
@@ -2004,7 +2008,7 @@ namespace Mono.TextEditor
 			
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
 			int width, height;
-			int xPos = (int)(x - textEditor.HAdjustment.Value);
+			int pangoPosition = (int)( (x - textEditor.HAdjustment.Value) * Pango.Scale.PangoScale);
 			
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
@@ -2022,7 +2026,7 @@ namespace Mono.TextEditor
 			
 			if (line == null) {
 				if (textEditor.Options.ShowInvalidLines) {
-					DrawInvalidLineMarker (win, xPos, y);
+					DrawInvalidLineMarker (win, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 				}
 				var marker = Document.GetExtendingTextMarker (lineNr);
 				if (marker != null) 
@@ -2046,14 +2050,14 @@ namespace Mono.TextEditor
 					//					win.DrawLayout (gc, xPos, y, layout);
 					//					layout.GetPixelSize (out width, out height);
 					
-					DrawLinePart (win, line, offset, foldOffset - offset, ref xPos, y, area.Right);
+					DrawLinePart (win, line, offset, foldOffset - offset, ref pangoPosition, y, area.Right);
 					//					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
 					markerLayout.SetText (folding.Description);
 					
-					markerLayout.GetPixelSize (out width, out height);
+					markerLayout.GetSize (out width, out height);
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
-					Rectangle foldingRectangle = new Rectangle (xPos, y, width - 1, this.LineHeight - 1);
+					Rectangle foldingRectangle = new Rectangle ((int)(pangoPosition / Pango.Scale.PangoScale), y, (int)(width / Pango.Scale.PangoScale) - 1, this.LineHeight - 1);
 					if (BackgroundRenderer == null)
 						win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.BackgroundColor : defaultBgColor), true, foldingRectangle);
 					/*
@@ -2069,12 +2073,12 @@ namespace Mono.TextEditor
 						cr.Stroke ();
 					}*/
 					win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color), false, foldingRectangle);
-					win.DrawLayout (GetGC (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color), xPos, y, markerLayout);
+					win.DrawLayout (GetGC (isFoldingSelected ? ColorStyle.Selection.Color : ColorStyle.FoldLine.Color), (int)(pangoPosition / Pango.Scale.PangoScale), y, markerLayout);
 					
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
-						SetVisibleCaretPosition (win, folding.Description[0], xPos, y);
+						SetVisibleCaretPosition (win, folding.Description[0], (int)(pangoPosition / Pango.Scale.PangoScale), y);
 					
-					xPos += width;
+					pangoPosition += width;
 					
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
@@ -2087,12 +2091,12 @@ namespace Mono.TextEditor
 			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon 
 			// and the caret position is calculated in DrawLinePart.
 			if (line.EndOffset - offset >= 0)
-				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref xPos, y, area.Right);
+				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref pangoPosition, y, area.Right);
 			
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
 			
-			lineArea.X = xPos;
-			lineArea.Width = textEditor.Allocation.Width - xPos;
+			lineArea.X = (int)(pangoPosition / Pango.Scale.PangoScale);
+			lineArea.Width = textEditor.Allocation.Width - (int)(pangoPosition / Pango.Scale.PangoScale);
 			
 			if (textEditor.SelectionMode == SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength)) {
 				DocumentLocation start = textEditor.MainSelection.Anchor;
@@ -2122,12 +2126,12 @@ namespace Mono.TextEditor
 			}
 			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
 			if (textEditor.Options.ShowEolMarkers)
-				DrawEolMarker (win, isEolSelected, xPos, y);
+				DrawEolMarker (win, isEolSelected, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null) 
 				extendingMarker.Draw (textEditor, win, lineNr, lineArea);
 			
-			lastLineRenderWidth = xPos;
+			lastLineRenderWidth = (int)(pangoPosition / Pango.Scale.PangoScale);
 		}
 		
 		internal IBackgroundRenderer BackgroundRenderer {

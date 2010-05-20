@@ -1,5 +1,10 @@
 2010-05-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Draw lines using pango
+	  coordinates instead of pixels (much better fix for #591459).
+
+2010-05-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs: Correctly adjust end
 	  offset.
 
