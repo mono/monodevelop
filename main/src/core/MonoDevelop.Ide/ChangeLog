@@ -1,3 +1,7 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* BuildVariables.cs: Updated.
+
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* options/KeyBindingSchemeEmacs.xml: Fix keybindings.
