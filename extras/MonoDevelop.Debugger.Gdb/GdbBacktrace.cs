@@ -128,7 +128,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return values.ToArray ();
 		}
 		
-		public ObjectValue GetException (int frameIndex, EvaluationOptions options)
+		public ExceptionInfo GetException (int frameIndex, EvaluationOptions options)
 		{
 			return null;
 		}
