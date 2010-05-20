@@ -265,9 +265,12 @@ namespace MonoDevelop.CSharp.Formatting
 				stateTracker.UpdateEngine ();
 				
 				bool reIndent = false;
-				if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
-					DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
-
+				if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
+					FixLineStart (textEditorData.Caret.Line + 1);
+				} else {
+					if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
+						DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
+				}
 				//reindent the line after the insertion, if needed
 				//N.B. if the engine says we need to reindent, make sure that it's because a char was 
 				//inserted rather than just updating the stack due to moving around
@@ -435,56 +438,74 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			stateTracker.UpdateEngine ();
 			reIndent = false;
-			int cursor = Editor.CursorPosition;
 			switch (charInserted) {
 			case ';':
 			case '}':
 				RunFormatter ();
 				break;
 			case '\n':
-				if (stateTracker.Engine.LineNumber > 0) {
-					string previousLine = Editor.GetLineText (stateTracker.Engine.LineNumber - 1);
-					string trimmedPreviousLine = previousLine.TrimStart ();
-					//xml doc comments
-					//check previous line was a doc comment
-					//check there's a following line?
-					if (trimmedPreviousLine.StartsWith ("/// ") && Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber + 1, 1) > -1)					/*  && cursor > 0 && Editor.GetCharAt (cursor - 1) == '\n'*/ {
-						//check that the newline command actually inserted a newline
-						string nextLine = Editor.GetLineText (stateTracker.Engine.LineNumber + 1);
-						if (trimmedPreviousLine.Length > "/// ".Length || nextLine.TrimStart ().StartsWith ("/// ")) {
-							Editor.InsertText (cursor, 							/*GetLineWhiteSpace (previousLine) + */"/// ");
-							return;
-						}
-						//multi-line comments
-					} else if (stateTracker.Engine.IsInsideMultiLineComment) {
-						string commentPrefix = string.Empty;
-						if (trimmedPreviousLine.StartsWith ("* ")) {
-							commentPrefix = "* ";
-						} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
-							commentPrefix = " * ";
-						} else if (trimmedPreviousLine.StartsWith ("*")) {
-							commentPrefix = "*";
-						}
-						Editor.InsertText (cursor, 						/*GetLineWhiteSpace (previousLine) +*/commentPrefix);
-						return;
-					} else if (stateTracker.Engine.IsInsideStringLiteral) {
-						int lastLineEndPos = Editor.GetPositionFromLineColumn (stateTracker.Engine.LineNumber - 1, Editor.GetLineLength (stateTracker.Engine.LineNumber - 1) + 1);
-						int cursorEndPos = cursor + 4;
-						Editor.InsertText (lastLineEndPos, "\" +");
-						if (!trimmedPreviousLine.StartsWith ("\"")) {
-							Editor.InsertText (cursor++ + 3, "\t");
-							cursorEndPos++;
-						}
-						Editor.InsertText (cursor + 3, "\"");
-						Editor.CursorPosition = cursorEndPos;
-						return;
-					}
-				}
+				if (FixLineStart (stateTracker.Engine.LineNumber - 1)) 
+					return;
 				//newline always reindents unless it's had special handling
 				reIndent = true;
 				break;
 			}
 		}
+		
+		bool FixLineStart (int lineNumber)
+		{
+			if (lineNumber > 0) {
+				LineSegment line = textEditorData.Document.GetLine (lineNumber);
+				int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
+				
+				LineSegment prevLine = textEditorData.Document.GetLine (lineNumber - 1);
+				string trimmedPreviousLine = textEditorData.Document.GetTextAt (prevLine).TrimStart ();
+				
+				//xml doc comments
+				//check previous line was a doc comment
+				//check there's a following line?
+				if (trimmedPreviousLine.StartsWith ("/// ") && lineNumber + 1 < textEditorData.Document.LineCount) {
+					//check that the newline command actually inserted a newline
+					string nextLine = textEditorData.Document.GetTextAt (textEditorData.Document.GetLine (lineNumber + 1)).TrimStart ();
+					if (trimmedPreviousLine.Length > "/// ".Length || nextLine.StartsWith ("/// ")) {
+						textEditorData.Insert (insertionPoint, "/// ");
+						if (textEditorData.Caret.Offset >= insertionPoint)
+							textEditorData.Caret.Offset += "/// ".Length;
+						return true;
+					}
+					//multi-line comments
+				} else if (stateTracker.Engine.IsInsideMultiLineComment) {
+					string commentPrefix = string.Empty;
+					if (trimmedPreviousLine.StartsWith ("* ")) {
+						commentPrefix = "* ";
+					} else if (trimmedPreviousLine.StartsWith ("/**") || trimmedPreviousLine.StartsWith ("/*")) {
+						commentPrefix = " * ";
+					} else if (trimmedPreviousLine.StartsWith ("*")) {
+						commentPrefix = "*";
+					}
+					textEditorData.Insert (insertionPoint, commentPrefix);
+					if (textEditorData.Caret.Offset >= insertionPoint)
+						textEditorData.Caret.Offset += commentPrefix.Length;
+					return true;
+				} else if (stateTracker.Engine.IsInsideStringLiteral) {
+					textEditorData.Insert (prevLine.Offset + prevLine.EditableLength, "\" +");
+					
+					if (!trimmedPreviousLine.StartsWith ("\"")) {
+						int offset = insertionPoint++ + 3; 
+						textEditorData.Insert (offset, "\t");
+						if (textEditorData.Caret.Offset >= offset)
+							textEditorData.Caret.Offset ++;
+					}
+					textEditorData.Insert (insertionPoint + 3, "\"");
+					if (textEditorData.Caret.Offset >= insertionPoint + 3)
+						textEditorData.Caret.Offset += "\"".Length;
+					
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		void RunFormatter ()
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false) && textEditorData != null) {
