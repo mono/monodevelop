@@ -203,6 +203,10 @@ namespace MonoDevelop.Platform
 				{ CommandManager.ToCommandId (HelpCommands.Help), CarbonCommandID.AppHelp },
 			});
 			
+			//mac-ify these command names
+			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
+			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Default Policies...");
+			
 			initedApp = true;
 			OSXIntegration.OSXMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
 			OSXIntegration.OSXMenu.AddAppMenuItems (
