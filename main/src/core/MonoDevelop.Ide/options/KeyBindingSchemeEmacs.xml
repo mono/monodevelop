@@ -7,7 +7,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Paste" shortcut="Control+Y" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Redo" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.SelectAll" shortcut="Control+X|H" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Control+Shift+_" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Control+_" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Control+X|Shift+Tab" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" shortcut="Control+X|Control+U" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Control+X|K" />
@@ -19,7 +19,7 @@
     <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAll" shortcut="Control+X|S" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAs" shortcut="Control+X|Control+W" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.Find" shortcut="Control+S" />
-    <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Alt+Shift+%" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Alt+%" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" shortcut="Control+B" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" shortcut="Control+F" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" shortcut="Control+H" />

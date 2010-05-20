@@ -1,5 +1,9 @@
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* options/KeyBindingSchemeEmacs.xml: Fix keybindings.
+
+2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Fix keybindings.
 
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
