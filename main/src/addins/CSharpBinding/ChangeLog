@@ -1,3 +1,13 @@
+2010-05-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs:
+	  Implemented request in 'Bug 607366 - Text link mode can
+	  break texteditor badly'.
+
 2010-05-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:

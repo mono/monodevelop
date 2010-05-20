@@ -31,6 +31,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
+	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \

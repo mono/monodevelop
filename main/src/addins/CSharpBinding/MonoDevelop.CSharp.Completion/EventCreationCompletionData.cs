@@ -109,11 +109,13 @@ namespace MonoDevelop.CSharp.Completion
 			// start text link mode after insert
 			List<TextLink> links = new List<TextLink> ();
 			TextLink link = new TextLink ("name");
+			
 			link.AddLink (new Segment (0, this.DisplayText.Length));
 			link.AddLink (new Segment (pos + pos2 - initialOffset, this.DisplayText.Length));
 			links.Add (link);
 			
-			TextLinkEditMode tle = new TextLinkEditMode (editor.Parent, initialOffset, links);
+			CompletionTextLinkMode tle = new CompletionTextLinkMode (editor.Parent, initialOffset, links);
+			tle.TriggerCodeCompletion = false;
 			tle.SetCaretPosition = true;
 			tle.SelectPrimaryLink = true;
 			tle.OldMode = editor.CurrentMode;
@@ -121,4 +123,6 @@ namespace MonoDevelop.CSharp.Completion
 			editor.CurrentMode = tle;
 		}
 	}
+	
+
 }

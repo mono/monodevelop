@@ -166,6 +166,10 @@ namespace MonoDevelop.CSharp.Completion
 		bool tryToForceCompletion = false;
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
+			if (textEditorData.CurrentMode is CompletionTextLinkMode) {
+				if (!((CompletionTextLinkMode)textEditorData.CurrentMode).TriggerCodeCompletion)
+					return null;
+			}
 	//		IDisposable timer = null;
 		try {
 			if (dom == null /*|| Document.CompilationUnit == null*/)
