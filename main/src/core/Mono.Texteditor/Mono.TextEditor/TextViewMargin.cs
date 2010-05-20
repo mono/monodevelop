@@ -2057,7 +2057,8 @@ namespace Mono.TextEditor
 					
 					markerLayout.GetSize (out width, out height);
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
-					Rectangle foldingRectangle = new Rectangle ((int)(pangoPosition / Pango.Scale.PangoScale), y, (int)(width / Pango.Scale.PangoScale) - 1, this.LineHeight - 1);
+					int pixelWidth = (int)(width / Pango.Scale.PangoScale);
+					Rectangle foldingRectangle = new Rectangle ((int)(pangoPosition / Pango.Scale.PangoScale), y, pixelWidth - 1, this.LineHeight - 1);
 					if (BackgroundRenderer == null)
 						win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.BackgroundColor : defaultBgColor), true, foldingRectangle);
 					/*
@@ -2078,7 +2079,7 @@ namespace Mono.TextEditor
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
 						SetVisibleCaretPosition (win, folding.Description[0], (int)(pangoPosition / Pango.Scale.PangoScale), y);
 					
-					pangoPosition += width;
+					pangoPosition += (int)(Pango.Scale.PangoScale * pixelWidth);
 					
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
