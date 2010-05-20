@@ -178,6 +178,8 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 			
+			if (memberCompilationUnit != null)
+				return;
 			if (callingMember != null && !setupLookupTableVisitor ) {
 				string wrapper = CreateWrapperClassForMember (callingMember, fileName, editor);
 				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
@@ -274,14 +276,16 @@ namespace MonoDevelop.CSharp.Resolver
 				AddContentsFromClassAndMembers (context, col);
 				
 				if (lookupTableVisitor != null && lookupTableVisitor.Variables != null) {
-					int callingMemberline = CallingMember != null ? CallingMember.Location.Line : 0;
+//					int callingMemberline = CallingMember != null ? CallingMember.Location.Line : 0;
 					// local variables could be outside members (LINQ initializers) 
 					foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 						if (pair.Value != null && pair.Value.Count > 0) {
 							foreach (LocalLookupVariable v in pair.Value) {
-								if (new DomLocation (callingMemberline + v.StartPos.Line - 2, v.StartPos.Column) <= this.resolvePosition && (v.EndPos.IsEmpty || new DomLocation (callingMemberline + v.EndPos.Line - 2, v.EndPos.Column) >= this.resolvePosition)) {
-									col.Add (new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef), DomRegion.Empty));
-								}
+								DomLocation varStartPos = new DomLocation (lookupVariableLine + v.StartPos.Line, v.StartPos.Column - 1);
+								DomLocation varEndPos   = new DomLocation (lookupVariableLine + v.EndPos.Line, v.EndPos.Column - 1);
+								if (varStartPos > this.resolvePosition || (!v.EndPos.IsEmpty && varEndPos < this.resolvePosition))
+									continue;
+								col.Add (new LocalVariable (CallingMember, pair.Key, ConvertTypeReference (v.TypeRef), DomRegion.Empty));
 							}
 						}
 					}
@@ -682,7 +686,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (resultTable.TryGetValue (identifier, out result))
 				return result;
 			resultTable[identifier] = result;
-			
+//			Console.WriteLine (lookupVariableLine);
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = null;

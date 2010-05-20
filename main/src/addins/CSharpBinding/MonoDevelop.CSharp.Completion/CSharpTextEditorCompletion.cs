@@ -192,7 +192,7 @@ namespace MonoDevelop.CSharp.Completion
 				int idx = result.Expression.LastIndexOf ('.');
 				if (idx > 0)
 					result.Expression = result.Expression.Substring (0, idx);
-				NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+				NRefactoryResolver resolver = CreateResolver ();
 				ResolveResult resolveResult = resolver.Resolve (result, location);
 				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
 					ICSharpCode.NRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.NRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
@@ -252,7 +252,7 @@ namespace MonoDevelop.CSharp.Completion
 				result = FindExpression (dom, completionContext, -1);
 				if (result == null || result.Expression == null)
 					return null;
-				resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+				resolver = CreateResolver ();
 				resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2));
 				
 				if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
@@ -369,7 +369,7 @@ namespace MonoDevelop.CSharp.Completion
 				case "=":
 				case "==":
 					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset - 1);
-					resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+					resolver = CreateResolver ();
 					resolveResult = resolver.Resolve (result, location);
 					if (resolveResult != null) {
 						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
@@ -437,7 +437,7 @@ namespace MonoDevelop.CSharp.Completion
 					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 						return null;
 					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset);
-					resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+					resolver = CreateResolver ();
 					resolveResult = resolver.Resolve (result, location);
 					
 					if (resolveResult is MemberResolveResult) {
@@ -667,6 +667,15 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 		
+		public ICSharpCode.NRefactory.Ast.CompilationUnit ParsedUnit { get; set; }
+		NRefactoryResolver CreateResolver ()
+		{
+			NRefactoryResolver result = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+			if (ParsedUnit != null)
+				result.SetupParsedCompilationUnit (ParsedUnit);
+			return result;
+		}
+		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (dom == null || (completionChar != '(' && completionChar != '<' && completionChar != '['))
@@ -680,7 +689,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 
 			//DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
-			NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+			NRefactoryResolver resolver = CreateResolver ();
 
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
@@ -861,7 +870,7 @@ namespace MonoDevelop.CSharp.Completion
 				{
 					CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					ExpressionResult expressionResult = FindExpression (dom, completionContext, wordStart - Editor.CursorPosition);
-					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+					NRefactoryResolver resolver = CreateResolver ();
 					ResolveResult resolveResult = resolver.Resolve (expressionResult, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 					if (resolveResult != null && resolveResult.ResolvedType != null) {
 						CompletionDataCollector col = new CompletionDataCollector (completionList, Document.CompilationUnit, location);
@@ -958,7 +967,7 @@ namespace MonoDevelop.CSharp.Completion
 					string token = GetPreviousToken (ref j, true);
 					string yieldToken = GetPreviousToken (ref j, true);
 					if (token == "return") {
-						NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+						NRefactoryResolver resolver = CreateResolver ();
 						resolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 						IReturnType returnType = resolver.CallingMember.ReturnType;
 						if (yieldToken == "yield" && returnType.GenericArguments.Count > 0)
@@ -982,7 +991,7 @@ namespace MonoDevelop.CSharp.Completion
 				return yieldDataList;
 			case "where":
 				CompletionDataList whereDataList = new CompletionDataList ();
-				NRefactoryResolver constraintResolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+				NRefactoryResolver constraintResolver = CreateResolver ();
 				constraintResolver.SetupResolver (new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
 				if (constraintResolver.CallingMember is IMethod) {
 					foreach (ITypeParameter tp in ((IMethod)constraintResolver.CallingMember).TypeParameters) {
@@ -1625,7 +1634,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			//	Console.WriteLine (Environment.StackTrace);
 			//	Console.WriteLine ("---------");
-			NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Editor, Document.FileName);
+			NRefactoryResolver resolver = CreateResolver ();
 			
 			DomLocation cursorLocation = new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
 			resolver.SetupResolver (cursorLocation);
@@ -1797,9 +1806,7 @@ namespace MonoDevelop.CSharp.Completion
 		#region case completion
 		ICompletionDataList CreateCaseCompletionData (DomLocation location, ExpressionResult expressionResult)
 		{
-			NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit,
-			                                                      ICSharpCode.NRefactory.SupportedLanguage.CSharp,
-			                                                      Editor, Document.FileName);
+			NRefactoryResolver resolver = CreateResolver ();
 			
 			resolver.SetupResolver (location);
 			

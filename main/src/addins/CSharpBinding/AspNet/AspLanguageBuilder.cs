@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -117,7 +118,6 @@ namespace MonoDevelop.CSharp.Completion
 			result.AppendLine ();
 			result.AppendLine ("}");
 			result.AppendLine ("}");
-			
 			return new LocalDocumentInfo () {
 				LocalDocument = result.ToString (),
 				CaretPosition = caretPosition,
@@ -152,11 +152,14 @@ namespace MonoDevelop.CSharp.Completion
 			doc.Text = info.LocalDocument;
 			DocumentLocation documentLocation = doc.OffsetToLocation (info.CaretPosition);
 			
-			codeCompletionContext.TriggerLine       = documentLocation.Line;
-			codeCompletionContext.TriggerLineOffset = documentLocation.Column;
+			codeCompletionContext.TriggerLine       = documentLocation.Line + 1;
+			codeCompletionContext.TriggerLineOffset = documentLocation.Column + 1;
 			
 			CSharpTextEditorCompletion completion = new CSharpTextEditorCompletion (document);
-			
+			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, new System.IO.StringReader (info.LocalDocument))) {
+				parser.Parse ();
+				completion.ParsedUnit = parser.CompilationUnit;
+			}
 			completion.Dom = currentDom;
 			return completion;
 		}
