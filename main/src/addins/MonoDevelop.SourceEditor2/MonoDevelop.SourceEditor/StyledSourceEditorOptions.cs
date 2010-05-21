@@ -157,9 +157,9 @@ namespace MonoDevelop.SourceEditor
 
 		public event EventHandler Changed {
 			add {
-				changed += value;
-				if (changed != null)
+				if (changed == null)
 					DefaultSourceEditorOptions.Instance.Changed += HandleDefaultsChanged;
+				changed += value;
 			}
 			remove {
 				changed -= value;

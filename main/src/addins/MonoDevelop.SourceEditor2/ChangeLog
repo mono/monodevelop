@@ -1,3 +1,11 @@
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Unsubscribe
+	  options change event.
+
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	  Subscribe the options changed event only once.
+
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs:

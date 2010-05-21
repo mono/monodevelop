@@ -241,13 +241,16 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.ShowMessageBubblesChanged += HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
-			widget.TextEditor.Options.Changed += delegate {
-				currentErrorMarkers.ForEach (marker => marker.DisposeLayout ());
-			};
+			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 		}
 		
 		MessageBubbleHighlightPopupWindow messageBubbleHighlightPopupWindow = null;
+
+		void HandleWidgetTextEditorOptionsChanged (object sender, EventArgs e)
+		{
+			currentErrorMarkers.ForEach (marker => marker.DisposeLayout ());
+		}
 
 		void HandleTaskServiceJumpedToTask (object sender, TaskEventArgs e)
 		{
@@ -501,6 +504,7 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled -= HandleErrorListPadTaskToggled;
+			
 			DisposeErrorMarkers ();
 			
 			if (autoSave != null) {
@@ -520,6 +524,7 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
 				widget.TextEditor.Document.TextReplacing -= OnTextReplaced;
 				widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
+				widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
 				// widget is destroyed with it's parent.
 				// widget.Destroy ();
 				widget = null;
