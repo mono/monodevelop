@@ -88,6 +88,20 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
+	internal class DefaultDeleteKeyHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			// Nothing. Will be forwarded to gtk
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			// Forward to gtk
+			info.Bypass = true;
+		}
+	}
+	
 	internal class DefaultDeleteHandler: CommandHandler
 	{
 		protected override void Run ()
@@ -129,7 +143,7 @@ namespace MonoDevelop.Ide.Commands
 			else if (focus is Gtk.TextView)
 				info.Enabled =  ((Gtk.TextView)focus).Editable;
 			else
-				info.Enabled = false;
+				info.Bypass = true;
 		}
 	}
 	
