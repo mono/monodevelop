@@ -1110,43 +1110,40 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
-		public delegate void LineDecorator (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd);
+		public delegate void LineDecorator (Gdk.Drawable win, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd);
 		public event LineDecorator DecorateLineBg;
 		public event LineDecorator DecorateLineFg;
 
-		void DecorateSpaces (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		void DecorateSpaces (Gdk.Drawable win, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
 		{
-			char[] lineChars = layout.Text.ToCharArray ();
 			uint curIndex = 0, byteIndex = 0;
-			for (int i = 0; i < lineChars.Length; i++) {
-				if (lineChars[i] == ' ') {
-					Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineChars, (uint)i, ref curIndex, ref byteIndex));
+			for (int i = 0; i < layout.LineChars.Length; i++) {
+				if (layout.LineChars[i] == ' ') {
+					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
 					DrawSpaceMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos / 1024, y);
 				}
 			}
 		}
 
-		void DecorateTabs (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		void DecorateTabs (Gdk.Drawable win, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
 		{
-			char[] lineChars = layout.Text.ToCharArray ();
 			uint curIndex = 0, byteIndex = 0;
-			for (int i = 0; i < lineChars.Length; i++) {
-				if (lineChars[i] == '\t') {
-					Pango.Rectangle pos = layout.IndexToPos ((int)TranslateToUTF8Index (lineChars, (uint)i, ref curIndex, ref byteIndex));
+			for (int i = 0; i < layout.LineChars.Length; i++) {
+				if (layout.LineChars[i] == '\t') {
+					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
 					DrawTabMarker (win, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos / 1024, y);
 				}
 			}
 		}
 		
-		void DecorateMatchingBracket (Gdk.Drawable win, Pango.Layout layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		void DecorateMatchingBracket (Gdk.Drawable win, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
-			string lineText = layout.Text;
 			if (offset <= highlightBracketOffset && highlightBracketOffset <= offset + length) {
 				int index = highlightBracketOffset - offset;
-				Pango.Rectangle rect = layout.IndexToPos ((int)TranslateToUTF8Index (lineText.ToCharArray (), (uint)index, ref curIndex, ref byteIndex));
+				Pango.Rectangle rect = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex));
 				
 				Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos + (int)(rect.X / Pango.Scale.PangoScale), y, (int)(rect.Width / Pango.Scale.PangoScale) - 1, (int)(rect.Height / Pango.Scale.PangoScale) - 1);
 				if (BackgroundRenderer == null)
@@ -1188,7 +1185,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (DecorateLineBg != null)
-				DecorateLineBg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
+				DecorateLineBg (win, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 		
 			if (layout.StartSet || selectionStart == offset + length) {
 				int startX;
@@ -1251,7 +1248,7 @@ namespace Mono.TextEditor
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout.Layout);
 			
 			if (DecorateLineFg != null)
-				DecorateLineFg (win, layout.Layout, offset, length, xPos, y, selectionStart, selectionEnd);
+				DecorateLineFg (win, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
 			if (Document.GetLine (Caret.Line) == line) {
 				int caretOffset = Caret.Offset;
@@ -1263,7 +1260,7 @@ namespace Mono.TextEditor
 					}
 					if (index >= 0 && index < length) {
 						curIndex = byteIndex = 0;
-						layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.Layout.Text.ToCharArray (), (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
+						layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
 						char caretChar = Document.GetCharAt (caretOffset);
 						if (textEditor.Options.ShowSpaces && caretChar == ' ')
 							caretChar = spaceMarkerChar;
@@ -1277,7 +1274,7 @@ namespace Mono.TextEditor
 			}
 
 			foreach (TextMarker marker in line.Markers) {
-				marker.Draw (textEditor, win, layout.Layout, false, 				/*selected*/offset, offset + length, y, xPos, xPos + width);
+				marker.Draw (textEditor, win, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
 			
 			pangoPosition += layout.PangoWidth;
