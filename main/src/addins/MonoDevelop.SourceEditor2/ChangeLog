@@ -2,6 +2,16 @@
 
 	* Makefile.am:
 	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs:
+	* MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs:
+	  Added message bubble popup animation/fixed bug in message
+	  bubble calculation.
+
+2010-05-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:

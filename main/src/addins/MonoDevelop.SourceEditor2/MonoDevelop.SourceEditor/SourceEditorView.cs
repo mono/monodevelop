@@ -246,6 +246,8 @@ namespace MonoDevelop.SourceEditor
 			};
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 		}
+		
+		MessageBubbleHighlightPopupWindow messageBubbleHighlightPopupWindow = null;
 
 		void HandleTaskServiceJumpedToTask (object sender, TaskEventArgs e)
 		{
@@ -258,8 +260,14 @@ namespace MonoDevelop.SourceEditor
 			MessageBubbleTextMarker marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker == null)
 				return;
-			// TODO: Show bubble animation.
-//			Console.WriteLine ("Jump To: " + marker + " description:" + task.Description);
+			
+			if (messageBubbleHighlightPopupWindow != null)
+				messageBubbleHighlightPopupWindow.Destroy ();
+			messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
+			messageBubbleHighlightPopupWindow.Destroyed += delegate {
+				messageBubbleHighlightPopupWindow = null;
+			};
+			messageBubbleHighlightPopupWindow.Popup ();
 		}
 
 		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
@@ -485,6 +493,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.isDisposed= true;
 			Counters.LoadedEditors--;
+			
+			if (messageBubbleHighlightPopupWindow != null)
+				messageBubbleHighlightPopupWindow.Destroy ();
 			
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;

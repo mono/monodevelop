@@ -54,8 +54,8 @@ namespace MonoDevelop.SourceEditor
 	public class MessageBubbleTextMarker : TextMarker, IBackgroundMarker, IIconBarMarker, IExtendingTextMarker, IDisposable, IActionTextMarker
 	{
 		const int border = 4;
-		Gdk.Pixbuf errorPixbuf;
-		Gdk.Pixbuf warningPixbuf;
+		internal Gdk.Pixbuf errorPixbuf;
+		internal Gdk.Pixbuf warningPixbuf;
 //		bool fitCalculated = false;
 		bool fitsInSameLine = true;
 		
@@ -92,6 +92,11 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		List<ErrorText> errors = new List<ErrorText> ();
+		internal IList<ErrorText> Errors {
+			get {
+				return errors;
+			}
+		}
 		
 		Task task;
 		LineSegment lineSegment;
@@ -205,7 +210,7 @@ namespace MonoDevelop.SourceEditor
 			DisposeLayout ();
 		}
 		
-		class LayoutDescriptor 
+		internal class LayoutDescriptor 
 		{
 			public Pango.Layout Layout { get; set; }
 			public int Width { get; set; }
@@ -219,23 +224,28 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		Gdk.GC gc, gcLight;
+		internal Gdk.GC gc, gcLight;
 		Pango.Layout errorCountLayout;
 		List<LayoutDescriptor> layouts;
+		internal IList<LayoutDescriptor> Layouts {
+			get {
+				return layouts;
+			}
+		}
 		Pango.FontDescription fontDescription;
 		
-		Cairo.Color errorLightBg, errorLightBgHighlighted;
-		Cairo.Color errorDarkBg, errorDarkBgHighlighted;
-		Cairo.Color errorLightBg2, errorLightBg2Highlighted;
-		Cairo.Color errorDarkBg2, errorDarkBg2Highlighted;
+		internal Cairo.Color errorLightBg, errorLightBgHighlighted;
+		internal Cairo.Color errorDarkBg, errorDarkBgHighlighted;
+		internal Cairo.Color errorLightBg2, errorLightBg2Highlighted;
+		internal Cairo.Color errorDarkBg2, errorDarkBg2Highlighted;
 
-		Cairo.Color warningLightBg, warningLightBgHighlighted;
-		Cairo.Color warningDarkBg, warningDarkBgHighlighted;
-		Cairo.Color warningLightBg2, warningLightBg2Highlighted;
-		Cairo.Color warningDarkBg2, warningDarkBg2Highlighted;
+		internal Cairo.Color warningLightBg, warningLightBgHighlighted;
+		internal Cairo.Color warningDarkBg, warningDarkBgHighlighted;
+		internal Cairo.Color warningLightBg2, warningLightBg2Highlighted;
+		internal Cairo.Color warningDarkBg2, warningDarkBg2Highlighted;
 		
-		Cairo.Color topLine;
-		Cairo.Color bottomLine;
+		internal Cairo.Color topLine;
+		internal Cairo.Color bottomLine;
 		
 		void EnsureLayoutCreated (TextEditor editor)
 		{
@@ -588,7 +598,32 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#endregion
+	
+		public Gdk.Rectangle ErrorTextBounds {
+			get {
+				int x = editor.Allocation.Width;
+				int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
+				
+				int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
+				int height = editor.LineHeight * errors.Count;
+				if (!fitsInSameLine)
+					height += editor.LineHeight;
+				int errorCounterWidth = 0;
+				
+				int ew = 0, eh = 0;
+				if (errors.Count > 1 && errorCountLayout != null) {
+					errorCountLayout.GetPixelSize (out ew, out eh);
+					errorCounterWidth = ew + 10;
+				}
+				
+				int labelWidth = layouts[0].Width + border + errorPixbuf.Width + errorCounterWidth + editor.LineHeight / 2;
+				
+				
+				return new Gdk.Rectangle (editor.Allocation.Width - labelWidth, y, labelWidth, height);
+			}
+		}
 		
+
 		#region IActionTextMarker implementation
 		public bool MousePressed (TextEditor editor, MarginMouseEventArgs args)
 		{
@@ -630,11 +665,14 @@ namespace MonoDevelop.SourceEditor
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 			int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
 			int height = editor.LineHeight * errors.Count;
-			if (!fitsInSameLine)
-				height += editor.LineHeight;
+			if (!fitsInSameLine) {
+				y += editor.LineHeight;
+			}
+//			Console.WriteLine (lineNumber +  ": height={0}, y={1}, args={2}", height, y, args.Y);
 			if (y > args.Y || args.Y > y + height)
 				return -1;
 			int error = (args.Y - y) / editor.LineHeight;
+//			Console.WriteLine ("error:" + error);
 			if (error >= layouts.Count)
 				return -1;
 			int errorCounterWidth = 0;

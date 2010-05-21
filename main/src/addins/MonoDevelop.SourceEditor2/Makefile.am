@@ -35,6 +35,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
 	MonoDevelop.SourceEditor/MessageBubbleCommands.cs \
+	MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs \
 	MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs \
 	MonoDevelop.SourceEditor/NavigationBar.cs \
 	MonoDevelop.SourceEditor/NavigationBarCommands.cs \
