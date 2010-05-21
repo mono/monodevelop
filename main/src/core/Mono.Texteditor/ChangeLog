@@ -1,5 +1,13 @@
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Took out event handler on
+	  destroy
+
+	* Mono.TextEditor/TextViewMargin.cs: Try to use the weak caret
+	  pos instead of the strong one.
+
+2010-05-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Speed up the line
 	  decorators a bit.
 

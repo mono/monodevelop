@@ -308,12 +308,15 @@ namespace Mono.TextEditor
 			}
 			
 			InitAnimations ();
-			this.Document.EndUndo += delegate {
-				if (this.Document.HeightChanged) {
-					this.Document.HeightChanged = false;
-					SetAdjustments ();
-				}
-			};
+			this.Document.EndUndo += HandleDocumenthandleEndUndo;
+		}
+
+		void HandleDocumenthandleEndUndo (object sender, Document.UndoOperationEventArgs e)
+		{
+			if (this.Document.HeightChanged) {
+				this.Document.HeightChanged = false;
+				SetAdjustments ();
+			}
 		}
 
 		void TextEditorDatahandleUpdateAdjustmentsRequested (object sender, EventArgs e)
@@ -579,6 +582,9 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
+			
+			if (this.Document != null)
+				this.Document.EndUndo -= HandleDocumenthandleEndUndo;
 			
 			DisposeAnimations ();
 			
