@@ -1,3 +1,13 @@
+2010-05-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/ErrorTextMarker.cs:
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Worked
+	  on message bubbles.
+
 2010-05-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ErrorTextMarker.cs: Fixed 'Bug

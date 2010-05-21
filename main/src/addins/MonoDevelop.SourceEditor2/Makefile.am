@@ -27,7 +27,6 @@ FILES =  \
 	MonoDevelop.SourceEditor/DropDownBoxListWindow.cs \
 	MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \
-	MonoDevelop.SourceEditor/ErrorTextMarker.cs \
 	MonoDevelop.SourceEditor/ExtensibleTextEditor.cs \
 	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \
 	MonoDevelop.SourceEditor/IdeViMode.cs \
@@ -36,6 +35,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/LanguageItemWindow.cs \
 	MonoDevelop.SourceEditor/MarkerOperationsHandler.cs \
 	MonoDevelop.SourceEditor/MessageBubbleCommands.cs \
+	MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs \
 	MonoDevelop.SourceEditor/NavigationBar.cs \
 	MonoDevelop.SourceEditor/NavigationBarCommands.cs \
 	MonoDevelop.SourceEditor/PinnedWatchWidget.cs \

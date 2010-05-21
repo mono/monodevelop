@@ -806,7 +806,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region Status Bar Handling
-		MonoDevelop.SourceEditor.ErrorTextMarker oldExpandedMarker;
+		MonoDevelop.SourceEditor.MessageBubbleTextMarker oldExpandedMarker;
 		void CaretPositionChanged (object o, DocumentLocationEventArgs args)
 		{
 			UpdateLineCol ();
@@ -815,9 +815,9 @@ namespace MonoDevelop.SourceEditor
 				classBrowser.UpdatePosition (TextEditor.Caret.Line + 1, TextEditor.Caret.Column + 1);
 			
 			LineSegment curLine = TextEditor.Document.GetLine (TextEditor.Caret.Line);
-			MonoDevelop.SourceEditor.ErrorTextMarker marker = null;
-			if (curLine != null && curLine.Markers.Any (m => m is MonoDevelop.SourceEditor.ErrorTextMarker)) {
-				marker = (MonoDevelop.SourceEditor.ErrorTextMarker)curLine.Markers.First (m => m is MonoDevelop.SourceEditor.ErrorTextMarker);
+			MonoDevelop.SourceEditor.MessageBubbleTextMarker marker = null;
+			if (curLine != null && curLine.Markers.Any (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker)) {
+				marker = (MonoDevelop.SourceEditor.MessageBubbleTextMarker)curLine.Markers.First (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker);
 				marker.CollapseExtendedErrors = false;
 				if (oldExpandedMarker == null)
 					Document.CommitLineToEndUpdate (Document.OffsetToLineNumber (curLine.Offset));
@@ -1306,7 +1306,7 @@ namespace MonoDevelop.SourceEditor
 				info.Visible = false;
 				return;
 			}
-			var marker = (ErrorTextMarker)line.Markers.FirstOrDefault (m => m is ErrorTextMarker);
+			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
 			info.Visible = marker != null;
 		}
 		
@@ -1315,7 +1315,7 @@ namespace MonoDevelop.SourceEditor
 			LineSegment line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			if (line == null)
 				return;
-			var marker = (ErrorTextMarker)line.Markers.FirstOrDefault (m => m is ErrorTextMarker);
+			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker != null) {
 				marker.IsExpanded = !marker.IsExpanded;
 				TextEditor.QueueDraw ();

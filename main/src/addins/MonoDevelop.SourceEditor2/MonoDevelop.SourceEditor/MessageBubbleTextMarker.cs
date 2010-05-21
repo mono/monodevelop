@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public class ErrorTextMarker : TextMarker, IBackgroundMarker, IIconBarMarker, IExtendingTextMarker, IDisposable, IActionTextMarker
+	public class MessageBubbleTextMarker : TextMarker, IBackgroundMarker, IIconBarMarker, IExtendingTextMarker, IDisposable, IActionTextMarker
 	{
 		const int border = 4;
 		Gdk.Pixbuf errorPixbuf;
@@ -145,7 +145,7 @@ namespace MonoDevelop.SourceEditor
 			fitsInSameLine = editor.TextViewMargin.XOffset + textSize.Key + layouts[0].Width + errorPixbuf.Width + border + editor.LineHeight / 2  < editor.Allocation.Width;
 		}
 		
-		public ErrorTextMarker (TextEditor editor, Task task, LineSegment lineSegment, bool isError, string errorMessage)
+		public MessageBubbleTextMarker (TextEditor editor, Task task, LineSegment lineSegment, bool isError, string errorMessage)
 		{
 			this.editor = editor;
 			this.task = task;

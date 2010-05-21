@@ -155,7 +155,6 @@
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\ErrorTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PrintSettingsWidget.cs" />
@@ -165,6 +164,7 @@
     <Compile Include="MonoDevelop.SourceEditor\NavigationBar.cs" />
     <Compile Include="MonoDevelop.SourceEditor\NavigationBarCommands.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCommands.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

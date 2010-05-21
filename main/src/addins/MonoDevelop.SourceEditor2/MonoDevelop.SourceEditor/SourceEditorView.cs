@@ -154,8 +154,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
 				UpdateBreakpoints ();
 				int oldHeight;
-				if (ErrorTextMarker.RemoveLine (e.Line, out oldHeight)) {
-					ErrorTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
+				if (MessageBubbleTextMarker.RemoveLine (e.Line, out oldHeight)) {
+					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
 						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); // ensure that the line cache is renewed
 						int newHeight = marker.GetLineHeight (widget.TextEditor);
@@ -237,6 +237,7 @@ namespace MonoDevelop.SourceEditor
 			
 			TaskService.Errors.TasksAdded   += UpdateTasks;
 			TaskService.Errors.TasksRemoved += UpdateTasks;
+			TaskService.JumpedToTask += HandleTaskServiceJumpedToTask;
 			IdeApp.Preferences.ShowMessageBubblesChanged += HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
@@ -244,6 +245,21 @@ namespace MonoDevelop.SourceEditor
 				currentErrorMarkers.ForEach (marker => marker.DisposeLayout ());
 			};
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
+		}
+
+		void HandleTaskServiceJumpedToTask (object sender, TaskEventArgs e)
+		{
+			Task task = e.Tasks.FirstOrDefault ();
+			if (task == null || task.FileName != Document.FileName)
+				return;
+			LineSegment lineSegment = Document.GetLine (task.Line - 1);
+			if (lineSegment == null)
+				return;
+			MessageBubbleTextMarker marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
+			if (marker == null)
+				return;
+			// TODO: Show bubble animation.
+//			Console.WriteLine ("Jump To: " + marker + " description:" + task.Description);
 		}
 
 		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
@@ -262,7 +278,7 @@ namespace MonoDevelop.SourceEditor
 			this.TextEditor.QueueDraw ();
 		}
 		
-		List<ErrorTextMarker> currentErrorMarkers = new List<ErrorTextMarker> ();
+		List<MessageBubbleTextMarker> currentErrorMarkers = new List<MessageBubbleTextMarker> ();
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
 			Task[] tasks = TaskService.Errors.GetFileTasks (ContentName);
@@ -286,7 +302,7 @@ namespace MonoDevelop.SourceEditor
 						continue;
 					}
 					
-					ErrorTextMarker errorTextMarker = new ErrorTextMarker (widget.TextEditor, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
+					MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (widget.TextEditor, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
 					currentErrorMarkers.Add (errorTextMarker);
 					
 					errorTextMarker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles;
@@ -513,6 +529,7 @@ namespace MonoDevelop.SourceEditor
 			TaskService.Errors.TasksAdded   -= UpdateTasks;
 			TaskService.Errors.TasksRemoved -= UpdateTasks;
 			TaskService.Errors.TasksChanged -= UpdateTasks;
+			TaskService.JumpedToTask -= HandleTaskServiceJumpedToTask;
 			
 			// This is not necessary but helps when tracking down memory leaks
 			
