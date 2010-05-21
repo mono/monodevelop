@@ -607,7 +607,7 @@ namespace MonoDevelop.SourceEditor
 				int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
 				int height = editor.LineHeight * errors.Count;
 				if (!fitsInSameLine)
-					height += editor.LineHeight;
+					y += editor.LineHeight;
 				int errorCounterWidth = 0;
 				
 				int ew = 0, eh = 0;

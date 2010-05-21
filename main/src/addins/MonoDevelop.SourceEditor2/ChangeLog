@@ -1,5 +1,11 @@
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs:
+	* MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs:
+	  Tweaked error bubble popup drawing a bit.
+
+2010-05-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.SourceEditor.csproj:
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:

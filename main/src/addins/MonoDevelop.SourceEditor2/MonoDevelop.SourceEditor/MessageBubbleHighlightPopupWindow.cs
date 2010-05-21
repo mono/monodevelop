@@ -118,7 +118,7 @@ namespace MonoDevelop.SourceEditor
 						
 						pixmap.DrawPixbuf (marker.gc, 
 						                marker.Errors.Any (e => e.IsError) ? marker.errorPixbuf : marker.warningPixbuf, 
-						                0, 0, 0, 0,
+						                0, 0, 0, (currentBounds.Height - marker.errorPixbuf.Height) / 2,
 						                marker.errorPixbuf.Width, marker.errorPixbuf.Height, 
 						                Gdk.RgbDither.None, 0, 0);
 
