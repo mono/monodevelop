@@ -348,6 +348,12 @@ namespace MonoDevelop.Components.Commands
 					key = GetGroupZeroKey (key, evt);
 				}
 			}
+			
+			//fix shift-tab brokenness
+			if (key == Gdk.Key.ISO_Left_Tab) {
+				key = Gdk.Key.Tab;
+				mod |= Gdk.ModifierType.ShiftMask;
+			}
 		}
 		
 		static Dictionary<Gdk.Key,Gdk.Key> groupZeroMappings = new Dictionary<Gdk.Key,Gdk.Key> ();

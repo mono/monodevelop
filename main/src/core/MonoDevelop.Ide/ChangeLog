@@ -1,3 +1,8 @@
+2010-05-20  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Fix
+	  shift-tab brokenness.
+
 2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* icons/SplashScreen.png: Updated.
