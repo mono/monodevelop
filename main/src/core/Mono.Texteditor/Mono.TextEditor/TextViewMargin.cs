@@ -1269,9 +1269,9 @@ namespace Mono.TextEditor
 							caretChar = spaceMarkerChar;
 						if (textEditor.Options.ShowTabs && caretChar == '\t')
 							caretChar = tabMarkerChar;
-						SetVisibleCaretPosition (win, caretChar, (int)(xPos + strong_pos.X / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (win, caretChar, (int)((pangoPosition + strong_pos.X) / Pango.Scale.PangoScale), y);
 					} else if (index == length) {
-						SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', xPos + width, y);
+						SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 					}
 				}
 			}

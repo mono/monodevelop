@@ -1,3 +1,8 @@
+2010-05-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Corrected caret drawing
+	  position.
+
 2010-05-20  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/Platform.cs: Fix shift-tab brokenness.
