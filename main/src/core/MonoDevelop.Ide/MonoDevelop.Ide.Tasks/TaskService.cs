@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public static event EventHandler<TaskEventArgs> JumpedToTask;
 
-		public static void InformJumpToTask (Task task)
+		internal static void InformJumpToTask (Task task)
 		{
 			EventHandler<TaskEventArgs> handler = JumpedToTask;
 			if (handler != null)

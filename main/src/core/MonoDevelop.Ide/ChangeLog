@@ -1,5 +1,10 @@
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Tasks/TaskService.cs: made informjumptotask
+	  internal.
+
+2010-05-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Tasks/Task.cs:
 	* MonoDevelop.Ide.Tasks/TaskStore.cs:
 	* MonoDevelop.Ide.Tasks/TaskService.cs: Added event to the
