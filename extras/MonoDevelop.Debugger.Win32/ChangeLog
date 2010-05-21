@@ -1,5 +1,0 @@
-2009-10-18  Michael Hutchinson  <mhutchinson@novell.com>
-
-	* MonoDevelop.Debugger.Win32.sln: Add the Win32 .NET debugger
-	addin to the workspace.
-
