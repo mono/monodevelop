@@ -100,7 +100,7 @@ namespace MonoDevelop.Xml.Formatting
 				return name;
 			else {
 				int i = policy.Formats.IndexOf (format) + 1;
-				return GettextCatalog.GetString ("Format #" + i);
+				return string.Format (GettextCatalog.GetString ("Format #{0}"), i);
 			}
 		}
 		
