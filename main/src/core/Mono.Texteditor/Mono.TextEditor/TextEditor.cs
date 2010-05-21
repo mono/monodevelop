@@ -2475,20 +2475,31 @@ namespace Mono.TextEditor
 
 		public int CalculateLineNumber (int yPos)
 		{
-			int logicalLine = Document.VisualToLogicalLine (yPos / LineHeight);
-			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
-			
+			int delta = 0;
 			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
-				if (logicalLineSegment != null && extendedTextMarkerLine.Offset >= logicalLineSegment.Offset)
+				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
+				int y = LineToVisualY (lineNumber);
+				if (y < yPos) {
+					int curLineHeight = GetLineHeight (extendedTextMarkerLine);
+					delta += curLineHeight - LineHeight;
+					if (y <= yPos && yPos < y + curLineHeight)
+						return lineNumber;
+				}
+			}
+			return Document.VisualToLogicalLine ((yPos - delta) / LineHeight);
+/*			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
+			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
+				if (logicalLineSegment != null && extendedTextMarkerLine.Offset > logicalLineSegment.Offset)
 					continue;
 				int curLineHeight = GetLineHeight (extendedTextMarkerLine) - LineHeight;
+				
 				if (curLineHeight != 0) {
 					logicalLine -= curLineHeight / LineHeight;
 					logicalLineSegment = Document.GetLine (logicalLine - 1);
 				}
 			}
 			
-			return logicalLine;
+			return logicalLine;*/
 		}
 		
 		public int LineToVisualY (int logicalLine)

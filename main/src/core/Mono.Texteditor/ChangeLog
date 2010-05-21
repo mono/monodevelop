@@ -1,5 +1,10 @@
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Fixed bug in logical line
+	  number calculation.
+
+2010-05-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed caret placement
 	  bug.
 
