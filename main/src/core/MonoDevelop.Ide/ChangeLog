@@ -1,3 +1,8 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: More
+	  shift-tab fixage.
+
 2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/EditCommands.cs: Set bypass flag if

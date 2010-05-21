@@ -114,7 +114,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.Insert), action);
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.Tab), MiscActions.InsertTab);
-			keyBindings.Add (GetKeyCode (Gdk.Key.ISO_Left_Tab, Gdk.ModifierType.ShiftMask), MiscActions.RemoveTab);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Tab, Gdk.ModifierType.ShiftMask), MiscActions.RemoveTab);
 			
 			action = MiscActions.InsertNewLine;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Return), action);

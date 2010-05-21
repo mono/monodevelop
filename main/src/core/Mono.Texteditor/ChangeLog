@@ -1,3 +1,10 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/Platform.cs:
+	* Mono.TextEditor/SimpleEditMode.cs:
+	* Mono.TextEditor.Vi/ViActionMaps.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs: More shift-tab fixage.
+
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Corrected rounding of

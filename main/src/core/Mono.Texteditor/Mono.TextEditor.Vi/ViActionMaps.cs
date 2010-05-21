@@ -202,7 +202,7 @@ namespace Mono.TextEditor.Vi
 			         && (modifier & Gdk.ModifierType.ShiftMask) != 0)
 			{
 				switch (key) {
-				case Gdk.Key.ISO_Left_Tab:
+				case Gdk.Key.Tab:
 					return MiscActions.RemoveTab;
 					
 				case Gdk.Key.BackSpace:

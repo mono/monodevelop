@@ -327,6 +327,15 @@ namespace Mono.TextEditor
 			Setlink (nextLink);
 		}
 		
+		void GotoPreviousLink (TextLink link)
+		{
+			int caretOffset = Editor.Caret.Offset - baseOffset;
+			var prevLink = links.FindLast (l => l.IsEditable && l.PrimaryLink.Offset < (link != null ? link.PrimaryLink.Offset : caretOffset));
+			if (prevLink == null)
+				prevLink = links.FindLast (l => l.IsEditable);
+			Setlink (prevLink);
+		}
+		
 		void CompleteWindow ()
 		{
 			if (window == null)
@@ -375,13 +384,10 @@ namespace Mono.TextEditor
 				if ((modifier & Gdk.ModifierType.ControlMask) != 0)
 					if (link != null && !link.IsIdentifier)
 						goto default;
-				GotoNextLink (link);
-				return;
-			case Gdk.Key.ISO_Left_Tab:
-				TextLink prevLink = links.FindLast (l => l.IsEditable && l.PrimaryLink.Offset < (link != null ? link.PrimaryLink.Offset : caretOffset));
-				if (prevLink == null)
-					prevLink = links.FindLast (l => l.IsEditable);
-				Setlink (prevLink);
+				if ((modifier & Gdk.ModifierType.ShiftMask) == 0)
+					GotoNextLink (link);
+				else
+					GotoPreviousLink (link);
 				return;
 			case Gdk.Key.Escape:
 			case Gdk.Key.Return:

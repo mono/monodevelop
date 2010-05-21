@@ -129,7 +129,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			//fix shift-tab brokenness
+			//fix shift-tab weirdness. There isn't a nice name for untab, so make it shift-tab
 			if (key == Gdk.Key.ISO_Left_Tab) {
 				key = Gdk.Key.Tab;
 				mod |= Gdk.ModifierType.ShiftMask;
