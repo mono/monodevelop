@@ -68,9 +68,9 @@ namespace MonoDevelop.XmlEditor.Gui
 			tracker = new DocumentStateTracker<Parser> (parser, TextEditorData);
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 			
-			lastCU = Document.ParsedDocument;
-			if (lastCU != null) {
-				RefreshOutline ();
+			if (Document.ParsedDocument != null) {
+				lastCU = Document.ParsedDocument;
+				OnParsedDocumentUpdated ();
 			}
 		}
 
@@ -88,32 +88,31 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			if (this.FileName == args.FileName && args.ParsedDocument != null) {
 				lastCU = args.ParsedDocument;
-				RefreshOutline ();
-				
-				//use the doctype to select a completion schema
-				XmlParsedDocument doc = CU as XmlParsedDocument;
-				bool found = false;
-				if (doc != null && doc.XDocument != null) {
-					foreach (XNode node in doc.XDocument.Nodes) {
-						if (node is XDocType) {
-							DocType = (XDocType)node;
-							found = true;
-							break;
-						}
-						//cannot validly have a doctype after these nodes
-						if (node is XElement || node is XCData)
-							break;
-					}
-					if (!found)
-						DocType = null;
-				}
-				
 				OnParsedDocumentUpdated ();
 			}
 		}
 		
 		protected virtual void OnParsedDocumentUpdated ()
 		{
+			RefreshOutline ();
+			
+			//use the doctype to select a completion schema
+			var doc = CU as XmlParsedDocument;
+			bool found = false;
+			if (doc != null && doc.XDocument != null) {
+				foreach (XNode node in doc.XDocument.Nodes) {
+					if (node is XDocType) {
+						DocType = (XDocType)node;
+						found = true;
+						break;
+					}
+					//cannot validly have a doctype after these nodes
+					if (node is XElement || node is XCData)
+						break;
+				}
+				if (!found)
+					DocType = null;
+			}
 		}
 
 		#endregion

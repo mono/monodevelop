@@ -1,3 +1,10 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Fix
+	  failing test by making sure that OnParsedDocumentUpdated is
+	  called when the file is first loaded, and moving all the new
+	  parsed document logic handling there.
+
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Xml.Formatting/XmlFormattingPolicyPanelWidget.cs:
