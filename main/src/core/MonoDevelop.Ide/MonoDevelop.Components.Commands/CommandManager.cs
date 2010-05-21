@@ -210,13 +210,21 @@ namespace MonoDevelop.Components.Commands
 				return;
 			}
 			
+			bool bypass = false;
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
+				if (cinfo.Bypass) {
+					bypass = true;
+					continue;
+				}
 				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
 					return;
 			}
+
+			// The command has not been handled.
+			// If there is at least a handler that sets the bypass flag, allow gtk to execute the default action
 			
-			e.RetVal = false;
+			e.RetVal = commands.Count > 0 && !bypass;
 			mode = null;
 		}
 		

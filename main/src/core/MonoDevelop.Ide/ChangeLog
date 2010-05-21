@@ -1,3 +1,15 @@
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/EditCommands.cs: Set bypass flag if
+	  Copy/Cut/Paste can't be handled, so that gtk can handle it.
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: When
+	  executing a command from a shortcut, don't forward the key
+	  press to gtk if the command was disabled, but do it if the
+	  bypass flag was set. With this change, the F10 key won't
+	  activate the main menu anymore when the step over command is
+	  disabled.
+
 2010-05-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Tasks/TaskService.cs: made informjumptotask
