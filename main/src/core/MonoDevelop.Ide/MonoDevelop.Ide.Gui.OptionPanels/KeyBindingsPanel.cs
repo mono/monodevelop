@@ -99,14 +99,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			keyTreeView.AppendColumn (GettextCatalog.GetString ("Description"), new CellRendererText (), "text", descCol);
 			
-			keyTreeView.Selection.Changed += new EventHandler (OnKeysTreeViewSelectionChange);
+			keyTreeView.Selection.Changed += OnKeysTreeViewSelectionChange;
 			
-			accelEntry.KeyPressEvent += new KeyPressEventHandler (OnAccelEntryKeyPress);
-			accelEntry.KeyReleaseEvent += new KeyReleaseEventHandler (OnAccelEntryKeyRelease);
+			accelEntry.KeyPressEvent += OnAccelEntryKeyPress;
+			accelEntry.KeyReleaseEvent += OnAccelEntryKeyRelease;
 			accelEntry.Changed += delegate {
 				UpdateWarningLabel ();
 			};
-			updateButton.Clicked += new EventHandler (OnUpdateButtonClick);
+			updateButton.Clicked += OnUpdateButtonClick;
 
 			currentBindings = KeyBindingService.CurrentKeyBindingSet.Clone ();
 
@@ -138,12 +138,19 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				};
 			};
 			
-			clearFilterButton.Clicked += delegate {
-				searchEntry.Text = "";
-				Refilter ();
-				//stop the timeout from refiltering, if it's already running
-				filterTimeoutRunning = false;
-			};
+			clearFilterButton.Clicked += ClearFilter;
+			
+			//HACK: workaround for MD Bug 608021: Stetic loses values assigned to "new" properties of custom widget
+			conflicButton.Label = GettextCatalog.GetString ("_View Conflicts");
+			conflicButton.UseUnderline = true;
+		}
+
+		void ClearFilter (object sender, EventArgs e)
+		{
+			searchEntry.Text = "";
+			Refilter ();
+			//stop the timeout from refiltering, if it's already running
+			filterTimeoutRunning = false;
 		}
 		
 		void Refilter ()
@@ -315,7 +322,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (sel.GetSelected (out model, out iter) && model.GetValue (iter,commandCol) != null) {
 				accelEntry.Sensitive = true;
 				CurrentBinding = (string) model.GetValue (iter, bindingCol);
-				accelEntry.GrabFocus ();
+				//grab focus AFTER the selection event, or focus gets screwy
+				GLib.Timeout.Add (10, delegate {
+					accelEntry.GrabFocus ();
+					return false;
+				});
 				accelIncomplete = false;
 				accelComplete = true;
 			} else {
@@ -454,6 +465,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void SelectCommand (Command cmd)
 		{
+			//item may not be visible if the list is filtered
+			ClearFilter (null, EventArgs.Empty);
+			
 			TreeIter iter;
 			if (!keyStore.GetIterFirst (out iter))
 				return;

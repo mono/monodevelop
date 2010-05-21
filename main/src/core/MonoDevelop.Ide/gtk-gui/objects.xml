@@ -42,6 +42,7 @@
       <itemgroup label="MenuButton Properties">
         <property name="Label" />
         <property name="UseMarkup" />
+        <property name="UseUnderline" />
       </itemgroup>
     </itemgroups>
     <signals />
@@ -114,6 +115,7 @@
         <property name="DialogTitle" />
         <property name="DefaultFilter" />
         <property name="EntryIsEditable" />
+        <property name="AllowInvalidValues" />
       </itemgroup>
     </itemgroups>
     <signals />

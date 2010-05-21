@@ -159,17 +159,22 @@ namespace MonoDevelop.Components
 			set { label.Text = value; }
 		}
 		
+		public new bool UseUnderline {
+			get { return label.UseUnderline; }
+			set { label.UseUnderline = value; }
+		}
+		
 		public string StockImage {
 			set { image.Pixbuf = RenderIcon (value, IconSize.Button, null); }
 		}
 		
-		public new bool UseMarkup
+		public bool UseMarkup
 		{
 			get { return label.UseMarkup; }
 			set { label.UseMarkup = value; }
 		}
 		
-		public new string Markup {
+		public string Markup {
 			set { label.Markup = value; }
 		}
 	}

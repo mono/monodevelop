@@ -1,3 +1,15 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components/MenuButton.cs: Fix the View Conflicts
+	  button.
+
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:
+	* gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:
+	  Fix the View Conflicts button, and focus issues.
+
+	* gtk-gui/objects.xml: Flush.
+
 2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.addin.xml:

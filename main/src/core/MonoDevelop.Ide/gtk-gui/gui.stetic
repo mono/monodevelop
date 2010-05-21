@@ -5,6 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
+    <widget-library name="Mono.Addins.Gui, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
   </import>
@@ -951,10 +952,11 @@
                             <property name="CanFocus">True</property>
                             <property name="Type">Custom</property>
                             <property name="UseMarkup">False</property>
+                            <property name="UseUnderline">False</property>
                           </widget>
                           <packing>
                             <property name="Position">2</property>
-                            <property name="AutoSize">True</property>
+                            <property name="AutoSize">False</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
                           </packing>
@@ -988,6 +990,7 @@
               <widget class="Gtk.TreeView" id="keyTreeView">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
+                <property name="EnableSearch">False</property>
               </widget>
             </child>
           </widget>
@@ -6555,7 +6558,6 @@ All solutions</property>
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Delete the project file and the whole project directory:</property>
-                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>

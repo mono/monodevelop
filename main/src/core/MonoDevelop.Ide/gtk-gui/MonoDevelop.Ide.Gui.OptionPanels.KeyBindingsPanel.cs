@@ -177,6 +177,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.conflicButton.CanFocus = true;
 			this.conflicButton.Name = "conflicButton";
 			this.conflicButton.UseMarkup = false;
+			this.conflicButton.UseUnderline = false;
 			this.conflicButton.Label = null;
 			this.warningBox.Add (this.conflicButton);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.warningBox[this.conflicButton]));
@@ -204,6 +205,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.keyTreeView = new global::Gtk.TreeView ();
 			this.keyTreeView.CanFocus = true;
 			this.keyTreeView.Name = "keyTreeView";
+			this.keyTreeView.EnableSearch = false;
 			this.scrolledwindow.Add (this.keyTreeView);
 			this.vbox.Add (this.scrolledwindow);
 			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox[this.scrolledwindow]));
