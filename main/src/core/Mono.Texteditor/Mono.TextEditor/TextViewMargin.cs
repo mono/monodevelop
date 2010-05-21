@@ -1173,6 +1173,7 @@ namespace Mono.TextEditor
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
 			int width = (int)(layout.PangoWidth / Pango.Scale.PangoScale);
+			
 			int xPos = (int)(pangoPosition / Pango.Scale.PangoScale);
 			bool drawBg = true;
 			bool drawText = true;
@@ -2006,7 +2007,7 @@ namespace Mono.TextEditor
 			
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
 			int width, height;
-			int pangoPosition = (int)( (x - textEditor.HAdjustment.Value) * Pango.Scale.PangoScale);
+			int pangoPosition = (int)((x - textEditor.HAdjustment.Value) * Pango.Scale.PangoScale);
 			
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
@@ -2055,8 +2056,9 @@ namespace Mono.TextEditor
 					
 					markerLayout.GetSize (out width, out height);
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
-					int pixelWidth = (int)(width / Pango.Scale.PangoScale);
-					Rectangle foldingRectangle = new Rectangle ((int)(pangoPosition / Pango.Scale.PangoScale), y, pixelWidth - 1, this.LineHeight - 1);
+					int pixelX = (int)(pangoPosition / Pango.Scale.PangoScale);
+					int pixelWidth = (int)((pangoPosition + width) / Pango.Scale.PangoScale) - pixelX;
+					Rectangle foldingRectangle = new Rectangle (pixelX, y, pixelWidth - 1, this.LineHeight - 1);
 					if (BackgroundRenderer == null)
 						win.DrawRectangle (GetGC (isFoldingSelected ? ColorStyle.Selection.BackgroundColor : defaultBgColor), true, foldingRectangle);
 					/*
@@ -2077,7 +2079,7 @@ namespace Mono.TextEditor
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
 						SetVisibleCaretPosition (win, folding.Description[0], (int)(pangoPosition / Pango.Scale.PangoScale), y);
 					
-					pangoPosition += (int)(Pango.Scale.PangoScale * pixelWidth);
+					pangoPosition += width;
 					
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
@@ -2129,7 +2131,8 @@ namespace Mono.TextEditor
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null) 
 				extendingMarker.Draw (textEditor, win, lineNr, lineArea);
-			
+//			int lineEndX = (int)(pangoPosition / Pango.Scale.PangoScale);
+//			win.DrawLine (GetGC (new Color (255, 0, 0)), lineEndX, y, lineEndX, y + LineHeight);
 			lastLineRenderWidth = (int)(pangoPosition / Pango.Scale.PangoScale);
 		}
 		
