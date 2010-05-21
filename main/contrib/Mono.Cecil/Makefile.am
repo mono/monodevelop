@@ -7,11 +7,12 @@ CECIL=$(BINDIR)/$(CECIL_DLL)
 CECIL_DEBUG=$(BINDIR)/$(CECIL_DLL).mdb
 CECIL_DIR=$(srcdir)/Mono.Cecil
 CECIL_CSFILES=$(addprefix $(CECIL_DIR)/, $(shell sed -f $(srcdir)/stripnewline.sed  $(CECIL_DIR)/Mono.Cecil.dll.sources))
-CECIL_DIST= $(CECIL_CSFILES)
+CECIL_SNK=$(srcdir)/cecil.snk
+CECIL_DIST= $(CECIL_CSFILES) $(CECIL_SNK)
 
 $(CECIL): $(CECIL_CSFILES)
 	mkdir -p $(BINDIR)
-	mcs $(CECIL_CSFILES) /keyfile:cecil.snk /debug /target:library /out:$(CECIL)
+	mcs $(CECIL_CSFILES) /keyfile:$(CECIL_SNK) /debug /target:library /out:$(CECIL)
 
 $(CECIL_DEBUG): $(CECIL)
 
@@ -20,11 +21,11 @@ CECIL_MDB=$(BINDIR)/$(CECIL_MDB_DLL)
 CECIL_MDB_DEBUG=$(BINDIR)/$(CECIL_MDB_DLL).mdb
 CECIL_MDB_DIR=$(srcdir)/Mono.Cecil.Mdb
 CECIL_MDB_CSFILES=$(addprefix $(CECIL_MDB_DIR)/, $(shell sed -f $(srcdir)/stripnewline.sed  $(CECIL_MDB_DIR)/Mono.Cecil.Mdb.dll.sources))
-CECIL_MDB_DIST= $(CECIL_MDB_CSFILES)
+CECIL_MDB_DIST= $(CECIL_MDB_CSFILES) $(CECIL_SNK)
 
 $(CECIL_MDB): $(CECIL_MDB_CSFILES) $(CECIL)
 	mkdir -p $(BINDIR)
-	gmcs $(CECIL_MDB_CSFILES) /debug /target:library /keyfile:cecil.snk /r:$(CECIL) /d:CECIL /out:$(CECIL_MDB)
+	gmcs $(CECIL_MDB_CSFILES) /debug /target:library /keyfile:$(CECIL_SNK) /r:$(CECIL) /d:CECIL /out:$(CECIL_MDB)
 
 $(CECIL_MDB_DEBUG): $(CECIL_MDB)
 
