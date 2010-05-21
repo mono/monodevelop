@@ -175,6 +175,16 @@ namespace MonoDevelop.Ide.Tasks
 				LoggingService.LogWarning ("Could not save user tasks: " + fileToSave, ex);
 			}
 		}
+		
+		
+		public static event EventHandler<TaskEventArgs> JumpedToTask;
+
+		public static void InformJumpToTask (Task task)
+		{
+			EventHandler<TaskEventArgs> handler = JumpedToTask;
+			if (handler != null)
+				handler (null, new TaskEventArgs (task));
+		}
 	}
 }
 

@@ -219,6 +219,7 @@ namespace MonoDevelop.Ide.Tasks
 					nav.Expanded = true;
 				}
 			}
+			TaskService.InformJumpToTask (this);
 		}
 		
 		public bool BelongsToItem (IWorkspaceObject item, bool checkHierarchy)

@@ -364,6 +364,23 @@ namespace MonoDevelop.Ide.Tasks
 			return GetNextLocation (false);
 		}
 		
+		class TaskNavigationPoint : TextFileNavigationPoint
+		{
+			Task task;
+			
+			public TaskNavigationPoint (Task task) : base (task.FileName, task.Line, task.Column)
+			{
+				this.task = task;
+			}
+			
+			protected override Document DoShow ()
+			{
+				Document result = base.DoShow ();
+				TaskService.InformJumpToTask (task);
+				return result;
+			}
+		}
+		
 		NavigationPoint GetNextLocation (bool followSeverity)
 		{
 			int n;
@@ -397,7 +414,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			if (currentLocationTask != null) {
 				TaskService.ShowStatus (currentLocationTask);
-				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
+				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
 				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
@@ -443,7 +460,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			if (currentLocationTask != null) {
 				TaskService.ShowStatus (currentLocationTask);
-				return new TextFileNavigationPoint (currentLocationTask.FileName, currentLocationTask.Line, currentLocationTask.Column);
+				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
 				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
