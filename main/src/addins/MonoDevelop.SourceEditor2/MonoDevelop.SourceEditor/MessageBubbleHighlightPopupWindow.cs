@@ -55,15 +55,15 @@ namespace MonoDevelop.SourceEditor
 			stage.ActorStep += OnAnimationActorStep;
 			stage.Iteration += OnAnimationIteration;
 			stage.UpdateFrequency = 10;
-			stage.Add (this, 200);
+			stage.Add (this, 100);
 		}
 		double Percent = 0.0;
 		
 		void OnAnimationIteration (object sender, EventArgs args)
 		{
 			Gdk.Rectangle currentBounds = marker.ErrorTextBounds;
-			int i = (int) (24.0 * Percent);
-			int j = (int) (4.0 * Percent);
+			int i = (int) (12.0 * Percent);
+			int j = (int) (2.0 * Percent);
 			int x, y;
 			view.SourceEditorWidget.TextEditor.GdkWindow.GetOrigin (out x, out y);
 			Move (x + currentBounds.X - i, y + currentBounds.Y - j);
