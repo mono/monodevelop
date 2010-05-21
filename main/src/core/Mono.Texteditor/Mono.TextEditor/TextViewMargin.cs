@@ -1101,11 +1101,11 @@ namespace Mono.TextEditor
 				}
 				wrapper.LineChars = lineChars;
 				wrapper.Layout.SetText (lineText);
+				atts.AssignTo (wrapper.Layout);
+				atts.Dispose ();
 				int w, h;
 				wrapper.Layout.GetSize (out w, out h);
 				wrapper.PangoWidth = w;
-				atts.AssignTo (wrapper.Layout);
-				atts.Dispose ();
 			});
 		}
 		#endregion
@@ -1266,8 +1266,7 @@ namespace Mono.TextEditor
 							caretChar = spaceMarkerChar;
 						if (textEditor.Options.ShowTabs && caretChar == '\t')
 							caretChar = tabMarkerChar;
-//						Console.WriteLine (strong_pos.X  + "-- " + weak_pos.X);
-						SetVisibleCaretPosition (win, caretChar, (int)((pangoPosition + weak_pos.X) / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (win, caretChar, xPos + (int)(strong_pos.X / Pango.Scale.PangoScale), y);
 					} else if (index == length) {
 						SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 					}
