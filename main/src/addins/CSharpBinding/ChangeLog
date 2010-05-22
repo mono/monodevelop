@@ -1,3 +1,7 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fix grammar.
+
 2010-05-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:

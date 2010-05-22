@@ -559,7 +559,9 @@ namespace MonoDevelop.CSharp.Resolver
 							nonMethodMembers.Add (member[i]);
 						
 						if (!member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected))
-							errors.Add (string.Format (MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to it's protection level."), ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics)));
+							errors.Add (
+								MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to its protection level.",
+								ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics)));
 						
 						if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended)/* && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true)*/) {
 							continue;
