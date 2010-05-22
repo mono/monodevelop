@@ -1,5 +1,10 @@
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs:
+	  Dialog placement.
+
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs: Revert
 	  show/hide changes as they make the panels behave weirdly.
 

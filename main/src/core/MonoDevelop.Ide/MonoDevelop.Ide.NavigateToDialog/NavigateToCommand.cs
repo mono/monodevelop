@@ -38,11 +38,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		protected override void Run ()
 		{
-			NavigateToDialog dialog = new NavigateToDialog (NavigateToType.Types, false);
-			dialog.Title = GettextCatalog.GetString ("Go to Type");
-			dialog.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
+			var dialog = new NavigateToDialog (NavigateToType.Types, false) {
+				Title = GettextCatalog.GetString ("Go to Type"),
+			};
 			try {
-				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dialog, MessageService.RootWindow) == (int)ResponseType.Ok) {
 					dialog.Sensitive = false;
 					foreach (var loc in dialog.Locations)
 						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
@@ -62,11 +62,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		protected override void Run ()
 		{
-			NavigateToDialog dialog = new NavigateToDialog (NavigateToType.Files, false);
-			dialog.Title = GettextCatalog.GetString ("Go to File");
-			dialog.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
+			var dialog = new NavigateToDialog (NavigateToType.Files, false) {
+				Title = GettextCatalog.GetString ("Go to File"),
+			};
 			try {
-				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dialog, MessageService.RootWindow) == (int)ResponseType.Ok) {
 					dialog.Sensitive = false;
 					foreach (var loc in dialog.Locations)
 						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
@@ -86,10 +86,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		protected override void Run ()
 		{
-			NavigateToDialog dialog = new NavigateToDialog (NavigateToType.All, true);
-			dialog.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
+			var dialog = new NavigateToDialog (NavigateToType.All, true);
 			try {
-				if ((ResponseType)dialog.Run () == ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dialog, MessageService.RootWindow) == (int)ResponseType.Ok) {
 					dialog.Sensitive = false;
 					foreach (var loc in dialog.Locations)
 						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
