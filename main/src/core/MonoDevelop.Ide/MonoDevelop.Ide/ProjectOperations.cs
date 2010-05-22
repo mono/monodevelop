@@ -727,7 +727,7 @@ namespace MonoDevelop.Ide
 				
 				selDialog.SetProject (project);
 
-				if (MessageService.ShowCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
 					ProjectReferenceCollection newRefs = selDialog.ReferenceInformations;
 					
 					ArrayList toDelete = new ArrayList ();

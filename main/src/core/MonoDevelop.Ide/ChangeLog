@@ -1,5 +1,10 @@
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide/ProjectOperations.cs: Don't destroy
+	  references dialog.
+
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs:
 	  Dialog placement.
 
