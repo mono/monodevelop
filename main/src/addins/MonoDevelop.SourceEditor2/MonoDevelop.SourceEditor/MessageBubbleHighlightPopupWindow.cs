@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 			this.Decorated = false;
 			this.BorderWidth = 0;
 			this.HasFrame = true;
-			this.TransientFor = IdeApp.Workbench.RootWindow;
+			this.TransientFor = (view.SourceEditorWidget.TextEditor.Toplevel as Gtk.Window) ?? IdeApp.Workbench.RootWindow;
 		}
 		
 		Stage<MessageBubbleHighlightPopupWindow> stage = new Stage<MessageBubbleHighlightPopupWindow> ();

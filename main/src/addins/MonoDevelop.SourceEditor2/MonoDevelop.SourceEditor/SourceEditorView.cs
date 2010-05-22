@@ -264,13 +264,18 @@ namespace MonoDevelop.SourceEditor
 			if (marker == null)
 				return;
 			
-			if (messageBubbleHighlightPopupWindow != null)
-				messageBubbleHighlightPopupWindow.Destroy ();
-			messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
-			messageBubbleHighlightPopupWindow.Destroyed += delegate {
-				messageBubbleHighlightPopupWindow = null;
-			};
-			messageBubbleHighlightPopupWindow.Popup ();
+			/*
+			//FIXME: this looks super-ugly because the window resizes before redrawing
+			// we should instead use a window of constant size with an alpha channel
+			if (TextEditor.IsComposited) {
+				if (messageBubbleHighlightPopupWindow != null)
+					messageBubbleHighlightPopupWindow.Destroy ();
+				messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
+				messageBubbleHighlightPopupWindow.Destroyed += delegate {
+					messageBubbleHighlightPopupWindow = null;
+				};
+				messageBubbleHighlightPopupWindow.Popup ();
+			}*/
 		}
 
 		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
