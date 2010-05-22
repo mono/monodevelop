@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -40,9 +41,9 @@ namespace MonoDevelop.RegexToolkit
 	{
 		protected override void Run ()
 		{
-			RegexToolkitWindow regexToolkit = new RegexToolkitWindow ();
+			var regexToolkit = new RegexToolkitWindow ();
+			MessageService.PlaceDialog (regexToolkit, null);
 			regexToolkit.Show ();
-			
 		}
 	}
 	

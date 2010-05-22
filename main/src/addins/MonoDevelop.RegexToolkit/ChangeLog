@@ -1,3 +1,7 @@
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.RegexToolkit/Commands.cs: Dialog placement.
+
 2010-05-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.RegexToolkit/RegexToolkitWindow.cs: Added multi
