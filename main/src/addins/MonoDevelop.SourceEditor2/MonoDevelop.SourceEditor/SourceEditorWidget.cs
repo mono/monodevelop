@@ -198,7 +198,7 @@ namespace MonoDevelop.SourceEditor
 		class DecoratedScrolledWindow : VBox
 		{
 			SourceEditorWidget parent;
-			CompactScrolledWindow scrolledWindow;
+			ScrolledWindow scrolledWindow;
 			
 			public Adjustment Hadjustment {
 				get {
@@ -215,21 +215,23 @@ namespace MonoDevelop.SourceEditor
 			public DecoratedScrolledWindow (SourceEditorWidget parent)
 			{
 				this.parent = parent;
+				/*
 				Border border = new Border ();
 				border.HeightRequest = 1;
 				PackStart (border, false, true, 0);
-				
+								 
 				HBox box = new HBox ();
 				
 				border = new Border ();
 				border.WidthRequest = 1;
 				box.PackStart (border, false, true, 0);
 				
-				scrolledWindow = new CompactScrolledWindow ();
+				scrolledWindow = new ScrolledWindow ();
 				scrolledWindow.BorderWidth = 0;
 				scrolledWindow.ShadowType = ShadowType.None;
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
 				box.PackStart (scrolledWindow, true, true, 0);
+				
 				
 				border = new Border ();
 				border.WidthRequest = 1;
@@ -239,11 +241,19 @@ namespace MonoDevelop.SourceEditor
 				
 				border = new Border ();
 				border.HeightRequest = 1;
-				PackStart (border, false, true, 0);
+				PackStart (border, false, true, 0);*/
+				
+				scrolledWindow = new ScrolledWindow ();
+				scrolledWindow.BorderWidth = 0;
+				scrolledWindow.ShadowType = ShadowType.In;
+				scrolledWindow.ButtonPressEvent += PrepareEvent;
+				PackStart (scrolledWindow, true, true, 0);
 			}
 			
 			protected override void OnDestroyed ()
 			{
+				if (scrolledWindow.Child != null)
+					RemoveEvents ();
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
 				base.OnDestroyed ();
 			}
