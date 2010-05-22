@@ -60,6 +60,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		public string DialogTitle { get; set; }
 		public string DefaultFilter { get; set; }
 		
+		/// <summary>Makes SelectedFile return Null if the file does not exist in the project.</summary>
+		public bool VerifyFileExistsInProject { get; set; }
+		
 		public bool EntryIsEditable {
 			get { return entry.IsEditable; }
 			set { entry.IsEditable = value; }
@@ -68,10 +71,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		public FilePath SelectedFile {
 			get {
 				CheckProject ();
-				string txt = entry.Text;
-				if (String.IsNullOrEmpty (txt))
+				FilePath value = entry.Text;
+				if (value.IsNullOrEmpty)
 					return FilePath.Null;
-				var pf = Project.Files.GetFileWithVirtualPath (txt);
+				if (!VerifyFileExistsInProject)
+					return value.ToAbsolute (Project.BaseDirectory);
+				var pf = Project.Files.GetFileWithVirtualPath (value);
 				if (pf != null)
 					return pf.FilePath;
 				return FilePath.Null;
