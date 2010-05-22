@@ -203,22 +203,16 @@ namespace MonoDevelop.Debugger
 		
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
 		{
-			BreakpointPropertiesDialog dlg = new BreakpointPropertiesDialog (bp, editNew);
-			try {
-				dlg.TransientFor = IdeApp.Workbench.RootWindow;
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					return true;
-				}
-			} finally {
-				dlg.Destroy ();
-			}
+			var dlg = new BreakpointPropertiesDialog (bp, editNew);
+			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
+				return true;
 			return false;
 		}
 		
 		public static void ShowAddTracepointDialog (string file, int line)
 		{
 			AddTracePointDialog dlg = new AddTracePointDialog ();
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
+			if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
 				Breakpoint bp = new Breakpoint (file, line);
 				bp.HitAction = HitAction.PrintExpression;
 				bp.TraceExpression = dlg.Text;
@@ -282,8 +276,7 @@ namespace MonoDevelop.Debugger
 			ExpressionEvaluatorDialog dlg = new ExpressionEvaluatorDialog ();
 			if (expression != null)
 				dlg.Expression = expression;
-			dlg.Run ();
-			dlg.Destroy ();
+			MessageService.RunCustomDialog (dlg);
 		}
 		
 		public static void ShowExceptionCaughtDialog ()
@@ -297,9 +290,7 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExceptionsFilters ()
 		{
-			ExceptionsDialog dlg = new ExceptionsDialog ();
-			dlg.Run ();
-			dlg.Destroy ();
+			MessageService.RunCustomDialog (new ExceptionsDialog ());
 		}
 		
 		static void SetupSession ()

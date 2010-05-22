@@ -1051,9 +1051,7 @@ namespace MonoDevelop.Refactoring
 				editor.BeginAtomicUndo ();
 			
 			try {
-				OverridesImplementsDialog dialog = new OverridesImplementsDialog ((IType)item);
-				dialog.TransientFor = IdeApp.Workbench.RootWindow;
-				dialog.Run ();
+				MessageService.RunCustomDialog (new OverridesImplementsDialog ((IType)item));
 			} finally {
 				if (editor != null)
 					editor.EndAtomicUndo ();

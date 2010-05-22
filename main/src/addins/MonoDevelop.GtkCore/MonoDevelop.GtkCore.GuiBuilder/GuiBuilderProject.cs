@@ -406,17 +406,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public void ImportGladeFile ()
 		{
-			Gtk.FileChooserDialog dialog =
-				new Gtk.FileChooserDialog ("Open Glade File", null, Gtk.FileChooserAction.Open,
-						       Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
-						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
-			dialog.TransientFor = IdeApp.Workbench.RootWindow;
-			int response = dialog.Run ();
-			if (response == (int)Gtk.ResponseType.Ok) {
-				SteticProject.ImportGlade (dialog.Filename);
+			var dlg = new MonoDevelop.Components.SelectFileDialog (GettextCatalog.GetString ("Open Glade File"));
+			dlg.AddFilter (GettextCatalog.GetString ("Glade files"), "*.glade");
+			dlg.AddAllFilesFilter ();
+			if (dlg.Run ()) {
+				SteticProject.ImportGlade (dlg.SelectedFile);
 				Save (true);
 			}
-			dialog.Destroy ();
 		}
 		
 		public GuiBuilderWindow GetWindowForClass (string className)

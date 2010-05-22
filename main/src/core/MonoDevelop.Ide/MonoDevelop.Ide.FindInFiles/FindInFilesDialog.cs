@@ -300,19 +300,18 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		void ButtonBrowsePathsClicked (object sender, EventArgs e)
 		{
-			FolderDialog folderDialog = new FolderDialog (GettextCatalog.GetString ("Select directory"));
-			try {
-				string defaultFolder = this.comboboxentryPath.Entry.Text;
-				if (string.IsNullOrEmpty (defaultFolder))
-					defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
-				if (!string.IsNullOrEmpty (defaultFolder))
-					folderDialog.SetFilename (defaultFolder);
-				folderDialog.TransientFor = IdeApp.Workbench.RootWindow;
-				if (folderDialog.Run () == (int)Gtk.ResponseType.Ok)
-					this.comboboxentryPath.Entry.Text = folderDialog.Filename;
-			} finally {
-				folderDialog.Destroy ();
-			}
+			var dlg = new SelectFolderDialog (GettextCatalog.GetString ("Select directory")) {
+				TransientFor = this,
+			};
+			
+			string defaultFolder = this.comboboxentryPath.Entry.Text;
+			if (string.IsNullOrEmpty (defaultFolder))
+				defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
+			if (!string.IsNullOrEmpty (defaultFolder))
+				dlg.CurrentFolder = defaultFolder;
+			
+			if (dlg.Run ())
+				this.comboboxentryPath.Entry.Text = dlg.SelectedFile;
 		}
 
 		void CheckbuttonRecursivelyDestroyed (object sender, EventArgs e)

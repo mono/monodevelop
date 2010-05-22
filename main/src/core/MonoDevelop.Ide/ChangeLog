@@ -1,5 +1,18 @@
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* gtk-gui/objects.xml: Flush.
+
+	* MonoDevelop.Ide/MessageService.cs:
+	* MonoDevelop.Ide/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:
+	* MonoDevelop.Components.Commands/LinkCommandEntry.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/FlagsSelectorDialog.cs:
+	  More dialog placing.
+
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide/ProjectOperations.cs: Don't destroy
 	  references dialog.
 

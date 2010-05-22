@@ -1,3 +1,9 @@
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  More dialog placing.
+
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs:

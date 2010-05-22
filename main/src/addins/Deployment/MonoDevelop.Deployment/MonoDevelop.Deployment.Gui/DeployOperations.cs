@@ -13,7 +13,7 @@ namespace MonoDevelop.Deployment.Gui
 			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ()) {
 				InstallDialog dlg = new InstallDialog (entry);
 				try {
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok)
+					if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
 						DeployService.Install (mon, entry, dlg.Prefix, dlg.AppName, configuration);
 				} finally {
 					dlg.Destroy ();
@@ -59,7 +59,7 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			EditPackageDialog dlg = new EditPackageDialog (package);
 			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok)
+				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
 					IdeApp.ProjectOperations.Save (package.ParentProject);
 			} finally {
 				dlg.Destroy ();

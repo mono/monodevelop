@@ -37,12 +37,8 @@ namespace MonoDevelop.WebReferences.Commands
 			WebReferenceDialog dialog = new WebReferenceDialog (project);
 			dialog.NamespacePrefix = project.Name;
 			
-			int response = dialog.Run();
-			dialog.Destroy();
-			if (response == (int)Gtk.ResponseType.Ok)
-			{
-				try
-				{
+			if (MessageService.RunCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
+				try {
 					dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
 					IdeApp.ProjectOperations.Save(project);
 				}

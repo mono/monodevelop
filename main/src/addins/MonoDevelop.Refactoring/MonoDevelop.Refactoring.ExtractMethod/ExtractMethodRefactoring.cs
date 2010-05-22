@@ -89,9 +89,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				MessageService.ShowError (GettextCatalog.GetString ("Invalid selection for method extraction."));
 				return;
 			}
-			ExtractMethodDialog dialog = new ExtractMethodDialog (options, this, param);
-			dialog.TransientFor = IdeApp.Workbench.RootWindow;
-			dialog.Run ();
+			MessageService.RunCustomDialog (new ExtractMethodDialog (options, this, param));
 		}
 		
 		public ExtractMethodParameters CreateParameters (RefactoringOptions options)

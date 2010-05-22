@@ -81,10 +81,8 @@ namespace MonoDevelop.Autotools
 		protected virtual void OnAutofooPropertiesClicked (object sender, System.EventArgs e)
 		{
 			MakefileSwitchEditor editor = new MakefileSwitchEditor (target);
-			editor.TransientFor = this.Toplevel as Gtk.Window;
 			editor.ShowAll ();
-			editor.Run ();
-			editor.Destroy ();
+			MonoDevelop.Ide.MessageService.RunCustomDialog (editor, this.Toplevel as Gtk.Window);
 		}
 	}
 }

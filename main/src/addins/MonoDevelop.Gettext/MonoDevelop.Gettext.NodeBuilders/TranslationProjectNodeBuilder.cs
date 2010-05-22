@@ -121,9 +121,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				TranslationProject project = CurrentNode.DataItem as TranslationProject;
 				if (project == null)
 					return;
-				TranslationProjectOptionsDialog options = new TranslationProjectOptionsDialog (project);
-				options.TransientFor = IdeApp.Workbench.RootWindow;
-				options.Run ();
+				MessageService.RunCustomDialog (new TranslationProjectOptionsDialog (project));
 				IdeApp.Workspace.Save ();
 			}
 			
@@ -143,14 +141,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				string monitorTitle = GettextCatalog.GetString ("Translator Output");
 				Translator.LanguageChooserDialog chooser = new Translator.LanguageChooserDialog ();
 				try {
-					int response = 0;
-					chooser.Response += delegate(object o, ResponseArgs args) {
-						response = (int)args.ResponseId;
-					};
-					chooser.TransientFor = IdeApp.Workbench.RootWindow;
-					chooser.Run ();
-					
-					if (response == (int)ResponseType.Ok) {
+					if (MessageService.ShowCustomDialog (chooser) == (int)ResponseType.Ok) {
 						string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
 					
 						using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (monitorTitle, "md-package", true, true)) {

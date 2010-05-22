@@ -4,6 +4,7 @@ using System.Threading;
 using System.Collections;
 using MonoDevelop.Core;
 using Gtk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -148,8 +149,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			EditRepositoryDialog dlg = new EditRepositoryDialog (null);
 			try {
-				dlg.TransientFor = this;
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
+				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 					VersionControlService.AddRepository (dlg.Repository);
 					VersionControlService.SaveConfiguration ();
 					LoadRepositories (dlg.Repository, Gtk.TreeIter.Zero);
@@ -177,9 +177,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (rep != null) {
 				Repository repCopy = rep.Clone ();
 				EditRepositoryDialog dlg = new EditRepositoryDialog (repCopy);
-				dlg.TransientFor = this;
 				try {
-					if (dlg.Run () != (int) Gtk.ResponseType.Ok) {
+					if (MessageService.ShowCustomDialog (dlg, this) != (int) Gtk.ResponseType.Ok) {
 						VersionControlService.ResetConfiguration ();
 						return;
 					}
@@ -311,19 +310,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
-			FileChooserDialog dialog =
-				new FileChooserDialog (GettextCatalog.GetString ("Select target directory"), null, FileChooserAction.SelectFolder,
-						       Gtk.Stock.Cancel, Gtk.ResponseType.Cancel,
-						       Gtk.Stock.Open, Gtk.ResponseType.Ok);
-			dialog.TransientFor = this;
-			int response = dialog.Run ();
-			try {
-				if (response == (int)Gtk.ResponseType.Ok) {
-					entryFolder.Text = dialog.Filename;
-				}
-			} finally {
-				dialog.Destroy ();
-			}
+			var dlg = new MonoDevelop.Components.SelectFolderDialog (GettextCatalog.GetString ("Select target directory"));
+			if (dlg.Run ())
+				entryFolder.Text = dlg.SelectedFile;
 		}
 
 		protected virtual void OnNotebookChangeCurrentPage(object o, Gtk.ChangeCurrentPageArgs args)

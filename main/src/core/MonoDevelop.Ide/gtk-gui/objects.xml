@@ -115,7 +115,7 @@
         <property name="DialogTitle" />
         <property name="DefaultFilter" />
         <property name="EntryIsEditable" />
-        <property name="AllowInvalidValues" />
+        <property name="VerifyFileExistsInProject" />
       </itemgroup>
     </itemgroups>
     <signals />

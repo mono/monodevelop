@@ -85,8 +85,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			dialog.DefaultWidth = 500;
 			dialog.DefaultHeight = 400;
 			dialog.ShowAll ();
-			dialog.TransientFor = parent;
-			return dialog.Run ();
+			return MonoDevelop.Ide.MessageService.RunCustomDialog (dialog, parent);
 		}
 		
 		public void Dispose ()

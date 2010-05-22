@@ -62,8 +62,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			EventHandler del = delegate {
 					try {
 						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save);
-						dlg.TransientFor = IdeApp.Workbench.RootWindow;
-						res = (dlg.Run () == (int) Gtk.ResponseType.Ok);
+						res = (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							local_save = dlg.Save;
 							local_accepted_failures = dlg.AcceptedFailures;

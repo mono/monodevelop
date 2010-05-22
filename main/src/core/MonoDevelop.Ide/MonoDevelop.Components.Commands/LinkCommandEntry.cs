@@ -69,11 +69,7 @@ namespace MonoDevelop.Components.Commands
 				System.Diagnostics.Process.Start (url);
 			} catch (Exception) {
 				string msg = AddinManager.CurrentLocalizer.GetString ("Could not open the url {0}", url);
-				Gtk.MessageDialog md = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal | Gtk.DialogFlags.DestroyWithParent, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
-				if (sender != null && sender is Gtk.Widget)
-					md.TransientFor = (sender as Gtk.Widget).Toplevel as Gtk.Window;
-				md.Run ();
-				md.Hide ();
+				MonoDevelop.Ide.MessageService.ShowError (((Gtk.Widget)sender).Toplevel as Gtk.Window, msg);
 			}
 		}
 		

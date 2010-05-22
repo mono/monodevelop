@@ -442,7 +442,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				dlg.Password = nc.Password;
 			}
 			try {
-				if (dlg.Run () == (int) ResponseType.Ok) {
+				if (MessageService.ShowCustomDialog (dlg) == (int) ResponseType.Ok) {
 					nc = new NetworkCredential (dlg.User, dlg.Password);
 					tempCredentials [uri.Host + uri.AbsolutePath] = nc;
 					tempCredentials [uri.Host] = nc;

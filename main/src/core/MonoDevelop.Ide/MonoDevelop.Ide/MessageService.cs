@@ -271,6 +271,11 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
+		public static int RunCustomDialog (Gtk.Dialog dialog)
+		{
+			return RunCustomDialog (dialog, rootWindow);
+		}
+		
 		/// <summary>
 		/// Places and runs a transient dialog. Does not destroy it, so values can be retrieved from its widgets.
 		/// </summary>

@@ -226,8 +226,7 @@ namespace MonoDevelop.Deployment.Linux
 		protected virtual void OnButtonAddCategoriesClicked(object sender, System.EventArgs e)
 		{
 			MenuCategorySelectorDialog dlg = new MenuCategorySelectorDialog ();
-			dlg.TransientFor = IdeApp.Workbench.RootWindow;
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+			if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 				foreach (string s in dlg.Selection)
 					entry.Categories.Add (s);
 				FillCategs ();

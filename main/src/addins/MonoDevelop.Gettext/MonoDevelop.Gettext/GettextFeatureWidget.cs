@@ -53,21 +53,15 @@ namespace MonoDevelop.Gettext
 			this.treeviewTranslations.HeadersVisible = false;
 			
 			this.buttonAdd.Clicked += delegate {
-				MonoDevelop.Gettext.Translator.LanguageChooserDialog chooser = new MonoDevelop.Gettext.Translator.LanguageChooserDialog ();
-
-				int response = 0;
-				chooser.Response += delegate(object o, Gtk.ResponseArgs args) {
-					response = (int)args.ResponseId;
-				};
-				chooser.TransientFor = IdeApp.Workbench.RootWindow;
-				chooser.Run ();
-				
-				if (response == (int)Gtk.ResponseType.Ok) {
-					string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
-					store.AppendValues (chooser.LanguageLong, language);
+				var chooser = new MonoDevelop.Gettext.Translator.LanguageChooserDialog ();
+				try {
+					if (MessageService.ShowCustomDialog (chooser) == (int)Gtk.ResponseType.Ok) {
+						string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
+						store.AppendValues (chooser.LanguageLong, language);
+					}
+				} finally {
+					chooser.Destroy ();
 				}
-				
-				chooser.Destroy ();
 			};
 			this.buttonRemove.Sensitive = false;
 			treeviewTranslations.Selection.Changed += delegate {

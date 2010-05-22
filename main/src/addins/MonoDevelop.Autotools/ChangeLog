@@ -1,3 +1,8 @@
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Commands.cs:
+	* TarballBuilderEditorWidget.cs: More dialog placing.
+
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SimpleProjectMakefileHandler.cs: Removed unnecessary

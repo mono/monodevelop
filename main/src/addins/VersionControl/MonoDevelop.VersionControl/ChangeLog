@@ -1,3 +1,11 @@
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl/CommitCommand.cs:
+	* MonoDevelop.VersionControl/PublishCommand.cs:
+	* MonoDevelop.VersionControl/CheckoutCommand.cs:
+	* MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:
+	  More dialog placing.
+
 2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Show a

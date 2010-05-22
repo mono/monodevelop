@@ -1,3 +1,9 @@
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.WebReferences.Dialogs/WebReferenceDialog.cs:
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	  More dialog placing.
+
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am: Flush.

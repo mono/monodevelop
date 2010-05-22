@@ -267,13 +267,9 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			grid.ShowToolbar = false;
 			
 			#endregion
-
-			//show and get response			
-			ResponseType response = (ResponseType) dialog.Run();
-			dialog.Destroy ();
 			
 			//if 'OK' put items back in collection
-			if (response == ResponseType.Ok)
+			if (MonoDevelop.Ide.MessageService.RunCustomDialog (dialog, toplevel) == (int)ResponseType.Ok)
 			{
 				DesignerTransaction tran = CreateTransaction (Instance);
 				object old = collection;

@@ -68,8 +68,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public int Run ()
 		{
-			dialog.TransientFor = IdeApp.Workbench.RootWindow;
-			return dialog.Run ();
+			return MessageService.ShowCustomDialog (dialog);
 		}
 		
 		public bool DeleteFile {
