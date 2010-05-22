@@ -361,13 +361,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			fdiag.TransientFor = IdeApp.Workbench.RootWindow;
 			fdiag.BuildActions = project.GetBuildActions ();	
 			
-			string[] files;
 			string overrideAction = null;
 			
 			if (!fdiag.Run ())
 				return;
 			
-			files = fdiag.SelectedFiles;
+			var files = fdiag.SelectedFiles;
 			overrideAction = fdiag.OverrideAction;
 			
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;

@@ -1,5 +1,34 @@
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs: Added
+	  docs and convenience API.
+
+	* gtk-gui/MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs:
+	  Flush.
+
+	* MonoDevelop.Components.Extensions/ISelectFileDialog.cs:
+	  Added ability to set filters in the dialogs.
+
+	* MonoDevelop.Components/FolderDialog.cs:
+	* MonoDevelop.Components/FileSelector.cs: Make internal.
+	  People should be using the platform file dialog API.
+
+	* MonoDevelop.Ide.Projects/AddFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileDialog.cs: Use file
+	  filters.
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:
+	  Track dialog API.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide/ProjectOperations.cs: Clean up dialog
+	  placement.
+
+	* MonoDevelop.Ide/MessageService.cs: New APIs for
+	  showing/running dialogs, and placing dialogs.
+
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components/MenuButton.cs: Fix the View Conflicts
 	  button.
 

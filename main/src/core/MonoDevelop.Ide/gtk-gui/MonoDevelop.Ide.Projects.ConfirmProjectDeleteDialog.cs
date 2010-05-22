@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.Projects
 			this.radioDeleteAll = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Delete the project file and the whole project directory:"));
 			this.radioDeleteAll.CanFocus = true;
 			this.radioDeleteAll.Name = "radioDeleteAll";
-			this.radioDeleteAll.Active = true;
 			this.radioDeleteAll.DrawIndicator = true;
 			this.radioDeleteAll.UseUnderline = true;
 			this.radioDeleteAll.Group = new global::GLib.SList (global::System.IntPtr.Zero);

@@ -112,18 +112,17 @@ namespace MonoDevelop.AspNet.Deployment
 		
 		static public void DeployDialog (AspNetAppProject project)
 		{
-			WebDeployLaunchDialog dialog = new WebDeployLaunchDialog (project);
-			Gtk.Window rootWindow =  MonoDevelop.Ide.MessageService.RootWindow as Gtk.Window;
-			dialog.TransientFor = rootWindow;
-			dialog.Modal = true;
+			var dialog = new WebDeployLaunchDialog (project) {
+				Modal = true,
+			};
 			dialog.Show ();
 			
 			ICollection<WebDeployTarget> targets = null;
 			
-			ResponseType response = Gtk.ResponseType.None;
+			var response = ResponseType.None;
 			do {
-				response = (ResponseType) dialog.Run ();
-			} while (response != Gtk.ResponseType.Ok && response != Gtk.ResponseType.Cancel && response != Gtk.ResponseType.DeleteEvent);
+				response = (ResponseType) MessageService.RunCustomDialog (dialog, MessageService.RootWindow);
+			} while (response != ResponseType.Ok && response != ResponseType.Cancel && response != ResponseType.DeleteEvent);
 			
 			if (response == Gtk.ResponseType.Ok)
 				targets = dialog.GetSelectedTargets ();

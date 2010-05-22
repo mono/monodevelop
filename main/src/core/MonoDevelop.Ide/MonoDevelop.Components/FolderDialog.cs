@@ -8,7 +8,7 @@ using Gtk;
 
 namespace MonoDevelop.Components
 {
-	public class FolderDialog : FileSelector
+	class FolderDialog : FileSelector
 	{
 		public FolderDialog (string title) : base (title, FileChooserAction.SelectFolder)
 		{

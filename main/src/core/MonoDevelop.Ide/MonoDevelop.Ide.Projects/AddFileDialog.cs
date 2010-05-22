@@ -93,11 +93,14 @@ namespace MonoDevelop.Ide.Projects
 			box.PackStart (combo, false, false, 4);
 			box.ShowAll ();
 			
+			foreach (var filter in GetGtkFileFilters ())
+				fdiag.AddFilter (filter);
+			
 			int result;
 			
 			try {
 				result = fdiag.Run ();
-				data.SelectedFiles = fdiag.Filenames;
+				data.SelectedFiles = fdiag.Filenames.ToFilePathArray ();
 				if (check.Active)
 					data.OverrideAction = combo.ActiveText;
 				else

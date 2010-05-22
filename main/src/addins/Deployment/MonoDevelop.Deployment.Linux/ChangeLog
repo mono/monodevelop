@@ -1,3 +1,8 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:
+	  Flush.
+
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Deployment.Linux/DotDesktopView.cs: IViewContent

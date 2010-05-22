@@ -122,29 +122,14 @@ namespace MonoDevelop.AspNet.Deployment
 			removeButton.Sensitive = selected;
 		}
 		
-		Gtk.Window GetParentWindow (Gtk.Widget child)
-		{
-			Gtk.Widget widget = child;
-			Gtk.Window window = null;
-			do {
-				window = widget as Gtk.Window;
-				widget = widget.Parent;
-			} while (window == null && widget != null);
-			return window;
-		}
-		
 		void RunEditor (WebDeployTarget target)
 		{
-			WebDeployTargetEditor targetEditor = new WebDeployTargetEditor ();
+			var targetEditor = new WebDeployTargetEditor ();
 			targetEditor.Load (target);
-			Gtk.Window parent = GetParentWindow (this);
-			if (parent != null)
-				targetEditor.TransientFor = parent;
 			targetEditor.Show ();
-			ResponseType result = (ResponseType) targetEditor.Run ();
-			if (result == ResponseType.Ok)
+			
+			if (MonoDevelop.Ide.MessageService.ShowCustomDialog (targetEditor, (Gtk.Window) Toplevel) == (int) ResponseType.Ok)
 				targetEditor.Save (target);
-			targetEditor.Destroy ();
 		}
 	}
 }

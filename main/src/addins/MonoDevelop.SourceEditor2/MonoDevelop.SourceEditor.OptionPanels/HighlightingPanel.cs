@@ -106,49 +106,47 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		void AddColorScheme (object sender, EventArgs args)
 		{
-			FileSelector fd = new FileSelector ();
-			fd.TransientFor = this.Toplevel as Gtk.Window;
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Application to Debug"), Gtk.FileChooserAction.Open) {
+				TransientFor = this.Toplevel as Gtk.Window,
+			};
+			dialog.AddFilter (null, "*.xml");
+			if (!dialog.Run ())
+				return;
+			
+			System.Collections.Generic.List<System.Xml.Schema.ValidationEventArgs> validationResult;
 			try {
-				int response = fd.Run ();
-				if (response == (int)ResponseType.Ok) {
-					System.Collections.Generic.List<System.Xml.Schema.ValidationEventArgs> validationResult;
-					try {
-						validationResult = Mono.TextEditor.Highlighting.SyntaxModeService.ValidateStyleFile (fd.Filename);
-					} catch (Exception) {
-						MessageService.ShowError (GettextCatalog.GetString ("Validation of style file failed."));
-						return;
-					}
-					if (validationResult.Count == 0) {
-						string newFileName = System.IO.Path.Combine (SourceEditorDisplayBinding.SyntaxModePath, System.IO.Path.GetFileName (fd.Filename));
-						if (!newFileName.EndsWith ("Style.xml"))
-							newFileName = System.IO.Path.Combine (SourceEditorDisplayBinding.SyntaxModePath, System.IO.Path.GetFileNameWithoutExtension (fd.Filename) + "Style.xml");
-						bool success = true;
-						try {
-							File.Copy (fd.Filename, newFileName);
-						} catch (Exception e) {
-							success = false;
-							LoggingService.LogError ("Can't copy syntax mode file.", e);
-						}
-						if (success) {
-							SourceEditorDisplayBinding.LoadCustomStylesAndModes ();
-							ShowStyles ();
-						}
-					} else {
-						StringBuilder errorMessage = new StringBuilder ();
-						errorMessage.AppendLine (GettextCatalog.GetString ("Validation of style file failed."));
-						int count = 0;
-						foreach (System.Xml.Schema.ValidationEventArgs vArg in validationResult) {
-							errorMessage.AppendLine (vArg.Message);
-							if (count++ > 5) {
-								errorMessage.AppendLine ("...");
-								break;
-							}
-						}
-						MessageService.ShowError (errorMessage.ToString ());
+				validationResult = Mono.TextEditor.Highlighting.SyntaxModeService.ValidateStyleFile (dialog.SelectedFile);
+			} catch (Exception) {
+				MessageService.ShowError (GettextCatalog.GetString ("Validation of style file failed."));
+				return;
+			}
+			if (validationResult.Count == 0) {
+				string newFileName = SourceEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileName);
+				if (!newFileName.EndsWith ("Style.xml"))
+					newFileName = SourceEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileNameWithoutExtension + "Style.xml");
+				bool success = true;
+				try {
+					File.Copy (dialog.SelectedFile, newFileName);
+				} catch (Exception e) {
+					success = false;
+					LoggingService.LogError ("Can't copy syntax mode file.", e);
+				}
+				if (success) {
+					SourceEditorDisplayBinding.LoadCustomStylesAndModes ();
+					ShowStyles ();
+				}
+			} else {
+				StringBuilder errorMessage = new StringBuilder ();
+				errorMessage.AppendLine (GettextCatalog.GetString ("Validation of style file failed."));
+				int count = 0;
+				foreach (System.Xml.Schema.ValidationEventArgs vArg in validationResult) {
+					errorMessage.AppendLine (vArg.Message);
+					if (count++ > 5) {
+						errorMessage.AppendLine ("...");
+						break;
 					}
 				}
-			} finally {
-				fd.Destroy ();
+				MessageService.ShowError (errorMessage.ToString ());
 			}
 		}
 		

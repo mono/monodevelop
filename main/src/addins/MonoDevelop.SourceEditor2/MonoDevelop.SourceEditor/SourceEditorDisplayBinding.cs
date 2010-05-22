@@ -33,9 +33,9 @@ namespace MonoDevelop.SourceEditor
 {
 	public class SourceEditorDisplayBinding : DisplayBinding
 	{
-		public static string SyntaxModePath {
+		public static FilePath SyntaxModePath {
 			get {
-				return Path.Combine (PropertyService.ConfigPath, "syntaxmodes");
+				return PropertyService.ConfigPath.Combine ("syntaxmodes");
 			}
 		}
 		

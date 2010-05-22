@@ -39,6 +39,9 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
 using System.Xml.Xsl;
+using MonoDevelop.Components;
+using Gtk;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -414,68 +417,41 @@ namespace MonoDevelop.XmlEditor
 		
 		#region File browsing utilities
 		
+		/// <summary>Allows the user to browse the file system for a stylesheet.</summary>
+		/// <returns>The stylesheet filename the user selected; otherwise null.</returns>
 		public static string BrowseForStylesheetFile ()
 		{
-			MonoDevelop.Components.FileSelector fs =
-			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XSLT Stylesheet"));
-			try {
-				Gtk.FileFilter xmlFiles = new Gtk.FileFilter ();
-				xmlFiles.Name = "XML Files";
-				xmlFiles.AddMimeType("text/xml");
-				fs.AddFilter(xmlFiles);
-				
-				Gtk.FileFilter xslFiles = new Gtk.FileFilter ();
-				xslFiles.Name = "XSL Files";
-				xslFiles.AddMimeType("text/x-xslt");
-				xslFiles.AddPattern("*.xslt;*.xsl");
-				fs.AddFilter(xslFiles);
-				
-				return browseCommon (fs);
-			}
-			finally {
-				fs.Destroy ();
-			}
+			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select XSLT Stylesheet")) {
+				TransientFor = IdeApp.Workbench.RootWindow,
+			};
+			dlg.AddFilter (new SelectFileDialogFilter (GettextCatalog.GetString ("XML Files", "*.xml")) {
+				MimeTypes = { "text/xml", "application/xml" },
+			});
+			dlg.AddFilter (new SelectFileDialogFilter (GettextCatalog.GetString ("XSL Files"), "*.xslt", "*.xsl") {
+				MimeTypes = { "text/x-xslt" },
+			});
+			dlg.AddAllFilesFilter ();
+			
+			if (dlg.Run ())
+				return dlg.SelectedFile;
+			return null;
 		}
 		
-		//Allows the user to browse the file system for a schema. Returns the schema file 
-		//name the user selected; otherwise an empty string.
+		/// <summary>Allows the user to browse the file system for a schema.</summary>
+		/// <returns>The schema filename the user selected; otherwise null.</returns>
 		public static string BrowseForSchemaFile ()
 		{
-			MonoDevelop.Components.FileSelector fs =
-			    new MonoDevelop.Components.FileSelector (GettextCatalog.GetString ("Select XML Schema"));
-			try {
-				Gtk.FileFilter xmlFiles = new Gtk.FileFilter ();
-				xmlFiles.Name = "XML Files";
-				xmlFiles.AddMimeType("text/xml");
-				xmlFiles.AddMimeType("application/xml");
-				xmlFiles.AddPattern ("*.xsd");
-				fs.AddFilter (xmlFiles);
-				
-				return browseCommon (fs);
-			} finally {
-				fs.Destroy ();
-			}
-		}
-		
-		static string browseCommon (MonoDevelop.Components.FileSelector fs)
-		{
-			fs.SelectMultiple = false;
+			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select XML Schema")) {
+				TransientFor = IdeApp.Workbench.RootWindow,
+			};
+			dlg.AddFilter (new SelectFileDialogFilter (GettextCatalog.GetString ("XML Files"), "*.xsd") {
+				MimeTypes = { "text/xml", "application/xml" },
+			});
+			dlg.AddAllFilesFilter ();
 			
-			Gtk.FileFilter allFiles = new Gtk.FileFilter ();
-			allFiles.Name = "All Files";
-			allFiles.AddPattern ("*");
-			fs.AddFilter(allFiles);
-			
-			fs.Modal = true;
-			fs.TransientFor = IdeApp.Workbench.RootWindow;
-			fs.DestroyWithParent = true;
-			int response = fs.Run ();
-			
-			if (response == (int)Gtk.ResponseType.Ok) {
-				return fs.Filename;
-			} else {
-				return null;
-			}
+			if (dlg.Run ())
+				return dlg.SelectedFile;
+			return null;
 		}
 		
 		#endregion

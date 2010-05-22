@@ -634,6 +634,14 @@ namespace MonoDevelop.Core
 				array[n] = paths[n].ToString ();
 			return array;
 		}
+		
+		public static FilePath[] ToFilePathArray (this string[] paths)
+		{
+			var array = new FilePath[paths.Length];
+			for (int n = 0; n < paths.Length; n++)
+				array[n] = paths[n];
+			return array;
+		}
 	}
 	
 	public delegate bool FileServiceErrorHandler (string message, Exception ex);

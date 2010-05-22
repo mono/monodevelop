@@ -1,3 +1,9 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Deployment/WebDeployService.cs:
+	* MonoDevelop.AspNet.Deployment/WebDeployOptionsPanelWidget.cs:
+	  Clean up dialog placement.
+
 2010-05-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Make

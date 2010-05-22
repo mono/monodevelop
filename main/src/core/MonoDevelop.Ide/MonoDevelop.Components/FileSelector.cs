@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
-	public class FileSelector : FileChooserDialog
+	class FileSelector : FileChooserDialog
 	{
 		const string LastPathProperty = "MonoDevelop.FileSelector.LastPath";
 

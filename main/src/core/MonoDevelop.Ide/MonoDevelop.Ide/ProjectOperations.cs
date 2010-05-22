@@ -310,8 +310,7 @@ namespace MonoDevelop.Ide
 		{
 			ExportProjectDialog dlg = new ExportProjectDialog (entry, format);
 			try {
-				dlg.TransientFor = IdeApp.Workbench.RootWindow;
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					
 					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {
 						string folder = dlg.TargetFolder;
@@ -522,16 +521,16 @@ namespace MonoDevelop.Ide
 		public void ShowOptions (IWorkspaceObject entry, string panelId)
 		{
 			if (entry is SolutionEntityItem) {
-				SolutionEntityItem selectedProject = (SolutionEntityItem) entry;
+				var selectedProject = (SolutionEntityItem) entry;
 				
-				ProjectOptionsDialog optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject);
-				SolutionItemConfiguration conf = selectedProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				var optionsDialog = new ProjectOptionsDialog (IdeApp.Workbench.RootWindow, selectedProject);
+				var conf = selectedProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 				optionsDialog.CurrentConfig = conf != null ? conf.Name : null;
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
 					
-					if (optionsDialog.Run() == (int)Gtk.ResponseType.Ok) {
+					if (MessageService.ShowCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
 						selectedProject.SetNeedsBuilding (true);
 						foreach (object ob in optionsDialog.ModifiedObjects) {
 							if (ob is Solution) {
@@ -548,12 +547,12 @@ namespace MonoDevelop.Ide
 			} else if (entry is Solution) {
 				Solution solution = (Solution) entry;
 				
-				CombineOptionsDialog optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, solution);
+				var optionsDialog = new CombineOptionsDialog (IdeApp.Workbench.RootWindow, solution);
 				optionsDialog.CurrentConfig = IdeApp.Workspace.ActiveConfigurationId;
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
-					if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok) {
+					if (MessageService.ShowCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
 						Save (solution);
 						IdeApp.Workspace.SavePreferences (solution);
 					}
@@ -566,7 +565,7 @@ namespace MonoDevelop.Ide
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
-					if (optionsDialog.Run () == (int) Gtk.ResponseType.Ok) {
+					if (MessageService.ShowCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
 						if (entry is IBuildTarget)
 							((IBuildTarget)entry).SetNeedsBuilding (true, IdeApp.Workspace.ActiveConfiguration);
 						if (entry is IWorkspaceFileObject)
@@ -594,7 +593,7 @@ namespace MonoDevelop.Ide
 			NewProjectDialog pd = new NewProjectDialog (null, true, null);
 			if (defaultTemplate != null)
 				pd.SelectTemplate (defaultTemplate);
-			pd.Run ();
+			MessageService.ShowCustomDialog (pd);
 			pd.Destroy ();
 		}
 		
@@ -608,7 +607,7 @@ namespace MonoDevelop.Ide
 			NewProjectDialog npdlg = new NewProjectDialog (null, false, parentWorkspace.BaseDirectory);
 			npdlg.SelectTemplate (defaultItemId);
 			try {
-				if (npdlg.Run () == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
+				if (MessageService.ShowCustomDialog (npdlg) == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
 					parentWorkspace.Items.Add ((WorkspaceItem) npdlg.NewItem);
 					Save (parentWorkspace);
 					return (WorkspaceItem) npdlg.NewItem;
@@ -627,7 +626,7 @@ namespace MonoDevelop.Ide
 			try {
 				fdiag.SetCurrentFolder (parentWorkspace.BaseDirectory);
 				fdiag.SelectMultiple = false;
-				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.ShowCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
 					try {
 						res = AddWorkspaceItem (parentWorkspace, fdiag.Filename);
 					}
@@ -659,7 +658,7 @@ namespace MonoDevelop.Ide
 			SolutionItem res = null;
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
-			npdlg.Run ();
+			MessageService.ShowCustomDialog (npdlg);
 			npdlg.Destroy ();
 			return res;
 		}
@@ -672,7 +671,7 @@ namespace MonoDevelop.Ide
 			try {
 				fdiag.SetCurrentFolder (parentFolder.BaseDirectory);
 				fdiag.SelectMultiple = false;
-				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.ShowCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
 					try {
 						res = AddSolutionItem (parentFolder, fdiag.Filename);
 					}
@@ -714,7 +713,7 @@ namespace MonoDevelop.Ide
 				nfd = new NewFileDialog (parentProject, basePath);
 				if (selectedTemplateId != null)
 					nfd.SelectTemplate (selectedTemplateId);
-				return nfd.Run () == (int) Gtk.ResponseType.Ok;
+				return MessageService.ShowCustomDialog (nfd) == (int) Gtk.ResponseType.Ok;
 			} finally {
 				if (nfd != null) nfd.Destroy ();
 			}
@@ -728,7 +727,7 @@ namespace MonoDevelop.Ide
 				
 				selDialog.SetProject (project);
 
-				if (selDialog.Run() == (int)Gtk.ResponseType.Ok) {
+				if (MessageService.ShowCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
 					ProjectReferenceCollection newRefs = selDialog.ReferenceInformations;
 					
 					ArrayList toDelete = new ArrayList ();
@@ -760,7 +759,7 @@ namespace MonoDevelop.Ide
 				
 				selDialog.SetReferenceCollection (references, ctx, targetVersion);
 
-				if (selDialog.Run() == (int)Gtk.ResponseType.Ok) {
+				if (MessageService.ShowCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
 					references.Clear ();
 					references.AddRange (selDialog.ReferenceInformations);
 					return true;
@@ -791,7 +790,7 @@ namespace MonoDevelop.Ide
 				if (!IdeApp.Workspace.RequestItemUnload (prj))
 					return;
 				ConfirmProjectDeleteDialog dlg = new ConfirmProjectDeleteDialog (prj);
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					
 					// Remove the project before removing the files to avoid unnecessary events
 					RemoveItemFromSolution (prj);
@@ -1157,15 +1156,21 @@ namespace MonoDevelop.Ide
 		
 		public bool AddFilesToSolutionFolder (SolutionFolder folder)
 		{
-			SelectFileDialog dlg = new SelectFileDialog ();
-			dlg.SelectMultiple = true;
-			dlg.Action = Gtk.FileChooserAction.Open;
-			dlg.CurrentFolder = folder.BaseDirectory;
-			dlg.TransientFor = IdeApp.Workbench.RootWindow;
+			var dlg = new SelectFileDialog () {
+				SelectMultiple = true,
+				Action = Gtk.FileChooserAction.Open,
+				CurrentFolder = folder.BaseDirectory,
+				TransientFor = MessageService.RootWindow,
+			};
 			if (dlg.Run ())
 				return AddFilesToSolutionFolder (folder, dlg.SelectedFiles);
 			else
 				return false;
+		}
+		
+		public bool AddFilesToSolutionFolder (SolutionFolder folder, FilePath[] files)
+		{
+			return AddFilesToSolutionFolder (folder, files.ToStringArray ());
 		}
 		
 		public bool AddFilesToSolutionFolder (SolutionFolder folder, string[] files)
@@ -1211,10 +1216,15 @@ namespace MonoDevelop.Ide
 			return someAdded;
 		}
 		
+		public IList<ProjectFile> AddFilesToProject (Project project, string[] files, FilePath targetDirectory)
+		{
+			return AddFilesToProject (project, files.ToFilePathArray (), targetDirectory);
+		}
+		
 		/// <summary>
 		/// Adds files to a project, potentially asking the user whether to move, copy or link the files.
 		/// </summary>
-		public IList<ProjectFile> AddFilesToProject (Project project, string[] files, FilePath targetDirectory)
+		public IList<ProjectFile> AddFilesToProject (Project project, FilePath[] files, FilePath targetDirectory)
 		{
 			int action = -1;
 			IProgressMonitor monitor = null;
@@ -1271,7 +1281,7 @@ namespace MonoDevelop.Ide
 						
 						int ret = -1;
 						if (action < 0) {
-							ret = md.Run ();
+							ret = MessageService.ShowCustomDialog (md);
 							if (ret < 0)
 								return newFileList;
 							if (remember != null && remember.Active) action = ret;

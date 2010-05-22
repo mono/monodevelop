@@ -1,3 +1,8 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/NUnitAssemblyGroupConfigurationNodeBuilder.cs: Clean up
+	  dialog placement.
+
 2010-05-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Services/UnitTestResult.cs: handled possible null ref.

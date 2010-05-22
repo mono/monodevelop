@@ -1,3 +1,19 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* CBinding.csproj:
+	* gtk-gui/gui.stetic:
+	* Gui/AddPathDialog.cs:
+	* Gui/AddLibraryDialog.cs:
+	* Gui/OutputOptionsPanel.cs:
+	* Gui/CodeGenerationPanel.cs:
+	* gtk-gui/CBinding.AddPathDialog.cs:
+	* gtk-gui/CBinding.AddLibraryDialog.cs:
+	* gtk-gui/CBinding.OutputOptionsPanel.cs:
+	* gtk-gui/CBinding.CodeGenerationPanel.cs:
+	* ProjectPad/ProjectPackagesFolderNodeBuilder.cs: Clean up
+	  dialog placement.
+
 2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:

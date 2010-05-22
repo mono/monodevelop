@@ -12,11 +12,11 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Configuration \
 	-r:System.Core \
 	-r:System.ServiceModel \
 	-r:System.Web \
 	-r:System.Web.Services \
-	-r:System.Configuration \
 	-r:System.Xml
 
 FILES =  \

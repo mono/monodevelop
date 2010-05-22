@@ -1,3 +1,7 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/AddViewDialog.cs: Clean up dialog placement.
+
 2010-05-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* gtk-gui/gui.stetic:

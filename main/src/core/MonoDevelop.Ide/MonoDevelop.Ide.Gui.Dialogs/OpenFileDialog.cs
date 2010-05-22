@@ -93,10 +93,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			win.Encoding = data.Encoding;
 			win.ShowEncodingSelector = data.ShowEncodingSelector;
 			win.ShowViewerSelector = data.ShowViewerSelector;
+			
+			foreach (var filter in GetGtkFileFilters ())
+				win.AddFilter (filter);
+			
 			if (win.Run () == (int) Gtk.ResponseType.Ok) {
 				data.Encoding = win.Encoding;
 				data.CloseCurrentWorkspace = win.CloseCurrentWorkspace;
-				data.SelectedFiles = win.Filenames;
+				data.SelectedFiles = win.Filenames.ToFilePathArray ();
 				data.SelectedViewer = win.SelectedViewer;
 				return true;
 			} else

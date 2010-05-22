@@ -54,7 +54,7 @@ namespace CBinding
 			this.configuration = configuration;
 			
 			outputNameTextEntry.Text = configuration.Output;
-			outputPathTextEntry.Text = configuration.OutputDirectory;
+			outputEntry.Path = configuration.OutputDirectory;
 			parametersTextEntry.Text = configuration.CommandLineParameters;
 			
 			if (externalConsoleCheckbox.Active)
@@ -62,14 +62,6 @@ namespace CBinding
 			
 			externalConsoleCheckbox.Active = configuration.ExternalConsole;
 			pauseCheckbox.Active = configuration.PauseConsoleOutput;
-		}
-		
-		private void OnBrowseButtonClick (object sender, EventArgs e)
-		{
-			AddPathDialog dialog = new AddPathDialog (configuration.OutputDirectory);
-			dialog.TransientFor = this.Toplevel as Gtk.Window;
-			dialog.Run ();
-			outputPathTextEntry.Text = dialog.SelectedPath;
 		}
 		
 		public void Store ()
@@ -80,8 +72,9 @@ namespace CBinding
 			if (outputNameTextEntry != null && outputNameTextEntry.Text.Length > 0)
 				configuration.Output = outputNameTextEntry.Text.Trim ();
 			
-			if (outputPathTextEntry.Text != null && outputPathTextEntry.Text.Length > 0)
-				configuration.OutputDirectory = outputPathTextEntry.Text.Trim ();
+			var newPath = outputEntry.Path.Trim ();
+			if (!string.IsNullOrEmpty (newPath))
+				configuration.OutputDirectory = newPath;
 			
 			if (parametersTextEntry.Text != null && parametersTextEntry.Text.Length > 0)
 				configuration.CommandLineParameters = parametersTextEntry.Text.Trim ();

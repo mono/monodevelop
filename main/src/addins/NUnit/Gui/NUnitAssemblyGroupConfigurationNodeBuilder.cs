@@ -67,14 +67,14 @@ namespace MonoDevelop.NUnit
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			SolutionItemConfiguration conf = dataObject as SolutionItemConfiguration;
+			var conf = (SolutionItemConfiguration) dataObject;
 			label = conf.Id;
 			icon = Context.GetIcon (Stock.ClosedFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			NUnitAssemblyGroupProjectConfiguration config = dataObject as NUnitAssemblyGroupProjectConfiguration;
+			var config = (NUnitAssemblyGroupProjectConfiguration) dataObject;
 				
 			foreach (TestAssembly ta in config.Assemblies)
 				builder.AddChild (ta);
@@ -82,19 +82,19 @@ namespace MonoDevelop.NUnit
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			NUnitAssemblyGroupProjectConfiguration config = dataObject as NUnitAssemblyGroupProjectConfiguration;
+			var config = (NUnitAssemblyGroupProjectConfiguration) dataObject;
 			return config.Assemblies.Count > 0;
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			NUnitAssemblyGroupProjectConfiguration config = dataObject as NUnitAssemblyGroupProjectConfiguration;
+			var config = (NUnitAssemblyGroupProjectConfiguration) dataObject;
 			config.AssembliesChanged += assembliesChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			NUnitAssemblyGroupProjectConfiguration config = dataObject as NUnitAssemblyGroupProjectConfiguration;
+			var config = (NUnitAssemblyGroupProjectConfiguration) dataObject;
 			config.AssembliesChanged -= assembliesChanged;
 		}
 		
@@ -110,25 +110,19 @@ namespace MonoDevelop.NUnit
 		[CommandHandler (NUnitProjectCommands.AddAssembly)]
 		protected void OnAddAssembly ()
 		{
-			NUnitAssemblyGroupProjectConfiguration config = (NUnitAssemblyGroupProjectConfiguration) CurrentNode.DataItem;
+			var config = (NUnitAssemblyGroupProjectConfiguration) CurrentNode.DataItem;
 			
-			FileSelector fdiag  = new FileSelector (GettextCatalog.GetString ("Add files"));
-			try
-			{
-				fdiag.SelectMultiple = true;
-				
-				int result = fdiag.Run ();
-				if (result != (int) Gtk.ResponseType.Ok)
-					return;
-
-				foreach (string file in fdiag.Filenames)
-					config.Assemblies.Add (new TestAssembly (file));
-				
-				IdeApp.Workspace.Save();
-			}
-			finally {
-				fdiag.Destroy ();
-			}
+			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Add files")) {
+				TransientFor = IdeApp.Workbench.RootWindow,
+				SelectMultiple = true,
+			};
+			if (!dlg.Run ())
+				return;
+			
+			foreach (string file in dlg.SelectedFiles)
+				config.Assemblies.Add (new TestAssembly (file));
+			
+			IdeApp.Workspace.Save();
 		}
 	}
 }

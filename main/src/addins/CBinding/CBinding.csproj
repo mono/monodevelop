@@ -227,11 +227,7 @@
     <Compile Include="Gui\CompilerPanel.cs" />
     <Compile Include="gtk-gui\CBinding.CodeGenerationPanel.cs" />
     <Compile Include="gtk-gui\CBinding.CompilerPanel.cs" />
-    <Compile Include="Gui\AddLibraryDialog.cs" />
-    <Compile Include="gtk-gui\CBinding.AddLibraryDialog.cs" />
     <Compile Include="Compiler\ICompiler.cs" />
-    <Compile Include="gtk-gui\CBinding.AddPathDialog.cs" />
-    <Compile Include="Gui\AddPathDialog.cs" />
     <Compile Include="Project\ProjectPackageCollection.cs" />
     <Compile Include="Gui\EditPackagesDialog.cs" />
     <Compile Include="gtk-gui\CBinding.EditPackagesDialog.cs" />

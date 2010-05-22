@@ -253,17 +253,56 @@ namespace MonoDevelop.Ide
 		
 		#endregion
 		
+		/// <summary>
+		/// Places, runs and destroys a transient dialog.
+		/// </summary>
 		public static int ShowCustomDialog (Gtk.Dialog dialog)
 		{
-			DispatchService.AssertGuiThread ();
+			return ShowCustomDialog (dialog, rootWindow);
+		}
+		
+		public static int ShowCustomDialog (Gtk.Dialog dialog, Window parent)
+		{
 			try {
-				dialog.TransientFor      = rootWindow;
-				dialog.DestroyWithParent = true;
-				return dialog.Run ();
+				return RunCustomDialog (dialog, parent);
 			} finally {
 				if (dialog != null)
 					dialog.Destroy ();
 			}
+		}
+		
+		/// <summary>
+		/// Places and runs a transient dialog. Does not destroy it, so values can be retrieved from its widgets.
+		/// </summary>
+		public static int RunCustomDialog (Gtk.Dialog dialog, Window parent)
+		{
+			dialog.TransientFor      = parent;
+			dialog.DestroyWithParent = true;
+			PlaceDialog (dialog, rootWindow);
+			return dialog.Run ();
+		}
+		
+		/// <summary>
+		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
+		/// </summary>
+		public static void PlaceDialog (Window child, Window parent)
+		{
+			//HACK: Mac GTK automatic window placement is broken
+			if (PropertyService.IsMac)
+				CenterWindow (child, parent);
+		}
+		
+		/// <summary>Centers a window relative to its parent.</summary>
+		static void CenterWindow (Window child, Window parent)
+		{
+			child.Child.Show ();
+			int w, h, winw, winh, x, y, winx, winy;
+			child.GetSize (out w, out h);
+			rootWindow.GetSize (out winw, out winh);
+			rootWindow.GetPosition (out winx, out winy);
+			x = Math.Max (0, (winw - w) /2) + winx;
+			y = Math.Max (0, (winh - h) /2) + winy;
+			child.Move (x, y);
 		}
 		
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, params AlertButton[] buttons)
@@ -319,10 +358,11 @@ namespace MonoDevelop.Ide
 		{
 			public void ShowException (Gtk.Window parent, Exception e, string primaryText)
 			{
-				MonoDevelop.Ide.Gui.Dialogs.ErrorDialog errorDialog = new MonoDevelop.Ide.Gui.Dialogs.ErrorDialog (parent);
+				var errorDialog = new MonoDevelop.Ide.Gui.Dialogs.ErrorDialog (parent);
 				try {
 					errorDialog.Message = primaryText;
 					errorDialog.AddDetails (e.ToString (), false);
+					PlaceDialog (errorDialog, parent);
 					errorDialog.Run ();
 				} finally {
 					errorDialog.Destroy ();
@@ -366,6 +406,8 @@ namespace MonoDevelop.Ide
 					md.ActionArea.ShowAll();
 					md.HasSeparator = false;
 					md.BorderWidth = 6;
+					
+					PlaceDialog (md, rootWindow);
 					
 					int response = md.Run ();
 					md.Hide ();

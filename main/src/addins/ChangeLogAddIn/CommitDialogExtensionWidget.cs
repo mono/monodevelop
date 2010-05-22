@@ -287,10 +287,8 @@ namespace MonoDevelop.ChangeLogAddIn
 				return;
 			}
 			
-			AddLogEntryDialog dlg = new AddLogEntryDialog (entries);
-			dlg.TransientFor = Toplevel as Gtk.Window;
-			dlg.Run ();
-			dlg.Destroy ();
+			var dlg = new AddLogEntryDialog (entries);
+			MessageService.ShowCustomDialog (dlg, (Gtk.Window) Toplevel);
 		}
 		
 		void OnClickOptions (object s, EventArgs args)

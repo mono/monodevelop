@@ -229,18 +229,11 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			FileSelector fs = new FileSelector (GettextCatalog.GetString ("Application to Debug"));
-			try {
-				fs.TransientFor = IdeApp.Workbench.RootWindow;
-				int response = fs.Run ();
-				string name = fs.Filename;
-				fs.Hide ();
-				if (response == (int)Gtk.ResponseType.Ok)
-					IdeApp.ProjectOperations.DebugApplication (name);
-			}
-			finally {
-				fs.Destroy ();
-			}
+			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Application to Debug")) {
+				TransientFor = IdeApp.Workbench.RootWindow,
+			};
+			if (dialog.Run ())
+				IdeApp.ProjectOperations.DebugApplication (dialog.SelectedFile);
 		}
 		
 		protected override void Update (CommandInfo info)

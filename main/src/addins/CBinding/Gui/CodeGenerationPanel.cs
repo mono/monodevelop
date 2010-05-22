@@ -33,6 +33,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
+using MonoDevelop.Ide;
 
 namespace CBinding
 {
@@ -168,28 +169,47 @@ namespace CBinding
 			libStore.Remove (ref iter);
 		}
 		
+		// TODO: This is platform specific... the C Binding should have a global list of 'standard' library dirs...
+		internal const string DEFAULT_LIB_DIR = "/usr/lib";
+		internal const string DEFAULT_INCLUDE_DIR = "/usr/lib";
+		internal const string STATIC_LIB_FILTER = "*.a";
+		internal const string DYNAMIC_LIB_FILTER = "*.so";
+		
 		private void OnBrowseButtonClick (object sender, EventArgs e)
 		{
-			AddLibraryDialog dialog = new AddLibraryDialog ();
-			dialog.TransientFor = this.Toplevel as Gtk.Window;
-			dialog.Run ();
-			libAddEntry.Text = dialog.Library;
+			var dialog = new MonoDevelop.Components.SelectFileDialog (GettextCatalog.GetString ("Add Library")) {
+				TransientFor = (Gtk.Window) Toplevel,
+				CurrentFolder = DEFAULT_LIB_DIR,
+			};
+			
+			dialog.AddFilter (GettextCatalog.GetString ("Static Library"), STATIC_LIB_FILTER);
+			dialog.AddFilter (GettextCatalog.GetString ("Dynamic Library"), DYNAMIC_LIB_FILTER);
+			dialog.AddAllFilesFilter ();
+			
+			if (dialog.Run ())
+				libAddEntry.Text = dialog.SelectedFile;
 		}
 		
 		private void OnIncludePathBrowseButtonClick (object sender, EventArgs e)
 		{
-			AddPathDialog dialog = new AddPathDialog ("/usr/include");
-			dialog.TransientFor = this.Toplevel as Gtk.Window;
-			dialog.Run ();
-			includePathEntry.Text = dialog.SelectedPath;
+			var dialog = new MonoDevelop.Components.SelectFolderDialog (GettextCatalog.GetString ("Add Path")) {
+				TransientFor = (Gtk.Window) Toplevel,
+				CurrentFolder = DEFAULT_INCLUDE_DIR,
+			};
+			
+			if (dialog.Run ())
+				includePathEntry.Text = dialog.SelectedFile;
 		}
 		
 		private void OnLibPathBrowseButtonClick (object sender, EventArgs e)
 		{
-			AddPathDialog dialog = new AddPathDialog ("/usr/lib");
-			dialog.TransientFor = this.Toplevel as Gtk.Window;
-			dialog.Run ();
-			libPathEntry.Text = dialog.SelectedPath;
+			var dialog = new MonoDevelop.Components.SelectFolderDialog (GettextCatalog.GetString ("Add Path")) {
+				TransientFor = (Gtk.Window) Toplevel,
+				CurrentFolder = DEFAULT_LIB_DIR,
+			};
+			
+			if (dialog.Run ())
+				libPathEntry.Text = dialog.SelectedFile;
 		}
 		
 		public bool Store ()

@@ -142,7 +142,6 @@ namespace MonoDevelop.Refactoring
 			this.radioUpdateExternal = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_External"));
 			this.radioUpdateExternal.CanFocus = true;
 			this.radioUpdateExternal.Name = "radioUpdateExternal";
-			this.radioUpdateExternal.Active = true;
 			this.radioUpdateExternal.DrawIndicator = true;
 			this.radioUpdateExternal.UseUnderline = true;
 			this.radioUpdateExternal.Group = new global::GLib.SList (global::System.IntPtr.Zero);

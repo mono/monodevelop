@@ -130,9 +130,7 @@ namespace CBinding.ProjectPad
 			CProject project = (CProject)CurrentNode.GetParentDataItem (
 			    typeof(CProject), false);
 			
-			EditPackagesDialog dialog = new EditPackagesDialog (project);
-			dialog.TransientFor = IdeApp.Workbench.RootWindow;
-			dialog.Run ();			
+			MessageService.ShowCustomDialog (new EditPackagesDialog (project));
 			
 			IdeApp.ProjectOperations.Save (project);
 			CurrentNode.Expanded = true;
