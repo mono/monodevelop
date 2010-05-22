@@ -40,6 +40,7 @@ using Document = Mono.TextEditor.Document;
 using Services = MonoDevelop.Projects.Services;
 using System.Threading;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -195,9 +196,9 @@ namespace MonoDevelop.SourceEditor
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
-			mainsw = new ScrolledWindow ();
+			mainsw = new CompactScrolledWindow ();
 			mainsw.BorderWidth = 0;
-			mainsw.ShadowType = ShadowType.In;
+			mainsw.ShadowType = ShadowType.None;
 			this.textEditorContainer = new TextEditorContainer (textEditor);
 			mainsw.Child = textEditorContainer;
 			vbox.PackStart (mainsw, true, true, 0);
@@ -616,8 +617,8 @@ namespace MonoDevelop.SourceEditor
 					Unsplit ();
 				}
 			};
-			secondsw = new ScrolledWindow ();
-			secondsw.ShadowType = ShadowType.In;
+			secondsw = new CompactScrolledWindow ();
+			secondsw.ShadowType = ShadowType.None;
 			secondsw.ButtonPressEvent += PrepareEvent;
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, this.textEditor.Options, textEditor.Document);
 			this.splittedTextEditor.Extension = textEditor.Extension;
@@ -652,8 +653,8 @@ namespace MonoDevelop.SourceEditor
 			textEditorContainer.Unparent ();
 			this.mainsw.Destroy ();
 			
-			this.mainsw = new ScrolledWindow ();
-			this.mainsw.ShadowType = ShadowType.In;
+			this.mainsw = new CompactScrolledWindow ();
+			this.mainsw.ShadowType = ShadowType.None;
 			this.mainsw.ButtonPressEvent += PrepareEvent;
 			this.mainsw.Child = textEditorContainer;
 			this.mainsw.Vadjustment.Value = vadjustment; 
