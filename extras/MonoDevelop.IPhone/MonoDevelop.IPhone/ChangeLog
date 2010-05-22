@@ -1,3 +1,10 @@
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml: Fix MainNibFile
+	  xib/nib value in the templates.
+
 2010-05-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs: Fix enum flags issue.
