@@ -1,3 +1,8 @@
+2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui.Dialogs/OptionsDialog.cs: Revert
+	  show/hide changes as they make the panels behave weirdly.
+
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide/MessageService.cs:
