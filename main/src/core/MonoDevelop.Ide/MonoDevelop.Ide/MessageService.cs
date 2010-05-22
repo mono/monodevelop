@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide
 		{
 			//HACK: Mac GTK automatic window placement is broken
 			if (PropertyService.IsMac)
-				CenterWindow (child, parent);
+				CenterWindow (child, parent ?? RootWindow);
 		}
 		
 		/// <summary>Centers a window relative to its parent.</summary>

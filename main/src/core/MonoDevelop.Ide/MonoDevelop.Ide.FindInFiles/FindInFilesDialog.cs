@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				childCombo.TopAttach = 3;
 				childCombo.BottomAttach = 4;
 
-				ShowAll ();
+				Child.ShowAll ();
 			}
 
 			comboboxentryFind.Entry.Activated += delegate { buttonSearch.Click (); };
@@ -420,6 +420,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				currentFindDialog.Destroy ();
 			}
 			currentFindDialog = new FindInFilesDialog (false);
+			MessageService.PlaceDialog (currentFindDialog, null);
 			currentFindDialog.Show ();
 		}
 		
@@ -429,6 +430,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				currentFindDialog.Destroy ();
 			}
 			currentFindDialog = new FindInFilesDialog (true);
+			MessageService.PlaceDialog (currentFindDialog, null);
 			currentFindDialog.Show ();
 		}
 		
@@ -438,6 +440,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				currentFindDialog.Destroy ();
 			}
 			currentFindDialog = new FindInFilesDialog (false, path);
+			MessageService.PlaceDialog (currentFindDialog, null);
 			currentFindDialog.Show ();
 		}
 				

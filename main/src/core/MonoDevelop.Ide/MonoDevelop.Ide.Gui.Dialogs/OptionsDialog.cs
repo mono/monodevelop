@@ -106,6 +106,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			FillTree ();
 			ExpandCategories ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
+			
+			//let the user show the dialog
+			Hide();
+			Child.ShowAll ();
 		}
 		
 		protected void ExpandCategories ()
