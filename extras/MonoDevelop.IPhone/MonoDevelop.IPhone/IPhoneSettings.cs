@@ -54,6 +54,9 @@ namespace MonoDevelop.IPhone
 		
 		public static System.Net.IPAddress GetDebuggerHostIP (bool simulator)
 		{
+			if (simulator)
+				return System.Net.IPAddress.Loopback;
+
 			var ipStr = PropertyService.Get ("MonoTouch.Debugger.HostIP", "");
 			try {
 				if (!string.IsNullOrEmpty (ipStr))

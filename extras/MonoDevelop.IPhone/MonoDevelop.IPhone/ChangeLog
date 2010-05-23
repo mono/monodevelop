@@ -5,6 +5,10 @@
 	* Templates/IPhoneWindowBasedProject.xpt.xml: Fix MainNibFile
 	  xib/nib value in the templates.
 
+2010-05-22  Geoff Norton  <gnorton@novell.com>
+
+	* IPhoneSettings.cs: Simulator should still use Loopback
+
 2010-05-17  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneProject.cs: Fix enum flags issue.
