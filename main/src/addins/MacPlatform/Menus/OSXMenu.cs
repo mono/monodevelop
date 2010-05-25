@@ -296,6 +296,8 @@ namespace OSXIntegration
 				return MenuGlyphs.Space;
 			case Gdk.Key.Escape:
 				return MenuGlyphs.Escape;
+			case Gdk.Key.Return:
+				return MenuGlyphs.Return;
 			default:
 				return MenuGlyphs.None;
 			}
