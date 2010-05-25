@@ -96,9 +96,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 				Mono.TextEditor.TextEditor editor = GetEditor (options.Document.ActiveView.Control);
 				if (editor == null) {
-					RenameItemDialog dialog = new RenameItemDialog (options, this);
-					dialog.TransientFor = IdeApp.Workbench.RootWindow;
-					dialog.Show ();
+					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 					return;
 				}
 
@@ -112,7 +110,6 @@ namespace MonoDevelop.Refactoring.Rename
 				foreach (MemberReference r in col) {
 					Segment segment = new Segment (data.Document.LocationToOffset (r.Line - 1, r.Column - 1) - baseOffset, r.Name.Length);
 					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
-						
 						link.Links.Insert (0, segment); 
 					} else {
 						link.AddLink (segment);
@@ -129,9 +126,7 @@ namespace MonoDevelop.Refactoring.Rename
 					data.CurrentMode = tle;
 				}
 			} else {
-				RenameItemDialog dialog = new RenameItemDialog (options, this);
-				dialog.TransientFor = IdeApp.Workbench.RootWindow;
-				dialog.Show ();
+				MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 			}
 		}
 		

@@ -87,9 +87,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 
 		public override void Run (RefactoringOptions options)
 		{
-			IntroduceConstantDialog dialog = new IntroduceConstantDialog (this, options, new Parameters ());
-			dialog.TransientFor = IdeApp.Workbench.RootWindow;
-			dialog.Show ();
+			MessageService.ShowCustomDialog (new IntroduceConstantDialog (this, options, new Parameters ()));
 		}
 		
 		public static string SearchString (TextEditorData data, char quote, out int start, out int end)

@@ -175,8 +175,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			SetProperties ();
 			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			((Widget)this).Destroy ();
-			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (options.Dom, changes);
-			refactoringPreviewDialog.Show ();
+			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (options.Dom, changes));
 		}
 	}
 }

@@ -54,7 +54,6 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			ValidateName ();
 			
 			buttonOk.Clicked += OnOKClicked;
-			buttonCancel.Clicked += OnCancelClicked;
 			buttonPreview.Clicked += OnPreviewClicked;
 			
 			ListStore modifiers = new ListStore (typeof (string));
@@ -82,11 +81,6 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			}
 			labelWarning.Text = result.Message;
 			return result.IsValid;
-		}
-		
-		void OnCancelClicked (object sender, EventArgs e)
-		{
-			this.Destroy ();
 		}
 		
 		void SetProperties ()
@@ -125,8 +119,8 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			SetProperties ();
 			List<Change> changes = refactoring.PerformChanges (options, parameters);
 			((Widget)this).Destroy ();
-			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (options.Dom, changes);
-			refactoringPreviewDialog.Show ();
+			
+			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (options.Dom, changes));
 		}
 		
 	}

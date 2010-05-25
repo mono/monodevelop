@@ -89,7 +89,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				MessageService.ShowError (GettextCatalog.GetString ("Invalid selection for method extraction."));
 				return;
 			}
-			MessageService.RunCustomDialog (new ExtractMethodDialog (options, this, param));
+			MessageService.ShowCustomDialog (new ExtractMethodDialog (options, this, param));
 		}
 		
 		public ExtractMethodParameters CreateParameters (RefactoringOptions options)

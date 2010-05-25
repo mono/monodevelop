@@ -112,7 +112,6 @@ namespace MonoDevelop.Refactoring.Rename
 			entry.Activated += OnEntryActivated;
 			
 			buttonOk.Clicked += OnOKClicked;
-			buttonCancel.Clicked += OnCancelClicked;
 			buttonPreview.Clicked += OnPreviewClicked;
 			entry.Changed += delegate { buttonPreview.Sensitive = buttonOk.Sensitive = ValidateName (); };
 			ValidateName ();
@@ -146,11 +145,6 @@ namespace MonoDevelop.Refactoring.Rename
 			if (buttonOk.Sensitive)
 				buttonOk.Click ();
 		}
-
-		void OnCancelClicked (object sender, EventArgs e)
-		{
-			this.Destroy ();
-		}
 		
 		RenameRefactoring.RenameProperties Properties {
 			get {
@@ -173,8 +167,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			List<Change> changes = rename.PerformChanges (options, Properties);
 			((Widget)this).Destroy ();
-			RefactoringPreviewDialog refactoringPreviewDialog = new RefactoringPreviewDialog (options.Dom, changes);
-			refactoringPreviewDialog.Show ();
+			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (options.Dom, changes));
 		}
 	}
 		
