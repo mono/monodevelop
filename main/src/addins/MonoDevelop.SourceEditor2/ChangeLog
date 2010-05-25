@@ -1,5 +1,10 @@
 2010-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Fixed
+	  some issues with message bubbles.
+
+2010-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:
 	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs:
 	* MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs:
