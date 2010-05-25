@@ -293,7 +293,7 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		// NOTE: changes in this should be mirrored in to Mono.TextEditor/Platform.cs
-		static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod)
+		public static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod)
 		{
 			mod = evt.State;
 			key = evt.Key;

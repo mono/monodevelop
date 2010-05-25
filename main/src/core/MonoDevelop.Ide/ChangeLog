@@ -1,5 +1,10 @@
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Make
+	  MapRawKeys public.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Map keys.
 
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
