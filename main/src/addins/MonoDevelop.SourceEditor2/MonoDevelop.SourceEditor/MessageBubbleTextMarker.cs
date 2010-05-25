@@ -320,6 +320,8 @@ namespace MonoDevelop.SourceEditor
 		bool ShowIconsInBubble = false;
 		int LayoutWidth {
 			get {
+				if (layouts == null)
+					return 0;
 				if (!CollapseExtendedErrors && errors.Count > 1)
 					return layouts.Max (l => l.Width);
 				return layouts[0].Width;
@@ -734,6 +736,7 @@ namespace MonoDevelop.SourceEditor
 		#region IExtendingTextMarker implementation
 		public void Draw (TextEditor editor, Gdk.Drawable win, int lineNr, Gdk.Rectangle lineArea)
 		{
+			EnsureLayoutCreated (editor);
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 			int errorNumber = lineNr - lineNumber;
 			int x = editor.TextViewMargin.XOffset;
