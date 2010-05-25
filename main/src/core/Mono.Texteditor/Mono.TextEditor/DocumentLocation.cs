@@ -65,7 +65,7 @@ namespace Mono.TextEditor
 		
 		public static bool operator <(DocumentLocation left, DocumentLocation right)
 		{
-			return left.Line < right.Line || (left.Line == right.Line && left.Column < right.Line);
+			return left.Line < right.Line || left.Line == right.Line && left.Column < right.Column;
 		}
 		public static bool operator <=(DocumentLocation left, DocumentLocation right)
 		{
