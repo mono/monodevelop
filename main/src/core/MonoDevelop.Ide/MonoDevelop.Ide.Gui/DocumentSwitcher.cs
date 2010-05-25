@@ -32,6 +32,7 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Commands;
 
 
 namespace MonoDevelop.Ide
@@ -293,12 +294,15 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		//FIXME: get ctrl(-shift)-tab keybindings from the Switch(Next|Previous)Document commands
+		//FIXME: get ctrl(-shift)-tab keybindings from the Switch(Next|Previous)Document commands?
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
-			bool next = (evnt.State & Gdk.ModifierType.ShiftMask) != ModifierType.ShiftMask;
-//			System.Console.WriteLine (evnt.Key + " -- " + evnt.State);
-			switch (evnt.Key) {
+			Gdk.Key key;
+			Gdk.ModifierType mod;
+			KeyBindingManager.MapRawKeys (evnt, out key, out mod);
+			bool next = (mod & ModifierType.ShiftMask) == 0;
+			
+			switch (key) {
 			case Gdk.Key.Left:
 				SwitchToPad ();
 				break;
@@ -319,7 +323,6 @@ namespace MonoDevelop.Ide
 					SelectPad (GetNextPad (SelectedPad));
 				}
 				break;
-			case Gdk.Key.ISO_Left_Tab:
 			case Gdk.Key.Tab:
 				if (documentFocus) {
 					SelectDocument (next ? GetNextDocument (SelectedDocument) : GetPrevDocument (SelectedDocument));

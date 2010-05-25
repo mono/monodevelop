@@ -1,5 +1,9 @@
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Map keys.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Components/PangoCairoHelper.cs: Pre-emptively
 	  fix calling conventions for pangocairo on Windows.
 
