@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 		internal const string LIBPANGOCAIRO   = "libpangocairo-1.0-0.dll";
 		
 		/// <summary>
-		/// This doesn't leak Pango layouts, unlike all other ways to create them in GTK# <= 2.12.10
+		/// This doesn't leak Pango layouts, unlike some other ways to create them in GTK# <= 2.12.11
 		/// </summary>
 		public static Pango.Layout CreateLayout (Widget widget)
 		{
@@ -67,10 +67,10 @@ namespace Mono.TextEditor
 			return ptr == IntPtr.Zero? null : new Pango.Layout (ptr);
 		}
 		
-		[DllImport (LIBGTK)]
+		[DllImport (LIBGTK, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr gtk_widget_create_pango_layout (IntPtr widget, IntPtr text);
 		
-		[DllImport (LIBGTK)]
+		[DllImport (LIBGTK, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr gtk_print_context_create_pango_layout (IntPtr context);
 	}
 	
@@ -121,34 +121,34 @@ namespace Mono.TextEditor
 			pango_attr_list_insert (list, attribute);
 		}
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_style_new (Pango.Style style);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_stretch_new (Pango.Stretch stretch);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_weight_new (Pango.Weight weight);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_foreground_new (ushort red, ushort green, ushort blue);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_background_new (ushort red, ushort green, ushort blue);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_underline_new (Pango.Underline underline);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_list_new ();
 
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_attr_list_unref (IntPtr list);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_attr_list_insert (IntPtr list, IntPtr attr);
 		
-		[DllImport (PangoUtil.LIBPANGO)]
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_layout_set_attributes (IntPtr layout, IntPtr attrList);
 		
 		public void AssignTo (Pango.Layout layout)
