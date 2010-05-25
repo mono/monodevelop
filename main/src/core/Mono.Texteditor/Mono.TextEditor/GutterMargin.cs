@@ -58,11 +58,16 @@ namespace Mono.TextEditor
 			editor.RedrawMarginLine (this, editor.Caret.Line);
 		}
 		
+		
 		void CalculateWidth ()
 		{
-			layout.SetText (editor.Document.LineCount.ToString () + "_");
+			layout.SetText (editor.Document.LineCount.ToString ());
+			layout.Alignment = Pango.Alignment.Left;
+			layout.Width = -1;
+			
 			int height;
 			layout.GetPixelSize (out this.width, out height);
+			this.width += 4;
 		}
 		
 		void UpdateWidth (object sender, LineEventArgs args)
@@ -194,9 +199,10 @@ namespace Mono.TextEditor
 			win.DrawRectangle (lineNumberBgGC, true, drawArea);
 			layout.Alignment = Pango.Alignment.Right;
 			layout.Width = Width;
+			
 			if (line < editor.Document.LineCount) {
 				layout.SetText ((line + 1).ToString ());
-				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + Width + 1, y, layout);
+				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + Width, y, layout);
 			}
 		}
 		

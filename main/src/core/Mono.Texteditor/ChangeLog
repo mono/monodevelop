@@ -1,5 +1,11 @@
 2010-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs: Fixed gutter drawing
+	  bug/made change marker smaller.
+
+2010-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Ensure that the lineheight is
 	  up to date in the optionschanged event chain.
 

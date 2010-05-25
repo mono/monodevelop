@@ -334,10 +334,10 @@ namespace Mono.TextEditor
 			
 			win.DrawRectangle (bgGC, true, drawArea);
 			if (state == Document.LineState.Changed) {
-				win.DrawRectangle (lineStateChangedGC, true, x + 1, y, Width / 2, lineHeight);
+				win.DrawRectangle (lineStateChangedGC, true, x + 1, y, Width / 3, lineHeight);
 		//		win.DrawRectangle (bgGC, true, x + 3 , y, Width  - 3, lineHeight);
 			} else if (state == Document.LineState.Dirty) {
-				win.DrawRectangle (lineStateDirtyGC, true, x + 1, y, Width / 2, lineHeight);
+				win.DrawRectangle (lineStateDirtyGC, true, x + 1, y, Width / 3, lineHeight);
 		//		win.DrawRectangle (bgGC, true, x + 3 , y, Width - 3, lineHeight);
 			}/* else {
 				win.DrawRectangle (bgGC, true, drawArea);
