@@ -30,14 +30,12 @@
 			              resource = "IPhoneViewController.xft.xml"/>
 			<FileTemplate id       = "IPhonePList"
 			              resource = "IPhonePList.xft.xml"/>
-			<FileTemplate id       = "IPhoneEntitlements"
-			              resource = "IPhoneEntitlements.xft.xml"/>
 			<FileTemplate id       = "IPadApplicationXib"
 			              resource = "IPadApplicationXib.xft.xml"/>
 			<FileTemplate id       = "IPadViewXib"
-				      resource = "IPadViewXib.xft.xml"/>
+			              resource = "IPadViewXib.xft.xml"/>
 			<FileTemplate id       = "IPadViewController"
-				      resource = "IPadViewController.xft.xml"/>
+			              resource = "IPadViewController.xft.xml"/>
 		</Condition>
 	</Extension>
 

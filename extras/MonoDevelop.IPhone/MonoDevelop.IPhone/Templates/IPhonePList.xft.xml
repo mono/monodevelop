@@ -3,7 +3,7 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Application Manifest Template</_Name>
+		<_Name>Plist Template</_Name>
 		<_Category>iPhone and iPad</_Category>
 		<Icon>md-xml-file-icon</Icon>
 		<LanguageName>*</LanguageName>

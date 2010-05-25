@@ -2,6 +2,16 @@
 
 	* MonoDevelop.IPhone.csproj:
 	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneEntitlements.xft.xml: Remove the
+	  entitlements plist template now we have a generic plist
+	  template.
+
+	* Templates/IPhonePList.xft.xml: Fix template name.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
 	* Templates/IPhonePList.xft.xml:
 	* Templates/IPhoneApplicationPList.xft.xml: Change application
 	  plist template into a generic plist template.

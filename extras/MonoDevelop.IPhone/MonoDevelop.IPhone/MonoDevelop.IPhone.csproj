@@ -200,9 +200,6 @@
     <EmbeddedResource Include="Icons\48x48\phone-apple-iphone.png">
       <LogicalName>phone-apple-iphone-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneEntitlements.xft.xml">
-      <LogicalName>IPhoneEntitlements.xft.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneLibraryProject.xpt.xml">
       <LogicalName>IPhoneLibraryProject.xpt.xml</LogicalName>
     </EmbeddedResource>
