@@ -192,9 +192,11 @@ namespace Mono.TextEditor
 		{
 			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, lineHeight);
 			win.DrawRectangle (lineNumberBgGC, true, drawArea);
+			layout.Alignment = Pango.Alignment.Right;
+			layout.Width = Width;
 			if (line < editor.Document.LineCount) {
 				layout.SetText ((line + 1).ToString ());
-				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + 1, y, layout);
+				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + Width + 1, y, layout);
 			}
 		}
 		

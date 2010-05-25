@@ -93,21 +93,39 @@
 		<Style name="location" color="chameleon1"/>
 	</Style>
 	
-	<Style name="warning.light.color1" color="#444400"/>
-	<Style name="warning.light.color2" color="#333300"/>
-	<Style name="warning.dark.color1" color="#333300"/>
-	<Style name="warning.dark.color2" color="#222200"/>
-	<Style name="warning.line.top" color="#222200"/>
-	<Style name="warning.line.bottom" color="#222200"/>
-	<Style name="warning.text" color="aluminium3"/>
+
+	<Style name="bubble">
+		<Style name="warning.light.color1" color="#444400"/>
+		<Style name="warning.light.color2" color="#333300"/>
+		<Style name="warning.dark.color1" color="#333300"/>
+		<Style name="warning.dark.color2" color="#222200"/>
+		<Style name="warning.line.top" color="#222200"/>
+		<Style name="warning.line.bottom" color="#222200"/>
+		<Style name="warning.text" color="aluminium3"/>
+		
+		<Style name="inactive.warning.light.color1" color="#44442E"/>
+		<Style name="inactive.warning.light.color2" color="#33332E"/>
+		<Style name="inactive.warning.dark.color1" color="#33332E"/>
+		<Style name="inactive.warning.dark.color2" color="#22222E"/>
+		<Style name="inactive.warning.line.top" color="#22222E"/>
+		<Style name="inactive.warning.line.bottom" color="#22222E"/>
+		
+		<Style name="error.light.color1" color="#440000"/>
+		<Style name="error.light.color2" color="#330000"/>
+		<Style name="error.dark.color1" color="#330000"/>
+		<Style name="error.dark.color2" color="#220000"/>
+		<Style name="error.line.top" color="#220000"/>
+		<Style name="error.line.bottom" color="#220000"/>
+		<Style name="error.text" color="aluminium3"/>
+		
+		<Style name="inactive.error.light.color1" color="#442222"/>
+		<Style name="inactive.error.light.color2" color="#332222"/>
+		<Style name="inactive.error.dark.color1" color="#332222"/>
+		<Style name="inactive.error.dark.color2" color="#222222"/>
+		<Style name="inactive.error.line.top" color="#222222"/>
+		<Style name="inactive.error.line.bottom" color="#222222"/>
+	</Style>
 	
-	<Style name="error.light.color1" color="#440000"/>
-	<Style name="error.light.color2" color="#330000"/>
-	<Style name="error.dark.color1" color="#330000"/>
-	<Style name="error.dark.color2" color="#220000"/>
-	<Style name="error.line.top" color="#220000"/>
-	<Style name="error.line.bottom" color="#220000"/>
-	<Style name="error.text" color="aluminium3"/>
 	
 	<!-- TODO: override defaults
 	<Style name="marker.underline" color="red"/>

@@ -456,25 +456,37 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (SecondaryTemplateColorString,            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 			SetStyle (SecondaryTemplateHighlightedColorString, 0x7F, 0x7F, 0x7F, 0xFF, 0xFF, 0xFF);
 			
-			SetStyle ("warning.light.color1", 250, 250, 210);
-			SetStyle ("warning.light.color2", 230, 230, 190);
+			SetStyle ("bubble.error.text",             0,    0,   0);
 			
-			SetStyle ("warning.dark.color1",  235, 235, 180);
-			SetStyle ("warning.dark.color2",  215, 215, 160);
+			SetStyleFromWeb ("bubble.warning.light.color1", "#fbf7eb");
+			SetStyleFromWeb ("bubble.warning.light.color2", "#f4eeda");
+			SetStyleFromWeb ("bubble.warning.dark.color1", "#f5eed8");
+			SetStyleFromWeb ("bubble.warning.dark.color2", "#eadebb");
+			SetStyleFromWeb ("bubble.warning.line.top", "#e5e3dd");
+			SetStyleFromWeb ("bubble.warning.line.bottom", "#d3cdba");
+			SetStyleFromWeb ("bubble.warning.text", "black");
 			
-			SetStyle ("warning.line.top",     199, 199, 141);
-			SetStyle ("warning.line.bottom",  199, 199, 141);
-			SetStyle ("warning.text",           0,   0,   0);
-
-			SetStyle ("error.light.color1",   240, 200, 200);
-			SetStyle ("error.light.color2",   230, 180, 180);
+			SetStyleFromWeb ("bubble.inactive.warning.light.color1", "#fbfbfb");
+			SetStyleFromWeb ("bubble.inactive.warning.light.color2", "#f5f3ed");
+			SetStyleFromWeb ("bubble.inactive.warning.dark.color1", "#f7f7f7");
+			SetStyleFromWeb ("bubble.inactive.warning.dark.color2", "#ece7dd");
+			SetStyleFromWeb ("bubble.inactive.warning.line.top", "#f2f2f2");
+			SetStyleFromWeb ("bubble.inactive.warning.line.bottom", "#eceae6");
 			
-			SetStyle ("error.dark.color1",    235, 180, 180);
-			SetStyle ("error.dark.color2",    215, 160, 160);
+			SetStyleFromWeb ("bubble.error.light.color1", "#faf2f0");
+			SetStyleFromWeb ("bubble.error.light.color2", "#f5eae7");
+			SetStyleFromWeb ("bubble.error.dark.color1", "#f6e6e2");
+			SetStyleFromWeb ("bubble.error.dark.color2", "#ead7d2");
+			SetStyleFromWeb ("bubble.error.line.top", "#e5e0e0");
+			SetStyleFromWeb ("bubble.error.line.bottom", "#cfc6c4");
+			SetStyleFromWeb ("bubble.error.text", "black");
 			
-			SetStyle ("error.line.top",       193, 143, 143);
-			SetStyle ("error.line.bottom",    193, 143, 143);
-			SetStyle ("error.text",             0,    0,   0);
+			SetStyleFromWeb ("bubble.inactive.error.light.color1", "#fcfcfc");
+			SetStyleFromWeb ("bubble.inactive.error.light.color2", "#f5f4f3");
+			SetStyleFromWeb ("bubble.inactive.error.dark.color1", "#f9f9f9");
+			SetStyleFromWeb ("bubble.inactive.error.dark.color2", "#ebe8e6");
+			SetStyleFromWeb ("bubble.inactive.error.line.top", "#f2f2f2");
+			SetStyleFromWeb ("bubble.inactive.error.line.bottom", "#eceaea");
 		}
 		
 		protected void PopulateDefaults ()
@@ -545,6 +557,14 @@ namespace Mono.TextEditor.Highlighting
 		void SetStyle (string name, byte r, byte g, byte b)
 		{
 			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b)));
+		}
+		
+		void SetStyleFromWeb (string name, string colorString)
+		{
+			Gdk.Color color = new Color ();
+			if (!Gdk.Color.Parse (colorString, ref color)) 
+				throw new Exception ("Can't parse color: " + colorString);
+			SetStyle (name, new ChunkStyle (color));
 		}
 		
 		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b)

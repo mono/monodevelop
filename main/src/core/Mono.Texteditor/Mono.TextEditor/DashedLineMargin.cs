@@ -31,7 +31,9 @@ namespace Mono.TextEditor
 	public class DashedLineMargin : Margin
 	{
 		TextEditor editor;
-		Gdk.GC foldDashedLineGC, foldDashedLineGC2, bgGC, bgGC2;
+//		Gdk.GC foldDashedLineGC, foldDashedLineGC2, bgGC, bgGC2;
+		
+		Gdk.GC bgGC, gc;
 
 		public override int Width {
 			get {
@@ -47,24 +49,30 @@ namespace Mono.TextEditor
 		internal protected override void OptionsChanged ()
 		{
 			DisposeGCs ();
-			foldDashedLineGC = CreateDashedLineGC (editor.ColorStyle.Default.Color);
+			bgGC = new Gdk.GC (this.editor.GdkWindow) {
+				RgbFgColor = editor.ColorStyle.Default.BackgroundColor
+			};
+			gc = new Gdk.GC (this.editor.GdkWindow) {
+				RgbFgColor = editor.ColorStyle.FoldLine.Color
+			};
+/*			foldDashedLineGC = CreateDashedLineGC (editor.ColorStyle.Default.Color);
 			foldDashedLineGC2 = CreateDashedLineGC (editor.ColorStyle.Default.BackgroundColor);
 			bgGC = new Gdk.GC (this.editor.GdkWindow) {
 				RgbFgColor = editor.ColorStyle.Default.BackgroundColor
 			};
 			bgGC2 = new Gdk.GC (this.editor.GdkWindow) {
 				RgbFgColor = editor.ColorStyle.Default.Color
-			};
+			};*/
 		}
 		
-		Gdk.GC CreateDashedLineGC (Gdk.Color fg)
+/*		Gdk.GC CreateDashedLineGC (Gdk.Color fg)
 		{
 			var gc = new Gdk.GC (editor.GdkWindow);
 			gc.RgbFgColor = fg;
 			gc.SetLineAttributes (1, Gdk.LineStyle.OnOffDash, Gdk.CapStyle.NotLast, Gdk.JoinStyle.Bevel);
 			gc.SetDashes (0, new sbyte[] { 1, 1 }, 2);
 			return gc;
-		}
+		}*/
 		
 		public override void Dispose ()
 		{
@@ -75,19 +83,29 @@ namespace Mono.TextEditor
 		
 		void DisposeGCs ()
 		{
-			foldDashedLineGC = foldDashedLineGC.Kill ();
+			gc = gc.Kill ();
+			bgGC = bgGC.Kill ();
+/*			foldDashedLineGC = foldDashedLineGC.Kill ();
 			foldDashedLineGC2 = foldDashedLineGC2.Kill ();
 			bgGC = bgGC.Kill ();
-			bgGC2 = bgGC2.Kill ();
+			bgGC2 = bgGC2.Kill ();*/
+		}
+		
+		public bool UseBGColor {
+			get;
+			set;
 		}
 		
 		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
 		{
-			int top = y;
-			int bottom = top + lineHeight;
-			bool isOdd = (top + (int)editor.VAdjustment.Value) % 2 != 0;
-			win.DrawLine (isOdd? bgGC : bgGC2, x, top, x, bottom);
-			win.DrawLine (isOdd? foldDashedLineGC : foldDashedLineGC2, x, top, x, bottom);
+			
+			win.DrawLine (UseBGColor ? bgGC : gc, x, y, x, y + lineHeight);
+			
+//			int top = y;
+//			int bottom = top + lineHeight;
+//			bool isOdd = (top + (int)editor.VAdjustment.Value) % 2 != 0;
+//			win.DrawLine (isOdd? bgGC : bgGC2, x, top, x, bottom);
+//			win.DrawLine (isOdd? foldDashedLineGC : foldDashedLineGC2, x, top, x, bottom);
 		}
 	}
 }

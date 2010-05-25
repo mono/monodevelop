@@ -1,3 +1,15 @@
+2010-05-25  Mike Krüger  <mkrueger@novell.com>
+
+	* Styles/OblivionStyle.xml:
+	* Styles/TangoLightStyle.xml:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/GutterMargin.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/DashedLineMargin.cs:
+	* Mono.TextEditor/FoldMarkerMargin.cs:
+	* Mono.TextEditor.Highlighting/Style.cs: Worked on text editor
+	  outfit.
+
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/PangoUtil.cs: Fix calling conventions for

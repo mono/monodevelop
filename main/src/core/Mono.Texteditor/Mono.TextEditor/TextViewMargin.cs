@@ -1995,6 +1995,12 @@ namespace Mono.TextEditor
 		{
 			SetClip (new Gdk.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height));
 		}
+		
+		public int TextStartPosition {
+			get {
+				return 4;
+			}
+		}
 
 		protected internal override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y, int _lineHeight)
 		{
@@ -2007,7 +2013,7 @@ namespace Mono.TextEditor
 			
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
 			int width, height;
-			int pangoPosition = (int)((x - textEditor.HAdjustment.Value) * Pango.Scale.PangoScale);
+			int pangoPosition = (int)((x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale);
 			
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.

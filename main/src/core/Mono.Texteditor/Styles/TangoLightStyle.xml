@@ -111,21 +111,37 @@
 		</Style>
 	</Style>
 	
-	<Style name="warning.light.color1" color="#FAFAEE"/>
-	<Style name="warning.light.color2" color="#F0F0E0"/>
-	<Style name="warning.dark.color1" color="#F0F0E0"/>
-	<Style name="warning.dark.color2" color="#E0E0D0"/>
-	<Style name="warning.line.top" color="#F9F9EC"/>
-	<Style name="warning.line.bottom" color="#EAEADA"/>
-	<Style name="warning.text" color="black"/>
-	
-	<Style name="error.light.color1" color="#FAEEEE"/>
-	<Style name="error.light.color2" color="#F0E0E0"/>
-	<Style name="error.dark.color1" color="#F0E0E0"/>
-	<Style name="error.dark.color2" color="#E0D0D0"/>
-	<Style name="error.line.top" color="#F9ECEC"/>
-	<Style name="error.line.bottom" color="#EADADA"/>
-	<Style name="error.text" color="black"/>
+	<Style name="bubble">
+		<Style name="warning.light.color1" color="#fbf7eb"/>
+		<Style name="warning.light.color2" color="#f4eeda"/>
+		<Style name="warning.dark.color1" color="#f5eed8"/>
+		<Style name="warning.dark.color2" color="#eadebb"/>
+		<Style name="warning.line.top" color="#e5e3dd"/>
+		<Style name="warning.line.bottom" color="#d3cdba"/>
+		<Style name="warning.text" color="black"/>
+		
+		<Style name="inactive.warning.light.color1" color="#fbfbfb"/>
+		<Style name="inactive.warning.light.color2" color="#f5f3ed"/>
+		<Style name="inactive.warning.dark.color1" color="#f7f7f7"/>
+		<Style name="inactive.warning.dark.color2" color="#ece7dd"/>
+		<Style name="inactive.warning.line.top" color="#f2f2f2"/>
+		<Style name="inactive.warning.line.bottom" color="#eceae6"/>
+		
+		<Style name="error.light.color1" color="#faf2f0"/>
+		<Style name="error.light.color2" color="#f5eae7"/>
+		<Style name="error.dark.color1" color="#f6e6e2"/>
+		<Style name="error.dark.color2" color="#ead7d2"/>
+		<Style name="error.line.top" color="#e5e0e0"/>
+		<Style name="error.line.bottom" color="#cfc6c4"/>
+		<Style name="error.text" color="black"/>
+		
+		<Style name="inactive.error.light.color1" color="#fcfcfc"/>
+		<Style name="inactive.error.light.color2" color="#f5f4f3"/>
+		<Style name="inactive.error.dark.color1" color="#f9f9f9"/>
+		<Style name="inactive.error.dark.color2" color="#ebe8e6"/>
+		<Style name="inactive.error.line.top" color="#f2f2f2"/>
+		<Style name="inactive.error.line.bottom" color="#eceaea"/>
+	</Style>
 	
 	<Style name="linenumber" color="aluminium4" bgColor="white">
 		<Style name="highlight" color="aluminium5"/>
