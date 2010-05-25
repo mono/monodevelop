@@ -252,7 +252,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public ReadOnlyCollection<IReturnType> GenericArguments {
 			get {
-				Debug.Assert (parts.Count > 0);
+				if (parts.Count ==0)
+					return new ReadOnlyCollection<IReturnType> (new IReturnType[0]);
 				return parts[parts.Count - 1].GenericArguments;
 			}
 		}
