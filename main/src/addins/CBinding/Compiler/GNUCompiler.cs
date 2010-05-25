@@ -652,7 +652,7 @@ namespace CBinding
 			while ((next = reader.ReadLine ()) != null) {
 				CompilerError error = CreateErrorFromErrorString (next, reader);
 				if (error != null)
-					cr.Errors.Insert (0, error);
+					cr.Errors.Add (error);
 			}
 			
 			reader.Close ();
@@ -698,21 +698,14 @@ namespace CBinding
 				                   match.Groups["level"].Value.Equals (note, StringComparison.Ordinal));
 				error.ErrorText = match.Groups["message"].Value;
 				
-				// Multi-line error message? attempt to parse it into a single error.
-				if (error.ErrorText.StartsWith ("(") && !error.ErrorText.EndsWith (")"))
-				{
-					string error_continued = reader.ReadLine ();
-					
-					// Unexpected result?  just return the error.
-					if (error_continued == null)
-						return error;
-					
-					// Get the rest of the error message.
-					CompilerError error_fragment = CreateErrorFromErrorString (error_continued, reader);
-					if (error_fragment != null)
-					{
-						error.ErrorText += " " + error_fragment.ErrorText;
-					}
+				// Skip messages that begin with ( and end with ), since they're generic.
+				//Attempt to capture multi-line versions too.
+				if (error.ErrorText.StartsWith ("(")) {
+					string error_continued = error.ErrorText;
+					do {
+						if (error_continued.EndsWith (")"))
+							return null;
+					} while ((error_continued = reader.ReadLine ()) != null);
 				}
 				
 				return error;
