@@ -131,9 +131,6 @@
     <EmbeddedResource Include="Templates\IPadViewXib.xft.xml">
       <LogicalName>IPadViewXib.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneApplicationPList.xft.xml">
-      <LogicalName>IPhoneApplicationPList.xft.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneProjectEmpty.xpt.xml">
       <LogicalName>IPhoneProjectEmpty.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -226,6 +223,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneUtilityProject.xpt.xml">
       <LogicalName>IPhoneUtilityProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhonePList.xft.xml">
+      <LogicalName>IPhonePList.xft.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

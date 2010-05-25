@@ -8,17 +8,12 @@
 		<Icon>md-xml-file-icon</Icon>
 		<LanguageName>*</LanguageName>
 		<ProjectType>IPhone</ProjectType>
-		<DefaultFilename IsFixed="True">Info.plist</DefaultFilename>
-		<_Description>Creates an iPhone application manifest property list template.</_Description>
+		<_Description>Creates an empty property list template.</_Description>
 	</TemplateConfiguration>
-	
-	<Conditions>
-		<ParentProject PermittedCreationPaths="" ExcludedFiles="Info.plist" RequireProject="True"/>
-	</Conditions>
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="Info.plist">
+		<File DefaultExtension=".plist">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

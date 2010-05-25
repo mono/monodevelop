@@ -1,5 +1,13 @@
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhonePList.xft.xml:
+	* Templates/IPhoneApplicationPList.xft.xml: Change application
+	  plist template into a generic plist template.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Bug 608161 - [REGRESSION]
 	  MonoDevelop no long allows nibless projects to build.
 

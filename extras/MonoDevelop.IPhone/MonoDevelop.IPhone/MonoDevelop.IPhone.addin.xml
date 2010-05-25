@@ -28,8 +28,8 @@
 			              resource = "IPhoneEmptyXib.xft.xml"/>
 			<FileTemplate id       = "IPhoneViewController"
 			              resource = "IPhoneViewController.xft.xml"/>
-			<FileTemplate id       = "IPhoneApplicationPList"
-			              resource = "IPhoneApplicationPList.xft.xml"/>
+			<FileTemplate id       = "IPhonePList"
+			              resource = "IPhonePList.xft.xml"/>
 			<FileTemplate id       = "IPhoneEntitlements"
 			              resource = "IPhoneEntitlements.xft.xml"/>
 			<FileTemplate id       = "IPadApplicationXib"
