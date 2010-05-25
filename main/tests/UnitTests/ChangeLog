@@ -1,3 +1,10 @@
+2010-05-25  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Added test
+	  for 'Bug 607990 - "Extract Method" refactoring sometimes
+	  tries to pass in unnecessary parameter depending on
+	  selection'.
+
 2010-05-20  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Fixed

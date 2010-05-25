@@ -338,6 +338,39 @@ namespace MonoDevelop.Refactoring.Tests
 }
 ");
 		}
+		
+		/// <summary>
+		/// Bug 607990 - "Extract Method" refactoring sometimes tries to pass in unnecessary parameter depending on selection
+		/// </summary>
+		[Test()]
+		public void TestBug607990 ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	void TestMethod ()
+	{
+		<-
+		Object obj1 = new Object();
+		obj1.ToString();
+		->
+	}
+}
+", @"class TestClass
+{
+	void TestMethod ()
+	{
+		NewMethod ();
+	}
+	
+	static void NewMethod ()
+	{
+		Object obj1 = new Object();
+		obj1.ToString();
+	}
+}
+");
+		}
+		
 		/* Currently not possible to implement, would cause serve bugs:
 		[Test()]
 		public void ExtractMethodMultiVariableWithLocalReturnVariableTest ()
