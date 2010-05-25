@@ -1,5 +1,10 @@
 2010-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Removed debug
+	  code.
+
+2010-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/GutterMargin.cs:
 	* Mono.TextEditor/FoldMarkerMargin.cs: Fixed gutter drawing
 	  bug/made change marker smaller.

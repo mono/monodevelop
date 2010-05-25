@@ -124,7 +124,7 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyPressEvent (EventKey evnt)
 		{
-			Console.WriteLine (evnt.Key);
+//			Console.WriteLine (evnt.Key);
 			return base.OnKeyPressEvent (evnt);
 		}
 		
