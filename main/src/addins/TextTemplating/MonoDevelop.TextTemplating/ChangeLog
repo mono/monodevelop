@@ -1,3 +1,9 @@
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* TextTemplatingService.cs: Allow RecyclableAppDomain to
+	  resolve assemblies from MD appdomain. Should fix issues
+	  running ASP.NET MVC templates.
+
 2010-05-06  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -48,7 +49,7 @@ namespace MonoDevelop.TextTemplating
 			TaskService.Errors.Clear ();
 			foreach (CompilerError err in errors) {
 					TaskService.Errors.Add (new Task (err.FileName, err.ErrorText, err.Column, err.Line,
-					                                    err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
+					                                  err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
 			}
 			TaskService.ShowErrors ();
 		}
@@ -81,8 +82,10 @@ namespace MonoDevelop.TextTemplating
 		{
 			domain = AppDomain.CreateDomain (name, null, info);
 			
-			//FIXME: do we want to allow resolving arbitrary MD assemblies?
-			//domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
+			//FIXME: do we really want to allow resolving arbitrary MD assemblies?
+			// some things do depend on this behaviour, but maybe some kind of explicit registration system 
+			// would be better, so we can prevent accidentally pulling in unwanted assemblies
+			domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
 		}
 		
 		public bool Used { get; private set; }
