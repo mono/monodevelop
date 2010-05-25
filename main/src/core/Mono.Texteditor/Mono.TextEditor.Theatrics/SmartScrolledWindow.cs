@@ -25,6 +25,14 @@ namespace Mono.TextEditor.Theatrics
 			Right
 		}
 		
+		public Adjustment Vadjustment {
+			get { return this.vAdjustment; }
+		}
+
+		public Adjustment Hadjustment {
+			get { return this.hAdjustment; }
+		}
+		
 		public override ContainerChild this [Widget w] {
 			get {
 				foreach (ContainerChild info in children.ToArray ()) {
@@ -120,24 +128,27 @@ namespace Mono.TextEditor.Theatrics
 		{
 			base.OnSizeAllocated (allocation);
 			
-			int vwidth = vScrollBar.Visible ? vScrollBar.Requisition.Width : 0;
-			int hheight = hScrollBar.Visible ? hScrollBar.Requisition.Height : 0; 
-			if (Child != null)
-				Child.SizeAllocate (new Rectangle (allocation.X, allocation.Y, allocation.Width - vwidth, allocation.Height - hheight));
+			int vwidth = vScrollBar.Visible ? vScrollBar.Requisition.Width : 1;
+			int hheight = hScrollBar.Visible ? hScrollBar.Requisition.Height : 1; 
+			Rectangle childRectangle = new Rectangle (allocation.X + 1, allocation.Y + 1, allocation.Width - vwidth, allocation.Height - hheight);
+			if (Child != null) 
+				Child.SizeAllocate (childRectangle);
 			
 			if (vScrollBar.Visible) {
-				int right = allocation.Right - vwidth;
-				int vChildTopHeight = 0;
+				int right = childRectangle.Right;
+				int vChildTopHeight = -1;
 				foreach (var child in children.Where (child => child.ChildPosition == ChildPosition.Top)) {
-					child.Child.SizeAllocate (new Rectangle (right, allocation.Y + vChildTopHeight, allocation.Width - vwidth, child.Child.Requisition.Height));
+					child.Child.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, allocation.Width - vwidth, child.Child.Requisition.Height));
 					vChildTopHeight += child.Child.Requisition.Height;
 				}
-				vScrollBar.SizeAllocate (new Rectangle (right, allocation.Y + vChildTopHeight, vwidth, allocation.Height - hheight - vChildTopHeight));
+				int v = hScrollBar.Visible ? hScrollBar.Requisition.Height : 0;
+				vScrollBar.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight));
 				vScrollBar.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vScrollBar.Value), vAdjustment.Lower);
 			}
 			
 			if (hScrollBar.Visible) {
-				hScrollBar.SizeAllocate (new Rectangle (allocation.X, allocation.Bottom - hheight, allocation.Width - vwidth, hheight));
+				int v = vScrollBar.Visible ? vScrollBar.Requisition.Width : 0;
+				hScrollBar.SizeAllocate (new Rectangle (allocation.X, childRectangle.Bottom, Allocation.Width - v, hheight));
 				hScrollBar.Value = System.Math.Max (System.Math.Min (hAdjustment.Upper - hAdjustment.PageSize, hScrollBar.Value), hAdjustment.Lower);
 			}
 		}
@@ -173,6 +184,34 @@ namespace Mono.TextEditor.Theatrics
 			hScrollBar.SizeRequest ();
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
+		
+		protected override bool OnExposeEvent (EventExpose evnt)
+		{
+			Gdk.GC gc = Style.DarkGC (State);
+//			Style.PaintVline (Style, evnt.Window, State, Allocation, this, null, Allocation.Top, Allocation.Bottom, Allocation.X);
+			evnt.Window.DrawLine (gc, Allocation.X, Allocation.Top, Allocation.X, Allocation.Bottom);
+//			if (!vScrollBar.Visible) 
+			evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
+//				Style.PaintVline (Style, evnt.Window, State, Allocation, this, null, Allocation.Top, Allocation.Bottom, Allocation.Right - 1);
+				
+			evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
+//			Style.PaintHline (Style, evnt.Window, State, Allocation, this, null, Allocation.Left, Allocation.Right, Allocation.Y);
+//			if (!hScrollBar.Visible) 
+			evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
+//				Style.PaintHline (Style, evnt.Window, State, Allocation, this, null, Allocation.Left, Allocation.Right, Allocation.Bottom - 1);
+			
+			if (vScrollBar.Visible && hScrollBar.Visible) {
+				int vwidth = vScrollBar.Requisition.Width;
+				int hheight = hScrollBar.Requisition.Height; 
+
+				evnt.Window.DrawRectangle (Style.BackgroundGC (State), true, 
+				                           Allocation.Right - vwidth, 
+				                           Allocation.Bottom - hheight, 
+				                           vwidth, hheight);
+			}
+			return base.OnExposeEvent (evnt);
+		}
+		
 	}
 }
 

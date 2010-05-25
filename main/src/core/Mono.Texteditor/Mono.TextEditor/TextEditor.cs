@@ -533,8 +533,6 @@ namespace Mono.TextEditor
 		{
 			if (!this.IsRealized)
 				return;
-			if (EditorOptionsChanged != null)
-				EditorOptionsChanged (this, args);
 			if (currentStyleName != Options.ColorScheme) {
 				currentStyleName = Options.ColorScheme;
 				this.textEditorData.ColorStyle = Options.GetColorStyle (this.Style);
@@ -544,6 +542,9 @@ namespace Mono.TextEditor
 			iconMargin.IsVisible   = Options.ShowIconMargin;
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
 			dashedLineMargin.IsVisible = foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
+			
+			if (EditorOptionsChanged != null)
+				EditorOptionsChanged (this, args);
 			
 			foreach (Margin margin in this.margins) {
 				margin.OptionsChanged ();
