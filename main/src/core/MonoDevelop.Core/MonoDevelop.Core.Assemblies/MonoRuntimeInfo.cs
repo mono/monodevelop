@@ -151,6 +151,8 @@ namespace MonoDevelop.Core.Assemblies
 			MonoRuntimeInfo rt = new MonoRuntimeInfo ();
 			
 			string ver = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
+			
+			//not sure which version this old scheme applies to
 			int i = ver.IndexOf ("/branches/mono-");
 			if (i != -1) {
 				i += 15;
@@ -163,7 +165,12 @@ namespace MonoDevelop.Core.Assemblies
 			
 			if (rt.monoVersion == "Unknown") {
 				i = ver.IndexOf (' ');
-				rt.monoVersion = ver.Substring (i+1);
+				//this schme applies to mono 2.6.3+
+				if (ver.Length > i && ver[i+1] == '(')
+					rt.monoVersion = ver.Substring (0, i);
+				//not sure how old this scheme is
+				else
+					rt.monoVersion = ver.Substring (i+1);
 			}
 
 			//Pull up assemblies from the installed mono system.
