@@ -41,6 +41,7 @@ using Services = MonoDevelop.Projects.Services;
 using System.Threading;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using Mono.TextEditor.Theatrics;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -198,7 +199,7 @@ namespace MonoDevelop.SourceEditor
 		class DecoratedScrolledWindow : VBox
 		{
 			SourceEditorWidget parent;
-			ScrolledWindow scrolledWindow;
+			SmartScrolledWindow scrolledWindow;
 			
 			public Adjustment Hadjustment {
 				get {
@@ -243,9 +244,9 @@ namespace MonoDevelop.SourceEditor
 				border.HeightRequest = 1;
 				PackStart (border, false, true, 0);*/
 				
-				scrolledWindow = new ScrolledWindow ();
-				scrolledWindow.BorderWidth = 0;
-				scrolledWindow.ShadowType = ShadowType.In;
+				scrolledWindow = new SmartScrolledWindow ();
+//				scrolledWindow.BorderWidth = 0;
+//				scrolledWindow.ShadowType = ShadowType.In;
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
 				PackStart (scrolledWindow, true, true, 0);
 			}
@@ -263,14 +264,19 @@ namespace MonoDevelop.SourceEditor
 				args.RetVal = true;
 			}
 		
-
 			public void SetTextEditor (TextEditorContainer container)
 			{
 				scrolledWindow.Child = container;
-				
+//				container.TextEditorWidget.EditorOptionsChanged += OptionsChanged;
 				container.TextEditorWidget.Caret.ModeChanged += parent.UpdateLineColOnEventHandler;
 				container.TextEditorWidget.Caret.PositionChanged += parent.CaretPositionChanged;
 				container.TextEditorWidget.SelectionChanged += parent.UpdateLineColOnEventHandler;
+			}
+			
+			void OptionsChanged (object sender, EventArgs e)
+			{
+				TextEditor editor = (TextEditor)sender;
+				scrolledWindow.ModifyBg (StateType.Normal, editor.ColorStyle.Default.BackgroundColor);
 			}
 			
 			void RemoveEvents ()
@@ -280,6 +286,7 @@ namespace MonoDevelop.SourceEditor
 					LoggingService.LogError ("can't remove events from text editor container.");
 					return;
 				}
+//				container.TextEditorWidget.EditorOptionsChanged -= OptionsChanged;
 				container.TextEditorWidget.Caret.ModeChanged -= parent.UpdateLineColOnEventHandler;
 				container.TextEditorWidget.Caret.PositionChanged -= parent.CaretPositionChanged;
 				container.TextEditorWidget.SelectionChanged -= parent.UpdateLineColOnEventHandler;
