@@ -297,11 +297,9 @@ namespace MonoDevelop.IPhone
 				
 				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchMinimumOSVersion);
 				
-				if (!SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile"))
-					result.AddError ("The 'Main interface file' value in iPhone Application settings is empty");
+				SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile");
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)
-					if (!SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad"))
-						result.AddError ("The 'iPad interface file' value in iPhone Application settings is empty");
+					SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
 				
 				return result;
 			});

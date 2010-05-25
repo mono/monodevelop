@@ -202,6 +202,7 @@
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="ipadIconPicker">
                 <property name="MemberName" />
                 <property name="EntryIsEditable">False</property>
+                <property name="AllowInvalidValues">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">10</property>
@@ -244,6 +245,7 @@
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="iPadNibPicker">
                 <property name="MemberName" />
                 <property name="EntryIsEditable">False</property>
+                <property name="AllowInvalidValues">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">6</property>
@@ -289,6 +291,7 @@
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="ipadSpotlightIconPicker">
                 <property name="MemberName" />
                 <property name="EntryIsEditable">False</property>
+                <property name="AllowInvalidValues">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">12</property>
@@ -355,6 +358,7 @@
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="iphoneIconPicker">
                 <property name="MemberName" />
                 <property name="EntryIsEditable">False</property>
+                <property name="AllowInvalidValues">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">9</property>
@@ -595,6 +599,7 @@
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="mainNibPicker">
                 <property name="MemberName" />
                 <property name="EntryIsEditable">False</property>
+                <property name="AllowInvalidValues">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">5</property>
@@ -639,6 +644,7 @@
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="settingsIconPicker">
                 <property name="MemberName" />
                 <property name="EntryIsEditable">False</property>
+                <property name="AllowInvalidValues">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">11</property>
