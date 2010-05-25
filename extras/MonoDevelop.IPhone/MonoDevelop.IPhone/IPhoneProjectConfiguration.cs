@@ -109,6 +109,18 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		[ItemProperty ("MtouchMinimumOS")]
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		string mtouchMinimumOSVersion = "3.0";
+		public string MtouchMinimumOSVersion {
+			get { return mtouchMinimumOSVersion; }
+			set {
+				if (string.IsNullOrEmpty (value))
+					value = "3.0";
+				mtouchMinimumOSVersion = value;
+			}
+		}
+		
 		[ItemProperty ("MtouchExtraArgs")]
 		public string MtouchExtraArgs { get; set; }
 		
@@ -137,6 +149,7 @@ namespace MonoDevelop.IPhone
 			MtouchDebug = cfg.MtouchDebug;
 			MtouchLink = cfg.MtouchLink;
 			MtouchSdkVersion = cfg.MtouchSdkVersion;
+			MtouchMinimumOSVersion = cfg.MtouchMinimumOSVersion;
 			MtouchExtraArgs = cfg.MtouchExtraArgs;
 			MtouchI18n = cfg.MtouchI18n;
 		}

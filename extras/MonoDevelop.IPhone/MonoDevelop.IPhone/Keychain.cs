@@ -430,9 +430,7 @@ namespace MonoDevelop.IPhone
 		
 		public static SigningKeyInformation Default {
 			get {
-				string dev = PropertyService.Get<string> ("IPhoneSigningKey.Developer", null);
-				string dist = PropertyService.Get<string> ("IPhoneSigningKey.Distribution", null);
-				return new SigningKeyInformation (dev, dist);
+				return new SigningKeyInformation (IPhoneSettings.SigningKeyDeveloper, IPhoneSettings.SigningKeyDistribution);
 			}
 		}
 		

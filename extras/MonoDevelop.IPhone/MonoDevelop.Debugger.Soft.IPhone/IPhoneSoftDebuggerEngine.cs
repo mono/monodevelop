@@ -50,9 +50,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		{
 			var cmd = (IPhoneExecutionCommand) command;
 			
-			var startInfo = new IPhoneDebuggerStartInfo (IPhoneBuildExtension.GetDebuggerIP (cmd.Simulator),
-								     IPhoneBuildExtension.DebuggerPort,
-								     IPhoneBuildExtension.DebuggerOutputPort, cmd);
+			var startInfo = new IPhoneDebuggerStartInfo (IPhoneSettings.GetDebuggerHostIP (cmd.Simulator),
+								     IPhoneSettings.DebuggerPort,
+								     IPhoneSettings.DebuggerOutputPort, cmd);
 			startInfo.SetUserAssemblies (cmd.UserAssemblyPaths);
 			return startInfo;
 		}
@@ -63,6 +63,8 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 					   DebuggerFeatures.Pause | 
 					   DebuggerFeatures.Stepping | 
 					   DebuggerFeatures.DebugFile |
+					   DebuggerFeatures.Tracepoints |
+					   DebuggerFeatures.ConditionalBreakpoints |
 					   DebuggerFeatures.Catchpoints;
 			}
 		}

@@ -35,6 +35,7 @@ using System.Diagnostics;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Gui;
+using System.Reflection;
 
 namespace MonoDevelop.IPhone
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.IPhone
 		NotSet = 0,
 		IPhone = 1,
 		IPad =   1 << 1,
-		IPhoneAndIPad = IPhone & IPad,
+		IPhoneAndIPad = IPhone | IPad,
 	}
 	
 	public class IPhoneProject : DotNetProject
@@ -78,6 +79,15 @@ namespace MonoDevelop.IPhone
 		
 		[ProjectPathItemProperty ("BundleIcon")]
 		string bundleIcon;
+		
+		[ProjectPathItemProperty ("BundleIconIPad")]
+		string bundleIconIPad;
+		
+		[ProjectPathItemProperty ("BundleIconSpotlight")]
+		string bundleIconSpotlight;
+		
+		[ProjectPathItemProperty ("BundleIconIPadSpotlight")]
+		string bundleIconIPadSpotlight;
 		
 		public override string ProjectType {
 			get { return "IPhone"; }
@@ -171,6 +181,36 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		public FilePath BundleIconIPad {
+			get { return bundleIconIPad; }
+			set {
+				if (value == (FilePath) bundleIconIPad)
+					return;
+				NotifyModified ("BundleIconIPad");
+				bundleIconIPad = value;
+			}
+		}
+		
+		public FilePath BundleIconSpotlight {
+			get { return bundleIconSpotlight; }
+			set {
+				if (value == (FilePath) bundleIconSpotlight)
+					return;
+				NotifyModified ("BundleIconSpotlight");
+				bundleIconSpotlight = value;
+			}
+		}
+		
+		public FilePath BundleIconIPadSpotlight {
+			get { return bundleIconIPadSpotlight; }
+			set {
+				if (value == (FilePath) bundleIconIPadSpotlight)
+					return;
+				NotifyModified ("BundleIconIPadSpotlight");
+				bundleIconIPadSpotlight = value;
+			}
+		}
+		
 		#endregion
 		
 		#region Constructors
@@ -220,8 +260,8 @@ namespace MonoDevelop.IPhone
 				deviceConf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 				Configurations.Add (deviceConf);
 				
-				if (sdkVersion != null)
-					deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = sdkVersion;
+				deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = (sdkVersion != null)?
+					sdkVersion : IPhoneSdkVersion.Default.ToString ();
 				
 				if (simConf.Name == "Debug")
 					simConf.MtouchDebug = deviceConf.MtouchDebug = true;
@@ -239,14 +279,35 @@ namespace MonoDevelop.IPhone
 			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
 		}
 		
-//		protected override void OnEndLoad ()
-//		{
-//			//fix target framework if it's incorrect
-//			if (TargetFramework != null && TargetFramework.Id != FX_IPHONE)
-//				TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
-//			
-//			base.OnEndLoad ();
-//		}
+		protected override void OnEndLoad ()
+		{
+			//fix target framework if it's incorrect
+			//if (TargetFramework != null && TargetFramework.Id != FX_IPHONE)
+			//	TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
+			
+			FixCSharpPlatformTarget ();
+			
+			base.OnEndLoad ();
+		}
+		
+		// HACK: Using older MD, C# projects may have become created with the wrong platform target
+		// Fix this without adding a hard dependency on the C# addin
+		void FixCSharpPlatformTarget ()
+		{
+			if (LanguageName != "C#")
+				return;
+			PropertyInfo prop = null;
+			foreach (IPhoneProjectConfiguration cfg in Configurations) {
+				if (prop == null) {
+					if (cfg.CompilationParameters == null)
+						return;
+					prop = cfg.CompilationParameters.GetType ().GetProperty ("PlatformTarget");
+					if (prop == null)
+						return;
+				}
+				prop.SetValue (cfg.CompilationParameters, "anycpu", null);
+			}
+		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
@@ -279,12 +340,17 @@ namespace MonoDevelop.IPhone
 		/// </summary>
 		public IPhoneSimulatorTarget GetSimulatorTarget (IPhoneProjectConfiguration conf)
 		{
-			return UserProperties.GetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget-" + conf.Id);
+			return UserProperties.GetValue<IPhoneSimulatorTarget> (GetSimulatorTargetKey (conf));
 		}
 		
 		public void SetSimulatorTarget (IPhoneProjectConfiguration conf, IPhoneSimulatorTarget value)
 		{
-			UserProperties.SetValue<IPhoneSimulatorTarget> ("IPhoneSimulatorTarget-" + conf.Id, value);
+			UserProperties.SetValue<IPhoneSimulatorTarget> (GetSimulatorTargetKey (conf), value);
+		}
+		
+		string GetSimulatorTargetKey (IPhoneProjectConfiguration conf)
+		{
+			return "IPhoneSimulatorTarget-" + conf.Id;
 		}
 		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
@@ -293,21 +359,23 @@ namespace MonoDevelop.IPhone
 			var conf = (IPhoneProjectConfiguration) configuration;
 			
 			IPhoneSimulatorTarget simTarget = null;
-			var minSdk = string.IsNullOrEmpty (conf.MtouchSdkVersion)?
-				IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+			
+			var minOS = string.IsNullOrEmpty (conf.MtouchMinimumOSVersion)?
+				IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
 			
 			if (conf.Platform != PLAT_IPHONE) {
 				simTarget = GetSimulatorTarget (conf);
 				if (simTarget == null) {
 					var defaultDevice = ((IPhoneProject)conf.ParentItem).SupportedDevices == TargetDevice.IPad?
 						TargetDevice.IPad : TargetDevice.IPhone;
-					simTarget = new IPhoneSimulatorTarget (defaultDevice, minSdk);
+					var sdk = string.IsNullOrEmpty (conf.MtouchSdkVersion)?
+						IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+					simTarget = new IPhoneSimulatorTarget (defaultDevice, sdk);
 				}
 			}
 			
 			return new IPhoneExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.DebugMode && conf.MtouchDebug, simTarget, minSdk,
-			                                   ((IPhoneProject)conf.ParentItem).SupportedDevices) {
+			                                   conf.DebugMode && conf.MtouchDebug, simTarget, minOS, SupportedDevices) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}
@@ -368,12 +436,6 @@ namespace MonoDevelop.IPhone
 		public override string[] SupportedPlatforms {
 			get {
 				return new string [] { PLAT_IPHONE, PLAT_SIM };
-			}
-		}
-		
-		public override ClrVersion[] SupportedClrVersions {
-			get {
-				return new ClrVersion[] { ClrVersion.Clr_2_1 };
 			}
 		}
 		

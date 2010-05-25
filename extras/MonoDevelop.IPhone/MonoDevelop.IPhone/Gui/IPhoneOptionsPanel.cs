@@ -29,17 +29,18 @@ using Gtk;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Gui;
 
 namespace MonoDevelop.IPhone.Gui
 {
 	
 	public class IPhoneOptionsPanel : ItemOptionsPanel
 	{
-		IPhoneOptionsPanelWidget panel;
+		IPhoneOptionsWidget panel;
 		
 		public override Widget CreatePanelWidget ()
 		{
-			panel = new IPhoneOptionsPanelWidget ();
+			panel = new IPhoneOptionsWidget ();
 			panel.Load ((IPhoneProject) ConfiguredProject);
 			return panel;
 		}
@@ -56,10 +57,10 @@ namespace MonoDevelop.IPhone.Gui
 		}
 	}
 
-	internal partial class IPhoneOptionsPanelWidget : Gtk.Bin
+	internal partial class IPhoneOptionsWidget : Gtk.Bin
 	{
 
-		public IPhoneOptionsPanelWidget ()
+		public IPhoneOptionsWidget ()
 		{
 			this.Build ();
 			targetDevicesCombo.Changed += HandleTargetDevicesComboChanged;
@@ -67,7 +68,85 @@ namespace MonoDevelop.IPhone.Gui
 
 		void HandleTargetDevicesComboChanged (object sender, EventArgs e)
 		{
-			iPadNibPicker.Sensitive = targetDevicesCombo.Active == 0;
+			switch (SupportedDevices) {
+			case TargetDevice.IPhoneAndIPad:
+				iPadNibPicker.Sensitive = true;
+				IPhoneIconSensitive = true;
+				IPadIconSensitive = true;
+				IPadSpotlightIconSensitive = true;
+				SettingsIconSensitive = true;
+				break;
+			case TargetDevice.IPhone:
+				iPadNibPicker.Sensitive = false;
+				IPhoneIconSensitive = true;
+				IPadIconSensitive = false;
+				IPadSpotlightIconSensitive = false;
+				SettingsIconSensitive = true;
+				break;
+			case TargetDevice.IPad:
+				iPadNibPicker.Sensitive = false;
+				IPhoneIconSensitive = false;
+				IPadIconSensitive = true;
+				IPadSpotlightIconSensitive = true;
+				SettingsIconSensitive = true;
+				break;
+			}
+		}
+		
+		bool IPhoneIconSensitive {
+			set {
+				iphoneIconLabel.Sensitive = iphoneIconSizeLabel.Sensitive = iphoneIconPicker.Sensitive = value;
+			}
+		}
+		
+		bool IPadIconSensitive {
+			set {
+				ipadIconLabel.Sensitive = ipadIconSizeLabel.Sensitive = ipadIconPicker.Sensitive = value;
+			}
+		}
+		
+		bool IPadSpotlightIconSensitive {
+			set {
+				ipadSpotlightIconLabel.Sensitive = ipadSpotlightIconSizeLabel.Sensitive
+					= ipadSpotlightIconPicker.Sensitive = value;
+			}
+		}
+		
+		bool SettingsIconSensitive {
+			set {
+				settingsIconLabel.Sensitive = settingsIconSizeLabel.Sensitive = settingsIconPicker.Sensitive = value;
+			}
+		}
+		
+		TargetDevice SupportedDevices {
+			get {
+				switch (targetDevicesCombo.Active) {
+				case 0:
+					return TargetDevice.IPhoneAndIPad;
+				case 1:
+					return TargetDevice.IPhone;
+				case 2:
+					return TargetDevice.IPad;
+				default:
+					throw new InvalidOperationException ("targetDevicesCombo has unexpected value");
+				}
+			}
+			set {
+				switch (value) {
+				case TargetDevice.IPhoneAndIPad:
+					targetDevicesCombo.Active = 0;
+					break;
+				case TargetDevice.IPhone:
+					targetDevicesCombo.Active = 1;
+					break;
+				case TargetDevice.IPad:
+					targetDevicesCombo.Active = 2;
+					break;
+				default:
+					LoggingService.LogWarning ("Unknown value '{0}' in SupportedDevices. Changing to default.");
+					goto case TargetDevice.IPhone;
+				}
+			}
 		}
 		
 		public void Load (IPhoneProject proj)
@@ -91,27 +170,21 @@ namespace MonoDevelop.IPhone.Gui
 			targetDevicesCombo.AppendText (GettextCatalog.GetString ("iPhone only"));
 			targetDevicesCombo.AppendText (GettextCatalog.GetString ("iPad only"));
 			
-			switch (proj.SupportedDevices) {
-			case TargetDevice.IPhoneAndIPad:
-				targetDevicesCombo.Active = 0;
-				break;
-			case TargetDevice.IPhone:
-				targetDevicesCombo.Active = 1;
-				break;
-			case TargetDevice.IPad:
-				targetDevicesCombo.Active = 2;
-				break;
-			default:
-				LoggingService.LogWarning ("Unknown value '{0}' in SupportedDevices. sChanging to default.");
-				goto case TargetDevice.IPhone;
-			}
+			SupportedDevices = proj.SupportedDevices;
 			
 			HandleTargetDevicesComboChanged (null, null);
 			
-			appIconPicker.Project = proj;
-			appIconPicker.DefaultFilter = "*.png";
-			appIconPicker.DialogTitle = GettextCatalog.GetString ("Select application icon...");
-			appIconPicker.SelectedFile = proj.BundleIcon.ToString () ?? "";
+			ProjectFileEntry [] pickers = { iphoneIconPicker, ipadIconPicker, settingsIconPicker, ipadSpotlightIconPicker };
+			foreach (var p in pickers) {
+				p.Project = proj;
+				p.DefaultFilter = "*.png";
+				p.DialogTitle = GettextCatalog.GetString ("Select icon...");
+			}
+			
+			iphoneIconPicker.SelectedFile = proj.BundleIcon.ToString () ?? "";
+			ipadIconPicker.SelectedFile = proj.BundleIconIPad.ToString () ?? "";
+			settingsIconPicker.SelectedFile = proj.BundleIconSpotlight.ToString () ?? "";
+			ipadSpotlightIconPicker.SelectedFile = proj.BundleIconIPadSpotlight.ToString () ?? "";
 		}
 		
 		public void Store (IPhoneProject proj)
@@ -122,19 +195,13 @@ namespace MonoDevelop.IPhone.Gui
 			proj.BundleDisplayName = NullIfEmpty (displayNameEntry.Text);
 			proj.MainNibFile = NullIfEmpty (mainNibPicker.SelectedFile);
 			proj.MainNibFileIPad = NullIfEmpty (iPadNibPicker.SelectedFile);
-			proj.BundleIcon = NullIfEmpty (appIconPicker.SelectedFile);
 			
-			switch (targetDevicesCombo.Active) {
-			case 0:
-				proj.SupportedDevices = TargetDevice.IPhoneAndIPad;
-				break;
-			case 1:
-				proj.SupportedDevices = TargetDevice.IPhone;
-				break;
-			case 2:
-				proj.SupportedDevices = TargetDevice.IPad;
-				break;
-			}
+			proj.BundleIcon = NullIfEmpty (iphoneIconPicker.SelectedFile);
+			proj.BundleIconIPad = NullIfEmpty (ipadIconPicker.SelectedFile);
+			proj.BundleIconSpotlight = NullIfEmpty (settingsIconPicker.SelectedFile);
+			proj.BundleIconIPadSpotlight = NullIfEmpty (ipadSpotlightIconPicker.SelectedFile);
+			
+			proj.SupportedDevices = SupportedDevices;
 		}
 		
 		string NullIfEmpty (string s)

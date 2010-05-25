@@ -1,3 +1,8 @@
+2010-05-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneSoftDebuggerEngine.cs: Moved settings to a static
+	  class.
+
 2010-01-27  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneDebuggerSession.cs: Use

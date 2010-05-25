@@ -31,16 +31,14 @@
 			              resource = "IPhoneEmptyXib.xft.xml"/>
 			<FileTemplate id       = "IPhoneViewController"
 			              resource = "IPhoneViewController.xft.xml"/>
-			<FileTemplate id       = "IPhoneApplicationPList"
-			              resource = "IPhoneApplicationPList.xft.xml"/>
-			<FileTemplate id       = "IPhoneEntitlements"
-			              resource = "IPhoneEntitlements.xft.xml"/>
+			<FileTemplate id       = "IPhonePList"
+			              resource = "IPhonePList.xft.xml"/>
 			<FileTemplate id       = "IPadApplicationXib"
 			              resource = "IPadApplicationXib.xft.xml"/>
 			<FileTemplate id       = "IPadViewXib"
-				      resource = "IPadViewXib.xft.xml"/>
+			              resource = "IPadViewXib.xft.xml"/>
 			<FileTemplate id       = "IPadViewController"
-				      resource = "IPadViewController.xft.xml"/>
+			              resource = "IPadViewController.xft.xml"/>
 		</Condition>
 	</Extension>
 
@@ -162,6 +160,13 @@
 			</ItemSet>
 		</Condition>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
+		<Condition id="MonoTouchInstalled">
+			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ViewDeviceConsole" />
+		</Condition>
+	</Extension>
+	
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<Condition id="MonoTouchInstalled">

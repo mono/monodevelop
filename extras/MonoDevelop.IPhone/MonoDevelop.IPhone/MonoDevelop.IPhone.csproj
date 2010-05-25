@@ -111,7 +111,6 @@
     <Compile Include="InterfaceBuilder\IBConnectionRecord.cs" />
     <Compile Include="InterfaceBuilder\Collections.cs" />
     <Compile Include="InterfaceBuilder\IBObjectRecord.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs" />
     <Compile Include="Keychain.cs" />
     <Compile Include="Gui\IPhoneSigningKeyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs" />
@@ -127,6 +126,8 @@
     <Compile Include="IPhoneFramework.cs" />
     <Compile Include="IPhoneSdkVersion.cs" />
     <Compile Include="IPhoneSimulatorTarget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs" />
+    <Compile Include="IPhoneSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">
@@ -143,9 +144,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPadViewXib.xft.xml">
       <LogicalName>IPadViewXib.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneApplicationPList.xft.xml">
-      <LogicalName>IPhoneApplicationPList.xft.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneProjectEmpty.xpt.xml">
       <LogicalName>IPhoneProjectEmpty.xpt.xml</LogicalName>
@@ -216,9 +214,6 @@
     <EmbeddedResource Include="Icons\48x48\phone-apple-iphone.png">
       <LogicalName>phone-apple-iphone-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneEntitlements.xft.xml">
-      <LogicalName>IPhoneEntitlements.xft.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneLibraryProject.xpt.xml">
       <LogicalName>IPhoneLibraryProject.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -239,6 +234,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhoneUtilityProject.xpt.xml">
       <LogicalName>IPhoneUtilityProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhonePList.xft.xml">
+      <LogicalName>IPhonePList.xft.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

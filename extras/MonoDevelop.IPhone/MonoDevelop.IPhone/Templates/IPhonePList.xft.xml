@@ -3,27 +3,22 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Entitlements</_Name>
+		<_Name>Plist Template</_Name>
 		<_Category>iPhone and iPad</_Category>
 		<Icon>md-xml-file-icon</Icon>
 		<LanguageName>*</LanguageName>
 		<ProjectType>IPhone</ProjectType>
-		<DefaultFilename>Entitlements.plist</DefaultFilename>
-		<_Description>Creates an iPhone application entitlements plist.</_Description>
+		<_Description>Creates an empty property list template.</_Description>
 	</TemplateConfiguration>
-	
-	<Conditions>
-	</Conditions>
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="Entitlements.plist">
+		<File DefaultExtension=".plist">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
-		<key>get-task-allow</key><true/>
-	</dict>
+<dict>
+</dict>
 </plist>]]></File>
 	</TemplateFiles>
 </Template>

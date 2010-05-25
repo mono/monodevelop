@@ -37,9 +37,39 @@ using System.IO;
 
 namespace MonoDevelop.IPhone
 {
-	
+	//NOTE: this class is required to be usable from a commandline tool outside of MD
+	// so cannot depend on anything other than MonoDevelop.IPhone.InterfaceBuilder
 	static class CodeBehindGenerator
 	{
+		static Dictionary<string,string> typeNameMap = new Dictionary<string, string> ();
+		
+		//FIXME: would prefer to look these up inside the MD type DB, if possible, instead of using reflection
+		static void InitializeTypeNameMap ()
+		{
+			var asm = System.Reflection.Assembly.LoadFile ("/Developer/MonoTouch/usr/lib/mono/2.1/monotouch.dll");
+			var nsobj = asm.GetType ("MonoTouch.Foundation.NSObject");
+			var registerAtt = asm.GetType ("MonoTouch.Foundation.RegisterAttribute");
+			var prop = registerAtt.GetProperty ("Name");
+			foreach (var t in asm.GetTypes ()) {
+				if (!t.IsSubclassOf (nsobj))
+					continue;
+				var attrs = t.GetCustomAttributes (registerAtt, false);
+				if (attrs != null && attrs.Length == 1)  {
+					var objCName = prop.GetValue (attrs[0], null) as string;
+					if (objCName != null)
+						typeNameMap [objCName] = t.FullName;
+				}
+			}
+		}
+		
+		static CodeBehindGenerator ()
+		{
+			try {
+				InitializeTypeNameMap ();
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+			}
+		}
 		
 		public static IEnumerable<CodeTypeDeclaration> GetTypes (XDocument xibDoc, CodeDomProvider provider, CodeGeneratorOptions generatorOptions)
 		{
@@ -276,10 +306,9 @@ namespace MonoDevelop.IPhone
 					return "MonoTouch.Foundation." + ibType;
 				} else if (ibType.StartsWith ("IB") && ibType.Length > 2 && ibType != "IBUICustomObject") {
 					name = ibType.Substring (2);
-					if (name.StartsWith ("UI"))
-						return "MonoTouch.UIKit." + name;
-					if (name.StartsWith ("MK"))
-						return "MonoTouch.MapKit." + name;
+					string typeName;
+					if (typeNameMap.TryGetValue (name, out typeName))
+						return typeName;
 				}
 			}
 			return null;

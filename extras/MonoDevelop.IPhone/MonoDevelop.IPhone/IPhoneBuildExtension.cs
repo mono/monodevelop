@@ -60,7 +60,8 @@ namespace MonoDevelop.IPhone
 			
 			if (!IPhoneFramework.SdkIsInstalled (conf.MtouchSdkVersion)) {
 				var r = new BuildResult ();
-				r.AddError (string.Format ("Apple iPhone SDK for target OS version '{0}' is not installed", conf.MtouchSdkVersion));
+				//FIXME: fall back to higher SDK?
+				r.AddError (string.Format ("Apple iPhone SDK version '{0}' is not installed", conf.MtouchSdkVersion));
 				return r;
 			}
 			
@@ -206,6 +207,10 @@ namespace MonoDevelop.IPhone
 			if (conf.MtouchSdkVersion != "3.0")
 				args.AppendFormat (" -sdk=\"{0}\"", conf.MtouchSdkVersion);
 			
+			if (conf.MtouchMinimumOSVersion != "3.0")
+				args.AppendFormat (" -targetver=\"{0}\"", conf.MtouchMinimumOSVersion);
+			
+			
 			AppendExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
 		
@@ -235,6 +240,7 @@ namespace MonoDevelop.IPhone
 			return CreateMergedPlist (monitor, conf, template, plistOut, 
 				(IPhoneProjectConfiguration config, PlistDocument doc) => 
 			{
+				var result = new BuildResult ();
 				var dict = doc.Root as PlistDictionary;
 				if (dict == null)
 					doc.Root = dict = new PropertyList.PlistDictionary ();
@@ -247,9 +253,30 @@ namespace MonoDevelop.IPhone
 				SetIfNotPresent (dict, "CFBundleDisplayName", proj.BundleDisplayName ?? proj.Name);
 				SetIfNotPresent (dict, "CFBundleExecutable", conf.NativeExe.FileName);
 				
-				FilePath icon = proj.BundleIcon.ToRelative (proj.BaseDirectory);
-				if (!(icon.IsNullOrEmpty || icon.ToString () == "."))
-					SetIfNotPresent (dict, "CFBundleIconFile", icon.FileName);
+				//iphone icons
+				if ((proj.SupportedDevices & TargetDevice.IPhone) != 0) {
+					if (!dict.ContainsKey ("CFBundleIconFile")) {
+						var icon = proj.BundleIcon.ToRelative (proj.BaseDirectory);
+						if (icon.IsNullOrEmpty || icon.ToString () == ".")
+							result.AddWarning ("Application bundle icon has not been set");
+						else
+							dict ["CFBundleIconFile"] = icon.FileName;
+					}
+				}
+				
+				//ipad and universal icons
+				if ((proj.SupportedDevices & TargetDevice.IPad) != 0 && !dict.ContainsKey ("CFBundleIconFiles")) {
+					var arr = new PlistArray ();
+					dict["CFBundleIconFiles"] = arr;
+					//universal only
+					if ((proj.SupportedDevices & TargetDevice.IPhone) != 0)
+						AddRelativeIfNotEmpty (proj, arr, proj.BundleIcon);
+					//ipad and universal
+					AddRelativeIfNotEmpty (proj, arr, proj.BundleIconSpotlight);
+					AddRelativeIfNotEmpty (proj, arr, proj.BundleIconIPadSpotlight);
+					if (!AddRelativeIfNotEmpty (proj, arr, proj.BundleIconIPad))
+						result.AddWarning ("iPad bundle icon has not been set");
+				}
 				
 				SetIfNotPresent (dict, "CFBundleIdentifier", identity.BundleID);
 				SetIfNotPresent (dict, "CFBundleInfoDictionaryVersion", "6.0");
@@ -268,26 +295,38 @@ namespace MonoDevelop.IPhone
 					SetIfNotPresent (dict,  "UIDeviceFamily", GetSupportedDevices (proj.SupportedDevices));
 				SetIfNotPresent (dict, "DTPlatformVersion", conf.MtouchSdkVersion);
 				
-				if (!sim)
-					//FIXME allow user to choose version?
-					SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchSdkVersion);
+				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchMinimumOSVersion);
 				
 				SetNibProperty (dict, proj, proj.MainNibFile, "NSMainNibFile");
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)
 					SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
 				
-				return null;
+				return result;
 			});
 		}
 		
-		static void SetNibProperty (PlistDictionary dict, IPhoneProject proj, FilePath mainNibProp, string propName)
+		static bool AddRelativeIfNotEmpty (IPhoneProject proj, PlistArray arr, FilePath iconFullPath)
 		{
-			if (!mainNibProp.IsNullOrEmpty) {
-				string mainNib = mainNibProp.ToRelative (proj.BaseDirectory);
-				if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
-				    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
-				SetIfNotPresent (dict, propName, mainNib);
-			};
+			var icon = iconFullPath.ToRelative (proj.BaseDirectory).ToString ();
+			if (string.IsNullOrEmpty (icon) || icon == ".")
+				return false;
+			arr.Add (icon);
+			return true;
+		}
+		
+		static bool SetNibProperty (PlistDictionary dict, IPhoneProject proj, FilePath mainNibProp, string propName)
+		{
+			if (!dict.ContainsKey (propName)) {
+				if (mainNibProp.IsNullOrEmpty) {
+					return false;
+				} else {
+					string mainNib = mainNibProp.ToRelative (proj.BaseDirectory);
+					if (mainNib.EndsWith (".nib") || mainNib.EndsWith (".xib"))
+					    mainNib = mainNib.Substring (0, mainNib.Length - 4).Replace ('\\', '/');
+					dict[propName] = mainNib;
+				}
+			}
+			return true;
 		}
 		
 		static PlistArray GetSupportedDevices (TargetDevice devices)
@@ -350,7 +389,8 @@ namespace MonoDevelop.IPhone
 			if (!Directory.Exists (conf.AppDirectory))
 				return true;
 			
-			if (!Directory.Exists (conf.AppDirectory.Combine ("PkgInfo")))
+			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;
+			if (isDevice && !File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
 				return true;
 			
 			// the mtouch output
@@ -785,17 +825,37 @@ namespace MonoDevelop.IPhone
 			
 			//insert the app ID into the plist at the beginning
 			var oldDict = doc.Root as PlistDictionary;
-			var newDict = new PropertyList.PlistDictionary ();
+			var newDict = new PlistDictionary ();
 			doc.Root = newDict;
 			newDict["application-identifier"] = identity.AppID;
+			var keychainGroups = new PlistArray (new [] { identity.AppID } );
+			newDict["keychain-access-groups"] = keychainGroups;
 			
-			//merge in the settings from the provisioning profile
+			//merge in the settings from the provisioning profile, skipping some
 			foreach (var item in identity.Profile.Entitlements)
 				if (item.Key != "application-identifier" && item.Key != "keychain-access-groups")
 					newDict.Add (item.Key, item.Value);
 			
 			//and merge in the user's values
 			foreach (var item in oldDict) {
+				//FIXME: we currently ignore these items, and write our own, but maybe we should do substitutes
+				//i.e. $(AppIdentifierPrefix)$(CFBundleIdentifier)
+				if (item.Key == "application-identifier") {
+					var str = item.Value as PlistString;
+					if (str == null || string.IsNullOrEmpty (str.Value) || str.Value.Contains ('$'))
+						continue;
+				} else if (item.Key == "keychain-access-groups") {
+					//special handling, merge into the array
+					var keyArr = item.Value as PlistArray;
+					foreach (var key in keyArr) {
+						var str = key as PlistString;
+						if (str != null && !string.IsNullOrEmpty (str.Value) && !str.Value.Contains ('$')) {
+							keychainGroups.Add (str.Value);
+						}
+					}
+					continue;
+				}
+				
 				if (newDict.ContainsKey (item.Key))
 					newDict[item.Key] = item.Value;
 				else
@@ -931,7 +991,19 @@ namespace MonoDevelop.IPhone
 		
 		static IEnumerable<FilePair> GetContentFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
 		{
-			return allItems.OfType<ProjectFile> ().Where (pf => pf.BuildAction == BuildAction.Content)
+			//these are filenames that could overwrite important packaging files
+			//FIXME: warn if the user has marked these as content, or just ignore?
+			//FIXME: check for _CodeResources and dlls and binaries too?
+			var forbiddenNames = new HashSet<string> (new [] {
+				"Info.plist",
+				"Embedded.mobileprovision",
+				"ResourceRules.plist",
+				"PkgInfo",
+				"CodeResources"
+			}, StringComparer.OrdinalIgnoreCase);
+			
+			return allItems.OfType<ProjectFile> ()
+				.Where (pf => pf.BuildAction == BuildAction.Content && !forbiddenNames.Contains (pf.RelativePath))
 				.Select (pf => new FilePair (pf.FilePath, pf.RelativePath.ToAbsolute (outputRoot)));
 		}
 		
@@ -1068,7 +1140,7 @@ namespace MonoDevelop.IPhone
 				bool sim = config.Platform == IPhoneProject.PLAT_SIM;
 				
 				try {
-					debuggerIP = GetDebuggerIP (sim);
+					debuggerIP = IPhoneSettings.GetDebuggerHostIP (sim);
 				} catch {
 					br.AddWarning (GettextCatalog.GetString ("Could not resolve host IP for debugger settings"));
 				}
@@ -1113,7 +1185,7 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_debug_port" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", DebuggerPort.ToString () }
+					{ "DefaultValue", IPhoneSettings.DebuggerPort.ToString () }
 				});
 					
 				arr.Add (new PlistDictionary (true) {
@@ -1122,39 +1194,11 @@ namespace MonoDevelop.IPhone
 					{ "Key", "__monotouch_output_port" },
 					{ "AutocapitalizationType", "None" },
 					{ "AutocorrectionType", "No" },
-					{ "DefaultValue", DebuggerOutputPort.ToString () }
+					{ "DefaultValue", IPhoneSettings.DebuggerOutputPort.ToString () }
 				});
 				
 				return br;
 			});
-		}
-		
-		public static System.Net.IPAddress GetDebuggerIP (bool simulator)
-		{
-			if (simulator)
-				return System.Net.IPAddress.Loopback;
-			
-			var ipStr = MonoDevelop.Core.PropertyService.Get<string> ("MonoTouch.Debugger.HostIP", "");
-			try {
-				if (!string.IsNullOrEmpty (ipStr))
-					return System.Net.IPAddress.Parse (ipStr);
-			} catch (Exception e) {
-				LoggingService.LogInfo ("Error parsing Debugger HostIP: {0}: {1}", ipStr, e);
-			}
-			
-			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
-		}
-		
-		public static int DebuggerPort {
-			get {
-				return MonoDevelop.Core.PropertyService.Get<int> ("MonoTouch.Debugger.Port", 10000);
-			}
-		}
-		
-		public static int DebuggerOutputPort {
-			get {
-				return MonoDevelop.Core.PropertyService.Get<int> ("MonoTouch.Debugger.OutputPort", 10001);
-			}
 		}
 	}
 }

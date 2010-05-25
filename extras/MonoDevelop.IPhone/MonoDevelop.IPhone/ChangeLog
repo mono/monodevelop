@@ -1,3 +1,185 @@
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CodeBehindGenerator.cs: Build a map of obj-c types to
+	  MonoTouch types by reflection, instead of hardcoding certain
+	  namespaces.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneEntitlements.xft.xml: Remove the
+	  entitlements plist template now we have a generic plist
+	  template.
+
+	* Templates/IPhonePList.xft.xml: Fix template name.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhonePList.xft.xml:
+	* Templates/IPhoneApplicationPList.xft.xml: Change application
+	  plist template into a generic plist template.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Bug 608161 - [REGRESSION]
+	  MonoDevelop no long allows nibless projects to build.
+
+	* gtk-gui/gui.stetic: Flush.
+
+2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml: Fix MainNibFile
+	  xib/nib value in the templates.
+
+2010-05-22  Geoff Norton  <gnorton@novell.com>
+
+	* IPhoneSettings.cs: Simulator should still use Loopback
+
+2010-05-17  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Fix enum flags issue.
+
+2010-05-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneExecutionHandler.cs: Added the ability not to show the
+	  'start app on device' message again.
+
+	* Keychain.cs:
+	* IPhoneSettings.cs:
+	* IPhoneBuildExtension.cs:
+	* MonoDevelop.IPhone.csproj: Moved settings to a static class.
+
+2010-05-14  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs:
+	* Gui/IPhoneOptionsPanel.cs: Finished icon support.
+
+2010-05-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* Gui/IPhoneOptionsPanel.cs:
+	* MonoDevelop.IPhone.csproj:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsPanelWidget.cs:
+	  Add settings for more icons (currently unused).
+
+2010-05-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Overwrite the C# platform target in case
+	  it's been mistakenly set to x86 by older MD versions.
+
+2010-05-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ChangeLog:
+	* Templates/IPhoneProjectEmpty.xpt.xml:
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneLibraryProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPadWindowBasedProject.xpt.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml:
+	* Templates/UniversalWindowBasedProject.xpt.xml: Reverted
+	  target platform change.
+
+2010-05-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Track API.
+
+2010-05-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneOptionsPanel.cs: Fix typo.
+
+2010-05-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneDeviceConsole.cs: Use existing LogView class.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneDeviceConsole.cs: Fix idle handler.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneDeviceConsole.cs: Use a queue and idle handler instead
+	  of application.invoke.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* InterfaceBuilder/IBConnectionRecord.cs: Added missing
+	  property.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Only check for PkgInfo in device
+	  builds.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Fix NeedsBuilding check.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneFramework.cs: Fix NRE.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneFramework.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs: Add values for known OS
+	  versions.
+
+2010-05-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs:
+	* IPhoneDeviceConsole.cs:
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml: Added a console for viewing
+	  device output.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: Change key, as it confused the
+	  propertybag.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneCommands.cs: Use min OS for the list of allowed
+	  simulators.
+
+	* IPhoneProject.cs: Attempt to fix storing target sim.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* IPhoneExecutionCommand.cs:
+	* IPhoneExecutionHandler.cs: Pass min OS to the execution
+	  command instead of min SDK. Default sim target still uses
+	  SDK version.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* IPhoneBuildExtension.cs:
+	* IPhoneProjectConfiguration.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:
+	  Add support for setting and handling minimum OS version.
+
+2010-05-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Ignore template values in Apple
+	  entitlement templates, but merge other values.
+
+2010-04-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Don't allow files as content that
+	  would interfere with packaging.
+
 2010-04-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneCommands.cs: Fix command ID / enum mismatch.
