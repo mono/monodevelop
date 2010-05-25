@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Components.Extensions;
 using System.Windows.Forms;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Platform
 {
@@ -28,10 +29,10 @@ namespace MonoDevelop.Platform
                     result = false;
                 else
                 {
-					FilePath[] paths = new FilePath [dlg.OpenDialog.FileNames.Length];
-					for (int n=0; n<dlg.OpenDialog.FileNames.Length; n++)
-						paths [n] = dlg.OpenDialog.FileNames [n];
-                    data.SelectedFiles = dlg.FileNames;
+					FilePath[] paths = new FilePath [dlg.FileNames.Length];
+					for (int n=0; n<dlg.FileNames.Length; n++)
+						paths [n] = dlg.FileNames [n];
+                    data.SelectedFiles = paths;
                     result = true;
                 }
             }

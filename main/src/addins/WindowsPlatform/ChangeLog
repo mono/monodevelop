@@ -1,5 +1,9 @@
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* SelectFileDialogHandler.cs: Fix build.
+
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* AddFileDialogHandler.cs:
 	* SelectFileDialogHandler.cs: Track api changes.
 
