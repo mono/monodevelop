@@ -100,13 +100,13 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				TextEditorData data = options.GetTextEditorData ();
 				TextLink link = new TextLink ("name");
 				if (varName != null) {
-					for (int i = selectionStart; i < data.Document.Length - varName.Length; i++) {
-						if (data.Document.GetTextAt (i, varName.Length) == varName && !IsIdentifierPart (data, i - 1) && !IsIdentifierPart (data, i + varName.Length)) {
-							link.AddLink (new Segment (i - selectionStart, varName.Length));
-							if (link.Count == 2)
-								break;
-						}
+					if (insertOffset >= 0) {
+						link.AddLink (new Segment (insertOffset - selectionStart, varName.Length));
+					} else {
+						LoggingService.LogWarning ("insert offset not found.");
 					}
+					if (replaceOffset >= 0)
+						link.AddLink (new Segment (replaceOffset - selectionStart, varName.Length));
 				}
 				List<TextLink> links = new List<TextLink> ();
 				links.Add (link);
@@ -131,6 +131,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		
 		int selectionStart;
 		int selectionEnd;
+		int replaceOffset = -1;
+		int insertOffset = -1;
+		
 		string varName;
 		int varCount;
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
@@ -206,6 +209,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 					if (SearchSubExpression (insert.InsertedText, data.SelectedText, 0, out offset, out length)) 
 					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) {
 						insert.InsertedText = insert.InsertedText.Substring (0, offset) + varName + insert.InsertedText.Substring (offset + length);
+						insertOffset = insert.Offset + offset;
 					}
 					
 				} else if (blockVisitor.ContainingStatement is IfElseStatement) {
@@ -231,18 +235,23 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) 
 					if (SearchSubExpression (insert.InsertedText, data.SelectedText, offset + 1, out offset, out length)) {
 						insert.InsertedText = insert.InsertedText.Substring (0, offset) + varName + insert.InsertedText.Substring (offset + length);
+						insertOffset = insert.Offset + offset;
 					}
 				} else {
 					lineSegment = data.Document.GetLine (data.Caret.Line);
 					insert.Offset = lineSegment.Offset;
-					insert.InsertedText =  options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl) + Environment.NewLine;
-					
+					insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl) + Environment.NewLine;
+					insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + provider.OutputNode (options.Dom, varDecl.TypeReference).Length + " ".Length;
+
 					TextReplaceChange replace = new TextReplaceChange ();
 					replace.FileName = options.Document.FileName;
 					replace.Offset = data.SelectionRange.Offset;
 					replace.RemovedChars = data.SelectionRange.Length;
 					replace.InsertedText = varName;
 					result.Add (replace);
+					replaceOffset = replace.Offset;
+					if (insert.Offset < replaceOffset)
+						replaceOffset += insert.InsertedText.Length - insert.RemovedChars;
 					varCount++;
 				}
 				result.Add (insert);
@@ -250,7 +259,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				selectionStart = insert.Offset;
 				return result;
 			}
-
+			
 			lineSegment = data.Document.GetLine (data.Caret.Line);
 			string line = data.Document.GetTextAt (lineSegment);
 
@@ -271,6 +280,8 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				varDecl.Variables.Add (new VariableDeclaration (varName, expression));
 				insert.RemovedChars = expression.EndLocation.Column - 1;
 				insert.InsertedText = provider.OutputNode (options.Dom, varDecl);
+				insertOffset = insert.Offset + provider.OutputNode (options.Dom, varDecl.TypeReference).Length + " ".Length;
+
 				result.Add (insert);
 				varCount++;
 				
