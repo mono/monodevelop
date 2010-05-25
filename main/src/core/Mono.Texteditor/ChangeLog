@@ -1,3 +1,8 @@
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/PangoUtil.cs: Fix calling conventions for
+	  gtk/pango on Windows.
+
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor/Platform.cs:
