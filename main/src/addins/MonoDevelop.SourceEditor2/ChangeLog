@@ -1,5 +1,10 @@
 2010-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Removed debug
+	  code.
+
+2010-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Ensures
 	  that the layout is created.
 

@@ -314,7 +314,6 @@ namespace MonoDevelop.SourceEditor
 						marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
 						continue;
 					}
-					Console.WriteLine (task.Description);
 					MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (widget.TextEditor, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
 					currentErrorMarkers.Add (errorTextMarker);
 					
