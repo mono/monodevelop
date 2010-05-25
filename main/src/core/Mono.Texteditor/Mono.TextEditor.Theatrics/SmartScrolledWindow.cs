@@ -188,19 +188,20 @@ namespace Mono.TextEditor.Theatrics
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			Gdk.GC gc = Style.DarkGC (State);
-//			Style.PaintVline (Style, evnt.Window, State, Allocation, this, null, Allocation.Top, Allocation.Bottom, Allocation.X);
 			evnt.Window.DrawLine (gc, Allocation.X, Allocation.Top, Allocation.X, Allocation.Bottom);
-//			if (!vScrollBar.Visible) 
-			evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
-//				Style.PaintVline (Style, evnt.Window, State, Allocation, this, null, Allocation.Top, Allocation.Bottom, Allocation.Right - 1);
-				
-			evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
-//			Style.PaintHline (Style, evnt.Window, State, Allocation, this, null, Allocation.Left, Allocation.Right, Allocation.Y);
-//			if (!hScrollBar.Visible) 
-			evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
-//				Style.PaintHline (Style, evnt.Window, State, Allocation, this, null, Allocation.Left, Allocation.Right, Allocation.Bottom - 1);
-			
 			if (vScrollBar.Visible && hScrollBar.Visible) {
+				evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Y + Allocation.Height / 2);
+			} else {
+				evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
+			}
+			evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
+			if (vScrollBar.Visible && hScrollBar.Visible) {
+				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Left + Allocation.Width / 2 , Allocation.Bottom);
+			} else {
+				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
+			}
+			
+/*			if (vScrollBar.Visible && hScrollBar.Visible) {
 				int vwidth = vScrollBar.Requisition.Width;
 				int hheight = hScrollBar.Requisition.Height; 
 
@@ -208,7 +209,7 @@ namespace Mono.TextEditor.Theatrics
 				                           Allocation.Right - vwidth, 
 				                           Allocation.Bottom - hheight, 
 				                           vwidth, hheight);
-			}
+			}*/
 			return base.OnExposeEvent (evnt);
 		}
 		
