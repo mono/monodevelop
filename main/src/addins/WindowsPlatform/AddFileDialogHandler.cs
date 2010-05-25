@@ -5,6 +5,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Platform;
 using System.Windows.Forms;
 using CustomControls.Controls;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Platform
 {
@@ -35,7 +36,10 @@ namespace MonoDevelop.Platform
                     result = false;
                 else
                 {
-                    data.SelectedFiles = adlg.OpenDialog.FileNames;
+					FilePath[] paths = new FilePath [adlg.OpenDialog.FileNames.Length];
+					for (int n=0; n<adlg.OpenDialog.FileNames.Length; n++)
+						paths [n] = adlg.OpenDialog.FileNames [n];
+                    data.SelectedFiles = paths;
                     data.OverrideAction = adlg.OverrideAction;
                     result = true;
                 }

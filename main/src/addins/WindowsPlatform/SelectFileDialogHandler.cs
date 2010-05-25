@@ -28,6 +28,9 @@ namespace MonoDevelop.Platform
                     result = false;
                 else
                 {
+					FilePath[] paths = new FilePath [dlg.OpenDialog.FileNames.Length];
+					for (int n=0; n<dlg.OpenDialog.FileNames.Length; n++)
+						paths [n] = dlg.OpenDialog.FileNames [n];
                     data.SelectedFiles = dlg.FileNames;
                     result = true;
                 }
