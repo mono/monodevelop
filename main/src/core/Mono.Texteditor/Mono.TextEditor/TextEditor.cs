@@ -549,7 +549,10 @@ namespace Mono.TextEditor
 			if (EditorOptionsChanged != null)
 				EditorOptionsChanged (this, args);
 			
+			textViewMargin.OptionsChanged ();
 			foreach (Margin margin in this.margins) {
+				if (margin == textViewMargin)
+					continue;
 				margin.OptionsChanged ();
 			}
 			SetAdjustments (Allocation);

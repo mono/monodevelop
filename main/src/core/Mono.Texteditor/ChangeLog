@@ -1,5 +1,10 @@
 2010-05-25  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Ensure that the lineheight is
+	  up to date in the optionschanged event chain.
+
+2010-05-25  Mike Krüger  <mkrueger@novell.com>
+
 	* Styles/OblivionStyle.xml:
 	* Styles/TangoLightStyle.xml:
 	* Mono.TextEditor/TextEditor.cs:
