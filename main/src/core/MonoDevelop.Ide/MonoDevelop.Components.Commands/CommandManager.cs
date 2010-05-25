@@ -701,6 +701,7 @@ namespace MonoDevelop.Components.Commands
 					cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
 				}
 				
+				info.Bypass = false;
 				cmd.UpdateCommandInfo (info);
 			}
 			catch (Exception ex) {

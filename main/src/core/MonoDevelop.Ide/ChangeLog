@@ -1,3 +1,9 @@
+2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Commands/CommandManager.cs: In
+	  GetCommandInfo, reset the bypass flag before calling the
+	  default handler.
+
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Make
