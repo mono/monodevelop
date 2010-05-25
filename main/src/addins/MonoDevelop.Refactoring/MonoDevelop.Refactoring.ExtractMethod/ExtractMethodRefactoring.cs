@@ -280,12 +280,24 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					if (resolveResult != null)
 						param.ExpressionType = resolveResult.ResolvedType;
 				}
+				
+				var startLocation = data.Document.OffsetToLocation (data.SelectionRange.Offset);
+				var endLocation = data.Document.OffsetToLocation (data.SelectionRange.EndOffset);
+//				Console.WriteLine ("startLocation={0}, endLocation={1}", startLocation, endLocation);
+				
 				foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefined && v.InitialValueUsed)) {
+					if (startLocation <= varDescr.Location && varDescr.Location < endLocation)
+						continue;
+//					Console.WriteLine (varDescr.Location);
+//					Console.WriteLine (startLocation <= varDescr.Location);
+//					Console.WriteLine (varDescr.Location < endLocation);
 					param.Parameters.Add (varDescr);
 				}
 				param.Variables = new List<VariableDescriptor> (visitor.Variables.Values);
 				foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefined && param.Variables.Contains (v))) {
 					if (param.Parameters.Contains (varDescr))
+						continue;
+					if (startLocation <= varDescr.Location && varDescr.Location < endLocation)
 						continue;
 					param.Parameters.Add (varDescr);
 				}
@@ -307,8 +319,21 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);
 				if (parsedNode != null)
 					parsedNode.AcceptVisitor (visitor, null);
-				param.VariablesOutside = visitor.Variables;
-				param.OutsideVariableList = visitor.VariableList;
+				
+				
+				param.VariablesOutside = new Dictionary<string, VariableDescriptor> ();
+				foreach (var pair in visitor.Variables) {
+					if (startLocation < pair.Value.Location || endLocation >= pair.Value.Location) {
+						param.VariablesOutside.Add (pair.Key, pair.Value);
+					}
+				}
+				param.OutsideVariableList = new List<VariableDescriptor> ();
+				foreach (var v in visitor.VariableList) {
+					if (startLocation < v.Location || endLocation >= v.Location)
+						param.OutsideVariableList.Add (v);
+				}
+				
+				
 				
 				param.ChangedVariablesUsedOutside = new List<VariableDescriptor> (param.Variables.Where (v => v.GetsChanged && param.VariablesOutside.ContainsKey (v.Name)));
 				param.OneChangedVariable = result is BlockStatement;
@@ -366,7 +391,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			}
 			//	string mimeType = DesktopService.GetMimeTypeForUri (options.Document.FileName);
 			TypeReference returnType = new TypeReference ("System.Void", true);
-			
 			ICSharpCode.NRefactory.Ast.INode outputNode;
 			if (param.OneChangedVariable) {
 				string name = param.ChangedVariables.First ();

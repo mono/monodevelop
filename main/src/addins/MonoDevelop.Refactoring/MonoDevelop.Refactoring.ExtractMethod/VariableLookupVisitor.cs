@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using ICSharpCode.NRefactory;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring.ExtractMethod
 {
@@ -67,6 +68,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			set;
 		}
 		
+		public DocumentLocation Location {
+			get;
+			set;
+		}
+		
 		public VariableDescriptor (string name)
 		{
 			this.Name = name;
@@ -75,9 +81,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public override string ToString ()
 		{
-			return string.Format ("[VariableDescriptor: Name={0}, GetsChanged={1}, InitialValueUsed={2}, IsDefined={3}, ReturnType={4}]", Name, GetsChanged, InitialValueUsed, IsDefined, ReturnType);
+			return string.Format("[VariableDescriptor: Name={0}, GetsChanged={1}, InitialValueUsed={2}, GetsAssigned={3}, IsDefined={4}, ReturnType={5}, Location={6}]", Name, GetsChanged, InitialValueUsed, GetsAssigned, IsDefined, ReturnType, Location);
 		}
-		
 	}
 	
 	public class VariableLookupVisitor : AbstractAstVisitor
@@ -150,7 +155,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				foreach (VariableDeclaration varDecl in localVariableDeclaration.Variables) {
 					variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
 						IsDefined = true, 
-						ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference)
+						ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference),
+						Location = new DocumentLocation (MemberLocation.Line + localVariableDeclaration.StartLocation.Line - 1, localVariableDeclaration.StartLocation.Column - 1)
 					};
 				}
 			}
@@ -174,7 +180,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				// result.ResolvedType == null may be true for namespace names or undeclared variables
 				if (!result.StaticResolve && !variables.ContainsKey (identifierExpression.Identifier)) {
 					variables[identifierExpression.Identifier] = new VariableDescriptor (identifierExpression.Identifier) {
-						InitialValueUsed = !valueGetsChanged
+						InitialValueUsed = !valueGetsChanged,
+						Location = new DocumentLocation (MemberLocation.Line + identifierExpression.StartLocation.Line - 1, identifierExpression.StartLocation.Column - 1)
+
 					};
 					variables[identifierExpression.Identifier].ReturnType = result.ResolvedType;
 				}
