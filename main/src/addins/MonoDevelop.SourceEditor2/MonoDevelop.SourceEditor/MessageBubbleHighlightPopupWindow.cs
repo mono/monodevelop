@@ -52,29 +52,35 @@ namespace MonoDevelop.SourceEditor
 
 		public void Popup ()
 		{
+			var rgbaColormap = Screen.RgbaColormap;
+			if (rgbaColormap == null)
+				return;
+			Colormap = rgbaColormap;
+			
+			Gdk.Rectangle currentBounds = marker.ErrorTextBounds;
+			int i = 12;
+			int j = 2;
+			int x, y;
+			view.SourceEditorWidget.TextEditor.GdkWindow.GetOrigin (out x, out y);
+			Move (x + currentBounds.X - i / 2, y + currentBounds.Y - j / 2);
+			Resize (currentBounds.Width + 2 * i, currentBounds.Height + 2 * j);
+			
 			stage.ActorStep += OnAnimationActorStep;
 			stage.Iteration += OnAnimationIteration;
 			stage.UpdateFrequency = 10;
-			stage.Add (this, 100);
+			stage.Add (this, 120);
+			
+			Show ();
 		}
 		double Percent = 0.0;
 		
 		void OnAnimationIteration (object sender, EventArgs args)
 		{
-			Gdk.Rectangle currentBounds = marker.ErrorTextBounds;
-			int i = (int) (12.0 * Percent);
-			int j = (int) (2.0 * Percent);
-			int x, y;
-			view.SourceEditorWidget.TextEditor.GdkWindow.GetOrigin (out x, out y);
-			Move (x + currentBounds.X - i, y + currentBounds.Y - j);
-			Resize (currentBounds.Width + 2 * i, currentBounds.Height + 2 * j);
-			if (first) {
-				Show ();
-				first = false;
-			}
+			QueueDraw ();
 		}
+		
 		bool isComing = true;
-		bool first = true;
+		
 		bool OnAnimationActorStep (Actor<MessageBubbleHighlightPopupWindow> actor)
 		{
 			if (isComing) {
@@ -109,29 +115,37 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
+			using (var g = Gdk.CairoHelper.Create (evnt.Window)) {
+				g.SetSourceRGBA (1, 1, 1, 0);
+				g.Operator = Cairo.Operator.Source;
+				g.Paint ();
+			}
+			
 			Gdk.Rectangle currentBounds = marker.ErrorTextBounds;
 			if (textImage == null) {
 				using (Gdk.Pixmap pixmap = new Gdk.Pixmap (evnt.Window, currentBounds.Width, currentBounds.Height)) {
 					using (var bgGc = new Gdk.GC(pixmap)) {
-						bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.Errors[0].IsError ? marker.errorLightBg : marker.warningLightBg);
+						bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0]);
 						pixmap.DrawRectangle (bgGc, true, 0, 0, currentBounds.Width, currentBounds.Height);
 						
-						pixmap.DrawPixbuf (marker.gc, 
+/*						pixmap.DrawPixbuf (marker.gc, 
 						                marker.Errors.Any (e => e.IsError) ? marker.errorPixbuf : marker.warningPixbuf, 
 						                0, 0, 0, (currentBounds.Height - marker.errorPixbuf.Height) / 2,
 						                marker.errorPixbuf.Width, marker.errorPixbuf.Height, 
 						                Gdk.RgbDither.None, 0, 0);
-
-						pixmap.DrawLayout (marker.gc, marker.errorPixbuf.Width + 2, (currentBounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
+						 */
+						pixmap.DrawLayout (marker.gc, /*marker.errorPixbuf.Width +*/ 0, (currentBounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
 					}
-					textImage = Gdk.Pixbuf.FromDrawable (pixmap, Gdk.Colormap.System, 0, 0, 0, 0, currentBounds.Width, currentBounds.Height);
+					textImage = Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, currentBounds.Width, currentBounds.Height);
 				}
 			}
 			try {
-				using (var scaled = textImage.ScaleSimple (Allocation.Width, Allocation.Height, Gdk.InterpType.Bilinear)) {
+				int i = (int)(12.0 * Percent);
+				int j = (int)(2.0 * Percent);
+				using (var scaled = textImage.ScaleSimple (Allocation.Width - (12 - i), Allocation.Height - (2 - j), Gdk.InterpType.Bilinear)) {
 					if (scaled != null) {
 						using (var gc = new Gdk.GC (evnt.Window)) {
-							scaled.RenderToDrawable (evnt.Window, gc, 0, 0, 0, 0, Allocation.Width, Allocation.Height, Gdk.RgbDither.None, 0, 0);
+							scaled.RenderToDrawable (evnt.Window, gc, 0, 0, (Allocation.Width - scaled.Width) / 2, (Allocation.Height - scaled.Height) / 2, scaled.Width, scaled.Height, Gdk.RgbDither.None, 0, 0);
 						}
 					}
 				}

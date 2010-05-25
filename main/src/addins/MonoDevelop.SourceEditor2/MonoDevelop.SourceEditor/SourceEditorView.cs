@@ -264,9 +264,6 @@ namespace MonoDevelop.SourceEditor
 			if (marker == null)
 				return;
 			
-			/*
-			//FIXME: this looks super-ugly because the window resizes before redrawing
-			// we should instead use a window of constant size with an alpha channel
 			if (TextEditor.IsComposited) {
 				if (messageBubbleHighlightPopupWindow != null)
 					messageBubbleHighlightPopupWindow.Destroy ();
@@ -275,7 +272,7 @@ namespace MonoDevelop.SourceEditor
 					messageBubbleHighlightPopupWindow = null;
 				};
 				messageBubbleHighlightPopupWindow.Popup ();
-			}*/
+			}
 		}
 
 		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
@@ -317,7 +314,7 @@ namespace MonoDevelop.SourceEditor
 						marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
 						continue;
 					}
-					
+					Console.WriteLine (task.Description);
 					MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (widget.TextEditor, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
 					currentErrorMarkers.Add (errorTextMarker);
 					
