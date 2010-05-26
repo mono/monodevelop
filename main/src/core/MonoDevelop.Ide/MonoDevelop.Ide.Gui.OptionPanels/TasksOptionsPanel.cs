@@ -180,6 +180,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			foreach (object[] row in tokensStore)
 				tags.Add (new CommentTag ((string)row[0], (int)row[1]));
 
+			ProjectDomService.SpecialCommentTags = new CommentTagSet (tags);
+			
 			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
 			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
 			PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));

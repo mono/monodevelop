@@ -1,5 +1,11 @@
 2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui.OptionPanels/TasksOptionsPanel.cs:
+	  Properly store the selected tags list. Fixes bug #605218 -
+	  Cannot modify Task List in preferences.
+
+2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
 	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
 	  Use ShowCustomDialog (which destroys the dialog when done)
