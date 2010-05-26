@@ -1,5 +1,10 @@
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs:
+	  Corrected some minor drawing issues.
+
+2010-05-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Clip
 	  selection region.
 

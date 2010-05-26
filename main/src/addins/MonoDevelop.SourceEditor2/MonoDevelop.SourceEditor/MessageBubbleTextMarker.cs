@@ -366,6 +366,9 @@ namespace MonoDevelop.SourceEditor
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
 			int selected = 0;
 			
+			int topSize = editor.LineHeight / 2;
+			int bottomSize = editor.LineHeight / 2 + editor.LineHeight % 2;
+		
 			using (var g = Gdk.CairoHelper.Create (win)) {
 				if (!fitsInSameLine) {
 					if (isEolSelected) {
@@ -377,10 +380,10 @@ namespace MonoDevelop.SourceEditor
 						editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y + editor.LineHeight, x2, editor.LineHeight), editor.ColorStyle.Default.BackgroundColor, true);
 					}
 				}
-				DrawRectangle (g, x, y, right, editor.LineHeight / 2);
+				DrawRectangle (g, x, y, right, topSize);
 				g.Color = colorMatrix[active, TOP, LIGHT, highlighted, selected];
 				g.Fill ();
-				DrawRectangle (g, x, y + editor.LineHeight / 2, right, editor.LineHeight / 2);
+				DrawRectangle (g, x, y + topSize, right, bottomSize);
 				g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
 				g.Fill ();
 				
@@ -391,7 +394,7 @@ namespace MonoDevelop.SourceEditor
 				g.Stroke ();
 				
 				g.MoveTo (new Cairo.PointD (x, y + editor.LineHeight - 0.5));
-				g.LineTo (new Cairo.PointD ((fitsInSameLine ? x + right : x2), y + editor.LineHeight - 0.5));
+				g.LineTo (new Cairo.PointD ((fitsInSameLine ? x + right : x2 + 1), y + editor.LineHeight - 0.5));
 				g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
 				g.LineWidth = 1;
 				g.Stroke ();
@@ -427,10 +430,10 @@ namespace MonoDevelop.SourceEditor
 					if (isEolSelected)
 						endX = editor.Allocation.Width + (int)editor.HAdjustment.Value;
 					if (startX < endX) {
-						DrawRectangle (g, startX, y, endX - startX, editor.LineHeight / 2);
+						DrawRectangle (g, startX, y, endX - startX, topSize);
 						g.Color = colorMatrix[active, TOP, LIGHT, highlighted, 1];
 						g.Fill ();
-						DrawRectangle (g, startX, y + editor.LineHeight / 2, endX - startX, editor.LineHeight / 2);
+						DrawRectangle (g, startX, y + topSize, endX - startX, bottomSize);
 						g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
 						g.Fill ();
 						
@@ -442,11 +445,19 @@ namespace MonoDevelop.SourceEditor
 						
 						if (startX < x2) {
 							g.MoveTo (new Cairo.PointD (startX, y + editor.LineHeight - 0.5));
-							g.LineTo (new Cairo.PointD (System.Math.Min (endX, x2), y + editor.LineHeight - 0.5));
+							g.LineTo (new Cairo.PointD (System.Math.Min (endX, x2 + 1), y + editor.LineHeight - 0.5));
 							g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
 							g.LineWidth = 1;
 							g.Stroke ();
+							if (x2 + 1 < endX) {
+								g.MoveTo (new Cairo.PointD (x2 + 1, y + editor.LineHeight - 0.5));
+								g.LineTo (new Cairo.PointD (endX, y + editor.LineHeight - 0.5));
+								g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
+								g.LineWidth = 1;
+								g.Stroke ();
+							}
 						}
+						
 						if (editor.Options.ShowRuler) {
 							int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
 							g.MoveTo (new Cairo.PointD (divider + 0.5, y));
@@ -462,8 +473,8 @@ namespace MonoDevelop.SourceEditor
 			
 			if (!fitsInSameLine) 
 				y += editor.LineHeight;
-			double y2       = fitsInSameLine ? y + 0.5 : y - 0.5;
-			double y2Bottom = fitsInSameLine ? y2 + editor.LineHeight  - 1 : y2 + editor.LineHeight;
+			double y2       = y;
+			double y2Bottom = y2 + editor.LineHeight;
 			selected = isEolSelected && CollapseExtendedErrors ? 1 : 0;
 			// draw message text background
 			using (var g = Gdk.CairoHelper.Create (win)) {
@@ -485,7 +496,7 @@ namespace MonoDevelop.SourceEditor
 						g.Stroke ();
 					} else { // draw 'arrow marker'
 						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
-						double mid = y2 + editor.LineHeight / 2;
+						double mid = y2 + topSize;
 						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, mid));
 						
 						g.LineTo (new Cairo.PointD (right, mid));
@@ -518,10 +529,10 @@ namespace MonoDevelop.SourceEditor
 					}
 				} else {
 					if (!fitsInSameLine) { // draw box
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
+						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
 						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
 						g.LineTo (new Cairo.PointD (right, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2 - 1));
+						g.LineTo (new Cairo.PointD (right, y2));
 						g.ClosePath ();
 					} else { // draw filled arrow box
 						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
@@ -842,10 +853,10 @@ namespace MonoDevelop.SourceEditor
 			
 	//		if (!isEolSelected) {
 				using (var g = Gdk.CairoHelper.Create (win)) {
-					g.MoveTo (new Cairo.PointD (x2 + 0.5, y - 1.5));
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
 					g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
 					g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
-					g.LineTo (new Cairo.PointD (right, y - 1.5));
+					g.LineTo (new Cairo.PointD (right, y));
 					g.ClosePath ();
 					g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 0];
 					g.Fill ();
