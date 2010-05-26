@@ -163,6 +163,10 @@ namespace MonoDevelop.CSharp.Dom
 				result.Append (GetString (property.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
+			if (settings.UseFullName) {
+				result.Append (Visit (property.DeclaringType, settings));
+				result.Append (settings.Markup ("."));
+			}
 			AppendExplicitInterfaces(result, property, settings);
 			result.Append (settings.EmitName (property, Format (property.Name)));
 			if (settings.IncludeParameters && property.Parameters.Count > 0) {
@@ -211,6 +215,10 @@ namespace MonoDevelop.CSharp.Dom
 				result.Append (settings.Markup (" "));
 			}
 			
+			if (settings.UseFullName) {
+				result.Append (Visit (field.DeclaringType, settings));
+				result.Append (settings.Markup ("."));
+			}
 			result.Append (settings.EmitName (field, Format (field.Name)));
 			
 			return result.ToString ();
@@ -279,8 +287,11 @@ namespace MonoDevelop.CSharp.Dom
 				result.Append (GetString (method.ReturnType, settings));
 				result.Append (settings.Markup (" "));
 			}
+			if (settings.UseFullName) {
+				result.Append (Visit (method.DeclaringType, settings));
+				result.Append (settings.Markup ("."));
+			}
 			AppendExplicitInterfaces (result, method, settings);
-			
 			if (method.IsConstructor) {
 				result.Append (settings.EmitName (method, Format (method.DeclaringType.Name)));
 			} else if (method.IsFinalizer) {
@@ -551,6 +562,11 @@ namespace MonoDevelop.CSharp.Dom
 				result.Append (settings.Markup (" "));
 			}
 			
+			if (settings.UseFullName) {
+				result.Append (Visit (evt.DeclaringType, settings));
+				result.Append (settings.Markup ("."));
+			}
+
 			AppendExplicitInterfaces(result, evt, settings);
 			result.Append (settings.EmitName (evt, Format (evt.Name)));
 			

@@ -1,3 +1,8 @@
+2010-05-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: UseFullName flag
+	  works now for members.
+
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fix grammar.
