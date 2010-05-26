@@ -1,3 +1,19 @@
+2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Projects/AddFileDialog.cs:
+	* MonoDevelop.Components/SelectFileDialog.cs:
+	* MonoDevelop.Components/SelectFolderDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:
+	* MonoDevelop.Components.Extensions/ISelectFileDialog.cs:
+	  Improved the platform dialog abstractions. Unified and
+	  tidied code, factored code from OpenFileDialog, improved
+	  support for file filters.
+
+	* MonoDevelop.Ide.Gui/Document.cs: Use platform dialog for
+	  OpenFile.
+
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:

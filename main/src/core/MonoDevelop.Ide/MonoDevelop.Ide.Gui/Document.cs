@@ -274,25 +274,24 @@ namespace MonoDevelop.Ide.Gui
 			}
 				
 			if (filename == null) {
-				FileSelectorDialog fdiag = new FileSelectorDialog (GettextCatalog.GetString ("Save as..."), Gtk.FileChooserAction.Save);
-				try {
-					if (Window.ViewContent.IsUntitled)
-						fdiag.CurrentName = Window.ViewContent.UntitledName;
-					else {
-						fdiag.SetCurrentFolder (Path.GetDirectoryName (Window.ViewContent.ContentName));
-						fdiag.CurrentName = Path.GetFileName (Window.ViewContent.ContentName);
-					}
-					fdiag.Encoding = encoding;
-					fdiag.ShowEncodingSelector = (tbuffer != null);
-					fdiag.TransientFor = IdeApp.Workbench.RootWindow;
-					int response = fdiag.Run ();
-					filename = fdiag.Filename;
-					encoding = fdiag.Encoding;
-					if (response != (int)Gtk.ResponseType.Ok)
-						return;
-				} finally {
-					fdiag.Destroy ();
+				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {
+					TransientFor = IdeApp.Workbench.RootWindow,
+					Encoding = encoding,
+					ShowEncodingSelector = (tbuffer != null),
+				};
+				
+				if (Window.ViewContent.IsUntitled)
+					dlg.InitialFileName = Window.ViewContent.UntitledName;
+				else {
+					dlg.CurrentFolder = Path.GetDirectoryName (Window.ViewContent.ContentName);
+					dlg.InitialFileName = Path.GetFileName (Window.ViewContent.ContentName);
 				}
+				
+				if (!dlg.Run ())
+					return;
+				
+				filename = dlg.SelectedFile;
+				encoding = dlg.Encoding;
 			}
 		
 			if (!FileService.IsValidPath (filename)) {

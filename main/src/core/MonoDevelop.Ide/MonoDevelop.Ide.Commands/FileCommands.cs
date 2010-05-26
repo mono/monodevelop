@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open")) {
+			var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), Gtk.FileChooserAction.Open) {
 				TransientFor = IdeApp.Workbench.RootWindow,
 				ShowEncodingSelector = true,
 				ShowViewerSelector = true,

@@ -62,50 +62,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			LocalOnly = true;
 			
-			ArrayList filters = new ArrayList ();
-			filters.AddRange (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFileFilters"));
-			try
-			{
-				filters.AddRange (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/FileFilters"));
-			}
-			catch
-			{
-				//nothing there..	
-			}
-			
-			filterPairs = new Hashtable ();
-			foreach (string filterStr in filters)
-			{
-				string[] parts = filterStr.Split ('|');
-				Gtk.FileFilter filter = new Gtk.FileFilter ();
-				filter.Name = parts[0];
-				filterPairs[parts[0]] = parts[1];
-				foreach (string ext in parts[1].Split (';'))
-				{
-					filter.AddPattern (ext);
-				}
-				AddFilter (filter);
-			}
-			
-			//Add All Files
-			Gtk.FileFilter allFilter = new Gtk.FileFilter ();
-			allFilter.Name = GettextCatalog.GetString ("All Files");
-			allFilter.AddPattern ("*");
-			filterPairs[GettextCatalog.GetString ("All Files")] = ("*");
-			AddFilter (allFilter);
-			
-			// Load last used filter
-			string lastPattern = (string)PropertyService.Get ("Monodevelop.FileSelector.LastPattern", "*");
-			foreach (FileFilter filter in this.Filters)
-			{
-				string pattern = filterPairs[filter.Name] as string;
-				if (! String.IsNullOrEmpty (pattern) && pattern == lastPattern)
-				{
-					this.Filter = filter;
-					break;
-				}
-			}
-			
 			// Add the text encoding selector
 			Table table = new Table (2, 2, false);
 			table.RowSpacing = 6;
@@ -312,16 +268,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			UpdateExtraWidgets ();
 			FillViewers ();
-		}
-		
-		protected override void OnDestroyed ()
-		{
-			// Save active filter
-			string pattern = filterPairs[this.Filter.Name] as string;
-			if (pattern != null)
-				PropertyService.Set ("Monodevelop.FileSelector.LastPattern", pattern);
-
-			base.OnDestroyed ();
 		}
 	}
 }

@@ -26,6 +26,8 @@
 
 using System;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 
 namespace MonoDevelop.Components

@@ -50,6 +50,12 @@ namespace MonoDevelop.Components
 			Action = action;
 		}
 		
+		/// <summary>
+		/// Shows the dialog
+		/// </summary>
+		/// <returns>
+		/// True if the user clicked OK.
+		/// </returns>
 		public bool Run ()
 		{
 			if (Handler != null)
