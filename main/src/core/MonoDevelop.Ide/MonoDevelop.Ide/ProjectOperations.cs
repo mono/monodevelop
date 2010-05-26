@@ -493,9 +493,9 @@ namespace MonoDevelop.Ide
 		
 		bool SelectValidFileFormat (IWorkspaceFileObject item)
 		{
-			SelectFileFormatDialog dlg = new SelectFileFormatDialog (item);
+			var dlg = new SelectFileFormatDialog (item);
 			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok && dlg.Format != null) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Format != null) {
 					item.ConvertToFormat (dlg.Format, true);
 					return true;
 				}

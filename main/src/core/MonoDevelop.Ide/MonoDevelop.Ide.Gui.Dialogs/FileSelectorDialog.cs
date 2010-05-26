@@ -240,10 +240,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void EncodingChanged (object s, EventArgs args)
 		{
 			if (encodingMenu.History == selectOption) {
-				SelectEncodingsDialog dlg = new SelectEncodingsDialog ();
-				dlg.TransientFor = this;
-				dlg.Run ();
-				dlg.Destroy ();
+				var dlg = new SelectEncodingsDialog ();
+				MessageService.ShowCustomDialog (dlg, this);
 				FillEncodings ();
 			}
 		}

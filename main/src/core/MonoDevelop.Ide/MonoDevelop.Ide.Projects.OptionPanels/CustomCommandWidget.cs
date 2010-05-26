@@ -100,21 +100,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
-			FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Select File"));
-			try {
-				fdiag.SetCurrentFolder (entry.BaseDirectory);
-				fdiag.SelectMultiple = false;
-				fdiag.TransientFor = this.Toplevel as Gtk.Window;
-				if (fdiag.Run () == (int) Gtk.ResponseType.Ok) {
-					if (System.IO.Path.IsPathRooted (fdiag.Filename))
-						entryCommand.Text = FileService.AbsoluteToRelativePath (entry.BaseDirectory, fdiag.Filename);
-					else
-						entryCommand.Text = fdiag.Filename;
-				}
-				fdiag.Hide ();
-			} finally {
-				fdiag.Destroy ();
-			}
+			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select File")) {
+				CurrentFolder = entry.BaseDirectory,
+				SelectMultiple = false,
+				TransientFor = this.Toplevel as Gtk.Window,
+			};
+			if (!dlg.Run ())
+				return;
+			if (System.IO.Path.IsPathRooted (dlg.SelectedFile))
+				entryCommand.Text = FileService.AbsoluteToRelativePath (entry.BaseDirectory, dlg.SelectedFile);
+			else
+				entryCommand.Text = dlg.SelectedFile;
 		}
 
 		protected virtual void OnEntryCommandChanged(object sender, System.EventArgs e)

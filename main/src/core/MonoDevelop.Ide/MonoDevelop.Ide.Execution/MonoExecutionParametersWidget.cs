@@ -61,10 +61,8 @@ namespace MonoDevelop.Ide.Execution
 		protected virtual void OnButtonPreviewClicked (object sender, System.EventArgs e)
 		{
 			propertyGrid.CommitPendingChanges ();
-			MonoExecutionParametersPreview dlg = new MonoExecutionParametersPreview (config);
-			dlg.TransientFor = this.Toplevel as Gtk.Window;
-			dlg.Run ();
-			dlg.Destroy ();
+			var dlg = new MonoExecutionParametersPreview (config);
+			MessageService.ShowCustomDialog (dlg, this.Toplevel as Gtk.Window);
 		}
 
 		protected virtual void OnButtonResetClicked (object sender, System.EventArgs e)

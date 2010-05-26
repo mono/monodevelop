@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.Extensions
 {
@@ -160,10 +161,8 @@ namespace MonoDevelop.Components.Extensions
 			foreach (var filter in GetGtkFileFilters ())
 				fdiag.AddFilter (filter);
 			
-			MonoDevelop.Ide.MessageService.PlaceDialog (fdiag, data.TransientFor ?? MonoDevelop.Ide.MessageService.RootWindow);
-			
 			try {
-				int result = fdiag.Run ();
+				int result = MessageService.RunCustomDialog (fdiag, data.TransientFor ?? MessageService.RootWindow);
 				data.SelectedFiles = fdiag.Filenames.ToFilePathArray ();
 				return result == (int) Gtk.ResponseType.Ok;
 			} finally {

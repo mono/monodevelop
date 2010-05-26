@@ -40,6 +40,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
+		public OpenFileDialog (string title)
+		{
+			Title = title;
+		}
+		
 		/// <summary>
 		/// Set to true if the encoding selector has to be shown
 		/// </summary>
@@ -89,22 +94,37 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (Handler != null)
 				Handler.Run (data);
 			
-			FileSelectorDialog win = new FileSelectorDialog (data.Title, data.Action);
-			win.Encoding = data.Encoding;
-			win.ShowEncodingSelector = data.ShowEncodingSelector;
-			win.ShowViewerSelector = data.ShowViewerSelector;
-			
+			var win = new FileSelectorDialog (data.Title, data.Action) {
+				Encoding = data.Encoding,
+				ShowEncodingSelector = data.ShowEncodingSelector,
+				ShowViewerSelector = data.ShowViewerSelector,
+			};
 			foreach (var filter in GetGtkFileFilters ())
 				win.AddFilter (filter);
 			
-			if (win.Run () == (int) Gtk.ResponseType.Ok) {
-				data.Encoding = win.Encoding;
-				data.CloseCurrentWorkspace = win.CloseCurrentWorkspace;
-				data.SelectedFiles = win.Filenames.ToFilePathArray ();
-				data.SelectedViewer = win.SelectedViewer;
-				return true;
-			} else
-				return false;
+			try {
+				var result = MessageService.RunCustomDialog (win, TransientFor ?? MessageService.RootWindow);
+				if (result == (int) Gtk.ResponseType.Ok) {
+					data.Encoding = win.Encoding;
+					data.CloseCurrentWorkspace = win.CloseCurrentWorkspace;
+					data.SelectedFiles = win.Filenames.ToFilePathArray ();
+					data.SelectedViewer = win.SelectedViewer;
+					
+					//handle certain strange cases in the GTK file dialog
+					if (string.IsNullOrEmpty (SelectedFile)) {
+						if (win.Uri != null)
+							MessageService.ShowError (GettextCatalog.GetString ("Only local files can be opened."));
+						else
+							MessageService.ShowError (GettextCatalog.GetString ("The provided file could not be loaded."));
+						return false;
+					}
+					
+					return true;
+				} else
+					return false;
+			} finally {
+				win.Destroy ();
+			}
 		}
 	}
 }

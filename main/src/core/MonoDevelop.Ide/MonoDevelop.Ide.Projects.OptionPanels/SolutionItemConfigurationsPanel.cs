@@ -104,13 +104,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void AddConfiguration (string copyFrom)
 		{
-			NewConfigurationDialog dlg = new NewConfigurationDialog (configData.Configurations);
+			var dlg = new NewConfigurationDialog (configData.Configurations);
 			try {
 				bool done = false;
 				do {
-					dlg.TransientFor = this.Toplevel as Gtk.Window;
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-						ItemConfiguration cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
+					if (MessageService.RunCustomDialog (dlg, Toplevel as Gtk.Window) == (int) Gtk.ResponseType.Ok) {
+						var cc = configData.AddConfiguration (dlg.ConfigName, copyFrom, dlg.CreateChildren);
 						store.AppendValues (cc, cc.Id);
 						done = true;
 					} else
@@ -133,12 +132,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				return;
 			}
 			
-			ItemConfiguration cc = (ItemConfiguration) store.GetValue (iter, 0);
-			DeleteConfigDialog dlg = new DeleteConfigDialog ();
+			var cc = (ItemConfiguration) store.GetValue (iter, 0);
+			var dlg = new DeleteConfigDialog ();
 			
 			try {
-				dlg.TransientFor = this.Toplevel as Gtk.Window;
-				if (dlg.Run () == (int) Gtk.ResponseType.Yes) {
+				if (MessageService.RunCustomDialog (dlg, Toplevel as Gtk.Window)== (int) Gtk.ResponseType.Yes) {
 					configData.RemoveConfiguration (cc.Id, dlg.DeleteChildren);
 					store.Remove (ref iter);
 				}
@@ -161,8 +159,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			try {
 				bool done = false;
 				do {
-					dlg.TransientFor = this.Toplevel as Gtk.Window;
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (dlg, Toplevel as Window) == (int) Gtk.ResponseType.Ok) {
 						configData.RenameConfiguration (cc.Id, dlg.ConfigName, dlg.RenameChildren);
 						store.SetValue (iter, 1, cc.Id);
 						done = true;

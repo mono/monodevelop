@@ -1,5 +1,29 @@
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide/RootWorkspace.cs:
+	* MonoDevelop.Ide/ProjectOperations.cs:
+	* MonoDevelop.Ide.Commands/ViewCommands.cs:
+	* MonoDevelop.Ide.Projects/AddFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/OpenFileDialog.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:
+	* MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs:
+	* MonoDevelop.Components.Extensions/ISelectFileDialog.cs:
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	* MonoDevelop.Ide.Execution/MonoExecutionParametersWidget.cs:
+	* MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:
+	* MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/TextEditorDialog.cs:
+	* MonoDevelop.Ide.Projects.OptionPanels/SolutionItemConfigurationsPanel.cs:
+	  More dialog placement cleanup.
+
+	* MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:
+	* MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:
+	  Use platform dialog.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/DocumentSwitcher.cs: Mark window as a
 	  popup, so the command manger doesn't intercept keystroke.
 

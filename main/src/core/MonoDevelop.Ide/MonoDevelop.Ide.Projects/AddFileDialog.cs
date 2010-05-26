@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Projects
 			int result;
 			
 			try {
-				result = fdiag.Run ();
+				result = MessageService.RunCustomDialog (fdiag, data.TransientFor ?? MessageService.RootWindow);
 				data.SelectedFiles = fdiag.Filenames.ToFilePathArray ();
 				if (check.Active)
 					data.OverrideAction = combo.ActiveText;

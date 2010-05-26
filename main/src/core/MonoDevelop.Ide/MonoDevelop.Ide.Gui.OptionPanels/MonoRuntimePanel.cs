@@ -110,19 +110,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		protected virtual void OnButtonAddClicked (object sender, System.EventArgs e)
 		{
-			FolderDialog fd = new FolderDialog (GettextCatalog.GetString ("Select the mono installation prefix"));
-			fd.SetFilename ("/usr");
-			fd.TransientFor = this.Toplevel as Gtk.Window;
-			
-			int response = fd.Run ();
-			
-			if (response != (int) ResponseType.Ok) {
-				fd.Hide ();
+			var dlg = new SelectFolderDialog (GettextCatalog.GetString ("Select the mono installation prefix")) {
+				TransientFor = this.Toplevel as Gtk.Window,
+				CurrentFolder = "/usr",
+			};
+			if (!dlg.Run ())
 				return;
-			}
-			fd.Hide ();
 			
-			MonoRuntimeInfo rinfo = new MonoRuntimeInfo (fd.Filename);
+			var rinfo = new MonoRuntimeInfo (dlg.SelectedFile);
 			if (!rinfo.IsValidRuntime) {
 				MessageService.ShowError (GettextCatalog.GetString ("Mono runtime not found"), GettextCatalog.GetString ("Please provide a valid directory prefix where mono is installed (for example, /usr)"));
 				return;

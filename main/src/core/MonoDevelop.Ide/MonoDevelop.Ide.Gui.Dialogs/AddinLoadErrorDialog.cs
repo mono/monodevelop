@@ -80,10 +80,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public new bool Run ()
 		{
-			Show ();
-			bool res = (((ResponseType)base.Run ()) == ResponseType.Yes);
-			Destroy ();
-			return res;
+			return MessageService.ShowCustomDialog (this) == (int)ResponseType.Yes;
 		}
 	}
 

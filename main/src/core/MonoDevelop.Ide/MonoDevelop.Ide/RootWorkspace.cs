@@ -677,11 +677,9 @@ namespace MonoDevelop.Ide
 					DispatchService.GuiDispatch (
 						delegate (object state) {
 							NewFilesMessage message = (NewFilesMessage) state;
-							IncludeNewFilesDialog includeNewFilesDialog = new IncludeNewFilesDialog (message.Project);
+							var includeNewFilesDialog = new IncludeNewFilesDialog (message.Project);
 							includeNewFilesDialog.AddFiles (message.NewFiles);
-							includeNewFilesDialog.TransientFor = IdeApp.Workbench.RootWindow;
-							includeNewFilesDialog.Run ();
-							includeNewFilesDialog.Destroy ();
+							MessageService.ShowCustomDialog (includeNewFilesDialog, IdeApp.Workbench.RootWindow);
 						},
 						new NewFilesMessage (project, newFiles)
 					);

@@ -85,11 +85,10 @@ namespace MonoDevelop.Ide.Execution
 
 		protected virtual void OnButtonAddClicked (object sender, System.EventArgs e)
 		{
-			CustomExecutionModeDialog dlg = new CustomExecutionModeDialog ();
-			dlg.TransientFor = this;
+			var dlg = new CustomExecutionModeDialog ();
 			try {
 				dlg.Initialize (ctx, null, null);
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
 					ExecutionModeCommandService.SaveCustomCommand (ctx.Project, dlg.GetConfigurationData ());
 					Fill ();
 				}
@@ -110,11 +109,10 @@ namespace MonoDevelop.Ide.Execution
 		protected virtual void OnButtonEditClicked (object sender, System.EventArgs e)
 		{
 			CustomExecutionMode mode = GetSelectedMode ();
-			CustomExecutionModeDialog dlg = new CustomExecutionModeDialog ();
-			dlg.TransientFor = this;
+			var dlg = new CustomExecutionModeDialog ();
 			try {
 				dlg.Initialize (ctx, null, mode);
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
 					CustomExecutionMode newMode = dlg.GetConfigurationData ();
 					ExecutionModeCommandService.SaveCustomCommand (ctx.Project, newMode);
 					if (newMode.Scope != mode.Scope)

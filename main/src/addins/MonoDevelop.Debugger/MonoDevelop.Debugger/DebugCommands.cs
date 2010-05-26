@@ -247,12 +247,10 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			AttachToProcessDialog dlg = new AttachToProcessDialog ();
+			var dlg = new AttachToProcessDialog ();
 			try {
-				dlg.TransientFor = IdeApp.Workbench.RootWindow;
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
 					IdeApp.ProjectOperations.AttachToProcess (dlg.SelectedDebugger, dlg.SelectedProcess);
-				}
 			}
 			finally {
 				dlg.Destroy ();

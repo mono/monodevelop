@@ -139,10 +139,9 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			string newLayoutName = null;
-			NewLayoutDialog dlg = new NewLayoutDialog();
-			dlg.TransientFor = IdeApp.Workbench.RootWindow;
+			var dlg = new NewLayoutDialog();
 			try {
-				if (((Gtk.ResponseType)dlg.Run ()) == Gtk.ResponseType.Ok) 
+				if (MessageService.RunCustomDialog (dlg) == (int)Gtk.ResponseType.Ok) 
 					newLayoutName = dlg.LayoutName; 
 			} finally {
 				dlg.Destroy ();

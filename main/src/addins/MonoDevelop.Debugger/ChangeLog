@@ -1,3 +1,8 @@
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Debugger/DebugCommands.cs: More dialog placement
+	  cleanup.
+
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: More dialog

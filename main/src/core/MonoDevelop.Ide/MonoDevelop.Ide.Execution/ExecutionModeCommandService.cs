@@ -91,13 +91,8 @@ namespace MonoDevelop.Ide.Execution
 		{
 			CommandItem item = (CommandItem) data;
 			if (item.Mode == null) {
-				CustomExecutionModeManagerDialog dlg = new CustomExecutionModeManagerDialog (item.Context);
-				dlg.TransientFor = IdeApp.Workbench.RootWindow;
-				try {
-					dlg.Run ();
-				} finally {
-					dlg.Destroy ();
-				}
+				var dlg = new CustomExecutionModeManagerDialog (item.Context);
+				MessageService.ShowCustomDialog (dlg);
 				return null;
 			}
 			
@@ -213,8 +208,7 @@ namespace MonoDevelop.Ide.Execution
 				CustomExecutionModeDialog dlg = new CustomExecutionModeDialog ();
 				try {
 					dlg.Initialize (ctx, mode, currentMode);
-					dlg.TransientFor = IdeApp.Workbench.RootWindow;
-					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 						cmode = dlg.GetConfigurationData ();
 						cmode.Project = ctx.Project;
 						if (dlg.Save)

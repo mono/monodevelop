@@ -324,8 +324,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			AddMimeTypeDialog dlg = new AddMimeTypeDialog (panel.GetItemMimeTypes ());
 			try {
-				dlg.TransientFor = this.Toplevel as Gtk.Window;
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg, this.Toplevel as Gtk.Window) == (int) Gtk.ResponseType.Ok) {
 					MimeTypePanelData mt = panel.AddGlobalMimeType (dlg.MimeType);
 					store.AppendValues (mt, DesktopService.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 				}
