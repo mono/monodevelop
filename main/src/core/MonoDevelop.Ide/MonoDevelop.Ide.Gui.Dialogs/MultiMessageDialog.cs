@@ -81,6 +81,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				scrolled.VscrollbarPolicy = PolicyType.Never;
 				this.Resize (10, 10);
 			}
+			MessageService.PlaceDialog (this, TransientFor ?? MessageService.RootWindow);
 			return base.Run ();
 		}
 	}

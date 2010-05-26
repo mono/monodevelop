@@ -1,5 +1,13 @@
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Commands/FileCommands.cs: Use platform
+	  dialog, and dialog placement cleanup.
+
+	* MonoDevelop.Ide.Gui.Dialogs/MultiMessageDialog.cs: More
+	  dialog placement cleanup.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/Workbench.cs:
 	* MonoDevelop.Ide/RootWorkspace.cs:
 	* MonoDevelop.Ide/ProjectOperations.cs:
