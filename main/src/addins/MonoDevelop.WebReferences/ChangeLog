@@ -1,6 +1,11 @@
 2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
+	  Fix build.
+
+2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.WebReferences.Commands/WebReferenceCommandHandler.cs:
 	  Properly destroy the web reference dialog.
 
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>

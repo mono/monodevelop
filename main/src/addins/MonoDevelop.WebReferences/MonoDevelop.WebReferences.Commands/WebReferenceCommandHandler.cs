@@ -42,11 +42,11 @@ namespace MonoDevelop.WebReferences.Commands
 					dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
 					IdeApp.ProjectOperations.Save(project);
 				}
-			} finally {
-				dialog.Destroy ();
 			}
 			catch(Exception exception) {
 				MessageService.ShowException (exception);
+			} finally {
+				dialog.Destroy ();
 			}
 		}
 		
