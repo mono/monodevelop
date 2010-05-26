@@ -55,11 +55,14 @@ namespace MonoDevelop.SourceEditor
 	
 	public class MessageBubbleTextMarker : TextMarker, IBackgroundMarker, IIconBarMarker, IExtendingTextMarker, IDisposable, IActionTextMarker
 	{
-		const int border = 4;
+		internal const int border = 4;
 		internal Gdk.Pixbuf errorPixbuf;
 		internal Gdk.Pixbuf warningPixbuf;
 //		bool fitCalculated = false;
 		bool fitsInSameLine = true;
+		public bool FitsInSameLine {
+			get { return this.fitsInSameLine; }
+		}
 		
 		TextEditor editor;
 		
@@ -130,6 +133,28 @@ namespace MonoDevelop.SourceEditor
 			lastHeight = height;
 			
 			return height;
+		}
+		
+		public void SetPrimaryError (string text)
+		{
+			var match = mcsErrorFormat.Match (text);
+			if (match.Success)
+				text = match.Groups[1].Value;
+			int idx = -1;
+			for (int i = 0; i < errors.Count; i++) {
+				if (errors[i].ErrorMessage == text) {
+					idx = i;
+					break;
+				}
+			}
+			if (idx <= 0)
+				return;
+			var tmp = errors[idx];
+			errors.RemoveAt (idx);
+			errors.Insert (0, tmp);
+			var tmplayout = layouts[idx];
+			layouts.RemoveAt (idx);
+			layouts.Insert (0, tmplayout);
 		}
 		
 		static Dictionary<string, KeyValuePair<int, int>> textWidthDictionary = new Dictionary<string, KeyValuePair<int, int>>();
@@ -234,7 +259,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		internal Gdk.GC gc, gcLight;
-		Pango.Layout errorCountLayout;
+		internal Pango.Layout errorCountLayout;
 		List<LayoutDescriptor> layouts;
 		internal IList<LayoutDescriptor> Layouts {
 			get {
@@ -333,7 +358,7 @@ namespace MonoDevelop.SourceEditor
 		const int BOTTOM = 1;
 		
 		bool ShowIconsInBubble = false;
-		int LayoutWidth {
+		internal int LayoutWidth {
 			get {
 				if (layouts == null)
 					return 0;
@@ -588,7 +613,7 @@ namespace MonoDevelop.SourceEditor
 					int rH = editor.LineHeight * 3 / 4;
 					BookmarkMarker.DrawRoundRectangle (g, rX, rY, 8, rW, rH);
 					
-					g.Color = oldIsOver ? new Cairo.Color (0.3, 0.3, 0.3) : new Cairo.Color (0.5, 0.5, 0.5);
+					g.Color = oldIsOver ? new Cairo.Color (0.3, 0.3, 0.3) : new Cairo.Color (0.5, 0.5, 0.5);
 					g.Fill ();
 					if (CollapseExtendedErrors) {
 						win.DrawLayout (gcLight, x2 + (ShowIconsInBubble ? errorPixbuf.Width : 0) + border + LayoutWidth + 4, y + (editor.LineHeight - eh) / 2, errorCountLayout);
@@ -724,9 +749,9 @@ namespace MonoDevelop.SourceEditor
 					errorCounterWidth = ew + 10;
 				}
 				
-				int labelWidth = LayoutWidth + border + (ShowIconsInBubble ? errorPixbuf.Width : 0) + errorCounterWidth + editor.LineHeight / 2;
-				
-				
+				int labelWidth = LayoutWidth + border + (ShowIconsInBubble ? errorPixbuf.Width : 0) + errorCounterWidth;
+				if (fitsInSameLine)
+					labelWidth += editor.LineHeight / 2;
 				return new Gdk.Rectangle (editor.Allocation.Width - labelWidth, y, labelWidth, height);
 			}
 		}

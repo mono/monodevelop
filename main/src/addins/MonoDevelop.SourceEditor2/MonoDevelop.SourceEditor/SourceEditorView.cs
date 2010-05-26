@@ -264,6 +264,8 @@ namespace MonoDevelop.SourceEditor
 			if (marker == null)
 				return;
 			
+			marker.SetPrimaryError (task.Description);
+			
 			if (TextEditor.IsComposited) {
 				if (messageBubbleHighlightPopupWindow != null)
 					messageBubbleHighlightPopupWindow.Destroy ();
