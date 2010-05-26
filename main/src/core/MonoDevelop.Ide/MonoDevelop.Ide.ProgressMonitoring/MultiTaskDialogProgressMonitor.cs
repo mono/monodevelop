@@ -68,6 +68,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (showProgress) {
 				dialog = new MultiTaskProgressDialog (allowCancel, showDetails, taskLabelAliases);
+				MessageService.PlaceDialog (dialog, MessageService.RootWindow);
 				dialog.Show ();
 				dialog.AsyncOperation = AsyncOperation;
 				DispatchService.RunPendingEvents ();

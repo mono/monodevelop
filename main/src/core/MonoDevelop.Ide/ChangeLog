@@ -1,5 +1,11 @@
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs:
+	* MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs:
+	  Dialog placement.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Commands/FileCommands.cs: Use platform
 	  dialog, and dialog placement cleanup.
 
