@@ -1,5 +1,10 @@
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
+	* Styles/IrBlackStyle.xml: Fixed 'Bug 608974 - [regression]
+	  IrBlack color scheme badly highlights warnings and errors'.
+
+2010-05-26  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextMarker.cs:
 	* Mono.TextEditor/TextViewMargin.cs:
 	* Mono.TextEditor/TextLinkEditMode.cs: text markers can now
