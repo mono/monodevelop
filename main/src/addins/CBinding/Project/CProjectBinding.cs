@@ -53,38 +53,33 @@ namespace CBinding
 		
 		public Project CreateSingleFileProject (string sourceFile)
 		{
-			ProjectCreateInformation info = new ProjectCreateInformation ();
-			info.ProjectName = Path.GetFileNameWithoutExtension (sourceFile);
-			info.SolutionPath = Path.GetDirectoryName (sourceFile);
-			info.ProjectBasePath = Path.GetDirectoryName (sourceFile);
+			var info = new ProjectCreateInformation () {
+				ProjectName = Path.GetFileNameWithoutExtension (sourceFile),
+				SolutionPath = Path.GetDirectoryName (sourceFile),
+				ProjectBasePath = Path.GetDirectoryName (sourceFile),
+			};
 			
-			string language = string.Empty;
-			
-			switch (Path.GetExtension (sourceFile))
-			{
+			Project project = new CProject (info, null, GetLanguage (sourceFile));
+			project.Files.Add (new ProjectFile (sourceFile));
+			return project;
+		}
+		
+		string GetLanguage (string filename)
+		{
+			switch (Path.GetExtension (filename.ToLower ())) {
 			case ".c":
-				language = "C";
-				break;
+				return "C";
 			case ".cpp":
-				language = "CPP";
-				break;
 			case ".cxx":
-				language = "CPP";
-				break;
+				return  "CPP";
+			default:
+				return null;
 			}
-			
-			if (language.Length > 0) {
-				Project project =  new CProject (info, null, language);
-				project.Files.Add (new ProjectFile (sourceFile));
-				return project;
-			}
-			
-			return null;
 		}
 		
 		public bool CanCreateSingleFileProject (string sourceFile)
 		{
-			return true;
+			return GetLanguage (sourceFile) != null;
 		}
 	}
 }
