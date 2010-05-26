@@ -246,10 +246,10 @@ namespace MonoDevelop.CSharp.Highlighting
 				return usages.Any (u => u.Offset <= offset && offset <= u.EndOffset);
 			}
 			
-			public bool DrawBackground (TextEditor editor, Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+			public bool DrawBackground (TextEditor editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 			{
 				drawBg = false;
-				if (selected || editor.CurrentMode is TextLinkEditMode)
+				if (selectionStart >= 0 || editor.CurrentMode is TextLinkEditMode)
 					return true;
 				foreach (ISegment usage in Usages) {
 					int markerStart = usage.Offset;
@@ -267,11 +267,11 @@ namespace MonoDevelop.CSharp.Highlighting
 					} else {
 						int start = startOffset < markerStart ? markerStart : startOffset;
 						int end = endOffset < markerEnd ? endOffset : markerEnd;
-						int x_pos = layout.IndexToPos (start - startOffset).X;
+						int x_pos = layout.Layout.IndexToPos (start - startOffset).X;
 			
 						@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			
-						x_pos = layout.IndexToPos (end - startOffset).X;
+						x_pos = layout.Layout.IndexToPos (end - startOffset).X;
 			
 						to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 					}

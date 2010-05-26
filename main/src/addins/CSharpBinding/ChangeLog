@@ -1,5 +1,10 @@
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Track API changes.
+
+2010-05-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: UseFullName flag
 	  works now for members.
 
