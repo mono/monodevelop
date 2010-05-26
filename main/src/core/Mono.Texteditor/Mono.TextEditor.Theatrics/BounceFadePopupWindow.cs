@@ -40,20 +40,29 @@ namespace Mono.TextEditor.Theatrics
 		Stage<BounceFadePopupWindow> stage = new Stage<BounceFadePopupWindow> ();
 		Gdk.Pixbuf textImage = null;
 		
-		uint duration;
-		
 		double scale = 0.0;
 		double opacity = 1.0;
 		
-		public BounceFadePopupWindow (TextEditor editor, Rectangle bounds, uint duration) : base (Gtk.WindowType.Popup)
+		public BounceFadePopupWindow (TextEditor editor, Rectangle bounds) : base (Gtk.WindowType.Popup)
 		{
 			this.Decorated = false;
 			this.BorderWidth = 0;
 			this.HasFrame = true;
 			this.editor = editor;
 			this.bounds = bounds;
-			this.duration = duration;
+			this.Duration = 500;
+			ExpandWidth = 8;
+			ExpandHeight = 2;
 		}
+		
+		/// <summary>Duration of the animation, in milliseconds.</summary>
+		public uint Duration { get; set; }
+		
+		/// <summary>The number of pixels by which the window's width will expand</summary>
+		public uint ExpandWidth { get; set; }
+		
+		/// <summary>The number of pixels by which the window's height will expand</summary>
+		public uint ExpandHeight { get; set; }
 
 		public void Popup ()
 		{
@@ -65,18 +74,16 @@ namespace Mono.TextEditor.Theatrics
 				return;
 			Colormap = rgbaColormap;
 			
-			int i = 12;
-			int j = 2;
 			int x, y;
 			editor.GdkWindow.GetOrigin (out x, out y);
-			Move (x + bounds.X - i / 2, y + bounds.Y - j / 2);
-			Resize (bounds.Width + 2 * i, bounds.Height + 2 * j);
+			Move (x + bounds.X - (int)ExpandWidth, y + bounds.Y - (int)ExpandHeight);
+			Resize (bounds.Width + (int)ExpandWidth * 2, bounds.Height + (int)ExpandHeight * 2);
 			
 			stage.ActorStep += OnAnimationActorStep;
 			stage.Iteration += OnAnimationIteration;
 			
 			stage.UpdateFrequency = 10;
-			stage.Add (this, duration);
+			stage.Add (this, Duration);
 			
 			Show ();
 		}

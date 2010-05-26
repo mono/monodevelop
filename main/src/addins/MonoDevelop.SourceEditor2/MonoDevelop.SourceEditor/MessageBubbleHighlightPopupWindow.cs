@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor
 		MessageBubbleTextMarker marker;
 		
 		public MessageBubbleHighlightPopupWindow (SourceEditorView view, MessageBubbleTextMarker marker)
-			: base (view.TextEditor, marker.ErrorTextBounds, 600)
+			: base (view.TextEditor, marker.ErrorTextBounds)
 		{
 			this.marker = marker;
 		}

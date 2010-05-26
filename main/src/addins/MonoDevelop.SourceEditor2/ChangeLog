@@ -1,6 +1,11 @@
 2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs:
+	  Track API.
+
+2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/MessageBubbleHighlightPopupWindow.cs:
 	  Use new BounceFadePopupWindow class.
 
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
