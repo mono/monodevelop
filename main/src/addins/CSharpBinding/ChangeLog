@@ -1,5 +1,12 @@
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 600624 - Property initializer completion
+	  unreliable'.
+
+2010-05-26  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
 	  Track API changes.
 

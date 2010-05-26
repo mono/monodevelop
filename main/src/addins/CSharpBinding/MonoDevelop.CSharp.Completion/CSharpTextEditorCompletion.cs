@@ -348,15 +348,37 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				}
 				return null;
+//			case '\n':
+//			case '\r': {
+//				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+//					return null;
+//				result = FindExpression (dom, completionContext);
+//				if (result == null)
+//					return null;
+//					
+//					
+//				int tokenIndex = completionContext.TriggerOffset;
+//				string token = GetPreviousToken (ref tokenIndex, false);
+//				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
+//					if (token == "{" || token == ",")
+//						return CreateCtrlSpaceCompletionData (completionContext, result); 
+//				} 
+//				return null;
+//				}
 			case ' ':
 				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 					return null;
 				result = FindExpression (dom, completionContext);
 				if (result == null)
 					return null;
-				
+					
+					
 				int tokenIndex = completionContext.TriggerOffset;
 				string token = GetPreviousToken (ref tokenIndex, false);
+				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
+					if (token == "{" || token == ",")
+						return CreateCtrlSpaceCompletionData (completionContext, result); 
+				}
 				if (token == "=") {
 					int j = tokenIndex;
 					string prevToken = GetPreviousToken (ref j, false);
