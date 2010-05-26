@@ -125,7 +125,7 @@ namespace MonoDevelop.SourceEditor
 			if (textImage == null) {
 				using (Gdk.Pixmap pixmap = new Gdk.Pixmap (evnt.Window, currentBounds.Width, currentBounds.Height)) {
 					using (var bgGc = new Gdk.GC(pixmap)) {
-						bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0]);
+						bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0, 0]);
 						pixmap.DrawRectangle (bgGc, true, 0, 0, currentBounds.Width, currentBounds.Height);
 						
 /*						pixmap.DrawPixbuf (marker.gc, 
