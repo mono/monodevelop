@@ -1,3 +1,12 @@
+2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.Theatrics/BounceFadePopupWindow.cs: New
+	  class extracted from MessageBubbleHighlightPopupWindow.
+	  Tooltip containing an image that "bounces" in size then
+	  fades away.
+
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
 	* Styles/IrBlackStyle.xml: Fixed 'Bug 608974 - [regression]

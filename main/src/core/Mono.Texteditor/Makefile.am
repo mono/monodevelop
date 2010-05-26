@@ -45,6 +45,7 @@ FILES =  \
 	Mono.TextEditor.Theatrics/AnimatedVBox.cs \
 	Mono.TextEditor.Theatrics/AnimatedWidget.cs \
 	Mono.TextEditor.Theatrics/Animation.cs \
+	Mono.TextEditor.Theatrics/BounceFadePopupWindow.cs \
 	Mono.TextEditor.Theatrics/Choreographer.cs \
 	Mono.TextEditor.Theatrics/Pulsator.cs \
 	Mono.TextEditor.Theatrics/SingleActorStage.cs \

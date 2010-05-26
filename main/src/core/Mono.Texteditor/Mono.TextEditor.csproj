@@ -163,6 +163,7 @@
     <Compile Include="Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
     <Compile Include="Mono.TextEditor\PieceTable.cs" />
     <Compile Include="Mono.TextEditor\PangoUtil.cs" />
+    <Compile Include="Mono.TextEditor.Theatrics\BounceFadePopupWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
