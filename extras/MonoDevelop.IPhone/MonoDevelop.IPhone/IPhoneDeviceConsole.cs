@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.IPhone
 {
@@ -137,9 +138,11 @@ namespace MonoDevelop.IPhone
 		
 		public static void Run ()
 		{
-			if (instance == null)
+			if (instance == null) {
 				instance = new IPhoneDeviceConsole ();
-			instance.Show ();
+				MessageService.PlaceDialog (instance, MessageService.RootWindow);
+				instance.Show ();
+			}
 			instance.Present ();
 		}
 	}

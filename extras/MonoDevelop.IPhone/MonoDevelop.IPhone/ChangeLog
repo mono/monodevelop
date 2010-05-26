@@ -1,5 +1,9 @@
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneDeviceConsole.cs: Dialog placement.
+
+2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* CodeBehindGenerator.cs: Build a map of obj-c types to
 	  MonoTouch types by reflection, instead of hardcoding certain
 	  namespaces.
