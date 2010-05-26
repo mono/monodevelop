@@ -93,6 +93,13 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
 				if (startPos < 0)
 					return null;
+				for (int pos = startPos; pos > 2; pos--) {
+					char ch = data.Document.GetCharAt (pos);
+					if (char.IsWhiteSpace (ch))
+						continue;
+					if (ch == 'w' && data.Document.GetCharAt (pos - 1) == 'e' && data.Document.GetCharAt (pos - 2) == 'n')
+						return null;
+				}
 				for (int pos = startPos; pos < data.Document.Length; pos++) {
 					char ch = data.Document.GetCharAt (pos);
 					if (ch == '(') {

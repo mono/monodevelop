@@ -1,3 +1,9 @@
+2010-05-26  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Fixed 'Bug 558372 - Code parser is interpreting classname as
+	  method name'.
+
 2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoryCommands.cs: Use
