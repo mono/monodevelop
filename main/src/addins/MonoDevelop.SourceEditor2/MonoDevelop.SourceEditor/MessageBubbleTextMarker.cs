@@ -423,36 +423,38 @@ namespace MonoDevelop.SourceEditor
 						endX = startX + 2;
 					startX += startXPos;
 					endX += startXPos;
+					startX = Math.Max (editor.TextViewMargin.XOffset, startX); // clip region to textviewmargin start
 					if (isEolSelected)
 						endX = editor.Allocation.Width + (int)editor.HAdjustment.Value;
-					
-					DrawRectangle (g, startX, y, endX - startX, editor.LineHeight / 2);
-					g.Color = colorMatrix[active, TOP, LIGHT, highlighted, 1];
-					g.Fill ();
-					DrawRectangle (g, startX, y + editor.LineHeight / 2, endX - startX, editor.LineHeight / 2);
-					g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
-					g.Fill ();
-					
-					g.MoveTo (new Cairo.PointD (startX, y + 0.5));
-					g.LineTo (new Cairo.PointD (endX, y + 0.5));
-					g.Color = colorMatrix[active, TOP, LINE, highlighted, 1];
-					g.LineWidth = 1;
-					g.Stroke ();
-					
-					if (startX < x2) {
-						g.MoveTo (new Cairo.PointD (startX, y + editor.LineHeight - 0.5));
-						g.LineTo (new Cairo.PointD (System.Math.Min (endX, x2), y + editor.LineHeight - 0.5));
-						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
+					if (startX < endX) {
+						DrawRectangle (g, startX, y, endX - startX, editor.LineHeight / 2);
+						g.Color = colorMatrix[active, TOP, LIGHT, highlighted, 1];
+						g.Fill ();
+						DrawRectangle (g, startX, y + editor.LineHeight / 2, endX - startX, editor.LineHeight / 2);
+						g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
+						g.Fill ();
+						
+						g.MoveTo (new Cairo.PointD (startX, y + 0.5));
+						g.LineTo (new Cairo.PointD (endX, y + 0.5));
+						g.Color = colorMatrix[active, TOP, LINE, highlighted, 1];
 						g.LineWidth = 1;
 						g.Stroke ();
-					}
-					if (editor.Options.ShowRuler) {
-						int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
-						g.MoveTo (new Cairo.PointD (divider + 0.5, y));
-						g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
-						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
-						g.LineWidth = 1;
-						g.Stroke ();
+						
+						if (startX < x2) {
+							g.MoveTo (new Cairo.PointD (startX, y + editor.LineHeight - 0.5));
+							g.LineTo (new Cairo.PointD (System.Math.Min (endX, x2), y + editor.LineHeight - 0.5));
+							g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
+							g.LineWidth = 1;
+							g.Stroke ();
+						}
+						if (editor.Options.ShowRuler) {
+							int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+							g.MoveTo (new Cairo.PointD (divider + 0.5, y));
+							g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
+							g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
+							g.LineWidth = 1;
+							g.Stroke ();
+						}
 					}
 				}
 				
