@@ -204,7 +204,7 @@ namespace MonoDevelop.Debugger
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
 		{
 			var dlg = new BreakpointPropertiesDialog (bp, editNew);
-			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
+			if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
 				return true;
 			return false;
 		}
@@ -276,7 +276,7 @@ namespace MonoDevelop.Debugger
 			ExpressionEvaluatorDialog dlg = new ExpressionEvaluatorDialog ();
 			if (expression != null)
 				dlg.Expression = expression;
-			MessageService.RunCustomDialog (dlg);
+			MessageService.ShowCustomDialog (dlg);
 		}
 		
 		public static void ShowExceptionCaughtDialog ()
@@ -290,7 +290,7 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExceptionsFilters ()
 		{
-			MessageService.RunCustomDialog (new ExceptionsDialog ());
+			MessageService.ShowCustomDialog (new ExceptionsDialog ());
 		}
 		
 		static void SetupSession ()

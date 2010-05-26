@@ -252,7 +252,7 @@ namespace MonoDevelop.NUnit
 		{
 			Properties properties = new Properties ();
 			properties.Set ("UnitTest", test);
-			MessageService.RunCustomDialog (new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, properties));
+			MessageService.ShowCustomDialog (new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, properties));
 		}
 		
 		void NotifyTestSuiteChanged ()

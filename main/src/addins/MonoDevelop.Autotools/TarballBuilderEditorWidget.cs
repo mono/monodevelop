@@ -82,7 +82,7 @@ namespace MonoDevelop.Autotools
 		{
 			MakefileSwitchEditor editor = new MakefileSwitchEditor (target);
 			editor.ShowAll ();
-			MonoDevelop.Ide.MessageService.RunCustomDialog (editor, this.Toplevel as Gtk.Window);
+			MonoDevelop.Ide.MessageService.ShowCustomDialog (editor, this.Toplevel as Gtk.Window);
 		}
 	}
 }

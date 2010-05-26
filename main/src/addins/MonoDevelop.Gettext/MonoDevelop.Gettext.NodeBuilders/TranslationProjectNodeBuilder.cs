@@ -121,7 +121,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				TranslationProject project = CurrentNode.DataItem as TranslationProject;
 				if (project == null)
 					return;
-				MessageService.RunCustomDialog (new TranslationProjectOptionsDialog (project));
+				MessageService.ShowCustomDialog (new TranslationProjectOptionsDialog (project));
 				IdeApp.Workspace.Save ();
 			}
 			

@@ -269,7 +269,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			#endregion
 			
 			//if 'OK' put items back in collection
-			if (MonoDevelop.Ide.MessageService.RunCustomDialog (dialog, toplevel) == (int)ResponseType.Ok)
+			if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog, toplevel) == (int)ResponseType.Ok)
 			{
 				DesignerTransaction tran = CreateTransaction (Instance);
 				object old = collection;

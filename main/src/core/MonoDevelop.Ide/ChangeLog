@@ -1,3 +1,10 @@
+2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs:
+	* MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:
+	  Use ShowCustomDialog (which destroys the dialog when done)
+	  instead of RunCustomDialog (which doesn't).
+
 2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Commands/FileCommands.cs:

@@ -657,7 +657,7 @@ namespace MonoDevelop.Ide.Gui
 			if (showDirtyDialog) {
 				DirtyFilesDialog dlg = new DirtyFilesDialog ();
 				dlg.Modal = true;
-				if (MessageService.RunCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok)
+				if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok)
 					return false;
 			}
 			

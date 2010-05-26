@@ -1051,7 +1051,7 @@ namespace MonoDevelop.Refactoring
 				editor.BeginAtomicUndo ();
 			
 			try {
-				MessageService.RunCustomDialog (new OverridesImplementsDialog ((IType)item));
+				MessageService.ShowCustomDialog (new OverridesImplementsDialog ((IType)item));
 			} finally {
 				if (editor != null)
 					editor.EndAtomicUndo ();
