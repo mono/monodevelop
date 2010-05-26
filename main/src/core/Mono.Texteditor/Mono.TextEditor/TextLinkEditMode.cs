@@ -613,7 +613,7 @@ namespace Mono.TextEditor
 					start < segment.EndOffset && segment.EndOffset < end;
 		}*/
 		
-	public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+	public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 	{
 		int caretOffset = Editor.Caret.Offset - BaseOffset;
 
@@ -628,8 +628,8 @@ namespace Mono.TextEditor
 					int strOffset = BaseOffset + segment.Offset - startOffset;
 					int strEndOffset = BaseOffset + segment.EndOffset - startOffset;
 
-					int x_pos = layout.IndexToPos (strOffset).X;
-					int x_pos2 = layout.IndexToPos (strEndOffset).X;
+					int x_pos = layout.Layout.IndexToPos (strOffset).X;
+					int x_pos2 = layout.Layout.IndexToPos (strEndOffset).X;
 					
 					x_pos = (int)(x_pos / Pango.Scale.PangoScale);
 					x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
@@ -652,7 +652,7 @@ namespace Mono.TextEditor
 							int x2 = startXPos + x_pos2 - 1;
 							int y2 = y + Editor.LineHeight - 1;
 
-							if (!selected) {
+							if (selectionStart < 0) {
 						//		Console.WriteLine ("Draw BG at " + y + "//" + Editor.GetTextEditorData ().VAdjustment.Value);
 						//		Console.WriteLine (Environment.StackTrace);
 								win.DrawRectangle (fillGc, true, x1, y, x2 - x1, Editor.LineHeight); 

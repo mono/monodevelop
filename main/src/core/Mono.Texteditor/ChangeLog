@@ -1,3 +1,10 @@
+2010-05-26  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextLinkEditMode.cs: text markers can now
+	  override the selection drawing.
+
 2010-05-25  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/CodeSegmentPreviewWindow.cs: Removed debug

@@ -50,6 +50,13 @@ namespace Mono.TextEditor
 		public string TooltipMarkup { get; set; }
 	}
 	
+	[Flags]
+	public enum TextMarkerFlags
+	{
+		None           = 0,
+		DrawsSelection = 1
+	}
+	
 	public class TextMarker
 	{
 		LineSegment lineSegment;
@@ -61,6 +68,11 @@ namespace Mono.TextEditor
 			set {
 				lineSegment = value;
 			}
+		}
+		
+		public virtual TextMarkerFlags Flags {
+			get;
+			set;
 		}
 		
 		public virtual void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
@@ -180,7 +192,7 @@ namespace Mono.TextEditor
 		/// <returns>
 		/// true, when the text view should draw the text, false when the text view should not draw the text.
 		/// </returns>
-		bool DrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg);
+		bool DrawBackground (TextEditor Editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg);
 	}
 	
 	public class LineBackgroundMarker: TextMarker, IBackgroundMarker
@@ -192,10 +204,10 @@ namespace Mono.TextEditor
 			this.color = color;
 		}
 		
-		public bool DrawBackground (TextEditor editor, Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+		public bool DrawBackground (TextEditor editor, Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 		{
 			drawBg = false;
-			if (selected)
+			if (selectionStart > 0)
 				return true;
 			using (Gdk.GC gc = new Gdk.GC (win)) {
 				gc.RgbFgColor = color;

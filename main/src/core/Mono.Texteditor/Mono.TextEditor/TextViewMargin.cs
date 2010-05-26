@@ -1159,7 +1159,7 @@ namespace Mono.TextEditor
 			return CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
 		}
 		
-		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int pangoPosition, int y, int maxX)
+		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int pangoPosition, ref bool isSelectionDrawn, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
@@ -1177,18 +1177,18 @@ namespace Mono.TextEditor
 			int xPos = (int)(pangoPosition / Pango.Scale.PangoScale);
 			bool drawBg = true;
 			bool drawText = true;
-			
 			foreach (TextMarker marker in line.Markers) {
 				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 				if (bgMarker == null)
 					continue;
-				drawText &= bgMarker.DrawBackground (textEditor, win, layout.Layout, false, 				/*selected*/offset, offset + length, y, xPos, xPos + width, ref drawBg);
+				isSelectionDrawn |= (marker.Flags & TextMarkerFlags.DrawsSelection) == TextMarkerFlags.DrawsSelection;
+				drawText &= bgMarker.DrawBackground (textEditor, win, layout, selectionStart, selectionEnd, offset, offset + length, y, xPos, xPos + width, ref drawBg);
 			}
 			
 			if (DecorateLineBg != null)
 				DecorateLineBg (win, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 		
-			if (layout.StartSet || selectionStart == offset + length) {
+			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length)) {
 				int startX;
 				int endX;
 				
@@ -2006,7 +2006,6 @@ namespace Mono.TextEditor
 		{
 			//			int visibleLine = y / this.LineHeight;
 			//			this.caretX = -1;
-			
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
 			xStart = System.Math.Max (0, xStart);
@@ -2018,6 +2017,8 @@ namespace Mono.TextEditor
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
 			
+			bool isSelectionDrawn = false;
+
 			if (BackgroundRenderer != null)
 				BackgroundRenderer.Draw (win, area, line, x, y, _lineHeight);
 			
@@ -2055,7 +2056,7 @@ namespace Mono.TextEditor
 					//					win.DrawLayout (gc, xPos, y, layout);
 					//					layout.GetPixelSize (out width, out height);
 					
-					DrawLinePart (win, line, offset, foldOffset - offset, ref pangoPosition, y, area.Right);
+					DrawLinePart (win, line, offset, foldOffset - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
 					//					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
 					markerLayout.SetText (folding.Description);
@@ -2098,7 +2099,7 @@ namespace Mono.TextEditor
 			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon 
 			// and the caret position is calculated in DrawLinePart.
 			if (line.EndOffset - offset >= 0)
-				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref pangoPosition, y, area.Right);
+				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
 			
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
 			
@@ -2131,7 +2132,8 @@ namespace Mono.TextEditor
 					lineArea.Width = textEditor.Allocation.Width - lineArea.X;
 				}
 			}
-			DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
+			if (!isSelectionDrawn)
+				DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.ColorStyle.Selection.BackgroundColor : defaultBgColor, false);
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
