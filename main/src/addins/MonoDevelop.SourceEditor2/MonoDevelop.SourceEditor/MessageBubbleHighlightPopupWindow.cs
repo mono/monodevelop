@@ -33,126 +33,33 @@ using Mono.TextEditor.Theatrics;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class MessageBubbleHighlightPopupWindow : Gtk.Window
+	public class MessageBubbleHighlightPopupWindow : BounceFadePopupWindow
 	{
 		MessageBubbleTextMarker marker;
-		SourceEditorView view;
 		
-		public MessageBubbleHighlightPopupWindow (SourceEditorView view, MessageBubbleTextMarker marker)  : base (WindowType.Popup)
+		public MessageBubbleHighlightPopupWindow (SourceEditorView view, MessageBubbleTextMarker marker)
+			: base (view.TextEditor, marker.ErrorTextBounds, 600)
 		{
-			this.view = view;
 			this.marker = marker;
-			this.Decorated = false;
-			this.BorderWidth = 0;
-			this.HasFrame = true;
-			this.TransientFor = (view.SourceEditorWidget.TextEditor.Toplevel as Gtk.Window) ?? IdeApp.Workbench.RootWindow;
 		}
 		
-		Stage<MessageBubbleHighlightPopupWindow> stage = new Stage<MessageBubbleHighlightPopupWindow> ();
-
-		public void Popup ()
+		protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
 		{
-			var rgbaColormap = Screen.RgbaColormap;
-			if (rgbaColormap == null)
-				return;
-			Colormap = rgbaColormap;
-			
-			Gdk.Rectangle currentBounds = marker.ErrorTextBounds;
-			int i = 12;
-			int j = 2;
-			int x, y;
-			view.SourceEditorWidget.TextEditor.GdkWindow.GetOrigin (out x, out y);
-			Move (x + currentBounds.X - i / 2, y + currentBounds.Y - j / 2);
-			Resize (currentBounds.Width + 2 * i, currentBounds.Height + 2 * j);
-			
-			stage.ActorStep += OnAnimationActorStep;
-			stage.Iteration += OnAnimationIteration;
-			stage.UpdateFrequency = 10;
-			stage.Add (this, 120);
-			
-			Show ();
-		}
-		double Percent = 0.0;
-		
-		void OnAnimationIteration (object sender, EventArgs args)
-		{
-			QueueDraw ();
-		}
-		
-		bool isComing = true;
-		
-		bool OnAnimationActorStep (Actor<MessageBubbleHighlightPopupWindow> actor)
-		{
-			if (isComing) {
-				Percent = actor.Percent;
-				if (actor.Expired) {
-					isComing = false;
-					actor.Reset ();
-					return true;
-				}
-			} else {
-				Percent = 1.0 - actor.Percent;
-				if (actor.Expired) {
-					Destroy ();
-					return false;
-				}
-			}
-			return true;
-		}
-
-		
-		Gdk.Pixbuf textImage = null;
-		protected override void OnDestroyed ()
-		{
-			base.OnDestroyed ();
-			stage.Playing = false;
-			
-			if (textImage != null) {
-				textImage.Dispose ();
-				textImage = null;
-			}
-		}
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var g = Gdk.CairoHelper.Create (evnt.Window)) {
-				g.SetSourceRGBA (1, 1, 1, 0);
-				g.Operator = Cairo.Operator.Source;
-				g.Paint ();
-			}
-			
-			Gdk.Rectangle currentBounds = marker.ErrorTextBounds;
-			if (textImage == null) {
-				using (Gdk.Pixmap pixmap = new Gdk.Pixmap (evnt.Window, currentBounds.Width, currentBounds.Height)) {
-					using (var bgGc = new Gdk.GC(pixmap)) {
-						bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0, 0]);
-						pixmap.DrawRectangle (bgGc, true, 0, 0, currentBounds.Width, currentBounds.Height);
-						
+			using (Gdk.Pixmap pixmap = new Gdk.Pixmap (parentwindow, bounds.Width, bounds.Height)) {
+				using (var bgGc = new Gdk.GC(pixmap)) {
+					bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0, 0]);
+					pixmap.DrawRectangle (bgGc, true, 0, 0, bounds.Width, bounds.Height);
+					
 /*						pixmap.DrawPixbuf (marker.gc, 
-						                marker.Errors.Any (e => e.IsError) ? marker.errorPixbuf : marker.warningPixbuf, 
-						                0, 0, 0, (currentBounds.Height - marker.errorPixbuf.Height) / 2,
-						                marker.errorPixbuf.Width, marker.errorPixbuf.Height, 
-						                Gdk.RgbDither.None, 0, 0);
-						 */
-						pixmap.DrawLayout (marker.gc, /*marker.errorPixbuf.Width +*/ 0, (currentBounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
-					}
-					textImage = Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, currentBounds.Width, currentBounds.Height);
+					                marker.Errors.Any (e => e.IsError) ? marker.errorPixbuf : marker.warningPixbuf, 
+					                0, 0, 0, (currentBounds.Height - marker.errorPixbuf.Height) / 2,
+					                marker.errorPixbuf.Width, marker.errorPixbuf.Height, 
+					                Gdk.RgbDither.None, 0, 0);
+					 */
+					pixmap.DrawLayout (marker.gc, /*marker.errorPixbuf.Width +*/ 0, (bounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
 				}
+				return Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, bounds.Width, bounds.Height);
 			}
-			try {
-				int i = (int)(12.0 * Percent);
-				int j = (int)(2.0 * Percent);
-				using (var scaled = textImage.ScaleSimple (Allocation.Width - (12 - i), Allocation.Height - (2 - j), Gdk.InterpType.Bilinear)) {
-					if (scaled != null) {
-						using (var gc = new Gdk.GC (evnt.Window)) {
-							scaled.RenderToDrawable (evnt.Window, gc, 0, 0, (Allocation.Width - scaled.Width) / 2, (Allocation.Height - scaled.Height) / 2, scaled.Width, scaled.Height, Gdk.RgbDither.None, 0, 0);
-						}
-					}
-				}
-			} catch (Exception e) {
-				Console.WriteLine ("got exception in search result animation:" + e);
-			}
-			return false;
 		}
 	}
 }
