@@ -94,11 +94,14 @@ namespace Mono.TextEditor.Theatrics
 				return false;
 			}
 			
+			// for the first half, vary scale in a simple sin curve from 0 to Pi
 			if (actor.Percent < 0.5) {
 				scale = System.Math.Sin (actor.Percent * 2 * System.Math.PI);
-			} else {
+			}
+			//for the second half, vary opacity linearly from 1 to 0.
+			else {
 				scale = 0;
-				opacity = 1.0 - (actor.Percent * 0.5);
+				opacity = 2.0 - actor.Percent * 2;
 			}
 			return true;
 		}
@@ -140,7 +143,7 @@ namespace Mono.TextEditor.Theatrics
 				int j = (int)(2.0 * scale);
 				using (var scaled = textImage.ScaleSimple (Allocation.Width - (12 - i), Allocation.Height - (2 - j), Gdk.InterpType.Bilinear)) {
 					if (scaled != null) {
-						SetPixbufChannel (scaled, 4, (byte)opacity);
+						SetPixbufChannel (scaled, 4, (byte)(opacity*255));
 						using (var gc = new Gdk.GC (evnt.Window)) {
 							scaled.RenderToDrawable (evnt.Window, gc, 0, 0, (Allocation.Width - scaled.Width) / 2, (Allocation.Height - scaled.Height) / 2, scaled.Width, scaled.Height, Gdk.RgbDither.None, 0, 0);
 						}
@@ -168,7 +171,7 @@ namespace Mono.TextEditor.Theatrics
 			int rowStride = p.Rowstride;
 			int width = p.Width;
 			byte *lastRow = start + p.Rowstride * (p.Height - 1);
-			for (byte *row = start; row < lastRow; row += rowStride) {
+			for (byte *row = start; row <= lastRow; row += rowStride) {
 				byte *colEnd = row + width * nChannels;
 				for (byte *col = row + channel - 1; col < colEnd; col += nChannels)
 					*col = value;

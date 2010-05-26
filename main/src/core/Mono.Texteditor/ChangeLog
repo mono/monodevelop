@@ -1,5 +1,10 @@
 2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Theatrics/BounceFadePopupWindow.cs: Fix some
+	  opacity calculations.
+
+2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor.Theatrics/BounceFadePopupWindow.cs: New
