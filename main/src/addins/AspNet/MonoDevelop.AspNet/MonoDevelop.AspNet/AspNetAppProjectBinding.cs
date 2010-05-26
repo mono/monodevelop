@@ -59,16 +59,15 @@ namespace MonoDevelop.AspNet
 		
 		public Project CreateSingleFileProject (string file)
 		{
-			if (!CanCreateSingleFileProject (file))
-				return null;
-			
 			//TODO: get page language
 			string language = "C#";
-					
-			ProjectCreateInformation info = new ProjectCreateInformation ();
-			info.ProjectName = Path.GetFileNameWithoutExtension (file);
-			info.SolutionPath = Path.GetDirectoryName (file);
-			Project project = CreateProject (language, info, null);
+			
+			var info = new ProjectCreateInformation () {
+				ProjectName = Path.GetFileNameWithoutExtension (file),
+				SolutionPath = Path.GetDirectoryName (file),
+				ProjectBasePath = Path.GetDirectoryName (file),
+			};
+			var project = CreateProject (language, info, null);
 			project.Files.Add (new ProjectFile (file));
 			return project;
 		}
