@@ -101,16 +101,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	
 	class TypeSearchResult : MemberSearchResult
 	{
-		bool useFullName;
-		
 		public override string File {
 			get { return ((IType)member).CompilationUnit.FileName; }
-		}
-		
-		protected override OutputFlags Flags {
-			get {
-				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | (useFullName  ? OutputFlags.UseFullName : OutputFlags.None);
-			}
 		}
 		
 		public override string Description {
@@ -125,16 +117,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		
-		public override string MarkupText {
-			get {
-				return useFullName ? HighlightMatch (Ambience.GetString (member, Flags | OutputFlags.IncludeMarkup), match) : base.MarkupText;
-			}
-		}
-		
-		
-		public TypeSearchResult (string match, string matchedString, int rank, IType type, bool useFullName) : base (match, matchedString, rank, type)
+		public TypeSearchResult (string match, string matchedString, int rank, IType type, bool useFullName) : base (match, matchedString, rank, type, useFullName)
 		{
-			this.useFullName = useFullName;
 		}
 	}
 	
@@ -187,16 +171,19 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	
 	class MemberSearchResult : SearchResult
 	{
+		protected bool useFullName;
 		protected IMember member;
 		
 		protected virtual OutputFlags Flags {
 			get {
-				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics;
+				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | (useFullName  ? OutputFlags.UseFullName : OutputFlags.None);
 			}
 		}
 		
 		public override string MarkupText {
 			get {
+				if (useFullName)
+					return HighlightMatch (Ambience.GetString (member, Flags | OutputFlags.IncludeMarkup), match);
 				OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
 				settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
 					if (domVisitable == member)
@@ -205,6 +192,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				return Ambience.GetString (member, settings);
 			}
 		}
+		
+			/*	
+		public override string MarkupText {
+			get {
+				return useFullName ? HighlightMatch (Ambience.GetString (member, Flags | OutputFlags.IncludeMarkup), match) : base.MarkupText;
+			}
+		}*/
+
 		
 		public override string PlainText {
 			get {
@@ -236,9 +231,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public MemberSearchResult (string match, string matchedString, int rank, IMember member) : base (match, matchedString, rank)
+		public MemberSearchResult (string match, string matchedString, int rank, IMember member, bool useFullName) : base (match, matchedString, rank)
 		{
-			this.member= member;
+			this.member = member;
+			this.useFullName = useFullName;
 		}
 		
 		protected Ambience Ambience { 

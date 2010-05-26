@@ -338,10 +338,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			internal SearchResult CheckMember (IMember member, string toMatch)
 			{
 				int rank;
-				string memberName = (member is IMethod && ((IMethod)member).IsConstructor) ? member.DeclaringType.Name : member.Name;
-				if (!MatchName (memberName, toMatch, out rank))
-					return null;
-				return new MemberSearchResult (toMatch, memberName, rank, member);
+				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer);
+				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
+				if (MatchName (memberName, toMatch, out rank))
+					return new MemberSearchResult (toMatch, memberName, rank, member, false);
+				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
+				if (MatchName (memberName, toMatch, out rank))
+					return new MemberSearchResult (toMatch, memberName, rank, member, true);
+				return null;
 			}
 			
 			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
