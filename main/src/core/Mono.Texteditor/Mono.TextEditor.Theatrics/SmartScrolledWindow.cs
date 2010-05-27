@@ -55,6 +55,10 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
+		protected SmartScrolledWindow (IntPtr ptr) : base (ptr)
+		{
+		}
+		
 		public SmartScrolledWindow ()
 		{
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
