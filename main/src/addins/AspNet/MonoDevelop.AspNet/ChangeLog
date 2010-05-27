@@ -1,3 +1,15 @@
+2010-05-27  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/CodeBehind.cs:
+	* MonoDevelop.AspNet/WebTypeManager.cs:
+	* MonoDevelop.AspNet/AspNetToolboxNode.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Parser/WebFormReferenceManager.cs:
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Move
+	  all the WebTypeManager static utility-type methods onto a
+	  WebTypeContext class. Reduces arguments and will make it
+	  easier to cache stuff.
+
 2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/WebTypeManager.cs: Added method for

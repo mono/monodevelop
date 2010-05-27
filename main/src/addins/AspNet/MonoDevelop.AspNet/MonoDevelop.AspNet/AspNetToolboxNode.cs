@@ -135,8 +135,7 @@ namespace MonoDevelop.AspNet
 			
 			var assemName = SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
 			
-			var refMan = new DocumentReferenceManager () {
-				Project = document.Project as AspNetAppProject,
+			var refMan = new DocumentReferenceManager ((AspNetAppProject)document.Project) {
 				Doc = doc,
 			};
 			

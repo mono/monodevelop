@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNet.Parser
 	{
 		int prefixIndex = 0;
 		
-		public WebFormReferenceManager ()
+		public WebFormReferenceManager (AspNetAppProject project) : base (project)
 		{
 		}
 		

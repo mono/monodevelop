@@ -77,8 +77,8 @@ namespace MonoDevelop.AspNet
 			if (string.IsNullOrEmpty (className))
 				return null;
 			
-			var refman = new DocumentReferenceManager () { Doc = document, Project = project };
-			var memberList = new MemberListVisitor (document, refman );
+			var refman = new DocumentReferenceManager (project) { Doc = document };
+			var memberList = new MemberListVisitor (document, refman);
 			document.RootNode.AcceptVisit (memberList);
 			
 			var err = memberList.Errors.Where (x => x.ErrorType == ErrorType.Error).FirstOrDefault ();

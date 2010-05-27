@@ -56,10 +56,9 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		AspNetParsedDocument aspDoc;
 		AspNetAppProject project;
-		DocumentReferenceManager refman = new DocumentReferenceManager ();
+		DocumentReferenceManager refman;
 		
 		bool HasDoc { get { return aspDoc != null; } }
-		bool HasProject { get { return project != null; } }
 		 
 		Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 		
@@ -76,9 +75,16 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			base.OnParsedDocumentUpdated ();
 			aspDoc = CU as AspNetParsedDocument;
-			project = base.Document.Project as AspNetAppProject;
-			if (HasProject)
-				refman.Project = project;
+			
+			var newProj = (AspNetAppProject)base.Document.Project;
+			if (newProj == null)
+				throw new InvalidOperationException ("Document has no project");
+			
+			if (project != newProj) {
+				project = newProj;
+				refman = new DocumentReferenceManager (project);
+			}
+			
 			if (HasDoc)
 				refman.Doc = aspDoc;
 		}
@@ -245,7 +251,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (!HasDoc) {
 				AddAspBeginExpressions (list);
 				string aspPrefix = "asp:";
-				foreach (IType cls in WebTypeManager.ListSystemControlClasses (new DomType ("System.Web.UI.Control"), project))
+				foreach (IType cls in WebTypeContext.ListSystemControlClasses (new DomType ("System.Web.UI.Control"), project))
 					list.Add (new AspTagCompletionData (aspPrefix, cls));
 				
 				base.GetElementCompletions (list);
@@ -431,7 +437,7 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		ClrVersion ProjClrVersion {
-			get { return HasProject? project.TargetFramework.ClrVersion : ClrVersion.Net_2_0; }
+			get { return project.TargetFramework.ClrVersion; }
 		}
 		
 		CompletionDataList HandleExpressionCompletion (AspNetExpression expr)
@@ -462,7 +468,7 @@ namespace MonoDevelop.AspNet.Gui
 			codeBehindClass = null;
 			projectDatabase = null;
 			
-			if (HasDoc && HasProject && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
+			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
 				projectDatabase = ProjectDomService.GetProjectDom (project);
 				if (projectDatabase != null)
 					codeBehindClass = projectDatabase.GetType (aspDoc.Info.InheritedClass, false, false);
@@ -489,8 +495,7 @@ namespace MonoDevelop.AspNet.Gui
 			Debug.Assert (name.IsValid);
 			Debug.Assert (name.HasPrefix);
 			
-			//get a parser database
-			var database = HasProject? ProjectDomService.GetProjectDom (project) : WebTypeManager.GetSystemWebDom (null);
+			var database = ProjectDomService.GetProjectDom (project);
 			
 			if (database == null) {
 				LoggingService.LogWarning ("Could not obtain project DOM in AddAspAttributeCompletionData");
@@ -536,7 +541,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (controlClass == null) {
 				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
 				
-				var database = WebTypeManager.GetSystemWebDom (project);
+				var database = WebTypeContext.GetSystemWebDom (project);
 				controlClass = database.GetType ("System.Web.UI.WebControls.WebControl", true, false);
 
 				if (controlClass == null) {
@@ -589,7 +594,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			if (projectDatabase == null) {
-				projectDatabase = WebTypeManager.GetSystemWebDom (project);
+				projectDatabase = WebTypeContext.GetSystemWebDom (project);
 				
 				if (projectDatabase == null) {
 					LoggingService.LogWarning ("Could not obtain type database in AddAspAttributeCompletionData");
