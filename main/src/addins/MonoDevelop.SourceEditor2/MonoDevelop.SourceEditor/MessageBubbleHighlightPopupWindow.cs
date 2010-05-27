@@ -41,22 +41,21 @@ namespace MonoDevelop.SourceEditor
 			: base (view.TextEditor, marker.ErrorTextBounds)
 		{
 			this.marker = marker;
+			
+			ExpandWidth = 36;
+			ExpandHeight = 2;
+			BounceEasing = Easing.Sine;
+			Duration = 600;
 		}
 		
 		protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
 		{
+			//FIXME add a drop shadow on the pixmap, and expand the bounds to include this
 			using (Gdk.Pixmap pixmap = new Gdk.Pixmap (parentwindow, bounds.Width, bounds.Height)) {
 				using (var bgGc = new Gdk.GC(pixmap)) {
 					bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0, 0]);
 					pixmap.DrawRectangle (bgGc, true, 0, 0, bounds.Width, bounds.Height);
-					
-/*						pixmap.DrawPixbuf (marker.gc, 
-					                marker.Errors.Any (e => e.IsError) ? marker.errorPixbuf : marker.warningPixbuf, 
-					                0, 0, 0, (currentBounds.Height - marker.errorPixbuf.Height) / 2,
-					                marker.errorPixbuf.Width, marker.errorPixbuf.Height, 
-					                Gdk.RgbDither.None, 0, 0);
-					 */
-					pixmap.DrawLayout (marker.gc, /*marker.errorPixbuf.Width +*/ 0, (bounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
+					pixmap.DrawLayout (marker.gc, 4, (bounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
 				}
 				return Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, bounds.Width, bounds.Height);
 			}
