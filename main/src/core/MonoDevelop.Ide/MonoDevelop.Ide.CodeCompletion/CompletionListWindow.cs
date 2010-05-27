@@ -638,7 +638,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			HideFooter ();
 			if (Visible) {
 				//don't reset the user-entered word when refilling the list
+				var tmp = this.List.AutoSelect;
 				Reset (false);
+				this.List.AutoSelect = tmp;
 				FillList ();
 				if (last != null )
 					SelectEntry (last);
