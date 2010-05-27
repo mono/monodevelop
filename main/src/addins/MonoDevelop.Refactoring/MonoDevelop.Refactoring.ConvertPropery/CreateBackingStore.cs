@@ -106,7 +106,8 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			backingStoreName = GetBackingStoreName (property);
 			
 			FieldDeclaration backingStore = new FieldDeclaration (null);
-			backingStore.TypeReference = property.ReturnType.ConvertToTypeReference ();
+			
+			backingStore.TypeReference = options.Document.CompilationUnit.ShortenTypeName (property.ReturnType, property.Location).ConvertToTypeReference ();
 			backingStore.Fields.Add (new VariableDeclaration (backingStoreName));
 			DocumentLocation location = property.Location.ToDocumentLocation (data.Document);
 			location.Column = 0;

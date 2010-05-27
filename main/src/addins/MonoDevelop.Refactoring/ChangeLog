@@ -1,3 +1,9 @@
+2010-05-27  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.ConvertPropery/CreateBackingStore.cs:
+	  Fixed 'Bug 609278 - Add backing store doesn't remove
+	  namespace from backing field'.
+
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
