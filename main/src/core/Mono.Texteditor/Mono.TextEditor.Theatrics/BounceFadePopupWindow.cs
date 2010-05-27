@@ -51,8 +51,9 @@ namespace Mono.TextEditor.Theatrics
 			this.editor = editor;
 			this.bounds = bounds;
 			this.Duration = 500;
-			ExpandWidth = 8;
+			ExpandWidth = 12;
 			ExpandHeight = 2;
+			BounceEasing = Easing.Sine;
 		}
 		
 		/// <summary>Duration of the animation, in milliseconds.</summary>
@@ -64,6 +65,9 @@ namespace Mono.TextEditor.Theatrics
 		/// <summary>The number of pixels by which the window's height will expand</summary>
 		public uint ExpandHeight { get; set; }
 
+		/// <summary>The easing used for the bounce part of the animation.</summary>
+		public Easing BounceEasing { get; set; }
+		
 		public void Popup ()
 		{
 			if (!IsComposited)
@@ -76,8 +80,8 @@ namespace Mono.TextEditor.Theatrics
 			
 			int x, y;
 			editor.GdkWindow.GetOrigin (out x, out y);
-			Move (x + bounds.X - (int)ExpandWidth, y + bounds.Y - (int)ExpandHeight);
-			Resize (bounds.Width + (int)ExpandWidth * 2, bounds.Height + (int)ExpandHeight * 2);
+			Move (x + bounds.X - (int)(ExpandWidth / 2), y + bounds.Y - (int)(ExpandHeight / 2));
+			Resize (bounds.Width + (int)ExpandWidth, bounds.Height + (int)ExpandHeight);
 			
 			stage.ActorStep += OnAnimationActorStep;
 			stage.Iteration += OnAnimationIteration;
@@ -101,13 +105,14 @@ namespace Mono.TextEditor.Theatrics
 				return false;
 			}
 			
-			// for the first half, vary scale in a simple sin curve from 0 to Pi
+			// for the first half, use an easing
 			if (actor.Percent < 0.5) {
-				scale = System.Math.Sin (actor.Percent * 2 * System.Math.PI);
+				scale = Choreographer.Compose (actor.Percent * 2, BounceEasing);
+				opacity = 1.0;
 			}
 			//for the second half, vary opacity linearly from 1 to 0.
 			else {
-				scale = 0;
+				scale = scale = Choreographer.Compose (1.0, BounceEasing);
 				opacity = 2.0 - actor.Percent * 2;
 			}
 			return true;
@@ -146,13 +151,18 @@ namespace Mono.TextEditor.Theatrics
 					}
 				}
 				
-				int i = (int)(12.0 * scale);
-				int j = (int)(2.0 * scale);
-				using (var scaled = textImage.ScaleSimple (Allocation.Width - (12 - i), Allocation.Height - (2 - j), Gdk.InterpType.Bilinear)) {
+				int i = (int)(ExpandWidth * scale);
+				int j = (int)(ExpandHeight * scale);
+				int winw = Allocation.Width, winh = Allocation.Height;
+				int scaledw = winw - (int)(ExpandWidth - i);
+				int scaledh = winh - (int)(ExpandHeight - j);
+				
+				using (var scaled = textImage.ScaleSimple (scaledw, scaledh, Gdk.InterpType.Bilinear)) {
 					if (scaled != null) {
 						SetPixbufChannel (scaled, 4, (byte)(opacity*255));
 						using (var gc = new Gdk.GC (evnt.Window)) {
-							scaled.RenderToDrawable (evnt.Window, gc, 0, 0, (Allocation.Width - scaled.Width) / 2, (Allocation.Height - scaled.Height) / 2, scaled.Width, scaled.Height, Gdk.RgbDither.None, 0, 0);
+							scaled.RenderToDrawable (evnt.Window, gc, 0, 0, (winw - scaledw) / 2, (winh - scaledh) / 2, 
+							                         scaledw, scaledh, Gdk.RgbDither.None, 0, 0);
 						}
 					}
 				}
