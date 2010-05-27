@@ -527,7 +527,6 @@ namespace MonoDevelop.SourceEditor
 						g.LineWidth = 1;
 						g.Stroke ();
 					} else { // draw 'arrow marker' in the same line
-						Console.WriteLine (2);
 						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
 						double mid = y2 + topSize;
 						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, mid));
