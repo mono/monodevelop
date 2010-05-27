@@ -155,19 +155,29 @@ namespace Mono.TextEditor
 			UpdateNode (line.Iter.CurrentNode);
 		}
 		
-		protected virtual void OnLineChanged (LineEventArgs args)
+		protected virtual void OnLineChanged (LineEventArgs e)
 		{
-			if (LineChanged != null) 
-				LineChanged (this, args);
+			EventHandler<LineEventArgs> handler = this.LineChanged;
+			if (handler != null)
+				handler (this, e);
 		}
 		public event EventHandler<LineEventArgs> LineChanged;
 		
-		protected virtual void OnLineInserted (LineEventArgs args)
+		protected virtual void OnLineInserted (LineEventArgs e)
 		{
-			if (LineInserted != null) 
-				LineInserted (this, args);
+			EventHandler<LineEventArgs> handler = this.LineInserted;
+			if (handler != null)
+				handler (this, e);
 		}
 		public event EventHandler<LineEventArgs> LineInserted;
+		
+		protected virtual void OnLineRemoved (LineEventArgs e)
+		{
+			EventHandler<LineEventArgs> handler = this.LineRemoved;
+			if (handler != null)
+				handler (this, e);
+		}
+		public event EventHandler<LineEventArgs> LineRemoved;
 		
 		public static int GetOffsetFromNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
 		{
@@ -235,6 +245,7 @@ namespace Mono.TextEditor
 			RedBlackTree<TreeNode>.RedBlackTreeNode parent = line.Iter.CurrentNode.parent; 
 			tree.RemoveAt (line.Iter);
 			UpdateNode (parent); 
+			OnLineRemoved (new LineEventArgs (line));
 		}
 		
 		public TreeNode GetNode (int index)

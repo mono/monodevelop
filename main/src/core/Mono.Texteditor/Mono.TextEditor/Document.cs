@@ -88,7 +88,7 @@ namespace Mono.TextEditor
 			buffer = new GapBuffer ();
 			splitter = new LineSplitter (buffer);
 			splitter.LineSegmentTree.LineChanged += SplitterLineSegmentTreeLineChanged;
-			
+			splitter.LineSegmentTree.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 		/*	splitter.LineSegmentTree.LineInserted += delegate (object sender, LineEventArgs args) {
 				if (LineInserted != null) 
 					LineInserted (this, args);
@@ -232,8 +232,6 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnTextReplaced (ReplaceEventArgs args)
 		{
-			extendingTextMarkers.RemoveAll (em => args.Offset <= em.LineSegment.Offset && em.LineSegment.EndOffset < args.Offset + args.Count);
-				
 			if (TextReplaced != null)
 				TextReplaced (this, args);
 		}
@@ -1231,6 +1229,19 @@ namespace Mono.TextEditor
 			}
 			line.RemoveMarker (type);
 			this.CommitLineUpdate (line);
+		}
+		
+		void HandleSplitterLineSegmentTreeLineRemoved (object sender, LineEventArgs e)
+		{
+			foreach (TextMarker marker in e.Line.Markers) {
+				if (marker is IExtendingTextMarker) {
+					lock (extendingTextMarkers) {
+						HeightChanged = true;
+						extendingTextMarkers.Remove (marker);
+					}
+					UnRegisterVirtualTextMarker ((IExtendingTextMarker)marker);
+				}
+			}
 		}
 		
 		public bool Contains (int offset)

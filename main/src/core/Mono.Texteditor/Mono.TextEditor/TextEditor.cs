@@ -1340,20 +1340,20 @@ namespace Mono.TextEditor
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
 			int startLine = CalculateLineNumber (area.Top - reminder + (int)this.textEditorData.VAdjustment.Value);
-			
 			int startY = LineToVisualY (startLine);
 			if (area.Top == 0 && startY > 0) {
 				startLine--;
 				startY -= GetLineHeight (Document.GetLine (startLine));
 			}
+			
 			int curX = 0;
 			int curY = startY - (int)this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
 			bool renderFirstLine = true;
 			for (int visualLineNumber = startLine; ; visualLineNumber++) {
 				int logicalLineNumber = visualLineNumber;
-				int lineHeight        = GetLineHeight (logicalLineNumber);
-				LineSegment line = Document.GetLine (logicalLineNumber);
+				LineSegment line      = Document.GetLine (logicalLineNumber);
+				int lineHeight        = GetLineHeight (line);
 				int lastFold = -1;
 				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
 					lastFold = System.Math.Max (fs.EndOffset, lastFold);
@@ -2526,7 +2526,6 @@ namespace Mono.TextEditor
 			}
 			
 			int visualLine = Document.LogicalToVisualLine (logicalLine);
-			
 			return visualLine * LineHeight + delta;
 		}
 		
