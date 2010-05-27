@@ -2200,6 +2200,7 @@ namespace Mono.TextEditor
 					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
 					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
 					index = TranslateIndexToUTF8 (layoutWrapper.Layout.Text, index);
+					
 					if (!IsNearX1 (xp, xp1, xp2))
 						index++;
 					return true;
@@ -2214,6 +2215,7 @@ namespace Mono.TextEditor
 					return DocumentLocation.Empty;
 				int offset = line.Offset;
 				yp %= margin.LineHeight;
+				xp -= margin.TextStartPosition;
 				xp += (int)margin.textEditor.HAdjustment.Value;
 				xp *= (int)Pango.Scale.PangoScale;
 				yp *= (int)Pango.Scale.PangoScale;

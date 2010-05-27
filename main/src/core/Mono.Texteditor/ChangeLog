@@ -1,5 +1,10 @@
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Corrected text coordinate
+	  translation.
+
+2010-05-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/LineSegmentTree.cs: Correctly remove line
