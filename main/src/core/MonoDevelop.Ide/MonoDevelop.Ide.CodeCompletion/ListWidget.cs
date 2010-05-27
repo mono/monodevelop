@@ -192,7 +192,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int current = CurrentCategory ();
 			int next = System.Math.Min (categories.Count - 1, System.Math.Max (0, current + relative));
-				
+			if (next < 0 || next >= categories.Count)
+				return;
 			Category newCategory = categories[next];
 			Selection = newCategory.Items[0];
 			if (next == 0)

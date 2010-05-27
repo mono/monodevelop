@@ -1,5 +1,10 @@
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs: Added bounds
+	  check.
+
+2010-05-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs:
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
