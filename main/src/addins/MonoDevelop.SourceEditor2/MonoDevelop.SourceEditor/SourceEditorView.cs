@@ -950,7 +950,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Undo()
 		{
-			if (this.Document.GetCurrentUndoDepth () > 0 && !this.Document.IsDirty) {
+			// TODO: Maybe make this feature optional ?
+/*			if (this.Document.GetCurrentUndoDepth () > 0 && !this.Document.IsDirty) {
 				var buttonCancel = new AlertButton (GettextCatalog.GetString ("Don't Undo")); 
 				var buttonOk = new AlertButton (GettextCatalog.GetString ("Undo")); 
 				var question = GettextCatalog.GetString ("You are about to undo past the last point this file was saved. Do you want to do this?");
@@ -958,7 +959,7 @@ namespace MonoDevelop.SourceEditor
 				                                          question, 1, buttonCancel, buttonOk);
 				if (result != buttonOk)
 					return;
-			}
+			}*/
 			
 			this.Document.Undo ();
 		}

@@ -1,5 +1,10 @@
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Removed
+	  message box which informs of undo past save point.
+
+2010-05-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: fixed
 	  little selection drawing issue.
 
