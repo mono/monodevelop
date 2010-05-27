@@ -398,6 +398,8 @@ namespace Mono.TextEditor
 			if (result < 0) {
 				clipboard.WaitIsTextAvailable ();
 				clipboard.RequestText (delegate(Clipboard clp, string text) {
+					if (string.IsNullOrEmpty (text))
+						return;
 					data.Document.BeginAtomicUndo ();
 					int caretPos = data.Caret.Offset;
 					if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {

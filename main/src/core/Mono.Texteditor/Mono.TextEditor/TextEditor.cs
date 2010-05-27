@@ -363,10 +363,14 @@ namespace Mono.TextEditor
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
 			if (IsSomethingSelected) {
-				ClipboardActions.ClearPrimary ();
 				ISegment selectionRange = MainSelection.GetSelectionRange (textEditorData);
-				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length)
+				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length) {
 					ClipboardActions.CopyToPrimary (this.textEditorData);
+				} else {
+					ClipboardActions.ClearPrimary ();
+				}
+			} else {
+				ClipboardActions.ClearPrimary ();
 			}
 			// Handle redraw
 			Selection selection = Selection.Clone (MainSelection);

@@ -1353,7 +1353,7 @@ namespace Mono.TextEditor
 				return;
 			}
 
-			if (args.Button == 1 || args.Button == 2) {
+			if (args.Button == 1) {
 				VisualLocationTranslator trans = new VisualLocationTranslator (this, args.X, args.Y);
 				clickLocation = trans.VisualToDocumentLocation (args.X, args.Y);
 				LineSegment line = Document.GetLine (clickLocation.Line);
@@ -1432,6 +1432,8 @@ namespace Mono.TextEditor
 				if (selection != null) 
 					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
 				
+				bool autoScroll = textEditor.Caret.AutoScrollToCaret;
+				textEditor.Caret.AutoScrollToCaret = false;
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
 				if (selection != null) {
@@ -1440,18 +1442,14 @@ namespace Mono.TextEditor
 						anchor += length;
 						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length), Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
 					}
-					bool autoScroll = textEditor.Caret.AutoScrollToCaret;
-					textEditor.Caret.AutoScrollToCaret = false;
-					try {
-						textEditor.Caret.Offset = oldOffset;
-					} finally {
-						textEditor.Caret.AutoScrollToCaret = autoScroll;
-					}
-					//textEditor.SelectionAnchor = anchor;
+					textEditor.Caret.Offset = oldOffset;
+					textEditor.Caret.AutoScrollToCaret = autoScroll;
 					textEditor.MainSelection = selection;
 				} else {
+					textEditor.Caret.AutoScrollToCaret = autoScroll;
 					textEditor.Caret.Offset = oldOffset;
 				}
+				Document.CommitLineToEndUpdate (docLocation.Line);
 			}
 		}
 
