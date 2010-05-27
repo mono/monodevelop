@@ -86,7 +86,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		InvocationExpression GetInvocationExpression (RefactoringOptions options)
 		{
 			TextEditorData data = options.GetTextEditorData ();
-			if (data == null || options.ResolveResult == null)
+			if (data == null || options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null)
 				return null;
 			string expression = options.ResolveResult.ResolvedExpression.Expression;
 			if (!expression.Contains ("(")) {
