@@ -80,6 +80,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
 					DoubleClick ();
 			};
+			list.WordsFiltered += delegate {
+				UpdateScrollBar ();
+			};
+			list.SizeAllocated += delegate {
+				UpdateScrollBar ();
+			};
 			vbox.PackStart (box, true, true, 0);
 			Add (vbox);
 			this.AutoSelect = true;
@@ -130,7 +136,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (IsRealized && !Visible)
 					Show ();
 			}
-			SetScrollbarVisibilty ();
+			
 			int width = list.WidthRequest;
 			int height = list.HeightRequest + (footer != null ? footer.Allocation.Height : 0);
 			
@@ -139,7 +145,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Resize (width, height);
 		}
 
-		protected void SetScrollbarVisibilty ()
+		void UpdateScrollBar ()
 		{
 			double pageSize = Math.Max (0, list.VisibleRows);
 			double upper = Math.Max (0, list.filteredItems.Count - 1);

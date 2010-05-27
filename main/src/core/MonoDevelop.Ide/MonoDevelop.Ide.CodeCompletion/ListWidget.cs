@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		ListWindow win;
 		int selection = 0;
 		int page = 0;
-		int visibleRows = -1;
+		
 		int rowHeight;
 		bool buttonPressed;
 		public event EventHandler SelectionChanged;
@@ -600,13 +600,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			});
 			CalcVisibleRows ();
 			UpdatePage ();
+			
+			OnWordsFiltered (EventArgs.Empty);
 		}
+		
+		protected virtual void OnWordsFiltered (EventArgs e)
+		{
+			EventHandler handler = this.WordsFiltered;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler WordsFiltered;
 		
 		int GetRowByPosition (int ypos)
 		{
-			if (visibleRows == -1)
-				CalcVisibleRows ();
-			
 			return GetItem (true, page + (ypos - margin) / rowHeight - (PreviewCompletionString ? 1 : 0));
 		}
 		
@@ -622,19 +630,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public int VisibleRows {
 			get {
-				if (visibleRows == -1)
-					CalcVisibleRows ();
-				return visibleRows;
+				int rowWidth;
+				layout.GetPixelSize (out rowWidth, out rowHeight);
+				rowHeight += padding;
+				return Allocation.Height / rowHeight;
 			}
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			int rowWidth;
-			layout.GetPixelSize (out rowWidth, out rowHeight);
-			rowHeight += padding;
-			visibleRows = Allocation.Height / rowHeight;
 			UpdatePage ();
 		}
 		

@@ -209,7 +209,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					initialWordLength = 0;//completionWidget.SelectedLength;
 					ResetSizes ();
 					ShowAll ();
-					SetScrollbarVisibilty ();
 					UpdateWordSelection ();
 					
 					//if there is only one matching result we take it by default
@@ -231,7 +230,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				} else {
 					ResetSizes ();
 					ShowAll ();
-					SetScrollbarVisibilty ();
 				}
 				return true;
 			}

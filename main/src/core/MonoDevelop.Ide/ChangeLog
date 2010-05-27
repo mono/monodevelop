@@ -1,5 +1,13 @@
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs:
+	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	  Fixed 'Bug 601737 - Scrollbar range on completion list often
+	  incorrect'.
+
+2010-05-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
 	  Fixed 'Bug 608058 - Completion list deselects if file was
 	  reparsed'.
