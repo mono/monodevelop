@@ -1,5 +1,10 @@
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Worked
+	  on message bubbles.
+
+2010-05-27  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Removed
 	  the message bubble focus inactive toggle (it's still
 	  inactive, if the line has changed).
