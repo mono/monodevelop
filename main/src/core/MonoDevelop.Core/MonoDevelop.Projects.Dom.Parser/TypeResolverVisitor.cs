@@ -122,8 +122,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			IType lookupType = db.SearchType (unit, contextType, null, type);
-			if (visitAttribute && lookupType == null)
-				lookupType = db.SearchType (unit, contextType, null, type.FullName + "Attribute");
+			if (visitAttribute && lookupType == null && type.Parts.Count > 0) {
+				type.Parts[type.Parts.Count - 1].Name += "Attribute";
+				lookupType = db.SearchType (unit, contextType, null, type);
+			}
 			
 			if (lookupType == null) {
 				unresolvedCount++;
