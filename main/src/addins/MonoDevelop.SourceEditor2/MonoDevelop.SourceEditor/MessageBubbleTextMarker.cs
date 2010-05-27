@@ -391,9 +391,7 @@ namespace MonoDevelop.SourceEditor
 			int x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset  + lineSegment.EditableLength) : false;
 			
-			int active = editor.HasFocus ? 0 : 1;
-			if (editor.Document.GetTextAt (lineSegment) != initialText)
-				active = 1;
+			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
 			int selected = 0;
 			
@@ -876,9 +874,7 @@ namespace MonoDevelop.SourceEditor
 			
 			int x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 //			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset  + lineSegment.EditableLength) : false;
-			int active = editor.HasFocus ? 0 : 1;
-			if (editor.Document.GetTextAt (lineSegment) != initialText)
-				active = 1;
+			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
 			bool isCaretInLine = lineSegment.Offset <= editor.Caret.Offset && editor.Caret.Offset <= lineSegment.EndOffset;
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
 			int selected = 0;
