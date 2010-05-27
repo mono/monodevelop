@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -51,9 +52,26 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		List<MarginDrawer> marginDrawer = new List<MarginDrawer> ();
+		public IEnumerable<MarginDrawer> MarginDrawer {
+			get {
+				return marginDrawer;
+			}
+		}
+		
 		protected Margin ()
 		{
 			IsVisible = true;
+		}
+		
+		public void AddDrawer (MarginDrawer drawer)
+		{
+			marginDrawer.Add (drawer);
+		}
+		
+		public void RemoveDrawer (MarginDrawer drawer)
+		{
+			marginDrawer.Add (drawer);
 		}
 
 		internal protected virtual void BeginRender (Gdk.Drawable drawable, Gdk.Rectangle area, int x)

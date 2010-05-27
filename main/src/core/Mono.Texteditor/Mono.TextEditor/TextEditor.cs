@@ -1388,6 +1388,13 @@ namespace Mono.TextEditor
 					break;
 			}
 			
+			foreach (Margin margin in this.margins) {
+				if (!margin.IsVisible)
+					continue;
+				foreach (var drawer in margin.MarginDrawer)
+					drawer.Draw (win, area);
+			}
+			
 			if (setLongestLine) 
 				SetHAdjustment ();
 

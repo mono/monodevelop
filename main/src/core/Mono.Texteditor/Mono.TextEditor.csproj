@@ -164,6 +164,8 @@
     <Compile Include="Mono.TextEditor\PieceTable.cs" />
     <Compile Include="Mono.TextEditor\PangoUtil.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\BounceFadePopupWindow.cs" />
+    <Compile Include="Mono.TextEditor\InsertionCursorEditMode.cs" />
+    <Compile Include="Mono.TextEditor\MarginDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

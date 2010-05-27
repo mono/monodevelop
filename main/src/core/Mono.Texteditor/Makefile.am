@@ -87,6 +87,7 @@ FILES =  \
 	Mono.TextEditor/IBracketMatcher.cs \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IconMargin.cs \
+	Mono.TextEditor/InsertionCursorEditMode.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
 	Mono.TextEditor/ITextEditorOptions.cs \
@@ -98,6 +99,7 @@ FILES =  \
 	Mono.TextEditor/LineSplitter.cs \
 	Mono.TextEditor/LinkEventArgs.cs \
 	Mono.TextEditor/Margin.cs \
+	Mono.TextEditor/MarginDrawer.cs \
 	Mono.TextEditor/PangoUtil.cs \
 	Mono.TextEditor/PieceTable.cs \
 	Mono.TextEditor/Platform.cs \
