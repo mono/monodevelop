@@ -1,5 +1,10 @@
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Theatrics/SmartScrolledWindow.cs: Destroy
+	  smart scrolled window children.
+
+2010-05-27  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Corrected text coordinate
 	  translation.
 

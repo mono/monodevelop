@@ -124,6 +124,15 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed (); // child gets destroyed here
+			vScrollBar.Destroy ();
+			hScrollBar.Destroy ();
+			vAdjustment.Destroy ();
+			hAdjustment.Destroy (); 
+		}
+		 
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
