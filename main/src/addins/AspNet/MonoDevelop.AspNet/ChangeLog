@@ -1,5 +1,13 @@
 2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/WebTypeManager.cs: Added method for
+	  getting the IType for an HTML control. 
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Added
+	  method for looking up IType of arbitrary tag.
+
+2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProjectBinding.cs: Fix creating
 	  ASP.NET single file projects. Fixes Bug 603521 - Command
 	  errors opening aspx file.

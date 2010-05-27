@@ -105,6 +105,44 @@ namespace MonoDevelop.AspNet.Parser
 			return WebTypeManager.GetRegisteredTypeName (Project, DirectoryPath, tagPrefix, tagName);
 		}
 		
+		public IType GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
+		{
+			if (tagPrefix == null || tagPrefix.Length < 1) 
+				return WebTypeManager.HtmlControlTypeLookup (Project, tagName, htmlTypeAttribute);
+			
+			if (0 == string.Compare (tagPrefix, "asp", StringComparison.OrdinalIgnoreCase)) {
+				var systemType = WebTypeManager.SystemTypeLookup (tagName, Project);
+				if (systemType != null)
+					return systemType;
+			}
+			
+			foreach (var rd in RegisteredTags) {
+				if (string.Compare (rd.TagPrefix, tagPrefix, StringComparison.OrdinalIgnoreCase) != 0)
+					continue;
+				
+				var ard = rd as AssemblyRegisterDirective;
+				if (ard != null) {
+					var dom = WebTypeManager.ResolveAssembly (Project, ard.Assembly);
+					if (dom != null) {
+						var type = WebTypeManager.AssemblyTypeLookup (dom, ard.Namespace, tagName);
+						if (type != null)
+							return type;
+					}
+					continue;
+				}
+				
+				var crd = rd as ControlRegisterDirective;
+				if (crd != null && string.Compare (crd.TagName, tagName, StringComparison.OrdinalIgnoreCase) == 0) {
+					var type = WebTypeManager.GetUserControlType (Project, crd.Src, Doc.FileName);
+					if (type != null)
+						return type;
+				}
+			}
+			
+			//returns null if type not found
+			return WebTypeManager.GetRegisteredType (Project, DirectoryPath, tagPrefix, tagName);
+		}
+		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
 			return GetControlCompletionData (new DomType ("System.Web.UI.Control"));

@@ -247,6 +247,16 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
+		public static IType HtmlControlTypeLookup (AspNetAppProject project, string tagName, string typeAttribute)
+		{
+			var str = HtmlControlLookup (tagName, typeAttribute);
+			if (str != null) {
+				var dom = GetSystemWebDom (project.TargetRuntime, WebTypeManager.GetProjectTargetFramework (project));
+				if (dom != null)
+					return dom.GetType (str, false, false);
+			}
+			return null;
+		}
 		
 		#endregion 
 		
