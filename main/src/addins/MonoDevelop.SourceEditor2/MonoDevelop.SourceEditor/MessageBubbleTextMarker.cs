@@ -390,6 +390,7 @@ namespace MonoDevelop.SourceEditor
 			
 			int x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset  + lineSegment.EditableLength) : false;
+			
 			int active = editor.HasFocus ? 0 : 1;
 			if (editor.Document.GetTextAt (lineSegment) != initialText)
 				active = 1;
@@ -506,7 +507,7 @@ namespace MonoDevelop.SourceEditor
 				y += editor.LineHeight;
 			double y2       = y + 0.5;
 			double y2Bottom = y2 + editor.LineHeight - 1;
-			selected = isEolSelected && CollapseExtendedErrors ? 1 : 0;
+			selected = isEolSelected && (CollapseExtendedErrors || errors.Count == 1) ? 1 : 0;
 			// draw message text background
 			using (var g = Gdk.CairoHelper.Create (win)) {
 				if (CollapseExtendedErrors || errors.Count == 1) {
