@@ -243,41 +243,46 @@ namespace MonoDevelop.SourceEditor
 		
 		IEnumerable<char> TextWithoutCommentsAndStrings {
 			get {
-				bool isInString = false, isInChar = false;
-				bool isInLineComment  = false, isInBlockComment = false;
-				
-				for (int pos = 0; pos < Document.Length; pos++) {
-					char ch = Document.GetCharAt (pos);
-					switch (ch) {
-						case '\r':
-						case '\n':
-							isInLineComment = false;
-							break;
-						case '/':
-							if (isInBlockComment) {
-								if (pos > 0 && Document.GetCharAt (pos - 1) == '*') 
-									isInBlockComment = false;
-							} else  if (!isInString && !isInChar && pos + 1 < Document.Length) {
-								char nextChar = Document.GetCharAt (pos + 1);
-								if (nextChar == '/')
-									isInLineComment = true;
-								if (!isInLineComment && nextChar == '*')
-									isInBlockComment = true;
-							}
-							break;
-						case '"':
-							if (!(isInChar || isInLineComment || isInBlockComment)) 
-								isInString = !isInString;
-							break;
-						case '\'':
-							if (!(isInString || isInLineComment || isInBlockComment)) 
-								isInChar = !isInChar;
-							break;
-						default :
-							if (!(isInString || isInChar || isInLineComment || isInBlockComment))
-								yield return ch;
-							break;
-					}
+				return from p in GetTextWithoutCommentsAndStrings (Mono.TextEditor.Document, 0, Document.Length) select p.Key;
+			}
+		}
+		
+		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Document doc, int start, int end) 
+		{
+			bool isInString = false, isInChar = false;
+			bool isInLineComment = false, isInBlockComment = false;
+			
+			for (int pos = start; pos < end; pos++) {
+				char ch = Document.GetCharAt (pos);
+				switch (ch) {
+					case '\r':
+					case '\n':
+						isInLineComment = false;
+						break;
+					case '/':
+						if (isInBlockComment) {
+							if (pos > 0 && Document.GetCharAt (pos - 1) == '*') 
+								isInBlockComment = false;
+						} else  if (!isInString && !isInChar && pos + 1 < Document.Length) {
+							char nextChar = Document.GetCharAt (pos + 1);
+							if (nextChar == '/')
+								isInLineComment = true;
+							if (!isInLineComment && nextChar == '*')
+								isInBlockComment = true;
+						}
+						break;
+					case '"':
+						if (!(isInChar || isInLineComment || isInBlockComment)) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!(isInString || isInLineComment || isInBlockComment)) 
+							isInChar = !isInChar;
+						break;
+					default :
+						if (!(isInString || isInChar || isInLineComment || isInBlockComment))
+							yield return new KeyValuePair<char, int> (ch, pos);
+						break;
 				}
 			}
 		}
