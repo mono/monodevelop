@@ -1,5 +1,13 @@
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:
+	  Don't show the parameterization options if none of the
+	  supported execution modes is parameterizable. Fixes bug
+	  #609679 - Unable to Set Custom Execution Commands for
+	  ASP.NET projects.
+
+2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Ide/ProjectOperations.cs:
 	* MonoDevelop.Ide.Gui.Components/ProjectFileEntry.cs:
 	* MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs: Fix
