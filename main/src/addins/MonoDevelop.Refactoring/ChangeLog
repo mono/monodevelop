@@ -1,3 +1,9 @@
+2010-05-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Fixed 'Bug 609221 - Refactor->"Create Method" does not infer
+	  type for parameter from LINQ query'.
+
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:

@@ -58,7 +58,8 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				return false;
 			returnType = DomReturnType.Void;
 			modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
-			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (provider.OutputNode (options.Dom, invoke)), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+			resolvePosition = new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn);
+			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (provider.OutputNode (options.Dom, invoke)), resolvePosition);
 			
 			if (resolveResult is MethodResolveResult) {
 				MethodResolveResult mrr = (MethodResolveResult)resolveResult ;
@@ -70,7 +71,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			
 			if (invoke.TargetObject is MemberReferenceExpression) {
 				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
-				resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				resolveResult = resolver.Resolve (new ExpressionResult (callingObject), resolvePosition);
 				if (resolveResult == null || resolveResult.ResolvedType == null || resolveResult.CallingType == null)
 					return false;
 				IType type = options.Dom.GetType (resolveResult.ResolvedType);
@@ -82,6 +83,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 		InvocationExpression invoke;
 		IReturnType returnType = DomReturnType.Void;
 		ICSharpCode.NRefactory.Ast.Modifiers modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
+		DomLocation resolvePosition;
 		
 		InvocationExpression GetInvocationExpression (RefactoringOptions options)
 		{
@@ -93,18 +95,23 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
 				if (startPos < 0)
 					return null;
+				bool gotWs = false;
 				for (int pos = startPos; pos > 2; pos--) {
 					char ch = data.Document.GetCharAt (pos);
-					if (char.IsWhiteSpace (ch))
+					if (char.IsWhiteSpace (ch)) {
+						if (gotWs)
+							break;
+						gotWs = true;
 						continue;
-					if (ch == 'w' && data.Document.GetCharAt (pos - 1) == 'e' && data.Document.GetCharAt (pos - 2) == 'n')
+					}
+					if (gotWs && ch == 'w' && data.Document.GetCharAt (pos - 1) == 'e' && data.Document.GetCharAt (pos - 2) == 'n')
 						return null;
 				}
 				for (int pos = startPos; pos < data.Document.Length; pos++) {
 					char ch = data.Document.GetCharAt (pos);
 					if (ch == '(') {
 						int offset = data.Document.GetMatchingBracketOffset (pos);
-						if (offset < startPos)
+						if (offset < startPos) 
 							return null;
 						expression = data.Document.GetTextAt (startPos, offset - startPos + 1);
 						break;
@@ -171,7 +178,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			} else {
 				methodDecl.Name = ((MemberReferenceExpression)invoke.TargetObject).MemberName;
 				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), resolvePosition);
 				IType type = options.Dom.GetType (resolveResult.ResolvedType);
 				insertNewMethod.FileName = type.CompilationUnit.FileName;
 				if (resolveResult.StaticResolve)
@@ -222,7 +229,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				if (IsValidIdentifier (lastName)) 
 					parameterName = lastName;
 				
-				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), options.ResolveResult.ResolvedExpression.Region.Start);
+				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), resolvePosition);
 				
 				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? options.Document.CompilationUnit.ShortenTypeName (resolveResult2.ResolvedType, data.Caret.Line, data.Caret.Column).ToInvariantString () : "System.Object");
 				typeReference.IsKeyword = true;
