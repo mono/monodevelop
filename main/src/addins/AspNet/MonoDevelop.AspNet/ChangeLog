@@ -1,5 +1,10 @@
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Missed a file in
+	  previous commit.
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
 	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs: Pass
 	  the full list of usings to the ILanguageCompletionBuilder.

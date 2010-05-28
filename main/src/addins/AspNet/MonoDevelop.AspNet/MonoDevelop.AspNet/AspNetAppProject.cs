@@ -66,7 +66,7 @@ namespace MonoDevelop.AspNet
 		[ItemProperty ("Target", ValueType=typeof(WebDeployTarget), Scope="*")]
 		protected WebDeployTargetCollection webDeployTargets = new WebDeployTargetCollection ();
 		
-		ProjectRegisteredControls controlRegistrationCache;
+		RegistrationCache registrationCache;
 		CodeBehindTypeNameCache codebehindTypeNameCache;
 		
 		#region properties
@@ -120,12 +120,11 @@ namespace MonoDevelop.AspNet
 			get { return webDeployTargets; }
 		}
 		
-		internal ProjectRegisteredControls ControlRegistrationCache {
+		internal RegistrationCache RegistrationCache {
 			get {
-				if (controlRegistrationCache == null)
-					controlRegistrationCache = new ProjectRegisteredControls (this);
-				
-				return controlRegistrationCache;
+				if (registrationCache == null)
+					registrationCache = new RegistrationCache (this);
+				return registrationCache;
 			}
 		}
 		
