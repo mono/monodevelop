@@ -112,9 +112,28 @@ namespace MonoDevelop.Projects.Dom
 		public static ExpressionContext InheritableType              = new ExpressionContext ("InheritableType");
 		public static ExpressionContext NamespaceNameExcepted        = new ExpressionContext ("NamespaceNameExcepted");
 		public static ExpressionContext TypeName                     = new ExpressionContext ("TypeName");
-		public static ExpressionContext LinqContext                  = new ExpressionContext ("LinqContext");
 	
 		public static ExpressionContext ObjectCreation               = new ObjectCreationContext ();
+		
+		public class LinqContext : ExpressionContext
+		{
+			public int Line {
+				get;
+				private set;
+			}
+			
+			public int Column {
+				get;
+				private set;
+			}
+			
+			public LinqContext (int line, int column)
+			{
+				this.Line = line;
+				this.Column = column;
+			}
+			
+		}
 		
 		public class ObjectCreationContext : ExpressionContext
 		{
