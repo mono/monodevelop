@@ -1,5 +1,9 @@
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneBuildExtension.cs: Fix adding values to dictionary.
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneBuildExtension.cs: Provisioning profile entitlement
 	  values should overwrite template values.
 

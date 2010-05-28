@@ -850,17 +850,13 @@ namespace MonoDevelop.IPhone
 					}
 					continue;
 				}
-				
-				if (newDict.ContainsKey (item.Key))
-					newDict[item.Key] = item.Value;
-				else
-					newDict.Add (item.Key, item.Value);
+				newDict[item.Key] = item.Value;
 			}
 			
 			//merge in the settings from the provisioning profile, skipping some
 			foreach (var item in identity.Profile.Entitlements)
 				if (item.Key != "application-identifier" && item.Key != "keychain-access-groups")
-					newDict.Add (item.Key, item.Value);
+					newDict[item.Key] = item.Value;
 			
 			try {
 				WriteXcent (doc, xcentName);
