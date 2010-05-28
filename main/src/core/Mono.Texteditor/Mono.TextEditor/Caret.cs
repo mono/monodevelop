@@ -179,6 +179,14 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		/// <summary>
+		/// Activates auto scroll to caret on next caret move.
+		/// </summary>
+		public void ActivateAutoScrollWithoutMove ()
+		{
+			autoScrollToCaret = true;
+		}
+		
 		public void SetToOffsetWithDesiredColumn (int desiredOffset)
 		{
 			DocumentLocation old = Location;

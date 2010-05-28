@@ -1,3 +1,9 @@
+2010-05-28  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 609188 -
+	  Middle-click paste jumps to source location'.
+
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Theatrics/SmartScrolledWindow.cs: Provided

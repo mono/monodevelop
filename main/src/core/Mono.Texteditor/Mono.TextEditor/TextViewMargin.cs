@@ -1443,11 +1443,13 @@ namespace Mono.TextEditor
 						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length), Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
 					}
 					textEditor.Caret.Offset = oldOffset;
-					textEditor.Caret.AutoScrollToCaret = autoScroll;
+					if (autoScroll)
+						textEditor.Caret.ActivateAutoScrollWithoutMove ();
 					textEditor.MainSelection = selection;
 				} else {
-					textEditor.Caret.AutoScrollToCaret = autoScroll;
 					textEditor.Caret.Offset = oldOffset;
+					if (autoScroll)
+						textEditor.Caret.ActivateAutoScrollWithoutMove ();
 				}
 				Document.CommitLineToEndUpdate (docLocation.Line);
 			}
