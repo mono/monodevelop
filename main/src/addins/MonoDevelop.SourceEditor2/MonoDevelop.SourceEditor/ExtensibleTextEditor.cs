@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Gtk;
 
@@ -243,17 +244,17 @@ namespace MonoDevelop.SourceEditor
 		
 		IEnumerable<char> TextWithoutCommentsAndStrings {
 			get {
-				return from p in GetTextWithoutCommentsAndStrings (Mono.TextEditor.Document, 0, Document.Length) select p.Key;
+				return from p in GetTextWithoutCommentsAndStrings (Document, 0, Document.Length) select p.Key;
 			}
 		}
 		
-		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Document doc, int start, int end) 
+		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Mono.TextEditor.Document doc, int start, int end) 
 		{
 			bool isInString = false, isInChar = false;
 			bool isInLineComment = false, isInBlockComment = false;
 			
 			for (int pos = start; pos < end; pos++) {
-				char ch = Document.GetCharAt (pos);
+				char ch = doc.GetCharAt (pos);
 				switch (ch) {
 					case '\r':
 					case '\n':
@@ -261,10 +262,10 @@ namespace MonoDevelop.SourceEditor
 						break;
 					case '/':
 						if (isInBlockComment) {
-							if (pos > 0 && Document.GetCharAt (pos - 1) == '*') 
+							if (pos > 0 && doc.GetCharAt (pos - 1) == '*') 
 								isInBlockComment = false;
-						} else  if (!isInString && !isInChar && pos + 1 < Document.Length) {
-							char nextChar = Document.GetCharAt (pos + 1);
+						} else  if (!isInString && !isInChar && pos + 1 < doc.Length) {
+							char nextChar = doc.GetCharAt (pos + 1);
 							if (nextChar == '/')
 								isInLineComment = true;
 							if (!isInLineComment && nextChar == '*')
