@@ -30,17 +30,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
+using System.Linq;
 
 namespace MonoDevelop.AspNet
 {
 	
-	class ProjectRegisteredControls : FileInfoCache<IList<RegistrationInfo>>
+	class RegistrationCache : FileInfoCache<RegistrationInfo>
 	{
 		AspNetAppProject project;
+		RegistrationInfo machineRegistrationInfo;
 		
-		public ProjectRegisteredControls (AspNetAppProject project)
+		public RegistrationCache (AspNetAppProject project)
 		{
 			this.project = project;
+			machineRegistrationInfo = GetMachineInfo ();
 		}
 		
 		public IList<RegistrationInfo> GetInfosForPath (string webDirectory)
@@ -54,62 +58,174 @@ namespace MonoDevelop.AspNet
 					if (!File.Exists (configPath))
 						configPath = Path.Combine (dir.FullName, "Web.config");
 					if (File.Exists (configPath))
-						infos.AddRange (Get (configPath));
+						infos.Add (Get (configPath));
 					dir = dir.Parent;
 				} catch (IOException ex) {
 					MonoDevelop.Core.LoggingService.LogError ("Error querying web.config file '" + configPath + "'", ex);
 				}
 			}
+			infos.Add (machineRegistrationInfo);
 			return infos;
 		}
 		
-		protected override IList<RegistrationInfo> GenerateInfo (string filename)
+		protected override RegistrationInfo GenerateInfo (string filename)
 		{
-			List<RegistrationInfo> list = new List<RegistrationInfo> ();
-			using (XmlTextReader reader = new XmlTextReader (filename))
-			{
-				reader.WhitespaceHandling = WhitespaceHandling.None;
-				reader.MoveToContent();
-				if (reader.Name == "configuration"
-				    && reader.ReadToDescendant ("system.web") && reader.NodeType == XmlNodeType.Element
-				    && reader.ReadToDescendant ("pages") && reader.NodeType == XmlNodeType.Element
-					&& reader.ReadToDescendant ("controls") && reader.NodeType == XmlNodeType.Element
-				    && reader.ReadToDescendant ("add") && reader.NodeType == XmlNodeType.Element) {
-					do {
-						list.Add (new RegistrationInfo (
-							filename,
-							reader.GetAttribute ("tagPrefix"),
-							reader.GetAttribute ("namespace"),
-							reader.GetAttribute ("assembly"),
-							reader.GetAttribute ("tagName"),
-							reader.GetAttribute ("src")
-						));
-						//Console.WriteLine (list[list.Count -1]);
-					} while (reader.ReadToNextSibling ("add"));
+			var info = new RegistrationInfo ();
+			using (var reader = new XmlTextReader (filename) { WhitespaceHandling = WhitespaceHandling.None }) {
+				var doc = XDocument.Load (reader);
+				
+				if (doc.Root.Name != "configuration")
+					return info;
+				
+				var systWeb = doc.Root.Element ("system.web");
+				if (systWeb == null)
+					return info;
+				
+				var pages = systWeb.Element ("pages");
+				if (pages != null) {
+					var controls = systWeb.Element ("controls");
+					if (controls != null) {
+						foreach (var element in controls.Elements ()) {
+							bool add = element.Name == "add";
+							if (add || element.Name == "remove")
+								info.Controls.Add (new ControlRegistration (filename, add,
+									(string) element.Attribute ("tagPrefix"),
+									(string) element.Attribute ("namespace"),
+									(string) element.Attribute ("assembly"),
+									(string) element.Attribute ("tagName"),
+									(string) element.Attribute ("src")));
+						}
+					}
+					var namespaces = pages.Element ("namespaces");
+					if (namespaces != null) {
+						foreach (var element in namespaces.Elements ()) {
+							bool add = element.Name == "add";
+							if (add || element.Name == "remove")
+								info.Namespaces.Add (new NamespaceRegistration (add, (string) element.Attribute ("namespace")));
+						}
+					}
+				}
+				
+				var compilation = systWeb.Element ("compilation");
+				if (compilation != null) {
+					var assemblies = compilation.Element ("assemblies");
+					if (assemblies != null) {
+						foreach (var element in assemblies.Elements ()) {
+							bool add = element.Name == "add";
+							if (add || element.Name == "remove")
+								info.Assemblies.Add (new AssemblyRegistration (add, (string) element.Attribute ("assembly")));
+						}
+					}
 				}
 			}
-			return list.ToArray ();	
+			return info;
+		}
+		
+		public IEnumerable<ControlRegistration> GetControlsForPath (string path)
+		{
+			//FIXME: handle removes as well as adds
+			return GetInfosForPath (path).SelectMany (x => x.Controls).Where (c => c.Add);
+		}
+		
+		public IEnumerable<string> GetAssembliesForPath (string path)
+		{
+			//FIXME: handle removes as well as adds
+			return GetInfosForPath (path).SelectMany (x => x.Assemblies).Where (c => c.Add).Select (c => c.Name);
+		}
+		
+		public IEnumerable<string> GetNamespacesForPath (string path)
+		{
+			//FIXME: handle removes as well as adds
+			return GetInfosForPath (path).SelectMany (x => x.Namespaces).Where (c => c.Add).Select (c => c.Namespace);
+		}
+		
+		//FIXME: add more default values
+		static RegistrationInfo GetMachineInfo ()
+		{
+			var info = new RegistrationInfo ();
+			
+			//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx
+			string[] defaultNamespaces = {
+				"System",
+				"System.Collections",
+				"System.Collections.Specialized",
+				"System.Configuration",
+				"System.Text",
+				"System.Text.RegularExpressions",
+				"System.Web",
+				"System.Web.Caching",
+				"System.Web.Profile",
+				"System.Web.Security",
+				"System.Web.SessionState",
+				"System.Web.UI",
+				"System.Web.UI.HtmlControls",
+				"System.Web.UI.WebControls",
+				"System.Web.UI.WebControls.WebParts",
+			};
+			
+			info.Namespaces.AddRange (defaultNamespaces.Select (ns => new NamespaceRegistration (true, ns)));
+			
+			return info;
 		}
 	}
 	
 	class RegistrationInfo
 	{
-		public string TagPrefix { get; set; }
-		public string Namespace { get; set; }
-		public string Assembly { get; set; }
-		public string TagName { get; set; }
-		public string Source { get; set; }
-		public string ConfigFile { get; set; }
+		public RegistrationInfo ()
+		{
+			this.Controls = new List<ControlRegistration> ();
+			this.Namespaces = new List<NamespaceRegistration> ();
+			this.Assemblies = new List<AssemblyRegistration> ();
+		}		
+		
+		public List<NamespaceRegistration> Namespaces { get; private set; }
+		public List<ControlRegistration> Controls { get; private set; }
+		public List<AssemblyRegistration> Assemblies { get; private set; }
+	}
+	
+	class NamespaceRegistration
+	{
+		public NamespaceRegistration (bool add, string name)
+		{
+			this.Add = add;
+			this.Namespace = name;
+		}
+		
+		public bool Add { get; private set; }
+		public string Namespace { get; private set; }
+	}
+	
+	class AssemblyRegistration
+	{
+		public AssemblyRegistration (bool add, string name)
+		{
+			this.Add = add;
+			this.Name = name;
+		}
+		
+		public bool Add { get; private set; }
+		public string Name { get; private set; }
+	}
+	
+	class ControlRegistration
+	{
+		public bool Add { get; private set; }
+		public string TagPrefix { get; private set; }
+		public string Namespace { get; private set; }
+		public string Assembly { get; private set; }
+		public string TagName { get; private set; }
+		public string Source { get; private set; }
+		public string ConfigFile { get; private set; }
 		
 		public bool IsAssembly {
 			get {
-				return !string.IsNullOrEmpty (Assembly) && !String.IsNullOrEmpty (TagPrefix) && !string.IsNullOrEmpty (Namespace);
+				return !string.IsNullOrEmpty (Assembly) && !string.IsNullOrEmpty (TagPrefix) && !string.IsNullOrEmpty (Namespace);
 			}
 		}
 		
 		public bool IsUserControl {
 			get {
-				return !string.IsNullOrEmpty (TagName) && !String.IsNullOrEmpty (TagPrefix) && !string.IsNullOrEmpty (Source);
+				return !string.IsNullOrEmpty (TagName) && !string.IsNullOrEmpty (TagPrefix) && !string.IsNullOrEmpty (Source);
 			}
 		}
 		
@@ -123,20 +239,14 @@ namespace MonoDevelop.AspNet
 			 return 0 == string.Compare (TagName, name, StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public RegistrationInfo (string configFile, string tagPrefix, string _namespace, string assembly, string tagName, string src)
+		public ControlRegistration (string configFile, bool add, string tagPrefix, string _namespace, 
+		                            string assembly, string tagName, string src)
 		{
-			ConfigFile = configFile;
 			TagPrefix = tagPrefix;
 			Namespace = _namespace;
 			Assembly = assembly;
 			TagName = tagName;
 			Source = src;
-		}
-		
-		public override string ToString ()
-		{
-			return string.Format("[RegistrationInfo: TagPrefix={0}, Namespace={1}, Assembly={2}, TagName={3}, Source={4}, ConfigFile={5}]",
-			                     TagPrefix, Namespace, Assembly, TagName, Source, ConfigFile);
 		}
 
 	}

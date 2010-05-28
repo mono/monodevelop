@@ -47,31 +47,6 @@ using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.AspNet
 {
-	static class WebTypeManager
-	{
-		//N.B. web.config and machine.config can add/remove items to this list
-		static void AddDefaultImportedNamespaces (System.Collections.Generic.Dictionary<string, object> list)
-		{
-			//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx
-			object flag = new object ();
-			list ["System"] = flag;
-			list ["System.Collections"] = flag;
-			list ["System.Collections.Specialized"] = flag;
-			list ["System.Configuration"] = flag;
-			list ["System.Text"] = flag;
-			list ["System.Text.RegularExpressions"] = flag;
-			list ["System.Web"] = flag;
-			list ["System.Web.Caching"] = flag;
-			list ["System.Web.Profile"] = flag;
-			list ["System.Web.Security"] = flag;
-			list ["System.Web.SessionState"] = flag;
-			list ["System.Web.UI"] = flag;
-			list ["System.Web.UI.HtmlControls"] = flag;
-			list ["System.Web.UI.WebControls"] = flag;
-			list ["System.Web.UI.WebControls.WebParts "] = flag;
-		}
-	}
-	
 	public class WebTypeContext
 	{
 		const string sysWebAssemblyName = "System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
@@ -136,22 +111,22 @@ namespace MonoDevelop.AspNet
 			
 			//read the web.config files at each level
 			//look up a level if a result not found until we hit the project root
-			foreach (RegistrationInfo info in Project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
-				if (info.PrefixMatches (tagPrefix)) {
-					if (info.IsAssembly) {
-						ProjectDom dom = ResolveAssembly (info.Assembly);
-						if (dom == null)
-							continue;
-						
-						IType type = AssemblyTypeLookup (dom, info.Namespace, tagName);
-						if (type != null)
-								return type;
-					}
-					if (info.IsUserControl && info.NameMatches (tagName)) {
-						IType type = GetUserControlType (info.Source, info.ConfigFile);
-						if (type != null)
-								return type;
-					}
+			foreach (var info in Project.RegistrationCache.GetControlsForPath (webDirectory)) {
+				if (!info.PrefixMatches (tagPrefix))
+					continue;
+				if (info.IsAssembly) {
+					var dom = ResolveAssembly (info.Assembly);
+					if (dom == null)
+						continue;
+					
+					var type = AssemblyTypeLookup (dom, info.Namespace, tagName);
+					if (type != null)
+							return type;
+				}
+				if (info.IsUserControl && info.NameMatches (tagName)) {
+					var type = GetUserControlType (info.Source, info.ConfigFile);
+					if (type != null)
+							return type;
 				}
 			}
 			
@@ -176,7 +151,7 @@ namespace MonoDevelop.AspNet
 			
 			//read the web.config files at each level
 			//look up a level if a result not found until we hit the project root
-			foreach (var info in Project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
+			foreach (var info in Project.RegistrationCache.GetControlsForPath (webDirectory)) {
 				if (info.IsAssembly) {
 					var dom = ResolveAssembly (info.Assembly);
 					if (dom == null)
@@ -385,7 +360,7 @@ namespace MonoDevelop.AspNet
 				return string.Empty;
 			
 			//todo: handle user controls
-			foreach (var info in Project.ControlRegistrationCache.GetInfosForPath (webDirectory)) {
+			foreach (var info in Project.RegistrationCache.GetControlsForPath (webDirectory)) {
 				if (info.IsAssembly && info.Namespace == control.Namespace) {
 					var dom = ResolveAssembly (info.Assembly);
 					if (dom != null && AssemblyTypeLookup (dom, info.Namespace, control.Name) != null)

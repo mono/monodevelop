@@ -1,3 +1,17 @@
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs: Pass
+	  the full list of usings to the ILanguageCompletionBuilder.
+
+	* MonoDevelop.AspNet/WebTypeManager.cs:
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs:
+	  Registration cache now tracks imports and assembly
+	  registrations.
+
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj: Add Sysytem.Xml.Linq reference.
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Html/PathCompletion.cs:

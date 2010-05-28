@@ -67,9 +67,9 @@ namespace MonoDevelop.CSharp.Completion
 			throw new InvalidOperationException (string.Format ("Unexpected filetype '{0}'", type));
 		}
 		
-		static void WriteUsings (MonoDevelop.AspNet.Parser.AspNetParsedDocument doc, StringBuilder builder)
+		static void WriteUsings (IEnumerable<string> usings, StringBuilder builder)
 		{
-			foreach (var u in doc.Info.Imports) {
+			foreach (var u in usings) {
 				builder.Append ("using ");
 				builder.Append (u);
 				builder.AppendLine (";");
@@ -89,12 +89,13 @@ namespace MonoDevelop.CSharp.Completion
 			builder.AppendLine (baseClass);
 		}
 		
-		public LocalDocumentInfo BuildLocalDocument (DocumentInfo documentInfo, TextEditorData data, string expressionText, bool isExpression)
+		public LocalDocumentInfo BuildLocalDocument (DocumentInfo documentInfo, IEnumerable<string> usings,
+		                                             TextEditorData data, string expressionText, bool isExpression)
 		{
 			this.data = data;
 			var result = new StringBuilder ();
 			
-			WriteUsings (documentInfo.AspNetParsedDocument, result);
+			WriteUsings (usings, result);
 			WriteClassDeclaration (documentInfo.AspNetParsedDocument, result);
 			result.AppendLine ("{");
 		
@@ -165,18 +166,20 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		DocumentInfo documentInfo;
-		public DocumentInfo BuildDocument (MonoDevelop.AspNet.Parser.AspNetParsedDocument aspDocument, TextEditorData data)
+		public DocumentInfo BuildDocument (MonoDevelop.AspNet.Parser.AspNetParsedDocument aspDocument, 
+		                                   IEnumerable<string> usings, TextEditorData data)
 		{
 			documentInfo = new DocumentInfo ();
 			this.data = data;
 			
-			WriteUsings (aspDocument, document);
+			WriteUsings (usings, document);
 			WriteClassDeclaration (aspDocument, document);
 			
 			aspDocument.RootNode.AcceptVisit (this);
 			
 			documentInfo.AspNetParsedDocument = aspDocument;
 			documentInfo.ParsedDocument = Parse (aspDocument.FileName, document.ToString ());
+			document.Length = 0;
 			return documentInfo;
 		}
 		

@@ -214,9 +214,13 @@ namespace MonoDevelop.AspNet.Gui
 				loc.EndLine = loc.BeginLine = line;
 				loc.EndColumn = loc.BeginColumn = col;
 				
-				var documentInfo = documentBuilder.BuildDocument (aspDoc, TextEditorData);
+				var usings = new HashSet<string> (project.RegistrationCache.GetNamespacesForPath (Document.FileName));
+				foreach (var s in aspDoc.Info.Imports)
+					usings.Add (s);
 				
-				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, true);
+				var documentInfo = documentBuilder.BuildDocument (aspDoc, usings, TextEditorData);
+				
+				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, usings, TextEditorData, sourceText, true);
 				
 				MonoDevelop.Ide.Gui.HiddenTextEditorViewContent viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
 				viewContent.Project = Document.Project;

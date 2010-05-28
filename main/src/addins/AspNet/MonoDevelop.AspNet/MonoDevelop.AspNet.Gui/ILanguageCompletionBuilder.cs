@@ -86,8 +86,10 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		bool SupportsLanguage (string language);
 		
-		DocumentInfo BuildDocument (AspNetParsedDocument aspDocument,  TextEditorData textEditorData);
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, bool isExpression);
+		DocumentInfo BuildDocument (AspNetParsedDocument aspDocument, IEnumerable<string> imports, 
+		                            TextEditorData textEditorData);
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, IEnumerable<string> imports, 
+		                                      TextEditorData textEditorData, string expressionText, bool isExpression);
 		
 		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char currentChar, ref int triggerWordLength);
 		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char completionChar);

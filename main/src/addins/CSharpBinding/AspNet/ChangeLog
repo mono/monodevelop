@@ -1,3 +1,7 @@
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* AspLanguageBuilder.cs: Use the list of usings.
+
 2010-05-20  Mike Krüger  <mkrueger@novell.com>
 
 	* AspLanguageBuilder.cs: Fixed local lookup for ASP.NET.

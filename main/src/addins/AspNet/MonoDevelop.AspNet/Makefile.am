@@ -24,7 +24,8 @@ REFS =  \
 	-r:System.Drawing \
 	-r:System.Drawing.Design \
 	-r:System.Web \
-	-r:System.Xml
+	-r:System.Xml \
+	-r:System.Xml.Linq
 
 FILES =  \
 	AssemblyInfo.cs \
