@@ -831,12 +831,7 @@ namespace MonoDevelop.IPhone
 			var keychainGroups = new PlistArray (new [] { identity.AppID } );
 			newDict["keychain-access-groups"] = keychainGroups;
 			
-			//merge in the settings from the provisioning profile, skipping some
-			foreach (var item in identity.Profile.Entitlements)
-				if (item.Key != "application-identifier" && item.Key != "keychain-access-groups")
-					newDict.Add (item.Key, item.Value);
-			
-			//and merge in the user's values
+			//merge in the user's values
 			foreach (var item in oldDict) {
 				//FIXME: we currently ignore these items, and write our own, but maybe we should do substitutes
 				//i.e. $(AppIdentifierPrefix)$(CFBundleIdentifier)
@@ -861,6 +856,11 @@ namespace MonoDevelop.IPhone
 				else
 					newDict.Add (item.Key, item.Value);
 			}
+			
+			//merge in the settings from the provisioning profile, skipping some
+			foreach (var item in identity.Profile.Entitlements)
+				if (item.Key != "application-identifier" && item.Key != "keychain-access-groups")
+					newDict.Add (item.Key, item.Value);
 			
 			try {
 				WriteXcent (doc, xcentName);

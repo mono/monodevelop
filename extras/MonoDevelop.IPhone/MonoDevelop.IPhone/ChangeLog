@@ -1,3 +1,8 @@
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Provisioning profile entitlement
+	  values should overwrite template values.
+
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneDeviceConsole.cs: Dialog placement.
