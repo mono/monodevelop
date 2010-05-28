@@ -121,7 +121,7 @@ namespace MonoDevelop.AspNet
 				if (parsedDocument == null)
 					continue;
 				
-				var ccu = CodeBehind.GenerateCodeBehind (aspProject, parsedDocument, errors);
+				var ccu = CodeBehind.GenerateCodeBehind (aspProject, designerFile.FilePath, parsedDocument, errors);
 				if (ccu == null)
 					continue;
 				

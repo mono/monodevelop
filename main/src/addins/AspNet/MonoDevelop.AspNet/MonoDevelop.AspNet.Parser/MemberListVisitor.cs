@@ -31,7 +31,6 @@
 //
 
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -43,8 +42,6 @@ namespace MonoDevelop.AspNet.Parser
 	//purpose is to find all named tags for code completion and compilation of base class
 	public class MemberListVisitor : Visitor
 	{
-		Dictionary<string,CodeMemberField> members = new Dictionary<string,CodeMemberField> ();
-		List<Error> errors = new List<Error> ();
 		AspNetParsedDocument doc;
 		DocumentReferenceManager refMan;
 		
@@ -52,6 +49,8 @@ namespace MonoDevelop.AspNet.Parser
 		{
 			this.doc = doc;
 			this.refMan = refMan;
+			this.Errors = new List<Error> ();
+			this.Members = new Dictionary<string,IType> ();
 		}
 		
 		public override void Visit (TagNode node)
@@ -64,7 +63,7 @@ namespace MonoDevelop.AspNet.Parser
 			if (id == null)
 				return;
 			
-			if (members.ContainsKey (id)) {
+			if (Members.ContainsKey (id)) {
 				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id));
 				return;
 			}
@@ -77,24 +76,20 @@ namespace MonoDevelop.AspNet.Parser
 				return;
 			}
 			
-			string typeName = null;
+			IType type = null;
 			try {
-				typeName = refMan.GetTypeName (prefix, name, node.Attributes ["type"] as string);
+				type = refMan.GetType (prefix, name, node.Attributes ["type"] as string);
 			} catch (Exception e) {
 				AddError (ErrorType.Error, node.Location, "Unknown parser error:" + e.ToString ());
 				return;
 			}
 			
-			if (typeName == null) {
+			if (type == null) {
 				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name));
 				return;
 			}
 			
-			CodeTypeReference ctRef = new CodeTypeReference (typeName);
-			CodeMemberField member = new CodeMemberField (ctRef, id);
-			member.Attributes = System.CodeDom.MemberAttributes.Family;
-			
-			members [id] = member;
+			Members [id] = type;
 		}
 		
 		internal void AddError (ErrorType type, ILocation location, string message)
@@ -102,7 +97,7 @@ namespace MonoDevelop.AspNet.Parser
 			Errors.Add (new Error (type, location.BeginLine, location.BeginColumn, message));
 		}
 		
-		public IDictionary<string,CodeMemberField> Members { get { return members; } }
-		public IList<Error> Errors { get { return errors; } }
+		public IDictionary<string,IType> Members { get; private set; }
+		public IList<Error> Errors { get; private set; }
 	}
 }

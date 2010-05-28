@@ -42,6 +42,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.DesignerSupport;
 
 using MonoDevelop.AspNet.Parser;
+using System.CodeDom;
 
 namespace MonoDevelop.AspNet
 {
@@ -64,7 +65,9 @@ namespace MonoDevelop.AspNet
 					document.FileName, err.Region.Start.Line, err.Region.Start.Column));
 		}
 		
-		public static System.CodeDom.CodeCompileUnit GenerateCodeBehind (AspNetAppProject project, AspNetParsedDocument document, 
+		public static System.CodeDom.CodeCompileUnit GenerateCodeBehind (AspNetAppProject project,
+		                                                                 string filename,
+		                                                                 AspNetParsedDocument document, 
 		                                                                 List<CodeBehindWarning> errors)
 		{
 			string className = document.Info.InheritedClass;
@@ -88,12 +91,13 @@ namespace MonoDevelop.AspNet
 			}
 			
 			//initialise the generated type
-			System.CodeDom.CodeCompileUnit ccu = new System.CodeDom.CodeCompileUnit ();
-			System.CodeDom.CodeNamespace namespac = new System.CodeDom.CodeNamespace ();
+			var ccu = new CodeCompileUnit ();
+			var namespac = new CodeNamespace ();
 			ccu.Namespaces.Add (namespac); 
-			System.CodeDom.CodeTypeDeclaration typeDecl = new System.CodeDom.CodeTypeDeclaration ();
-			typeDecl.IsClass = true;
-			typeDecl.IsPartial = true;
+			var typeDecl = new System.CodeDom.CodeTypeDeclaration () {
+				IsClass = true,
+				IsPartial = true,
+			};
 			namespac.Types.Add (typeDecl);
 			
 			//name the class and namespace
@@ -131,9 +135,9 @@ namespace MonoDevelop.AspNet
 			}
 			
 			if (masterTypeName != null) {
-				var masterProp = new System.CodeDom.CodeMemberProperty () {
+				var masterProp = new CodeMemberProperty () {
 					Name = "Master",
-					Type = new System.CodeDom.CodeTypeReference (masterTypeName),
+					Type = new CodeTypeReference (masterTypeName),
 					HasGet = true,
 					HasSet = false,
 					Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.New 
@@ -146,10 +150,33 @@ namespace MonoDevelop.AspNet
 				typeDecl.Members.Add (masterProp);
 			}
 			
-			//add fields for each control in the page
-			foreach (var member in memberList.Members.Values)
-				typeDecl.Members.Add (member);
+			//shortcut building the existing members type map
+			if (memberList.Members.Count == 0)
+				return ccu;
 			
+			var cls = refman.TypeCtx.ProjectDom.GetType (className);
+			HashSet<string> existingMembers = new HashSet<string> ();
+			while (cls != null) {
+				foreach (var member in cls.Members) {
+					if (member.IsPrivate || (member.IsInternal && member.DeclaringType.SourceProjectDom != refman.TypeCtx.ProjectDom))
+					    continue;
+					if (member.DeclaringType.CompilationUnit.FileName == filename)
+						continue;
+					existingMembers.Add (member.Name);
+				}
+				if (cls.BaseType == null)
+					break;
+				cls = refman.TypeCtx.ProjectDom.GetType (cls.BaseType);
+			}
+			
+			//add fields for each control in the page
+			//TODO: check compatibilty with exisitng members
+			foreach (var member in memberList.Members) {
+				if (existingMembers.Contains (member.Key))
+					continue;
+				var type = new CodeTypeReference (member.Value.FullName);
+				typeDecl.Members.Add (new CodeMemberField (type, member.Key) { Attributes = MemberAttributes.Family });
+			}
 			return ccu;
 		}
 	}
