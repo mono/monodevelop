@@ -556,7 +556,25 @@ namespace MonoDevelop.CSharp.Completion
 						result = FindExpression (dom, completionContext, -1);
 						if (result == null)
 							return null;
-						if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
+						if (IsInLinqContext (result)) {
+							tokenIndex = completionContext.TriggerOffset;
+							token = GetPreviousToken (ref tokenIndex, false); // token last typed
+							token = GetPreviousToken (ref tokenIndex, false); // possible linq keyword ?
+							triggerWordLength = 1;
+							
+							if (linqKeywords.Contains (token)) {
+								if (token == "from") // after from no auto code completion.
+									return null;
+								result.Expression = "";
+								return CreateCtrlSpaceCompletionData (completionContext, result);
+							}
+							CompletionDataList dataList = new ProjectDomCompletionDataList ();
+							CompletionDataCollector col = new CompletionDataCollector (dataList, Document.CompilationUnit, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+							foreach (string kw in linqKeywords) {
+								col.Add (kw, "md-keyword");
+							}
+							return dataList;
+						} else if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 							triggerWordLength = 1;
 							bool autoSelect = true;
 							int cpos;
@@ -576,23 +594,6 @@ namespace MonoDevelop.CSharp.Completion
 							CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
 							dataList.AutoSelect = autoSelect;
 							return dataList;
-						} else if (result.Contexts != null && result.Contexts.Any (ctx => ctx == ExpressionContext.LinqContext)) {
-							tokenIndex = completionContext.TriggerOffset;
-							token = GetPreviousToken (ref tokenIndex, false); // token last typed
-							token = GetPreviousToken (ref tokenIndex, false); // possible linq keyword ?
-							triggerWordLength = 1;
-							if (linqKeywords.Contains (token)) {
-								if (token == "from") // after from no auto code completion.
-									return null;
-								result.Expression = "";
-								return CreateCtrlSpaceCompletionData (completionContext, result);
-							}
-							CompletionDataList dataList = new ProjectDomCompletionDataList ();
-							CompletionDataCollector col = new CompletionDataCollector (dataList, Document.CompilationUnit, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-							foreach (string kw in linqKeywords) {
-								col.Add (kw, "md-keyword");
-							}
-							return dataList;
 						}
 					}
 				}
@@ -606,6 +607,59 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return null;
 		}
+		
+		public bool IsInLinqContext (ExpressionResult result)
+		{
+			if (result.Contexts == null)
+				return false;
+			var ctx = (ExpressionContext.LinqContext)result.Contexts.FirstOrDefault (c => c is ExpressionContext.LinqContext);
+			if (ctx == null)
+				return false;
+			int offset = this.textEditorData.Document.LocationToOffset (ctx.Line, ctx.Column);
+			return !GetTextWithoutCommentsAndStrings (this.textEditorData.Document, offset, textEditorData.Caret.Offset).Any (p => p.Key == ';');
+		}
+		
+		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Mono.TextEditor.Document doc, int start, int end) 
+		{
+			bool isInString = false, isInChar = false;
+			bool isInLineComment = false, isInBlockComment = false;
+			
+			for (int pos = start; pos < end; pos++) {
+				char ch = doc.GetCharAt (pos);
+				switch (ch) {
+					case '\r':
+					case '\n':
+						isInLineComment = false;
+						break;
+					case '/':
+						if (isInBlockComment) {
+							if (pos > 0 && doc.GetCharAt (pos - 1) == '*') 
+								isInBlockComment = false;
+						} else  if (!isInString && !isInChar && pos + 1 < doc.Length) {
+							char nextChar = doc.GetCharAt (pos + 1);
+							if (nextChar == '/')
+								isInLineComment = true;
+							if (!isInLineComment && nextChar == '*')
+								isInBlockComment = true;
+						}
+						break;
+					case '"':
+						if (!(isInChar || isInLineComment || isInBlockComment)) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!(isInString || isInLineComment || isInBlockComment)) 
+							isInChar = !isInChar;
+						break;
+					default :
+						if (!(isInString || isInChar || isInLineComment || isInBlockComment))
+							yield return new KeyValuePair<char, int> (ch, pos);
+						break;
+				}
+			}
+		}
+		
+		
 		
 		static string[] linqKeywords = new string[] { "from", "where", "select", "group", "into", "orderby", "join", "let", "in", "on", "equals", "by", "ascending", "descending" };
 		
@@ -1022,8 +1076,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				return whereDataList;
 			}
-			
-			if (result.Contexts != null && result.Contexts.Any (ctx => ctx == ExpressionContext.LinqContext)) {
+			if (IsInLinqContext (result)) {
 				if (linqKeywords.Contains (word)) {
 					if (word == "from") // after from no auto code completion.
 						return null;

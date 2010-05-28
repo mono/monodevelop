@@ -1,3 +1,9 @@
+2010-05-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 609528 - No Intellisense for LINQ join'.
+
 2010-05-26  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:

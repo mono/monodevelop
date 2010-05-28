@@ -793,7 +793,7 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				break;
 			case Tokens.From:
-				frame.SetContext (ExpressionContext.LinqContext);
+				frame.SetContext (new ExpressionContext.LinqContext (token.Location.Line - 1, token.Location.Column - 1));
 				break;
 			case Tokens.LessThan:
 				if (Tokens.ValidInsideTypeName[lastToken]) {
