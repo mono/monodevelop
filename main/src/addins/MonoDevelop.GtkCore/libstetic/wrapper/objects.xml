@@ -1483,9 +1483,10 @@
 		<property name="Orientation" />
 		<property name="ShowArrow" />
 		<property name="Tooltips" />
-		<property name="ButtonStyle" label="Toolbar style"/>
+		<property name="ButtonStyle" label="Toolbar style" default="Default"/>
 		<property name="ToolbarStyle" ignore-default="true" internal="true"/>
-		<property name="IconSize" />
+		<property name="ButtonIconSize" label="Icon size" default="Default" />
+		<property name="IconSize" ignore-default="true" internal="true" />
 	    </itemgroup>
 	</itemgroups>
 	<signals>
@@ -2036,6 +2037,23 @@
 	       description="The size of an icon in a drag-and-drop operation" />
 	<value name="Dialog" label="Dialog"
 	       description="The size of an icon in a dialog box" />
+    </enum>
+
+    <enum type="Stetic.Wrapper.ActionToolbarWrapper+ToolbarIconSize">
+	<value name="Menu" label="Menu"
+	       description="The size of an icon an a menu item" />
+	<value name="SmallToolbar" label="Small Toolbar"
+	       description="The size of an icon in a small toolbar" />
+	<value name="LargeToolbar" label="Large Toolbar"
+	       description="The size of an icon in a large toolbar" />
+	<value name="Button" label="Button"
+	       description="The size of an icon in a button" />
+	<value name="Dnd" label="Drag and Drop"
+	       description="The size of an icon in a drag-and-drop operation" />
+	<value name="Dialog" label="Dialog"
+	       description="The size of an icon in a dialog box" />
+	<value name="Default" label="System Default"
+	       description="Use the system default size" />
     </enum>
 
     <enum type="Gtk.Justification,gtk-sharp">

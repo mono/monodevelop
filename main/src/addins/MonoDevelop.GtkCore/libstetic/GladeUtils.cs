@@ -188,7 +188,14 @@ namespace Stetic {
 		{
 			return GetProperty (elem, "./packing/property[@name='" + name + "']", defaultValue, true);
 		}
-
+		
+		public static void RenameProperty (XmlElement elem, string name, string newName)
+		{
+			XmlElement prop = (XmlElement)elem.SelectSingleNode ("./property[@name='" + name + "']");
+			if (prop != null)
+				prop.SetAttribute ("name", newName);
+		}
+		
 		public static void SetProperty (XmlElement elem, string name, string value)
 		{
 			XmlElement prop_elem = elem.OwnerDocument.CreateElement ("property");

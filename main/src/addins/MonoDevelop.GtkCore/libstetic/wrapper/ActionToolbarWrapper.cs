@@ -11,9 +11,12 @@ namespace Stetic.Wrapper
 	{
 		ActionTree actionTree;
 		XmlElement toolbarInfo;
-		ToolbarStyle toolbarStyle;
+		ToolbarStyle toolbarStyle = ToolbarStyle.Default;
+		ToolbarIconSize iconSize = ToolbarIconSize.Default;
 		bool treeChanged;
+		
 		static Gtk.ToolbarStyle defaultStyle;
+		static Gtk.IconSize defaultSize;
 		static bool gotDefault;
 		
 		public enum ToolbarStyle {
@@ -22,6 +25,16 @@ namespace Stetic.Wrapper
 			Both,
 			BothHoriz,
 			Default
+		}
+	
+		public enum ToolbarIconSize {
+			Menu = Gtk.IconSize.Menu,
+			SmallToolbar = Gtk.IconSize.SmallToolbar,
+			LargeToolbar = Gtk.IconSize.LargeToolbar,
+			Button = Gtk.IconSize.Button,
+			Dnd = Gtk.IconSize.Dnd,
+			Dialog = Gtk.IconSize.Dialog,
+			Default = -1
 		}
 	
 		public ActionToolbarWrapper()
@@ -37,6 +50,11 @@ namespace Stetic.Wrapper
 		public static Gtk.Toolbar CreateInstance ()
 		{
 			ActionToolbar t = new ActionToolbar ();
+			// Looks like the default size and style are set when adding the toolbar to the window,
+			// so we have to explicitly get the defaults to make sure the toolbar is properly initialized 
+			GetDefaults ();
+			t.IconSize = defaultSize;
+			t.ToolbarStyle = defaultStyle;
 			return t;
 		}
 		
@@ -77,9 +95,18 @@ namespace Stetic.Wrapper
 			}
 		}
 		
-		public Gtk.IconSize IconSize {
-			get { return toolbar.IconSize; }
-			set { toolbar.IconSize = value; EmitNotify ("IconSize"); }
+		public ToolbarIconSize ButtonIconSize {
+			get { return iconSize; }
+			set {
+				iconSize = value;
+				if (value == ToolbarIconSize.Default) {
+					GetDefaults ();
+					toolbar.IconSize = defaultSize;
+				} else {
+					toolbar.IconSize = (Gtk.IconSize) ((int)value);
+				}
+				EmitNotify ("ButtonIconSize");
+			}
 		}
 		
 		public ToolbarStyle ButtonStyle {
@@ -87,20 +114,26 @@ namespace Stetic.Wrapper
 			set {
 				toolbarStyle = value;
 				if (value == ToolbarStyle.Default) {
-					if (!gotDefault) {
-						// Is there a better way of getting the default?
-						Gtk.Window d = new Gtk.Window ("");
-						Gtk.Toolbar t = new Gtk.Toolbar ();
-						d.Add (t);
-						defaultStyle = t.ToolbarStyle;
-						d.Destroy ();
-						gotDefault = true;
-					}
+					GetDefaults ();
 					toolbar.ToolbarStyle = defaultStyle;
 				} else {
 					toolbar.ToolbarStyle = (Gtk.ToolbarStyle) ((int)value);
 				}
 				EmitNotify ("ButtonStyle");
+			}
+		}
+		
+		static void GetDefaults ()
+		{
+			if (!gotDefault) {
+				// Is there a better way of getting the default?
+				Gtk.Window d = new Gtk.Window ("");
+				Gtk.Toolbar t = new Gtk.Toolbar ();
+				d.Add (t);
+				defaultStyle = t.ToolbarStyle;
+				defaultSize = t.IconSize;
+				d.Destroy ();
+				gotDefault = true;
 			}
 		}
 		
@@ -124,8 +157,13 @@ namespace Stetic.Wrapper
 		{
 			XmlElement elem = base.WriteProperties (writer);
 			if (writer.Format == FileFormat.Native) {
-				// The style is already stored in ButtonStyle
+				// The style and icon size is already stored in ButtonStyle and ButtonIconSize
 				GladeUtils.ExtractProperty (elem, "ToolbarStyle", "");
+				GladeUtils.ExtractProperty (elem, "IconSize", "");
+				
+				// Store ButtonIconSize as IconSize, for backwards compat
+				GladeUtils.RenameProperty (elem, "ButtonIconSize", "IconSize");
+				
 				if (toolbarInfo != null)
 					elem.AppendChild (writer.XmlDocument.ImportNode (toolbarInfo, true));
 				else
@@ -136,6 +174,9 @@ namespace Stetic.Wrapper
 		
 		protected override void ReadProperties (ObjectReader reader, XmlElement elem)
 		{
+			// ButtonIconSize is stored as IconSize
+			GladeUtils.RenameProperty (elem, "IconSize", "ButtonIconSize");
+			
 			base.ReadProperties (reader, elem);
 			toolbarInfo = elem ["node"];
 		}
@@ -163,6 +204,8 @@ namespace Stetic.Wrapper
 		protected override void GeneratePropertySet (GeneratorContext ctx, CodeExpression var, PropertyDescriptor prop)
 		{
 			if (toolbarStyle == ToolbarStyle.Default && prop.Name == "ToolbarStyle")
+				return;
+			else if (iconSize == ToolbarIconSize.Default && prop.Name == "IconSize")
 				return;
 			else
 				base.GeneratePropertySet (ctx, var, prop);

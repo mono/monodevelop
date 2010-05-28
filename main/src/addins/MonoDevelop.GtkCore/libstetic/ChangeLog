@@ -1,3 +1,12 @@
+2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* GladeUtils.cs:
+	* wrapper/objects.xml:
+	* wrapper/ActionToolbarWrapper.cs: Allow setting "System
+	  Default" as icon size. Fixed handling of default toolbar
+	  style. Should fix bug #609132 - Large toolbar reverts to
+	  small toolbar after compiling program.
+
 2010-04-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* editor/ActionMenu.cs: Explicit destroy of children should
