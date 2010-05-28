@@ -217,7 +217,7 @@ namespace MonoDevelop.Projects.Dom
 				string longest = "";
 				string lastAlias = null;
 				if (callingType != null && returnType.DecoratedFullName.StartsWith (callingType.FullName)) {
-					int p1 = System.Math.Min (callingType.FullName.Count (ch => ch == '.') + 1, returnType.Parts.Count);
+					int p1 = System.Math.Min (callingType.FullName.Count (ch => ch == '.') + 1, returnType.Parts.Count - 1);
 					returnType.Parts.RemoveRange (0, p1);
 					returnType.Namespace = "";
 					return returnType;
