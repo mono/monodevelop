@@ -101,13 +101,16 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			CheckProject ();
 			
-			using (var dialog = new ProjectFileSelectorDialog (Project, null, DefaultFilter)) {
+			var dialog = new ProjectFileSelectorDialog (Project, null, DefaultFilter);
+			try {
 				if (DialogTitle != null)
 					dialog.Title = DialogTitle;
-				int response = MessageService.ShowCustomDialog (dialog);
+				int response = MessageService.RunCustomDialog (dialog);
 				if (response == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
 					entry.Text = dialog.SelectedFile.ProjectVirtualPath;
 				}
+			} finally {
+				dialog.Destroy ();
 			}
 		}
 	}

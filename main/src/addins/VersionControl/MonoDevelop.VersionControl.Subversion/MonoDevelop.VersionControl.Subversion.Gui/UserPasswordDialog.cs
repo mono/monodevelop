@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			EventHandler del = delegate {
 					try {
 						UserPasswordDialog dlg = new UserPasswordDialog (user, realm, may_save, showPwd);
-						res = (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
+						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							s = dlg.SavePassword ? 1 : 0;
 							pwd = dlg.Password;

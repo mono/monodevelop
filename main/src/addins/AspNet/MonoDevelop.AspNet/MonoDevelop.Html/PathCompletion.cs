@@ -121,10 +121,14 @@ namespace MonoDevelop.Html
 			public override void InsertCompletionText (CompletionListWindow window)
 			{
 				string text;
-				using (var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (proj, "", pattern)) {
-					if (MessageService.ShowCustomDialog (dialog) != (int)Gtk.ResponseType.Ok || dialog.SelectedFile == null)
+				var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (proj, "", pattern);
+				try {
+					if (MessageService.RunCustomDialog (dialog) != (int)Gtk.ResponseType.Ok || dialog.SelectedFile == null)
 						return;
 					text = pathFunc (dialog.SelectedFile);
+				}
+				finally {
+					dialog.Destroy ();
 				}
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, "", text);
 			}

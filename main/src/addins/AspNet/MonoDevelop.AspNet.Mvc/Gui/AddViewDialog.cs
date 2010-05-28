@@ -165,8 +165,12 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				Title = MonoDevelop.Core.GettextCatalog.GetString ("Select a Master Page..."),
 				TransientFor = this,
 			};
-			if (dialog.Run ())
-				masterEntry.Text = project.LocalToVirtualPath (dialog.SelectedFile.FilePath);
+			try {
+				if (MessageService.RunCustomDialog (dialog) == (int) Gtk.ResponseType.Ok)
+					masterEntry.Text = project.LocalToVirtualPath (dialog.SelectedFile.FilePath);
+			} finally {
+				dialog.Destroy ();
+			}
 		}
 		
 		protected virtual void MasterChanged (object sender, EventArgs e)

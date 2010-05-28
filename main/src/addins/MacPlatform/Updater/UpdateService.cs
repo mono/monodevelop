@@ -132,7 +132,6 @@ namespace MonoDevelop.Platform.Updater
 				if (visibleDialog == null) {
 					visibleDialog = new UpdateDialog ();
 					MessageService.ShowCustomDialog (visibleDialog);
-					visibleDialog.Destroy ();
 					visibleDialog = null;
 				} else {
 					visibleDialog.GdkWindow.Focus (0);

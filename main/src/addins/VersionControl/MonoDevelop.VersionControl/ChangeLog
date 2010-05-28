@@ -1,3 +1,11 @@
+2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl/CommitCommand.cs:
+	* MonoDevelop.VersionControl/PublishCommand.cs:
+	* MonoDevelop.VersionControl/CheckoutCommand.cs:
+	* MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:
+	  Fix incorrect use of ShowCustomDialog/RunCustomDialog.
+
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl/CommitCommand.cs:

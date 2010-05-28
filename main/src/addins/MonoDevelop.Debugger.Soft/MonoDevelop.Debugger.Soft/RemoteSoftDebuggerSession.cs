@@ -104,7 +104,6 @@ namespace MonoDevelop.Debugger.Soft
 				dialog.AddButton ("Cancel", Gtk.ResponseType.Cancel);
 				
 				int response = MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
-				dialog.Destroy ();
 				
 				if (response != (int) Gtk.ResponseType.Ok) {
 					EndSession ();

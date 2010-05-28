@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			EventHandler del = delegate {
 					try {
 						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save);
-						res = (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
+						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							local_save = dlg.Save;
 							local_accepted_failures = dlg.AcceptedFailures;

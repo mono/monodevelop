@@ -46,7 +46,7 @@ namespace MonoDevelop.VersionControl
 						return false;
 					CommitDialog dlg = new CommitDialog (changeSet);
 					try {
-						if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+						if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 							if (VersionControlService.NotifyBeforeCommit (vc, changeSet)) {
 								new CommitWorker (vc, changeSet, dlg).Start();
 								return true;

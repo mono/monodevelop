@@ -36,7 +36,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			EventHandler del = delegate {
 					ClientCertificateDialog dlg = new ClientCertificateDialog (realm, may_save);
 					try {
-						res = (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
+						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							local_save = dlg.Save;
 							local_cert_file = dlg.File;

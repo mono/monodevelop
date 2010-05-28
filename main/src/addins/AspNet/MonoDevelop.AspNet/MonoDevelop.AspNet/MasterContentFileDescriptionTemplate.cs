@@ -56,11 +56,15 @@ namespace MonoDevelop.AspNet
 			ProjectFile masterPage = null;
 			string masterContent = "";
 			
-			using (var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (aspProj, null, "*.master")) {
+			var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (aspProj, null, "*.master");
+			try {
 				dialog.Title = GettextCatalog.GetString ("Select a Master Page...");
-				int response =  MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
+				int response =  MonoDevelop.Ide.MessageService.RunCustomDialog (dialog);
 				if (response == (int)Gtk.ResponseType.Ok)
 					masterPage = dialog.SelectedFile;
+			}
+			finally {
+				dialog.Destroy ();
 			}
 			if (masterPage == null)
 				return;

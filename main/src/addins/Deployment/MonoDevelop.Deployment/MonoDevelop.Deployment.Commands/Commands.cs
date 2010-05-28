@@ -21,7 +21,7 @@ namespace MonoDevelop.Deployment
 			SolutionItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
 			DeployDialog dlg = new DeployDialog (entry, false);
 			try {
-				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					if (dlg.SaveToProject) {
 						Package p = new Package ();
 						p.Name = dlg.NewPackageName;
@@ -61,7 +61,7 @@ namespace MonoDevelop.Deployment
 			PackagingProject project = IdeApp.ProjectOperations.CurrentSelectedSolutionItem as PackagingProject;
 			DeployDialog dlg = new DeployDialog (project.ParentFolder, true);
 			try {
-				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					project.AddPackage (dlg.NewPackageName, dlg.PackageBuilder);
 					IdeApp.ProjectOperations.Save (project);
 				}

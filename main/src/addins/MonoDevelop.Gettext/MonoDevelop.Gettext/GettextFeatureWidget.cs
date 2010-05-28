@@ -55,7 +55,7 @@ namespace MonoDevelop.Gettext
 			this.buttonAdd.Clicked += delegate {
 				var chooser = new MonoDevelop.Gettext.Translator.LanguageChooserDialog ();
 				try {
-					if (MessageService.ShowCustomDialog (chooser) == (int)Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (chooser) == (int)Gtk.ResponseType.Ok) {
 						string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
 						store.AppendValues (chooser.LanguageLong, language);
 					}

@@ -149,7 +149,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			EditRepositoryDialog dlg = new EditRepositoryDialog (null);
 			try {
-				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
 					VersionControlService.AddRepository (dlg.Repository);
 					VersionControlService.SaveConfiguration ();
 					LoadRepositories (dlg.Repository, Gtk.TreeIter.Zero);
@@ -178,7 +178,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				Repository repCopy = rep.Clone ();
 				EditRepositoryDialog dlg = new EditRepositoryDialog (repCopy);
 				try {
-					if (MessageService.ShowCustomDialog (dlg, this) != (int) Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (dlg, this) != (int) Gtk.ResponseType.Ok) {
 						VersionControlService.ResetConfiguration ();
 						return;
 					}

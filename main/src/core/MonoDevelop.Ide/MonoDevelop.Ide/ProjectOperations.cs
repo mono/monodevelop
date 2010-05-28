@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide
 		{
 			ExportProjectDialog dlg = new ExportProjectDialog (entry, format);
 			try {
-				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					
 					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Export Project"), null, true, true)) {
 						string folder = dlg.TargetFolder;
@@ -530,7 +530,7 @@ namespace MonoDevelop.Ide
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
 					
-					if (MessageService.ShowCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
 						selectedProject.SetNeedsBuilding (true);
 						foreach (object ob in optionsDialog.ModifiedObjects) {
 							if (ob is Solution) {
@@ -552,7 +552,7 @@ namespace MonoDevelop.Ide
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
-					if (MessageService.ShowCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
 						Save (solution);
 						IdeApp.Workspace.SavePreferences (solution);
 					}
@@ -565,7 +565,7 @@ namespace MonoDevelop.Ide
 				try {
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
-					if (MessageService.ShowCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
 						if (entry is IBuildTarget)
 							((IBuildTarget)entry).SetNeedsBuilding (true, IdeApp.Workspace.ActiveConfiguration);
 						if (entry is IWorkspaceFileObject)
@@ -594,7 +594,6 @@ namespace MonoDevelop.Ide
 			if (defaultTemplate != null)
 				pd.SelectTemplate (defaultTemplate);
 			MessageService.ShowCustomDialog (pd);
-			pd.Destroy ();
 		}
 		
 		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace)
@@ -607,7 +606,7 @@ namespace MonoDevelop.Ide
 			NewProjectDialog npdlg = new NewProjectDialog (null, false, parentWorkspace.BaseDirectory);
 			npdlg.SelectTemplate (defaultItemId);
 			try {
-				if (MessageService.ShowCustomDialog (npdlg) == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
+				if (MessageService.RunCustomDialog (npdlg) == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
 					parentWorkspace.Items.Add ((WorkspaceItem) npdlg.NewItem);
 					Save (parentWorkspace);
 					return (WorkspaceItem) npdlg.NewItem;
@@ -626,7 +625,7 @@ namespace MonoDevelop.Ide
 			try {
 				fdiag.SetCurrentFolder (parentWorkspace.BaseDirectory);
 				fdiag.SelectMultiple = false;
-				if (MessageService.ShowCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
 					try {
 						res = AddWorkspaceItem (parentWorkspace, fdiag.Filename);
 					}
@@ -659,7 +658,6 @@ namespace MonoDevelop.Ide
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
 			MessageService.ShowCustomDialog (npdlg);
-			npdlg.Destroy ();
 			return res;
 		}
 
@@ -671,7 +669,7 @@ namespace MonoDevelop.Ide
 			try {
 				fdiag.SetCurrentFolder (parentFolder.BaseDirectory);
 				fdiag.SelectMultiple = false;
-				if (MessageService.ShowCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
 					try {
 						res = AddSolutionItem (parentFolder, fdiag.Filename);
 					}
@@ -708,15 +706,10 @@ namespace MonoDevelop.Ide
 		
 		public bool CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
-			NewFileDialog nfd = null;
-			try {
-				nfd = new NewFileDialog (parentProject, basePath);
-				if (selectedTemplateId != null)
-					nfd.SelectTemplate (selectedTemplateId);
-				return MessageService.ShowCustomDialog (nfd) == (int) Gtk.ResponseType.Ok;
-			} finally {
-				if (nfd != null) nfd.Destroy ();
-			}
+			NewFileDialog nfd = new NewFileDialog (parentProject, basePath);
+			if (selectedTemplateId != null)
+				nfd.SelectTemplate (selectedTemplateId);
+			return MessageService.ShowCustomDialog (nfd) == (int) Gtk.ResponseType.Ok;
 		}
 
 		public bool AddReferenceToProject (DotNetProject project)
@@ -759,7 +752,7 @@ namespace MonoDevelop.Ide
 				
 				selDialog.SetReferenceCollection (references, ctx, targetVersion);
 
-				if (MessageService.ShowCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
 					references.Clear ();
 					references.AddRange (selDialog.ReferenceInformations);
 					return true;
@@ -790,7 +783,7 @@ namespace MonoDevelop.Ide
 				if (!IdeApp.Workspace.RequestItemUnload (prj))
 					return;
 				ConfirmProjectDeleteDialog dlg = new ConfirmProjectDeleteDialog (prj);
-				if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					
 					// Remove the project before removing the files to avoid unnecessary events
 					RemoveItemFromSolution (prj);
@@ -1281,7 +1274,7 @@ namespace MonoDevelop.Ide
 						
 						int ret = -1;
 						if (action < 0) {
-							ret = MessageService.ShowCustomDialog (md);
+							ret = MessageService.RunCustomDialog (md);
 							if (ret < 0)
 								return newFileList;
 							if (remember != null && remember.Active) action = ret;

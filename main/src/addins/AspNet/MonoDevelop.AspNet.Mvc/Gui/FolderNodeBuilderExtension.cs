@@ -103,7 +103,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				
 				bool fileGood = false;
 				while (!fileGood) {
-					Gtk.ResponseType resp = (Gtk.ResponseType) MessageService.ShowCustomDialog (dialog);
+					Gtk.ResponseType resp = (Gtk.ResponseType) MessageService.RunCustomDialog (dialog);
 					dialog.Hide ();
 					if (resp != Gtk.ResponseType.Ok || ! dialog.IsValid ())
 						return;

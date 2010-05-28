@@ -225,11 +225,6 @@ namespace MonoDevelop.Ide.Projects
 		/// </summary>
 		public ProjectFile SelectedFile { get; private set; }
 		
-		public new bool Run ()
-		{
-			return (MessageService.ShowCustomDialog (this, TransientFor) == (int)Gtk.ResponseType.Ok);
-		}
-
 		FilePath GetSelectedDirectory ( )
 		{
 			TreeIter iter;

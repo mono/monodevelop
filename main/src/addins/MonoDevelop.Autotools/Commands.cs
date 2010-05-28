@@ -74,7 +74,7 @@ namespace MonoDevelop.Autotools
 
 			GenerateMakefilesDialog dialog = new GenerateMakefilesDialog (solution);
 			try {
-				if (MessageService.ShowCustomDialog (dialog) != (int) Gtk.ResponseType.Ok)
+				if (MessageService.RunCustomDialog (dialog) != (int) Gtk.ResponseType.Ok)
 					return;
 
 				SolutionDeployer deployer = new SolutionDeployer (dialog.GenerateAutotools);

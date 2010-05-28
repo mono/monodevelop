@@ -1,3 +1,8 @@
+2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.DesignerSupport/ToolboxService.cs: Fix incorrect
+	  use of ShowCustomDialog/RunCustomDialog.
+
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DesignerSupport/ToolboxService.cs: More dialog

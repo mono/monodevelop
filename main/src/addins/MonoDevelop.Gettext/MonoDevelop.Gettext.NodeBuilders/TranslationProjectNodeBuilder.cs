@@ -141,7 +141,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				string monitorTitle = GettextCatalog.GetString ("Translator Output");
 				Translator.LanguageChooserDialog chooser = new Translator.LanguageChooserDialog ();
 				try {
-					if (MessageService.ShowCustomDialog (chooser) == (int)ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (chooser) == (int)ResponseType.Ok) {
 						string language = chooser.Language + (chooser.HasCountry ? "_" + chooser.Country : "");
 					
 						using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (monitorTitle, "md-package", true, true)) {

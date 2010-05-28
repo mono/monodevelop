@@ -1,3 +1,10 @@
+2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide/ProjectOperations.cs:
+	* MonoDevelop.Ide.Gui.Components/ProjectFileEntry.cs:
+	* MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs: Fix
+	  incorrect use of ShowCustomDialog/RunCustomDialog.
+
 2010-05-27  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs: using
