@@ -34,7 +34,13 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		List<DocumentLocation> insertionPoints;
 		CursorDrawer drawer;
-		
+		int curPoint = 0;
+		public DocumentLocation CurrentInsertionPoint {
+			get {
+				return insertionPoints[curPoint];
+			}
+		}
+			
 		public InsertionCursorEditMode (TextEditor editor, List<DocumentLocation> insertionPoints)
 		{
 			this.editor = editor;
@@ -46,8 +52,14 @@ namespace Mono.TextEditor
 		{
 			switch (key) {
 			case Gdk.Key.Up:
+				if (curPoint > 0)
+					curPoint--;
+				editor.QueueDraw ();
 				break;
 			case Gdk.Key.Down:
+				if (curPoint < insertionPoints.Count - 1)
+					curPoint++;
+				editor.QueueDraw ();
 				break;
 				
 			case Gdk.Key.KP_Enter:
@@ -66,17 +78,23 @@ namespace Mono.TextEditor
 		{
 			oldMode = editor.CurrentMode;
 			
-			this.editor.TextViewMargin.AddDrawer (drawer);
+			
+			editor.Caret.IsVisible = false;
+			editor.TextViewMargin.AddDrawer (drawer);
 			editor.CurrentMode = this;
 		}
 		
 		protected virtual void OnExited (InsertionCursorEventArgs e)
 		{
-			Editor.CurrentMode = oldMode;
+			editor.Caret.IsVisible = true;
+			editor.TextViewMargin.RemoveDrawer (drawer);
+			editor.CurrentMode = oldMode;
+			
 			EventHandler<InsertionCursorEventArgs> handler = this.Exited;
 			if (handler != null)
 				handler (this, e);
-			Editor.Document.CommitUpdateAll ();
+			
+			editor.Document.CommitUpdateAll ();
 		}
 		
 		public event EventHandler<InsertionCursorEventArgs> Exited;
@@ -90,9 +108,83 @@ namespace Mono.TextEditor
 				this.mode = mode;
 			}
 			
+			void DrawArrow (Cairo.Context g, int x, int y)
+			{
+				TextEditor editor = mode.editor;
+				double phi = 1.618;
+				double arrowLength = editor.LineHeight * phi;
+				double arrowHeight = editor.LineHeight / phi;
+				
+				g.MoveTo (x - arrowLength, y - arrowHeight);
+				g.LineTo (x, y);
+				g.LineTo (x - arrowLength, y + arrowHeight);
+				
+				g.LineTo (x - arrowLength / phi, y);
+				g.ClosePath ();
+				g.Color = new Cairo.Color (1.0, 0, 0);
+				g.StrokePreserve ();
+				
+				g.Color = new Cairo.Color (1.0, 0, 0, 0.1);
+				g.Fill ();
+			}
+			
 			public override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area)
 			{
-				
+				TextEditor editor = mode.editor;
+				int y = editor.LineToVisualY (mode.CurrentInsertionPoint.Line);
+				using (var g = Gdk.CairoHelper.Create (drawable)) {
+					g.LineWidth = System.Math.Min (1, editor.Options.Zoom);
+					LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
+					LineSegment lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
+					
+					int aboveStart = 0, aboveEnd = editor.TextViewMargin.XOffset;
+					int belowStart = 0, belowEnd = editor.TextViewMargin.XOffset;
+					int l = 0;
+					if (lineAbove != null) {
+						var wrapper = editor.TextViewMargin.GetLayout (lineAbove);
+						wrapper.Layout.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out aboveStart);
+						aboveStart = (int)(aboveStart / Pango.Scale.PangoScale);
+						aboveEnd = (int)(wrapper.PangoWidth / Pango.Scale.PangoScale);
+						
+						if (wrapper.IsUncached)
+							wrapper.Dispose ();
+					}
+					if (lineBelow != null) {
+						var wrapper = editor.TextViewMargin.GetLayout (lineBelow);
+						wrapper.Layout.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out belowStart);
+						belowStart = (int)(belowStart / Pango.Scale.PangoScale);
+						belowEnd = (int)(wrapper.PangoWidth / Pango.Scale.PangoScale);
+						if (wrapper.IsUncached)
+							wrapper.Dispose ();
+					}
+					
+					int d = editor.LineHeight / 3;
+					int x1 = editor.TextViewMargin.XOffset;
+					int x2 = editor.TextViewMargin.XOffset;
+					if (aboveStart < belowEnd) {
+						x1 += aboveStart;
+						x2 += belowEnd;
+					} else if (aboveStart > belowEnd) {
+						d *= -1;
+						x1 += belowEnd;
+						x2 += aboveStart;
+					} else {
+						x1 += System.Math.Min (aboveStart, belowStart);
+						x2 += System.Math.Max (aboveEnd, belowEnd);
+						if (x1 == x2)
+							x2 += 50;
+					}
+					
+					g.MoveTo (x1, y + d);
+					g.LineTo (x1, y);
+					g.LineTo (x2, y);
+					g.LineTo (x2, y - d);
+					
+					g.Color = new Cairo.Color (1.0, 0, 0);
+					g.Stroke ();
+					
+					DrawArrow (g, x1 - 4, y);
+				}
 			}
 		}
 	}

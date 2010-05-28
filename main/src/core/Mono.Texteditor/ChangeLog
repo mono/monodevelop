@@ -1,5 +1,11 @@
 2010-05-28  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Margin.cs:
+	* Mono.TextEditor/InsertionCursorEditMode.cs: Worked on
+	  insertion cursor edit mode.
+
+2010-05-28  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Caret.cs:
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 609188 -
 	  Middle-click paste jumps to source location'.

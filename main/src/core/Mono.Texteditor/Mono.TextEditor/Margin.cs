@@ -71,7 +71,7 @@ namespace Mono.TextEditor
 		
 		public void RemoveDrawer (MarginDrawer drawer)
 		{
-			marginDrawer.Add (drawer);
+			marginDrawer.Remove (drawer);
 		}
 
 		internal protected virtual void BeginRender (Gdk.Drawable drawable, Gdk.Rectangle area, int x)
