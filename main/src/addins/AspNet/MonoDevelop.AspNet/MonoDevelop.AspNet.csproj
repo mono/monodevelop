@@ -111,8 +111,8 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AspNet.addin.xml">
@@ -295,6 +295,7 @@
     <Compile Include="MonoDevelop.Html\PathCompletion.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\ILanguageCompletionBuilder.cs" />
     <Compile Include="MonoDevelop.AspNet\LineInterceptingTextWriter.cs" />
+    <Compile Include="MonoDevelop.AspNet.Gui\AspProjectDom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -321,7 +322,6 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar Sync="true" Name="DATA_FILES" />

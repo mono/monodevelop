@@ -51,6 +51,7 @@ FILES =  \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanel.cs \
 	MonoDevelop.AspNet.Gui/AspNetConfigurationPanelWidget.cs \
 	MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs \
+	MonoDevelop.AspNet.Gui/AspProjectDom.cs \
 	MonoDevelop.AspNet.Gui/BaseHtmlEditorExtension.cs \
 	MonoDevelop.AspNet.Gui/BrowserLauncher.cs \
 	MonoDevelop.AspNet.Gui/HtmlEditorExtension.cs \

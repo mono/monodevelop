@@ -87,68 +87,21 @@ namespace MonoDevelop.AspNet.Gui
 			
 			if (HasDoc)
 				refman.Doc = aspDoc;
-		}
-		
-		/// <summary>
-		/// This wraps a project dom and adds the compilation information from the ASP.NET page to the DOM to lookup members
-		/// on the page.
-		/// </summary>
-		class DomWrapper : ProjectDomDecorator
-		{
-			ParsedDocument doc, localDoc;
 			
-			public DomWrapper (ProjectDom decorated, ParsedDocument doc, ParsedDocument localDoc) : base (decorated)
-			{
-				this.doc = doc;
-				this.localDoc = localDoc;
-			}
-			IType constructedType = null;
-			MonoDevelop.Projects.Dom.IType CheckType (MonoDevelop.Projects.Dom.IType type)
-			{
-				if (type == null)
-					return null;
-				if (type.IsPartial && doc.CompilationUnit.Types[0].FullName == type.FullName) {
-					if (constructedType == null) 
-						constructedType = CompoundType.Merge (CompoundType.Merge (doc.CompilationUnit.Types[0], type), localDoc.CompilationUnit.Types[0]);
-					constructedType.SourceProjectDom = this;
-					return constructedType;
-				}
-				return type;
-			}
+			documentBuilder = HasDoc? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
-			public override IType ResolveType (IType type)
-			{
-				if (type == constructedType)
-					return type;
-				return CheckType (base.ResolveType (type));
-			}
-			
-			public override MonoDevelop.Projects.Dom.IType GetType (IReturnType returnType)
-			{
-				return CheckType (base.GetType (returnType));
-			}
-
-			public override MonoDevelop.Projects.Dom.IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
-			{
-				return CheckType (base.GetType (typeName, genericArguments, deepSearchReferences, caseSensitive));
-			}
-
-			public override MonoDevelop.Projects.Dom.IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
-			{
-				return CheckType (base.GetType (typeName, genericArgumentsCount, deepSearchReferences, caseSensitive));
-			}
-			
-			public override System.Collections.Generic.IEnumerable<MonoDevelop.Projects.Dom.IType> GetInheritanceTree (IType type)
-			{
-				foreach (IType t in base.GetInheritanceTree (type)) {
-					yield return CheckType (t);
-				}
+			if (documentBuilder != null) {
+				var usings = refman.GetUsings ();
+				documentInfo = new DocumentInfo (aspDoc, usings);
+				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, TextEditorData);
+				documentInfo.Dom = new AspProjectDom (refman.GetDoms (), documentInfo.ParsedDocument);
 			}
 		}
 		
 		ILanguageCompletionBuilder documentBuilder;
 		MonoDevelop.Ide.Gui.Document hiddenDocument;
 		LocalDocumentInfo localDocumentInfo;
+		DocumentInfo documentInfo;
 		
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
@@ -196,9 +149,7 @@ namespace MonoDevelop.AspNet.Gui
 				DocType.Uri = matches.Groups["uri"].Value;
 			}
 			
-			//simple completion for ASP.NET expressions
-			documentBuilder = HasDoc? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
-			
+			//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
 				int start = Document.TextEditor.CursorPosition - Tracker.Engine.CurrentStateLength;
@@ -208,32 +159,28 @@ namespace MonoDevelop.AspNet.Gui
 				
 				string sourceText = Document.TextEditor.GetText (start, Document.TextEditor.CursorPosition);
 
-				MonoDevelop.AspNet.Parser.Internal.Location loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
+				var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
 				int line, col;
  				Document.TextEditor.GetLineColumnFromPosition (start, out line, out col);
 				loc.EndLine = loc.BeginLine = line;
 				loc.EndColumn = loc.BeginColumn = col;
 				
-				var usings = new HashSet<string> (project.RegistrationCache.GetNamespacesForPath (Document.FileName));
-				foreach (var s in aspDoc.Info.Imports)
-					usings.Add (s);
+				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, true);
 				
-				var documentInfo = documentBuilder.BuildDocument (aspDoc, usings, TextEditorData);
-				
-				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, usings, TextEditorData, sourceText, true);
-				
-				MonoDevelop.Ide.Gui.HiddenTextEditorViewContent viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
+				var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
 				viewContent.Project = Document.Project;
 				viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
 				
 				viewContent.Text = localDocumentInfo.LocalDocument;
 				viewContent.GetTextEditorData ().Caret.Offset = localDocumentInfo.CaretPosition;
-				MonoDevelop.Ide.Gui.HiddenWorkbenchWindow workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
+				var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 				workbenchWindow.ViewContent = viewContent;
 				hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
 				
 				hiddenDocument.ParsedDocument = localDocumentInfo.ParsedLocalDocument;
-				return documentBuilder.HandleCompletion (hiddenDocument, localDocumentInfo, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), documentInfo.ParsedDocument, localDocumentInfo.ParsedLocalDocument), currentChar, ref triggerWordLength);
+				
+				return documentBuilder.HandleCompletion (hiddenDocument, documentInfo, localDocumentInfo, currentChar, 
+				                                         ref triggerWordLength);
 			}
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
@@ -242,7 +189,7 @@ namespace MonoDevelop.AspNet.Gui
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null && hiddenDocument != null)
-				return documentBuilder.HandleParameterCompletion (hiddenDocument, localDocumentInfo, new DomWrapper (ProjectDomService.GetProjectDom (Document.Project), hiddenDocument.ParsedDocument, localDocumentInfo.ParsedLocalDocument), completionChar);
+				return documentBuilder.HandleParameterCompletion (hiddenDocument, documentInfo, localDocumentInfo, completionChar);
 			
 			return base.HandleParameterCompletion (completionContext, completionChar);
 		}

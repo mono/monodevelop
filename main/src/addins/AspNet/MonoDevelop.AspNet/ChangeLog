@@ -1,5 +1,25 @@
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj: Added AspProjectDom to project.
+
+	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs:
+	  DocumentInfo now contains the usings, ProjectDoms, script
+	  region list, class name, base type.
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Only
+	  rebuild the DocumentInfo when we get a new
+	  AspNetParsedDocument, not on every keystroke. Track APIs.
+
+	* MonoDevelop.AspNet.Gui/AspProjectDom.cs: Moved from
+	  DomWrapper in AspNetCompletion.cs.
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Added
+	  APIs for getting the usings and ProjectDoms for the
+	  document.
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Missed a file in
 	  previous commit.
 

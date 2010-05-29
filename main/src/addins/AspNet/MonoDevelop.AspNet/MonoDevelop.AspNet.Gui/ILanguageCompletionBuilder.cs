@@ -46,53 +46,102 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.AspNet.Gui
 {
-	public class LocalDocumentInfo {
-		public string LocalDocument {
-			get;
-			set;
-		}
-		
-		public ParsedDocument ParsedLocalDocument {
-			get;
-			set;
-		}
-		
-		public int CaretPosition {
-			get;
-			set;
-		}
+	/// <summary>
+	/// Embedded local region completion information for each keystroke
+	/// </summary>
+	public class LocalDocumentInfo
+	{
+		public string LocalDocument { get; set; }
+		public ParsedDocument ParsedLocalDocument { get; set; }
+		public int CaretPosition { get; set; }
 	}
 	
-	public class DocumentInfo {
-		public MonoDevelop.AspNet.Parser.AspNetParsedDocument AspNetParsedDocument {
-			get;
-			set;
-		}
+	/// <summary>
+	/// Embedded completion information calculated from the AspNetParsedDocument
+	/// </summary>
+	public class DocumentInfo
+	{
+		public DocumentInfo (AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports)
+		{
+			this.AspNetDocument = aspNetParsedDocument;
+			this.Imports = imports;
+			ScriptBlocks = new List<TagNode> ();
+			Expressions = new List<ExpressionNode> ();
+			aspNetParsedDocument.RootNode.AcceptVisit (new ExpressionCollector (this));
+		}		
 		
-		public ParsedDocument ParsedDocument {
-			get;
-			set;
-		}
+		public AspNetParsedDocument AspNetDocument { get; private set; }
+		public ParsedDocument ParsedDocument { get; set; }
+		public List<ExpressionNode> Expressions { get; private set; }
+		public List<TagNode> ScriptBlocks { get; private set; }
+		public ProjectDom Dom { get; set; }
+		public IEnumerable<string> Imports { get; private set; }
 		
-		List<ExpressionNode> expressions = new List<ExpressionNode> ();
-		public List<ExpressionNode> Expressions {
+		public string BaseType {
 			get {
-				return expressions;
+				return string.IsNullOrEmpty (AspNetDocument.Info.InheritedClass)?
+					GetDefaultBaseClass (AspNetDocument.Type) : AspNetDocument.Info.InheritedClass;
+			}
+		}
+		
+		public string ClassName  {
+			get {
+				return string.IsNullOrEmpty (AspNetDocument.Info.ClassName)?
+					"Generated" : AspNetDocument.Info.ClassName;
+			}
+		}
+		
+		static string GetDefaultBaseClass (MonoDevelop.AspNet.WebSubtype type)
+		{
+			switch (type) {
+			case MonoDevelop.AspNet.WebSubtype.WebForm:
+				return "System.Web.UI.Page";
+			case MonoDevelop.AspNet.WebSubtype.MasterPage:
+				return "System.Web.UI.MasterPage";
+			case MonoDevelop.AspNet.WebSubtype.WebControl:
+				return "System.Web.UI.UserControl";
+			}
+			throw new InvalidOperationException (string.Format ("Unexpected filetype '{0}'", type));
+		}
+		
+		class ExpressionCollector : Visitor
+		{
+			DocumentInfo parent;
+			
+			public ExpressionCollector (DocumentInfo parent)
+			{
+				this.parent = parent;
+			}
+			
+			public override void Visit (TagNode node)
+			{
+				if (node.TagName == "script" && (string)node.Attributes["runat"] == "server")
+					parent.ScriptBlocks.Add (node);
+			}
+			
+			public override void Visit (ExpressionNode node)
+			{
+				parent.Expressions.Add (node);
 			}
 		}
 	}
 	
+	/// <summary>
+	/// Code completion for languages embedded in ASP.NET documents
+	/// </summary>
 	public interface ILanguageCompletionBuilder 
 	{
 		bool SupportsLanguage (string language);
 		
-		DocumentInfo BuildDocument (AspNetParsedDocument aspDocument, IEnumerable<string> imports, 
-		                            TextEditorData textEditorData);
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, IEnumerable<string> imports, 
-		                                      TextEditorData textEditorData, string expressionText, bool isExpression);
+		ParsedDocument BuildDocument (DocumentInfo info, TextEditorData textEditorData);
 		
-		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char currentChar, ref int triggerWordLength);
-		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, LocalDocumentInfo info, ProjectDom currentDom, char completionChar);
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, 
+			bool isExpression);
+		
+		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info, 
+			LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
+		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
+			LocalDocumentInfo localInfo, char completionChar);
 	}
 	
 	public static class LanguageCompletionBuilderService
@@ -110,9 +159,10 @@ namespace MonoDevelop.AspNet.Gui
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Asp/CompletionBuilders", delegate(object sender, Mono.Addins.ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case Mono.Addins.ExtensionChange.Add:
-					Console.WriteLine (args.ExtensionObject);
-					Console.WriteLine (args.ExtensionNode);
 					builder.Add ((ILanguageCompletionBuilder)args.ExtensionObject);
+					break;
+				case Mono.Addins.ExtensionChange.Remove:
+					builder.Remove ((ILanguageCompletionBuilder)args.ExtensionObject);
 					break;
 				}
 			});

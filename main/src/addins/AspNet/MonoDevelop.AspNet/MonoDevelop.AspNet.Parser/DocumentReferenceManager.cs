@@ -405,6 +405,31 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		#endregion
+		
+		public IEnumerable<string> GetUsings ()
+		{
+			var usings = new HashSet<string> (Project.RegistrationCache.GetNamespacesForPath (Doc.FileName));
+			foreach (var s in Doc.Info.Imports)
+				usings.Add (s);
+			return usings;
+		}
+		
+		public IList<ProjectDom> GetDoms ()
+		{
+			var asms = new HashSet<string> (Project.RegistrationCache.GetAssembliesForPath (Doc.FileName));
+			foreach (var s in Doc.Info.Assemblies)
+				asms.Add (s.Name);
+			
+			var doms = new List<ProjectDom> ();
+			doms.Add (TypeCtx.ProjectDom);
+			
+			foreach (var asmName in asms) {
+				var dom = TypeCtx.ResolveAssembly (asmName);
+				if (dom != null)
+					doms.Add (dom);
+			}
+			return doms;
+		}
 	}
 	
 	//lazily loads docs
