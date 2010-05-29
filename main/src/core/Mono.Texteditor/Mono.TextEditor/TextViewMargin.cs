@@ -1205,7 +1205,7 @@ namespace Mono.TextEditor
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
-				DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value, new Rectangle (xPos + startX, y, endX - startX, textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
+				DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Rectangle (xPos + startX, y, endX - startX, textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
 			}
 			
 				
