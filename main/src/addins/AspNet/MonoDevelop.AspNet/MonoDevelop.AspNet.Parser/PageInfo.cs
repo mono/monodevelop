@@ -83,6 +83,11 @@ namespace MonoDevelop.AspNet.Parser
 			public override void Visit (DirectiveNode node)
 			{
 				var atts = node.Attributes;
+				
+				//easy way to avoid NREs - we can't get much info anyway
+				if (atts == null)
+					return;
+				
 				switch (node.Name.ToLowerInvariant ()) {
 				case "page":
 					SetSubtype (WebSubtype.WebForm, node);
