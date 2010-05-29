@@ -1,3 +1,9 @@
+2010-05-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Fixed
+	  'Bug 608910 - Getting a "File not found" exception in
+	  monodevelop that doesn't allow me to build :('.
+
 2010-05-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
