@@ -1,3 +1,11 @@
+2010-05-29  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs: Fix control
+	  registration.
+
+	* MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs: Use
+	  directory for config search, not filename.
+
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetAppProject.cs: Get the web.config

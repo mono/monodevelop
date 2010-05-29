@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNet
 		
 		public IList<RegistrationInfo> GetInfosForPath (string webDirectory)
 		{
-			List<RegistrationInfo> infos = new List<RegistrationInfo> ();
+			var infos = new List<RegistrationInfo> ();
 			DirectoryInfo dir = new DirectoryInfo (webDirectory);
 			string projectRootParent = new DirectoryInfo (project.BaseDirectory).Parent.FullName;
 			while (dir != null && dir.FullName.Length > projectRootParent.Length && dir.FullName != projectRootParent) {
@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet
 				
 				var pages = systWeb.Element ("pages");
 				if (pages != null) {
-					var controls = systWeb.Element ("controls");
+					var controls = pages.Element ("controls");
 					if (controls != null) {
 						foreach (var element in controls.Elements ()) {
 							bool add = element.Name == "add";
@@ -242,6 +242,8 @@ namespace MonoDevelop.AspNet
 		public ControlRegistration (string configFile, bool add, string tagPrefix, string _namespace, 
 		                            string assembly, string tagName, string src)
 		{
+			Add = add;
+			ConfigFile = configFile;
 			TagPrefix = tagPrefix;
 			Namespace = _namespace;
 			Assembly = assembly;

@@ -408,7 +408,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<string> GetUsings ()
 		{
-			var usings = new HashSet<string> (Project.RegistrationCache.GetNamespacesForPath (Doc.FileName));
+			var usings = new HashSet<string> (Project.RegistrationCache.GetNamespacesForPath (DirectoryPath));
 			foreach (var s in Doc.Info.Imports)
 				usings.Add (s);
 			return usings;
@@ -416,7 +416,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IList<ProjectDom> GetDoms ()
 		{
-			var asms = new HashSet<string> (Project.RegistrationCache.GetAssembliesForPath (Doc.FileName));
+			var asms = new HashSet<string> (Project.RegistrationCache.GetAssembliesForPath (DirectoryPath));
 			foreach (var s in Doc.Info.Assemblies)
 				asms.Add (s.Name);
 			
