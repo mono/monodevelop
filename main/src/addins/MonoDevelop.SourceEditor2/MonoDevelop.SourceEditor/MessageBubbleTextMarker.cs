@@ -75,6 +75,8 @@ namespace MonoDevelop.SourceEditor
 		public bool CollapseExtendedErrors {
 			get { return collapseExtendedErrors; }
 			set {
+				if (collapseExtendedErrors == value)
+					return;
 				collapseExtendedErrors = value;
 				int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 				if (collapseExtendedErrors) {
@@ -97,7 +99,7 @@ namespace MonoDevelop.SourceEditor
 		Task task;
 		LineSegment lineSegment;
 		int editorAllocHeight = -1, lastLineLength = -1;
-		int lastHeight = 0;
+		internal int lastHeight = 0;
 
 		public int GetLineHeight (TextEditor editor)
 		{
@@ -159,9 +161,9 @@ namespace MonoDevelop.SourceEditor
 				int textWidth, textHeight;
 				textLayout.GetPixelSize (out textWidth, out textHeight);
 				textSize = new KeyValuePair<int, int> (textWidth, textHeight);
-				if (textWidthDictionary.Count > 10000) {
+				if (textWidthDictionary.Count > 10000)
 					textWidthDictionary.Clear ();
-				}
+				
 				lineWidthDictionary[lineSegment] = textSize;
 			}
 			EnsureLayoutCreated (editor);
@@ -203,14 +205,10 @@ namespace MonoDevelop.SourceEditor
 			DisposeLayout ();
 		}
 
-		public static bool RemoveLine (LineSegment line, out int oldHeight)
+		public static bool RemoveLine (LineSegment line)
 		{
-			KeyValuePair<int, int> result;
-			if (!lineWidthDictionary.TryGetValue (line, out result)) {
-				oldHeight = -1;
+			if (!lineWidthDictionary.ContainsKey (line))
 				return false;
-			}
-			oldHeight = result.Value;
 			lineWidthDictionary.Remove (line);
 			return true;
 		}

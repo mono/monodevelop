@@ -153,15 +153,14 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
 				UpdateBreakpoints ();
-				int oldHeight;
-				if (MessageBubbleTextMarker.RemoveLine (e.Line, out oldHeight)) {
+				if (MessageBubbleTextMarker.RemoveLine (e.Line)) {
 					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
+						int oldHeight = marker.lastHeight;
 						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); // ensure that the line cache is renewed
 						int newHeight = marker.GetLineHeight (widget.TextEditor);
-						if (oldHeight != newHeight) {
+						if (oldHeight != newHeight)
 							widget.Document.CommitLineToEndUpdate (widget.TextEditor.Document.OffsetToLineNumber (e.Line.Offset));
-						}
 					}
 				}
 			};

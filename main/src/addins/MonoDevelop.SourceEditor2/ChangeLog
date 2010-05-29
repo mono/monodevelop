@@ -1,3 +1,10 @@
+2010-05-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Fixed
+	  'Bug 610099 - Typing in lines with bubbles very slow'.
+
+
 2010-05-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
