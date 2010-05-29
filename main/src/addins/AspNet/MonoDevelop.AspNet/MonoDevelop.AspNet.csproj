@@ -285,7 +285,6 @@
     <Compile Include="MonoDevelop.AspNet.StateEngine\HtmlTagState.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\HtmlClosingTagState.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.AspNet\ProjectRegisteredControls.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\ContentPlaceHolderVisitor.cs" />
     <Compile Include="MonoDevelop.AspNet\MasterContentFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetExecutionCommand.cs" />
@@ -296,6 +295,7 @@
     <Compile Include="MonoDevelop.AspNet.Gui\ILanguageCompletionBuilder.cs" />
     <Compile Include="MonoDevelop.AspNet\LineInterceptingTextWriter.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\AspProjectDom.cs" />
+    <Compile Include="MonoDevelop.AspNet\RegistrationCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -174,6 +174,13 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
+		public override void Dispose ()
+		{
+			codebehindTypeNameCache.Dispose ();
+			RegistrationCache.Dispose ();
+			base.Dispose ();
+		}
+		
 		#region build/prebuild/execute
 		
 		
@@ -694,20 +701,21 @@ namespace MonoDevelop.AspNet
 				return codebehindTypeNameCache.GetCodeBehindTypeName (fileName);
 		}
 		
-		class CodeBehindTypeNameCache : FileInfoCache<string> 
+		class CodeBehindTypeNameCache : ProjectFileCache<AspNetAppProject,string>
 		{
-			AspNetAppProject proj;
-			
-			public CodeBehindTypeNameCache (AspNetAppProject proj)
+			public CodeBehindTypeNameCache (AspNetAppProject proj) : base (proj)
 			{
-				this.proj = proj;
 			}
 			
-			protected override string GenerateInfo (string fileName)
+			protected override string GenerateInfo (string filename)
 			{
-				var doc = ProjectDomService.Parse (proj, fileName, null) as AspNetParsedDocument;
-				if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
-					return doc.Info.InheritedClass;
+				try {
+					var doc = ProjectDomService.Parse (Project, filename, null) as AspNetParsedDocument;
+					if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
+						return doc.Info.InheritedClass;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error reading codebehind name for file '" + filename + "'", ex);
+				}
 				return null;
 			}
 			

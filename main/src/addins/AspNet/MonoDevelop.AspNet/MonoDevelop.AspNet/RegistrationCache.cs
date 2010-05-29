@@ -32,37 +32,34 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet
 {
 	
-	class RegistrationCache : FileInfoCache<RegistrationInfo>
+	class RegistrationCache : ProjectFileCache<AspNetAppProject,RegistrationInfo>
 	{
-		AspNetAppProject project;
 		RegistrationInfo machineRegistrationInfo;
 		
-		public RegistrationCache (AspNetAppProject project)
+		public RegistrationCache (AspNetAppProject project) : base (project)
 		{
-			this.project = project;
 			machineRegistrationInfo = GetMachineInfo ();
 		}
 		
-		public IList<RegistrationInfo> GetInfosForPath (string webDirectory)
+		public IList<RegistrationInfo> GetInfosForPath (FilePath dir)
 		{
 			var infos = new List<RegistrationInfo> ();
-			DirectoryInfo dir = new DirectoryInfo (webDirectory);
-			string projectRootParent = new DirectoryInfo (project.BaseDirectory).Parent.FullName;
-			while (dir != null && dir.FullName.Length > projectRootParent.Length && dir.FullName != projectRootParent) {
-				string configPath = Path.Combine (dir.FullName, "web.config");
-				try {
-					if (!File.Exists (configPath))
-						configPath = Path.Combine (dir.FullName, "Web.config");
-					if (File.Exists (configPath))
-						infos.Add (Get (configPath));
-					dir = dir.Parent;
-				} catch (IOException ex) {
-					MonoDevelop.Core.LoggingService.LogError ("Error querying web.config file '" + configPath + "'", ex);
+			var projectRootParent = Project.BaseDirectory.ParentDirectory;
+			while (dir != null && dir.IsChildPathOf (projectRootParent)) {
+				var conf = dir.Combine ("web.config");
+				var reg = Get (conf);
+				if (reg == null) {
+					conf = dir.Combine ("Web.config");
+					reg = Get (conf);
 				}
+				if (reg != null)
+					infos.Add (reg);
+				dir = dir.ParentDirectory;
 			}
 			infos.Add (machineRegistrationInfo);
 			return infos;
@@ -70,51 +67,61 @@ namespace MonoDevelop.AspNet
 		
 		protected override RegistrationInfo GenerateInfo (string filename)
 		{
+			try {
+				using (var reader = new XmlTextReader (filename) { WhitespaceHandling = WhitespaceHandling.None }) {
+					var doc = XDocument.Load (reader);
+					return ReadFrom (filename, doc);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error reading registration info from file '" + filename + "'", ex);
+			}
+			return null;
+		}
+		
+		RegistrationInfo ReadFrom (string filename, XDocument doc)
+		{
 			var info = new RegistrationInfo ();
-			using (var reader = new XmlTextReader (filename) { WhitespaceHandling = WhitespaceHandling.None }) {
-				var doc = XDocument.Load (reader);
+			
+			if (doc.Root.Name != "configuration")
+				return info;
 				
-				if (doc.Root.Name != "configuration")
-					return info;
-				
-				var systWeb = doc.Root.Element ("system.web");
-				if (systWeb == null)
-					return info;
-				
-				var pages = systWeb.Element ("pages");
-				if (pages != null) {
-					var controls = pages.Element ("controls");
-					if (controls != null) {
-						foreach (var element in controls.Elements ()) {
-							bool add = element.Name == "add";
-							if (add || element.Name == "remove")
-								info.Controls.Add (new ControlRegistration (filename, add,
-									(string) element.Attribute ("tagPrefix"),
-									(string) element.Attribute ("namespace"),
-									(string) element.Attribute ("assembly"),
-									(string) element.Attribute ("tagName"),
-									(string) element.Attribute ("src")));
-						}
-					}
-					var namespaces = pages.Element ("namespaces");
-					if (namespaces != null) {
-						foreach (var element in namespaces.Elements ()) {
-							bool add = element.Name == "add";
-							if (add || element.Name == "remove")
-								info.Namespaces.Add (new NamespaceRegistration (add, (string) element.Attribute ("namespace")));
-						}
+			var systWeb = doc.Root.Element ("system.web");
+			if (systWeb == null)
+				return info;
+			
+			var pages = systWeb.Element ("pages");
+			if (pages != null) {
+				var controls = pages.Element ("controls");
+				if (controls != null) {
+					foreach (var element in controls.Elements ()) {
+						bool add = element.Name == "add";
+						if (add || element.Name == "remove")
+							info.Controls.Add (new ControlRegistration (filename, add,
+								(string) element.Attribute ("tagPrefix"),
+								(string) element.Attribute ("namespace"),
+								(string) element.Attribute ("assembly"),
+								(string) element.Attribute ("tagName"),
+								(string) element.Attribute ("src")));
 					}
 				}
-				
-				var compilation = systWeb.Element ("compilation");
-				if (compilation != null) {
-					var assemblies = compilation.Element ("assemblies");
-					if (assemblies != null) {
-						foreach (var element in assemblies.Elements ()) {
-							bool add = element.Name == "add";
-							if (add || element.Name == "remove")
-								info.Assemblies.Add (new AssemblyRegistration (add, (string) element.Attribute ("assembly")));
-						}
+				var namespaces = pages.Element ("namespaces");
+				if (namespaces != null) {
+					foreach (var element in namespaces.Elements ()) {
+						bool add = element.Name == "add";
+						if (add || element.Name == "remove")
+							info.Namespaces.Add (new NamespaceRegistration (add, (string) element.Attribute ("namespace")));
+					}
+				}
+			}
+			
+			var compilation = systWeb.Element ("compilation");
+			if (compilation != null) {
+				var assemblies = compilation.Element ("assemblies");
+				if (assemblies != null) {
+					foreach (var element in assemblies.Elements ()) {
+						bool add = element.Name == "add";
+						if (add || element.Name == "remove")
+							info.Assemblies.Add (new AssemblyRegistration (add, (string) element.Attribute ("assembly")));
 					}
 				}
 			}
@@ -250,42 +257,73 @@ namespace MonoDevelop.AspNet
 			TagName = tagName;
 			Source = src;
 		}
-
 	}
 	
-	//NOTE: not safe for multithreaded access
-	public abstract class FileInfoCache<T> where T : class
+	/// <summary>
+	/// Caches items for filename keys. Files may not exist, which doesn't matter.
+	/// When a project file with that name is cached in any way, the cache item will be flushed.
+	/// </summary>
+	/// <remarks>Not safe for multithreaded access.</remarks>
+	abstract class ProjectFileCache<T,U> : IDisposable
+		where T : MonoDevelop.Projects.Project
 	{
-		Dictionary<string, CacheEntry<T>> cache = new Dictionary<string, CacheEntry<T>> ();
+		protected T Project { get; private set; }
 		
-		protected T Get (string filename)
+		Dictionary<string, U> cache;
+		
+		/// <summary>Creates a ProjectFileCache</summary>
+		/// <param name="project">The project the cache is bound to</param>
+		public ProjectFileCache (T project)
 		{
-			CacheEntry<T> cached;
-			DateTime lastWriteUtc = File.GetLastWriteTimeUtc (filename);
+			this.Project = project;
+			cache =  new Dictionary<string, U> ();
+			Project.FileChangedInProject += FileChangedInProject;
+			Project.FileRemovedFromProject += FileChangedInProject;
+			Project.FileAddedToProject += FileChangedInProject;
+			Project.FileRenamedInProject += FileRenamedInProject;
+		}
+
+		void FileRenamedInProject (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs e)
+		{
+			cache.Remove (e.OldName);
+		}
+
+		void FileChangedInProject (object sender, MonoDevelop.Projects.ProjectFileEventArgs e)
+		{
+			cache.Remove (e.ProjectFile.Name);
+		}
+		
+		/// <summary>
+		/// Queries the cache for an item. If the file does not exist in the project, returns null.
+		/// </summary>
+		protected U Get (string filename)
+		{
+			U value;
+			if (cache.TryGetValue (filename, out value))
+				return value;
 			
-			if (!cache.TryGetValue (filename, out cached) || lastWriteUtc <= cached.LastWriteUtc) {
-				cache[filename] = cached = new CacheEntry<T> {
-					LastWriteUtc = lastWriteUtc,
-					Info = GenerateInfo (filename)
-				};
-			}
+			var pf = Project.GetProjectFile (filename);
+			if (pf != null)
+				value = GenerateInfo (filename);
 			
-			return cached.Info;
+			return cache[filename] = value;
 		}
 		
-		public void Flush ()
+		/// <summary>
+		/// Detaches from the project's events.
+		/// </summary>
+		public void Dispose ()
 		{
-			foreach (string filename in new List<string> (cache.Keys))
-				if (!File.Exists (filename) || cache[filename].LastWriteUtc < File.GetLastWriteTimeUtc (filename))
-					cache.Remove (filename);
+			Project.FileChangedInProject -= FileChangedInProject;
+			Project.FileRemovedFromProject -= FileChangedInProject;
+			Project.FileAddedToProject -= FileChangedInProject;
+			Project.FileRenamedInProject -= FileRenamedInProject;
 		}
 		
-		protected abstract T GenerateInfo (string filename);
-		
-		class CacheEntry<T>
-		{
-			public DateTime LastWriteUtc;
-			public T Info;
-		}
+		/// <summary>
+		/// Generates info for a given filename.
+		/// </summary>
+		/// <returns>Null if no info could be generated for the requested filename, e.g. if it did not exist.</returns>
+		protected abstract U GenerateInfo (string filename);
 	}
 }

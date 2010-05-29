@@ -117,7 +117,7 @@ FILES =  \
 	MonoDevelop.AspNet/LineInterceptingTextWriter.cs \
 	MonoDevelop.AspNet/MasterContentFileDescriptionTemplate.cs \
 	MonoDevelop.AspNet/ProjectFolderNodeBuilderExtension.cs \
-	MonoDevelop.AspNet/ProjectRegisteredControls.cs \
+	MonoDevelop.AspNet/RegistrationCache.cs \
 	MonoDevelop.AspNet/VerifyCodeBehindBuildStep.cs \
 	MonoDevelop.AspNet/WebTypeManager.cs \
 	MonoDevelop.AspNet/XspParameters.cs \

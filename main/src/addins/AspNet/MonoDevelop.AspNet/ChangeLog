@@ -1,5 +1,16 @@
 2010-05-29  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj:
+	* MonoDevelop.AspNet/AspNetAppProject.cs:
+	* MonoDevelop.AspNet/RegistrationCache.cs:
+	* MonoDevelop.AspNet/ProjectRegisteredControls.cs: Change the
+	  file info caches so that they don't constantly stat the
+	  disk. Instead, they use the project file events to flush
+	  items.
+
+2010-05-29  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet/ProjectRegisteredControls.cs: Fix control
 	  registration.
 
