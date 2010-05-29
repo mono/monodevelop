@@ -541,7 +541,6 @@ namespace Mono.TextEditor
 		#region Caret blinking
 		Timer caretTimer = null;
 		bool caretBlink = true;
-//		bool firstBlink = true;
 		object lockObject = new object ();
 		
 		public void ResetCaretBlink ()
@@ -554,11 +553,7 @@ namespace Mono.TextEditor
 					caretTimer = new Timer (Gtk.Settings.Default.CursorBlinkTime / 2);
 					caretTimer.Elapsed += UpdateCaret;
 				}
-				bool shouldRedraw = !caretBlink;
 				caretBlink = true; 
-				if (shouldRedraw)
-					textEditor.RedrawMarginLine (this, Caret.Line);
-//				firstBlink = true;
 				caretTimer.Start ();
 			}
 		}

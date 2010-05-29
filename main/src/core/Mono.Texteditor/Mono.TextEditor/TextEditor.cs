@@ -2560,9 +2560,10 @@ namespace Mono.TextEditor
 				return;
 			int currentHeight = GetLineHeight (e.Line);
 			int h;
-			if (lineHeights.TryGetValue (e.Line.Offset, out h) && h != currentHeight) {
+			if (!lineHeights.TryGetValue (e.Line.Offset, out h))
+				h = TextViewMargin.LineHeight;
+			if (h != currentHeight)
 				textEditorData.Document.CommitLineToEndUpdate (textEditorData.Document.OffsetToLineNumber (e.Line.Offset));
-			}
 			lineHeights[e.Line.Offset] = currentHeight;
 		}
 		
