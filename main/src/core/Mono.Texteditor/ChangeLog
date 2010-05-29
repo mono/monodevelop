@@ -1,3 +1,8 @@
+2010-05-29  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Changed middle click
+	  paste.
+
 2010-05-28  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Margin.cs:

@@ -1436,21 +1436,19 @@ namespace Mono.TextEditor
 				textEditor.Caret.AutoScrollToCaret = false;
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				int newOffset = textEditor.Caret.Offset;
+				textEditor.Caret.Offset = oldOffset;
+				
 				if (selection != null) {
 					if (newOffset < selectionRange.EndOffset) {
 						oldOffset += length;
 						anchor += length;
 						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length), Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
 					}
-					textEditor.Caret.Offset = oldOffset;
-					if (autoScroll)
-						textEditor.Caret.ActivateAutoScrollWithoutMove ();
 					textEditor.MainSelection = selection;
-				} else {
-					textEditor.Caret.Offset = oldOffset;
-					if (autoScroll)
-						textEditor.Caret.ActivateAutoScrollWithoutMove ();
 				}
+				
+				if (autoScroll)
+					textEditor.Caret.ActivateAutoScrollWithoutMove ();
 				Document.CommitLineToEndUpdate (docLocation.Line);
 			}
 		}
