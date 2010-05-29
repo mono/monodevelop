@@ -1,5 +1,13 @@
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetAppProject.cs: Get the web.config
+	  name from the project. Fixes Bug 610066 - Adding a reference
+	  to an ASP.NET MVC project causes Web.config to be renamed
+	  "web.config".
+
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Parser/PageInfo.cs: More granular version
 	  of the NRE fix.
 

@@ -332,7 +332,7 @@ namespace MonoDevelop.AspNet
 		
 		public ProjectDom ResolveAssemblyDom (string assemblyName)
 		{
-			System.Reflection.AssemblyName parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
+			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
 				return null;
 			
@@ -361,7 +361,7 @@ namespace MonoDevelop.AspNet
 		
 		string GetAssemblyPath (string assemblyName)
 		{
-			System.Reflection.AssemblyName parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
+			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
 				return null;
 			
@@ -450,8 +450,8 @@ namespace MonoDevelop.AspNet
 		
 		void UpdateWebConfigRefs ()
 		{
-			List<string> refs = new List<string> ();
-			foreach (ProjectReference reference in References) {
+			var refs = new List<string> ();
+			foreach (var reference in References) {
 				//local copied assemblies are copied to the bin directory so ASP.NET references them automatically
 				if (reference.LocalCopy && (reference.ReferenceType == ReferenceType.Project || reference.ReferenceType == ReferenceType.Assembly))
 					continue;
@@ -467,15 +467,14 @@ namespace MonoDevelop.AspNet
 				refs.Add (reference.Reference);
 			}
 						
-			string webConfigPath = WebConfigPath;
-			if (!File.Exists (webConfigPath))
+			var webConfig = GetWebConfig ();
+			if (webConfig == null || !File.Exists (webConfig.FilePath))
 				return;
 			
-			MonoDevelop.Projects.Text.IEditableTextFile textFile = 
-				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (webConfigPath);
+			var textFile = DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (webConfig.FilePath);
 			//use textfile API because it's write safe (writes out to another file then moves)
 			if (textFile == null)
-				textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (webConfigPath);
+				textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (webConfig.FilePath);
 				
 			//can't use System.Web.Configuration.WebConfigurationManager, as it can only access virtual paths within an app
 			//so need full manual handling
@@ -563,8 +562,19 @@ namespace MonoDevelop.AspNet
 			return result;
 		}
 		
-		string WebConfigPath {
-			get { return Path.Combine (this.BaseDirectory, "web.config"); }
+		ProjectFile GetWebConfig ()
+		{
+			var webConf = this.BaseDirectory.Combine ("web.config");
+			foreach (var file in this.Files)
+				if (string.Compare (file.FilePath.ToString (), webConf, StringComparison.OrdinalIgnoreCase) == 0)
+					return file;
+			return null;
+		}
+		
+		bool IsWebConfig (FilePath file)
+		{
+			var webConf = this.BaseDirectory.Combine ("web.config");
+			return (string.Compare (file, webConf, StringComparison.OrdinalIgnoreCase) == 0);
 		}
 		
 		bool IsSystemReference (string reference)
@@ -611,7 +621,7 @@ namespace MonoDevelop.AspNet
 			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
 				(this, e.ProjectFile, groupedExtensions);
 			
-			if (Path.GetFullPath (e.ProjectFile.FilePath) == Path.GetFullPath (WebConfigPath))
+			if (IsWebConfig (e.ProjectFile.FilePath))
 				UpdateWebConfigRefs ();
 			
 			//let the base fire the event before we add files
