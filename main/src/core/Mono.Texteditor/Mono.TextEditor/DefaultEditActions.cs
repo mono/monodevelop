@@ -327,11 +327,21 @@ namespace Mono.TextEditor
 			data.Remove (startLine.Offset, delta);
 			
 			// handle the last line case
-			
 			if (hasEmptyDelimiter) {
 				text = text + data.EolMarker;
 				data.Remove (prevLine.Offset + prevLine.EditableLength, prevLine.DelimiterLength);
 			}
+			
+			// move markers
+			List<TextMarker> markers = new List<TextMarker> (prevLine.Markers);
+			prevLine.ClearMarker ();
+			for (int i = lineStart; i <= lineEnd; i++) {
+				foreach (TextMarker marker in data.Document.GetLine (i).Markers) {
+					data.Document.GetLine (i - 1).AddMarker (marker);
+				}
+				data.Document.GetLine (i).ClearMarker ();
+			}
+			markers.ForEach (m => endLine.AddMarker (m));
 			
 			data.Insert (newStartOffset, text);
 			data.Caret.Offset = newStartOffset + relCaretOffset;
@@ -372,6 +382,18 @@ namespace Mono.TextEditor
 			}
 			data.Insert (nextLineOffset, text);
 			data.Remove (startLine.Offset, delta);
+			
+			// move markers
+			List<TextMarker> markers = new List<TextMarker> (nextLine.Markers);
+			nextLine.ClearMarker ();
+			for (int i = lineEnd; i <= lineStart; i++) {
+				foreach (TextMarker marker in data.Document.GetLine (i).Markers) {
+					data.Document.GetLine (i + 1).AddMarker (marker);
+				}
+				data.Document.GetLine (i).ClearMarker ();
+			}
+			markers.ForEach (m => startLine.AddMarker (m));
+
 			
 			data.Caret.Offset = newStartOffset + relCaretOffset;
 			if (setSelection)

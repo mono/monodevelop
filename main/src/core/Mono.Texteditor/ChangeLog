@@ -1,5 +1,10 @@
 2010-05-29  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed 'Bug 610045 -
+	  Moving line with url alt-up/down leaves url markers'.
+
+2010-05-29  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Changed middle click
 	  paste.
 
