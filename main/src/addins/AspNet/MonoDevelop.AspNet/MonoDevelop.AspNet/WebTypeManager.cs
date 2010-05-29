@@ -92,12 +92,16 @@ namespace MonoDevelop.AspNet
 		
 		#region Assembly resolution
 		
+		Dictionary<string,ProjectDom> cachedDoms = new Dictionary<string, ProjectDom> ();
 				
 		public ProjectDom ResolveAssembly (string assemblyName)
 		{
-			var dom = Project.ResolveAssemblyDom (assemblyName);
-			if (dom == null)
-				LoggingService.LogWarning ("Failed to obtain completion database for '{0}'", assemblyName);
+			ProjectDom dom;
+			if (!cachedDoms.TryGetValue (assemblyName, out dom)) {
+				cachedDoms [assemblyName] = dom = Project.ResolveAssemblyDom (assemblyName);
+				if (dom == null)
+					LoggingService.LogWarning ("Failed to obtain completion database for '{0}'", assemblyName);
+			}
 			return dom;
 		}
 		

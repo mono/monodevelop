@@ -1,5 +1,9 @@
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/WebTypeManager.cs: Cache ProjectDoms.
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.AspNet.csproj: Added AspProjectDom to project.
 
