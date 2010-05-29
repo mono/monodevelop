@@ -1,5 +1,10 @@
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Parser/PageInfo.cs: More granular version
+	  of the NRE fix.
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.Parser/PageInfo.cs: Fix an NRE.
 
 2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>

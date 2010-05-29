@@ -84,13 +84,11 @@ namespace MonoDevelop.AspNet.Parser
 			{
 				var atts = node.Attributes;
 				
-				//easy way to avoid NREs - we can't get much info anyway
-				if (atts == null)
-					return;
-				
 				switch (node.Name.ToLowerInvariant ()) {
 				case "page":
 					SetSubtype (WebSubtype.WebForm, node);
+					if (atts == null)
+						return;
 					info.MasterPageFile = atts ["masterpagefile"] as string;
 					break;
 				case "control":
@@ -113,12 +111,16 @@ namespace MonoDevelop.AspNet.Parser
 						Add (ErrorType.Error, node, "Unexpected second mastertype directive", node.Name);
 						return;
 					}
+					if (atts == null)
+						return;
 					info.MasterPageTypeName = atts["typename"] as string;
 					info.MasterPageTypeVPath = atts["virtualpath"] as string;
 					if (string.IsNullOrEmpty (info.MasterPageTypeName) == string.IsNullOrEmpty (info.MasterPageTypeVPath))
 						Add (ErrorType.Error, node, "Mastertype directive must have non-empty 'typename' or 'virtualpath' attribute");
 					break;
 				case "register":
+					if (atts == null)
+						return;
 					if (atts ["TagPrefix"] != null) {
 						if ((atts ["TagName"] != null) && (atts ["Src"] != null))
 							info.registeredTags.Add (new ControlRegisterDirective (node));
@@ -127,6 +129,8 @@ namespace MonoDevelop.AspNet.Parser
 					}
 					break;
 				case "assembly":
+					if (atts == null)
+						return;
 					var assembly = new AssemblyDirective (atts ["name"] as string, atts ["src"] as string);
 					if (assembly.IsValid ())
 						info.assemblies.Add (assembly);
@@ -134,6 +138,8 @@ namespace MonoDevelop.AspNet.Parser
 						Add (ErrorType.Error, node, "Assembly directive must have non-empty 'name' or 'src' attribute");
 					break;
 				case "import":
+					if (atts == null)
+						return;
 					var ns = atts ["namespace"] as string;
 					if (!string.IsNullOrEmpty (ns))
 						info.imports.Add (ns);
@@ -141,6 +147,8 @@ namespace MonoDevelop.AspNet.Parser
 						Add (ErrorType.Error, node, "Import directive must have non-empty 'namespace' attribute");
 					break;
 				case "implements":
+					if (atts == null)
+						return;
 					var interf = atts ["interface"] as string;
 					if (!string.IsNullOrEmpty (interf))
 						info.implements.Add (interf);
@@ -165,6 +173,10 @@ namespace MonoDevelop.AspNet.Parser
 				}
 				
 				info.Subtype = type;
+				
+				if (node.Attributes == null)
+					return;
+				
 				info.InheritedClass = node.Attributes ["inherits"] as string;
 				if (info.ClassName == null)
 					info.ClassName = node.Attributes ["classname"] as string;
