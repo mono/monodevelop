@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring.ExtractMethod
 {
@@ -162,6 +163,17 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		void OnOKClicked (object sender, EventArgs e)
 		{
+			TextEditorData data = options.GetTextEditorData ();
+			Mono.TextEditor.TextEditor editor = data.Parent;
+	/* Insertion cursor mode test:
+			 * if (editor != null) {
+				List<DocumentLocation> points = new List<DocumentLocation> ();
+				
+				IType type = properties.DeclaringMember.DeclaringType;
+				
+				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (editor.Document, type));
+				mode.StartMode ();
+			}*/
 			SetProperties ();
 			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);

@@ -71,21 +71,6 @@ namespace MonoDevelop.Refactoring.Rename
 			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename).Text;
 		}
 		
-		internal static Mono.TextEditor.TextEditor GetEditor (Gtk.Widget widget)
-		{
-			if (widget is Mono.TextEditor.TextEditor)
-				return (Mono.TextEditor.TextEditor)widget;
-			Gtk.Container container = widget as Gtk.Container;
-			if (container != null) {
-				foreach (var child in container.Children) {
-					Mono.TextEditor.TextEditor editor = GetEditor (child);
-					if (editor != null)
-						return editor;
-				}
-			}
-			return null;
-		}
-		
 		public override void Run (RefactoringOptions options)
 		{
 			if (options.SelectedItem is LocalVariable || options.SelectedItem is IParameter) {
@@ -93,8 +78,7 @@ namespace MonoDevelop.Refactoring.Rename
 				if (col == null)
 					return;
 				TextEditorData data = options.GetTextEditorData ();
-
-				Mono.TextEditor.TextEditor editor = GetEditor (options.Document.ActiveView.Control);
+				Mono.TextEditor.TextEditor editor = data.Parent;
 				if (editor == null) {
 					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 					return;

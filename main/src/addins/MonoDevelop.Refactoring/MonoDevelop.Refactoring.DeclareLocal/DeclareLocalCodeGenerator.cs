@@ -96,8 +96,8 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				options.Document.TextEditor.CursorPosition = selectionEnd;
 				options.Document.TextEditor.Select (selectionStart, selectionEnd);
 			} else {
-				Mono.TextEditor.TextEditor editor = MonoDevelop.Refactoring.Rename.RenameRefactoring.GetEditor (options.Document.ActiveView.Control);
 				TextEditorData data = options.GetTextEditorData ();
+				Mono.TextEditor.TextEditor editor = data.Parent;
 				TextLink link = new TextLink ("name");
 				if (varName != null) {
 					if (insertOffset >= 0) {

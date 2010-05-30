@@ -63,9 +63,8 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			base.Run (options);
 			
 			TextEditorData data = options.GetTextEditorData ();
-				
-			Mono.TextEditor.TextEditor editor = MonoDevelop.Refactoring.Rename.RenameRefactoring.GetEditor (options.Document.ActiveView.Control);
-				
+			Mono.TextEditor.TextEditor editor = data.Parent;
+			
 			List<TextLink> links = new List<TextLink> ();
 			TextLink link = new TextLink ("name");
 			int referenceCount = 1;
