@@ -94,7 +94,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		{
 			string outputFile = null;
 			MvcTextTemplateHost host = null;
-			AppDomain domain = null;
+			MonoDevelop.TextTemplating.RecyclableAppDomain.Handle handle = null;
 			AddViewDialog dialog = null;
 			
 			try {
@@ -118,12 +118,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 						break;
 				}	
 				
-				AppDomainSetup info = new AppDomainSetup ();
-				info.ApplicationBase  = System.IO.Path.GetDirectoryName (typeof (MvcTextTemplateHost).Assembly.Location);
-				domain = AppDomain.CreateDomain ("AspMvcGenerationDomain", null, info);
-				domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
+				handle = MonoDevelop.TextTemplating.TextTemplatingService.GetTemplatingDomain ();
 				
-				host = MvcTextTemplateHost.Create (domain);
+				host = MvcTextTemplateHost.Create (handle.Domain);
 				
 				if (dialog.HasMaster) {
 					host.IsViewContentPage = true;
@@ -145,8 +142,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				MonoDevelop.TextTemplating.TextTemplatingService.ShowTemplateHostErrors (host.Errors);
 				
 			} finally {
-				if (domain != null)
-					AppDomain.Unload (domain);
+				if (handle != null)
+					handle.Dispose ();
 				if (dialog != null)
 					dialog.Destroy ();
 			}
