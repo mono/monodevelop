@@ -1209,10 +1209,15 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		bool inCaretScroll = false;
-		public void ScrollToCaret ()
+
+		public void ScrollTo (int line, int column)
 		{
-			if (isDisposed || Caret.Line < 0 || Caret.Line >= Document.LineCount || inCaretScroll)
+			ScrollTo (new DocumentLocation (line, column));
+		}
+		
+		public void ScrollTo (DocumentLocation p)
+		{
+			if (isDisposed || p.Line < 0 || p.Line >= Document.LineCount || inCaretScroll)
 				return;
 			inCaretScroll = true;
 			try {
@@ -1220,7 +1225,7 @@ namespace Mono.TextEditor
 					this.textEditorData.VAdjustment.Value = 0;
 				} else {
 					int yMargin = 1 * this.LineHeight;
-					int caretPosition = LineToVisualY (Caret.Line);
+					int caretPosition = LineToVisualY (p.Line);
 					if (this.textEditorData.VAdjustment.Value > caretPosition) {
 						this.textEditorData.VAdjustment.Value = caretPosition;
 					} else if (this.textEditorData.VAdjustment.Value + this.textEditorData.VAdjustment.PageSize - this.LineHeight < caretPosition + yMargin) {
@@ -1231,7 +1236,7 @@ namespace Mono.TextEditor
 				if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 					this.textEditorData.HAdjustment.Value = 0;
 				} else {
-					int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
+					int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
 					int textWith = Allocation.Width - textViewMargin.XOffset;
 					if (this.textEditorData.HAdjustment.Value > caretX) {
 						this.textEditorData.HAdjustment.Value = caretX;
@@ -1243,6 +1248,12 @@ namespace Mono.TextEditor
 			} finally {
 				inCaretScroll = false;
 			}
+		}
+		
+		bool inCaretScroll = false;
+		public void ScrollToCaret ()
+		{
+			ScrollTo (Caret.Location);
 		}
 		
 		public void TryToResetHorizontalScrollPosition ()

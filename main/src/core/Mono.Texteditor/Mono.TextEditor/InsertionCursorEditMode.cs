@@ -54,11 +54,15 @@ namespace Mono.TextEditor
 			case Gdk.Key.Up:
 				if (curPoint > 0)
 					curPoint--;
+				DocumentLocation loc = insertionPoints[curPoint];
+				editor.ScrollTo (loc.Line - 1, 0);
 				editor.QueueDraw ();
 				break;
 			case Gdk.Key.Down:
 				if (curPoint < insertionPoints.Count - 1)
 					curPoint++;
+				loc = insertionPoints[curPoint];
+				editor.ScrollTo (loc.Line + 1, 0);
 				editor.QueueDraw ();
 				break;
 				
@@ -82,6 +86,9 @@ namespace Mono.TextEditor
 			editor.Caret.IsVisible = false;
 			editor.TextViewMargin.AddDrawer (drawer);
 			editor.CurrentMode = this;
+			
+			editor.ScrollTo (insertionPoints[curPoint]);
+			editor.QueueDraw ();
 		}
 		
 		protected virtual void OnExited (InsertionCursorEventArgs e)
@@ -131,7 +138,7 @@ namespace Mono.TextEditor
 			public override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area)
 			{
 				TextEditor editor = mode.editor;
-				int y = editor.LineToVisualY (mode.CurrentInsertionPoint.Line);
+				int y = editor.LineToVisualY (mode.CurrentInsertionPoint.Line) - (int)editor.VAdjustment.Value;
 				using (var g = Gdk.CairoHelper.Create (drawable)) {
 					g.LineWidth = System.Math.Min (1, editor.Options.Zoom);
 					LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
@@ -151,7 +158,15 @@ namespace Mono.TextEditor
 					}
 					if (lineBelow != null) {
 						var wrapper = editor.TextViewMargin.GetLayout (lineBelow);
-						wrapper.Layout.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out belowStart);
+						int index = lineAbove.GetIndentation (editor.Document).Length;
+						if (index == 0) {
+							belowStart = 0;
+						} else if (index >= lineBelow.EditableLength) {
+							belowStart = wrapper.PangoWidth;
+						} else {
+							wrapper.Layout.IndexToLineX (index, true, out l, out belowStart);
+						}
+						
 						belowStart = (int)(belowStart / Pango.Scale.PangoScale);
 						belowEnd = (int)(wrapper.PangoWidth / Pango.Scale.PangoScale);
 						if (wrapper.IsUncached)
@@ -159,8 +174,8 @@ namespace Mono.TextEditor
 					}
 					
 					int d = editor.LineHeight / 3;
-					int x1 = editor.TextViewMargin.XOffset;
-					int x2 = editor.TextViewMargin.XOffset;
+					int x1 = editor.TextViewMargin.XOffset - (int)editor.HAdjustment.Value;
+					int x2 = x1;
 					if (aboveStart < belowEnd) {
 						x1 += aboveStart;
 						x2 += belowEnd;
