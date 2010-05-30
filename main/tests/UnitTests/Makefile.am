@@ -83,6 +83,7 @@ FILES =  \
 	MonoDevelop.Refactoring/CreateBackingStoreTests.cs \
 	MonoDevelop.Refactoring/DeclareLocalTests.cs \
 	MonoDevelop.Refactoring/ExtractMethodTests.cs \
+	MonoDevelop.Refactoring/GenerateNewMemberTests.cs \
 	MonoDevelop.Refactoring/IntegrateTemporaryVariableTests.cs \
 	MonoDevelop.Refactoring/IntroduceConstantRefactoringTests.cs \
 	MonoDevelop.Refactoring/IntroduceFormatItemRefactoringTests.cs \

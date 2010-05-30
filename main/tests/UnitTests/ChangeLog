@@ -1,3 +1,10 @@
+2010-05-30  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* MonoDevelop.Refactoring/GenerateNewMemberTests.cs: Added
+	  some tests.
+
 2010-05-25  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Added test
