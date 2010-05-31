@@ -167,11 +167,13 @@ namespace Mono.TextEditor.Vi
 			if (data == null)
 				return;
 			data.ClearSelection ();
+			
 			if (CaretMode.Block != data.Caret.Mode) {
 				data.Caret.Mode = CaretMode.Block;
 				if (data.Caret.Column > 0)
 					data.Caret.Column--;
 			}
+			ViActions.RetreatFromLineEnd (data);
 		}
 		
 		protected override void OnAddedToEditor (TextEditorData data)
@@ -187,8 +189,9 @@ namespace Mono.TextEditor.Vi
 		
 		void Reset (string status)
 		{
-			ResetEditorState (Data);
 			state = State.Normal;
+			ResetEditorState (Data);
+			
 			commandBuffer.Length = 0;
 			Status = status;
 		}
@@ -323,14 +326,19 @@ namespace Mono.TextEditor.Vi
 						return;
 						
 					case 'x':
+						if (Data.Caret.Column == Data.Document.GetLine (Data.Caret.Line).EditableLength)
+							return;
 						Status = string.Empty;
 						if (!Data.IsSomethingSelected)
 							RunActions (SelectionActions.FromMoveAction (CaretMoveActions.Right), ClipboardActions.Cut);
 						else
 							RunAction (ClipboardActions.Cut);
+						ViActions.RetreatFromLineEnd (Data);
 						return;
 						
 					case 'X':
+						if (Data.Caret.Column == 0)
+							return;
 						Status = string.Empty;
 						if (!Data.IsSomethingSelected && 0 < Caret.Offset)
 							RunActions (SelectionActions.FromMoveAction (CaretMoveActions.Left), ClipboardActions.Cut);

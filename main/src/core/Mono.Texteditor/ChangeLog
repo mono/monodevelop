@@ -1,5 +1,10 @@
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Retreat from line end after x
+	  and on reset. Don't allow x to delete line delimiters.
+
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViActionMaps.cs: Use vi up/down/end
 	  commands with arrow and end keys too.
 
