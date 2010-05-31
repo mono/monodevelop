@@ -690,6 +690,7 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			MethodResolveResult methodResult = targetResult as MethodResolveResult;
 			if (methodResult != null) {
+				methodResult.GetsInvoked = true;
 //				Console.WriteLine ("--------------------");
 //				Console.WriteLine ("i:" + methodResult.ResolvedType);
 /*				foreach (var arg in methodResult.GenericArguments) {
