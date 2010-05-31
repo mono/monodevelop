@@ -30,6 +30,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.TextEditor.Vi
 {
@@ -119,7 +120,10 @@ namespace Mono.TextEditor.Vi
 				if (1 < command.Length) {
 					Editor.HighlightSearchPattern = true;
 					Editor.SearchEngine = new RegexSearchEngine ();
-					Editor.SearchPattern = command.Substring (1);
+					var pattern = command.Substring (1);
+					Editor.SearchPattern = pattern;
+					var caseSensitive = pattern.ToCharArray ().Any (c => char.IsUpper (c));
+					Editor.SearchEngine.SearchRequest.CaseSensitive = caseSensitive;
 				}
 				return Search ();
 			}
@@ -531,7 +535,7 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					RunActions (action, ClipboardActions.Cut);
-					Reset ("-- INSERT --");
+					Status = "-- INSERT --";
 					state = State.Insert;
 					Caret.Mode = CaretMode.Insert;
 				} else {
