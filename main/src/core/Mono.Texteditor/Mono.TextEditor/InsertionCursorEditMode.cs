@@ -29,19 +29,51 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
+	public class InsertionPoint 
+	{
+		public DocumentLocation Location {
+			get;
+			set;
+		}
+		
+		public bool ShouldInsertNewLineBefore { get; set; }
+		public bool ShouldInsertNewLineAfter { get; set; }
+		
+		public InsertionPoint (DocumentLocation location, bool shouldInsertNewLineBefore, bool shouldInsertNewLineAfter)
+		{
+			this.Location = location;
+			this.ShouldInsertNewLineBefore = shouldInsertNewLineBefore;
+			this.ShouldInsertNewLineAfter = shouldInsertNewLineAfter;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[InsertionPoint: Location={0}, ShouldInsertNewLineBefore={1}, ShouldInsertNewLineAfter={2}]", Location, ShouldInsertNewLineBefore, ShouldInsertNewLineAfter);
+		}
+	}
+	
 	public class InsertionCursorEditMode : SimpleEditMode
 	{
 		TextEditor editor;
-		List<DocumentLocation> insertionPoints;
+		List<InsertionPoint> insertionPoints;
 		CursorDrawer drawer;
-		int curPoint = 0;
+		
+		public int CurIndex {
+			get;
+			set;
+		}
+		
 		public DocumentLocation CurrentInsertionPoint {
 			get {
-				return insertionPoints[curPoint];
+				return insertionPoints[CurIndex].Location;
 			}
 		}
-			
-		public InsertionCursorEditMode (TextEditor editor, List<DocumentLocation> insertionPoints)
+		
+		public List<InsertionPoint> InsertionPoints {
+			get { return this.insertionPoints; }
+		}
+		
+		public InsertionCursorEditMode (TextEditor editor, List<InsertionPoint> insertionPoints)
 		{
 			this.editor = editor;
 			this.insertionPoints = insertionPoints;
@@ -52,27 +84,27 @@ namespace Mono.TextEditor
 		{
 			switch (key) {
 			case Gdk.Key.Up:
-				if (curPoint > 0)
-					curPoint--;
-				DocumentLocation loc = insertionPoints[curPoint];
+				if (CurIndex > 0)
+					CurIndex--;
+				DocumentLocation loc = insertionPoints[CurIndex].Location;
 				editor.ScrollTo (loc.Line - 1, 0);
 				editor.QueueDraw ();
 				break;
 			case Gdk.Key.Down:
-				if (curPoint < insertionPoints.Count - 1)
-					curPoint++;
-				loc = insertionPoints[curPoint];
+				if (CurIndex < insertionPoints.Count - 1)
+					CurIndex++;
+				loc = insertionPoints[CurIndex].Location;
 				editor.ScrollTo (loc.Line + 1, 0);
 				editor.QueueDraw ();
 				break;
 				
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
-				OnExited (new InsertionCursorEventArgs (true, editor.Caret.Location));
+				OnExited (new InsertionCursorEventArgs (true, insertionPoints[CurIndex]));
 				break;
 				
 			case Gdk.Key.Escape:
-				OnExited (new InsertionCursorEventArgs (false, DocumentLocation.Empty));
+				OnExited (new InsertionCursorEventArgs (false, null));
 				break;
 			}
 		}
@@ -87,7 +119,7 @@ namespace Mono.TextEditor
 			editor.TextViewMargin.AddDrawer (drawer);
 			editor.CurrentMode = this;
 			
-			editor.ScrollTo (insertionPoints[curPoint]);
+			editor.ScrollTo (insertionPoints[CurIndex].Location);
 			editor.QueueDraw ();
 		}
 		
@@ -138,7 +170,7 @@ namespace Mono.TextEditor
 			public override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area)
 			{
 				TextEditor editor = mode.editor;
-				int y = editor.LineToVisualY (mode.CurrentInsertionPoint.Line) - (int)editor.VAdjustment.Value;
+				int y = editor.LineToVisualY (mode.CurrentInsertionPoint.Line) - (int)editor.VAdjustment.Value; 
 				using (var g = Gdk.CairoHelper.Create (drawable)) {
 					g.LineWidth = System.Math.Min (1, editor.Options.Zoom);
 					LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
@@ -212,12 +244,12 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public DocumentLocation InsertionPoint {
+		public InsertionPoint InsertionPoint {
 			get;
 			private set;
 		}
 		
-		public InsertionCursorEventArgs (bool success, DocumentLocation insertionPoint)
+		public InsertionCursorEventArgs (bool success, InsertionPoint insertionPoint)
 		{
 			this.Success = success;
 			this.InsertionPoint = insertionPoint;

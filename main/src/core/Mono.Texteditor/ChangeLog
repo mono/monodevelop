@@ -1,5 +1,10 @@
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/InsertionCursorEditMode.cs: Worked on
+	  insertion cursor mode.
+
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: added new scroll to overload.
 
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
