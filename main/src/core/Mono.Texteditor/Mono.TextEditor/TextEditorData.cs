@@ -70,8 +70,9 @@ namespace Mono.TextEditor
 			set {
 				EditMode oldMode = this.currentMode;
 				this.currentMode = value;
+				this.currentMode.AddedToEditor (this);
 				if (oldMode != null)
-					oldMode.RemovedFromTextEditor ();
+					oldMode.RemovedFromEditor (this);
 			}
 		}
 		

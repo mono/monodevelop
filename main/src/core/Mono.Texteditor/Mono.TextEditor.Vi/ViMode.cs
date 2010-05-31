@@ -165,6 +165,16 @@ namespace Mono.TextEditor.Vi
 				data.Caret.Mode = CaretMode.Block;
 		}
 		
+		protected override void OnAddedToEditor (TextEditorData data)
+		{
+			data.Caret.Mode = CaretMode.Block;
+		}
+		
+		protected override void OnRemovedFromEditor (TextEditorData data)
+		{
+			data.Caret.Mode = CaretMode.Insert;
+		}
+		
 		void Reset (string status)
 		{
 			ResetEditorState (Data);
@@ -789,8 +799,8 @@ namespace Mono.TextEditor.Vi
 				segment = Data.SelectionRange;
 			} else {
 				// Operate on current line
-				segment = Editor.Document.GetLine (Caret.Line);
-				line = Editor.Document.GetTextBetween (segment.Offset, segment.EndOffset);
+				segment = Data.Document.GetLine (Caret.Line);
+				line = Data.Document.GetTextBetween (segment.Offset, segment.EndOffset);
 			}
 
 			// Set regex options
@@ -804,7 +814,7 @@ namespace Mono.TextEditor.Vi
 
 			try {
 				string newline = Regex.Replace (line, match.Groups["pattern"].Value, replacement, options);
-				Editor.GetTextEditorData ().Replace (segment.Offset, line.Length, newline);
+				Data.Replace (segment.Offset, line.Length, newline);
 				if (Data.IsSomethingSelected)
 					Data.ClearSelection ();
 				lastPattern = match.Groups["pattern"].Value;

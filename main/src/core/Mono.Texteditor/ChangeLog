@@ -1,3 +1,15 @@
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViMode.cs: Use OnAdded/OnRemoved to
+	  change caret.
+
+	* Mono.TextEditor/TextEditorData.cs: Properly implement the
+	  mode OnAdded/OnRemoved calls.
+
+	* Mono.TextEditor/EditMode.cs: Don't access Editor unless
+	  necessary. Improves testability. Also properly implement the
+	  OnAdded/OnRemoved calls
+
 2010-05-30  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditor.cs:
