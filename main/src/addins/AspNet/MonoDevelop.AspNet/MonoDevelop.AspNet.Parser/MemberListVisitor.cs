@@ -50,7 +50,7 @@ namespace MonoDevelop.AspNet.Parser
 			this.doc = doc;
 			this.refMan = refMan;
 			this.Errors = new List<Error> ();
-			this.Members = new Dictionary<string,IType> ();
+			this.Members = new Dictionary<string,CodeBehindMember> ();
 		}
 		
 		public override void Visit (TagNode node)
@@ -89,7 +89,7 @@ namespace MonoDevelop.AspNet.Parser
 				return;
 			}
 			
-			Members [id] = type;
+			Members [id] = new CodeBehindMember (id, type, new DomLocation (node.Location.BeginLine, node.Location.BeginColumn));
 		}
 		
 		internal void AddError (ErrorType type, ILocation location, string message)
@@ -97,7 +97,21 @@ namespace MonoDevelop.AspNet.Parser
 			Errors.Add (new Error (type, location.BeginLine, location.BeginColumn, message));
 		}
 		
-		public IDictionary<string,IType> Members { get; private set; }
+		public IDictionary<string,CodeBehindMember> Members { get; private set; }
 		public IList<Error> Errors { get; private set; }
+	}
+	
+	public class CodeBehindMember
+	{
+		public CodeBehindMember (string name, IType type, DomLocation location)
+		{
+			this.Name = name;
+			this.Type = type;
+			this.Location = location;
+		}		
+		
+		public string Name { get; private set; }
+		public IType Type { get; private set; }
+		public DomLocation Location { get; private set; }
 	}
 }

@@ -61,21 +61,27 @@ namespace MonoDevelop.AspNet.Gui
 	/// </summary>
 	public class DocumentInfo
 	{
-		public DocumentInfo (AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports)
+		public DocumentInfo (AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
+		                     IList<ProjectDom> references)
 		{
 			this.AspNetDocument = aspNetParsedDocument;
 			this.Imports = imports;
+			this.References = references;
 			ScriptBlocks = new List<TagNode> ();
 			Expressions = new List<ExpressionNode> ();
 			aspNetParsedDocument.RootNode.AcceptVisit (new ExpressionCollector (this));
-		}		
+		}
+		
+		IType codeBesideClass;
 		
 		public AspNetParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
 		public List<ExpressionNode> Expressions { get; private set; }
 		public List<TagNode> ScriptBlocks { get; private set; }
-		public ProjectDom Dom { get; set; }
+		public IList<ProjectDom> References { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
+		
+		public IType CodeBesideClass { get; set; }
 		
 		public string BaseType {
 			get {
@@ -139,9 +145,9 @@ namespace MonoDevelop.AspNet.Gui
 			bool isExpression);
 		
 		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info, 
-			LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
+			LocalDocumentInfo localInfo, ProjectDom dom, char currentChar, ref int triggerWordLength);
 		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
-			LocalDocumentInfo localInfo, char completionChar);
+			LocalDocumentInfo localInfo, ProjectDom dom, char completionChar);
 	}
 	
 	public static class LanguageCompletionBuilderService

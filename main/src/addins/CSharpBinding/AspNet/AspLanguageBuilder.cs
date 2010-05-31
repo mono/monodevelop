@@ -106,25 +106,25 @@ namespace MonoDevelop.CSharp.Completion
 		
 		
 		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
-			LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
+			LocalDocumentInfo localInfo, ProjectDom dom, char currentChar, ref int triggerWordLength)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (var completion = CreateCompletion (document, info, localInfo, out codeCompletionContext)) {
+			using (var completion = CreateCompletion (document, info, localInfo, dom, out codeCompletionContext)) {
 				return completion.HandleCodeCompletion (codeCompletionContext, currentChar, ref triggerWordLength);
 			}
 		}
 		
 		public IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, 
-			DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
+			DocumentInfo info, LocalDocumentInfo localInfo, ProjectDom dom, char completionChar)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (var completion = CreateCompletion (document, info, localInfo, out codeCompletionContext)) {
+			using (var completion = CreateCompletion (document, info, localInfo, dom, out codeCompletionContext)) {
 				return completion.HandleParameterCompletion (codeCompletionContext, completionChar);
 			}
 		}
 
 		CSharpTextEditorCompletion CreateCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
-			LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
+			LocalDocumentInfo localInfo, ProjectDom dom, out CodeCompletionContext codeCompletionContext)
 		{
 			var doc = new Mono.TextEditor.Document () {
 				Text = localInfo.LocalDocument,
@@ -142,7 +142,7 @@ namespace MonoDevelop.CSharp.Completion
 				parser.Parse ();
 				return new CSharpTextEditorCompletion (document) {
 					ParsedUnit = parser.CompilationUnit,
-					Dom = info.Dom,
+					Dom = dom,
 				};
 			}
 		}

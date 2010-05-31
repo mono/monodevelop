@@ -154,30 +154,45 @@ namespace MonoDevelop.AspNet
 			if (memberList.Members.Count == 0)
 				return ccu;
 			
-			var cls = refman.TypeCtx.ProjectDom.GetType (className);
-			HashSet<string> existingMembers = new HashSet<string> ();
+			var dom = refman.TypeCtx.ProjectDom;
+			var cls = dom.GetType (className);
+			var members = GetDesignerMembers (memberList.Members.Values, cls, filename, dom, dom);
+			
+			//add fields for each control in the page
+			
+			foreach (var member in members) {
+				var type = new CodeTypeReference (member.Type.FullName);
+				typeDecl.Members.Add (new CodeMemberField (type, member.Name) { Attributes = MemberAttributes.Family });
+			}
+			return ccu;
+		}
+		
+		/// <summary>Filters out members whose names conflict with existing accessible members</summary>
+		/// <param name="members">Full list of CodeBehind members</param>
+		/// <param name="cls">The class to which these members' partial class will be added.</param>
+		/// <param name="designerFile">Members in this file will be ignored.</param>
+		/// <param name="resolveDom">The ProjectDom to use for resolving base types.</param>
+		/// <param name="internalDom">The ProjectDom to use for checking whether members are accessible as internal.</param>
+		/// <returns>The filtered list of non-conflicting members.</returns>
+		// TODO: check compatibilty with existing members
+		public static IEnumerable<CodeBehindMember> GetDesignerMembers (
+			IEnumerable<CodeBehindMember> members, IType cls, string designerFile, ProjectDom resolveDom,
+			ProjectDom internalDom)
+		{
+			var existingMembers = new HashSet<string> ();
 			while (cls != null) {
 				foreach (var member in cls.Members) {
-					if (member.IsPrivate || (member.IsInternal && member.DeclaringType.SourceProjectDom != refman.TypeCtx.ProjectDom))
+					if (member.IsPrivate || (member.IsInternal && member.DeclaringType.SourceProjectDom != internalDom))
 					    continue;
-					if (member.DeclaringType.CompilationUnit.FileName == filename)
+					if (member.DeclaringType.CompilationUnit.FileName == designerFile)
 						continue;
 					existingMembers.Add (member.Name);
 				}
 				if (cls.BaseType == null)
 					break;
-				cls = refman.TypeCtx.ProjectDom.GetType (cls.BaseType);
+				cls = resolveDom.GetType (cls.BaseType);
 			}
-			
-			//add fields for each control in the page
-			//TODO: check compatibilty with exisitng members
-			foreach (var member in memberList.Members) {
-				if (existingMembers.Contains (member.Key))
-					continue;
-				var type = new CodeTypeReference (member.Value.FullName);
-				typeDecl.Members.Add (new CodeMemberField (type, member.Key) { Attributes = MemberAttributes.Family });
-			}
-			return ccu;
+			return members.Where (m => !existingMembers.Contains (m.Name));
 		}
 	}
 }

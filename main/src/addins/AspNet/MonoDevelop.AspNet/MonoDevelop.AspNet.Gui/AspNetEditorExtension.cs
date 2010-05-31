@@ -92,10 +92,23 @@ namespace MonoDevelop.AspNet.Gui
 			
 			if (documentBuilder != null) {
 				var usings = refman.GetUsings ();
-				documentInfo = new DocumentInfo (aspDoc, usings);
+				documentInfo = new DocumentInfo (aspDoc, usings, refman.GetDoms ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, TextEditorData);
-				documentInfo.Dom = new AspProjectDom (refman.GetDoms (), documentInfo.ParsedDocument);
+				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
 			}
+		}
+		
+		static IType CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
+		{
+			var v = new MemberListVisitor (info.AspNetDocument, refman);
+			info.AspNetDocument.RootNode.AcceptVisit (v);
+			var t = new DomType (info.ClassName);
+			t.CompilationUnit = new CompilationUnit (info.AspNetDocument.FileName);
+			var dom = refman.TypeCtx.ProjectDom;
+			var baseType = dom.GetType (info.BaseType);
+			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null, dom, null))
+				t.Add (new DomField (m.Name, Modifiers.Protected, m.Location, new DomReturnType (m.Type)));
+			return t;
 		}
 		
 		ILanguageCompletionBuilder documentBuilder;
@@ -179,8 +192,8 @@ namespace MonoDevelop.AspNet.Gui
 				
 				hiddenDocument.ParsedDocument = localDocumentInfo.ParsedLocalDocument;
 				
-				return documentBuilder.HandleCompletion (hiddenDocument, documentInfo, localDocumentInfo, currentChar, 
-				                                         ref triggerWordLength);
+				return documentBuilder.HandleCompletion (hiddenDocument, documentInfo, localDocumentInfo, 
+					 new AspProjectDomWrapper (documentInfo), currentChar, ref triggerWordLength);
 			}
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
@@ -189,7 +202,8 @@ namespace MonoDevelop.AspNet.Gui
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null && hiddenDocument != null)
-				return documentBuilder.HandleParameterCompletion (hiddenDocument, documentInfo, localDocumentInfo, completionChar);
+				return documentBuilder.HandleParameterCompletion (hiddenDocument, documentInfo, localDocumentInfo,
+					new AspProjectDomWrapper (documentInfo), completionChar);
 			
 			return base.HandleParameterCompletion (completionContext, completionChar);
 		}

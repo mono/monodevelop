@@ -34,16 +34,15 @@ namespace MonoDevelop.AspNet.Gui
 	/// This wraps a project dom and adds the compilation information from the ASP.NET page to the DOM to lookup members
 	/// on the page.
 	/// </summary>
-	class AspProjectDom : ProjectDomDecorator
+	class AspProjectDomWrapper : ProjectDomDecorator
 	{
-		ParsedDocument doc;
-		IList<ProjectDom> references;
+		DocumentInfo info;
 		
 		//FIXME: use all the doms
-		public AspProjectDom (IList<ProjectDom> references, ParsedDocument doc) : base (references[0])
+		//FIXME: merge the items from the members visitor too
+		public AspProjectDomWrapper (DocumentInfo info) : base (info.References[0])
 		{
-			this.doc = doc;
-			this.references = references;
+			this.info = info;
 		}
 		
 		IType constructedType = null;
@@ -51,9 +50,12 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (type == null)
 				return null;
-			if (type.IsPartial && doc.CompilationUnit.Types[0].FullName == type.FullName) {
-				if (constructedType == null) 
-					constructedType = CompoundType.Merge (doc.CompilationUnit.Types[0], type);
+			var cu =info.ParsedDocument.CompilationUnit;
+			if (type.IsPartial && cu.Types[0].FullName == type.FullName) {
+				if (constructedType != null)
+					return constructedType;
+				constructedType = CompoundType.Merge (cu.Types[0], type);
+				constructedType = CompoundType.Merge (constructedType, info.CodeBesideClass);
 				constructedType.SourceProjectDom = this;
 				return constructedType;
 			}

@@ -1,3 +1,16 @@
+2010-05-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/CodeBehind.cs: Moved duplicate field
+	  elimination code into re-usable method.
+
+	* MonoDevelop.AspNet.Gui/AspProjectDom.cs:
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs: Added
+	  support for CodeBeside members in embedded completion.
+
+	* MonoDevelop.AspNet.Parser/MemberListVisitor.cs: Collect
+	  locations of items.
+
 2010-05-29  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Makefile.am:
