@@ -179,6 +179,27 @@ namespace MonoDevelop.CSharp.Resolver
 					
 					ExpressionResult firstExprs = FindExpression (documentToCursor, j);
 					if (firstExprs.Expression != null) {
+						if (documentToCursor[j] == '[') {
+							StringBuilder expr = new StringBuilder (firstExprs.Expression);
+							while (j < documentToCursor.Length) {
+								char ch = documentToCursor[j];
+								switch (ch) {
+								case '[':
+								case ',':
+								case ']':
+									expr.Append (ch);
+									break;
+								case ' ':
+								case '\t':
+									break;
+								default:
+									j = documentToCursor.Length;
+									break;
+								}
+								j++;
+							}
+							firstExprs.Expression = expr.ToString ();
+						}
 						IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 						if (unresolvedReturnType != null) {
 							IType resolvedType = projectContent.SearchType ((INode)callingType ?? unit, unresolvedReturnType);

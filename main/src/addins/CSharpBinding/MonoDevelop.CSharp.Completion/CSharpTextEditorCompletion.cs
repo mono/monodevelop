@@ -376,7 +376,10 @@ namespace MonoDevelop.CSharp.Completion
 				int tokenIndex = completionContext.TriggerOffset;
 				string token = GetPreviousToken (ref tokenIndex, false);
 				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
-					if (token == "{" || token == ",")
+					resolver = CreateResolver ();
+					ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (Editor, resolver.Unit, Document.FileName, resolver.CallingType);
+					IReturnType objectInitializer = ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType;
+					if (objectInitializer != null && objectInitializer.ArrayDimensions == 0 && objectInitializer.PointerNestingLevel == 0 && (token == "{" || token == ","))
 						return CreateCtrlSpaceCompletionData (completionContext, result); 
 				}
 				if (token == "=") {
@@ -1779,7 +1782,13 @@ namespace MonoDevelop.CSharp.Completion
 				ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (Editor, resolver.Unit, Document.FileName, resolver.CallingType);
 				if (exactContext is ExpressionContext.TypeExpressionContext) {
 					IReturnType objectInitializer = ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType;
-					
+					if (objectInitializer.ArrayDimensions > 0 || objectInitializer.PointerNestingLevel > 0) {
+						col.Add ("global", "md-keyword");
+						AddPrimitiveTypes (col);
+						resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
+						return result;
+					}
+						
 					IType foundType = resolver.SearchType (objectInitializer);
 					if (foundType == null)
 						foundType = dom.GetType (objectInitializer);

@@ -1,3 +1,11 @@
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 609999 - Intellisense confuses Array initializers
+	  with object initializers'.
+
+
 2010-05-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Fixed
