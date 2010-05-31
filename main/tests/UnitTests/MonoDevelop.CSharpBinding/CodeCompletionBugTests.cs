@@ -2558,5 +2558,29 @@ class Foo
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("select"), "keyword 'select' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 610006 - Intellisense gives members of return type of functions even when that function isn't invoked
+		/// </summary>
+		[Test()]
+		public void TestBug610006 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+class MainClass
+{
+	public MainClass FooBar ()
+	{
+	}
+	
+	public void Test ()
+	{
+		$FooBar.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found, but shouldn't.");
+		}
 	}
 }
