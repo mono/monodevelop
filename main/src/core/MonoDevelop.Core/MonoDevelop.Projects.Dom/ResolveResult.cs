@@ -385,6 +385,7 @@ namespace MonoDevelop.Projects.Dom
 				return methods.AsReadOnly ();
 			}
 		}
+		
 		public override IMember ResolvedMember {
 			get {
 				return MostLikelyMethod;
@@ -448,6 +449,14 @@ namespace MonoDevelop.Projects.Dom
 			get {
 				return ResolvedType;
 			}
+		}
+		
+		/// <summary>
+		/// Flags, if the return type should be completed or this result is in 'delegate' state.
+		/// </summary>
+		public bool GetsInvoked {
+			get;
+			set;
 		}
 
 		public ReadOnlyCollection<IReturnType> GenericArguments {
@@ -523,7 +532,7 @@ namespace MonoDevelop.Projects.Dom
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
-			MemberResolveResult.AddType (dom, result, ResolvedType, callingMember, StaticResolve);
+			MemberResolveResult.AddType (dom, result, GetsInvoked ? ResolvedType : DomReturnType.Delegate , callingMember, StaticResolve);
 			return result;
 		}
 		
