@@ -352,6 +352,8 @@ namespace Mono.TextEditor
 //			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
 			RequestResetCaretBlink ();
 			
+			textEditorData.CurrentMode.InternalCaretPositionChanged (this, textEditorData);
+			
 			if (!IsSomethingSelected) {
 				if (/*Options.HighlightCaretLine && */args.Location.Line != Caret.Line) 
 					RedrawMarginLine (TextViewMargin, args.Location.Line);

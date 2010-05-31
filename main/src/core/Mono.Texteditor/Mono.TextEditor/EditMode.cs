@@ -65,7 +65,24 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		internal void InternalCaretPositionChanged (TextEditor editor, TextEditorData data)
+		{
+			// only trigger CaretPositionChanged when event is a result of external stimuli, i.e. when 
+			// not already running HandleKeypress
+			if (this.editor == null) {
+				this.editor = editor; 
+				this.textEditorData = data;
+				CaretPositionChanged ();
+				this.textEditorData = null;
+				this.editor = null;
+			}
+		}
+		
 		protected virtual void SelectionChanged ()
+		{
+		}
+		
+		protected virtual void CaretPositionChanged ()
 		{
 		}
 		

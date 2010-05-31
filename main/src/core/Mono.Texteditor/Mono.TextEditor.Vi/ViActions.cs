@@ -215,10 +215,12 @@ namespace Mono.TextEditor.Vi
 			return (c == '\r' || c == '\n');
 		}
 		
-		static void RetreatFromLineEnd (TextEditorData data)
+		internal static void RetreatFromLineEnd (TextEditorData data)
 		{
-			while (0 < data.Caret.Column && IsEol (data.Document.GetCharAt (data.Caret.Offset))) {
-				Left (data);
+			if (data.Caret.Mode == CaretMode.Block) {
+				while (0 < data.Caret.Column && IsEol (data.Document.GetCharAt (data.Caret.Offset))) {
+					Left (data);
+				}
 			}
 		}
 	}

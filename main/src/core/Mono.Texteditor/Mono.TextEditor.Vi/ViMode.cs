@@ -143,6 +143,12 @@ namespace Mono.TextEditor.Vi
 			}
 		}
 		
+		protected override void CaretPositionChanged ()
+		{
+			if (state == ViEditMode.State.Normal || state == ViEditMode.State.Unknown)
+				ViActions.RetreatFromLineEnd (Data);
+		}
+		
 		void CheckVisualMode ()
 		{
 			if (state == ViEditMode.State.Visual || state == ViEditMode.State.Visual) {
@@ -161,13 +167,17 @@ namespace Mono.TextEditor.Vi
 			if (data == null)
 				return;
 			data.ClearSelection ();
-			if (CaretMode.Block != data.Caret.Mode)
+			if (CaretMode.Block != data.Caret.Mode) {
 				data.Caret.Mode = CaretMode.Block;
+				if (data.Caret.Column > 0)
+					data.Caret.Column--;
+			}
 		}
 		
 		protected override void OnAddedToEditor (TextEditorData data)
 		{
 			data.Caret.Mode = CaretMode.Block;
+			ViActions.RetreatFromLineEnd (data);
 		}
 		
 		protected override void OnRemovedFromEditor (TextEditorData data)
@@ -248,7 +258,8 @@ namespace Mono.TextEditor.Vi
 						goto case 'i';
 					
 					case 'a':
-						RunAction (ViActions.Right);
+						//use CaretMoveActions so that we can move past last character on line end
+						RunAction (CaretMoveActions.Right);
 						goto case 'i';
 					case 'i':
 						Caret.Mode = CaretMode.Insert;
