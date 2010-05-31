@@ -1172,7 +1172,7 @@ namespace MonoDevelop.CSharp.Completion
 				private set;
 			}
 			
-			Dictionary<string, MemberCompletionData> data = new Dictionary<string, MemberCompletionData> ();
+			Dictionary<string, List<MemberCompletionData>> data = new Dictionary<string, List<MemberCompletionData>> ();
 			HashSet<string> namespacesInScope = new HashSet<string> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
 		
@@ -1329,20 +1329,27 @@ namespace MonoDevelop.CSharp.Completion
 				if (member is IMember) {
 					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
 				}
-				MemberCompletionData existingData;
+				List<MemberCompletionData> existingData;
 				if (data.TryGetValue (memberKey, out existingData)) {
 					if (existingData == null)
 						return null;
 					IBaseMember a = member as IBaseMember;
-					IBaseMember b = existingData.Member as IBaseMember;
-					if (a == null || b == null || a.MemberType == b.MemberType) {
-						existingData.AddOverload (newData);
-					} else {
+					foreach (MemberCompletionData md in existingData) {
+						IBaseMember b = md.Member as IBaseMember;
+						if (a == null || b == null || a.MemberType == b.MemberType) {
+							md.AddOverload (newData);
+							newData = null;
+							break;
+						} 
+					}
+					if (newData != null) {
 						CompletionList.Add (newData);
+						data[memberKey].Add (newData);
 					}
 				} else {
 					CompletionList.Add (newData);
-					data [memberKey] = newData;
+					data[memberKey] = new List<MemberCompletionData> ();
+					data[memberKey].Add (newData);
 				}
 				return newData;
 			}
