@@ -1210,6 +1210,11 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public void ScrollTo (int offset)
+		{
+			ScrollTo (Document.OffsetToLocation (offset));
+		}
+		
 		public void ScrollTo (int line, int column)
 		{
 			ScrollTo (new DocumentLocation (line, column));

@@ -1,3 +1,7 @@
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: added new scroll to overload.
+
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViMode.cs: Use OnAdded/OnRemoved to
