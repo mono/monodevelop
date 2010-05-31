@@ -1,5 +1,10 @@
 2010-05-31  Levi Bard  <levi@unity3d.com>
 
+	* SoftDebuggerSession.cs: Account for multiple assemblies
+	  being built from a single source file.
+
+2010-05-31  Levi Bard  <levi@unity3d.com>
+
 	* SoftDebuggerSession.cs: Clear the source-to-type map on
 	  assembly unload.
 
