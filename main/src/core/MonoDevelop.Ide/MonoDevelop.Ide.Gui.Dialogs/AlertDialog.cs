@@ -115,6 +115,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				markup.Append (GLib.Markup.EscapeText (secondaryText));
 			}
 			label.Markup = markup.ToString ();
+			label.Selectable = true;
 			
 			foreach (AlertButton button in message.buttons) {
 				Button newButton = new Button ();
