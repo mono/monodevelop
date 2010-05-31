@@ -1,5 +1,11 @@
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 610203
+	  - Go to declaration on a method doesn't go to the correct
+	  overload'.
+
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom/DomReturnType.cs:
 	* MonoDevelop.Projects.Dom/ResolveResult.cs: Fixed 'Bug 610006
 	  - Intellisense gives members of return type of functions
