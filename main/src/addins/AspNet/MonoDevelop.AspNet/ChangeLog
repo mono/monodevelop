@@ -1,3 +1,8 @@
+2010-05-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.AspNet.csproj: Don't require a specific M.A
+	  version.
+
 2010-05-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/CodeBehind.cs: Moved duplicate field
