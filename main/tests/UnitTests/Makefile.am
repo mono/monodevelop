@@ -44,6 +44,7 @@ FILES =  \
 	Mono.TextEditor.Tests/SelectionTests.cs \
 	Mono.TextEditor.Tests/SyntaxHighlightingTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
+	Mono.TextEditor.Tests/ViTests.cs \
 	MonoDevelop.AspNet/AspNetCompletionTests.cs \
 	MonoDevelop.AspNet/AspNetTesting.cs \
 	MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs \

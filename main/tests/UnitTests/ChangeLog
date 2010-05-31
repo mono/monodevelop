@@ -1,3 +1,10 @@
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* Mono.TextEditor.Tests/ViTests.cs: Started adding tests for
+	  vi mode.
+
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added

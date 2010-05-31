@@ -202,6 +202,7 @@
     <Compile Include="MonoDevelop.CSharpBinding\TestTypeLevelIndentation.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestFormattingBugs.cs" />
     <Compile Include="MonoDevelop.Refactoring\GenerateNewMemberTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
