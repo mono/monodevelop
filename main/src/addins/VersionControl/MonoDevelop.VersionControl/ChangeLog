@@ -1,5 +1,10 @@
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Added
+	  missing string to translation.
+
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Fixed 'Bug
 	  610257 - Text editor does not redraw after toggling
 	  annotations'.
