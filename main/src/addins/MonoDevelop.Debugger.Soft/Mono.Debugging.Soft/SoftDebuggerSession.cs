@@ -650,6 +650,15 @@ namespace Mono.Debugging.Soft
 				foreach (string typename in affectedTypes) {
 					types.Remove (typename);
 				}
+				affectedTypes = new List<string> (
+					from pair in source_to_type
+					where pair.Value.Count > 0 && 
+					      pair.Value[0].Assembly.Location.Equals (aue.Assembly.Location, StringComparison.OrdinalIgnoreCase)
+					select pair.Key
+				);
+				foreach (string filename in affectedTypes) {
+					source_to_type.Remove (filename);
+				}
 				OnDebuggerOutput (false, string.Format ("Unloaded assembly: {0}\n", aue.Assembly.Location));
 			}
 			

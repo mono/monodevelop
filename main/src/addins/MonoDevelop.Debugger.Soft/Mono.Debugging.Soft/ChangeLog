@@ -1,3 +1,8 @@
+2010-05-31  Levi Bard  <levi@unity3d.com>
+
+	* SoftDebuggerSession.cs: Clear the source-to-type map on
+	  assembly unload.
+
 2010-05-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SoftDebuggerAdaptor.cs: Improved detection of null values.
