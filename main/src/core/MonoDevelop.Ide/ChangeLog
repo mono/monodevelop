@@ -1,3 +1,8 @@
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.NavigateToDialog/SearchResult.cs: Fixed 'Bug
+	  610092 - Navigate to dialog'.
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:

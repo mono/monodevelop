@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string MarkupText {
 			get {
 				if (useFullName)
-					return HighlightMatch (Ambience.GetString (member, Flags | OutputFlags.IncludeMarkup), match);
+					return HighlightMatch (Ambience.GetString (member, Flags), match);
 				OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
 				settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
 					if (domVisitable == member)
