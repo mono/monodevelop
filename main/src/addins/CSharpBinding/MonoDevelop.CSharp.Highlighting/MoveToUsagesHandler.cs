@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						segment = marker.Usages[i];
 				}
 				if (segment != null) {
-					doc.TextEditorData.Caret.Offset = segment.Offset;
+					MoveToNextUsageHandler.MoveToSegment (doc, segment);
 					return;
 				}
 			}
@@ -91,10 +91,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					max = pair.Key;
 			}
 			if (max >= 0) {
-				doc.TextEditorData.Caret.Offset = ext.Markers[max].Usages.Last ().Offset;
+				MoveToNextUsageHandler.MoveToSegment (doc, ext.Markers[max].Usages.Last ());
 				return;
 			}
-			doc.TextEditorData.Caret.Offset = ext.Markers.Last ().Value.Usages.Last ().Offset;
+			MoveToNextUsageHandler.MoveToSegment (doc, ext.Markers.Last ().Value.Usages.Last ());
 		}
 	}
 	
@@ -132,7 +132,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 				}
 				if (segment != null) {
-					doc.TextEditorData.Caret.Offset = segment.Offset;
+					MoveToSegment (doc, segment);
 					return;
 				}
 			}
@@ -146,10 +146,21 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			
 			if (max >= 0) {
-				doc.TextEditorData.Caret.Offset = ext.Markers[max].Usages.First ().Offset;
+				MoveToSegment (doc, ext.Markers[max].Usages.First ());
 				return;
 			}
-			doc.TextEditorData.Caret.Offset = ext.Markers.First ().Value.Usages.First ().Offset;
+			MoveToSegment (doc, ext.Markers.First ().Value.Usages.First ());
+		}
+		
+		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, ISegment segment)
+		{
+			TextEditorData data = doc.TextEditorData;
+			data.Caret.Offset = segment.Offset;
+			data.Parent.ScrollTo (segment.EndOffset);
+			
+			var loc = data.Document.OffsetToLocation (segment.EndOffset);
+			if (data.Parent.TextViewMargin.ColumnToVisualX (data.Document.GetLine (loc.Line), loc.Column) < data.HAdjustment.PageSize)
+				data.HAdjustment.Value = 0;
 		}
 	}
 }

@@ -1,5 +1,12 @@
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Worked on highight usage extensions & Bug 610048 - Sometimes
+	  symbol highlight is not cleared.
+
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Handled multiple type overloads.
 
