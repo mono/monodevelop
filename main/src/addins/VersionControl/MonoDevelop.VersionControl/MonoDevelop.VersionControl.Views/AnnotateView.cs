@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Views
 				} else {
 					view.TextEditor.InsertMargin (0, new AnnotationMargin (repo, view.TextEditor, doc));
 				}
-				view.TextEditor.RedrawFromLine (0);
+				view.TextEditor.QueueDraw ();
 			}
 			
 			return true;
@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Views
 			SourceEditorView view = doc.ActiveView as SourceEditorView;
 			if (view != null && view.TextEditor.HasMargin (typeof (AnnotationMargin))) { 
 				view.TextEditor.GetMargin (typeof (AnnotationMargin)).IsVisible = false;
-				view.TextEditor.RedrawFromLine (0);
+				view.TextEditor.QueueDraw ();
 			}
 			
 			return true;
