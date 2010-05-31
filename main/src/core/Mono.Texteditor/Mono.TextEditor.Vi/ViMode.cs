@@ -640,8 +640,8 @@ namespace Mono.TextEditor.Vi
 					RunAction (SelectionActions.StartSelection);
 					int   roffset = Data.SelectionRange.Offset;
 					InsertCharacter ((char) unicodeKey);
-					Caret.Offset = roffset;
 					Reset (string.Empty);
+					Caret.Offset = roffset;
 				} else {
 					Reset ("Keystroke was not a character");
 				}

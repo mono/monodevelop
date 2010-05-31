@@ -1,5 +1,10 @@
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Single-char offset should not
+	  move caret position.
+
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViMode.cs: Smart casing for searches. Fix
 	  'cw' insertion position.
 
