@@ -1,5 +1,11 @@
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 610011 - Extension methods incorrectly trump real
+	  members'.
+
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/ResolveVisitor.cs: Fixed 'Bug
 	  610006 - Intellisense gives members of return type of
 	  functions even when that function isn't invoked'.

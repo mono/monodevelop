@@ -1250,34 +1250,8 @@ namespace MonoDevelop.CSharp.Completion
 					
 					return true;
 				}
-				/*
-				public bool ProcessKey (CompletionListWindow window, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction)
-				{
-					if (keyChar != '!') {
-						keyAction = KeyActions.None;
-						return false;
-					}
-					
-					keyAction = KeyActions.CloseWindow;
-					
-					CodeCompletionContext ctx = window.CodeCompletionContext;
-					int offset = ctx.TriggerOffset;
-					while (offset > 0) {
-						char ch = window.CompletionWidget.GetChar (offset);
-						if (ch != '.' && ch != '_' && !Char.IsLetterOrDigit (ch)) {
-							keyAction = KeyActions.CloseWindow | KeyActions.Ignore | KeyActions.Complete;
-							window.CompletionWidget.Replace (offset + 1, 0, "!");
-							ctx.TriggerOffset++;
-							ctx.TriggerLineOffset++;
-							break;
-						}
-						offset--;
-					}
-					
-					return true;
-				}*/
-				
 			}
+			
 			public CompletionDataCollector (CompletionDataList completionList, ICompilationUnit unit, DomLocation location)
 			{
 				this.CompletionList = completionList;
@@ -1359,7 +1333,13 @@ namespace MonoDevelop.CSharp.Completion
 				if (data.TryGetValue (memberKey, out existingData)) {
 					if (existingData == null)
 						return null;
-					existingData.AddOverload (newData);
+					IBaseMember a = member as IBaseMember;
+					IBaseMember b = existingData.Member as IBaseMember;
+					if (a == null || b == null || a.MemberType == b.MemberType) {
+						existingData.AddOverload (newData);
+					} else {
+						CompletionList.Add (newData);
+					}
 				} else {
 					CompletionList.Add (newData);
 					data [memberKey] = newData;
