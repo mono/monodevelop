@@ -48,11 +48,13 @@ namespace MonoDevelop.Refactoring.Tests
 		static void TestInsertionPoints (string text)
 		{
 			TextEditorData data = new TextEditorData ();
-			List<DocumentLocation> loc = new List<DocumentLocation> ();
+			List<InsertionPoint> loc = new List<InsertionPoint> ();
 			for (int i = 0; i < text.Length; i++) {
 				char ch = text[i];
 				if (ch == '@') {
-					loc.Add (data.Document.OffsetToLocation (data.Document.Length));
+					i++;
+					ch = text[i];
+					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.Length), ch == '3' || ch == '2', ch == '3' || ch == '1'));
 				} else {
 					data.Insert (data.Document.Length, ch.ToString ());
 				}
@@ -62,20 +64,36 @@ namespace MonoDevelop.Refactoring.Tests
 			var foundPoints = HelperMethods.GetInsertionPoints (data.Document, parseResult.CompilationUnit.Types[0]);
 			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
 			for (int i = 0; i < loc.Count; i++) {
-				Assert.AreEqual (loc[i], foundPoints[i], "point " + i + " doesn't match");
+				Console.WriteLine (loc[i] + "/" + foundPoints[i]);
+				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");
+				Assert.AreEqual (loc[i].ShouldInsertNewLineAfter, foundPoints[i].ShouldInsertNewLineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
+				Assert.AreEqual (loc[i].ShouldInsertNewLineBefore, foundPoints[i].ShouldInsertNewLineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
 			}
 		}
+		
+		[Test()]
+		public void TestBasicInsertionPointWithoutEmpty ()
+		{
+			TestInsertionPoints (@"
+class Test {
+	@1void TestMe ()
+	{
+	}
+@1}
+");
+		}
+
 		
 		[Test()]
 		public void TestBasicInsertionPoint ()
 		{
 			TestInsertionPoints (@"
 class Test {
-	@
+	@1
 	void TestMe ()
 	{
 	}
-	@
+	@2
 }
 ");
 		}
@@ -83,33 +101,61 @@ class Test {
 		[Test()]
 		public void TestBasicInsertionPointOneLineCase ()
 		{
-			TestInsertionPoints (@"class Test {@void TestMe () { }@}");
+			TestInsertionPoints (@"class Test {@3void TestMe () { }@3}");
 		}
+		
+		
 		
 		[Test()]
 		public void TestComplexInsertionPoint ()
 		{
 			TestInsertionPoints (@"
 class Test {
-	@
+	@1
 	void TestMe ()
 	{
 	}
-	@
+	@1
 	int a;
-	@
+	@1
 	class Test2 {
 		void TestMe2 ()
 		{
 	
 		}
 	}
-	@
+	@1
 	public delegate void ADelegate ();
-	@
+	@2
 }
 ");
 		}
+		
+		
+		[Test()]
+		public void TestComplexInsertionPointCase2 ()
+		{
+			TestInsertionPoints (@"class MainClass {
+	@1static void A ()
+	{
+	}
+	@3static void B ()
+	{
+	}
+	@1
+	public static void Main (string[] args)
+	{
+		System.Console.WriteLine ();
+	}
+	@3int g;
+	@3int i;
+	@1
+	int j;
+	@3public delegate void Del(int a);
+@1}
+");
+		}
+
 	}
 }
 

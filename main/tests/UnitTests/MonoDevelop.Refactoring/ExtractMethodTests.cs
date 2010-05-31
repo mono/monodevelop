@@ -39,6 +39,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Parser;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring.Tests
 {
@@ -93,7 +94,7 @@ namespace MonoDevelop.Refactoring.Tests
 			sev.CursorPosition = cursorPosition;
 			
 			tww.ViewContent = sev;
-			Document doc = new Document (tww);
+			var doc = new MonoDevelop.Ide.Gui.Document (tww);
 			
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
 			foreach (var e in doc.ParsedDocument.Errors)
@@ -179,8 +180,8 @@ namespace MonoDevelop.Refactoring.Tests
 			ExtractMethodRefactoring.ExtractMethodParameters parameters = refactoring.CreateParameters (options);
 			Assert.IsNotNull (parameters);
 			parameters.Name = "NewMethod";
+			parameters.InsertionPoint = new Mono.TextEditor.InsertionPoint (new DocumentLocation (options.ResolveResult.CallingMember.BodyRegion.End.Line, 0), true, false);
 			List<Change> changes = refactoring.PerformChanges (options, parameters);
-			
 			string output = GetOutput (options, changes);
 			Assert.IsTrue (CompareSource (output, outputString), "Expected:" + Environment.NewLine + outputString + Environment.NewLine + "was:" + Environment.NewLine + output);
 		}
