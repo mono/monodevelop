@@ -1,3 +1,9 @@
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* configure.in: Reverted Mono.Addins dependency for now,
+	  as it causes problems for people building on Mac where 
+	  Mono.Addins 0.5 has not been packaged.
+
 2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.in: Bumped Mono.Addins dependency.
