@@ -144,6 +144,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				set;
 			}
 			
+			public InsertionPoint InsertionPoint {
+				get;
+				set;
+			}
+			
 			public DomLocation Location {
 				get;
 				set;
@@ -427,7 +432,8 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = options.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
-			insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (param.DeclaringMember.BodyRegion.End.Line, param.DeclaringMember.BodyRegion.End.Column);
+			insertNewMethod.RemovedChars = param.InsertionPoint.Location.Column;
+			insertNewMethod.Offset = data.Document.LocationToOffset (param.InsertionPoint.Location) - insertNewMethod.RemovedChars;
 			
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
@@ -482,9 +488,10 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			
 			string indent = options.GetIndent (param.DeclaringMember);
 			StringBuilder methodText = new StringBuilder ();
-			methodText.AppendLine ();
-			methodText.Append (indent);
-			methodText.AppendLine ();
+			if (param.InsertionPoint.ShouldInsertNewLineBefore) {
+				methodText.Append (indent);
+				methodText.AppendLine ();
+			}
 			if (param.GenerateComment) {
 				methodText.Append (indent);
 				methodText.AppendLine ("/// <summary>");
@@ -512,15 +519,9 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 					methodText.AppendLine ("/// </returns>");
 				}
 			}
-			/*		foreach (VariableDescriptor var in variablesToOutput) {
-				TypeReference typeReference = options.ShortenTypeName (var.ReturnType).ConvertToTypeReference ();
-				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, var.Name);
-				if (!param.OneChangedVariable && param.ChangedVariables.Contains (var.Name))
-					pde.ParamModifier |= ICSharpCode.NRefactory.Ast.ParameterModifiers.Out;
-				methodDecl.Parameters.Add (pde);
-			}*/			
 			
 			methodText.Append (indent);
+			
 			if (node is BlockStatement) {
 				string text = provider.OutputNode (options.Dom, methodDecl, indent).Trim ();
 				int emptyStatementMarker = text.LastIndexOf (';');
@@ -535,7 +536,15 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			} else {
 				methodText.Append (provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember)).Trim ());
 			}
+			methodText.AppendLine ();
+			methodText.Append (indent);
 			
+			if (param.InsertionPoint.ShouldInsertNewLineAfter) {
+				methodText.AppendLine ();
+				methodText.Append (indent);
+			}
+			Console.WriteLine (param.InsertionPoint);
+			Console.WriteLine ("'" + methodText + "'");
 			insertNewMethod.InsertedText = methodText.ToString ();
 			result.Add (insertNewMethod);
 

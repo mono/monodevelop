@@ -1,3 +1,10 @@
+2010-05-31  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/HelperMethods.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Worked on new member positioning.
+
 2010-05-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/HelperMethods.cs:

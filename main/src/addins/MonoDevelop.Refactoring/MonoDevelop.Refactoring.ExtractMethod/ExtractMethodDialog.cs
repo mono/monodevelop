@@ -165,19 +165,30 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		{
 			TextEditorData data = options.GetTextEditorData ();
 			Mono.TextEditor.TextEditor editor = data.Parent;
-	/* Insertion cursor mode test:
-			 * if (editor != null) {
-				List<DocumentLocation> points = new List<DocumentLocation> ();
-				
+// Insertion cursor mode test:
+			if (editor != null) {
 				IType type = properties.DeclaringMember.DeclaringType;
 				
 				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (editor.Document, type));
+				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+					var point = mode.InsertionPoints[i];
+					if (point.Location < editor.Caret.Location) {
+						mode.CurIndex = i;
+					} else {
+						break;
+					}
+				}
 				mode.StartMode ();
-			}*/
-			SetProperties ();
-			List<Change> changes = extractMethod.PerformChanges (options, properties);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+				mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
+					if (args.Success) {
+						SetProperties ();
+						properties.InsertionPoint = args.InsertionPoint;
+						List<Change> changes = extractMethod.PerformChanges (options, properties);
+						IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
+						RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+					}
+				};
+			}
 			
 			((Widget)this).Destroy ();
 		}

@@ -88,20 +88,18 @@ namespace MonoDevelop.Refactoring
 			return result;
 		}
 		
-		public static List<DocumentLocation> GetInsertionPoints (Document doc, IType type)
+		public static List<InsertionPoint> GetInsertionPoints (Document doc, IType type)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			if (type == null)
 				throw new ArgumentNullException ("type");
-			List<DocumentLocation> result = new List<DocumentLocation> ();
+			List<InsertionPoint> result = new List<InsertionPoint> ();
 			result.Add (GetInsertionPosition (doc, type.BodyRegion.Start.Line - 1, type.BodyRegion.Start.Column));
+			result[0].ShouldInsertNewLineBefore = false;
 			foreach (IMember member in type.Members) {
 				DomLocation domLocation = member.BodyRegion.End;
-				Console.WriteLine ("loc:" + domLocation);
 				if (domLocation.Line <= 0) {
-					Console.WriteLine ("location:" + member.Location);
-					
 					LineSegment lineSegment = doc.GetLine (member.Location.Line - 1);
 					if (lineSegment == null)
 						continue;
@@ -109,25 +107,62 @@ namespace MonoDevelop.Refactoring
 				}
 				result.Add (GetInsertionPosition (doc, domLocation.Line - 1, domLocation.Column - 1));
 			}
+			result[result.Count - 1].ShouldInsertNewLineAfter = false;
+			CheckStartPoint (doc, result[0]);
+			if (result.Count > 1)
+				CheckEndPoint (doc, result[result.Count - 1]);
 			return result;
 		}
+
+		static void CheckEndPoint (Document doc, InsertionPoint point)
+		{
+			LineSegment line = doc.GetLine (point.Location.Line);
+			if (line == null)
+				return;
+			bool isEmpty = doc.GetLineIndent (line).Length == line.EditableLength;
+			point.ShouldInsertNewLineBefore = isEmpty;
+			if (doc.GetLineIndent (line).Length < point.Location.Column)
+				point.ShouldInsertNewLineBefore = true;
+			if (point.Location.Column < line.EditableLength)
+				point.ShouldInsertNewLineAfter = true;
+		}
+		static void CheckStartPoint (Document doc, InsertionPoint point)
+		{
+			LineSegment line = doc.GetLine (point.Location.Line);
+			if (line == null)
+				return;
+			if (doc.GetLineIndent (line).Length < point.Location.Column)
+				point.ShouldInsertNewLineBefore = true;
+			if (point.Location.Column < line.EditableLength)
+				point.ShouldInsertNewLineAfter = true;
+		}
 		
-		static DocumentLocation GetInsertionPosition (Document doc, int line, int column)
+		static InsertionPoint GetInsertionPosition (Document doc, int line, int column)
 		{
 			LineSegment nextLine = doc.GetLine (line + 1);
 			int bodyEndOffset = doc.LocationToOffset (line, column) + 1;
-			Console.WriteLine (bodyEndOffset);
 			int endOffset = nextLine != null ? nextLine.Offset : doc.Length;
 			for (int i = bodyEndOffset; i < endOffset; i++) {
 				char ch = doc.GetCharAt (i);
 				if (!char.IsWhiteSpace (ch))
-					return doc.OffsetToLocation (i);
+					return new InsertionPoint (doc.OffsetToLocation (i), true, true);
 			}
+			
 			if (nextLine == null)
-				return doc.OffsetToLocation (bodyEndOffset - 1);
-			while (line + 2 < doc.LineCount && doc.GetLineIndent (line + 2).Length == doc.GetLine (line + 2).EditableLength)
-				line++;
-			return new DocumentLocation (line + 1, doc.GetLine (line + 1).EditableLength);
+				return new InsertionPoint (doc.OffsetToLocation (bodyEndOffset - 1), true, true);
+			int oldLine = line;
+			bool curLineEmpty = false;
+			if (doc.GetLineIndent (nextLine).Length == nextLine.EditableLength) {
+				curLineEmpty = true;
+				while (line + 2 < doc.LineCount && doc.GetLineIndent (line + 2).Length == doc.GetLine (line + 2).EditableLength)
+					line++;
+			}
+			bool insertBefore = !curLineEmpty && line - oldLine <= 1;
+			bool insertAfter  = line - oldLine == 0;
+//			if (curLineEmpty)
+//				line++;
+			int lineNumber = line + 1;
+			return new InsertionPoint (new DocumentLocation (lineNumber, doc.GetLineIndent (lineNumber).Length), insertBefore, insertAfter);
 		}
 	}
 }
