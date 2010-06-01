@@ -57,6 +57,36 @@ namespace Mono.TextEditor
 		{
 			return string.Format ("[InsertionPoint: Location={0}, LineBefore={1}, LineAfter={2}]", Location, LineBefore, LineAfter);
 		}
+		
+		public void InsertNewLine (TextEditor editor, NewLineInsertion insertion, ref int offset)
+		{
+			string str = null;
+			switch (insertion) {
+			case NewLineInsertion.Eol:
+				str = editor.GetTextEditorData ().EolMarker;
+				break;
+			case NewLineInsertion.BlankLine:
+				str = editor.GetTextEditorData ().EolMarker + editor.GetTextEditorData ().EolMarker;
+				break;
+			default:
+				return;
+			}
+			
+			editor.Insert (offset, str);
+			offset += str.Length;
+		}
+		
+		
+		public void Insert (TextEditor editor, string text)
+		{
+			int offset = editor.Document.LocationToOffset (Location);
+			editor.Document.BeginAtomicUndo ();
+			InsertNewLine (editor, LineBefore, ref offset);
+			editor.Insert (offset, text);
+			offset += text.Length;
+			InsertNewLine (editor, LineAfter, ref offset);
+			editor.Document.EndAtomicUndo ();
+		}
 	}
 	
 	public class InsertionCursorEditMode : SimpleEditMode
@@ -94,14 +124,14 @@ namespace Mono.TextEditor
 				if (CurIndex > 0)
 					CurIndex--;
 				DocumentLocation loc = insertionPoints[CurIndex].Location;
-				editor.ScrollTo (loc.Line - 1, 0);
+				editor.CenterTo (loc.Line - 1, 0);
 				editor.QueueDraw ();
 				break;
 			case Gdk.Key.Down:
 				if (CurIndex < insertionPoints.Count - 1)
 					CurIndex++;
 				loc = insertionPoints[CurIndex].Location;
-				editor.ScrollTo (loc.Line + 1, 0);
+				editor.CenterTo (loc.Line + 1, 0);
 				editor.QueueDraw ();
 				break;
 				

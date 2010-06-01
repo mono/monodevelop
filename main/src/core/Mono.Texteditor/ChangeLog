@@ -1,5 +1,11 @@
 2010-06-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/InsertionCursorEditMode.cs: Worked on
+	  insertion cursor mode.
+
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/InsertionCursorEditMode.cs: Worked on
 	  insertioncursoreditmode.
 
