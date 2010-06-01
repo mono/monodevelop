@@ -1199,6 +1199,7 @@ namespace MonoDevelop.SourceEditor
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}
+			TextEditor.CenterToCaret ();
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
@@ -1222,6 +1223,7 @@ namespace MonoDevelop.SourceEditor
 			if (focus) {
 				TextEditor.GrabFocus ();
 			}
+			TextEditor.CenterToCaret ();
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
