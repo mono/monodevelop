@@ -154,9 +154,11 @@ FILES =  \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \
+	MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs \
 	MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs \
 	MonoDevelop.Projects.CodeGeneration/INameValidator.cs \
 	MonoDevelop.Projects.CodeGeneration/IRefactorer.cs \
+	MonoDevelop.Projects.CodeGeneration/MimeTypeExtensionNode.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorerContext.cs \
 	MonoDevelop.Projects.CodeGeneration/RefactorOperations.cs \
 	MonoDevelop.Projects.CodeGeneration/XmlCodeDomReader.cs \

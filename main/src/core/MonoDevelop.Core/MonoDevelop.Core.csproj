@@ -474,6 +474,8 @@
     <Compile Include="MonoDevelop.Core.StringParsing\StringTagModel.cs" />
     <Compile Include="MonoDevelop.Core.StringParsing\StringTagModelDescription.cs" />
     <Compile Include="MonoDevelop.Core.StringParsing\IStringTagModel.cs" />
+    <Compile Include="MonoDevelop.Projects.CodeGeneration\CodeGenerator.cs" />
+    <Compile Include="MonoDevelop.Projects.CodeGeneration\MimeTypeExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
