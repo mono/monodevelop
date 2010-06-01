@@ -1,3 +1,9 @@
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* MonoDevelop.Refactoring/GenerateNewMemberTests.cs: Worked on
+	  insertioncursor unit tests.
+
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Tests/ViTests.cs: Added tests for dd and cc.

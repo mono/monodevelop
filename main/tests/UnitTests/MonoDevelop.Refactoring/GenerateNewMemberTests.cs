@@ -54,11 +54,44 @@ namespace MonoDevelop.Refactoring.Tests
 				if (ch == '@') {
 					i++;
 					ch = text[i];
-					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.Length), ch == '3' || ch == '2', ch == '3' || ch == '1'));
+					NewLineInsertion insertBefore = NewLineInsertion.None;
+					NewLineInsertion insertAfter  = NewLineInsertion.None;
+					
+					switch (ch) {
+					case 'd':
+						insertAfter = NewLineInsertion.Eol;
+						break;
+					case 'D':
+						insertAfter = NewLineInsertion.BlankLine;
+						break;
+					case 'u':
+						insertBefore = NewLineInsertion.Eol;
+						break;
+					case 'U':
+						insertBefore = NewLineInsertion.BlankLine;
+						break;
+					case 's':
+						insertBefore = insertAfter = NewLineInsertion.Eol;
+						break;
+					case 'S':
+						insertBefore = insertAfter = NewLineInsertion.BlankLine;
+						break;
+						
+					case 't':
+						insertBefore = NewLineInsertion.Eol;
+						insertAfter = NewLineInsertion.BlankLine;
+						break;
+					case 'v':
+						insertBefore = NewLineInsertion.BlankLine;
+						insertAfter = NewLineInsertion.Eol;
+						break;
+					}
+					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.Length), insertBefore, insertAfter));
 				} else {
 					data.Insert (data.Document.Length, ch.ToString ());
 				}
 			}
+			
 			var parseResult = new NRefactoryParser ().Parse (null, "a.cs", data.Document.Text);
 			
 			var foundPoints = HelperMethods.GetInsertionPoints (data.Document, parseResult.CompilationUnit.Types[0]);
@@ -66,42 +99,45 @@ namespace MonoDevelop.Refactoring.Tests
 			for (int i = 0; i < loc.Count; i++) {
 				Console.WriteLine (loc[i] + "/" + foundPoints[i]);
 				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");
-				Assert.AreEqual (loc[i].ShouldInsertNewLineAfter, foundPoints[i].ShouldInsertNewLineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
-				Assert.AreEqual (loc[i].ShouldInsertNewLineBefore, foundPoints[i].ShouldInsertNewLineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
+				Assert.AreEqual (loc[i].LineAfter, foundPoints[i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
+				Assert.AreEqual (loc[i].LineBefore, foundPoints[i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
 			}
 		}
-		
-		[Test()]
-		public void TestBasicInsertionPointWithoutEmpty ()
-		{
-			TestInsertionPoints (@"
-class Test {
-	@1void TestMe ()
-	{
-	}
-@1}
-");
-		}
-
 		
 		[Test()]
 		public void TestBasicInsertionPoint ()
 		{
 			TestInsertionPoints (@"
 class Test {
-	@1
+	@D
 	void TestMe ()
 	{
 	}
-	@2
-}
+	
+@d}
 ");
 		}
+		
+		
+		[Test()]
+		public void TestBasicInsertionPointWithoutEmpty ()
+		{
+			TestInsertionPoints (@"
+class Test {
+	@Dvoid TestMe ()
+	{
+	}
+@v}
+");
+		}
+
+		
+		
 		
 		[Test()]
 		public void TestBasicInsertionPointOneLineCase ()
 		{
-			TestInsertionPoints (@"class Test {@3void TestMe () { }@3}");
+			TestInsertionPoints (@"class Test {@Svoid TestMe () { }@v}");
 		}
 		
 		
@@ -111,23 +147,23 @@ class Test {
 		{
 			TestInsertionPoints (@"
 class Test {
-	@1
+	@D
 	void TestMe ()
 	{
 	}
-	@1
-	int a;
-	@1
-	class Test2 {
+	
+	@Dint a;
+	
+	@Dclass Test2 {
 		void TestMe2 ()
 		{
 	
 		}
 	}
-	@1
-	public delegate void ADelegate ();
-	@2
-}
+	
+	@Dpublic delegate void ADelegate ();
+	
+@d}
 ");
 		}
 		
@@ -136,23 +172,23 @@ class Test {
 		public void TestComplexInsertionPointCase2 ()
 		{
 			TestInsertionPoints (@"class MainClass {
-	@1static void A ()
+	@Dstatic void A ()
 	{
 	}
-	@3static void B ()
+	@Sstatic void B ()
 	{
 	}
-	@1
-	public static void Main (string[] args)
+	
+	@Dpublic static void Main (string[] args)
 	{
 		System.Console.WriteLine ();
 	}
-	@3int g;
-	@3int i;
-	@1
-	int j;
-	@3public delegate void Del(int a);
-@1}
+	@Sint g;
+	@Sint i;
+	
+	@Dint j;
+	@Spublic delegate void Del(int a);
+@v}
 ");
 		}
 
