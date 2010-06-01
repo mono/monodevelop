@@ -1,5 +1,34 @@
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViActionMaps.cs: New EditObject map for
+	  'c' to use word start/end instead of word navigation
+	  boundaries.
+
+	* Mono.TextEditor/EmacsWordFindStrategy.cs:
+	* Mono.TextEditor.Vi/ViWordFindStrategy.cs:
+	* Mono.TextEditor/SharpDevelopWordFindStrategy.cs: Move code
+	  to abstract base class.
+
+	* Mono.TextEditor.Vi/ViActions.cs: Added WordStart and WordEnd
+	  move actions.
+
+	* Mono.TextEditor.Vi/ViMode.cs: Implemented '*'. Also, 'c'
+	  uses the EditObject map.
+
+	* Mono.TextEditor/TextEditorData.cs: Added FindCurrentWordEnd
+	  and FindCurrentWordStart methods that use the
+	  IWordFindStrategy.
+
+	* Mono.TextEditor/IWordFindStrategy.cs: New abstract base
+	  class. Added new FindCurrentWordEnd and FindCurrentWordStart
+	  methods to interface, with default implementation taken from
+	  TextViewMargin.
+
+	* Mono.TextEditor/TextViewMargin.cs: Use the WordFindStrategy
+	  for word selection.
+
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViActions.cs: Fix possible exception.
 
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>

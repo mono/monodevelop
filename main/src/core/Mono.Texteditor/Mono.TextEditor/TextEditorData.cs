@@ -280,7 +280,16 @@ namespace Mono.TextEditor
 		{
 			return this.options.WordFindStrategy.FindPrevSubwordOffset (this.Document, offset);
 		}
-
+		
+		public int FindCurrentWordEnd (int offset)
+		{
+			return this.Options.WordFindStrategy.FindCurrentWordEnd (this.Document, offset);
+		}
+		
+		public int FindCurrentWordStart (int offset)
+		{
+			return this.Options.WordFindStrategy.FindCurrentWordStart (this.Document, offset);
+		}
 		
 		public delegate void PasteCallback (int insertionOffset, string text);
 		

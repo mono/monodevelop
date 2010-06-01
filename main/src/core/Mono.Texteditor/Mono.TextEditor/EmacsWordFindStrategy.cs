@@ -27,12 +27,12 @@
 //
 
 using System;
-using CC = Mono.TextEditor.SharpDevelopWordFindStrategy.CharacterClass;
-using SW = Mono.TextEditor.SharpDevelopWordFindStrategy;
+using CC = Mono.TextEditor.WordFindStrategy.CharacterClass;
+using SW = Mono.TextEditor.WordFindStrategy;
 
 namespace Mono.TextEditor
 {
-	public class EmacsWordFindStrategy : IWordFindStrategy
+	public class EmacsWordFindStrategy : WordFindStrategy
 	{
 		bool treat_;
 		
@@ -131,22 +131,22 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public int FindNextWordOffset (Document doc, int offset)
+		public override int FindNextWordOffset (Document doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, false);
 		}
 		
-		public int FindPrevWordOffset (Document doc, int offset)
+		public override int FindPrevWordOffset (Document doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, false);
 		}
 		
-		public int FindNextSubwordOffset (Document doc, int offset)
+		public override int FindNextSubwordOffset (Document doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, true);
 		}
 		
-		public int FindPrevSubwordOffset (Document doc, int offset)
+		public override int FindPrevSubwordOffset (Document doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, true);
 		}

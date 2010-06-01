@@ -200,6 +200,16 @@ namespace Mono.TextEditor.Vi
 			data.Caret.DesiredColumn = desiredColumn;
 		}
 		
+		public static void WordEnd (TextEditorData data)
+		{
+			data.Caret.Offset = data.FindCurrentWordEnd (data.Caret.Offset);
+		}
+		
+		public static void WordStart (TextEditorData data)
+		{
+			data.Caret.Offset = data.FindCurrentWordStart (data.Caret.Offset);
+		}
+		
 		public static void LineEnd (TextEditorData data)
 		{
 			int desiredColumn = System.Math.Max (data.Caret.Column, data.Caret.DesiredColumn);

@@ -30,41 +30,8 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class SharpDevelopWordFindStrategy : IWordFindStrategy
+	public class SharpDevelopWordFindStrategy : WordFindStrategy
 	{
-		public enum CharacterClass {
-			Unknown,
-			Whitespace,
-			IdentifierPart,
-			UppercaseLetter,
-			LowercaseLetter,
-			Digit
-		}
-		
-		public static CharacterClass GetCharacterClass (char ch)
-		{
-			return GetCharacterClass (ch, false, false);
-		}
-		
-		public static CharacterClass GetCharacterClass (char ch, bool subword, bool treat_)
-		{
-			if (Char.IsWhiteSpace (ch))
-				return CharacterClass.Whitespace;
-			if (Char.IsDigit (ch))
-				return subword? CharacterClass.Digit : CharacterClass.IdentifierPart;
-			if (Char.IsLetter (ch)) {
-				if (!subword)
-					return CharacterClass.IdentifierPart;
-				else if (Char.IsUpper (ch))
-					return CharacterClass.UppercaseLetter;
-				else
-					return CharacterClass.LowercaseLetter;
-			}
-			if (!subword && treat_ && ch == '_')
- 				return CharacterClass.IdentifierPart;
- 			return CharacterClass.Unknown;
- 		}
-		
 		int FindNextWordOffset (Document doc, int offset, bool subword)
 		{
 			int lineNumber   = doc.OffsetToLineNumber (offset);
@@ -160,22 +127,22 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public int FindNextWordOffset (Document doc, int offset)
+		public override int FindNextWordOffset (Document doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, false);
 		}
 		
-		public int FindPrevWordOffset (Document doc, int offset)
+		public override int FindPrevWordOffset (Document doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, false);
 		}
 		
-		public int FindNextSubwordOffset (Document doc, int offset)
+		public override int FindNextSubwordOffset (Document doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, true);
 		}
 		
-		public int FindPrevSubwordOffset (Document doc, int offset)
+		public override int FindPrevSubwordOffset (Document doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, true);
 		}

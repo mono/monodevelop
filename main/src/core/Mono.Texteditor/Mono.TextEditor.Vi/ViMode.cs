@@ -131,6 +131,22 @@ namespace Mono.TextEditor.Vi
 			return "Command not recognised";
 		}
 		
+		void SearchWordAtCaret ()
+		{
+			Editor.SearchEngine = new BasicSearchEngine ();
+			var s = Data.FindCurrentWordStart (Data.Caret.Offset);
+			var e = Data.FindCurrentWordEnd (Data.Caret.Offset);
+			if (s < 0 || e <= s)
+				return;
+			
+			var word = Document.GetTextBetween (s, e);
+			Editor.SearchPattern = word;
+			Editor.SearchEngine.SearchRequest.CaseSensitive = true;
+			Editor.SearchEngine.SearchRequest.WholeWordOnly = true;
+			searchBackward = false;
+			Search ();
+		}
+		
 		public override bool WantsToPreemptIM {
 			get {
 				return state != State.Insert && state != State.Replace;
@@ -450,6 +466,9 @@ namespace Mono.TextEditor.Vi
 						currentMacro = null;
 						Reset("Macro Recorded");
 						return;
+					case '*':
+						SearchWordAtCaret ();
+						return;
 					}
 					
 				}
@@ -526,7 +545,7 @@ namespace Mono.TextEditor.Vi
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 				} else {
-					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
+					action = ViActionMaps.GetEditObjectCharAction ((char)unicodeKey);
 					if (action == null)
 						action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 					if (action != null)

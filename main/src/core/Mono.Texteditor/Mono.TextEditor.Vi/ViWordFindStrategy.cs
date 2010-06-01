@@ -31,7 +31,7 @@ namespace Mono.TextEditor.Vi
 	/// <summary>
 	/// A word find strategy to mimic vi's
 	/// </summary>
-	public class ViWordFindStrategy: IWordFindStrategy
+	public class ViWordFindStrategy: WordFindStrategy
 	{
 
 		#region IWordFindStrategy implementation
@@ -39,7 +39,7 @@ namespace Mono.TextEditor.Vi
 		/// <summary>
 		/// Move to next non-whitespace change in character class.
 		/// </summary>
-		public int FindNextSubwordOffset (Document doc, int offset)
+		public override int FindNextSubwordOffset (Document doc, int offset)
 		{
 			int myoffset = offset;
 			if (0 > myoffset || doc.Length-1 <= myoffset){ return myoffset; }
@@ -60,7 +60,7 @@ namespace Mono.TextEditor.Vi
 		/// <summary>
 		/// Move past next whitespace group.
 		/// </summary>
-		public int FindNextWordOffset (Document doc, int offset)
+		public override int FindNextWordOffset (Document doc, int offset)
 		{
 			int myoffset = offset;
 			if (0 > myoffset || doc.Length-1 <= myoffset){ return myoffset; }
@@ -78,7 +78,7 @@ namespace Mono.TextEditor.Vi
 		/// <summary>
 		/// Move to previous non-whitespace change in character class.
 		/// </summary>
-		public int FindPrevSubwordOffset (Document doc, int offset)
+		public override int FindPrevSubwordOffset (Document doc, int offset)
 		{
 			int myoffset = offset-1;
 			char c;
@@ -100,7 +100,7 @@ namespace Mono.TextEditor.Vi
 		/// <summary>
 		/// Move to end of previous whitespace group.
 		/// </summary>
-		public int FindPrevWordOffset (Document doc, int offset)
+		public override int FindPrevWordOffset (Document doc, int offset)
 		{
 			--offset;
 			if (0 > offset || doc.Length-1 <= offset){ return offset; }
@@ -120,7 +120,7 @@ namespace Mono.TextEditor.Vi
 		/// <summary>
 		/// Gets the character class for a given character.
 		/// </summary>
-		static CharacterClass GetCharacterClass (char c)
+		new static CharacterClass GetCharacterClass (char c)
 		{
 			if (char.IsLetterOrDigit (c) || '_' == c) {
 				return CharacterClass.AlphaNumeric;
@@ -129,7 +129,7 @@ namespace Mono.TextEditor.Vi
 			} else {
 				return CharacterClass.Symbol;
 			}
-		}
+		}	
 		
 		enum CharacterClass
 		{

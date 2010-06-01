@@ -1380,8 +1380,9 @@ namespace Mono.TextEditor
 				}
 
 				if (args.Type == EventType.TwoButtonPress) {
-					mouseWordStart = ScanWord (offset, false);
-					mouseWordEnd = ScanWord (offset, true);
+					var data = textEditor.GetTextEditorData ();
+					mouseWordStart = data.FindCurrentWordStart (offset);
+					mouseWordEnd = data.FindCurrentWordEnd (offset);
 					Caret.Offset = mouseWordEnd;
 					textEditor.MainSelection = new Selection (textEditor.Document.OffsetToLocation (mouseWordStart), textEditor.Document.OffsetToLocation (mouseWordEnd));
 					inSelectionDrag = true;
@@ -1456,28 +1457,6 @@ namespace Mono.TextEditor
 			if (inDrag)
 				Caret.Location = clickLocation;
 			base.MouseReleased (args);
-		}
-		
-		static bool IsNoLetterOrDigit (char ch)
-		{
-			return !char.IsWhiteSpace (ch) && !char.IsLetterOrDigit (ch);
-		}
-
-		int ScanWord (int offset, bool forwardDirection)
-		{
-			if (offset < 0 || offset >= Document.Length)
-				return offset;
-			LineSegment line = Document.GetLineByOffset (offset);
-			char first = Document.GetCharAt (offset);
-
-			while (offset >= line.Offset && offset < line.Offset + line.EditableLength) {
-				char ch = Document.GetCharAt (offset);
-				if (char.IsWhiteSpace (first) && !char.IsWhiteSpace (ch) || IsNoLetterOrDigit (first) && !IsNoLetterOrDigit (ch) || (char.IsLetterOrDigit (first) || first == '_') && !(char.IsLetterOrDigit (ch) || ch == '_'))
-					break;
-
-				offset = forwardDirection ? offset + 1 : offset - 1;
-			}
-			return System.Math.Min (line.Offset + line.EditableLength, System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 
 		CodeSegmentPreviewWindow previewWindow = null;
@@ -1696,13 +1675,14 @@ namespace Mono.TextEditor
 				int offset = textEditor.Document.LocationToOffset (loc);
 				int start;
 				int end;
+				var data = textEditor.GetTextEditorData ();
 				if (offset < textEditor.SelectionAnchor) {
-					start = ScanWord (offset, false);
-					end = ScanWord (textEditor.SelectionAnchor, true);
+					start = data.FindCurrentWordStart (offset);
+					end = data.FindCurrentWordEnd (textEditor.SelectionAnchor);
 					Caret.Offset = start;
 				} else {
-					start = ScanWord (textEditor.SelectionAnchor, false);
-					end = ScanWord (offset, true);
+					start = data.FindCurrentWordStart (textEditor.SelectionAnchor);
+					end = data.FindCurrentWordEnd (offset);
 					Caret.Offset = end;
 				}
 				if (textEditor.MainSelection != null) {
