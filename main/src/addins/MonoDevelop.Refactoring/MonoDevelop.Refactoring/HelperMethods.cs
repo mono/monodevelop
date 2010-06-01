@@ -95,7 +95,12 @@ namespace MonoDevelop.Refactoring
 			if (type == null)
 				throw new ArgumentNullException ("type");
 			List<InsertionPoint> result = new List<InsertionPoint> ();
-			result.Add (GetInsertionPosition (doc, type.BodyRegion.Start.Line - 1, type.BodyRegion.Start.Column));
+			
+			int offset = doc.LocationToOffset (type.BodyRegion.Start.Line - 1, type.BodyRegion.Start.Column);
+			while (offset < doc.Length && doc.GetCharAt (offset) != '{' && char.IsWhiteSpace (doc.GetCharAt (offset)))
+				offset++;
+			var realStartLocation = doc.OffsetToLocation (offset);
+			result.Add (GetInsertionPosition (doc, realStartLocation.Line, realStartLocation.Column));
 			result[0].LineBefore = NewLineInsertion.None;
 			foreach (IMember member in type.Members) {
 				DomLocation domLocation = member.BodyRegion.End;
