@@ -1,5 +1,11 @@
 2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Bypass the
+	  cut/copy/paste commands if the current view doesn't support
+	  it.
+
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.AutoTest/AutoTestSession.cs: The
 	  current object is now always the active widget unless some
 	  other specific object is set.

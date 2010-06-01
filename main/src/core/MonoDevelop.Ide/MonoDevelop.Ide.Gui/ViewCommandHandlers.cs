@@ -163,8 +163,8 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdateCut (CommandInfo info)
 		{
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null)
-				info.Enabled = handler.EnableCut;
+			if (handler != null && handler.EnableCut)
+				info.Enabled = true;
 			else
 				info.Bypass = true;
 		}
@@ -181,8 +181,8 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdateCopy (CommandInfo info)
 		{
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null)
-				info.Enabled = handler.EnableCopy;
+			if (handler != null && handler.EnableCopy)
+				info.Enabled = true;
 			else
 				info.Bypass = true;
 		}
@@ -199,8 +199,8 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUpdatePaste (CommandInfo info)
 		{
 			IClipboardHandler handler = GetContent <IClipboardHandler> ();
-			if (handler != null)
-				info.Enabled = handler.EnablePaste;
+			if (handler != null && handler.EnablePaste)
+				info.Enabled = true;
 			else
 				info.Bypass = true;
 		}
