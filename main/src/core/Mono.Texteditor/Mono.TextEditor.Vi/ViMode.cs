@@ -133,16 +133,17 @@ namespace Mono.TextEditor.Vi
 		
 		void SearchWordAtCaret ()
 		{
-			Editor.SearchEngine = new BasicSearchEngine ();
+			Editor.SearchEngine = new RegexSearchEngine ();
 			var s = Data.FindCurrentWordStart (Data.Caret.Offset);
 			var e = Data.FindCurrentWordEnd (Data.Caret.Offset);
 			if (s < 0 || e <= s)
 				return;
 			
 			var word = Document.GetTextBetween (s, e);
+			//use negative lookahead and lookbehind for word characters to make sure we only get fully matching words
+			word = "(?<!\\w)" + System.Text.RegularExpressions.Regex.Escape (word) + "(?!\\w)";
 			Editor.SearchPattern = word;
 			Editor.SearchEngine.SearchRequest.CaseSensitive = true;
-			Editor.SearchEngine.SearchRequest.WholeWordOnly = true;
 			searchBackward = false;
 			Search ();
 		}
@@ -187,6 +188,8 @@ namespace Mono.TextEditor.Vi
 			if (data == null)
 				return;
 			data.ClearSelection ();
+			
+			Editor.HighlightSearchPattern = false;
 			
 			if (CaretMode.Block != data.Caret.Mode) {
 				data.Caret.Mode = CaretMode.Block;
