@@ -1,3 +1,9 @@
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Fix bug
+	  #610262 - After hiding annotations they still refresh on
+	  save.
+
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/AnnotateView.cs: Added

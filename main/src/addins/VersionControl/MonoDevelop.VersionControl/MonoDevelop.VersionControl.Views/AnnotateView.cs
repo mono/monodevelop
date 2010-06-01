@@ -82,7 +82,9 @@ namespace MonoDevelop.VersionControl.Views
 			SourceEditorView view = doc.ActiveView as SourceEditorView;
 			if (view != null) {
 				if (view.TextEditor.HasMargin (typeof (AnnotationMargin))) { 
-					view.TextEditor.GetMargin (typeof (AnnotationMargin)).IsVisible = true;
+					AnnotationMargin margin = (AnnotationMargin) view.TextEditor.GetMargin (typeof (AnnotationMargin));
+					margin.IsVisible = true;
+					margin.UpdateAnnotations (null, null);
 				} else {
 					view.TextEditor.InsertMargin (0, new AnnotationMargin (repo, view.TextEditor, doc));
 				}
@@ -134,6 +136,7 @@ namespace MonoDevelop.VersionControl.Views
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC, locallyModifiedGC;
 		Mono.TextEditor.TextEditor editor;
 		AnnotationTooltipProvider tooltipProvider;
+		Ide.Gui.Document document;
 		
 		private static readonly string locallyModified = "*****";
 		
@@ -159,6 +162,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.repo = repo;
 			this.width = 0;
 			this.editor = editor;
+			this.document = doc;
 			annotations = new List<string> ();
 			UpdateAnnotations (null, null);
 			
@@ -190,8 +194,10 @@ namespace MonoDevelop.VersionControl.Views
 		/// <summary>
 		/// Reloads annotations for the current document
 		/// </summary>
-		private void UpdateAnnotations (object sender, EventArgs e)
+		internal void UpdateAnnotations (object sender, EventArgs e)
 		{
+			if (!IsVisible)
+				return;
 			StatusBarContext ctx = IdeApp.Workbench.StatusBar.CreateContext ();
 			ctx.AutoPulse = true;
 			ctx.ShowMessage (ImageService.GetImage ("md-version-control", IconSize.Menu), GettextCatalog.GetString ("Retrieving history"));
@@ -307,6 +313,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void Dispose ()
 		{
+			document.Saved -= UpdateAnnotations;
 			editor.Document.TextReplacing -= EditorDocumentTextReplacing;
 			editor.Document.LineChanged -= EditorDocumentLineChanged;
 			editor.TooltipProviders.Remove (tooltipProvider);
