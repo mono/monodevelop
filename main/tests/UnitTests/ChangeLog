@@ -1,5 +1,9 @@
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Tests/ViTests.cs: Added tests for dd and cc.
+
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Tests/ViTests.cs: More tests.
 
 2010-05-31  Mike Krüger  <mkrueger@novell.com>

@@ -103,6 +103,37 @@ qrstu",
 			Assert.AreEqual ("ghy jkop", mode.GetLine ());
 		}
 		
+		[Test]
+		public void DeleteLine ()
+		{
+			var mode = new TestViEditMode () { Text =
+@"   aaa aaa
+   bbb bbb
+   ccc ccc",
+			};
+			mode.Input ("jwlldd");
+			Assert.AreEqual (1, mode.Line);
+			Assert.AreEqual (3, mode.Col);
+			Assert.AreEqual (
+@"   aaa aaa
+   ccc ccc", mode.Text);
+		}
+		
+		[Test]
+		public void ChangeLine ()
+		{
+			var mode = new TestViEditMode () { Text =
+@"   aaa aaa
+   bbb bbb
+   ccc ccc",
+			};
+			mode.Input ("jwllcceeee");
+			Assert.AreEqual (
+@"   aaa aaa
+   eeee
+   ccc ccc", mode.Text);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
