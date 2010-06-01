@@ -193,7 +193,9 @@ namespace Mono.TextEditor.Vi
 				return;
 			data.ClearSelection ();
 			
-			Editor.HighlightSearchPattern = false;
+			//Editor can be null during GUI-less tests
+			if (Editor != null)
+				Editor.HighlightSearchPattern = false;
 			
 			if (CaretMode.Block != data.Caret.Mode) {
 				data.Caret.Mode = CaretMode.Block;
