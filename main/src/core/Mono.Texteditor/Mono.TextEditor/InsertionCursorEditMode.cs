@@ -29,6 +29,13 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
+	public enum NewLineInsertion
+	{
+		None,
+		Eol,
+		BlankLine
+	}
+	
 	public class InsertionPoint 
 	{
 		public DocumentLocation Location {
@@ -36,19 +43,19 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public bool ShouldInsertNewLineBefore { get; set; }
-		public bool ShouldInsertNewLineAfter { get; set; }
+		public NewLineInsertion LineBefore { get; set; }
+		public NewLineInsertion LineAfter { get; set; }
 		
-		public InsertionPoint (DocumentLocation location, bool shouldInsertNewLineBefore, bool shouldInsertNewLineAfter)
+		public InsertionPoint (DocumentLocation location, NewLineInsertion lineBefore, NewLineInsertion lineAfter)
 		{
 			this.Location = location;
-			this.ShouldInsertNewLineBefore = shouldInsertNewLineBefore;
-			this.ShouldInsertNewLineAfter = shouldInsertNewLineAfter;
+			this.LineBefore = lineBefore;
+			this.LineAfter = lineAfter;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[InsertionPoint: Location={0}, ShouldInsertNewLineBefore={1}, ShouldInsertNewLineAfter={2}]", Location, ShouldInsertNewLineBefore, ShouldInsertNewLineAfter);
+			return string.Format ("[InsertionPoint: Location={0}, LineBefore={1}, LineAfter={2}]", Location, LineBefore, LineAfter);
 		}
 	}
 	
