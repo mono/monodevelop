@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring {
 
@@ -46,7 +47,8 @@ namespace MonoDevelop.Refactoring {
 		IType declaringType;
 		ListStore store;
 		ListStore visibilityStore;
-
+		TextEditor editor;
+		
 		private const int colCheckedIndex = 0;
 		private const int colFieldNameIndex = 1;
 		private const int colPropertyNameIndex = 2;
@@ -54,16 +56,17 @@ namespace MonoDevelop.Refactoring {
 		private const int colReadOnlyIndex = 4;
 		private const int colFieldIndex = 5;
 
-		public EncapsulateFieldDialog (ProjectDom ctx, IType declaringType)
+		public EncapsulateFieldDialog (TextEditor editor, ProjectDom ctx, IType declaringType)
 			: this (declaringType, null)
 		{}
 
-		public EncapsulateFieldDialog (ProjectDom ctx, IField field)
+		public EncapsulateFieldDialog (TextEditor editor, ProjectDom ctx, IField field)
 			: this (field.DeclaringType, field)
 		{}
 
-		private EncapsulateFieldDialog (IType declaringType, IField field)
+		private EncapsulateFieldDialog (TextEditor editor, IType declaringType, IField field)
 		{
+			this.editor = editor;
 			this.declaringType = declaringType;
 			this.Build ();
 

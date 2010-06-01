@@ -1,3 +1,11 @@
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/HelperMethods.cs:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/EncapsulateFieldDialog.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	  Worked on insertioncursor edit mode.
+
 2010-05-31  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/HelperMethods.cs:

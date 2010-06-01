@@ -428,11 +428,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode).Trim ();
 			
 			result.Add (replacement);
-			
+
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = options.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
-			insertNewMethod.RemovedChars = param.InsertionPoint.Location.Column;
+			insertNewMethod.RemovedChars = param.InsertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : param.InsertionPoint.Location.Column;
 			insertNewMethod.Offset = data.Document.LocationToOffset (param.InsertionPoint.Location) - insertNewMethod.RemovedChars;
 			
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
@@ -488,9 +488,14 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			
 			string indent = options.GetIndent (param.DeclaringMember);
 			StringBuilder methodText = new StringBuilder ();
-			if (param.InsertionPoint.ShouldInsertNewLineBefore) {
+			switch (param.InsertionPoint.LineBefore) {
+			case NewLineInsertion.Eol:
+				methodText.AppendLine ();
+				break;
+			case NewLineInsertion.BlankLine:
 				methodText.Append (indent);
 				methodText.AppendLine ();
+				break;
 			}
 			if (param.GenerateComment) {
 				methodText.Append (indent);
@@ -536,15 +541,18 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			} else {
 				methodText.Append (provider.OutputNode (options.Dom, methodDecl, options.GetIndent (param.DeclaringMember)).Trim ());
 			}
-			methodText.AppendLine ();
-			methodText.Append (indent);
 			
-			if (param.InsertionPoint.ShouldInsertNewLineAfter) {
+			switch (param.InsertionPoint.LineAfter) {
+			case NewLineInsertion.Eol:
+				methodText.AppendLine ();
+				break;
+			case NewLineInsertion.BlankLine:
 				methodText.AppendLine ();
 				methodText.Append (indent);
+				methodText.AppendLine ();
+				methodText.Append (indent);
+				break;
 			}
-			Console.WriteLine (param.InsertionPoint);
-			Console.WriteLine ("'" + methodText + "'");
 			insertNewMethod.InsertedText = methodText.ToString ();
 			result.Add (insertNewMethod);
 

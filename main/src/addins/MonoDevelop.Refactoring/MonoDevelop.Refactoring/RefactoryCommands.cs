@@ -1030,13 +1030,11 @@ namespace MonoDevelop.Refactoring
 			try {
 				EncapsulateFieldDialog dialog;
 				if (item is IField) {
-					dialog = new EncapsulateFieldDialog (ctx, (IField) item);
+					dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IField) item);
 				} else {
-					
-					dialog = new EncapsulateFieldDialog (ctx, (IType) item);
+					dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IType) item);
 				}
-				
-				dialog.Show ();
+				MessageService.ShowCustomDialog (dialog);
 			} finally {
 				if (editor != null)
 					editor.EndAtomicUndo ();
