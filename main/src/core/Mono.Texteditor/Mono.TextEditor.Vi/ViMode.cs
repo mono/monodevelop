@@ -166,8 +166,12 @@ namespace Mono.TextEditor.Vi
 		
 		protected override void CaretPositionChanged ()
 		{
-			if (state == ViEditMode.State.Normal || state == ViEditMode.State.Unknown)
+			if (state == ViEditMode.State.Replace || state == ViEditMode.State.Insert)
+				return;
+			else if (state == ViEditMode.State.Normal || state == ViEditMode.State.Unknown)
 				ViActions.RetreatFromLineEnd (Data);
+			else
+				Reset ("");
 		}
 		
 		void CheckVisualMode ()
