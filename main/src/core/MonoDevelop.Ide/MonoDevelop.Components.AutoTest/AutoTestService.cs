@@ -66,6 +66,11 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 		
+		public static SessionRecord StartRecordingSession ()
+		{
+			return new SessionRecord (commandManager);
+		}
+		
 		internal static string SessionReferenceFile {
 			get {
 				return Path.Combine (Path.GetTempPath (), "monodevelop-autotest-objref");
@@ -149,5 +154,88 @@ namespace MonoDevelop.Components.AutoTest
 	{
 		AutoTestSession AttachClient (IAutoTestClient client);
 		void DetachClient (IAutoTestClient client);
+	}
+	
+	public class SessionRecord
+	{
+		CommandManager commandManager;
+		List<RecordEvent> events = new List<RecordEvent> ();
+		bool recording;
+		
+		public class RecordEvent
+		{
+		}
+		
+		public class KeyPressEvent: RecordEvent
+		{
+			public Gdk.Key Key { get; set; }
+			public Gdk.ModifierType Modifiers { get; set; }
+		}
+		
+		public class CommandEvent: RecordEvent
+		{
+			public object CommandId { get; set; }
+			public int DataItemIndex { get; set; }
+			public bool IsCommandArray {
+				get { return DataItemIndex != -1; }
+			}
+		}
+		
+		internal SessionRecord (CommandManager commandManager)
+		{
+			this.commandManager = commandManager;
+			Resume ();
+		}
+		
+		public IEnumerable<RecordEvent> Events {
+			get {
+				if (recording)
+					throw new InvalidOperationException ("The record session must be paused before getting the recorded events.");
+				return events; 
+			}
+		}
+		
+		public bool IsPaused {
+			get { return !recording; }
+		}
+		
+		public void Pause ()
+		{
+			if (recording) {
+				commandManager.KeyPressed -= HandleCommandManagerKeyPressed;
+				commandManager.CommandActivated -= HandleCommandManagerCommandActivated;
+				recording = false;
+			}
+		}
+		
+		public void Resume ()
+		{
+			if (!recording) {
+				commandManager.KeyPressed += HandleCommandManagerKeyPressed;
+				commandManager.CommandActivated += HandleCommandManagerCommandActivated;
+				recording = true;
+			}
+		}
+		
+		void HandleCommandManagerCommandActivated (object sender, CommandActivationEventArgs e)
+		{
+			CommandEvent cme = new CommandEvent () { CommandId = e.CommandId };
+			cme.DataItemIndex = -1;
+			
+			if (e.DataItem != null && e.CommandInfo.ArrayInfo != null) {
+				for (int n=0; n<e.CommandInfo.ArrayInfo.Count; n++) {
+					if (e.CommandInfo.ArrayInfo[n].HandlesItem (e.DataItem)) {
+						cme.DataItemIndex = n;
+						break;
+					}
+				}
+			}
+			events.Add (cme);
+		}
+
+		void HandleCommandManagerKeyPressed (object sender, KeyPressArgs e)
+		{
+			events.Add (new KeyPressEvent () { Key = e.Key, Modifiers = e.Modifiers });
+		}
 	}
 }

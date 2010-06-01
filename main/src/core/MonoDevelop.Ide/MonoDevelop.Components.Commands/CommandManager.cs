@@ -207,6 +207,7 @@ namespace MonoDevelop.Components.Commands
 			} else {
 				e.RetVal = false;
 				mode = null;
+				NotifyKeyPressed (e);
 				return;
 			}
 			
@@ -224,8 +225,19 @@ namespace MonoDevelop.Components.Commands
 			// The command has not been handled.
 			// If there is at least a handler that sets the bypass flag, allow gtk to execute the default action
 			
-			e.RetVal = commands.Count > 0 && !bypass;
+			if (commands.Count > 0 && !bypass)
+				e.RetVal = true;
+			else {
+				e.RetVal = false;
+				NotifyKeyPressed (e);
+			}
 			mode = null;
+		}
+		
+		void NotifyKeyPressed (Gtk.KeyPressEventArgs e)
+		{
+			if (KeyPressed != null)
+				KeyPressed (this, new KeyPressArgs () { Key = e.Event.Key, Modifiers = e.Event.State });
 		}
 		
 		public void SetRootWindow (Gtk.Window root)
@@ -533,18 +545,10 @@ namespace MonoDevelop.Components.Commands
 					if (cui != null) {
 						if (cmd.CommandArray) {
 							// Make sure that the option is still active
-							CommandArrayInfo ainfo = new CommandArrayInfo (info);
-							cui.Run (cmdTarget, ainfo);
-							if (!ainfo.Bypass) {
-								bool found = false;
-								foreach (CommandInfo ci in ainfo) {
-									if (dataItem == ci.DataItem || Object.Equals (dataItem, ci.DataItem)) {
-										found = true;
-										break;
-									}
-								}
-								
-								if (!found)
+							info.ArrayInfo = new CommandArrayInfo (info);
+							cui.Run (cmdTarget, info.ArrayInfo);
+							if (!info.ArrayInfo.Bypass) {
+								if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
 									return false;
 							} else
 								bypass = true;
@@ -564,16 +568,16 @@ namespace MonoDevelop.Components.Commands
 							object localTarget = cmdTarget;
 							if (cmd.CommandArray) {
 								handlers.Add (delegate {
-									OnCommandActivating (commandId, info, localTarget, source);
+									OnCommandActivating (commandId, info, dataItem, localTarget, source);
 									chi.Run (localTarget, cmd, dataItem);
-									OnCommandActivated (commandId, info, localTarget, source);
+									OnCommandActivated (commandId, info, dataItem, localTarget, source);
 								});
 							}
 							else {
 								handlers.Add (delegate {
-									OnCommandActivating (commandId, info, localTarget, source);
+									OnCommandActivating (commandId, info, dataItem, localTarget, source);
 									chi.Run (localTarget, cmd);
-									OnCommandActivated (commandId, info, localTarget, source);
+									OnCommandActivated (commandId, info, dataItem, localTarget, source);
 								});
 							}
 							handlerFoundInMulticast = true;
@@ -594,10 +598,8 @@ namespace MonoDevelop.Components.Commands
 					return true;
 				}
 	
-				if (cmd.DispatchCommand (dataItem)) {
-					OnCommandActivating (commandId, info, cmdTarget, source);
+				if (DefaultDispatchCommand (cmd, info, dataItem, cmdTarget, source)) {
 					UpdateToolbars ();
-					OnCommandActivated (commandId, info, cmdTarget, source);
 					return true;
 				}
 			}
@@ -609,16 +611,38 @@ namespace MonoDevelop.Components.Commands
 			return false;
 		}
 		
-		void OnCommandActivating (object commandId, CommandInfo commandInfo, object target, CommandSource source)
+		bool DefaultDispatchCommand (ActionCommand cmd, CommandInfo info, object dataItem, object target, CommandSource source)
 		{
-			if (CommandActivating != null)
-				CommandActivating (this, new CommandActivationEventArgs (commandId, commandInfo, target, source));
+			DefaultUpdateCommandInfo (cmd, info);
+			
+			if (cmd.CommandArray) {
+				if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
+					return false;
+			}
+			else if (!info.Enabled || !info.Visible)
+				return false;
+			
+			if (cmd.DefaultHandler == null) {
+				if (cmd.DefaultHandlerType == null)
+					return false;
+				cmd.DefaultHandler = (CommandHandler) Activator.CreateInstance (cmd.DefaultHandlerType);
+			}
+			OnCommandActivating (cmd.Id, info, dataItem, target, source);
+			cmd.DefaultHandler.InternalRun (dataItem);
+			OnCommandActivated (cmd.Id, info, dataItem, target, source);
+			return true;
 		}
 		
-		void OnCommandActivated (object commandId, CommandInfo commandInfo, object target, CommandSource source)
+		void OnCommandActivating (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source)
+		{
+			if (CommandActivating != null)
+				CommandActivating (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
+		}
+		
+		void OnCommandActivated (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source)
 		{
 			if (CommandActivated != null)
-				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, target, source));
+				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
 		}
 		
 		public event EventHandler<CommandActivationEventArgs> CommandActivating;
@@ -702,7 +726,7 @@ namespace MonoDevelop.Components.Commands
 				}
 				
 				info.Bypass = false;
-				cmd.UpdateCommandInfo (info);
+				DefaultUpdateCommandInfo (cmd, info);
 			}
 			catch (Exception ex) {
 				if (!commandUpdateErrors.Contains (commandId)) {
@@ -718,6 +742,25 @@ namespace MonoDevelop.Components.Commands
 			if (guiLock > 0)
 				info.Enabled = false;
 			return info;
+		}
+		
+		void DefaultUpdateCommandInfo (ActionCommand cmd, CommandInfo info)
+		{
+			if (cmd.DefaultHandler == null) {
+				if (cmd.DefaultHandlerType == null) {
+					info.Enabled = false;
+					if (!cmd.DisabledVisible)
+						info.Visible = false;
+					return;
+				}
+				cmd.DefaultHandler = (CommandHandler) Activator.CreateInstance (cmd.DefaultHandlerType);
+			}
+			if (cmd.CommandArray) {
+				info.ArrayInfo = new CommandArrayInfo (info);
+				cmd.DefaultHandler.InternalUpdate (info.ArrayInfo);
+			}
+			else
+				cmd.DefaultHandler.InternalUpdate (info);
 		}
 		
 		public object VisitCommandTargets (ICommandTargetVisitor visitor, object initialTarget)
@@ -1155,6 +1198,7 @@ namespace MonoDevelop.Components.Commands
 		public event EventHandler ApplicationFocusOut;  // Fired when the application loses the focus
 		public event EventHandler CommandTargetScanStarted;
 		public event EventHandler CommandTargetScanFinished;
+		public event EventHandler<KeyPressArgs> KeyPressed;
 	}
 	
 	internal class HandlerTypeInfo
@@ -1513,18 +1557,20 @@ namespace MonoDevelop.Components.Commands
 		
 	public class CommandActivationEventArgs : EventArgs
 	{
-		public CommandActivationEventArgs (object commandId, CommandInfo commandInfo, object target, CommandSource source)
+		public CommandActivationEventArgs (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source)
 		{
 			this.CommandId = commandId;
 			this.CommandInfo = commandInfo;
 			this.Target = target;
 			this.Source = source;
+			this.DataItem = dataItem;
 		}			
 		
 		public object CommandId  { get; private set; }
 		public CommandInfo CommandInfo  { get; private set; }
 		public object Target  { get; private set; }
 		public CommandSource Source { get; private set; }
+		public object DataItem  { get; private set; }
 	}
 	
 	public enum CommandSource
@@ -1562,6 +1608,12 @@ namespace MonoDevelop.Components.Commands
 		internal IEnumerable<object> Targets {
 			get { return targets; }
 		}
+	}
+	
+	public class KeyPressArgs: EventArgs
+	{
+		public Gdk.Key Key { get; internal set; }
+		public Gdk.ModifierType Modifiers { get; internal set; }
 	}
 }
 

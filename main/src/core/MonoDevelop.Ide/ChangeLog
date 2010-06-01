@@ -1,3 +1,26 @@
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.AutoTest/AutoTestSession.cs: The
+	  current object is now always the active widget unless some
+	  other specific object is set.
+
+	* MonoDevelop.Components.AutoTest/AutoTestService.cs: Added
+	  basic support for recording a test session.
+
+	* MonoDevelop.Components.Commands/CommandInfo.cs:
+	* MonoDevelop.Components.Commands/CommandManager.cs:
+	* MonoDevelop.Components.Commands/CommandArrayInfo.cs: Notofy
+	  key presses through the new KeyPressed event. Include the
+	  selected data item in the CommandActivated event args.
+	  Properly notify CommandActivated event when running the
+	  default handler of a command.
+
+	* MonoDevelop.Components.Commands/ActionCommand.cs: Removed
+	  DispatchCommand and UpdateCommandInfo virtuals. They are not
+	  used and makes things more complex in the command manager.
+
+	* MonoDevelop.Ide.Desktop/RecentItem.cs: Implemented Equals.
+
 2010-05-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Dialogs/AlertDialog.cs: Allow selecting

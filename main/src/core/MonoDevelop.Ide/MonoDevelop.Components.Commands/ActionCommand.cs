@@ -100,18 +100,7 @@ namespace MonoDevelop.Components.Commands
 			set { defaultHandler = value; }
 		}
 
-		public virtual bool DispatchCommand (object dataItem)
-		{
-			if (defaultHandler == null) {
-				if (DefaultHandlerType == null)
-					return false;
-				defaultHandler = (CommandHandler) Activator.CreateInstance (DefaultHandlerType);
-			}			
-			defaultHandler.InternalRun (dataItem);
-			return true;
-		}
-
-		public virtual void UpdateCommandInfo (CommandInfo info)
+		internal void UpdateCommandInfo (CommandInfo info)
 		{
 			if (defaultHandler == null) {
 				if (DefaultHandlerType == null) {

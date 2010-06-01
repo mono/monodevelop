@@ -35,6 +35,8 @@ namespace MonoDevelop.Components.AutoTest
 	public class AutoTestSession: MarshalByRefObject
 	{
 		object currentObject;
+		bool trackingActiveWidget;
+		
 		ManualResetEvent syncEvent = new ManualResetEvent (false);
 		
 		public AutoTestSession ()
@@ -50,7 +52,7 @@ namespace MonoDevelop.Components.AutoTest
 		public void ExecuteCommand (object cmd)
 		{
 			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, null, currentObject);
+				AutoTestService.CommandManager.DispatchCommand (cmd, null, CurrentObject);
 			});
 		}
 		
@@ -132,12 +134,12 @@ namespace MonoDevelop.Components.AutoTest
 		public void SendKeyPress (Gdk.Key key, Gdk.ModifierType state, string subWindow)
 		{
 			Sync (delegate {
-				SendKeyEvent ((Gtk.Widget)currentObject, (uint)key, state, Gdk.EventType.KeyPress, subWindow);
+				SendKeyEvent ((Gtk.Widget)CurrentObject, (uint)key, state, Gdk.EventType.KeyPress, subWindow);
 				return null;
 			});
 			Thread.Sleep (15);
 			Sync (delegate {
-				SendKeyEvent ((Gtk.Widget)currentObject, (uint)key, state, Gdk.EventType.KeyRelease, subWindow);
+				SendKeyEvent ((Gtk.Widget)CurrentObject, (uint)key, state, Gdk.EventType.KeyRelease, subWindow);
 				return null;
 			});
 			Thread.Sleep (10);
@@ -147,6 +149,7 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			Sync (delegate {
 				currentObject = GetGlobalObject (name);
+				trackingActiveWidget = false;
 				return null;
 			});
 		}
@@ -154,9 +157,18 @@ namespace MonoDevelop.Components.AutoTest
 		public void SelectActiveWidget ()
 		{
 			Sync (delegate {
-				currentObject = GetActiveWidget ();
+				trackingActiveWidget = true;
 				return null;
 			});
+		}
+		
+		object CurrentObject {
+			get {
+				if (trackingActiveWidget)
+					return GetActiveWidget ();
+				else
+					return currentObject;
+			}
 		}
 		
 		object GetActiveWidget ()
@@ -184,14 +196,14 @@ namespace MonoDevelop.Components.AutoTest
 		public object GetValue (string name)
 		{
 			return Sync (delegate {
-				return GetValue (currentObject, currentObject.GetType (), name);
+				return GetValue (CurrentObject, CurrentObject.GetType (), name);
 			});
 		}
 		
 		public void SetValue (string name, object value)
 		{
 			Sync (delegate {
-				SetValue (currentObject, currentObject.GetType (), name, value);
+				SetValue (CurrentObject, CurrentObject.GetType (), name, value);
 				return null;
 			});
 		}
@@ -199,7 +211,7 @@ namespace MonoDevelop.Components.AutoTest
 		public object Invoke (string methodName, object[] args)
 		{
 			return Sync (delegate {
-				return Invoke (currentObject, currentObject.GetType (), methodName, args);
+				return Invoke (CurrentObject, CurrentObject.GetType (), methodName, args);
 			});
 		}
 		

@@ -132,5 +132,10 @@ namespace MonoDevelop.Components.Commands
 		public bool IsArraySeparator {
 			get; internal set;
 		}
+		
+		public bool HandlesItem (object item)
+		{
+			return item == DataItem || Object.Equals (item, DataItem);
+		}
 	}
 }

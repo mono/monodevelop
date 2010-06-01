@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -47,6 +48,11 @@ namespace MonoDevelop.Components.Commands
 		public void Clear ()
 		{
 			list.Clear ();
+		}
+		
+		public CommandInfo FindCommandInfo (object dataItem)
+		{
+			return list.FirstOrDefault (ci => ci.HandlesItem (dataItem));
 		}
 		
 		public void Insert (int index, CommandInfoSet infoSet)

@@ -155,6 +155,21 @@ namespace MonoDevelop.Ide.Desktop
 			return this.groups.Contains (group);
 		}
 		
+		public override bool Equals (object obj)
+		{
+			RecentItem item = obj as RecentItem;
+			if (item == null)
+				return false;
+			return uri == item.uri;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return uri.GetHashCode ();
+		}
+		
+		
+		
 		public int CompareTo (object o)
 		{
 			RecentItem item = o as RecentItem;
