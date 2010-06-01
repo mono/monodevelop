@@ -184,17 +184,19 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected void RunActions (Action<TextEditorData> action1, Action<TextEditorData> action2)
+		protected void RunActions (params Action<TextEditorData>[] actions)
 		{
 			HideMouseCursor ();
 			try {
 				Document.BeginAtomicUndo ();
-				action1 (this.textEditorData);
-				action2 (this.textEditorData);
+				foreach (var action in actions)
+					action (this.textEditorData);
 				Document.EndAtomicUndo ();
 			} catch (Exception e) {
-				Console.WriteLine ("Error while executing actions " + action1.ToString () + 
-				                   " & " + action2.ToString () + ": " + e);
+				var sb = new System.Text.StringBuilder ("Error while executing actions ");
+				foreach (var action in actions)
+					sb.AppendFormat (" {0}", action);
+				Console.WriteLine (sb.ToString () + ": " + e);
 			}
 		
 		}

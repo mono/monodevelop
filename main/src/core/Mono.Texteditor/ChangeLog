@@ -1,5 +1,13 @@
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Improve testability. Fix dd
+	  and cc behaviour.
+
+	* Mono.TextEditor/EditMode.cs: Made RunActions take params,
+	  not just two.
+
+2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViActionMaps.cs: New EditObject map for
 	  'c' to use word start/end instead of word navigation
 	  boundaries.

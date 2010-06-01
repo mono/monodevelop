@@ -254,6 +254,7 @@ namespace Mono.TextEditor.Vi
 			}
 			
 			Action<TextEditorData> action = null;
+			bool lineAction = false;
 			
 			switch (state) {
 			case State.Unknown:
@@ -488,9 +489,10 @@ namespace Mono.TextEditor.Vi
 				
 			case State.Delete:
 				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
-				     && key == Gdk.Key.d))
+				     && unicodeKey == 'd'))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+					lineAction = true;
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
@@ -500,7 +502,10 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunActions (action, ClipboardActions.Cut);
+					if (lineAction)
+						RunActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+					else
+						RunActions (action, ClipboardActions.Cut);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -510,13 +515,12 @@ namespace Mono.TextEditor.Vi
 
 			case State.Yank:
 				int offset = Caret.Offset;
-				bool lineyank = false;
 				
 				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
-				     && key == Gdk.Key.y))
+				     && unicodeKey == 'y'))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
-					lineyank = true;
+					lineAction	= true;
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
@@ -527,7 +531,7 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					RunAction (action);
-					if (Data.IsSomethingSelected && !lineyank)
+					if (Data.IsSomethingSelected && !lineAction)
 						offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
 					Reset (string.Empty);
@@ -541,9 +545,10 @@ namespace Mono.TextEditor.Vi
 			case State.Change:
 				//copied from delete action
 				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
-				     && key == Gdk.Key.c))
+				     && unicodeKey == 'c'))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+					lineAction = true;
 				} else {
 					action = ViActionMaps.GetEditObjectCharAction ((char)unicodeKey);
 					if (action == null)
@@ -553,7 +558,10 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunActions (action, ClipboardActions.Cut);
+					if (lineAction)
+						RunActions (action, ClipboardActions.Cut, ViActions.NewLineAbove);
+					else
+						RunActions (action, ClipboardActions.Cut);
 					Status = "-- INSERT --";
 					state = State.Insert;
 					Caret.Mode = CaretMode.Insert;
@@ -667,7 +675,7 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Indent:
-				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '>'))
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>'))
 				{
 					RunAction (MiscActions.IndentSelection);
 					Reset ("");
