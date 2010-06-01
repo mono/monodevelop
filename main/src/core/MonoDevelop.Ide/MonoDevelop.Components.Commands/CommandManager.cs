@@ -616,8 +616,8 @@ namespace MonoDevelop.Components.Commands
 			DefaultUpdateCommandInfo (cmd, info);
 			
 			if (cmd.CommandArray) {
-				if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
-					return false;
+				//if (info.ArrayInfo.FindCommandInfo (dataItem) == null)
+				//	return false;
 			}
 			else if (!info.Enabled || !info.Visible)
 				return false;
