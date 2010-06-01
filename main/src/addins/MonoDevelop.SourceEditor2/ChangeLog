@@ -1,5 +1,10 @@
 2010-06-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: check if
+	  search&replace widget is open.
+
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed 'Bug
 	  610204 - Find-as-you-type-bar with Chrome style broke a good
 	  use case of the find-bar with Firefox style'.
