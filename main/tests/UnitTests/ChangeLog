@@ -1,5 +1,10 @@
 2010-06-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/GenerateNewMemberTests.cs: Added
+	  unit test.
+
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
 	* MonoDevelop.Refactoring/GenerateNewMemberTests.cs: Worked on
 	  insertioncursor unit tests.

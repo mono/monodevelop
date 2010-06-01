@@ -118,6 +118,21 @@ class Test {
 ");
 		}
 		
+		[Test()]
+		public void TestBasicInsertionPoint2 ()
+		{
+			TestInsertionPoints (@"
+class Test 
+{
+	@D
+	void TestMe ()
+	{
+	}
+	
+@d}
+");
+		}
+		
 		
 		[Test()]
 		public void TestBasicInsertionPointWithoutEmpty ()
