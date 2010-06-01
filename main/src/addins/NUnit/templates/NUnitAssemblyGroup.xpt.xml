@@ -17,7 +17,7 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
-		<CombineEntry name = "${ProjectName}" directory = "." type = "MonoDevelop.NUnit.NUnitAssemblyGroupProject, MonoDevelop.NUnit">
+		<CombineEntry name = "${ProjectName}" directory = "." type = "MonoDevelop.NUnit.NUnitAssemblyGroupProject">
 		</CombineEntry>
 	</Combine>
 </Template>

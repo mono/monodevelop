@@ -1,5 +1,11 @@
 2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* templates/NUnitAssemblyGroup.xpt.xml: Don't include the
+	  assembly name in the project type name since it doesn't work
+	  well when running on .NET
+
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Gui/TestNodeBuilder.cs:
 	* MonoDevelopNUnit.addin.xml: Added go-to-failure command to
 	  the test pad context menu. Fixes bug #610358 - Go to source

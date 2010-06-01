@@ -13,7 +13,7 @@
 	<Combine name = "${ProjectName}" directory = ".">
 		<CombineEntry name = "${ProjectName}" 
 		              directory = "." 
-		              type = "MonoDevelop.Gettext.TranslationProject, MonoDevelop.Gettext"
+		              type = "MonoDevelop.Gettext.TranslationProject"
 		              packageName="i8n1" 
 		              outputType="RelativeToOutput" 
 		              relPath="locale" />

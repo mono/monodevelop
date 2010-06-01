@@ -1,3 +1,9 @@
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/PackagingProject.xpt.xml: Don't include the
+	  assembly name in the project type name since it doesn't work
+	  well when running on .NET
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Deployment.Commands/Commands.cs:
