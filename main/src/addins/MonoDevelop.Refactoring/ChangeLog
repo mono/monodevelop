@@ -3,6 +3,13 @@
 	* MonoDevelop.Refactoring/HelperMethods.cs:
 	* MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs:
 	* MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:
+	  Extracted indent level calculation.
+
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/HelperMethods.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:
 	  Worked on refactoring - corrected interface formatting.
 
 2010-06-01  Mike Krüger  <mkrueger@novell.com>

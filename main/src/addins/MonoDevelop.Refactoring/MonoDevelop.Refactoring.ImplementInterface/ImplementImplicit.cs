@@ -29,6 +29,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.ImplementInterface
 {
@@ -68,12 +69,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					CodeGenerator generator = CodeGenerator.CreateGenerator (options.GetTextEditorData ().Document.MimeType);
-					generator.IndentLevel = 1;
-					IType t = declaringType;
-					while (t.DeclaringType != null) {
-						generator.IndentLevel++;
-						t = t.DeclaringType;
-					}
+					generator.IndentLevel = HelperMethods.CalculateBodyIndentLevel (declaringType);
 					args.InsertionPoint.Insert (editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, false));
 				}
 			};

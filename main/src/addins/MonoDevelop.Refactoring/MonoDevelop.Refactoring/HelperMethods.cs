@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 using MonoDevelop.Projects.Dom;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring
 {
@@ -38,6 +39,26 @@ namespace MonoDevelop.Refactoring
 		{
 			return Char.IsLetterOrDigit (ch) || ch == '_';
 		}
+		
+		
+		public static int CalculateBodyIndentLevel (IType declaringType)
+		{
+			int indentLevel = 0;
+			IType t = declaringType;
+			do {
+				indentLevel++;
+				t = t.DeclaringType;
+			} while (t != null);
+			DomLocation lastLoc = DomLocation.Empty;
+			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.Region.Contains (declaringType.Location))) {
+				if (lastLoc == us.Region.Start)
+					continue;
+				lastLoc = us.Region.Start;
+				indentLevel++;
+			}
+			return indentLevel;
+		}
+		
 		
 		public static DocumentLocation ToDocumentLocation (this DomLocation location, Document document)
 		{
