@@ -1,3 +1,10 @@
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs: Don't offer
+	  the gtk feature if gtk# is not installed in the active
+	  runtime. Fixes bug #608052 - The New Solution wizard throws
+	  an exception after choosing project features.
+
 2010-05-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs:

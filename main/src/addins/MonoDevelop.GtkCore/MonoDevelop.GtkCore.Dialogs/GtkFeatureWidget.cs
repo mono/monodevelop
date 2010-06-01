@@ -52,7 +52,12 @@ namespace MonoDevelop.GtkCore.Dialogs
 		{
 			if (!(entry is DotNetProject) || !GtkDesignInfo.SupportsRefactoring (entry as DotNetProject))
 				return FeatureSupportLevel.NotSupported;
-			else if (GtkDesignInfo.SupportsDesigner ((Project)entry))
+			
+			ReferenceManager refmgr = new ReferenceManager ((DotNetProject)entry);
+			if (refmgr.SupportedGtkVersions.Count == 0)
+				return FeatureSupportLevel.NotSupported;
+			
+			if (GtkDesignInfo.SupportsDesigner ((Project)entry))
 				return FeatureSupportLevel.Enabled;
 			else if (entry is DotNetAssemblyProject)
 				return FeatureSupportLevel.SupportedByDefault;
