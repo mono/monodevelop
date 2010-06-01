@@ -289,6 +289,7 @@
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightUsagesExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\MoveToUsagesHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

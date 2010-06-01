@@ -165,6 +165,10 @@
 		         _label = "_Move to next usage"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/CodeGenerators">
+		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
+	</Extension>
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>

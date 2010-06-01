@@ -146,6 +146,7 @@ FILES =  \
 	MonoDevelop.CSharp.Project/CSharpProjectParameters.cs \
 	MonoDevelop.CSharp.Project/CSharpResourceIdBuilder.cs \
 	MonoDevelop.CSharp.Refactoring/CodeGenerator.cs \
+	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs \
 	MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs \
 	MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs \

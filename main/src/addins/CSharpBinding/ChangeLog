@@ -1,5 +1,14 @@
 2010-06-01  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* CSharpBinding.addin.xml:
+	* MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:
+	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs:
+	  Worked on c# code generation.
+
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: Fixed
 	  'Bug 610241 - #elif Coloring Messed'.
 
