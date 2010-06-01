@@ -57,11 +57,11 @@ namespace MonoDevelop.Refactoring {
 		private const int colFieldIndex = 5;
 
 		public EncapsulateFieldDialog (TextEditor editor, ProjectDom ctx, IType declaringType)
-			: this (declaringType, null)
+			: this (editor, declaringType, null)
 		{}
 
 		public EncapsulateFieldDialog (TextEditor editor, ProjectDom ctx, IField field)
-			: this (field.DeclaringType, field)
+			: this (editor, field.DeclaringType, field)
 		{}
 
 		private EncapsulateFieldDialog (TextEditor editor, IType declaringType, IField field)

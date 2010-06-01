@@ -1,5 +1,10 @@
 2010-06-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/EncapsulateFieldDialog.cs: fixed
+	  compilation error.
+
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/HelperMethods.cs:
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring/EncapsulateFieldDialog.cs:
