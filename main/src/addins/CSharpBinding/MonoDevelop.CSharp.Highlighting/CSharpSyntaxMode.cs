@@ -364,25 +364,30 @@ namespace MonoDevelop.CSharp.Highlighting
 					ruleStack.Push (GetRule (elseIfBlockSpan));
 					
 					// put pre processor eol span on stack, so that '#elif' gets the correct highlight
-					OnFoundSpanBegin (elseIfBlockSpan, i, 1);
-					spanStack.Push (elseIfBlockSpan);
-					ruleStack.Push (GetRule (elseIfBlockSpan));
+					Span preprocessorSpan = CreatePreprocessorSpan ();
+					OnFoundSpanBegin (preprocessorSpan, i, 0);
+					spanStack.Push (preprocessorSpan);
+					ruleStack.Push (GetRule (preprocessorSpan));
 					//i += length - 1;
 					return;
 				}
 				if (CurRule.Name == "<root>" &&  doc.GetCharAt (i) == '#') {
-					Span preprocessorSpan = new Span ();
-					
-					preprocessorSpan.TagColor = "text.preprocessor";
-					preprocessorSpan.Color = "text.preprocessor";
-					preprocessorSpan.Rule = "String";
-					preprocessorSpan.StopAtEol = true;
+					Span preprocessorSpan = CreatePreprocessorSpan ();
 					OnFoundSpanBegin (preprocessorSpan, i, 1);
 					spanStack.Push (preprocessorSpan);
 					ruleStack.Push (GetRule (preprocessorSpan));
 				}
-
 				base.ScanSpan (ref i);
+			}
+			
+			public static Span CreatePreprocessorSpan ()
+			{
+				Span result = new Span ();
+				result.TagColor = "text.preprocessor";
+				result.Color = "text.preprocessor";
+				result.Rule = "String";
+				result.StopAtEol = true;
+				return result;
 			}
 			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
