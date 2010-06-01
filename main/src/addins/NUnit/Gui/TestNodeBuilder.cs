@@ -164,6 +164,17 @@ namespace MonoDevelop.NUnit
 			UnitTest test = CurrentNode.DataItem as UnitTest;
 			SourceCodeLocation loc = null;
 			UnitTestResult res = test.GetLastResult ();
+			loc = test.SourceCodeLocation;
+			if (loc != null)
+				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column, true);
+		}
+		
+		[CommandHandler (TestCommands.GoToFailure)]
+		protected void OnShowFailure ()
+		{
+			UnitTest test = CurrentNode.DataItem as UnitTest;
+			SourceCodeLocation loc = null;
+			UnitTestResult res = test.GetLastResult ();
 			if (res != null && res.IsFailure)
 				loc = res.GetFailureLocation ();
 			if (loc == null)

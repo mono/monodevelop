@@ -1,3 +1,10 @@
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/TestNodeBuilder.cs:
+	* MonoDevelopNUnit.addin.xml: Added go-to-failure command to
+	  the test pad context menu. Fixes bug #610358 - Go to source
+	  code in unit test pad doesn't work as expected.
+
 2010-05-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Services/NUnitService.cs: Use ShowCustomDialog (which

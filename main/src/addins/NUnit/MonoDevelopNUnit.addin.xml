@@ -143,6 +143,8 @@
 		<ItemSet id = "RunTestWith" _label = "Run Test With">
 			<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith" />
 		</ItemSet>
+		<SeparatorItem id = "s0" />
+		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.GoToFailure" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestDetails" />
 		<SeparatorItem id = "s1" />
