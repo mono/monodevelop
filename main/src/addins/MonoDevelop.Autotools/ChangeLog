@@ -1,3 +1,9 @@
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AutotoolsContext.cs:
+	* SolutionDeployer.cs:
+	* SolutionMakefileHandler.cs: Don't allow spaces in paths.
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Commands.cs: Fix incorrect use of

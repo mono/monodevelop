@@ -300,6 +300,12 @@ namespace MonoDevelop.Autotools
 			}
 			return null;
 		}
+		
+		internal static void CheckSpaces (string path)
+		{
+			if (path.IndexOf (' ') != -1)
+				throw new Exception ("Paths with spaces are not supported");
+		}
 	
 		public static string EscapeStringForAutomake (string str) 
 		{

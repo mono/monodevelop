@@ -102,6 +102,8 @@ namespace MonoDevelop.Autotools
 							string path = FileService.AbsoluteToRelativePath (targetDirectory, baseDirectory);
 							if (path.StartsWith ("." + Path.DirectorySeparatorChar) )
 								path = path.Substring (2);
+							
+							AutotoolsContext.CheckSpaces (path);
 							subdirs.Append (" ");
 							subdirs.Append ( AutotoolsContext.EscapeStringForAutomake (path) );
 						}
@@ -202,7 +204,7 @@ namespace MonoDevelop.Autotools
 			}
 			return solutionMakefile;
 		}
-
+		
 		// utility function for finding the correct order to process directories
 		List<SolutionItem> CalculateSubDirOrder (AutotoolsContext ctx, SolutionFolder folder, SolutionConfiguration config)
 		{
