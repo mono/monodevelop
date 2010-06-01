@@ -1,3 +1,7 @@
+2010-06-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* TextTemplatingTool.cs: Make ThreadAsyncOperation public.
+
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* TextTemplatingService.cs: Allow RecyclableAppDomain to

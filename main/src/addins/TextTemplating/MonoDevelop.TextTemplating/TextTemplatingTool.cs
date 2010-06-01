@@ -55,7 +55,7 @@ namespace MonoDevelop.TextTemplating
 		}
 	}
 	
-	class ThreadAsyncOperation : IAsyncOperation
+	public class ThreadAsyncOperation : IAsyncOperation
 	{
 		Thread thread;
 		bool cancelled;
