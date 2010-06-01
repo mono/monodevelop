@@ -36,6 +36,7 @@ using System.Reflection;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -48,9 +49,11 @@ namespace MonoDevelop.Ide.Templates
 //		string relativePath;
 		string typeName;
 		XmlElement template;
+		RuntimeAddin addin;
 		
-		protected SolutionItemDescriptor (XmlElement element)
+		protected SolutionItemDescriptor (RuntimeAddin addin, XmlElement element)
 		{
+			this.addin = addin;
 			name = element.GetAttribute ("name");
 //			relativePath = element.GetAttribute ("directory");
 			typeName = element.GetAttribute ("type");
@@ -59,7 +62,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			Type type = Type.GetType (typeName);
+			Type type = addin.GetType (typeName, false);
 			
 			if (type == null) {
 				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", typeName));
@@ -83,9 +86,9 @@ namespace MonoDevelop.Ide.Templates
 		{
 		}
 		
-		public static SolutionItemDescriptor CreateDescriptor (XmlElement element)
+		public static SolutionItemDescriptor CreateDescriptor (RuntimeAddin addin, XmlElement element)
 		{
-			return new SolutionItemDescriptor (element);
+			return new SolutionItemDescriptor (addin, element);
 		}
 	}
 }

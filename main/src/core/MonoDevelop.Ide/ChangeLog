@@ -1,5 +1,13 @@
 2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
+	* MonoDevelop.Ide.Templates/SolutionDescriptor.cs:
+	* MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs: Lookup
+	  solution types through the add-in instance. Fixes bug
+	  #610150 - Unable to create Packaging Project.
+
+2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.Commands/CommandManager.cs: Disable
 	  data item check in the default command handler since it may
 	  cause regressions.

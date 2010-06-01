@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using System.Collections.Generic;
 using System.Xml;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -49,6 +50,7 @@ namespace MonoDevelop.Ide.Templates
         string directory;
         string name;
         string type;
+		RuntimeAddin addin;
 
         private List<ISolutionItemDescriptor> entryDescriptors = new List<ISolutionItemDescriptor> ();
         public ISolutionItemDescriptor[] EntryDescriptors
@@ -56,9 +58,10 @@ namespace MonoDevelop.Ide.Templates
             get { return entryDescriptors.ToArray(); }
         }
 
-        public static SolutionDescriptor CreateSolutionDescriptor (XmlElement xmlElement)
+        public static SolutionDescriptor CreateSolutionDescriptor (RuntimeAddin addin, XmlElement xmlElement)
         {
             SolutionDescriptor solutionDescriptor = new SolutionDescriptor ();
+			solutionDescriptor.addin = addin;
 
             if (xmlElement.Attributes["name"] != null)
                 solutionDescriptor.name = xmlElement.Attributes["name"].Value;
@@ -84,7 +87,7 @@ namespace MonoDevelop.Ide.Templates
                             break;
                         case "CombineEntry":
                         case "SolutionItem":
-                            solutionDescriptor.entryDescriptors.Add (SolutionItemDescriptor.CreateDescriptor (xmlNodeElement));
+                            solutionDescriptor.entryDescriptors.Add (SolutionItemDescriptor.CreateDescriptor (addin, xmlNodeElement));
                             break;
 
                     }
@@ -101,7 +104,7 @@ namespace MonoDevelop.Ide.Templates
             if (string.IsNullOrEmpty (type))
                 workspaceItem = new Solution ();
             else {
-                Type workspaceItemType = Type.GetType (type);
+                Type workspaceItemType = addin.GetType (type, false);
                 if (workspaceItemType != null)
                     workspaceItem = Activator.CreateInstance (workspaceItemType) as WorkspaceItem;
 
