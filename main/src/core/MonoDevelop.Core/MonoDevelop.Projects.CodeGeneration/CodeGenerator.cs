@@ -151,8 +151,14 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember, bool> (prop, needsExplicitly));
 			}
-			
+			bool first = true;
 			foreach (var pair in toImplement) {
+				if (!first) {
+					result.AppendLine ();
+					result.AppendLine ();
+				} else {
+					first = false;
+				}
 				result.Append (CreateMemberImplementation (pair.Key, pair.Value));
 			}
 			

@@ -1,5 +1,10 @@
 2010-06-01  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Append
+	  new line between members.
+
+2010-06-01  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Core.addin.xml:
