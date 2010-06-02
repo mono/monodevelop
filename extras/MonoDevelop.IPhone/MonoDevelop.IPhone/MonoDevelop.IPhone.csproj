@@ -76,10 +76,14 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +132,7 @@
     <Compile Include="IPhoneSimulatorTarget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs" />
     <Compile Include="IPhoneSettings.cs" />
+    <Compile Include="Orientation.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">
@@ -237,6 +242,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\IPhonePList.xft.xml">
       <LogicalName>IPhonePList.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneApplicationManifest.xft.xml">
+      <LogicalName>IPhoneApplicationManifest.xft.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

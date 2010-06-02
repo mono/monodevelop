@@ -28,6 +28,8 @@ using System;
 using Gtk;
 using MonoDevelop.Projects.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Gui;
+using MonoDevelop.Core.Gui.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Gui;
 
@@ -59,10 +61,13 @@ namespace MonoDevelop.IPhone.Gui
 
 	internal partial class IPhoneOptionsWidget : Gtk.Bin
 	{
+		bool badPlist;
 
 		public IPhoneOptionsWidget ()
 		{
 			this.Build ();
+			supportedOrientationsCombo.Model = new ListStore (typeof (string), typeof (Orientation));
+			iPadOrientationsCombo.Model = new ListStore (typeof (string), typeof (Orientation));
 			targetDevicesCombo.Changed += HandleTargetDevicesComboChanged;
 		}
 
@@ -75,6 +80,7 @@ namespace MonoDevelop.IPhone.Gui
 				IPadIconSensitive = true;
 				IPadSpotlightIconSensitive = true;
 				SettingsIconSensitive = true;
+				iPadOrientationsCombo.Sensitive = true;
 				break;
 			case TargetDevice.IPhone:
 				iPadNibPicker.Sensitive = false;
@@ -82,6 +88,7 @@ namespace MonoDevelop.IPhone.Gui
 				IPadIconSensitive = false;
 				IPadSpotlightIconSensitive = false;
 				SettingsIconSensitive = true;
+				iPadOrientationsCombo.Sensitive = false;
 				break;
 			case TargetDevice.IPad:
 				iPadNibPicker.Sensitive = false;
@@ -89,6 +96,7 @@ namespace MonoDevelop.IPhone.Gui
 				IPadIconSensitive = true;
 				IPadSpotlightIconSensitive = true;
 				SettingsIconSensitive = true;
+				iPadOrientationsCombo.Sensitive = false;
 				break;
 			}
 		}
@@ -172,8 +180,6 @@ namespace MonoDevelop.IPhone.Gui
 			
 			SupportedDevices = proj.SupportedDevices;
 			
-			HandleTargetDevicesComboChanged (null, null);
-			
 			ProjectFileEntry [] pickers = { iphoneIconPicker, ipadIconPicker, settingsIconPicker, ipadSpotlightIconPicker };
 			foreach (var p in pickers) {
 				p.Project = proj;
@@ -185,6 +191,71 @@ namespace MonoDevelop.IPhone.Gui
 			ipadIconPicker.SelectedFile = proj.BundleIconIPad.ToString () ?? "";
 			settingsIconPicker.SelectedFile = proj.BundleIconSpotlight.ToString () ?? "";
 			ipadSpotlightIconPicker.SelectedFile = proj.BundleIconIPadSpotlight.ToString () ?? "";
+			
+			badPlist = false;
+			try {
+				var pf = proj.GetInfoPlist ();
+				var doc = new PropertyList.PlistDocument ();
+				doc.LoadFromXmlFile (pf.FilePath);
+				var dict = doc.Root as PropertyList.PlistDictionary;
+				if (dict == null)
+					doc.Root = dict = new PropertyList.PlistDictionary ();
+				
+				var orientationArr = dict.TryGetValue (OrientationUtil.KEY) as PropertyList.PlistArray;
+				var ipadOrientationArr = dict.TryGetValue (OrientationUtil.KEY_IPAD) as PropertyList.PlistArray;
+				
+				LoadOrientationsCombo (supportedOrientationsCombo, orientationArr);
+				LoadOrientationsCombo (iPadOrientationsCombo, ipadOrientationArr);
+			} catch (Exception ex) {
+				badPlist = true;
+				MessageService.ShowException (ex, "Error reading Info.plist. Some settings may not be saved.");
+			}
+			
+			HandleTargetDevicesComboChanged (null, null);
+		}
+		
+		static void LoadOrientationsCombo (ComboBox combo, PropertyList.PlistArray values)
+		{
+			var store = (ListStore)combo.Model;
+			store.Clear ();
+			store.AppendValues (GettextCatalog.GetString ("Both"), Orientation.Both);
+			store.AppendValues (GettextCatalog.GetString ("Portrait"), Orientation.Portrait);
+			store.AppendValues (GettextCatalog.GetString ("Landscape"), Orientation.Landscape);
+			store.AppendValues (GettextCatalog.GetString ("Not specified"), Orientation.None);
+			
+			var o = OrientationUtil.Parse (values);
+			switch (o) {
+			case Orientation.Both:
+				combo.Active = 0;
+				break;
+			case Orientation.Portrait:
+				combo.Active = 1;
+				break;
+			case Orientation.Landscape:
+				combo.Active = 2;
+				break;
+			case Orientation.None:
+				combo.Active = 3;
+				break;
+			default:
+				store.AppendValues (GettextCatalog.GetString ("Custom"), o);
+				combo.Active = 4;
+				break;
+			}
+		}
+		
+		static PropertyList.PlistArray SaveOrientationsCombo (ComboBox combo)
+		{
+			var store = (ListStore)combo.Model;
+			int i = combo.Active;
+			TreeIter iter;
+			if (store.GetIterFirst (out iter)) {
+				do {
+					if (i-- == 0)
+						return OrientationUtil.ToPlist ((Orientation)store.GetValue (iter, 1));
+				} while (store.IterNext (ref iter));
+			}
+			return null;
 		}
 		
 		public void Store (IPhoneProject proj)
@@ -202,6 +273,34 @@ namespace MonoDevelop.IPhone.Gui
 			proj.BundleIconIPadSpotlight = NullIfEmpty (ipadSpotlightIconPicker.SelectedFile);
 			
 			proj.SupportedDevices = SupportedDevices;
+			
+			if (badPlist)
+				return;
+			try {
+				var pf = proj.GetInfoPlist ();
+				var doc = new PropertyList.PlistDocument ();
+				doc.LoadFromXmlFile (pf.FilePath);
+				var dict = doc.Root as PropertyList.PlistDictionary;
+				if (dict == null)
+					doc.Root = dict = new PropertyList.PlistDictionary ();
+				
+				var orientations = SaveOrientationsCombo (supportedOrientationsCombo);
+				if (orientations != null)
+					dict [OrientationUtil.KEY] = orientations;
+				else
+					dict.Remove (OrientationUtil.KEY);
+				
+				var iPadOrientations = SaveOrientationsCombo (iPadOrientationsCombo);
+				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad && iPadOrientations != null)
+					dict [OrientationUtil.KEY_IPAD] = orientations;
+				else
+					dict.Remove (OrientationUtil.KEY_IPAD);
+				
+				doc.WriteToFile (pf.FilePath);
+			} catch (Exception ex) {
+				badPlist = true;
+				MessageService.ShowException (ex, "Error saving Info.plist.");
+			}
 		}
 		
 		string NullIfEmpty (string s)

@@ -1,3 +1,57 @@
+2010-06-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneApplicationManifest.xft.xml: Added
+	  application manifest template.
+
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPadWindowBasedProject.xpt.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml:
+	* Templates/UniversalWindowBasedProject.xpt.xml: Added
+	  Info.plist to all new projects.
+
+2010-06-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Orientation.cs:
+	* Gui/IPhoneOptionsPanel.cs: Moved orientation code from
+	  options panel to separate file.
+
+	* IPhoneBuildExtension.cs: Warn about missing orientation keys
+	  in the plist with SDK 3.2 and higher.
+
+	* MonoDevelop.IPhone.csproj: Added file, make references not
+	  require specific version.
+
+2010-06-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneOptionsPanel.cs: Options panel now loads and saves
+	  orientation to Info.plist.
+
+	* IPhoneProject.cs: Fix NRE creating Info.plist.
+
+2010-06-01  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* IPhoneBuildExtension.cs:
+	* Gui/IPhoneOptionsPanel.cs:
+	* PropertyList/PlistDocument.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs:
+	  Some work on orientation support.
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Fix adding values to dictionary.
+
+2010-05-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Provisioning profile entitlement
+	  values should overwrite template values.
+
 2010-05-25  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* CodeBehindGenerator.cs: Build a map of obj-c types to

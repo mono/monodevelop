@@ -31,8 +31,9 @@
 				<Reference type="Gac" refto="monotouch" />
 			</References>
 			<Files>
-		<File name="MainWindowIPhone.xib.designer.cs" DependsOn="${Name}.xib" SuppressAutoOpen="True"
-			ShowAutogenerationNotice="True" AddStandardHeader="False" ><![CDATA[
+				<FileTemplateReference TemplateID="IPhoneApplicationManifest" />	
+				<File name="MainWindowIPhone.xib.designer.cs" DependsOn="${Name}.xib" SuppressAutoOpen="True"
+					ShowAutogenerationNotice="True" AddStandardHeader="False" ><![CDATA[
 namespace ${Namespace}
 {
 	// Base type probably should be MonoTouch.Foundation.NSObject or subclass

@@ -31,9 +31,9 @@
 				<Reference type="Gac" refto="monotouch" />
 			</References>
 			<Files>
+				<FileTemplateReference TemplateID="IPhoneApplicationManifest" />
 				<FileTemplateReference TemplateID="IPhoneApplicationXib" />
-				<File name="Main.cs"
-				      AddStandardHeader="True">
+				<File name="Main.cs" AddStandardHeader="True">
 <![CDATA[
 using System;
 using System.Collections.Generic;

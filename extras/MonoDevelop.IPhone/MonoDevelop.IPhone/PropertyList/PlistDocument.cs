@@ -176,5 +176,13 @@ namespace PropertyList
 			root.Write (writer);
 			writer.WriteEndDocument ();
 		}
+		
+		public void WriteToFile (string filename)
+		{
+			using (var writer = new XmlTextWriter (filename, System.Text.Encoding.UTF8)) {
+				writer.Formatting = Formatting.Indented;
+				Write (writer);
+			}
+		}
 	}
 }
