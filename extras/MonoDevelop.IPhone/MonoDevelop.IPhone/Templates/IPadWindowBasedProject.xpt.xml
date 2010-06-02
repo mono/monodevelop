@@ -31,6 +31,7 @@
 				<Reference type="Gac" refto="monotouch" />
 			</References>
 			<Files>
+				<FileTemplateReference TemplateID="IPhoneApplicationManifest" />
 				<FileTemplateReference TemplateID="IPadApplicationXib" />
 				<File name="Main.cs"
 				      AddStandardHeader="True">

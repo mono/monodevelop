@@ -1,5 +1,20 @@
 2010-06-02  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* Templates/IPhoneApplicationManifest.xft.xml: Added
+	  application manifest template.
+
+	* Templates/IPhoneOpenGLProject.xpt.xml:
+	* Templates/IPhoneUtilityProject.xpt.xml:
+	* Templates/IPhoneNavBasedProject.xpt.xml:
+	* Templates/IPadWindowBasedProject.xpt.xml:
+	* Templates/IPhoneWindowBasedProject.xpt.xml:
+	* Templates/UniversalWindowBasedProject.xpt.xml: Added
+	  Info.plist to all new projects.
+
+2010-06-02  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Orientation.cs:
 	* Gui/IPhoneOptionsPanel.cs: Moved orientation code from
 	  options panel to separate file.

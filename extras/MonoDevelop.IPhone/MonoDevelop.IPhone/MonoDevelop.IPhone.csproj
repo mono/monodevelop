@@ -229,6 +229,9 @@
     <EmbeddedResource Include="Templates\IPhonePList.xft.xml">
       <LogicalName>IPhonePList.xft.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\IPhoneApplicationManifest.xft.xml">
+      <LogicalName>IPhoneApplicationManifest.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />

@@ -34,6 +34,8 @@
 			              resource = "IPadApplicationXib.xft.xml"/>
 			<FileTemplate id       = "IPadViewXib"
 			              resource = "IPadViewXib.xft.xml"/>
+			<FileTemplate id       = "IPhoneApplicationManifest"
+			              resource = "IPhoneApplicationManifest.xft.xml"/>
 			<FileTemplate id       = "IPadViewController"
 			              resource = "IPadViewController.xft.xml"/>
 		</Condition>
