@@ -218,6 +218,22 @@ namespace MonoDevelop.CSharp.Refactoring
 				return result.ToString ();
 			}
 			
+			public void AppendNotImplementedException (StringBuilder result, CSharpCodeGenerator.CodeGenerationOptions options)
+			{
+				generator.AppendIndent (result);
+				result.Append ("throw new ");
+				AppendReturnType (result, options.ImplementingType, new DomReturnType ("System.NotImplementedException"));
+				if (generator.policy.BeforeMethodCallParentheses)
+					result.Append (" ");
+				result.AppendLine ("();");
+			}
+			
+			public void AppendMonoTouchTodo (StringBuilder result)
+			{
+				generator.AppendIndent (result);
+				result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+			}
+			
 			public override string Visit (IMethod method, CodeGenerationOptions options)
 			{
 				StringBuilder result = new StringBuilder ();
@@ -276,15 +292,9 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append (");");
 					result.AppendLine ();
 				} else if (IsMonoTouchModelMember (method)) {
-					generator.AppendIndent (result);
-					result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+					AppendMonoTouchTodo (result);
 				} else if (method.IsAbstract || method.DeclaringType.ClassType == ClassType.Interface) {
-					generator.AppendIndent (result);
-					result.AppendLine ("throw new ");
-					AppendReturnType (result, options.ImplementingType, new DomReturnType ("System.NotImplementedException"));
-					if (generator.policy.BeforeMethodCallParentheses)
-						result.Append (" ");
-					result.AppendLine ("();");
+					AppendNotImplementedException (result, options);
 				} else {
 					generator.AppendIndent (result);
 					result.Append ("base.");
@@ -382,15 +392,9 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("get");
 					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (property)) {
-						generator.AppendIndent (result);
-						result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+						AppendMonoTouchTodo (result);
 					} else if (property.IsAbstract || property.DeclaringType.ClassType == ClassType.Interface) {
-						generator.AppendIndent (result);
-						result.AppendLine ("throw new ");
-						AppendReturnType (result, options.ImplementingType, new DomReturnType ("System.NotImplementedException"));
-						if (generator.policy.BeforeMethodCallParentheses)
-							result.Append (" ");
-						result.AppendLine ("();");
+						AppendNotImplementedException (result, options);
 					} else {
 						generator.AppendIndent (result);
 						result.Append ("return base.");
@@ -406,11 +410,9 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("set");
 					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (property)) {
-						generator.AppendIndent (result);
-						result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+						AppendMonoTouchTodo (result);
 					} else if (property.IsAbstract || property.DeclaringType.ClassType == ClassType.Interface) {
-						generator.AppendIndent (result);
-						result.AppendLine ("throw new System.NotImplementedException ();");
+						AppendNotImplementedException (result, options);
 					} else {
 						generator.AppendIndent (result);
 						result.Append ("base.");
