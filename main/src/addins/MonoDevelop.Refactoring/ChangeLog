@@ -1,5 +1,10 @@
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  fixed null reference exception.
+
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/HelperMethods.cs:
 	* MonoDevelop.CodeGeneration/ToStringGenerator.cs:
 	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:

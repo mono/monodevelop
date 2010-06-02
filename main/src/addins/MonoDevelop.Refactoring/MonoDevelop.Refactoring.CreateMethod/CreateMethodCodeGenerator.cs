@@ -52,8 +52,8 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			IResolver resolver = options.GetResolver ();
 			if (provider == null || resolver == null)
 				return false;
-			
-			invoke = GetInvocationExpression (options);
+			if (invoke == null)
+				invoke = GetInvocationExpression (options);
 			if (invoke == null)
 				return false;
 			returnType = DomReturnType.Void;
