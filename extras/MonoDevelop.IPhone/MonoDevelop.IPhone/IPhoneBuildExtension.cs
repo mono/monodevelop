@@ -301,6 +301,22 @@ namespace MonoDevelop.IPhone
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)
 					SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
 				
+				var sdkversion = IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+				if (sdkversion.CompareTo (new IPhoneSdkVersion (new [] { 3, 2 })) >= 0) {
+					if (!dict.ContainsKey (OrientationUtil.KEY)) {
+						result.AddWarning ("Supported orientations have not been set (iPhone Application options panel)");
+					} else {
+						var val = OrientationUtil.Parse ((PlistArray)dict[OrientationUtil.KEY]);
+						if (!OrientationUtil.IsValidPair (val))
+							result.AddWarning ("Supported orientations are not matched pairs (Info.plist)");
+						if (dict.ContainsKey (OrientationUtil.KEY_IPAD)) {
+							var pad = OrientationUtil.Parse ((PlistArray)dict[OrientationUtil.KEY_IPAD]);
+							if (pad != Orientation.None && !OrientationUtil.IsValidPair (pad))
+								result.AddWarning ("iPad orientations are not matched pairs (Info.plist)");
+						}
+					}
+				}   
+				
 				return result;
 			});
 		}
@@ -1087,8 +1103,14 @@ namespace MonoDevelop.IPhone
 				}
 			}
 			
-			if (result.Append (merge (conf, doc)).ErrorCount > 0)
+			try {
+				if (result.Append (merge (conf, doc)).ErrorCount > 0)
+					return result;
+			} catch (Exception ex) {
+				result.AddError ("Error merging Info.plist: " + ex.Message);
+				LoggingService.LogError ("Error merging Info.plist", ex);
 				return result;
+			}
 			
 			try {
 				EnsureDirectoryForFile (outPath);

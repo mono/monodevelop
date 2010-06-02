@@ -60,16 +60,12 @@ namespace MonoDevelop.IPhone.Gui
 	internal partial class IPhoneOptionsWidget : Gtk.Bin
 	{
 		bool badPlist;
-		ListStore orientationStore, ipadOrientationStore;
 
-		const string ORIENTATION = "UISupportedInterfaceOrientations";
-		const string ORIENTATION_IPAD = "UISupportedInterfaceOrientations~ipad";
-		
 		public IPhoneOptionsWidget ()
 		{
 			this.Build ();
-			supportedOrientationsCombo.Model = orientationStore = new ListStore (typeof (string), typeof (Orientation));
-			iPadOrientationsCombo.Model = ipadOrientationStore = new ListStore (typeof (string), typeof (Orientation));
+			supportedOrientationsCombo.Model = new ListStore (typeof (string), typeof (Orientation));
+			iPadOrientationsCombo.Model = new ListStore (typeof (string), typeof (Orientation));
 			targetDevicesCombo.Changed += HandleTargetDevicesComboChanged;
 		}
 
@@ -203,8 +199,8 @@ namespace MonoDevelop.IPhone.Gui
 				if (dict == null)
 					doc.Root = dict = new PropertyList.PlistDictionary ();
 				
-				var orientationArr = dict.TryGetValue (ORIENTATION) as PropertyList.PlistArray;
-				var ipadOrientationArr = dict.TryGetValue (ORIENTATION_IPAD) as PropertyList.PlistArray;
+				var orientationArr = dict.TryGetValue (OrientationUtil.KEY) as PropertyList.PlistArray;
+				var ipadOrientationArr = dict.TryGetValue (OrientationUtil.KEY_IPAD) as PropertyList.PlistArray;
 				
 				LoadOrientationsCombo (supportedOrientationsCombo, orientationArr);
 				LoadOrientationsCombo (iPadOrientationsCombo, ipadOrientationArr);
@@ -225,7 +221,7 @@ namespace MonoDevelop.IPhone.Gui
 			store.AppendValues (GettextCatalog.GetString ("Landscape"), Orientation.Landscape);
 			store.AppendValues (GettextCatalog.GetString ("Not specified"), Orientation.None);
 			
-			var o = ParseOrientation (values);
+			var o = OrientationUtil.Parse (values);
 			switch (o) {
 			case Orientation.Both:
 				combo.Active = 0;
@@ -254,7 +250,7 @@ namespace MonoDevelop.IPhone.Gui
 			if (store.GetIterFirst (out iter)) {
 				do {
 					if (i-- == 0)
-						return OrientationToString ((Orientation)store.GetValue (iter, 1));
+						return OrientationUtil.ToPlist ((Orientation)store.GetValue (iter, 1));
 				} while (store.IterNext (ref iter));
 			}
 			return null;
@@ -288,15 +284,15 @@ namespace MonoDevelop.IPhone.Gui
 				
 				var orientations = SaveOrientationsCombo (supportedOrientationsCombo);
 				if (orientations != null)
-					dict [ORIENTATION] = orientations;
+					dict [OrientationUtil.KEY] = orientations;
 				else
-					dict.Remove (ORIENTATION);
+					dict.Remove (OrientationUtil.KEY);
 				
 				var iPadOrientations = SaveOrientationsCombo (iPadOrientationsCombo);
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad && iPadOrientations != null)
-					dict [ORIENTATION_IPAD] = orientations;
+					dict [OrientationUtil.KEY_IPAD] = orientations;
 				else
-					dict.Remove (ORIENTATION_IPAD);
+					dict.Remove (OrientationUtil.KEY_IPAD);
 				
 				doc.WriteToFile (pf.FilePath);
 			} catch (Exception ex) {
@@ -310,57 +306,6 @@ namespace MonoDevelop.IPhone.Gui
 			if (s == null || s.Length != 0)
 				return s;
 			return null;
-		}
-		
-		//ignores invalid values
-		static Orientation ParseOrientation (PropertyList.PlistArray arr)
-		{
-			var o = Orientation.None;
-			if (arr == null)
-				return o;
-			foreach (PropertyList.PlistString s in arr) {
-				switch (s.Value) {
-				case "UIInterfaceOrientationPortrait":
-					o |= Orientation.Down;
-					break;
-				case "UIInterfaceOrientationPortraitUpsideDown":
-					o |= Orientation.Up;
-					break;
-				case "UIInterfaceOrientationLandscapeLeft":
-					o |= Orientation.Left;
-					break;
-				case "UIInterfaceOrientationLandscapeRight":
-					o |= Orientation.Right;
-					break;
-				}
-			}
-			return o;
-		}
-		
-		static PropertyList.PlistArray OrientationToString (Orientation o)
-		{
-			var arr = new PropertyList.PlistArray ();
-			if ((o & Orientation.Up) != 0)
-				arr.Add ("UIInterfaceOrientationPortrait");
-			if ((o & Orientation.Down) != 0)
-				arr.Add ("UIInterfaceOrientationPortraitUpsideDown");
-			if ((o & Orientation.Left) != 0)
-				arr.Add ("UIInterfaceOrientationLandscapeLeft");
-			if ((o & Orientation.Right) != 0)
-				arr.Add ("UIInterfaceOrientationLandscapeRight");
-			return arr.Count == 0? null : arr;
-		}
-		
-		[Flags]	
-		enum Orientation {
-			None  = 0,
-			Up    = 1 << 0, // UIInterfaceOrientationPortrait
-			Down  = 1 << 1, // UIInterfaceOrientationPortraitUpsideDown
-			Left  = 1 << 2, // UIInterfaceOrientationLandscapeLeft
-			Right = 1 << 3,  // UIInterfaceOrientationLandscapeRight
-			Portrait = Up | Down,
-			Landscape = Right | Left,
-			Both = Portrait | Landscape,
 		}
 	}
 }
