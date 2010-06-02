@@ -1,3 +1,9 @@
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/SelectionActions.cs: Fixed virtual space
+	  drawing.
+
 2010-06-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViActions.cs: Fix navigation in visual

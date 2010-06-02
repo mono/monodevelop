@@ -69,7 +69,7 @@ namespace Mono.TextEditor
 		
 		public static void EndSelection (TextEditorData data)
 		{
-			data.ExtendSelectionTo (data.Caret.Offset);
+			data.ExtendSelectionTo (data.Caret.Location);
 			data.Caret.AutoScrollToCaret = true;
 			data.Caret.PreserveSelection = false;
 		}
@@ -97,7 +97,7 @@ namespace Mono.TextEditor
 			
 			public void DataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
 			{
-				data.ExtendSelectionTo (data.Caret.Offset);
+				data.ExtendSelectionTo (data.Caret.Location);
 			}
 		}
 

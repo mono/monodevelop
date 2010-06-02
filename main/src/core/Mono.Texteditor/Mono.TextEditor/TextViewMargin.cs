@@ -1254,7 +1254,32 @@ namespace Mono.TextEditor
 					if (offset <= textEditor.preeditOffset && textEditor.preeditOffset < offset + length) {
 						index += textEditor.preeditString.Length;
 					}
-					if (index >= 0 && index < length) {
+					
+					if (Caret.Column > line.EditableLength) {
+						string virtualSpace = this.textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
+						LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
+						wrapper.LineChars = virtualSpace.ToCharArray ();
+						wrapper.Layout.SetText (virtualSpace);
+						int vy, vx;
+						wrapper.Layout.GetSize (out vx, out vy);
+						SetVisibleCaretPosition (win, ' ', (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
+						xPos = (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale);
+						
+						if (!isSelectionDrawn && (selectionEnd == line.Offset + line.EditableLength)) {
+							int startX;
+							int endX;
+							startX = xPos;
+							endX = (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale);
+							DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Rectangle (startX, y, endX - startX, textEditor.LineHeight), this.ColorStyle.Selection.BackgroundColor, true);
+						}
+						
+						if (DecorateLineBg != null)
+							DecorateLineBg (win, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
+						if (DecorateLineFg != null)
+							DecorateLineFg (win, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
+						wrapper.Dispose ();
+						pangoPosition += vx;
+					} else if (index >= 0 && index < length) {
 						curIndex = byteIndex = 0;
 						layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
 						char caretChar = Document.GetCharAt (caretOffset);
