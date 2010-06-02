@@ -116,11 +116,11 @@ namespace MonoDevelop.AspNet.Gui
 		LocalDocumentInfo localDocumentInfo;
 		DocumentInfo documentInfo;
 		
+		
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
 		{
 			ITextBuffer buf = this.Buffer;
-			
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
 			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
@@ -144,14 +144,14 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				return null;
 			}
-
+			
 			//non-xml tag completion
 			if (currentChar == '<' && !(Tracker.Engine.CurrentState is S.XmlFreeState)) {
 				var list = new CompletionDataList ();
 				AddAspBeginExpressions (list);
 				return list;
 			}
-
+			
 			if (!HasDoc || aspDoc.Info.DocType == null) {
 				//FIXME: get doctype from master page
 				DocType = null;
@@ -161,42 +161,58 @@ namespace MonoDevelop.AspNet.Gui
 				DocType.PublicFpi = matches.Groups["fpi"].Value;
 				DocType.Uri = matches.Groups["uri"].Value;
 			}
-			
 			//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
-				int start = Document.TextEditor.CursorPosition - Tracker.Engine.CurrentStateLength;
-				if (Document.TextEditor.GetCharAt (start) == '=') {
-					start++;
-				}
-				
-				string sourceText = Document.TextEditor.GetText (start, Document.TextEditor.CursorPosition);
-
-				var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
-				int line, col;
- 				Document.TextEditor.GetLineColumnFromPosition (start, out line, out col);
-				loc.EndLine = loc.BeginLine = line;
-				loc.EndColumn = loc.BeginColumn = col;
-				
-				localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, true);
-				
-				var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
-				viewContent.Project = Document.Project;
-				viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
-				
-				viewContent.Text = localDocumentInfo.LocalDocument;
-				viewContent.GetTextEditorData ().Caret.Offset = localDocumentInfo.CaretPosition;
-				var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
-				workbenchWindow.ViewContent = viewContent;
-				hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
-				
-				hiddenDocument.ParsedDocument = localDocumentInfo.ParsedLocalDocument;
-				
+				InitializeCodeCompletion ();
 				return documentBuilder.HandleCompletion (hiddenDocument, documentInfo, localDocumentInfo, 
 					 new AspProjectDomWrapper (documentInfo), currentChar, ref triggerWordLength);
 			}
 			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
+		}
+		
+		public void InitializeCodeCompletion ()
+		{
+			int caretOffset = Document.TextEditorData.Caret.Offset;
+			int start = caretOffset - Tracker.Engine.CurrentStateLength;
+			if (Document.TextEditor.GetCharAt (start) == '=') 
+				start++;
+			
+			string sourceText = Document.TextEditor.GetText (start, caretOffset);
+			string textAfterCaret = Document.TextEditor.GetText (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start);
+			
+			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
+			var docLoc = Document.TextEditorData.Document.OffsetToLocation (start);
+			loc.EndLine = loc.BeginLine = docLoc.Line;
+			loc.EndColumn = loc.BeginColumn = docLoc.Column;
+			
+			localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, textAfterCaret, true);
+			
+			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
+			viewContent.Project = Document.Project;
+			viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
+			
+			viewContent.Text = localDocumentInfo.LocalDocument;
+			viewContent.GetTextEditorData ().Caret.Offset = localDocumentInfo.CaretPosition;
+			Console.WriteLine (viewContent.GetTextEditorData ().Document.GetCharAt (localDocumentInfo.CaretPosition));
+			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
+			workbenchWindow.ViewContent = viewContent;
+			hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
+			
+			hiddenDocument.ParsedDocument = localDocumentInfo.ParsedLocalDocument;
+		}
+		
+		
+		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		{
+			//completion for ASP.NET expressions
+			// TODO: Detect <script> state here !!!
+			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
+				InitializeCodeCompletion ();
+				return documentBuilder.HandlePopupCompletion (hiddenDocument, documentInfo, localDocumentInfo, new AspProjectDomWrapper (documentInfo));
+			}
+			return base.CodeCompletionCommand (completionContext);
 		}
 		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)

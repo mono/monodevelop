@@ -1,3 +1,9 @@
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs: Worked
+	  on ASP.NET completion.
+
 2010-05-31  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.AspNet.csproj: Don't require a specific M.A

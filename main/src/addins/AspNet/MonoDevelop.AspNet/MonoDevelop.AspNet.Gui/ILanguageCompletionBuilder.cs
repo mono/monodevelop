@@ -141,9 +141,11 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ParsedDocument BuildDocument (DocumentInfo info, TextEditorData textEditorData);
 		
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, 
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, string textAfterCaret, 
 			bool isExpression);
 		
+		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info, 
+			LocalDocumentInfo localInfo, ProjectDom dom);
 		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info, 
 			LocalDocumentInfo localInfo, ProjectDom dom, char currentChar, ref int triggerWordLength);
 		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
