@@ -111,12 +111,25 @@ namespace Mono.TextEditor
 
 		public static void EndLineSelection (TextEditorData data)
 		{
-			int fromLine = data.MainSelection.Anchor.Line,
-			    toLine = data.Caret.Line;
-			LineSegment toSegment = data.Document.GetLine (toLine);
-			int toOffset = (toLine < fromLine)? toSegment.Offset: toSegment.EndOffset;
+			int fromLine = data.MainSelection.Anchor.Line;
+			int toLine = data.Caret.Line;
+			var toSegment = data.Document.GetLine (toLine);
 			
-			data.ExtendSelectionTo (toOffset);
+			//flip the anchor if pivoting around the origin line
+			if (fromLine == toLine + 1) {
+				if ((fromLine - data.MainSelection.Lead.Line) != 2) {
+					var fromSegment = data.Document.GetLine (fromLine);
+					data.SetSelection (fromSegment.EndOffset, toSegment.Offset);
+				} else {
+					data.SetSelection (toSegment.Offset, toSegment.EndOffset);
+				}
+			}
+			//else just extend the selection
+			else {
+				int toOffset = (toLine < fromLine)? toSegment.Offset: toSegment.EndOffset;
+				data.ExtendSelectionTo (toOffset);
+			}
+			                   
 			data.Caret.PreserveSelection = false;
 		}
 

@@ -1,3 +1,11 @@
+2010-06-02  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViActions.cs: Fix navigation in visual
+	  mode.
+
+	* Mono.TextEditor/SelectionActions.cs: Fix pivot around origin
+	  for line selection actions.
+
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/InsertionCursorEditMode.cs: Corrected
