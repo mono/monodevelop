@@ -76,15 +76,18 @@ namespace Mono.TextEditor
 			offset += str.Length;
 		}
 		
-		
 		public void Insert (TextEditor editor, string text)
 		{
 			int offset = editor.Document.LocationToOffset (Location);
 			editor.Document.BeginAtomicUndo ();
 			InsertNewLine (editor, LineBefore, ref offset);
-			editor.Insert (offset, text);
-			offset += text.Length;
+			LineSegment line = editor.Document.GetLineByOffset (offset);
+			string indent = editor.Document.GetLineIndent (line) ?? "";
+			editor.Replace (line.Offset, indent.Length, text);
+			offset = line.Offset + text.Length;
 			InsertNewLine (editor, LineAfter, ref offset);
+			if (!string.IsNullOrEmpty (indent))
+				editor.Insert (offset, indent);
 			editor.Document.EndAtomicUndo ();
 		}
 	}
