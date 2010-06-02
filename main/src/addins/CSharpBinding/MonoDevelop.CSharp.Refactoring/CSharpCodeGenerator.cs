@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static void AppendReturnType (StringBuilder result, IType implementingType, IReturnType type)
 		{
 			var shortType = implementingType.CompilationUnit.ShortenTypeName (type, implementingType.BodyRegion.IsEmpty ? implementingType.Location : implementingType.BodyRegion.Start);
-			result.Append (ambience.GetString (shortType, OutputFlags.IncludeGenerics));
+			result.Append (ambience.GetString (shortType, OutputFlags.IncludeGenerics | OutputFlags.UseFullName));
 		}
 		
 		/*
