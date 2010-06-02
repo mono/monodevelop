@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		public LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData data,
-		                                             string expressionText, bool isExpression)
+		                                             string expressionText, string textAfterCaret, bool isExpression)
 		{
 			var result = new StringBuilder ();
 			
@@ -93,6 +93,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			result.Append (expressionText);
 			int caretPosition = result.Length;
+			result.Append (textAfterCaret);
+			
 			result.AppendLine ();
 			result.AppendLine ("}");
 			result.AppendLine ("}");
@@ -104,6 +106,14 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 		
+		public ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
+			LocalDocumentInfo localInfo, ProjectDom dom)
+		{
+			CodeCompletionContext codeCompletionContext;
+			using (var completion = CreateCompletion (document, info, localInfo, dom, out codeCompletionContext)) {
+				return completion.CodeCompletionCommand (codeCompletionContext);
+			}
+		}
 		
 		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
 			LocalDocumentInfo localInfo, ProjectDom dom, char currentChar, ref int triggerWordLength)
