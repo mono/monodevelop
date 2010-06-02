@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using System.Text;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -103,22 +104,11 @@ namespace MonoDevelop.CodeGeneration
 				return char.ToUpper (member.Name[0]) + member.Name.Substring (1);
 			}
 			
-			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
-				foreach (IField field in includedMembers) {
-					PropertyDeclaration propertyDeclaration = new PropertyDeclaration (ICSharpCode.NRefactory.Ast.Modifiers.Public, null, CreatePropertyName (field), null);
-					propertyDeclaration.TypeReference = field.ReturnType.ConvertToTypeReference ();
-					propertyDeclaration.GetRegion = new PropertyGetRegion (new BlockStatement (), null);
-					MemberReferenceExpression memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), field.Name);
-					propertyDeclaration.GetRegion.Block.Children.Add (new ReturnStatement (memberReference));
-					
-					if (!ReadOnly) {
-						propertyDeclaration.SetRegion = new PropertySetRegion (new BlockStatement (), null);
-						AssignmentExpression assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression ("value"));
-						propertyDeclaration.SetRegion.Block.Children.Add (new ExpressionStatement (assign));
-					}
-					yield return propertyDeclaration;
-				}
+				CodeGenerator generator = CodeGenerator.CreateGenerator (Options.Document.TextEditorData.Document.MimeType);
+				foreach (IField field in includedMembers)
+					yield return generator.CreateFieldEncapsulation (Options.EnclosingType, field, CreatePropertyName (field), MonoDevelop.Projects.Dom.Modifiers.Public, ReadOnly);
 			}
 		}
 	}

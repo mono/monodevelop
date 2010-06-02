@@ -423,7 +423,6 @@ namespace MonoDevelop.Refactoring {
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType);
-					generator.IndentLevel = HelperMethods.CalculateBodyIndentLevel (declaringType);
 					StringBuilder code = new StringBuilder ();
 					for (int j = 0; j < data.Count; j++) {
 						if (j > 0) {
@@ -431,7 +430,7 @@ namespace MonoDevelop.Refactoring {
 							code.AppendLine ();
 						}
 						var f = data[j];
-						code.Append (generator.CreateFieldEncapsulation (f.Field, f.PropertyName, f.Modifiers, f.ReadOnly));
+						code.Append (generator.CreateFieldEncapsulation (declaringType, f.Field, f.PropertyName, f.Modifiers, f.ReadOnly));
 					}
 					args.InsertionPoint.Insert (editor, code.ToString ());
 				}

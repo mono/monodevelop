@@ -94,7 +94,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
 				foreach (IMember member in includedMembers) {
 					MethodDeclaration methodDeclaration = new MethodDeclaration ();
@@ -120,7 +120,7 @@ namespace MonoDevelop.CodeGeneration
 					arguments.Add (new IdentifierExpression (invokeMethod.Parameters[1].Name));
 					ifStatement.TrueStatement.Add (new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments)));
 					methodDeclaration.Body.AddChild (ifStatement);
-					yield return methodDeclaration;
+					yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 				}
 			}
 		}

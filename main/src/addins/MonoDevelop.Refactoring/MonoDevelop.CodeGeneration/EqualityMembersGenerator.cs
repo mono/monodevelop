@@ -89,7 +89,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
 				// Genereate Equals
 				MethodDeclaration methodDeclaration = new MethodDeclaration ();
@@ -134,7 +134,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 
 				methodDeclaration.Body.AddChild (new ReturnStatement (binOp));
-				yield return methodDeclaration;
+				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 
 				methodDeclaration = new MethodDeclaration ();
 				methodDeclaration.Name = "GetHashCode";
@@ -162,7 +162,7 @@ namespace MonoDevelop.CodeGeneration
 				uncheckedBlock.AddChild (new ReturnStatement (binOp));
 
 				methodDeclaration.Body.AddChild (new UncheckedStatement (uncheckedBlock));
-				yield return methodDeclaration;
+				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
 			}
 		}
 	}

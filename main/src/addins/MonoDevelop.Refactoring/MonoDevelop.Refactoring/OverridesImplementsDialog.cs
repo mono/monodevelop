@@ -241,7 +241,6 @@ namespace MonoDevelop.Refactoring
 			try {
 				StringBuilder code = new StringBuilder ();
 				CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType);
-				generator.IndentLevel = HelperMethods.CalculateBodyIndentLevel (this.cls);
 				
 				foreach (KeyValuePair<IType, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
 					if (code.Length > 0) {
@@ -256,7 +255,7 @@ namespace MonoDevelop.Refactoring
 							curImpl.AppendLine ();
 							curImpl.AppendLine ();
 						}
-						curImpl.Append (generator.CreateMemberImplementation (pair.Key, pair.Value != null));
+						curImpl.Append (generator.CreateMemberImplementation (this.cls, pair.Key, pair.Value != null));
 					}
 					if (kvp.Key.ClassType == ClassType.Interface) {
 						code.Append (generator.WrapInRegions (kvp.Key.Name + " implementation", curImpl.ToString ()));

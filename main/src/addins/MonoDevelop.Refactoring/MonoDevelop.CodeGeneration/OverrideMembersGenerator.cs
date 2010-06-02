@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -117,66 +118,13 @@ namespace MonoDevelop.CodeGeneration
 			
 			static readonly ICSharpCode.NRefactory.Ast.INode throwNotImplemented = new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null));
 			
-			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
-				foreach (IMember member in includedMembers) {
-					ICSharpCode.NRefactory.Ast.Modifiers modifier = (((ICSharpCode.NRefactory.Ast.Modifiers)member.Modifiers) & ~(ICSharpCode.NRefactory.Ast.Modifiers.Abstract | ICSharpCode.NRefactory.Ast.Modifiers.Virtual));
-					bool isInterfaceMember = member.DeclaringType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
-					if (!isInterfaceMember)
-						modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Override;
-					if (isInterfaceMember)
-						modifier |= ICSharpCode.NRefactory.Ast.Modifiers.Public;
-					
-					MemberReferenceExpression baseReference = new MemberReferenceExpression (new BaseReferenceExpression (), member.Name);
-					
-					if (member is IMethod) {
-						IMethod method = (IMethod)member;
-						MethodDeclaration methodDeclaration = new MethodDeclaration () { 
-							Name = method.Name,
-							TypeReference = member.ReturnType.ConvertToTypeReference (),
-							Modifier = modifier,
-							Body = new BlockStatement ()
-						};
-						
-						List<Expression> arguments = new List<Expression> ();
-						foreach (IParameter parameter in method.Parameters) {
-							methodDeclaration.Parameters.Add (new ParameterDeclarationExpression (Options.ShortenTypeName (parameter.ReturnType.ConvertToTypeReference ()), parameter.Name, GetModifier (parameter)));
-							arguments.Add (new DirectionExpression (GetDirection (parameter), new IdentifierExpression (parameter.Name)));
-						}
-						
-						if (isInterfaceMember) {
-							methodDeclaration.Body.AddChild (throwNotImplemented);
-						} else {
-							InvocationExpression baseInvocation = new InvocationExpression (baseReference, arguments);
-							if (method.ReturnType.FullName == "System.Void") {
-								methodDeclaration.Body.AddChild (new ExpressionStatement (baseInvocation));
-							} else {
-								methodDeclaration.Body.AddChild (new ReturnStatement (baseInvocation));
-							}
-						}
-						yield return methodDeclaration;
-					}
-					
-					if (member is IProperty) {
-						IProperty property = (IProperty)member;
-						PropertyDeclaration propertyDeclaration = new PropertyDeclaration (modifier, null, member.Name, null);
-						propertyDeclaration.TypeReference = Options.ShortenTypeName (member.ReturnType.ConvertToTypeReference ());
-						if (property.HasGet) {
-							BlockStatement block = new BlockStatement ();
-							block.AddChild (isInterfaceMember ? throwNotImplemented : new ReturnStatement (baseReference));
-							propertyDeclaration.GetRegion = new PropertyGetRegion (block, null);
-						}
-						if (property.HasSet) {
-							BlockStatement block = new BlockStatement ();
-							block.AddChild (isInterfaceMember ? throwNotImplemented : new ExpressionStatement (new AssignmentExpression (baseReference, AssignmentOperatorType.Assign, new IdentifierExpression ("value"))));
-							propertyDeclaration.SetRegion = new PropertySetRegion (block, null);
-						}
-						yield return propertyDeclaration;
-					}
-				}
+				CodeGenerator generator = CodeGenerator.CreateGenerator (Options.Document.TextEditorData.Document.MimeType);
 				
+				foreach (IMember member in includedMembers) 
+					yield return generator.CreateMemberImplementation (Options.EnclosingType, member, false);
 			}
-
 		}
 	}
 }

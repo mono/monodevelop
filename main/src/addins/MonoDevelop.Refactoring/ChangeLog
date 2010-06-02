@@ -1,5 +1,24 @@
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/HelperMethods.cs:
+	* MonoDevelop.CodeGeneration/ToStringGenerator.cs:
+	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:
+	* MonoDevelop.CodeGeneration/NullCheckGenerator.cs:
+	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:
+	* MonoDevelop.Refactoring/EncapsulateFieldDialog.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.Refactoring/OverridesImplementsDialog.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs:
+	* MonoDevelop.CodeGeneration/RaiseEventMethodGenerator.cs:
+	* MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:
+	  Code generator get's now used by code completion auto
+	  generation & insert code feature.
+
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring/EncapsulateFieldDialog.cs:
 	* MonoDevelop.Refactoring/OverridesImplementsDialog.cs: Worked

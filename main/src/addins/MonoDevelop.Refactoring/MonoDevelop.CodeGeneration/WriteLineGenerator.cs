@@ -124,7 +124,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
 				StringBuilder format = new StringBuilder ();
 				int i = 0;
@@ -142,8 +142,7 @@ namespace MonoDevelop.CodeGeneration
 				foreach (IBaseMember member in includedMembers) {
 					invocationExpression.Arguments.Add (new IdentifierExpression (member.Name));
 				}
-				
-				yield return new ExpressionStatement (invocationExpression);
+				yield return indent + astProvider.OutputNode (this.Options.Dom, new ExpressionStatement (invocationExpression), indent);
 			}
 		}
 	}

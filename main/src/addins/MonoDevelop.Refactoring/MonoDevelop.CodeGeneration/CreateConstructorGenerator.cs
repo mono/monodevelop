@@ -98,7 +98,7 @@ namespace MonoDevelop.CodeGeneration
 				return member.Name;
 			}
 			
-			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
 				List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression> ();
 				foreach (IMember member in includedMembers) {
@@ -112,7 +112,7 @@ namespace MonoDevelop.CodeGeneration
 					AssignmentExpression assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
 					constructorDeclaration.Body.AddChild (new ExpressionStatement (assign));
 				}
-				yield return constructorDeclaration;
+				yield return astProvider.OutputNode (this.Options.Dom, constructorDeclaration, indent);
 			}
 		}
 	}

@@ -34,6 +34,7 @@ using MonoDevelop;
 using MonoDevelop.CodeGeneration;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -89,10 +90,10 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<ICSharpCode.NRefactory.Ast.INode> GenerateCode (List<IBaseMember> includedMembers)
+			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
 				foreach (var member in includedMembers) {
-					yield return new IfElseStatement (
+					yield return indent + astProvider.OutputNode (this.Options.Dom, new IfElseStatement (
 						new BinaryOperatorExpression (
 					    	new IdentifierExpression (member.Name),
 					        BinaryOperatorType.Equality,
@@ -103,7 +104,7 @@ namespace MonoDevelop.CodeGeneration
 					            new List<Expression> { new PrimitiveExpression (member.Name) }
 							)
 					    )
-					);
+					), indent);
 				}
 			}
 		}

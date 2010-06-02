@@ -69,7 +69,6 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					CodeGenerator generator = CodeGenerator.CreateGenerator (options.GetTextEditorData ().Document.MimeType);
-					generator.IndentLevel = HelperMethods.CalculateBodyIndentLevel (declaringType);
 					args.InsertionPoint.Insert (editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, false));
 				}
 			};
