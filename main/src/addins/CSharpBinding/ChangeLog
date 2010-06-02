@@ -1,6 +1,11 @@
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs:
+	  Corrected base call.
+
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs:
 	  Corrected type name output.
 
 2010-06-02  Mike Krüger  <mkrueger@novell.com>

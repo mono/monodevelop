@@ -297,6 +297,8 @@ namespace MonoDevelop.CSharp.Refactoring
 					AppendNotImplementedException (result, options);
 				} else {
 					generator.AppendIndent (result);
+					if (method.ReturnType.FullName != DomReturnType.Void.FullName)
+						result.Append ("return ");
 					result.Append ("base.");
 					result.Append (method.Name);
 					if (generator.policy.BeforeMethodCallParentheses)
