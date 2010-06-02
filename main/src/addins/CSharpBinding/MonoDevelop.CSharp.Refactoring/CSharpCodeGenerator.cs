@@ -36,30 +36,33 @@ namespace MonoDevelop.CSharp.Refactoring
 {
 	public class CSharpCodeGenerator : MonoDevelop.Projects.CodeGeneration.CodeGenerator
 	{
+		static CSharpAmbience ambience = new CSharpAmbience ();
+		
 		OutputVisitor visitor;
+		CSharpFormattingPolicy policy;
 		
 		public CSharpCodeGenerator ()
 		{
 			visitor = new OutputVisitor (this);
+			
+			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 		}
 		
-	
+		
 		class CodeGenerationOptions
 		{
 			public bool ExplicitDeclaration { get; set; }
-			public CSharpFormattingPolicy Policy { get; set; }
 		}
-		
-		
 		
 		public override string WrapInRegions (string regionName, string text)
 		{
 			StringBuilder result = new StringBuilder ();
-			result.Append (OutputVisitor.GetIndent (IndentLevel));
+			AppendIndent (result);
 			result.Append ("#region ");
 			result.AppendLine (regionName);
 			result.AppendLine (text);
-			result.Append (OutputVisitor.GetIndent (IndentLevel));
+			AppendIndent (result);
 			result.Append ("#endregion");
 			return result.ToString ();
 		}
@@ -70,15 +73,75 @@ namespace MonoDevelop.CSharp.Refactoring
 				ExplicitDeclaration = explicitDeclaration
 			};
 			
-			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			options.Policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-			
 			return member.AcceptVisitor (visitor, options);
 		}
 		
+		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
+		{
+			switch (braceStyle) {
+			case BraceStyle.EndOfLine:
+				result.AppendLine (" {");
+				break;
+			case BraceStyle.EndOfLineWithoutSpace:
+				result.AppendLine ("{");
+				break;
+			case BraceStyle.NextLine:
+				result.AppendLine ();
+				AppendIndent (result);
+				result.AppendLine ("{");
+				break;
+			case BraceStyle.NextLineShifted:
+				result.AppendLine ();
+				result.Append (GetIndent (IndentLevel + 1));
+				result.AppendLine ("{");
+				break;
+			case BraceStyle.NextLineShifted2:
+				result.AppendLine ();
+				result.Append (GetIndent (IndentLevel + 1));
+				result.AppendLine ("{");
+				IndentLevel++;
+				break;
+			default:
+				goto case BraceStyle.NextLine;
+			}
+			IndentLevel++;
+		}
+		
+		void AppendBraceEnd (StringBuilder result, BraceStyle braceStyle)
+		{
+			switch (braceStyle) {
+			case BraceStyle.EndOfLineWithoutSpace:
+			case BraceStyle.NextLine:
+			case BraceStyle.EndOfLine:
+				IndentLevel --;
+				AppendIndent (result);
+				result.Append ("}");
+				break;
+			case BraceStyle.NextLineShifted:
+				AppendIndent (result);
+				result.Append ("}");
+				IndentLevel--;
+				break;
+			case BraceStyle.NextLineShifted2:
+				IndentLevel--;
+				AppendIndent (result);
+				result.Append ("}");
+				IndentLevel--;
+				break;
+			default:
+				goto case BraceStyle.NextLine;
+			}
+		}
+		
+		void AppendIndent (StringBuilder result)
+		{
+			result.Append (GetIndent (IndentLevel));
+		}
+		
+			
+		
 		class OutputVisitor : AbstractDomVistitor<CodeGenerationOptions, string>
 		{
-			static CSharpAmbience ambience = new CSharpAmbience ();
 			static string indent = "\t";
 			CSharpCodeGenerator generator;
 			
@@ -87,15 +150,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				this.generator = generator;
 			}
 			
-			public void AppendIndent (StringBuilder result)
-			{
-				result.Append (GetIndent (generator.IndentLevel));
-			}
-			
 			public override string Visit (IField field, CodeGenerationOptions options)
 			{
 				StringBuilder result = new StringBuilder ();
-				AppendIndent (result);
+				generator.AppendIndent (result);
 				result.Append (ambience.GetString (field.Modifiers));
 				result.Append (" ");
 				result.Append (ambience.GetString (field.ReturnType, OutputFlags.IncludeGenerics));
@@ -111,7 +169,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				
 				AppendModifiers (result, options, evt);
 				
-				result.Append (" event ");
+				result.Append ("event ");
 				result.Append (ambience.GetString (evt.ReturnType, OutputFlags.IncludeGenerics));
 				result.Append (" ");
 				if (options.ExplicitDeclaration) {
@@ -120,83 +178,28 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append (evt.Name);
 				if (options.ExplicitDeclaration) {
-					AppendBraceStart (result, options.Policy.EventBraceStyle);
-					AppendIndent (result);
+					generator.AppendBraceStart (result, generator.policy.EventBraceStyle);
+					generator.AppendIndent (result);
 					result.Append ("add");
-					AppendBraceStart (result, options.Policy.EventAddBraceStyle);
-					AppendIndent (result);
+					generator.AppendBraceStart (result, generator.policy.EventAddBraceStyle);
+					generator.AppendIndent (result);
 					result.AppendLine ("// TODO");
-					AppendBraceEnd (result, options.Policy.EventAddBraceStyle);
+					generator.AppendBraceEnd (result, generator.policy.EventAddBraceStyle);
 					
-					AppendIndent (result);
+					generator.AppendIndent (result);
 					result.Append ("remove");
-					AppendBraceStart (result, options.Policy.EventRemoveBraceStyle);
-					AppendIndent (result);
+					generator.AppendBraceStart (result, generator.policy.EventRemoveBraceStyle);
+					generator.AppendIndent (result);
 					result.AppendLine ("// TODO");
-					AppendBraceEnd (result, options.Policy.EventRemoveBraceStyle);
-					AppendBraceEnd (result, options.Policy.EventBraceStyle);
+					generator.AppendBraceEnd (result, generator.policy.EventRemoveBraceStyle);
+					generator.AppendBraceEnd (result, generator.policy.EventBraceStyle);
 				} else {
 					result.Append (";");
 				}
 				return result.ToString ();
 			}
 			
-			public void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
-			{
-				switch (braceStyle) {
-				case BraceStyle.EndOfLine:
-					result.AppendLine (" {");
-					break;
-				case BraceStyle.EndOfLineWithoutSpace:
-					result.AppendLine ("{");
-					break;
-				case BraceStyle.NextLine:
-					result.AppendLine ();
-					AppendIndent (result);
-					result.AppendLine ("{");
-					break;
-				case BraceStyle.NextLineShifted:
-					result.AppendLine ();
-					result.Append (GetIndent (generator.IndentLevel + 1));
-					result.AppendLine ("{");
-					break;
-				case BraceStyle.NextLineShifted2:
-					result.AppendLine ();
-					result.Append (GetIndent (generator.IndentLevel + 1));
-					result.AppendLine ("{");
-					generator.IndentLevel++;
-					break;
-				default:
-					goto case BraceStyle.NextLine;
-				}
-				generator.IndentLevel++;
-			}
-			
-			public void AppendBraceEnd (StringBuilder result, BraceStyle braceStyle)
-			{
-				switch (braceStyle) {
-				case BraceStyle.EndOfLineWithoutSpace:
-				case BraceStyle.NextLine:
-				case BraceStyle.EndOfLine:
-					generator.IndentLevel --;
-					AppendIndent (result);
-					result.Append ("}");
-					break;
-				case BraceStyle.NextLineShifted:
-					AppendIndent (result);
-					result.Append ("}");
-					generator.IndentLevel--;
-					break;
-				case BraceStyle.NextLineShifted2:
-					generator.IndentLevel--;
-					AppendIndent (result);
-					result.Append ("}");
-					generator.IndentLevel--;
-					break;
-				default:
-					goto case BraceStyle.NextLine;
-				}
-			}
+		
 			
 			public override string Visit (IMethod method, CodeGenerationOptions options)
 			{
@@ -219,24 +222,24 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					result.Append (">");
 				}
-				if (options.Policy.BeforeMethodDeclarationParentheses)
+				if (generator.policy.BeforeMethodDeclarationParentheses)
 					result.Append (" ");
 				result.Append ("(");
 				AppendParameterList (result, method.Parameters);
 				result.Append (")");
 				
-				AppendBraceStart (result, options.Policy.MethodBraceStyle);
+				generator.AppendBraceStart (result, generator.policy.MethodBraceStyle);
 				if (IsMonoTouchModelMember (method)) {
-					AppendIndent (result);
+					generator.AppendIndent (result);
 					result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
 				} else if (method.IsAbstract || method.DeclaringType.ClassType == ClassType.Interface) {
-					AppendIndent (result);
+					generator.AppendIndent (result);
 					result.AppendLine ("throw new System.NotImplementedException ();");
 				} else {
-					AppendIndent (result);
+					generator.AppendIndent (result);
 					result.Append ("base.");
 					result.Append (method.Name);
-					if (options.Policy.BeforeMethodCallParentheses)
+					if (generator.policy.BeforeMethodCallParentheses)
 						result.Append (" ");
 					result.Append ("(");
 					for (int i = 0; i < method.Parameters.Count; i++) {
@@ -250,9 +253,9 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append ("ref ");
 						result.Append (p.Name);
 					}
-					result.Append (");");
+					result.AppendLine (");");
 				}
-				AppendBraceEnd (result, options.Policy.MethodBraceStyle);
+				generator.AppendBraceEnd (result, generator.policy.MethodBraceStyle);
 				return result.ToString ();
 			}
 			
@@ -275,14 +278,18 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 			
-			public void AppendModifiers (StringBuilder result, CSharpCodeGenerator.CodeGenerationOptions options, IMember member)
+			void AppendModifiers (StringBuilder result, CSharpCodeGenerator.CodeGenerationOptions options, IMember member)
 			{
-				AppendIndent (result);
+				generator.AppendIndent (result);
 				if (member.DeclaringType.ClassType == ClassType.Interface) {
 					if (!options.ExplicitDeclaration)
 						result.Append ("public ");
 				} else {
-					result.Append (ambience.GetString (member.Modifiers));
+					Modifiers modifiers = member.Modifiers;
+					if ((modifiers & Modifiers.Virtual) == Modifiers.Virtual) {
+						modifiers = modifiers & ~Modifiers.Virtual | Modifiers.Override;
+					}
+					result.Append (ambience.GetString (modifiers));
 					result.Append (" ");
 				}
 			}
@@ -304,45 +311,48 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					result.Append (property.Name);
 				}
-				AppendBraceStart (result, options.Policy.PropertyBraceStyle);
+				generator.AppendBraceStart (result, generator.policy.PropertyBraceStyle);
 				if (property.HasGet) {
-					AppendIndent (result);
+					generator.AppendIndent (result);
 					result.Append ("get");
-					AppendBraceStart (result, options.Policy.PropertyGetBraceStyle);
+					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (property)) {
-						AppendIndent (result);
+						generator.AppendIndent (result);
 						result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
 					} else if (property.IsAbstract || property.DeclaringType.ClassType == ClassType.Interface) {
-						AppendIndent (result);
+						generator.AppendIndent (result);
 						result.AppendLine ("throw new System.NotImplementedException ();");
 					} else {
-						AppendIndent (result);
+						generator.AppendIndent (result);
 						result.Append ("return base.");
 						result.Append (property.Name);
 						result.AppendLine ();
 					}
-					AppendBraceEnd (result, options.Policy.PropertyGetBraceStyle);
+					generator.AppendBraceEnd (result, generator.policy.PropertyGetBraceStyle);
+					result.AppendLine ();
 				}
+				
 				if (property.HasSet) {
-					AppendIndent (result);
+					generator.AppendIndent (result);
 					result.Append ("set");
-					AppendBraceStart (result, options.Policy.PropertyGetBraceStyle);
+					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (property)) {
-						AppendIndent (result);
+						generator.AppendIndent (result);
 						result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
 					} else if (property.IsAbstract || property.DeclaringType.ClassType == ClassType.Interface) {
-						AppendIndent (result);
+						generator.AppendIndent (result);
 						result.AppendLine ("throw new System.NotImplementedException ();");
 					} else {
-						AppendIndent (result);
+						generator.AppendIndent (result);
 						result.Append ("base.");
 						result.Append (property.Name);
 						result.Append (" = value;");
 						result.AppendLine ();
 					}
-					AppendBraceEnd (result, options.Policy.PropertyGetBraceStyle);
+					generator.AppendBraceEnd (result, generator.policy.PropertyGetBraceStyle);
+					result.AppendLine ();
 				}
-				AppendBraceEnd (result, options.Policy.PropertyBraceStyle);
+				generator.AppendBraceEnd (result, generator.policy.PropertyBraceStyle);
 				return result.ToString ();
 			}
 			
@@ -352,11 +362,52 @@ namespace MonoDevelop.CSharp.Refactoring
 					return false;
 				return member.DeclaringType.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.FullName == "MonoTouch.Foundation.ModelAttribute");
 			}
-			
-			internal static string GetIndent (int indentLevel)
-			{
-				return new string ('\t', indentLevel);
-			}
 		}
+	
+		internal static string GetIndent (int indentLevel)
+		{
+			return new string ('\t', indentLevel);
+		}
+		
+		public override string CreateFieldEncapsulation (IField field, string propertyName, Modifiers modifiers, bool readOnly)
+		{
+			StringBuilder result = new StringBuilder ();
+			AppendIndent (result);
+			
+			if (modifiers != Modifiers.None) {
+				result.Append (ambience.GetString (modifiers));
+				result.Append (" ");
+			}
+			result.Append (ambience.GetString (field.ReturnType, OutputFlags.IncludeGenerics));
+			result.Append (" ");
+			result.Append (propertyName);
+			AppendBraceStart (result, policy.PropertyBraceStyle);
+			AppendIndent (result);
+			
+			result.Append ("get");
+			AppendBraceStart (result, policy.PropertyGetBraceStyle);
+			AppendIndent (result);
+			result.Append ("return this.");
+			result.Append (field.Name);
+			result.AppendLine (";");
+			AppendBraceEnd (result, policy.PropertyGetBraceStyle);
+			result.AppendLine ();
+
+			if (!readOnly) {
+				AppendIndent (result);
+				result.Append ("set");
+				AppendBraceStart (result, policy.PropertyGetBraceStyle);
+				AppendIndent (result);
+				result.Append (field.Name);
+				result.AppendLine (" = value;");
+				AppendBraceEnd (result, policy.PropertyGetBraceStyle);
+				result.AppendLine ();
+			}
+			
+			AppendBraceEnd (result, policy.PropertyBraceStyle);
+			return result.ToString ();
+		}
+
+		
 	}
 }
