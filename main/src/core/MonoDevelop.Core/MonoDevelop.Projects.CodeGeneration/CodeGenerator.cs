@@ -65,13 +65,43 @@ namespace MonoDevelop.Projects.CodeGeneration
 			});
 		}
 		
-		public int IndentLevel {
+		protected int IndentLevel {
 			get;
 			set;
 		}
 		
+		public CodeGenerator ()
+		{
+			IndentLevel = -1;
+		}
+		
+		static int CalculateBodyIndentLevel (IType declaringType)
+		{
+			int indentLevel = 0;
+			IType t = declaringType;
+			do {
+				indentLevel++;
+				t = t.DeclaringType;
+			} while (t != null);
+			DomLocation lastLoc = DomLocation.Empty;
+			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.Region.Contains (declaringType.Location))) {
+				if (lastLoc == us.Region.Start)
+					continue;
+				lastLoc = us.Region.Start;
+				indentLevel++;
+			}
+			return indentLevel;
+		}
+		
+		protected void SetIndentTo (IType implementingType)
+		{
+			if (IndentLevel < 0)
+				IndentLevel = CalculateBodyIndentLevel (implementingType);
+		}
+		
 		public string CreateInterfaceImplementation (IType implementingType, IType interfaceType, bool explicitly)
 		{
+			SetIndentTo (implementingType);
 			StringBuilder result = new StringBuilder ();
 			foreach (IType baseInterface in interfaceType.SourceProjectDom.GetInheritanceTree (interfaceType)) {
 				if (baseInterface.FullName == DomReturnType.Object.FullName)
@@ -159,7 +189,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				} else {
 					first = false;
 				}
-				result.Append (CreateMemberImplementation (pair.Key, pair.Value));
+				result.Append (CreateMemberImplementation (implementingType, pair.Key, pair.Value));
 			}
 			
 			return result.ToString ();
@@ -176,7 +206,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		}
 		
 		public abstract string WrapInRegions (string regionName, string text);
-		public abstract string CreateMemberImplementation (IMember member, bool explicitDeclaration);
-		public abstract string CreateFieldEncapsulation (IField field, string propertyName, Modifiers modifiers, bool readOnly);
+		public abstract string CreateMemberImplementation (IType implementingType, IMember member, bool explicitDeclaration);
+		public abstract string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, Modifiers modifiers, bool readOnly);
 	}
 }

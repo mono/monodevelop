@@ -1,5 +1,11 @@
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Code
+	  generator get's now used by code completion auto generation
+	  & insert code feature.
+
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Worked
 	  on code generation.
 
