@@ -134,6 +134,55 @@ qrstu",
    ccc ccc", mode.Text);
 		}
 		
+		[Test]
+		public void LineDeletePaste ()
+		{
+			var mode = new TestViEditMode () { Text =
+@"   aaa aaa
+   bbb bbb
+   ccc ccc
+   eee eee
+   fff fff
+   ggg ggg
+   hhh hhh",
+			};
+			//move down, enter visual line mode, move down twice -> lines 2/3/4 selected -> delete
+			mode.Input ("jjVjjd");
+			Assert.AreEqual (
+@"   aaa aaa
+   bbb bbb
+   ggg ggg
+   hhh hhh", mode.Text);
+			//enter visual line mode, move down once -> lines 1/2 selected -> delete
+   			mode.Input ("Vkd");
+			Assert.AreEqual (
+@"   aaa aaa
+   hhh hhh", mode.Text);
+			//paste last delete below current line (1)
+   			mode.Input ("p");
+			Assert.AreEqual (
+@"   aaa aaa
+   hhh hhh
+   bbb bbb
+   ggg ggg", mode.Text);
+			//paste last delete above current line (3)
+   			mode.Input ("P");
+			Assert.AreEqual (
+@"   aaa aaa
+   hhh hhh
+   bbb bbb
+   bbb bbb
+   ggg ggg
+   ggg ggg", mode.Text);
+			Assert.AreEqual (4, mode.Line);
+			//movement to/across boundaries, check selection still okay by deleting lines 1/2/3
+			mode.Input ("kVlllllhhhhhhhhhhjjjhhhhhjjjjkkkkkkkkkkkkjd");
+			Assert.AreEqual (
+@"   aaa aaa
+   ggg ggg
+   ggg ggg", mode.Text);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
