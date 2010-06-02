@@ -249,7 +249,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngineStack.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\NRefactoryParser.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\CSharpAmbience.cs" />
@@ -290,6 +289,7 @@
     <Compile Include="MonoDevelop.CSharp.Highlighting\MoveToUsagesHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

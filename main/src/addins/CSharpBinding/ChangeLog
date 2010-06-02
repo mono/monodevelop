@@ -1,5 +1,16 @@
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* CSharpBinding.csproj:
+	* MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:
+	* MonoDevelop.CSharp.Refactoring/CSharpRefactorer.cs:
+	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs:
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	  Code generator get's now used by code completion auto
+	  generation & insert code feature.
+
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs:
 	  Worked on code generation.
 

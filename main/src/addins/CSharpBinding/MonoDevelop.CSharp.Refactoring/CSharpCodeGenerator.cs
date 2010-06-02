@@ -49,10 +49,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 		}
 		
-		
 		class CodeGenerationOptions
 		{
 			public bool ExplicitDeclaration { get; set; }
+			public IType ImplementingType { get; set; }
 		}
 		
 		public override string WrapInRegions (string regionName, string text)
@@ -67,10 +67,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result.ToString ();
 		}
 
-		public override string CreateMemberImplementation (IMember member, bool explicitDeclaration)
+		public override string CreateMemberImplementation (IType implementingType, IMember member, bool explicitDeclaration)
 		{
+			SetIndentTo (implementingType);
 			CodeGenerationOptions options = new CodeGenerationOptions () {
-				ExplicitDeclaration = explicitDeclaration
+				ExplicitDeclaration = explicitDeclaration,
+				ImplementingType = implementingType
 			};
 			
 			return member.AcceptVisitor (visitor, options);
@@ -138,11 +140,28 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (GetIndent (IndentLevel));
 		}
 		
-			
+		static void AppendReturnType (StringBuilder result, IType implementingType, IReturnType type)
+		{
+			var shortType = implementingType.CompilationUnit.ShortenTypeName (type, implementingType.BodyRegion.IsEmpty ? implementingType.Location : implementingType.BodyRegion.Start);
+			result.Append (ambience.GetString (shortType, OutputFlags.IncludeGenerics));
+		}
+		
+		/*
+		void ResolveReturnTypes ()
+		{
+			returnType = member.ReturnType;
+			foreach (IUsing u in unit.Usings) {
+				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+					if (alias.Key == member.ReturnType.FullName) {
+						returnType = alias.Value;
+						return;
+					}
+				}
+			}
+		}*/
 		
 		class OutputVisitor : AbstractDomVistitor<CodeGenerationOptions, string>
 		{
-			static string indent = "\t";
 			CSharpCodeGenerator generator;
 			
 			public OutputVisitor (CSharpCodeGenerator generator)
@@ -170,7 +189,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				AppendModifiers (result, options, evt);
 				
 				result.Append ("event ");
-				result.Append (ambience.GetString (evt.ReturnType, OutputFlags.IncludeGenerics));
+				AppendReturnType (result, options.ImplementingType, evt.ReturnType);
 				result.Append (" ");
 				if (options.ExplicitDeclaration) {
 					result.Append (ambience.GetString (new DomReturnType (evt.DeclaringType), OutputFlags.IncludeGenerics));
@@ -199,13 +218,11 @@ namespace MonoDevelop.CSharp.Refactoring
 				return result.ToString ();
 			}
 			
-		
-			
 			public override string Visit (IMethod method, CodeGenerationOptions options)
 			{
 				StringBuilder result = new StringBuilder ();
 				AppendModifiers (result, options, method);
-				result.Append (ambience.GetString (method.ReturnType, OutputFlags.IncludeGenerics));
+				AppendReturnType (result, options.ImplementingType, method.ReturnType);
 				result.Append (" ");
 				if (options.ExplicitDeclaration) {
 					result.Append (ambience.GetString (new DomReturnType (method.DeclaringType), OutputFlags.IncludeGenerics));
@@ -225,16 +242,49 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (generator.policy.BeforeMethodDeclarationParentheses)
 					result.Append (" ");
 				result.Append ("(");
-				AppendParameterList (result, method.Parameters);
+				AppendParameterList (result, options.ImplementingType, method.Parameters);
 				result.Append (")");
 				
 				generator.AppendBraceStart (result, generator.policy.MethodBraceStyle);
-				if (IsMonoTouchModelMember (method)) {
+				if (method.Name == "ToString" && (method.Parameters == null || method.Parameters.Count == 0) && method.ReturnType != null && method.ReturnType.FullName == "System.String") {
+					generator.AppendIndent (result);
+					result.Append ("return string.Format");
+					if (generator.policy.BeforeMethodDeclarationParentheses)
+						result.Append (" ");
+					result.Append ("(\"[");
+					result.Append (options.ImplementingType.Name);
+					if (options.ImplementingType.PropertyCount > 0) 
+						result.Append (": ");
+					int i = 0;
+					foreach (IProperty property in options.ImplementingType.Properties) {
+						if (property.IsStatic || !property.IsPublic)
+							continue;
+						if (i > 0)
+							result.Append (", ");
+						result.Append (property.Name);
+						result.Append ("={");
+						result.Append (i++);
+						result.Append ("}");
+					}
+					result.Append ("]\"");
+					foreach (IProperty property in options.ImplementingType.Properties) {
+						if (property.IsStatic || !property.IsPublic)
+							continue;
+						result.Append (", ");
+						result.Append (property.Name);
+					}
+					result.Append (");");
+					result.AppendLine ();
+				} else if (IsMonoTouchModelMember (method)) {
 					generator.AppendIndent (result);
 					result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
 				} else if (method.IsAbstract || method.DeclaringType.ClassType == ClassType.Interface) {
 					generator.AppendIndent (result);
-					result.AppendLine ("throw new System.NotImplementedException ();");
+					result.AppendLine ("throw new ");
+					AppendReturnType (result, options.ImplementingType, new DomReturnType ("System.NotImplementedException"));
+					if (generator.policy.BeforeMethodCallParentheses)
+						result.Append (" ");
+					result.AppendLine ("();");
 				} else {
 					generator.AppendIndent (result);
 					result.Append ("base.");
@@ -259,7 +309,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				return result.ToString ();
 			}
 			
-			public static void AppendParameterList (StringBuilder result, IList<IParameter> parameters)
+			public static void AppendParameterList (StringBuilder result, IType implementingType, IList<IParameter> parameters)
 			{
 				for (int i = 0; i < parameters.Count; i++) {
 					if (i > 0)
@@ -272,37 +322,52 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("ref ");
 					if (p.IsParams)
 						result.Append ("params ");
-					result.Append (ambience.GetString (p.ReturnType, OutputFlags.IncludeGenerics));
+					AppendReturnType (result, implementingType, p.ReturnType);
 					result.Append (" ");
 					result.Append (p.Name);
 				}
 			}
 			
+			static string GetModifiers (IType implementingType, IMember member)
+			{
+				if (member.IsPublic || member.DeclaringType.ClassType == ClassType.Interface) 
+					return "public ";
+				if (member.IsPrivate) 
+					return "";
+					
+				if (member.IsProtectedAndInternal) 
+					return "protected internal ";
+				if (member.IsProtectedOrInternal && implementingType.SourceProjectDom == member.DeclaringType.SourceProjectDom) 
+					return "internal protected ";
+				
+				if (member.IsProtected) 
+					return "protected ";
+				if (member.IsInternal) 
+					return "internal ";
+					
+				return "";
+			}
+			
 			void AppendModifiers (StringBuilder result, CSharpCodeGenerator.CodeGenerationOptions options, IMember member)
 			{
 				generator.AppendIndent (result);
-				if (member.DeclaringType.ClassType == ClassType.Interface) {
-					if (!options.ExplicitDeclaration)
-						result.Append ("public ");
-				} else {
-					Modifiers modifiers = member.Modifiers;
-					if ((modifiers & Modifiers.Virtual) == Modifiers.Virtual) {
-						modifiers = modifiers & ~Modifiers.Virtual | Modifiers.Override;
-					}
-					result.Append (ambience.GetString (modifiers));
-					result.Append (" ");
-				}
+				if (options.ExplicitDeclaration)
+					return;
+				result.Append (GetModifiers (options.ImplementingType, member));
+				
+				if ((member.Modifiers & Modifiers.Virtual) == Modifiers.Virtual)
+					result.Append ("override ");
 			}
 			
 			public override string Visit (IProperty property, CodeGenerationOptions options)
 			{
 				StringBuilder result = new StringBuilder ();
 				AppendModifiers (result, options, property);
-				result.Append (ambience.GetString (property.ReturnType, OutputFlags.IncludeGenerics));
+				AppendReturnType (result, options.ImplementingType, property.ReturnType);
 				result.Append (" ");
 				if (property.IsIndexer) {
 					result.Append ("this[");
-					AppendParameterList (result, property.Parameters);
+					AppendParameterList (result, options.ImplementingType, property.Parameters);
 					result.Append ("]");
 				} else {
 					if (options.ExplicitDeclaration) {
@@ -321,7 +386,11 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
 					} else if (property.IsAbstract || property.DeclaringType.ClassType == ClassType.Interface) {
 						generator.AppendIndent (result);
-						result.AppendLine ("throw new System.NotImplementedException ();");
+						result.AppendLine ("throw new ");
+						AppendReturnType (result, options.ImplementingType, new DomReturnType ("System.NotImplementedException"));
+						if (generator.policy.BeforeMethodCallParentheses)
+							result.Append (" ");
+						result.AppendLine ("();");
 					} else {
 						generator.AppendIndent (result);
 						result.Append ("return base.");
@@ -369,8 +438,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			return new string ('\t', indentLevel);
 		}
 		
-		public override string CreateFieldEncapsulation (IField field, string propertyName, Modifiers modifiers, bool readOnly)
+		public override string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, Modifiers modifiers, bool readOnly)
 		{
+			SetIndentTo (implementingType);
 			StringBuilder result = new StringBuilder ();
 			AppendIndent (result);
 			
@@ -378,7 +448,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append (ambience.GetString (modifiers));
 				result.Append (" ");
 			}
-			result.Append (ambience.GetString (field.ReturnType, OutputFlags.IncludeGenerics));
+			
+			AppendReturnType (result, implementingType, field.ReturnType);
 			result.Append (" ");
 			result.Append (propertyName);
 			AppendBraceStart (result, policy.PropertyBraceStyle);
@@ -407,7 +478,5 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendBraceEnd (result, policy.PropertyBraceStyle);
 			return result.ToString ();
 		}
-
-		
 	}
 }
