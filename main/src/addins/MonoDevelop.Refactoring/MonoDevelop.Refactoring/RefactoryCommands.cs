@@ -1023,37 +1023,18 @@ namespace MonoDevelop.Refactoring
 		
 		public void EncapsulateField ()
 		{
-			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
-			if (editor != null)
-				editor.BeginAtomicUndo ();
-				
-			try {
-				EncapsulateFieldDialog dialog;
-				if (item is IField) {
-					dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IField) item);
-				} else {
-					dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IType) item);
-				}
-				MessageService.ShowCustomDialog (dialog);
-			} finally {
-				if (editor != null)
-					editor.EndAtomicUndo ();
+			EncapsulateFieldDialog dialog;
+			if (item is IField) {
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IField) item);
+			} else {
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IType) item);
 			}
-			
+			MessageService.ShowCustomDialog (dialog);
 		}
 		
 		public void OverrideOrImplementMembers ()
 		{
-			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
-			if (editor != null) 
-				editor.BeginAtomicUndo ();
-			
-			try {
-				MessageService.ShowCustomDialog (new OverridesImplementsDialog ((IType)item));
-			} finally {
-				if (editor != null)
-					editor.EndAtomicUndo ();
-			}
+			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, (IType)item));
 		}
 		
 		public void Rename ()

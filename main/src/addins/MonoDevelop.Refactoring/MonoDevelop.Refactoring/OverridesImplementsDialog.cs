@@ -36,6 +36,8 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using Ambience_ = MonoDevelop.Projects.Dom.Output.Ambience;
 using MonoDevelop.Ide;
+using System.Text;
+using Mono.TextEditor;
 
 
 namespace MonoDevelop.Refactoring
@@ -46,7 +48,8 @@ namespace MonoDevelop.Refactoring
 		TreeStore store;
 		CodeRefactorer refactorer;
 		Ambience ambience;
-
+		TextEditor editor;
+		
 		private const int colCheckedIndex = 0;
 		private const int colIconIndex = 1;
 		private const int colNameIndex = 2;
@@ -62,13 +65,12 @@ namespace MonoDevelop.Refactoring
 		private const OutputFlags default_conversion_flags =
 			OutputFlags.IncludeParameters |
 			OutputFlags.IncludeParameterName |
-			OutputFlags.IncludeReturnType
+			OutputFlags.IncludeReturnType;
 
-;
-
-		public OverridesImplementsDialog (IType cls)
+		public OverridesImplementsDialog (TextEditor editor, IType cls)
 		{
 			this.Build();
+			this.editor = editor;
 			this.cls = cls;
 
 			// FIXME: title
@@ -237,13 +239,40 @@ namespace MonoDevelop.Refactoring
 		void OnOKClicked (object sender, EventArgs e)
 		{
 			try {
-				IType target = this.cls;
+				StringBuilder code = new StringBuilder ();
+				CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType);
+				generator.IndentLevel = HelperMethods.CalculateBodyIndentLevel (this.cls);
+				
 				foreach (KeyValuePair<IType, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
+					if (code.Length > 0) {
+						code.AppendLine ();
+						code.AppendLine ();
+					}
+				
 					//update the target class so that new members don't get inserted in weird locations
-					target = refactorer.ImplementMembers (target, YieldImpls (kvp), 
-							(kvp.Key.ClassType == ClassType.Interface)?
-								kvp.Key.Name + " implementation" : null);
+					StringBuilder curImpl = new StringBuilder ();
+					foreach (var pair in YieldImpls (kvp)) {
+						if (curImpl.Length > 0) {
+							curImpl.AppendLine ();
+							curImpl.AppendLine ();
+						}
+						curImpl.Append (generator.CreateMemberImplementation (pair.Key, pair.Value != null));
+					}
+					if (kvp.Key.ClassType == ClassType.Interface) {
+						code.Append (generator.WrapInRegions (kvp.Key.Name + " implementation", curImpl.ToString ()));
+					} else {
+						code.Append (curImpl.ToString ());
+					}
 				}
+				
+				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (editor.Document, this.cls));
+				mode.CurIndex = mode.InsertionPoints.Count - 1;
+				mode.StartMode ();
+				mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
+					if (args.Success)
+						args.InsertionPoint.Insert (editor, code.ToString ());
+				};
+				
 			} finally {
 				((Widget) this).Destroy ();
 			}
