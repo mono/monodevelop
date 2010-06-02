@@ -499,6 +499,7 @@ namespace MonoDevelop.IPhone
 			if (pf != null)
 				return pf;
 			var doc = new PropertyList.PlistDocument ();
+			doc.Root = new PropertyList.PlistDictionary ();
 			doc.WriteToFile (name);
 			return AddFile (name);
 		}

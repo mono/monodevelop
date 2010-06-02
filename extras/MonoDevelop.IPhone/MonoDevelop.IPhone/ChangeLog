@@ -1,5 +1,12 @@
 2010-06-01  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Gui/IPhoneOptionsPanel.cs: Options panel now loads and saves
+	  orientation to Info.plist.
+
+	* IPhoneProject.cs: Fix NRE creating Info.plist.
+
+2010-06-01  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs:
 	* gtk-gui/gui.stetic:
 	* IPhoneBuildExtension.cs:
