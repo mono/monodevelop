@@ -73,6 +73,7 @@ namespace MonoDevelop.IPhone.Gui
 			this.entitlementsEntry = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.entitlementsEntry.Name = "entitlementsEntry";
 			this.entitlementsEntry.EntryIsEditable = false;
+			this.entitlementsEntry.VerifyFileExistsInProject = false;
 			this.signingTable.Add (this.entitlementsEntry);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.signingTable[this.entitlementsEntry]));
 			w2.TopAttach = ((uint)(2));
@@ -161,6 +162,7 @@ namespace MonoDevelop.IPhone.Gui
 			this.resourceRulesEntry = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.resourceRulesEntry.Name = "resourceRulesEntry";
 			this.resourceRulesEntry.EntryIsEditable = false;
+			this.resourceRulesEntry.VerifyFileExistsInProject = false;
 			this.signingTable.Add (this.resourceRulesEntry);
 			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.signingTable[this.resourceRulesEntry]));
 			w10.TopAttach = ((uint)(3));

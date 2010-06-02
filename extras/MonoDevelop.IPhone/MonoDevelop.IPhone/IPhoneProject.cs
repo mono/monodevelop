@@ -46,7 +46,7 @@ namespace MonoDevelop.IPhone
 		IPad =   1 << 1,
 		IPhoneAndIPad = IPhone | IPad,
 	}
-	
+
 	public class IPhoneProject : DotNetProject
 	{
 		internal const string PLAT_IPHONE = "iPhone";
@@ -491,5 +491,16 @@ namespace MonoDevelop.IPhone
 		}
 		
 		#endregion
+		
+		public ProjectFile GetInfoPlist ()
+		{
+			var name = BaseDirectory.Combine ("Info.plist");
+			var pf = Files.GetFile (name);
+			if (pf != null)
+				return pf;
+			var doc = new PropertyList.PlistDocument ();
+			doc.WriteToFile (name);
+			return AddFile (name);
+		}
 	}
 }

@@ -1092,10 +1092,7 @@ namespace MonoDevelop.IPhone
 			
 			try {
 				EnsureDirectoryForFile (outPath);
-				using (XmlTextWriter writer = new XmlTextWriter (outPath, Encoding.UTF8)) {
-					writer.Formatting = Formatting.Indented;
-					doc.Write (writer);
-				}
+				doc.WriteToFile (outPath);
 			} catch (Exception ex) {
 				result.AddError (outPath, 0, 0, null, ex.Message);
 				monitor.ReportError (GettextCatalog.GetString ("Could not write file '{0}'", outPath), ex);

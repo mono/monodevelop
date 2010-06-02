@@ -75,6 +75,7 @@ namespace MonoDevelop.IPhone.Gui
 				IPadIconSensitive = true;
 				IPadSpotlightIconSensitive = true;
 				SettingsIconSensitive = true;
+				iPadOrientationsCombo.Sensitive = true;
 				break;
 			case TargetDevice.IPhone:
 				iPadNibPicker.Sensitive = false;
@@ -82,6 +83,7 @@ namespace MonoDevelop.IPhone.Gui
 				IPadIconSensitive = false;
 				IPadSpotlightIconSensitive = false;
 				SettingsIconSensitive = true;
+				iPadOrientationsCombo.Sensitive = false;
 				break;
 			case TargetDevice.IPad:
 				iPadNibPicker.Sensitive = false;
@@ -89,6 +91,7 @@ namespace MonoDevelop.IPhone.Gui
 				IPadIconSensitive = true;
 				IPadSpotlightIconSensitive = true;
 				SettingsIconSensitive = true;
+				iPadOrientationsCombo.Sensitive = false;
 				break;
 			}
 		}
@@ -185,6 +188,36 @@ namespace MonoDevelop.IPhone.Gui
 			ipadIconPicker.SelectedFile = proj.BundleIconIPad.ToString () ?? "";
 			settingsIconPicker.SelectedFile = proj.BundleIconSpotlight.ToString () ?? "";
 			ipadSpotlightIconPicker.SelectedFile = proj.BundleIconIPadSpotlight.ToString () ?? "";
+			
+			//LoadOrientationsCombo (supportedOrientationsCombo, null);
+			//LoadOrientationsCombo (iPadOrientationsCombo, null);
+		}
+		
+		static void LoadOrientationsCombo (ComboBox combo, PropertyList.PlistArray values)
+		{
+			combo.AppendText (GettextCatalog.GetString ("Both"));
+			combo.AppendText (GettextCatalog.GetString ("Portrait"));
+			combo.AppendText (GettextCatalog.GetString ("Landscape"));
+			
+			var custom = false;
+			
+			if (custom) {
+				combo.AppendText (GettextCatalog.GetString ("Custom"));
+				combo.Active = 3;
+			}
+		}
+		
+		static PropertyList.PlistArray SaveOrientationsCombo (ComboBox combo)
+		{
+			switch (combo.Active) {
+			case 0:
+				return OrientationToString (Orientation.Both);
+			case 1:
+				return OrientationToString (Orientation.Portrait);
+			case 2:
+				return OrientationToString (Orientation.Landscape);
+			}
+			return null;
 		}
 		
 		public void Store (IPhoneProject proj)
@@ -209,6 +242,55 @@ namespace MonoDevelop.IPhone.Gui
 			if (s == null || s.Length != 0)
 				return s;
 			return null;
+		}
+		
+		//ignores invalid values
+		static Orientation ParseOrientation (PropertyList.PlistArray arr)
+		{
+			var o = Orientation.None;
+			foreach (PropertyList.PlistString s in arr) {
+				switch (s.Value) {
+				case "UIInterfaceOrientationPortrait":
+					o |= Orientation.Down;
+					break;
+				case "UIInterfaceOrientationPortraitUpsideDown":
+					o |= Orientation.Up;
+					break;
+				case "UIInterfaceOrientationLandscapeLeft":
+					o |= Orientation.Left;
+					break;
+				case "UIInterfaceOrientationLandscapeRight":
+					o |= Orientation.Right;
+					break;
+				}
+			}
+			return o;
+		}
+		
+		static PropertyList.PlistArray OrientationToString (Orientation o)
+		{
+			var arr = new PropertyList.PlistArray ();
+			if ((o & Orientation.Up) != 0)
+				arr.Add ("UIInterfaceOrientationPortrait");
+			if ((o & Orientation.Down) != 0)
+				arr.Add ("UIInterfaceOrientationPortraitUpsideDown");
+			if ((o & Orientation.Left) != 0)
+				arr.Add ("UIInterfaceOrientationLandscapeLeft");
+			if ((o & Orientation.Right) != 0)
+				arr.Add ("UIInterfaceOrientationLandscapeRight");
+			return arr.Count == 0? null : arr;
+		}
+		
+		[Flags]	
+		enum Orientation {
+			None  = 0,
+			Up    = 1 << 0, // UIInterfaceOrientationPortrait
+			Down  = 1 << 1, // UIInterfaceOrientationPortraitUpsideDown
+			Left  = 1 << 2, // UIInterfaceOrientationLandscapeLeft
+			Right = 1 << 3,  // UIInterfaceOrientationLandscapeRight
+			Portrait = Up | Down,
+			Landscape = Right | Left,
+			Both = Portrait | Landscape,
 		}
 	}
 }
