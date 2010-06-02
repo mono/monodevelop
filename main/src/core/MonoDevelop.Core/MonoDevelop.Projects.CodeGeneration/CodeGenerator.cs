@@ -177,5 +177,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		public abstract string WrapInRegions (string regionName, string text);
 		public abstract string CreateMemberImplementation (IMember member, bool explicitDeclaration);
+		public abstract string CreateFieldEncapsulation (IField field, string propertyName, Modifiers modifiers, bool readOnly);
 	}
 }

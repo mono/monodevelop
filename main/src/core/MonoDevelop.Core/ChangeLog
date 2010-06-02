@@ -1,3 +1,8 @@
+2010-06-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Worked
+	  on code generation.
+
 2010-06-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Append
