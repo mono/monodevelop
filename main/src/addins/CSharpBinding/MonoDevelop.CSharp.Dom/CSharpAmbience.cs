@@ -391,7 +391,7 @@ namespace MonoDevelop.CSharp.Dom
 				foreach (IProperty property in type.Properties) {
 					result.AppendLine ();
 					result.Append ("\t");
-					if (property.ReturnType != null) {
+					if (property.ReturnType != null && !string.IsNullOrEmpty (property.ReturnType.FullName)) {
 						result.Append (property.ReturnType.AcceptVisitor (this, settings));
 						result.Append (" ");
 					} else {

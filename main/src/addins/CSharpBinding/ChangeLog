@@ -1,5 +1,10 @@
 2010-06-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: handled other case
+	  of unresolveable types.
+
+2010-06-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: make it clearer
 	  that the type can't be resolved.
 
