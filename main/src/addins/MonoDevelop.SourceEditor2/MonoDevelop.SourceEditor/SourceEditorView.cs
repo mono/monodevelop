@@ -1785,6 +1785,8 @@ namespace MonoDevelop.SourceEditor
 		void CorrectIndenting ()
 		{
 			Formatter formatter = TextFileService.GetFormatter (Document.MimeType);
+			if (formatter == null || !formatter.SupportsCorrectIndenting)
+				return;
 			if (TextEditor.IsSomethingSelected) {
 				TextEditor.Document.BeginAtomicUndo ();
 				int max = TextEditor.MainSelection.MaxLine;
