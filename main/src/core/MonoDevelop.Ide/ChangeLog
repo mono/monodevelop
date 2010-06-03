@@ -1,5 +1,13 @@
 2010-06-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.Docking/DockFrame.cs:
+	* MonoDevelop.Components.Docking/DockBarItem.cs: Resize the
+	  autohide frame when the main frame size changes. Fixes bug
+	  #611071 - Resizing while output window is open doesn't
+	  resizie the output window.
+
+2010-06-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Don't
 	  enable the arrow button by default. This is handled by
 	  DockToolbarPanel.

@@ -46,6 +46,7 @@ namespace MonoDevelop.Components.Docking
 		uint autoShowTimeout = uint.MaxValue;
 		uint autoHideTimeout = uint.MaxValue;
 		int size;
+		Gdk.Size lastFrameSize;
 		
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
@@ -55,7 +56,25 @@ namespace MonoDevelop.Components.Docking
 			this.it = it;
 			VisibleWindow = false;
 			UpdateTab ();
+			lastFrameSize = bar.Frame.Allocation.Size;
+			bar.Frame.SizeAllocated += HandleBarFrameSizeAllocated;
 		}
+
+		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (!lastFrameSize.Equals (args.Allocation.Size)) {
+				lastFrameSize = args.Allocation.Size;
+				if (autoShowFrame != null)
+					bar.Frame.UpdateSize (bar, autoShowFrame);
+			}
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			bar.Frame.SizeAllocated -= HandleBarFrameSizeAllocated;
+		}
+		
 		
 		public void Close ()
 		{
