@@ -98,6 +98,8 @@ namespace MonoDevelop.Refactoring
 			List<InsertionPoint> result = new List<InsertionPoint> ();
 			
 			int offset = doc.LocationToOffset (type.BodyRegion.Start.Line - 1, type.BodyRegion.Start.Column);
+			if (offset < 0)
+				return result;
 			while (offset < doc.Length && doc.GetCharAt (offset) != '{' && char.IsWhiteSpace (doc.GetCharAt (offset)))
 				offset++;
 			var realStartLocation = doc.OffsetToLocation (offset);
@@ -114,13 +116,13 @@ namespace MonoDevelop.Refactoring
 				result.Add (GetInsertionPosition (doc, domLocation.Line - 1, domLocation.Column - 1));
 			}
 			result[result.Count - 1].LineAfter = NewLineInsertion.None;
-			CheckStartPoint (doc, result[0]);
+			CheckStartPoint (doc, result[0], result.Count == 1);
 			if (result.Count > 1)
-				CheckEndPoint (doc, result[result.Count - 1]);
+				CheckEndPoint (doc, result[result.Count - 1], result.Count == 1);
 			return result;
 		}
 
-		static void CheckEndPoint (Document doc, InsertionPoint point)
+		static void CheckEndPoint (Document doc, InsertionPoint point, bool isStartPoint)
 		{
 			LineSegment line = doc.GetLine (point.Location.Line);
 			if (line == null)
@@ -132,7 +134,7 @@ namespace MonoDevelop.Refactoring
 				point.LineAfter = NewLineInsertion.Eol;
 		}
 		
-		static void CheckStartPoint (Document doc, InsertionPoint point)
+		static void CheckStartPoint (Document doc, InsertionPoint point, bool isEndPoint)
 		{
 			LineSegment line = doc.GetLine (point.Location.Line);
 			if (line == null)
@@ -147,9 +149,9 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (doc.GetLineIndent (line).Length < point.Location.Column)
-				point.LineBefore = NewLineInsertion.BlankLine;
+				point.LineBefore = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
 			if (point.Location.Column < line.EditableLength)
-				point.LineAfter = NewLineInsertion.BlankLine;
+				point.LineAfter = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
 		}
 		
 		static InsertionPoint GetInsertionPosition (Document doc, int line, int column)

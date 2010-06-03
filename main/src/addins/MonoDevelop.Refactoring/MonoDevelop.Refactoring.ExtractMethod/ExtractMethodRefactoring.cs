@@ -548,7 +548,6 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				break;
 			case NewLineInsertion.BlankLine:
 				methodText.AppendLine ();
-				methodText.Append (indent);
 				methodText.AppendLine ();
 				methodText.Append (indent);
 				break;
