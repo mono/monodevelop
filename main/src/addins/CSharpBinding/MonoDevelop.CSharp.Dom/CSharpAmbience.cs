@@ -395,7 +395,7 @@ namespace MonoDevelop.CSharp.Dom
 						result.Append (property.ReturnType.AcceptVisitor (this, settings));
 						result.Append (" ");
 					} else {
-						result.Append ("object ");
+						result.Append ("? ");
 					}
 					result.Append (property.Name);
 					result.Append (";");

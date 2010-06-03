@@ -1,5 +1,10 @@
 2010-06-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs: make it clearer
+	  that the type can't be resolved.
+
+2010-06-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Handled
 	  unresolved return types
