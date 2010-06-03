@@ -58,6 +58,8 @@ namespace MonoDevelop.Refactoring.Tests
 					NewLineInsertion insertAfter  = NewLineInsertion.None;
 					
 					switch (ch) {
+					case 'n':
+						break;
 					case 'd':
 						insertAfter = NewLineInsertion.Eol;
 						break;
@@ -84,6 +86,9 @@ namespace MonoDevelop.Refactoring.Tests
 					case 'v':
 						insertBefore = NewLineInsertion.BlankLine;
 						insertAfter = NewLineInsertion.Eol;
+						break;
+					default:
+						Assert.Fail ("unknown insertion point:" + ch);
 						break;
 					}
 					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.Length), insertBefore, insertAfter));
@@ -155,6 +160,29 @@ class Test {
 			TestInsertionPoints (@"class Test {@Svoid TestMe () { }@v}");
 		}
 		
+		
+		[Test()]
+		public void TestEmptyClass ()
+		{
+			TestInsertionPoints (@"class Test {@s}");
+		}
+		
+		[Test()]
+		public void TestEmptyClass2 ()
+		{
+			TestInsertionPoints (@"class Test {
+@n
+}");
+		}
+		
+		[Test()]
+		public void TestEmptyClass3 ()
+		{
+			TestInsertionPoints (@"class Test
+{
+@n
+}");
+		}
 		
 		
 		[Test()]
