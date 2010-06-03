@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.DockToolbars
 			grip.Hide ();
 			this.id = id;
 			this.title = title;
-			ShowArrow = true;
+			ShowArrow = false;
 		}
 		
 		internal void SetParentFrame (DockToolbarFrame frame)
@@ -299,7 +299,7 @@ namespace MonoDevelop.Components.DockToolbars
 		{
 			WidthRequest = -1;
 			HeightRequest = -1;
-			ShowArrow = true;
+			ShowArrow = false;
 		}
 		
 		public int Size {

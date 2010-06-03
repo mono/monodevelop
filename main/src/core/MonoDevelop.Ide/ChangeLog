@@ -1,5 +1,17 @@
 2010-06-03  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Don't
+	  enable the arrow button by default. This is handled by
+	  DockToolbarPanel.
+
+	* MonoDevelop.Components.DockToolbars/DockToolbarPanel.cs:
+	  Improved toolbar resizing algorithm in PackRow. Instead of
+	  reducing size in all toolbars pixel by pixel, it will now
+	  reduce button by button. Fixes bug #545746 - Toolbar on
+	  small screens.
+
+2010-06-03  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Disable
 	  custom drawing on the toolbar background since it hides the
 	  arrow button.

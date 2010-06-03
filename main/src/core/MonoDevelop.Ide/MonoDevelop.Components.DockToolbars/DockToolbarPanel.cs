@@ -695,11 +695,25 @@ namespace MonoDevelop.Components.DockToolbars
 			}
 			
 			int barsSize = lastx - gaps;
-			double barShrink = 1;
 			double gapShrink = 0;
 			
-			if (barsSize > PanelWidth)
-				barShrink = (double)PanelWidth / (double)barsSize;
+			int[] sizeReduction = new int [n - sn];
+			
+			if (barsSize > PanelWidth) {
+				int remSize = barsSize - PanelWidth;
+				while (remSize > 0) {
+					int oldRemSize = remSize;
+					for (int k=n-1; k >= sn; k--) {
+						int pos = k - sn;
+						DockToolbar bar = (DockToolbar) bars [k];
+						int newReduction = GetBarReduction (bar, remSize, sizeReduction [pos]);
+						sizeReduction [pos] += newReduction;
+						remSize -= newReduction;
+					}
+					if (oldRemSize == remSize)
+						break;
+				}
+			}
 			else
 				gapShrink = ((double)(PanelWidth - barsSize)) / (double)gaps;
 			
@@ -714,7 +728,7 @@ namespace MonoDevelop.Components.DockToolbars
 				if (nx != bar.DockOffset)
 					MoveBar (bar, nx, bar.DockRow, false);
 				
-				int nw = (int)((double)bar.DefaultSize * barShrink);
+				int nw = bar.DefaultSize - sizeReduction [i - sn];
 				if (nw != bar.Size) {
 					bar.ShowArrow = nw != bar.DefaultSize;
 					bar.Size = nw;
@@ -723,6 +737,44 @@ namespace MonoDevelop.Components.DockToolbars
 			}
 			
 			return n;
+		}
+		
+		int GetBarReduction (DockToolbar bar, int sizeToReduce, int currentReduction)
+		{
+			Gtk.Widget[] children = bar.Children;
+			int w = bar.DefaultSize;
+			int arrowSize = 0;
+			bar.Forall (delegate (Gtk.Widget wa) {
+				if (wa is ToggleButton) {
+					arrowSize = bar.Orientation == Orientation.Horizontal ? wa.SizeRequest ().Width : wa.SizeRequest ().Height;
+				}
+			});
+			for (int n=children.Length - 1; n >= 1; n--) {
+				if (!children [n].Visible)
+					continue;
+				int x;
+				if (bar.Orientation == Orientation.Horizontal)
+					x = children [n].Allocation.X - bar.Allocation.X;
+				else
+					x = children [n].Allocation.Y - bar.Allocation.Y;
+				int rightSize = w - x - 1;
+				if (rightSize > currentReduction) {
+					int prevRequest = Orientation == Orientation.Horizontal ? children [n-1].SizeRequest ().Width : children [n-1].SizeRequest ().Height;
+					if (prevRequest > arrowSize*2)
+						continue;
+					int newReduction = rightSize - currentReduction;
+					if (newReduction > sizeToReduce)
+						newReduction = sizeToReduce;
+					
+					int minSize = Orientation == Orientation.Horizontal ? children[0].SizeRequest ().Width : children[0].SizeRequest ().Height;
+					minSize += arrowSize + 6;
+					if (bar.DefaultSize - (currentReduction + newReduction) < minSize)
+						newReduction = (bar.DefaultSize - minSize) - currentReduction;
+					
+					return newReduction;
+				}
+			}
+			return 0;
 		}
 		
 		int GetPanelBottom ()
