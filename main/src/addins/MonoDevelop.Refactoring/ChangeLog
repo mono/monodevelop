@@ -1,6 +1,11 @@
 2010-06-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Improved parameter naming of created methods.
+
+2010-06-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
 	  added null check.
 
 2010-06-03  Mike Krüger  <mkrueger@novell.com>

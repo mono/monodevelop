@@ -136,7 +136,6 @@ namespace MonoDevelop.Refactoring.CreateMethod
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			TextEditorData data = options.GetTextEditorData ();
 			IType type = options.ResolveResult.CallingType;
-			Console.WriteLine ("target:" + invoke.TargetObject);
 			if (invoke.TargetObject is IdentifierExpression) {
 				fileName = options.Document.FileName;
 				newMethodName = ((IdentifierExpression)invoke.TargetObject).Identifier;
@@ -253,12 +252,19 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				string parameterName = "par" + i;
 				int idx = output.LastIndexOf ('.');
 				string lastName = output.Substring (idx + 1); // start from 0, if '.' wasn't found
+				
+				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), resolvePosition);
+				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? options.Document.CompilationUnit.ShortenTypeName (resolveResult2.ResolvedType, data.Caret.Line, data.Caret.Column).ToInvariantString () : "System.Object");
+							
+				if (lastName == "this" || lastName == "base") {
+					idx = typeReference.Type.LastIndexOf ('.');
+					lastName = typeReference.Type.Substring (idx + 1);
+				}
+				if (!string.IsNullOrEmpty (lastName))
+					lastName = char.ToLower (lastName[0]) + lastName.Substring (1);
 				if (IsValidIdentifier (lastName)) 
 					parameterName = lastName;
 				
-				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), resolvePosition);
-				
-				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? options.Document.CompilationUnit.ShortenTypeName (resolveResult2.ResolvedType, data.Caret.Line, data.Caret.Column).ToInvariantString () : "System.Object");
 				typeReference.IsKeyword = true;
 				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
 				methodDecl.Parameters.Add (pde);
