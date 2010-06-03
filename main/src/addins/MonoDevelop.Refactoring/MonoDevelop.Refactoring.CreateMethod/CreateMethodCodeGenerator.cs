@@ -158,6 +158,8 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				} else {
 					var openDocument = IdeApp.Workbench.OpenDocument (fileName);
 					data = openDocument.TextEditorData;
+					if (data == null)
+						return;
 					modifiers |= ICSharpCode.NRefactory.Ast.Modifiers.Public;
 					bool isInInterface = type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
 					if (isInInterface) 
