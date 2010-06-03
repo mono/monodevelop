@@ -1,3 +1,8 @@
+2010-06-03  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/InsertionCursorEditMode.cs: Don't start
+	  insertion cursor mode without insertion points.
+
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs:

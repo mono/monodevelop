@@ -152,6 +152,8 @@ namespace Mono.TextEditor
 		EditMode oldMode;
 		public void StartMode ()
 		{
+			if (insertionPoints.Count == 0)
+				return;
 			oldMode = editor.CurrentMode;
 			
 			
