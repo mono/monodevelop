@@ -391,8 +391,12 @@ namespace MonoDevelop.CSharp.Dom
 				foreach (IProperty property in type.Properties) {
 					result.AppendLine ();
 					result.Append ("\t");
-					result.Append (property.ReturnType.AcceptVisitor (this, settings));
-					result.Append (" ");
+					if (property.ReturnType != null) {
+						result.Append (property.ReturnType.AcceptVisitor (this, settings));
+						result.Append (" ");
+					} else {
+						result.Append ("object ");
+					}
 					result.Append (property.Name);
 					result.Append (";");
 				}

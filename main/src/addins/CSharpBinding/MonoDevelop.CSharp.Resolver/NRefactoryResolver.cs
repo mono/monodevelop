@@ -609,7 +609,7 @@ namespace MonoDevelop.CSharp.Resolver
 							if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 								IMethod invocationMethod = type.Methods.First ();
 								if (invocationMethod.Parameters.Count > 0) {
-									if (lambdaReturnType == null || string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName)) {
+									if (lambdaReturnType == null || lambdaReturnType.ResolvedType == null || string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName)) {
 										returnType = invocationMethod.Parameters[System.Math.Min (i, invocationMethod.Parameters.Count - 1)].ReturnType;
 									} else {
 										returnType = (IReturnType)new TypeReplaceVisitor (invocationMethod.ReturnType, lambdaReturnType.ResolvedType).Visit (returnType, null);
