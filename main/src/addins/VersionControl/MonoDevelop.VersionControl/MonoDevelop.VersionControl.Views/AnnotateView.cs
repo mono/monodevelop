@@ -215,11 +215,7 @@ namespace MonoDevelop.VersionControl.Views
 				DispatchService.GuiDispatch (delegate {
 					ctx.Dispose ();
 					UpdateWidth ();
-					if (redrawAll) {
-						editor.RedrawFromLine (0);
-					} else {
-						editor.RedrawMarginLines (this, 0, -1);
-					}
+					editor.QueueDraw ();
 				});
 			});
 		}
