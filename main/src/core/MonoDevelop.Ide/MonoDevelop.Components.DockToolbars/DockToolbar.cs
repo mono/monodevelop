@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.DockToolbars
 			grip.Hide ();
 			this.id = id;
 			this.title = title;
-			ShowArrow = false;
+			ShowArrow = true;
 		}
 		
 		internal void SetParentFrame (DockToolbarFrame frame)
@@ -261,7 +261,7 @@ namespace MonoDevelop.Components.DockToolbars
 			return base.OnButtonReleaseEvent (e);
 		}
 		
-		protected override bool OnExposeEvent (EventExpose evnt)
+/*		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			//use the base class to paint the background like a toolbar, which may be a gradient
 			// but only if horizontal, else the gradient usually looks really ugly
@@ -282,7 +282,7 @@ namespace MonoDevelop.Components.DockToolbars
             }
 		
 		    return true;
-		}
+		}*/
 		
 		bool firstRealized;
 		protected override void OnRealized ()
@@ -299,7 +299,7 @@ namespace MonoDevelop.Components.DockToolbars
 		{
 			WidthRequest = -1;
 			HeightRequest = -1;
-			ShowArrow = false;
+			ShowArrow = true;
 		}
 		
 		public int Size {

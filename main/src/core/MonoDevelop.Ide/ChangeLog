@@ -1,3 +1,9 @@
+2010-06-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Disable
+	  custom drawing on the toolbar background since it hides the
+	  arrow button.
+
 2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Templates/ProjectTemplate.cs:
