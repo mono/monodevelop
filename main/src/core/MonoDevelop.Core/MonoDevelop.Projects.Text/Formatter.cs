@@ -88,6 +88,10 @@ namespace MonoDevelop.Projects.Text
 			prettyPrinter.OnTheFlyFormat (textEditorData, callingType, callingMember, dom, unit, endLocation);
 		}
 		
+		public bool SupportsCorrectIndenting {
+			get { return prettyPrinter != null; }
+		}
+		
 		public void CorrectIndenting (object textEditorData, int line)
 		{
 			prettyPrinter.CorrectIndenting (textEditorData, line);

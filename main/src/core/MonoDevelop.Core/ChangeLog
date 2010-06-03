@@ -1,3 +1,8 @@
+2010-06-03  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Projects.Text/Formatter.cs: Fixed 'Bug 611202 -
+	  Move line up/down command fails in aspx files'.
+
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Code
