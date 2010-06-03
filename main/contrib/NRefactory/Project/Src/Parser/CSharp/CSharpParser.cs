@@ -623,6 +623,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		internal static string GetReflectionNameForOperator(OverloadableOperatorType op)
 		{
 			switch (op) {
+				case OverloadableOperatorType.None:
+					return "op_unknown";
 				case OverloadableOperatorType.Add:
 					return "op_Addition";
 				case OverloadableOperatorType.BitNot:
@@ -681,7 +683,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				case OverloadableOperatorType.UnaryPlus:
 					return "op_UnaryPlus";
 				default:
-					throw new NotSupportedException();
+					throw new NotSupportedException("opeartor type:" + op);
 			}
 		}
 	}
