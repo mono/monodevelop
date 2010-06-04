@@ -19,6 +19,7 @@ namespace MonoDevelop.Debugger.Win32
 	public class CorDebuggerSession: DebuggerSession
 	{
 		object debugLock = new object ();
+		object terminateLock = new object ();
 
 		CorDebugger dbg;
 		CorProcess process;
@@ -75,15 +76,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override void Dispose ( )
 		{
-			if (dbg != null && !terminated) {
-				// The Terminate call will fail if this Dispose is being called from the handler
-				// of a debugger event. Just in case, we run it in a separate thread.
-				CorDebugger dd = dbg;
-				ThreadPool.QueueUserWorkItem (delegate {
-					if (!terminated)
-						dd.Terminate ();
-				});
-			}
+			TerminateDebugger ();
+
 			base.Dispose ();
 
 			// There is no explicit way of disposing the metadata objects, so we have
@@ -92,11 +86,29 @@ namespace MonoDevelop.Debugger.Win32
 			modules = null;
 			documents = null;
 			threads = null;
-			process = null;
 			processes = null;
-			dbg = null;
 			activeThread = null;
 			GC.Collect ();
+		}
+
+		void TerminateDebugger ()
+		{
+			lock (terminateLock) {
+				if (terminated)
+					return;
+
+				terminated = true;
+
+				ThreadPool.QueueUserWorkItem (delegate
+				{
+					if (process != null) {
+						// Process already running. Stop it. In the ProcessExited event the
+						// debugger engine will be terminated
+						process.Stop (4000);
+						process.Terminate (1);
+					}
+				});
+			}
 		}
 
 		protected override void OnRun (DebuggerStartInfo startInfo)
@@ -248,6 +260,21 @@ namespace MonoDevelop.Debugger.Win32
 		void OnProcessExit (object sender, CorProcessEventArgs e)
 		{
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetExited);
+
+			// If the main thread stopped, terminate the debugger session
+			if (e.Process.Id == process.Id) {
+				lock (terminateLock) {
+					process = null;
+					ThreadPool.QueueUserWorkItem (delegate
+					{
+						// The Terminate call will fail if called in the event handler
+						dbg.Terminate ();
+						dbg = null;
+						GC.Collect ();
+					});
+				}
+			}
+
 			OnTargetEvent (args);
 		}
 
@@ -381,14 +408,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnExit ( )
 		{
-			try {
-				terminated = true;
-				process.Stop (4000);
-				process.Terminate (1);
-			}
-			catch (Exception ex) {
-				OnDebuggerOutput (true, ex.Message + "\n");
-			}
+			TerminateDebugger ();
 		}
 
 		protected override void OnFinish ( )
