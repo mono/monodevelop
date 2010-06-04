@@ -40,6 +40,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		XmlAttributeState AttributeState;
 		XmlNameState NameState;
 		XmlMalformedTagState MalformedTagState;
+		HtmlScriptBodyState ScriptState;
 		bool warnAutoClose;
 		
 		public HtmlTagState (bool warnAutoClose) : this (warnAutoClose, new XmlAttributeState ()) {}
@@ -52,17 +53,28 @@ namespace MonoDevelop.AspNet.StateEngine
 		
 		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState, XmlNameState nameState,
 			XmlMalformedTagState malformedTagState)
+			: this (warnAutoClose, attributeState, nameState, malformedTagState, new HtmlScriptBodyState ())
+		{
+		}
+		
+		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState, XmlNameState nameState,
+			XmlMalformedTagState malformedTagState, HtmlScriptBodyState scriptState)
 			: base (attributeState, nameState, malformedTagState)
 		{
 			this.warnAutoClose = warnAutoClose;
+			this.ScriptState = scriptState;
+			
+			Adopt (this.ScriptState);
 		}
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
+			if (context.CurrentStateLength == 0 && context.PreviousState is HtmlScriptBodyState)
+				return Parent;
+			
 			//NOTE: This is (mostly) duplicated in HtmlClosingTagState
 			//handle "paragraph" tags implicitly closed by block-level elements
-			if (context.CurrentStateLength == 1 && context.PreviousState is XmlNameState)
-			{
+			if (context.CurrentStateLength == 1 && context.PreviousState is XmlNameState) {
 				XElement element = (XElement) context.Nodes.Peek ();
 				//Note: the node stack will always be at least 1 deep due to the XDocument
 				XElement parent = context.Nodes.Peek (1) as XElement;
@@ -73,7 +85,6 @@ namespace MonoDevelop.AspNet.StateEngine
 				    && (ElementTypes.IsInline (parent.Name.Name) || ElementTypes.IsParagraph (parent.Name.Name))
 				    )
 				{
-					
 					context.Nodes.Pop ();
 					context.Nodes.Pop ();
 					if (warnAutoClose) {
@@ -91,19 +102,19 @@ namespace MonoDevelop.AspNet.StateEngine
 						
 			State ret = base.PushChar (c, context, ref rollback);
 			
-			//handle implicitly empty tags
-			if (c == '>')
-			{
-				XElement element = context.Nodes.Peek () as XElement;
-				if (element != null && !element.Name.HasPrefix && element.Name.IsValid
-				    && ElementTypes.IsEmpty (element.Name.Name))
-				{
-					element.Close (element);
-					context.Nodes.Pop ();
-					
-					if (warnAutoClose) {
-						context.LogWarning (string.Format ("Implicitly closed empty tag '{0}'", element.Name.Name),
-						                    element.Region);
+			if (ret == Parent && c == '>') {
+				var element = context.Nodes.Peek () as XElement;
+				if (element != null && !element.Name.HasPrefix && element.Name.IsValid) {
+					if (element.Name.Name.Equals ("script", StringComparison.OrdinalIgnoreCase)) {
+					    return ScriptState;
+					} else if (ElementTypes.IsEmpty (element.Name.Name)) {
+						element.Close (element);
+						context.Nodes.Pop ();
+						
+						if (warnAutoClose) {
+							context.LogWarning (string.Format ("Implicitly closed empty tag '{0}'", element.Name.Name),
+							                    element.Region);
+						}
 					}
 				}
 			}

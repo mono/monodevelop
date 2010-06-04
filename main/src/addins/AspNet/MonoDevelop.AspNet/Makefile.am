@@ -98,6 +98,7 @@ FILES =  \
 	MonoDevelop.AspNet.StateEngine/AspNetServerCommentState.cs \
 	MonoDevelop.AspNet.StateEngine/AspNetSpeculativeExpressionState.cs \
 	MonoDevelop.AspNet.StateEngine/HtmlClosingTagState.cs \
+	MonoDevelop.AspNet.StateEngine/HtmlScriptBodyState.cs \
 	MonoDevelop.AspNet.StateEngine/HtmlTagState.cs \
 	MonoDevelop.AspNet/AspNetAppProject.cs \
 	MonoDevelop.AspNet/AspNetAppProjectBinding.cs \

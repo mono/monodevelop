@@ -64,6 +64,11 @@ namespace MonoDevelop.AspNet.StateEngine
 					context.Nodes.Push (new AspNetRenderExpression (context.LocationMinus (3)));
 					break;
 				
+				//HTML ENCODED EXPRESSION <%:
+				case ':':
+					context.Nodes.Push (new AspNetHtmlEncodedExpression (context.LocationMinus (3)));
+					break;
+				
 				// RENDER BLOCK
 				default:
 					context.Nodes.Push (new AspNetRenderBlock (context.LocationMinus (2)));

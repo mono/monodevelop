@@ -138,6 +138,24 @@ namespace MonoDevelop.AspNet.StateEngine
 		}
 	}
 	
+	public class AspNetHtmlEncodedExpression : AspNetExpression
+	{
+		public AspNetHtmlEncodedExpression (DomRegion region) : base (region) {}
+		public AspNetHtmlEncodedExpression (DomLocation start) : base (start) {}
+		protected AspNetHtmlEncodedExpression () {}
+		
+		protected override XObject NewInstance () { return new AspNetHtmlEncodedExpression (); }
+		
+		public override string ToString ()
+		{
+			return string.Format ("[AspNetHtmlEncodedExpression Location='{0}'", this.Region);
+		}
+		
+		public override string FriendlyPathRepresentation {
+			get { return "<%: %>"; }
+		}
+	}
+	
 	public class AspNetDataBindingExpression : AspNetExpression
 	{
 		public AspNetDataBindingExpression (DomRegion region) : base (region) {}

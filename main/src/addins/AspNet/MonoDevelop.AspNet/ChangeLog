@@ -1,3 +1,16 @@
+2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet.StateEngine/AspNetDom.cs:
+	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs: Add
+	  support for HTML encoded expressions in the state engine.
+
+	* MonoDevelop.AspNet.StateEngine/HtmlTagState.cs:
+	* MonoDevelop.AspNet.StateEngine/HtmlScriptBodyState.cs:
+	  Support for HTML script blocks.
+
+	* Makefile.am:
+	* MonoDevelop.AspNet.csproj: Added file to project.
+
 2010-06-02  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
