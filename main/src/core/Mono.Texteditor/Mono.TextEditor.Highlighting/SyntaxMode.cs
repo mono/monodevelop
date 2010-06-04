@@ -359,7 +359,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 			
-			protected virtual bool ScanSpanEnd (Span cur, int i)
+			protected virtual bool ScanSpanEnd (Span cur, ref int i)
 			{
 				if (cur.End != null) {
 					RegexMatch match = cur.End.TryMatch (doc, i);
@@ -368,6 +368,7 @@ namespace Mono.TextEditor.Highlighting
 						spanStack.Pop ();
 						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 							ruleStack.Pop ();
+						i += match.Length;
 						return true;
 					}
 				}
@@ -379,6 +380,7 @@ namespace Mono.TextEditor.Highlighting
 						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 							ruleStack.Pop ();
 						OnFoundSpanExit (cur, i, match.Length);
+						i += match.Length;
 						return true;
 					}
 				}
@@ -406,7 +408,7 @@ namespace Mono.TextEditor.Highlighting
 								continue;
 							}
 						}
-						if (ScanSpanEnd (cur, i))
+						if (ScanSpanEnd (cur, ref i))
 							continue;
 					}
 					

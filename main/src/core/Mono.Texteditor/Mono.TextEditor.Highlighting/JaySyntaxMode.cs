@@ -155,7 +155,7 @@ namespace Mono.TextEditor.Highlighting
 				base.ScanSpan (ref i);
 			}
 			
-			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
+			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
 			{
 				JayBlockSpan jbs = cur as JayBlockSpan;
 				if (jbs != null) {
@@ -253,7 +253,7 @@ namespace Mono.TextEditor.Highlighting
 						return true;
 					}
 				}
-				return base.ScanSpanEnd (cur, i);
+				return base.ScanSpanEnd (cur, ref i);
 			}
 		}
 	}
