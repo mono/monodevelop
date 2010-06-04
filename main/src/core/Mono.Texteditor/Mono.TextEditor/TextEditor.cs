@@ -2784,12 +2784,22 @@ namespace Mono.TextEditor
 
 		Atk.TextRange Atk.Text.GetBoundedRanges (Atk.TextRectangle rect, Atk.CoordType coord_type, Atk.TextClipType x_clip_type, Atk.TextClipType y_clip_type)
 		{
-			return new Atk.TextRange ();
+			Atk.TextRange result = new Atk.TextRange ();
+			// todo 
+			return result;
 		}
 
 		Atk.TextRectangle Atk.Text.GetRangeExtents (int start_offset, int end_offset, Atk.CoordType coord_type)
 		{
-			return new Atk.TextRectangle ();
+			Atk.TextRectangle result = new Atk.TextRectangle ();
+			var point1 = DocumentToVisualLocation (Document.OffsetToLocation (start_offset));
+			var point2 = DocumentToVisualLocation (Document.OffsetToLocation (end_offset));
+
+			result.X = System.Math.Min (point2.X, point1.Y);
+			result.Y = System.Math.Min (point2.Y, point1.Y);
+			result.Width = System.Math.Abs (point2.X - point1.X);
+			result.Height = System.Math.Abs (point2.Y - point1.Y) + LineHeight;
+			return result;
 		}
 
 		bool Atk.Text.RemoveSelection (int selection_num)

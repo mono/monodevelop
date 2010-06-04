@@ -1,5 +1,9 @@
 2010-06-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: atk impl. improvements
+
+2010-06-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Added accessibility support.
 
 2010-06-04  Mike Krüger  <mkrueger@novell.com>
