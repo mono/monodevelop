@@ -1,3 +1,8 @@
+2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/DotNetProject.cs: Added option for
+	  setting a project to use an external console.
+
 2010-06-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Text/Formatter.cs: Fixed 'Bug 611202 -

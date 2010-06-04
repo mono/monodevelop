@@ -99,6 +99,8 @@ namespace MonoDevelop.Projects
 
 			if (this.LanguageBinding != null) {
 				LanguageParameters = languageBinding.CreateProjectParameters (projectOptions);
+				
+				bool externalConsole = false;
 
 				string platform = null;
 				if (projectOptions != null) {
@@ -110,11 +112,15 @@ namespace MonoDevelop.Projects
 						projectOptions.SetAttribute ("Platform", platform);
 					} else
 						platform = projectOptions.GetAttribute ("Platform");
+					if (projectOptions.GetAttribute ("ExternalConsole") == "True")
+						externalConsole = true;
 				}
 				string platformSuffix = string.IsNullOrEmpty (platform) ? string.Empty : "|" + platform;
 				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix) as DotNetProjectConfiguration;
 				configDebug.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
 				configDebug.DebugMode = true;
+				configDebug.ExternalConsole = externalConsole;
+				configDebug.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configDebug);
 
 				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix) as DotNetProjectConfiguration;
@@ -122,6 +128,8 @@ namespace MonoDevelop.Projects
 					projectOptions.SetAttribute ("DefineDebug", "False");
 				configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
 				configRelease.DebugMode = false;
+				configRelease.ExternalConsole = externalConsole;
+				configRelease.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configRelease);
 			}
 
