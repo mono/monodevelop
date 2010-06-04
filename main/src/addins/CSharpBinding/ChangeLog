@@ -1,3 +1,8 @@
+2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* templates/ConsoleProject.xpt.xml: Set the external console
+	  flag for console projects.
+
 2010-06-04  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: Track

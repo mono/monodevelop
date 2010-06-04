@@ -1,3 +1,12 @@
+2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project/CProject.cs: Allow setting the External Console flag
+	  in the options.
+
+	* templates/ConsoleCProject.xpt.xml:
+	* templates/ConsoleCppProject.xpt.xml: Set the external
+	  console flag for console projects.
+
 2010-05-26  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Project/CProjectBinding.cs: Only create single file projects

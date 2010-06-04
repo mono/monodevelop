@@ -25,7 +25,7 @@
 		
 		<Project name = "${ProjectName}" directory = ".">
 			<!-- FIXME: remove path to jar -->
-			<Options Target = "Exe" PauseConsoleOutput = "False" MainClass ="application" />
+			<Options Target = "Exe" MainClass ="application" ExternalConsole="True" />
 	
 			<Files>
 				<File name = "application.java">

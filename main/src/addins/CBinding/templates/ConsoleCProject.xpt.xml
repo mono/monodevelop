@@ -18,7 +18,7 @@
 		<Project name = "${ProjectName}" directory = "." type = "C/C++">
 			<Options
 				Target = "Bin"
-				PauseConsoleOutput = "True"
+				ExternalConsole = "True"
 				CompilerArgs = ""
 				LinkerArgs = ""/>
 			

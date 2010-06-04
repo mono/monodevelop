@@ -149,6 +149,10 @@ namespace CBinding
 						    typeof(CBinding.CompileTarget),
 						    projectOptions.Attributes["Target"].InnerText);
 					}
+					if (projectOptions.GetAttribute ("ExternalConsole") == "True") {
+						c.ExternalConsole = true;
+						c.PauseConsoleOutput = true;
+					}
 					if (projectOptions.Attributes["PauseConsoleOutput"] != null) {
 						c.PauseConsoleOutput = bool.Parse (
 							projectOptions.Attributes["PauseConsoleOutput"].InnerText);
