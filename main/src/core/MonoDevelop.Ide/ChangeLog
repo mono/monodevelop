@@ -1,3 +1,8 @@
+2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Use the correct
+	  tag model when parsing the working directory and command.
+
 2010-06-03  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs: Fix GTK

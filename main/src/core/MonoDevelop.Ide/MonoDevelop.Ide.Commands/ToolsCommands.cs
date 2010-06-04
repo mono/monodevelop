@@ -88,8 +88,8 @@ namespace MonoDevelop.Ide.Commands
 
 		void RunExternalTool (ExternalTools.ExternalTool tool, string argumentsTool)
 		{
-			string commandTool = StringParserService.Parse (tool.Command);
-			string initialDirectoryTool = StringParserService.Parse (tool.InitialDirectory);
+			string commandTool = StringParserService.Parse (tool.Command, IdeApp.Workbench.GetStringTagModel ());
+			string initialDirectoryTool = StringParserService.Parse (tool.InitialDirectory, IdeApp.Workbench.GetStringTagModel ());
 
 			//Execute tool
 			IProgressMonitor progressMonitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
