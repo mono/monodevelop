@@ -1,3 +1,8 @@
+2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs: Fix
+	  property getter in overrides.
+
 2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/ConsoleProject.xpt.xml: Set the external console

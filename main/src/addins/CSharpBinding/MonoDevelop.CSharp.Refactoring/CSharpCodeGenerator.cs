@@ -401,6 +401,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						generator.AppendIndent (result);
 						result.Append ("return base.");
 						result.Append (property.Name);
+						result.Append (";");
 						result.AppendLine ();
 					}
 					generator.AppendBraceEnd (result, generator.policy.PropertyGetBraceStyle);
