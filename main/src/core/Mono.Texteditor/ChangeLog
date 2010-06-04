@@ -1,5 +1,13 @@
 2010-06-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorAccessibility.cs: Worked on
+	  accessibility.
+
+2010-06-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: atk impl. improvements
 
 2010-06-04  Mike Krüger  <mkrueger@novell.com>

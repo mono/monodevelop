@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Gtk.Widget, ITextEditorDataProvider, Atk.EditableText, Atk.Text
+	public class TextEditor : Gtk.Widget, ITextEditorDataProvider
 	{
 		TextEditorData textEditorData;
 		
@@ -76,12 +76,10 @@ namespace Mono.TextEditor
 				return textEditorData.Document;
 			}
 			set {
-				textEditorData.Document.TextReplaced -= AtkHandleDocTextReplaced;
 				textEditorData.Document.TextReplaced -= OnDocumentStateChanged;
 				textEditorData.Document.TextSet -= OnTextSet;
 				textEditorData.Document = value;
 				textEditorData.Document.TextReplaced += OnDocumentStateChanged;
-				textEditorData.Document.TextReplaced += AtkHandleDocTextReplaced;
 				textEditorData.Document.TextSet += OnTextSet;
 			}
 		}
@@ -122,6 +120,7 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this(new Document ())
 		{
+			new TextEditorAccessible.Factory ();
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 		}
 		
@@ -249,7 +248,6 @@ namespace Mono.TextEditor
 				StartCaretPulseAnimation ();
 			};
 			doc.TextReplaced += OnDocumentStateChanged;
-			doc.TextReplaced += AtkHandleDocTextReplaced;
 			doc.TextSet += OnTextSet;
 
 			textEditorData.CurrentMode = initialMode;
@@ -361,13 +359,6 @@ namespace Mono.TextEditor
 				if (/*Options.HighlightCaretLine && */args.Location.Line != Caret.Line) 
 					RedrawMarginLine (TextViewMargin, args.Location.Line);
 				RedrawMarginLine (TextViewMargin, Caret.Line);
-			}
-			
-			Atk.TextCaretMovedHandler handler = textCaretMoved;
-			if (handler != null) {
-				Atk.TextCaretMovedArgs caretMoveArgs = new Atk.TextCaretMovedArgs ();
-//				caretMoveArgs.Location = Caret.Offset;
-				handler (this, caretMoveArgs);
 			}
 		}
 		
@@ -2609,347 +2600,6 @@ namespace Mono.TextEditor
 				textEditorData.Document.CommitLineToEndUpdate (textEditorData.Document.OffsetToLineNumber (e.Line.Offset));
 			lineHeights[e.Line.Offset] = currentHeight;
 		}
-		
-		#region EditableText implementation
-		
-		bool Atk.EditableText.SetRunAttributes (GLib.SList attrib_set, int start_offset, int end_offset)
-		{
-			// TODO
-			return false;
-		}
-
-		void Atk.EditableText.CopyText (int start_pos, int end_pos)
-		{
-			var oldSelection = textEditorData.MainSelection;
-			textEditorData.SetSelection (start_pos, end_pos);
-			ClipboardActions.Copy (textEditorData);
-			textEditorData.MainSelection = oldSelection;
-		}
-
-		void Atk.EditableText.CutText (int start_pos, int end_pos)
-		{
-			var oldSelection = textEditorData.MainSelection;
-			textEditorData.SetSelection (start_pos, end_pos);
-			ClipboardActions.Cut (textEditorData);
-			textEditorData.MainSelection = oldSelection;
-		}
-
-		void Atk.EditableText.PasteText (int position)
-		{
-			throw new NotImplementedException ();
-		}
-
-		void Atk.EditableText.DeleteText (int start_pos, int end_pos)
-		{
-			Remove (start_pos, end_pos - start_pos);
-		}
-
-		void Atk.EditableText.InsertText (string str1ng, ref int position)
-		{
-			position += Insert (position, str1ng);
-		}
-
-		string Atk.EditableText.TextContents {
-			set {
-				Document.Text = value;
-			}
-		}
-		#endregion
-		
-		#region Text implementation
-		event Atk.TextCaretMovedHandler textCaretMoved;
-		event Atk.TextCaretMovedHandler Atk.Text.TextCaretMoved {
-			add {
-				textCaretMoved += value;
-			}
-			remove {
-				textCaretMoved -= value;
-			}	
-		}
-
-		event EventHandler Atk.Text.TextSelectionChanged {
-			add {
-				SelectionChanged += value;
-			}	
-			remove {
-				SelectionChanged -= value;
-			}
-		}
-		
-		event EventHandler Atk.Text.TextAttributesChanged {
-			add {
-				// TODO - relevant for a text editor ?
-			}
-			remove {
-				// TODO - relevant for a text editor ?
-			}
-		}
-		
-		Atk.TextChangedHandler atkTextChanged;
-		event Atk.TextChangedHandler Atk.Text.TextChanged {
-			add {
-				atkTextChanged += value;
-			}	
-			remove {
-				atkTextChanged -= value;
-			}
-		}
-		
-		void AtkHandleDocTextReplaced (object sender, ReplaceEventArgs e)
-		{
-			var handler = atkTextChanged;
-			if (handler != null) {
-				Atk.TextChangedArgs args = new Atk.TextChangedArgs ();
-//				args.Length = e.Count;
-//				args.Position = e.Offset;
-				handler (this, args);
-			}
-		}
-
-		bool Atk.Text.AddSelection (int start_offset, int end_offset)
-		{
-			textEditorData.SetSelection (start_offset, end_offset);
-			return true;
-		}
-		
-		int Atk.Text.GetOffsetAtPoint (int x, int y, Atk.CoordType coords)
-		{
-			int rx = 0, ry = 0;
-			switch (coords) {
-			case Atk.CoordType.Screen:
-				TranslateCoordinates (this, x, y, out rx, out ry);
-				rx -= textViewMargin.XOffset;
-				break;
-			case Atk.CoordType.Window:
-				rx = x - textViewMargin.XOffset;
-				ry = y;
-				break;
-			}
-			return Document.LocationToOffset (textViewMargin.VisualToDocumentLocation (rx, ry));
-		}
-		
-		string Atk.Text.GetSelection (int selection_num, out int start_offset, out int end_offset)
-		{
-			if (!textEditorData.IsSomethingSelected) {
-				start_offset = end_offset = Caret.Offset;
-				return "";
-			}
-			var selection = textEditorData.SelectionRange;
-			start_offset = selection.Offset;
-			end_offset = selection.EndOffset;
-			return SelectedText;
-		}
-
-		string Atk.Text.GetTextBeforeOffset (int offset, Atk.TextBoundary boundary_type, out int start_offset, out int end_offset)
-		{
-			LineSegment line;
-			switch (boundary_type) {
-			case Atk.TextBoundary.Char:
-				start_offset = offset;
-				end_offset = offset + 1;
-				break;
-				
-			case Atk.TextBoundary.SentenceEnd:
-			case Atk.TextBoundary.LineEnd:
-				line = Document.GetLineByOffset (offset);
-				start_offset = offset;
-				end_offset = line.Offset + line.EditableLength;
-				break;
-			case Atk.TextBoundary.SentenceStart:
-			case Atk.TextBoundary.LineStart:
-				line = Document.GetLineByOffset (offset);
-				start_offset = line.Offset;
-				end_offset = offset;
-				break;
-			case Atk.TextBoundary.WordEnd:
-				start_offset = offset;
-				end_offset = textEditorData.FindCurrentWordEnd (offset);
-				break;
-			case Atk.TextBoundary.WordStart:
-				start_offset = textEditorData.FindCurrentWordStart (offset);
-				end_offset = offset;
-				break;
-			default:
-				start_offset = end_offset = offset;
-				break;
-			}
-			end_offset = System.Math.Min (end_offset, offset);
-			return Document.GetTextBetween (start_offset, end_offset);
-		}
-
-		string Atk.Text.GetText (int start_offset, int end_offset)
-		{
-			return Document.GetTextAt (start_offset, end_offset - start_offset);
-		}
-
-		Atk.TextRange Atk.Text.GetBoundedRanges (Atk.TextRectangle rect, Atk.CoordType coord_type, Atk.TextClipType x_clip_type, Atk.TextClipType y_clip_type)
-		{
-			Atk.TextRange result = new Atk.TextRange ();
-			// todo 
-			return result;
-		}
-
-		Atk.TextRectangle Atk.Text.GetRangeExtents (int start_offset, int end_offset, Atk.CoordType coord_type)
-		{
-			Atk.TextRectangle result = new Atk.TextRectangle ();
-			var point1 = DocumentToVisualLocation (Document.OffsetToLocation (start_offset));
-			var point2 = DocumentToVisualLocation (Document.OffsetToLocation (end_offset));
-
-			result.X = System.Math.Min (point2.X, point1.Y);
-			result.Y = System.Math.Min (point2.Y, point1.Y);
-			result.Width = System.Math.Abs (point2.X - point1.X);
-			result.Height = System.Math.Abs (point2.Y - point1.Y) + LineHeight;
-			return result;
-		}
-
-		bool Atk.Text.RemoveSelection (int selection_num)
-		{
-			textEditorData.DeleteSelectedText ();
-			return true;
-		}
-
-		void Atk.Text.GetCharacterExtents (int offset, out int x, out int y, out int width, out int height, Atk.CoordType coords)
-		{
-			var point = DocumentToVisualLocation (Document.OffsetToLocation (offset));
-			x = point.X + textViewMargin.XOffset;
-			y = point.Y;
-			width = textViewMargin.CharWidth;
-			height = LineHeight;
-			switch (coords) {
-			case Atk.CoordType.Screen:
-				int ox, oy;
-				GdkWindow.GetOrigin (out ox, out oy);
-				x += ox; y += oy;
-				break;
-			case Atk.CoordType.Window:
-				// nothing
-				break;
-			}
-		}
-
-		Atk.Attribute[] Atk.Text.GetRunAttributes (int offset, out int start_offset, out int end_offset)
-		{
-			// TODO
-			start_offset = end_offset = offset;
-			return null;
-		}
-
-		string Atk.Text.GetTextAtOffset (int offset, Atk.TextBoundary boundary_type, out int start_offset, out int end_offset)
-		{
-			LineSegment line;
-			switch (boundary_type) {
-			case Atk.TextBoundary.Char:
-				start_offset = offset;
-				end_offset = offset + 1;
-				break;
-				
-			case Atk.TextBoundary.SentenceEnd:
-			case Atk.TextBoundary.LineEnd:
-				line = Document.GetLineByOffset (offset);
-				start_offset = offset;
-				end_offset = line.Offset + line.EditableLength;
-				break;
-			case Atk.TextBoundary.SentenceStart:
-			case Atk.TextBoundary.LineStart:
-				line = Document.GetLineByOffset (offset);
-				start_offset = line.Offset;
-				end_offset = offset;
-				break;
-			case Atk.TextBoundary.WordEnd:
-				start_offset = offset;
-				end_offset = textEditorData.FindCurrentWordEnd (offset);
-				break;
-			case Atk.TextBoundary.WordStart:
-				start_offset = textEditorData.FindCurrentWordStart (offset);
-				end_offset = offset;
-				break;
-			default:
-				start_offset = end_offset = offset;
-				break;
-			}
-			return Document.GetTextBetween (start_offset, end_offset);
-		}
-
-		bool Atk.Text.SetCaretOffset (int offset)
-		{
-			textEditorData.Caret.Offset = offset;
-			return true;
-		}
-
-		char Atk.Text.GetCharacterAtOffset (int offset)
-		{
-			return Document.GetCharAt (offset);
-		}
-
-		string Atk.Text.GetTextAfterOffset (int offset, Atk.TextBoundary boundary_type, out int start_offset, out int end_offset)
-		{
-			LineSegment line;
-			switch (boundary_type) {
-			case Atk.TextBoundary.Char:
-				start_offset = offset;
-				end_offset = offset + 1;
-				break;
-				
-			case Atk.TextBoundary.SentenceEnd:
-			case Atk.TextBoundary.LineEnd:
-				line = Document.GetLineByOffset (offset);
-				start_offset = offset;
-				end_offset = line.Offset + line.EditableLength;
-				break;
-			case Atk.TextBoundary.SentenceStart:
-			case Atk.TextBoundary.LineStart:
-				line = Document.GetLineByOffset (offset);
-				start_offset = line.Offset;
-				end_offset = offset;
-				break;
-			case Atk.TextBoundary.WordEnd:
-				start_offset = offset;
-				end_offset = textEditorData.FindCurrentWordEnd (offset);
-				break;
-			case Atk.TextBoundary.WordStart:
-				start_offset = textEditorData.FindCurrentWordStart (offset);
-				end_offset = offset;
-				break;
-			default:
-				start_offset = end_offset = offset;
-				break;
-			}
-			start_offset = System.Math.Min (start_offset, offset);
-			return Document.GetTextBetween (start_offset, end_offset);	
-		}
-
-		bool Atk.Text.SetSelection (int selection_num, int start_offset, int end_offset)
-		{
-			textEditorData.SetSelection (start_offset, end_offset);
-			return true;
-		}
-
-		int Atk.Text.CaretOffset {
-			get {
-				return textEditorData.Caret.Offset;
-			}
-		}
-
-		int Atk.Text.CharacterCount {
-			get {
-				return Document.Length;
-			}
-		}
-
-		Atk.Attribute[] Atk.Text.DefaultAttributes {
-			get {
-				// TODO
-				return null;
-			}
-		}
-
-		int Atk.Text.NSelections {
-			get {
-				return textEditorData.IsSomethingSelected ? 1 : 0;
-			}
-		}
-		#endregion
-		
 	}
 	
 	public interface ITextEditorDataProvider
