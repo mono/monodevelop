@@ -127,7 +127,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//directive names
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
-				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
+				var directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
 				if (HasDoc && directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
 				    directive.Region.Start.Column + 4 == completionContext.TriggerLineOffset)
 				{
@@ -135,7 +135,7 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				return null;
 			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
-				AspNetDirective directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
+				var directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
 				if (HasDoc && directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
 				    directive.Region.Start.Column + 5 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
 				{
@@ -145,8 +145,10 @@ namespace MonoDevelop.AspNet.Gui
 				return null;
 			}
 			
+			bool isAspExprState =  Tracker.Engine.CurrentState is AspNetExpressionState;
+			
 			//non-xml tag completion
-			if (currentChar == '<' && !(Tracker.Engine.CurrentState is S.XmlFreeState)) {
+			if (currentChar == '<' && !(isAspExprState || Tracker.Engine.CurrentState is S.XmlFreeState)) {
 				var list = new CompletionDataList ();
 				AddAspBeginExpressions (list);
 				return list;
@@ -161,15 +163,46 @@ namespace MonoDevelop.AspNet.Gui
 				DocType.PublicFpi = matches.Groups["fpi"].Value;
 				DocType.Uri = matches.Groups["uri"].Value;
 			}
+			
 			//completion for ASP.NET expressions
-			// TODO: Detect <script> state here !!!
-			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
+			if (documentBuilder != null && isAspExprState) {
 				InitializeCodeCompletion ();
 				return documentBuilder.HandleCompletion (hiddenDocument, documentInfo, localDocumentInfo, 
 					 new AspProjectDomWrapper (documentInfo), currentChar, ref triggerWordLength);
 			}
 			
+			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
+				var el = Tracker.Engine.Nodes.Peek () as S.XElement;
+				if (el != null) {
+					var att = GetHtmlAtt (el, "runat");
+					if (att != null && "server".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
+						if (documentBuilder != null) {
+							// TODO: C# completion
+						}
+					}
+					/*
+					else {
+						att = GetHtmlAtt (el, "language");
+						if (att == null || "javascript".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
+						    att = GetHtmlAtt (el, "type");
+							if (att == null || "text/javascript".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
+								// TODO: JS completion
+							}
+						}
+					}*/
+				}
+				
+			}
+			
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
+		}
+		
+		//case insensitive, no prefix
+		static S.XAttribute GetHtmlAtt (S.XElement el, string name)
+		{
+			return el.Attributes
+				.Where (a => a.IsNamed && !a.Name.HasPrefix && a.Name.Name.Equals (name, StringComparison.OrdinalIgnoreCase))
+				.FirstOrDefault ();
 		}
 		
 		public void InitializeCodeCompletion ()
@@ -195,7 +228,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			viewContent.Text = localDocumentInfo.LocalDocument;
 			viewContent.GetTextEditorData ().Caret.Offset = localDocumentInfo.CaretPosition;
-			Console.WriteLine (viewContent.GetTextEditorData ().Document.GetCharAt (localDocumentInfo.CaretPosition));
+
 			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
 			hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
@@ -467,8 +500,14 @@ namespace MonoDevelop.AspNet.Gui
 			list.Add ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"));
 			
 			//valid on 2.0+ runtime only
-			if (ProjClrVersion != ClrVersion.Net_1_1)
+			if (ProjClrVersion != ClrVersion.Net_1_1) {
 				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
+			}
+			
+			//valid on 2.0+ runtime only
+			if (ProjClrVersion != ClrVersion.Net_4_0) {
+				list.Add ("%:", "md-literal", GettextCatalog.GetString ("ASP.NET HTML encoded expression"));
+			}
 		}
 		
 		void AddAspAttributeCompletionData (CompletionDataList list, S.XName name, Dictionary<string, string> existingAtts)
@@ -852,7 +891,5 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		#endregion
 	}
-	
-	
 		
 }

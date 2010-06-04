@@ -1,5 +1,10 @@
 2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs: Partial
+	  support for HTML encoded expressions and script blocks.
+
+2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.AspNet.StateEngine/AspNetDom.cs:
 	* MonoDevelop.AspNet.StateEngine/AspNetExpressionState.cs: Add
 	  support for HTML encoded expressions in the state engine.
