@@ -120,7 +120,8 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this(new Document ())
 		{
-			new TextEditorAccessible.Factory ();
+			// TODO: Enable accessibility factory
+			//			new TextEditorAccessible.Factory ();
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 		}
 		

@@ -351,7 +351,7 @@ namespace Mono.TextEditor
 			}
 		}
 		#endregion
-
+		/*
 		internal sealed class Factory : Atk.ObjectFactory
 		{
 			public static void Init ()
@@ -368,7 +368,7 @@ namespace Mono.TextEditor
 			{
 				return TextEditorAccessible.GType;
 			}
-		}
+		}*/
 	}
 
 	public class BaseWidgetAccessible : Gtk.Accessible, Atk.ComponentImplementor

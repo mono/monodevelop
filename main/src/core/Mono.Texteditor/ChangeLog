@@ -1,5 +1,13 @@
 2010-06-04  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorAccessibility.cs: Disabled
+	  accessibility (produces a compile error on linux - on mac it
+	  works - the Atk.ObjectFactory implementation differs between
+	  my two systems).
+
+2010-06-04  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Mono.TextEditor/TextEditor.cs:
