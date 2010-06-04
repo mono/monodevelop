@@ -390,7 +390,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				return result;
 			}
 			
-			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
+			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
 			{
 				if (cur is IfBlockSpan || cur is ElseIfBlockSpan || cur is ElseBlockSpan) {
 					bool end = i + 6 <= doc.Length && doc.GetTextAt (i, 6) == "#endif";
@@ -417,7 +417,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					return end;
 				}
-				return base.ScanSpanEnd (cur, i);
+				return base.ScanSpanEnd (cur, ref i);
 			}
 			
 	//		Span preprocessorSpan;
