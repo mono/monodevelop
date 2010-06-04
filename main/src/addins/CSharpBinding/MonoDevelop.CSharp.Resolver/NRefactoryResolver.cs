@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Resolver
 		IMember callingMember;
 		ICompilationUnit unit;
 		LookupTableVisitor lookupTableVisitor;
-		DomLocation resolvePosition;
+		internal DomLocation resolvePosition;
 		string fileName;
 		
 		public IType CallingType {
@@ -605,6 +605,7 @@ namespace MonoDevelop.CSharp.Resolver
 							IParameter parameter = result.MostLikelyMethod.Parameters[i];
 							IReturnType returnType = parameter.ReturnType;
 							IType type = resolver.Dom.GetType (returnType);
+							
 							bool isResolved = false;
 							if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 								IMethod invocationMethod = type.Methods.First ();
@@ -617,6 +618,7 @@ namespace MonoDevelop.CSharp.Resolver
 									isResolved = true;
 								}
 							}
+						
 							if (!isResolved) {
 								while (returnType.GenericArguments.Count > 0) {
 									returnType = returnType.GenericArguments[0];
@@ -626,7 +628,8 @@ namespace MonoDevelop.CSharp.Resolver
 							if (returnTypeDictionary.ContainsKey (invariantString))
 								return returnTypeDictionary[invariantString];
 							ResolveResult createdResult = visitor.CreateResult (returnType);
-							returnTypeDictionary[invariantString] = createdResult;
+//							if (!(returnType.Type is AnonymousType))
+								returnTypeDictionary[invariantString] = createdResult;
 							return createdResult;
 						}
 					}
@@ -716,7 +719,7 @@ namespace MonoDevelop.CSharp.Resolver
 							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
 							DomReturnType resolved = new DomReturnType (dom.GetType ("System.Linq.IGrouping", new IReturnType [] { 
 								DomType.GetComponentType (dom, initializerResolve.ResolvedType), groupByResolve.ResolvedType}));
-						varTypeUnresolved = varType = resolved;
+							varTypeUnresolved = varType = resolved;
 						} finally {
 							resolvePosition = old;
 						}
@@ -727,6 +730,14 @@ namespace MonoDevelop.CSharp.Resolver
 							if (lambdaResolve != null) {
 								varType           = lambdaResolve.ResolvedType;
 								varTypeUnresolved = lambdaResolve.UnresolvedType;
+								
+								IType type = Dom.GetType (varType);
+								if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
+									IMethod invocationMethod = type.Methods.First ();
+									if (invocationMethod.Parameters.Count > 0) {
+										varType = varTypeUnresolved = invocationMethod.Parameters[0].ReturnType;
+									}
+								}
 							} else {
 								varType = varTypeUnresolved = DomReturnType.Void;
 							}
@@ -743,7 +754,6 @@ namespace MonoDevelop.CSharp.Resolver
 					} else { 
 						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
-					
 					varType = ResolveType (varType);
 					result = new LocalVariableResolveResult (
 						new LocalVariable (CallingMember, identifier, varType,

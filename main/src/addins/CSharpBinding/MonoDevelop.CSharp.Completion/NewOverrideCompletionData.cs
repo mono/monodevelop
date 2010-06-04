@@ -47,15 +47,11 @@ namespace MonoDevelop.CSharp.Completion
 		TextEditorData editor;
 		IMember member;
 		static Ambience ambience = new CSharpAmbience ();
-		string indent;
 		int    initialOffset;
 		int    declarationBegin;
 		int    targetCaretPositon = -1;
 		int    selectionEndPositon = -1;
-		bool   insertPrivate;
-		bool   insertSealed;
 		IType  type;
-		ICompilationUnit unit;
 		public bool GenerateBody {
 			get;
 			set;
@@ -69,13 +65,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			this.initialOffset = editor.Caret.Offset;
 			this.declarationBegin = declarationBegin;
-			this.unit = type.CompilationUnit;
 			this.GenerateBody = true;
-			string declarationText = editor.Document.GetTextBetween (declarationBegin, initialOffset);
-			insertPrivate = declarationText.Contains ("private");
-			insertSealed  = declarationText.Contains ("sealed");
-			
-			this.indent = editor.Document.GetLineIndent (editor.Caret.Line);
 			this.Icon = member.StockIcon;
 			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter);
 			this.CompletionText = member.Name;

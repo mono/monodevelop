@@ -246,14 +246,23 @@ namespace MonoDevelop.CSharp.Resolver
 			return "?";
 		}
 		
+		Dictionary<CollectionInitializerExpression, DomType> anonymousTypes = new Dictionary<CollectionInitializerExpression, DomType> ();
 		IType CreateAnonymousClass (CollectionInitializerExpression initializer)
 		{
-			DomType result = new AnonymousType ();
-			result.SourceProjectDom = resolver.Dom;
-			foreach (Expression expr in initializer.CreateExpressions) {
-				DomProperty newProperty = new DomProperty (GetAnonymousTypeFieldName (expr), MonoDevelop.Projects.Dom.Modifiers.Public, DomLocation.Empty, DomRegion.Empty, ResolveType(expr));
-				newProperty.DeclaringType = result;
-				result.Add (newProperty);
+			DomType result;
+			if (!anonymousTypes.TryGetValue (initializer, out result)) {
+				result = new AnonymousType ();
+				result.SourceProjectDom = resolver.Dom;
+				foreach (Expression expr in initializer.CreateExpressions) {
+					var oldPos = resolver.ResolvePosition;
+					if (!expr.StartLocation.IsEmpty)
+						resolver.resolvePosition = new DomLocation (expr.StartLocation.Line + resolver.CallingMember.Location.Line - 1, expr.StartLocation.Column - 1);
+					DomProperty newProperty = new DomProperty (GetAnonymousTypeFieldName (expr), MonoDevelop.Projects.Dom.Modifiers.Public, DomLocation.Empty, DomRegion.Empty, ResolveType (expr));
+					newProperty.DeclaringType = result;
+					result.Add (newProperty);
+					resolver.resolvePosition = oldPos;
+				}
+				anonymousTypes[initializer] = result;
 			}
 			return result;
 		}
@@ -502,7 +511,6 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				return null;
 			}
-
 			if (result != null && result.ResolvedType != null) {
 				foreach (ResolveResult innerResult in result.ResolveResults) {
 					ResolveResult resolvedResult = ResolveMemberReference (innerResult, memberReferenceExpression);
@@ -542,7 +550,7 @@ namespace MonoDevelop.CSharp.Resolver
 							continue;
 						member.Add (foundMember);
 					}
-				}
+				} 
 			}
 			if (member.Count > 0) {
 				if (member[0] is IMethod) {
