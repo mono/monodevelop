@@ -55,10 +55,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.Build();
 			this.Title = isNew ? GettextCatalog.GetString ("New template") : GettextCatalog.GetString ("Edit template");
 			this.template = template;
-			this.entryShortcut1.Text = template.Shortcut;
-			this.comboboxentryGroups.Entry.Text = template.Group;
-			this.comboboxentryMime.Entry.Text = template.MimeType;
-			this.entryDescription.Text = template.Description;
+			this.entryShortcut1.Text = template.Shortcut  ?? "";
+			this.comboboxentryGroups.Entry.Text = template.Group ?? "";
+			this.comboboxentryMime.Entry.Text = template.MimeType ?? "";
+			this.entryDescription.Text = template.Description ?? "";
 			this.textEditor.Document.MimeType = template.MimeType;
 			this.textEditor.Document.Text = template.Code;
 			
