@@ -87,19 +87,6 @@ namespace MonoDevelop.AspNet
 				}
 			}
 			
-			protected override void ScanSpan (ref int i)
-			{
-				if (i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
-					var span = new CodeExpressionSpan (GetDefaultMime ());
-					spanStack.Push (span);
-					ruleStack.Push (GetRule (span));
-					OnFoundSpanBegin (span, i, 0);
-					return;
-				}
-				
-				base.ScanSpan (ref i);
-			}
-			
 			static string GetMimeForLanguage (string language)
 			{
 				switch (language) {
@@ -124,58 +111,60 @@ namespace MonoDevelop.AspNet
 				return "text/x-csharp";
 			}
 			
-			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, int i)
+			
+			protected override void ScanSpan (ref int i)
 			{
-				if (doc.GetCharAt (i) == '>') {
-					int j = i - 1;
-					while (j > 0) {
-						char ch = doc.GetCharAt (j);
-						if (ch == '<')
-							break;
-						if (ch == '>')
-							break;
-							
-						j--;
-					}
-					if (j + 7 < doc.Length && doc.GetTextAt (j, 7) == "<script") {
-						StringBuilder langBuilder = new StringBuilder ();
-						j += 7;
-						while (j < doc.Length && doc.GetCharAt (j) != '>') {
-							if (j + 8 < doc.Length && doc.GetTextAt (j, 8) == "language") {
-								j += 8;
-								bool inString = false;
-								while (j < doc.Length) {
-									char ch = doc.GetCharAt (j);
-									if (ch == '"' || ch == '\'') {
-										if (inString)
-											break;
-										inString = true;
-										j++;
-										continue;
-									}
+				if (i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
+					var span = new CodeExpressionSpan (GetDefaultMime ());
+					spanStack.Push (span);
+					ruleStack.Push (GetRule (span));
+					OnFoundSpanBegin (span, i, 0);
+					return;
+				}
+				
+				if (i + 7 < doc.Length && doc.GetTextAt (i, 7) == "<script") {
+					StringBuilder langBuilder = new StringBuilder ();
+					int j = i + 7;
+					while (j < doc.Length && doc.GetCharAt (j) != '>') {
+						if (j + 8 < doc.Length && doc.GetTextAt (j, 8) == "language") {
+							j += 8;
+							bool inString = false;
+							while (j < doc.Length) {
+								char ch = doc.GetCharAt (j);
+								if (ch == '"' || ch == '\'') {
 									if (inString)
-										langBuilder.Append (ch);
+										break;
+									inString = true;
 									j++;
+									continue;
 								}
-								break;
+								if (inString)
+									langBuilder.Append (ch);
+								j++;
 							}
-							j++;
+							break;
 						}
-						
-						string mime = langBuilder.Length != 0 ? GetMimeForLanguage (langBuilder.ToString ()) : GetDefaultMime ();
-						
-						if (mime != null) {
-							bool result = base.ScanSpanEnd (cur, i);
-							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
-							spanStack.Push (span);
-							ruleStack.Push (GetRule (span));
-							OnFoundSpanBegin (span, i + 1, 0);
-							return result;
-						}
+						j++;
+					}
+					
+					string mime = langBuilder.Length != 0 ? GetMimeForLanguage (langBuilder.ToString ()) : GetDefaultMime ();
+					
+					if (mime != null) {
+						CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
+						spanStack.Push (span);
+						ruleStack.Push (GetRule (span));
+						OnFoundSpanBegin (span, i,  j - i + 1);
+						i = j + 1;
+						return;
 					}
 				}
 				
-				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 10 < doc.Length && doc.GetTextAt (i + 1, 9) == "</script>") {
+				base.ScanSpan (ref i);
+			}
+			
+			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
+			{
+				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 <= doc.Length && doc.GetTextAt (i, 9) == "</script>") {
 					while (!(spanStack.Peek () is CodeDeclarationSpan)) {
 						OnFoundSpanEnd (spanStack.Peek (), i, 0);
 						spanStack.Pop ();
@@ -183,7 +172,8 @@ namespace MonoDevelop.AspNet
 							ruleStack.Pop ();
 					}
 					cur = spanStack.Peek ();
-					OnFoundSpanEnd (cur, i, 0);
+					OnFoundSpanEnd (cur, i, "</script>".Length);
+					i += "</script>".Length;
 					spanStack.Pop ();
 					if (ruleStack.Count > 1)
 						ruleStack.Pop ();
@@ -204,7 +194,7 @@ namespace MonoDevelop.AspNet
 						ruleStack.Pop ();
 					return true;
 				}
-				return base.ScanSpanEnd (cur, i);
+				return base.ScanSpanEnd (cur, ref i);
 			}
 		}
 	}
