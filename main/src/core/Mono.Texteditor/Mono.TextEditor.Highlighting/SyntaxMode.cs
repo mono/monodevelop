@@ -368,7 +368,6 @@ namespace Mono.TextEditor.Highlighting
 						spanStack.Pop ();
 						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 							ruleStack.Pop ();
-						i += match.Length;
 						return true;
 					}
 				}
@@ -380,7 +379,6 @@ namespace Mono.TextEditor.Highlighting
 						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 							ruleStack.Pop ();
 						OnFoundSpanExit (cur, i, match.Length);
-						i += match.Length;
 						return true;
 					}
 				}
