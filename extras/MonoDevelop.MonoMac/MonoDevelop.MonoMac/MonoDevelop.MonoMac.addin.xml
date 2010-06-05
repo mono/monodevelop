@@ -1,0 +1,63 @@
+<Addin id          = "MonoMac"
+       namespace   = "MonoDevelop"
+       name        = "MonoMac development"
+       author      = "Michael Hutchinson"
+       copyright   = "MIT X11"
+       url         = "http://monodevelop.com/"
+       description = "Support for developing MonoMac applications"
+       category    = "Mac Development"
+       version     = "2.4">
+	
+	<Runtime>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id       = "MonoMacApplicationXib"
+			      resource = "MonoMacApplicationXib.xft.xml"/>
+		<FileTemplate id       = "MonoMacViewXib"
+			      resource = "MonoMacViewXib.xft.xml"/>
+		<FileTemplate id       = "MonoMacEmptyXib"
+			      resource = "MonoMacEmptyXib.xft.xml"/>
+		<FileTemplate id       = "MonoMacViewController"
+			      resource = "MonoMacViewController.xft.xml"/>
+		<FileTemplate id       = "MonoMacPList"
+			      resource = "MonoMacPList.xft.xml"/>
+		<FileTemplate id       = "MonoMacApplicationManifest"
+			      resource = "MonoMacApplicationManifest.xft.xml"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id       = "MonoMacWindowBasedProject"
+				 resource = "MonoMacWindowBasedProject.xpt.xml" />
+		<ProjectTemplate id       = "MonoMacProject-Empty"
+				 resource = "MonoMacProjectEmpty.xpt.xml"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProjectSubtype
+			guid="{1c533b1c-72dd-4cb1-9f6b-bf11d93bcfbe}"
+			type="MonoDevelop.MonoMac.MonoMacProject" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<ProjectBinding id = "MonoMac" class = "MonoDevelop.MonoMac.MonoMacProjectBinding" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.MonoMac.MonoMacProject" />
+		<DataType class = "MonoDevelop.MonoMac.MonoMacProjectConfiguration" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+		<Class class = "MonoDevelop.MonoMac.MonoMacBuildExtension" insertafter="MidStep" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="MonoMac" class = "MonoDevelop.MonoMac.MonoMacExecutionHandler"/>
+	</Extension>
+</Addin>
