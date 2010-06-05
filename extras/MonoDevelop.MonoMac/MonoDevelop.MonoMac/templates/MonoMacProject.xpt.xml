@@ -28,7 +28,7 @@
 				<Reference type="Gac" refto="System.Core" />
 				<Reference type="Gac" refto="System.Xml.Linq" />
 				<Reference type="Gac" refto="System.Drawing" />
-				<Reference type="Gac" refto="monomac" />
+				<Reference type="Gac" refto="monomac" SpecificVersion="false" />
 			</References>
 			<Files>
 				<FileTemplateReference TemplateID="MacPlist" name="Info.plist" />
