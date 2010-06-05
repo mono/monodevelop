@@ -31,7 +31,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
-using MonoDevelop.IPhone.InterfaceBuilder;
+using MonoDevelop.MacDev.InterfaceBuilder;
 using System.CodeDom.Compiler;
 using System.IO;
 

@@ -34,7 +34,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using System.Xml;
 using System.Text;
 using System.Diagnostics;
-using PropertyList;
+using MonoDevelop.MacDev.Plist;
 using System.CodeDom.Compiler;
 using System.Security.Cryptography.X509Certificates;
 
@@ -243,7 +243,7 @@ namespace MonoDevelop.IPhone
 				var result = new BuildResult ();
 				var dict = doc.Root as PlistDictionary;
 				if (dict == null)
-					doc.Root = dict = new PropertyList.PlistDictionary ();
+					doc.Root = dict = new PlistDictionary ();
 				
 				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
 				
@@ -286,7 +286,7 @@ namespace MonoDevelop.IPhone
 					dict["CFBundleResourceSpecification"] = "ResourceRules.plist";
 				SetIfNotPresent (dict, "CFBundleSignature", "????");
 				SetIfNotPresent (dict,  "CFBundleSupportedPlatforms",
-					new PropertyList.PlistArray () { sim? "iPhoneSimulator" : "iPhoneOS" });
+					new PlistArray () { sim? "iPhoneSimulator" : "iPhoneOS" });
 				SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
 				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
 				SetIfNotPresent (dict, "DTSDKName", (sim? "iphonesimulator" : "iphoneos")  + conf.MtouchSdkVersion);
@@ -1162,7 +1162,7 @@ namespace MonoDevelop.IPhone
 				
 				var dict = doc.Root as PlistDictionary;
 				if (dict == null)
-					doc.Root = dict = new PropertyList.PlistDictionary ();
+					doc.Root = dict = new PlistDictionary ();
 				
 				SetIfNotPresent (dict, "Title", "AppSettings");
 				SetIfNotPresent (dict, "StringsTable", "Root");

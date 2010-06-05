@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.MacDev.Plist;
 
 namespace MonoDevelop.IPhone.Gui
 {
@@ -193,14 +194,14 @@ namespace MonoDevelop.IPhone.Gui
 			badPlist = false;
 			try {
 				var pf = proj.GetInfoPlist ();
-				var doc = new PropertyList.PlistDocument ();
+				var doc = new PlistDocument ();
 				doc.LoadFromXmlFile (pf.FilePath);
-				var dict = doc.Root as PropertyList.PlistDictionary;
+				var dict = doc.Root as PlistDictionary;
 				if (dict == null)
-					doc.Root = dict = new PropertyList.PlistDictionary ();
+					doc.Root = dict = new PlistDictionary ();
 				
-				var orientationArr = dict.TryGetValue (OrientationUtil.KEY) as PropertyList.PlistArray;
-				var ipadOrientationArr = dict.TryGetValue (OrientationUtil.KEY_IPAD) as PropertyList.PlistArray;
+				var orientationArr = dict.TryGetValue (OrientationUtil.KEY) as PlistArray;
+				var ipadOrientationArr = dict.TryGetValue (OrientationUtil.KEY_IPAD) as PlistArray;
 				
 				LoadOrientationsCombo (supportedOrientationsCombo, orientationArr);
 				LoadOrientationsCombo (iPadOrientationsCombo, ipadOrientationArr);
@@ -212,7 +213,7 @@ namespace MonoDevelop.IPhone.Gui
 			HandleTargetDevicesComboChanged (null, null);
 		}
 		
-		static void LoadOrientationsCombo (ComboBox combo, PropertyList.PlistArray values)
+		static void LoadOrientationsCombo (ComboBox combo, PlistArray values)
 		{
 			var store = (ListStore)combo.Model;
 			store.Clear ();
@@ -242,7 +243,7 @@ namespace MonoDevelop.IPhone.Gui
 			}
 		}
 		
-		static PropertyList.PlistArray SaveOrientationsCombo (ComboBox combo)
+		static PlistArray SaveOrientationsCombo (ComboBox combo)
 		{
 			var store = (ListStore)combo.Model;
 			int i = combo.Active;
@@ -276,11 +277,11 @@ namespace MonoDevelop.IPhone.Gui
 				return;
 			try {
 				var pf = proj.GetInfoPlist ();
-				var doc = new PropertyList.PlistDocument ();
+				var doc = new PlistDocument ();
 				doc.LoadFromXmlFile (pf.FilePath);
-				var dict = doc.Root as PropertyList.PlistDictionary;
+				var dict = doc.Root as PlistDictionary;
 				if (dict == null)
-					doc.Root = dict = new PropertyList.PlistDictionary ();
+					doc.Root = dict = new PlistDictionary ();
 				
 				var orientations = SaveOrientationsCombo (supportedOrientationsCombo);
 				if (orientations != null)

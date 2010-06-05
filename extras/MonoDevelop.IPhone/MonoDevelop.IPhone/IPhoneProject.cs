@@ -35,6 +35,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using System.Reflection;
+using MonoDevelop.MacDev.Plist;
 
 namespace MonoDevelop.IPhone
 {
@@ -313,22 +314,11 @@ namespace MonoDevelop.IPhone
 			var conf = new IPhoneProjectConfiguration (name);
 			conf.CopyFrom (base.CreateConfiguration (name));
 			
-			
-			var dir = new FilePath ("bin");
-			if (!String.IsNullOrEmpty (conf.Platform))
-				dir = dir.Combine (conf.Platform);
-			dir = dir.Combine (conf.Name);
-			
-			conf.OutputDirectory = BaseDirectory.IsNullOrEmpty? dir : BaseDirectory.Combine (dir);
-			conf.OutputAssembly = Name;
 			if (conf.Platform == PLAT_IPHONE) {
 				conf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 			} else if (conf.Platform == PLAT_SIM) {
 				conf.MtouchLink = MtouchLinkMode.None;
 			}
-			
-			if (LanguageBinding != null)
-				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
 			return conf;
 		}
 		
@@ -500,8 +490,8 @@ namespace MonoDevelop.IPhone
 			var pf = Files.GetFile (name);
 			if (pf != null)
 				return pf;
-			var doc = new PropertyList.PlistDocument ();
-			doc.Root = new PropertyList.PlistDictionary ();
+			var doc = new PlistDocument ();
+			doc.Root = new PlistDictionary ();
 			doc.WriteToFile (name);
 			return AddFile (name);
 		}

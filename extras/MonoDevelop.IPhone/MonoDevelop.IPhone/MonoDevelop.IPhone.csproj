@@ -78,28 +78,11 @@
     <Compile Include="IPhoneProjectBinding.cs" />
     <Compile Include="IPhoneBuildExtension.cs" />
     <Compile Include="IPhoneFrameworkBackend.cs" />
-    <Compile Include="PropertyList\PlistArray.cs" />
-    <Compile Include="PropertyList\PlistBoolean.cs" />
-    <Compile Include="PropertyList\PlistData.cs" />
-    <Compile Include="PropertyList\PlistDictionary.cs" />
-    <Compile Include="PropertyList\PlistDocument.cs" />
-    <Compile Include="PropertyList\PlistInteger.cs" />
-    <Compile Include="PropertyList\PlistObject.cs" />
-    <Compile Include="PropertyList\PlistObjectBase.cs" />
-    <Compile Include="PropertyList\PlistReal.cs" />
-    <Compile Include="PropertyList\PlistString.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Gui\IPhoneOptionsPanel.cs" />
     <Compile Include="IPhoneExecutionCommand.cs" />
     <Compile Include="IPhoneExecutionHandler.cs" />
     <Compile Include="CodeBehindGenerator.cs" />
-    <Compile Include="InterfaceBuilder\IBObject.cs" />
-    <Compile Include="InterfaceBuilder\UnknownIBObject.cs" />
-    <Compile Include="InterfaceBuilder\IBDocument.cs" />
-    <Compile Include="InterfaceBuilder\IBReference.cs" />
-    <Compile Include="InterfaceBuilder\IBConnectionRecord.cs" />
-    <Compile Include="InterfaceBuilder\Collections.cs" />
-    <Compile Include="InterfaceBuilder\IBObjectRecord.cs" />
     <Compile Include="Keychain.cs" />
     <Compile Include="Gui\IPhoneSigningKeyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs" />
@@ -107,7 +90,6 @@
     <Compile Include="Gui\IPhoneBuildOptionsPanel.cs" />
     <Compile Include="CodeBehind.cs" />
     <Compile Include="MobileProvision.cs" />
-    <Compile Include="PropertyList\PlistDate.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DataConverter.cs" />
     <Compile Include="IPhoneExecutionModeSet.cs" />
@@ -124,128 +106,143 @@
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">
       <LogicalName>MonoDevelop.IPhone.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneApplicationXib.xft.xml">
-      <LogicalName>IPhoneApplicationXib.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPadApplicationXib.xft.xml">
-      <LogicalName>IPadApplicationXib.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneViewXib.xft.xml">
-      <LogicalName>IPhoneViewXib.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPadViewXib.xft.xml">
-      <LogicalName>IPadViewXib.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneProjectEmpty.xpt.xml">
-      <LogicalName>IPhoneProjectEmpty.xpt.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="framework_IPhone.xml">
       <LogicalName>framework_IPhone.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneEmptyXib.xft.xml">
-      <LogicalName>IPhoneEmptyXib.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneViewController.xft.xml">
-      <LogicalName>IPhoneViewController.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPadViewController.xft.xml">
-      <LogicalName>IPadViewController.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\16x16\application-x-mono-develop-xib.png">
-      <LogicalName>application-x-mono-develop-xib-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\16x16\iphone-project-options-panel.png">
-      <LogicalName>iphone-project-options-panel-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\16x16\phone-apple-iphone.png">
-      <LogicalName>phone-apple-iphone-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\22x22\application-x-mono-develop-xib.png">
-      <LogicalName>application-x-mono-develop-xib-22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\22x22\phone-apple-iphone.png">
-      <LogicalName>phone-apple-iphone-22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\24x24\application-x-mono-develop-xib.png">
-      <LogicalName>application-x-mono-develop-xib-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\24x24\iphone-project-options-panel.png">
-      <LogicalName>iphone-project-options-panel-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\24x24\phone-apple-iphone.png">
-      <LogicalName>phone-apple-iphone-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\application-x-mono-develop-xib.png">
-      <LogicalName>application-x-mono-develop-xib-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\phone-apple-iphone.png">
-      <LogicalName>phone-apple-iphone-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\phone-apple-iphone-project-overlay.png">
-      <LogicalName>iphone-project-overlay.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\xib-template-window.png">
-      <LogicalName>xib-template-window.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\xib-template-empty.png">
-      <LogicalName>xib-template-empty.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\xib-template-view.png">
-      <LogicalName>xib-template-view.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\32x32\xib-template-application.png">
-      <LogicalName>xib-template-application.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\48x48\application-x-mono-develop-xib.png">
-      <LogicalName>application-x-mono-develop-xib-48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Icons\48x48\phone-apple-iphone.png">
-      <LogicalName>phone-apple-iphone-48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneLibraryProject.xpt.xml">
-      <LogicalName>IPhoneLibraryProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneWindowBasedProject.xpt.xml">
-      <LogicalName>IPhoneWindowBasedProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPadWindowBasedProject.xpt.xml">
-      <LogicalName>IPadWindowBasedProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\UniversalWindowBasedProject.xpt.xml">
-      <LogicalName>UniversalWindowBasedProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneOpenGLProject.xpt.xml">
-      <LogicalName>IPhoneOpenGLProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneNavBasedProject.xpt.xml">
-      <LogicalName>IPhoneNavBasedProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneUtilityProject.xpt.xml">
-      <LogicalName>IPhoneUtilityProject.xpt.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhonePList.xft.xml">
-      <LogicalName>IPhonePList.xft.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Templates\IPhoneApplicationManifest.xft.xml">
-      <LogicalName>IPhoneApplicationManifest.xft.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\" />
     <Folder Include="Gui\" />
     <Folder Include="InterfaceBuilder\" />
-    <Folder Include="Icons\" />
+    <Folder Include="templates\" />
+    <Folder Include="icons\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="PropertyList\" />
+    <Folder Include="icons\" />
+    <Folder Include="icons\" />
+    <Folder Include="icons\48x48\" />
+    <Folder Include="icons\48x48\" />
+    <Folder Include="icons\32x32\" />
+    <Folder Include="icons\32x32\" />
+    <Folder Include="icons\32x32\" />
+    <Folder Include="icons\32x32\" />
+    <Folder Include="icons\32x32\" />
+    <Folder Include="icons\32x32\" />
+    <Folder Include="icons\32x32\" />
+    <Folder Include="icons\256x256\" />
+    <Folder Include="icons\256x256\" />
+    <Folder Include="icons\24x24\" />
+    <Folder Include="icons\24x24\" />
+    <Folder Include="icons\24x24\" />
+    <Folder Include="icons\22x22\" />
+    <Folder Include="icons\22x22\" />
+    <Folder Include="icons\16x16\" />
+    <Folder Include="icons\16x16\" />
+    <Folder Include="icons\16x16\" />
+    <Folder Include="icons\" />
+    <Folder Include="icons\" />
+    <Folder Include="icons\" />
+    <Folder Include="icons\" />
+    <Folder Include="templates\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ItemGroup>
-    <None Include="Icons\256x256\application-x-mono-develop-xib.png" />
-    <None Include="Icons\256x256\phone-apple-iphone.png" />
-    <None Include="Icons\application-x-mono-develop-xib.svg" />
-    <None Include="Icons\mono-develop.svg" />
-    <None Include="Icons\phone-apple-iphone.svg" />
+    <None Include="templates\IPhoneApplicationXib.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPadApplicationXib.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneViewXib.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPadViewXib.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneProjectEmpty.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneEmptyXib.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneViewController.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPadViewController.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneLibraryProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneWindowBasedProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPadWindowBasedProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\UniversalWindowBasedProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneOpenGLProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneNavBasedProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneUtilityProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\IPhoneApplicationManifest.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\phone-apple-iphone.svg" />
+    <None Include="icons\phone-apple-iphone-48.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\phone-apple-iphone-32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\iphone-project-overlay.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\phone-apple-iphone-256.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\phone-apple-iphone-24.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\iphone-project-options-panel-24.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\phone-apple-iphone-22.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\phone-apple-iphone-16.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\iphone-project-options-panel-16.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\application-x-mono-develop-xib-16.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.MacDev\MonoDevelop.MacDev.csproj">
+      <Project>{150AC48A-E4AE-4232-9959-28D240537906}</Project>
+      <Name>MonoDevelop.MacDev</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

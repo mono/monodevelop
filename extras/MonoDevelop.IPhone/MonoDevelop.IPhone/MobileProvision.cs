@@ -27,7 +27,7 @@
 using System;
 using System.Linq;
 using System.IO;
-using PropertyList;
+using MonoDevelop.MacDev.Plist;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Security.Cryptography.X509Certificates;

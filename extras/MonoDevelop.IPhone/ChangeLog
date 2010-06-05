@@ -1,3 +1,10 @@
+2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.MacDev:
+	* MonoDevelop.IPhone.sln: Moved sharable code, icons,
+	  templates and mimetype definitions out of the iPhone addin
+	  into a new MacDev addin.
+
 2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure: Bump MD version.

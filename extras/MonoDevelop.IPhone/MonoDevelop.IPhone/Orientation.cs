@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.MacDev.Plist;
 
 namespace MonoDevelop.IPhone
 {
@@ -43,12 +44,12 @@ namespace MonoDevelop.IPhone
 	public static class OrientationUtil
 	{
 		//ignores invalid values
-		public static Orientation Parse (PropertyList.PlistArray arr)
+		public static Orientation Parse (PlistArray arr)
 		{
 			var o = Orientation.None;
 			if (arr == null)
 				return o;
-			foreach (PropertyList.PlistString s in arr) {
+			foreach (PlistString s in arr) {
 				switch (s.Value) {
 				case "UIInterfaceOrientationPortrait":
 					o |= Orientation.Down;
@@ -67,9 +68,9 @@ namespace MonoDevelop.IPhone
 			return o;
 		}
 		
-		public static PropertyList.PlistArray ToPlist (Orientation o)
+		public static PlistArray ToPlist (Orientation o)
 		{
-			var arr = new PropertyList.PlistArray ();
+			var arr = new PlistArray ();
 			if ((o & Orientation.Up) != 0)
 				arr.Add ("UIInterfaceOrientationPortrait");
 			if ((o & Orientation.Down) != 0)
