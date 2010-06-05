@@ -96,7 +96,7 @@ namespace MonoDevelop.IPhone.Gui
 			entitlementsEntry.Project = project;
 			entitlementsEntry.EntryIsEditable = true;
 			
-			additionalArgsEntry.AddOptions (IPhoneBuildOptionsPanelWidget.menuOptions);
+			additionalArgsEntry.AddOptions (IPhoneBuildOptionsWidget.menuOptions);
 			
 			profiles = MobileProvision.GetAllInstalledProvisions ();
 			

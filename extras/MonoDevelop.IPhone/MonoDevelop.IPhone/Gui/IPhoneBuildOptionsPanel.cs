@@ -39,7 +39,7 @@ namespace MonoDevelop.IPhone.Gui
 
 	class IPhoneBuildOptionsPanel : MultiConfigItemOptionsPanel
 	{
-		IPhoneBuildOptionsPanelWidget widget;
+		IPhoneBuildOptionsWidget widget;
 		
 		public override bool IsVisible ()
 		{
@@ -50,7 +50,7 @@ namespace MonoDevelop.IPhone.Gui
 		public override Gtk.Widget CreatePanelWidget ()
 		{
 			AllowMixedConfigurations = false;
-			return (widget = new IPhoneBuildOptionsPanelWidget ());
+			return (widget = new IPhoneBuildOptionsWidget ());
 		}
 		
 		public override void LoadConfigData ()
@@ -64,7 +64,7 @@ namespace MonoDevelop.IPhone.Gui
 		}
 	}
 	
-	partial class IPhoneBuildOptionsPanelWidget : Gtk.Bin
+	partial class IPhoneBuildOptionsWidget : Gtk.Bin
 	{
 		internal static string[,] menuOptions = new string[,] {
 			{GettextCatalog.GetString ("Target _Path"), "${TargetPath}"},
@@ -79,7 +79,7 @@ namespace MonoDevelop.IPhone.Gui
 		
 		ListStore store;
 		
-		public IPhoneBuildOptionsPanelWidget ()
+		public IPhoneBuildOptionsWidget ()
 		{
 			this.Build ();
 			extraArgsEntry.AddOptions (menuOptions);

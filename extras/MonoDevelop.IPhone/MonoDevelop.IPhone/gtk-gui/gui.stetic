@@ -1124,7 +1124,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget" design-size="519 303">
+  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget" design-size="519 303">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
@@ -1316,7 +1316,7 @@
                       <widget class="Gtk.Label" id="label6">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes">Minimim _OS version:</property>
+                        <property name="LabelProp" translatable="yes">Minimum _OS version:</property>
                         <property name="UseUnderline">True</property>
                         <property name="MnemonicWidget">sdkCombo</property>
                       </widget>

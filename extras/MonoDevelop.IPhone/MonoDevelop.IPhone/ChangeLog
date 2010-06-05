@@ -1,3 +1,21 @@
+2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneSigningKeyPanel.cs:
+	* Gui/IPhoneBuildOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget.cs:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanelWidget.cs:
+	  Change widget name so it doesn't include the word "Panel",
+	  because idiot theme authors assume the "Panel" word is
+	  exclusive to gnome-panel widget names, and make dark/light
+	  themes that make the text unreadable.
+
+	* MonoDevelop.IPhone.csproj: Updated filename.
+
+	* gtk-gui/gui.stetic: Fix typo.
+
+	* IPhoneProject.cs: Fix default output dir of new
+	  configurations.
+
 2010-06-02  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.IPhone.csproj:

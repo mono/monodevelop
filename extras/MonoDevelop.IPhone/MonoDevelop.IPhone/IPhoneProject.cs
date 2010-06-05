@@ -311,11 +311,13 @@ namespace MonoDevelop.IPhone
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			var conf = new IPhoneProjectConfiguration (name);
+			conf.CopyFrom (base.CreateConfiguration (name));
+			
 			
 			var dir = new FilePath ("bin");
 			if (!String.IsNullOrEmpty (conf.Platform))
-				dir.Combine (conf.Platform);
-			dir.Combine (conf.Name);
+				dir = dir.Combine (conf.Platform);
+			dir = dir.Combine (conf.Name);
 			
 			conf.OutputDirectory = BaseDirectory.IsNullOrEmpty? dir : BaseDirectory.Combine (dir);
 			conf.OutputAssembly = Name;
