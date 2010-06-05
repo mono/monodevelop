@@ -115,44 +115,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui\" />
-    <Folder Include="InterfaceBuilder\" />
-    <Folder Include="templates\" />
-    <Folder Include="icons\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="PropertyList\" />
-    <Folder Include="icons\" />
-    <Folder Include="icons\" />
-    <Folder Include="icons\48x48\" />
-    <Folder Include="icons\48x48\" />
-    <Folder Include="icons\32x32\" />
-    <Folder Include="icons\32x32\" />
-    <Folder Include="icons\32x32\" />
-    <Folder Include="icons\32x32\" />
-    <Folder Include="icons\32x32\" />
-    <Folder Include="icons\32x32\" />
-    <Folder Include="icons\32x32\" />
-    <Folder Include="icons\256x256\" />
-    <Folder Include="icons\256x256\" />
-    <Folder Include="icons\24x24\" />
-    <Folder Include="icons\24x24\" />
-    <Folder Include="icons\24x24\" />
-    <Folder Include="icons\22x22\" />
-    <Folder Include="icons\22x22\" />
-    <Folder Include="icons\16x16\" />
-    <Folder Include="icons\16x16\" />
-    <Folder Include="icons\16x16\" />
-    <Folder Include="icons\" />
-    <Folder Include="icons\" />
-    <Folder Include="icons\" />
     <Folder Include="icons\" />
     <Folder Include="templates\" />
   </ItemGroup>

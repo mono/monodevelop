@@ -1,3 +1,10 @@
+2010-06-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProjectConfiguration.cs: Fix possible exception.
+
+	* MonoDevelop.IPhone.csproj: Remove duplicate/nonexistent
+	  folders.
+
 2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* icons:

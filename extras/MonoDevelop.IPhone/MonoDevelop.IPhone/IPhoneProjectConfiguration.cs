@@ -137,8 +137,10 @@ namespace MonoDevelop.IPhone
 		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
-			var cfg = (IPhoneProjectConfiguration) configuration;
 			base.CopyFrom (configuration);
+			var cfg = configuration as IPhoneProjectConfiguration;
+			if (cfg == null)
+				return;
 			
 			CodesignProvision = cfg.CodesignProvision;
 			CodesignKey = cfg.CodesignKey;
