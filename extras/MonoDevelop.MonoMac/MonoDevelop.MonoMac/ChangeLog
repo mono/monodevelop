@@ -1,0 +1,11 @@
+2010-06-05  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.MonoMac.addin.xml: Added project template.
+	  Include monomac.dll as a bundled package.
+
+	* templates/MonoMacProject.xpt.xml: Added project template.
+
+	* MonoDevelop.MonoMac.csproj: Added files.
+
+	* monomac.dll: Bundle monomac.dll with the addin.
+

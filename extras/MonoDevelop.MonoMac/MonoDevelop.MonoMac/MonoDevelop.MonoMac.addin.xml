@@ -9,6 +9,8 @@
        version     = "2.4">
 	
 	<Runtime>
+		<Import file = "templates/MonoMacProject.xpt.xml"/>
+		<Import file = "monomac.dll"/>
 	</Runtime>
 	
 	<Dependencies>
@@ -17,25 +19,15 @@
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id       = "MonoMacApplicationXib"
-			      resource = "MonoMacApplicationXib.xft.xml"/>
-		<FileTemplate id       = "MonoMacViewXib"
-			      resource = "MonoMacViewXib.xft.xml"/>
-		<FileTemplate id       = "MonoMacEmptyXib"
-			      resource = "MonoMacEmptyXib.xft.xml"/>
-		<FileTemplate id       = "MonoMacViewController"
-			      resource = "MonoMacViewController.xft.xml"/>
-		<FileTemplate id       = "MonoMacPList"
-			      resource = "MonoMacPList.xft.xml"/>
-		<FileTemplate id       = "MonoMacApplicationManifest"
-			      resource = "MonoMacApplicationManifest.xft.xml"/>
+<!--
+			<FileTemplate id = "MonoMacApplicationXib"
+			            file = "MonoMacApplicationXib.xft.xml"/>
+-->
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id       = "MonoMacWindowBasedProject"
-				 resource = "MonoMacWindowBasedProject.xpt.xml" />
-		<ProjectTemplate id       = "MonoMacProject-Empty"
-				 resource = "MonoMacProjectEmpty.xpt.xml"/>
+		<ProjectTemplate id = "MonoMacProject"
+				       file = "templates/MonoMacProject.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -60,4 +52,10 @@
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="MonoMac" class = "MonoDevelop.MonoMac.MonoMacExecutionHandler"/>
 	</Extension>
-</Addin>
+	
+	<Extension path="/MonoDevelop/Core/SupportPackages">
+		<Package name="monomac" version="0.0.0.0" targetFramework="3.5">
+			<Assembly file="monomac.dll" />
+		</Package>
+	</Extension>
+</Addin> 

@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2010/06/05">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>MonoMac Project</_Name>
+		<_Category>Mac</_Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates a MonoMac project.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "MonoMac">
+			<Options />
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Xml" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Gac" refto="System.Xml.Linq" />
+				<Reference type="Gac" refto="System.Drawing" />
+				<Reference type="Gac" refto="monomac" />
+			</References>
+			<Files>
+				<FileTemplateReference TemplateID="MacPlist" name="Info.plist" />
+				<File name="Main.cs">
+<![CDATA[using System;
+using System.Drawing;
+using MonoMac.Foundation;
+using MonoMac.AppKit;
+using MonoMac.ObjCRuntime;
+
+namespace ${Namespace}
+{
+	class MainClass
+	{
+	        static void Main (string [] args)
+	        {
+	                NSApplication.Init ();
+	                NSApplication.Main (args);
+	        }
+	}
+}	
+]]></File>
+				<File name="AppDelegate.cs">
+<![CDATA[using System;
+using System.Drawing;
+using MonoMac.Foundation;
+using MonoMac.AppKit;
+using MonoMac.ObjCRuntime;
+
+namespace ${Namespace}
+{
+	[Register]
+	public class AppDelegate : NSApplicationDelegate
+	{
+	        NSWindow window;
+	        NSTextField text;
+	
+	        public AppDelegate ()
+	        {
+	        }
+	
+	        public override void FinishedLaunching (NSObject notification)
+	        {
+	                text = new NSTextField (new RectangleF (44, 32, 232, 31)) {
+	                        StringValue = "Hello Mono Mac!"
+	                };
+	
+	                window = new NSWindow (new RectangleF (50, 50, 400, 400),
+	                	 (NSWindowStyle) (1 | (1 << 1) | (1 << 2) | (1 << 3)), 0, false);
+	                window.ContentView.AddSubview (text);
+	                window.MakeKeyAndOrderFront (this);
+	        }
+	       }
+}
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
