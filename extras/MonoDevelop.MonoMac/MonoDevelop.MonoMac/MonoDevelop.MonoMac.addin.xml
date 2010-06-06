@@ -10,7 +10,7 @@
 	
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
-		<Import file = "monomac.dll"/>
+		<Import file = "MonoMac.dll"/>
 	</Runtime>
 	
 	<Dependencies>
@@ -33,7 +33,8 @@
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{1c533b1c-72dd-4cb1-9f6b-bf11d93bcfbe}"
-			type="MonoDevelop.MonoMac.MonoMacProject" />
+			type="MonoDevelop.MonoMac.MonoMacProject"
+			import="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
@@ -55,7 +56,7 @@
 	
 	<Extension path="/MonoDevelop/Core/SupportPackages">
 		<Package name="monomac" version="0.0.0.0" targetFramework="3.5">
-			<Assembly file="monomac.dll" />
+			<Assembly file="MonoMac.dll" />
 		</Package>
 	</Extension>
 </Addin> 

@@ -93,7 +93,7 @@
     <None Include="templates\MonoMacProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="monomac.dll">
+    <None Include="MonoMac.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

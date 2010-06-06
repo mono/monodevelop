@@ -1,3 +1,13 @@
+2010-06-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoMac.dll:
+	* MonoDevelop.MonoMac.csproj:
+	* MonoDevelop.MonoMac.addin.xml: Renamed our copy of MonoMac
+	  from monomac.dll to MonoMac.dll
+
+	* templates/MonoMacProject.xpt.xml: Added an Info.plist and a
+	  MainMenu.xib.
+
 2010-06-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/MonoMacProject.xpt.xml: Don't require specific
