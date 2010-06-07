@@ -1,5 +1,12 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacCodeBehind.cs: Simpler codebehind generator that just
+	  uses types explicitly defined in IB.
+
+	* MonoMacProject.cs: Remove dead code.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* templates/MonoMacProject.xpt.xml: Fix category.
 
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>

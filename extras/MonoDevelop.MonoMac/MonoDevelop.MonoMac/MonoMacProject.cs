@@ -196,16 +196,6 @@ namespace MonoDevelop.MonoMac
 			}
 		}
 		
-		protected override void OnFileChangedInProject (MonoDevelop.Projects.ProjectFileEventArgs e)
-		{
-			/* TODO
-			//update codebehind
-			if (e.ProjectFile.BuildAction == BuildAction.Page && e.ProjectFile.FilePath.Extension ==".xib")
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate { CodeBehind.UpdateXibCodebehind (e.ProjectFile); });
-			*/
-			base.OnFileChangedInProject (e);
-		}
-		
 		#endregion
 		
 		public ProjectFile GetInfoPlist ()

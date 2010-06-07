@@ -40,6 +40,8 @@ namespace MonoDevelop.MonoMac
 {
 	public class MonoMacCodeBehind : XibCodeBehind
 	{
+		const string NSOBJECT = "MonoMac.Foundation.NSObject";
+		
 		static Dictionary<string,string> typeNameMap = new Dictionary<string, string> ();
 		
 		//FIXME: would prefer to look these up inside the MD type DB, if possible, instead of using reflection
@@ -81,177 +83,65 @@ namespace MonoDevelop.MonoMac
 			var ibDoc = IBDocument.Deserialize (xibDoc);
 			
 			object outVar;
-			UnknownIBObject objects;
-			if (!ibDoc.Properties.TryGetValue ("IBDocument.Objects", out outVar) || (objects = outVar as UnknownIBObject) == null)
-				return new CodeTypeDeclaration[0];
-			
-			//process the connection records
-			NSMutableArray connectionRecords;
-			if (!objects.Properties.TryGetValue ("connectionRecords", out outVar) || (connectionRecords = outVar as NSMutableArray) == null)
-				return new CodeTypeDeclaration[0];
-			
-			//group connection records by type ref ID
-			var typeRecords = new Dictionary<int,List<IBConnectionRecord>> ();
-			foreach (var record in connectionRecords.Values.OfType<IBConnectionRecord> ()) {
-				//get the type this member belongs in
-				var ev = record.Connection as IBActionConnection;
-				var outlet = record.Connection as IBOutletConnection;
-				if (outlet == null && ev == null) {
-					//not a recognised connection type. probably a desktop xib
-					continue;
-				}
-				int? typeIndex = ((IBObject)(ev != null
-					? ev.Destination.Reference
-					: outlet.Source.Reference)).Id;
-				if (typeIndex == null)
-					throw new InvalidOperationException ("Connection " + record.ConnectionId + " references null object ID");
-				List<IBConnectionRecord> records;
-				if (!typeRecords.TryGetValue (typeIndex.Value, out records))
-					typeRecords[typeIndex.Value] = records = new List<IBConnectionRecord> ();
-				records.Add (record);
-			}
-			
-			//grab the custom class names, keyed by object ID
-			var classNames = new Dictionary<int, string> ();
-			var flattenedProperties = (NSMutableDictionary) objects.Properties ["flattenedProperties"];
-			foreach (var pair in flattenedProperties.Values) {
-				string keyStr = (string)pair.Key;
-				if (!keyStr.EndsWith (".CustomClassName"))
-					continue;
-				int key = int.Parse (keyStr.Substring (0, keyStr.IndexOf ('.')));
-				string name = (string)pair.Value;
-				
-				//HACK: why does IB not generate partial classes for UIApplication or UIResponder? I guess we should suppress them too
-				if (name == "UIApplication" || name == "UIResponder")
-					continue;
-				
-				classNames[key] = (string)pair.Value;
-			}
-			
-			// it seems to be hard to figure out which objects we should generate classes for,
-			// so take the list of classes that xcode would generate
-			var ibApprovedPartialClassNames = new HashSet<string> ();
 			UnknownIBObject classDescriber;
-			if (ibDoc.Properties.TryGetValue ("IBDocument.Classes", out outVar) && (classDescriber = outVar as UnknownIBObject) != null) {
-				NSMutableArray arr;
-				if (classDescriber.Properties.TryGetValue ("referencedPartialClassDescriptions", out outVar) && (arr = outVar as NSMutableArray) != null) {
-					foreach (var cls in arr.Values.OfType<IBPartialClassDescription> ())
-						if (!String.IsNullOrEmpty (cls.ClassName))
-						    ibApprovedPartialClassNames.Add (cls.ClassName);
-				}
-			}
+			if (!ibDoc.Properties.TryGetValue ("IBDocument.Classes", out outVar) || (classDescriber = outVar as UnknownIBObject) == null)
+				yield break;
 			
-			// construct the type objects, keyed by ref ID
-			var objectRecords = (IBMutableOrderedSet) objects.Properties ["objectRecords"];
-			var customTypeNames = new Dictionary<int,string> ();
-			var types = new Dictionary<int,CodeTypeDeclaration> ();
-			foreach (IBObjectRecord record in objectRecords.OrderedObjects.OfType<IBObjectRecord> ()) {
-				string name;
-				int? objId = ((IBObject)ResolveIfReference (record.Object)).Id;
-				if (objId != null && classNames.TryGetValue (record.ObjectId, out name)) {
-					
-					customTypeNames[objId.Value] = name;
-					
-					if (!ibApprovedPartialClassNames.Contains (name))
-						continue;
-					
-					//HACK to avoid duplicate class definitions, which is not compilable
-					ibApprovedPartialClassNames.Remove (name);
-					
-					var type = new CodeTypeDeclaration (name) {
-						IsPartial = true
-					};
-					type.CustomAttributes.Add (
-						new CodeAttributeDeclaration ("MonoMac.Foundation.Register",
-							new CodeAttributeArgument (new CodePrimitiveExpression (name))));
-					
-					//FIXME: implement proper base class resolution. I'm not sure where the info is - it might need some
-					// inference rules
-					
-					var obj = ResolveIfReference (record.Object);
-					if (obj != null) {
-						string baseType = "MonoMac.Foundation.NSObject";
-						if (obj is IBProxyObject) {
-							baseType = "MonoMac.UIKit.UIViewController";
-						} else if (obj is UnknownIBObject) {
-							var uobj = (UnknownIBObject)obj;
-							
-							//if the item comes from another nib, don't generate the partial class in this xib's codebehind
-							if (uobj.Properties.ContainsKey ("IBUINibName") && !String.IsNullOrEmpty (uobj.Properties["IBUINibName"] as string))
-								continue;
-							
-							baseType = GetTypeName (null, uobj) ?? "MonoMac.Foundation.NSObject";
-						}
-						type.Comments.Add (new CodeCommentStatement (String.Format ("Base type probably should be {0} or subclass", baseType))); 
-					}
-					
-					types.Add (objId.Value, type);
-				}
-			}
+			NSMutableArray arr;
+			if (!classDescriber.Properties.TryGetValue ("referencedPartialClassDescriptions", out outVar) || (arr = outVar as NSMutableArray) == null)
+				yield break;
 			
-			foreach (KeyValuePair<int,List<IBConnectionRecord>> typeRecord in typeRecords) {
-				CodeTypeDeclaration type;
-				if (!types.TryGetValue (typeRecord.Key, out type))
+			foreach (var cls in arr.Values.OfType<IBPartialClassDescription> ()) {
+				if (string.IsNullOrEmpty (cls.ClassName))
 					continue;
 				
-				//separate out the actions and outlets
-				var actions = new List<IBActionConnection> ();
-				var outlets = new List<IBOutletConnection> ();
-				foreach (var record in typeRecord.Value) {
-					if (record.Connection is IBActionConnection)
-						actions.Add ((IBActionConnection)record.Connection);
-					else if (record.Connection is IBOutletConnection)
-						outlets.Add ((IBOutletConnection)record.Connection);
-				}
+				var si = cls.SourceIdentifier.Value;
+				if (si == null || si.MajorKey != "IBUserSource")
+					continue;
 				
-				//process the actions, grouping ones with the same name
-				foreach (var actionGroup in actions.GroupBy (a => a.Label)) {
-					//find a common sender type for all the items in the grouping
-					CodeTypeReference senderType = null;
-					foreach (IBActionConnection ev in actionGroup) {
-						var sender = ResolveIfReference (ev.Source) as IBObject;
-						var newType = new CodeTypeReference (GetTypeName (customTypeNames, sender) ?? "MonoMac.Foundation.NSObject");
-						if (senderType == null) {
-							senderType = newType;
-							continue;
-						} else if (senderType == newType) {
-							continue;
-						} else {
-							//FIXME: resolve common type
-							newType = new CodeTypeReference ("MonoMac.Foundation.NSObject");
-							break;
-						}	
-					}
-					
-					if (type.Members.Count == 0)
+				var type = new CodeTypeDeclaration (cls.ClassName) {
+					IsPartial = true,
+				};
+				type.CustomAttributes.Add (
+					new CodeAttributeDeclaration ("MonoMac.Foundation.Register",
+						new CodeAttributeArgument (new CodePrimitiveExpression (cls.ClassName))));
+				
+				var sc = GetTypeName (cls.SuperclassName) ?? "MonoMac.Foundation.NSObject";
+				type.BaseTypes.Add (new CodeTypeReference (sc));
+				
+				if (cls.Actions != null) {
+					foreach (var action in cls.Actions.Values) {
 						AddWarningDisablePragmas (type, provider);
-					
-					//create the action method and add it
-					StringWriter actionStubWriter = null;
-					GenerateAction (type, actionGroup.Key, senderType, provider, generatorOptions, ref actionStubWriter);
-					if (actionStubWriter != null) {
-						type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
-						actionStubWriter.Dispose ();
+						StringWriter actionStubWriter = null;
+						var val = (string)action.Value;
+						var sender = val == "id"? NSOBJECT : GetTypeName (val);
+						GenerateAction (type, (string)action.Key, new CodeTypeReference (sender), provider, generatorOptions, ref actionStubWriter);
+						
+						if (actionStubWriter != null) {
+							type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
+							actionStubWriter.Dispose ();
+						}
 					}
 				}
 				
-				foreach (var outlet in outlets) {
-					CodeTypeReference outletType;
-					//destination is widget, so get type
-					var widget = ResolveIfReference (outlet.Destination.Reference) as IBObject;
-					outletType = new CodeTypeReference (GetTypeName (customTypeNames, widget) ?? "System.Object");
-					
-					if (type.Members.Count == 0)
+				if (cls.Outlets != null) {
+					foreach (var outlet in cls.Outlets.Values) {
 						AddWarningDisablePragmas (type, provider);
-					AddOutletProperty (type, outlet.Label, outletType);
+						var val = (string)outlet.Value;
+						var ret = val == "id"? NSOBJECT : GetTypeName (val);
+						AddOutletProperty (type, (string)outlet.Key, new CodeTypeReference (ret));
+					}
 				}
+				
+				yield return type;
 			}
-			
-			return types.Values;
 		}
 		
 		static void AddWarningDisablePragmas (CodeTypeDeclaration type, CodeDomProvider provider)
 		{
+			if (type.Members.Count > 0)
+				return;
+			
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				type.Members.Add (new CodeSnippetTypeMember ("#pragma warning disable 0169")); // unused member
 			}
@@ -300,23 +190,13 @@ namespace MonoDevelop.MonoMac
 			}
 		}
 		
-		static string GetTypeName (Dictionary<int,string> customTypeNames, IBObject obj)
+		//FIXME: resolve in the context of the whole project
+		string GetTypeName (string objcName)
 		{
-			string name;
-			if (obj != null && customTypeNames != null && obj.Id.HasValue && customTypeNames.TryGetValue (obj.Id.Value, out name))
-			    return name;
-			if (obj is UnknownIBObject) {
-				string ibType = ((UnknownIBObject)obj).Class;
-				if (ibType.StartsWith ("NS")) {
-					return "MonoMac.Foundation." + ibType;
-				} else if (ibType.StartsWith ("IB") && ibType.Length > 2 && ibType != "IBUICustomObject") {
-					name = ibType.Substring (2);
-					string typeName;
-					if (typeNameMap.TryGetValue (name, out typeName))
-						return typeName;
-				}
-			}
-			return null;
+			string typeName;
+			if (typeNameMap.TryGetValue (objcName, out typeName))
+				return typeName;
+			return objcName;
 		}
 		
 		public static void AddOutletProperty (CodeTypeDeclaration type, string name, CodeTypeReference typeRef)
