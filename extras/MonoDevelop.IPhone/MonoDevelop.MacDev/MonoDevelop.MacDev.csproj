@@ -48,7 +48,6 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
-      <Package>banshee-1-core</Package>
     </Reference>
     <Reference Include="MonoDevelop.DesignerSupport, Version=2.4.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
