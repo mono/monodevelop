@@ -46,14 +46,23 @@ namespace MonoDevelop.MonoMac
 	{
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
-			var res = base.Build (monitor, item, configuration);
+			var proj = item as MonoMacProject;
+			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+				return base.Build (monitor, item, configuration);
+			
+			var conf = (MonoMacProjectConfiguration) configuration.GetConfiguration (item);
+			var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
+			var appDir = conf.AppDirectory;
+			
+			//make sure the codebehind files are updated before building
+			bool forceRegen = !Directory.Exists (appDir);
+			var res = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, proj.Files, forceRegen);
 			if (res.ErrorCount > 0)
 				return res;
 			
-			var proj = item as MonoMacProject;
-			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+			res = res.Append (base.Build (monitor, item, configuration));
+			if (res.ErrorCount > 0)
 				return res;
-			var conf = (MonoMacProjectConfiguration) configuration.GetConfiguration (item);
 			
 			//copy exe, mdb, refs, copy-to-output, Content files to Resources
 			foreach (var f in GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding)) {
@@ -61,10 +70,13 @@ namespace MonoDevelop.MonoMac
 				File.Copy (f.Input, f.Output, true);
 			}
 			
-			//Interface Builder files
-			var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
-			if (res.Append (MacBuildUtilities.CompileXibFiles (monitor, proj.Files, resDir)).ErrorCount > 0)
-				return res;
+			if (!PropertyService.IsMac) {
+				res.AddWarning ("Cannot compile xib files on non-Mac platforms");
+			} else {
+				//Interface Builder files
+				if (res.Append (MacBuildUtilities.CompileXibFiles (monitor, proj.Files, resDir)).ErrorCount > 0)
+					return res;
+			}
 			
 			//info.plist
 			var plistOut = conf.AppDirectory.Combine ("Contents", "Info.plist");
@@ -117,10 +129,12 @@ namespace MonoDevelop.MonoMac
 			if (GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding).Any ())
 				return true;
 			
-			//Interface Builder files
-			var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
-			if (MacBuildUtilities.GetIBFilePairs (proj.Files, resDir).Any (NeedsBuilding))
-				return true;
+			if (PropertyService.IsMac) {
+				//Interface Builder files
+				var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
+				if (MacBuildUtilities.GetIBFilePairs (proj.Files, resDir).Any (NeedsBuilding))
+					return true;
+			}
 			
 			//the Info.plist
 			var plistOut = conf.AppDirectory.Combine ("Contents", "Info.plist");

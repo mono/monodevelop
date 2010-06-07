@@ -1,5 +1,13 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacProject.cs:
+	* MonoMacCodeBehind.cs:
+	* MonoMacBuildExtension.cs:
+	* MonoDevelop.MonoMac.csproj: Add designer codebehind
+	  generation.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacExecutionHandler.cs: Implemented run support.
 
 	* MonoMacExecutionCommand.cs: Add launch script to execution

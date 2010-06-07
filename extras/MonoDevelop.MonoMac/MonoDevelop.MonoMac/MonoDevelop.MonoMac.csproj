@@ -78,6 +78,7 @@
     <Compile Include="MonoMacExecutionCommand.cs" />
     <Compile Include="MonoMacExecutionHandler.cs" />
     <Compile Include="MonoMacProject.cs" />
+    <Compile Include="MonoMacCodeBehind.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoMac.addin.xml">

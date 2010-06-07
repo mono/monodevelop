@@ -46,26 +46,38 @@ namespace MonoDevelop.MonoMac
 			get { return "MonoMac"; }
 		}
 		
+		public MonoMacCodeBehind CodeBehindGenerator {
+			get; private set;
+		}
+		
 		#region Constructors
 		
 		public MonoMacProject ()
 		{
+			Init ();
 		}
 		
 		public MonoMacProject (string languageName)
 			: base (languageName)
 		{
+			Init ();
 		}
 		
 		public MonoMacProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+			Init ();
 			/* TODO
 			var mainNibAtt = projectOptions.Attributes ["MainNibFile"];
 			if (mainNibAtt != null) {
 				this.mainNibFile = mainNibAtt.InnerText;	
 			}
 			*/
+		}
+		
+		void Init ()
+		{
+			CodeBehindGenerator = new MonoMacCodeBehind (this);
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
