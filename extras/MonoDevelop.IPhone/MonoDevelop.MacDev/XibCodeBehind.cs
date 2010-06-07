@@ -122,13 +122,12 @@ namespace MonoDevelop.MacDev
 
 		void GenerateDesignerCode (CodeBehindWriter writer, ProjectFile xibFile, ProjectFile designerFile)
 		{
-			var ns = new CodeNamespace (((DotNetProject)designerFile.Project).GetDefaultNamespace (designerFile.FilePath));
-			var ccu = new CodeCompileUnit ();
-			ccu.Namespaces.Add (ns);
-			foreach (var ctd in GetTypes (XDocument.Load (xibFile.FilePath), writer.Provider, writer.GeneratorOptions))
-				ns.Types.Add (ctd);
+			var ccu = Generate (xibFile, writer.Provider, writer.GeneratorOptions);
 			writer.Write (ccu, designerFile.FilePath);
 		}
+		
+		public abstract CodeCompileUnit Generate (ProjectFile xibFile, CodeDomProvider provider, 
+		                                          CodeGeneratorOptions generator);
 		
 		void UpdateXibCodebehind (ProjectFile xibFile)
 		{
@@ -155,8 +154,5 @@ namespace MonoDevelop.MacDev
 				LoggingService.LogError (String.Format ("Error generating code for xib file '{0}'", xibFile.FilePath), ex);
 			}
 		}
-		
-		public abstract IEnumerable<CodeTypeDeclaration> GetTypes (XDocument xibDoc, CodeDomProvider provider,
-		                                                           CodeGeneratorOptions generatorOptions);
 	}
 }

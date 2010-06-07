@@ -464,8 +464,7 @@ namespace MonoDevelop.IPhone
 			
 			//find any related files, e.g codebehind
 			//FIXME: base this on the controller class names defined in the xib
-			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
-				(this, e.ProjectFile, groupedExtensions);
+			var filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies (this, e.ProjectFile, groupedExtensions);
 			
 			//let the base fire the event before we add files
 			//don't want to fire events out of order of files being added

@@ -82,7 +82,6 @@
     <Compile Include="Gui\IPhoneOptionsPanel.cs" />
     <Compile Include="IPhoneExecutionCommand.cs" />
     <Compile Include="IPhoneExecutionHandler.cs" />
-    <Compile Include="CodeBehindGenerator.cs" />
     <Compile Include="Keychain.cs" />
     <Compile Include="Gui\IPhoneSigningKeyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs" />
@@ -100,6 +99,7 @@
     <Compile Include="IPhoneSettings.cs" />
     <Compile Include="Orientation.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget.cs" />
+    <Compile Include="IPhoneCodeBehind.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.IPhone.addin.xml">

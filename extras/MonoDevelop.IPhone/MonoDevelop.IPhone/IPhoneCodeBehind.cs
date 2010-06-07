@@ -35,6 +35,7 @@ using MonoDevelop.MacDev.InterfaceBuilder;
 using System.CodeDom.Compiler;
 using System.IO;
 using MonoDevelop.MacDev;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.IPhone
 {
@@ -74,14 +75,24 @@ namespace MonoDevelop.IPhone
 		{
 		}
 		
-		public override IEnumerable<CodeTypeDeclaration> GetTypes (XDocument xibDoc, CodeDomProvider provider,
-		                                                           CodeGeneratorOptions generatorOptions)
+		public override CodeCompileUnit Generate (ProjectFile xibFile, CodeDomProvider provider, CodeGeneratorOptions options)
 		{
-			var ibDoc = IBDocument.Deserialize (xibDoc);
-			
+			var doc = XDocument.Load (xibFile.FilePath);
+			var ibDoc = IBDocument.Deserialize (doc);
+			var project = (DotNetProject)xibFile.Project;
+			var ccu = new CodeCompileUnit ();
+			var ns = new CodeNamespace (project.GetDefaultNamespace (xibFile.FilePath));
+			ccu.Namespaces.Add (ns);
+			foreach (var ctd in GetTypes (ibDoc, provider, options))
+				ns.Types.Add (ctd);
+			return ccu;
+		}
+		
+		IEnumerable<CodeTypeDeclaration> GetTypes (IBDocument doc, CodeDomProvider provider, CodeGeneratorOptions options)
+		{
 			object outVar;
 			UnknownIBObject objects;
-			if (!ibDoc.Properties.TryGetValue ("IBDocument.Objects", out outVar) || (objects = outVar as UnknownIBObject) == null)
+			if (!doc.Properties.TryGetValue ("IBDocument.Objects", out outVar) || (objects = outVar as UnknownIBObject) == null)
 				return new CodeTypeDeclaration[0];
 			
 			//process the connection records
@@ -131,7 +142,7 @@ namespace MonoDevelop.IPhone
 			// so take the list of classes that xcode would generate
 			var ibApprovedPartialClassNames = new HashSet<string> ();
 			UnknownIBObject classDescriber;
-			if (ibDoc.Properties.TryGetValue ("IBDocument.Classes", out outVar) && (classDescriber = outVar as UnknownIBObject) != null) {
+			if (doc.Properties.TryGetValue ("IBDocument.Classes", out outVar) && (classDescriber = outVar as UnknownIBObject) != null) {
 				NSMutableArray arr;
 				if (classDescriber.Properties.TryGetValue ("referencedPartialClassDescriptions", out outVar) && (arr = outVar as NSMutableArray) != null) {
 					foreach (var cls in arr.Values.OfType<IBPartialClassDescription> ())
@@ -227,7 +238,7 @@ namespace MonoDevelop.IPhone
 					
 					//create the action method and add it
 					StringWriter actionStubWriter = null;
-					GenerateAction (type, actionGroup.Key, senderType, provider, generatorOptions, ref actionStubWriter);
+					GenerateAction (type, actionGroup.Key, senderType, provider, options, ref actionStubWriter);
 					if (actionStubWriter != null) {
 						type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
 						actionStubWriter.Dispose ();

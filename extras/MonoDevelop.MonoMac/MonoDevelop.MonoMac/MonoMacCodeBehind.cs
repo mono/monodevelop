@@ -35,6 +35,7 @@ using MonoDevelop.MacDev.InterfaceBuilder;
 using System.CodeDom.Compiler;
 using System.IO;
 using MonoDevelop.MacDev;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.MonoMac
 {
@@ -77,19 +78,24 @@ namespace MonoDevelop.MonoMac
 		{
 		}
 		
-		public override IEnumerable<CodeTypeDeclaration> GetTypes (XDocument xibDoc, CodeDomProvider provider,
-		                                                           CodeGeneratorOptions generatorOptions)
+		public override CodeCompileUnit Generate (ProjectFile xibFile, CodeDomProvider provider, CodeGeneratorOptions options)
 		{
+			var xibDoc = XDocument.Load (xibFile.FilePath);
 			var ibDoc = IBDocument.Deserialize (xibDoc);
+			var ccu = new CodeCompileUnit ();
 			
 			object outVar;
 			UnknownIBObject classDescriber;
 			if (!ibDoc.Properties.TryGetValue ("IBDocument.Classes", out outVar) || (classDescriber = outVar as UnknownIBObject) == null)
-				yield break;
+				return ccu;
 			
 			NSMutableArray arr;
 			if (!classDescriber.Properties.TryGetValue ("referencedPartialClassDescriptions", out outVar) || (arr = outVar as NSMutableArray) == null)
-				yield break;
+				return ccu;
+			
+			var project = (DotNetProject)xibFile.Project;
+			var defaultNS = project.GetDefaultNamespace (xibFile.FilePath);
+			var nsDict = new Dictionary<string,CodeNamespace> ();
 			
 			foreach (var cls in arr.Values.OfType<IBPartialClassDescription> ()) {
 				if (string.IsNullOrEmpty (cls.ClassName))
@@ -106,16 +112,16 @@ namespace MonoDevelop.MonoMac
 					new CodeAttributeDeclaration ("MonoMac.Foundation.Register",
 						new CodeAttributeArgument (new CodePrimitiveExpression (cls.ClassName))));
 				
-				var sc = GetTypeName (cls.SuperclassName) ?? "MonoMac.Foundation.NSObject";
-				type.BaseTypes.Add (new CodeTypeReference (sc));
+				var sc = GetTypeReference (cls.SuperclassName ?? "id");
+				type.BaseTypes.Add (sc);
 				
 				if (cls.Actions != null) {
 					foreach (var action in cls.Actions.Values) {
 						AddWarningDisablePragmas (type, provider);
 						StringWriter actionStubWriter = null;
-						var val = (string)action.Value;
-						var sender = val == "id"? NSOBJECT : GetTypeName (val);
-						GenerateAction (type, (string)action.Key, new CodeTypeReference (sender), provider, generatorOptions, ref actionStubWriter);
+						
+						var sender = GetTypeReference ((string)action.Value);
+						GenerateAction (type, (string)action.Key, sender, provider, options, ref actionStubWriter);
 						
 						if (actionStubWriter != null) {
 							type.Comments.Add (new CodeCommentStatement (actionStubWriter.ToString ()));
@@ -127,14 +133,41 @@ namespace MonoDevelop.MonoMac
 				if (cls.Outlets != null) {
 					foreach (var outlet in cls.Outlets.Values) {
 						AddWarningDisablePragmas (type, provider);
-						var val = (string)outlet.Value;
-						var ret = val == "id"? NSOBJECT : GetTypeName (val);
-						AddOutletProperty (type, (string)outlet.Key, new CodeTypeReference (ret));
+						AddOutletProperty (type, (string)outlet.Key, GetTypeReference ((string)outlet.Value));
 					}
 				}
 				
-				yield return type;
+				//FIXME: use _ as namespace separator
+				var ns = defaultNS;
+				CodeNamespace cn;
+				if (!nsDict.TryGetValue (ns, out cn)) {
+					cn = new CodeNamespace (ns);
+					nsDict.Add (ns, cn);
+					ccu.Namespaces.Add (cn);
+				}
+				cn.Types.Add (type);
 			}
+			
+			return ccu;
+		}
+		
+		//FIXME: resolve in the context of the whole project?
+		CodeTypeReference GetTypeReference (string objcName)
+		{
+			if (objcName == "id") {
+				return new CodeTypeReference (NSOBJECT) {
+					Options = CodeTypeReferenceOptions.GlobalReference
+				};
+			}
+			
+			string typeName;
+			if (typeNameMap.TryGetValue (objcName, out typeName)) {
+				return new CodeTypeReference (typeName) {
+					Options = CodeTypeReferenceOptions.GlobalReference
+				};
+			}
+			
+			return new CodeTypeReference (objcName);
 		}
 		
 		static void AddWarningDisablePragmas (CodeTypeDeclaration type, CodeDomProvider provider)
@@ -188,15 +221,6 @@ namespace MonoDevelop.MonoMac
 				if (actionStubWriterCreated)
 					actionStubWriter = null;
 			}
-		}
-		
-		//FIXME: resolve in the context of the whole project
-		string GetTypeName (string objcName)
-		{
-			string typeName;
-			if (typeNameMap.TryGetValue (objcName, out typeName))
-				return typeName;
-			return objcName;
 		}
 		
 		public static void AddOutletProperty (CodeTypeDeclaration type, string name, CodeTypeReference typeRef)

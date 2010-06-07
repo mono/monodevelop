@@ -1,5 +1,11 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacCodeBehind.cs: Track base class API. Emit global refs
+	  when possible. Abstract out which namespace the classes are
+	  generated in.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacCodeBehind.cs: Simpler codebehind generator that just
 	  uses types explicitly defined in IB.
 

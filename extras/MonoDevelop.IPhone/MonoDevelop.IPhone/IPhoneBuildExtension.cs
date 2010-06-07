@@ -455,7 +455,6 @@ namespace MonoDevelop.IPhone
 			if (result.Append (base.Compile (monitor, item, buildData)).ErrorCount > 0)
 				return result;
 			
-			
 			if (result.Append (MacBuildUtilities.CompileXibFiles (monitor, projFiles, appDir)).ErrorCount > 0)
 				return result;
 			
