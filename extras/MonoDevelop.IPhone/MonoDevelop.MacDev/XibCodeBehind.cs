@@ -52,6 +52,9 @@ namespace MonoDevelop.MacDev
 
 		void HandleProjectFileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
+			if (e.Project.Loading)
+				return;
+			
 			var pf = e.ProjectFile;
 			if (IsDesignerFile (pf)) {
 				var xibFile = GetXibFile (pf);
