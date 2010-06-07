@@ -1,0 +1,7 @@
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoMacDebuggerSession.cs:
+	* MonoMacSoftDebuggerEngine.cs:
+	* MonoDevelop.Debugger.Soft.MonoMac.csproj: Working debugging
+	  support.
+

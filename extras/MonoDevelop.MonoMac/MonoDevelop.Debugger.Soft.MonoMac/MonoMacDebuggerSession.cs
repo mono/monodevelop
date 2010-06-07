@@ -42,9 +42,46 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 
 	public class MonoMacDebuggerSession : RemoteSoftDebuggerSession
 	{
+		Process process;
+		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			throw new NotImplementedException ();
+			var dsi = (MonoMacDebuggerStartInfo) startInfo;
+			var cmd = dsi.ExecutionCommand;		
+		
+			StartListening (dsi);
+			
+			Console.WriteLine ("ls2 {0}", cmd.LaunchScript);
+			var psi = new ProcessStartInfo (cmd.LaunchScript) {
+				Arguments = "",
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				UseShellExecute = false
+			};
+			psi.EnvironmentVariables["MONO_OPTIONS"] = 
+				string.Format ("--debug --debugger-agent=transport=dt_socket,address={0}:{1}",
+				              dsi.Address, dsi.DebugPort);
+			
+			process = System.Diagnostics.Process.Start (psi);
+			
+			ConnectOutput (process.StandardOutput, false);
+			ConnectOutput (process.StandardError, true);
+			
+			process.EnableRaisingEvents = true;
+			process.Exited += delegate {
+				EndSession ();
+				process = null;
+			};
+		}
+		
+		protected override void EnsureExited ()
+		{
+			try {
+				if (process != null && !process.HasExited)
+					process.Kill ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error force-terminating soft debugger process", ex);
+			}
 		}
 	}
 	
@@ -53,7 +90,7 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 		public MonoMacExecutionCommand ExecutionCommand { get; private set; }
 		
 		public MonoMacDebuggerStartInfo (MonoMacExecutionCommand cmd)
-			: base (cmd.AppPath.FileNameWithoutExtension, IPAddress.Loopback, 8080, 8080)
+			: base (cmd.AppPath.FileNameWithoutExtension, IPAddress.Loopback, 8901)
 		{
 			ExecutionCommand = cmd;
 		}

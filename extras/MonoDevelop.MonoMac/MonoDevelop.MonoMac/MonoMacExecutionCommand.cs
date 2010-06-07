@@ -34,15 +34,18 @@ namespace MonoDevelop.MonoMac
 {
 	public class MonoMacExecutionCommand: ExecutionCommand
 	{
-		public MonoMacExecutionCommand (TargetRuntime runtime, TargetFramework framework, FilePath appPath, bool debugMode)
+		public MonoMacExecutionCommand (TargetRuntime runtime, TargetFramework framework, FilePath appPath, 
+		                                FilePath launchScript, bool debugMode)
 		{
 			this.AppPath = appPath;
+			this.LaunchScript = launchScript;
 			this.Framework = framework;
 			this.Runtime = runtime;
 			this.DebugMode = debugMode;
 		}
 		
 		public FilePath AppPath { get; private set; }
+		public FilePath LaunchScript { get; private set; }
 		public bool DebugMode { get; private set; }
 		public TargetRuntime Runtime { get; private set; }
 		public TargetFramework Framework { get; private set; }

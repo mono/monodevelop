@@ -37,6 +37,7 @@ using System.Diagnostics;
 using System.CodeDom.Compiler;
 using Mono.Addins;
 using MonoDevelop.MacDev;
+using Mono.Unix;
 
 namespace MonoDevelop.MonoMac
 {
@@ -81,6 +82,9 @@ namespace MonoDevelop.MonoMac
 					Directory.CreateDirectory (ls.ParentDirectory);
 				var src = AddinManager.CurrentAddin.GetFilePath ("MonoMacLaunchScript.sh");
 				File.Copy (src, ls, true);
+				var fi = new UnixFileInfo (ls);
+				fi.FileAccessPermissions |= FileAccessPermissions.UserExecute
+					| FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute;
 			}
 			
 			//pkginfo
@@ -176,7 +180,7 @@ namespace MonoDevelop.MonoMac
 			if (conf.DebugMode) {
 				FilePath mdbFile = project.TargetRuntime.GetAssemblyDebugInfoFile (output);
 				if (File.Exists (mdbFile))
-					yield return new FilePair (mdbFile, resDir.Combine (mdbFile));
+					yield return new FilePair (mdbFile, resDir.Combine (mdbFile.FileName));
 			}
 			
 			foreach (FileCopySet.Item s in project.GetSupportFileList (sel))

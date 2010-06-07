@@ -30,6 +30,7 @@ Global
 		$2.UpdateMode = ProjectRoot
 		$2.inheritsSet = Mono
 		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
 		$3.TabWidth = 4
 		$3.inheritsSet = Mono
 		$3.inheritsScope = text/plain

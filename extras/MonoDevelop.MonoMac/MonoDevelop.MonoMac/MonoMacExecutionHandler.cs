@@ -37,18 +37,18 @@ namespace MonoDevelop.MonoMac
 {
 	public class MonoMacExecutionHandler : IExecutionHandler
 	{
-		public MonoMacExecutionHandler ()
-		{
-		}
-		
 		public bool CanExecute (ExecutionCommand command)
 		{
-			return (command is MonoMacExecutionCommand);
+			return PropertyService.IsMac && (command is MonoMacExecutionCommand);
 		}
 		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			throw new NotImplementedException ();
+			//FIXME: use open -W -n Foo.app, or the launch script?
+			var cmd = (MonoMacExecutionCommand) command;
+			return Runtime.ProcessService.StartConsoleProcess (cmd.LaunchScript, "",
+			    //"open", string.Format ( "-W -n \"{0}\"", cmd.AppPath), 
+				cmd.AppPath.ParentDirectory, console, null); 
 		}
 	}
 }

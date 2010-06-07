@@ -1,3 +1,18 @@
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoMacExecutionHandler.cs: Implemented run support.
+
+	* MonoMacExecutionCommand.cs: Add launch script to execution
+	  command.
+
+	* MonoMacLaunchScript.sh: Fix launch script not to nuke
+	  MONO_OPTIONS.
+
+	* MonoMacProject.cs: Include mdb file from the monomac package
+	  if it exists.
+
+	* MonoMacBuildExtension.cs: Fix copying mdb file.
+
 2010-06-06  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoMacBuildExtension.cs: Use MacBuildUtilities to compile

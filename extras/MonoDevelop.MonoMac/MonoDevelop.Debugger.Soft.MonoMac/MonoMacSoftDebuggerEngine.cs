@@ -44,6 +44,7 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 		{
 			var cmd = command as MonoMacExecutionCommand;
 			return cmd != null && cmd.DebugMode;
+				//&& SoftDebuggerEngine.CanDebugRuntime (cmd.TargetRuntime);
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
