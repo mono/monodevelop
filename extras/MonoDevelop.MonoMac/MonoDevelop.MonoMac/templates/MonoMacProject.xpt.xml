@@ -5,7 +5,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>MonoMac Project</_Name>
-		<_Category>Mac</_Category>
+		<_Category>C#/Mac</_Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a MonoMac project.</_Description>
 	</TemplateConfiguration>

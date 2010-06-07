@@ -1,5 +1,9 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* templates/MonoMacProject.xpt.xml: Fix category.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacBuildExtension.cs: Merge required values into
 	  Info.plist.
 
