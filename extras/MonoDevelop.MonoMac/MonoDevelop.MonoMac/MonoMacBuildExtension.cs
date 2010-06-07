@@ -36,6 +36,7 @@ using System.Text;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
 using Mono.Addins;
+using MonoDevelop.MacDev;
 
 namespace MonoDevelop.MonoMac
 {
@@ -58,6 +59,11 @@ namespace MonoDevelop.MonoMac
 				f.EnsureOutputDirectory ();
 				File.Copy (f.Input, f.Output, true);
 			}
+			
+			//Interface Builder files
+			var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
+			if (res.Append (MacBuildUtilities.CompileXibFiles (monitor, proj.Files, resDir)).ErrorCount > 0)
+				return res;
 			
 			//info.plist
 			var plistOut = conf.AppDirectory.Combine ("Contents", "Info.plist");
@@ -103,8 +109,13 @@ namespace MonoDevelop.MonoMac
 				return false;
 			var conf = (MonoMacProjectConfiguration) configuration.GetConfiguration (item);
 			
-			//all content file
+			//all content files
 			if (GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding).Any ())
+				return true;
+			
+			//Interface Builder files
+			var resDir = conf.AppDirectory.Combine ("Contents", "Resources");
+			if (MacBuildUtilities.GetIBFilePairs (proj.Files, resDir).Any (NeedsBuilding))
 				return true;
 			
 			//the Info.plist
@@ -174,40 +185,6 @@ namespace MonoDevelop.MonoMac
 			foreach (var pf in project.Files)
 				if (pf.BuildAction == BuildAction.Content)
 					yield return new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (resDir));
-		}
-		
-		static IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
-		{
-			return allItems.OfType<ProjectFile> ()
-				.Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
-				.Select (pf => {
-					string[] splits = ((string)pf.ProjectVirtualPath).Split (Path.DirectorySeparatorChar);
-					FilePath name = splits.Last ();
-					if (splits.Length > 1 && splits[0].EndsWith (".lproj"))
-						name = new FilePath (splits[0]).Combine (name);
-					return new FilePair (pf.FilePath, name.ChangeExtension (".nib").ToAbsolute (outputRoot));
-				});
-		}
-		
-		struct FilePair
-		{
-			public FilePair (FilePath input, FilePath output)
-			{
-				this.Input = input;
-				this.Output = output;
-			}
-			public FilePath Input, Output;
-			
-			public bool NeedsBuilding ()
-			{
-				return !File.Exists (Output) || File.GetLastWriteTime (Input) > File.GetLastWriteTime (Output);
-			}
-			
-			public void EnsureOutputDirectory ()
-			{
-				if (!Directory.Exists (Output.ParentDirectory))
-					Directory.CreateDirectory (Output.ParentDirectory);
-			}
 		}
 	}
 }

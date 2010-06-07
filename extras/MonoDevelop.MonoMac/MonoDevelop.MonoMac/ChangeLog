@@ -1,5 +1,13 @@
 2010-06-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacBuildExtension.cs: Use MacBuildUtilities to compile
+	  xibs and remove code duplication.
+
+	* templates/MonoMacProject.xpt.xml: Remove test code. Register
+	  explicit app delegate name.
+
+2010-06-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacProject.cs:
 	* MonoMacLaunchScript.sh:
 	* MonoMacBuildExtension.cs:

@@ -90,26 +90,15 @@ using MonoMac.ObjCRuntime;
 
 namespace ${Namespace}
 {
-	[Register]
+	[Register ("AppDelegate")]
 	public class AppDelegate : NSApplicationDelegate
 	{
-		NSWindow window;
-		NSTextField text;
-
 		public AppDelegate ()
 		{
 		}
 
 		public override void FinishedLaunching (NSObject notification)
 		{
-			text = new NSTextField (new RectangleF (44, 32, 232, 31)) {
-					StringValue = "Hello Mono Mac!"
-			};
-
-			window = new NSWindow (new RectangleF (50, 50, 400, 400),
-				 (NSWindowStyle) (1 | (1 << 1) | (1 << 2) | (1 << 3)), 0, false);
-			window.ContentView.AddSubview (text);
-			window.MakeKeyAndOrderFront (this);
 		}
 	}
 }
