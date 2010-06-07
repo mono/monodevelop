@@ -37,6 +37,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.DesignerSupport;
 using System.IO;
 using MonoDevelop.Projects;
+using System.Threading;
 
 namespace MonoDevelop.MacDev
 {
@@ -46,13 +47,35 @@ namespace MonoDevelop.MacDev
 		{
 			this.Project = project;
 			project.FileChangedInProject += HandleProjectFileChangedInProject;
+			project.FileAddedToProject += HandleProjectFileAddedToProject;
+		}
+
+		void HandleProjectFileAddedToProject (object sender, ProjectFileEventArgs e)
+		{
+			var pf = e.ProjectFile;
+			if (IsDesignerFile (pf)) {
+				var xibFile = GetXibFile (pf);
+				if (xibFile != null)
+					ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (xibFile, pf, true); });
+			} else if (IsXibFile (pf)) {
+				ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (pf, true); });
+			}
 		}
 
 		void HandleProjectFileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
-			//update codebehind
-			if (e.ProjectFile.BuildAction == BuildAction.Page && e.ProjectFile.FilePath.Extension ==".xib")
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (e.ProjectFile); });
+			if (IsXibFile (e.ProjectFile))
+				ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (e.ProjectFile); });
+		}
+		
+		static bool IsXibFile (ProjectFile pf)
+		{
+			return pf.BuildAction == BuildAction.Page && pf.FilePath.Extension ==".xib";
+		}
+		
+		static bool IsDesignerFile (ProjectFile pf)
+		{
+			return pf.BuildAction == BuildAction.Compile && pf.FilePath.FileNameWithoutExtension.EndsWith (".xib.designer");
 		}
 		
 		public DotNetProject Project { get; private set ; }
@@ -62,7 +85,7 @@ namespace MonoDevelop.MacDev
 			BuildResult result = null;
 			var projWrite = File.GetLastWriteTime (Project.FileName);
 			
-			foreach (var xibFile in allFiles.Where (x => x.FilePath.Extension == ".xib" && x.BuildAction == BuildAction.Page)) {
+			foreach (var xibFile in allFiles.Where (IsXibFile)) {
 				var designerFile = GetDesignerFile (xibFile);
 				if (designerFile == null)
 					continue;
@@ -85,6 +108,14 @@ namespace MonoDevelop.MacDev
 		{
 			return xibFile.DependentChildren.Where (x => x.Name.StartsWith (xibFile.Name + ".designer")).FirstOrDefault ();
 		}
+		
+		static ProjectFile GetXibFile (ProjectFile designerFile)
+		{
+			var parent = designerFile.DependsOnFile;
+			if (parent != null && IsXibFile (parent) && designerFile.FilePath.FileName.StartsWith (parent.FilePath.FileName + ".designer."))
+				return parent;
+			return null;
+		}
 
 		void GenerateDesignerCode (CodeBehindWriter writer, ProjectFile xibFile, ProjectFile designerFile)
 		{
@@ -96,12 +127,22 @@ namespace MonoDevelop.MacDev
 			writer.Write (ccu, designerFile.FilePath);
 		}
 		
-		public void UpdateXibCodebehind (ProjectFile xibFile)
+		void UpdateXibCodebehind (ProjectFile xibFile)
+		{
+			UpdateXibCodebehind (xibFile, false);
+		}
+		
+		void UpdateXibCodebehind (ProjectFile xibFile, bool force)
 		{
 			var designerFile = GetDesignerFile (xibFile);
-			
+			if (designerFile != null)
+				UpdateXibCodebehind (xibFile, designerFile, false);
+		}
+		
+		void UpdateXibCodebehind (ProjectFile xibFile, ProjectFile designerFile, bool force)
+		{
 			try {
-				if (designerFile == null || File.GetLastWriteTime (xibFile.FilePath) <= File.GetLastWriteTime (designerFile.FilePath))
+				if (!force && File.GetLastWriteTime (xibFile.FilePath) <= File.GetLastWriteTime (designerFile.FilePath))
 					return;
 				var writer = CodeBehindWriter.CreateForProject (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (),
 				                                                (DotNetProject)xibFile.Project);

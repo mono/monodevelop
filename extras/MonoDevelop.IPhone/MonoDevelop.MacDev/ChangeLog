@@ -1,5 +1,10 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* XibCodeBehind.cs: Force-update designer files after adding
+	  one to the project.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* XibCodeBehind.cs:
 	* MacBuildUtilities.cs:
 	* MonoDevelop.MacDev.csproj: Move more sharable code from
