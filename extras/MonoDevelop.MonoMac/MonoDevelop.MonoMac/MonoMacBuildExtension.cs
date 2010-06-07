@@ -38,6 +38,7 @@ using System.CodeDom.Compiler;
 using Mono.Addins;
 using MonoDevelop.MacDev;
 using Mono.Unix;
+using MonoDevelop.MacDev.Plist;
 
 namespace MonoDevelop.MonoMac
 {
@@ -81,10 +82,9 @@ namespace MonoDevelop.MonoMac
 			//info.plist
 			var plistOut = conf.AppDirectory.Combine ("Contents", "Info.plist");
 			var appInfoIn = proj.Files.GetFile (proj.BaseDirectory.Combine ("Info.plist"));
-			var appInfoInSrc = appInfoIn == null? FilePath.Null : appInfoIn.FilePath;
 			if (new FilePair (proj.FileName, plistOut).NeedsBuilding () ||
 			    	(appInfoIn != null && new FilePair (appInfoIn.FilePath, plistOut).NeedsBuilding ()))
-				if (res.Append (MergeInfoPlist (proj, conf, plistOut, appInfoInSrc)).ErrorCount > 0)
+				if (res.Append (MergeInfoPlist (monitor, proj, conf, appInfoIn, plistOut)).ErrorCount > 0)
 					return res;
 			
 			//launch script
@@ -108,11 +108,37 @@ namespace MonoDevelop.MonoMac
 			return res;
 		}
 		
-		BuildResult MergeInfoPlist (MonoMacProject proj, MonoMacProjectConfiguration conf, 
-		                            FilePath plistOut, FilePath plistTemplate)
+		BuildResult MergeInfoPlist (IProgressMonitor monitor, MonoMacProject proj, MonoMacProjectConfiguration conf, 
+		                            ProjectFile template, FilePath plistOut)
 		{
-			File.Copy (plistTemplate, plistOut, true);
-			return null;
+			return MacBuildUtilities.CreateMergedPlist (monitor, template, plistOut, (PlistDocument doc) => {
+				var result = new BuildResult ();
+				var dict = doc.Root as PlistDictionary;
+				if (dict == null)
+					doc.Root = dict = new PlistDictionary ();
+				
+				//required keys that the user is likely to want to modify
+				SetIfNotPresent (dict, "CFBundleName", proj.Name);
+				SetIfNotPresent (dict, "CFBundleIdentifier", "com.yourcompany." + proj.Name);
+				SetIfNotPresent (dict, "CFBundleShortVersionString", proj.Version);
+				SetIfNotPresent (dict, "CFBundleVersion", "1");
+				SetIfNotPresent (dict, "LSMinimumSystemVersion", "10.6");
+				SetIfNotPresent (dict, "CFBundleDevelopmentRegion", "English");
+				
+				//required keys that the user probably should not modify
+				dict["CFBundleExecutable"] = conf.LaunchScript.FileName;
+				SetIfNotPresent (dict, "CFBundleInfoDictionaryVersion", "6.0");
+				SetIfNotPresent (dict, "CFBundlePackageType", "APPL");
+				SetIfNotPresent (dict, "CFBundleSignature", "????");
+				
+				return result;
+			});
+		}
+		
+		static void SetIfNotPresent (PlistDictionary dict, string key, PlistObjectBase value)
+		{
+			if (!dict.ContainsKey (key))
+				dict[key] = value;
 		}
 		
 		protected override bool GetNeedsBuilding (SolutionEntityItem item, ConfigurationSelector configuration)

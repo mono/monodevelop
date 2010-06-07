@@ -1,5 +1,13 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacBuildExtension.cs: Merge required values into
+	  Info.plist.
+
+	* templates/MonoMacProject.xpt.xml: Remove some of the
+	  Info.plist keys that we merge.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacProject.cs:
 	* MonoMacCodeBehind.cs:
 	* MonoMacBuildExtension.cs:
