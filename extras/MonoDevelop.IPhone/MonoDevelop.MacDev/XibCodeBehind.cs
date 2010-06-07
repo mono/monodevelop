@@ -38,17 +38,29 @@ using MonoDevelop.DesignerSupport;
 using System.IO;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.IPhone
+namespace MonoDevelop.MacDev
 {
-	
-	public static class CodeBehind
+	public abstract class XibCodeBehind
 	{
+		public XibCodeBehind (DotNetProject project)
+		{
+			this.Project = project;
+			project.FileChangedInProject += HandleProjectFileChangedInProject;
+		}
+
+		void HandleProjectFileChangedInProject (object sender, ProjectFileEventArgs e)
+		{
+			//update codebehind
+			if (e.ProjectFile.BuildAction == BuildAction.Page && e.ProjectFile.FilePath.Extension ==".xib")
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (e.ProjectFile); });
+		}
 		
-		public static BuildResult UpdateXibCodebehind (CodeBehindWriter writer, IPhoneProject project,
-		                                               IEnumerable<ProjectFile> allFiles, bool forceRegen)
+		public DotNetProject Project { get; private set ; }
+		
+		public BuildResult UpdateXibCodebehind (CodeBehindWriter writer, IEnumerable<ProjectFile> allFiles, bool forceRegen)
 		{
 			BuildResult result = null;
-			var projWrite = File.GetLastWriteTime (project.FileName);
+			var projWrite = File.GetLastWriteTime (Project.FileName);
 			
 			foreach (var xibFile in allFiles.Where (x => x.FilePath.Extension == ".xib" && x.BuildAction == BuildAction.Page)) {
 				var designerFile = GetDesignerFile (xibFile);
@@ -74,17 +86,17 @@ namespace MonoDevelop.IPhone
 			return xibFile.DependentChildren.Where (x => x.Name.StartsWith (xibFile.Name + ".designer")).FirstOrDefault ();
 		}
 
-		static void GenerateDesignerCode (CodeBehindWriter writer, ProjectFile xibFile, ProjectFile designerFile)
+		void GenerateDesignerCode (CodeBehindWriter writer, ProjectFile xibFile, ProjectFile designerFile)
 		{
 			var ns = new CodeNamespace (((DotNetProject)designerFile.Project).GetDefaultNamespace (designerFile.FilePath));
 			var ccu = new CodeCompileUnit ();
 			ccu.Namespaces.Add (ns);
-			foreach (var ctd in CodeBehindGenerator.GetTypes (XDocument.Load (xibFile.FilePath), writer.Provider, writer.GeneratorOptions))
+			foreach (var ctd in GetTypes (XDocument.Load (xibFile.FilePath), writer.Provider, writer.GeneratorOptions))
 				ns.Types.Add (ctd);
 			writer.Write (ccu, designerFile.FilePath);
 		}
 		
-		public static void UpdateXibCodebehind (ProjectFile xibFile)
+		public void UpdateXibCodebehind (ProjectFile xibFile)
 		{
 			var designerFile = GetDesignerFile (xibFile);
 			
@@ -99,5 +111,8 @@ namespace MonoDevelop.IPhone
 				LoggingService.LogError (String.Format ("Error generating code for xib file '{0}'", xibFile.FilePath), ex);
 			}
 		}
+		
+		public abstract IEnumerable<CodeTypeDeclaration> GetTypes (XDocument xibDoc, CodeDomProvider provider,
+		                                                           CodeGeneratorOptions generatorOptions);
 	}
 }

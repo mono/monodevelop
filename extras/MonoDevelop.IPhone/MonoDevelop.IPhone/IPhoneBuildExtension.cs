@@ -442,29 +442,19 @@ namespace MonoDevelop.IPhone
 				return base.Compile (monitor, item, buildData);
 			
 			var cfg = (IPhoneProjectConfiguration) buildData.Configuration;
+			var projFiles = buildData.Items.OfType<ProjectFile> ();
+			string appDir = cfg.AppDirectory;
 			
 			//make sure the codebehind files are updated before building
-			monitor.BeginTask (GettextCatalog.GetString ("Updating CodeBehind files"), 0);	
-			var cbWriter = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, proj);
-			BuildResult result = null;
-			if (cbWriter.SupportsPartialTypes) {
-				bool forceRegen = !Directory.Exists (cfg.AppDirectory);
-				result = CodeBehind.UpdateXibCodebehind (cbWriter, proj, buildData.Items.OfType<ProjectFile> (), forceRegen);
-				cbWriter.WriteOpenFiles ();
-				if (cbWriter.WrittenCount > 0)
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updated {0} CodeBehind files", cbWriter.WrittenCount));
-			} else {
-				monitor.ReportWarning ("Cannot generate designer code, because CodeDom " +
-					"provider does not support partial classes.");
-			}
-			monitor.EndTask ();
+			bool forceRegen = !Directory.Exists (appDir);
 			
-			result = base.Compile (monitor, item, buildData).Append (result);
+			var result = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, projFiles, forceRegen);
 			if (result.ErrorCount > 0)
 				return result;
 			
-			string appDir = ((IPhoneProjectConfiguration)buildData.Configuration).AppDirectory;
-			var projFiles = buildData.Items.OfType<ProjectFile> ();
+			if (result.Append (base.Compile (monitor, item, buildData)).ErrorCount > 0)
+				return result;
+			
 			
 			if (result.Append (MacBuildUtilities.CompileXibFiles (monitor, projFiles, appDir)).ErrorCount > 0)
 				return result;

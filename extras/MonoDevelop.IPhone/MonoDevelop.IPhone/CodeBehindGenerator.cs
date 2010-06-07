@@ -34,12 +34,11 @@ using System.Text;
 using MonoDevelop.MacDev.InterfaceBuilder;
 using System.CodeDom.Compiler;
 using System.IO;
+using MonoDevelop.MacDev;
 
 namespace MonoDevelop.IPhone
 {
-	//NOTE: this class is required to be usable from a commandline tool outside of MD
-	// so cannot depend on anything other than MonoDevelop.IPhone.InterfaceBuilder
-	static class CodeBehindGenerator
+	public class IPhoneCodeBehind : XibCodeBehind
 	{
 		static Dictionary<string,string> typeNameMap = new Dictionary<string, string> ();
 		
@@ -62,7 +61,7 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		static CodeBehindGenerator ()
+		static IPhoneCodeBehind ()
 		{
 			try {
 				InitializeTypeNameMap ();
@@ -71,7 +70,12 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		public static IEnumerable<CodeTypeDeclaration> GetTypes (XDocument xibDoc, CodeDomProvider provider, CodeGeneratorOptions generatorOptions)
+		public IPhoneCodeBehind (IPhoneProject project) : base (project)
+		{
+		}
+		
+		public override IEnumerable<CodeTypeDeclaration> GetTypes (XDocument xibDoc, CodeDomProvider provider,
+		                                                           CodeGeneratorOptions generatorOptions)
 		{
 			var ibDoc = IBDocument.Deserialize (xibDoc);
 			

@@ -48,6 +48,10 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>banshee-1-core</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.DesignerSupport, Version=2.4.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +81,7 @@
     <Compile Include="MonoDevelop.MacDev.Plist\PlistReal.cs" />
     <Compile Include="MonoDevelop.MacDev.Plist\PlistString.cs" />
     <Compile Include="MacBuildUtilities.cs" />
+    <Compile Include="XibCodeBehind.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

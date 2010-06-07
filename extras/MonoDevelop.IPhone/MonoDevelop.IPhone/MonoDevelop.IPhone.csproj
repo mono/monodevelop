@@ -69,6 +69,7 @@
     </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>banshee-1-core</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -88,7 +89,6 @@
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs" />
     <Compile Include="IPhoneCommands.cs" />
     <Compile Include="Gui\IPhoneBuildOptionsPanel.cs" />
-    <Compile Include="CodeBehind.cs" />
     <Compile Include="MobileProvision.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DataConverter.cs" />

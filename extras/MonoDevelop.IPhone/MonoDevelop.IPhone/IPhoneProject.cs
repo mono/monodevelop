@@ -211,6 +211,10 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		public IPhoneCodeBehind CodeBehindGenerator {
+			get; private set;
+		}
+		
 		#endregion
 		
 		#region Constructors
@@ -275,6 +279,8 @@ namespace MonoDevelop.IPhone
 		
 		void Init ()
 		{
+			CodeBehindGenerator = new IPhoneCodeBehind (this);
+			
 			//set parameters to ones required for IPhone build
 			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
 		}
@@ -472,14 +478,6 @@ namespace MonoDevelop.IPhone
 					AddFile (file);
 				}
 			}
-		}
-		
-		protected override void OnFileChangedInProject (MonoDevelop.Projects.ProjectFileEventArgs e)
-		{
-			//update codebehind
-			if (e.ProjectFile.BuildAction == BuildAction.Page && e.ProjectFile.FilePath.Extension ==".xib")
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate { CodeBehind.UpdateXibCodebehind (e.ProjectFile); });
-			base.OnFileChangedInProject (e);
 		}
 		
 		#endregion

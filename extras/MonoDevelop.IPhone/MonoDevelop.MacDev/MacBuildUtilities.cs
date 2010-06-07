@@ -91,6 +91,26 @@ namespace MonoDevelop.MacDev
 			return result;
 		}
 		
+		public static BuildResult UpdateCodeBehind (IProgressMonitor monitor, XibCodeBehind generator, 
+		                                            IEnumerable<ProjectFile> items, bool forceRegen)
+		{
+			//make sure the codebehind files are updated before building
+			monitor.BeginTask (GettextCatalog.GetString ("Updating CodeBehind files"), 0);	
+			var cbWriter = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, generator.Project);
+			var result = new BuildResult ();
+			if (cbWriter.SupportsPartialTypes) {
+				result.Append (generator.UpdateXibCodebehind (cbWriter, items, forceRegen));
+				cbWriter.WriteOpenFiles ();
+				if (cbWriter.WrittenCount > 0)
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updated {0} CodeBehind files", cbWriter.WrittenCount));
+			} else {
+				monitor.ReportWarning ("Cannot generate designer code, because CodeDom " +
+					"provider does not support partial classes.");
+			}
+			monitor.EndTask ();
+			return result;
+		}
+		
 		//copied from MoonlightBuildExtension
 		public static int ExecuteCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo, out string errorOutput)
 		{
