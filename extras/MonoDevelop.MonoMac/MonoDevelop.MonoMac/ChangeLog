@@ -1,5 +1,15 @@
 2010-06-06  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacProject.cs:
+	* MonoMacLaunchScript.sh:
+	* MonoMacBuildExtension.cs:
+	* MonoDevelop.MonoMac.csproj:
+	* MonoDevelop.MonoMac.addin.xml:
+	* MonoMacProjectConfiguration.cs: Build/update/clean the app
+	  bundle.
+
+2010-06-06  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMac.dll:
 	* MonoDevelop.MonoMac.csproj:
 	* MonoDevelop.MonoMac.addin.xml: Renamed our copy of MonoMac

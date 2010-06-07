@@ -35,6 +35,7 @@ using System.Xml;
 using System.Text;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
+using Mono.Addins;
 
 namespace MonoDevelop.MonoMac
 {
@@ -43,24 +44,170 @@ namespace MonoDevelop.MonoMac
 	{
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
-			//var proj = item as MonoMacProject;
-			//if (proj == null || proj.CompileTarget != CompileTarget.Exe)
-				return base.Build (monitor, item, configuration);
+			var res = base.Build (monitor, item, configuration);
+			if (res.ErrorCount > 0)
+				return res;
+			
+			var proj = item as MonoMacProject;
+			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+				return res;
+			var conf = (MonoMacProjectConfiguration) configuration.GetConfiguration (item);
+			
+			//copy exe, mdb, refs, copy-to-output, Content files to Resources
+			foreach (var f in GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding)) {
+				f.EnsureOutputDirectory ();
+				File.Copy (f.Input, f.Output, true);
+			}
+			
+			//info.plist
+			var plistOut = conf.AppDirectory.Combine ("Contents", "Info.plist");
+			var appInfoIn = proj.Files.GetFile (proj.BaseDirectory.Combine ("Info.plist"));
+			var appInfoInSrc = appInfoIn == null? FilePath.Null : appInfoIn.FilePath;
+			if (new FilePair (proj.FileName, plistOut).NeedsBuilding () ||
+			    	(appInfoIn != null && new FilePair (appInfoIn.FilePath, plistOut).NeedsBuilding ()))
+				if (res.Append (MergeInfoPlist (proj, conf, plistOut, appInfoInSrc)).ErrorCount > 0)
+					return res;
+			
+			//launch script
+			var ls = conf.LaunchScript;
+			if (!File.Exists (ls)) {
+				if (!Directory.Exists (ls.ParentDirectory))
+					Directory.CreateDirectory (ls.ParentDirectory);
+				var src = AddinManager.CurrentAddin.GetFilePath ("MonoMacLaunchScript.sh");
+				File.Copy (src, ls, true);
+			}
+			
+			//pkginfo
+			var pkgInfo = conf.AppDirectory.Combine ("Contents", "PkgInfo");
+			if (!File.Exists (pkgInfo))
+				using (var f = File.OpenWrite (pkgInfo))
+					f.Write (new byte [] { 0X41, 0X50, 0X50, 0X4C, 0x3f, 0x3f, 0x3f, 0x3f}, 0, 8); // "APPL???"
+			
+			return res;
+		}
+		
+		BuildResult MergeInfoPlist (MonoMacProject proj, MonoMacProjectConfiguration conf, 
+		                            FilePath plistOut, FilePath plistTemplate)
+		{
+			File.Copy (plistTemplate, plistOut, true);
+			return null;
 		}
 		
 		protected override bool GetNeedsBuilding (SolutionEntityItem item, ConfigurationSelector configuration)
 		{
-			return base.GetNeedsBuilding (item, configuration);
+			if (base.GetNeedsBuilding (item, configuration))
+				return true;
+			
+			var proj = item as MonoMacProject;
+			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+				return false;
+			var conf = (MonoMacProjectConfiguration) configuration.GetConfiguration (item);
+			
+			//all content file
+			if (GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding).Any ())
+				return true;
+			
+			//the Info.plist
+			var plistOut = conf.AppDirectory.Combine ("Contents", "Info.plist");
+			var appInfoIn = proj.Files.GetFile (proj.BaseDirectory.Combine ("Info.plist"));
+			if (new FilePair (proj.FileName, plistOut).NeedsBuilding () ||
+			    	(appInfoIn != null && new FilePair (appInfoIn.FilePath, plistOut).NeedsBuilding ()))
+			    return true;
+			
+			//launch script
+			var ls = conf.LaunchScript;
+			if (new FilePair (proj.FileName, ls).NeedsBuilding ())
+				return true;
+			
+			//pkginfo
+			if (!File.Exists (conf.AppDirectory.Combine ("Contents", "PkgInfo")))
+			    return true;
+			
+			return false;
 		}
 		
 		protected override void Clean (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
 			base.Clean (monitor, item, configuration);
+			
+			var proj = item as MonoMacProject;
+			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+				return;
+			var conf = (MonoMacProjectConfiguration) configuration.GetConfiguration (item);
+			
+			if (Directory.Exists (conf.AppDirectory))
+				Directory.Delete (conf.AppDirectory, true);
 		}
 		
 		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
 		{
 			return base.Compile (monitor, item, buildData);
+		}
+		
+		static bool NeedsBuilding (FilePair fp)
+		{
+			return fp.NeedsBuilding ();
+		}
+		
+		static BuildResult BuildError (string error)
+		{
+			var br = new BuildResult ();
+			br.AddError (error);
+			return br;
+		}
+		
+		static IEnumerable<FilePair> GetCopyFiles (MonoMacProject project, ConfigurationSelector sel, MonoMacProjectConfiguration conf)
+		{
+			var resDir = conf.AppDirectoryResources;
+			var output = conf.CompiledOutputName;
+			yield return new FilePair (output, resDir.Combine (output.FileName));
+			
+			if (conf.DebugMode) {
+				FilePath mdbFile = project.TargetRuntime.GetAssemblyDebugInfoFile (output);
+				if (File.Exists (mdbFile))
+					yield return new FilePair (mdbFile, resDir.Combine (mdbFile));
+			}
+			
+			foreach (FileCopySet.Item s in project.GetSupportFileList (sel))
+				yield return new FilePair (s.Src, resDir.Combine (s.Target));
+			
+			foreach (var pf in project.Files)
+				if (pf.BuildAction == BuildAction.Content)
+					yield return new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (resDir));
+		}
+		
+		static IEnumerable<FilePair> GetIBFilePairs (IEnumerable<ProjectFile> allItems, string outputRoot)
+		{
+			return allItems.OfType<ProjectFile> ()
+				.Where (pf => pf.BuildAction == BuildAction.Page && pf.FilePath.Extension == ".xib")
+				.Select (pf => {
+					string[] splits = ((string)pf.ProjectVirtualPath).Split (Path.DirectorySeparatorChar);
+					FilePath name = splits.Last ();
+					if (splits.Length > 1 && splits[0].EndsWith (".lproj"))
+						name = new FilePath (splits[0]).Combine (name);
+					return new FilePair (pf.FilePath, name.ChangeExtension (".nib").ToAbsolute (outputRoot));
+				});
+		}
+		
+		struct FilePair
+		{
+			public FilePair (FilePath input, FilePath output)
+			{
+				this.Input = input;
+				this.Output = output;
+			}
+			public FilePath Input, Output;
+			
+			public bool NeedsBuilding ()
+			{
+				return !File.Exists (Output) || File.GetLastWriteTime (Input) > File.GetLastWriteTime (Output);
+			}
+			
+			public void EnsureOutputDirectory ()
+			{
+				if (!Directory.Exists (Output.ParentDirectory))
+					Directory.CreateDirectory (Output.ParentDirectory);
+			}
 		}
 	}
 }

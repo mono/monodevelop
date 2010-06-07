@@ -105,6 +105,22 @@ namespace MonoDevelop.MonoMac
 		
 		#endregion
 		
+		//taken from monodevelop.aspnet.mvc
+		protected override void PopulateSupportFileList (MonoDevelop.Projects.FileCopySet list, ConfigurationSelector solutionConfiguration)
+		{
+			base.PopulateSupportFileList (list, solutionConfiguration);
+			
+			//HACK: workaround for MD not local-copying package references
+			foreach (var projectReference in References) {
+				if (projectReference.Package != null && projectReference.Package.Name == "monomac") {
+					if (projectReference.LocalCopy && projectReference.ReferenceType == ReferenceType.Gac)
+						foreach (var assem in projectReference.Package.Assemblies)
+							list.Add (assem.Location);
+					break;
+				}
+			}
+		}
+		
 		#region Platform properties
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)

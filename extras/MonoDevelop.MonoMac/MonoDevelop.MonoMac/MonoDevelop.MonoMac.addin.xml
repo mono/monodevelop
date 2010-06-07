@@ -11,6 +11,7 @@
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
 		<Import file = "MonoMac.dll"/>
+		<Import file = "MonoMacLaunchScript.sh"/>
 	</Runtime>
 	
 	<Dependencies>

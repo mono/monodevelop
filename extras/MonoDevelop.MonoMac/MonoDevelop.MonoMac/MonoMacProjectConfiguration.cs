@@ -44,22 +44,27 @@ namespace MonoDevelop.MonoMac
 		{
 		}
 		
+		string AppName {
+			get {
+				return Path.GetFileNameWithoutExtension (OutputAssembly);
+			}
+		}
+		
 		public FilePath AppDirectory {
 			get {
-				var proj = ParentItem as MonoMacProject;
-				if (proj != null)
-					return OutputDirectory.Combine (proj.Name + ".app");
-				return FilePath.Null;
+				return OutputDirectory.Combine (AppName + ".app");
+			}
+		}
+		
+		public FilePath AppDirectoryResources {
+			get {
+				return AppDirectory.Combine ("Contents", "Resources");
 			}
 		}
 		
 		public FilePath LaunchScript {
 			get {
-				var proj = ParentItem as MonoMacProject;
-				if (proj != null)
-					return OutputDirectory.Combine (proj.Name + ".app")
-						.Combine ("Resources", Path.GetFileNameWithoutExtension (OutputAssembly));
-				return null;
+				return AppDirectory.Combine ("Contents", "MacOS", AppName);
 			}
 		}
 		
