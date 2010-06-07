@@ -30,10 +30,18 @@
 		<MimeType id="application/vnd.apple-plist" _description="Mac Property List" isText="false">
 			<File pattern="*.plist" />
 		</MimeType>
-		<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file"
-		          isText="false" icon="application-vnd-apple-interface-builder">
-			<File pattern="*.xib" />
-		</MimeType>
+		<Condition id="Platform" value="mac">
+			<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file"
+			          isText="false" icon="application-vnd-apple-interface-builder">
+				<File pattern="*.xib" />
+			</MimeType>
+		</Condition>
+		<Condition id="Platform" value="!mac">
+			<MimeType id="application/vnd.apple-interface-builder" _description="Interface Builder file"
+			          baseType="application/xml" icon="application-vnd-apple-interface-builder">
+				<File pattern="*.xib" />
+			</MimeType>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
