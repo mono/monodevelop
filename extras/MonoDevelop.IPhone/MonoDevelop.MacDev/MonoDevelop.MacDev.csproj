@@ -44,11 +44,11 @@
     <Reference Include="System.Core">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.MacDev.Plist\" />
@@ -76,6 +76,7 @@
     <Compile Include="MonoDevelop.MacDev.Plist\PlistObjectBase.cs" />
     <Compile Include="MonoDevelop.MacDev.Plist\PlistReal.cs" />
     <Compile Include="MonoDevelop.MacDev.Plist\PlistString.cs" />
+    <Compile Include="MacBuildUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

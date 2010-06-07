@@ -1,3 +1,10 @@
+2010-06-06  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacBuildUtilities.cs:
+	* MonoDevelop.MacDev.csproj: Moved lots of re-usable code from
+	  iphone build extension to new
+	  MonoDevelop.MacDev.MacBuildUtilities class.
+
 2010-06-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.MacDev.csproj: Flush.
