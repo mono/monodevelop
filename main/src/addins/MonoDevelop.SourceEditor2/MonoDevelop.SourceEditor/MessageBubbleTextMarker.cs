@@ -329,7 +329,9 @@ namespace MonoDevelop.SourceEditor
 			
 			layouts = new List<LayoutDescriptor> ();
 			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
-			fontDescription.Family = "Sans";
+			var label = new Gtk.Label ("");
+			fontDescription.Family = label.Style.FontDescription.Family;
+			label.Destroy ();
 			fontDescription.Size = (int)(fontDescription.Size * 0.9f * editor.Options.Zoom);
 			foreach (ErrorText errorText in errors) {
 				Pango.Layout layout = new Pango.Layout (editor.PangoContext);
