@@ -134,7 +134,7 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 				base.Add (new DomCecilField (fieldDefinition));
 			}
-			foreach (MethodDefinition methodDefinition in typeDefinition.Methods) {
+			foreach (MethodDefinition methodDefinition in SelectMethods (typeDefinition, false)) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
 				base.Add (new DomCecilMethod (methodDefinition));
@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			bool internalOnly    = true;
 			bool hasConstructors = false;
-			foreach (MethodDefinition methodDefinition in typeDefinition.Constructors) {
+			foreach (MethodDefinition methodDefinition in SelectMethods (typeDefinition, true)) {
 				hasConstructors = true;
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
@@ -171,6 +171,15 @@ namespace MonoDevelop.Projects.Dom
 				if (typeParameters != null && innerType.typeParameters != null)
 					innerType.typeParameters.RemoveAll (para => typeParameters.Any (myPara => myPara.Name == para.Name));
 			}
+		}
+
+		static IEnumerable<MethodDefinition> SelectMethods (TypeDefinition type, bool constructors)
+		{
+			foreach (var method in type.Methods)
+				if (method.IsConstructor && constructors)
+					yield return method;
+				else if (!method.IsConstructor && !constructors)
+					yield return method;
 		}
 		
 		public TypeDefinition TypeDefinition {

@@ -201,25 +201,8 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal static System.Reflection.AssemblyName GetAssemblyNameObj (string file)
 		{
-			try {
-				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
-				return new AssemblyName (asm.Name.FullName);
-				
-				// Don't use reflection to get the name since it is a common cause for deadlocks
-				// in Mono < 2.6.
-				// return System.Reflection.AssemblyName.GetAssemblyName (file);
-				
-			} catch (FileNotFoundException) {
-				// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
-				foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
-					if (f != file)
-						return GetAssemblyNameObj (f);
-				}
-				throw;
-			} catch (BadImageFormatException) {
-				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
-				return new AssemblyName (asm.Name.FullName);
-			}
+			var assembly = AssemblyDefinition.ReadAssembly (file);
+			return new AssemblyName (assembly.Name.FullName);
 		}
 		
 		public static string GetAssemblyName (string file)
@@ -337,17 +320,17 @@ namespace MonoDevelop.Core.Assemblies
 		public string GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			try {
-				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
-			
-				AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
-				foreach (AssemblyNameReference aname in names) {
-					if (aname.Name == "mscorlib") {
-						foreach (TargetFramework tf in GetTargetFrameworks ()) {
-							if (tf.GetCorlibVersion () == aname.Version.ToString ())
-								return tf.Id;
-						}
-						break;
-					}
+				var assembly = AssemblyDefinition.ReadAssembly (file);
+
+				foreach (var reference in assembly.MainModule.AssemblyReferences) {
+					if (reference.Name != "mscorlib")
+						continue;
+
+					foreach (var framework in GetTargetFrameworks ())
+						if (framework.GetCorlibVersion () == reference.Version.ToString ())
+							return framework.Id;
+
+					break;
 				}
 			} catch {
 				// Ignore

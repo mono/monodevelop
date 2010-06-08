@@ -305,10 +305,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public IEnumerable<string> ReadAssemblyReferences ()
 		{
-			AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (assemblyFile);
-		
-			AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
-			foreach (AssemblyNameReference aname in names) {
+			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (assemblyFile);
+
+			foreach (AssemblyNameReference aname in asm.MainModule.AssemblyReferences) {
 				string afile = runtime.AssemblyContext.GetAssemblyLocation (aname.FullName, fx);
 				if (afile != null)
 					yield return "Assembly:" + runtime.Id + ":" + Path.GetFullPath (afile);

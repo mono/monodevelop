@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Dom
 //			base.modifiers           = DomCecilType.GetModifiers (parameterDefinition..Attributes);
 			base.ReturnType          = DomCecilMethod.GetReturnType (parameterDefinition.ParameterType);
 			
-			if (parameterDefinition.ParameterType is Mono.Cecil.ReferenceType) {
+			if (parameterDefinition.ParameterType is Mono.Cecil.ByReferenceType) {
 				this.ParameterModifiers = (parameterDefinition.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out ? ParameterModifiers.Out : ParameterModifiers.Ref;
 			} else {
 				this.ParameterModifiers = ParameterModifiers.In;
@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			if (ReturnType.ArrayDimensions > 0) {
 				foreach (CustomAttribute customAttribute in parameterDefinition.CustomAttributes) {
-					if (customAttribute.Constructor.DeclaringType.FullName == "System.ParamArrayAttribute") 
+					if (customAttribute.AttributeType.FullName == "System.ParamArrayAttribute") 
 						this.ParameterModifiers |= ParameterModifiers.Params;
 				}
 			}

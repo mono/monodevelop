@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.CodeDom;
+
 using Mono.Cecil;
 
 namespace MonoDevelop.Projects.Dom
@@ -47,23 +49,58 @@ namespace MonoDevelop.Projects.Dom
 			base.AttributeType = DomCecilMethod.GetReturnType (customAttribute.Constructor);
 			base.Name          = customAttribute.Constructor.DeclaringType.FullName;
 			
-			try {
-				// This Resolve call is required to load enum parameter values.
-				// Without this call, enum parameters are omited.
-				customAttribute.Resolve ();
-			} catch {
-				// If the resolve operation fails, just continue. The enum parameters will
-				// be omited, but there will be other parameters
-			}
+			foreach (var argument in customAttribute.ConstructorArguments)
+				AddPositionalArgument (CreateExpressionFor (argument));
+
+			foreach (var namedArgument in customAttribute.Properties)
+				AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
 			
-			foreach (object par in customAttribute.ConstructorParameters)
-				AddPositionalArgument (new System.CodeDom.CodePrimitiveExpression (par));
-			
-			foreach (System.Collections.DictionaryEntry entry in customAttribute.Properties)
-				AddNamedArgument ((string)entry.Key, new System.CodeDom.CodePrimitiveExpression (entry.Value));
-			
-			foreach (System.Collections.DictionaryEntry entry in customAttribute.Fields)
-				AddNamedArgument ((string)entry.Key, new System.CodeDom.CodePrimitiveExpression (entry.Value));
+			foreach (var namedArgument in customAttribute.Fields)
+				AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
+		}
+
+		static CodeExpression CreateExpressionFor (CustomAttributeArgument argument)
+		{
+			if (IsSystemType (argument.Type))
+				return new CodeTypeOfExpression (GetCodeTypeReference ((TypeReference) argument.Value));
+
+			return new CodePrimitiveExpression (argument.Value);
+		}
+
+		static bool IsSystemType (TypeReference type)
+		{
+			return type.FullName == "System.Type";
+		}
+
+		static CodeTypeReference GetCodeTypeReference (TypeReference type)
+		{
+			var array = type as ArrayType;
+			if (array != null)
+				return GetArrayCodeTypeReference (array);
+
+			var instance = type as GenericInstanceType;
+			if (instance != null)
+				return GetGenericInstanceCodeTypeReference (instance);
+
+			if (type.DeclaringType != null)
+				return new CodeTypeReference (type.FullName.Replace ('/', '+'));
+
+			return new CodeTypeReference (type.FullName);
+		}
+
+		static CodeTypeReference GetArrayCodeTypeReference (ArrayType array)
+		{
+			return new CodeTypeReference (GetCodeTypeReference (array.ElementType), array.Rank);
+		}
+
+		static CodeTypeReference GetGenericInstanceCodeTypeReference (GenericInstanceType instance)
+		{
+			var reference = GetCodeTypeReference (instance.ElementType);
+
+			foreach (var argument in instance.GenericArguments)
+				reference.TypeArguments.Add (GetCodeTypeReference (argument));
+
+			return reference;
 		}
 	}
 }
