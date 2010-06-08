@@ -55,6 +55,14 @@ namespace ${Namespace}
 ]]></File>
 		<File name="${Name}.xib.designer.cs" DependsOn="${Name}.xib"
 		      ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True" ><![CDATA[
+namespace ${Namespace} {
+	
+	// Should subclass MonoMac.AppKit.NSView
+	[MonoMac.Foundation.Register("${Name}")]
+	public partial class ${Name} {
+	}
+}
+
 ]]></File>
 		<File name="${Name}.xib" DefaultExtension=".xib" SuppressAutoOpen="True">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
@@ -71,6 +79,7 @@ namespace ${Namespace}
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -97,9 +106,10 @@ namespace ${Namespace}
 				<string key="NSClassName">NSApplication</string>
 			</object>
 			<object class="NSCustomView" id="709478681">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
-				<string key="NSFrameSize">{163, 96}</string>
+				<string key="NSFrameSize">{438, 255}</string>
+				<reference key="NSSuperview"/>
 				<string key="NSClassName">${Name}</string>
 			</object>
 		</object>
@@ -148,6 +158,7 @@ namespace ${Namespace}
 					<string>-1.IBPluginDependency</string>
 					<string>-2.IBPluginDependency</string>
 					<string>-3.IBPluginDependency</string>
+					<string>2.IBEditorWindowLastContentRect</string>
 					<string>2.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
@@ -155,6 +166,7 @@ namespace ${Namespace}
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>{{369, 404}, {438, 255}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 				</object>
 			</object>

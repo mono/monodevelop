@@ -79,8 +79,8 @@ namespace ${Namespace}
 			Initialize ();
 		}
 		
-		// Call to load from the XIB file
-		public ${Name} () : base ("${Name}", null)
+		// Call to load from the XIB/NIB file
+		public ${Name} () : base ("${Name}", NSBundle.MainBundle)
 		{
 			Initialize ();
 		}
@@ -96,6 +96,18 @@ namespace ${Namespace}
 ]]></File>
 		<File name="${Name}.xib.designer.cs" DependsOn="${Name}.xib"
 		      ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True" ><![CDATA[
+namespace ${Namespace} {
+	
+	// Should subclass MonoMac.AppKit.NSView
+	[MonoMac.Foundation.Register("${Name}")]
+	public partial class ${Name} {
+	}
+	
+	// Should subclass MonoMac.AppKit.NSViewController
+	[MonoMac.Foundation.Register("${Name}Controller")]
+	public partial class ${Name}Controller {
+	}
+}
 ]]></File>
 		<File name="${Name}.xib" DefaultExtension=".xib" SuppressAutoOpen="True">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
@@ -130,7 +142,7 @@ namespace ${Namespace}
 		<object class="NSMutableArray" key="IBDocument.RootObjects" id="1000">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<object class="NSCustomObject" id="1001">
-				<string key="NSClassName">NSObject</string>
+				<string key="NSClassName">${Name}Controller</string>
 			</object>
 			<object class="NSCustomObject" id="1003">
 				<string key="NSClassName">FirstResponder</string>
@@ -138,7 +150,6 @@ namespace ${Namespace}
 			<object class="NSCustomObject" id="1004">
 				<string key="NSClassName">NSApplication</string>
 			</object>
-			<object class="NSViewController" id="248921246"/>
 			<object class="NSCustomView" id="159381209">
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
@@ -153,10 +164,10 @@ namespace ${Namespace}
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">view</string>
-						<reference key="source" ref="248921246"/>
+						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="159381209"/>
 					</object>
-					<int key="connectionID">5</int>
+					<int key="connectionID">17</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -187,13 +198,11 @@ namespace ${Namespace}
 						<string key="objectName">Application</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">2</int>
-						<reference key="object" ref="248921246"/>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">4</int>
 						<reference key="object" ref="159381209"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+						</object>
 						<reference key="parent" ref="0"/>
 					</object>
 				</object>
@@ -205,8 +214,6 @@ namespace ${Namespace}
 					<string>-1.IBPluginDependency</string>
 					<string>-2.IBPluginDependency</string>
 					<string>-3.IBPluginDependency</string>
-					<string>2.CustomClassName</string>
-					<string>2.IBPluginDependency</string>
 					<string>4.IBEditorWindowLastContentRect</string>
 					<string>4.IBPluginDependency</string>
 				</object>
@@ -215,9 +222,7 @@ namespace ${Namespace}
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>${Name}Controller</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{392, 387}, {470, 296}}</string>
+					<string>{{380, 424}, {470, 296}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 				</object>
 			</object>
@@ -237,7 +242,7 @@ namespace ${Namespace}
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">5</int>
+			<int key="maxID">17</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
