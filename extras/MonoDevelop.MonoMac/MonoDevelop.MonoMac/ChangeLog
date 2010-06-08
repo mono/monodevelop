@@ -1,5 +1,9 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* templates/MonoMacProject.xpt.xml: Fix menu labels.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.MonoMac.csproj:
 	* MonoDevelop.MonoMac.addin.xml:
 	* templates/MonoMacViewXib.xft.xml:
