@@ -1,5 +1,10 @@
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.IPhone.csproj: Remove Mono.Addins targets as
+	  they seem to be broken.
+
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.csproj:
 	* MonoDevelop.IPhone.addin.xml:
 	* templates/IPhonePlist.xft.xml: Re-specialized the plist

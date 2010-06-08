@@ -118,7 +118,6 @@
     <Folder Include="templates\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Mono.Addins.targets" />
   <ItemGroup>
     <None Include="templates\IPhoneApplicationXib.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
