@@ -1,5 +1,10 @@
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.MonoMac.csproj: Remove Mono.Addins targets as
+	  they seem to be broken.
+
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* templates/MonoMacViewWithControllerXib.xft.xml:
 	* templates/MonoMacWindowWithControllerXib.xft.xml: Add some
 	  strongly typed accessors.
