@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty MonoMac Project</_Name>
-		<_Category>Mac</_Category>
+		<_Category>MonoMac</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty MonoMac project.</_Description>
 	</TemplateConfiguration>

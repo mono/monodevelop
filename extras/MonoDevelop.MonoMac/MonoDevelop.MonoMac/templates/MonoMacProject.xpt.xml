@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-<Template originator="Michael Hutchinson"
-          created="2010/06/05">
+<Template originator="Michael Hutchinson" created="2010/06/05">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>MonoMac Project</_Name>
-		<_Category>C#/Mac</_Category>
+		<_Category>C#/MonoMac</_Category>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a MonoMac project.</_Description>
 	</TemplateConfiguration>
@@ -3316,7 +3315,6 @@ namespace ${Namespace}
 					<string>515.IBPluginDependency</string>
 					<string>516.IBPluginDependency</string>
 					<string>517.IBPluginDependency</string>
-					<string>533.IBPluginDependency</string>
 					<string>56.IBPluginDependency</string>
 					<string>56.ImportedFromIB2</string>
 					<string>57.IBEditorWindowLastContentRect</string>
@@ -3458,7 +3456,7 @@ namespace ${Namespace}
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
 					<string>{{525, 802}, {197, 73}}</string>
-					<string>{{343, 691}, {402, 20}}</string>
+					<string>{{346, 722}, {402, 20}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
 					<string>{74, 862}</string>
@@ -3553,7 +3551,6 @@ namespace ${Namespace}
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>{{878, 180}, {164, 173}}</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -4152,7 +4149,6 @@ namespace ${Namespace}
 		</object>
 	</data>
 </archive>
-
 ]]></File>
 			</Files>
 		</Project>

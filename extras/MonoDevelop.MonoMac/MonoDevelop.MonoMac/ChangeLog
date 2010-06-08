@@ -1,3 +1,19 @@
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.MonoMac.csproj:
+	* MonoDevelop.MonoMac.addin.xml:
+	* templates/MonoMacPlist.xft.xml:
+	* templates/MonoMacViewXib.xft.xml:
+	* templates/MonoMacProject.xpt.xml:
+	* templates/MonoMacEmptyXib.xft.xml:
+	* templates/MonoMacWindowXib.xft.xml:
+	* templates/MonoMacProjectEmpty.xpt.xml:
+	* templates/MonoMacDocumentWindowXib.xft.xml:
+	* templates/MonoMacApplicationManifest.xft.xml:
+	* templates/MonoMacViewWithControllerXib.xft.xml:
+	* templates/MonoMacWindowWithControllerXib.xft.xml: Lots of
+	  templates and cleanup.
+
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/MonoMacViewXib.xft.xml:

@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
-<Template Originator  ="Michael Hutchinson"
-          Created     ="2009/06/08">
+<Template Originator="Michael Hutchinson" Created="2010/06/08">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>View with Controller</_Name>
+		<_Name>Cocoa View with Controller</_Name>
 		<Icon>xib-template-view</Icon>
-		<_Category>Mac</_Category>
+		<_Category>MonoMac</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>MonoMac</ProjectType>
-		<_Description>Creates an Interface Builder View with a Controller, for MonoMac.</_Description>
+		<_Description>Creates an Cocoa View with a Controller, for MonoMac.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>

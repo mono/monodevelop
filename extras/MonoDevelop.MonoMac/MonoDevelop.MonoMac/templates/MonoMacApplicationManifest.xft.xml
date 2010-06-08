@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Info.plist</_Name>
-		<_Category>Mac</_Category>
+		<_Category>MonoMac</_Category>
 		<Icon>md-xml-file-icon</Icon>
 		<LanguageName>*</LanguageName>
 		<ProjectType>MonoMac</ProjectType>
