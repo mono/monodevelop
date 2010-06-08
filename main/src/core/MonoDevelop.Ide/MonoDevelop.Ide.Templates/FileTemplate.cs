@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.Templates
                     }
 				} else {
                     string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
-                    Stream stream = singleFile.CreateFileContent (policyParent, project, language, fileName);
+                    Stream stream = singleFile.CreateFileContent (policyParent, project, language, fileName, name);
 
                     // Guess the mime type of the new file
                     string fn = Path.GetTempFileName ();

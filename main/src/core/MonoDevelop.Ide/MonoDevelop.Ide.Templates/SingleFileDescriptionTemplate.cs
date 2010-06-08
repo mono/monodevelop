@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Templates
 				
 				if (!string.IsNullOrEmpty (dependsOn)) {
 					Dictionary<string,string> tags = new Dictionary<string,string> ();
-					ModifyTags (policyParent, project, language, null, generatedFile, ref tags);
+					ModifyTags (policyParent, project, language, name, generatedFile, ref tags);
 					string parsedDepName = StringParserService.Parse (dependsOn, tags);
 					if (projectFile.DependsOn != parsedDepName)
 						projectFile.DependsOn = parsedDepName;
@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Templates
 			if (!Directory.Exists (Path.GetDirectoryName (file)))
 				Directory.CreateDirectory (Path.GetDirectoryName (file));
 					
-			Stream stream = CreateFileContent (policyParent, project, language, file);
+			Stream stream = CreateFileContent (policyParent, project, language, file, entryName);
 			
 			byte[] buffer = new byte [2048];
 			int nr;
@@ -235,10 +235,10 @@ namespace MonoDevelop.Ide.Templates
 		
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
-		public virtual Stream CreateFileContent (SolutionItem policyParent, Project project, string language, string fileName)
+		public virtual Stream CreateFileContent (SolutionItem policyParent, Project project, string language, string fileName, string identifier)
 		{
 			Dictionary<string, string> tags = new Dictionary<string, string> ();
-			ModifyTags (policyParent, project, language, null, fileName, ref tags);
+			ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 			
 			string content = CreateContent (project, tags, language);
 			content = StringParserService.Parse (content, tags);

@@ -130,13 +130,13 @@ namespace MonoDevelop.AspNet
 			
 			// Build tags for ${CodeRegion:#} substitutions			
 			foreach (string regionName in codeAreas.Keys) {
-				CodeTranslationFileDescriptionTemplate templ =
-					(CodeTranslationFileDescriptionTemplate) codeAreas [regionName];
+				var templ = (CodeTranslationFileDescriptionTemplate) codeAreas [regionName];
 				
 				//makes CodeTranslationFile's internal name substitition easier
-				templ.GetFileName (policyParent, project, language, project == null? null :project.BaseDirectory, (string) tags ["Name"]);
+				var name = (string) tags ["Name"];
+				templ.GetFileName (policyParent, project, language, project == null? null :project.BaseDirectory, name);
 				
-				Stream stream = templ.CreateFileContent (policyParent, project, language, fileName);
+				Stream stream = templ.CreateFileContent (policyParent, project, language, fileName, identifier);
 				StreamReader reader = new StreamReader (stream);
 				tags ["CodeRegion:"+regionName] = reader.ReadToEnd ();
 				reader.Close ();

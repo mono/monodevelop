@@ -1,3 +1,13 @@
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:
+	  Always use the original identifier for ${Name}, not the new
+	  constructed filename. Makes things easier in templates that
+	  produce multiple files.
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Track
+	  SingleFileDescription template API.
+
 2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/ToolsCommands.cs: Use the correct
