@@ -11,6 +11,7 @@
 	
 	<!-- Actions -->
 	<Actions>
+		<Open filename = "Main.cs"/>
 	</Actions>
 	
 	<!-- Template Content -->
@@ -30,6 +31,7 @@
 				<Reference type="Gac" refto="MonoMac" SpecificVersion="false" />
 			</References>
 			<Files>
+				<FileTemplateReference TemplateID="MonoMacWindowWithControllerXib" name="MainWindow" />
 				<FileTemplateReference TemplateID="MonoMacApplicationManifest" />
 				<File name="Main.cs">
 <![CDATA[using System;
@@ -61,12 +63,16 @@ namespace ${Namespace}
 {
 	public partial class AppDelegate : NSApplicationDelegate
 	{
+		MainWindowController mainWindowController;
+		
 		public AppDelegate ()
 		{
 		}
 
 		public override void FinishedLaunching (NSObject notification)
 		{
+			mainWindowController = new MainWindowController ();
+			mainWindowController.Window.MakeKeyAndOrderFront (this);
 		}
 	}
 }

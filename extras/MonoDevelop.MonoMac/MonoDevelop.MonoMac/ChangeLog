@@ -1,5 +1,9 @@
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* templates/MonoMacProject.xpt.xml: Add a MainWindow.
+
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.MonoMac.csproj: Remove Mono.Addins targets as
 	  they seem to be broken.
 
