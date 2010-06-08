@@ -1,3 +1,8 @@
+2010-06-01  Levi Bard  <levi@unity3d.com>
+
+	* SoftDebuggerSession.cs: Catch SocketException 
+	  on session exit.
+
 2010-05-31  Levi Bard  <levi@unity3d.com>
 
 	* SoftDebuggerSession.cs: Account for multiple assemblies

@@ -340,7 +340,12 @@ namespace Mono.Debugging.Soft
 		{
 			EndLaunch ();
 			if (vm != null)
-				vm.Exit (0);
+				try {
+					vm.Exit (0);
+				} catch (SocketException se) {
+					// This will often happen during normal operation
+					LoggingService.LogError ("Error closing debugger session", se);
+				}
 			QueueEnsureExited ();
 			exited = true;
 		}
