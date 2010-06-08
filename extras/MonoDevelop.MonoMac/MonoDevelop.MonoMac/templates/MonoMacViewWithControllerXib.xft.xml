@@ -90,6 +90,13 @@ namespace ${Namespace}
 		}
 		
 		#endregion
+		
+		//strongly typed view accessor
+		public new ${Name} View {
+			get {
+				return (${Name}) base.View;
+			}
+		}
 	}
 }
 ]]></File>

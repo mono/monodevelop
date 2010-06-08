@@ -1,5 +1,11 @@
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* templates/MonoMacViewWithControllerXib.xft.xml:
+	* templates/MonoMacWindowWithControllerXib.xft.xml: Add some
+	  strongly typed accessors.
+
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.MonoMac.csproj:
 	* MonoDevelop.MonoMac.addin.xml:
 	* templates/MonoMacPlist.xft.xml:

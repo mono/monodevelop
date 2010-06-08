@@ -90,6 +90,13 @@ namespace ${Namespace}
 		}
 		
 		#endregion
+		
+		//strongly typed window accessor
+		public new ${Name} Window {
+			get {
+				return (${Name}) base.Window;
+			}
+		}
 	}
 }
 ]]></File>
