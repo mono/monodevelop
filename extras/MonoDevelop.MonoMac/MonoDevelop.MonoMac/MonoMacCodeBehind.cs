@@ -113,7 +113,8 @@ namespace MonoDevelop.MonoMac
 						new CodeAttributeArgument (new CodePrimitiveExpression (cls.ClassName))));
 				
 				var sc = GetTypeReference (cls.SuperclassName ?? "id");
-				type.BaseTypes.Add (sc);
+				type.Comments.Add (new CodeCommentStatement ("Should subclass " + sc.BaseType));
+				//type.BaseTypes.Add (sc);
 				
 				if (cls.Actions != null) {
 					foreach (var action in cls.Actions.Values) {

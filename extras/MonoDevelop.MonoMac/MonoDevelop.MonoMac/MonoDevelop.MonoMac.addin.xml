@@ -10,25 +10,33 @@
 	
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
+		<Import file = "templates/MonoMacProjectEmpty.xpt.xml"/>
+		<Import file = "templates/MonoMacViewXib.xft.xml"/>
+		<Import file = "templates/MonoMacViewWithControllerXib.xft.xml"/>
+		<Import file = "templates/MonoMacApplicationManifest.xft.xml"/>
 		<Import file = "MonoMac.dll"/>
 		<Import file = "MonoMacLaunchScript.sh"/>
 	</Runtime>
 	
 	<Dependencies>
 		<Addin id="Core" version="2.4"/>
-		<Addin id="Ide" version="2.4"/>
+		<Addin id="Ide"  version="2.4"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-<!--
-			<FileTemplate id = "MonoMacApplicationXib"
-			            file = "MonoMacApplicationXib.xft.xml"/>
--->
+			<FileTemplate id = "MonoMacApplicationManifest"
+			            file = "templates/MonoMacApplicationManifest.xft.xml"/>
+			<FileTemplate id = "MonoMacViewXib"
+			            file = "templates/MonoMacViewXib.xft.xml"/>
+			<FileTemplate id = "MonoMacViewWithControllerXib"
+			            file = "templates/MonoMacViewWithControllerXib.xft.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MonoMacProject"
 				       file = "templates/MonoMacProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoMacProjectEmpty"
+				       file = "templates/MonoMacProjectEmpty.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

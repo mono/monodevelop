@@ -1,5 +1,26 @@
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.MonoMac.csproj:
+	* MonoDevelop.MonoMac.addin.xml:
+	* templates/MonoMacViewXib.xft.xml:
+	* templates/MonoMacProject.xpt.xml:
+	* templates/MonoMacProjectEmpty.xpt.xml:
+	* templates/MonoMacApplicationManifest.xft.xml:
+	* templates/MonoMacViewWithControllerXib.xft.xml: More &
+	  better templates.
+
+	* templates/MonoMacPList.xft.xml:
+	* templates/MonoMacEmptyXib.xft.xml:
+	* templates/MonoMacViewController.xft.xml:
+	* templates/MonoMacApplicationXib.xft.xml:
+	* templates/MonoMacWindowBasedProject.xpt.xml: Removed unused
+	  files.
+
+	* MonoMacCodeBehind.cs: Don't set the base class, let the user
+	  do it.
+
+2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacCodeBehind.cs: Track base class API. Emit global refs
 	  when possible. Abstract out which namespace the classes are
 	  generated in.

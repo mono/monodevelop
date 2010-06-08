@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<Template Originator="Michael Hutchinson" Created="2009/06/08">
+<Template Originator="Michael Hutchinson" Created="2010/06/07">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Info.plist</_Name>
-		<_Category>iPhone and iPad</_Category>
+		<_Category>Mac</_Category>
 		<Icon>md-xml-file-icon</Icon>
 		<LanguageName>*</LanguageName>
-		<ProjectType>IPhone</ProjectType>
+		<ProjectType>MonoMac</ProjectType>
 		<DefaultFilename IsFixed="True">Info.plist</DefaultFilename>
-		<_Description>An iPhone/iPad application manifest.</_Description>
+		<_Description>A Mac application manifest.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>
@@ -23,13 +23,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+	<key>CFBundleIdentifier</key>
+	<string>com.yourcompany.${ProjectName}</string>
+	<key>CFBundleName</key>
+	<string>${ProjectName}</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.6</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
 </dict>
 </plist>]]></File>
 	</TemplateFiles>
