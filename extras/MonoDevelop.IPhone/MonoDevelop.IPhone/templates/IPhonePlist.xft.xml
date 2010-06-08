@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
-<Template Originator="Michael Hutchinson" Created="2009/06/08">
+<Template Originator="Michael Hutchinson" Created="2010/06/08">
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Property List</_Name>
-		<_Category>Mac</_Category>
+		<_Category>iPhone and iPad</_Category>
 		<Icon>md-xml-file-icon</Icon>
+		<LanguageName>*</LanguageName>
+		<ProjectType>IPhone</ProjectType>
 		<_Description>Creates an empty property list.</_Description>
 	</TemplateConfiguration>
 

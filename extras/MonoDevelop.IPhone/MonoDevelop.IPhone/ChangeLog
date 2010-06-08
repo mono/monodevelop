@@ -1,3 +1,10 @@
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.IPhone.csproj:
+	* MonoDevelop.IPhone.addin.xml:
+	* templates/IPhonePlist.xft.xml: Re-specialized the plist
+	  template so categorization remains sane.
+
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/IPhoneViewController.xft.xml: Fix template.

@@ -18,7 +18,6 @@
 		<Import file = "icons/xib-template-empty.png"/>
 		<Import file = "icons/xib-template-view.png"/>
 		<Import file = "icons/xib-template-window.png"/>
-		<Import file = "templates/MacPlist.xft.xml"/>
 	</Runtime>
 
 	<Dependencies>
@@ -42,11 +41,6 @@
 				<File pattern="*.xib" />
 			</MimeType>
 		</Condition>
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id   = "MacPlist"
-		              file = "templates/MacPlist.xft.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

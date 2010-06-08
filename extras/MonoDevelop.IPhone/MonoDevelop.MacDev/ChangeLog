@@ -1,3 +1,10 @@
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.MacDev.csproj:
+	* templates/MacPlist.xft.xml:
+	* MonoDevelop.MacDev.addin.xml: Re-specialized the plist
+	  template so categorization remains sane.
+
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* XibCodeBehind.cs: Generato sublcasses now return a CCU, not

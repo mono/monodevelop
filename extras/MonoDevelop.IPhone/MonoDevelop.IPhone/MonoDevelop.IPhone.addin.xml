@@ -16,6 +16,7 @@
 		<Import file = "icons/iphone-project-overlay.png" />
 		<Import file = "icons/iphone-project-options-panel-16.png" />
 		<Import file = "icons/iphone-project-options-panel-24.png" />
+		<Import file = "templates/IPhonePlist.xft.xml"/>
 		<Import file = "templates/IPhoneApplicationXib.xft.xml"/>
 		<Import file = "templates/IPhoneViewXib.xft.xml"/>
 		<Import file = "templates/IPhoneEmptyXib.xft.xml"/>
@@ -44,6 +45,8 @@
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<Condition id="MonoTouchInstalled">
+			<FileTemplate id   = "IPhonePlist"
+			              file = "templates/IPhonePlist.xft.xml"/>
 			<FileTemplate id   = "IPhoneApplicationXib"
 			              file = "templates/IPhoneApplicationXib.xft.xml"/>
 			<FileTemplate id   = "IPhoneViewXib"

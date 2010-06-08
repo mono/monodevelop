@@ -199,6 +199,9 @@
     <None Include="icons\application-x-mono-develop-xib-16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="templates\IPhonePlist.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.MacDev\MonoDevelop.MacDev.csproj">
