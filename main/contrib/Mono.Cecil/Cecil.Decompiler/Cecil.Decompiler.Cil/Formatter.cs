@@ -135,13 +135,13 @@ namespace Cecil.Decompiler.Cil {
 
 		private static void WriteMethodReference (TextWriter writer, MethodReference method)
 		{
-			writer.Write (FormatTypeReference (method.ReturnType.ReturnType));
+			writer.Write (FormatTypeReference (method.ReturnType));
 			writer.Write (' ');
 			writer.Write (FormatTypeReference (method.DeclaringType));
 			writer.Write ("::");
 			writer.Write (method.Name);
 			writer.Write ("(");
-			ParameterDefinitionCollection parameters = method.Parameters;
+			var parameters = method.Parameters;
 			for (int i=0; i < parameters.Count; ++i) {
 				if (i > 0) writer.Write (", ");
 				writer.Write (FormatTypeReference (parameters [i].ParameterType));

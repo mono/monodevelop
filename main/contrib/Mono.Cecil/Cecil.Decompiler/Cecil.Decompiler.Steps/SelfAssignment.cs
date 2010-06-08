@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 //
 //	(C) 2007 - 2008 Novell, Inc. http://www.novell.com
 //	(C) 2007 - 2008 Jb Evain http://evain.net
@@ -38,7 +38,7 @@ namespace Cecil.Decompiler.Steps {
 
 		public static readonly IEqualityComparer Instance = new VariableComparer ();
 
-		public bool Equals (object x, object y)
+		public new bool Equals (object x, object y)
 		{
 			if (x == y)
 				return true;

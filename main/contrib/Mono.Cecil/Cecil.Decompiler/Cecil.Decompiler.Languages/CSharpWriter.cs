@@ -88,7 +88,7 @@ namespace Cecil.Decompiler.Languages {
 
 		void WriteMethodReturnType (MethodDefinition method)
 		{
-			WriteReference (method.ReturnType.ReturnType);
+			WriteReference (method.ReturnType);
 			WriteSpace ();
 		}
 
@@ -387,7 +387,7 @@ namespace Cecil.Decompiler.Languages {
 			if (pointer != null)
 				return ToString (specification.ElementType) + "*";
 
-			var reference = specification as ReferenceType;
+			var reference = specification as ByReferenceType;
 			if (reference != null)
 				return ToString (specification.ElementType) + "&";
 
@@ -627,7 +627,7 @@ namespace Cecil.Decompiler.Languages {
 		{
 			WriteKeyword ("catch");
 
-			if (node.Type.FullName != Constants.Object) {
+			if (node.Type.FullName != "System.Object") {
 				WriteSpace ();
 				WriteToken ("(");
 				if (node.Variable != null)
