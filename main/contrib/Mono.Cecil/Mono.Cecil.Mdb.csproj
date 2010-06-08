@@ -8,7 +8,7 @@
     <ProjectGuid>{201F7AC0-D2D5-4F51-85A8-17475DADBED3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Cecil.Mdb</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <RootNamespace>Mono.Cecil.Mdb</RootNamespace>
     <AssemblyOriginatorKeyFile>cecil.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
@@ -39,25 +39,19 @@
     <DefineConstants>CECIL</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Mono.Cecil.Mdb\AUTHORS" />
     <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb.csproj" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb.dll.sources" />
-    <Content Include="Mono.Cecil.Mdb\README" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Mono.Cecil.Mdb\ChangeLog" />
-    <None Include="Mono.CompilerServices.SymbolWriter\ChangeLog" />
     <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\AssemblyInfo.cs" />
-    <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbFactory.cs" />
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbReader.cs" />
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbWriter.cs" />
-    <Compile Include="Mono.CompilerServices.SymbolWriter\MonoSymbolFile.cs" />
-    <Compile Include="Mono.CompilerServices.SymbolWriter\MonoSymbolTable.cs" />
-    <Compile Include="Mono.CompilerServices.SymbolWriter\MonoSymbolWriter.cs" />
-    <Compile Include="Mono.CompilerServices.SymbolWriter\SymbolWriterImpl.cs" />
+    <Compile Include="Mono.Cecil.Mdb\Mono.CompilerServices.SymbolWriter\MonoSymbolFile.cs" />
+    <Compile Include="Mono.Cecil.Mdb\Mono.CompilerServices.SymbolWriter\MonoSymbolTable.cs" />
+    <Compile Include="Mono.Cecil.Mdb\Mono.CompilerServices.SymbolWriter\MonoSymbolWriter.cs" />
+    <Compile Include="Mono.Cecil.Mdb\Mono.CompilerServices.SymbolWriter\SymbolWriterImpl.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
