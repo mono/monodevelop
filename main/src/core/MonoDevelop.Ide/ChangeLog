@@ -1,3 +1,11 @@
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Templates/FileTemplate.cs: Use
+	  List<FileTemplate> not ArrayList.
+
+	* MonoDevelop.Ide.Projects/NewFileDialog.cs: Sort the template
+	  list by name.
+
 2010-06-07  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Templates/SingleFileDescriptionTemplate.cs:

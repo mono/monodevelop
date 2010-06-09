@@ -273,15 +273,15 @@ namespace MonoDevelop.Ide.Templates
             }
         }
 
-		internal static ArrayList GetFileTemplates (Project project, string projectPath)
-        {
-            ArrayList list = new ArrayList ();
-            foreach (FileTemplate t in fileTemplates) {
-                if (t.IsValidForProject (project, projectPath))
-                    list.Add (t);
-            }
-            return list;
-        }
+		internal static List<FileTemplate> GetFileTemplates (Project project, string projectPath)
+		{
+			var list = new List<FileTemplate> ();
+			foreach (var t in fileTemplates) {
+				if (t.IsValidForProject (project, projectPath))
+					list.Add (t);
+			}
+			return list;
+		}
 
 		internal static FileTemplate GetFileTemplateByID (string templateID)
         {

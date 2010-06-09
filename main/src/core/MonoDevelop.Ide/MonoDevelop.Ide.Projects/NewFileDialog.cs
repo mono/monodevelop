@@ -263,8 +263,11 @@ namespace MonoDevelop.Ide.Projects
 
 			if (!boxProject.Visible || projectAddCheckbox.Active)
 				project = parentProject;
-
-			foreach (FileTemplate template in FileTemplate.GetFileTemplates (project, basePath)) {
+			
+			var templates = FileTemplate.GetFileTemplates (project, basePath);
+			templates.Sort ((FileTemplate t, FileTemplate u) => string.Compare (t.Name, u.Name));
+			
+			foreach (var template in templates) {
 				List<string> langs = template.GetCompatibleLanguages (project, basePath);
 				if (langs != null) {
 					foreach (string language in langs) {
