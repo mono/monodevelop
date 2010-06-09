@@ -3,13 +3,13 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>iPhone Main Window Definition</_Name>
+		<_Name>iPhone Main Window</_Name>
 		<_Category>iPhone and iPad</_Category>
 		<Icon>xib-template-application</Icon>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>IPhone</ProjectType>
 		<DefaultFilename IsFixed="True">MainWindow</DefaultFilename>
-		<_Description>Creates an Interface Builder application document for MonoTouch.</_Description>
+		<_Description>Creates an Interface Builder iPhone Application document for MonoTouch.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>

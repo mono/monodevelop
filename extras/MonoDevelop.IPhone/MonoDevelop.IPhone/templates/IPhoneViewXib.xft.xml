@@ -4,12 +4,12 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>View Interface Definition</_Name>
+		<_Name>iPhone View</_Name>
 		<Icon>xib-template-view</Icon>
-		<_Category>iPhone</_Category>
+		<_Category>iPhone and iPad</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>IPhone</ProjectType>
-		<_Description>Creates an Interface Builder view document for MonoTouch.</_Description>
+		<_Description>Creates an Interface Builder iPhone View document for MonoTouch.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>

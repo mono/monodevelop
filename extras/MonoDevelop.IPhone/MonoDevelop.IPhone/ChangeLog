@@ -1,5 +1,14 @@
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* templates/IPadViewXib.xft.xml:
+	* templates/IPhoneViewXib.xft.xml:
+	* templates/IPadViewController.xft.xml:
+	* templates/IPadApplicationXib.xft.xml:
+	* templates/IPhoneViewController.xft.xml:
+	* templates/IPhoneApplicationXib.xft.xml: Unify categories.
+
+2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.IPhone.csproj: Remove Mono.Addins targets as
 	  they seem to be broken.
 
