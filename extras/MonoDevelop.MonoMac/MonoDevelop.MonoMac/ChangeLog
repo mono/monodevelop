@@ -1,5 +1,9 @@
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacLaunchScript.sh: Fixify.
+
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacLaunchScript.sh: Launch script now checks for Mono
 
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>

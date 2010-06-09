@@ -4,7 +4,7 @@
 ##### Determine app name and locations #####
 
 APP_ROOT=$(cd "$(dirname "$0")"; pwd)
-APP_ROOT=${APP_ROOT%%/Contents/MacOS}"
+APP_ROOT=${APP_ROOT%%/Contents/MacOS}
  
 CONTENTS_DIR="$APP_ROOT/Contents"
 RESOURCES_PATH="$CONTENTS_DIR/Resources"
@@ -44,10 +44,18 @@ fi
 
 ##### Run the exe using Mono #####
 
+# Work around a limitation in 'exec' in older versions of macosx
+OSX_VERSION=$(uname -r | cut -f1 -d.)
+if [ $OSX_VERSION -lt 9 ]; then  # If OSX version is 10.4
+	EXEC="exec "
+else
+	EXEC="exec -a \"$APP_NAME\""
+fi
+
 # I don't know why this crazyness is required, but it doesn't work without.
 MONO_BIN=`which mono`
 EXEC_PATH="$APP_ROOT"/"$APP_NAME"
 if [ -f "$EXEC_PATH" ]; then rm -f "$EXEC_PATH" ; fi
 ln -s $MONO_BIN "$EXEC_PATH"
 
-exec -a $APP_NAME "$EXEC_PATH" $MONO_OPTIONS "$RESOURCES_PATH"/"$ASSEMBLY"
+$EXEC "$EXEC_PATH" $MONO_OPTIONS "$RESOURCES_PATH"/"$ASSEMBLY"
