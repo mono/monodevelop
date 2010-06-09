@@ -119,19 +119,20 @@ namespace Stetic {
 				dragWin.SetSizeRequest (-1, 20);
 
 			req = dragWin.SizeRequest ();
-			
-			int px, py, rx, ry;
-			Gdk.ModifierType pmask;
-			ctx.SourceWindow.GetPointer (out px, out py, out pmask);
-			ctx.SourceWindow.GetRootOrigin (out rx, out ry);
-
-			dragWin.Move (rx + px, ry + py);
-			dragWin.Show ();
-			
-			dragHotX = req.Width / 2;
-			dragHotY = -3;
-			
-			Gtk.Drag.SetIconWidget (ctx, dragWin, dragHotX, dragHotY);
+			if (ctx.SourceWindow != null) {
+				int px, py, rx, ry;
+				Gdk.ModifierType pmask;
+				ctx.SourceWindow.GetPointer (out px, out py, out pmask);
+				ctx.SourceWindow.GetRootOrigin (out rx, out ry);
+	
+				dragWin.Move (rx + px, ry + py);
+				dragWin.Show ();
+				
+				dragHotX = req.Width / 2;
+				dragHotY = -3;
+				
+				Gtk.Drag.SetIconWidget (ctx, dragWin, dragHotX, dragHotY);
+			}
 
 			if (source != null) {
 				source.DragDataGet += DragDataGet;

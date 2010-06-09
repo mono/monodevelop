@@ -1,3 +1,7 @@
+2010-06-09  Mike Krüger  <mkrueger@novell.com>
+
+	* DND.cs: Fixed stetic crash when drag & drop widgets on mac.
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* GladeUtils.cs:
