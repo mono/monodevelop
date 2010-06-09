@@ -1,5 +1,9 @@
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacLaunchScript.sh: Ooops, removed important line.
+
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacLaunchScript.sh: Fixify.
 
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>

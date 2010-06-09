@@ -9,6 +9,7 @@ APP_ROOT=${APP_ROOT%%/Contents/MacOS}
 CONTENTS_DIR="$APP_ROOT/Contents"
 RESOURCES_PATH="$CONTENTS_DIR/Resources"
 
+APP_NAME=`echo $0 | awk -F"/" '{ printf("%s", $NF); }'`
 ASSEMBLY=`echo $0 | awk -F"/" '{ printf("%s.exe", $NF); }'`
  
 ##### Environment setup #####
