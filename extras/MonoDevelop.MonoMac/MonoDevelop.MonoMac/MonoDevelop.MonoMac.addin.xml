@@ -75,7 +75,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
-		<ExecutionHandler id="MonoMac" class = "MonoDevelop.MonoMac.MonoMacExecutionHandler"/>
+		<Condition id="Platform" value="mac">
+			<ExecutionHandler id="MonoMac" class = "MonoDevelop.MonoMac.MonoMacExecutionHandler"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/SupportPackages">

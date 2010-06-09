@@ -39,7 +39,6 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 {
 	public class MonoMacSoftDebuggerEngine: IDebuggerEngine
 	{
-		
 		public bool CanDebugCommand (ExecutionCommand command)
 		{
 			var cmd = command as MonoMacExecutionCommand;

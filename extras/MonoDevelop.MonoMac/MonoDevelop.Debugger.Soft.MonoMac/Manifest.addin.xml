@@ -15,10 +15,12 @@
 	</Dependencies>
 	
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
-		<DebuggerEngine
-			id="Mono.Debugger.Soft.MonoMac"
-			name="Mono Soft Debugger for MonoMac"
-			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
-			type="MonoDevelop.Debugger.Soft.MonoMac.MonoMacSoftDebuggerEngine" />
+		<Condition id="Platform" value="mac">
+			<DebuggerEngine
+				id="Mono.Debugger.Soft.MonoMac"
+				name="Mono Soft Debugger for MonoMac"
+				features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+				type="MonoDevelop.Debugger.Soft.MonoMac.MonoMacSoftDebuggerEngine" />
+		</Condition>
 	</Extension>
 </Addin>

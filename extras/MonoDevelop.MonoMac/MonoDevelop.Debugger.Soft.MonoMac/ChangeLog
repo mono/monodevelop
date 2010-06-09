@@ -1,3 +1,10 @@
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Manifest.addin.xml:
+	* MonoMacDebuggerSession.cs:
+	* MonoMacSoftDebuggerEngine.cs: Disable the debug and
+	  execution handlers cleanly on non-Mac.
+
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Debugger.Soft.MonoMac.csproj: Make xbuild happy.

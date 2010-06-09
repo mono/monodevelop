@@ -1,5 +1,11 @@
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacExecutionHandler.cs:
+	* MonoDevelop.MonoMac.addin.xml: Disable the debug and
+	  execution handlers cleanly on non-Mac.
+
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacLaunchScript.sh: Ooops, removed important line.
 
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>

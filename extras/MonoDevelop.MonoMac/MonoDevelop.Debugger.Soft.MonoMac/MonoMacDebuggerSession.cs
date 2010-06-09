@@ -51,7 +51,6 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 		
 			StartListening (dsi);
 			
-			Console.WriteLine ("ls2 {0}", cmd.LaunchScript);
 			var psi = new ProcessStartInfo (cmd.LaunchScript) {
 				Arguments = "",
 				RedirectStandardOutput = true,

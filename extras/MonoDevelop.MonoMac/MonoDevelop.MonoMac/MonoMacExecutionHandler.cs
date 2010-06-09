@@ -39,7 +39,7 @@ namespace MonoDevelop.MonoMac
 	{
 		public bool CanExecute (ExecutionCommand command)
 		{
-			return PropertyService.IsMac && (command is MonoMacExecutionCommand);
+			return command is MonoMacExecutionCommand);
 		}
 		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
