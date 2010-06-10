@@ -56,8 +56,7 @@ namespace MonoDevelop.MonoMac
 			var appDir = conf.AppDirectory;
 			
 			//make sure the codebehind files are updated before building
-			bool forceRegen = !Directory.Exists (appDir);
-			var res = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, proj.Files, forceRegen);
+			var res = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, proj.Files);
 			if (res.ErrorCount > 0)
 				return res;
 			
@@ -66,9 +65,16 @@ namespace MonoDevelop.MonoMac
 				return res;
 			
 			//copy exe, mdb, refs, copy-to-output, Content files to Resources
-			foreach (var f in GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding)) {
-				f.EnsureOutputDirectory ();
-				File.Copy (f.Input, f.Output, true);
+			var filesToCopy = GetCopyFiles (proj, configuration, conf).Where (NeedsBuilding).ToList ();
+			if (filesToCopy.Count > 0) {
+				monitor.BeginTask ("Copying resource files to app bundle", filesToCopy.Count);
+				foreach (var f in filesToCopy) {
+					f.EnsureOutputDirectory ();
+					File.Copy (f.Input, f.Output, true);
+					monitor.Log.WriteLine ("Copied {0}", f.Output.ToRelative (appDir));
+					monitor.Step (1);
+				}
+				monitor.EndTask ();
 			}
 			
 			if (!PropertyService.IsMac) {

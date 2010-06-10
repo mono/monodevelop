@@ -92,24 +92,41 @@ namespace MonoDevelop.MacDev
 		}
 		
 		public static BuildResult UpdateCodeBehind (IProgressMonitor monitor, XibCodeBehind generator, 
-		                                            IEnumerable<ProjectFile> items, bool forceRegen)
+		                                            IEnumerable<ProjectFile> items)
 		{
-			//make sure the codebehind files are updated before building
-			monitor.BeginTask (GettextCatalog.GetString ("Updating CodeBehind files"), 0);	
-			var cbWriter = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, generator.Project);
 			var result = new BuildResult ();
-			if (cbWriter.SupportsPartialTypes) {
-				result.Append (generator.UpdateXibCodebehind (cbWriter, items, forceRegen));
-				cbWriter.WriteOpenFiles ();
-				if (cbWriter.WrittenCount > 0)
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updated {0} CodeBehind files", cbWriter.WrittenCount));
-			} else {
+			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (monitor, generator.Project);
+			if (!writer.SupportsPartialTypes) {
 				monitor.ReportWarning ("Cannot generate designer code, because CodeDom " +
-					"provider does not support partial classes.");
+						"provider does not support partial classes.");
+				return result;
 			}
+			
+			var files = generator.GetDesignerFilesNeedBuilding (items, false).ToList ();
+			if (files.Count == 0)
+				return result;
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Updating CodeBehind files"), 0);
+			
+			foreach (var f in files) {
+				try {
+					generator.GenerateDesignerCode (writer, f.Key, f.Value);
+					var relPath = f.Value.FilePath.ToRelative (generator.Project.BaseDirectory);
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updated {0}", relPath));
+				} catch (Exception ex) {
+					result = result ?? new BuildResult ();
+					result.AddError (f.Key.FilePath, 0, 0, null, ex.Message);
+					LoggingService.LogError (String.Format ("Error generating code for xib file '{0}'", f.Key.FilePath), ex);
+				}
+			}
+			
+			writer.WriteOpenFiles ();
+			
 			monitor.EndTask ();
 			return result;
 		}
+		
+		
 		
 		//copied from MoonlightBuildExtension
 		public static int ExecuteCommand (IProgressMonitor monitor, System.Diagnostics.ProcessStartInfo startInfo, out string errorOutput)

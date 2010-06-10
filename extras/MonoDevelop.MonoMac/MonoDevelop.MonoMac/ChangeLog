@@ -1,3 +1,7 @@
+2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoMacBuildExtension.cs: Better build output.
+
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoMacBuildExtension.cs: Fix build deps.

@@ -445,10 +445,7 @@ namespace MonoDevelop.IPhone
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
 			string appDir = cfg.AppDirectory;
 			
-			//make sure the codebehind files are updated before building
-			bool forceRegen = !Directory.Exists (appDir);
-			
-			var result = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, projFiles, forceRegen);
+			var result = MacBuildUtilities.UpdateCodeBehind (monitor, proj.CodeBehindGenerator, projFiles);
 			if (result.ErrorCount > 0)
 				return result;
 			

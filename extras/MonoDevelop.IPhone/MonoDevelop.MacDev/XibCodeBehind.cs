@@ -83,28 +83,23 @@ namespace MonoDevelop.MacDev
 		
 		public DotNetProject Project { get; private set ; }
 		
-		public BuildResult UpdateXibCodebehind (CodeBehindWriter writer, IEnumerable<ProjectFile> allFiles, bool forceRegen)
+		internal IEnumerable<KeyValuePair<ProjectFile,ProjectFile>> GetDesignerFilesNeedBuilding
+			(IEnumerable<ProjectFile> allFiles, bool forceRegen)
 		{
-			BuildResult result = null;
-			var projWrite = File.GetLastWriteTime (Project.FileName);
+			var pairs = from x in allFiles
+				where IsXibFile (x)
+				let d = GetDesignerFile (x)
+				where d != null
+				select new KeyValuePair<ProjectFile, ProjectFile> (x, d);
 			
-			foreach (var xibFile in allFiles.Where (IsXibFile)) {
-				var designerFile = GetDesignerFile (xibFile);
-				if (designerFile == null)
-					continue;
-				
-				try {
-					var designerWrite = File.GetLastWriteTime (designerFile.FilePath);
-					if (forceRegen || designerWrite < projWrite || designerWrite < File.GetLastWriteTime (xibFile.FilePath)) {
-						GenerateDesignerCode (writer, xibFile, designerFile);
-					}
-				} catch (Exception ex) {
-					result = result ?? new BuildResult ();
-					result.AddError (xibFile.FilePath, 0, 0, null, ex.Message);
-					LoggingService.LogError (String.Format ("Error generating code for xib file '{0}'", xibFile.FilePath), ex);
-				}
-			}
-			return result;
+			if (forceRegen)
+				return pairs;
+			
+			var projWrite = File.GetLastWriteTime (Project.FileName);
+			return from p in pairs
+				let t = File.GetLastWriteTime (p.Value.FilePath)
+				where t < projWrite || t < File.GetLastWriteTime (p.Key.FilePath)
+				select p;
 		}
 
 		static ProjectFile GetDesignerFile (ProjectFile xibFile)
@@ -120,7 +115,7 @@ namespace MonoDevelop.MacDev
 			return null;
 		}
 
-		void GenerateDesignerCode (CodeBehindWriter writer, ProjectFile xibFile, ProjectFile designerFile)
+		internal void GenerateDesignerCode (CodeBehindWriter writer, ProjectFile xibFile, ProjectFile designerFile)
 		{
 			var ccu = Generate (xibFile, writer.Provider, writer.GeneratorOptions);
 			writer.Write (ccu, designerFile.FilePath);
