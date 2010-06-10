@@ -1,5 +1,10 @@
 2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViMode.cs: Fix mouse selection enabling
+	  visual mode.
+
+2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViMode.cs:
 	* Mono.TextEditor.Vi/ViActions.cs: Fix the visual mode
 	  selection when pivoting around the anchor char and anchor
