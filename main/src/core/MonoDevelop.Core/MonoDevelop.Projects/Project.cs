@@ -282,7 +282,7 @@ namespace MonoDevelop.Projects
 
 			StringParserService.Properties["Project"] = Name;
 
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation..."));
+			monitor.BeginTask (GettextCatalog.GetString ("Performing main compilation..."), 0);
 			BuildResult res = DoBuild (monitor, configuration);
 
 			isDirty = false;
@@ -293,6 +293,7 @@ namespace MonoDevelop.Projects
 
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Build complete -- ") + errorString + ", " + warningString);
 			}
+			monitor.EndTask ();
 
 			return res;
 		}

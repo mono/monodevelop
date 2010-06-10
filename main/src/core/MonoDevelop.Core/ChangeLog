@@ -1,5 +1,11 @@
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects/Project.cs: Use a monitor task for the
+	  build so things get indented properly in the build output
+	  pad.
+
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Use
 	  start & end offset for regions, not start + length.
 
