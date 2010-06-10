@@ -71,6 +71,7 @@ RES =  \
 	gtk-gui/gui.stetic \
 	icons/debug-overlay-16.png \
 	icons/debug-overlay-22.png \
+	icons/debug-overlay-24.png \
 	icons/debug-overlay-32.png \
 	icons/step-into-16.png \
 	icons/step-into-22.png \
