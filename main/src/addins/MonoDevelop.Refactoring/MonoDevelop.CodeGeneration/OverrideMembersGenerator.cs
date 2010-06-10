@@ -123,7 +123,7 @@ namespace MonoDevelop.CodeGeneration
 				CodeGenerator generator = CodeGenerator.CreateGenerator (Options.Document.TextEditorData.Document.MimeType);
 				
 				foreach (IMember member in includedMembers) 
-					yield return generator.CreateMemberImplementation (Options.EnclosingType, member, false);
+					yield return generator.CreateMemberImplementation (Options.EnclosingType, member, false).Code;
 			}
 		}
 	}

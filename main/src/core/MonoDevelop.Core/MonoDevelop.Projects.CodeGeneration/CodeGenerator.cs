@@ -189,7 +189,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				} else {
 					first = false;
 				}
-				result.Append (CreateMemberImplementation (implementingType, pair.Key, pair.Value));
+				result.Append (CreateMemberImplementation (implementingType, pair.Key, pair.Value).Code);
 			}
 			
 			return result.ToString ();
@@ -206,7 +206,55 @@ namespace MonoDevelop.Projects.CodeGeneration
 		}
 		
 		public abstract string WrapInRegions (string regionName, string text);
-		public abstract string CreateMemberImplementation (IType implementingType, IMember member, bool explicitDeclaration);
+		public abstract CodeGeneratorMemberResult CreateMemberImplementation (IType implementingType, IMember member, bool explicitDeclaration);
 		public abstract string CreateFieldEncapsulation (IType implementingType, IField field, string propertyName, Modifiers modifiers, bool readOnly);
+	}
+	
+	public class CodeGeneratorMemberResult
+	{
+		public CodeGeneratorMemberResult (string code) : this (code, null)
+		{
+		}
+		
+		public CodeGeneratorMemberResult (string code, int bodyStart, int bodyLength)
+		{
+			this.Code = code;
+			this.BodyRegions = new CodeGeneratorBodyRegion[] {
+				new CodeGeneratorBodyRegion (bodyStart, bodyLength)
+			};
+		}
+		
+		public CodeGeneratorMemberResult (string code, IList<CodeGeneratorBodyRegion> bodyRegions)
+		{
+			this.Code = code;
+			this.BodyRegions = bodyRegions ??  new CodeGeneratorBodyRegion[0];
+		}
+		
+		public string Code { get; private set; }
+		public IList<CodeGeneratorBodyRegion> BodyRegions { get; private set; }
+	}
+	
+	public class CodeGeneratorBodyRegion
+	{
+		public CodeGeneratorBodyRegion (int startOffset, int length)
+		{
+			this.StartOffset = startOffset;
+			this.Length = length;
+		}
+
+		public int StartOffset { get; private set; }
+		public int Length { get; private set; }
+		
+		public int EndOffset {
+			get {
+				return StartOffset + Length;
+			}
+		}
+		
+		public bool IsValid {
+			get {
+				return StartOffset >= 0 && Length >= 0;
+			}
+		}
 	}
 }

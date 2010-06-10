@@ -166,7 +166,7 @@ namespace MonoDevelop.Projects.Dom
 			this.modules.Add (module);
 		}
 		
-		class InstantiatedParamResolver : AbstractDomVistitor<object, object>
+		class InstantiatedParamResolver : AbstractDomVisitor<object, object>
 		{
 			Dictionary<string, string> xmlDocumentation;
 			Dictionary<string, IType> argTypes = new Dictionary<string, IType> ();

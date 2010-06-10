@@ -47,15 +47,10 @@ namespace MonoDevelop.CSharp.Completion
 		TextEditorData editor;
 		IMember member;
 		static Ambience ambience = new CSharpAmbience ();
-		int    initialOffset;
 		int    declarationBegin;
-		int    targetCaretPositon = -1;
-		int    selectionEndPositon = -1;
 		IType  type;
-		public bool GenerateBody {
-			get;
-			set;
-		}
+		
+		public bool GenerateBody { get; set; }
 		
 		public NewOverrideCompletionData (ProjectDom dom, TextEditorData editor, int declarationBegin, IType type, IMember member) : base (null)
 		{
@@ -63,7 +58,6 @@ namespace MonoDevelop.CSharp.Completion
 			this.type   = type;
 			this.member = member;
 			
-			this.initialOffset = editor.Caret.Offset;
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
 			this.Icon = member.StockIcon;
@@ -73,14 +67,37 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override void InsertCompletionText (CompletionListWindow window)
 		{
-			CSharpCodeGenerator generator = new CSharpCodeGenerator ();
-			string sb = generator.CreateMemberImplementation (type, member, false).Trim ();
-			editor.Replace (declarationBegin, editor.Caret.Offset - declarationBegin, sb);
-			if (selectionEndPositon >= 0) {
-				editor.Caret.Offset = selectionEndPositon;
-				editor.SetSelection (targetCaretPositon, selectionEndPositon);
+			var generator = new CSharpCodeGenerator ();
+			var result = generator.CreateMemberImplementation (type, member, false);
+			string sb = result.Code.TrimStart ();
+			int trimStart = result.Code.Length - sb.Length;
+			sb = sb.TrimEnd ();
+			
+			var lastRegion = result.BodyRegions.LastOrDefault ();
+			CodeGeneratorBodyRegion region = lastRegion != null? 
+				new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.Length) : null;
+			
+			int targetCaretPosition;
+			int selectionEndPosition = -1;
+			if (region != null && region.IsValid) {
+				targetCaretPosition = declarationBegin + region.StartOffset;
+				if (region.Length > 0) {
+					if (GenerateBody) {
+						selectionEndPosition = declarationBegin + region.EndOffset;
+					} else {
+						sb = sb.Substring (0, region.StartOffset) + sb.Substring (region.EndOffset); 
+					}
+				}
 			} else {
-				editor.Caret.Offset = targetCaretPositon < 0 ? declarationBegin + sb.Length : targetCaretPositon;
+				targetCaretPosition = declarationBegin + sb.Length;
+			}
+			
+			editor.Replace (declarationBegin, editor.Caret.Offset - declarationBegin, sb);
+			if (selectionEndPosition > 0) {
+				editor.Caret.Offset = selectionEndPosition;
+				editor.SetSelection (targetCaretPosition, selectionEndPosition);
+			} else {
+				editor.Caret.Offset = targetCaretPosition;
 			}
 		}
 	}

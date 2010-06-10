@@ -1,3 +1,12 @@
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs: Track
+	  API. Emit regions for members.
+
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	  Use body regions to select body or place caret, and to
+	  remove generated body when GenerateBody is false.
+
 2010-06-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs: Fix

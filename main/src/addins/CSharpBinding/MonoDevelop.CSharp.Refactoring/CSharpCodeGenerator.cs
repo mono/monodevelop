@@ -31,6 +31,7 @@ using System.Text;
 using MonoDevelop.CSharp.Formatting;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -66,15 +67,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append ("#endregion");
 			return result.ToString ();
 		}
-
-		public override string CreateMemberImplementation (IType implementingType, IMember member, bool explicitDeclaration)
+		
+		public override CodeGeneratorMemberResult CreateMemberImplementation (IType implementingType, IMember member,
+		                                                                      bool explicitDeclaration)
 		{
 			SetIndentTo (implementingType);
-			CodeGenerationOptions options = new CodeGenerationOptions () {
+			var options = new CodeGenerationOptions () {
 				ExplicitDeclaration = explicitDeclaration,
-				ImplementingType = implementingType
+				ImplementingType = implementingType,
 			};
-			
 			return member.AcceptVisitor (visitor, options);
 		}
 		
@@ -160,7 +161,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}*/
 		
-		class OutputVisitor : AbstractDomVistitor<CodeGenerationOptions, string>
+		class OutputVisitor : AbstractDomVisitor<CodeGenerationOptions, CodeGeneratorMemberResult>
 		{
 			CSharpCodeGenerator generator;
 			
@@ -169,7 +170,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				this.generator = generator;
 			}
 			
-			public override string Visit (IField field, CodeGenerationOptions options)
+			public override CodeGeneratorMemberResult Visit (IField field, CodeGenerationOptions options)
 			{
 				StringBuilder result = new StringBuilder ();
 				generator.AppendIndent (result);
@@ -179,10 +180,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append (" ");
 				result.Append (field.Name);
 				result.Append (";");
-				return result.ToString ();
+				return new CodeGeneratorMemberResult (result.ToString (), -1, -1);
 			}
 			
-			public override string Visit (IEvent evt, CodeGenerationOptions options)
+			public override CodeGeneratorMemberResult Visit (IEvent evt, CodeGenerationOptions options)
 			{
 				StringBuilder result = new StringBuilder ();
 				
@@ -215,27 +216,35 @@ namespace MonoDevelop.CSharp.Refactoring
 				} else {
 					result.Append (";");
 				}
-				return result.ToString ();
+				return new CodeGeneratorMemberResult (result.ToString (), -1, -1);
 			}
 			
-			public void AppendNotImplementedException (StringBuilder result, CSharpCodeGenerator.CodeGenerationOptions options)
+			public void AppendNotImplementedException (StringBuilder result, CodeGenerationOptions options,
+			                                           out int bodyStartOffset, out int bodyEndOffset)
 			{
 				generator.AppendIndent (result);
+				bodyStartOffset = result.Length;
 				result.Append ("throw new ");
 				AppendReturnType (result, options.ImplementingType, new DomReturnType ("System.NotImplementedException"));
 				if (generator.policy.BeforeMethodCallParentheses)
 					result.Append (" ");
-				result.AppendLine ("();");
+				result.Append ("();");
+				bodyEndOffset = result.Length;
+				result.AppendLine ();
 			}
 			
-			public void AppendMonoTouchTodo (StringBuilder result)
+			public void AppendMonoTouchTodo (StringBuilder result, out int bodyStartOffset, out int bodyEndOffset)
 			{
 				generator.AppendIndent (result);
-				result.AppendLine ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+				bodyStartOffset = result.Length;
+				result.Append ("// TODO: Implement - see: http://go-mono.com/docs/index.aspx?link=T%3aMonoTouch.Foundation.ModelAttribute");
+				bodyEndOffset = result.Length;
+				result.AppendLine ();
 			}
 			
-			public override string Visit (IMethod method, CodeGenerationOptions options)
+			public override CodeGeneratorMemberResult Visit (IMethod method, CodeGenerationOptions options)
 			{
+				int bodyStartOffset = -1, bodyEndOffset = -1;
 				StringBuilder result = new StringBuilder ();
 				AppendModifiers (result, options, method);
 				AppendReturnType (result, options.ImplementingType, method.ReturnType);
@@ -264,6 +273,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				generator.AppendBraceStart (result, generator.policy.MethodBraceStyle);
 				if (method.Name == "ToString" && (method.Parameters == null || method.Parameters.Count == 0) && method.ReturnType != null && method.ReturnType.FullName == "System.String") {
 					generator.AppendIndent (result);
+					bodyStartOffset = result.Length;
 					result.Append ("return string.Format");
 					if (generator.policy.BeforeMethodDeclarationParentheses)
 						result.Append (" ");
@@ -290,13 +300,15 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append (property.Name);
 					}
 					result.Append (");");
+					bodyEndOffset = result.Length;
 					result.AppendLine ();
 				} else if (IsMonoTouchModelMember (method)) {
-					AppendMonoTouchTodo (result);
+					AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
 				} else if (method.IsAbstract || method.DeclaringType.ClassType == ClassType.Interface) {
-					AppendNotImplementedException (result, options);
+					AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 				} else {
 					generator.AppendIndent (result);
+					bodyStartOffset = result.Length;
 					if (method.ReturnType.FullName != DomReturnType.Void.FullName)
 						result.Append ("return ");
 					result.Append ("base.");
@@ -315,10 +327,12 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append ("ref ");
 						result.Append (p.Name);
 					}
-					result.AppendLine (");");
+					result.Append (");");
+					bodyEndOffset = result.Length;
+					result.AppendLine ();
 				}
 				generator.AppendBraceEnd (result, generator.policy.MethodBraceStyle);
-				return result.ToString ();
+				return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset - bodyStartOffset);
 			}
 			
 			public static void AppendParameterList (StringBuilder result, IType implementingType, IList<IParameter> parameters)
@@ -371,8 +385,9 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("override ");
 			}
 			
-			public override string Visit (IProperty property, CodeGenerationOptions options)
+			public override CodeGeneratorMemberResult Visit (IProperty property, CodeGenerationOptions options)
 			{
+				int bodyStartOffset = -1, bodyEndOffset = -1;
 				StringBuilder result = new StringBuilder ();
 				AppendModifiers (result, options, property);
 				AppendReturnType (result, options.ImplementingType, property.ReturnType);
@@ -394,14 +409,16 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("get");
 					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (property)) {
-						AppendMonoTouchTodo (result);
+						AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
 					} else if (property.IsAbstract || property.DeclaringType.ClassType == ClassType.Interface) {
-						AppendNotImplementedException (result, options);
+						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 					} else {
 						generator.AppendIndent (result);
+						bodyStartOffset = result.Length;
 						result.Append ("return base.");
 						result.Append (property.Name);
 						result.Append (";");
+						bodyEndOffset = result.Length;
 						result.AppendLine ();
 					}
 					generator.AppendBraceEnd (result, generator.policy.PropertyGetBraceStyle);
@@ -413,21 +430,23 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("set");
 					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
 					if (IsMonoTouchModelMember (property)) {
-						AppendMonoTouchTodo (result);
+						AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
 					} else if (property.IsAbstract || property.DeclaringType.ClassType == ClassType.Interface) {
-						AppendNotImplementedException (result, options);
+						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 					} else {
 						generator.AppendIndent (result);
+						bodyStartOffset = result.Length;
 						result.Append ("base.");
 						result.Append (property.Name);
 						result.Append (" = value;");
+						bodyEndOffset = result.Length;
 						result.AppendLine ();
 					}
 					generator.AppendBraceEnd (result, generator.policy.PropertyGetBraceStyle);
 					result.AppendLine ();
 				}
 				generator.AppendBraceEnd (result, generator.policy.PropertyBraceStyle);
-				return result.ToString ();
+				return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset - bodyStartOffset);
 			}
 			
 			public static bool IsMonoTouchModelMember (IMember member)

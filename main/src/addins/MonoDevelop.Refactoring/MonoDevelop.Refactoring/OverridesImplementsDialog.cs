@@ -255,7 +255,7 @@ namespace MonoDevelop.Refactoring
 							curImpl.AppendLine ();
 							curImpl.AppendLine ();
 						}
-						curImpl.Append (generator.CreateMemberImplementation (this.cls, pair.Key, pair.Value != null));
+						curImpl.Append (generator.CreateMemberImplementation (this.cls, pair.Key, pair.Value != null).Code);
 					}
 					if (kvp.Key.ClassType == ClassType.Interface) {
 						code.Append (generator.WrapInRegions (kvp.Key.Name + " implementation", curImpl.ToString ()));

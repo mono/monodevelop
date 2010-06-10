@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Dom
 		S Visit (LocalVariable var, T data);
 	}
 
-	public abstract class AbstractDomVistitor<T, S> : IDomVisitor<T, S>
+	public abstract class AbstractDomVisitor<T, S> : IDomVisitor<T, S>
 	{
 		public virtual S Visit (ICompilationUnit unit, T data)
 		{

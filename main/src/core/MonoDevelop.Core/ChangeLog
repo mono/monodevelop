@@ -1,3 +1,13 @@
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs:
+	  CreateMemberImplementation now returns a
+	  CodeGeneratorMemberResult with body regions.
+
+	* MonoDevelop.Projects.Dom/IDomVisitor.cs:
+	* MonoDevelop.Projects.Dom/DomCecilCompilationUnit.cs: Fix
+	  spelling.
+
 2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Projects/DotNetProject.cs: Added option for
