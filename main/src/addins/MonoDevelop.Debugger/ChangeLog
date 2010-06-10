@@ -1,3 +1,7 @@
+2010-06-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Debugger/DisassemblyView.cs: Track API changes.
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Debugger/DebuggingService.cs: Fix incorrect use

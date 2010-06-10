@@ -101,7 +101,7 @@ namespace MonoDevelop.Debugger
 			autoRefill = false;
 			
 			if (lastDebugLine != -1) {
-				editor.Document.RemoveMarker (lastDebugLine, currentDebugLineMarker);
+				editor.Document.RemoveMarker (currentDebugLineMarker);
 			}
 			
 			if (DebuggingService.CurrentFrame == null) {
@@ -235,7 +235,7 @@ namespace MonoDevelop.Debugger
 			
 			if (loc.Line < FillMarginLines) {
 				if (lastDebugLine != -1)
-					editor.Document.RemoveMarker (lastDebugLine, currentDebugLineMarker);
+					editor.Document.RemoveMarker (currentDebugLineMarker);
 				int num = (FillMarginLines - loc.Line) * 2;
 				InsertLines (0, firstLine - num, firstLine - 1);
 				firstLine -= num;
