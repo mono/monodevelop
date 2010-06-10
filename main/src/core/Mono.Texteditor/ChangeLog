@@ -1,5 +1,9 @@
 2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViActions.cs: Fix line end text object.
+
+2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/Document.cs: Add RemoveMarker overloads
 	  allowing to skip line updates.
 

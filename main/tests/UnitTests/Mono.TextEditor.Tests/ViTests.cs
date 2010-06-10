@@ -183,6 +183,34 @@ qrstu",
    ggg ggg", mode.Text);
 		}
 		
+				[Test]
+		public void DeleteToLineBoundary ()
+		{
+			var mode = new TestViEditMode () { Text =
+@"   aaa bbb ccc ddd
+   eee fff ggg hhh
+   iii jjj kkk lll",
+			};
+			//move 3 words, delete to line end
+			mode.Input ("wwwd$");
+			Assert.AreEqual (
+@"   aaa bbb 
+   eee fff ggg hhh
+   iii jjj kkk lll", mode.Text);
+			//move down to 0 position, move 3 words, delete to home
+			mode.Input ("j0wwwd^");
+			Assert.AreEqual (
+@"   aaa bbb
+   ggg hhh
+   iii jjj kkk lll", mode.Text);
+			//move down to 0 position, move 3 words, delete to 0
+			mode.Input ("j0wwwd0");
+			Assert.AreEqual (
+@"   aaa bbb
+   ggg hhh
+kkk lll", mode.Text);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
