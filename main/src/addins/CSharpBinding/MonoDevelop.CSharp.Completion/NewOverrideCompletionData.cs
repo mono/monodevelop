@@ -74,8 +74,8 @@ namespace MonoDevelop.CSharp.Completion
 			sb = sb.TrimEnd ();
 			
 			var lastRegion = result.BodyRegions.LastOrDefault ();
-			CodeGeneratorBodyRegion region = lastRegion != null? 
-				new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.Length) : null;
+			var region = lastRegion == null? null
+				: new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.EndOffset - trimStart);
 			
 			int targetCaretPosition;
 			int selectionEndPosition = -1;
@@ -85,6 +85,7 @@ namespace MonoDevelop.CSharp.Completion
 					if (GenerateBody) {
 						selectionEndPosition = declarationBegin + region.EndOffset;
 					} else {
+						//FIXME: if there are multiple regions, remove all of them
 						sb = sb.Substring (0, region.StartOffset) + sb.Substring (region.EndOffset); 
 					}
 				}

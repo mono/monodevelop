@@ -1,5 +1,10 @@
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs: Use
+	  start & end offset for regions, not start + length.
+
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Projects.CodeGeneration/CodeGenerator.cs:
 	  CreateMemberImplementation now returns a
 	  CodeGeneratorMemberResult with body regions.

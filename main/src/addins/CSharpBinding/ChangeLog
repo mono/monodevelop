@@ -1,5 +1,13 @@
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs:
+	  Track API. Fix region offset.
+
+	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs: Track
+	  API. Include both body regions for properties.
+
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs: Track
 	  API. Emit regions for members.
 

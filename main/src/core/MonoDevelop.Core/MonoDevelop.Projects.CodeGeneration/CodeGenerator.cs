@@ -216,11 +216,11 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 		}
 		
-		public CodeGeneratorMemberResult (string code, int bodyStart, int bodyLength)
+		public CodeGeneratorMemberResult (string code, int bodyStartOffset, int bodyEndOffset)
 		{
 			this.Code = code;
 			this.BodyRegions = new CodeGeneratorBodyRegion[] {
-				new CodeGeneratorBodyRegion (bodyStart, bodyLength)
+				new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset)
 			};
 		}
 		
@@ -236,18 +236,18 @@ namespace MonoDevelop.Projects.CodeGeneration
 	
 	public class CodeGeneratorBodyRegion
 	{
-		public CodeGeneratorBodyRegion (int startOffset, int length)
+		public CodeGeneratorBodyRegion (int startOffset, int endOffset)
 		{
 			this.StartOffset = startOffset;
-			this.Length = length;
+			this.EndOffset = endOffset;
 		}
 
 		public int StartOffset { get; private set; }
-		public int Length { get; private set; }
+		public int EndOffset { get; private set; }
 		
-		public int EndOffset {
+		public int Length {
 			get {
-				return StartOffset + Length;
+				return EndOffset - StartOffset;
 			}
 		}
 		

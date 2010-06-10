@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				} else {
 					result.Append (";");
 				}
-				return new CodeGeneratorMemberResult (result.ToString (), -1, -1);
+				return new CodeGeneratorMemberResult (result.ToString ());
 			}
 			
 			public void AppendNotImplementedException (StringBuilder result, CodeGenerationOptions options,
@@ -332,7 +332,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.AppendLine ();
 				}
 				generator.AppendBraceEnd (result, generator.policy.MethodBraceStyle);
-				return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset - bodyStartOffset);
+				return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
 			}
 			
 			public static void AppendParameterList (StringBuilder result, IType implementingType, IList<IParameter> parameters)
@@ -387,8 +387,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			public override CodeGeneratorMemberResult Visit (IProperty property, CodeGenerationOptions options)
 			{
-				int bodyStartOffset = -1, bodyEndOffset = -1;
-				StringBuilder result = new StringBuilder ();
+				var regions = new List<CodeGeneratorBodyRegion> ();
+				var result = new StringBuilder ();
 				AppendModifiers (result, options, property);
 				AppendReturnType (result, options.ImplementingType, property.ReturnType);
 				result.Append (" ");
@@ -405,6 +405,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				generator.AppendBraceStart (result, generator.policy.PropertyBraceStyle);
 				if (property.HasGet) {
+					int bodyStartOffset, bodyEndOffset;
 					generator.AppendIndent (result);
 					result.Append ("get");
 					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
@@ -423,9 +424,11 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					generator.AppendBraceEnd (result, generator.policy.PropertyGetBraceStyle);
 					result.AppendLine ();
+					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
 				
 				if (property.HasSet) {
+					int bodyStartOffset, bodyEndOffset;
 					generator.AppendIndent (result);
 					result.Append ("set");
 					generator.AppendBraceStart (result, generator.policy.PropertyGetBraceStyle);
@@ -444,9 +447,11 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					generator.AppendBraceEnd (result, generator.policy.PropertyGetBraceStyle);
 					result.AppendLine ();
+					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
+						
 				}
 				generator.AppendBraceEnd (result, generator.policy.PropertyBraceStyle);
-				return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset - bodyStartOffset);
+				return new CodeGeneratorMemberResult (result.ToString (), regions);
 			}
 			
 			public static bool IsMonoTouchModelMember (IMember member)
