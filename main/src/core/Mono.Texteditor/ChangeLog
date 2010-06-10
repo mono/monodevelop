@@ -1,5 +1,10 @@
 2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViActions.cs: Fix some buglets in the
+	  selection line pivoting.
+
+2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViMode.cs: Fix mouse selection enabling
 	  visual mode.
 

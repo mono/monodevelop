@@ -250,28 +250,39 @@ namespace Mono.TextEditor.Vi
 				moveAction (data);
 				SelectionActions.EndSelection (data);
 				
-				//ensure that the pivot about the anchor char leaves a char selected
-				if (!data.IsSomethingSelected || data.MainSelection.Anchor == data.Caret.Location) {
+				DocumentLocation newCaret = data.Caret.Location, newAnchor = newCaret, newLead = newCaret;
+				if (data.MainSelection != null) {
+					newLead = data.MainSelection.Lead;
+					newAnchor = data.MainSelection.Anchor;
+				}
+				
+				//Console.WriteLine ("oc{0}:{1} oa{2}:{3} ol{4}:{5}", oldCaret.Line, oldCaret.Column, oldAnchor.Line, oldAnchor.Column, oldLead.Line, oldLead.Column);
+				//Console.WriteLine ("nc{0}:{1} na{2}:{3} nl{4}:{5}", newCaret.Line, newCaret.Line, newAnchor.Line, newAnchor.Column, newLead.Line, newLead.Column);
+				
+				//pivot the anchor around the anchor character
+				if (oldAnchor < oldLead && newAnchor >= newLead) {
+					data.SetSelection (new DocumentLocation (newAnchor.Line, newAnchor.Column + 1), newLead);
+				} else if (oldAnchor > oldLead && newAnchor <= newLead) {
+					data.SetSelection (new DocumentLocation (newAnchor.Line, newAnchor.Column - 1), newLead);
+				}
+				
+				//pivot the lead about the anchor character
+				if (newAnchor == newLead) {
 					if (oldAnchor < oldLead)
 						SelectionActions.FromMoveAction (Left) (data);
 					else
 						SelectionActions.FromMoveAction (Right) (data);
 				}
-				//fix offset when pivoting around anchor line
-				else if (data.Caret.Line == oldCaret.Line - 1 && oldCaret.Line == oldAnchor.Line) {
-					SelectionActions.FromMoveAction (Left) (data);
-				} else if (data.Caret.Line == oldCaret.Line + 1 && oldCaret.Line == oldAnchor.Line - 1) {
-					SelectionActions.FromMoveAction (Right) (data);
-				}
-				
-				var newAnchor = data.MainSelection.Anchor;
-				var newLead = data.MainSelection.Lead;
-				
-				//pivot the anchor around the anchor character
-				if (oldAnchor > oldLead && newAnchor <= newLead) {
-					data.SetSelection (new DocumentLocation (newAnchor.Line, newAnchor.Column - 1), newLead);
-				} else if (oldAnchor < oldLead && newAnchor >= newLead) {
-					data.SetSelection (new DocumentLocation (newAnchor.Line, newAnchor.Column + 1), newLead);
+				//pivot around the anchor line
+				else {
+					if (oldAnchor < oldLead && newAnchor > newLead && (
+							(newLead.Line == newAnchor.Line && oldLead.Line == oldAnchor.Line + 1) ||
+						    (newLead.Line == newAnchor.Line - 1 && oldLead.Line == oldAnchor.Line)))
+						SelectionActions.FromMoveAction (Left) (data);
+					else if (oldAnchor > oldLead && newAnchor < newLead && (
+							(newLead.Line == newAnchor.Line && oldLead.Line == oldAnchor.Line - 1) ||
+							(newLead.Line == newAnchor.Line + 1 && oldLead.Line == oldAnchor.Line)))
+						SelectionActions.FromMoveAction (Right) (data);
 				}
 			};
 		}
