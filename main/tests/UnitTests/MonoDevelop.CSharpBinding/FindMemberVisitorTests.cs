@@ -194,7 +194,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 		}
 		
-		class SearchMemberVisitor : AbstractDomVistitor<object, object>
+		class SearchMemberVisitor : AbstractDomVisitor<object, object>
 		{
 			public INode FoundMember {
 				get;
