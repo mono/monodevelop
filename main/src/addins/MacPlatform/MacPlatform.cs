@@ -267,5 +267,20 @@ namespace MonoDevelop.Platform
 			return new ExternalConsoleProcess (command, arguments, workingDirectory, environmentVariables,
 			                                   title, pauseWhenFinished);
 		}
+		
+		public override bool CanOpenTerminal {
+			get {
+				return true;
+			}
+		}
+		
+		public override void OpenInTerminal (FilePath directory)
+		{
+			AppleScript.Run (string.Format (
+@"tell application ""Terminal""
+activate
+do script with command ""cd {0}""
+end tell", directory.ToString ().Replace ("\"", "\\\"")));
+		}
 	}
 }

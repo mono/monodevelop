@@ -134,5 +134,16 @@ namespace MonoDevelop.Ide
 		{
 			platformService.SetFileAttributes (fileName, attributes);
 		}
+		
+		public static bool CanOpenTerminal {
+			get {
+				return platformService.CanOpenTerminal;
+			}
+		}
+		
+		public static void OpenInTerminal (FilePath directory)
+		{
+			platformService.OpenInTerminal (directory);
+		}
 	}
 }

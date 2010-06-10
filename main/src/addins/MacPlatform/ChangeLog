@@ -1,3 +1,7 @@
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Implemented CanOpenTerminal/OpenInTerminal.
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Updater/UpdateService.cs: Fix incorrect use of

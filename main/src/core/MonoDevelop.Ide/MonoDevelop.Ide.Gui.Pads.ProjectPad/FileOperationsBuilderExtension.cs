@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -81,24 +82,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			FindInFilesDialog.FindInPath (path);
 		}
 		
-		public static string TerminalCommand {
-			get {
-				return PropertyService.Get ("MonoDevelop.Shell", "gnome-terminal");
-			}
+		
+		
+		[CommandUpdateHandler (FileCommands.OpenInTerminal)]
+		[AllowMultiSelection]
+		public void OnUpdateOpenInTerminal (CommandInfo info)
+		{
+			info.Visible = DesktopService.CanOpenTerminal && GetCurrentDirectories ().Any ();
 		}
 		
 		[CommandHandler (FileCommands.OpenInTerminal)]
 		[AllowMultiSelection]
 		public void OnOpenInTerminal ()
 		{
-			HashSet<string> paths = new HashSet<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				string path = GetDir (node.DataItem);
-				string terminal = TerminalCommand;
-				if (paths.Add (path))
-					Runtime.ProcessService.StartProcess (terminal, "", path, null);
-			}
+			foreach (var dir in GetCurrentDirectories ())
+				DesktopService.OpenInTerminal (dir);
 		}
 		
+		IEnumerable<String> GetCurrentDirectories ()
+		{
+			return CurrentNodes.Select (n => GetDir (n.DataItem)) .Where (d => !string.IsNullOrEmpty (d)).Distinct ();
+		}
 	}
 }

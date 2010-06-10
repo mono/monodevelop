@@ -34,6 +34,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.IO;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Platform
 {
@@ -314,5 +315,22 @@ namespace MonoDevelop.Platform
 
 #endregion
 		
+		//FIXME: probe for terminal
+		static string TerminalCommand {
+			get {
+				return PropertyService.Get ("MonoDevelop.Shell", "gnome-terminal");
+			}
+		}
+		
+		public override bool CanOpenTerminal {
+			get {
+				return true;
+			}
+		}
+		
+		public override void OpenInTerminal (FilePath directory)
+		{
+			Runtime.ProcessService.StartProcess (TerminalCommand, "", directory, null);
+		}
 	}
 }

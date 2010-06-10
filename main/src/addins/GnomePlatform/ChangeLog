@@ -1,3 +1,8 @@
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* GnomePlatform.cs: Implemented
+	  CanOpenTerminal/OpenInTerminal.
+
 2010-04-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* GnomePlatform.cs: Track StartConsoleProcess API.

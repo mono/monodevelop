@@ -300,5 +300,16 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return null;
 		}
+		
+		public virtual bool CanOpenTerminal {
+			get {
+				return false;
+			}
+		}
+		
+		public virtual void OpenInTerminal (FilePath directory)
+		{
+			throw new InvalidOperationException ();
+		}
 	}
 }

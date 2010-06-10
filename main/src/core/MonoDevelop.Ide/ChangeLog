@@ -1,3 +1,13 @@
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide/DesktopService.cs:
+	* MonoDevelop.Ide.Desktop/PlatformService.cs: Added
+	  CanOpenTerminal/OpenInTerminal.
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/FileOperationsBuilderExtension.cs:
+	  Use platform service CanOpenTerminal/OpenInTerminal instead
+	  of hardcoded gnome-terminal.
+
 2010-06-08  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Templates/FileTemplate.cs: Use
