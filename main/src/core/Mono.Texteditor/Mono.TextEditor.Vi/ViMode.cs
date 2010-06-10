@@ -314,10 +314,8 @@ namespace Mono.TextEditor.Vi
 						
 					case 'v':
 						Status = "-- VISUAL --";
-						if (Data.MainSelection == null && Caret.Offset+1 < Data.Document.Length)
-							Data.SetSelection (Caret.Offset, Caret.Offset+1);
-						Data.MainSelection.Anchor = Caret.Location;
 						state = State.Visual;
+						RunAction (ViActions.VisualSelectionFromMoveAction (ViActions.Right));
 						return;
 						
 					case 'd':
@@ -637,7 +635,7 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetCommandCharAction ((char)unicodeKey);
 				}
 				if (action != null) {
-					RunAction (SelectionActions.FromMoveAction (action));
+					RunAction (ViActions.VisualSelectionFromMoveAction (action));
 					return;
 				}
 

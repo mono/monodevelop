@@ -234,5 +234,46 @@ namespace Mono.TextEditor.Vi
 				}
 			}
 		}
+		
+		public static Action<TextEditorData> VisualSelectionFromMoveAction (Action<TextEditorData> moveAction)
+		{
+			return delegate (TextEditorData data) {
+				//get info about the old selection state
+				DocumentLocation oldCaret = data.Caret.Location, oldAnchor = oldCaret, oldLead = oldCaret;
+				if (data.MainSelection != null) {
+					oldLead = data.MainSelection.Lead;
+					oldAnchor = data.MainSelection.Anchor;
+				}
+				
+				//do the action, preserving selection
+				SelectionActions.StartSelection (data);
+				moveAction (data);
+				SelectionActions.EndSelection (data);
+				
+				//ensure that the pivot about the anchor char leaves a char selected
+				if (!data.IsSomethingSelected || data.MainSelection.Anchor == data.Caret.Location) {
+					if (oldAnchor < oldLead)
+						SelectionActions.FromMoveAction (Left) (data);
+					else
+						SelectionActions.FromMoveAction (Right) (data);
+				}
+				//fix offset when pivoting around anchor line
+				else if (data.Caret.Line == oldCaret.Line - 1 && oldCaret.Line == oldAnchor.Line) {
+					SelectionActions.FromMoveAction (Left) (data);
+				} else if (data.Caret.Line == oldCaret.Line + 1 && oldCaret.Line == oldAnchor.Line - 1) {
+					SelectionActions.FromMoveAction (Right) (data);
+				}
+				
+				var newAnchor = data.MainSelection.Anchor;
+				var newLead = data.MainSelection.Lead;
+				
+				//pivot the anchor around the anchor character
+				if (oldAnchor > oldLead && newAnchor <= newLead) {
+					data.SetSelection (new DocumentLocation (newAnchor.Line, newAnchor.Column - 1), newLead);
+				} else if (oldAnchor < oldLead && newAnchor >= newLead) {
+					data.SetSelection (new DocumentLocation (newAnchor.Line, newAnchor.Column + 1), newLead);
+				}
+			};
+		}
 	}
 }
