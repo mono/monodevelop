@@ -1,3 +1,9 @@
+2010-06-10  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor.Vi/ViMark.cs: Fixed 'Bug 613114 - NRE in
+	  editor means error marker never goes away'.
+
 2010-06-05  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed 'Bug

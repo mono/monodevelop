@@ -1191,14 +1191,9 @@ namespace Mono.TextEditor
 			return left.LineSegment.Offset.CompareTo (right.LineSegment.Offset);
 		}
 		
-		public void RemoveMarker (int lineNumber, TextMarker marker)
+		public void RemoveMarker (TextMarker marker)
 		{
-			RemoveMarker (this.GetLine (lineNumber), marker);
-		}
-		
-		public void RemoveMarker (LineSegment line, TextMarker marker)
-		{
-			if (line == null || marker == null)
+			if (marker == null || marker.LineSegment == null)
 				return;
 			if (marker is IExtendingTextMarker) {
 				lock (extendingTextMarkers) {
@@ -1206,7 +1201,8 @@ namespace Mono.TextEditor
 					extendingTextMarkers.Remove (marker);
 				}
 			}
-			line.RemoveMarker (marker);
+			var line = marker.LineSegment;
+			marker.LineSegment.RemoveMarker (marker);
 			this.CommitLineUpdate (line);
 		}
 		
@@ -1507,7 +1503,13 @@ namespace Mono.TextEditor
 				return result;
 			return null;
 		}
-
+		
+		/// <summary>
+		/// un register virtual text marker.
+		/// </summary>
+		/// <param name='marker'>
+		/// marker.
+		/// </param>
 		public void UnRegisterVirtualTextMarker (IExtendingTextMarker marker)
 		{
 			List<int> keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);

@@ -50,7 +50,7 @@ namespace Mono.TextEditor.Vi
 		
 			if (base.LineSegment != null) {
 				// Remove the marker first
-				data.Document.RemoveMarker (base.LineSegment, this);
+				data.Document.RemoveMarker (this);
 			}
 		
 			// Is there a better way of doing this?
