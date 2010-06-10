@@ -171,7 +171,7 @@ namespace MonoDevelop.MonoMac
 			
 			//launch script
 			var ls = conf.LaunchScript;
-			if (new FilePair (proj.FileName, ls).NeedsBuilding ())
+			if (!File.Exists (ls))
 				return true;
 			
 			//pkginfo

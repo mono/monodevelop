@@ -1,5 +1,9 @@
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoMacBuildExtension.cs: Fix build deps.
+
+2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoMacExecutionHandler.cs: Fix build.
 
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
