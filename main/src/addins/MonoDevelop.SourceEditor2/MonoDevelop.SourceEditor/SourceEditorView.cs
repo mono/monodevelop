@@ -329,7 +329,7 @@ namespace MonoDevelop.SourceEditor
 		void DisposeErrorMarkers ()
 		{
 			currentErrorMarkers.ForEach (em => {
-				widget.Document.RemoveMarker (em.LineSegment, em);
+				widget.Document.RemoveMarker (em);
 				em.Dispose ();
 			});
 			currentErrorMarkers.Clear ();
@@ -690,11 +690,11 @@ namespace MonoDevelop.SourceEditor
 		void RemoveDebugMarkers ()
 		{
 			if (currentLineSegment != null) {
-				widget.TextEditor.Document.RemoveMarker (currentLineSegment, currentDebugLineMarker);
+				widget.TextEditor.Document.RemoveMarker (currentDebugLineMarker);
 				currentLineSegment = null;
 			}
 			if (debugStackSegment != null) {
-				widget.TextEditor.Document.RemoveMarker (debugStackSegment, debugStackLineMarker);
+				widget.TextEditor.Document.RemoveMarker (debugStackLineMarker);
 				debugStackSegment = null;
 			}
 		}
@@ -805,11 +805,11 @@ namespace MonoDevelop.SourceEditor
 			HashSet<int> lineNumbers = new HashSet<int> ();
 			foreach (LineSegment line in breakpointSegments) {
 				lineNumbers.Add (Document.OffsetToLineNumber (line.Offset));
-				widget.TextEditor.Document.RemoveMarker (line, breakpointMarker);
-				widget.TextEditor.Document.RemoveMarker (line, breakpointDisabledMarker);
-				widget.TextEditor.Document.RemoveMarker (line, breakpointInvalidMarker);
-				widget.TextEditor.Document.RemoveMarker (line, tracepointMarker);
-				widget.TextEditor.Document.RemoveMarker (line, tracepointDisabledMarker);
+				widget.TextEditor.Document.RemoveMarker (breakpointMarker);
+				widget.TextEditor.Document.RemoveMarker (breakpointDisabledMarker);
+				widget.TextEditor.Document.RemoveMarker (breakpointInvalidMarker);
+				widget.TextEditor.Document.RemoveMarker (tracepointMarker);
+				widget.TextEditor.Document.RemoveMarker (tracepointDisabledMarker);
 			}
 			
 			breakpointSegments.Clear ();

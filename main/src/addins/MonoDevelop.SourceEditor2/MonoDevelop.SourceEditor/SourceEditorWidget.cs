@@ -1550,9 +1550,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void RemoveFromLine (Mono.TextEditor.Document doc)
 		{
-			if (Line != null) {
-				doc.RemoveMarker (Line, marker);
-			}
+			doc.RemoveMarker (marker);
 		}
 	}
 }

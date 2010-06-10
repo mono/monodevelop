@@ -1,3 +1,9 @@
+2010-06-10  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Fixed 'Bug
+	  613114 - NRE in editor means error marker never goes away'.
+
 2010-06-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Use a
