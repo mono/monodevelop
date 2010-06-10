@@ -183,7 +183,7 @@ qrstu",
    ggg ggg", mode.Text);
 		}
 		
-				[Test]
+		[Test]
 		public void DeleteToLineBoundary ()
 		{
 			var mode = new TestViEditMode () { Text =
@@ -209,6 +209,40 @@ qrstu",
 @"   aaa bbb
    ggg hhh
 kkk lll", mode.Text);
+		}
+		
+		[Test]
+		public void VisualMotion ()
+		{
+			var mode = new TestViEditMode () { Text =
+@"    aaa bbb ccc ddd
+   eee fff ggg hhh
+   iii jjj kkk lll
+   mmm nnn ooo ppp
+   qqq rrr sss ttt",
+			};
+			//move 2 lines down, 2 words in, enter visual mode
+			mode.Input ("jjwwv");
+			mode.AssertSelection (2, 7, 2, 8);
+			//2 letters to right
+			mode.Input ("ll");
+			mode.AssertSelection (2, 7, 2, 10);
+			//4 letters to left
+			mode.Input ("hhhh");
+			mode.AssertSelection (2, 8, 2, 5);
+			//1 line up
+			mode.Input ("k");
+			mode.AssertSelection (2, 8, 1, 5);
+			//1 line up
+			mode.Input ("k");
+			mode.AssertSelection (2, 8, 0, 5);
+			//5 letters to right
+			mode.Input ("lllll");
+			mode.AssertSelection (2, 8, 0, 10);
+			//3 lines down
+			mode.Input ("jjj");
+			mode.AssertSelection (2, 7, 3, 11);
+			
 		}
 		
 		[TestFixtureSetUp] 
@@ -310,6 +344,16 @@ kkk lll", mode.Text);
 		{
 			foreach (char c in sequence)
 				Input ((Gdk.Key)0, c, Gdk.ModifierType.None);
+		}
+		
+		public void AssertSelection (int anchorLine, int anchorCol, int leadLine, int leadCol)
+		{
+			var sel = Data.MainSelection;
+			Assert.IsNotNull (sel);
+			Assert.AreEqual (anchorLine, sel.Anchor.Line);
+			Assert.AreEqual (anchorCol, sel.Anchor.Column);
+			Assert.AreEqual (leadLine, sel.Lead.Line);
+			Assert.AreEqual (leadCol, sel.Lead.Column);
 		}
 	}
 }
