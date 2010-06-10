@@ -1193,6 +1193,11 @@ namespace Mono.TextEditor
 		
 		public void RemoveMarker (TextMarker marker)
 		{
+			RemoveMarker (marker, true);
+		}
+		
+		public void RemoveMarker (TextMarker marker, bool updateLine)
+		{
 			if (marker == null || marker.LineSegment == null)
 				return;
 			if (marker is IExtendingTextMarker) {
@@ -1203,7 +1208,8 @@ namespace Mono.TextEditor
 			}
 			var line = marker.LineSegment;
 			marker.LineSegment.RemoveMarker (marker);
-			this.CommitLineUpdate (line);
+			if (updateLine)
+				this.CommitLineUpdate (line);
 		}
 		
 		public void RemoveMarker (int lineNumber, Type type)
@@ -1212,6 +1218,11 @@ namespace Mono.TextEditor
 		}
 		
 		public void RemoveMarker (LineSegment line, Type type)
+		{
+			RemoveMarker (line, type, true);
+		}
+		
+		public void RemoveMarker (LineSegment line, Type type, bool updateLine)
 		{
 			if (line == null || type == null)
 				return;
@@ -1224,7 +1235,8 @@ namespace Mono.TextEditor
 				}
 			}
 			line.RemoveMarker (type);
-			this.CommitLineUpdate (line);
+			if (updateLine)
+				this.CommitLineUpdate (line);
 		}
 		
 		void HandleSplitterLineSegmentTreeLineRemoved (object sender, LineEventArgs e)

@@ -1,3 +1,8 @@
+2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/Document.cs: Add RemoveMarker overloads
+	  allowing to skip line updates.
+
 2010-06-10  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs:
