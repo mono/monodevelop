@@ -26,7 +26,7 @@ namespace MonoDevelop.VersionControl
 		protected Task() {
 			threadnotify = new ThreadNotify(new ReadyEvent(Wakeup));
 			
-			tracker = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Version Control", "md-version-control", true, true);
+			tracker = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Version Control", "md-version-control", false, true);
 		}
 		
 		protected IProgressMonitor Monitor {
