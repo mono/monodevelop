@@ -53,6 +53,8 @@ FILES =  \
 	Mono.TextEditor.Theatrics/Stage.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
+	Mono.TextEditor.Vi/ViCommandBuilder.cs \
+	Mono.TextEditor.Vi/ViKeyNotation.cs \
 	Mono.TextEditor.Vi/ViMacro.cs \
 	Mono.TextEditor.Vi/ViMark.cs \
 	Mono.TextEditor.Vi/ViMode.cs \

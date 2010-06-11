@@ -167,6 +167,8 @@
     <Compile Include="Mono.TextEditor\InsertionCursorEditMode.cs" />
     <Compile Include="Mono.TextEditor\MarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\TextEditorAccessibility.cs" />
+    <Compile Include="Mono.TextEditor.Vi\ViCommandBuilder.cs" />
+    <Compile Include="Mono.TextEditor.Vi\ViKeyNotation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -1,5 +1,16 @@
 2010-06-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViKeyNotation.cs: Added vi key notation
+	  parsing and stringifying.
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Added vi command
+	  builder stub.
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj: Added files.
+
+2010-06-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fix super for block
 	  select.
 
