@@ -1,3 +1,9 @@
+2010-06-11  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/CaretMoveActions.cs: Fixed 'Bug 612001 -
+	  "Virtual tab" line spacing is incorrect'.
+
 2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViActions.cs: Fix some buglets in the

@@ -249,7 +249,7 @@ namespace Mono.TextEditor
 		{
 			InternalCaretMoveHome (data, true, false);
 		}
-		
+
 		public static void LineEnd (TextEditorData data)
 		{
 			if (!data.Caret.PreserveSelection)
@@ -271,7 +271,9 @@ namespace Mono.TextEditor
 				newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
 			if (newLocation != data.Caret.Location) {
 				data.Caret.Location = newLocation;
-			} else if (data.Caret.AllowCaretBehindLineEnd) {
+			}
+			
+			if (data.Caret.AllowCaretBehindLineEnd) {
 				int nextColumn = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
 				if (nextColumn != data.Caret.Column)
 					data.Caret.Column = nextColumn;

@@ -1260,6 +1260,7 @@ namespace Mono.TextEditor
 						LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 						wrapper.LineChars = virtualSpace.ToCharArray ();
 						wrapper.Layout.SetText (virtualSpace);
+						wrapper.Layout.Tabs = tabArray;
 						int vy, vx;
 						wrapper.Layout.GetSize (out vx, out vy);
 						SetVisibleCaretPosition (win, ' ', (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
