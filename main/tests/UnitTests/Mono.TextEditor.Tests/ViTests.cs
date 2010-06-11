@@ -27,6 +27,8 @@
 using System;
 using NUnit.Framework;
 using System.Reflection;
+using Mono.TextEditor.Vi;
+using System.Text;
 
 namespace Mono.TextEditor.Tests
 {
@@ -242,7 +244,17 @@ kkk lll", mode.Text);
 			//3 lines down
 			mode.Input ("jjj");
 			mode.AssertSelection (2, 7, 3, 11);
-			
+		}
+		
+		[Test]
+		public void KeyNotationRoundTrip ()
+		{
+			string command = "<C-m>av2f<Space>34<Esc><M-Space><S-C-M-Down>";
+			var keys = ViKeyNotation.Parse (command);
+			Assert.IsNotNull (keys);
+			Assert.AreEqual (11, keys.Count);
+			var s = ViKeyNotation.ToString (keys);
+			Assert.AreEqual (command, s);
 		}
 		
 		[TestFixtureSetUp] 
@@ -257,7 +269,7 @@ kkk lll", mode.Text);
 		}
 	}
 	
-	class TestViEditMode : Mono.TextEditor.Vi.ViEditMode
+	class TestViEditMode : ViEditMode
 	{
 		public TestViEditMode () : this (new TextEditorData ())
 		{
