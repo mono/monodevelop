@@ -1,3 +1,9 @@
+2010-06-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViKeyNotation.cs: Use explicit
+	  dictionaries instead of switches, to make code more
+	  readable.
+
 2010-06-11  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViKeyNotation.cs: Added vi key notation

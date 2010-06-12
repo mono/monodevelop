@@ -92,195 +92,217 @@ namespace Mono.TextEditor.Vi
 		
 		public static bool IsValid (ViKey key)
 		{
-			return GetString (key.UnicodeKey) != null || GetString (key.Key) != null;
+			return GetString (key.UnicodeKey) != null || keyStringMaps.ContainsKey (key.Key);
 		}
 		
 		static string GetString (uint unicodeKey)
 		{
 			string str = char.ConvertFromUtf32 ((int)unicodeKey);
 			if (str.Length == 1) {
-				switch (str[0]) {
-				case '\0': return "Nul";
-				case ' ':  return "Space";
-				case '\r': return "CR";
-				case '\n': return "NL";
-				case '\f': return "FF";
-				case '\t': return "Tab";
-				case '<':  return "lt";
-				case '\\': return "Bslash";
-				case '|':  return "Bar";
-				}
+				string s;
+				if (charStringMaps.TryGetValue (str[0], out s))
+					return s;
 				if (char.IsControl (str[0]))
 					return null;
 			}
 			return str;
 		}
 		
+		static Dictionary<char, string> charStringMaps = new Dictionary<char, string> () {
+			{ '\0', "Nul" },
+			{ ' ',  "Space" },
+			{ '\r', "CR" },
+			{ '\n', "NL" },
+			{ '\f', "FF" },
+			{ '\t', "Tab" },
+			{ '<',  "lt" },
+			{ '\\', "Bslash" },
+			{ '|',  "Bar" },
+		};
+		
 		static string GetString (Key key)
 		{
-			switch (key) {
-			case Gdk.Key.BackSpace:    return "BS";
-			case Gdk.Key.Tab:          return "Tab";
-			case Gdk.Key.Return:       return "Enter"; //"CR" "Return"
-			case Gdk.Key.Escape:       return "Esc";
-			case Gdk.Key.space:        return "Space";
-			case Gdk.Key.KP_Up:
-			case Gdk.Key.Up:           return "Up";
-			case Gdk.Key.KP_Down:
-			case Gdk.Key.Down:         return "Down";
-			case Gdk.Key.KP_Left:
-			case Gdk.Key.Left:         return "Left";
-			case Gdk.Key.KP_Right:
-			case Gdk.Key.Right:        return "Right";
-			case Gdk.Key.F1:           return "F1";
-			case Gdk.Key.F2:           return "F2";
-			case Gdk.Key.F3:           return "F3";
-			case Gdk.Key.F4:           return "F4";
-			case Gdk.Key.F5:           return "F5";
-			case Gdk.Key.F6:           return "F6";
-			case Gdk.Key.F7:           return "F7";
-			case Gdk.Key.F8:           return "F8";
-			case Gdk.Key.F9:           return "F9";
-			case Gdk.Key.F10:          return "F10";
-			case Gdk.Key.F11:          return "F11";
-			case Gdk.Key.F12:          return "F12";
-			case Gdk.Key.Insert:       return "Insert";
-			case Gdk.Key.Delete:       return "Del";
-			case Gdk.Key.Home:         return "Home";
-			case Gdk.Key.End:          return "End";
-			case Gdk.Key.Page_Up:      return "PageUp";
-			case Gdk.Key.Page_Down:    return "PageDown";
-			case Gdk.Key.KP_Home:      return "kHome";
-			case Gdk.Key.KP_End:       return "kEnd";
-			case Gdk.Key.KP_Page_Up:   return "kPageUp";
-			case Gdk.Key.KP_Page_Down: return "kPageDown";
-			case Gdk.Key.KP_Add:       return "kPlus";
-			case Gdk.Key.KP_Subtract:  return "kMinus";
-			case Gdk.Key.KP_Multiply:  return "kMultiply";
-			case Gdk.Key.KP_Divide:    return "kDivide";
-			case Gdk.Key.KP_Enter:     return "kEnter";
-			case Gdk.Key.KP_Decimal:   return "kPoint";
-			case Gdk.Key.KP_0:         return "k0";
-			case Gdk.Key.KP_1:         return "k1";
-			case Gdk.Key.KP_2:         return "k2";
-			case Gdk.Key.KP_3:         return "k3";
-			case Gdk.Key.KP_4:         return "k4";
-			case Gdk.Key.KP_5:         return "k5";
-			case Gdk.Key.KP_6:         return "k6";
-			case Gdk.Key.KP_7:         return "k7";
-			case Gdk.Key.KP_8:         return "k8";
-			case Gdk.Key.KP_9:         return "k9";
-			case Gdk.Key.Help:         return "Help";
-			case Gdk.Key.Undo:         return "Undo";
-			default:                   return null;
-			}
+			string str;
+			if (keyStringMaps.TryGetValue (key, out str))
+				return str;
+			return null;
 		}
+		
+		static Dictionary<Gdk.Key, string> keyStringMaps = new Dictionary<Gdk.Key, string> () {
+			{ Gdk.Key.BackSpace,    "BS"        },
+			{ Gdk.Key.Tab,          "Tab"       },
+			{ Gdk.Key.Return,       "Enter"     }, //"CR" "Return"
+			{ Gdk.Key.Escape,       "Esc"       },
+			{ Gdk.Key.space,        "Space"     },
+			{ Gdk.Key.KP_Up,        "Up"        },
+			{ Gdk.Key.Up,           "Up"        },
+			{ Gdk.Key.KP_Down,      "Down"      },
+			{ Gdk.Key.Down,         "Down"      },
+			{ Gdk.Key.KP_Left,      "Left"      },
+			{ Gdk.Key.Left,         "Left"      },
+			{ Gdk.Key.KP_Right,     "Right"     },
+			{ Gdk.Key.Right,        "Right"     },
+			{ Gdk.Key.F1,           "F1"        },
+			{ Gdk.Key.F2,           "F2"        },
+			{ Gdk.Key.F3,           "F3"        },
+			{ Gdk.Key.F4,           "F4"        },
+			{ Gdk.Key.F5,           "F5"        },
+			{ Gdk.Key.F6,           "F6"        },
+			{ Gdk.Key.F7,           "F7"        },
+			{ Gdk.Key.F8,           "F8"        },
+			{ Gdk.Key.F9,           "F9"        },
+			{ Gdk.Key.F10,          "F10"       },
+			{ Gdk.Key.F11,          "F11"       },
+			{ Gdk.Key.F12,          "F12"       },
+			{ Gdk.Key.Insert,       "Insert"    },
+			{ Gdk.Key.Delete,       "Del"       },
+			{ Gdk.Key.Home,         "Home"      },
+			{ Gdk.Key.End,          "End"       },
+			{ Gdk.Key.Page_Up,      "PageUp"    },
+			{ Gdk.Key.Page_Down,    "PageDown"  },
+			{ Gdk.Key.KP_Home,      "kHome"     },
+			{ Gdk.Key.KP_End,       "kEnd"      },
+			{ Gdk.Key.KP_Page_Up,   "kPageUp"   },
+			{ Gdk.Key.KP_Page_Down, "kPageDown" },
+			{ Gdk.Key.KP_Add,       "kPlus"     },
+			{ Gdk.Key.KP_Subtract,  "kMinus"    },
+			{ Gdk.Key.KP_Multiply,  "kMultiply" },
+			{ Gdk.Key.KP_Divide,    "kDivide"   },
+			{ Gdk.Key.KP_Enter,     "kEnter"    },
+			{ Gdk.Key.KP_Decimal,   "kPoint"    },
+			{ Gdk.Key.KP_0,         "k0"        },
+			{ Gdk.Key.KP_1,         "k1"        },
+			{ Gdk.Key.KP_2,         "k2"        },
+			{ Gdk.Key.KP_3,         "k3"        },
+			{ Gdk.Key.KP_4,         "k4"        },
+			{ Gdk.Key.KP_5,         "k5"        },
+			{ Gdk.Key.KP_6,         "k6"        },
+			{ Gdk.Key.KP_7,         "k7"        },
+			{ Gdk.Key.KP_8,         "k8"        },
+			{ Gdk.Key.KP_9,         "k9"        },
+			{ Gdk.Key.Help,         "Help"      },
+			{ Gdk.Key.Undo,         "Undo"      },
+		};
 		
 		static char GetChar (string charName)
 		{
-			switch (charName) {
-			case "Nul":    return '\0';
-			case "Space":  return ' ';
-			case "CR":     return '\r';
-			//FIXME this should be environment/editor-dependent
-			case "EOL":
-			case "NL":     return '\n';
-			case "FF":     return '\f';
-			case "Tab":    return '\t';
-			case "lt":     return '<';
-			case "Bslash": return '\\';
-			case "Bar":    return '|';
-			}
 			if (charName.Length == 1)
 				return charName[0];
+			
+			char c;
+			if (stringCharMaps.TryGetValue (charName, out c))
+				return c;
+			
+			//FIXME this should be environment/editor-dependent
+			if (charName == "EOL")
+				return '\n';
+			
 			throw new FormatException ("Unknown char '" + charName +"'");
 		}
 		
+		static Dictionary<string, char> stringCharMaps = new Dictionary<string, char> () {
+			{ "Nul",     '\0' },
+			{ "Space",   ' '  },
+			{ "CR",      '\r' },
+			{ "NL",      '\n' },
+			{ "FF",      '\f' },
+			{ "Tab",     '\t' },
+			{ "lt",      '<'  },
+			{ "Bslash",  '\\' },
+			{ "Bar",     '|'  },
+		};
 		
 		static Gdk.Key GetKey (string code)
 		{
-			switch (code) {
-			case "BS":        return Gdk.Key.BackSpace;
-			case "Tab":       return Gdk.Key.Tab;
-			case "CR":
-			case "Return":
-			case "Enter":     return Gdk.Key.Return;
-			case "Esc":       return Gdk.Key.Escape;
-			case "Space":     return Gdk.Key.space;
-			case "Up":        return Gdk.Key.Up;
-			case "Down":      return Gdk.Key.Down;
-			case "Left":      return Gdk.Key.Left;
-			case "Right":     return Gdk.Key.Right;
-			case "#1":
-			case "F1":        return Gdk.Key.F1;
-			case "#2":
-			case "F2":        return Gdk.Key.F2;
-			case "#3":
-			case "F3":        return Gdk.Key.F3;
-			case "#4":
-			case "F4":        return Gdk.Key.F4;
-			case "#5":
-			case "F5":        return Gdk.Key.F5;
-			case "#6":
-			case "F6":        return Gdk.Key.F6;
-			case "#7":
-			case "F7":        return Gdk.Key.F7;
-			case "#8":
-			case "F8":        return Gdk.Key.F8;
-			case "#9":
-			case "F9":        return Gdk.Key.F9;
-			case "#0":
-			case "F10":       return Gdk.Key.F10;
-			case "F11":       return Gdk.Key.F11;
-			case "F12":       return Gdk.Key.F12;
-			case "Insert":    return Gdk.Key.Insert;
-			case "Del":       return Gdk.Key.Delete;
-			case "Home":      return Gdk.Key.Home;
-			case "End":       return Gdk.Key.End;
-			case "PageUp":    return Gdk.Key.Page_Up;
-			case "PageDown":  return Gdk.Key.Page_Down;
-			case "kHome":     return Gdk.Key.KP_Home;
-			case "kEnd":      return Gdk.Key.KP_End;
-			case "kPageUp":   return Gdk.Key.KP_Page_Up;
-			case "kPageDown": return Gdk.Key.KP_Page_Down;
-			case "kPlus":     return Gdk.Key.KP_Add;
-			case "kMinus":    return Gdk.Key.KP_Subtract;
-			case "kMultiply": return Gdk.Key.KP_Multiply;
-			case "kDivide":   return Gdk.Key.KP_Divide;
-			case "kEnter":    return Gdk.Key.KP_Enter;
-			case "kPoint":    return Gdk.Key.KP_Decimal;
-			case "k0":        return Gdk.Key.KP_0;
-			case "k1":        return Gdk.Key.KP_1;
-			case "k2":        return Gdk.Key.KP_2;
-			case "k3":        return Gdk.Key.KP_3;
-			case "k4":        return Gdk.Key.KP_4;
-			case "k5":        return Gdk.Key.KP_5;
-			case "k6":        return Gdk.Key.KP_6;
-			case "k7":        return Gdk.Key.KP_7;
-			case "k8":        return Gdk.Key.KP_8;
-			case "k9":        return Gdk.Key.KP_9;
-			case "Help":      return Gdk.Key.Help;
-			case "Undo":      return Gdk.Key.Undo;
-			default: return (Gdk.Key)0;
-			}
+			Gdk.Key k;
+			if (stringKeyMaps.TryGetValue (code, out k))
+				return k;
+			return (Gdk.Key)0;
 		}
+		
+		static Dictionary<string, Gdk.Key> stringKeyMaps = new Dictionary<string, Gdk.Key> () {
+			{ "BS",        Gdk.Key.BackSpace    },
+			{ "Tab",       Gdk.Key.Tab          },
+			{ "CR",        Gdk.Key.Return       },
+			{ "Return",    Gdk.Key.Return       },
+			{ "Enter",     Gdk.Key.Return       },
+			{ "Esc",       Gdk.Key.Escape       },
+			{ "Space",     Gdk.Key.space        },
+			{ "Up",        Gdk.Key.Up           },
+			{ "Down",      Gdk.Key.Down         },
+			{ "Left",      Gdk.Key.Left         },
+			{ "Right",     Gdk.Key.Right        },
+			{ "#1",        Gdk.Key.F1           },
+			{ "F1",        Gdk.Key.F1           },
+			{ "#2",        Gdk.Key.F2           },
+			{ "F2",        Gdk.Key.F2           },
+			{ "#3",        Gdk.Key.F3           },
+			{ "F3",        Gdk.Key.F3           },
+			{ "#4",        Gdk.Key.F4           },
+			{ "F4",        Gdk.Key.F4           },
+			{ "#5",        Gdk.Key.F5           },
+			{ "F5",        Gdk.Key.F5           },
+			{ "#6",        Gdk.Key.F6           },
+			{ "F6",        Gdk.Key.F6           },
+			{ "#7",        Gdk.Key.F7           },
+			{ "F7",        Gdk.Key.F7           },
+			{ "#8",        Gdk.Key.F8           },
+			{ "F8",        Gdk.Key.F8           },
+			{ "#9",        Gdk.Key.F9           },
+			{ "F9",        Gdk.Key.F9           },
+			{ "#0",        Gdk.Key.F10          },
+			{ "F10",       Gdk.Key.F10          },
+			{ "F11",       Gdk.Key.F11          },
+			{ "F12",       Gdk.Key.F12          },
+			{ "Insert",    Gdk.Key.Insert       },
+			{ "Del",       Gdk.Key.Delete       },
+			{ "Home",      Gdk.Key.Home         },
+			{ "End",       Gdk.Key.End          },
+			{ "PageUp",    Gdk.Key.Page_Up      },
+			{ "PageDown",  Gdk.Key.Page_Down    },
+			{ "kHome",     Gdk.Key.KP_Home      },
+			{ "kEnd",      Gdk.Key.KP_End       },
+			{ "kPageUp",   Gdk.Key.KP_Page_Up   },
+			{ "kPageDown", Gdk.Key.KP_Page_Down },
+			{ "kPlus",     Gdk.Key.KP_Add       },
+			{ "kMinus",    Gdk.Key.KP_Subtract  },
+			{ "kMultiply", Gdk.Key.KP_Multiply  },
+			{ "kDivide",   Gdk.Key.KP_Divide    },
+			{ "kEnter",    Gdk.Key.KP_Enter     },
+			{ "kPoint",    Gdk.Key.KP_Decimal   },
+			{ "k0",        Gdk.Key.KP_0         },
+			{ "k1",        Gdk.Key.KP_1         },
+			{ "k2",        Gdk.Key.KP_2         },
+			{ "k3",        Gdk.Key.KP_3         },
+			{ "k4",        Gdk.Key.KP_4         },
+			{ "k5",        Gdk.Key.KP_5         },
+			{ "k6",        Gdk.Key.KP_6         },
+			{ "k7",        Gdk.Key.KP_7         },
+			{ "k8",        Gdk.Key.KP_8         },
+			{ "k9",        Gdk.Key.KP_9         },
+			{ "Help",      Gdk.Key.Help         },
+			{ "Undo",      Gdk.Key.Undo         },
+		};
 		
 		static ViKey FlattenControlMappings (ViKey k)
 		{
-			if ((k.Modifiers & ModifierType.ControlMask) == k.Modifiers) {
-				switch (k.UnicodeKey) {
-				case '@': return new ViKey (ModifierType.None, '\0', (Gdk.Key)0);
-				case 'h': return new ViKey (ModifierType.None, '\0', Gdk.Key.BackSpace);
-				case 'i': return new ViKey (ModifierType.None, '\t', Gdk.Key.Tab);
-				case 'j': return new ViKey (ModifierType.None, '\n', Gdk.Key.Linefeed);
-				case 'l': return new ViKey (ModifierType.None, '\f', (Gdk.Key)0);
-				case 'm': return new ViKey (ModifierType.None, '\r', Gdk.Key.Return);
-				case '[': return new ViKey (ModifierType.None, '\0', Gdk.Key.Escape);
-				case 'p': return new ViKey (ModifierType.None, '\0', Gdk.Key.Up);
-				}
-			}
+			ViKey ret;
+			if ((k.Modifiers & ModifierType.ControlMask) == k.Modifiers &&
+			    controlMappings.TryGetValue (k.UnicodeKey, out ret))
+					return ret;
 			return k;
 		}
+		
+		static Dictionary<uint, ViKey> controlMappings = new Dictionary<uint, ViKey> () {
+			{ '@', new ViKey (ModifierType.None, '\0', (Gdk.Key)0)        },
+			{ 'h', new ViKey (ModifierType.None, '\0', Gdk.Key.BackSpace) },
+			{ 'i', new ViKey (ModifierType.None, '\t', Gdk.Key.Tab)       },
+			{ 'j', new ViKey (ModifierType.None, '\n', Gdk.Key.Linefeed)  },
+			{ 'l', new ViKey (ModifierType.None, '\f', (Gdk.Key)0)        },
+			{ 'm', new ViKey (ModifierType.None, '\r', Gdk.Key.Return)    },
+			{ '[', new ViKey (ModifierType.None, '\0', Gdk.Key.Escape)    },
+			{ 'p', new ViKey (ModifierType.None, '\0', Gdk.Key.Up)        },
+		};
 
 		public static IList<ViKey> Parse (string command)
 		{
@@ -300,7 +322,7 @@ namespace Mono.TextEditor.Vi
 			return list;
 		}
 		
-		//TODO <CSI> <xCSI>
+		//TODO: <CSI> <xCSI>
 		static ViKey ParseKeySequence (string seq)
 		{
 			var modifiers = ModifierType.None;
