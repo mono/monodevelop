@@ -1,5 +1,11 @@
 2010-06-14  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/TextEditorData.cs: Fixed 'Bug 609674 -
+	  Selection changes on middle-click after selection'.
+
+2010-06-14  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DeleteActions.cs: Fixed 'Bug 613770 -
 	  Backspace inconsistently deletes entire lines when using
 	  "virtual spaces"'.

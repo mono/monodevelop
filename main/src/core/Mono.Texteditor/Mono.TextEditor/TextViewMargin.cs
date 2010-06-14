@@ -1457,14 +1457,13 @@ namespace Mono.TextEditor
 				bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 				textEditor.Caret.AutoScrollToCaret = false;
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
-				int newOffset = textEditor.Caret.Offset;
 				textEditor.Caret.Offset = oldOffset;
-				
 				if (selection != null) {
-					if (newOffset < selectionRange.EndOffset) {
+					if (offset < selectionRange.EndOffset) {
 						oldOffset += length;
 						anchor += length;
-						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length), Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
+						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length), 
+						                           Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
 					}
 					textEditor.MainSelection = selection;
 				}
