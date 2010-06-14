@@ -1,3 +1,7 @@
+2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Gui/ShellTextView.boo: Track api changes.
+
 2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure: Bump MD version.

@@ -434,15 +434,11 @@ class ShellTextView (TextView, ICompletionWidget):
 		
 	// FIXME: Make my FileChooser use suck less
 	private def OnSaveScript():
-		_sel = FileSelector("Save Script ...", FileChooserAction.Save)
-		_sel.Run()
-		if _sel.Filename:
-			_sel.Hide()
-			_path = _sel.Filename
+		_sel = SelectFileDialog("Save Script ...", FileChooserAction.Save)
+		if _sel.Run():
+			_path = _sel.SelectedFile
 			using writer = StreamWriter (_path):
 				writer.Write (_scriptLines)
-		else:
-			_sel.Hide()
 	
 	def OnPropertyChanged (obj as object, e as PropertyChangedEventArgs):
 		if e.Key == "Font":
@@ -514,6 +510,13 @@ class ShellTextView (TextView, ICompletionWidget):
 		Buffer.MoveMark (Buffer.InsertMark, offsetIter)
 		Buffer.Delete (offsetIter, endIter)
 		Buffer.InsertAtCursor (complete_word)
+		
+	def ICompletionWidget.Replace (offset as int, count as int, text as string):
+		offsetIter = Buffer.GetIterAtOffset(offset)
+		endIter = Buffer.GetIterAtOffset (offsetIter.Offset + count)
+		Buffer.MoveMark (Buffer.InsertMark, offsetIter)
+		Buffer.Delete (offsetIter, endIter)
+		Buffer.InsertAtCursor (text)
 	
 	ICompletionWidget.GtkStyle:
 		get:
