@@ -33,7 +33,7 @@ namespace Mono.TextEditor.Vi
 {
 	public struct ViKey
 	{
-		public ViKey (Gdk.ModifierType modifiers, uint unicodeKey, Gdk.Key key)
+		public ViKey (Gdk.ModifierType modifiers, uint unicodeKey, Gdk.Key key): this ()
 		{
 			Modifiers = modifiers & KnownModifiers;
 			UnicodeKey = unicodeKey;

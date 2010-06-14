@@ -1,5 +1,10 @@
 2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.TextEditor.Vi/ViKeyNotation.cs: Really fix the windows
+	  build.
+
+2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.TextEditor.Vi/ViKeyNotation.cs: Fix windows build.
 
 2010-06-14  Mike Krüger  <mkrueger@novell.com>
