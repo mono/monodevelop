@@ -213,7 +213,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			
 			foreach (var pair in markers) {
-				textEditorData.Document.RemoveMarker (pair.Value, false);
+				textEditorData.Document.RemoveMarker (pair.Value, true);
 			}
 			markers.Clear ();
 		}
