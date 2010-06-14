@@ -1,3 +1,9 @@
+2010-06-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/DeleteActions.cs: Fixed 'Bug 613770 -
+	  Backspace inconsistently deletes entire lines when using
+	  "virtual spaces"'.
+
 2010-06-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViKeyNotation.cs: Use explicit

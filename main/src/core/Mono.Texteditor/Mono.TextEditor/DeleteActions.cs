@@ -145,7 +145,9 @@ namespace Mono.TextEditor
 			if (data.Caret.Offset == 0)
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			if (data.Caret.Offset == line.Offset) {
+			if (data.Caret.Column > line.EditableLength) {
+				data.Caret.Column = line.EditableLength;
+			} else if (data.Caret.Offset == line.Offset) {
 				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength);
 				data.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
@@ -156,7 +158,10 @@ namespace Mono.TextEditor
 		
 		public static void RemoveCharBeforeCaret (TextEditorData data)
 		{
-			data.Remove (data.Caret.Offset - 1, 1);
+			int offset = data.Caret.Offset;
+			if (offset <= 0)
+				return;
+			data.Remove (offset - 1, 1);
 			data.Caret.Column--;
 		}
 		
