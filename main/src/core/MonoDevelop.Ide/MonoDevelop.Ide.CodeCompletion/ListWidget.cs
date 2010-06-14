@@ -520,8 +520,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			for (int newSelection = 0; newSelection < text.Length && itemIndex < filterText.Length; newSelection++) {
 				char ch1 = char.ToUpper (text[newSelection]);
 				char ch2 = char.ToUpper (filterText[itemIndex]);
+				bool ch1IsUpper = char.IsUpper (text[newSelection]);
+				bool ch2IsUpper = char.IsUpper (filterText[itemIndex]);
 				
-				if (ch1 == ch2) {
+				if (ch1 == ch2 && !(!ch1IsUpper && ch2IsUpper)) {
 					itemIndex++;
 					matchIndices.Add (newSelection);
 					wasMatch = true;
