@@ -1,3 +1,7 @@
+2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* VBBindingCompilerServices.cs: Track api changes.
+
 2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/VBConsoleApplicationProject.xpt.xml: Set the
