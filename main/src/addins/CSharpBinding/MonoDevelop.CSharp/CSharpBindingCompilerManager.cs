@@ -33,6 +33,7 @@ using System.Text;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.CSharp.Project;
 
@@ -275,7 +276,7 @@ namespace MonoDevelop.CSharp
 
 			LoggingService.LogInfo (compilerName + " " + sb.ToString ());
 			
-			Dictionary<string,string> envVars = runtime.GetToolsEnvironmentVariables (project.TargetFramework);
+			ExecutionEnvironment envVars = runtime.GetToolsExecutionEnvironment (project.TargetFramework);
 			string cargs = "/noconfig @\"" + responseFileName + "\"";
 
 			int exitCode = DoCompilation (compilerName, cargs, workingDir, envVars, gacRoots, ref output, ref error);
@@ -360,7 +361,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 		
-		static int DoCompilation (string compilerName, string compilerArgs, string working_dir, Dictionary<string, string> envVars, List<string> gacRoots, ref string output, ref string error) 
+		static int DoCompilation (string compilerName, string compilerArgs, string working_dir, ExecutionEnvironment envVars, List<string> gacRoots, ref string output, ref string error) 
 		{
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
@@ -382,12 +383,7 @@ namespace MonoDevelop.CSharp
 				pinfo.EnvironmentVariables ["MONO_GAC_PREFIX"] = gacPrefix;
 			}
 			
-			foreach (KeyValuePair<string,string> ev in envVars) {
-				if (ev.Value == null)
-					pinfo.EnvironmentVariables.Remove (ev.Key);
-				else
-					pinfo.EnvironmentVariables [ev.Key] = ev.Value;
-			}
+			envVars.MergeTo (pinfo);
 			
 			pinfo.UseShellExecute = false;
 			pinfo.RedirectStandardOutput = true;

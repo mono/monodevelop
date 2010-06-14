@@ -423,8 +423,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 					string exe = typeof(ProjectBuilder).Assembly.Location;
 					ProcessStartInfo pinfo = new ProcessStartInfo (exe);
-					foreach (KeyValuePair<string,string> evar in runtime.GetToolsEnvironmentVariables (fx))
-						pinfo.EnvironmentVariables [evar.Key] = evar.Value;
+					runtime.GetToolsExecutionEnvironment (fx).MergeTo (pinfo);
 					pinfo.UseShellExecute = false;
 					pinfo.RedirectStandardError = true;
 					pinfo.RedirectStandardInput = true;

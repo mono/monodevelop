@@ -1,3 +1,15 @@
+2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Core.Assemblies/TargetRuntime.cs:
+	* MonoDevelop.Core.Execution/ExecutionEnvironment.cs:
+	* MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs:
+	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectService.cs:
+	  Added ExecutionEnvironment class, which can be used to
+	  customize the environment of a process.
+
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Projects/Project.cs: Use a monitor task for the

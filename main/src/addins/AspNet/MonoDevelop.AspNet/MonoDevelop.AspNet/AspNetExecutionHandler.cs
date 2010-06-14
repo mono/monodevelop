@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet
 			//if it's a script, use a native execution handler
 			if (xspPath.Extension != ".exe") {
 				//set mono debug mode if project's in debug mode
-				var envVars = cmd.TargetRuntime.GetToolsEnvironmentVariables (cmd.TargetFramework); 
+				var envVars = cmd.TargetRuntime.GetToolsExecutionEnvironment (cmd.TargetFramework).Variables; 
 				if (cmd.DebugMode) {
 					envVars = new Dictionary<string, string> (envVars);
 					envVars ["MONO_OPTIONS"] = "--debug";
@@ -99,7 +99,7 @@ namespace MonoDevelop.AspNet
 			// Set DEVPATH when running on Windows (notice that this has no effect unless
 			// <developmentMode developerInstallation="true" /> is set in xsp2.exe.config
 
-			var evars = cmd.TargetRuntime.GetToolsEnvironmentVariables (cmd.TargetFramework);
+			var evars = cmd.TargetRuntime.GetToolsExecutionEnvironment (cmd.TargetFramework).Variables;
 			if (cmd.TargetRuntime is MsNetTargetRuntime)
 				evars["DEVPATH"] = Path.GetDirectoryName (xspPath);
 			

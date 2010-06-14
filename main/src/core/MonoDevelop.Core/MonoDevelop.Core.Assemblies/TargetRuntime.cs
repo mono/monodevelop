@@ -34,6 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Collections.Specialized;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
@@ -245,8 +246,7 @@ namespace MonoDevelop.Core.Assemblies
 			
 			// Set the runtime env vars
 			
-			foreach (KeyValuePair<string,string> evar in GetToolsEnvironmentVariables (fx))
-				cp.EnvironmentVariables [evar.Key] = evar.Value;
+			GetToolsExecutionEnvironment (fx).MergeTo (cp);
 			
 			ConvertAssemblyProcessStartInfo (pinfo);
 			return Process.Start (pinfo);
@@ -290,9 +290,9 @@ namespace MonoDevelop.Core.Assemblies
 		/// <summary>
 		/// Returns a list of environment variables that should be set when running tools using this runtime
 		/// </summary>
-		public virtual Dictionary<string, string> GetToolsEnvironmentVariables (TargetFramework fx)
+		public virtual ExecutionEnvironment GetToolsExecutionEnvironment (TargetFramework fx)
 		{
-			return GetBackend (fx).GetToolsEnvironmentVariables ();
+			return new ExecutionEnvironment (GetBackend (fx).GetToolsEnvironmentVariables ());
 		}
 		
 		/// <summary>

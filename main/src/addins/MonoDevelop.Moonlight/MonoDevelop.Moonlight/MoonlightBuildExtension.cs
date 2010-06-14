@@ -29,6 +29,7 @@ using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Xml;
 using System.Text;
@@ -118,14 +119,9 @@ namespace MonoDevelop.Moonlight
 			}
 			
 			var si = new System.Diagnostics.ProcessStartInfo ();
-			foreach (KeyValuePair<string,string> env in runtime.GetToolsEnvironmentVariables (proj.TargetFramework)) {
-				if (env.Value == null) {
-					if (si.EnvironmentVariables.ContainsKey (env.Key))
-						si.EnvironmentVariables.Remove (env.Key);
-				} else {
-					si.EnvironmentVariables[env.Key] = env.Value;
-				}
-			}
+			var env = runtime.GetToolsExecutionEnvironment (proj.TargetFramework);
+			env.MergeTo (si);
+			
 			si.FileName = respack.EndsWith (".exe")? "mono" : respack;
 			si.WorkingDirectory = outfile.ParentDirectory;
 			

@@ -45,6 +45,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/DotNetExecutionCommand.cs \
 	MonoDevelop.Core.Execution/DotNetExecutionHandler.cs \
 	MonoDevelop.Core.Execution/ExecutionCommand.cs \
+	MonoDevelop.Core.Execution/ExecutionEnvironment.cs \
 	MonoDevelop.Core.Execution/ExecutionMode.cs \
 	MonoDevelop.Core.Execution/ExecutionPlatform.cs \
 	MonoDevelop.Core.Execution/ExternalConsoleFactory.cs \

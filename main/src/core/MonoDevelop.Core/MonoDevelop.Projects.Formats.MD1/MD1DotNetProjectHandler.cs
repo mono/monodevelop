@@ -34,6 +34,7 @@ using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
 using System.Xml;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Formats.MSBuild;
@@ -209,6 +210,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectItemCollection projectItems, IProgressMonitor monitor)
 		{
 			string resgen = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "resgen");
+			ExecutionEnvironment env = configuration.TargetRuntime.GetToolsExecutionEnvironment (configuration.TargetFramework);
 			
 			bool cloned = false;
 			Dictionary<string, string> resourcesByCulture = new Dictionary<string, string> ();
@@ -218,7 +220,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 				string fname = finfo.Name;
 				string resourceId;
-				CompilerError ce = GetResourceId (finfo, ref fname, resgen, out resourceId, monitor);
+				CompilerError ce = GetResourceId (env, finfo, ref fname, resgen, out resourceId, monitor);
 				if (ce != null) {
 					CompilerResults cr = new CompilerResults (new TempFileCollection ());
 					cr.Errors.Add (ce);
@@ -257,7 +259,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return null;
 		}
 		
-		CompilerError GetResourceId (ProjectFile finfo, ref string fname, string resgen, out string resourceId, IProgressMonitor monitor)
+		CompilerError GetResourceId (ExecutionEnvironment env, ProjectFile finfo, ref string fname, string resgen, out string resourceId, IProgressMonitor monitor)
 		{
 			resourceId = finfo.ResourceId;
 			if (resourceId == null) {
@@ -292,6 +294,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 									resgen, String.Format ("/compile \"{0}\"", fname),
 									Path.GetDirectoryName (fname), false);
 
+					env.MergeTo (info);
 					if (PlatformID.Unix == Environment.OSVersion.Platform)
 						info.EnvironmentVariables ["MONO_IOMAP"] = "drive";
 

@@ -82,7 +82,7 @@ namespace MonoDevelop.Core.Assemblies
 		public virtual IEnumerable<string> GetToolsPaths ()
 		{
 			string paths;
-			if (!runtime.GetToolsEnvironmentVariables (framework).TryGetValue ("PATH", out paths))
+			if (!runtime.GetToolsExecutionEnvironment (framework).Variables.TryGetValue ("PATH", out paths))
 				yield break;
 			foreach (string path in paths.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries)) {
 				if (path.Length > 0 && path [0] == '"' && path [path.Length - 1] == '"')
