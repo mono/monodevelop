@@ -555,6 +555,16 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreNotEqual ("AbCdEf", output);
 		}
 		
+		/// <summary>
+		/// Bug 613539 - DOBa does not complete to DynamicObjectBase
+		/// </summary>
+		[Test]
+		public void TestBug613539 ()
+		{
+			string output = RunSimulation ("", "DOB ", true, true, false, "DynamicObject", "DynamicObjectBase");
+			Assert.AreEqual ("DynamicObjectBase", output);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
