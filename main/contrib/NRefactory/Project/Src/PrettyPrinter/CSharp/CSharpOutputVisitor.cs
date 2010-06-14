@@ -3131,7 +3131,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
-			return letClause.Expression.AcceptVisitor(this, data);
+			var result = letClause.Expression.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			return result;
 		}
 		
 		public override object TrackedVisitQueryExpressionGroupClause(QueryExpressionGroupClause groupClause, object data)

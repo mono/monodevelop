@@ -1,3 +1,9 @@
+2010-06-14  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed 'Bug
+	  613698 - Format document option removes space between the
+	  LINQ keywords'.
+
 2010-06-03  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/Parser/CSharp/CSharpParser.cs: Fixed 'Bug 611253 -
