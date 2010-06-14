@@ -1,3 +1,7 @@
+2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* configure.in: Bump MD version.
+
 2010-05-31  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* configure.in: Reverted Mono.Addins dependency for now,
