@@ -69,14 +69,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.CompletionText = completionText;
 		}
 		
-		public virtual void InsertCompletionText (CompletionListWindow window)
+		public static string GetCurrentWord (CompletionListWindow window)
 		{
 			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
-			
 			int replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
-			string currentWord = window.CompletionWidget.GetText (window.CodeCompletionContext.TriggerOffset, window.CodeCompletionContext.TriggerOffset + replaceLength);
-			
-			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
+			return window.CompletionWidget.GetText (window.CodeCompletionContext.TriggerOffset, window.CodeCompletionContext.TriggerOffset + replaceLength);
+		}
+
+		public virtual void InsertCompletionText (CompletionListWindow window)
+		{
+			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), CompletionText);
 		}
 		
 		public override string ToString ()

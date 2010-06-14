@@ -122,7 +122,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			
 			if ((ka & KeyActions.Complete) != 0) {
-				CompleteWord ();
+				bool completed = CompleteWord ();
+				Console.WriteLine ("completed:" + completed);
+				if (!completed) {
+					CompletionWindowManager.HideWindow ();
+					return false;
+				}
 			}
 
 			if ((ka & KeyActions.CloseWindow) != 0)
@@ -314,17 +319,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		
-		public void CompleteWord ()
+		public bool CompleteWord ()
 		{
 			if (SelectionIndex == -1 || completionDataList == null)
-				return;
+				return false;
 			CompletionData item = completionDataList[SelectionIndex];
 			if (item == null)
-				return;
-			
+				return false;
+			if (item.CompletionText == CompletionData.GetCurrentWord (this)) {
+				AddWordToHistory (item.CompletionText);
+				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
+				return false;
+			}
 			item.InsertCompletionText (this);
 			AddWordToHistory (item.CompletionText);
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
+			return true;
 		}
 		
 		protected virtual void OnWordCompleted (CodeCompletionContextEventArgs e)
