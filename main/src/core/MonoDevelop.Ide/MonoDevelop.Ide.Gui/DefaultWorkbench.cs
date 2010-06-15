@@ -865,7 +865,6 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 			}
-			CurrentLayout = "Default";
 		}
 		
 		void InitializeLayout (string name)
