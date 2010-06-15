@@ -1,5 +1,12 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: when there are
+	  no matches, display a message to indicate that the
+	  completion list is still handling input
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Set icon for the default code
 	  formatting policies panel group to match the per-item one.
 

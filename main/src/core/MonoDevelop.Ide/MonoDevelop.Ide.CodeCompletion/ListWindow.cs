@@ -130,12 +130,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			list.CompletionString = PartialWord;
 			
-			if (list.filteredItems.Count == 0 && !list.PreviewCompletionString) {
-				Hide ();
-			} else {
-				if (IsRealized && !Visible)
-					Show ();
-			}
+			if (IsRealized && !Visible)
+				Show ();
 			
 			int width = list.WidthRequest;
 			int height = list.HeightRequest + (footer != null ? footer.Allocation.Height : 0);

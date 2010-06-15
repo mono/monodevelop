@@ -304,6 +304,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return true;
 		}
 		
+		string NoMatchesMsg {
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("No matches"); }
+		}
+		
+		string NoSuggestionsMsg {
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"); }
+		}
+		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			Gdk.Window window = args.Window;
@@ -324,12 +332,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				yPos += rowHeight;
 			}
 			
+			//when there are no matches, display a message to indicate that the completion list is still handling input
 			if (filteredItems.Count == 0) {
 				Gdk.GC gc = new Gdk.GC (window);
 				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
 				window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
 				gc.Dispose ();
-				layout.SetText (MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"));
+				layout.SetText (win.DataProvider.ItemCount == 0? NoSuggestionsMsg : NoMatchesMsg);
 				int lWidth, lHeight;
 				layout.GetPixelSize (out lWidth, out lHeight);
 				window.DrawLayout (this.Style.TextGC (StateType.Normal), (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2, layout);
@@ -666,7 +675,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			int viewableCats = InCategoryMode ? categories.Count: 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
-			int newHeight = (rowHeight * Math.Max (1, Math.Min (requestedVisibleRows, filteredItems.Count + viewableCats))) + margin * 2;
+			int newHeight = (rowHeight * Math.Max (1, Math.Min (requestedVisibleRows, Math.Max (1, filteredItems.Count + viewableCats)))) + margin * 2;
 			if (PreviewCompletionString) {
 				newHeight += rowHeight;
 			}
