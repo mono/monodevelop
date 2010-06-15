@@ -691,11 +691,11 @@ namespace MonoDevelop.CSharp.Formatting
 				object val      = info.GetValue (this, null);
 				object otherVal = info.GetValue (other, null);
 				if (!val.Equals (otherVal)) {
-					Console.WriteLine ("!equal");
+					//Console.WriteLine ("!equal");
 					return false;
 				}
 			}
-			Console.WriteLine ("== equal");
+			//Console.WriteLine ("== equal");
 			return true;
 		}
 	}
