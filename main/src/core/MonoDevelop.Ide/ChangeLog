@@ -1,5 +1,10 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Desktop/PlatformService.cs: Add a
+	  description for the text/plain mimetype.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.addin.xml: Remove nonexistent icon.
 
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>

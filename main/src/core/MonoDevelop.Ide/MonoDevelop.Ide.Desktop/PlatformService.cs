@@ -79,6 +79,8 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public string GetMimeTypeDescription (string mimeType)
 		{
+			if (mimeType == "text/plain")
+				return GettextCatalog.GetString ("Plain Text");
 			MimeTypeNode mt = FindMimeType (mimeType);
 			if (mt != null && mt.Description != null)
 				return mt.Description;
