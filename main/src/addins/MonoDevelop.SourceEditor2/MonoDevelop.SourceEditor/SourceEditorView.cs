@@ -67,11 +67,6 @@ namespace MonoDevelop.SourceEditor
 		
 		TextMarker currentDebugLineMarker;
 		TextMarker debugStackLineMarker;
-		TextMarker breakpointMarker;
-		TextMarker breakpointDisabledMarker;
-		TextMarker tracepointMarker;
-		TextMarker tracepointDisabledMarker;
-		TextMarker breakpointInvalidMarker;
 		
 		int lastDebugLine = -1;
 		EventHandler currentFrameChanged;
@@ -190,12 +185,6 @@ namespace MonoDevelop.SourceEditor
 			
 			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
-			breakpointMarker = new BreakpointTextMarker (widget.TextEditor, false);
-			breakpointDisabledMarker = new DisabledBreakpointTextMarker (widget.TextEditor, false);
-			tracepointMarker = new BreakpointTextMarker (widget.TextEditor, true);
-			tracepointDisabledMarker = new DisabledBreakpointTextMarker (widget.TextEditor, true);
-			breakpointInvalidMarker = new InvalidBreakpointTextMarker (widget.TextEditor);
-			
 			
 			fileSystemWatcher = new FileSystemWatcher ();
 			fileSystemWatcher.Created += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
@@ -553,9 +542,6 @@ namespace MonoDevelop.SourceEditor
 			
 			debugStackLineMarker = null;
 			currentDebugLineMarker = null;
-			breakpointMarker = null;
-			breakpointDisabledMarker = null;
-			breakpointInvalidMarker = null;
 			
 			currentFrameChanged = null;
 			breakpointAdded = null;
@@ -805,13 +791,11 @@ namespace MonoDevelop.SourceEditor
 			HashSet<int> lineNumbers = new HashSet<int> ();
 			foreach (LineSegment line in breakpointSegments) {
 				lineNumbers.Add (Document.OffsetToLineNumber (line.Offset));
-				widget.TextEditor.Document.RemoveMarker (breakpointMarker);
-				widget.TextEditor.Document.RemoveMarker (breakpointDisabledMarker);
-				widget.TextEditor.Document.RemoveMarker (breakpointInvalidMarker);
-				widget.TextEditor.Document.RemoveMarker (tracepointMarker);
-				widget.TextEditor.Document.RemoveMarker (tracepointDisabledMarker);
+				widget.TextEditor.Document.RemoveMarker (line, typeof (BreakpointTextMarker));
+				widget.TextEditor.Document.RemoveMarker (line, typeof (DisabledBreakpointTextMarker));
+				widget.TextEditor.Document.RemoveMarker (line, typeof (InvalidBreakpointTextMarker));
 			}
-			
+	
 			breakpointSegments.Clear ();
 			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
 				lineNumbers.Add (bp.Line - 1);
@@ -836,24 +820,23 @@ namespace MonoDevelop.SourceEditor
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
 				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
-
+				
 				if (line == null)
-
 					return;
 				if (!bp.Enabled) {
 					if (bp.HitAction == HitAction.Break)
-						widget.TextEditor.Document.AddMarker (line, breakpointDisabledMarker);
+						widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, false));
 					else
-						widget.TextEditor.Document.AddMarker (line, tracepointDisabledMarker);
+						widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, true));
 				}
 				else if (bp.IsValid (DebuggingService.DebuggerSession)) {
 					if (bp.HitAction == HitAction.Break)
-						widget.TextEditor.Document.AddMarker (line, breakpointMarker);
+						widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, false));
 					else
-						widget.TextEditor.Document.AddMarker (line, tracepointMarker);
+						widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, true));
 				}
 				else
-					widget.TextEditor.Document.AddMarker (line, breakpointInvalidMarker);
+					widget.TextEditor.Document.AddMarker (line, new InvalidBreakpointTextMarker (widget.TextEditor));
 				widget.TextEditor.QueueDraw ();
 				breakpointSegments.Add (line);
 			}

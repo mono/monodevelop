@@ -1,3 +1,13 @@
+2010-06-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Reset
+	  custom size requests before calculating the real size
+	  request. Fixes issue when getting the default size.
+
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Ensure the default
+	  layout is set after loading the workbench memento.
+
 2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* icons/SplashScreen.png: Updated.
