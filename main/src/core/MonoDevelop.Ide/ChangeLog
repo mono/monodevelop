@@ -1,5 +1,9 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Remove nonexistent icon.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:
 	  Only show mimetypes with policies.
 
