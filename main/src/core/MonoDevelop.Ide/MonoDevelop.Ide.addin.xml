@@ -639,7 +639,7 @@
 			<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
 				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 			</Section>
-			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+			<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
 		</Section>
 	</Extension>
 

@@ -1,5 +1,13 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml: Set icon for the default code
+	  formatting policies panel group to match the per-item one.
+
+	* MonoDevelop.Ide.Desktop/PlatformService.cs: Handle icon for
+	  text/plain mimetype.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Desktop/PlatformService.cs: Add a
 	  description for the text/plain mimetype.
 
