@@ -123,11 +123,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			if ((ka & KeyActions.Complete) != 0) {
 				bool completed = CompleteWord ();
-				Console.WriteLine ("completed:" + completed);
-				if (!completed) {
-					CompletionWindowManager.HideWindow ();
-					return false;
-				}
+				//NOTE: this passes the enter keystroke through to the editor if the current item is an exact match
+				//if (!completed) {
+				//	CompletionWindowManager.HideWindow ();
+				//	return false;
+				//}
 			}
 
 			if ((ka & KeyActions.CloseWindow) != 0)
