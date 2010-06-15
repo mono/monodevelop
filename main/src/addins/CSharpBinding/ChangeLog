@@ -1,6 +1,11 @@
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed unit test.
+
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Fixed 'Bug 614045 - Types hidden by members are not
 	  formatted properly by ambience'.
 

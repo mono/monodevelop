@@ -1398,7 +1398,7 @@ namespace MonoDevelop.CSharp.Completion
 						IType declaringType = unit.GetTypeAt (location);
 						if (declaringType != null && dom != null) {
 							foreach (IType t in dom.GetInheritanceTree (declaringType)) {
-								if (t.SearchMember (type.Name, true).Any ()) {
+								if (t.SearchMember (type.Name, true).Any (m => m.MemberType != MemberType.Type)) {
 									flags |= OutputFlags.UseFullName;
 									break;
 								}
