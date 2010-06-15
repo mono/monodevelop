@@ -935,7 +935,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		static uint TranslateToUTF8Index (char[] charArray, uint textIndex, ref uint curIndex, ref uint byteIndex)
+		public static uint TranslateToUTF8Index (char[] charArray, uint textIndex, ref uint curIndex, ref uint byteIndex)
 		{
 			if (textIndex < curIndex) {
 				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
@@ -949,7 +949,7 @@ namespace Mono.TextEditor
 			return byteIndex;
 		}
 
-		static int TranslateIndexToUTF8 (string text, int index)
+		public static int TranslateIndexToUTF8 (string text, int index)
 		{
 			byte[] bytes = Encoding.UTF8.GetBytes (text);
 			return Encoding.UTF8.GetString (bytes, 0, index).Length;

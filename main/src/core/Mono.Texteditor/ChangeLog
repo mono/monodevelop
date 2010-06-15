@@ -1,5 +1,10 @@
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: made some functions
+	  public.
+
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/GutterMargin.cs: Fixed a bug where the
 	  gutter margin with isn't calculated correctly.
 
