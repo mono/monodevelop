@@ -264,11 +264,16 @@ namespace MonoDevelop.CSharp.Highlighting
 					} else {
 						int start = startOffset < markerStart ? markerStart : startOffset;
 						int end = endOffset < markerEnd ? endOffset : markerEnd;
-						int x_pos = layout.Layout.IndexToPos (start - startOffset).X;
-			
+						
+						uint curIndex = 0, byteIndex = 0;
+						TextViewMargin.TranslateToUTF8Index (layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
+						
+						int x_pos = layout.Layout.IndexToPos ((int)byteIndex).X;
+						
 						@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-			
-						x_pos = layout.Layout.IndexToPos (end - startOffset).X;
+						
+						TextViewMargin.TranslateToUTF8Index (layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
+						x_pos = layout.Layout.IndexToPos ((int)byteIndex).X;
 			
 						to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 					}

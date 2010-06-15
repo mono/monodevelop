@@ -1,5 +1,10 @@
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Respect UTF-8 coordinates in highlight usages extension.
+
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Fixed unit test.
 
