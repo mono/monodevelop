@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		Pango.Layout layout;
 		int width;
-		int oldLineCountLog10 = 1;
+		int oldLineCountLog10 = -1;
 		
 		public GutterMargin (TextEditor editor)
 		{
@@ -44,10 +44,13 @@ namespace Mono.TextEditor
 			layout = PangoUtil.CreateLayout (editor, null);
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
 			this.editor.Document.LineChanged += UpdateWidth;
-			this.editor.Document.TextSet += delegate {
-				UpdateWidth (null, null);
-			}; 
+			this.editor.Document.TextSet += HandleEditorDocumenthandleTextSet;
 			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
+		}
+
+		void HandleEditorDocumenthandleTextSet (object sender, EventArgs e)
+		{
+			UpdateWidth (null, null);
 		}
 
 		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
@@ -57,8 +60,7 @@ namespace Mono.TextEditor
 			editor.RedrawMarginLine (this, e.Location.Line);
 			editor.RedrawMarginLine (this, editor.Caret.Line);
 		}
-		
-		
+
 		void CalculateWidth ()
 		{
 			layout.SetText (editor.Document.LineCount.ToString ());
@@ -163,6 +165,7 @@ namespace Mono.TextEditor
 			base.cursor.Dispose ();
 			base.cursor = null;
 			
+			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.LineChanged -= UpdateWidth;
 			layout = layout.Kill ();
 			DisposeGCs ();
@@ -205,6 +208,5 @@ namespace Mono.TextEditor
 				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + Width, y, layout);
 			}
 		}
-		
 	}
 }

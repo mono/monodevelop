@@ -1,3 +1,8 @@
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/GutterMargin.cs: Fixed a bug where the
+	  gutter margin with isn't calculated correctly.
+
 2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.TextEditor.Vi/ViKeyNotation.cs: Really fix the windows
