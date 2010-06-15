@@ -1,5 +1,11 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide/RootWorkspace.cs: Disabled
+	  OnRunProjectChecks timeout because it churns disk, wastes
+	  power on laptop.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/ListWidget.cs:
 	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: when there are
 	  no matches, display a message to indicate that the

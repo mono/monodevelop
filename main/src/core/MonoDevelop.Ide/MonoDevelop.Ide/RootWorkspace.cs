@@ -95,7 +95,8 @@ namespace MonoDevelop.Ide
 				}
 			};
 			
-			GLib.Timeout.Add (2000, OnRunProjectChecks);
+			//FIXME: disabled OnRunProjectChecks timeout because it churns disk, wastes power on laptop. Need better solution.
+			//GLib.Timeout.Add (2000, OnRunProjectChecks);
 		}
 		
 		public WorkspaceItemCollection Items {
