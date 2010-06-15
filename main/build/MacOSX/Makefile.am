@@ -55,6 +55,7 @@ MonoDevelop.app:
 	rm -rf $(MACOS)/lib/monodevelop/bin/UnitTests.dll* \
 	  $(MACOS)/lib/monodevelop/bin/TestResult.xml \
 	  $(MACOS)/lib/monodevelop/bin/addin-db* \
+	  $(MACOS)/lib/monodevelop/bin/local \
 	  $(MACOS)/lib/monodevelop/bin/repository-cache* \
 	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
 
