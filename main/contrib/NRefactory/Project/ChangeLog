@@ -1,3 +1,9 @@
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Src/Ast/Generated.cs:
+	* Src/Visitors/LookupTableVisitor.cs: Fixed 'Bug 613714 -
+	  Intellisense does not show / know about LINQ variables'.-
+
 2010-06-14  Mike Krüger  <mkrueger@novell.com>
 
 	* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Fixed 'Bug

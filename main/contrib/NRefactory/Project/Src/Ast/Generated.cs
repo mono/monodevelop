@@ -2713,7 +2713,7 @@ namespace ICSharpCode.NRefactory.Ast {
 			expressionBody = Expression.Null;
 		}
 		
-public Location ExtendedEndLocation { get; set; }
+		public Location ExtendedEndLocation { get; set; }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitLambdaExpression(this, data);
