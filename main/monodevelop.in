@@ -6,12 +6,7 @@ EXE_PATH="${0%%/bin/monodevelop}/lib/monodevelop/bin/MonoDevelop.exe"
 
 _MD_REDIRECT_LOG="${MD_REDIRECT_LOG:-${XDG_CONFIG_HOME:-$HOME/.config}/MonoDevelop/log}"
 
-##NOTE: remove this for stable releases
-if [ -z "$MD_NO_DEBUG" ]; then
-	_MONO_OPTIONS=${MONO_OPTIONS:---debug}
-else
-	_MONO_OPTIONS=$MONO_OPTIONS
-fi
+_MONO_OPTIONS=$MONO_OPTIONS
 
 #############################
 ## BEGIN MOZILLA DETECTION ##
