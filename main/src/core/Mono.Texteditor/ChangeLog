@@ -1,5 +1,10 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am:
+	* Mono.TextEditor.csproj: Added file to project.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViKeyNotation.cs: Implement equality
 	  members on ViKey.
 
