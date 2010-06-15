@@ -29,6 +29,7 @@ using Gdk;
 using System.Collections.Generic;
 using System.Text;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace Mono.TextEditor.Vi
 {
@@ -50,12 +51,17 @@ namespace Mono.TextEditor.Vi
 		}
 	}
 	
+	/// <summary>
+	/// Returns true if it handled the keystroke.
+	/// </summary>
+	public delegate bool ViBuilder (ViBuilderContext ctx);
+	
 	public class ViBuilderContext
 	{
 		public string Error { get; set; }
 		public string Message { get; set; }
 		public Action<ViEditor> Action { get; set; }
-		public Action<ViBuilderContext> Builder { get; set; }
+		public ViBuilder Builder { get; set; }
 		public IList<ViKey> Keys { get; set; }
 		public int KeyIndex { get; set; }
 		public int Multiplier { get; set; }
@@ -65,7 +71,12 @@ namespace Mono.TextEditor.Vi
 			get { return Keys[KeyIndex]; }
 		}
 		
-		static Action<ViBuilderContext> normalBuilder = new ViCommandMap () {
+		static ViBuilder normalBuilder =
+			ViBuilders.RegisterBuilder (
+				ViBuilders.MultiplierBuilder (
+					ViBuilders.FirstOrFail (normalActionBuilder, motionBuilder)));
+		
+		static ViBuilder normalActionBuilder = new ViCommandMap () {
 			{ 'J', ViActions.Join },
 			{ 'z', new ViCommandMap () {
 				{ 'A', FoldActions.ToggleFoldRecursive },
@@ -84,34 +95,78 @@ namespace Mono.TextEditor.Vi
 			{ '~', ViActions.ToggleCase },
 			{ 'm', ViBuilders.Mark },
 			{ 'M', ViEditorActions.CenterCaret },
+			{ new ViKey (ModifierType.ControlMask, Key.Up),       ScrollActions.Up },
+			{ new ViKey (ModifierType.ControlMask, Key.KP_Up),    ScrollActions.Up },
+			{ new ViKey (ModifierType.ControlMask, Key.Down),     ScrollActions.Down },
+			{ new ViKey (ModifierType.ControlMask, Key.KP_Down),  ScrollActions.Down },
+		}.Builder;
+		
+		static ViBuilder motionBuilder = new ViCommandMap () {
 			{ '`', ViBuilders.GoToMark },
+			{ 'h', ViActions.Left },
+			{ 'b', CaretMoveActions.PreviousSubword },
+			{ 'B', CaretMoveActions.PreviousWord },
+			{ 'l', ViActions.Right },
+			{ 'w', CaretMoveActions.NextSubword },
+			{ 'W', CaretMoveActions.NextWord },
+			{ 'k', ViActions.Up },
+			{ 'j', ViActions.Down },
+			{ '%', MiscActions.GotoMatchingBracket },
+			{ '0', CaretMoveActions.LineStart },
+			{ '^', CaretMoveActions.LineFirstNonWhitespace },
+			{ '_', CaretMoveActions.LineFirstNonWhitespace },
+			{ '$', ViActions.LineEnd },
+			{ 'G', CaretMoveActions.ToDocumentEnd },
+			{ '{', ViActions.MoveToPreviousEmptyLine },
+			{ '}', ViActions.MoveToNextEmptyLine },
+			{ Key.Left,         ViActions.Left },
+			{ Key.KP_Left,      ViActions.Left },
+			{ Key.Right,        ViActions.Right },
+			{ Key.KP_Right,     ViActions.Right },
+			{ Key.Up,           ViActions.Up },
+			{ Key.KP_Up,        ViActions.Up },
+			{ Key.Down,         ViActions.Down },
+			{ Key.KP_Down,      ViActions.Down },
+			{ Key.KP_Home,      CaretMoveActions.LineHome },
+			{ Key.Home,         CaretMoveActions.LineHome },
+			{ Key.KP_End,       ViActions.LineEnd },
+			{ Key.End,          ViActions.LineEnd },
+			{ Key.Page_Up,      CaretMoveActions.PageUp },
+			{ Key.KP_Page_Up,   CaretMoveActions.PageUp },
+			{ Key.Page_Down,    CaretMoveActions.PageDown },
+			{ Key.KP_Page_Down, CaretMoveActions.PageDown },
+			{ new ViKey (ModifierType.ControlMask, Key.Left),     CaretMoveActions.PreviousWord },
+			{ new ViKey (ModifierType.ControlMask, Key.KP_Left),  CaretMoveActions.PreviousWord },
+			{ new ViKey (ModifierType.ControlMask, Key.Right),    CaretMoveActions.NextWord },
+			{ new ViKey (ModifierType.ControlMask, Key.KP_Right), CaretMoveActions.NextWord },
+			{ new ViKey (ModifierType.ControlMask, Key.Home),     CaretMoveActions.ToDocumentStart },
+			{ new ViKey (ModifierType.ControlMask, Key.KP_Home),  CaretMoveActions.ToDocumentStart },
+			{ new ViKey (ModifierType.ControlMask, Key.End),      CaretMoveActions.ToDocumentEnd },
+			{ new ViKey (ModifierType.ControlMask, Key.KP_End),   CaretMoveActions.ToDocumentEnd },
+			{ new ViKey (ModifierType.ControlMask, 'u'),  CaretMoveActions.PageUp },
+			{ new ViKey (ModifierType.ControlMask, 'd'),  CaretMoveActions.PageDown },
 		}.Builder;
 	}
 	
-	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,Action<ViBuilderContext>>>
+	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,ViBuilder>>
 	{
-		Dictionary<ViKey,Action<ViBuilderContext>> builders = new Dictionary<ViKey, Action<ViBuilderContext>> ();
-		Dictionary<ViKey,Action<ViEditor>> actions  = new Dictionary<ViKey, Action<ViEditor>> ();
+		Dictionary<ViKey,ViBuilder> builders = new Dictionary<ViKey,ViBuilder> ();
+		Dictionary<ViKey,Action<ViEditor>> actions  = new Dictionary<ViKey,Action<ViEditor>> ();
 		
-		public void Builder (ViBuilderContext ctx)
+		public bool Builder (ViBuilderContext ctx)
 		{
-			var k = ctx.LastKey;
-			if (k.Char == '"') {
-				ViBuilders.CreateSetRegisterBuilder (ctx, this.Builder);
-				return;
-			}
-			
 			Action<ViEditor> a;
-			if (actions.TryGetValue (k, out a)) {
+			if (actions.TryGetValue (ctx.LastKey, out a)) {
 				ctx.Action = a;
+				return true;
 			} else {
-				Action<ViBuilderContext> b;
-				if (builders.TryGetValue (k, out b)) {
+				ViBuilder b;
+				if (builders.TryGetValue (ctx.LastKey, out b)) {
 					ctx.Builder = b;
-				} else {
-					ctx.Error = "Unknown command";
+					return true;
 				}
 			}
+			return false;
 		}
 		
 		public void Add (ViKey key, ViCommandMap map)
@@ -129,7 +184,7 @@ namespace Mono.TextEditor.Vi
 			this.actions[key] = (ViEditor ed) => action (ed.Data);
 		}
 		
-		public void Add (ViKey key, Action<ViBuilderContext> builder)
+		public void Add (ViKey key, ViBuilder builder)
 		{
 			this.builders[key] = builder;
 		}
@@ -139,7 +194,7 @@ namespace Mono.TextEditor.Vi
 			return builders.GetEnumerator ();
 		}
 		
-		public IEnumerator<KeyValuePair<ViKey,Action<ViBuilderContext>>> GetEnumerator ()
+		public IEnumerator<KeyValuePair<ViKey,ViBuilder>> GetEnumerator ()
 		{
 			return builders.GetEnumerator ();
 		}
@@ -147,12 +202,12 @@ namespace Mono.TextEditor.Vi
 	
 	class ViBuilders
 	{
-		public static void Mark (ViBuilderContext ctx)
+		public static bool Mark (ViBuilderContext ctx)
 		{
 			char c = ctx.LastKey.Char;
 			if (!char.IsLetterOrDigit (c)) {
 				ctx.Error = "Invalid Mark";
-				return;
+				return true;
 			}
 			
 			ctx.Action = (ViEditor ed) => {
@@ -161,14 +216,15 @@ namespace Mono.TextEditor.Vi
 					ed.Context.Marks [c] = mark = new ViMark (c);
 				mark.SaveMark (ed.Data);
 			};
+			return true;
 		}
 		
-		public static void GoToMark (ViBuilderContext ctx)
+		public static bool GoToMark (ViBuilderContext ctx)
 		{
 			char c = ctx.LastKey.Char;
 			if (!char.IsLetterOrDigit (c)) {
 				ctx.Error = "Invalid Mark";
-				return;
+				return true;
 			}
 			
 			ctx.Action = (ViEditor ed) => {
@@ -178,18 +234,20 @@ namespace Mono.TextEditor.Vi
 				else
 					ed.Reset ("Unknown Mark");
 			};
+			return true;
 		}
 		
 		
-		public static void ReplaceChar (ViBuilderContext ctx)
+		public static bool ReplaceChar (ViBuilderContext ctx)
 		{
 			if (ctx.LastKey.Char != '\0')
 				ctx.Action = (ViEditor ed) => ed.Data.Replace (ed.Data.Caret.Offset, 1, ctx.LastKey.Char.ToString ());
 			else
 				ctx.Error = "Expecting a character";
+			return true;
 		}
 		
-		public static void CreateSetRegisterBuilder (ViBuilderContext ctx, Action<ViBuilderContext> nextBuilder)
+		static void StartRegisterBuilder (ViBuilderContext ctx, ViBuilder nextBuilder)
 		{
 			if (ctx.Register == '\0') {
 				ctx.Error = "Register already set";
@@ -199,10 +257,68 @@ namespace Mono.TextEditor.Vi
 				char c = x.LastKey.Char;
 				if (!ViEditorContext.IsValidRegister (c)) {
 					x.Error = "Invalid register";
-					return;
+					return true;
 				}
 				x.Register = c;
 				x.Builder = nextBuilder;
+				return true;
+			};
+		}
+		
+		static void StartMultiplierBuilder (ViBuilderContext ctx, ViBuilder nextBuilder)
+		{
+			int factor = 1;
+			int multiplier = 0;
+			ctx.Builder = (ViBuilderContext x) => {
+				int c = (int)x.LastKey.Char;
+				if (c >= (int)'0' && c <= (int)'9') {
+					int d = c - (int)'0';
+					multiplier = multiplier * factor + d;
+					factor *= 10;
+					return true;
+				} else {
+					ctx.Multiplier *= multiplier;
+					ctx.Builder = nextBuilder;
+					return ctx.Builder (ctx);
+				}
+			};
+			ctx.Builder (ctx);
+		}
+		
+		public static ViBuilder MultiplierBuilder (ViBuilder nextBuilder)
+		{
+			return (ViBuilderContext ctx) => {
+				var k = ctx.LastKey;
+				if (char.IsDigit (k.Char)) {
+					ViBuilders.StartMultiplierBuilder (ctx, nextBuilder);
+					return true;
+				} else {
+					ctx.Builder = nextBuilder;
+					return ctx.Builder (ctx);
+				}
+			};
+		}
+		
+		public static ViBuilder RegisterBuilder (ViBuilder nextBuilder)
+		{
+			return (ViBuilderContext ctx) => {
+				var k = ctx.LastKey;
+				if (k.Char == '"') {
+					ViBuilders.StartRegisterBuilder (ctx, nextBuilder);
+					return true;
+				} else {
+					ctx.Builder = nextBuilder;
+					return ctx.Builder (ctx);
+				}
+			};
+		}
+		
+		public static ViBuilder FirstOrFail (params ViBuilder[] builders)
+		{
+			return (ViBuilderContext ctx) => {
+				if (!builders.Any (b => b (ctx)))
+					ctx.Error = "Unknown command";
+				return true;
 			};
 		}
 	}

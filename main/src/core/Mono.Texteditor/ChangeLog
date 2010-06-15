@@ -1,5 +1,13 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViKeyNotation.cs: Implement equality
+	  members on ViKey.
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Parse motions,
+	  multipliers, registers.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViKeyNotation.cs:
 	* Mono.TextEditor.Vi/ViEditorContext.cs:
 	* Mono.TextEditor.Vi/ViCommandBuilder.cs: New vi command

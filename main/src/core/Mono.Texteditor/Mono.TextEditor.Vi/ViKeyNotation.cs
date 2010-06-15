@@ -31,7 +31,7 @@ using System.Text;
 
 namespace Mono.TextEditor.Vi
 {
-	public struct ViKey
+	public struct ViKey : IEquatable<ViKey>
 	{
 		Gdk.ModifierType modifiers;
 		char ch;
@@ -45,7 +45,15 @@ namespace Mono.TextEditor.Vi
 		{
 		}
 		
-		public ViKey (Gdk.ModifierType modifiers, char ch, Gdk.Key key): this ()
+		public ViKey (ModifierType modifiers, Gdk.Key key) : this (modifiers, '\0', key)
+		{
+		}
+		
+		public ViKey (ModifierType modifiers, char ch) : this (modifiers, ch, (Gdk.Key)0)
+		{
+		}
+		
+		public ViKey (ModifierType modifiers, char ch, Gdk.Key key): this ()
 		{
 			this.modifiers = modifiers & KnownModifiers;
 			this.ch = ch;
@@ -67,6 +75,29 @@ namespace Mono.TextEditor.Vi
 		public static implicit operator ViKey (Gdk.Key key)
 		{
 			return new ViKey (key);
+		}
+		
+		public bool Equals (ViKey other)
+		{
+			return modifiers == other.modifiers && ch == other.ch && key == other.key;
+		}
+		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (!(obj is ViKey))
+				return false;
+			return Equals ((ViKey)obj);
+		}
+		
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return modifiers.GetHashCode () ^ ch.GetHashCode () ^ key.GetHashCode ();
+			}
 		}
 	}
 	
