@@ -1,3 +1,10 @@
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViKeyNotation.cs:
+	* Mono.TextEditor.Vi/ViEditorContext.cs:
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: New vi command
+	  builder architecture (incomplete)
+
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: made some functions
