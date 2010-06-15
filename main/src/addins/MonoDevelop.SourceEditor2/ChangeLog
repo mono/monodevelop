@@ -1,5 +1,11 @@
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
+	  613825 - Auto-complete on highlighted text overwrites
+	  following characters'.
+
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed
 	  breakpoint text markers.
 
