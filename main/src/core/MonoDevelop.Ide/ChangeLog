@@ -1,5 +1,10 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:
+	  Only show mimetypes with policies.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
 	  Remove debug writelines. Disable
 	  process-enter-on-exact-match behaviour change or now.
