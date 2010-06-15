@@ -2582,5 +2582,45 @@ class MainClass
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found, but shouldn't.");
 		}
+		
+		
+		/// <summary>
+		/// Bug 614045 - Types hidden by members are not formatted properly by ambience
+		/// </summary>
+		[Test()]
+		public void TestBug614045 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"
+namespace A
+{
+	enum Foo
+	{
+		One,
+		Two,
+		Three
+	}
+}
+
+namespace B
+{
+	using A;
+	
+	public class Baz
+	{
+		public string Foo;
+		
+		void Test (Foo a)
+		{
+			$switch (a) {
+			case $
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("Foo"), "enum 'Foo' found, but shouldn't.");
+			Assert.IsNotNull (provider.Find ("A.Foo"), "enum 'A.Foo' not found.");
+		}
 	}
 }
