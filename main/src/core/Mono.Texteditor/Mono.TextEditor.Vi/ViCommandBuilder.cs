@@ -41,11 +41,8 @@ namespace Mono.TextEditor.Vi
 	
 	public class ViBuilderContext
 	{
-		public ViBuilderContext ()
+		ViBuilderContext ()
 		{
-			Builder = normalBuilder;
-			
-			
 			Keys = new List<ViKey> ();
 		}
 		
@@ -53,7 +50,6 @@ namespace Mono.TextEditor.Vi
 		{
 			var k = ch == '\0'? new ViKey (modifiers, key) : new ViKey (modifiers, ch);
 			Keys.Add (k);
-			Console.WriteLine (ViKeyNotation.ToString (Keys));
 			if (!Builder (this)) {
 				Error = "Unknown command";
 			}
@@ -71,9 +67,16 @@ namespace Mono.TextEditor.Vi
 			get { return Keys[Keys.Count - 1]; }
 		}
 		
+		public static ViBuilderContext CreateNormal ()
+		{
+			return new ViBuilderContext () {
+				Builder = normalBuilder
+			};
+		}
+		
 		//WORKAROUND: we used to use a static initializer but that triggered a gmcs 2.6.4 bug
 		//so instead use a lazy pattern
-		ViBuilder normalBuilder {
+		static ViBuilder normalBuilder {
 			get {
 				return _normalBuilder ?? (_normalBuilder = 
 					ViBuilders.RegisterBuilder (
@@ -340,12 +343,7 @@ namespace Mono.TextEditor.Vi
 		
 		public static ViBuilder First (params ViBuilder[] builders)
 		{
-			return (ViBuilderContext ctx) => {
-				return builders.Any (b =>{
-					Console.WriteLine ("b {0}", b);
-					return b != null && b (ctx);
-				});
-			};
+			return (ViBuilderContext ctx) => builders.Any (b => b (ctx));
 		}
 	}
 	

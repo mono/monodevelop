@@ -28,16 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Gdk;
 
 namespace Mono.TextEditor.Vi
 {
-	public enum ViState
-	{
-		Normal,
-		Visual,
-		VisualLine
-	}
-	
 	public class ViEditor
 	{
 		#region Register constants
@@ -62,6 +56,8 @@ namespace Mono.TextEditor.Vi
 		public TextEditor Editor { get; private set; }
 		public TextEditorData Data { get; private set; }
 		public Document Document { get { return Data.Document; } }
+		ViBuilderContext Context { get; set; }
+		public string Message { get; private set; }
 
 		//shared between editors in the same process
 		//TODO: maybe move these into some kind of shared context to pass around expliictly
@@ -87,6 +83,21 @@ namespace Mono.TextEditor.Vi
 		
 		public void Reset (string message)
 		{
+			Context = ViBuilderContext.CreateNormal ();
+			Message = message;
+		}
+		
+		public void ProcessKey (Gdk.ModifierType modifiers, Key key, char ch)
+		{
+			Context.Build (modifiers, key, ch);
+			if (Context.Error != null) {
+				Reset (Context.Error);
+			} else if (Context.Action != null) {
+				Context.Action (this);
+				Reset ("");
+			} else {
+				Message = Context.Message;
+			}
 		}
 		
 		public Dictionary<char,ViMark> Marks { get { return marks; } }
@@ -98,6 +109,7 @@ namespace Mono.TextEditor.Vi
 		{
 			this.Editor = editor;
 			this.Data = data;
+			Reset ("");
 		}
 
 		public string GetRegisterContents (char register)

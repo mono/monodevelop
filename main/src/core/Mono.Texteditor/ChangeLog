@@ -1,5 +1,13 @@
 2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Remove debug code,
+	  tidy.
+
+	* Mono.TextEditor.Vi/ViEditorContext.cs: Basic input
+	  processing.
+
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs: Use mapped modifier values
 	  for the IM commit. Modifiers and keys received by editor
 	  extensions and editor modes are now always post keyboard
