@@ -44,6 +44,8 @@ namespace Mono.TextEditor.Vi
 		public ViBuilderContext ()
 		{
 			Builder = normalBuilder;
+			
+			
 			Keys = new List<ViKey> ();
 		}
 		
@@ -69,10 +71,17 @@ namespace Mono.TextEditor.Vi
 			get { return Keys[Keys.Count - 1]; }
 		}
 		
-		static ViBuilder normalBuilder =
-			ViBuilders.RegisterBuilder (
-				ViBuilders.MultiplierBuilder (
-					ViBuilders.First (normalActions.Builder, motions.Builder)));
+		//WORKAROUND: we used to use a static initializer but that triggered a gmcs 2.6.4 bug
+		//so instead use a lazy pattern
+		ViBuilder normalBuilder {
+			get {
+				return _normalBuilder ?? (_normalBuilder = 
+					ViBuilders.RegisterBuilder (
+						ViBuilders.MultiplierBuilder (
+							ViBuilders.First (normalActions.Builder, motions.Builder))));
+			}
+		}
+		static ViBuilder _normalBuilder;
 		
 		static ViCommandMap normalActions = new ViCommandMap () {
 			{ 'J', ViActions.Join },
@@ -148,7 +157,7 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ControlMask, 'd'),  CaretMoveActions.PageDown },
 		};
 		
-		static ViBuilder insertActionBuilder = new ViCommandMap () {
+		static ViCommandMap insertActions = new ViCommandMap () {
 			{ Key.Tab,       MiscActions.InsertTab },
 			{ Key.Return,    MiscActions.InsertNewLine },
 			{ Key.KP_Enter,  MiscActions.InsertNewLine },
@@ -161,7 +170,7 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ControlMask, Key.KP_Delete), DeleteActions.NextWord },
 			{ new ViKey (ModifierType.ShiftMask,   Key.Tab),       MiscActions.RemoveTab },
 			{ new ViKey (ModifierType.ShiftMask,   Key.BackSpace),       DeleteActions.Backspace },
-		}.Builder;
+		};
 	}
 	
 	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,ViBuilder>>
@@ -265,7 +274,7 @@ namespace Mono.TextEditor.Vi
 		
 		static void StartRegisterBuilder (ViBuilderContext ctx, ViBuilder nextBuilder)
 		{
-			if (ctx.Register == '\0') {
+			if (ctx.Register != '\0') {
 				ctx.Error = "Register already set";
 				return;
 			}
