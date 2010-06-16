@@ -88,10 +88,6 @@ namespace Mono.TextEditor
 			key = (Gdk.Key)keyval;
 			mod = evt.State & ~consumedModifiers;
 			
-			//we restore the shift modifier if it was a letter, since those always get displayed uppercase
-			if (char.IsUpper ((char)Gdk.Keyval.ToUnicode (keyval)) && ((consumedModifiers & Gdk.ModifierType.ShiftMask) != 0))
-				mod |= Gdk.ModifierType.ShiftMask;
-			
 			if (IsX11) {
 				//this is a workaround for a common X mapping issue
 				//where the alt key is mapped to the meta key when the shift modifier is active
