@@ -79,6 +79,8 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public string GetMimeTypeDescription (string mimeType)
 		{
+			if (mimeType == "text/plain")
+				return GettextCatalog.GetString ("Text file");
 			MimeTypeNode mt = FindMimeType (mimeType);
 			if (mt != null && mt.Description != null)
 				return mt.Description;
@@ -202,6 +204,8 @@ namespace MonoDevelop.Ide.Desktop
 		
 		string GetIconForType (string type)
 		{
+			if (type == "text/plain")
+				return "md-text-file-icon";
 			MimeTypeNode mt = FindMimeType (type);
 			if (mt != null)
 				return mt.Icon;

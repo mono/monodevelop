@@ -183,6 +183,7 @@ namespace MonoDevelop.IPhone.Gui
 			foreach (var p in pickers) {
 				p.Project = proj;
 				p.DefaultFilter = "*.png";
+				p.EntryIsEditable = true;
 				p.DialogTitle = GettextCatalog.GetString ("Select icon...");
 			}
 			

@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -42,10 +43,14 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		PolicyContainer policyContainer;
 		Dictionary<string,MimeTypePanelData> typeSections = new Dictionary<string, MimeTypePanelData> ();
 		List<string> globalMimeTypes;
+		HashSet<string> mimeTypesWithPolicies = new HashSet<string> ();
 		
 		public override void Initialize (MonoDevelop.Ide.Gui.Dialogs.OptionsDialog dialog, object dataObject)
 		{
 			base.Initialize (dialog, dataObject);
+			
+			foreach (MimeTypeOptionsPanelNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels"))
+				mimeTypesWithPolicies.Add (node.MimeType);
 			
 			if (dataObject is SolutionItem) {
 				policyContainer = ((SolutionItem)dataObject).Policies;
@@ -64,6 +69,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		MimeTypePanelData AddPanel (string mt)
 		{
+			var chain = new List<string> (DesktopService.GetMimeTypeInheritanceChain (mt).Where (x => mimeTypesWithPolicies.Contains (x)));
+			if (chain.Count == 0)
+				return null;
 			MimeTypePanelData data = new MimeTypePanelData ();
 			OptionsDialogSection sec = new OptionsDialogSection (typeof(MimeTypePolicyOptionsSection));
 			sec.Fill = true;
@@ -77,7 +85,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			data.DataObject = DataObject;
 			data.PolicyContainer = policyContainer;
 			sec.Label = data.TypeDescription;
-			LoadPolicyTypeData (data, mt);
+			LoadPolicyTypeData (data, mt, chain);
 			typeSections [mt] = data;
 			ParentDialog.AddChildSection (this, sec, data);
 			return data;
@@ -114,10 +122,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			get { return policyContainer; }
 		}
 
-		void LoadPolicyTypeData (MimeTypePanelData data, string mimeType)
+		void LoadPolicyTypeData (MimeTypePanelData data, string mimeType, List<string> types)
 		{
-			List<string> types = new List<string> ();
-			types.AddRange (DesktopService.GetMimeTypeInheritanceChain (mimeType));
 			List<IMimeTypePolicyOptionsPanel> panels = new List<IMimeTypePolicyOptionsPanel> ();
 			
 			bool useParentPolicy = false;

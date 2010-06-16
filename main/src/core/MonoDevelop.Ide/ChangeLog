@@ -1,3 +1,37 @@
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide/RootWorkspace.cs: Disabled
+	  OnRunProjectChecks timeout because it churns disk, wastes
+	  power on laptop.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Set icon for the default code
+	  formatting policies panel group to match the per-item one.
+
+	* MonoDevelop.Ide.Desktop/PlatformService.cs: Handle icon for
+	  text/plain mimetype.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Desktop/PlatformService.cs: Add a
+	  description for the text/plain mimetype.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: Remove nonexistent icon.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:
+	  Only show mimetypes with policies.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	  Remove debug writelines. Disable
+	  process-enter-on-exact-match behaviour change or now.
+
 2010-06-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.DockToolbars/DockToolbar.cs: Reset

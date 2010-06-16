@@ -468,7 +468,6 @@
 		<StockIcon stockid = "md-addin" resource = "plugin-32.png" size = "LargeToolbar"/>
 		<StockIcon stockid = "md-workspace" resource = "workspace-16.png" size="Menu"/>
 		<StockIcon stockid = "md-workspace" resource = "workspace-32.png" size="Dnd" />
-		<StockIcon stockid = "md-new-workspace" resource = "workspace-new-16.png"/>
 		<StockIcon stockid = "md-new-solution-folder" resource = "solution-folder-new-16.png"/>
 		<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-16.png" size="Menu"/>
 		<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-16.png" size="Menu"/>
@@ -640,7 +639,7 @@
 			<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
 				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 			</Section>
-			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+			<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
 		</Section>
 	</Extension>
 
@@ -803,8 +802,7 @@
 				icon  = "md-new-project" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewWorkspace"
 				_label = "_Add New Workspace..."
-				_description = "Add a new child workspace to the selected workspace"
-				icon  = "md-new-workspace" />
+				_description = "Add a new child workspace to the selected workspace" />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution"
 				_label = "_Add New Solution..."
 				_description = "Add a new child solution to the selected workspace"
@@ -988,8 +986,7 @@
 				shortcut = "Control|Shift|N"  />
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" 
 				defaultHandler = "MonoDevelop.Ide.Commands.NewWorkspaceHandler"
-				_label = "_Workspace..." 
-				icon = "md-new-workspace" 
+				_label = "_Workspace..."
 				_description = "Create a new workspace"/>
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
 				_label = "_Close File" 
