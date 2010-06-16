@@ -151,6 +151,14 @@ namespace MonoDevelop.Components.Commands
 			Gdk.Key key;
 			Gdk.ModifierType modifier;
 			MapRawKeys (raw, out key, out modifier);
+			
+			//we restore shift modifier if it was consumed for a letter, as accelerators are always 
+			//displayed uppercase, so the shift key must be included in the binding
+			//Gdk.Keyval.IsUpper doesn't seem to work properly, so we use Char.IsUpper
+			bool shiftWasConsumed = ((raw.State ^ modifier) & Gdk.ModifierType.ShiftMask) != 0;
+			if (shiftWasConsumed && char.IsUpper ((char)Gdk.Keyval.ToUnicode ((uint)key)))
+				modifier |= Gdk.ModifierType.ShiftMask;
+			
 			return AccelFromKey (key, modifier, out complete);
 		}
 		
@@ -306,11 +314,6 @@ namespace MonoDevelop.Components.Commands
 			
 			key = (Gdk.Key)keyval;
 			mod = evt.State & ~consumedModifiers;
-			
-			//we restore the shift modifier if it was a letter, since those always get displayed uppercase
-			//Gdk.Keyval.IsUpper doesn't seem to work properly, so we use Char.IsUpper
-			if (char.IsUpper ((char)Gdk.Keyval.ToUnicode (keyval)) && ((consumedModifiers & Gdk.ModifierType.ShiftMask) != 0))
-				mod |= Gdk.ModifierType.ShiftMask;
 			
 			if (isX11) {
 				//this is a workaround for a common X mapping issue

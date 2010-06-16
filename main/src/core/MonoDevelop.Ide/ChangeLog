@@ -1,3 +1,9 @@
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Move
+	  the consumed shift modifier restoration to a more
+	  appropriate place. Add a better comment.
+
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide/RootWorkspace.cs: Disabled
