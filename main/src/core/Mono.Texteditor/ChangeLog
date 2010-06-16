@@ -1,5 +1,11 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViEditorContext.cs:
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Merged ViEditor and
+	  ViEditorContext. Added method for building commands.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Fix build, add more
 	  actions.
 

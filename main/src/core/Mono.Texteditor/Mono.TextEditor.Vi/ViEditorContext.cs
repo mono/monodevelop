@@ -31,7 +31,14 @@ using System.Text;
 
 namespace Mono.TextEditor.Vi
 {
-	public class ViEditorContext
+	public enum ViState
+	{
+		Normal,
+		Visual,
+		VisualLine
+	}
+	
+	public class ViEditor
 	{
 		#region Register constants
 		const char REG_YANK_DEFAULT = '0';
@@ -51,7 +58,10 @@ namespace Mono.TextEditor.Vi
 
 		Dictionary<char,string> registers = new Dictionary<char,string> ();
 		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark>();
-		Document doc;
+		
+		public TextEditor Editor { get; private set; }
+		public TextEditorData Data { get; private set; }
+		public Document Document { get { return Data.Document; } }
 
 		//shared between editors in the same process
 		//TODO: maybe move these into some kind of shared context to pass around expliictly
@@ -75,14 +85,19 @@ namespace Mono.TextEditor.Vi
 			set { lastInsertedText = value; }
 		}
 		
+		public void Reset (string message)
+		{
+		}
+		
 		public Dictionary<char,ViMark> Marks { get { return marks; } }
 
 		public bool SearchBackward { get; set; }
 		public string LastReplacement { get; set; }
 
-		public ViEditorContext (Document doc)
+		public ViEditor (TextEditor editor, TextEditorData data)
 		{
-			this.doc = doc;
+			this.Editor = editor;
+			this.Data = data;
 		}
 
 		public string GetRegisterContents (char register)
@@ -96,7 +111,7 @@ namespace Mono.TextEditor.Vi
 
 				case REG_FILENAME_ALTERNATE:
 				case REG_FILENAME_CURRENT:
-					return doc.FileName;
+					return Document.FileName;
 				
 				case REG_LAST_COMMANDLINE:
 					return LastCommandline;

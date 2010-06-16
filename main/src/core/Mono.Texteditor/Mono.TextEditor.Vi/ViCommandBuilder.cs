@@ -33,23 +33,6 @@ using System.Linq;
 
 namespace Mono.TextEditor.Vi
 {
-	public enum ViState
-	{
-		Normal,
-		Visual,
-		VisualLine
-	}
-	
-	public class ViEditor
-	{
-		public TextEditor Editor { get; private set; }
-		public TextEditorData Data { get; private set; }
-		public ViEditorContext Context { get; private set; }
-		
-		public void Reset (string message)
-		{
-		}
-	}
 	
 	/// <summary>
 	/// Returns true if it handled the keystroke.
@@ -58,25 +41,40 @@ namespace Mono.TextEditor.Vi
 	
 	public class ViBuilderContext
 	{
+		public ViBuilderContext ()
+		{
+			Builder = normalBuilder;
+			Keys = new List<ViKey> ();
+		}
+		
+		public void Build (ModifierType modifiers, Key key, char ch)
+		{
+			var k = ch == '\0'? new ViKey (modifiers, key) : new ViKey (modifiers, ch);
+			Keys.Add (k);
+			Console.WriteLine (ViKeyNotation.ToString (Keys));
+			if (!Builder (this)) {
+				Error = "Unknown command";
+			}
+		}
+		
 		public string Error { get; set; }
 		public string Message { get; set; }
 		public Action<ViEditor> Action { get; set; }
 		public ViBuilder Builder { get; set; }
-		public IList<ViKey> Keys { get; set; }
-		public int KeyIndex { get; set; }
+		public IList<ViKey> Keys { get; private set; }
 		public int Multiplier { get; set; }
 		public char Register { get; set; }
 		
 		public ViKey LastKey {
-			get { return Keys[KeyIndex]; }
+			get { return Keys[Keys.Count - 1]; }
 		}
 		
 		static ViBuilder normalBuilder =
 			ViBuilders.RegisterBuilder (
 				ViBuilders.MultiplierBuilder (
-					ViBuilders.FirstOrFail (normalActionBuilder, motionBuilder)));
+					ViBuilders.First (normalActions.Builder, motions.Builder)));
 		
-		static ViBuilder normalActionBuilder = new ViCommandMap () {
+		static ViCommandMap normalActions = new ViCommandMap () {
 			{ 'J', ViActions.Join },
 			{ 'z', new ViCommandMap () {
 				{ 'A', FoldActions.ToggleFoldRecursive },
@@ -102,9 +100,9 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ControlMask, Key.KP_Up),    ScrollActions.Up },
 			{ new ViKey (ModifierType.ControlMask, Key.Down),     ScrollActions.Down },
 			{ new ViKey (ModifierType.ControlMask, Key.KP_Down),  ScrollActions.Down },
-		}.Builder;
+		};
 		
-		static ViBuilder motionBuilder = new ViCommandMap () {
+		static ViCommandMap motions = new ViCommandMap () {
 			{ '`', ViBuilders.GoToMark },
 			{ 'h', ViActions.Left },
 			{ 'b', CaretMoveActions.PreviousSubword },
@@ -148,7 +146,7 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ControlMask, Key.KP_End),   CaretMoveActions.ToDocumentEnd },
 			{ new ViKey (ModifierType.ControlMask, 'u'),  CaretMoveActions.PageUp },
 			{ new ViKey (ModifierType.ControlMask, 'd'),  CaretMoveActions.PageDown },
-		}.Builder;
+		};
 		
 		static ViBuilder insertActionBuilder = new ViCommandMap () {
 			{ Key.Tab,       MiscActions.InsertTab },
@@ -230,8 +228,8 @@ namespace Mono.TextEditor.Vi
 			
 			ctx.Action = (ViEditor ed) => {
 				ViMark mark;
-				if (!ed.Context.Marks.TryGetValue (c, out mark))
-					ed.Context.Marks [c] = mark = new ViMark (c);
+				if (!ed.Marks.TryGetValue (c, out mark))
+					ed.Marks [c] = mark = new ViMark (c);
 				mark.SaveMark (ed.Data);
 			};
 			return true;
@@ -247,7 +245,7 @@ namespace Mono.TextEditor.Vi
 			
 			ctx.Action = (ViEditor ed) => {
 				ViMark mark;
-				if (ed.Context.Marks.TryGetValue (c, out mark))
+				if (ed.Marks.TryGetValue (c, out mark))
 					mark.LoadMark (ed.Data);
 				else
 					ed.Reset ("Unknown Mark");
@@ -273,7 +271,7 @@ namespace Mono.TextEditor.Vi
 			}
 			ctx.Builder = (ViBuilderContext x) => {
 				char c = x.LastKey.Char;
-				if (!ViEditorContext.IsValidRegister (c)) {
+				if (!ViEditor.IsValidRegister (c)) {
 					x.Error = "Invalid register";
 					return true;
 				}
@@ -331,12 +329,13 @@ namespace Mono.TextEditor.Vi
 			};
 		}
 		
-		public static ViBuilder FirstOrFail (params ViBuilder[] builders)
+		public static ViBuilder First (params ViBuilder[] builders)
 		{
 			return (ViBuilderContext ctx) => {
-				if (!builders.Any (b => b (ctx)))
-					ctx.Error = "Unknown command";
-				return true;
+				return builders.Any (b =>{
+					Console.WriteLine ("b {0}", b);
+					return b != null && b (ctx);
+				});
 			};
 		}
 	}
