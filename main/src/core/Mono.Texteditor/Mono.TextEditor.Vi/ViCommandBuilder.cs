@@ -95,6 +95,7 @@ namespace Mono.TextEditor.Vi
 			{ '~', ViActions.ToggleCase },
 			{ 'm', ViBuilders.Mark },
 			{ 'M', ViEditorActions.CenterCaret },
+			{ 'u', MiscActions.Undo },
 			{ new ViKey (ModifierType.ControlMask, Key.Up),       ScrollActions.Up },
 			{ new ViKey (ModifierType.ControlMask, Key.KP_Up),    ScrollActions.Up },
 			{ new ViKey (ModifierType.ControlMask, Key.Down),     ScrollActions.Down },
@@ -146,6 +147,21 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ControlMask, 'u'),  CaretMoveActions.PageUp },
 			{ new ViKey (ModifierType.ControlMask, 'd'),  CaretMoveActions.PageDown },
 		}.Builder;
+		
+		static ViBuilder insertActionBuilder = new ViCommandMap () {
+			{ Key.Tab,       MiscActions.InsertTab },
+			{ Key.Return,    MiscActions.InsertNewLine },
+			{ Key.KP_Enter,  MiscActions.InsertNewLine },
+			{ Key.BackSpace, MiscActions.Backspace },
+			{ Key.Delete,    MiscActions.Delete },
+			{ Key.KP_Delete, MiscActions.Delete },
+			{ Key.Insert,    MiscActions.SwitchCaretMode },
+			{ new ViKey (ModifierType.ControlMask, Key.BackSpace), DeleteActions.PreviousWord },
+			{ new ViKey (ModifierType.ControlMask, Key.Delete),    DeleteActions.NextWord },
+			{ new ViKey (ModifierType.ControlMask, Key.KP_Delete), DeleteActions.NextWord },
+			{ new ViKey (ModifierType.ShiftMask,   Key.Tab),       DeleteActions.RemoveTab },
+			{ new ViKey (ModifierType.BackSpace,   Key.Tab),       DeleteActions.Backspace },
+		};
 	}
 	
 	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,ViBuilder>>

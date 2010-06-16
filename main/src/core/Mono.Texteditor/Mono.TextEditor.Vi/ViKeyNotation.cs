@@ -53,7 +53,7 @@ namespace Mono.TextEditor.Vi
 		{
 		}
 		
-		public ViKey (ModifierType modifiers, char ch, Gdk.Key key): this ()
+		ViKey (ModifierType modifiers, char ch, Gdk.Key key): this ()
 		{
 			this.modifiers = modifiers & KnownModifiers;
 			this.ch = ch;
@@ -344,14 +344,14 @@ namespace Mono.TextEditor.Vi
 		}
 		
 		static Dictionary<uint, ViKey> controlMappings = new Dictionary<uint, ViKey> () {
-			{ '@', new ViKey (ModifierType.None, '\0', (Gdk.Key)0)        },
-			{ 'h', new ViKey (ModifierType.None, '\0', Gdk.Key.BackSpace) },
-			{ 'i', new ViKey (ModifierType.None, '\t', Gdk.Key.Tab)       },
-			{ 'j', new ViKey (ModifierType.None, '\n', Gdk.Key.Linefeed)  },
-			{ 'l', new ViKey (ModifierType.None, '\f', (Gdk.Key)0)        },
-			{ 'm', new ViKey (ModifierType.None, '\r', Gdk.Key.Return)    },
-			{ '[', new ViKey (ModifierType.None, '\0', Gdk.Key.Escape)    },
-			{ 'p', new ViKey (ModifierType.None, '\0', Gdk.Key.Up)        },
+			{ '@', '\0'          },
+			{ 'h', Key.BackSpace },
+			{ 'i', '\t'          },
+			{ 'j', '\n'          },
+			{ 'l', '\f'          },
+			{ 'm', '\r'          },
+			{ '[', Key.Escape    },
+			{ 'p', Key.Up        },
 		};
 
 		public static IList<ViKey> Parse (string command)
@@ -366,7 +366,7 @@ namespace Mono.TextEditor.Vi
 					list.Add (ParseKeySequence (seq));
 					i = j;
 				} else {
-					list.Add (new ViKey (ModifierType.None, command[i], (Gdk.Key)0));
+					list.Add (command[i]);
 				}
 			}
 			return list;
@@ -401,7 +401,7 @@ namespace Mono.TextEditor.Vi
 			if (k == (Gdk.Key)0)
 				c = GetChar (seq);
 			
-			var key = new ViKey (modifiers, c, k);
+			var key = c == '\0'? new ViKey (modifiers, k) : new ViKey (modifiers, c);
 			if (!IsValid (key))
 				throw new FormatException ("Invalid key sequence '" + seq + "'");
 			return key;
