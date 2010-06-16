@@ -38,13 +38,19 @@ namespace Mono.TextEditor.Tests
 		{
 			Assert.IsTrue (SyntaxModeService.ValidateAllSyntaxModes ());
 		}
-		static void TestOutput (string input,
-		                         string expectedMarkup)
+		
+		static void TestOutput (string input, string expectedMarkup)
+		{
+			TestOutput (input, expectedMarkup, "text/x-csharp");
+		}
+		
+		static void TestOutput (string input, string expectedMarkup, string syntaxMode)
 		{
 			Document doc = new Document ();
-			doc.SyntaxMode = SyntaxModeService.GetSyntaxMode ("text/x-csharp");
+			doc.SyntaxMode = SyntaxModeService.GetSyntaxMode (syntaxMode);
 			doc.Text = input;
 			string markup = doc.SyntaxMode.GetMarkup (doc, TextEditorOptions.DefaultOptions, SyntaxModeService.GetColorStyle (null, "TangoLight"), 0, doc.Length, false);
+			Console.WriteLine (markup);
 			Assert.AreEqual (expectedMarkup, markup, "expected:" + expectedMarkup + Environment.NewLine + "But got:" + markup);
 		}
 		 
@@ -82,5 +88,18 @@ namespace Mono.TextEditor.Tests
 			TestOutput ("123.45678e-09d",
 		                "<span foreground=\"#75507B\">123.45678e-09d</span>");
 		}
+		
+		[Test]
+		public void TestCDATASection ()
+		{
+			TestOutput ("<![CDATA[ test ]]>",
+			            "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>",
+			            "application/xml");
+			
+			TestOutput ("<![CDATA[ test]]>",
+			            "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>",
+			            "application/xml");
+		}
+		
 	}
 }
