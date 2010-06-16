@@ -1,5 +1,16 @@
 2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Use mapped modifier values
+	  for the IM commit. Modifiers and keys received by editor
+	  extensions and editor modes are now always post keyboard
+	  mapping.
+
+	* Mono.TextEditor/SimpleEditMode.cs: Moved
+	  modifier-permits-input check here. Much simpler now that
+	  modifiers are consumed.
+
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor/Platform.cs: Track MapRawKeys from Ide -
 	  don't restore consumed modifiers, since that breaks vi
 	  stuff.

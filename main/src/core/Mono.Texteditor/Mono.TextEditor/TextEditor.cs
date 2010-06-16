@@ -65,6 +65,8 @@ namespace Mono.TextEditor
 		bool isDisposed = false;
 		IMMulticontext imContext;
 		Gdk.EventKey lastIMEvent;
+		Gdk.Key lastIMEventMappedKey;
+		Gdk.ModifierType lastIMEventMappedModifier;
 		bool imContextActive;
 		
 		string currentStyleName;
@@ -446,7 +448,7 @@ namespace Mono.TextEditor
 		{
 			try {
 				if (IsRealized && IsFocus) {
-					uint lastChar = Keyval.ToUnicode (lastIMEvent.KeyValue);
+					uint lastChar = Keyval.ToUnicode ((uint)lastIMEventMappedKey);
 					
 					//this, if anywhere, is where we should handle UCS4 conversions
 					for (int i = 0; i < ca.Str.Length; i++) {
@@ -458,9 +460,9 @@ namespace Mono.TextEditor
 							utf32Char = (int) ca.Str[i];
 						}
 						
-						//include the key & state if possible, i.e. if the char matches the unprocessed one
+						//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
 						if (lastChar == utf32Char)
-							OnIMProcessedKeyPressEvent (lastIMEvent.Key, lastChar, lastIMEvent.State);
+							OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastChar, lastIMEventMappedModifier);
 						else
 							OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 					}
@@ -752,28 +754,28 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		/// <summary>Handles key input after key mapping and input methods.</summary>
+		/// <param name="key">The mapped keycode.</param>
+		/// <param name="unicodeChar">A UCS4 character. If this is nonzero, it overrides the keycode.</param>
+		/// <param name="modifier">Keyboard modifier, excluding any consumed by key mapping or IM.</param>
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeChar, ModifierType modifier)
 		{
-			ModifierType filteredModifiers = modifier & (ModifierType.ShiftMask | ModifierType.Mod1Mask | ModifierType.ControlMask | ModifierType.MetaMask | ModifierType.SuperMask);
-			
-			ModifierType modifiersThatPermitChars = ModifierType.ShiftMask;
-			if (Platform.IsMac)
-				modifiersThatPermitChars |= ModifierType.Mod1Mask;
-			
-			if ((filteredModifiers & ~modifiersThatPermitChars) != 0)
-				unicodeChar = 0;
-			
+			ModifierType filteredModifiers = modifier & (ModifierType.ShiftMask | ModifierType.Mod1Mask
+				 | ModifierType.ControlMask | ModifierType.MetaMask | ModifierType.SuperMask);
 			CurrentMode.InternalHandleKeypress (this, textEditorData, key, unicodeChar, filteredModifiers);
 			RequestResetCaretBlink ();
 		}
 		
-		bool IMFilterKeyPress (Gdk.EventKey evt)
+		bool IMFilterKeyPress (Gdk.EventKey evt, Gdk.Key mappedKey, Gdk.ModifierType mappedModifiers)
 		{
 			if (lastIMEvent == evt)
 				return false;
 			
-			if (evt.Type == EventType.KeyPress)
+			if (evt.Type == EventType.KeyPress) {
 				lastIMEvent = evt;
+				lastIMEventMappedKey = mappedKey;
+				lastIMEventMappedModifier = mappedModifiers;
+			}
 			
 			if (imContext.FilterKeypress (evt)) {
 				imContextActive = true;
@@ -813,7 +815,7 @@ namespace Mono.TextEditor
 				SimulateKeyPress (key, unicodeChar, mod);
 				return true;
 			}
-			bool filter = IMFilterKeyPress (evt);
+			bool filter = IMFilterKeyPress (evt, key, mod);
 			if (!filter) {
 				return OnIMProcessedKeyPressEvent (key, unicodeChar, mod);
 			}
@@ -831,7 +833,7 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
 		{
-			if (IMFilterKeyPress (evnt))
+			if (IMFilterKeyPress (evnt, 0, ModifierType.None))
 				imContextActive = true;
 			return true;
 		}
