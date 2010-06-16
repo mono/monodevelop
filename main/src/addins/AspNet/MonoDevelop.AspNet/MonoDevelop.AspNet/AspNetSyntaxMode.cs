@@ -71,7 +71,8 @@ namespace MonoDevelop.AspNet
 					Rule = "mode:" + language;
 					Begin = new Regex ("<%");
 					End = new Regex ("<%");
-					Color = "";
+					Color = "text";
+					TagColor = "text.markup.tag";
 				}
 			}
 			
@@ -94,6 +95,7 @@ namespace MonoDevelop.AspNet
 					return "text/x-csharp";
 				case "VB":
 					return "text/x-vb";
+				case "javascript":
 				case "JScript.NET":
 					return "application/javascript";
 				}
@@ -112,50 +114,73 @@ namespace MonoDevelop.AspNet
 			}
 			
 			
+			public string GetAttributeValue (ref int j)
+			{
+				bool inString = false;
+				StringBuilder langBuilder = new StringBuilder ();
+				while (j < doc.Length) {
+					char ch = doc.GetCharAt (j);
+					if (ch == '"' || ch == '\'') {
+						if (inString)
+							break;
+						inString = true;
+						j++;
+						continue;
+					}
+					if (inString)
+						langBuilder.Append (ch);
+					j++;
+				}
+				return langBuilder.ToString ();
+			}
+
+			
 			protected override void ScanSpan (ref int i)
 			{
-				if (i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
+				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) &&  i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
 					var span = new CodeExpressionSpan (GetDefaultMime ());
 					spanStack.Push (span);
 					ruleStack.Push (GetRule (span));
-					OnFoundSpanBegin (span, i, 0);
+					OnFoundSpanBegin (span, i, doc.GetCharAt (i + 2) == '=' ? 3 : 2);
 					return;
 				}
 				
-				if (i + 7 < doc.Length && doc.GetTextAt (i, 7) == "<script") {
-					StringBuilder langBuilder = new StringBuilder ();
-					int j = i + 7;
-					while (j < doc.Length && doc.GetCharAt (j) != '>') {
-						if (j + 8 < doc.Length && doc.GetTextAt (j, 8) == "language") {
-							j += 8;
-							bool inString = false;
-							while (j < doc.Length) {
-								char ch = doc.GetCharAt (j);
-								if (ch == '"' || ch == '\'') {
-									if (inString)
-										break;
-									inString = true;
-									j++;
-									continue;
-								}
-								if (inString)
-									langBuilder.Append (ch);
-								j++;
-							}
-							break;
-						}
-						j++;
+				if (i > 0 && doc.GetCharAt (i - 1) == '>') {
+					int k = i - 1;
+					while (k > 0 && doc.GetCharAt (k) != '<') {
+						k--;
 					}
-					
-					string mime = langBuilder.Length != 0 ? GetMimeForLanguage (langBuilder.ToString ()) : GetDefaultMime ();
-					
-					if (mime != null) {
-						CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
-						spanStack.Push (span);
-						ruleStack.Push (GetRule (span));
-						OnFoundSpanBegin (span, i,  j - i + 1);
-						i = j + 1;
-						return;
+					if (k + 7 < doc.Length && doc.GetTextAt (k, 7) == "<script") {
+						int j = k + 7;
+						string mime = "application/javascript";
+						while (j < doc.Length && doc.GetCharAt (j) != '>') {
+							if (j + 8 < doc.Length && doc.GetTextAt (j, 8) == "language") {
+								j += 8;
+								mime = GetMimeForLanguage (GetAttributeValue (ref j));
+								break;
+							}
+							if (j + 5 < doc.Length && doc.GetTextAt (j, 5) == "runat") {
+								j += 5;
+								GetAttributeValue (ref j);
+								mime = GetDefaultMime ();
+								break;
+							}
+							if (j + 4 < doc.Length && doc.GetTextAt (j, 4) == "type") {
+								j += 4;
+								mime = GetAttributeValue (ref j);
+								break;
+							}
+							
+							j++;
+						}
+						
+						if (mime != null) {
+							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
+							spanStack.Push (span);
+							ruleStack.Push (GetRule (span));
+							OnFoundSpanBegin (span, i, 0);
+							return;
+						}
 					}
 				}
 				
@@ -188,7 +213,7 @@ namespace MonoDevelop.AspNet
 							ruleStack.Pop ();
 					}
 					cur = spanStack.Peek ();
-					OnFoundSpanEnd (cur, i, 0);
+					OnFoundSpanEnd (cur, i, 2);
 					spanStack.Pop ();
 					if (ruleStack.Count > 1)
 						ruleStack.Pop ();
