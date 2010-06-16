@@ -1,5 +1,10 @@
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Fix build, add more
+	  actions.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Mono.TextEditor.Vi/ViKeyNotation.cs: Remove full ctor that
 	  could create invalid keys.
 

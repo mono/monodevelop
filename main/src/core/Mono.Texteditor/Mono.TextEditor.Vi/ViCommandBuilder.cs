@@ -94,7 +94,9 @@ namespace Mono.TextEditor.Vi
 			{ 'r', ViBuilders.ReplaceChar },
 			{ '~', ViActions.ToggleCase },
 			{ 'm', ViBuilders.Mark },
-			{ 'M', ViEditorActions.CenterCaret },
+			{ 'M', ViEditorActions.CaretToScreenCenter },
+			{ 'H', ViEditorActions.CaretToScreenTop },
+			{ 'L', ViEditorActions.CaretToScreenBottom },
 			{ 'u', MiscActions.Undo },
 			{ new ViKey (ModifierType.ControlMask, Key.Up),       ScrollActions.Up },
 			{ new ViKey (ModifierType.ControlMask, Key.KP_Up),    ScrollActions.Up },
@@ -152,16 +154,16 @@ namespace Mono.TextEditor.Vi
 			{ Key.Tab,       MiscActions.InsertTab },
 			{ Key.Return,    MiscActions.InsertNewLine },
 			{ Key.KP_Enter,  MiscActions.InsertNewLine },
-			{ Key.BackSpace, MiscActions.Backspace },
-			{ Key.Delete,    MiscActions.Delete },
-			{ Key.KP_Delete, MiscActions.Delete },
+			{ Key.BackSpace, DeleteActions.Backspace },
+			{ Key.Delete,    DeleteActions.Delete },
+			{ Key.KP_Delete, DeleteActions.Delete },
 			{ Key.Insert,    MiscActions.SwitchCaretMode },
 			{ new ViKey (ModifierType.ControlMask, Key.BackSpace), DeleteActions.PreviousWord },
 			{ new ViKey (ModifierType.ControlMask, Key.Delete),    DeleteActions.NextWord },
 			{ new ViKey (ModifierType.ControlMask, Key.KP_Delete), DeleteActions.NextWord },
-			{ new ViKey (ModifierType.ShiftMask,   Key.Tab),       DeleteActions.RemoveTab },
-			{ new ViKey (ModifierType.BackSpace,   Key.Tab),       DeleteActions.Backspace },
-		};
+			{ new ViKey (ModifierType.ShiftMask,   Key.Tab),       MiscActions.RemoveTab },
+			{ new ViKey (ModifierType.ShiftMask,   Key.BackSpace),       DeleteActions.Backspace },
+		}.Builder;
 	}
 	
 	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,ViBuilder>>
@@ -341,12 +343,25 @@ namespace Mono.TextEditor.Vi
 	
 	class ViEditorActions
 	{
-		public static void CenterCaret (ViEditor ed)
+		public static void CaretToScreenCenter (ViEditor ed)
 		{
 			var line = ed.Editor.VisualToDocumentLocation (0, ed.Editor.Allocation.Height/2).Line;
 			if (line < 0)
 				line = ed.Data.Document.LineCount - 1;
 			ed.Data.Caret.Line = line;
+		}
+		
+		public static void CaretToScreenBottom (ViEditor ed)
+		{
+			int line = ed.Editor.VisualToDocumentLocation (0, ed.Editor.Allocation.Height - ed.Editor.LineHeight * 2 - 2).Line;
+			if (line < 0)
+				line = ed.Data.Document.LineCount - 1;
+			ed.Data.Caret.Line = line;
+		}
+		
+		public static void CaretToScreenTop (ViEditor ed)
+		{
+			ed.Data.Caret.Line = System.Math.Max (0, ed.Editor.VisualToDocumentLocation (0, ed.Editor.LineHeight - 1).Line);
 		}
 	}
 }
