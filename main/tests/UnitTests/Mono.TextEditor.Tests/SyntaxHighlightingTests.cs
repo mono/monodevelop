@@ -44,13 +44,17 @@ namespace Mono.TextEditor.Tests
 			TestOutput (input, expectedMarkup, "text/x-csharp");
 		}
 		
-		static void TestOutput (string input, string expectedMarkup, string syntaxMode)
+		public static string GetMarkup (string input, string syntaxMode)
 		{
 			Document doc = new Document ();
 			doc.SyntaxMode = SyntaxModeService.GetSyntaxMode (syntaxMode);
 			doc.Text = input;
-			string markup = doc.SyntaxMode.GetMarkup (doc, TextEditorOptions.DefaultOptions, SyntaxModeService.GetColorStyle (null, "TangoLight"), 0, doc.Length, false);
-			Console.WriteLine (markup);
+			return doc.SyntaxMode.GetMarkup (doc, TextEditorOptions.DefaultOptions, SyntaxModeService.GetColorStyle (null, "TangoLight"), 0, doc.Length, false);
+		}
+
+		static void TestOutput (string input, string expectedMarkup, string syntaxMode)
+		{
+			string markup = GetMarkup (input, syntaxMode);
 			Assert.AreEqual (expectedMarkup, markup, "expected:" + expectedMarkup + Environment.NewLine + "But got:" + markup);
 		}
 		 
@@ -92,9 +96,11 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestCDATASection ()
 		{
-			TestOutput ("<![CDATA[ test ]]>",
-			            "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>",
-			            "application/xml");
+			string markup = GetMarkup ("<![CDATA[ test ]]>", "application/xml");
+			if (makup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>" && 
+			    markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test </span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>") {
+				Assert.Fail ("CDATA markup invalid:" + markup);
+			}
 			
 			TestOutput ("<![CDATA[ test]]>",
 			            "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>",

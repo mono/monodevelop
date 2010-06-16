@@ -1,5 +1,10 @@
 2010-06-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: Try to fix
+	  unit test for the build bot.
+
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: Added unit
 	  test for CDATA highlighting.
 
