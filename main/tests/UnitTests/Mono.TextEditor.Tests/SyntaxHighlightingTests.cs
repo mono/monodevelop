@@ -97,7 +97,7 @@ namespace Mono.TextEditor.Tests
 		public void TestCDATASection ()
 		{
 			string markup = GetMarkup ("<![CDATA[ test ]]>", "application/xml");
-			if (makup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>" && 
+			if (markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>" && 
 			    markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4E9A06\"> test </span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>") {
 				Assert.Fail ("CDATA markup invalid:" + markup);
 			}
