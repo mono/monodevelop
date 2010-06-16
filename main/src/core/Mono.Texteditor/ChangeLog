@@ -1,3 +1,9 @@
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Corrected a
+	  highlighting bug (visible in the CTAGS section in xml
+	  highlighting).
+
 2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Remove debug code,
