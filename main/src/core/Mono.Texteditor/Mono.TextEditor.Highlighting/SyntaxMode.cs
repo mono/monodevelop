@@ -530,7 +530,13 @@ namespace Mono.TextEditor.Highlighting
 			public void FoundSpanBegin (Span span, int offset, int length)
 			{
 				curChunk.Length = offset - curChunk.Offset;
-				curChunk.Style  = GetStyle (curChunk) ?? GetSpanStyle ();
+				curChunk.Style  = GetStyle (curChunk);
+				if (string.IsNullOrEmpty (curChunk.Style)) {
+					Span tmpSpan = spanParser.SpanStack.Count > 0 ? spanParser.SpanStack.Pop () : null;
+					curChunk.Style = GetSpanStyle ();
+					if (tmpSpan != null)
+						spanParser.SpanStack.Push (tmpSpan);
+				}
 				AddChunk (ref curChunk, 0, curChunk.Style);
 				
 				curChunk.Offset = offset;

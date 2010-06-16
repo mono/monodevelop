@@ -1,5 +1,10 @@
 2010-06-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed
+	  highlighting bug.
+
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
 	* SyntaxModes/JavascriptSyntaxMode.xml: Added mime type for
 	  java script.
 
