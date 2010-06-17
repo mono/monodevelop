@@ -1,5 +1,9 @@
 2010-06-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am: Adding DocFood to the solution/build system.
+
+2010-06-17  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.DocFood: Checked in doc food addin.
 
 2010-02-23  Michael Hutchinson  <mhutchinson@novell.com>
