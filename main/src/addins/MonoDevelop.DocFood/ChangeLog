@@ -1,5 +1,10 @@
 2010-06-17  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.DocFood/DocGenerator.cs: Assume that method
+	  sentences start with a verb.
+
+2010-06-17  Mike Krüger  <mkrueger@novell.com>
+
 	* gtk-gui:
 	* Main.cs:
 	* ChangeLog:

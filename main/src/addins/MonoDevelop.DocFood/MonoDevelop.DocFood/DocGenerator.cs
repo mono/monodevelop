@@ -499,7 +499,7 @@ namespace MonoDevelop.DocFood
 				words.Insert (ofTheIndex, word);
 			} 
 			
-			if (words.Count > 1) {
+			if (obj is IMethod && words.Count > 1) {
 				if (words[0].EndsWith("s")) {
 					words[0] += "es";
 				} else if (words[0].EndsWith("y")) {
