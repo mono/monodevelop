@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Mono.TextEditor.PopupWindow;
 
 namespace Mono.TextEditor
 {
@@ -103,6 +104,11 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		public ModeHelpWindow HelpWindow {
+			get;
+			set;
+		}
+		
 		public DocumentLocation CurrentInsertionPoint {
 			get {
 				return insertionPoints[CurIndex].Location;
@@ -163,10 +169,36 @@ namespace Mono.TextEditor
 			
 			editor.ScrollTo (insertionPoints[CurIndex].Location);
 			editor.QueueDraw ();
+			
+			if (HelpWindow != null) {
+				MoveHelpWindow (null, null);
+				editor.SizeAllocated += MoveHelpWindow;
+				HelpWindow.Show ();
+			}
+		}
+
+		void MoveHelpWindow (object o, Gtk.SizeAllocatedArgs args)
+		{
+			if (editor == null || HelpWindow == null)
+				return;
+			int ox, oy;
+			editor.GdkWindow.GetOrigin (out ox, out oy);
+			
+			Gdk.Rectangle geometry = editor.Screen.GetMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			var req = HelpWindow.SizeRequest ();
+			
+			int x = System.Math.Min (ox + editor.Allocation.Width - req.Width / 2, geometry.Width - req.Width);
+			int y = System.Math.Min (oy + editor.Allocation.Height - req.Height / 2, geometry.Height - req.Height);
+			HelpWindow.Move (x, y);
 		}
 		
 		protected virtual void OnExited (InsertionCursorEventArgs e)
 		{
+			if (HelpWindow != null) {
+				editor.SizeAllocated -= MoveHelpWindow;
+				HelpWindow.Destroy ();
+				HelpWindow = null;
+			}
 			editor.Caret.IsVisible = true;
 			editor.TextViewMargin.RemoveDrawer (drawer);
 			editor.CurrentMode = oldMode;

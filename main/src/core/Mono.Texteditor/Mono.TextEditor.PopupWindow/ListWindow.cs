@@ -52,7 +52,7 @@ namespace Mono.TextEditor.PopupWindow
 		StringBuilder word;
 		int curPos;
 		
-		public ListWindow (): base (Gtk.WindowType.Popup)
+		public ListWindow () : base (Gtk.WindowType.Popup)
 		{
 			vbox = new VBox ();
 			
@@ -363,7 +363,7 @@ namespace Mono.TextEditor.PopupWindow
 			this.GetSize (out winWidth, out winHeight);
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth-1, winHeight-1);
 			return false;
-		}		
+		}
 		
 		public int TextOffset {
 			get { return list.TextOffset + (int) this.BorderWidth; }

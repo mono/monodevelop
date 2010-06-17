@@ -39,6 +39,7 @@ FILES =  \
 	Mono.TextEditor.PopupWindow/IListDataProvider.cs \
 	Mono.TextEditor.PopupWindow/ListWidget.cs \
 	Mono.TextEditor.PopupWindow/ListWindow.cs \
+	Mono.TextEditor.PopupWindow/ModeHelpWindow.cs \
 	Mono.TextEditor.PopupWindow/TooltipWindow.cs \
 	Mono.TextEditor.Theatrics/Actor.cs \
 	Mono.TextEditor.Theatrics/AnimatedBox.cs \

@@ -136,6 +136,11 @@ namespace Mono.TextEditor
 
 		public static void DrawRoundRectangle (Cairo.Context cr, bool upperRound, bool lowerRound, double x, double y, double r, double w, double h)
 		{
+			DrawRoundRectangle (cr, upperRound, upperRound, lowerRound, lowerRound, x, y, r, w, h);
+		}
+		
+		public static void DrawRoundRectangle (Cairo.Context cr, bool topLeftRound, bool topRightRound, bool bottomLeftRound, bool bottomRightRound,  double x, double y, double r, double w, double h)
+		{
 			//  UA****BQ
 			//  H      C
 			//  *      *
@@ -143,18 +148,24 @@ namespace Mono.TextEditor
 			//  TF****ES
 			
 			cr.NewPath ();
-			if (upperRound) {
+			
+			if (topLeftRound) {
 				cr.MoveTo (x + r, y);                 // Move to A
+			} else {
+				cr.MoveTo (x, y);             // Move to U
+			}
+			
+			if (topRightRound) {
 				cr.LineTo (x + w - r, y);             // Straight line to B
 				
 				cr.CurveTo (x + w, y, 
 				            x + w, y,
 				            x + w, y + r); // Curve to C, Control points are both at Q
 			} else {
-				cr.MoveTo (x, y);             // Move to U
 				cr.LineTo (x + w, y);         // Straight line to Q
 			}
-			if (lowerRound) {
+			
+			if (bottomRightRound) {
 				cr.LineTo (x + w, y + h - r);                              // Move to D
 
 				cr.CurveTo (x + w, y + h, 
@@ -164,7 +175,7 @@ namespace Mono.TextEditor
 				cr.LineTo (x + w, y + h); // Move to S
 			}
 			
-			if (lowerRound) {
+			if (bottomLeftRound) {
 				cr.LineTo (x + r, y + h);                      // Line to F
 				cr.CurveTo (x, y + h, 
 				            x, y + h , 
@@ -173,7 +184,7 @@ namespace Mono.TextEditor
 				cr.LineTo (x, y + h); // Line to T
 			}
 			
-			if (upperRound) {
+			if (topLeftRound) {
 				cr.LineTo (x, y + r);              // Line to H
 				cr.CurveTo (x, y, 
 				            x , y, 

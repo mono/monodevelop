@@ -1,3 +1,13 @@
+2010-06-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.PopupWindow/ListWindow.cs:
+	* Mono.TextEditor/InsertionCursorEditMode.cs:
+	* Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Added
+	  help window for insertion mode.
+
 2010-06-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed
