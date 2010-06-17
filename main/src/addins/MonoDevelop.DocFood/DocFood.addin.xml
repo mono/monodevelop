@@ -1,0 +1,52 @@
+<Addin id          = "DocFood"
+       namespace   = "MonoDevelop"
+       name        = "DocFood"
+       author      = "Mike Krüger"
+       copyright   = "MIT X11"
+       url         = "http://www.monodevelop.com/"
+       description = "DocFood is an automated comment generator"
+       category    = "IDE extensions"
+       version     = "2.4">
+
+	<Runtime>
+		<Import assembly="MonoDevelop.DocFood.dll" />
+	</Runtime>
+
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+		<Addin id="Refactoring" version="2.4"/>
+	</Dependencies>
+	
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
+<!--		<Command id = "MonoDevelop.DocFood.Commands.DocumentThis"
+		         defaultHandler = "MonoDevelop.DocFood.DocumentThisHandler"
+		         _label = "Document this" /> -->
+		<Command id = "MonoDevelop.DocFood.Commands.DocumentBuffer"
+		         defaultHandler = "MonoDevelop.DocFood.DocumentBufferHandler"
+		         _label = "Document buffer" />
+	</Extension>
+	
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions = ".cs" class = "MonoDevelop.DocFood.DocFoodTextEditorExtension" insertbefore = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
+	</Extension>
+
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
+<!--		<CommandItem id="MonoDevelop.DocFood.Commands.DocumentThis" /> -->
+		<CommandItem id="MonoDevelop.DocFood.Commands.DocumentBuffer" insertafter = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"/>
+	</Extension>
+	<!--
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
+		<Section id = "DocFood" _label = "DocFood">
+			<Section id = "Options" _label = "Options" class = "MonoDevelop.DocFood.Options.OptionsPanelPanel" />
+			<Section id = "Expansions" _label = "Expansions" class = "MonoDevelop.DocFood.Options.ExpansionsPanel" />
+			<Section id = "Acronyms" _label = "Acronyms" class = "MonoDevelop.DocFood.Options.AcronymsPanel" />
+			<Section id = "NoTheReordering" _label = '"No the" Words' class = "MonoDevelop.DocFood.Options.NoTheReordering" />
+			<Section id = "OfTheReordering" _label = '"Of the" Reordering' class = "MonoDevelop.DocFood.Options.OfTheReordering" />
+			<Section id = "Rules" _label = "Rules" class = "MonoDevelop.DocFood.Options.RulesPanel" />
+		</Section>
+	</Extension> -->
+</Addin>

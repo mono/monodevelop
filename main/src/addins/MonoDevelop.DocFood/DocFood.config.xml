@@ -1,0 +1,507 @@
+<DocFood>
+	<WordLists>
+		<List name="ofThe">
+			<Word>color</Word>
+			<Word>content</Word>
+			<Word>duration</Word>
+			<Word>height</Word>
+			<Word>index</Word>
+			<Word>kind</Word>
+			<Word>length</Word>
+			<Word>name</Word>
+			<Word>size</Word>
+			<Word>state</Word>
+			<Word>type</Word>
+			<Word>width</Word>
+		</List>
+	
+		<List name="prefixThe">
+			<Word>actual</Word>
+			<Word>average</Word>
+			<Word>calculated</Word>
+			<Word>default</Word>
+			<Word>display</Word>
+			<Word>empty</Word>
+			<Word>end</Word>
+			<Word>expected</Word>
+			<Word>final</Word>
+			<Word>first</Word>
+			<Word>full</Word>
+			<Word>initial</Word>
+			<Word>last</Word>
+			<Word>long</Word>
+			<Word>maximum</Word>
+			<Word>minimum</Word>
+			<Word>new</Word>
+			<Word>old</Word>
+			<Word>optimum</Word>
+			<Word>partial</Word>
+			<Word>processed</Word>
+			<Word>random</Word>
+			<Word>short</Word>
+			<Word>specified</Word>
+			<Word>start</Word>
+			<Word>total</Word>
+		</List>
+		
+		<List name="noThe">
+			<Word>a</Word>
+			<Word>all</Word>
+			<Word>an</Word>
+			<Word>another</Word>
+			<Word>any</Word>
+			<Word>anything</Word>
+			<Word>as</Word>
+			<Word>at</Word>
+			<Word>down</Word>
+			<Word>for</Word>
+			<Word>from</Word>
+			<Word>her</Word>
+			<Word>his</Word>
+			<Word>if</Word>
+			<Word>it</Word>
+			<Word>its</Word>
+			<Word>me</Word>
+			<Word>my</Word>
+			<Word>our</Word>
+			<Word>some</Word>
+			<Word>something</Word>
+			<Word>the</Word>
+			<Word>their</Word>
+			<Word>to</Word>
+			<Word>up</Word>
+			<Word>you</Word>
+			<Word>your</Word>
+		</List>
+		
+		<List name="acronyms">
+			<Word>ADO</Word>
+			<Word>ANSI</Word>
+			<Word>API</Word>
+			<Word>ARGB</Word>
+			<Word>ASCII</Word>
+			<Word>ASP</Word>
+			<Word>BLOB</Word>
+			<Word>BOID</Word>
+			<Word>CAB</Word>
+			<Word>CDO</Word>
+			<Word>CLSID</Word>
+			<Word>COM</Word>
+			<Word>DAO</Word>
+			<Word>DCOM</Word>
+			<Word>DES</Word>
+			<Word>DOM</Word>
+			<Word>DSA</Word>
+			<Word>DTE</Word>
+			<Word>EBCDIC</Word>
+			<Word>ECMA</Word>
+			<Word>EMF</Word>
+			<Word>EOF</Word>
+			<Word>ETP</Word>
+			<Word>EULA</Word>
+			<Word>FAQ</Word>
+			<Word>GDI</Word>
+			<Word>GIF</Word>
+			<Word>GUI</Word>
+			<Word>GUID</Word>
+			<Word>IDE</Word>
+			<Word>IDL</Word>
+			<Word>IIS</Word>
+			<Word>IME</Word>
+			<Word>ISAPI</Word>
+			<Word>JIT</Word>
+			<Word>JPEG</Word>
+			<Word>LDAP</Word>
+			<Word>MDI</Word>
+			<Word>MIME</Word>
+			<Word>MPEG</Word>
+			<Word>MRU</Word>
+			<Word>MSDE</Word>
+			<Word>MSIL</Word>
+			<Word>MTA</Word>
+			<Word>MUI</Word>
+			<Word>ODBC</Word>
+			<Word>OLE</Word>
+			<Word>POP3</Word>
+			<Word>RAD</Word>
+			<Word>RESX</Word>
+			<Word>RSA</Word>
+			<Word>SAX</Word>
+			<Word>SDI</Word>
+			<Word>SOAP</Word>
+			<Word>UDP</Word>
+			<Word>UI</Word>
+			<Word>URI</Word>
+			<Word>URL</Word>
+			<Word>UTC</Word>
+			<Word>UTF16</Word>
+			<Word>UTF8</Word>
+			<Word>UUID</Word>
+			<Word>VSA</Word>
+			<Word>VSIP</Word>
+			<Word>WMI</Word>
+		</List>
+	</WordLists>
+	
+	<WordExpansion>
+		<Word from="addr" to="address"/>
+		<Word from="alt" to="alternate"/>
+		<Word from="anim" to="animation"/>
+		<Word from="arg" to="argument"/>
+		<Word from="args" to="arguments"/>
+		<Word from="bg" to="background"/>
+		<Word from="buf" to="buffer"/>
+		<Word from="btn" to="button"/>
+		<Word from="calc" to="calculate"/>
+		<Word from="cmp" to="compare"/>
+		<Word from="cnt" to="count"/>
+		<Word from="coord" to="coordinate"/>
+		<Word from="ctx" to="context"/>
+		<Word from="cur" to="current"/>
+		<Word from="dest" to="destination"/>
+		<Word from="doc" to="document"/>
+		<Word from="docs" to="documents"/>
+		<Word from="elem" to="element"/>
+		<Word from="err" to="error"/>
+		<Word from="grp" to="group"/>
+		<Word from="id" to="identifier"/>
+		<Word from="ids" to="identifiers"/>
+		<Word from="idx" to="index"/>
+		<Word from="img" to="image"/>
+		<Word from="len" to="length"/>
+		<Word from="loc" to="location"/>
+		<Word from="mid" to="middle"/>
+		<Word from="min" to="minimum"/>
+		<Word from="msg" to="message"/>
+		<Word from="num" to="number"/>
+		<Word from="obj" to="object"/>
+		<Word from="objs" to="objects"/>
+		<Word from="orig" to="original"/>
+		<Word from="param" to="parameter"/>
+		<Word from="params" to="parameters"/>
+		<Word from="pkg" to="package"/>
+		<Word from="pos" to="position"/>
+		<Word from="pref" to="preference"/>
+		<Word from="prev" to="previous"/>
+		<Word from="prop" to="property"/>
+		<Word from="props" to="properties"/>
+		<Word from="pt" to="point"/>
+		<Word from="ref" to="reference"/>
+		<Word from="refs" to="references"/>
+		<Word from="rnd" to="random"/>
+		<Word from="src" to="source"/>
+		<Word from="stmt" to="statement"/>
+		<Word from="str" to="string"/>
+		<Word from="sz" to="size"/>
+		<Word from="trunc" to="truncate"/>
+		<Word from="txt" to="text"/>
+		<Word from="ui" to="user interface"/>
+		<Word from="val" to="value"/>
+		<Word from="var" to="variable"/>
+		<Word from="vars" to="variables"/>
+		<Word from="win" to="window"/>
+		<Word from="wnd" to="window"/>
+	</WordExpansion>
+	
+	<Macros>
+		<Macro tag = "True" value = "&lt;c&gt;true&lt;/c&gt;" />
+		<Macro tag = "False" value = "&lt;c&gt;false&lt;/c&gt;" />
+		<Macro tag = "Null" value = '&lt;see langword="null"/&gt;' />
+	</Macros>
+	
+	<Rules>
+		<Switch>
+			<Case type="field">
+				<Switch>
+					<Case modifier="Const">
+						<Section name="summary">Constant ${AllWords}.</Section>
+					</Case>
+					<Default>
+						<Section name="summary">${Sentence}.</Section>
+					</Default>
+				</Switch>
+			</Case>
+			<Case type="constructor">
+				<Switch>
+					<Case modifier="Static">
+						<Section name="summary">Initializes the ${DeclaringType} ${DeclaringTypeKind}.</Section>
+					</Case>
+					<Default>
+						<Section name="summary">Initializes a new instance of the ${DeclaringType} ${DeclaringTypeKind}.</Section>
+					</Default>
+				</Switch>
+			</Case>
+			
+			<Case type="destructor">
+				<Section name="summary">Releases unmanaged resources and performs other cleanup operations before the ${DeclaringType} is reclaimed by garbage collection.</Section>
+			</Case>
+			
+			<Case type="event">
+				<Section name="summary">Occurs when ${AllWords}.</Section>
+			</Case>
+			
+			<Case type="indexer">
+				<Switch>
+					<Case parameter="0:index">
+						<Section name="summary">${AccessText} the ${DeclaringType} at the specified index.</Section>
+					</Case>
+					<Default>
+						<Section name="summary">${AccessText} the ${DeclaringType} with the specified ${ParameterSentence}.</Section>
+					</Default>
+				</Switch>
+			</Case>
+			
+			<Case type="method">
+				<Switch>
+					<Case startsWithWord="On">
+						<Section name="summary">Raises the ${AllWordsExceptFirst} event.</Section>
+					</Case>
+					
+					<Case startsWithWord="Is,Has,Can">
+						<Switch>
+							<Case wordCount="1">
+								<Section name="summary">Determines whether this instance ${AllWords}  ${ParameterSentence}.</Section>
+								<Section name="returns">${True} if this instance ${AllWords} ${ParameterSentence}; otherwise, ${False}.</Section>
+							</Case>
+							<Default>
+								<If paramCount="0">
+									<Section name="summary">Determines whether this instance ${AllWords}.</Section>
+									<Section name="returns">${True} if this instance ${AllWords}; otherwise, ${False}.</Section>
+								</If>
+								<IfNot paramCount="0">
+									<Section name="summary">Determines whether this instance ${AllWords} the specified ${ParameterSentence}.</Section>
+									<Section name="returns">${True} if this instance ${AllWords} the specified ${ParameterSentence}; otherwise, ${False}.</Section>
+								</IfNot>
+							</Default>
+						</Switch>
+					</Case>
+					
+					<Case name = "Dispose" paramCount="0">
+						<Section name="summary" override="true">Releases all resource used by the ${DeclaringType} object.</Section>
+						<Section name="remarks" override="true">Call ${Member} when you are finished using the ${DeclaringType}. The ${Member} method leaves the ${DeclaringType} in an unusable state. After calling ${Member}, you must release all references to the ${DeclaringType} so the garbage collector can reclaim the memory that the ${DeclaringType} was occupying.</Section>
+					</Case>
+					
+					<Case name = "Equals" paramCount="1" returns="System.Boolean">
+						<Section name="summary" override="true">Determines whether the specified ${Parameter0.Type} is equal to the current ${DeclaringType}.</Section>
+						<Section name="param0" override="true">The ${Parameter0.Type} to compare with the current ${DeclaringType}.</Section>
+						<Section name="returns" override="true">${True} if the specified ${Parameter0.Type} is equal to the current ${DeclaringType}; otherwise, ${False}.</Section>
+					</Case>
+					<Case name = "GetHashCode" paramCount="0" returns="System.Int32">
+						<Section name="summary" override="true">Serves as a hash function for a ${DeclaringType} object.</Section>
+						<Section name="returns" override="true">A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</Section>
+					</Case>
+					<Case name = "ToString" paramCount="0" returns="System.String">
+						<Section name="summary" override="true">Returns a ${ReturnType} that represents the current ${DeclaringType}.</Section>
+						<Section name="returns" override="true">A ${ReturnType} that represents the current ${DeclaringType}.</Section>
+					</Case>
+					
+					<Case name = "Main">
+						<Section name="summary">The entry point of the program, where the program control starts and ends.</Section>
+						<If paramCount="1">
+							<Section name="param0">The command-line arguments.</Section>
+						</If>
+						<If returns="System.Int32">
+							<Section name="returns">The exit code that is given to the operating system after the program ends.</Section>
+						</If>
+					</Case>
+					<Case wordCount="1">
+						<If paramCount="0">
+								<Section name="summary">${FirstAsVerb} this instance.</Section>
+						</If>
+						<IfNot paramCount="0">
+							<Section name="summary">${FirstAsVerb} the specified ${ParameterList}.</Section>
+						</IfNot>
+					</Case>
+					<Case endsWith="At,Between">
+						<Section name="summary">${Sentence} ${ParameterList}.</Section>
+						<IfNot returns="System.Void">
+							<Section name="returns">The ${ReturnType}.</Section>
+						</IfNot>
+					</Case>
+					<Default>
+						<If paramCount="0">
+							<Section name="summary">${Sentence}.</Section>
+						</If>
+						<IfNot paramCount="0">
+							<Section name="summary">${Sentence}.</Section>
+						</IfNot>
+						<IfNot returns="System.Void">
+							<Section name="returns">The ${AllWordsExceptFirst}.</Section>
+						</IfNot>
+					</Default>
+				</Switch>
+			</Case>
+			
+			<Case type="operator">
+				<Switch>
+					<Case name="+" paramCount="2">
+						<Section name="summary">Adds a ${Parameter0.Type} to a ${Parameter1.Type}, yielding a new ${ReturnType}.</Section>
+						<Section name="param0" override="true">The first ${Parameter0.Type} to add.</Section>
+						<Section name="param1" override="true">The second ${Parameter1.Type} to add.</Section>
+						<Section name="returns">The ${ReturnType} that is the sum of the values of ${Parameter0.Name} and ${Parameter1.Name}.</Section>
+					</Case>
+					<Case name="-" paramCount="2">
+						<Section name="summary">Subtracts a ${Parameter0.Type} from a ${Parameter1.Type}, yielding a new ${ReturnType}.</Section>
+						<Section name="param0" override="true">The ${Parameter0.Type} to subtract from (the minuend).</Section>
+						<Section name="param1" override="true">The ${Parameter1.Type} to subtract (the subtrahend).</Section>
+						<Section name="returns">The ${ReturnType} that is the ${Parameter0.Name} minus ${Parameter1.Name}.</Section>
+					</Case>
+					<Case name="*" paramCount="2">
+						<Section name="summary">Computes the product of ${Parameter0.Name} and ${Parameter1.name}, yielding a new ${ReturnType}.</Section>
+						<Section name="param0" override="true">The ${Parameter0.Type} to multiply.</Section>
+						<Section name="param1" override="true">The ${Parameter1.Type} to multiply.</Section>
+						<Section name="returns">The ${ReturnType} that is the ${Parameter0.Name} * ${Parameter1.Name}.</Section>
+					</Case>
+					<Case name="/" paramCount="2">
+						<Section name="summary">Computes the division of ${Parameter0.Name} and ${Parameter1.name}, yielding a new ${ReturnType}.</Section>
+						<Section name="param0" override="true">The ${Parameter0.Type} to divide (the divident).</Section>
+						<Section name="param1" override="true">The ${Parameter1.Type} to divide (the divisor).</Section>
+						<Section name="returns">The ${ReturnType} that is the ${Parameter0.Name} / ${Parameter1.Name}.</Section>
+					</Case>
+					
+					<Case name="==" paramCount="2">
+						<Section name="summary">Determines whether a specified instance of ${Parameter0.Type} is equal to another specified ${Parameter1.Type}.</Section>
+						<Section name="param0" override="true">The first ${Parameter0.Type} to compare.</Section>
+						<Section name="param1" override="true">The second ${Parameter1.Type} to compare.</Section>
+						<Section name="returns">${True} if ${Parameter0.Name} and ${Parameter1.Name} are equal; otherwise, ${False}.</Section>
+					</Case>
+					<Case name="!=" paramCount="2">
+						<Section name="summary">Determines whether a specified instance of ${Parameter0.Type} is not equal to another specified ${Parameter1.Type}.</Section>
+						<Section name="param0" override="true">The first ${Parameter0.Type} to compare.</Section>
+						<Section name="param1" override="true">The second ${Parameter1.Type} to compare.</Section>
+						<Section name="returns">${True} if ${Parameter0.Name} and ${Parameter1.Name} are not equal; otherwise, ${False}.</Section>
+					</Case>
+					<Case name="&gt;" paramCount="2">
+						<Section name="summary">Determines whether one specified ${Parameter0.Type} is greater than another specfied ${Parameter1.Type}.</Section>
+						<Section name="param0" override="true">The first ${Parameter0.Type} to compare.</Section>
+						<Section name="param1" override="true">The second ${Parameter1.Type} to compare.</Section>
+						<Section name="returns">${True} if ${Parameter0.Name} is greater than ${Parameter1.Name}; otherwise, ${False}.</Section>
+					</Case>
+					<Case name="&gt;=" paramCount="2">
+						<Section name="summary">Determines whether one specified ${Parameter0.Type} is greater than or equal to another specfied ${Parameter1.Type}.</Section>
+						<Section name="param0" override="true">The first ${Parameter0.Type} to compare.</Section>
+						<Section name="param1" override="true">The second ${Parameter1.Type} to compare.</Section>
+						<Section name="returns">${True} if ${Parameter0.Name} is greater than or equal to ${Parameter1.Name}; otherwise, ${False}.</Section>
+					</Case>
+					<Case name="&lt;" paramCount="2">
+						<Section name="summary">Determines whether one specified ${Parameter0.Type} is lower than another specfied ${Parameter1.Type}.</Section>
+						<Section name="param0" override="true">The first ${Parameter0.Type} to compare.</Section>
+						<Section name="param1" override="true">The second ${Parameter1.Type} to compare.</Section>
+						<Section name="returns">${True} if ${Parameter0.Name} is lower than ${Parameter1.Name}; otherwise, ${False}.</Section>
+					</Case>
+					<Case name="&lt;=" paramCount="2">
+						<Section name="summary">Determines whether one specified ${Parameter0.Type} is lower than or equal to another specfied ${Parameter1.Type}.</Section>
+						<Section name="param0" override="true">The first ${Parameter0.Type} to compare.</Section>
+						<Section name="param1" override="true">The second ${Parameter1.Type} to compare.</Section>
+						<Section name="returns">${True} if ${Parameter0.Name} is lower than or equal to ${Parameter1.Name}; otherwise, ${False}.</Section>
+					</Case>
+				</Switch>
+			</Case>
+			
+			<Case type="property">
+				<Switch>
+					<Case startsWithWord="Is,Has,Can">
+						<Section name="summary">${AccessText} a value indicating whether this instance ${AllWords}.</Section>
+						<Section name="value">${True} if this instance ${AllWords}; otherwise, ${False}.</Section>
+					</Case>
+					<Case returns="System.Boolean">
+						<If wordCount="1">
+							<Section name="summary">${AccessText} a value indicating whether this ${DeclaringType} is ${AllWords}.</Section>
+							<Section name="value">${True} if ${AllWords}; otherwise, ${False}.</Section>
+						</If>
+						<IfNot wordCount="1">
+							<Section name="summary">${AccessText} a value indicating whether this ${DeclaringType} ${AllWords}.</Section>
+							<Section name="value">${True} if ${AllWords}; otherwise, ${False}.</Section>
+						</IfNot>
+					</Case>
+					<Default>
+						<Section name="summary">${AccessText} ${Sentence}.</Section>
+						<Section name="value">${Sentence}.</Section>
+					</Default>
+				</Switch>
+			</Case>
+			
+			<Case type="parameter">
+				<Switch>
+					<Case returns="System.Boolean">
+						<Section name="param">If set to ${True} ${AllWords}.</Section>
+					</Case>
+					<Case endsWith="EventArgs">
+						<Section name="param">The ${ParameterType} instance containing the event data.</Section>
+					</Case>
+					<Case name = "i">
+						<Section name="param">The index.</Section>
+					</Case>
+					<Case name = "x">
+						<Section name="param">The x coordinate.</Section>
+					</Case>
+					<Case name = "y">
+						<Section name="param">The y coordinate.</Section>
+					</Case>
+					<Case name = "z">
+						<Section name="param">The z coordinate.</Section>
+					</Case>
+					<Case name = "w">
+						<Section name="param">The width.</Section>
+					</Case>
+					<Case name = "h">
+						<Section name="param">The height.</Section>
+					</Case>
+					
+					<Case name = "r">
+						<Section name="param">The red component.</Section>
+					</Case>
+					<Case name = "g">
+						<Section name="param">The green component.</Section>
+					</Case>
+					<Case name = "b">
+						<Section name="param">The blue component.</Section>
+					</Case>
+					<Case name = "a">
+						<Section name="param">The alpha component.</Section>
+					</Case>
+					
+					<Case name = "x1">
+						<Section name="param">The first x value.</Section>
+					</Case>
+					<Case name = "x2">
+						<Section name="param">The second x value.</Section>
+					</Case>
+					
+					<Case name = "y1">
+						<Section name="param">The first y value.</Section>
+					</Case>
+					<Case name = "y2">
+						<Section name="param">The second y value.</Section>
+					</Case>
+					
+					<Case name = "z1">
+						<Section name="param">The first z value.</Section>
+					</Case>
+					<Case name = "z2">
+						<Section name="param">The second z value.</Section>
+					</Case>
+					<Default>
+						<Section name="param">${AllWords}.</Section>
+					</Default>
+				</Switch>
+			</Case>
+			
+			<Case type="exception">
+				<Switch>
+					<Default>
+						<Section name="exception">Is thrown when ${Sentence}.</Section>
+					</Default>
+				</Switch>
+			</Case>
+			
+			<Case type="typeparam">
+				<Switch>
+					<Default>
+						<Section name="typeparam">The ${TypeParamNumber} type parameter.</Section>
+					</Default>
+				</Switch>
+			</Case>
+		</Switch>
+	</Rules>
+</DocFood>

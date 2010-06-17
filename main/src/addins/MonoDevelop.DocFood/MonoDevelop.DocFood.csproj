@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{875D389F-48D1-4D46-BFC6-998837DD6AE0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.DocFood</RootNamespace>
+    <AssemblyName>MonoDevelop.DocFood</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Execute" command="../../../main/build/bin/MonoDevelop.exe" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.DocFood\DocFoodTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.DocFood\DocGenerator.cs" />
+    <Compile Include="MonoDevelop.DocFood\Section.cs" />
+    <Compile Include="MonoDevelop.DocFood\DocConfig.cs" />
+    <Compile Include="MonoDevelop.DocFood\IfStatement.cs" />
+    <Compile Include="MonoDevelop.DocFood\Node.cs" />
+    <Compile Include="MonoDevelop.DocFood\IfNotStatement.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.DocFood\Commands.cs" />
+    <Compile Include="MonoDevelop.DocFood.Options\AcronymsPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DocFood.Options.AcronymsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.DocFood.Options\OptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.DocFood.Options\RulesPanelWidget.cs" />
+    <Compile Include="MonoDevelop.DocFood.Options\OfTheReorderingWidget.cs" />
+    <Compile Include="MonoDevelop.DocFood.Options\NoTheReorderingWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DocFood.Options.OfTheReorderingWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DocFood.Options.NoTheReorderingWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DocFood.Options.OptionsPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DocFood.Options.RulesPanelWidget.cs" />
+    <Compile Include="MonoDevelop.DocFood.Options\ExpansionsPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DocFood.Options.ExpansionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.DocFood\SwitchStatement.cs" />
+    <Compile Include="MonoDevelop.DocFood\MemberVisitor.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="DocFood.addin.xml">
+      <LogicalName>DocFood.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DocFood.config.xml">
+      <LogicalName>DocFood.config.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.DocFood\" />
+    <Folder Include="MonoDevelop.DocFood.Options\" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+  </ItemGroup>
+</Project>
