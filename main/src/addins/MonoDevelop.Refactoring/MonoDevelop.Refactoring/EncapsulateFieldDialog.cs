@@ -41,6 +41,7 @@ using MonoDevelop.Ide;
 using Mono.TextEditor;
 using System.Linq;
 using System.Collections.Generic;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Refactoring {
 
@@ -408,6 +409,15 @@ namespace MonoDevelop.Refactoring {
 			} while (store.IterNext (ref iter));
 			
 			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (editor.Document, declaringType));
+			ModeHelpWindow helpWindow = new ModeHelpWindow ();
+			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
+			helpWindow.TitleText = GettextCatalog.GetString ("<b>Encapsulate Field -- Targeting</b>");
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare new property</b> at target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+			mode.HelpWindow = helpWindow;
 			mode.CurIndex = mode.InsertionPoints.Count - 1;
 			int idx = -1, i = 0;
 			DomLocation lastLocation = DomLocation.Empty;
