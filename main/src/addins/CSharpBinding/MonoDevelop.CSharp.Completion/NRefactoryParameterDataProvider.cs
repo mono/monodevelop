@@ -203,27 +203,37 @@ namespace MonoDevelop.CSharp.Completion
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			CSharpIndentEngine engine = new CSharpIndentEngine (MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types));
 			int index = memberStart + 1;
+			int parentheses = 0;
 			int bracket = 0;
 			do {
 				char c = editor.GetCharAt (i - 1);
 				engine.Push (c);
 				switch (c) {
-				case '(':
+				case '{':
 					if (!engine.IsInsideOrdinaryCommentOrString)
 						bracket++;
 					break;
-				case ')':
+				case '}':
 					if (!engine.IsInsideOrdinaryCommentOrString)
 						bracket--;
 					break;
+				case '(':
+					if (!engine.IsInsideOrdinaryCommentOrString)
+						parentheses++;
+					break;
+				case ')':
+					if (!engine.IsInsideOrdinaryCommentOrString)
+						parentheses--;
+					break;
 				case ',':
-					if (!engine.IsInsideOrdinaryCommentOrString && bracket == 1)
+					if (!engine.IsInsideOrdinaryCommentOrString && parentheses == 1 && bracket == 0)
 						index++;
 					break;
 				}
 				i++;
-			} while (i <= cursor && bracket >= 0);
-			return bracket != 1 ? -1 : index;
+			} while (i <= cursor && parentheses >= 0);
+			
+			return parentheses != 1 || bracket > 0 ? -1 : index;
 		}
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)

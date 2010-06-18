@@ -720,15 +720,15 @@ namespace MonoDevelop.CSharp.Completion
 			if (mem == null || (mem is IType))
 				return false;
 			int startPos = GetMemberStartPosition (mem);
-			int bracketDepth = 0;
+			int parenDepth = 0;
 			int chevronDepth = 0;
 			while (cpos > startPos) {
 				char c = Editor.GetCharAt (cpos);
 				if (c == ')')
-					bracketDepth++;
+					parenDepth++;
 				if (c == '>')
 					chevronDepth++;
-				if (bracketDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
+				if (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
 					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
 					if (p != -1) {
 						cpos++;
@@ -738,7 +738,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 				if (c == '(')
-					bracketDepth--;
+					parenDepth--;
 				if (c == '<')
 					chevronDepth--;
 				cpos--;
