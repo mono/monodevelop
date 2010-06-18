@@ -1039,6 +1039,7 @@ namespace Mono.TextEditor
 				char[] lineChars = lineText.ToCharArray ();
 				int startOffset = offset, endOffset = offset + length;
 				uint curIndex = 0, byteIndex = 0;
+				uint curChunkIndex = 0, byteChunkIndex = 0;
 				
 				uint oldEndIndex = 0;
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
@@ -1078,15 +1079,18 @@ namespace Mono.TextEditor
 								wrapper.SelectionStartIndex = (int)si;
 							wrapper.SelectionEndIndex   = (int)ei;
 						});
+						
+						var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
+						var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
 						if (chunkStyle.Bold)
-							atts.AddWeightAttribute (Pango.Weight.Bold, startIndex, endIndex);
+							atts.AddWeightAttribute (Pango.Weight.Bold, translatedStartIndex, translatedEndIndex);
 
 						if (chunkStyle.Italic)
-							atts.AddStyleAttribute (Pango.Style.Italic, startIndex, endIndex);
+							atts.AddStyleAttribute (Pango.Style.Italic, translatedStartIndex, translatedEndIndex);
 						
 						if (chunkStyle.Underline)
-							atts.AddUnderlineAttribute (Pango.Underline.Single, startIndex, endIndex);
+							atts.AddUnderlineAttribute (Pango.Underline.Single, translatedStartIndex, translatedEndIndex);
 					}
 				}
 				if (containsPreedit) {
@@ -1794,6 +1798,7 @@ namespace Mono.TextEditor
 
 			int startOffset = line.Offset, endOffset = line.Offset + line.EditableLength;
 			uint curIndex = 0, byteIndex = 0;
+			uint curChunkIndex = 0, byteChunkIndex = 0;
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
 			uint oldEndIndex = 0;
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
@@ -1833,24 +1838,27 @@ namespace Mono.TextEditor
 
 					});
 
+					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
+					var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
+
 					if (chunkStyle.Bold) {
 						Pango.AttrWeight attrWeight = new Pango.AttrWeight (Pango.Weight.Bold);
-						attrWeight.StartIndex = startIndex;
-						attrWeight.EndIndex = endIndex;
+						attrWeight.StartIndex = translatedStartIndex;
+						attrWeight.EndIndex = translatedEndIndex;
 						attributes.Add (attrWeight);
 					}
 
 					if (chunkStyle.Italic) {
 						Pango.AttrStyle attrStyle = new Pango.AttrStyle (Pango.Style.Italic);
-						attrStyle.StartIndex = startIndex;
-						attrStyle.EndIndex = endIndex;
+						attrStyle.StartIndex = translatedStartIndex;
+						attrStyle.EndIndex = translatedEndIndex;
 						attributes.Add (attrStyle);
 					}
 
 					if (chunkStyle.Underline) {
 						Pango.AttrUnderline attrUnderline = new Pango.AttrUnderline (Pango.Underline.Single);
-						attrUnderline.StartIndex = startIndex;
-						attrUnderline.EndIndex = endIndex;
+						attrUnderline.StartIndex = translatedStartIndex;
+						attrUnderline.EndIndex = translatedEndIndex;
 						attributes.Add (attrUnderline);
 					}
 				}
