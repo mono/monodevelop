@@ -44,6 +44,7 @@ namespace Mono.TextEditor.Vi
 		ViBuilderContext ()
 		{
 			Keys = new List<ViKey> ();
+			Multiplier = 1;
 		}
 		
 		public void Build (ModifierType modifiers, Key key, char ch)
@@ -57,11 +58,43 @@ namespace Mono.TextEditor.Vi
 		
 		public string Error { get; set; }
 		public string Message { get; set; }
-		public Action<ViEditor> Action { get; set; }
-		public ViBuilder Builder { get; set; }
 		public IList<ViKey> Keys { get; private set; }
 		public int Multiplier { get; set; }
 		public char Register { get; set; }
+		
+		Action<ViEditor> action;
+		
+		public Action<ViEditor> Action {
+			get { return action; }
+			set {
+				if (action != null)
+					throw new InvalidOperationException ("Action already set");
+				
+				//FALLBACK for builders that don't handler multipliers directly
+				//we cap these at 100, to reduce the length of time MD could be unresponsive
+				if (Multiplier > 1) {
+					action = (ViEditor v) => {
+						for (int i = 0; i < System.Math.Min (100, Multiplier); i++)
+							value (v);
+					};
+				} else {
+					action = value;
+				}
+			}
+		}
+		
+		public ViBuilder builder;
+		
+		public ViBuilder Builder {
+			get { return builder; }
+			set {
+				if (value == null)
+					throw new ArgumentException ("builder cannot be null");
+				if (action != null)
+					throw new InvalidOperationException ("builder cannot be set after action has been set");
+				builder = value;
+			}
+		}
 		
 		public ViKey LastKey {
 			get { return Keys[Keys.Count - 1]; }
