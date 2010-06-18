@@ -1,3 +1,11 @@
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added unit test
+	  for 'Bug 615196 - Pasting a chunk of text into the virtual
+	  whitespace fracks everything up'.
+
 2010-06-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: Try to fix
