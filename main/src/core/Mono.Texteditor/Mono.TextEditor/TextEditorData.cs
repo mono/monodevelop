@@ -219,8 +219,9 @@ namespace Mono.TextEditor
 				return;
 			Document.BeginAtomicUndo ();
 			EnsureCaretIsNotVirtual ();
-			int length = Insert (Caret.Offset, text);
-			Caret.Offset += length;
+			int offset = Caret.Offset;
+			int length = Insert (offset, text);
+			Caret.Offset = offset + length;
 			Document.EndAtomicUndo ();
 		}
 		

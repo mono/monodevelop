@@ -1,5 +1,12 @@
 2010-06-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Fixed 'Bug 615196 -
+	  Pasting a chunk of text into the virtual whitespace fracks
+	  everything up'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 615342 -
 	  Source code highlighting behaves badly on cyrillic text'.
 
