@@ -1,5 +1,11 @@
 2010-06-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed 'Bug 615191 -
+	  When using multiline selection to indent/outdent, the
+	  indenter selects too much'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs:
 	* Mono.TextEditor/ClipboardActions.cs: Fixed 'Bug 615196 -
 	  Pasting a chunk of text into the virtual whitespace fracks

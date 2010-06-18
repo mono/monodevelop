@@ -105,13 +105,8 @@ namespace Mono.TextEditor
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
 			Debug.Assert (data.IsSomethingSelected);
-			int startLineNr = data.IsSomethingSelected ? data.MainSelection.MinLine : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.MaxLine : data.Caret.Line;
-			
-			if (endLineNr < 0)
-				endLineNr = data.Document.LineCount;
-//			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLine (data.MainSelection.Anchor.Line) : null;
-//			int         anchorColumn = data.IsSomethingSelected ? data.MainSelection.Anchor.Column : -1;
+			int startLineNr, endLineNr;
+			GetSelectedLines (data, out startLineNr, out endLineNr);
 			
 			data.Document.BeginAtomicUndo ();
 			int first = -1;
@@ -168,14 +163,29 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public static void IndentSelection (TextEditorData data)
+		public static void GetSelectedLines (TextEditorData data, out int startLineNr, out int endLineNr)
 		{
-			int startLineNr = data.IsSomethingSelected ? data.MainSelection.MinLine : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.MaxLine : data.Caret.Line;
+			if (data.IsSomethingSelected) {
+				if (data.MainSelection.Anchor < data.MainSelection.Lead) {
+					startLineNr = data.MainSelection.Anchor.Line;
+					endLineNr = data.MainSelection.Lead.Column == 0 ? data.MainSelection.Lead.Line - 1 : data.MainSelection.Lead.Line;
+				} else {
+					startLineNr = data.MainSelection.Lead.Line;
+					endLineNr = data.MainSelection.Anchor.Line;
+				}
+			} else {
+				startLineNr = endLineNr = data.Caret.Line;
+			}
+			
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
-//			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLine (data.MainSelection.Anchor.Line) : null;
-//			int         anchorColumn = data.IsSomethingSelected ? data.MainSelection.Anchor.Column : -1;
+		}
+
+		public static void IndentSelection (TextEditorData data)
+		{
+			int startLineNr, endLineNr;
+			GetSelectedLines (data, out startLineNr, out endLineNr);
+			
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
 				data.Insert (line.Offset, data.Options.IndentationString);
