@@ -1,5 +1,11 @@
 2010-06-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added test for
+	  'Bug 613770 - Backspace inconsistently deletes entire lines
+	  when using "virtual spaces"'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* UnitTests.csproj:
 	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added unit test

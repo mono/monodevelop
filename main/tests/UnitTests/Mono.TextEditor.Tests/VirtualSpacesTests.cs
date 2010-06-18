@@ -53,6 +53,24 @@ namespace Mono.TextEditor.Tests
 			
 			Assert.AreEqual ("\n    Test\nHello World\n", data.Document.Text);
 		}
+		
+		
+		/// <summary>
+		/// Bug 613770 - Backspace inconsistently deletes entire lines when using "virtual spaces"
+		/// </summary>
+		[Test()]
+		public void TestBug613770 ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = "\n\n\n";
+			data.Caret.Offset = 1; // 2nd.Line
+			data.Caret.AllowCaretBehindLineEnd = true;
+			data.Caret.Column = 4;
+			DeleteActions.Backspace (data);
+			
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
+		}
+		
 	}
 }
 
