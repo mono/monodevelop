@@ -263,27 +263,16 @@ namespace Mono.TextEditor
 				return;
 			
 			data.Document.BeginAtomicUndo ();
-			if (data.IsSomethingSelected) {
+			if (data.IsSomethingSelected)
 				data.DeleteSelectedText ();
-			}
 			
-			string newLine = data.EolMarker;
-			int caretColumnOffset = 0;
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			
-			if (data.Options.AutoIndent) {
-				int i;
-				for (i = 0; i < line.EditableLength; i++) {
-					char ch = data.Document.GetCharAt (line.Offset + i);
-					if (!Char.IsWhiteSpace (ch))
-						break;
-				}
-				caretColumnOffset = i;
-				newLine += data.Document.GetTextBetween (line.Offset, line.Offset + i);
-			}
-			
-			data.Insert (data.Caret.Offset, newLine);
-			data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, caretColumnOffset);
+			data.EnsureCaretIsNotVirtual ();
+			StringBuilder sb = new StringBuilder (data.EolMarker);
+			if (data.Options.AutoIndent)
+				sb.Append (data.Document.GetLineIndent (data.Caret.Line));
+			int offset = data.Caret.Offset;
+			data.Insert (offset, sb.ToString ());
+			data.Caret.Offset = offset + sb.Length;
 			data.Document.EndAtomicUndo ();
 		}
 		

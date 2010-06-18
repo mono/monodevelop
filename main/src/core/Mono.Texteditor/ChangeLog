@@ -1,3 +1,9 @@
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/DefaultEditActions.cs: Improved virtual
+	  space return key behavior.
+
 2010-06-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Some simple
