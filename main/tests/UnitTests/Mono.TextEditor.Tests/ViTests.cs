@@ -274,6 +274,7 @@ kkk lll", mode.Text);
 		public TestViEditMode () : this (new TextEditorData ())
 		{
 			Data.Options.WordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
+			Data.Options.RemoveTrailingWhitespaces = true;
 		}
 		
 		//used to prevent edit actions from the HandleKeypress causing Caret/SelectionPositionChanged

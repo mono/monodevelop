@@ -69,6 +69,21 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
 		
+		
+		[Test()]
+		public void TestReturnKeyBehavior ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = "\n\n\n";
+			data.Caret.Offset = 1; // 2nd.Line
+			data.Caret.AllowCaretBehindLineEnd = true;
+			data.Caret.Column = 4;
+			data.Options.RemoveTrailingWhitespaces = false;
+			MiscActions.InsertNewLine (data);
+			
+			Assert.AreEqual ("\n    \n    \n\n", data.Document.Text);
+		}
+		
 	}
 }
 

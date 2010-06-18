@@ -1,5 +1,13 @@
 2010-06-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Tests/ViTests.cs: Set flag required for one
+	  vi test.
+
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added test for
+	  virtual space return key behavior.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* UnitTests.csproj:
 	* Mono.TextEditor.Tests/EditActionsTest.cs:
