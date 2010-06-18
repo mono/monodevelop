@@ -38,6 +38,7 @@ FILES =  \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs \
 	Mono.TextEditor.Tests/DocumentTests.cs \
+	Mono.TextEditor.Tests/EditActionsTest.cs \
 	Mono.TextEditor.Tests/FoldingTests.cs \
 	Mono.TextEditor.Tests/LineSplitterTests.cs \
 	Mono.TextEditor.Tests/SearchTests.cs \

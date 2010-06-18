@@ -1,5 +1,14 @@
 2010-06-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* UnitTests.csproj:
+	* Mono.TextEditor.Tests/EditActionsTest.cs:
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added unit
+	  tests for 'Bug 615191 - When using multiline selection to
+	  indent/outdent, the indenter selects too much'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added test for
 	  'Bug 613770 - Backspace inconsistently deletes entire lines
 	  when using "virtual spaces"'.

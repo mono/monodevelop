@@ -1,5 +1,5 @@
 // 
-// VirtualSpacesTests.cs
+// EditActionsTest.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -32,43 +32,37 @@ namespace Mono.TextEditor.Tests
 {
 	
 	[TestFixture()]
-	public class VirtualSpacesTests : UnitTests.TestBase
+	public class EditActionsTest
 	{
 		/// <summary>
-		/// Bug 615196 - Pasting a chunk of text into the virtual whitespace fracks everything up
+		/// Bug 615191 - When using multiline selection to indent/outdent, the indenter selects too much
 		/// </summary>
 		[Test()]
-		public void TestBug615196 ()
+		public void TestBug615196_IndentCase ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = "\n\nHello World\n";
-			data.Caret.Offset = 1; // 2nd.Line
-			data.Caret.AllowCaretBehindLineEnd = true;
-			data.Caret.Column = 4;
-			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
-			clipboard.Text = "Test";
+			data.Document.Text = "\n\n\n\n\n";
+			data.Caret.Offset = data.Document.GetLine (1).Offset; // 2nd.Line
+			data.MainSelection = new Selection (1,0, 3, 0);
+			MiscActions.InsertTab (data);
+			MiscActions.InsertTab (data);
 			
-			ClipboardActions.Paste (data);
-			
-			Assert.AreEqual ("\n    Test\nHello World\n", data.Document.Text);
+			Assert.AreEqual ("\n\t\t\n\t\t\n\n\n", data.Document.Text);
 		}
 		
-		/// <summary>
-		/// Bug 613770 - Backspace inconsistently deletes entire lines when using "virtual spaces"
-		/// </summary>
 		[Test()]
-		public void TestBug613770 ()
+		public void TestBug615196_UnIndentCase ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = "\n\n\n";
-			data.Caret.Offset = 1; // 2nd.Line
-			data.Caret.AllowCaretBehindLineEnd = true;
-			data.Caret.Column = 4;
-			DeleteActions.Backspace (data);
+			data.Document.Text = "\n\t\t\n\t\t\n\t\t\n\n";
+			data.Caret.Offset = data.Document.GetLine (1).Offset; // 2nd.Line
+			data.MainSelection = new Selection (1,0, 3, 0);
+			MiscActions.RemoveTab (data);
+			MiscActions.RemoveTab (data);
 			
-			Assert.AreEqual ("\n\n\n", data.Document.Text);
+			Assert.AreEqual ("\n\n\n\t\t\n\n", data.Document.Text);
 		}
-		
+
 	}
 }
 
