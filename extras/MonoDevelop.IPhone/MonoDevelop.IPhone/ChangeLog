@@ -1,3 +1,14 @@
+2010-06-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneSdkVersion.cs: Add some conveniences.
+
+	* IPhoneBuildExtension.cs: Use proper DTSDKName and
+	  DTPlatformVersion values from Apple's plists. Always include
+	  UIDeviceFamily key when building with > 3.2 SDK.
+
+	* IPhoneFramework.cs: Methods for looking up DTSDKName and
+	  DTPlatformVersion.,
+
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneOptionsPanel.cs: Fix Bug 614551 - Cannot clear

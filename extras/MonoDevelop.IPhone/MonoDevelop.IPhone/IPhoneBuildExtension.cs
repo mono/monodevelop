@@ -245,6 +245,9 @@ namespace MonoDevelop.IPhone
 					doc.Root = dict = new PlistDictionary ();
 				
 				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
+				var sdkversion = IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+				bool v3_2_orNewer = sdkversion.CompareTo (IPhoneSdkVersion.V3_2) >= 0;
+				bool v4_0_orNewer = sdkversion.CompareTo (IPhoneSdkVersion.V4_0) >= 0;
 				
 				SetIfNotPresent (dict, "CFBundleDevelopmentRegion",
 					String.IsNullOrEmpty (proj.BundleDevelopmentRegion)? "English" : proj.BundleDevelopmentRegion);
@@ -288,11 +291,11 @@ namespace MonoDevelop.IPhone
 					new PlistArray () { sim? "iPhoneSimulator" : "iPhoneOS" });
 				SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
 				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
-				SetIfNotPresent (dict, "DTSDKName", (sim? "iphonesimulator" : "iphoneos")  + conf.MtouchSdkVersion);
+				SetIfNotPresent (dict, "DTSDKName", IPhoneFramework.GetDTSdkName (sdkversion, sim));//? "iphonesimulator" : "iphoneos") +   conf.MtouchSdkVersion);
 				SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
-				if (proj.SupportedDevices != TargetDevice.IPhone)
+				if (v4_0_orNewer || proj.SupportedDevices != TargetDevice.IPhone)
 					SetIfNotPresent (dict,  "UIDeviceFamily", GetSupportedDevices (proj.SupportedDevices));
-				SetIfNotPresent (dict, "DTPlatformVersion", conf.MtouchSdkVersion);
+				SetIfNotPresent (dict, "DTPlatformVersion", IPhoneFramework.DTPlatformVersion);
 				
 				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchMinimumOSVersion);
 				
@@ -300,8 +303,8 @@ namespace MonoDevelop.IPhone
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad)
 					SetNibProperty (dict, proj, proj.MainNibFileIPad, "NSMainNibFile~ipad");
 				
-				var sdkversion = IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
-				if (sdkversion.CompareTo (new IPhoneSdkVersion (new [] { 3, 2 })) >= 0) {
+				
+				if (v3_2_orNewer) {
 					if (!dict.ContainsKey (OrientationUtil.KEY)) {
 						result.AddWarning ("Supported orientations have not been set (iPhone Application options panel)");
 					} else {

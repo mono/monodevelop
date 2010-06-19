@@ -34,6 +34,7 @@ using Mono.Addins;
 using MonoDevelop.Ide;
 using Gtk;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.MacDev.Plist;
 namespace MonoDevelop.IPhone
 {
 public static class IPhoneFramework
@@ -78,6 +79,51 @@ public static class IPhoneFramework
 		public static bool SdkIsInstalled (IPhoneSdkVersion version)
 		{
 			return SdkIsInstalled (version.ToString ());
+		}
+		
+		static PlistDocument LoadSdkSettings (IPhoneSdkVersion sdk)
+		{
+			var doc = new PlistDocument ();
+			doc.LoadFromXmlFile ("/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + sdk.ToString ()
+			                     + ".sdk/SDKSettings.plist");
+			return doc;
+		}
+		
+		static Dictionary<string,string> dtSdkName = new Dictionary<string, string> ();
+		static Dictionary<string,string> dtSdkNameSim = new Dictionary<string, string> ();
+		
+		public static string GetDTSdkName (IPhoneSdkVersion sdk, bool sim)
+		{
+			var cache = sim? dtSdkNameSim : dtSdkName;
+			string name;
+			if (cache.TryGetValue (sdk.ToString (), out name))
+				return name;
+			
+			string keyName = sim? "AlternateSDK" : "CanonicalName";
+			var doc = LoadSdkSettings (sdk);
+			var dict = (PlistDictionary) doc.Root;
+			return cache[sdk.ToString ()] = ((PlistString) dict[keyName]).Value;
+		}
+		
+		static PlistDocument LoadDTSettings ()
+		{
+			var doc = new PlistDocument ();
+			doc.LoadFromXmlFile ("/Developer/Platforms/iPhoneOS.platform/Info.plist");
+			return doc;
+		}
+		
+		static string dtPlatformVersion;
+		
+		public static string DTPlatformVersion {
+			get {
+				if (dtPlatformVersion == null) {
+					var doc = LoadDTSettings ();
+					var dict = (PlistDictionary) doc.Root;
+					var settings = (PlistDictionary) dict["AdditionalInfo"];
+					dtPlatformVersion = ((PlistString) settings["DTPlatformVersion"]).Value;
+				}
+				return dtPlatformVersion;
+			}
 		}
 		
 		public static IPhoneSdkVersion GetClosestInstalledSdk (IPhoneSdkVersion v)
