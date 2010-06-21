@@ -1,3 +1,9 @@
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextLinkEditMode.cs:
+	* Mono.TextEditor/InsertionCursorEditMode.cs: Text link edit
+	  mode can now show mode help windows as well.
+
 2010-06-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextEditorData.cs:

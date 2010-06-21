@@ -131,7 +131,7 @@ namespace Mono.TextEditor
 		#endregion
 	}
 	
-	public class TextLinkEditMode : SimpleEditMode
+	public class TextLinkEditMode : HelpWindowEditMode
 	{
 		List<TextLink> links;
 		int baseOffset;
@@ -162,11 +162,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public new TextEditor Editor {
-			get;
-			set;
-		}
-		
 		public bool SetCaretPosition {
 			get;
 			set;
@@ -179,7 +174,7 @@ namespace Mono.TextEditor
 		TextLinkTooltipProvider tooltipProvider;
 		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
 		{
-			this.Editor = editor;
+			this.editor = editor;
 			this.links = links;
 			this.baseOffset = baseOffset;
 			this.endOffset = editor.Caret.Offset;
@@ -187,6 +182,14 @@ namespace Mono.TextEditor
 			this.Editor.TooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
 			this.SelectPrimaryLink = true;
+		}
+		
+		public event EventHandler Cancel;
+		protected virtual void OnCancel (EventArgs e)
+		{
+			EventHandler handler = this.Cancel;
+			if (handler != null)
+				handler (this, e);
 		}
 
 		TextLink closedLink = null;
@@ -242,6 +245,7 @@ namespace Mono.TextEditor
 			this.HandlePositionChanged (null, null);
 			Editor.Document.CommitUpdateAll ();
 			this.undoDepth = Editor.Document.GetCurrentUndoDepth ();
+			ShowHelpWindow ();
 		}
 		
 		void Setlink (TextLink link)
@@ -258,6 +262,7 @@ namespace Mono.TextEditor
 		
 		void ExitTextLinkMode ()
 		{
+			DestroyHelpWindow ();
 			isExited = true;
 			DestroyWindow ();
 			foreach (TextLink link in links) {
@@ -399,6 +404,8 @@ namespace Mono.TextEditor
 				} else {
 					ExitTextLinkMode ();
 				}
+				if (key == Gdk.Key.Escape)
+					OnCancel (EventArgs.Empty);
 				return;
 			default:
 				wasReplaced = false;
