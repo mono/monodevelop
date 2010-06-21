@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Commands
 			yield return new StringTagDescription ("CurText", "Selected Editor Text", false);
 			yield return new StringTagDescription ("EditorText", "Editor Text", false);
 			yield return new StringTagDescription ("StartupPath", "MonoDevelop Startup Directory", false);
+			yield return new StringTagDescription ("ConfigDir", "MonoDevelop Configuration Directory", false);
 		}
 		
 		public override object GetTagValue (Workbench wb, string tag)
@@ -103,6 +104,9 @@ namespace MonoDevelop.Ide.Commands
 					
 				case "STARTUPPATH":
 					return AppDomain.CurrentDomain.BaseDirectory;
+					
+				case "CONFIGDIR":
+					return PropertyService.ConfigPath;
 			}
 			throw new NotSupportedException ();
         }
