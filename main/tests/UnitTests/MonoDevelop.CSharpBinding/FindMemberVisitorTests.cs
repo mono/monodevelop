@@ -756,6 +756,28 @@ object item)
 ");
 		}
 
+		/// <summary>
+		/// Bug 615702 - In-place variable renaming can't rename foreach loop variables
+		/// </summary>
+		[Test()]
+		public void TestBug615702 ()
+		{
+			LocalVariable localVariable = new LocalVariable (null,
+			                                  "obj",
+			                                  DomReturnType.Int32,
+			                                  new DomRegion (5, 3, 8, 3));
+			RunTest (
+@"class FooBar
+{
+	public static void Main (string[] args)
+	{
+		foreach (object @obj in new object[3])
+		{
+			Console.WriteLine (@obj.GetType());
+		}
+	}
+}", localVariable);
+		}
 		
 		/*
 		[Test()]
