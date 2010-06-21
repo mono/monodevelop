@@ -1,3 +1,9 @@
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Fixed 'Bug
+	  615831 - Texteditor is not invalidated after remove trailing
+	  wihte spaces action'.
+
 2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Move

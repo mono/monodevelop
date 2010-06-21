@@ -541,6 +541,7 @@ namespace MonoDevelop.Ide.Gui
 			removeList.ForEach (info => ((Mono.TextEditor.IBuffer)data.Document).Remove (info.Position, info.Length));
 			data.Caret.Offset = Math.Min (data.Caret.Offset, data.Document.Length - 1);
 			data.Document.EndAtomicUndo ();
+			data.Document.CommitUpdateAll ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.RemoveTrailingWhiteSpaces)]
