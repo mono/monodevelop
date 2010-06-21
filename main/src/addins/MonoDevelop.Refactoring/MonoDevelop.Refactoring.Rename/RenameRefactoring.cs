@@ -34,6 +34,7 @@ using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Ide;
 using System.Linq;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -105,6 +106,16 @@ namespace MonoDevelop.Refactoring.Rename
 				tle.SetCaretPosition = false;
 				tle.SelectPrimaryLink = true;
 				if (tle.ShouldStartTextLinkMode) {
+					ModeHelpWindow helpWindow = new ModeHelpWindow ();
+					helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
+					helpWindow.TitleText = options.SelectedItem is LocalVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
+					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Return</b>"), GettextCatalog.GetString ("<b>Accept</b> this refactoring.")));
+					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+					tle.HelpWindow = helpWindow;
+					tle.Cancel += delegate {
+						editor.Document.Undo ();
+					};
 					tle.OldMode = data.CurrentMode;
 					tle.StartMode ();
 					data.CurrentMode = tle;

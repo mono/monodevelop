@@ -182,7 +182,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				ModeHelpWindow helpWindow = new ModeHelpWindow ();
 				helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = GettextCatalog.GetString ("<b>Extract Method -- Targeting</b>");
-				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behaviour</b>")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
 				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
 				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
 				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare new method</b> at target point.")));

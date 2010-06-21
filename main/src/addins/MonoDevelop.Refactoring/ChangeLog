@@ -1,3 +1,10 @@
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs:
+	  Implemented 'Bug 615701 - Escape should cancel renaming
+	  refactor action, not accept it'.
+
 2010-06-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/EncapsulateFieldDialog.cs:
