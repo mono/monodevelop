@@ -1,5 +1,11 @@
 2010-06-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	  Fixed 'Bug 615702 - In-place variable renaming can't rename
+	  foreach loop variables'.
+
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs:
 	* MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs:
 	  Worked on new parser/formatter.
