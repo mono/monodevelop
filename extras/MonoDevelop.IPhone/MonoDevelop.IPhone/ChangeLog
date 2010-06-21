@@ -1,3 +1,13 @@
+2010-06-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Include UIDeviceFamily key in 3.2
+	  builds.
+
+	* IPhoneFramework.cs: Filter out simulator targets.
+
+	* Gui/IPhoneBuildOptionsPanel.cs: Only show min OS version
+	  values that are valid for current SDK version.
+
 2010-06-18  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* IPhoneSdkVersion.cs: Add some conveniences.

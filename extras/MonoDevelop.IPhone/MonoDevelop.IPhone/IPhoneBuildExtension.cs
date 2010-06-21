@@ -247,7 +247,7 @@ namespace MonoDevelop.IPhone
 				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
 				var sdkversion = IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
 				bool v3_2_orNewer = sdkversion.CompareTo (IPhoneSdkVersion.V3_2) >= 0;
-				bool v4_0_orNewer = sdkversion.CompareTo (IPhoneSdkVersion.V4_0) >= 0;
+				//bool v4_0_orNewer = sdkversion.CompareTo (IPhoneSdkVersion.V4_0) >= 0;
 				
 				SetIfNotPresent (dict, "CFBundleDevelopmentRegion",
 					String.IsNullOrEmpty (proj.BundleDevelopmentRegion)? "English" : proj.BundleDevelopmentRegion);
@@ -293,7 +293,7 @@ namespace MonoDevelop.IPhone
 				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
 				SetIfNotPresent (dict, "DTSDKName", IPhoneFramework.GetDTSdkName (sdkversion, sim));//? "iphonesimulator" : "iphoneos") +   conf.MtouchSdkVersion);
 				SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
-				if (v4_0_orNewer || proj.SupportedDevices != TargetDevice.IPhone)
+				if (v3_2_orNewer)
 					SetIfNotPresent (dict,  "UIDeviceFamily", GetSupportedDevices (proj.SupportedDevices));
 				SetIfNotPresent (dict, "DTPlatformVersion", IPhoneFramework.DTPlatformVersion);
 				
