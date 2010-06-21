@@ -1,4 +1,4 @@
-<Addin id = "MonoDevelop.Debugger.Soft.IPhone"
+<Addin id = "MonoDevelop.Debugger.Soft.MonoMac"
        name      = "Mono Soft Debugger Support for MonoMac"
        author	 = "Michael Hutchinson"
        url       = "http://www.mono-project.com"
