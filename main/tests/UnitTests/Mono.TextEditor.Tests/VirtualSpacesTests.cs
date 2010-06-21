@@ -84,6 +84,22 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n    \n    \n\n", data.Document.Text);
 		}
 		
+		/// <summary>
+		/// Bug 615624 - Pressing DOWN after RETURN moves cursor to beginning of blank lines instead of to the indent
+		/// </summary>
+		[Test()]
+		public void TestBug615624 ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = "\n \n\n";
+			data.Caret.AllowCaretBehindLineEnd = true;
+			data.Caret.Offset = 2; // 2nd.Line
+			Assert.AreEqual (1, data.Caret.Column);
+			Document.RemoveTrailingWhitespaces (data, data.Document.GetLine (1));
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
+			Assert.AreEqual (1, data.Caret.Column);
+		}
+		
 	}
 }
 
