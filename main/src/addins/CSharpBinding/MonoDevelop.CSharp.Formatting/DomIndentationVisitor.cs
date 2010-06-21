@@ -474,12 +474,12 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (lbrace == null || rbrace == null)
 				return;
+			
 //			LineSegment lbraceLineSegment = data.Document.GetLine (lbrace.StartLocation.Line);
 			int lbraceOffset = data.Document.LocationToOffset (lbrace.StartLocation.Line, lbrace.StartLocation.Column);
 			
 //			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.StartLocation.Line);
 			int rbraceOffset = data.Document.LocationToOffset (rbrace.StartLocation.Line, rbrace.StartLocation.Column);
-			
 			int whitespaceStart = SearchWhitespaceStart (lbraceOffset);
 			int whitespaceEnd = SearchWhitespaceStart (rbraceOffset);
 			string startIndent = "";
@@ -519,6 +519,17 @@ namespace MonoDevelop.CSharp.Formatting
 			string currentText = data.Document.GetTextAt (offset, removedChars);
 			if (currentText == insertedText)
 				return;
+			foreach (DomSpacingVisitor.MyTextReplaceChange change in changes) {
+				if (change.Offset == offset) {
+					if (removedChars > 0 && insertedText == change.InsertedText) {
+						change.RemovedChars = removedChars;
+//						change.InsertedText = insertedText;
+						return;
+					}
+				}
+			}
+//			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText);
+//			Console.WriteLine (Environment.StackTrace);
 			changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
 		
