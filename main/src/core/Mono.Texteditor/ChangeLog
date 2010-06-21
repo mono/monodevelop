@@ -1,5 +1,11 @@
 2010-06-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs: Fixed 'Bug 615624 - Pressing
+	  DOWN after RETURN moves cursor to beginning of blank lines
+	  instead of to the indent'.
+
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextLinkEditMode.cs:
 	* Mono.TextEditor/InsertionCursorEditMode.cs: Text link edit
 	  mode can now show mode help windows as well.
