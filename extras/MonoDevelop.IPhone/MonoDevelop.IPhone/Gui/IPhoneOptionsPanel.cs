@@ -198,7 +198,15 @@ namespace MonoDevelop.IPhone.Gui
 			
 			SupportedDevices = proj.SupportedDevices;
 			
-			ProjectFileEntry [] pickers = { iphoneIconPicker, ipadIconPicker, settingsIconPicker, ipadSpotlightIconPicker };
+			ProjectFileEntry [] pickers = {
+				iphoneIconPicker,
+				iphoneIconHighPicker,
+				ipadIconPicker,
+				settingsIconPicker,
+				settingsIconHighPicker,
+				ipadSpotlightIconPicker,
+			};
+			
 			foreach (var p in pickers) {
 				p.Project = proj;
 				p.DefaultFilter = "*.png";
