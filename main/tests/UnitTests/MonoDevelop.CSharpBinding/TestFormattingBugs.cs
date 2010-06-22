@@ -40,9 +40,8 @@ using MonoDevelop.CSharp.Formatting;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.CSharpBinding
+namespace MonoDevelop.CSharpBinding.FormattingTests
 {
-	
 	[TestFixture()]
 	public class TestFormattingBugs : UnitTests.TestBase
 	{
@@ -159,5 +158,5 @@ using (IDisposable b = null) {
 
 		
 	}
-}*/
-
+}
+*/
