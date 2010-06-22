@@ -91,8 +91,7 @@ namespace MonoDevelop.IPhone.Gui
 			foreach (var v in IPhoneFramework.InstalledSdkVersions)
 				sdkComboEntry.AppendText (v.ToString ());
 			
-			foreach (var v in IPhoneFramework.KnownOSVersions)
-				minOSComboEntry.AppendText (v.ToString ());
+			sdkComboEntry.Changed += HandleSdkComboEntryChanged;
 			
 			store = new ListStore (typeof (string), typeof (bool));
 			i18nTreeView.Model = store;
@@ -108,6 +107,21 @@ namespace MonoDevelop.IPhone.Gui
 			};
 			
 			this.ShowAll ();
+		}
+
+		/// <summary>
+		/// Populates the minOSComboEntry with value valid for the current sdkComboEntry value.
+		/// </summary>
+		void HandleSdkComboEntryChanged (object sender, EventArgs e)
+		{
+			((ListStore)minOSComboEntry.Model).Clear ();
+			IPhoneSdkVersion sdkVer = IPhoneSdkVersion.Default;
+			try {
+				sdkVer = IPhoneSdkVersion.Parse (sdkComboEntry.Entry.Text);
+			} catch {}
+			foreach (var v in IPhoneFramework.KnownOSVersions)
+				if (v.CompareTo (sdkVer) <= 0)
+					minOSComboEntry.AppendText (v.ToString ());
 		}
 		
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)

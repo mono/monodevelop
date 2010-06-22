@@ -1,3 +1,34 @@
+2010-06-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs:
+	* gtk-gui/gui.stetic:
+	* IPhoneBuildExtension.cs:
+	* Gui/IPhoneOptionsPanel.cs:
+	* MonoDevelop.IPhone.addin.xml:
+	* gtk-gui/MonoDevelop.IPhone.Gui.IPhoneOptionsWidget.cs: Added
+	  options for hi-res icons.
+
+2010-06-21  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneBuildExtension.cs: Include UIDeviceFamily key in 3.2
+	  builds.
+
+	* IPhoneFramework.cs: Filter out simulator targets.
+
+	* Gui/IPhoneBuildOptionsPanel.cs: Only show min OS version
+	  values that are valid for current SDK version.
+
+2010-06-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneSdkVersion.cs: Add some conveniences.
+
+	* IPhoneBuildExtension.cs: Use proper DTSDKName and
+	  DTPlatformVersion values from Apple's plists. Always include
+	  UIDeviceFamily key when building with > 3.2 SDK.
+
+	* IPhoneFramework.cs: Methods for looking up DTSDKName and
+	  DTPlatformVersion.,
+
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneOptionsPanel.cs: Fix Bug 614551 - Cannot clear

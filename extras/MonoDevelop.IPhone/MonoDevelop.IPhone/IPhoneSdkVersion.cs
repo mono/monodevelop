@@ -36,7 +36,7 @@ using Gtk;
 using MonoDevelop.Core.Serialization;
 namespace MonoDevelop.IPhone
 {
-public struct IPhoneSdkVersion : IComparable<IPhoneSdkVersion>, IEquatable<IPhoneSdkVersion>
+	public struct IPhoneSdkVersion : IComparable<IPhoneSdkVersion>, IEquatable<IPhoneSdkVersion>
 	{
 		public static readonly IPhoneSdkVersion Default = GetDefaultSdkVersion ();
 		
@@ -48,7 +48,7 @@ public struct IPhoneSdkVersion : IComparable<IPhoneSdkVersion>, IEquatable<IPhon
 		
 		int[] version;
 		
-		public IPhoneSdkVersion (int[] version)
+		public IPhoneSdkVersion (params int[] version)
 		{
 			if (version == null)
 				throw new ArgumentNullException ();
@@ -113,5 +113,8 @@ public struct IPhoneSdkVersion : IComparable<IPhoneSdkVersion>, IEquatable<IPhon
 				return acc;
 			}
 		}
+		
+		public static readonly IPhoneSdkVersion V3_2 = new IPhoneSdkVersion (3, 2);
+		public static readonly IPhoneSdkVersion V4_0 = new IPhoneSdkVersion (4, 0);
 	}
 }

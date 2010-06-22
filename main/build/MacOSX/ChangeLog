@@ -1,3 +1,7 @@
+2010-06-22  Michael Hutchinson  <mhutchinson@novell.com>
+
+	Bumped SVN revision for Mac release.
+
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* build/MacOSX/Info.plist.in: Force QuartzGL off.
