@@ -188,7 +188,7 @@ namespace MonoDevelop.IPhone
 		}
 		
 		public FilePath BundleIconHigh {
-			get { return BundleIconHigh; }
+			get { return bundleIconHigh; }
 			set {
 				if (value == (FilePath) bundleIconHigh)
 					return;
@@ -218,7 +218,7 @@ namespace MonoDevelop.IPhone
 		}
 		
 		public FilePath BundleIconSpotlightHigh {
-			get { return BundleIconSpotlightHigh; }
+			get { return bundleIconSpotlightHigh; }
 			set {
 				if (value == (FilePath) bundleIconSpotlightHigh)
 					return;

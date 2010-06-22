@@ -1,5 +1,9 @@
 2010-06-22  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: Fix stack overflow.
+
+2010-06-22  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* IPhoneProject.cs:
 	* gtk-gui/gui.stetic:
 	* IPhoneBuildExtension.cs:
