@@ -1,3 +1,9 @@
+2010-06-23  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Core.Serialization/DataContext.cs: Properly
+	  register extended properties. Fixes bug #Bug 615523 -
+	  [regression] tarball packages lack pixmaps / desktop files.
+
 2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

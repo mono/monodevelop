@@ -158,8 +158,12 @@ namespace MonoDevelop.Core.Serialization
 			PropertyRef prop = new PropertyRef (addin, targetType, name, propertyType, isExternal, skipEmpty);
 			if (tr.Properties == null)
 				tr.Properties = prop;
-			else
-				tr.Properties.Next = prop;
+			else {
+				PropertyRef plink = tr.Properties;
+				while (plink.Next != null)
+					plink = plink.Next;
+				plink.Next = prop;
+			}
 		}
 		
 		public void UnregisterProperty (Type targetType, string name)
