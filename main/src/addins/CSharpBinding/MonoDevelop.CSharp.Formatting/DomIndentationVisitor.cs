@@ -528,7 +528,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 			}
-//			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText);
+//			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
 //			Console.WriteLine (Environment.StackTrace);
 			changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
@@ -722,6 +722,7 @@ namespace MonoDevelop.CSharp.Formatting
 			string indentString = newLine ? data.EolMarker + this.curIndent.IndentString : " ";
 			AddChange (whitespaceStart, offset - whitespaceStart, indentString);
 		}
+		
 		string nextStatementIndent = null;
 		void FixStatementIndentation (MonoDevelop.Projects.Dom.DomLocation location)
 		{
