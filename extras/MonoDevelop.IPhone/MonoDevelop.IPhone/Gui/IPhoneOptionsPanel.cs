@@ -323,7 +323,7 @@ namespace MonoDevelop.IPhone.Gui
 				
 				var iPadOrientations = SaveOrientationsCombo (iPadOrientationsCombo);
 				if (proj.SupportedDevices == TargetDevice.IPhoneAndIPad && iPadOrientations != null)
-					dict [OrientationUtil.KEY_IPAD] = orientations;
+					dict [OrientationUtil.KEY_IPAD] = iPadOrientations;
 				else
 					dict.Remove (OrientationUtil.KEY_IPAD);
 				
