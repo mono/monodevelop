@@ -60,10 +60,10 @@ MonoDevelop.app:
 	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
 
 # update revision in updateinfo
-	if test -d ../../.git/svn; then svn_info="git log --no-color --first-parent -n1 --grep=git-svn-id: --pretty=format:%b | sed -n -e 's,git-svn-id: \(.*\)@\(.*\) .*,URL: \1 Revision: \2,p'"; fi; \
-	if test -d ./../../.svn; then svn_info='svn info'; fi; \
+	if test -d ../../../.git/svn; then svn_info="git log --no-color --first-parent -n1 --grep=git-svn-id: --pretty=format:%b | sed -n -e 's,git-svn-id: \(.*\)@\(.*\) .*,URL: \1 Revision: \2,p'"; fi; \
+	if test -d ../../../.svn; then svn_info='svn info'; fi; \
 	if test -n "$$svn_info"; then \
-		version=$$(cd ../..; \
+		version=$$(cd ../../..; \
 			LANG=C; export LANG; \
 			eval $$svn_info | sed -n -e '/Last Changed Rev/ s/.*: //p'; \
 		); \

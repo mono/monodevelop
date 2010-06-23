@@ -10,8 +10,8 @@ buildinfo = $(top_builddir)/build/bin/buildinfo
 all:
 
 vcrevision:
-	@if test -d ./.svn; then \
-		version=$$( \
+	@if test -d ../.svn; then \
+		version=$$(cd ..; \
 			LANG=C; export LANG; \
 			svn info | sed -n -e '/Last Changed Rev/ s/.*: //p'; \
 		); \
