@@ -241,6 +241,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			editor.EditorOptionsChanged -= HandleEditorEditorOptionsChanged;
 			DisposeLayout ();
+			if (!CollapseExtendedErrors)
+				editor.Document.UnRegisterVirtualTextMarker (this);
 		}
 
 		internal class LayoutDescriptor

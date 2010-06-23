@@ -1,3 +1,9 @@
+2010-06-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Fixed
+	  'Bug 616001 - Inline errors don't completely vanish after
+	  build'.
+
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Fixed 'Bug
