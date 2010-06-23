@@ -1,3 +1,12 @@
+2010-06-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/TestSpacingVisitor.cs: Activated
+	  unit test.
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
+	  unit test for 'Bug 615983 - Refactoring does not include
+	  object initializers'.
+
 2010-06-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestFormattingBugs.cs: Moved test

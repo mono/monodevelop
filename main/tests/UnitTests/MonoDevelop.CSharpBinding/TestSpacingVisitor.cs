@@ -178,7 +178,6 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BeforeConstructorDeclarationParentheses = true;
-			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
@@ -207,7 +206,6 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
-		[Ignore("Currenty failing because '/' has not the exact location.")]
 		public void TestSpacesAroundMultiplicativeOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
@@ -1123,4 +1121,5 @@ return (Test)null;
 		}
 		
 	}
-}*/
+}
+ */
