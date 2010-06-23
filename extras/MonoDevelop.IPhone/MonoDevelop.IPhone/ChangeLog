@@ -1,3 +1,10 @@
+2010-06-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/IPadApplicationXib.xft.xml:
+	* templates/IPhoneApplicationXib.xft.xml: Fix Bug 616532 -
+	  Property in .xib.designer.cs file to back IBOutlet is not
+	  being generated.
+
 2010-06-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneOptionsPanel.cs: Fix the hires icon pickers.
