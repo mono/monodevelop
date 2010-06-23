@@ -1,5 +1,10 @@
 2010-06-23  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Only update changed lines.
+
+2010-06-23  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
 	  Fixed 'Bug 615988 - Go to declaration not available on
 	  generic methods'.
