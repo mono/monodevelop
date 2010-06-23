@@ -585,7 +585,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			return new DomLocation (loc.Line, loc.Column);
 		}
-		
+
 		public override object VisitObjectCreateExpression (ICSharpCode.NRefactory.Ast.ObjectCreateExpression objectCreateExpression, object data)
 		{
 			IMethod method = searchedMember as IMethod;
@@ -601,6 +601,24 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 				}
 			}
+			
+			IProperty property = searchedMember as IProperty;
+			if (property != null && objectCreateExpression.ObjectInitializer != null) {
+				ResolveResult resolveResult = resolver.ResolveExpression (objectCreateExpression, ConvertLocation (objectCreateExpression.StartLocation));
+				if (resolveResult != null && resolveResult.ResolvedType != null) {
+					IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
+					if (resolvedType != null && resolvedType.FullName == property.DeclaringType.FullName) {
+						foreach (Expression expr in objectCreateExpression.ObjectInitializer.CreateExpressions) {
+							NamedArgumentExpression namedArgumentExpression = expr as NamedArgumentExpression;
+							if (namedArgumentExpression == null)
+								continue;
+							if (namedArgumentExpression.Name == property.Name)
+								AddUniqueReference (namedArgumentExpression.StartLocation.Line, namedArgumentExpression.StartLocation.Column, searchedMemberName);
+						}
+					}
+				}
+			}
+			
 			return base.VisitObjectCreateExpression (objectCreateExpression, data);
 		}
 		
