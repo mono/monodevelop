@@ -52,10 +52,10 @@ namespace MonoDevelop.IPhone
 			foreach (PlistString s in arr) {
 				switch (s.Value) {
 				case "UIInterfaceOrientationPortrait":
-					o |= Orientation.Down;
+					o |= Orientation.Up;
 					break;
 				case "UIInterfaceOrientationPortraitUpsideDown":
-					o |= Orientation.Up;
+					o |= Orientation.Down;
 					break;
 				case "UIInterfaceOrientationLandscapeLeft":
 					o |= Orientation.Left;
