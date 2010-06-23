@@ -137,8 +137,8 @@ namespace MonoDevelop.Refactoring
 		{
 			Initialize ();
 			string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
-			if (CompletionText != GetCurrentWord (window)) 
-				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), CompletionText);
+			if (text != GetCurrentWord (window)) 
+				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
 			if (generateUsing) {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				refactorer.AddGlobalNamespaceImport (dom, data.Document.FileName, type.Namespace);
