@@ -326,11 +326,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			CompletionData item = completionDataList[SelectionIndex];
 			if (item == null)
 				return false;
-			if (item.CompletionText == CompletionData.GetCurrentWord (this)) {
-				AddWordToHistory (item.CompletionText);
-				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
-				return false;
-			}
 			item.InsertCompletionText (this);
 			AddWordToHistory (item.CompletionText);
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));

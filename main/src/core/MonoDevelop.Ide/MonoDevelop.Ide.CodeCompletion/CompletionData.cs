@@ -78,6 +78,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual void InsertCompletionText (CompletionListWindow window)
 		{
+			if (CompletionText == GetCurrentWord (window)) 
+				return;
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), CompletionText);
 		}
 		
