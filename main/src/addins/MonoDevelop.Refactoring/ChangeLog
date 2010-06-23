@@ -1,3 +1,8 @@
+2010-06-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Fixed 'Bug
+	  616653 - "import symbol" does not resolve full typenames'.
+
 2010-06-21  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
