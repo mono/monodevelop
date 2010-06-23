@@ -1522,7 +1522,7 @@ namespace Mono.TextEditor
 		public void UnRegisterVirtualTextMarker (IExtendingTextMarker marker)
 		{
 			List<int> keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);
-			keys.ForEach (key => virtualTextMarkers.Remove (key));
+			keys.ForEach (key => { virtualTextMarkers.Remove (key); CommitLineUpdate (key); });
 		}
 	}
 	
