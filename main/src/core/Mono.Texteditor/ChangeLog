@@ -1,5 +1,12 @@
 2010-06-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextMarker.cs:
+	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 616949 -
+	  Message bubbles prevents the background color of selected
+	  text to change'.
+
+2010-06-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed 'Bug 616921 -
 	  "Move the line or highlighted selection up" command deletes
 	  selection'.
