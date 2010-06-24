@@ -267,7 +267,7 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleIdeAppPreferencesDefaultHideMessageBubblesChanged (object sender, PropertyChangedEventArgs e)
 		{
-			currentErrorMarkers.ForEach (marker => marker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles);
+			currentErrorMarkers.ForEach (marker => marker.IsVisible = !IdeApp.Preferences.DefaultHideMessageBubbles);
 			this.TextEditor.QueueDraw ();
 		}
 
@@ -307,7 +307,7 @@ namespace MonoDevelop.SourceEditor
 					MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (widget.TextEditor, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
 					currentErrorMarkers.Add (errorTextMarker);
 					
-					errorTextMarker.IsExpanded = !IdeApp.Preferences.DefaultHideMessageBubbles;
+					errorTextMarker.IsVisible = !IdeApp.Preferences.DefaultHideMessageBubbles;
 					widget.Document.AddMarker (lineSegment, errorTextMarker, false);
 				}
 			}
