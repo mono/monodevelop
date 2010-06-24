@@ -1,3 +1,8 @@
+2010-06-24  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Check if
+	  line is valid.
+
 2010-06-23  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Document.cs: Fixed 'Bug 616128 - Text editor
