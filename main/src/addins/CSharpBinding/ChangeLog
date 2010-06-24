@@ -1,5 +1,10 @@
 2010-06-24  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs: fixed
+	  bug in abstract member overriding.
+
+2010-06-24  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
 	  Added bounds check.
 

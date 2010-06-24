@@ -381,7 +381,8 @@ namespace MonoDevelop.CSharp.Refactoring
 					return;
 				result.Append (GetModifiers (options.ImplementingType, member));
 				
-				if ((member.Modifiers & Modifiers.Virtual) == Modifiers.Virtual)
+				if ((member.Modifiers & Modifiers.Virtual) == Modifiers.Virtual ||
+				    (member.Modifiers & Modifiers.Abstract) == Modifiers.Abstract)
 					result.Append ("override ");
 			}
 			
