@@ -1,5 +1,11 @@
 2010-06-24  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed 'Bug 616921 -
+	  "Move the line or highlighted selection up" command deletes
+	  selection'.
+
+2010-06-24  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Check if
 	  line is valid.
 
