@@ -1,3 +1,10 @@
+2010-06-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Docking/DockBarItem.cs: Don't hide
+	  the item if the mouse pointer is inside the window. Fixes
+	  bug #565714 - Autohidden pads hide when viewing treeview
+	  tooltips.
+
 2010-06-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
