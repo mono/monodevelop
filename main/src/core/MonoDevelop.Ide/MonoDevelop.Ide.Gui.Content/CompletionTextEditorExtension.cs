@@ -100,6 +100,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			var ignoreMods = Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
 				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
+			
+			// Handle parameter completion
+			if (ParameterInformationWindowManager.IsWindowVisible) {
+				ParameterInformationWindowManager.CurrentCodeCompletionContext = Editor.CurrentCodeCompletionContext;
+				ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
+			}
+			
 			if ((modifier & ignoreMods) != 0)
 				return res;
 			/*
@@ -140,11 +147,6 @@ namespace MonoDevelop.Ide.Gui.Content
 				} else {
 					currentCompletionContext = null;
 				}
-			}
-			// Handle parameter completion
-			if (ParameterInformationWindowManager.IsWindowVisible) {
-				ParameterInformationWindowManager.CurrentCodeCompletionContext = Editor.CurrentCodeCompletionContext;
-				ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
 			}
 			
 			if (enableParameterInsight && completionWidget != null) {
