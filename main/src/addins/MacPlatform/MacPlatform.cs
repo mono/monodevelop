@@ -112,7 +112,9 @@ namespace MonoDevelop.Platform
 		internal static void OpenUrl (string url)
 		{
 			//WORKAROUND: don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
-			var psi = new ProcessStartInfo ("open", url) { UseShellExecute = false };
+			var psi = new ProcessStartInfo ("open", string.Format ("\"{0}\"", url.Replace ("\"", "\\\""))) {
+				UseShellExecute = false
+			};
 			Process.Start (psi);
 		}
 
