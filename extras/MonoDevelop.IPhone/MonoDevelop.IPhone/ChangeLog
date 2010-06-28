@@ -1,3 +1,8 @@
+2010-06-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/IPhoneOpenGLProject.xpt.xml: Update the xib file
+	  in the OpenGL template.
+
 2010-06-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/IPhoneOptionsPanel.cs: Use ipad key should use ipad
