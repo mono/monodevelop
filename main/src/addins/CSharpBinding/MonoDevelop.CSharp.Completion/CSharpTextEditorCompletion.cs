@@ -263,6 +263,16 @@ namespace MonoDevelop.CSharp.Completion
 					foreach (object o in dom.GetNamespaceContents (GetUsedNamespaces (), true, true)) {
 						col.Add (o);
 					}
+					if (resolver.CallingMember is IMethod) {
+						foreach (ITypeParameter tp in ((IMethod)resolver.CallingMember).TypeParameters) {
+							col.Add (tp.Name, "md-keyword");
+						}
+					}
+					if (resolver.CallingType != null) {
+						foreach (ITypeParameter tp in resolver.CallingType.TypeParameters) {
+							col.Add (tp.Name, "md-keyword");
+						}
+					}
 					return completionList;
 				}
 				return null;
@@ -1076,7 +1086,14 @@ namespace MonoDevelop.CSharp.Completion
 					foreach (ITypeParameter tp in ((IMethod)constraintResolver.CallingMember).TypeParameters) {
 						whereDataList.Add (tp.Name, "md-keyword");
 					}
+				} else {
+					if (constraintResolver.CallingType != null) {
+						foreach (ITypeParameter tp in constraintResolver.CallingType.TypeParameters) {
+							whereDataList.Add (tp.Name, "md-keyword");
+						}
+					}
 				}
+
 				return whereDataList;
 			}
 			if (IsInLinqContext (result)) {

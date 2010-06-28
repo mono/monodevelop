@@ -1,3 +1,9 @@
+2010-06-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Submitted patch from Tom Spink <tspink@gmail.com>: Update to
+	  generic code completion
+
 2010-06-24  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs: fixed
