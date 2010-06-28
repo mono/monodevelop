@@ -30,6 +30,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace MonoDevelop.IPhone
 {
@@ -43,6 +44,33 @@ namespace MonoDevelop.IPhone
 		
 		public IPhoneProjectConfiguration (string name) : base (name)
 		{
+		}
+		
+		/// <summary>
+		/// Alters configuration to make output name valid for iOS. 
+		/// Should only be used when creating configurations.
+		/// </summary>
+		public void SanitizeAppName ()
+		{
+			if (string.IsNullOrEmpty (OutputAssembly))
+				return;
+			
+			var sb = new StringBuilder (OutputAssembly.Length);
+			foreach (var c in OutputAssembly)
+				if (AppNameCharIsValid (c))
+					sb.Append (c);
+			OutputAssembly = sb.ToString ();
+		}
+		
+		bool AppNameCharIsValid (char c)
+		{
+			return char.IsLetterOrDigit (c) || c == '_';
+		}
+		
+		public bool IsValidAppName {
+			get {
+				return !string.IsNullOrEmpty (OutputAssembly) && OutputAssembly.All (AppNameCharIsValid);
+			}
 		}
 		
 		public FilePath AppDirectory {

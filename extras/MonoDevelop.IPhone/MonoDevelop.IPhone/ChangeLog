@@ -1,5 +1,15 @@
 2010-06-28  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* IPhoneProject.cs: In new configurations, sanitize output/app
+	  name for iOS.
+
+	* IPhoneBuildExtension.cs: Warn about invalid output/app name.
+
+	* IPhoneProjectConfiguration.cs: Methods to check for validity
+	  of output name for iOS.
+
+2010-06-28  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* templates/IPhoneOpenGLProject.xpt.xml: Update the xib file
 	  in the OpenGL template.
 

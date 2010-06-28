@@ -469,6 +469,9 @@ namespace MonoDevelop.IPhone
 			if (result.ErrorCount > 0)
 				return result;
 			
+			if (!cfg.IsValidAppName)
+				result.AddWarning ("iOS executable name should be alphanumeric, or it may not run (Project Options->Build->Output).");
+			
 			if (result.Append (base.Compile (monitor, item, buildData)).ErrorCount > 0)
 				return result;
 			
