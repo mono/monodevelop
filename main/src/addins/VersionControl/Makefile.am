@@ -1,2 +1,2 @@
 
-SUBDIRS = MonoDevelop.VersionControl MonoDevelop.VersionControl.Subversion
+SUBDIRS = MonoDevelop.VersionControl MonoDevelop.VersionControl.Subversion MonoDevelop.VersionControl.Git

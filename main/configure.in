@@ -166,6 +166,13 @@ AC_ARG_ENABLE(subversion,
 
 AM_CONDITIONAL(ENABLE_SUBVERSION, test x$enable_subversion = xyes)
 
+AC_ARG_ENABLE(git,
+	AC_HELP_STRING([--enable-git],
+		[enable Git support [default=no]]),
+		enable_git=${enableval}, enable_git=no)
+
+AM_CONDITIONAL(ENABLE_GIT, test x$enable_git = xyes)
+
 platform_bindings=""
 
 # Gnome platform addin
@@ -334,6 +341,7 @@ src/addins/NUnit/Makefile
 src/addins/NUnit/NUnitRunner/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
+src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
 src/addins/VersionControl/Makefile
 src/addins/CSharpBinding/Makefile
 src/addins/CSharpBinding/Autotools/Makefile
@@ -399,6 +407,7 @@ echo "   * C# compiler = $CSC"
 echo "   * Mono class library development extensions: $enable_monoextensions"
 echo "   * Version control providers:"
 echo "   *     Subversion (Unix): $enable_subversion"
+echo "   *     Git: $enable_git"
 echo "   * Platform bindings: $platform_bindings"
 echo "   * Unit tests: $enable_tests"
 echo "   * Mozilla location: $MOZILLA_HOME"

@@ -48,7 +48,6 @@
     <ProjectReference type="Project" localcopy="True" refto="MonoDevelop.Profiling" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="NRefactory, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -58,5 +57,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=43ec5927c50c544e" />
     <ProjectReference type="Custom" localcopy="True" Include="MonoDevelop.Core,2.2" refto="MonoDevelop.Core,2.2" ctype="AddinReference" />
     <ProjectReference type="Custom" localcopy="True" Include="MonoDevelop.Ide,2.2" refto="MonoDevelop.Ide,2.2" ctype="AddinReference" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.9.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
 </Project>

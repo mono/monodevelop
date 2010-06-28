@@ -1,3 +1,9 @@
+2010-06-28  Dale Ragan  <dale.ragan@sinesignal.com>
+
+       * Main.sln:
+       * configure.in: Adding MonoDevelop.VersionControl.Git to the solution/build 
+         system.  It is disabled by default, to enable pass --enable-git=yes.
+
 2010-06-25  Levi Bard  <levi@unity3d.com>
 
 	* *.csproj: Clean up Copy Local for project references.

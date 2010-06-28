@@ -114,12 +114,7 @@ namespace MonoDevelop.Database.Designer
 			this.GtkAlignment2.Name = "GtkAlignment2";
 			this.GtkAlignment2.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment2.Gtk.Container+ContainerChild
-			this.columnSelecter = new global::MonoDevelop.Database.Components.SelectColumnWidget ();
-			this.columnSelecter.Sensitive = false;
-			this.columnSelecter.CanFocus = true;
-			this.columnSelecter.Name = "columnSelecter";
-			this.columnSelecter.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.columnSelecter.SingleCheck = false;
+			this.columnSelecter = null;
 			this.GtkAlignment2.Add (this.columnSelecter);
 			this.frame1.Add (this.GtkAlignment2);
 			this.GtkLabel2 = new global::Gtk.Label ();
@@ -139,12 +134,7 @@ namespace MonoDevelop.Database.Designer
 			this.GtkAlignment3.Name = "GtkAlignment3";
 			this.GtkAlignment3.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment3.Gtk.Container+ContainerChild
-			this.referenceColumnSelecter = new global::MonoDevelop.Database.Components.SelectColumnWidget ();
-			this.referenceColumnSelecter.Sensitive = false;
-			this.referenceColumnSelecter.CanFocus = true;
-			this.referenceColumnSelecter.Name = "referenceColumnSelecter";
-			this.referenceColumnSelecter.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.referenceColumnSelecter.SingleCheck = false;
+			this.referenceColumnSelecter = null;
 			this.GtkAlignment3.Add (this.referenceColumnSelecter);
 			this.frame2.Add (this.GtkAlignment3);
 			this.GtkLabel3 = new global::Gtk.Label ();

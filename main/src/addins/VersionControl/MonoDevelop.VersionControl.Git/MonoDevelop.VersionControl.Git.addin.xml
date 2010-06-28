@@ -1,0 +1,24 @@
+<Addin id          = "VersionControl.Git"
+       namespace   = "MonoDevelop"
+       name        = "Git support for the Version Control Add-in"
+       author      = "Dale Ragan"
+       copyright   = "LGPL"
+       url         = "http://www.monodevelop.com/"
+       description = "Git support for the Version Control Add-in"
+       category    = "Version Control"
+       version     = "2.4">
+ 
+	<Runtime>
+		<Import assembly="MonoDevelop.VersionControl.Git.dll"/>
+	</Runtime>
+
+	<Dependencies>
+	    <Addin id="Core" version="2.4"/>
+	    <Addin id="Ide" version="2.4"/>
+	    <Addin id="VersionControl" version="2.4"/>
+	</Dependencies>
+	
+	<Extension path="/MonoDevelop/VersionControl/VersionControlSystems">
+		<Class class="MonoDevelop.VersionControl.Git.GitClient"/>
+	</Extension>
+</Addin>

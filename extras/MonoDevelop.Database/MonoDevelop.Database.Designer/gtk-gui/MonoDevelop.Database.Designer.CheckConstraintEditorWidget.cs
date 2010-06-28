@@ -100,10 +100,7 @@ namespace MonoDevelop.Database.Designer
 			this.alignment.Name = "alignment";
 			this.alignment.LeftPadding = ((uint)(12));
 			// Container child alignment.Gtk.Container+ContainerChild
-			this.sqlEditor = new global::MonoDevelop.Database.Components.SqlEditorWidget ();
-			this.sqlEditor.Events = ((global::Gdk.EventMask)(256));
-			this.sqlEditor.Name = "sqlEditor";
-			this.sqlEditor.Editable = false;
+			this.sqlEditor = null;
 			this.alignment.Add (this.sqlEditor);
 			this.frame.Add (this.alignment);
 			this.GtkLabel2 = new global::Gtk.Label ();

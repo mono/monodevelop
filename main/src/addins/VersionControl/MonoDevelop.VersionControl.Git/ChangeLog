@@ -1,0 +1,16 @@
+2010-06-28  Dale Ragan  <dale.ragan@sinesignal.com>
+
+	* Makefile.am:
+	* MonoDevelop.VersionControl.Git.csproj:
+	* AssemblyInfo.cs:
+	* MonoDevelop.VersionControl.Git.addin.xml:
+	* MonoDevelop.VersionControl.Git/GitClient.cs:
+	* MonoDevelop.VersionControl.Git/GitVersionControl.cs:
+	* MonoDevelop.VersionControl.Git/GitRepository.cs:
+	  Official kickoff of the 'Support for Git' task.  This 
+	  is mainly a skeleton and no functionality.  The add-in 
+	  is recognized by MonoDevelop and the Version Control add-in 
+	  sees the new Git Version Control System.  Of course it 
+	  doesn't show up in the drop down, due to the 
+	  NotImplementedException's.
+

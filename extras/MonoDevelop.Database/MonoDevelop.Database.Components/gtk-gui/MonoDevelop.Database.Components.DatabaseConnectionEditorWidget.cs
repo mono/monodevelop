@@ -23,8 +23,7 @@ namespace MonoDevelop.Database.Components
 			this.hbox3.Name = "hbox3";
 			this.hbox3.Spacing = 6;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.comboConnection = new global::MonoDevelop.Database.Components.DatabaseConnectionContextComboBox ();
-			this.comboConnection.Name = "comboConnection";
+			this.comboConnection = null;
 			this.hbox3.Add (this.comboConnection);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.comboConnection]));
 			w1.Position = 0;
@@ -85,7 +84,6 @@ namespace MonoDevelop.Database.Components
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.comboConnection.Changed += new global::System.EventHandler (this.OnComboConnectionChanged);
 			this.buttonNew.Clicked += new global::System.EventHandler (this.OnButtonNewClicked);
 			this.buttonEdit.Clicked += new global::System.EventHandler (this.OnButtonEditClicked);
 		}

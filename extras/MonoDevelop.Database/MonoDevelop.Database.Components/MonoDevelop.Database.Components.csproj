@@ -111,10 +111,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>MonoDevelop.GtkCore</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>MonoDevelop.Ide</HintPath>
-    </Reference>
     <Reference Include="NRefactory">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>NRefactory</HintPath>
