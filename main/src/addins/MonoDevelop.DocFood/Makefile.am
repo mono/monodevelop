@@ -49,6 +49,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
+	-r:../../../build/bin/Mono.TextEditor.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \
 	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../../build/bin/NRefactory.dll \
