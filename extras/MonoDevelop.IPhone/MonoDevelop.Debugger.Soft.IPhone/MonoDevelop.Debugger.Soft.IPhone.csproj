@@ -71,12 +71,12 @@
       <Package>monodevelop-core-addins</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0a2c35c1b147027a">
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=889ced0135e7a3f3">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6475773cf49b8e0d">
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=777769bbe9a538f6">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
       <Private>False</Private>

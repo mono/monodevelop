@@ -86,7 +86,12 @@ namespace MonoDevelop.Database.Designer
 			global::Gtk.Paned.PanedChild w6 = ((global::Gtk.Paned.PanedChild)(this.hpaned[this.vbox3]));
 			w6.Resize = false;
 			// Container child hpaned.Gtk.Paned+PanedChild
-			this.columnSelecter = null;
+			this.columnSelecter = new global::MonoDevelop.Database.Components.SelectColumnWidget ();
+			this.columnSelecter.Sensitive = false;
+			this.columnSelecter.CanFocus = true;
+			this.columnSelecter.Name = "columnSelecter";
+			this.columnSelecter.ShadowType = ((global::Gtk.ShadowType)(1));
+			this.columnSelecter.SingleCheck = false;
 			this.hpaned.Add (this.columnSelecter);
 			this.Add (this.hpaned);
 			if ((this.Child != null)) {

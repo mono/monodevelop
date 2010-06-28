@@ -138,6 +138,15 @@
     <Reference Include="Mono.Addins.Setup, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="MonoDevelop.Core.Gui, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects.Gui, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
@@ -191,6 +200,9 @@
     <Reference Include="MonoDevelop.Core, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="MonoDevelop.Components, Version=2.1.0.0, Culture=neutral">
+      <Package>monodevelop</Package>
+    </Reference>
     <Reference Include="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
@@ -216,9 +228,6 @@
       <Package>monodevelop</Package>
     </Reference>
     <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1968fe265398bfbb">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>

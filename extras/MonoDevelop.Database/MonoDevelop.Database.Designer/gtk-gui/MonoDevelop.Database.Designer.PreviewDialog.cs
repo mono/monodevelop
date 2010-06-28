@@ -32,7 +32,10 @@ namespace MonoDevelop.Database.Designer
 			this.vboxContent.Name = "vboxContent";
 			this.vboxContent.Spacing = 6;
 			// Container child vboxContent.Gtk.Box+BoxChild
-			this.sqlEditor = null;
+			this.sqlEditor = new global::MonoDevelop.Database.Components.SqlEditorWidget ();
+			this.sqlEditor.Events = ((global::Gdk.EventMask)(256));
+			this.sqlEditor.Name = "sqlEditor";
+			this.sqlEditor.Editable = false;
 			this.vboxContent.Add (this.sqlEditor);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vboxContent[this.sqlEditor]));
 			w2.Position = 0;

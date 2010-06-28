@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -35,6 +35,34 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\CORDBLib.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.AspNet, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\MonoDevelop.Ide.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NRefactory, Version=2.1.0.0, Culture=neutral, PublicKeyToken=efe927acf176eea2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\main\build\bin\NRefactory.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -47,34 +75,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6475773cf49b8e0d">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.AspNet, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Debugger, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\bin\MonoDevelop.Ide.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\bin\NRefactory.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayAdaptor.cs" />
@@ -105,7 +105,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
