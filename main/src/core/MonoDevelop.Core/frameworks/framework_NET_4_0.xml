@@ -38,6 +38,7 @@
   <Assembly name="System.Net" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="System.ServiceModel.Web" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Web.Abstractions" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
+  <Assembly name="System.Web.ApplicationServices" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Web.DynamicData.Design" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Web.DynamicData" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Web.Entity.Design" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
