@@ -467,13 +467,13 @@ namespace MonoDevelop.VersionControl.Subversion
 		    return IsHistoryAvailable (localPath);
 		}
 		
-		public override string[] GetAnnotations (FilePath localPath)
+		public override Annotation[] GetAnnotations (FilePath localPath)
 		{
-			List<string> annotations = Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base);
+			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base));
 			Range    original,
 			         local;
-			string nextRev = GettextCatalog.GetString ("working copy");
-			         
+			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "", "");
+
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (Hunk hunk in new Diff (GetPathToBaseText (localPath), localPath.FullPath, true, true)) {
 				if (!hunk.Same) {

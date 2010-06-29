@@ -1,3 +1,11 @@
+2010-06-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionVersionControl.cs:
+	  Track API changes (annotations are now given back as class
+	  instead of a custom string).
+
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion.Gui/UserPasswordDialog.cs:

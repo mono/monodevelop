@@ -292,9 +292,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		/// <returns>
 		/// A <see cref="System.String"/> annotation for each line in file.
 		/// </returns>
-		public virtual List<string> GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd)
+		public virtual Annotation[] GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd)
 		{
-			return new List<string> ();
+			return new Annotation[0];
 		}
 	}
 	

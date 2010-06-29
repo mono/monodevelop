@@ -421,7 +421,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return ret;
 		}
 		
-		public override List<string> GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd)
+		public override Annotation[] GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd)
 		{
 			if (file == FilePath.Null)
 				throw new ArgumentNullException ();
@@ -430,10 +430,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev revisionEnd = (LibSvnClient.Rev) revEnd;
 			
 			int numAnnotations = File.ReadAllLines (repo.GetPathToBaseText(file)).Length;
-			List<string> annotations = new List<string> (numAnnotations);
-			for (int i=0; i<numAnnotations; ++i) {
-				annotations.Insert (0, string.Empty);
-			}
+			Annotation[] annotations = new Annotation [numAnnotations];
 			
 			AnnotationCollector collector = new AnnotationCollector (annotations);
 			
@@ -1279,21 +1276,21 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		/// </summary>
 		private class AnnotationCollector
 		{
-			List<string> annotations;
+			Annotation[] annotations;
 			
 			/// <summary>
 			/// A svn_client_blame_receiver_t implementation.
 			/// </summary>
 			public IntPtr Func (IntPtr baton, long line_no, int revision, string author, string date, string line, IntPtr pool)
 			{
-				if (line_no < annotations.Count) {
-					annotations[(int)line_no] = string.Format ("{0} {1} {2}", revision, author, date).Substring (0, 15);
+				if (line_no < annotations.Length) {
+					annotations[(int)line_no] = new Annotation (revision.ToString (), author, date);
 				}
 				
 				return IntPtr.Zero;
 			}
 			
-			public AnnotationCollector (List<string> annotations)
+			public AnnotationCollector (Annotation[] annotations)
 			{
 				this.annotations = annotations;
 			}
