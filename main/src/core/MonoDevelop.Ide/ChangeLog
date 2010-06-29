@@ -1,3 +1,8 @@
+2010-06-29  Carlo Kok  <ck@remobjects.com>
+
+	* MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs: Make
+	  the label localizable.
+
 2010-06-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/Document.cs: Exposed workbench window.
