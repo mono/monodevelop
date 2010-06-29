@@ -36,6 +36,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using System.Reflection;
 using MonoDevelop.MacDev.Plist;
+using System.Text;
 
 namespace MonoDevelop.IPhone
 {
@@ -300,6 +301,8 @@ namespace MonoDevelop.IPhone
 				
 				simConf.OutputDirectory = binPath.Combine (simConf.Platform, simConf.Name);
 				deviceConf.OutputDirectory = binPath.Combine (deviceConf.Platform, deviceConf.Name);
+				simConf.SanitizeAppName ();
+				deviceConf.SanitizeAppName ();
 			}
 		}
 		
@@ -351,9 +354,10 @@ namespace MonoDevelop.IPhone
 			} else if (conf.Platform == PLAT_SIM) {
 				conf.MtouchLink = MtouchLinkMode.None;
 			}
+			conf.SanitizeAppName ();
 			return conf;
 		}
-		
+
 		#endregion
 		
 		#region Execution

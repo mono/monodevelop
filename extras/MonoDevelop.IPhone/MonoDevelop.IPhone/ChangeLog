@@ -1,3 +1,28 @@
+2010-06-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* IPhoneProject.cs: In new configurations, sanitize output/app
+	  name for iOS.
+
+	* IPhoneBuildExtension.cs: Warn about invalid output/app name.
+
+	* IPhoneProjectConfiguration.cs: Methods to check for validity
+	  of output name for iOS.
+
+2010-06-28  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* templates/IPhoneOpenGLProject.xpt.xml: Update the xib file
+	  in the OpenGL template.
+
+2010-06-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Gui/IPhoneOptionsPanel.cs: Use ipad key should use ipad
+	  orientation value, not iphone value.
+
+2010-06-23  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Orientation.cs: Fix UIInterfaceOrientation parsing bug that
+	  flipped Portrait and PortraitUpsideDown values.
+
 2010-06-23  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* templates/IPadApplicationXib.xft.xml:
