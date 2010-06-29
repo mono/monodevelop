@@ -86,6 +86,48 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
+		public void TestFixedFieldSpacesBeforeComma ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	fixed int a[10]           ,                   b[10],          c[10];
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.SpacesAfterComma = true;
+			policy.SpacesBeforeComma = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	fixed int a[10] , b[10] , c[10];
+}", data.Document.Text);
+		}
+
+		[Test()]
+		public void TestConstFieldSpacesBeforeComma ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	const int a = 1           ,                   b = 2,          c = 3;
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.SpacesAfterComma = false;
+			policy.SpacesBeforeComma = false;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test {
+	const int a = 1,b = 2,c = 3;
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestBeforeDelegateDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
