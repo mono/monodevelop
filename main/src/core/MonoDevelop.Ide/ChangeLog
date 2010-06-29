@@ -1,3 +1,9 @@
+2010-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Components.Docking/DockItemContainer.cs: Added
+	  missing null checks. Fixes bug #613437 - Null Reference
+	  Exception on loading a project.
+
 2010-06-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Components.Docking/DockBarItem.cs: Don't hide
