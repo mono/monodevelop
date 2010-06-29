@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui
 		bool parsing;
 		const int ParseDelay = 600;
 
-		internal IWorkbenchWindow Window {
+		public IWorkbenchWindow Window {
 			get { return window; }
 		}
 		

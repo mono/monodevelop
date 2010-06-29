@@ -1,3 +1,7 @@
+2010-06-29  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Exposed workbench window.
+
 2010-06-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Navigation/NavigationHistoryService.cs: When
