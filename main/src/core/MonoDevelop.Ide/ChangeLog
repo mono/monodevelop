@@ -1,5 +1,12 @@
 2010-06-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.Ide.Navigation/NavigationHistoryService.cs: When
+	  clearing the navigation history, don't reuse the current
+	  item since it is destroyed by the clear method. Should fix
+	  bug #606557 - Invalid items in history service.
+
+2010-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Components.Docking/DockItemContainer.cs: Added
 	  missing null checks. Fixes bug #613437 - Null Reference
 	  Exception on loading a project.
