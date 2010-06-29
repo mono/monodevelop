@@ -123,7 +123,7 @@
 			description = "Unlock files in the repository, so that other user can change them."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Annotate" 
 			_label = "Show Annotations"
-			description = "Show the origin of each line in a file."/>
+			description = "Show the origin of each line in a file."/> <!--
 		<Command id = "MonoDevelop.VersionControl.Commands.ShowAnnotations" 
 			defaultHandler = "MonoDevelop.VersionControl.ShowAnnotationsCommand" 
 			_label = "Show Annotations"
@@ -131,7 +131,7 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.HideAnnotations" 
 			defaultHandler = "MonoDevelop.VersionControl.HideAnnotationsCommand" 
 			_label = "Hide Annotations"
-			description = "Hide Annotations."/>
+			description = "Hide Annotations."/>-->
 		<Command id = "MonoDevelop.VersionControl.Commands.CreatePatch" 
 			_label = "Create _Patch"
 			icon = "vc-diff"
@@ -188,11 +188,11 @@
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock" type="MonoDevelop.VersionControl.AddinCommandHandler"/>
 		<SeparatorItem id = "CommandSeparator3" />
 	</Extension>
-	
+	<!--
 	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor"> 
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.ShowAnnotations"/>
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.HideAnnotations"/>
-	</Extension>	
+	</Extension>	-->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="VersionControl" _label="Version Control">

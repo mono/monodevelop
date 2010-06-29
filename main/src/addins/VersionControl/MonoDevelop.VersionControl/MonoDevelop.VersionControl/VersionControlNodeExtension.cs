@@ -348,47 +348,52 @@ namespace MonoDevelop.VersionControl
 			
 			try {
 				switch (cmd) {
-					case Commands.Update:
-						res = UpdateCommand.Update (items, test);
-						break;
-					case Commands.Diff:
-						res = DiffView.Show (items, test);
-						break;
-					case Commands.Log:
-						res = MonoDevelop.VersionControl.Views.LogView.Show (items, null, test);
-						break;
-					case Commands.Status:
-						res = StatusView.Show (items, test);
-						break;
-					case Commands.Commit:
-						res = CommitCommand.Commit (items, test);
-						break;
-					case Commands.Add:
-						res = AddCommand.Add (items, test);
-						break;
-					case Commands.Remove:
-						res = RemoveCommand.Remove (items, test);
-						break;
-					case Commands.Revert:
-						res = RevertCommand.Revert (items, test);
-						break;
-					case Commands.Lock:
-						res = LockCommand.Lock (items, test);
-						break;
-					case Commands.Unlock:
-						res = UnlockCommand.Unlock (items, test);
-						break;
-					case Commands.Publish:
-						VersionControlItem it = items [0];
-						if (items.Count == 1 && it.IsDirectory && it.WorkspaceObject != null)
-							res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
-						break;
-					case Commands.Annotate:
-						res = AnnotateView.Show (items[0].Repository, items[0].Path, test);
-						break;
-					case Commands.CreatePatch:
-						res = CreatePatchCommand.CreatePatch (items, test);
-						break;
+				case Commands.Update:
+					res = UpdateCommand.Update (items, test);
+					break;
+				case Commands.Diff:
+					if (!test)
+						ComparisonView.Show (items);
+					res = true;
+//					res = DiffView.Show (items, test);
+					break;
+				case Commands.Log:
+					res = MonoDevelop.VersionControl.Views.LogView.Show (items, null, test);
+					break;
+				case Commands.Status:
+					res = StatusView.Show (items, test);
+					break;
+				case Commands.Commit:
+					res = CommitCommand.Commit (items, test);
+					break;
+				case Commands.Add:
+					res = AddCommand.Add (items, test);
+					break;
+				case Commands.Remove:
+					res = RemoveCommand.Remove (items, test);
+					break;
+				case Commands.Revert:
+					res = RevertCommand.Revert (items, test);
+					break;
+				case Commands.Lock:
+					res = LockCommand.Lock (items, test);
+					break;
+				case Commands.Unlock:
+					res = UnlockCommand.Unlock (items, test);
+					break;
+				case Commands.Publish:
+					VersionControlItem it = items [0];
+					if (items.Count == 1 && it.IsDirectory && it.WorkspaceObject != null)
+						res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
+					break;
+				case Commands.Annotate:
+					if (!test)
+						BlameView.Show (items);
+					res = true;
+					break;
+				case Commands.CreatePatch:
+					res = CreatePatchCommand.CreatePatch (items, test);
+					break;
 				}
 			}
 			catch (Exception ex) {

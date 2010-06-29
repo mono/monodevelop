@@ -89,9 +89,13 @@ namespace MonoDevelop.VersionControl
 			VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
 			if (args.Change == ExtensionChange.Add) {
 				handlers.Add (vcs);
-				// Include the repository type in the serialization context, so repositories
-				// of this type can be deserialized from the configuration file.
-				dataContext.IncludeType (vcs.CreateRepositoryInstance ().GetType ());
+				try {
+					// Include the repository type in the serialization context, so repositories
+					// of this type can be deserialized from the configuration file.
+					dataContext.IncludeType (vcs.CreateRepositoryInstance ().GetType ());
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while adding version control system.", e);
+				}
 			}
 			else {
 				handlers.Remove (vcs);

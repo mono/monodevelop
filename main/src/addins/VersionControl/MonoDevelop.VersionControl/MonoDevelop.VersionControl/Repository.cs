@@ -449,9 +449,34 @@ namespace MonoDevelop.VersionControl
 		/// A <see cref="System.String"/> corresponding to each line 
 		/// of the file to which repositoryPath points.
 		/// </returns>
-		public virtual string[] GetAnnotations (FilePath repositoryPath)
+		public virtual Annotation[] GetAnnotations (FilePath repositoryPath)
 		{
-			return new string[0];
+			return new Annotation[0];
+		}
+	}
+	
+	public class Annotation
+	{
+		public string Revision {
+			get;
+			private set;
+		}
+
+		public string Author {
+			get;
+			private set;
+		}
+
+		public string Date {
+			get;
+			private set;
+		}
+
+		public Annotation (string revision, string author, string date)
+		{
+			this.Revision = revision;
+			this.Author = author;
+			this.Date = date;
 		}
 	}
 	

@@ -33,7 +33,7 @@ using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl 
-{
+{/*
 	/// <summary>
 	/// Command handler for showing annotations
 	/// </summary>
@@ -58,8 +58,9 @@ namespace MonoDevelop.VersionControl
 			Repository repo = VersionControlService.GetRepositoryReference (Path.GetDirectoryName (file.FullPath), file.FileName);
 			item.Visible = AnnotateView.Show (repo, file, true);
 		}
-	}
-
+	}*/
+	
+	/*
 	/// <summary>
 	/// Command handler for hiding annotations
 	/// </summary>
@@ -84,5 +85,5 @@ namespace MonoDevelop.VersionControl
 			Repository repo = VersionControlService.GetRepositoryReference (Path.GetDirectoryName (file.FullPath), file.FileName);
 			item.Visible = AnnotateView.Hide (repo, file, true);
 		}
-	}
+	}*/
 }

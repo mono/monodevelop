@@ -25,7 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
+/*
 using System;
 using System.Threading;
 using System.Collections.Generic;
@@ -130,7 +130,7 @@ namespace MonoDevelop.VersionControl.Views
 	internal class AnnotationMargin: Margin
 	{
 		Repository repo;
-		List<string> annotations;
+		List<Annotation> annotations;
 		Revision[] history;
 		Pango.Layout layout;
 		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC, locallyModifiedGC;
@@ -138,7 +138,7 @@ namespace MonoDevelop.VersionControl.Views
 		AnnotationTooltipProvider tooltipProvider;
 		Ide.Gui.Document document;
 		
-		private static readonly string locallyModified = "*****";
+		private static readonly Annotation locallyModified = new Annotation ("***", "***", "***");
 		
 		public override int Width {
 			get { return width; }
@@ -163,7 +163,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.width = 0;
 			this.editor = editor;
 			this.document = doc;
-			annotations = new List<string> ();
+			annotations = new List<Annotation> ();
 			UpdateAnnotations (null, null);
 			
 			tooltipProvider = new AnnotationTooltipProvider (this);
@@ -204,7 +204,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					annotations = new List<string> (repo.GetAnnotations (editor.Document.FileName));
+					annotations = new List<Annotation> (repo.GetAnnotations (editor.Document.FileName));
 					if (null == history)
 						history = repo.GetHistory (editor.Document.FileName, null);
 				} catch (Exception ex) {
@@ -298,9 +298,9 @@ namespace MonoDevelop.VersionControl.Views
 			int tmpwidth = 0,
 			    height = 0;
 			
-			foreach (string note in annotations) {
-				if (!string.IsNullOrEmpty (note)) { 
-					layout.SetText (note + "_");
+			foreach (Annotation note in annotations) {
+				if (!string.IsNullOrEmpty (note.Author)) { 
+					layout.SetText (note.Author + note.Date + note.Revision + "_");
 					layout.GetPixelSize (out tmpwidth, out height);
 					width = Math.Max (width, tmpwidth);
 				}
@@ -326,9 +326,9 @@ namespace MonoDevelop.VersionControl.Views
 		/// </summary>
 		protected override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
 		{
-			string ann = (line < annotations.Count)? annotations[line]: string.Empty;
+			Annotation ann = (line < annotations.Count)? annotations[line]: new Annotation ("", "", "");
 			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, lineHeight);
-			drawable.DrawRectangle (locallyModified.Equals (ann, StringComparison.Ordinal)? locallyModifiedGC: lineNumberBgGC, true, drawArea);
+			drawable.DrawRectangle (ann? locallyModifiedGC: lineNumberBgGC, true, drawArea);
 			
 			if (!locallyModified.Equals (ann, StringComparison.Ordinal) &&
 			    (line < annotations.Count)) {
@@ -347,7 +347,7 @@ namespace MonoDevelop.VersionControl.Views
 		/// <param name="text">
 		/// A <see cref="System.String"/>: The annotation to be used.
 		/// </param>
-		void SetAnnotation (int index, string text)
+		void SetAnnotation (int index, Annotation text)
 		{
 			int difference = index - annotations.Count;
 			
@@ -426,4 +426,4 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#endregion
 	}
-}
+}*/
