@@ -60,6 +60,7 @@
 			<Style name="searchresult" color="#ffe2b9"/>
 		</Style>
 		<Style name="selection" color="aluminium1" bgColor="skyblue1"/>
+		<Style name="selection.inactive" color="aluminium1" bgColor="aluminium3"/>
 		<Style name="link" color="blue"/>
 		<Style name="literal" color="plum2"/>
 		<Style name="punctuation" color="aluminium6"/>

@@ -1481,7 +1481,7 @@ namespace Mono.TextEditor
 			if (e.Area.Contains (TextViewMargin.caretX, TextViewMargin.caretY))
 				textViewMargin.DrawCaret (e.Window);
 			
-			return true;
+			return base.OnExposeEvent (e);
 		}
 
 		#region TextEditorData functions

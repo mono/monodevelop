@@ -120,6 +120,13 @@ namespace Mono.TextEditor.Highlighting
 				return GetChunkStyle (SelectionString);
 			}
 		}
+		
+		public const string InactiveSelectionString = "text.selection.inactive";
+		public virtual ChunkStyle InactiveSelection {
+			get {
+				return GetChunkStyle (InactiveSelectionString);
+			}
+		}
 
 		public const string LineMarkerString = "marker.line";
 		public virtual Color LineMarker {
@@ -403,6 +410,7 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (LineChangedBgString, 108, 226, 108);
 			
 			SetStyle (SelectionString,     255, 255, 255, 96, 87, 210);
+			SetStyle (InactiveSelectionString,     255, 255, 255, 196, 196, 196);
 			
 			SetStyle (LineMarkerString,    200, 255, 255);
 			SetStyle (RulerString,         187, 187, 187);

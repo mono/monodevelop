@@ -68,6 +68,7 @@
 	<!-- environment -->
 	<Style name="text" color="black" bgColor="white"/>
 	<Style name="text.selection" color="human_highlight" bgColor="black"/>
+	<Style name="text.selection.inactive" color="human_highlight" bgColor="darkgray"/>
 	<Style name="text.background.searchresult" color="yellow"/>
 	
 	<Style name="text.link" color="blue"/>

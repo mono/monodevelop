@@ -937,18 +937,23 @@ namespace Mono.TextEditor
 		FoldSegmentTreeNode foldSegmentTree = new FoldSegmentTreeNode ();
 		
 		internal FoldSegmentTreeNode FoldSegmentTree {
-			get { return this.foldSegmentTree; }
+			get { return !IgnoreFoldings ? this.foldSegmentTree : new FoldSegmentTreeNode (); }
+		}
+		
+		public bool IgnoreFoldings {
+			get;
+			set;
 		}
 		
 		public bool HasFoldSegments {
 			get {
-				return foldSegmentTree.FoldSegments.Any ();
+				return FoldSegmentTree.FoldSegments.Any ();
 			}
 		}
 		
 		public IEnumerable<FoldSegment> FoldSegments {
 			get {
-				return foldSegmentTree.FoldSegments;
+				return FoldSegmentTree.FoldSegments;
 			}
 		}
 		
@@ -1102,7 +1107,7 @@ namespace Mono.TextEditor
 		{
 			if (offset < 0 || offset >= Length)
 				return new FoldSegment[0];
-			return foldSegmentTree.GetFoldingsFromOffset (offset);
+			return FoldSegmentTree.GetFoldingsFromOffset (offset);
 		}
 		
 		public IEnumerable<FoldSegment> GetFoldingContaining (int lineNumber)
@@ -1114,7 +1119,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return new FoldSegment[0];
-			return foldSegmentTree.GetFoldingContaining (line);
+			return FoldSegmentTree.GetFoldingContaining (line);
 		}
 
 		public IEnumerable<FoldSegment> GetStartFoldings (int lineNumber)
@@ -1126,7 +1131,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return new FoldSegment[0];
-			return foldSegmentTree.GetStartFoldings (line);
+			return FoldSegmentTree.GetStartFoldings (line);
 		}
 
 		public IEnumerable<FoldSegment> GetEndFoldings (int lineNumber)
@@ -1275,7 +1280,7 @@ namespace Mono.TextEditor
 		{
 			if (visualLineNumber <= 0)
 				return 0;
-			return this.foldSegmentTree.VisualToLogicalLine (this, visualLineNumber);
+			return this.FoldSegmentTree.VisualToLogicalLine (this, visualLineNumber);
 		}
 		
 		public DocumentLocation LogicalToVisualLocation (TextEditorData editor, DocumentLocation location)
@@ -1288,7 +1293,7 @@ namespace Mono.TextEditor
 		
 		public int LogicalToVisualLine (int logicalLineNumber)
 		{
-			return this.foldSegmentTree.LogicalToVisualLine (this, logicalLineNumber);
+			return this.FoldSegmentTree.LogicalToVisualLine (this, logicalLineNumber);
 		}
 		
 		#region Update logic
