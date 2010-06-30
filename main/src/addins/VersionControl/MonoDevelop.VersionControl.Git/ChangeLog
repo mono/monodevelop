@@ -1,3 +1,8 @@
+2010-06-30  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.VersionControl.Git.csproj: Make MD refs private.
+	  Should fix running on .NET.
+
 2010-06-28  Dale Ragan  <dale.ragan@sinesignal.com>
 
 	* Makefile.am:
