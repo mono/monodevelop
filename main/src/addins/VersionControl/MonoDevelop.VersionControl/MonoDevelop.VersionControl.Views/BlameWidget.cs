@@ -473,7 +473,7 @@ namespace MonoDevelop.VersionControl.Views
 			void UpdateWidth ()
 			{
 				int tmpwidth, height, width = 120;
-				
+				int dateTimeLength = -1;
 				foreach (Annotation note in annotations) {
 					if (!string.IsNullOrEmpty (note.Author)) { 
 						string dateTime;
@@ -482,12 +482,16 @@ namespace MonoDevelop.VersionControl.Views
 						} catch (Exception) {
 							dateTime = "?";
 						}
-						layout.SetText (note.Author + dateTime + note.Revision);
+						if (dateTimeLength < 0 && dateTime != "?") {
+							layout.SetText (dateTime);
+							layout.GetPixelSize (out dateTimeLength, out height);
+						}
+						layout.SetText (note.Author + note.Revision);
 						layout.GetPixelSize (out tmpwidth, out height);
 						width = Math.Max (width, tmpwidth);
 					}
 				}
-				WidthRequest = width + 54;
+				WidthRequest = dateTimeLength + width + 54;
 				QueueResize ();
 			}
 
@@ -520,12 +524,17 @@ namespace MonoDevelop.VersionControl.Views
 					while (curY < Allocation.Bottom) {
 						int curStart = curY;
 						int lineStart = line;
-						int w = 0, h = 16;
+						int w = 0, w2 = 0, h = 16;
 						Annotation ann = line < annotations.Count ? annotations[line] : null;
 						if (ann != null) {
 							layout.SetText (ann.Author);
 							layout.GetPixelSize (out w, out h);
 							e.Window.DrawLayout (Style.BlackGC, leftMargin, curY + (widget.Editor.LineHeight - h) / 2, layout);
+							
+							
+							layout.SetText (ann.Revision);
+							layout.GetPixelSize (out w2, out h);
+							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w2, curY + (widget.Editor.LineHeight - h) / 2, layout);
 							
 							string dateTime;
 							try {
@@ -533,13 +542,10 @@ namespace MonoDevelop.VersionControl.Views
 							} catch (Exception) {
 								dateTime = "?";
 							}
+							int middle = w + (Allocation.Width - leftMargin - w - w2) / 2;
 							layout.SetText (dateTime);
 							layout.GetPixelSize (out w, out h);
-							e.Window.DrawLayout (Style.BlackGC, leftMargin + (Allocation.Width - leftMargin - w) / 2, curY + (widget.Editor.LineHeight - h) / 2, layout);
-							
-							layout.SetText (ann.Revision);
-							layout.GetPixelSize (out w, out h);
-							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w, curY + (widget.Editor.LineHeight - h) / 2, layout);
+							e.Window.DrawLayout (Style.BlackGC, leftMargin + middle - w / 2, curY + (widget.Editor.LineHeight - h) / 2, layout);
 						}
 						do {
 							int lineHeight = widget.Editor.GetLineHeight (line);
