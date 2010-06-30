@@ -43,15 +43,32 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		public static void AttachViewContents (Document document, VersionControlItem item)
+		{
+			IWorkbenchWindow window = document.Window;
+			if (window.SubViewContents.Any (sub => sub is ComparisonView))
+				return;
+			window.AttachViewContent (new ComparisonView (document, item));
+			window.AttachViewContent (new BlameView (document, item));
+			window.AttachViewContent (new LogView (item.Repository, item.Path));
+		}
+
 		public static void Show (VersionControlItemList items)
 		{
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
-				document.ActiveView.WorkbenchWindow.AttachViewContent (new ComparisonView (document, item));
-				document.ActiveView.WorkbenchWindow.AttachViewContent (new BlameView (document, item));
-				document.ActiveView.WorkbenchWindow.AttachViewContent (new LogView (item.Repository, item.Path));
+				ComparisonView.AttachViewContents (document, item);
 				document.Window.SwitchView (1);
 			}
+		}
+		
+		public static bool CanShow (VersionControlItemList items)
+		{
+			foreach (VersionControlItem item in items) {
+				if (item.Repository.IsModified (item.Path))
+					return true;
+			}
+			return false;
 		}
 
 		public ComparisonView (Document doc, VersionControlItem item) : base ("Comparison")

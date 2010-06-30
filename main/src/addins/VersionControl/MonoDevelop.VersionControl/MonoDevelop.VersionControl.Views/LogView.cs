@@ -20,15 +20,30 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore changedpathstore;
 		Toolbar commandbar;
 		
-		public static bool Show (VersionControlItemList items, Revision since, bool test)
+		public static void Show (VersionControlItemList items, Revision since)
+		{
+			foreach (VersionControlItem item in items) {
+				var document = IdeApp.Workbench.OpenDocument (item.Path);
+				ComparisonView.AttachViewContents (document, item);
+				document.Window.SwitchView (3);
+			}
+			
+		/*	bool found = false;
+			foreach (VersionControlItem item in items) {
+				if (item.Repository.IsHistoryAvailable (item.Path)) {
+					found = true;
+					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
+				}
+			}
+			return found;*/
+		}
+		
+		public static bool CanShow (VersionControlItemList items, Revision since)
 		{
 			bool found = false;
 			foreach (VersionControlItem item in items) {
 				if (item.Repository.IsHistoryAvailable (item.Path)) {
-					if (test)
-						return true;
-					found = true;
-					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
+					return true;
 				}
 			}
 			return found;

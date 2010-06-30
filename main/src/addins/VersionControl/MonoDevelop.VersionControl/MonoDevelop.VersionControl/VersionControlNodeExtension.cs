@@ -352,13 +352,18 @@ namespace MonoDevelop.VersionControl
 					res = UpdateCommand.Update (items, test);
 					break;
 				case Commands.Diff:
-					if (!test)
+					if (!test) {
 						ComparisonView.Show (items);
-					res = true;
-//					res = DiffView.Show (items, test);
+					} else {
+						res = ComparisonView.CanShow (items);
+					}
 					break;
 				case Commands.Log:
-					res = MonoDevelop.VersionControl.Views.LogView.Show (items, null, test);
+					if (!test) {
+						MonoDevelop.VersionControl.Views.LogView.Show (items, null);
+					} else {
+						res = MonoDevelop.VersionControl.Views.LogView.CanShow (items, null);
+					}
 					break;
 				case Commands.Status:
 					res = StatusView.Show (items, test);
@@ -387,9 +392,11 @@ namespace MonoDevelop.VersionControl
 						res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
 					break;
 				case Commands.Annotate:
-					if (!test)
+					if (!test) {
 						BlameView.Show (items);
-					res = true;
+					} else {
+						res = BlameView.CanShow (items[0].Repository, items[0].Path);
+					}
 					break;
 				case Commands.CreatePatch:
 					res = CreatePatchCommand.CreatePatch (items, test);

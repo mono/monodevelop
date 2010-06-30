@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 namespace MonoDevelop.VersionControl.Views
 {
 	internal class BlameView : BaseView, IAttachableViewContent 
@@ -42,12 +43,29 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
-				document.ActiveView.WorkbenchWindow.AttachViewContent (new ComparisonView (document, item));
-				document.ActiveView.WorkbenchWindow.AttachViewContent (new BlameView (document, item));
-				document.ActiveView.WorkbenchWindow.AttachViewContent (new LogView (item.Repository, item.Path));
+				ComparisonView.AttachViewContents (document, item);
 				document.Window.SwitchView (2);
 			}
 		}
+		
+		public static bool CanShow (Repository repo, FilePath file)
+		{
+			if (null != repo && repo.CanGetAnnotations (file)) {
+//				foreach (Ide.Gui.Document guidoc in IdeApp.Workbench.Documents) {
+//					if (guidoc.FileName.Equals (file)) {
+//						SourceEditorView seview  = guidoc.ActiveView as SourceEditorView;
+//						if (null != seview && 
+//						    seview.TextEditor.HasMargin (typeof (AnnotationMargin)) && 
+//						    seview.TextEditor.GetMargin (typeof (AnnotationMargin)).IsVisible) { 
+//							return false;
+//						}
+//					}
+//				}
+				return true;
+			}
+			return false;
+		}
+		
 		
 		public BlameView (Document doc, VersionControlItem item) : base ("Blame")
 		{
