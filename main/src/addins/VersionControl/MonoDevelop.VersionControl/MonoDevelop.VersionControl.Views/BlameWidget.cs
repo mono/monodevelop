@@ -116,6 +116,9 @@ namespace MonoDevelop.VersionControl.Views
 			
 			this.DoubleBuffered = true;
 			editor.ExposeEvent += HandleEditorExposeEvent;
+			editor.EditorOptionsChanged += delegate {
+				overview.OptionsChanged ();
+			};
 		}
 
 		void HandleAdjustmentChanged (object sender, EventArgs e)
@@ -228,7 +231,7 @@ namespace MonoDevelop.VersionControl.Views
 		void HandleEditorExposeEvent (object o, ExposeEventArgs args)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
-				cr.LineWidth = 1;
+				cr.LineWidth = Math.Max (1.0, Editor.Options.Zoom);
 				
 				int startLine = Editor.CalculateLineNumber ((int)Editor.VAdjustment.Value);
 				
@@ -247,7 +250,7 @@ namespace MonoDevelop.VersionControl.Views
 						int lineHeight = Editor.GetLineHeight (line);
 						curY += lineHeight;
 						line++;
-					} while (line + 1 < overview.annotations.Count && overview.annotations[line] != null && overview.annotations[line + 1] != null && overview.annotations[line + 1].Revision == overview.annotations[line].Revision);
+					} while (line + 1 < overview.annotations.Count && ann != null && overview.annotations[line] != null && overview.annotations[line].Revision == ann.Revision);
 					
 					if (ann != null) {
 						cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
@@ -277,7 +280,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		class BlameRenderer : DrawingArea 
 		{
-			static readonly Annotation locallyModified = new Annotation ("***", "***", "***");
+			static readonly Annotation locallyModified = new Annotation ("", "?", GettextCatalog.GetString ("Working Copy"));
 			
 			BlameWidget widget;
 			internal List<Annotation> annotations;
@@ -297,16 +300,16 @@ namespace MonoDevelop.VersionControl.Views
 				};
 				
 				layout = new Pango.Layout (PangoContext);
-				layout.FontDescription = new Pango.FontDescription ();
-				layout.FontDescription.Family = "Sans 6";
-	/*			var description = new Pango.FontDescription ();
-				description.Family = "Sans";
-				description.Size = 8;
-				layout.FontDescription = description;
-	*/			
 				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask;
-				UpdateWidth ();
+				OptionsChanged ();
 				Show ();
+			}
+			
+			public void OptionsChanged ()
+			{
+				var description = Pango.FontDescription.FromString ("Tahoma " + (int)(10 * widget.Editor.Options.Zoom));
+				layout.FontDescription = description;
+				UpdateWidth ();
 			}
 			
 			protected override void OnDestroyed ()
@@ -352,24 +355,17 @@ namespace MonoDevelop.VersionControl.Views
 			/// </summary>
 			private void EditorDocumentLineChanged (object sender, LineEventArgs e)
 			{
-				int  startLine = widget.Editor.Document.OffsetToLineNumber (e.Line.Offset),
-				     endLine = widget.Editor.Document.OffsetToLineNumber (e.Line.EndOffset);
-				
-				if (startLine == endLine) {
-					SetAnnotation (startLine, locallyModified);
-				}
-				for (int i=startLine; i<endLine; ++i) {
-					SetAnnotation (i, locallyModified);
-				}
+				int startLine = widget.Editor.Document.OffsetToLineNumber (e.Line.Offset);
+				SetAnnotation (startLine, locallyModified);
 			}
-	
+			
 			/// <summary>
 			/// Marks necessary lines modified when text is replaced
 			/// </summary>
 			private void EditorDocumentTextReplacing (object sender, ReplaceEventArgs e)
 			{
 				int  startLine = widget.Editor.Document.OffsetToLineNumber (e.Offset),
-				     endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset+e.Count),
+				     endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset + Math.Max (e.Count, e.Value != null ? e.Value.Length : 0)),
 				     lineCount = 0;
 				string[] tokens = null;
 				
@@ -491,25 +487,22 @@ namespace MonoDevelop.VersionControl.Views
 						width = Math.Max (width, tmpwidth);
 					}
 				}
-				WidthRequest = dateTimeLength + width + 54;
+				WidthRequest = dateTimeLength + width + 30 + leftSpacer + margin * 2;
 				QueueResize ();
 			}
 
 			Regex regex = new Regex (@"[\s+\*[^:]*\:\s*]*(?<msg>[^:\s*](.)*)$");
-			const int leftMargin = 4;
+			const int leftSpacer = 4;
+			const int margin = 4;
 			
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{	
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
-					cr.LineWidth = 1;
+					cr.LineWidth = Math.Max (1.0, widget.Editor.Options.Zoom);
 					
-					cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+					cr.Rectangle (leftSpacer, 0, Allocation.Width, Allocation.Height);
 					cr.Color = new Cairo.Color (0.95, 0.95, 0.95);
 					cr.Fill ();
-					cr.MoveTo (0, 0);
-					cr.LineTo (0, Allocation.Height);
-					cr.Color = (HslColor)Style.Dark (State);
-					cr.Stroke ();
 					
 					int startLine = widget.Editor.CalculateLineNumber ((int)widget.Editor.VAdjustment.Value);
 					
@@ -529,12 +522,12 @@ namespace MonoDevelop.VersionControl.Views
 						if (ann != null) {
 							layout.SetText (ann.Author);
 							layout.GetPixelSize (out w, out h);
-							e.Window.DrawLayout (Style.BlackGC, leftMargin, curY + (widget.Editor.LineHeight - h) / 2, layout);
+							e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin, curY + (widget.Editor.LineHeight - h) / 2, layout);
 							
 							
 							layout.SetText (ann.Revision);
 							layout.GetPixelSize (out w2, out h);
-							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w2, curY + (widget.Editor.LineHeight - h) / 2, layout);
+							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w2 - margin, curY + (widget.Editor.LineHeight - h) / 2, layout);
 							
 							string dateTime;
 							try {
@@ -542,16 +535,20 @@ namespace MonoDevelop.VersionControl.Views
 							} catch (Exception) {
 								dateTime = "?";
 							}
-							int middle = w + (Allocation.Width - leftMargin - w - w2) / 2;
+							int middle = w + (Allocation.Width - margin * 2 - leftSpacer - w - w2) / 2;
 							layout.SetText (dateTime);
 							layout.GetPixelSize (out w, out h);
-							e.Window.DrawLayout (Style.BlackGC, leftMargin + middle - w / 2, curY + (widget.Editor.LineHeight - h) / 2, layout);
-						}
-						do {
-							int lineHeight = widget.Editor.GetLineHeight (line);
-							curY += lineHeight;
+							e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin + middle - w / 2, curY + (widget.Editor.LineHeight - h) / 2, layout);
+						
+							do {
+								int lineHeight = widget.Editor.GetLineHeight (line);
+								curY += lineHeight;
+								line++;
+							} while (line + 1 < annotations.Count && annotations[line] != null && annotations[line].Revision == ann.Revision);
+						} else {
+							curY += widget.Editor.GetLineHeight (line);
 							line++;
-						} while (line + 1 < annotations.Count && annotations[line] != null && annotations[line + 1] != null && annotations[line + 1].Revision == annotations[line].Revision);
+						}
 						
 						if (ann != null && line - lineStart > 1) {
 							string msg = GetCommitMessage (lineStart);
@@ -576,19 +573,42 @@ namespace MonoDevelop.VersionControl.Views
 								using (var gc = new Gdk.GC (e.Window)) {
 									gc.RgbFgColor = Style.Dark (State);
 									gc.ClipRectangle = new Rectangle (0, curStart, Allocation.Width, curY - curStart);
-									e.Window.DrawLayout (gc, leftMargin, curStart + h, layout);
+									e.Window.DrawLayout (gc, leftSpacer + margin, curStart + h, layout);
 								}
 							}
 						}
 						
+						cr.Rectangle (0, curStart, leftSpacer, curY - curStart);
+						
+						if (ann != null && ann != locallyModified && !string.IsNullOrEmpty (ann.Author)) {
+							
+							double a = 1.0;
+							
+							if (ann != null && history != null) {
+								for (int i = 0; i < history.Length; i++) {
+									Revision rev = history[i];
+									if (rev.ToString () == ann.Revision) {
+										a = i / (double)history.Length;
+										break;
+									}
+								}
+							} else {
+								a = 1;
+							}
+	
+							HslColor color = new Cairo.Color (0.90, 0.90, 1);
+							color.L = 0.4 + a / 2;
+							color.S = 1 - a / 2;
+							cr.Color = color;
+						} else {
+							cr.Color = ann != null ? new Cairo.Color (1, 1, 0) : new Cairo.Color (0.95, 0.95, 0.95);
+						}
+						cr.Fill ();
+
 						if (ann != null) {
 							cr.MoveTo (0, curY + 0.5);
 							cr.LineTo (Allocation.Width, curY + 0.5);
-							var color = Style.Dark (State);
-							cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
-							                            color.Green / (double)ushort.MaxValue,
-							                            color.Blue / (double)ushort.MaxValue,
-							                            0.7);
+							cr.Color = new Cairo.Color (0.6, 0.6, 0.6);
 							cr.Stroke ();
 						}
 					}
