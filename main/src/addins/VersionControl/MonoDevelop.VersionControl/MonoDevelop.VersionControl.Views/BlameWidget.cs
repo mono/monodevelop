@@ -75,25 +75,26 @@ namespace MonoDevelop.VersionControl.Views
 				return this.editor;
 			}
 		}
-
+		VersionControlDocumentInfo info;
+		
 		public Ide.Gui.Document Document {
-			get;
-			set;
+			get {
+				return info.Document;
+			}
 		}
 		public VersionControlItem VersionControlItem {
-			get;
-			set;
+			get {
+				return info.Item;
+			}
 		}
 
 		protected BlameWidget (IntPtr ptr) : base (ptr)
 		{
 		}
-		
-		
-		public BlameWidget (MonoDevelop.Ide.Gui.Document doc, VersionControlItem item)
+
+		public BlameWidget (VersionControlDocumentInfo info)
 		{
-			this.Document = doc;
-			this.VersionControlItem = item;
+			this.info = info;
 			
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
@@ -107,7 +108,7 @@ namespace MonoDevelop.VersionControl.Views
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 			
-			editor = new TextEditor (doc.TextEditorData.Document, doc.TextEditorData.Options);
+			editor = new TextEditor (info.Document.TextEditorData.Document, info.Document.TextEditorData.Options);
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
@@ -284,12 +285,12 @@ namespace MonoDevelop.VersionControl.Views
 			
 			BlameWidget widget;
 			internal List<Annotation> annotations;
-			Revision[] history;
 			Pango.Layout layout;
 			
 			public BlameRenderer (BlameWidget widget)
 			{
 				this.widget = widget;
+				widget.info.Updated += delegate { QueueDraw (); };
 				annotations = new List<Annotation> ();
 				UpdateAnnotations (null, null);
 				widget.Document.Saved += UpdateAnnotations;
@@ -336,8 +337,6 @@ namespace MonoDevelop.VersionControl.Views
 				ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						annotations = new List<Annotation> (widget.VersionControlItem.Repository.GetAnnotations (widget.Document.FileName));
-						if (null == history)
-							history = widget.VersionControlItem.Repository.GetHistory (widget.Document.FileName, null);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
@@ -424,7 +423,7 @@ namespace MonoDevelop.VersionControl.Views
 			internal string GetCommitMessage (int index)
 			{
 				Annotation annotation = (index < annotations.Count)? annotations[index]: null;
-				
+				var history = widget.info.History;
 				if (null != history && annotation != null) {
 					foreach (Revision rev in history) {
 						if (rev.ToString () == annotation.Revision) {
@@ -435,37 +434,7 @@ namespace MonoDevelop.VersionControl.Views
 				
 				return null;
 			}
-			
-//			public void MouseMove (double y)
-//			{
-//				var adj = widget.vScrollBar.Adjustment;
-//				double position = ((double)y / Allocation.Height - (double)widget.vScrollBar.Allocation.Height/adj.Upper/2) * adj.Upper;
-//				if (position < 0) position = 0;
-//				if (position + widget.vScrollBar.Allocation.Height > adj.Upper) position = adj.Upper - widget.vScrollBar.Allocation.Height;
-//				widget.vScrollBar.Adjustment.Value = position;
-//			}
-//
-//			protected override bool OnMotionNotifyEvent (EventMotion evnt)
-//			{
-//				if (button != 0)
-//					MouseMove (evnt.Y);
-//				return base.OnMotionNotifyEvent (evnt);
-//			}
-//			
-//			uint button;
-//			protected override bool OnButtonPressEvent (EventButton evnt)
-//			{
-//				button |= evnt.Button;
-//				MouseMove (evnt.Y);
-//				return base.OnButtonPressEvent (evnt);
-//			}
-//			
-//			protected override bool OnButtonReleaseEvent (EventButton evnt)
-//			{
-//				button &= ~evnt.Button;
-//				return base.OnButtonReleaseEvent (evnt);
-//			}
-			
+
 			void UpdateWidth ()
 			{
 				int tmpwidth, height, width = 120;
@@ -508,6 +477,11 @@ namespace MonoDevelop.VersionControl.Views
 					
 					int startY = widget.Editor.LineToVisualY (startLine);
 					if (startY > 0) {
+						startLine--;
+						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
+					}
+					
+					while (startLine > 0 && annotations[startLine - 1] != null && annotations[startLine] != null && annotations[startLine - 1].Revision == annotations[startLine].Revision) {
 						startLine--;
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
 					}
@@ -583,7 +557,7 @@ namespace MonoDevelop.VersionControl.Views
 						if (ann != null && ann != locallyModified && !string.IsNullOrEmpty (ann.Author)) {
 							
 							double a = 1.0;
-							
+							var history = widget.info.History;
 							if (ann != null && history != null) {
 								for (int i = 0; i < history.Length; i++) {
 									Revision rev = history[i];

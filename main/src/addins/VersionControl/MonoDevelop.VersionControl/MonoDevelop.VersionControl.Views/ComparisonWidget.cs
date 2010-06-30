@@ -44,9 +44,7 @@ namespace MonoDevelop.VersionControl.Views
 		OverviewRenderer overview;
 		MiddleArea middleArea;
 		
-		TextEditor leftEditor, rightEditor;
-		
-		internal Gtk.Button textButton = new Gtk.Button ();
+		TextEditor originalEditor, diffEditor;
 		
 		List<ContainerChild> children = new List<ContainerChild> ();
 		
@@ -68,15 +66,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public TextEditor LeftEditor {
+		public TextEditor OriginalEditor {
 			get {
-				return this.leftEditor;
+				return this.originalEditor;
 			}
 		}
 
-		public TextEditor RightEditor {
+		public TextEditor DiffEditor {
 			get {
-				return this.rightEditor;
+				return this.diffEditor;
 			}
 		}
 		
@@ -89,7 +87,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 		}
 		
-		public ComparisonWidget ()
+		public ComparisonWidget (VersionControlDocumentInfo info)
 		{
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
@@ -106,21 +104,18 @@ namespace MonoDevelop.VersionControl.Views
 			rightHScrollBar = new HScrollbar (hAdjustment);
 			AddChild (rightHScrollBar);
 			
-			leftEditor = new TextEditor ();
-			AddChild (leftEditor);
-			leftEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
+			originalEditor = new TextEditor ();
+			AddChild (originalEditor);
+			originalEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
-			rightEditor = new TextEditor ();
+			diffEditor = new TextEditor ();
 			
-			AddChild (rightEditor);
-			rightEditor.Document.ReadOnly = true;
-			rightEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
+			AddChild (diffEditor);
+			diffEditor.Document.ReadOnly = true;
+			diffEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			this.vAdjustment.ValueChanged += delegate {
 				middleArea.QueueDraw ();
 			};
-			
-			textButton.Label = "Text";
-			AddChild (textButton);
 			
 			overview = new OverviewRenderer (this);
 			AddChild (overview);
@@ -129,8 +124,8 @@ namespace MonoDevelop.VersionControl.Views
 			AddChild (middleArea);
 			
 			this.DoubleBuffered = true;
-			leftEditor.ExposeEvent += HandleLeftEditorExposeEvent;
-			rightEditor.ExposeEvent += HandleRightEditorExposeEvent;
+			originalEditor.ExposeEvent += HandleLeftEditorExposeEvent;
+			diffEditor.ExposeEvent += HandleRightEditorExposeEvent;
 		}
 
 		void HandleAdjustmentChanged (object sender, EventArgs e)
@@ -209,13 +204,11 @@ namespace MonoDevelop.VersionControl.Views
 			int spacerWidth = 42;
 			int editorWidth = (childRectangle.Width - spacerWidth) / 2;
 			
-			var req = textButton.SizeRequest ();
-			textButton.SizeAllocate (new Rectangle (childRectangle.X + editorWidth + (spacerWidth - req.Width) / 2, childRectangle.Top, req.Width, req.Height));
 			
-			leftEditor.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top, editorWidth, Allocation.Height - hheight));
-			rightEditor.SizeAllocate (new Rectangle (childRectangle.Right - editorWidth, childRectangle.Top, editorWidth, Allocation.Height - hheight));
+			diffEditor.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top, editorWidth, Allocation.Height - hheight));
+			originalEditor.SizeAllocate (new Rectangle (childRectangle.Right - editorWidth, childRectangle.Top, editorWidth, Allocation.Height - hheight));
 			
-			middleArea.SizeAllocate (new Rectangle (leftEditor.Allocation.Right, childRectangle.Top + req.Height, spacerWidth + 1, childRectangle.Height - req.Height));
+			middleArea.SizeAllocate (new Rectangle (diffEditor.Allocation.Right, childRectangle.Top, spacerWidth + 1, childRectangle.Height));
 			
 			if (leftHScrollBar.Visible) {
 				leftHScrollBar.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Bottom, editorWidth, hheight));
@@ -269,21 +262,21 @@ namespace MonoDevelop.VersionControl.Views
 				if (Diff != null) {
 					foreach (Diff.Hunk hunk in Diff) {
 						if (!hunk.Same) {
-							int y1 = leftEditor.LineToVisualY (hunk.Right.Start) - (int)leftEditor.VAdjustment.Value;
-							int y2 = leftEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)leftEditor.VAdjustment.Value;
+							int y1 = originalEditor.LineToVisualY (hunk.Right.Start) - (int)originalEditor.VAdjustment.Value;
+							int y2 = originalEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)originalEditor.VAdjustment.Value;
 							if (y1 == y2)
 								y2 = y1 + 1;
-							cr.Rectangle (0, y1, leftEditor.Allocation.Width, y2 - y1);
+							cr.Rectangle (0, y1, originalEditor.Allocation.Width, y2 - y1);
 							cr.Color = GetColor (hunk, fillAlpha);
 							cr.Fill ();
 							
 							cr.Color = GetColor (hunk, lineAlpha);
 							cr.MoveTo (0, y1);
-							cr.LineTo (leftEditor.Allocation.Width, y1);
+							cr.LineTo (originalEditor.Allocation.Width, y1);
 							cr.Stroke ();
 							
 							cr.MoveTo (0, y2);
-							cr.LineTo (leftEditor.Allocation.Width, y2);
+							cr.LineTo (originalEditor.Allocation.Width, y2);
 							cr.Stroke ();
 						}
 					}
@@ -297,23 +290,23 @@ namespace MonoDevelop.VersionControl.Views
 				if (Diff != null) {
 					foreach (Diff.Hunk hunk in Diff) {
 						if (!hunk.Same) {
-							int y1 = rightEditor.LineToVisualY (hunk.Left.Start) - (int)rightEditor.VAdjustment.Value;
-							int y2 = rightEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)rightEditor.VAdjustment.Value;
+							int y1 = diffEditor.LineToVisualY (hunk.Left.Start) - (int)diffEditor.VAdjustment.Value;
+							int y2 = diffEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)diffEditor.VAdjustment.Value;
 							
 							if (y1 == y2)
 								y2 = y1 + 1;
 							
-							cr.Rectangle (0, y1, rightEditor.Allocation.Width, y2 - y1);
+							cr.Rectangle (0, y1, diffEditor.Allocation.Width, y2 - y1);
 							cr.Color = GetColor (hunk, fillAlpha);
 							cr.Fill ();
 							
 							cr.Color = GetColor (hunk, lineAlpha);
 							cr.MoveTo (0, y1);
-							cr.LineTo (rightEditor.Allocation.Width, y1);
+							cr.LineTo (diffEditor.Allocation.Width, y1);
 							cr.Stroke ();
 							
 							cr.MoveTo (0, y2);
-							cr.LineTo (rightEditor.Allocation.Width, y2);
+							cr.LineTo (diffEditor.Allocation.Width, y2);
 							cr.Stroke ();
 						}
 					}
@@ -333,17 +326,17 @@ namespace MonoDevelop.VersionControl.Views
 			Diff.Hunk selectedHunk = null;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
-				int delta = widget.LeftEditor.Allocation.Y - Allocation.Y;
+				int delta = widget.OriginalEditor.Allocation.Y - Allocation.Y;
 				Diff.Hunk selectedHunk = null;
 				foreach (Diff.Hunk hunk in widget.Diff) {
 					if (!hunk.Same) {
-						int y1 = delta + widget.LeftEditor.LineToVisualY (hunk.Right.Start) - (int)widget.LeftEditor.VAdjustment.Value;
-						int y2 = delta + widget.LeftEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)widget.LeftEditor.VAdjustment.Value;
+						int y1 = delta + widget.OriginalEditor.LineToVisualY (hunk.Right.Start) - (int)widget.OriginalEditor.VAdjustment.Value;
+						int y2 = delta + widget.OriginalEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)widget.OriginalEditor.VAdjustment.Value;
 						if (y1 == y2)
 							y2 = y1 + 1;
 						
-						int z1 = delta + widget.RightEditor.LineToVisualY (hunk.Left.Start) - (int)widget.RightEditor.VAdjustment.Value;
-						int z2 = delta + widget.RightEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)widget.RightEditor.VAdjustment.Value;
+						int z1 = delta + widget.DiffEditor.LineToVisualY (hunk.Left.Start) - (int)widget.DiffEditor.VAdjustment.Value;
+						int z2 = delta + widget.DiffEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)widget.DiffEditor.VAdjustment.Value;
 						
 						if (z1 == z2)
 							z2 = z1 + 1;
@@ -370,16 +363,16 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				if (selectedHunk != null) {
 					Console.WriteLine (selectedHunk.Left.Start + "/" + selectedHunk.Right.Start);
-					LineSegment start = widget.LeftEditor.Document.GetLine (selectedHunk.Right.Start);
-					LineSegment end   = widget.LeftEditor.Document.GetLine (selectedHunk.Right.Start + selectedHunk.Right.Count - 1);
+					LineSegment start = widget.OriginalEditor.Document.GetLine (selectedHunk.Right.Start);
+					LineSegment end   = widget.OriginalEditor.Document.GetLine (selectedHunk.Right.Start + selectedHunk.Right.Count - 1);
 					if (selectedHunk.Right.Count > 0)
-						widget.LeftEditor.Remove (start.Offset, end.EndOffset - start.Offset);
+						widget.OriginalEditor.Remove (start.Offset, end.EndOffset - start.Offset);
 					int offset = start.Offset;
 					
 					if (selectedHunk.Left.Count > 0) {
-						start = widget.RightEditor.Document.GetLine (selectedHunk.Left.Start);
-						end   = widget.RightEditor.Document.GetLine (selectedHunk.Left.Start + selectedHunk.Left.Count - 1);
-						widget.LeftEditor.Insert (offset, widget.RightEditor.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset));
+						start = widget.DiffEditor.Document.GetLine (selectedHunk.Left.Start);
+						end   = widget.DiffEditor.Document.GetLine (selectedHunk.Left.Start + selectedHunk.Left.Count - 1);
+						widget.OriginalEditor.Insert (offset, widget.DiffEditor.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset));
 					}
 					
 				}
@@ -389,35 +382,35 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-					int delta = widget.LeftEditor.Allocation.Y - Allocation.Y;
+					int delta = widget.OriginalEditor.Allocation.Y - Allocation.Y;
 					if (widget.Diff != null) {
 						foreach (Diff.Hunk hunk in widget.Diff) {
 							if (!hunk.Same) {
-								int y1 = delta + widget.LeftEditor.LineToVisualY (hunk.Right.Start) - (int)widget.LeftEditor.VAdjustment.Value;
-								int y2 = delta + widget.LeftEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)widget.LeftEditor.VAdjustment.Value;
+								int y1 = delta + widget.DiffEditor.LineToVisualY (hunk.Right.Start) - (int)widget.OriginalEditor.VAdjustment.Value;
+								int y2 = delta + widget.DiffEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)widget.OriginalEditor.VAdjustment.Value;
 								if (y1 == y2)
 									y2 = y1 + 1;
 								
-								int z1 = delta + widget.RightEditor.LineToVisualY (hunk.Left.Start) - (int)widget.RightEditor.VAdjustment.Value;
-								int z2 = delta + widget.RightEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)widget.RightEditor.VAdjustment.Value;
+								int z1 = delta + widget.OriginalEditor.LineToVisualY (hunk.Left.Start) - (int)widget.DiffEditor.VAdjustment.Value;
+								int z2 = delta + widget.OriginalEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)widget.DiffEditor.VAdjustment.Value;
 								
 								if (z1 == z2)
 									z2 = z1 + 1;
-								cr.MoveTo (0, y1);
-								cr.LineTo (Allocation.Width, z1);
-								cr.LineTo (Allocation.Width, z2);
-								cr.LineTo (0, y2);
+								cr.MoveTo (Allocation.Width, y1);
+								cr.LineTo (0, z1);
+								cr.LineTo (0, z2);
+								cr.LineTo (Allocation.Width, y2);
 								cr.ClosePath ();
 								cr.Color = GetColor (hunk, fillAlpha);
 								cr.Fill ();
 								
 								cr.Color = GetColor (hunk, lineAlpha);
-								cr.MoveTo (0, y1);
-								cr.LineTo (Allocation.Width, z1);
+								cr.MoveTo (Allocation.Width, y1);
+								cr.LineTo (0, z1);
 								cr.Stroke ();
 								
-								cr.MoveTo (0, y2);
-								cr.LineTo (Allocation.Width, z2);
+								cr.MoveTo (Allocation.Width, y2);
+								cr.LineTo (0, z2);
 								cr.Stroke ();
 								int x = Allocation.Width / 2;
 								int y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2;

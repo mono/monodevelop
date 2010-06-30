@@ -7,7 +7,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs \
-	gtk-gui/MonoDevelop.VersionControl.Views.ComparisonWidgetContainer.cs \
+	gtk-gui/MonoDevelop.VersionControl.Views.PatchWidget.cs \
 	MonoDevelop.VersionControl.Dialogs/CommitDialog.cs \
 	MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs \
 	MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs \
@@ -19,10 +19,11 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/CellRendererDiff.cs \
 	MonoDevelop.VersionControl.Views/ComparisonView.cs \
 	MonoDevelop.VersionControl.Views/ComparisonWidget.cs \
-	MonoDevelop.VersionControl.Views/ComparisonWidgetContainer.cs \
 	MonoDevelop.VersionControl.Views/DiffParser.cs \
 	MonoDevelop.VersionControl.Views/DiffView.cs \
 	MonoDevelop.VersionControl.Views/LogView.cs \
+	MonoDevelop.VersionControl.Views/PatchView.cs \
+	MonoDevelop.VersionControl.Views/PatchWidget.cs \
 	MonoDevelop.VersionControl.Views/StatusView.cs \
 	MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
 	MonoDevelop.VersionControl/AnnotateCommand.cs \

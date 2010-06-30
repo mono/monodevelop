@@ -30,12 +30,70 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Diff;
 using System.Collections.Generic;
+using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
+	
+	public class VersionControlDocumentInfo
+	{
+		public Document Document {
+			get;
+			set;
+		}
+
+		public VersionControlItem Item {
+			get;
+			set;
+		}
+
+		public Revision[] History {
+			get;
+			set;
+		}
+		
+		public VersionInfo VersionInfo {
+			get;
+			set;
+		}
+
+		public VersionControlDocumentInfo (Document document, VersionControlItem item)
+		{
+			this.Document = document;
+			this.Item = item;
+		}
+
+		public void Start ()
+		{
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					History      = Item.Repository.GetHistory (Item.Path, null);
+					VersionInfo  = Item.Repository.GetVersionInfo (Item.Path, false);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error retrieving history", ex);
+				}
+				
+				DispatchService.GuiDispatch (delegate {
+					OnUpdated (EventArgs.Empty);
+				});
+			});
+		}
+
+		protected virtual void OnUpdated (EventArgs e)
+		{
+			EventHandler handler = this.Updated;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler Updated;
+
+	}
+	
 	internal class ComparisonView : BaseView, IAttachableViewContent 
 	{
-		ComparisonWidgetContainer widget;
+		ComparisonWidget widget;
 
 		public override Gtk.Widget Control { 
 			get {
@@ -43,14 +101,27 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		public Diff Diff {
+			get {
+				return widget.Diff;
+			}
+		}
+		
 		public static void AttachViewContents (Document document, VersionControlItem item)
 		{
 			IWorkbenchWindow window = document.Window;
 			if (window.SubViewContents.Any (sub => sub is ComparisonView))
 				return;
-			window.AttachViewContent (new ComparisonView (document, item));
-			window.AttachViewContent (new BlameView (document, item));
-			window.AttachViewContent (new LogView (item.Repository, item.Path));
+			
+			VersionControlDocumentInfo info = new VersionControlDocumentInfo (document, item);
+			
+			ComparisonView comparisonView = new ComparisonView (info);
+			window.AttachViewContent (comparisonView);
+			window.AttachViewContent (new PatchView (comparisonView, info));
+			window.AttachViewContent (new BlameView (info));
+			window.AttachViewContent (new LogView (info));
+			
+			info.Start ();
 		}
 
 		public static void Show (VersionControlItemList items)
@@ -71,21 +142,52 @@ namespace MonoDevelop.VersionControl.Views
 			return false;
 		}
 
-		public ComparisonView (Document doc, VersionControlItem item) : base ("Comparison")
+		public ComparisonView (VersionControlDocumentInfo info) : base ("Comparison")
 		{
-			widget = new ComparisonWidgetContainer (doc, item);
+			
+			widget = new ComparisonWidget (info);
+			
+			widget.OriginalEditor.Document.MimeType = widget.DiffEditor.Document.MimeType = info.Document.TextEditorData.Document.MimeType;
+			widget.OriginalEditor.Options.FontName = widget.DiffEditor.Options.FontName = info.Document.TextEditorData.Options.FontName;
+			widget.OriginalEditor.Options.ColorScheme = widget.DiffEditor.Options.ColorScheme = info.Document.TextEditorData.Options.ColorScheme;
+			widget.OriginalEditor.Options.ShowFoldMargin = widget.DiffEditor.Options.ShowFoldMargin = false;
+			widget.OriginalEditor.Options.ShowIconMargin = widget.DiffEditor.Options.ShowIconMargin = false;
+			
+			widget.OriginalEditor.Document = info.Document.TextEditorData.Document;
+			widget.DiffEditor.Document.Text = System.IO.File.ReadAllText (info.Item.Repository.GetPathToBaseText (info.Item.Path));
+			widget.ShowAll ();
+			
+			widget.OriginalEditor.Document.TextReplaced += HandleWidgetLeftEditorDocumentTextReplaced;
+			
+			HandleWidgetLeftEditorDocumentTextReplaced (null, null);
+		}
+		
+		
+		void HandleWidgetLeftEditorDocumentTextReplaced (object sender, Mono.TextEditor.ReplaceEventArgs e)
+		{
+			var leftLines = from l in widget.OriginalEditor.Document.Lines select widget.OriginalEditor.Document.GetTextAt (l.Offset, l.EditableLength);
+			var rightLines = from l in widget.DiffEditor.Document.Lines select widget.DiffEditor.Document.GetTextAt (l.Offset, l.EditableLength);
+			
+			widget.Diff = new Diff (rightLines.ToArray (), leftLines.ToArray (), true, true);
+			widget.QueueDraw ();
+		}
+		
+		public override void Dispose ()
+		{
+			widget.OriginalEditor.Document.TextReplaced -= HandleWidgetLeftEditorDocumentTextReplaced;
+			base.Dispose ();
 		}
 
 		#region IAttachableViewContent implementation
 		public void Selected ()
 		{
-			widget.ComparisonWidget.LeftEditor.Document.IgnoreFoldings = true;
+			widget.OriginalEditor.Document.IgnoreFoldings = true;
 		}
 		
 
 		public void Deselected ()
 		{
-			widget.ComparisonWidget.LeftEditor.Document.IgnoreFoldings = false;
+			widget.OriginalEditor.Document.IgnoreFoldings = false;
 		}
 
 		public void BeforeSave ()

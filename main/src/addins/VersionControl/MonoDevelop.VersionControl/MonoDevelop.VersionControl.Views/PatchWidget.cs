@@ -37,7 +37,7 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.VersionControl.Views
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class ComparisonWidgetContainer : Gtk.Bin
+	internal partial class PatchWidget : Gtk.Bin
 	{
 		Mono.TextEditor.TextEditor diffEditor;
 		ComparisonWidget widget;
@@ -46,51 +46,28 @@ namespace MonoDevelop.VersionControl.Views
 				return this.widget;
 			}
 		}
-		public ComparisonWidgetContainer (MonoDevelop.Ide.Gui.Document doc, VersionControlItem item)
+		public PatchWidget (ComparisonView comparisonView, VersionControlDocumentInfo info)
 		{
 			this.Build ();
 			diffEditor = new Mono.TextEditor.TextEditor ();
 			diffEditor.Document.MimeType = "text/x-diff";
-			diffEditor.Options.FontName = doc.TextEditorData.Options.FontName;
-			diffEditor.Options.ColorScheme = doc.TextEditorData.Options.ColorScheme;
+			diffEditor.Options.FontName = info.Document.TextEditorData.Options.FontName;
+			diffEditor.Options.ColorScheme = info.Document.TextEditorData.Options.ColorScheme;
 			diffEditor.Options.ShowFoldMargin = false;
 			diffEditor.Options.ShowIconMargin = false;
 			diffEditor.Options.ShowTabs = true;
 			diffEditor.Options.ShowSpaces = true;
-			diffEditor.Options.ShowInvalidLines = doc.TextEditorData.Options.ShowInvalidLines;
+			diffEditor.Options.ShowInvalidLines = info.Document.TextEditorData.Options.ShowInvalidLines;
 			diffEditor.Document.ReadOnly = true;
 			scrolledwindow1.Child = diffEditor;
 			diffEditor.ShowAll ();
-			
-			widget = new ComparisonWidget ();
-			widget.LeftEditor.Document.MimeType = widget.RightEditor.Document.MimeType = doc.TextEditorData.Document.MimeType;
-			widget.LeftEditor.Options.FontName = widget.RightEditor.Options.FontName = doc.TextEditorData.Options.FontName;
-			widget.LeftEditor.Options.ColorScheme = widget.RightEditor.Options.ColorScheme = doc.TextEditorData.Options.ColorScheme;
-			widget.LeftEditor.Options.ShowFoldMargin = widget.RightEditor.Options.ShowFoldMargin = false;
-			widget.LeftEditor.Options.ShowIconMargin = widget.RightEditor.Options.ShowIconMargin = false;
-			
-			widget.LeftEditor.Document = doc.TextEditorData.Document;
-			widget.RightEditor.Document.Text = System.IO.File.ReadAllText (item.Repository.GetPathToBaseText (item.Path));
-			widget.ShowAll ();
-			
-			widget.LeftEditor.Document.TextReplaced += HandleWidgetLeftEditorDocumentTextReplaced;
-			
-			HandleWidgetLeftEditorDocumentTextReplaced (null, null);
-			notebook3.Add (widget);
-			notebook3.Page = 1;
-			widget.textButton.Clicked += delegate {
-				var writer = new System.IO.StringWriter ();
-				UnifiedDiff.WriteUnifiedDiff (widget.Diff, writer, 
-				                              System.IO.Path.GetFileName(item.Path) + "    (repository)", 
-				                              System.IO.Path.GetFileName(item.Path) + "    (working copy)",
+			using (var writer = new StringWriter ()) {
+				UnifiedDiff.WriteUnifiedDiff (comparisonView.Diff, writer, 
+				                              System.IO.Path.GetFileName (info.Item.Path) + "    (repository)", 
+				                              System.IO.Path.GetFileName (info.Item.Path) + "    (working copy)",
 				                              3);
 				diffEditor.Document.Text = writer.ToString ();
-				notebook3.Page = 0;
-			};
-			buttonGraph.Clicked += delegate {
-				notebook3.Page = 1;
-			};
-			
+			}
 			buttonSave.Clicked += delegate {
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow
@@ -102,14 +79,6 @@ namespace MonoDevelop.VersionControl.Views
 			};
 		}
 		
-		void HandleWidgetLeftEditorDocumentTextReplaced (object sender, Mono.TextEditor.ReplaceEventArgs e)
-		{
-			var leftLines = from l in widget.LeftEditor.Document.Lines select widget.LeftEditor.Document.GetTextAt (l.Offset, l.EditableLength);
-			var rightLines = from l in widget.RightEditor.Document.Lines select widget.RightEditor.Document.GetTextAt (l.Offset, l.EditableLength);
-			
-			widget.Diff = new Diff (rightLines.ToArray (), leftLines.ToArray (), true, true);
-			widget.QueueDraw ();
-		}
 	}
 	
 }

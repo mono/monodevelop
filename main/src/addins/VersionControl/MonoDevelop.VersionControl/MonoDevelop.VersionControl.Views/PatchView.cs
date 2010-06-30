@@ -1,5 +1,5 @@
 // 
-// BlameView.cs
+// PatchView.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -25,51 +25,47 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+
 namespace MonoDevelop.VersionControl.Views
 {
-	internal class BlameView : BaseView, IAttachableViewContent 
+	internal class PatchView : BaseView, IAttachableViewContent 
 	{
-		BlameWidget widget;
-		
+		PatchWidget widget;
+
 		public override Gtk.Widget Control { 
 			get {
 				return widget;
 			}
 		}
-		
+
 		public static void Show (VersionControlItemList items)
 		{
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
 				ComparisonView.AttachViewContents (document, item);
-				document.Window.SwitchView (3);
+				document.Window.SwitchView (2);
 			}
 		}
-		
+
 		public static bool CanShow (Repository repo, FilePath file)
 		{
-			if (null != repo && repo.CanGetAnnotations (file)) 
-				return true;
-			return false;
+			return repo.IsModified (file);
 		}
-		
-		
-		public BlameView (VersionControlDocumentInfo info) : base ("Blame")
+
+		public PatchView (ComparisonView comparisonView, VersionControlDocumentInfo info) : base ("Diff")
 		{
-			widget = new BlameWidget (info);
+			widget = new PatchWidget (comparisonView, info);
 		}
-		
+
 		#region IAttachableViewContent implementation
 		public void Selected ()
 		{
-			widget.Editor.Document.IgnoreFoldings = true;
 		}
 
 		public void Deselected ()
 		{
-			widget.Editor.Document.IgnoreFoldings = false;
 		}
 
 		public void BeforeSave ()
@@ -82,4 +78,3 @@ namespace MonoDevelop.VersionControl.Views
 		#endregion
 	}
 }
-

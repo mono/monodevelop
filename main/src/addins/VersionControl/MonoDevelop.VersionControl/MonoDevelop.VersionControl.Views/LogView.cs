@@ -25,17 +25,8 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
 				ComparisonView.AttachViewContents (document, item);
-				document.Window.SwitchView (3);
+				document.Window.SwitchView (4);
 			}
-			
-		/*	bool found = false;
-			foreach (VersionControlItem item in items) {
-				if (item.Repository.IsHistoryAvailable (item.Path)) {
-					found = true;
-					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
-				}
-			}
-			return found;*/
 		}
 		
 		public static bool CanShow (VersionControlItemList items, Revision since)
@@ -79,37 +70,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		internal class RetrieveHistoryWorker : Task {
-			LogView view;
-			Repository vc;
-			string file;
-			
-			public RetrieveHistoryWorker (LogView view, Repository vc, string file)
-			{
-				this.view = view;
-				this.vc = vc;
-				this.file = file;
-			}
-			protected override string GetDescription ()
-			{
-				return "get log";
-			}
-			VersionInfo versionInfo;
-			Revision[] history;
-			protected override void Run () {
-				history = vc.GetHistory (file, null);
-				versionInfo = vc.GetVersionInfo (file, false);
-			}
-		
-			protected override void Finished () {
-				Application.Invoke (delegate {
-					view.history = history;
-					view.vinfo = versionInfo;
-					view.ShowHistory ();
-				});
-			}
-		}
-		
 		ListStore logstore;
 		public void ShowHistory ()
 		{
@@ -121,13 +81,18 @@ namespace MonoDevelop.VersionControl.Views
 					d.Message == String.Empty ? GettextCatalog.GetString ("(No message)") : d.Message);
 			}
 		}
-
-		public LogView (Repository vc, string filepath) : base ("Log")
+		VersionControlDocumentInfo info;
+		public LogView (VersionControlDocumentInfo info) : base ("Log")
 		{
-			this.vc = vc;
-			this.filepath = filepath;
+			this.info = info;
+			this.vc = info.Item.Repository;
+			this.filepath = info.Item.Path;
 			
-			new RetrieveHistoryWorker (this, vc, filepath).Start ();
+			info.Updated += delegate {
+				history = this.info.History;
+				vinfo   = this.info.VersionInfo;
+				ShowHistory ();
+			};
 			
 			// Widget setup
 			VBox box = new VBox (false, 6);
