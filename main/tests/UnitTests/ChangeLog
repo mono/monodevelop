@@ -1,5 +1,10 @@
 2010-06-30  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs: Added
+	  missing using.
+
+2010-06-30  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs: Track API
 	  changes.
 

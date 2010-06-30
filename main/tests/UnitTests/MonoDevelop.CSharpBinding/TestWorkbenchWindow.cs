@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 
 using MonoDevelop.Ide.Gui;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
