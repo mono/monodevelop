@@ -1,3 +1,10 @@
+2010-06-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui/HiddenWorkbenchWindow.cs: Addeds subview
+	  contents to the interface.
+
 2010-06-29  Carlo Kok  <ck@remobjects.com>
 
 	* MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs: Make

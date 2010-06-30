@@ -27,64 +27,65 @@
 
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui
 {
 	public interface IWorkbenchWindow
 	{
-        IViewContent ViewContent { get; }
-        IBaseViewContent ActiveViewContent { get; set; }
-        Document Document { get; set; }
-        string DocumentType { get; set; }
-        string Title { get; set; }
-        bool ShowNotification { get; set; }
+		IViewContent ViewContent { get; }
+		IBaseViewContent ActiveViewContent { get; set; }
 
-        void AttachViewContent (IAttachableViewContent subViewContent);
-        void SwitchView (int index);
+		IEnumerable<IAttachableViewContent> SubViewContents { get; }
 
-        bool CloseWindow (bool force, bool fromMenu, int pageNum);
-        void SelectWindow ();
+		Document Document { get; set; }
+		string DocumentType { get; set; }
+		string Title { get; set; }
+		bool ShowNotification { get; set; }
 
-        event WorkbenchWindowEventHandler Closed;
-        event WorkbenchWindowEventHandler Closing;
-        event ActiveViewContentEventHandler ActiveViewContentChanged;
+		void AttachViewContent (IAttachableViewContent subViewContent);
+		void SwitchView (int index);
 
+		bool CloseWindow (bool force, bool fromMenu, int pageNum);
+		void SelectWindow ();
+
+		event WorkbenchWindowEventHandler Closed;
+		event WorkbenchWindowEventHandler Closing;
+		event ActiveViewContentEventHandler ActiveViewContentChanged;
+		
 	}
 
-    public delegate void WorkbenchWindowEventHandler (object o, WorkbenchWindowEventArgs e);
-    public class WorkbenchWindowEventArgs : CancelEventArgs
-    {
-        private bool forced;
-        public bool Forced
-        {
-            get { return forced; }
-        }
+	public delegate void WorkbenchWindowEventHandler (object o, WorkbenchWindowEventArgs e);
+	public class WorkbenchWindowEventArgs : CancelEventArgs
+	{
+		private bool forced;
+		public bool Forced {
+			get { return forced; }
+		}
 
-        private bool wasActive;
-        public bool WasActive
-        {
-            get { return wasActive; }
-        }
+		private bool wasActive;
+		public bool WasActive {
+			get { return wasActive; }
+		}
 
-        public WorkbenchWindowEventArgs (bool forced, bool wasActive)
-        {
-            this.forced = forced;
-            this.wasActive = wasActive;
-        }
-    }
+		public WorkbenchWindowEventArgs (bool forced, bool wasActive)
+		{
+			this.forced = forced;
+			this.wasActive = wasActive;
+		}
+	}
 
-    public delegate void ActiveViewContentEventHandler (object o, ActiveViewContentEventArgs e);
-    public class ActiveViewContentEventArgs: EventArgs
-    {
-        private IBaseViewContent content = null;
-        public IBaseViewContent Content
-        {
-            get { return content; }
-        }
+	public delegate void ActiveViewContentEventHandler (object o, ActiveViewContentEventArgs e);
+	public class ActiveViewContentEventArgs : EventArgs
+	{
+		private IBaseViewContent content = null;
+		public IBaseViewContent Content {
+			get { return content; }
+		}
 
-        public ActiveViewContentEventArgs (IBaseViewContent content)
-        {
-            this.content = content;
-        }
-    }
+		public ActiveViewContentEventArgs (IBaseViewContent content)
+		{
+			this.content = content;
+		}
+	}
 }
