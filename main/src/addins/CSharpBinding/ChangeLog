@@ -1,3 +1,9 @@
+2010-07-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 618676 - C# code editor removes "override" word
+	  after choosing one of intellisense variants'.
+
 2010-06-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Parser/CSharpParser.cs: Added support for
