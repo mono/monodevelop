@@ -87,7 +87,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				headerLayout.FontDescription = desc;
 		}
 		
-		const int spacing = 2;
 		const int categoryHeaderSize = 25;
 		Pango.Layout layout;
 		Pango.Layout headerLayout;
@@ -132,8 +131,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			categories.Add (category);
 			foreach (Item item in category.Items) {
-				this.iconSize.Width  = Math.Max (this.iconSize.Width,  item.Icon.Width + spacing);
-				this.iconSize.Height  = Math.Max (this.iconSize.Height,  item.Icon.Height + spacing);
+				this.iconSize.Width  = Math.Max (this.iconSize.Width,  item.Icon.Width);
+				this.iconSize.Height  = Math.Max (this.iconSize.Height,  item.Icon.Height);
 			}
 		}
 		
@@ -211,9 +210,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			Cairo.Context cr = Gdk.CairoHelper.Create (e.Window);
 			draw.DrawRectangle (Style.BaseGC (StateType.Normal), true, area);
-			int xpos = spacing - (this.hAdjustement != null ? (int)this.hAdjustement.Value : 0);
+			int xpos = (this.hAdjustement != null ? (int)this.hAdjustement.Value : 0);
 			int vadjustment = (this.vAdjustement != null ? (int)this.vAdjustement.Value : 0);
-			int ypos = spacing - vadjustment;
+			int ypos = -vadjustment;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				const int foldSegmentHeight = 8;
 				
@@ -241,7 +240,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					cr.FillPreserve ();
 					
 				}
-				
 				DrawFoldSegment (draw, xpos + 2, ypos + (itemDimension.Height - foldSegmentHeight) / 2, foldSegmentHeight, foldSegmentHeight, category.IsExpanded, category == mouseOverItem && mouseX < xpos + 2 + 12);
 				headerLayout.SetText (category.Text);
 				int width, height;
@@ -267,13 +265,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				if (listMode || !curCategory.CanIconizeItems)  {
 					draw.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), 
 					                item.Icon, 0, 0, 
-					                xpos + spacing, 
+					                xpos + 4, 
 					                ypos + 1 + (itemDimension.Height - item.Icon.Height) / 2, 
 					                item.Icon.Width, item.Icon.Height, Gdk.RgbDither.None, 0, 0);
 					layout.SetText (item.Text);
 					int width, height;
 					layout.GetPixelSize (out width, out height);
-					draw.DrawLayout (Style.TextGC (item != this.SelectedItem ? StateType.Normal : StateType.Selected), xpos + IconSize.Width, ypos + (itemDimension.Height - height) / 2, layout);
+					draw.DrawLayout (Style.TextGC (item != this.SelectedItem ? StateType.Normal : StateType.Selected), xpos + IconSize.Width + 4, ypos + (itemDimension.Height - height) / 2, layout);
 				} else {
 					draw.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), 
 					                item.Icon, 0, 0, 
@@ -440,22 +438,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			int xpos = spacing;
-			int ypos = spacing;
+			int xpos = 0;
+			int ypos = 0;
 			HideTooltipWindow ();
 			var oldItem = mouseOverItem;
 			mouseOverItem = null;
 			this.mouseX = (int)e.X + (int)(this.hAdjustement != null ? this.hAdjustement.Value : 0);
 			this.mouseY = (int)e.Y + (int)(this.vAdjustement != null ? this.vAdjustement.Value : 0);
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
-				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width + spacing  &&
-				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height + spacing) {
+				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
+				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
 					mouseOverItem = category;
 					ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
 				}
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
-				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width + spacing  &&
-				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height + spacing) {
+				if (xpos <= mouseX && mouseX <= xpos + itemDimension.Width  &&
+				    ypos <= mouseY && mouseY <= ypos + itemDimension.Height) {
 					mouseOverItem = item;
 					ShowTooltip (mouseOverItem, TipTimer, (int)e.X + 2, (int)e.Y + 16);
 				}
@@ -511,7 +509,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Category GetCategory (Item item)
 		{
 			Category result = null;
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 			}, delegate (Category curCategory, Item innerItem, Gdk.Size itemDimension) {
 				if (innerItem == item) 
@@ -524,7 +522,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Category result = category;
 			Category last = null;
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category curCategory, Gdk.Size itemDimension) {
 				if (last == category) 
 					result = curCategory;
@@ -538,7 +536,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (xpos > rect.X && ypos == rect.Y && result == item)
@@ -551,7 +549,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (xpos < rect.X && ypos == rect.Y)
@@ -566,7 +564,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (ypos > rect.Y && xpos == rect.X && result == item && curCategory == itemCategory)
@@ -580,7 +578,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Category itemCategory = GetCategory (item);
 			Item result = item;
 			Gdk.Rectangle rect = GetItemExtends (item);
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 			}, delegate (Category curCategory, Item curItem, Gdk.Size itemDimension) {
 				if (ypos < rect.Y && xpos == rect.X && curCategory == itemCategory)
@@ -592,7 +590,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Gdk.Rectangle GetItemExtends (Item item)
 		{
 			Gdk.Rectangle result = new Gdk.Rectangle (0, 0, 0, 0);
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				if (item == category)
 					result = new Gdk.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
@@ -607,7 +605,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Item result = currentItem;
 			Item lastItem = null;
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				if (currentItem == category && lastItem != null)
 					result = lastItem;
@@ -625,7 +623,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			Item result = currentItem;
 			Item lastItem = null;
-			int xpos = spacing, ypos = spacing;
+			int xpos = 0, ypos = 0;
 			Iterate (ref xpos, ref ypos, delegate (Category category, Gdk.Size itemDimension) {
 				if (lastItem == currentItem) {
 					result = category;
@@ -652,8 +650,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Gdk.Rectangle rect = GetItemExtends (this.SelectedItem);
 			if (this.vAdjustement.Value > rect.Top)
 				this.vAdjustement.Value = rect.Top;
-			if (this.vAdjustement.Value + this.Allocation.Height - spacing < rect.Bottom)
-				this.vAdjustement.Value = rect.Bottom - this.Allocation.Height + spacing;
+			if (this.vAdjustement.Value + this.Allocation.Height < rect.Bottom)
+				this.vAdjustement.Value = rect.Bottom - this.Allocation.Height;
 		}
 		
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
@@ -682,11 +680,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					layout.SetText (item.Text);
 					int x, y;
 					layout.GetPixelSize (out x, out y);
-					y = Math.Max (IconSize.Height, y) + spacing;
+					y = Math.Max (IconSize.Height, y);
 					
-					xpos = spacing;
+					xpos = 0;
 					if (action != null)
-						action (category, item, new Gdk.Size (Allocation.Width - spacing * 2, y));
+						action (category, item, new Gdk.Size (Allocation.Width, y));
 					
 					ypos += y;
 				}
@@ -695,15 +693,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			foreach (Item item in category.Items) {
 				if (!item.IsVisible)
 					continue;
-				if (xpos + IconSize.Width + spacing >= this.Allocation.Width) {
-					xpos = spacing;
+				if (xpos + IconSize.Width >= this.Allocation.Width) {
+					xpos = 0;
 					ypos += IconSize.Height;
 				}
 				if (action != null)
 					action (category, item, IconSize);
 				xpos += IconSize.Width;
 			}
-			ypos += IconSize.Height + spacing;
+			ypos += IconSize.Height;
 		}
 		
 		void Iterate (ref int xpos, ref int ypos, CategoryAction catAction, ItemAction action)
@@ -711,7 +709,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			foreach (Category category in this.categories) {
 				if (!category.IsVisible)
 					continue;
-				xpos = spacing;
+				xpos = 0;
 				if (this.showCategories) {
 					
 					layout.SetText (category.Text);
@@ -721,7 +719,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					
 					
 					if (catAction != null)
-						catAction (category, new Size (this.Allocation.Width - spacing * 2, y));
+						catAction (category, new Size (this.Allocation.Width, y));
 					ypos += y;
 				} 
 				if (category.IsExpanded || !this.showCategories) {
@@ -742,8 +740,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				req.Height = 0;
 				return;
 			}
-			int xpos = spacing;
-			int ypos = spacing;
+			int xpos = 0;
+			int ypos = 0;
 			Iterate (ref xpos, ref ypos, null, null);
 			req.Width  = 50; 
 			req.Height = ypos;
@@ -798,7 +796,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			tooltipWindow.ParentWindow = this.GdkWindow;
 			int ox, oy;
 			this.GdkWindow.GetOrigin (out ox, out oy);
-			tooltipWindow.Move (Math.Max (spacing, ox + tipX), oy + tipY);
+			tooltipWindow.Move (Math.Max (0, ox + tipX), oy + tipY);
 			tooltipWindow.ShowAll ();
 			return false;
 		}
