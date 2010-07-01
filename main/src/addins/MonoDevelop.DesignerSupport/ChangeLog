@@ -1,6 +1,11 @@
 2010-07-01  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:
+	  Swapped gradient.
+
+2010-07-01  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DesignerSupport.Toolbox/ToolboxWidget.cs:
 	  Removed inner border around the toolbox widget.
 
 2010-05-28  Lluis Sanchez Gual  <lluis@novell.com>

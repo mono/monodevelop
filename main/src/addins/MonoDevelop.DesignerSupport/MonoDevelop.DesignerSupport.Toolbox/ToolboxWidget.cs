@@ -233,8 +233,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					cr.ClosePath ();
 					Cairo.Gradient pat = new Cairo.LinearGradient (xpos, ypos, xpos, ypos + itemDimension.Height);
 					Cairo.Color ccol = Convert (Style.Mid (StateType.Normal));
+					ccol.A = 0.2;
 					pat.AddColorStop (0, ccol);
-					ccol.A = 0.4;
+					ccol.A = 1;
 					pat.AddColorStop (1, ccol);
 					cr.Pattern = pat;
 					cr.FillPreserve ();
