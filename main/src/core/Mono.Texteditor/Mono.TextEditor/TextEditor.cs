@@ -180,7 +180,8 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			GdkWindow.Scroll (0, -delta);
+			if (GdkWindow != null)
+				GdkWindow.Scroll (0, -delta);
 /*			if (delta > 0) {
 				delta += LineHeight;
 //				QueueDrawArea (0, Allocation.Height - delta, Allocation.Width, delta);
