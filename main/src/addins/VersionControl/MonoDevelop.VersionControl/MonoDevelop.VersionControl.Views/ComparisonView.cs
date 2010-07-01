@@ -141,10 +141,11 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			return false;
 		}
-
+		
+		VersionControlDocumentInfo info;
 		public ComparisonView (VersionControlDocumentInfo info) : base ("Comparison")
 		{
-			
+			this.info = info;
 			widget = new ComparisonWidget (info);
 			
 			widget.OriginalEditor.Document.MimeType = widget.DiffEditor.Document.MimeType = info.Document.TextEditorData.Document.MimeType;
@@ -182,11 +183,16 @@ namespace MonoDevelop.VersionControl.Views
 		public void Selected ()
 		{
 			widget.OriginalEditor.Document.IgnoreFoldings = true;
+			widget.OriginalEditor.Caret.Location = info.Document.TextEditorData.Caret.Location;
+			widget.OriginalEditor.CenterToCaret ();
+			widget.OriginalEditor.GrabFocus ();
 		}
 		
 
 		public void Deselected ()
 		{
+			info.Document.TextEditorData.Caret.Location = widget.OriginalEditor.Caret.Location;
+			info.Document.TextEditorData.Parent.CenterToCaret ();
 			widget.OriginalEditor.Document.IgnoreFoldings = false;
 		}
 

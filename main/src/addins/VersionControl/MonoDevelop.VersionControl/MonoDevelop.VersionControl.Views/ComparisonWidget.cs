@@ -40,6 +40,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		Adjustment hAdjustment;
 		Gtk.HScrollbar leftHScrollBar, rightHScrollBar;
+		Gtk.Button next, prev;
 		
 		OverviewRenderer overview;
 		MiddleArea middleArea;
@@ -94,6 +95,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			vScrollBar = new VScrollbar (vAdjustment);
 			AddChild (vScrollBar);
+			vScrollBar.Hide ();
 			
 			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			hAdjustment.Changed += HandleAdjustmentChanged;
@@ -122,6 +124,55 @@ namespace MonoDevelop.VersionControl.Views
 			
 			middleArea = new MiddleArea (this);
 			AddChild (middleArea);
+			
+			prev = new Button ();
+			prev.Add (new Arrow (ArrowType.Up, ShadowType.None));
+			AddChild (prev);
+			prev.ShowAll ();
+			prev.Clicked += delegate {
+				if (this.Diff == null)
+					return;
+				originalEditor.GrabFocus ();
+				
+				int line = originalEditor.Caret.Line;
+				int max  = -1, searched = -1;
+				foreach (Diff.Hunk hunk in this.Diff) {
+					if (hunk.Same)
+						continue;
+					max = System.Math.Max (hunk.Left.Start, max);
+					if (hunk.Left.Start < line)
+						searched = System.Math.Max (hunk.Left.Start, searched);
+				}
+				if (max >= 0) {
+					originalEditor.Caret.Line = searched < 0 ? max : searched;
+					originalEditor.CenterToCaret ();
+				}
+			};
+			
+			next = new Button ();
+			next.BorderWidth = 0;
+			next.Add (new Arrow (ArrowType.Down, ShadowType.None));
+			next.Clicked += delegate {
+				if (this.Diff == null)
+					return;
+				originalEditor.GrabFocus ();
+				
+				int line = originalEditor.Caret.Line;
+				int min  = Int32.MaxValue, searched = Int32.MaxValue;
+				foreach (Diff.Hunk hunk in this.Diff) {
+					if (hunk.Same)
+						continue;
+					min = System.Math.Min (hunk.Left.Start, min);
+					if (hunk.Left.Start > line)
+						searched = System.Math.Min (hunk.Left.Start, searched);
+				}
+				if (min < Int32.MaxValue) {
+					originalEditor.Caret.Line = searched == Int32.MaxValue ? min : searched;
+					originalEditor.CenterToCaret ();
+				}
+			};
+			AddChild (next);
+			next.ShowAll ();
 			
 			this.DoubleBuffered = true;
 			originalEditor.ExposeEvent += HandleLeftEditorExposeEvent;
@@ -189,21 +240,28 @@ namespace MonoDevelop.VersionControl.Views
 			base.OnSizeAllocated (allocation);
 			
 			int overviewWidth = 16;
-			int vwidth = vScrollBar.Visible ? vScrollBar.Requisition.Width : 1;
+			int vwidth = 1; // vScrollBar.Visible ? vScrollBar.Requisition.Width : 1;
 			int hheight = leftHScrollBar.Visible ? leftHScrollBar.Requisition.Height : 1; 
 			Rectangle childRectangle = new Rectangle (allocation.X + 1, allocation.Y + 1, allocation.Width - vwidth - overviewWidth, allocation.Height - hheight);
 			
-			if (vScrollBar.Visible) {
-				int right = childRectangle.Right;
-				int vChildTopHeight = -1;
-				int v = leftHScrollBar.Visible ? leftHScrollBar.Requisition.Height : 0;
-				vScrollBar.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight));
-				vScrollBar.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vScrollBar.Value), vAdjustment.Lower);
-			}
-			overview.SizeAllocate (new Rectangle (allocation.Right - overviewWidth + 1, childRectangle.Y, overviewWidth - 1, childRectangle.Height));
-			int spacerWidth = 42;
-			int editorWidth = (childRectangle.Width - spacerWidth) / 2;
+//			if (vScrollBar.Visible) {
+//				int right = childRectangle.Right;
+//				int vChildTopHeight = -1;
+//				int v = leftHScrollBar.Visible ? leftHScrollBar.Requisition.Height : 0;
+//				vScrollBar.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight));
+//				vScrollBar.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vScrollBar.Value), vAdjustment.Lower);
+//			}
 			
+			Requisition nextReq = next.SizeRequest ();
+			Requisition prevReq = prev.SizeRequest ();
+			
+			overview.SizeAllocate (new Rectangle (allocation.Right - overviewWidth + 1, childRectangle.Y, overviewWidth - 1, childRectangle.Height - nextReq.Height - prevReq.Height));
+			
+			prev.SizeAllocate (new Rectangle (overview.Allocation.X, overview.Allocation.Bottom + 4, overviewWidth - 1, prevReq.Height));
+			next.SizeAllocate (new Rectangle (overview.Allocation.X, prev.Allocation.Bottom, overviewWidth - 1, nextReq.Height));
+			
+			int spacerWidth = 34;
+			int editorWidth = (childRectangle.Width - spacerWidth) / 2;
 			
 			diffEditor.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top, editorWidth, Allocation.Height - hheight));
 			originalEditor.SizeAllocate (new Rectangle (childRectangle.Right - editorWidth, childRectangle.Top, editorWidth, Allocation.Height - hheight));
@@ -461,7 +519,7 @@ namespace MonoDevelop.VersionControl.Views
 			public OverviewRenderer (ComparisonWidget widget)
 			{
 				this.widget = widget;
-				widget.vScrollBar.ValueChanged += delegate {
+				widget.Vadjustment.ValueChanged += delegate {
 					QueueDraw ();
 				};
 				WidthRequest = 50;
@@ -473,7 +531,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public void MouseMove (double y)
 			{
-				var adj = widget.vScrollBar.Adjustment;
+				var adj = widget.Vadjustment;
 				double position = ((double)y / Allocation.Height - (double)widget.vScrollBar.Allocation.Height/adj.Upper/2) * adj.Upper;
 				if (position < 0) position = 0;
 				if (position + widget.vScrollBar.Allocation.Height > adj.Upper) position = adj.Upper - widget.vScrollBar.Allocation.Height;
@@ -503,7 +561,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{
-				var scroller = widget.vScrollBar;
+				var adj = widget.Vadjustment;
 				
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 					cr.LineWidth = 1;
@@ -533,14 +591,17 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					
 					cr.Rectangle (1,
-					              (int)(Allocation.Height*scroller.Adjustment.Value/scroller.Adjustment.Upper),
+					              (int)(Allocation.Height * adj.Value / adj.Upper),
 					              Allocation.Width - 2,
-					              (int)(Allocation.Height*((double)scroller.Allocation.Height/scroller.Adjustment.Upper)));
+					              (int)(Allocation.Height * ((double)adj.PageSize / adj.Upper)));
 					cr.Color = new Cairo.Color (0, 0, 0, 0.5);
 					cr.StrokePreserve ();
 					
 					cr.Color = new Cairo.Color (0, 0, 0, 0.03);
 					cr.Fill ();
+					cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
+					cr.Color = (HslColor)Style.Dark (StateType.Normal);
+					cr.Stroke ();
 				}
 				
 /*				gc.RgbFgColor = ColorGrey;
