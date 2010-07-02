@@ -450,9 +450,10 @@ namespace MonoDevelop.Ide.Gui
 				DetachFromPathedDocument ();
 			if (pathDoc == null)
 				return;
-			PathWidgetEnabled = true;
 			pathDoc.PathChanged += HandlePathChange;
 			this.pathDoc = pathDoc;
+			PathWidgetEnabled = true;
+			pathBar.SetPath (pathDoc.CurrentPath);
 		}
 		
 		internal void DetachFromPathedDocument ()
@@ -468,7 +469,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
 			pathBar.SetPath (pathDoc.CurrentPath);
-			pathBar.SetActive (pathDoc.SelectedIndex);
+//			pathBar.SetActive (pathDoc.SelectedIndex);
 		}
 		
 		bool PathWidgetEnabled {
@@ -477,35 +478,16 @@ namespace MonoDevelop.Ide.Gui
 				if (PathWidgetEnabled == value)
 					return;
 				if (value) {
-					CheckCreateToolbarBox ();
-					pathBar = new PathBar (CreatePathMenu);
-					toolbarBox.PackEnd (pathBar, true, true, 0);
-					toolbarBox.ShowAll ();
+					pathBar = new PathBar (pathDoc.CreatePathWidget);
+					box.PackStart (pathBar, false, true, 0);
+					box.ReorderChild (pathBar, 0);
+					pathBar.Show ();
 				} else {
-					toolbarBox.Remove (pathBar);
-					toolbarBox.Destroy ();
+					box.Remove (pathBar);
+					pathBar.Destroy ();
 					pathBar = null;
-					toolbarBox = null;
 				}
-				EnsureToolbarBoxSeparator ();
 			}
-		}
-		
-		Menu CreatePathMenu (int index)
-		{
-			Menu menu = new Menu ();
-			MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
-			mi.Activated += delegate {
-				pathDoc.SelectPath (index);
-			};
-			menu.Add (mi);
-			mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
-			mi.Activated += delegate {
-				pathDoc.SelectPathContents (index);
-			};
-			menu.Add (mi);
-			menu.ShowAll ();
-			return menu;
 		}
 		
 		#endregion

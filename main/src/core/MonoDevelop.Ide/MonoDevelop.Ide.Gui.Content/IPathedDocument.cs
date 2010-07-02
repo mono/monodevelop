@@ -27,37 +27,29 @@
 //
 
 using System;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	
-	
 	public interface IPathedDocument
 	{
+		PathEntry[] CurrentPath { get; }
+		
+		Gtk.Widget CreatePathWidget (int index);
+		
 		event EventHandler<DocumentPathChangedEventArgs> PathChanged;
-		void SelectPath (int index);
-		void SelectPathContents (int index);
-		string[] CurrentPath { get; }
-		int SelectedIndex { get; }
 	}
 	
 	public class DocumentPathChangedEventArgs : EventArgs
 	{
-		string[] previousPath;
-		int previousSelectedIndex;
-		
-		public DocumentPathChangedEventArgs (string[] previousPath, int previousSelectedIndex)	
+		public DocumentPathChangedEventArgs (PathEntry[] previousPath)
 		{
-			this.previousPath = previousPath;
-			this.previousSelectedIndex = previousSelectedIndex;
+			this.PreviousPath = previousPath;
 		}
 		
-		public string[] PreviousPath {
-			get { return previousPath; }	
-		}
-		
-		public int PreviousSelectedIndex {
-			get { return previousSelectedIndex; }
+		public PathEntry[] PreviousPath {
+			get;
+			private set;
 		}
 	}
 }

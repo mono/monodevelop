@@ -1,3 +1,11 @@
+2010-07-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Components/PathBar.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui.Content/IPathedDocument.cs: Worked on
+	  pathed document subsystem.
+
 2010-06-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Gui/IWorkbenchWindow.cs:

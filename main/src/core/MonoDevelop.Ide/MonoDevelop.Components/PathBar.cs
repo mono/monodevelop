@@ -30,13 +30,61 @@ using System.Linq;
 
 using Gtk;
 using Gdk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
+	public class PathEntry 
+	{
+		public Gdk.Pixbuf Icon {
+			get;
+			private set;
+		}
+		
+		public string Text {
+			get;
+			private set;
+		}
+		
+		public object Tag {
+			get;
+			set;
+		}
+		
+		public PathEntry (Gdk.Pixbuf icon, string text)
+		{
+			this.Icon = icon;
+			this.Text = text;
+		}
+		
+		public PathEntry (string text)
+		{
+			this.Text = text;
+		}
+		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (obj.GetType () != typeof(PathEntry))
+				return false;
+			MonoDevelop.Components.PathEntry other = (MonoDevelop.Components.PathEntry)obj;
+			return Icon == other.Icon && Text == other.Text;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return (Icon != null ? Icon.GetHashCode () : 0) ^ (Text != null ? Text.GetHashCode () : 0);
+			}
+		}
+	}
 	
 	public class PathBar : Gtk.DrawingArea
 	{
-		string[] path = new string[0];
+		PathEntry[] path = new PathEntry[0];
 		Pango.Layout layout;
 		Pango.AttrList boldAtts = new Pango.AttrList ();
 		
@@ -50,9 +98,9 @@ namespace MonoDevelop.Components
 		const int padding = 2;
 		const int spacing = 10;
 		
-		Func<int,Menu> createMenuForItem;
+		Func<int, Widget> createMenuForItem;
 		
-		public PathBar (Func<int,Menu> createMenuForItem)
+		public PathBar (Func<int, Widget> createMenuForItem)
 		{
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |
@@ -65,28 +113,28 @@ namespace MonoDevelop.Components
 			this.createMenuForItem = createMenuForItem;
 		}
 		
-		public new string[] Path { get { return path; } }
+		public new PathEntry[] Path { get { return path; } }
 		public int ActiveIndex { get { return activeIndex; } }
 		
-		public void SetPath (string[] path)
+		public void SetPath (PathEntry[] path)
 		{
 			if (ArrSame (this.path, path))
 				return;
 			
-			this.path = path ?? new string[0];
+			this.path = path ?? new PathEntry[0];
 			activeIndex = -1;
 			widths = null;
 			QueueResize ();
 		}
 		
-		bool ArrSame (string[] a, string[] b)
+		bool ArrSame (PathEntry[] a, PathEntry[] b)
 		{
 			if ((a == null || b == null) && a != b)
 				return false;
 			if (a.Length != b.Length)
 				return false;
 			for (int i = 0; i < a.Length; i++)
-				if (a[i] != b[i])
+				if (!a[i].Equals(b[i]))
 					return false;
 			return true;
 		}
@@ -112,11 +160,17 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
+			//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
+			// so we get the content but not the border. This might break with crazy themes.
+			//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
+			// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
+			const int boxpadding = 4;
+			Style.PaintBox (Style, evnt.Window, StateType.Normal, ShadowType.None, evnt.Area, this, "button", 
+			                - boxpadding, - padding, Allocation.Width + boxpadding * 2, Allocation.Height + boxpadding * 2);
+			
 			if (widths == null)
 				return true;
 			
-			//FIXME use event area
-			//FIXME: why don't we need to use the allocation.x and allocation.y here?
 			int xpos = padding, ypos = padding;
 			for (int i = 0; i < path.Length; i++) {
 				bool last = i == path.Length - 1;
@@ -126,13 +180,18 @@ namespace MonoDevelop.Components
 					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
 					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
 					                evnt.Area, this, "button",
-					                xpos - padding, ypos - padding, widths[i] + padding + (last? padding : spacing),
+					                xpos - padding, ypos - padding, widths[i] + padding + padding /*+ (last ? padding : spacing)*/,
 					                height + padding * 2);
+				}
+				int textOffset = 0;
+				if (path[i].Icon != null) {
+					evnt.Window.DrawPixbuf (Style.BaseGC (State), path[i].Icon , 0, 0, xpos, ypos, -1, -1, RgbDither.None, 0, 0);
+					textOffset += path[i].Icon.Width + padding;
 				}
 				
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
-				layout.SetText (path[i]);
-				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", xpos, ypos, layout);
+				layout.SetText (path[i].Text);
+				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", xpos + textOffset, ypos, layout);
 				
 				xpos += widths[i];
 				if (!last) {
@@ -171,8 +230,10 @@ namespace MonoDevelop.Components
 			if (hoverIndex < 0)
 				return;
 			
-			Menu menu = createMenuForItem (hoverIndex);
-			menu.Hidden += delegate {
+			Gtk.Widget widget = createMenuForItem (hoverIndex);
+			if (widget == null)
+				return;
+			widget.Hidden += delegate {
 				
 				menuVisible = false;
 				QueueDraw ();
@@ -180,13 +241,43 @@ namespace MonoDevelop.Components
 				//FIXME: for some reason the menu's children don't get activated if we destroy 
 				//directly here, so use a timeout to delay it
 				GLib.Timeout.Add (100, delegate {
-					menu.Destroy ();
+					widget.Destroy ();
 					return false;
 				});
 			};
 			menuVisible = true;
-			menu.Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
+			if (widget is Menu) {
+				((Menu)widget).Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
+			} else {
+				PositionWidget (widget);
+				widget.ShowAll ();
+			}
+				
 		}
+		
+		void PositionWidget (Gtk.Widget widget)
+		{
+			if (!(widget is Gtk.Window))
+				return;
+			int ox, oy;
+			ParentWindow.GetOrigin (out ox, out oy);
+			int dx = ox + this.Allocation.X + widths.Take (hoverIndex).Sum () + hoverIndex * spacing;
+			int dy = oy + this.Allocation.Bottom;
+			
+			int width, height;
+			widget.GetSizeRequest (out width, out height);
+			widget.WidthRequest = System.Math.Max (width, widths[hoverIndex]);
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (dx, dy));
+			
+			if (dy + height > geometry.Bottom)
+				dy = oy + this.Allocation.Y - height;
+			if (dx + width > geometry.Right)
+				dx = geometry.Right - width;
+			(widget as Gtk.Window).Move (dx, dy);
+			widget.GrabFocus ();
+		}
+		
+		
 		
 		void PositionFunc (Menu mn, out int x, out int y, out bool push_in)
 		{
@@ -266,11 +357,11 @@ namespace MonoDevelop.Components
 			widths = new int[path.Length];
 			for (int i = 0; i < widths.Length; i++) {
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
-				layout.SetText (path[i]);
+				layout.SetText (path[i].Text);
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 				height = Math.Max (h, height);
-				widths[i] = w;
+				widths[i] = w + (path[i].Icon != null ? path[i].Icon.Width + padding : 0);
 			}
 		}
 		

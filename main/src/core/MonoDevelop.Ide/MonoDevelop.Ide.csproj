@@ -724,9 +724,6 @@
     <EmbeddedResource Include="MonoDevelop.Components.Docking\stock-menu-right-12.png">
       <LogicalName>stock-menu-right-12.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\objects.xml">
-      <LogicalName>objects.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
