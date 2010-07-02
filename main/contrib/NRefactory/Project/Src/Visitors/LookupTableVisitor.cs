@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			QueryExpression parent = fromClause.Parent as QueryExpression;
 			AddVariable(fromClause.Type, fromClause.Identifier,
-			            fromClause.StartLocation, CurrentEndLocation,
+			            fromClause.StartLocation, new Location (CurrentEndLocation.Column + 1, CurrentEndLocation.Line),
 			            false, true, fromClause.InExpression, null, parent != null && parent.IsQueryContinuation);
 			return base.VisitQueryExpressionFromClause(fromClause, data);
 		}

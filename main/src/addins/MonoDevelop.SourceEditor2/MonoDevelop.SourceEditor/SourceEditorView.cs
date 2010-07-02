@@ -1341,6 +1341,7 @@ namespace MonoDevelop.SourceEditor
 						triggerOffset = ctx.TriggerOffset - data.SelectionRange.Length;
 					data.DeleteSelectedText ();
 				}
+				length = 0;
 			}
 
 			// | in the completion text now marks the caret position

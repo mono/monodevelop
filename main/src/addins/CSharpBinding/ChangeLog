@@ -3,6 +3,27 @@
 	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
 	  Remove debug writelines.
 
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Optimized performance.
+
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Respect UTF-8 coordinates in highlight usages extension.
+
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed unit test.
+
+2010-06-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 614045 - Types hidden by members are not
+	  formatted properly by ambience'.
+
 2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.CSharp/CSharpBindingCompilerManager.cs: Track
