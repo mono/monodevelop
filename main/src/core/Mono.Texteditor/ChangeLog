@@ -1,3 +1,88 @@
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed
+	  highlighting bug.
+
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* SyntaxModes/JavascriptSyntaxMode.xml: Added mime type for
+	  java script.
+
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Corrected a
+	  highlighting bug (visible in the CTAGS section in xml
+	  highlighting).
+
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Remove debug code,
+	  tidy.
+
+	* Mono.TextEditor.Vi/ViEditorContext.cs: Basic input
+	  processing.
+
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/TextEditor.cs: Use mapped modifier values
+	  for the IM commit. Modifiers and keys received by editor
+	  extensions and editor modes are now always post keyboard
+	  mapping.
+
+	* Mono.TextEditor/SimpleEditMode.cs: Moved
+	  modifier-permits-input check here. Much simpler now that
+	  modifiers are consumed.
+
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor/Platform.cs: Track MapRawKeys from Ide -
+	  don't restore consumed modifiers, since that breaks vi
+	  stuff.
+
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Work around a gmcs
+	  bug.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViEditorContext.cs:
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Merged ViEditor and
+	  ViEditorContext. Added method for building commands.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Fix build, add more
+	  actions.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViKeyNotation.cs: Remove full ctor that
+	  could create invalid keys.
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Add some more action
+	  maps.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj: Added file to project.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViKeyNotation.cs: Implement equality
+	  members on ViKey.
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Parse motions,
+	  multipliers, registers.
+
+2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViKeyNotation.cs:
+	* Mono.TextEditor.Vi/ViEditorContext.cs:
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: New vi command
+	  builder architecture (incomplete)
+
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: made some functions

@@ -24,7 +24,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Javascript" mimeTypes="application/javascript">
+<SyntaxMode name = "Javascript" mimeTypes="application/javascript;text/javascript">
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	<Span color = "comment" rule="Comment">
 		<Begin>/*</Begin>
