@@ -471,8 +471,9 @@ namespace Mono.TextEditor
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			if (data.Caret.Column > line.EditableLength) {
 				string text = data.GetVirtualSpaces (data.Caret.Line, data.Caret.Column);
-				int textLength = data.Insert (data.Caret.Offset, text);
-				data.Caret.Offset += textLength;
+				int offset = data.Caret.Offset;
+				int textLength = data.Insert (offset, text);
+				data.Caret.Offset = offset + textLength;
 			}
 			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}

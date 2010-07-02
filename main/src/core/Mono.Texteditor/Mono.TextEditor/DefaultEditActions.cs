@@ -105,13 +105,8 @@ namespace Mono.TextEditor
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
 			Debug.Assert (data.IsSomethingSelected);
-			int startLineNr = data.IsSomethingSelected ? data.MainSelection.MinLine : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.MaxLine : data.Caret.Line;
-			
-			if (endLineNr < 0)
-				endLineNr = data.Document.LineCount;
-//			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLine (data.MainSelection.Anchor.Line) : null;
-//			int         anchorColumn = data.IsSomethingSelected ? data.MainSelection.Anchor.Column : -1;
+			int startLineNr, endLineNr;
+			GetSelectedLines (data, out startLineNr, out endLineNr);
 			
 			data.Document.BeginAtomicUndo ();
 			int first = -1;
@@ -168,14 +163,29 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public static void IndentSelection (TextEditorData data)
+		public static void GetSelectedLines (TextEditorData data, out int startLineNr, out int endLineNr)
 		{
-			int startLineNr = data.IsSomethingSelected ? data.MainSelection.MinLine : data.Caret.Line;
-			int endLineNr   = data.IsSomethingSelected ? data.MainSelection.MaxLine : data.Caret.Line;
+			if (data.IsSomethingSelected) {
+				if (data.MainSelection.Anchor < data.MainSelection.Lead) {
+					startLineNr = data.MainSelection.Anchor.Line;
+					endLineNr = data.MainSelection.Lead.Column == 0 ? data.MainSelection.Lead.Line - 1 : data.MainSelection.Lead.Line;
+				} else {
+					startLineNr = data.MainSelection.Lead.Line;
+					endLineNr = data.MainSelection.Anchor.Line;
+				}
+			} else {
+				startLineNr = endLineNr = data.Caret.Line;
+			}
+			
 			if (endLineNr < 0)
 				endLineNr = data.Document.LineCount;
-//			LineSegment anchorLine   = data.IsSomethingSelected ? data.Document.GetLine (data.MainSelection.Anchor.Line) : null;
-//			int         anchorColumn = data.IsSomethingSelected ? data.MainSelection.Anchor.Column : -1;
+		}
+
+		public static void IndentSelection (TextEditorData data)
+		{
+			int startLineNr, endLineNr;
+			GetSelectedLines (data, out startLineNr, out endLineNr);
+			
 			data.Document.BeginAtomicUndo ();
 			foreach (LineSegment line in data.SelectedLines) {
 				data.Insert (line.Offset, data.Options.IndentationString);
@@ -253,27 +263,16 @@ namespace Mono.TextEditor
 				return;
 			
 			data.Document.BeginAtomicUndo ();
-			if (data.IsSomethingSelected) {
+			if (data.IsSomethingSelected)
 				data.DeleteSelectedText ();
-			}
 			
-			string newLine = data.EolMarker;
-			int caretColumnOffset = 0;
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			
-			if (data.Options.AutoIndent) {
-				int i;
-				for (i = 0; i < line.EditableLength; i++) {
-					char ch = data.Document.GetCharAt (line.Offset + i);
-					if (!Char.IsWhiteSpace (ch))
-						break;
-				}
-				caretColumnOffset = i;
-				newLine += data.Document.GetTextBetween (line.Offset, line.Offset + i);
-			}
-			
-			data.Insert (data.Caret.Offset, newLine);
-			data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, caretColumnOffset);
+			data.EnsureCaretIsNotVirtual ();
+			StringBuilder sb = new StringBuilder (data.EolMarker);
+			if (data.Options.AutoIndent)
+				sb.Append (data.Document.GetLineIndent (data.Caret.Line));
+			int offset = data.Caret.Offset;
+			data.Insert (offset, sb.ToString ());
+			data.Caret.Offset = offset + sb.Length;
 			data.Document.EndAtomicUndo ();
 		}
 		

@@ -1,3 +1,44 @@
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/ViTests.cs: Set flag required for one
+	  vi test.
+
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added test for
+	  virtual space return key behavior.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* Mono.TextEditor.Tests/EditActionsTest.cs:
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added unit
+	  tests for 'Bug 615191 - When using multiline selection to
+	  indent/outdent, the indenter selects too much'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added test for
+	  'Bug 613770 - Backspace inconsistently deletes entire lines
+	  when using "virtual spaces"'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* UnitTests.csproj:
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added unit test
+	  for 'Bug 615196 - Pasting a chunk of text into the virtual
+	  whitespace fracks everything up'.
+
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: Try to fix
+	  unit test for the build bot.
+
+2010-06-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/SyntaxHighlightingTests.cs: Added unit
+	  test for CDATA highlighting.
+
 2010-06-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added

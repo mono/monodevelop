@@ -1,3 +1,42 @@
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/DefaultEditActions.cs: Improved virtual
+	  space return key behavior.
+
+2010-06-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Mono.TextEditor.Vi/ViCommandBuilder.cs: Some simple
+	  multiplier support.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed 'Bug 615191 -
+	  When using multiline selection to indent/outdent, the
+	  indenter selects too much'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextEditorData.cs:
+	* Mono.TextEditor/ClipboardActions.cs: Fixed 'Bug 615196 -
+	  Pasting a chunk of text into the virtual whitespace fracks
+	  everything up'.
+
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 615342 -
+	  Source code highlighting behaves badly on cyrillic text'.
+
+2010-06-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor.PopupWindow/ListWindow.cs:
+	* Mono.TextEditor/InsertionCursorEditMode.cs:
+	* Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Added
+	  help window for insertion mode.
+
 2010-06-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Fixed

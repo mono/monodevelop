@@ -1,3 +1,9 @@
+2010-06-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
+	  Fixed 'Bug 615182 - Tooltip sometimes stays up too long'.
+
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs:
