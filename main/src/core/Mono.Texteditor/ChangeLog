@@ -1,3 +1,8 @@
+2010-07-02  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Theatrics/SmartScrolledWindow.cs: Fixed text
+	  editor splitting.
+
 2010-07-01  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/Caret.cs:
