@@ -154,6 +154,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		void ShowReferences (List<MonoDevelop.Projects.CodeGeneration.MemberReference> references)
 		{
 			RemoveMarkers (false);
+			HashSet<int> lineNumbers = new HashSet<int> ();
 			if (references != null) {
 				bool alphaBlend = false;
 				foreach (var r in references) {
@@ -164,9 +165,11 @@ namespace MonoDevelop.CSharp.Highlighting
 						textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
 					}
 					marker.Usages.Add (new Mono.TextEditor.Segment (offset, r.Name.Length));
+					lineNumbers.Add (r.Line - 1);
 				}
 			}
-			textEditorData.Document.CommitUpdateAll ();
+			foreach (int line in lineNumbers)
+				textEditorData.Document.CommitLineUpdate (line);
 		}
 		
 		List<MonoDevelop.Projects.CodeGeneration.MemberReference> GetReferences (ResolveResult resolveResult)

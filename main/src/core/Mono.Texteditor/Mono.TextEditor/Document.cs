@@ -987,6 +987,7 @@ namespace Mono.TextEditor
 				}
 				List<FoldSegment> oldSegments = new List<FoldSegment> (doc.foldSegmentTree.FoldSegments);
 				bool needsUpdate = newSegments.Count > oldSegments.Count;
+				LineSegment updateFrom = null;
 				int i = 0, j = 0;
 				while (i < oldSegments.Count && j < newSegments.Count) {
 					if (runInThread && IsStopping)
@@ -1001,9 +1002,13 @@ namespace Mono.TextEditor
 						i++;
 						j++;
 					} else if (cmp > 0) {
+						if (updateFrom == null)
+							updateFrom = newSegments[j].StartLine;
 						j++;
 						needsUpdate = true;
 					} else {
+						if (updateFrom == null)
+							updateFrom = oldSegments[i].StartLine;
 						i++;
 						needsUpdate = true;
 					}
@@ -1015,12 +1020,16 @@ namespace Mono.TextEditor
 				}
 				doc.foldSegmentTree = newFoldSegmentTree;
 				if (runInThread) {
-					Gtk.Application.Invoke (delegate {
-						if (needsUpdate) {
-							doc.RequestUpdate (new UpdateAll ());
-							doc.CommitDocumentUpdate ();
-						}
-					});
+					if (needsUpdate) {
+						Gtk.Application.Invoke (delegate {
+							if (updateFrom == null) {
+								doc.CommitUpdateAll ();
+							} else {
+								int lineNr = doc.OffsetToLineNumber (updateFrom.Offset) - 1;
+								doc.CommitLineToEndUpdate (lineNr);
+							}
+						});
+					}
 					base.Stop ();
 				}
 			}
@@ -1522,7 +1531,7 @@ namespace Mono.TextEditor
 		public void UnRegisterVirtualTextMarker (IExtendingTextMarker marker)
 		{
 			List<int> keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);
-			keys.ForEach (key => virtualTextMarkers.Remove (key));
+			keys.ForEach (key => { virtualTextMarkers.Remove (key); CommitLineUpdate (key); });
 		}
 	}
 	

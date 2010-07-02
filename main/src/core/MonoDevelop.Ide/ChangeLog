@@ -1,3 +1,10 @@
+2010-06-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/CompletionData.cs:
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	  Fixed 'Bug 616653 - "import symbol" does not resolve full
+	  typenames'.
+
 2010-06-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs: Add

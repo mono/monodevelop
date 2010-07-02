@@ -1,3 +1,31 @@
+2010-06-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: fixed
+	  cut&paste error.
+
+2010-06-23  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs: Fixed 'Bug
+	  616653 - "import symbol" does not resolve full typenames'.
+
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.Rename/RenameRefactoring.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs:
+	  Implemented 'Bug 615701 - Escape should cancel renaming
+	  refactor action, not accept it'.
+
+2010-06-17  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/EncapsulateFieldDialog.cs:
+	* MonoDevelop.Refactoring/OverridesImplementsDialog.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodDialog.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	  Added help windows for refactorings that use the insertion
+	  point mode.
+
 2010-06-09  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Refactoring/OverridesImplementsDialog.cs:

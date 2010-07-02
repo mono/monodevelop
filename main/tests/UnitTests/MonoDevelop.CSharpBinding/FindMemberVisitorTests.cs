@@ -757,6 +757,28 @@ object item)
 		}
 
 		
+		
+		/// <summary>
+		/// Bug 615983 - Refactoring does not include object initializers
+		/// </summary>
+		[Test()]
+		public void TestBug615983 ()
+		{
+			RunTest (
+@"class test
+{
+	public string $@property { get; set; }
+
+	void Test ()
+	{
+		test product = new test {
+			@property = ""asdf""
+		};
+		product.@property = ""asdf"";
+	}
+}");
+		}
+		
 		/*
 		[Test()]
 		public void FindInterfaceMethodReferences ()
