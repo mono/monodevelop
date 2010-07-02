@@ -1,3 +1,27 @@
+2010-06-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs: Add
+	  string tag for the config directory. Implements 615677 -
+	  Make the config folder variable available in custom
+	  commands.
+
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Only update
+	  changed lines.
+
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Fixed 'Bug
+	  615831 - Texteditor is not invalidated after remove trailing
+	  wihte spaces action'.
+
+2010-06-16  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Components.Commands/KeyBindingManager.cs: Move
+	  the consumed shift modifier restoration to a more
+	  appropriate place. Add a better comment.
+
 2010-06-15  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide/RootWorkspace.cs: Disabled

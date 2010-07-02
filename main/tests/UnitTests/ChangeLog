@@ -1,3 +1,15 @@
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/VirtualSpacesTests.cs: Added test for
+	  'Bug 615624 - Pressing DOWN after RETURN moves cursor to
+	  beginning of blank lines instead of to the indent'.
+
+2010-06-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs: Added
+	  test for 'Bug 615702 - In-place variable renaming can't
+	  rename foreach loop variables'.
+
 2010-06-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Tests/ViTests.cs: Set flag required for one
