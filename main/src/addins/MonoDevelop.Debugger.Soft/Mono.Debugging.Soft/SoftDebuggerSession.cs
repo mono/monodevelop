@@ -96,6 +96,7 @@ namespace Mono.Debugging.Soft
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
 				UseShellExecute = false,
+				CreateNoWindow = true,
 			};
 			
 			LaunchOptions options = null;

@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute]
 		protected string mimeType;
 		
-		[NodeAttribute ("_label")]
+		[NodeAttribute ("_label", Localizable=true)]
 		protected string label;
 		
 		public string MimeType {

@@ -1,3 +1,9 @@
+2010-06-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AspNetSoftDebuggerEngine.cs: On windows, xsp is placed under
+	  a winhack dir. Fixes bug #594193 - [sdb] Can't debug web
+	  apps on Windows.
+
 2010-03-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Manifest.addin.xml: Bumped MD version.

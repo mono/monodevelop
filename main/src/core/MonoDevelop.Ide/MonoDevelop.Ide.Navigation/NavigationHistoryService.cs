@@ -220,9 +220,8 @@ namespace MonoDevelop.Ide.Navigation
 		
 		public static void Clear ()
 		{
-			NavigationHistoryItem current = history.Current;
 			history.Clear ();
-			history.AddPoint (current);
+			LogActiveDocument ();
 		}
 		
 		public static event EventHandler HistoryChanged;

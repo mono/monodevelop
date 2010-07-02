@@ -45,6 +45,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string extension;
 
+		[NodeAttribute]
+		string exclude;
+
 		Type itemType;
 
 		public string Import {
@@ -67,6 +70,12 @@ namespace MonoDevelop.Projects.Extensions
 		public string Extension {
 			get { 
 				return extension; 
+			}
+		}
+		
+		public string Exclude {
+			get { 
+				return exclude; 
 			}
 		}
 		
@@ -99,6 +108,9 @@ namespace MonoDevelop.Projects.Extensions
 			MSBuildProjectHandler h = (MSBuildProjectHandler) ProjectExtensionUtil.GetItemHandler (item);
 			if (!string.IsNullOrEmpty (import))
 				h.TargetImports.AddRange (import.Split (':'));
+			if (!string.IsNullOrEmpty (exclude))
+				foreach (string e in exclude.Split (':'))
+					h.TargetImports.Remove (e);
 			h.SubtypeGuids.Add (guid);
 		}
 	}

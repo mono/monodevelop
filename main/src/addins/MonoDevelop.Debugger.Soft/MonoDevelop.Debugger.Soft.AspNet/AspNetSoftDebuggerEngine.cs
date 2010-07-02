@@ -58,9 +58,16 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			};
 			
 			FilePath prefix = runtime.Prefix;
-			startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
-				? prefix.Combine ("lib", "mono", "1.0", "xsp.exe")
-				: prefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
+			if (MonoDevelop.Core.PropertyService.IsWindows) {
+				startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
+					? prefix.Combine ("lib", "mono", "1.0", "winhack", "xsp.exe")
+					: prefix.Combine ("lib", "mono", "2.0", "winhack", "xsp2.exe");
+			}
+			else {
+				startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
+					? prefix.Combine ("lib", "mono", "1.0", "xsp.exe")
+					: prefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
+			}
 			
 			string error;
 			startInfo.UserAssemblyNames = SoftDebuggerEngine.GetAssemblyNames (cmd.UserAssemblyPaths, out error);
