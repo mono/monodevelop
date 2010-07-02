@@ -98,28 +98,28 @@ namespace MonoDevelop.SourceEditor
 		
 		
 		public bool ShowClassBrowser {
-			get { return shouldShowclassBrowser; }
+			get { return false; }
 			set {
-				if (shouldShowclassBrowser == value)
+/*				if (shouldShowclassBrowser == value)
 					return;
-				shouldShowclassBrowser = value;
 				UpdateClassBrowserVisibility (false);
+				shouldShowclassBrowser = value;*/
 			}
 		}
 		
 		bool CanShowClassBrowser {
-			get { return canShowClassBrowser; }
+			get { return false; }
 			set {
-				if (canShowClassBrowser == value)
+/*				if (canShowClassBrowser == value)
 					return;
 				canShowClassBrowser = value;
-				UpdateClassBrowserVisibility (false);
+				UpdateClassBrowserVisibility (false);*/
 			}
 		}
 		
 		void UpdateClassBrowserVisibility (bool threaded)
 		{
-			if (shouldShowclassBrowser && canShowClassBrowser) {
+		/*	if (shouldShowclassBrowser && canShowClassBrowser) {
 				if (classBrowser == null) {
 					classBrowser = new NavigationBar (this);
 					classBrowser.StatusBox.UpdateWidth ();
@@ -134,7 +134,7 @@ namespace MonoDevelop.SourceEditor
 					classBrowser.Destroy ();
 					classBrowser = null;
 				}
-			}
+			}*/
 		}
 		
 		public void PopulateClassCombo (bool runInThread)
