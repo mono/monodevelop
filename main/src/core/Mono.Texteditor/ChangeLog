@@ -1,3 +1,13 @@
+2010-07-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/Caret.cs:
+	* Mono.TextEditor/TextEditor.cs: Fixed some issues.
+
+2010-07-01  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextLinkEditMode.cs: Fixed text link
+	  markers.
+
 2010-06-24  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextMarker.cs:

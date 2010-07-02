@@ -1513,8 +1513,10 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, searchType, DomLocation.Empty);
-			foreach (IType t in this.dom.GetInheritanceTree (searchType)) {
-				//System.Console.WriteLine("t:" + t);
+			
+			List<IType> inheritanceTree = new List<IType> (this.dom.GetInheritanceTree (searchType));
+			inheritanceTree.Sort ((l, r) => l.ClassType == r.ClassType ? 0 : (l.ClassType == ClassType.Interface ? 1 : (r.ClassType == ClassType.Interface ? -1 : 0)));
+			foreach (IType t in inheritanceTree) {
 				foreach (IMember m in t.Members) {
 					if (!m.IsAccessibleFrom (dom, type, type, true) || m.IsSpecialName)
 						continue;
