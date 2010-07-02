@@ -39,6 +39,8 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
+using Gtk;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -462,10 +464,8 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		#region IPathedDocument
 		
-		string[] currentPath;
-		int selectedPathIndex;
+		PathEntry[] currentPath;
 		bool pathUpdateQueued = false;
-		
 		
 		public override void CursorPositionChanged ()
 		{
@@ -557,10 +557,27 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 		
-		protected void OnPathChanged (string[] oldPath, int oldSelectedIndex)
+		public Gtk.Widget CreatePathWidget (int index)
+		{
+			Menu menu = new Menu ();
+			MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
+			mi.Activated += delegate {
+				SelectPath (index);
+			};
+			menu.Add (mi);
+			mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
+			mi.Activated += delegate {
+				SelectPathContents (index);
+			};
+			menu.Add (mi);
+			menu.ShowAll ();
+			return menu;
+		}
+		
+		protected void OnPathChanged (PathEntry[] oldPath)
 		{
 			if (PathChanged != null)
-				PathChanged (this, new DocumentPathChangedEventArgs (oldPath, oldSelectedIndex));
+				PathChanged (this, new DocumentPathChangedEventArgs (oldPath));
 		}
 		
 		protected XName GetCompleteName ()
@@ -639,28 +656,21 @@ namespace MonoDevelop.XmlEditor.Gui
 				return;
 			
 			//build the list
-			string[] path = new string[l.Count];
+			PathEntry[] path = new PathEntry[l.Count];
 			for (int i = 0; i < l.Count; i++) {
 				if (l[i].FriendlyPathRepresentation == null) System.Console.WriteLine(l[i].GetType ());
-				path[i] = l[i].FriendlyPathRepresentation ?? "<>";
+				path[i] = new PathEntry (l[i].FriendlyPathRepresentation ?? "<>");
 			}
 			
-			string[] oldPath = currentPath;
-			int oldIndex = selectedPathIndex;
+			PathEntry[] oldPath = currentPath;
 			currentPath = path;
-			selectedPathIndex = currentPath.Length - 1;
 			
-			OnPathChanged (oldPath, oldIndex);
+			OnPathChanged (oldPath);
 		}
 		
-		public string[] CurrentPath {
+		public PathEntry[] CurrentPath {
 			get { return currentPath; }
 		}
-		
-		public int SelectedIndex {
-			get { return selectedPathIndex; }
-		}
-		
 		#endregion
 		
 		#region IOutlinedDocument

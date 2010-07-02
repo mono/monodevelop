@@ -1,3 +1,8 @@
+2010-07-02  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Track
+	  API changes.
+
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlEditorService.cs: Clean up dialog
