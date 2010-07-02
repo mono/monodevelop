@@ -1,3 +1,11 @@
+2010-06-24  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Fixed
+	  'Bug 616949 - Message bubbles prevents the background color
+	  of selected text to change'.
+
 2010-06-23  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs: Fixed

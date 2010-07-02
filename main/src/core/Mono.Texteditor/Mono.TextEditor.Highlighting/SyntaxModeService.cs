@@ -246,7 +246,10 @@ namespace Mono.TextEditor.Highlighting
 			public void InnerRun ()
 			{
 				bool doUpdate = false;
-				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = doc.GetLineByOffset (startOffset).Iter;
+				LineSegment lineSegment = doc.GetLineByOffset (startOffset);
+				if (lineSegment == null)
+					return;
+				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = lineSegment.Iter;
 				if (iter == null || iter.Current == null)
 					return;
 				Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();

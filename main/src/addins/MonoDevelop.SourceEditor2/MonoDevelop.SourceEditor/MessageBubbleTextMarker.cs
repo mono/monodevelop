@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor
 
 		TextEditor editor;
 
-		public bool IsExpanded {
+		public override bool IsVisible {
 			get { return !task.Completed; }
 			set { task.Completed = !value; }
 		}
@@ -103,7 +103,7 @@ namespace MonoDevelop.SourceEditor
 
 		public int GetLineHeight (TextEditor editor)
 		{
-			if (!IsExpanded || DebuggingService.IsDebugging)
+			if (!IsVisible || DebuggingService.IsDebugging)
 				return editor.LineHeight;
 			
 			if (editorAllocHeight == editor.Allocation.Width && lastLineLength == lineSegment.EditableLength)
@@ -175,7 +175,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.editor = editor;
 			this.task = task;
-			this.IsExpanded = true;
+			this.IsVisible = true;
 			this.lineSegment = lineSegment;
 			this.initialText = editor.Document.GetTextAt (lineSegment);
 			this.Flags = TextMarkerFlags.DrawsSelection;
@@ -376,7 +376,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool DrawBackground (TextEditor editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout2, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 		{
-			if (!IsExpanded || DebuggingService.IsDebugging)
+			if (!IsVisible || DebuggingService.IsDebugging)
 				return true;
 			EnsureLayoutCreated (editor);
 			int x = editor.TextViewMargin.XOffset;

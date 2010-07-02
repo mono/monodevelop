@@ -75,6 +75,12 @@ namespace Mono.TextEditor
 			set;
 		}
 		
+		
+		public virtual bool IsVisible {
+			get;
+			set;
+		}
+		
 		public virtual void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
 		{
 		}

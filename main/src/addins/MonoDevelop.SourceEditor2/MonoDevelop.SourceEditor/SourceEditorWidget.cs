@@ -493,32 +493,15 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
 		{
-			/*
-			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null) {
+			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null)
 				return;
-			}
-			
 			string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
 			if (fileName != args.FileName)
 				return;
 			
-			ParsedDocument = args.ParsedDocument;
-			bool canShowBrowser = ParsedDocument != null && ParsedDocument.CompilationUnit != null;
-			if (canShowBrowser)
-				Gtk.Application.Invoke (delegate { this.CanShowClassBrowser = canShowBrowser; } );
-			*/
 			Gtk.Application.Invoke (delegate {
-				if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null) {
-					return;
-				}
-				
-				string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
-				if (fileName != args.FileName)
-					return;
-				
 				if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) 
 					TextEditor.TextViewMargin.PurgeLayoutCache ();
-				
 				ParsedDocument = args.ParsedDocument;
 				bool canShowBrowser = ParsedDocument != null && ParsedDocument.CompilationUnit != null;
 				if (canShowBrowser)
@@ -551,7 +534,6 @@ namespace MonoDevelop.SourceEditor
 				new ParseInformationUpdaterWorkerThread (this).Run (false);
 			}
 		}
-
 		
 		void StopParseInfoThread ()
 		{
@@ -1422,7 +1404,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
 			if (marker != null) {
-				marker.IsExpanded = !marker.IsExpanded;
+				marker.IsVisible = !marker.IsVisible;
 				TextEditor.QueueDraw ();
 				MonoDevelop.Ide.Gui.Pads.ErrorListPad pad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 				pad.Control.QueueDraw ();
