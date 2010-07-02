@@ -41,6 +41,7 @@
     <ProjectReference Include="..\MonoDevelop.XmlEditor.csproj">
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
       <Name>MonoDevelop.XmlEditor</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

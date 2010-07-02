@@ -286,7 +286,12 @@ namespace MonoDevelop.Components.Docking
 			if (autoHideTimeout == uint.MaxValue) {
 				autoHideTimeout = GLib.Timeout.Add (force ? 0 : bar.Frame.AutoHideDelay, delegate {
 					// Don't hide the item if it has the focus. Try again later.
-					if (it.Widget.FocusChild != null)
+					if (it.Widget.FocusChild != null && !force)
+						return true;
+					// Don't hide the item if the mouse pointer is still inside the window. Try again later.
+					int px, py;
+					it.Widget.GetPointer (out px, out py);
+					if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px, py) && !force)
 						return true;
 					autoHideTimeout = uint.MaxValue;
 					AutoHide (true);

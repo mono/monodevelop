@@ -1,3 +1,14 @@
+2010-06-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects/ProjectFileCollection.cs: Use FilePath
+	  when comparing files, since it will is case insensitive on
+	  windows. Sould fix bug #567155 - Linked source files not
+	  saved before building.
+
+2010-06-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* frameworks/framework_NET_4_0.xml: Add missing assembly.
+
 2010-06-23  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Core.Serialization/DataContext.cs: Properly
