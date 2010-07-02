@@ -95,7 +95,6 @@ namespace Mono.TextEditor.Theatrics
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			
 			if (include_internals) {
 				callback (vScrollBar);
 				callback (hScrollBar);
@@ -126,6 +125,7 @@ namespace Mono.TextEditor.Theatrics
 					break;
 				}
 			}
+			base.OnRemoved (widget);
 		}
 		
 		protected override void OnDestroyed ()
