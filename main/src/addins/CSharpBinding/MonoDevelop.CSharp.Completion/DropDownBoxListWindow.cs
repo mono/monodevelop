@@ -214,7 +214,7 @@ namespace MonoDevelop.CSharp.Completion
 			public ListWidget (DropDownBoxListWindow win)
 			{
 				this.win = win;
-				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
+				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.KeyPressMask;
 				layout = new Pango.Layout (this.PangoContext);
 				CalcRowHeight ();
 			}
@@ -225,6 +225,13 @@ namespace MonoDevelop.CSharp.Completion
 				int rowWidth;
 				layout.GetPixelSize (out rowWidth, out rowHeight);
 				rowHeight += padding;
+			}
+			
+			protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+			{
+				if (win.ProcessKey (evnt.Key, evnt.State))
+					return true;
+				return base.OnKeyPressEvent (evnt);
 			}
 			
 			protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)

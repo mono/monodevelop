@@ -2199,8 +2199,8 @@ namespace MonoDevelop.CSharp.Completion
 			string GetString (Ambience amb, IMember x)
 			{
 				if (tag is ICompilationUnit)
-					return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
-				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
+					return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
+				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 			}
 			
 			public string GetText (int n)
@@ -2321,7 +2321,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			var loc = textEditorData.Caret.Location;
 			IType type = Document.ParsedDocument.CompilationUnit.GetTypeAt (loc.Line + 1, loc.Column + 1);
-			IMember member = type != null ? type.GetMemberAt (loc.Line + 1, loc.Column + 1) : null;
+			IMember member = type != null && type.ClassType != ClassType.Delegate ? type.GetMemberAt (loc.Line + 1, loc.Column + 1) : null;
 			
 			List<PathEntry> result = new List<PathEntry> ();
 			var amb = GetAmbience ();
@@ -2340,7 +2340,7 @@ namespace MonoDevelop.CSharp.Completion
 						                       reg.Name);
 					}
 				} else {
-					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters));
+					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates));
 				}
 				entry.Tag = node;
 				result.Insert (0, entry);
@@ -2348,7 +2348,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if (type == null) {
 				result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (Document.CompilationUnit) } );
-			} else if (member == null)
+			} else if (member == null && type.ClassType != ClassType.Delegate) 
 				result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (type) } );
 			var prev = CurrentPath;
 			CurrentPath = result.ToArray ();

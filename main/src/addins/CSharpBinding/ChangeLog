@@ -1,5 +1,12 @@
 2010-07-03  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:
+	* MonoDevelop.CSharp.Completion/DropDownBoxListWindow.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Worked on quick navigation bar
+
+2010-07-03  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Improved handling of inner classes.
 

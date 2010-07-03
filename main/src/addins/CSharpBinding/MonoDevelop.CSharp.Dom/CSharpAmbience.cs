@@ -330,8 +330,10 @@ namespace MonoDevelop.CSharp.Dom
 				bool first = true;
 				if (method.Parameters != null) {
 					foreach (IParameter parameter in method.Parameters) {
-						if (settings.HideExtensionsParameter && method.IsExtension && parameter == method.Parameters[0])
+						if (settings.HideExtensionsParameter && method.IsExtension && first)
 							continue;
+						if (method.IsExtension && first)
+							result.Append (settings.Markup ("this "));
 						if (!first)
 							result.Append (settings.Markup (", "));
 						AppendParameter (settings, result, parameter);
@@ -437,7 +439,7 @@ namespace MonoDevelop.CSharp.Dom
 				result.Append (settings.Markup (" "));
 			
 			
-			if (type.ClassType == ClassType.Delegate && settings.ReformatDelegates) {
+			if (type.ClassType == ClassType.Delegate && settings.ReformatDelegates && settings.IncludeReturnType) {
 				IMethod invoke = type.SearchMember ("Invoke", true).FirstOrDefault () as IMethod;
 				if (invoke != null) {
 					result.Append (this.GetString (invoke.ReturnType, settings));
@@ -485,7 +487,7 @@ namespace MonoDevelop.CSharp.Dom
 				IMethod invoke = type.SearchMember ("Invoke", true).FirstOrDefault () as IMethod;
 				if (invoke != null) 
 					AppendParameterList (result, settings, invoke.Parameters);
-				result.Append (settings.Markup (");"));
+				result.Append (settings.Markup (")"));
 				return result.ToString ();
 			}
 			
