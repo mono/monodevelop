@@ -2196,9 +2196,11 @@ namespace MonoDevelop.CSharp.Completion
 				memberList.Sort ((x, y) => String.Compare (GetString (amb, x), GetString (amb, y), StringComparison.OrdinalIgnoreCase));
 			}
 			
-			internal static string GetString (Ambience amb, IMember x)
+			string GetString (Ambience amb, IMember x)
 			{
-				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
+				if (tag is ICompilationUnit)
+					return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName);
+				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters);
 			}
 			
 			public string GetText (int n)
@@ -2338,7 +2340,7 @@ namespace MonoDevelop.CSharp.Completion
 						                       reg.Name);
 					}
 				} else {
-					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), DataProvider.GetString (amb, (IMember)node));
+					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters));
 				}
 				entry.Tag = node;
 				result.Insert (0, entry);
