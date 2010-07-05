@@ -481,7 +481,7 @@ namespace MonoDevelop.VersionControl.Views
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
 					}
 					
-					while (startLine > 0 && annotations[startLine - 1] != null && annotations[startLine] != null && annotations[startLine - 1].Revision == annotations[startLine].Revision) {
+					while (startLine > 0 && startLine - 1 < annotations.Count && annotations[startLine - 1] != null && annotations[startLine] != null && annotations[startLine - 1].Revision == annotations[startLine].Revision) {
 						startLine--;
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
 					}
