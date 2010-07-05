@@ -51,6 +51,11 @@ namespace MonoDevelop.Components
 			set;
 		}
 		
+		public bool IsPathEnd {
+			get;
+			set;
+		}
+		
 		public PathEntry (Gdk.Pixbuf icon, string text)
 		{
 			this.Icon = icon;
@@ -195,10 +200,14 @@ namespace MonoDevelop.Components
 				
 				xpos += widths[i];
 				if (!last) {
-					int arrowH = Math.Min (height, spacing);
-					int arrowY = ypos + (height - arrowH) / 2;
-					Style.PaintArrow (Style, GdkWindow, State, ShadowType.None, evnt.Area, this, "", ArrowType.Right,
-					                  true, xpos, arrowY, spacing, arrowH);
+					if (path[i].IsPathEnd) {
+						Style.PaintVline (Style, GdkWindow, State, evnt.Area, this, "", ypos, ypos + height, xpos + spacing / 2);
+					} else {
+						int arrowH = Math.Min (height, spacing);
+						int arrowY = ypos + (height - arrowH) / 2;
+						Style.PaintArrow (Style, GdkWindow, State, ShadowType.None, evnt.Area, this, "", ArrowType.Right,
+						                  true, xpos, arrowY, spacing, arrowH);
+					}
 				}
 				xpos += spacing;
 			}
