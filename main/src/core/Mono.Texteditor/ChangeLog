@@ -1,5 +1,10 @@
 2010-07-05  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Theatrics/SmartScrolledWindow.cs: Fixed GTK
+	  critical when closing a text editor.
+
+2010-07-05  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed single line
 	  indent/outdent (Bug 619798 - Outdent a selected line selects
 	  the next line).
