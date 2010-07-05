@@ -1,3 +1,9 @@
+2010-07-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  Fixed 'Bug 619799 - Renaming variable also invokes
+	  auto-complete'.
+
 2010-07-03  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:
