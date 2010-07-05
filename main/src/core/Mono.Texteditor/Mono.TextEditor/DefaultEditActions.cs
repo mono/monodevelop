@@ -133,6 +133,10 @@ namespace Mono.TextEditor
 		
 		static void SelectLineBlock (TextEditorData data, int endLineNr, int startLineNr)
 		{
+			if (startLineNr == endLineNr) {
+				data.MainSelection = new Selection (startLineNr, 0, startLineNr + 1, 0);
+				return;
+			}
 			LineSegment endLine = data.Document.GetLine (endLineNr);
 			data.MainSelection = new Selection (startLineNr, 0, endLineNr, endLine.Length);
 		}

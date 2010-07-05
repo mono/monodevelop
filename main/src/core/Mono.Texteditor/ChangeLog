@@ -1,3 +1,9 @@
+2010-07-05  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed single line
+	  indent/outdent (Bug 619798 - Outdent a selected line selects
+	  the next line).
+
 2010-07-02  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Theatrics/SmartScrolledWindow.cs: Fixed text
