@@ -312,6 +312,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				word.Remove (curPos, 1);
 				ResetSizes ();
 				UpdateWordSelection ();
+				if (word.Length == 0)
+					return KeyActions.CloseWindow | KeyActions.Process;
 				return KeyActions.Process;
 
 			case Gdk.Key.Right:
