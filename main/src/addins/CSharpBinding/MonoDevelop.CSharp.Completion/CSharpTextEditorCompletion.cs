@@ -169,7 +169,10 @@ namespace MonoDevelop.CSharp.Completion
 			if (textEditorData.CurrentMode is CompletionTextLinkMode) {
 				if (!((CompletionTextLinkMode)textEditorData.CurrentMode).TriggerCodeCompletion)
 					return null;
+			} else if (textEditorData.CurrentMode is Mono.TextEditor.TextLinkEditMode) {
+				return null;
 			}
+
 	//		IDisposable timer = null;
 		try {
 			if (dom == null /*|| Document.CompilationUnit == null*/)
