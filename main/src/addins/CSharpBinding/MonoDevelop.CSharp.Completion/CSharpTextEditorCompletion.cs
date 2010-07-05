@@ -2342,6 +2342,7 @@ namespace MonoDevelop.CSharp.Completion
 						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf,
 						                       reg.Name);
 					}
+					entry.IsPathEnd = true;
 				} else {
 					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates));
 				}
