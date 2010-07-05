@@ -257,7 +257,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
-		public override object GetContent (Type type)
+		public override T GetContent<T> ()
 		{
 //			if (type == typeof(IEditableTextBuffer)) {
 //				// Intercept the IPositionable interface, since we need to
@@ -268,18 +268,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 //					return null;
 //			}
 //			
-			object ob = base.GetContent (type);
-			if (ob != null)
-				return ob;
-			else if (content != null)
-				return content.GetContent (type);
-			else
-				return null;
+			return  base.GetContent<T> () ?? content.GetContent<T> ();
 		}
 
 		public void JumpTo (int line, int column)
 		{
-			IEditableTextBuffer ip = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
+			IEditableTextBuffer ip = content.GetContent<IEditableTextBuffer> ();
 			if (ip != null) {
 				ShowPage (0);
 				ip.SetCaretTo (line, column);
