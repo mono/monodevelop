@@ -105,15 +105,17 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			if (identifierExpression.TypeArguments != null && identifierExpression.TypeArguments.Count > 0) {
 				if (resolver.CallingType != null) {
-					IMethod possibleMethod = resolver.CallingType.Methods.Where (m => m.Name == identifierExpression.Identifier && m.TypeParameters.Count == identifierExpression.TypeArguments.Count).FirstOrDefault ();
-					if (possibleMethod != null) {
-						MethodResolveResult methodResolveResult = new MethodResolveResult (possibleMethod);
-						methodResolveResult.CallingType   = resolver.CallingType;
-						methodResolveResult.CallingMember = resolver.CallingMember;
-						
-						identifierExpression.TypeArguments.ForEach (arg => methodResolveResult.AddGenericArgument (resolver.ResolveType (arg.ConvertToReturnType ())));
-						methodResolveResult.ResolveExtensionMethods ();
-						return methodResolveResult;
+					foreach (var type in resolver.Dom.GetInheritanceTree (resolver.CallingType)) {
+						IMethod possibleMethod = type.Methods.Where (m => m.Name == identifierExpression.Identifier && m.TypeParameters.Count == identifierExpression.TypeArguments.Count && m.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, true)).FirstOrDefault ();
+						if (possibleMethod != null) {
+							MethodResolveResult methodResolveResult = new MethodResolveResult (possibleMethod);
+							methodResolveResult.CallingType   = resolver.CallingType;
+							methodResolveResult.CallingMember = resolver.CallingMember;
+							
+							identifierExpression.TypeArguments.ForEach (arg => methodResolveResult.AddGenericArgument (resolver.ResolveType (arg.ConvertToReturnType ())));
+							methodResolveResult.ResolveExtensionMethods ();
+							return methodResolveResult;
+						}
 					}
 				}
 				TypeReference reference = new TypeReference (identifierExpression.Identifier);
