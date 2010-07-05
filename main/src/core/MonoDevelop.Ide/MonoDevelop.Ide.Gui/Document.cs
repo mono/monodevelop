@@ -75,17 +75,17 @@ namespace MonoDevelop.Ide.Gui
 			get { return this.editorExtension; }
 		}
  		
-		public object GetContent (Type type)
+		public T GetContent<T> () where T : class
 		{
 			//check whether the ViewContent can return the type directly
-			object ret = Window.ActiveViewContent.GetContent (type);
+			T ret = Window.ActiveViewContent.GetContent<T> ();
 			if (ret != null)
 				return ret;
 			
 			//check the primary viewcontent
 			//not sure if this is the right thing to do, but things depend on this behaviour
 			if (Window.ViewContent != Window.ActiveViewContent) {
-				ret = Window.ViewContent.GetContent (type);
+				ret = Window.ViewContent.GetContent<T> ();
 				if (ret != null)
 					return ret;
 			}
@@ -93,16 +93,11 @@ namespace MonoDevelop.Ide.Gui
 			//no, so look through the TexteditorExtensions as well
 			TextEditorExtension nextExtension = editorExtension;
 			while (nextExtension != null) {
-				if (type.IsAssignableFrom (nextExtension.GetType ()))
-					return nextExtension;
+				if (typeof(T).IsAssignableFrom (nextExtension.GetType ()))
+					return nextExtension as T;
 				nextExtension = nextExtension.Next as TextEditorExtension;
 			}
 			return null;
-		}
-		
-		public T GetContent <T>()
-		{
-			return (T) GetContent (typeof(T));
 		}
 		
 		public Document (IWorkbenchWindow window)

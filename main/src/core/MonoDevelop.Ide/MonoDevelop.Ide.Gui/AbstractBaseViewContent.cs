@@ -64,9 +64,9 @@ namespace MonoDevelop.Ide.Gui
 			return false;
 		}
 
-		public virtual object GetContent (Type contentType)
+		public virtual T GetContent<T> () where T : class
 		{
-			return contentType.IsInstanceOfType (this) ? this : null;
+			return this as T;
 		}
 
 		#endregion

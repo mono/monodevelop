@@ -392,7 +392,7 @@ namespace MonoDevelop.Ide.Gui
 							Present ();
 						}
 						
-						IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
+						IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
 						if (line >= 1 && ipos != null) {
 							ipos.SetCaretTo (line, column >= 1 ? column : 1, highlightCaretLine);
 						}
@@ -1032,7 +1032,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
-				IEncodedTextContent etc = (IEncodedTextContent) newContent.GetContent (typeof(IEncodedTextContent));
+				IEncodedTextContent etc = newContent.GetContent<IEncodedTextContent> ();
 				if (fileInfo.Encoding != null && etc != null)
 					etc.Load (fileName, fileInfo.Encoding);
 				else
@@ -1055,7 +1055,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
-			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
+			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
 			if (fileInfo.Line != -1 && ipos != null) {
 				GLib.Timeout.Add (10, new GLib.TimeoutHandler (JumpToLine));
 			}
@@ -1064,7 +1064,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool JumpToLine ()
 		{
-			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
+			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
 			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.HighlightCaretLine);
 			return false;
 		}

@@ -30,14 +30,15 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui
 {
-    public interface IBaseViewContent : IDisposable
+	public interface IBaseViewContent : IDisposable
 	{
-        IWorkbenchWindow WorkbenchWindow { get; set; }
-        Widget Control { get; }
-        string TabPageLabel { get; }
+		IWorkbenchWindow WorkbenchWindow { get; set; }
+		Widget Control { get; }
+		string TabPageLabel { get; }
 
-        object GetContent (Type type);
-        bool CanReuseView (string fileName);
-        void RedrawContent ();
+		T GetContent<T> () where T : class;
+		
+		bool CanReuseView (string fileName);
+		void RedrawContent ();
 	}
 }

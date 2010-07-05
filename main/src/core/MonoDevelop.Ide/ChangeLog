@@ -1,5 +1,16 @@
 2010-07-05  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.Gui/IBaseViewContent.cs:
+	* MonoDevelop.Ide.Gui/SdiWorkspaceWindow.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.Gui/AbstractBaseViewContent.cs: Worked on
+	  navigation panel/content interface.
+
+2010-07-05  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Components/PathBar.cs: Added the ability to show
 	  a separator inside a path.
 

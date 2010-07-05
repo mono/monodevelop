@@ -46,16 +46,16 @@ namespace MonoDevelop.Ide.Gui
 		
 		public static TextEditor GetTextEditor (IBaseViewContent content)
 		{
-			IEditableTextBuffer tb = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
+			IEditableTextBuffer tb = content.GetContent<IEditableTextBuffer> ();
 			if (tb == null)
 				return null;
 			
 			TextEditor ed = new TextEditor ();
 			ed.textBuffer = tb;
-			ed.bookmarkBuffer = (IBookmarkBuffer) content.GetContent (typeof(IBookmarkBuffer));
-			ed.encodedTextContent = (IEncodedTextContent) content.GetContent (typeof(IEncodedTextContent));
-			ed.completionWidget = (ICompletionWidget) content.GetContent (typeof(ICompletionWidget));
-			ed.clipboardHandler = (IClipboardHandler) content.GetContent (typeof(IClipboardHandler));
+			ed.bookmarkBuffer = content.GetContent<IBookmarkBuffer> ();
+			ed.encodedTextContent = content.GetContent<IEncodedTextContent> ();
+			ed.completionWidget = content.GetContent<ICompletionWidget> ();
+			ed.clipboardHandler = content.GetContent<IClipboardHandler> ();
 			return ed;
 		}
 		

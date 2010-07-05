@@ -49,9 +49,9 @@ namespace MonoDevelop.Ide.Gui
 			doc = IdeApp.Workbench.WrapDocument (window);
 		}
 		
-		public T GetContent <T>()
+		public T GetContent <T>() where T : class
 		{
-			return (T) window.ActiveViewContent.GetContent (typeof(T));
+			return window.ActiveViewContent.GetContent<T> ();
 		}
 		
 		object ICommandRouter.GetNextCommandTarget ()
