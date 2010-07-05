@@ -1,3 +1,9 @@
+2010-07-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  unit test for 'Bug 615992 - Intellisense broken when calling
+	  generic method.'.
+
 2010-06-30  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs: Added

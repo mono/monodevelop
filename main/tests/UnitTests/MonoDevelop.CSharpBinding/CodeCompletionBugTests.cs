@@ -2622,5 +2622,41 @@ namespace B
 			Assert.IsNull (provider.Find ("Foo"), "enum 'Foo' found, but shouldn't.");
 			Assert.IsNotNull (provider.Find ("A.Foo"), "enum 'A.Foo' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 615992 - Intellisense broken when calling generic method.
+		/// </summary>
+		[Test()]
+		public void TestBug615992 ()
+		{
+				CompletionDataList provider = CreateProvider (
+@"public delegate void Act<T> (T t);
+
+public class Foo
+{
+	public void Bar ()
+	{
+	}
+}
+
+class TestBase
+{
+	protected void Method<T> (Act<T> action)
+	{
+	}
+}
+
+class Test : TestBase
+{
+	public Test ()
+	{
+		$Method<Foo> (f => f.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
+		}
+		
+
 	}
 }
