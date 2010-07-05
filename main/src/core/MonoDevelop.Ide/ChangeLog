@@ -1,3 +1,9 @@
+2010-07-05  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeCompletion/ListWindow.cs: Fixed 'Bug
+	  619800 - Auto-complete of nothing shouldn't auto-complete as
+	  void'.
+
 2010-06-29  Carlo Kok  <ck@remobjects.com>
 
 	* MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs: Make
