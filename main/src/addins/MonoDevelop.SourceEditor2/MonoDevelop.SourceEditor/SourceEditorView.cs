@@ -102,7 +102,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override Gtk.Widget Control {
 			get {
-				return widget.Vbox;
+				return widget != null ? widget.Vbox : null;
 			}
 		}
 		
