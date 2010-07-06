@@ -129,6 +129,11 @@ namespace MonoDevelop.CSharp.Formatting
 				indentBuilder = new StringBuilder ();
 				if ((inside & (Inside.Attribute | Inside.ParenList)) != 0) {
 					if (size > 0 && stack[sp].inside == inside) {
+						while (sp >= 0) {
+							if ((stack[sp].inside & Inside.FoldedOrBlock) != 0)
+								break;
+							sp--;
+						}
 						indentBuilder.Append (stack[sp].indent);
 						if (stack[sp].lineNr == lineNr)
 							n = stack[sp].nSpaces;
@@ -142,11 +147,11 @@ namespace MonoDevelop.CSharp.Formatting
 							sp--;
 						}
 					}
-					if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+//					if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 						indentBuilder.Append ('\t');
-					} else {
-						indentBuilder.Append (' ', nSpaces - n);
-					}
+//					} else {
+//						indentBuilder.Append (' ', nSpaces - n);
+//					}
 				} else if (inside == Inside.MultiLineComment) {
 					if (size > 0) {
 						indentBuilder.Append (stack[sp].indent);
