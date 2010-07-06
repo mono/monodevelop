@@ -143,9 +143,9 @@ namespace MonoDevelop.Components
 			this.rightPath = Path.Where (p => p.Position == EntryPosition.Right).ToArray ();
 			
 			activeIndex = -1;
-			leftWidths = null;
-			rightWidths = null;
-			QueueResize ();
+			leftWidths = rightWidths = null;
+			EnsureWidths ();
+			QueueDraw ();
 		}
 		
 		bool ArrSame (PathEntry[] a, PathEntry[] b)
