@@ -372,18 +372,13 @@ namespace MonoDevelop.VersionControl.Views
 					// change crosses line boundary
 					
 					lineCount = endLine - startLine;
+					lineCount = Math.Min (lineCount, annotations.Count - startLine);
 					
-					if (string.IsNullOrEmpty (e.Value)) {
-						// delete
-						lineCount = Math.Min (lineCount, annotations.Count - startLine);
-						if (lineCount > 0)
-							annotations.RemoveRange (startLine, lineCount);
-					}  else {
-						// replace
+					if (lineCount > 0)
 						annotations.RemoveRange (startLine, lineCount);
-						for (int i=0; i<lineCount; ++i) {
+					if (!string.IsNullOrEmpty (e.Value)) {
+						for (int i=0; i<lineCount; ++i)
 							annotations.Insert (startLine, locallyModified);
-						}
 					}
 					return;
 				} else if (0 == e.Count) {
