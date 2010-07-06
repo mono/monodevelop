@@ -1,5 +1,11 @@
 2010-07-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Views/ComparisonView.cs:
+	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs:
+	  Undo/Redo now works in comparison view.
+
+2010-07-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Views/BlameWidget.cs: Added
 	  bounds check.
 

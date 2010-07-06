@@ -32,6 +32,7 @@ using MonoDevelop.Components.Diff;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -91,7 +92,7 @@ namespace MonoDevelop.VersionControl.Views
 
 	}
 	
-	internal class ComparisonView : BaseView, IAttachableViewContent 
+	internal class ComparisonView : BaseView, IAttachableViewContent, IUndoHandler
 	{
 		ComparisonWidget widget;
 
@@ -203,7 +204,43 @@ namespace MonoDevelop.VersionControl.Views
 		public void BaseContentChanged ()
 		{
 		}
+		
 		#endregion
+		
+		#region IUndoHandler implementation
+		void IUndoHandler.Undo ()
+		{
+			this.widget.OriginalEditor.Document.Undo ();
+		}
+
+		void IUndoHandler.Redo ()
+		{
+			this.widget.OriginalEditor.Document.Redo ();
+		}
+
+		void IUndoHandler.BeginAtomicUndo ()
+		{
+			this.widget.OriginalEditor.Document.BeginAtomicUndo ();
+		}
+
+		void IUndoHandler.EndAtomicUndo ()
+		{
+			this.widget.OriginalEditor.Document.EndAtomicUndo ();
+		}
+
+		bool IUndoHandler.EnableUndo {
+			get {
+				return this.widget.OriginalEditor.Document.CanUndo;
+			}
+		}
+
+		bool IUndoHandler.EnableRedo {
+			get {
+				return this.widget.OriginalEditor.Document.CanRedo;
+			}
+		}
+		#endregion
+
 	}
 }
 

@@ -420,7 +420,7 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				if (selectedHunk != null) {
-					Console.WriteLine (selectedHunk.Left.Start + "/" + selectedHunk.Right.Start);
+					widget.OriginalEditor.Document.BeginAtomicUndo ();
 					LineSegment start = widget.OriginalEditor.Document.GetLine (selectedHunk.Right.Start);
 					LineSegment end   = widget.OriginalEditor.Document.GetLine (selectedHunk.Right.Start + selectedHunk.Right.Count - 1);
 					if (selectedHunk.Right.Count > 0)
@@ -432,7 +432,7 @@ namespace MonoDevelop.VersionControl.Views
 						end   = widget.DiffEditor.Document.GetLine (selectedHunk.Left.Start + selectedHunk.Left.Count - 1);
 						widget.OriginalEditor.Insert (offset, widget.DiffEditor.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset));
 					}
-					
+					widget.OriginalEditor.Document.EndAtomicUndo ();
 				}
 				return base.OnButtonPressEvent (evnt);
 			}
