@@ -1,5 +1,9 @@
 2010-07-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Components/PathBar.cs: Added bounds check.
+
+2010-07-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Components/PathBar.cs: Improved resizing
 	  behavior.
 

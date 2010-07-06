@@ -200,7 +200,7 @@ namespace MonoDevelop.Components
 				xpos += leftWidths[i];
 				xpos += spacing;
 				
-				if (hoverIndex >= 0 && leftPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
+				if (hoverIndex >= 0 && hoverIndex < Path.Length && leftPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
 					Style.PaintBox (Style, GdkWindow,
 					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
 					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
@@ -239,7 +239,7 @@ namespace MonoDevelop.Components
 					
 				int x = xposRight;
 				
-				if (hoverIndex >= 0 && rightPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
+				if (hoverIndex >= 0 && hoverIndex < Path.Length && rightPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
 					Style.PaintBox (Style, GdkWindow,
 					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
 					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
