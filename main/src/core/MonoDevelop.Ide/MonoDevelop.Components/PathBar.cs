@@ -34,6 +34,12 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
+	public enum EntryPosition
+	{
+		Left,
+		Right
+	}
+	
 	public class PathEntry 
 	{
 		public Gdk.Pixbuf Icon {
@@ -52,6 +58,11 @@ namespace MonoDevelop.Components
 		}
 		
 		public bool IsPathEnd {
+			get;
+			set;
+		}
+		
+		public EntryPosition Position {
 			get;
 			set;
 		}
@@ -89,11 +100,12 @@ namespace MonoDevelop.Components
 	
 	public class PathBar : Gtk.DrawingArea
 	{
-		PathEntry[] path = new PathEntry[0];
+		PathEntry[] leftPath  = new PathEntry[0];
+		PathEntry[] rightPath = new PathEntry[0];
 		Pango.Layout layout;
 		Pango.AttrList boldAtts = new Pango.AttrList ();
 		
-		int[] widths;
+		int[] leftWidths, rightWidths;
 		int height;
 		
 		bool pressed, hovering, menuVisible;
@@ -118,17 +130,20 @@ namespace MonoDevelop.Components
 			this.createMenuForItem = createMenuForItem;
 		}
 		
-		public new PathEntry[] Path { get { return path; } }
+		public new PathEntry[] Path { get; private set; }
 		public int ActiveIndex { get { return activeIndex; } }
 		
 		public void SetPath (PathEntry[] path)
 		{
-			if (ArrSame (this.path, path))
+			if (ArrSame (this.leftPath, path))
 				return;
+			this.Path = path ?? new PathEntry[0];
+			this.leftPath = Path.Where (p => p.Position == EntryPosition.Left).ToArray ();
+			this.rightPath = Path.Where (p => p.Position == EntryPosition.Right).ToArray ();
 			
-			this.path = path ?? new PathEntry[0];
 			activeIndex = -1;
-			widths = null;
+			leftWidths = null;
+			rightWidths = null;
 			QueueResize ();
 		}
 		
@@ -146,12 +161,12 @@ namespace MonoDevelop.Components
 		
 		public void SetActive (int index)
 		{
-			if (index >= path.Length)
+			if (index >= leftPath.Length)
 				throw new IndexOutOfRangeException ();
 			
 			if (activeIndex != index) {
 				activeIndex = index;
-				widths = null;
+				leftWidths = rightWidths = null;
 				QueueResize ();
 			}
 		}
@@ -173,43 +188,74 @@ namespace MonoDevelop.Components
 			Style.PaintBox (Style, evnt.Window, StateType.Normal, ShadowType.None, evnt.Area, this, "button", 
 			                - boxpadding, - padding, Allocation.Width + boxpadding * 2, Allocation.Height + boxpadding * 2);
 			
-			if (widths == null)
+			if (leftWidths == null || rightWidths == null)
 				return true;
 			
 			int xpos = padding, ypos = padding;
-			for (int i = 0; i < path.Length; i++) {
-				bool last = i == path.Length - 1;
+			for (int i = 0; i < leftPath.Length; i++) {
+				bool last = i == leftPath.Length - 1;
 				
-				if (hoverIndex == i && (menuVisible || pressed || hovering)) {
+				int x = xpos;
+				xpos += leftWidths[i];
+				xpos += spacing;
+				
+				if (hoverIndex >= 0 && leftPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
 					Style.PaintBox (Style, GdkWindow,
 					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
 					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
 					                evnt.Area, this, "button",
-					                xpos - padding, ypos - padding, widths[i] + padding + padding /*+ (last ? padding : spacing)*/,
+					                x - padding, ypos - padding, leftWidths[i] + padding + padding /*+ (last ? padding : spacing)*/,
 					                height + padding * 2);
 				}
+				
 				int textOffset = 0;
-				if (path[i].Icon != null) {
-					evnt.Window.DrawPixbuf (Style.BaseGC (State), path[i].Icon , 0, 0, xpos, ypos, -1, -1, RgbDither.None, 0, 0);
-					textOffset += path[i].Icon.Width + padding;
+				if (leftPath[i].Icon != null) {
+					GdkWindow.DrawPixbuf (Style.BaseGC (State), leftPath[i].Icon , 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
+					textOffset += leftPath[i].Icon.Width + padding;
 				}
 				
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
-				layout.SetText (path[i].Text);
-				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", xpos + textOffset, ypos, layout);
-				
-				xpos += widths[i];
+				layout.SetText (leftPath[i].Text);
+				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
 				if (!last) {
-					if (path[i].IsPathEnd) {
-						Style.PaintVline (Style, GdkWindow, State, evnt.Area, this, "", ypos, ypos + height, xpos + spacing / 2);
+					if (leftPath[i].IsPathEnd) {
+						Style.PaintVline (Style, GdkWindow, State, evnt.Area, this, "", ypos, ypos + height, xpos - spacing / 2);
 					} else {
 						int arrowH = Math.Min (height, spacing);
 						int arrowY = ypos + (height - arrowH) / 2;
 						Style.PaintArrow (Style, GdkWindow, State, ShadowType.None, evnt.Area, this, "", ArrowType.Right,
-						                  true, xpos, arrowY, spacing, arrowH);
+						                  true, xpos - spacing, arrowY, spacing, arrowH);
 					}
 				}
-				xpos += spacing;
+			}
+			
+			int xposRight = Allocation.Width - padding;
+			for (int i = 0; i < rightPath.Length; i++) {
+//				bool last = i == rightPath.Length - 1;
+				
+				xposRight -= rightWidths[i];
+				xposRight -= spacing;
+					
+				int x = xposRight;
+				
+				if (hoverIndex >= 0 && rightPath[i] == Path[hoverIndex] && (menuVisible || pressed || hovering)) {
+					Style.PaintBox (Style, GdkWindow,
+					                (pressed || menuVisible)? StateType.Active : StateType.Prelight,
+					                (pressed || menuVisible)? ShadowType.In : ShadowType.Out,
+					                evnt.Area, this, "button",
+					                x - padding, ypos - padding, rightWidths[i] + padding + padding /*+ (last ? padding : spacing)*/,
+					                height + padding * 2);
+				}
+				
+				int textOffset = 0;
+				if (rightPath[i].Icon != null) {
+					GdkWindow.DrawPixbuf (Style.BaseGC (State), rightPath[i].Icon , 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
+					textOffset += rightPath[i].Icon.Width + padding;
+				}
+				
+				layout.Attributes = (i == activeIndex)? boldAtts : null;
+				layout.SetText (rightPath[i].Text);
+				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
 			}
 			
 			return true;
@@ -264,18 +310,42 @@ namespace MonoDevelop.Components
 				
 		}
 		
+		public int GetHoverXPosition (out int w)
+		{
+			if (Path[hoverIndex].Position == EntryPosition.Left) {
+				int idx = leftPath.TakeWhile (p => p != Path[hoverIndex]).Count ();
+				Console.WriteLine ("lidx={0}", idx);
+				
+				if (idx >= 0) {
+					w = leftWidths[idx];
+					return leftWidths.Take (idx).Sum () + idx * spacing;
+				}
+			} else {
+				int idx = rightPath.TakeWhile (p => p != Path[hoverIndex]).Count ();
+				if (idx >= 0) {
+					w = rightWidths[idx];
+					return Allocation.Width - padding - rightWidths[idx] - spacing;
+				}
+			}
+			w = Allocation.Width;
+			return 0;
+		}
+
 		void PositionWidget (Gtk.Widget widget)
 		{
 			if (!(widget is Gtk.Window))
 				return;
 			int ox, oy;
 			ParentWindow.GetOrigin (out ox, out oy);
-			int dx = ox + this.Allocation.X + widths.Take (hoverIndex).Sum () + hoverIndex * spacing;
+			int w;
+			int dx = ox + this.Allocation.X + GetHoverXPosition (out w);
 			int dy = oy + this.Allocation.Bottom;
 			
 			int width, height;
 			widget.GetSizeRequest (out width, out height);
-			widget.WidthRequest = System.Math.Max (width, widths[hoverIndex]);
+			
+			width = System.Math.Max (width, w);
+			widget.WidthRequest = width;
 			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (dx, dy));
 			
 			if (dy + height > geometry.Bottom)
@@ -291,10 +361,10 @@ namespace MonoDevelop.Components
 		void PositionFunc (Menu mn, out int x, out int y, out bool push_in)
 		{
 			this.GdkWindow.GetOrigin (out x, out y);
+			int w;
 			var rect = this.Allocation;
 			y += rect.Height;
-			x += widths.Take (hoverIndex).Sum () + hoverIndex * spacing;
-			
+			x += GetHoverXPosition (out w);
 			//if the menu would be off the bottom of the screen, "drop" it upwards
 			if (y + mn.Requisition.Height > this.Screen.Height) {
 				y -= mn.Requisition.Height;
@@ -336,17 +406,30 @@ namespace MonoDevelop.Components
 			}
 		}
 		
+		public int IndexOf (PathEntry entry)
+		{
+			return Path.TakeWhile (p => p != entry).Count ();
+		}
+
 		int GetItemAt (int x, int y)
 		{
-			int xpos = padding;
-			if (widths == null || x < xpos)
+			int xpos = padding, xposRight = Allocation.Width - padding;
+			if (leftWidths == null || x < xpos || x > xposRight)
 				return -1;
+			
 			//could do a binary search, but probably not worth it
-			for (int i = 0; i < path.Length; i++) {
-				xpos += widths[i] + spacing;
+			for (int i = 0; i < leftPath.Length; i++) {
+				xpos += leftWidths[i] + spacing;
 				if (x < xpos)
-					return i;
+					return IndexOf (leftPath[i]);
 			}
+			
+			for (int i = 0; i < rightPath.Length; i++) {
+				xposRight -= rightWidths[i] - spacing;
+				if (x > xposRight)
+					return IndexOf (rightPath[i]);
+			}
+			
 			return -1;
 		}
 		
@@ -357,21 +440,28 @@ namespace MonoDevelop.Components
 			layout = new Pango.Layout (PangoContext);
 		}
 		
-		void EnsureWidths ()
+		int[] CreateWidthArray (PathEntry[] path)
 		{
-			if (widths != null)
-				return;
-			EnsureLayout ();
-			
-			widths = new int[path.Length];
-			for (int i = 0; i < widths.Length; i++) {
+			var result = new int[path.Length];
+			for (int i = 0; i < path.Length; i++) {
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
 				layout.SetText (path[i].Text);
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 				height = Math.Max (h, height);
-				widths[i] = w + (path[i].Icon != null ? path[i].Icon.Width + padding : 0);
+				result[i] = w + (path[i].Icon != null ? path[i].Icon.Width + padding : 0);
 			}
+			return result;
+		}
+
+		void EnsureWidths ()
+		{
+			if (leftWidths != null)
+				return;
+			EnsureLayout ();
+			
+			leftWidths = CreateWidthArray (leftPath);
+			rightWidths = CreateWidthArray (rightPath);
 		}
 		
 		protected override void OnStyleSet (Style previous)
@@ -388,7 +478,7 @@ namespace MonoDevelop.Components
 			layout = null;
 			boldAtts.Dispose ();
 			
-			widths = null;
+			leftWidths = rightWidths = null;
 		}
 		
 		public override void Dispose ()
