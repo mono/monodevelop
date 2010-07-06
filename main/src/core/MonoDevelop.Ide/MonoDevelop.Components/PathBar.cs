@@ -341,15 +341,14 @@ namespace MonoDevelop.Components
 			int dx = ox + this.Allocation.X + GetHoverXPosition (out w);
 			int dy = oy + this.Allocation.Bottom;
 			
-			int width, height;
-			widget.GetSizeRequest (out width, out height);
+			var req = widget.SizeRequest ();
 			
-			width = System.Math.Max (width, w);
+			int width = System.Math.Max (req.Width, w);
 			widget.WidthRequest = width;
 			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (dx, dy));
 			
-			if (dy + height > geometry.Bottom)
-				dy = oy + this.Allocation.Y - height;
+			if (dy + req.Height > geometry.Bottom)
+				dy = oy + this.Allocation.Y - req.Height;
 			if (dx + width > geometry.Right)
 				dx = geometry.Right - width;
 			(widget as Gtk.Window).Move (dx, dy);
