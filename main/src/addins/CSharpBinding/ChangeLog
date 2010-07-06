@@ -5,6 +5,11 @@
 
 2010-07-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Formatting/CSharpIndentEngineStack.cs:
+	  Indenting should now reflect the mono style.
+
+2010-07-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
 	  Worked on region box.
 
