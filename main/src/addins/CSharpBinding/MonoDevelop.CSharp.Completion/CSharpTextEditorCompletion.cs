@@ -2336,13 +2336,12 @@ namespace MonoDevelop.CSharp.Completion
 						break;
 					FoldingRegion reg = Document.ParsedDocument.UserRegions.Where (r => r.Region.Contains (loc.Line + 1, loc.Column + 1)).LastOrDefault ();
 					if (reg == null) {
-						entry = new PathEntry (DesktopService.GetPixbufForFile (this.Document.FileName, IconSize.Menu), 
-						                       System.IO.Path.GetFileName (this.Document.FileName));
+						entry = new PathEntry (GettextCatalog.GetString ("No region"));
 					} else {
 						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf,
 						                       reg.Name);
 					}
-					entry.IsPathEnd = true;
+					entry.Position = EntryPosition.Right;
 				} else {
 					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates));
 				}
@@ -2350,10 +2349,18 @@ namespace MonoDevelop.CSharp.Completion
 				result.Insert (0, entry);
 				node = node.Parent;
 			}
+			PathEntry noSelection = null;
 			if (type == null) {
-				result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (Document.CompilationUnit) } );
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (Document.CompilationUnit) };
 			} else if (member == null && type.ClassType != ClassType.Delegate) 
-				result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (type) } );
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (type) };
+			if (noSelection != null) {
+/*				if (result.Count > 0 && result[result.Count - 1].Tag is ICompilationUnit) {
+					result.Insert (result.Count - 1, noSelection);
+				} else {*/
+					result.Add (noSelection);
+//				}
+			}
 			var prev = CurrentPath;
 			CurrentPath = result.ToArray ();
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));
