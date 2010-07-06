@@ -128,6 +128,7 @@ namespace MonoDevelop.Components
 					       EventMask.PointerMotionMask;
 			boldAtts.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
 			this.createMenuForItem = createMenuForItem;
+			EnsureLayout ();
 		}
 		
 		public new PathEntry[] Path { get; private set; }
@@ -455,9 +456,12 @@ namespace MonoDevelop.Components
 
 		void EnsureWidths ()
 		{
-			if (leftWidths != null)
+			if (leftWidths != null) 
 				return;
-			EnsureLayout ();
+			
+			layout.SetText ("#");
+			int w;
+			layout.GetPixelSize (out w, out this.height);
 			
 			leftWidths = CreateWidthArray (leftPath);
 			rightWidths = CreateWidthArray (rightPath);
@@ -467,6 +471,7 @@ namespace MonoDevelop.Components
 		{
 			base.OnStyleSet (previous);
 			KillLayout ();
+			EnsureLayout ();
 		}
 		
 		void KillLayout ()
