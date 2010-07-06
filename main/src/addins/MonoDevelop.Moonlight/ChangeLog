@@ -1,5 +1,10 @@
 2010-07-06  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs: reverted
+	  change (the bug is gone).
+
+2010-07-06  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Moonlight/MoonlightFrameworkBackend.cs: added
 	  null check.
 
