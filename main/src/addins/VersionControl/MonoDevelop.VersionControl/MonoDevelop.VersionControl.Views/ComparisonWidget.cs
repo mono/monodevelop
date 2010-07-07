@@ -79,9 +79,10 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
+		Diff diff;
 		public Diff Diff {
-			get;
-			set;
+			get { return diff; }
+			set { diff = value; llcsCache.Clear (); }
 		}
 		
 		protected ComparisonWidget (IntPtr ptr) : base (ptr)
@@ -313,7 +314,14 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		const double fillAlpha = 0.1;
 		const double lineAlpha = 0.6;
-		
+		Dictionary<Diff.Hunk, int[,]> llcsCache = new Dictionary<Diff.Hunk, int[,]> ();
+		int[,] GetLCS (Diff.Hunk hunk)
+		{
+			int[,] result;
+			if (llcsCache.TryGetValue (hunk, out result))
+				return result;
+			return null;
+		}
 		void HandleLeftEditorExposeEvent (object o, ExposeEventArgs args)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
@@ -327,6 +335,42 @@ namespace MonoDevelop.VersionControl.Views
 							cr.Rectangle (0, y1, originalEditor.Allocation.Width, y2 - y1);
 							cr.Color = GetColor (hunk, fillAlpha);
 							cr.Fill ();
+							if (hunk.Right.Count > 0 && hunk.Left.Count > 0) {
+								int startOffset = originalEditor.Document.GetLine (hunk.Right.Start).Offset;
+								int rStartOffset = diffEditor.Document.GetLine (hunk.Left.Start).Offset;
+								var lcs = GetLCS (hunk);
+								if (lcs == null) {
+									string leftText = originalEditor.Document.GetTextBetween (startOffset, originalEditor.Document.GetLine (hunk.Right.Start + hunk.Right.Count - 1).EndOffset);
+									string rightText = diffEditor.Document.GetTextBetween (rStartOffset, diffEditor.Document.GetLine (hunk.Left.Start + hunk.Left.Count - 1).EndOffset);
+									llcsCache[hunk] = lcs = GetLCS (leftText, rightText);
+								}
+								
+								int ll = lcs.GetLength (0), rl = lcs.GetLength (1);
+								int blockStart = -1;
+								Stack<KeyValuePair<int, int>> posStack = new Stack<KeyValuePair<int, int>> ();
+								posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
+								while (posStack.Count > 0) {
+									var pos = posStack.Pop ();
+									int i = pos.Key, j = pos.Value;
+									if (i > 0 && j > 0 && originalEditor.Document.GetCharAt (startOffset + i) == diffEditor.Document.GetCharAt (rStartOffset + j)) {
+										posStack.Push (new KeyValuePair<int, int> (i - 1, j - 1));
+										PaintBlock (originalEditor, cr, startOffset, i, ref blockStart);
+										continue;
+									}
+									if (j > 0 && (i == 0 || lcs[i, j - 1] == lcs[i - 1, j])) {
+										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
+										PaintBlock (originalEditor, cr, startOffset, i, ref blockStart);
+									} else if (j > 0 && (i == 0 || lcs[i, j - 1] > lcs[i - 1, j])) {
+										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
+										PaintBlock (originalEditor, cr, startOffset, i, ref blockStart);
+									} else if (i > 0 && (j == 0 || lcs[i, j - 1] < lcs[i - 1, j])) {
+										posStack.Push (new KeyValuePair<int, int> (i - 1, j));
+										if (blockStart < 0)
+											blockStart = i;
+									}
+								}
+								PaintBlock (originalEditor, cr, startOffset, 0, ref blockStart);
+							}
 							
 							cr.Color = GetColor (hunk, lineAlpha);
 							cr.MoveTo (0, y1);
@@ -342,6 +386,24 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
+		void PaintBlock (TextEditor editor, Cairo.Context cr, int startOffset, int i, ref int blockStart)
+		{
+			if (blockStart < 0)
+				return;
+			var point = editor.DocumentToVisualLocation (editor.Document.OffsetToLocation (startOffset + i + 1));
+			point.X += editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - (int)originalEditor.HAdjustment.Value;
+			point.Y -= (int)editor.VAdjustment.Value;
+			
+			var point2 = editor.DocumentToVisualLocation (editor.Document.OffsetToLocation (startOffset + blockStart + 1));
+			point2.X += editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - (int)originalEditor.HAdjustment.Value;
+			point2.Y -= (int)editor.VAdjustment.Value;
+			
+			cr.Rectangle (point.X, point.Y, point2.X - point.X, editor.LineHeight);
+			cr.Color = editor == originalEditor ? new Cairo.Color (0, 1, 0, 0.2) : new Cairo.Color (1, 0, 0, 0.2);
+			cr.Fill ();
+			blockStart = -1;
+		}
+
 		void HandleRightEditorExposeEvent (object o, ExposeEventArgs args)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
@@ -350,13 +412,50 @@ namespace MonoDevelop.VersionControl.Views
 						if (!hunk.Same) {
 							int y1 = diffEditor.LineToVisualY (hunk.Left.Start) - (int)diffEditor.VAdjustment.Value;
 							int y2 = diffEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)diffEditor.VAdjustment.Value;
-							
+								
 							if (y1 == y2)
 								y2 = y1 + 1;
 							
 							cr.Rectangle (0, y1, diffEditor.Allocation.Width, y2 - y1);
 							cr.Color = GetColor (hunk, fillAlpha);
 							cr.Fill ();
+							
+							if (hunk.Right.Count > 0 && hunk.Left.Count > 0) {
+								int startOffset = originalEditor.Document.GetLine (hunk.Right.Start).Offset;
+								int rStartOffset = diffEditor.Document.GetLine (hunk.Left.Start).Offset;
+								var lcs = GetLCS (hunk);
+								if (lcs == null) {
+									string leftText = originalEditor.Document.GetTextBetween (startOffset, originalEditor.Document.GetLine (hunk.Right.Start + hunk.Right.Count - 1).EndOffset);
+									string rightText = diffEditor.Document.GetTextBetween (rStartOffset, diffEditor.Document.GetLine (hunk.Left.Start + hunk.Left.Count - 1).EndOffset);
+									llcsCache[hunk] = lcs = GetLCS (leftText, rightText);
+								}
+								
+								int ll = lcs.GetLength (0), rl = lcs.GetLength (1);
+								int blockStart = -1;
+								Stack<KeyValuePair<int, int>> posStack = new Stack<KeyValuePair<int, int>> ();
+								posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
+								while (posStack.Count > 0) {
+									var pos = posStack.Pop ();
+									int i = pos.Key, j = pos.Value;
+									if (i > 0 && j > 0 && originalEditor.Document.GetCharAt (startOffset + i) == diffEditor.Document.GetCharAt (rStartOffset + j)) {
+										posStack.Push (new KeyValuePair<int, int> (i - 1, j - 1));
+										PaintBlock (diffEditor, cr, rStartOffset, j, ref blockStart);
+										continue;
+									}
+									if (j > 0 && (i == 0 || lcs[i, j - 1] == lcs[i - 1, j])) {
+										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
+										PaintBlock (diffEditor, cr, rStartOffset, j, ref blockStart);
+									} else if (j > 0 && (i == 0 || lcs[i, j - 1] > lcs[i - 1, j])) {
+										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
+										if (blockStart < 0)
+											blockStart = j;
+									} else if (i > 0 && (j == 0 || lcs[i, j - 1] < lcs[i - 1, j])) {
+										posStack.Push (new KeyValuePair<int, int> (i - 1, j));
+										PaintBlock (diffEditor, cr, rStartOffset, j, ref blockStart);
+									}
+								}
+								PaintBlock (diffEditor, cr, rStartOffset, 0, ref blockStart);
+							}
 							
 							cr.Color = GetColor (hunk, lineAlpha);
 							cr.MoveTo (0, y1);
@@ -370,6 +469,25 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				}
 			}
+		}
+		
+		public static int[,] GetLCS (string left, string right)
+		{
+			int[,] result = new int[left.Length, right.Length];
+			for (int i = 0; i < left.Length; i++) {
+				for (int j = 0; j < right.Length; j++) {
+					if (left[i] == right[j]) {
+						result[i, j] = (i == 0 || j == 0) ? 1 : 1 + result[i - 1, j - 1];
+					} else {
+						if (i == 0) {
+							result[i, j] = j == 0 ? 0 : Math.Max(0, result[i, j - 1]);
+						} else {
+							result[i, j] = j == 0 ? Math.Max(result[i - 1, j], 0) : Math.Max(result[i - 1, j], result [i, j - 1]);
+						}
+					}
+				}
+			}
+			return result;
 		}
 		
 		class MiddleArea : DrawingArea 

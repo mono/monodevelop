@@ -385,9 +385,8 @@ namespace MonoDevelop.VersionControl.Views
 						// insert
 						tokens = e.Value.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 						lineCount = tokens.Length - 1;
-						
 						for (int i=0; i<lineCount; ++i) {
-							annotations.Insert (startLine+1, locallyModified);
+							annotations.Insert (Math.Min (startLine + 1, annotations.Count), locallyModified);
 						}
 				} else if (startLine > endLine) {
 					// revert
