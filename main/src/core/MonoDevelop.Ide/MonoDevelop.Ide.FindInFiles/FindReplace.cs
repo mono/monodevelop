@@ -250,8 +250,9 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 					i += next[0];
 				}
-				else
+				else if (j+1 < next.Length && j+i < content.Length && content[j+i] < occ.Length)
 					i += System.Math.Max (next[j + 1], j-occ[(int)content[i + j]]);
+				else i += next[0];
 			}
 		}
 	}
