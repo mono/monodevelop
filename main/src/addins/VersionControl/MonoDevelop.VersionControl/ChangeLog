@@ -1,5 +1,10 @@
 2010-07-07  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Fixed
+	  error in calculation.
+
+2010-07-07  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Views/BlameWidget.cs:
 	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs:
 	  Improved the visualization of the change-diff - it's now

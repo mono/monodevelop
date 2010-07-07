@@ -357,10 +357,8 @@ namespace MonoDevelop.VersionControl.Views
 										PaintBlock (originalEditor, cr, startOffset, i, ref blockStart);
 										continue;
 									}
-									if (j > 0 && (i == 0 || lcs[i, j - 1] == lcs[i - 1, j])) {
-										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
-										PaintBlock (originalEditor, cr, startOffset, i, ref blockStart);
-									} else if (j > 0 && (i == 0 || lcs[i, j - 1] > lcs[i - 1, j])) {
+									
+									if (j > 0 && (i == 0 || lcs[i, j - 1] >= lcs[i - 1, j])) {
 										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
 										PaintBlock (originalEditor, cr, startOffset, i, ref blockStart);
 									} else if (i > 0 && (j == 0 || lcs[i, j - 1] < lcs[i - 1, j])) {
@@ -442,10 +440,8 @@ namespace MonoDevelop.VersionControl.Views
 										PaintBlock (diffEditor, cr, rStartOffset, j, ref blockStart);
 										continue;
 									}
-									if (j > 0 && (i == 0 || lcs[i, j - 1] == lcs[i - 1, j])) {
-										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
-										PaintBlock (diffEditor, cr, rStartOffset, j, ref blockStart);
-									} else if (j > 0 && (i == 0 || lcs[i, j - 1] > lcs[i - 1, j])) {
+									
+									if (j > 0 && (i == 0 || lcs[i, j - 1] >= lcs[i - 1, j])) {
 										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
 										if (blockStart < 0)
 											blockStart = j;
