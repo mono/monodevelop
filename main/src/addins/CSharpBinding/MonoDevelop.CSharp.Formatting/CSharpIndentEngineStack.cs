@@ -134,9 +134,11 @@ namespace MonoDevelop.CSharp.Formatting
 								break;
 							sp--;
 						}
-						indentBuilder.Append (stack[sp].indent);
-						if (stack[sp].lineNr == lineNr)
-							n = stack[sp].nSpaces;
+						if (sp >= 0) {
+							indentBuilder.Append (stack[sp].indent);
+							if (stack[sp].lineNr == lineNr)
+								n = stack[sp].nSpaces;
+						}
 					} else {
 						while (sp >= 0) {
 							if ((stack[sp].inside & Inside.FoldedBlockOrCase) != 0) {
