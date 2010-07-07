@@ -45,6 +45,7 @@ namespace MonoDevelop.VersionControl.Views
 		OverviewRenderer overview;
 		MiddleArea middleArea;
 		
+		DropDownBox originalComboBox, diffComboBox;
 		TextEditor originalEditor, diffEditor;
 		
 		List<ContainerChild> children = new List<ContainerChild> ();
@@ -107,9 +108,17 @@ namespace MonoDevelop.VersionControl.Views
 			rightHScrollBar = new HScrollbar (hAdjustment);
 			AddChild (rightHScrollBar);
 			
+			originalComboBox = new DropDownBox ();
+			originalComboBox.Text = "Local";
+			AddChild (originalComboBox);
+			
 			originalEditor = new TextEditor ();
 			AddChild (originalEditor);
 			originalEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
+			
+			diffComboBox = new DropDownBox ();
+			diffComboBox.Text = "Base";
+			AddChild (diffComboBox);
 			
 			diffEditor = new TextEditor ();
 			
@@ -256,6 +265,8 @@ namespace MonoDevelop.VersionControl.Views
 			Requisition nextReq = next.SizeRequest ();
 			Requisition prevReq = prev.SizeRequest ();
 			
+			Requisition comboReq =  originalComboBox.SizeRequest ();
+			
 			overview.SizeAllocate (new Rectangle (allocation.Right - overviewWidth + 1, childRectangle.Y, overviewWidth - 1, childRectangle.Height - nextReq.Height - prevReq.Height));
 			
 			prev.SizeAllocate (new Rectangle (overview.Allocation.X, overview.Allocation.Bottom + 4, overviewWidth - 1, prevReq.Height));
@@ -264,8 +275,11 @@ namespace MonoDevelop.VersionControl.Views
 			int spacerWidth = 34;
 			int editorWidth = (childRectangle.Width - spacerWidth) / 2;
 			
-			diffEditor.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top, editorWidth, Allocation.Height - hheight));
-			originalEditor.SizeAllocate (new Rectangle (childRectangle.Right - editorWidth, childRectangle.Top, editorWidth, Allocation.Height - hheight));
+			diffComboBox.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top, editorWidth, comboReq.Height));
+			originalComboBox.SizeAllocate (new Rectangle (childRectangle.Right - editorWidth, childRectangle.Top, editorWidth, comboReq.Height));
+			
+			diffEditor.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top + comboReq.Height, editorWidth, Allocation.Height - hheight - comboReq.Height));
+			originalEditor.SizeAllocate (new Rectangle (childRectangle.Right - editorWidth, childRectangle.Top + comboReq.Height, editorWidth, Allocation.Height - hheight - comboReq.Height));
 			
 			middleArea.SizeAllocate (new Rectangle (diffEditor.Allocation.Right, childRectangle.Top, spacerWidth + 1, childRectangle.Height));
 			

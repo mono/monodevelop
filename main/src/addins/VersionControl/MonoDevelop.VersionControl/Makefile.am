@@ -21,6 +21,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/ComparisonWidget.cs \
 	MonoDevelop.VersionControl.Views/DiffParser.cs \
 	MonoDevelop.VersionControl.Views/DiffView.cs \
+	MonoDevelop.VersionControl.Views/DropDownBox.cs \
 	MonoDevelop.VersionControl.Views/LogView.cs \
 	MonoDevelop.VersionControl.Views/PatchView.cs \
 	MonoDevelop.VersionControl.Views/PatchWidget.cs \
