@@ -1360,6 +1360,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestService.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSession.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestClientSession.cs" />
+    <Compile Include="MonoDevelop.Components\DropDownBoxListWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

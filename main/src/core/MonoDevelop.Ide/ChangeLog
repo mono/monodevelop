@@ -1,5 +1,13 @@
 2010-07-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Components.Diff/Diff.cs:
+	* MonoDevelop.Components/DropDownBoxListWindow.cs: Worked on
+	  version control gui.
+
+2010-07-08  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs: Removed unused
 	  event handler (deletetolineend is handled by the text
 	  editor).

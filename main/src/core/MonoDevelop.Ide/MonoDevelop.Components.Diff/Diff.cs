@@ -120,19 +120,24 @@ namespace MonoDevelop.Components.Diff {
 				if (index != 0) throw new ArgumentException();
 				return Right;
 			}
-				
-			public override int GetHashCode() {
-				return unchecked(s1start + s1end + s2start + s2end);
+			
+			public override bool Equals (object obj)
+			{
+				if (obj == null)
+					return false;
+				if (ReferenceEquals (this, obj))
+					return true;
+				if (obj.GetType () != typeof(Hunk))
+					return false;
+				MonoDevelop.Components.Diff.Diff.Hunk other = (MonoDevelop.Components.Diff.Diff.Hunk)obj;
+				return s1start == other.s1start && s1end == other.s1end && s2start == other.s2start && s2end == other.s2end && same == other.same;
 			}
 			
-			public override bool Equals(object o) {
-				Hunk h = o as Hunk;
-				return
-					s1start == h.s1start &&
-					s1start == h.s1end &&
-					s1start == h.s2start &&
-					s1start == h.s2end &&
-					same == h.same;
+			public override int GetHashCode ()
+			{
+				unchecked {
+					return s1start.GetHashCode () ^ s1end.GetHashCode () ^ s2start.GetHashCode () ^ s2end.GetHashCode () ^ same.GetHashCode ();
+				}
 			}
 			
 			public override string ToString() {

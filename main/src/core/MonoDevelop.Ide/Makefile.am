@@ -236,6 +236,7 @@ FILES =  \
 	MonoDevelop.Components/CompactScrolledWindow.cs \
 	MonoDevelop.Components/ConsoleView.cs \
 	MonoDevelop.Components/DataGrid.cs \
+	MonoDevelop.Components/DropDownBoxListWindow.cs \
 	MonoDevelop.Components/FileEntry.cs \
 	MonoDevelop.Components/FileSelector.cs \
 	MonoDevelop.Components/FixedWidthWrapLabel.cs \
