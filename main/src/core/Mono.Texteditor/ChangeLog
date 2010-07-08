@@ -1,5 +1,10 @@
 2010-07-08  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DeleteActions.cs: Fixed 'Bug 620854 -
+	  "delete to end of line" messes up edited file'.
+
+2010-07-08  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextMarker.cs: Changed the isVisible flag
 	  setting.
 
