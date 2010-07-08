@@ -154,29 +154,14 @@ namespace MonoDevelop.VersionControl.Views
 			widget.OriginalEditor.Options.ColorScheme = widget.DiffEditor.Options.ColorScheme = info.Document.TextEditorData.Options.ColorScheme;
 			widget.OriginalEditor.Options.ShowFoldMargin = widget.DiffEditor.Options.ShowFoldMargin = false;
 			widget.OriginalEditor.Options.ShowIconMargin = widget.DiffEditor.Options.ShowIconMargin = false;
-			
-			widget.OriginalEditor.Document = info.Document.TextEditorData.Document;
 			widget.DiffEditor.Document.Text = System.IO.File.ReadAllText (info.Item.Repository.GetPathToBaseText (info.Item.Path));
+			widget.SetLocal (widget.OriginalEditor.GetTextEditorData ());
 			widget.ShowAll ();
-			
-			widget.OriginalEditor.Document.TextReplaced += HandleWidgetLeftEditorDocumentTextReplaced;
-			
-			HandleWidgetLeftEditorDocumentTextReplaced (null, null);
 		}
 		
-		
-		void HandleWidgetLeftEditorDocumentTextReplaced (object sender, Mono.TextEditor.ReplaceEventArgs e)
-		{
-			var leftLines = from l in widget.OriginalEditor.Document.Lines select widget.OriginalEditor.Document.GetTextAt (l.Offset, l.EditableLength);
-			var rightLines = from l in widget.DiffEditor.Document.Lines select widget.DiffEditor.Document.GetTextAt (l.Offset, l.EditableLength);
-			
-			widget.Diff = new Diff (rightLines.ToArray (), leftLines.ToArray (), true, true);
-			widget.QueueDraw ();
-		}
 		
 		public override void Dispose ()
 		{
-			widget.OriginalEditor.Document.TextReplaced -= HandleWidgetLeftEditorDocumentTextReplaced;
 			base.Dispose ();
 		}
 
@@ -189,7 +174,6 @@ namespace MonoDevelop.VersionControl.Views
 			widget.OriginalEditor.GrabFocus ();
 		}
 		
-
 		public void Deselected ()
 		{
 			info.Document.TextEditorData.Caret.Location = widget.OriginalEditor.Caret.Location;

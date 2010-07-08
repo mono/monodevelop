@@ -1,3 +1,11 @@
+2010-07-08  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/DropDownBox.cs:
+	* MonoDevelop.VersionControl.Views/BlameWidget.cs:
+	* MonoDevelop.VersionControl.Views/ComparisonView.cs:
+	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Worked
+	  on version control gui.
+
 2010-07-07  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

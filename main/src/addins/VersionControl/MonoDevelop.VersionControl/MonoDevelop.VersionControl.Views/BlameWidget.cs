@@ -399,16 +399,11 @@ namespace MonoDevelop.VersionControl.Views
 			
 			void SetAnnotation (int index, Annotation text)
 			{
-				int difference = index - annotations.Count;
-				
-				if (0 > difference) {
-					annotations[index] = text;
-				} else {
-					for (int i=0; i<difference; ++i) {
-						annotations.Add (locallyModified);
-					}
-					annotations.Add (text);
-				}
+				if (index < 0)
+					return;
+				for (int i = annotations.Count; i <= index; ++i)
+					annotations.Add (locallyModified);
+				annotations[index] = text;
 			}
 		
 			/// <summary>

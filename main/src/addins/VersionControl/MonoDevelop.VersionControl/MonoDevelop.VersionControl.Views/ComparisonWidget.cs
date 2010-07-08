@@ -30,6 +30,10 @@ using Gdk;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using MonoDevelop.Components.Diff;
+using MonoDevelop.Ide;
+using MonoDevelop.Components;
+using System.ComponentModel;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -90,8 +94,10 @@ namespace MonoDevelop.VersionControl.Views
 		{
 		}
 		
+		VersionControlDocumentInfo info;
 		public ComparisonWidget (VersionControlDocumentInfo info)
 		{
+			this.info = info;
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
 			
@@ -108,17 +114,16 @@ namespace MonoDevelop.VersionControl.Views
 			rightHScrollBar = new HScrollbar (hAdjustment);
 			AddChild (rightHScrollBar);
 			
-			originalComboBox = new DropDownBox ();
-			originalComboBox.Text = "Local";
-			AddChild (originalComboBox);
 			
 			originalEditor = new TextEditor ();
 			AddChild (originalEditor);
 			originalEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
-			diffComboBox = new DropDownBox ();
-			diffComboBox.Text = "Base";
-			AddChild (diffComboBox);
+			originalComboBox = new DropDownBox ();
+			originalComboBox.WindowRequestFunc = CreateComboBoxSelector;
+			originalComboBox.Text = "Local";
+			originalComboBox.Tag = originalEditor;
+			AddChild (originalComboBox);
 			
 			diffEditor = new TextEditor ();
 			
@@ -128,6 +133,13 @@ namespace MonoDevelop.VersionControl.Views
 			this.vAdjustment.ValueChanged += delegate {
 				middleArea.QueueDraw ();
 			};
+			
+			diffComboBox = new DropDownBox ();
+			diffComboBox.WindowRequestFunc = CreateComboBoxSelector;
+			diffComboBox.Text = "Base";
+			diffComboBox.Tag = diffEditor;
+			AddChild (diffComboBox);
+			
 			
 			overview = new OverviewRenderer (this);
 			AddChild (overview);
@@ -149,9 +161,9 @@ namespace MonoDevelop.VersionControl.Views
 				foreach (Diff.Hunk hunk in this.Diff) {
 					if (hunk.Same)
 						continue;
-					max = System.Math.Max (hunk.Left.Start, max);
-					if (hunk.Left.Start < line)
-						searched = System.Math.Max (hunk.Left.Start, searched);
+					max = System.Math.Max (hunk.Right.Start, max);
+					if (hunk.Right.Start < line)
+						searched = System.Math.Max (hunk.Right.Start, searched);
 				}
 				if (max >= 0) {
 					originalEditor.Caret.Line = searched < 0 ? max : searched;
@@ -172,9 +184,9 @@ namespace MonoDevelop.VersionControl.Views
 				foreach (Diff.Hunk hunk in this.Diff) {
 					if (hunk.Same)
 						continue;
-					min = System.Math.Min (hunk.Left.Start, min);
-					if (hunk.Left.Start > line)
-						searched = System.Math.Min (hunk.Left.Start, searched);
+					min = System.Math.Min (hunk.Right.Start, min);
+					if (hunk.Right.Start > line)
+						searched = System.Math.Min (hunk.Right.Start, searched);
 				}
 				if (min < Int32.MaxValue) {
 					originalEditor.Caret.Line = searched == Int32.MaxValue ? min : searched;
@@ -187,8 +199,163 @@ namespace MonoDevelop.VersionControl.Views
 			this.DoubleBuffered = true;
 			originalEditor.ExposeEvent += HandleLeftEditorExposeEvent;
 			diffEditor.ExposeEvent += HandleRightEditorExposeEvent;
+			info.Document.TextEditorData.Document.TextReplaced += HandleInfoDocumentTextEditorDataDocumentTextReplaced;
+		}
+		
+		List<TextEditorData> localUpdate = new List<TextEditorData> ();
+
+		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		{
+			foreach (var data in localUpdate.ToArray ()) {
+				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+				data.Replace (e.Offset, e.Count, e.Value);
+				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+				data.Document.CommitUpdateAll ();
+			}
 		}
 
+		public void CreateDiff ()
+		{
+			var leftLines = from l in OriginalEditor.Document.Lines select OriginalEditor.Document.GetTextAt (l.Offset, l.EditableLength);
+			var rightLines = from l in DiffEditor.Document.Lines select DiffEditor.Document.GetTextAt (l.Offset, l.EditableLength);
+			
+			Diff = new Diff (rightLines.ToArray (), leftLines.ToArray (), true, true);
+			QueueDraw ();
+		}
+		
+		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();
+		public void SetLocal (TextEditorData data)
+		{
+			dict[data.Document] = data;
+			data.Document.Text = info.Document.TextEditorData.Document.Text;
+			data.Document.ReadOnly = false;
+			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+			localUpdate.Add (data);
+			CreateDiff ();
+		}
+		
+		void HandleDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		{
+			var data = dict[(Document)sender];
+			localUpdate.Remove (data);
+			info.Document.TextEditorData.Replace (e.Offset, e.Count, e.Value);
+			localUpdate.Add (data);
+			CreateDiff ();
+		}
+		
+		public void RemoveLocal (TextEditorData data)
+		{
+			localUpdate.Remove (data);
+			data.Document.ReadOnly = true;
+			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+		}
+		
+
+		class ComboBoxSelector : DropDownBoxListWindow.IListDataProvider
+		{
+			ComparisonWidget widget;
+			DropDownBox box;
+			
+			public ComboBoxSelector (ComparisonWidget widget, DropDownBox box)
+			{
+				this.widget = widget;
+				this.box = box;
+				
+			}
+
+			#region IListDataProvider implementation
+			public void Reset ()
+			{
+			}
+	
+			public string GetText (int n)
+			{
+				if (n == 0)
+					return "Local";
+				if (n == 1)
+					return "Base";
+				Revision rev = widget.info.History[n - 2];
+				return rev.ToString () + "\t" + rev.Time.ToString () + "\t" + rev.Author;
+			}
+
+			public Pixbuf GetIcon (int n)
+			{
+				return null;
+			}
+
+			public object GetTag (int n)
+			{
+				if (n < 2)
+					return null;
+				return widget.info.History[n - 2];
+			}
+			
+			public void ActivateItem (int n)
+			{
+				if (n == 0) {
+					box.SetItem ("Local", null, new object());
+					widget.SetLocal (((TextEditor)box.Tag).GetTextEditorData ());
+					return;
+				}
+				widget.RemoveLocal (((TextEditor)box.Tag).GetTextEditorData ());
+				((TextEditor)box.Tag).Document.ReadOnly = true;
+				if (n == 1) {
+					box.SetItem ("Base", null, new object());
+					((TextEditor)box.Tag).Document.Text = System.IO.File.ReadAllText (widget.info.Item.Repository.GetPathToBaseText (widget.info.Item.Path));
+					widget.CreateDiff ();
+					return;
+				}
+				
+				BackgroundWorker worker = new BackgroundWorker ();
+				worker.DoWork += HandleWorkerDoWork;
+				worker.RunWorkerCompleted += HandleWorkerRunWorkerCompleted;
+				Revision rev = widget.info.History[n - 2];
+				worker.RunWorkerAsync (rev);
+				IdeApp.Workbench.StatusBar.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
+				IdeApp.Workbench.StatusBar.AutoPulse = true;
+				box.Sensitive = false;
+			}
+
+			void HandleWorkerRunWorkerCompleted (object sender, RunWorkerCompletedEventArgs e)
+			{
+				Application.Invoke (delegate {
+					var result = (KeyValuePair<Revision, string>)e.Result;
+					box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
+					((TextEditor)box.Tag).Document.Text = result.Value;
+					widget.CreateDiff ();
+					IdeApp.Workbench.StatusBar.AutoPulse = false;
+					IdeApp.Workbench.StatusBar.EndProgress ();
+					box.Sensitive = true;
+				});
+			}
+
+			void HandleWorkerDoWork (object sender, DoWorkEventArgs e)
+			{
+				Revision rev = (Revision)e.Argument;
+				string text = null;
+				try {
+					Console.WriteLine (widget.info.VersionInfo.RepositoryPath);
+					text = widget.info.Item.Repository.GetTextAtRevision (widget.info.VersionInfo.RepositoryPath, rev);
+				} catch (Exception ex) {
+					text = "Error retrieving revision " + rev + Environment.NewLine + ex.ToString ();
+				}
+				e.Result = new KeyValuePair<Revision, string> (rev, text);
+			}
+
+			public int IconCount {
+				get {
+					return widget.info.History == null ? 2 : widget.info.History.Length + 2;
+				}
+			}
+			#endregion
+		}
+		
+		Gtk.Window CreateComboBoxSelector (DropDownBox box)
+		{
+			DropDownBoxListWindow window = new DropDownBoxListWindow (new ComboBoxSelector (this, box));
+			return window;
+		}
+		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
 		{
 			Adjustment adjustment = (Adjustment)sender;
@@ -243,6 +410,7 @@ namespace MonoDevelop.VersionControl.Views
 			base.OnDestroyed ();
 			children.ForEach (child => child.Child.Destroy ());
 			children.Clear ();
+			info.Document.TextEditorData.Document.TextReplaced -= HandleInfoDocumentTextEditorDataDocumentTextReplaced;
 		}
 		 
 		protected override void OnSizeAllocated (Rectangle allocation)
@@ -329,6 +497,7 @@ namespace MonoDevelop.VersionControl.Views
 		const double fillAlpha = 0.1;
 		const double lineAlpha = 0.6;
 		Dictionary<Diff.Hunk, int[,]> llcsCache = new Dictionary<Diff.Hunk, int[,]> ();
+		
 		int[,] GetLCS (Diff.Hunk hunk)
 		{
 			int[,] result;
@@ -336,6 +505,7 @@ namespace MonoDevelop.VersionControl.Views
 				return result;
 			return null;
 		}
+		
 		void HandleLeftEditorExposeEvent (object o, ExposeEventArgs args)
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
@@ -362,7 +532,8 @@ namespace MonoDevelop.VersionControl.Views
 								int ll = lcs.GetLength (0), rl = lcs.GetLength (1);
 								int blockStart = -1;
 								Stack<KeyValuePair<int, int>> posStack = new Stack<KeyValuePair<int, int>> ();
-								posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
+								if (ll > 0 && rl > 0)
+									posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
 								while (posStack.Count > 0) {
 									var pos = posStack.Pop ();
 									int i = pos.Key, j = pos.Value;
@@ -445,7 +616,8 @@ namespace MonoDevelop.VersionControl.Views
 								int ll = lcs.GetLength (0), rl = lcs.GetLength (1);
 								int blockStart = -1;
 								Stack<KeyValuePair<int, int>> posStack = new Stack<KeyValuePair<int, int>> ();
-								posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
+								if (ll > 0 && rl > 0)
+									posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
 								while (posStack.Count > 0) {
 									var pos = posStack.Pop ();
 									int i = pos.Key, j = pos.Value;
@@ -512,31 +684,36 @@ namespace MonoDevelop.VersionControl.Views
 			Diff.Hunk selectedHunk = null;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
-				int delta = widget.OriginalEditor.Allocation.Y - Allocation.Y;
+				bool hideButton = widget.OriginalEditor.Document.ReadOnly || !widget.DiffEditor.Document.ReadOnly;
 				Diff.Hunk selectedHunk = null;
-				foreach (Diff.Hunk hunk in widget.Diff) {
-					if (!hunk.Same) {
-						int y1 = delta + widget.OriginalEditor.LineToVisualY (hunk.Right.Start) - (int)widget.OriginalEditor.VAdjustment.Value;
-						int y2 = delta + widget.OriginalEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)widget.OriginalEditor.VAdjustment.Value;
-						if (y1 == y2)
-							y2 = y1 + 1;
-						
-						int z1 = delta + widget.DiffEditor.LineToVisualY (hunk.Left.Start) - (int)widget.DiffEditor.VAdjustment.Value;
-						int z2 = delta + widget.DiffEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)widget.DiffEditor.VAdjustment.Value;
-						
-						if (z1 == z2)
-							z2 = z1 + 1;
-						
-						int x = (Allocation.Width) / 2;
-						int y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2;
-						if (Math.Sqrt (System.Math.Abs (x - evnt.X) * System.Math.Abs (x - evnt.X) +
-						               System.Math.Abs (y - evnt.Y) * System.Math.Abs (y - evnt.Y)) < 10) {
-							selectedHunk = hunk;
-							break;
+				if (!hideButton) {
+					int delta = widget.OriginalEditor.Allocation.Y - Allocation.Y;
+					foreach (Diff.Hunk hunk in widget.Diff) {
+						if (!hunk.Same) {
+							int y1 = delta + widget.OriginalEditor.LineToVisualY (hunk.Right.Start) - (int)widget.OriginalEditor.VAdjustment.Value;
+							int y2 = delta + widget.OriginalEditor.LineToVisualY (hunk.Right.Start + hunk.Right.Count) - (int)widget.OriginalEditor.VAdjustment.Value;
+							if (y1 == y2)
+								y2 = y1 + 1;
+							
+							int z1 = delta + widget.DiffEditor.LineToVisualY (hunk.Left.Start) - (int)widget.DiffEditor.VAdjustment.Value;
+							int z2 = delta + widget.DiffEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)widget.DiffEditor.VAdjustment.Value;
+							
+							if (z1 == z2)
+								z2 = z1 + 1;
+							
+							int x = (Allocation.Width) / 2;
+							int y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2;
+							if (Math.Sqrt (System.Math.Abs (x - evnt.X) * System.Math.Abs (x - evnt.X) +
+							               System.Math.Abs (y - evnt.Y) * System.Math.Abs (y - evnt.Y)) < 10) {
+								selectedHunk = hunk;
+								break;
+							}
 						}
 					}
+				} else {
+					selectedHunk = null;
 				}
-				
+					
 				if (this.selectedHunk != selectedHunk) {
 					this.selectedHunk = selectedHunk;
 					QueueDraw ();
@@ -547,7 +724,8 @@ namespace MonoDevelop.VersionControl.Views
 			
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
-				if (selectedHunk != null) {
+				bool hideButton = widget.OriginalEditor.Document.ReadOnly || !widget.DiffEditor.Document.ReadOnly;
+				if (!hideButton && selectedHunk != null) {
 					widget.OriginalEditor.Document.BeginAtomicUndo ();
 					LineSegment start = widget.OriginalEditor.Document.GetLine (selectedHunk.Right.Start);
 					LineSegment end   = widget.OriginalEditor.Document.GetLine (selectedHunk.Right.Start + selectedHunk.Right.Count - 1);
@@ -567,6 +745,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
+				bool hideButton = widget.OriginalEditor.Document.ReadOnly || !widget.DiffEditor.Document.ReadOnly;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 					int delta = widget.OriginalEditor.Allocation.Y - Allocation.Y;
 					if (widget.Diff != null) {
@@ -598,31 +777,34 @@ namespace MonoDevelop.VersionControl.Views
 								cr.MoveTo (Allocation.Width, y2);
 								cr.LineTo (0, z2);
 								cr.Stroke ();
-								int x = Allocation.Width / 2;
-								int y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2;
-								cr.Save ();
-								cr.Translate (x, y);
-								cr.Scale (10, 10);
-								cr.Arc (0, 0, 1, 0, 2 * Math.PI);
 								
-								cr.Color = GetColor (hunk, 1);
-								cr.FillPreserve ();
-								
-								Cairo.RadialGradient shadowGradient = new Cairo.RadialGradient (0.0, 0.0, .6,  0.0, 0.0, 1.0);
-								shadowGradient.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
-								shadowGradient.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.5));
-								cr.Source = shadowGradient;
-								cr.FillPreserve ();
-								
-								if (selectedHunk != null && hunk.Left.Start == selectedHunk.Left.Start && hunk.Right.Start == selectedHunk.Right.Start ) {
-									cr.Scale (12, 12);
-									shadowGradient = new Cairo.RadialGradient (0.0, 0.0, .6,  0.0, 0.0, 1.0);
-									shadowGradient.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.5));
-									shadowGradient.AddColorStop (1, new Cairo.Color (1, 1, 1, 0.2));
+								if (!hideButton) {
+									int x = Allocation.Width / 2;
+									int y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2;
+									cr.Save ();
+									cr.Translate (x, y);
+									cr.Scale (10, 10);
+									cr.Arc (0, 0, 1, 0, 2 * Math.PI);
+									
+									cr.Color = GetColor (hunk, 1);
+									cr.FillPreserve ();
+									
+									Cairo.RadialGradient shadowGradient = new Cairo.RadialGradient (0.0, 0.0, .6,  0.0, 0.0, 1.0);
+									shadowGradient.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
+									shadowGradient.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.5));
 									cr.Source = shadowGradient;
-									cr.Fill ();
+									cr.FillPreserve ();
+									
+									if (selectedHunk != null && hunk.Left.Start == selectedHunk.Left.Start && hunk.Right.Start == selectedHunk.Right.Start ) {
+										cr.Scale (12, 12);
+										shadowGradient = new Cairo.RadialGradient (0.0, 0.0, .6,  0.0, 0.0, 1.0);
+										shadowGradient.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.5));
+										shadowGradient.AddColorStop (1, new Cairo.Color (1, 1, 1, 0.2));
+										cr.Source = shadowGradient;
+										cr.Fill ();
+									}
+									cr.Restore ();
 								}
-								cr.Restore ();
 							}
 						}
 					}
@@ -728,7 +910,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Color = new Cairo.Color (0, 0, 0, 0.03);
 					cr.Fill ();
 					cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
-					cr.Color = (HslColor)Style.Dark (StateType.Normal);
+					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 					cr.Stroke ();
 				}
 				

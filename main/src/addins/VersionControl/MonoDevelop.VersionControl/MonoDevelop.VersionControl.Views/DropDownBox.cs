@@ -78,6 +78,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
+		public object Tag {
+			get;
+			set;
+		}
+		
+		Window window = null;
+		public Func<DropDownBox, Window> WindowRequestFunc = null;
+		
+		
 		public DropDownBox ()
 		{
 			layout = new Pango.Layout (this.PangoContext);
@@ -85,7 +94,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.CanFocus = true;
 			BorderWidth = 0;
 		}
-		/*
+		
 		void PositionListWindow ()
 		{
 			if (window == null)
@@ -107,8 +116,11 @@ namespace MonoDevelop.VersionControl.Views
 			window.Move (dx, dy);
 			window.GetSizeRequest (out width, out height);
 			window.GrabFocus ();
+			window.FocusOutEvent += delegate {
+				DestroyWindow ();
+			};
 		}
-		*/
+		
 		public void SetItem (string text, Gdk.Pixbuf icon, object currentItem)
 		{
 			if (currentItem != CurrentItem) {// don't update when the same item is set.
@@ -121,15 +133,10 @@ namespace MonoDevelop.VersionControl.Views
 			if (ItemSet != null)
 				ItemSet (this, EventArgs.Empty);
 		}
-		/*
-		public void SetItem (int i)
-		{
-			SetItem (DataProvider.GetText (i), DataProvider.GetIcon (i), DataProvider.GetTag (i));
-		}*/
 		
 		protected override void OnDestroyed ()
 		{
-//			DestroyWindow ();
+			DestroyWindow ();
 			if (layout != null) {
 				layout.Dispose ();
 				layout = null;
@@ -168,9 +175,10 @@ namespace MonoDevelop.VersionControl.Views
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
 			if (evnt.Key == Gdk.Key.Escape) {
-//				DestroyWindow (); 
+				DestroyWindow (); 
 				return true;
 			}
+			
 //			if (window != null && window.ProcessKey (evnt.Key, evnt.State))
 //				return true;
 			return base.OnKeyPressEvent (evnt);
@@ -186,24 +194,29 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (e.Button == 3) {
 //				StatusBox.ShowNavigationBarContextMenu ();
-				return true;
+				return base.OnButtonPressEvent (e);
 			}
-/*			if (e.Type == Gdk.EventType.ButtonPress) {
+			Console.WriteLine (e.Type);
+			if (e.Type == Gdk.EventType.ButtonPress) {
 				if (window != null) {
 					DestroyWindow ();
 				} else {
-					this.GrabFocus ();
-					if (DataProvider != null) {
-						DataProvider.Reset ();
-						if (DataProvider.IconCount > 0) {
-							window = new DropDownBoxListWindow (this);
-							PositionListWindow ();
-							window.SelectItem (CurrentItem);
-						}
+					if (WindowRequestFunc != null) {
+						window = WindowRequestFunc (this);
+						PositionListWindow ();
 					}
 				}
-			}*/
+			}
 			return base.OnButtonPressEvent (e);
+		}
+		
+		void DestroyWindow ()
+		{
+			if (window != null) {
+				window.Destroy ();
+				window = null;
+				QueueDraw ();
+			}
 		}
 		
 		protected override void OnStateChanged (StateType previous_state)
