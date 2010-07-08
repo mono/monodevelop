@@ -475,7 +475,7 @@ namespace MonoDevelop.SourceEditor
 								marker.IsFolded = false;
 							
 						}
-						widget.textEditorData.Document.UpdateFoldSegments (foldSegments, runInThread);
+						widget.Document.UpdateFoldSegments (foldSegments, runInThread);
 						widget.firstUpdate = false;
 					}
 					widget.UpdateAutocorTimer ();
