@@ -106,6 +106,7 @@ namespace Mono.TextEditor
 			if (!data.CanEdit (data.Caret.Line))
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			data.EnsureCaretIsNotVirtual ();
 			if (data.Caret.Column == line.EditableLength) {
 				// Nothing after the cursor, delete the end-of-line sequence
 				data.Remove (line.Offset + data.Caret.Column, line.Length - data.Caret.Column);
