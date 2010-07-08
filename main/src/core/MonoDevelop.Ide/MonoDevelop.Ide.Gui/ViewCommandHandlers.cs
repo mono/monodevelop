@@ -357,7 +357,6 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (TextEditorCommands.DocumentStart)]
 		[CommandUpdateHandler (TextEditorCommands.DocumentEnd)]
 		[CommandUpdateHandler (TextEditorCommands.DeleteLine)]
-		[CommandUpdateHandler (TextEditorCommands.DeleteToLineEnd)]
 		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]
 		[CommandUpdateHandler (TextEditorCommands.MoveBlockDown)]		
 		[CommandUpdateHandler (TextEditorCommands.GotoMatchingBrace)]		
@@ -452,20 +451,6 @@ namespace MonoDevelop.Ide.Gui
 			doc.TextEditor.CursorColumn = col;
 			doc.TextEditor.EndAtomicUndo ();
 		}
-		
-		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
-		protected void OnDeleteToLineEnd ()
-		{
-			int len = doc.TextEditor.GetLineLength (doc.TextEditor.CursorLine);
-			int col = doc.TextEditor.CursorColumn;
-			if (col == len + 1) {
-				int npos = doc.TextEditor.GetPositionFromLineColumn (doc.TextEditor.CursorLine + 1, 1);
-				doc.TextEditor.DeleteText (doc.TextEditor.CursorPosition, npos - doc.TextEditor.CursorPosition);
-			} else {
-				doc.TextEditor.DeleteText (doc.TextEditor.CursorPosition, len - col + 1);
-			}
-		}
-		
 		
 		struct RemoveInfo
 		{
