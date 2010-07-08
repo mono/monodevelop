@@ -25,12 +25,16 @@
 //
 //
 
+using System;
+using System.Linq;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
 	public class LocalsPad: ObjectValuePad
 	{
+		StackFrame lastFrame;
+		
 		public LocalsPad()
 		{
 			tree.AllowEditing = true;
@@ -41,10 +45,19 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnUpdateList ();
 			StackFrame frame = DebuggingService.CurrentFrame;
-			if (frame != null) {
-				tree.ClearValues ();
-				tree.AddValues (frame.GetAllLocals ());
+			if (frame != null && !FrameEquals (frame, lastFrame)) {
+				tree.ClearExpressions ();
+				tree.AddExpressions (frame.GetAllLocals ().Select (i => i.Name));
+				lastFrame = frame;
 			}
+		}
+		
+		static bool FrameEquals (StackFrame a, StackFrame z)
+		{
+			if (null == a || null == z)
+				return a == z;
+			return a.SourceLocation.Filename.Equals (z.SourceLocation.Filename, StringComparison.Ordinal) &&
+			       a.SourceLocation.Method.Equals (z.SourceLocation.Method, StringComparison.Ordinal);
 		}
 	}
 }
