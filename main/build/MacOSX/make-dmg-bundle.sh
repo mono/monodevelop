@@ -41,6 +41,9 @@ popd &>/dev/null
 mkdir -p $MOUNT_POINT/.background
 cp dmg-bg.png $MOUNT_POINT/.background
 cp DS_Store $MOUNT_POINT/.DS_Store
+cp VolumeIcon.icns $MOUNT_POINT/.VolumeIcon.icns
+SetFile -c icnC $MOUNT_POINT/.VolumeIcon.icns
+SetFile -a C $MOUNT_POINT
 
 echo "Detaching from disk image..."
 hdiutil detach $MOUNT_POINT -quiet || exit $?
