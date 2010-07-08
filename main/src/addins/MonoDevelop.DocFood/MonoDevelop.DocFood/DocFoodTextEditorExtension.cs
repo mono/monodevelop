@@ -45,12 +45,16 @@ namespace MonoDevelop.DocFood
 		
 		string GenerateDocumentation (IMember member, string indent)
 		{
-			return DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent).Substring (indent.Length + "//".Length).TrimEnd ('\n', '\r');
+			string doc = DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent);
+			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
+			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 		
 		string GenerateEmptyDocumentation (IMember member, string indent)
 		{
-			return DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent).Substring (indent.Length + "//".Length).TrimEnd ('\n', '\r');
+			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent);
+			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
+			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
