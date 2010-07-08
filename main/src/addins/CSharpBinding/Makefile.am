@@ -33,7 +33,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
-	MonoDevelop.CSharp.Completion/DropDownBoxListWindow.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
 	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \

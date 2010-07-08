@@ -501,13 +501,16 @@ namespace MonoDevelop.CSharp.Completion
 						if (Document.LastErrorFreeParsedDocument != null) {
 							declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);
 						}
-						IType typeFromDatabase = dom.GetType (declaringType.FullName, new DomReturnType (declaringType).GenericArguments) ?? declaringType;
-						bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
-						foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
-							foreach (IMethod method in type.Methods) {
-								if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) && MatchDelegate (delegateType, method)) {
-									CompletionData data = cdc.Add (method);
-									data.SetText (data.CompletionText + ";");
+						IType typeFromDatabase = null;
+						if (declaringType != null) {
+							typeFromDatabase = dom.GetType (declaringType.FullName, new DomReturnType (declaringType).GenericArguments) ?? declaringType;
+							bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
+							foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
+								foreach (IMethod method in type.Methods) {
+									if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) && MatchDelegate (delegateType, method)) {
+										CompletionData data = cdc.Add (method);
+										data.SetText (data.CompletionText + ";");
+									}
 								}
 							}
 						}
@@ -2298,9 +2301,12 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public Gtk.Widget CreatePathWidget (int index)
 		{
-			var tag = CurrentPath[index].Tag;
+			PathEntry[] path = CurrentPath;
+			if (path == null || index < 0 || index >= path.Length)
+				return null;
+			var tag = path[index].Tag;
 			DropDownBoxListWindow window = new DropDownBoxListWindow (tag is ICompilationUnit ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Document) : new DataProvider (Document, tag, GetAmbience ()));
-			window.SelectItem (CurrentPath[index].Tag);
+			window.SelectItem (path[index].Tag);
 			return window;
 		}
 		

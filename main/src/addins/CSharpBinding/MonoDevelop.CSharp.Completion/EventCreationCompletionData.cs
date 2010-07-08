@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Completion
 				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + evt.Name;
 			}
 			
-			if (declaringType.SearchMember (this.DisplayText, true).Count > 0) {
+			if (declaringType != null && declaringType.SearchMember (this.DisplayText, true).Count > 0) {
 				for (int i = 1; i < 10000; i++) {
 					if (declaringType.SearchMember (this.DisplayText + i.ToString (), true).Count == 0) {
 						this.DisplayText = this.DisplayText + i.ToString ();
