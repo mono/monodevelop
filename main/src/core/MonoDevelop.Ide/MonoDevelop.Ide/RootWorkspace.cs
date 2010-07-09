@@ -27,6 +27,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -95,8 +96,7 @@ namespace MonoDevelop.Ide
 				}
 			};
 			
-			//FIXME: disabled OnRunProjectChecks timeout because it churns disk, wastes power on laptop. Need better solution.
-			//GLib.Timeout.Add (2000, OnRunProjectChecks);
+			FileService.FileChanged += CheckWorkspaceItems;
 		}
 		
 		public WorkspaceItemCollection Items {
@@ -757,6 +757,26 @@ namespace MonoDevelop.Ide
 			// Save the file
 			
 			item.SaveUserProperties ();
+		}
+		
+		void CheckWorkspaceItems (object sender, FileEventArgs args)
+		{
+			Solution solution = GetAllSolutions ().FirstOrDefault (sol =>
+				StringComparer.OrdinalIgnoreCase.Equals (args.FileName, sol.FileName.FullPath)
+			);
+			if (solution != null) {
+				solution.NeedsReload = true;
+				OnCheckWorkspaceItem (solution);
+				return;
+			}
+			
+			Project project = GetAllProjects ().FirstOrDefault (proj =>
+				StringComparer.OrdinalIgnoreCase.Equals (args.FileName, proj.FileName.FullPath)
+			);
+			if (project != null) {
+				project.NeedsReload = true;
+				OnCheckProject (project);
+			}
 		}
 		
 		bool OnRunProjectChecks ()
