@@ -537,7 +537,13 @@ namespace MonoDevelop.Components
 				Gdk.Color color_b = parent.Style.Text (StateType.Normal);
 				text_gc.RgbFgColor = ColorBlend (color_a, color_b);
 			}
-
+			
+			protected override void OnDestroyed ()
+			{
+				parent.StyleSet -= OnParentStyleSet;
+				base.OnDestroyed ();
+			}
+			
 			public static Gdk.Color ColorBlend (Gdk.Color a, Gdk.Color b)
 			{
 				// at some point, might be nice to allow any blend?
