@@ -790,7 +790,7 @@ namespace Mono.TextEditor
 		
 		internal void HideMouseCursor ()
 		{
-			if (GtkWindow != null)
+			if (GdkWindow != null)
 				GdkWindow.Cursor = invisibleCursor;
 		}
 		
