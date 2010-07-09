@@ -1,5 +1,9 @@
 2010-07-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs: Added some gdk window checks.
+
+2010-07-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DefaultEditActions.cs: Fixed indent
 	  selection.
 
