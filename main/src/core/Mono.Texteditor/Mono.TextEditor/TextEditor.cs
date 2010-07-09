@@ -788,7 +788,8 @@ namespace Mono.TextEditor
 		
 		internal void HideMouseCursor ()
 		{
-			GdkWindow.Cursor = invisibleCursor;
+			if (GtkWindow != null)
+				GdkWindow.Cursor = invisibleCursor;
 		}
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
@@ -1088,7 +1089,7 @@ namespace Mono.TextEditor
 				startPos = textViewMargin.XOffset;
 			} else {
 				margin = GetMarginAtX ((int)x, out startPos);
-				if (margin != null)
+				if (margin != null && GdkWindow != null)
 					GdkWindow.Cursor = margin.MarginCursor;
 			}
 
@@ -1141,7 +1142,8 @@ namespace Mono.TextEditor
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
 			if (e.Mode == CrossingMode.Normal) {
-				GdkWindow.Cursor = null;
+				if (GdkWindow != null)
+					GdkWindow.Cursor = null;
 				if (oldMargin != null)
 					oldMargin.MouseLeft ();
 			}
@@ -2213,7 +2215,8 @@ namespace Mono.TextEditor
 			};
 			
 			int ox = 0, oy = 0;
-			this.GdkWindow.GetOrigin (out ox, out oy);
+			if (GdkWindow != null)
+				this.GdkWindow.GetOrigin (out ox, out oy);
 			
 			int w;
 			double xalign;
