@@ -1,3 +1,8 @@
+2010-07-09  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/DropDownBox.cs: fixed some
+	  drop down box issues.
+
 2010-07-08  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/DropDownBox.cs:

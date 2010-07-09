@@ -203,8 +203,12 @@ namespace MonoDevelop.VersionControl.Views
 				} else {
 					if (WindowRequestFunc != null) {
 						window = WindowRequestFunc (this);
+						window.Destroyed += delegate {
+							window = null;
+							QueueDraw ();
+						};
 						PositionListWindow ();
-					}
+ 					}
 				}
 			}
 			return base.OnButtonPressEvent (e);
@@ -212,11 +216,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void DestroyWindow ()
 		{
-			if (window != null) {
+			if (window != null) 
 				window.Destroy ();
-				window = null;
-				QueueDraw ();
-			}
 		}
 		
 		protected override void OnStateChanged (StateType previous_state)
@@ -245,10 +246,7 @@ namespace MonoDevelop.VersionControl.Views
 //			if (DrawRightBorder)
 //				arrowXPos -= 2;
 			
-			//HACK: don't ever draw insensitive, only active/prelight/normal, because insensitive generally looks really ugly
-			//this *might* cause some theme issues with the state of the text/arrows rendering on top of it
-			var state = /*window != null? StateType.Active
-				: State == StateType.Insensitive? StateType.Normal : */State;
+			var state = window != null? StateType.Active : State;
 			
 			//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
 			// so we get the content but not the border. This might break with crazy themes.
