@@ -1,3 +1,8 @@
+2010-07-09  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/Rule.cs: Fixed 'Bug 620977 -
+	  Special characters in source code crashes MD'.
+
 2010-07-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/DeleteActions.cs: Fixed 'Bug 620854 -
