@@ -1,5 +1,10 @@
 2010-07-09  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/DefaultEditActions.cs: Fixed indent
+	  selection.
+
+2010-07-09  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/Rule.cs: Fixed 'Bug 620977 -
 	  Special characters in source code crashes MD'.
 
