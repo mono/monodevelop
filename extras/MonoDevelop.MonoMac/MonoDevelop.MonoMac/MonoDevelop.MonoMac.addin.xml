@@ -20,6 +20,7 @@
 		<Import file = "templates/MonoMacApplicationManifest.xft.xml"/>
 		<Import file = "templates/MonoMacPlist.xft.xml"/>
 		<Import file = "MonoMac.dll"/>
+		<Import file = "MonoMac.dll.mdb"/>
 		<Import file = "MonoMacLaunchScript.sh"/>
 	</Runtime>
 	
