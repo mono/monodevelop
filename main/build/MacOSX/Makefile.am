@@ -48,7 +48,6 @@ MonoDevelop.app:
 # Remove addins that don't work on OSX
 	rm -rf  $(ADDINS)/GnomePlatform* \
 	  $(ADDINS)/WindowsPlatform* \
-	  $(ADDINS)/MonoDevelop.GtkCore* \
 	  $(ADDINS)/MonoDevelop.Gettext/*
 	
 # remove stuff we don't need
