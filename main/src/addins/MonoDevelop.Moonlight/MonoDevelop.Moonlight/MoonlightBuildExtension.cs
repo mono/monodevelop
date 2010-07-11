@@ -404,7 +404,7 @@ namespace MonoDevelop.Moonlight
 				foreach (ProjectReference pr in proj.References) {
 					if (pr.LocalCopy) {
 						var pk = pr.Package;
-						if (pk == null || !pk.IsFrameworkPackage) {
+						if (pk == null || !pk.IsFrameworkPackage || pk.Name.EndsWith ("-redist")) {
 							foreach (string s in pr.GetReferencedFileNames (slnConf))
 								AddAssemblyPart (doc, partsNode, s);
 						}
@@ -512,7 +512,7 @@ namespace MonoDevelop.Moonlight
 			foreach (ProjectReference pr in proj.References) {
 				if (pr.LocalCopy) {
 					var pk = pr.Package;
-					if (pk == null || (!pk.IsFrameworkPackage || pk.Name.EndsWith ("-redist"))) {
+					if (pk == null || !pk.IsFrameworkPackage || pk.Name.EndsWith ("-redist")) {
 						string err = pr.ValidationErrorMessage;
 						if (!String.IsNullOrEmpty (err)) {
 							string msg = String.Format ("Could not add reference '{0}' to '{1}': {2}",
