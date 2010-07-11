@@ -126,8 +126,15 @@ namespace MonoDevelop.Moonlight
 		{
 			foreach (var f in GetFrameworkFolders ())
 				yield return f;
-			foreach (var f in base.GetToolsPaths ())
+			foreach (var f in BaseGetToolsPaths ())
 				yield return f;
+		}
+		
+		//WORKAROUND for gmcs code generation bug - base not properly accessible from generators.
+		//Should be fixed in Mono 2.8 final. 
+		IEnumerable<string> BaseGetToolsPaths ()
+		{
+			return base.GetToolsPaths ();
 		}
 		
 		Dictionary<string, string> envVars;

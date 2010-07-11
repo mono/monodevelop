@@ -86,11 +86,18 @@ namespace MonoDevelop.AspNet.Gui
 			return CheckType (base.GetType (typeName, genericArgumentsCount, deepSearchReferences, caseSensitive));
 		}
 		
-		public override System.Collections.Generic.IEnumerable<IType> GetInheritanceTree (IType type)
+		public override IEnumerable<IType> GetInheritanceTree (IType type)
 		{
-			foreach (IType t in base.GetInheritanceTree (type)) {
+			foreach (IType t in BaseGetInheritanceTree (type)) {
 				yield return CheckType (t);
 			}
+		}
+		
+		//WORKAROUND for gmcs code generation bug - base not properly accessible from generators.
+		//Should be fixed in Mono 2.8 final.
+		IEnumerable<IType> BaseGetInheritanceTree (IType type)
+		{
+			return base.GetInheritanceTree (type);
 		}
 	}
 }
