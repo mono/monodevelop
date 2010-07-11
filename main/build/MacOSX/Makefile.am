@@ -3,6 +3,8 @@ MAC_APP_DIR=MonoDevelop.app
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
 MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
 ADDINS=$(MACOS)/lib/monodevelop/AddIns
+EXTRAS=$(top_srcdir)/../extras
+ARTIFACTS=$(top_srcdir)/../../artifacts
 
 CLEANFILES = MonoDevelop.dmg MonoDevelop.app
 #DISTCLEANFILES = 
@@ -57,6 +59,19 @@ MonoDevelop.app:
 	  $(MACOS)/lib/monodevelop/bin/local \
 	  $(MACOS)/lib/monodevelop/bin/repository-cache* \
 	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
+
+# add extras known to work on Mac, if they exist
+	mkdir -p $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.{IPhone,MonoMac,Database}
+	cp -pR $(EXTRAS)/MonoDevelop.IPhone/build/* $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.IPhone/
+	cp -pR $(EXTRAS)/MonoDevelop.MonoMac/build/* $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.MonoMac/
+	cp -pR $(EXTRAS)/MonoDevelop.Database/build/* $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.Database/
+
+# add the binary artifacts if they exist
+	mkdir -p $(MACOS)/lib/{moonlight,pkgconfig}
+	mkdir -p $(MACOS)/MonoDoc.app/
+	cp -pR $(ARTIFACTS)/MoonSDK/* $(MACOS)/lib/moonlight/
+	cp -pR $(ARTIFACTS)/system.web.mvc.pc $(MACOS)/lib/pkgconfig/
+	cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
 # update revision in updateinfo
 	if test -d ../../../.git/svn; then svn_info="git log --no-color --first-parent -n1 --grep=git-svn-id: --pretty=format:%b | sed -n -e 's,git-svn-id: \(.*\)@\(.*\) .*,URL: \1 Revision: \2,p'"; fi; \

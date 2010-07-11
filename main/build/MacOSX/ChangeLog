@@ -1,5 +1,9 @@
 2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* Makefile.am: Merged the release packaging steps.
+
+2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* Makefile.am: Include GtkCore as it works on Mac now.
 
 2010-02-05  Michael Hutchinson  <mhutchinson@novell.com>
