@@ -1,3 +1,7 @@
+2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Makefile.am: Include GtkCore as it works on Mac now.
+
 2010-06-22  Michael Hutchinson  <mhutchinson@novell.com>
 
 	Bumped SVN revision for Mac release.
