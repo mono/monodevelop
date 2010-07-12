@@ -1,3 +1,8 @@
+2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.DesignerSupport.addin.xml: Borrow a keybinding
+	  from Xcode for "Switch between related files".
+
 2010-07-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport/WrapperDesignView.cs: Track API
