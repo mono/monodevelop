@@ -1,3 +1,7 @@
+2010-07-12  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Tests/FoldingTests.cs: track API changes.
+
 2010-07-05  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added

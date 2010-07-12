@@ -55,7 +55,7 @@ namespace Mono.TextEditor.Tests
 				char ch = doc.GetCharAt (i);
 				
 				if ((ch == '+' || ch == '-') && doc.GetCharAt(i + 1) == '[') {
-					FoldSegment segment = new FoldSegment ("...", i, 0, FoldingType.None);
+					FoldSegment segment = new FoldSegment (doc, "...", i, 0, FoldingType.None);
 					segment.IsFolded = ch == '+';
 					foldSegments.Push (segment);
 				} else if (ch == ']' && foldSegments.Count > 0) {
