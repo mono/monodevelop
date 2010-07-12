@@ -1,3 +1,8 @@
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Track changes
+	  in warnings emitted by XML parser.
+
 2010-07-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Tests/FoldingTests.cs: track API changes.

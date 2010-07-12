@@ -134,7 +134,7 @@ namespace MonoDevelop.Xml.StateEngine
 			);
 			parser.AssertEmpty ();
 			parser.AssertErrorCount (3, x => x.ErrorType == ErrorType.Error);
-			parser.AssertErrorCount (5, x => x.ErrorType == ErrorType.Warning);
+			parser.AssertErrorCount (2, x => x.ErrorType == ErrorType.Warning);
 		}
 		
 		[Test]
