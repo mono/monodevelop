@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Dialogs;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -39,6 +40,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		NamespaceSynchronisationPanelWidget widget;
 		bool migrateIds;
+		
+		public override bool IsVisible ()
+		{
+			//FIXME: this GetAllItems lookup is kinda expensive, maybe it should be cached in ParentDialog
+			var item = ParentDialog.DataObject;
+			if (item is DotNetProject)
+				return true;
+			var slnFolder = item as SolutionFolder ?? ((item is Solution)? ((Solution)item).RootFolder : null);
+			if (slnFolder != null)
+				return slnFolder.GetAllItems<DotNetProject> ().Any ();
+			
+			return false;
+		}
 		
 		public override Widget CreatePanelWidget ()
 		{
