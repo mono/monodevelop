@@ -1,3 +1,10 @@
+2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.addin.xml: The "navigate forward/back"
+	  commands now use the Xcode binding, and a similar binding on
+	  Windows so they no longer block the subword navigation. Also
+	  add a Mac binding for "move selection up/down"
+
 2010-07-09  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Ide/RootWorkspace.cs:
