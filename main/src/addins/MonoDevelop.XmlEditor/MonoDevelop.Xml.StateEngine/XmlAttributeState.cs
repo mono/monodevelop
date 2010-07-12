@@ -29,6 +29,7 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -142,7 +143,14 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			if (Char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsWhiteSpace (c)) {
-				context.LogError ("Unexpected character '" + c + "' in attribute.");
+				string err;
+				if (context.StateTag == GETTINGEQ)
+					context.LogError ("Expecting = in attribute, got " + c + ".");
+				else if (context.StateTag == GETTINGVAL)
+					context.LogError ("Expecting attribute value, got " + c + ".");
+				else
+					context.LogError ("Unexpected character '" + c + "' in attribute.");
+				
 				if (att != null)
 					context.Nodes.Pop ();
 				rollback = string.Empty;

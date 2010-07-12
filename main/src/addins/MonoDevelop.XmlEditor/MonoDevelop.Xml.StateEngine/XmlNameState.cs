@@ -91,7 +91,7 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			rollback = string.Empty;
-			context.LogError ("Unexpected character '" + c +"'");
+			context.LogError ("Unexpected character '" + c +"' in name");
 			return Parent;
 		}
 	}
