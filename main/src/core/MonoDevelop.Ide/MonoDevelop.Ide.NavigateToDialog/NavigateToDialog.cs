@@ -429,6 +429,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					}
 				}
 			}
+			if (i >= 0)
+				yield break;
 			
 			// Search Types
 			if (newResult.IncludeTypes) {
