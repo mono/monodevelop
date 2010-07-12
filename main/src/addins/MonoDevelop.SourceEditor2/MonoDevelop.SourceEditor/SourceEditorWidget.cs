@@ -387,7 +387,7 @@ namespace MonoDevelop.SourceEditor
 			
 			int startOffset = document.LocationToOffset (region.Start.Line - 1,  region.Start.Column - 1);
 			int endOffset   = document.LocationToOffset (region.End.Line - 1,  region.End.Column - 1);
-			FoldSegment result = new FoldSegment (text, startOffset, endOffset - startOffset, type);
+			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;
