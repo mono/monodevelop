@@ -26,6 +26,7 @@
 using System;
 using Mono.Addins;
 using System.Collections;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Extensions
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.Ide.Extensions
 		{
 			if (fileExtensions != null && fileExtensions.Length > 0) {
 				string ext = System.IO.Path.GetExtension (fileName);
-				return ((IList)fileExtensions).Contains (ext);
+				return fileExtensions.Any (fe => string.Compare (fe, ext, StringComparison.OrdinalIgnoreCase) == 0);
 			}
 			if (mimeTypes != null && mimeTypes.Length > 0) {
 				string mt = DesktopService.GetMimeTypeForUri (fileName);

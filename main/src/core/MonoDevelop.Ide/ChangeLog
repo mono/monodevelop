@@ -1,5 +1,10 @@
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.Extensions/TextEditorExtensionNode.cs:
+	  Case-insensitive file extension comparison.
+
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs: Track
 	  ProjectDomService/Parser API.
 
