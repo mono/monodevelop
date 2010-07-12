@@ -152,8 +152,11 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		[AsyncDispatch]
 		public virtual void Dispose()
 		{
-			// Make sure we are done with all pending calls
-			DispatchService.RunPendingEvents ();
+			// HACK: Causes crash on OSX
+			if (!PropertyService.IsMac) {
+				// Make sure we are done with all pending calls
+				DispatchService.RunPendingEvents ();
+			}
 			
 			lock (progressTracker) {
 				progressTracker.Done ();
