@@ -410,11 +410,15 @@ namespace MonoDevelop.SourceEditor
 			public void Run (bool runInThread)
 			{
 				try {
-					if (this.widget.options.ShowFoldMargin && widget.parsedDocument != null) {
+					var doc = widget.Document;
+					if (doc == null)
+						return;
+					ParsedDocument parsedDocument = widget.parsedDocument;
+					if (this.widget.options.ShowFoldMargin && parsedDocument != null) {
 						List<FoldSegment> foldSegments = new List<FoldSegment> ();
-						bool updateSymbols = widget.parsedDocument.Defines.Count != widget.symbols.Count;
+						bool updateSymbols = parsedDocument.Defines.Count != widget.symbols.Count;
 						if (!updateSymbols) {
-							foreach (PreProcessorDefine define in widget.parsedDocument.Defines) {
+							foreach (PreProcessorDefine define in parsedDocument.Defines) {
 								if (!widget.symbols.Contains (define.Define)) {
 									updateSymbols = true;
 									break;
@@ -423,12 +427,12 @@ namespace MonoDevelop.SourceEditor
 						}
 						if (updateSymbols) {
 							widget.symbols.Clear ();
-							foreach (PreProcessorDefine define in widget.parsedDocument.Defines) {
+							foreach (PreProcessorDefine define in parsedDocument.Defines) {
 								widget.symbols.Add (define.Define);
 							}
-							widget.Document.UpdateHighlighting ();
+							doc.UpdateHighlighting ();
 						}
-						foreach (FoldingRegion region in widget.parsedDocument.GenerateFolds ()) {
+						foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
 							if (runInThread && IsStopping)
 								return;
 							FoldingType type = FoldingType.None;
@@ -475,7 +479,7 @@ namespace MonoDevelop.SourceEditor
 								marker.IsFolded = false;
 							
 						}
-						widget.Document.UpdateFoldSegments (foldSegments, runInThread);
+						doc.UpdateFoldSegments (foldSegments, runInThread);
 						widget.firstUpdate = false;
 					}
 					widget.UpdateAutocorTimer ();
@@ -1280,7 +1284,10 @@ namespace MonoDevelop.SourceEditor
 	
 		public Mono.TextEditor.Document Document {
 			get {
-				return TextEditor.Document;
+				var editor = TextEditor;
+				if (editor == null)
+					return null;
+				return editor.Document;
 			}
 		}
 		
