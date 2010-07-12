@@ -1,3 +1,10 @@
+2010-07-12  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:
+	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
+	  Enhanced support for keyword like names.
+
 2010-07-08  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

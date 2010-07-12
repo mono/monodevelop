@@ -263,7 +263,7 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
 			sb.Append (prefix);
 			sb.Append ("<b>");
-			sb.Append (name);
+			sb.Append (CSharpAmbience.FilterName (name));
 			sb.Append ("</b> (");
 			sb.Append (parameters.ToString ());
 			sb.Append (")");
