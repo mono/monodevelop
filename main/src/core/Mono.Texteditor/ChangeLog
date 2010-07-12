@@ -1,5 +1,12 @@
 2010-07-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor/FoldSegment.cs: Optimized fold segment
+	  updating/fixed 'Bug 621484 - Editor repaints multiple times
+	  after "resolve using"'.
+
+2010-07-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/DefaultEditActions.cs: Implemented 'Bug
 	  621461 - shift+tab should outdent a code line without
 	  selecting it' / shift-tab behaves now like in gedit.

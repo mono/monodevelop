@@ -816,6 +816,7 @@ namespace Mono.TextEditor
 					}
 					child.UpdateFoldSegmentsOnReplace (e);
 				}
+				Document.UpdateSegments (from n in childNodes select (ISegment)n.FoldSegment, e);
 			}
 
 			public FoldSegmentTreeNode (FoldSegment foldSegment) 
@@ -983,8 +984,8 @@ namespace Mono.TextEditor
 					LineSegment endLine = doc.splitter.GetLineByOffset (foldSegment.EndOffset);
 					foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset;
 					foldSegment.Column = foldSegment.Offset - startLine.Offset;
-					foldSegment.EndLine = endLine;
-					foldSegment.StartLine = startLine;
+//					foldSegment.StartLine = startLine;
+//					foldSegment.EndLine = endLine;
 				}
 				FoldSegmentTreeNode newFoldSegmentTree = new FoldSegmentTreeNode ();
 				foreach (FoldSegment foldSegment in newSegments) {

@@ -37,7 +37,7 @@ namespace Mono.TextEditor
 		public int Column { get; set; }
 		public int EndColumn { get; set; }
 
-		public override int Offset {
+	/*	public override int Offset {
 			get {
 				return StartLine != null ? StartLine.Offset + Column : base.Offset;
 			}
@@ -53,15 +53,25 @@ namespace Mono.TextEditor
 			set {
 				base.Length = value;
 			}
+		}*/
+		
+		public LineSegment StartLine { 
+			get {
+				return doc.GetLineByOffset (Offset);
+			} 
 		}
 		
-		public LineSegment StartLine { get; set; }
-		public LineSegment EndLine { get; set; }
+		public LineSegment EndLine {
+			get {
+				return doc.GetLineByOffset (EndOffset);
+			}
+		}
 		
 		public FoldingType FoldingType { get; set; }
-		
-		public FoldSegment (string description, int offset, int length, FoldingType foldingType) : base (offset, length)
+		Document doc;
+		public FoldSegment (Document doc, string description, int offset, int length, FoldingType foldingType) : base (offset, length)
 		{
+			this.doc = doc;
 			this.IsFolded    = false;
 			this.Description = description;
 			this.FoldingType = foldingType;
