@@ -145,9 +145,9 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
-			if (data.IsMultiLineSelection) {
+//			if (data.IsMultiLineSelection) {
 				RemoveIndentSelection (data);
-				return;
+/*				return;
 			} else {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				int visibleColumn = 0;
@@ -164,7 +164,7 @@ namespace Mono.TextEditor
 						break;
 					}
 				}
-			}
+			}*/
 		}
 		
 		public static void GetSelectedLines (TextEditorData data, out int startLineNr, out int endLineNr)
