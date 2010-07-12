@@ -221,7 +221,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Class class = "MonoDevelop.VersionControl.Views.DiffParser" id = "DiffParser" />
+		<Parser class = "MonoDevelop.VersionControl.Views.DiffParser" id = "DiffParser" fileExtensions=".diff, .patch" />
 	</Extension>
 </Addin>
 	

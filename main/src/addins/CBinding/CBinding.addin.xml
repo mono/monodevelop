@@ -184,7 +184,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class mimeTypes="text/x-csrc, text/x-chdr, text/x-c++src, text/x-c++hdr" class = "CBinding.CTextEditorExtension" />
+		<Class fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" class = "CBinding.CTextEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
@@ -220,6 +220,7 @@
 -->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Class class = "CBinding.Parser.CDocumentParser" id = "CDocumentParser" />
+		<Parser class = "CBinding.Parser.CDocumentParser" id = "CDocumentParser"
+			fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" />
 	</Extension>
 </Addin>

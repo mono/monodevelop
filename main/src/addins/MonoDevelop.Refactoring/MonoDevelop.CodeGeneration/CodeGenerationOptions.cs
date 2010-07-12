@@ -67,7 +67,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		public MonoDevelop.Projects.Dom.Parser.IParser GetParser ()
 		{
-			return ProjectDomService.GetParser (Document.FileName, MimeType);
+			return ProjectDomService.GetParser (Document.FileName);
 		}
 		
 		public ICSharpCode.NRefactory.Ast.TypeReference ShortenTypeName (ICSharpCode.NRefactory.Ast.TypeReference typeReference)

@@ -41,17 +41,6 @@ namespace MonoDevelop.Html
 	
 	public class HtmlParser : AbstractParser
 	{
-		
-		public HtmlParser () : base (null, "text/html", "application/xhtml+xml")
-		{
-		}
-		
-		public override bool CanParse (string fileName)
-		{
-			return fileName.EndsWith (".html", StringComparison.OrdinalIgnoreCase)
-				|| fileName.EndsWith (".htm", StringComparison.OrdinalIgnoreCase);
-		}
-		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);

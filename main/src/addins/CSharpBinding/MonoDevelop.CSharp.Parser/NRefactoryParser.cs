@@ -45,15 +45,6 @@ namespace MonoDevelop.CSharp.Parser
 {
 	public class NRefactoryParser : AbstractParser
 	{
-		public override bool CanParse (string fileName)
-		{
-			return Path.GetExtension (fileName) == ".cs";
-		}
-
-		public NRefactoryParser () : base("C#", "text/x-csharp")
-		{
-		}
-
 		public override IExpressionFinder CreateExpressionFinder (ProjectDom dom)
 		{
 			return new NewCSharpExpressionFinder (dom);
@@ -216,7 +207,7 @@ namespace MonoDevelop.CSharp.Parser
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				
 				parser.Errors.Error += delegate(int line, int col, string message) { result.Add (new Error (ErrorType.Error, line, col, message)); };
-				parser.Lexer.SpecialCommentTags = LexerTags;
+				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
 				parser.Lexer.EvaluateConditionalCompilation = true;
 				if (dom != null && dom.Project != null) {
 					DotNetProjectConfiguration conf = dom.Project.DefaultConfiguration as DotNetProjectConfiguration;

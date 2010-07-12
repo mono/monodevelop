@@ -34,11 +34,11 @@ namespace PyBinding.Parser
 	{
 		IPythonRuntime m_defaultRuntime;
 		
-		public PythonParser () : base ("Python", "text/x-python")
+		public PythonParser ()
 		{
 			m_defaultRuntime = PythonHelper.FindPreferedRuntime ();
 		}
-
+		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			IPythonRuntime runtime;
@@ -58,11 +58,6 @@ namespace PyBinding.Parser
 				Console.WriteLine (ex.ToString ());
 				throw;
 			}
-		}
-
-		public override bool CanParse (string fileName)
-		{
-			return Path.GetExtension (fileName).ToLower () == ".py";
 		}
 		
 		public override IResolver CreateResolver (ProjectDom dom, object editor, string fileName)

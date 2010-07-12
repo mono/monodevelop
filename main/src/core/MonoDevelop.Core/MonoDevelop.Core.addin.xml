@@ -122,7 +122,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DomParser" name = "Parsers">
-		<ExtensionNode name="Class"/>
+		<ExtensionNode name="Parser" type="MonoDevelop.Projects.Extensions.ParserNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/TextFormatters" name = "Formatters">

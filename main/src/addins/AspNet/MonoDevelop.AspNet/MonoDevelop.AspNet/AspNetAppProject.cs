@@ -710,7 +710,7 @@ namespace MonoDevelop.AspNet
 			protected override string GenerateInfo (string filename)
 			{
 				try {
-					var doc = ProjectDomService.Parse (Project, filename, null) as AspNetParsedDocument;
+					var doc = ProjectDomService.Parse (Project, filename) as AspNetParsedDocument;
 					if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
 						return doc.Info.InheritedClass;
 				} catch (Exception ex) {

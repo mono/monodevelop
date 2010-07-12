@@ -1,3 +1,8 @@
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs: Track
+	  ProjectDomService/Parser API.
+
 2010-07-12  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs:

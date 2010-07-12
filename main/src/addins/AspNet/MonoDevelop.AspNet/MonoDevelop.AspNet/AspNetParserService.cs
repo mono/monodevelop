@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet
 	{
 		public static AspNetParsedDocument GetCompileUnit (Project project, string filename, bool ensureUpToDate)
 		{
-			return ProjectDomService.Parse (project, filename, null) as AspNetParsedDocument;
+			return ProjectDomService.Parse (project, filename) as AspNetParsedDocument;
 		}
 		
 		public static AspNetParsedDocument GetCompileUnit (Project project, string filename)

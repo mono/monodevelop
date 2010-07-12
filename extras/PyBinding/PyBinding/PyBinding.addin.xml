@@ -90,7 +90,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Class class = "PyBinding.Parser.PythonParser" />
+		<Parser class = "PyBinding.Parser.PythonParser" fileExtensions=".py" />
 	</Extension>
 
   	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

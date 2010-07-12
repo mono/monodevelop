@@ -36,13 +36,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 		ParsedDocument Parse (ProjectDom dom, string fileName, string content);
 		ParsedDocument Parse (ProjectDom dom, string fileName, TextReader content);
 		
-		bool CanParseMimeType (string mimeType);
-		bool CanParseProjectType (string projectType);
+		/// <summary>
+		/// Checks whether the parser can parse a file. Use for more granular checks after the 
+		/// parser extension node's file extension check succeeds.
+		/// </summary>
 		bool CanParse (string fileName);
 		
 		IExpressionFinder CreateExpressionFinder (ProjectDom dom);
 		IResolver         CreateResolver (ProjectDom dom, object editor, string fileName);
-
-		string[] LexerTags { get; set; }
 	}
 }

@@ -85,7 +85,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Class class = "MonoDevelop.VBNetBinding.DomParser" />
+		<Parser class = "MonoDevelop.VBNetBinding.DomParser" fileExtensions=".vb" />
 	</Extension>
 	
 </Addin>

@@ -282,6 +282,7 @@ FILES =  \
 	MonoDevelop.Projects.Extensions/ItemTypeNode.cs \
 	MonoDevelop.Projects.Extensions/LanguageBindingCodon.cs \
 	MonoDevelop.Projects.Extensions/MonoDocSourceNode.cs \
+	MonoDevelop.Projects.Extensions/ParserNode.cs \
 	MonoDevelop.Projects.Extensions/PolicyNode.cs \
 	MonoDevelop.Projects.Extensions/PolicySetNode.cs \
 	MonoDevelop.Projects.Extensions/ProjectBindingCodon.cs \

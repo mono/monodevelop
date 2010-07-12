@@ -479,7 +479,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (IsSomethingSelected) {
 				string fileName = view.ContentName ?? view.UntitledName;
-				IParser parser = ProjectDomService.GetParser (fileName, Document.MimeType);
+				IParser parser = ProjectDomService.GetParser (fileName);
 				if (parser == null)
 					return CodeTemplateContext.Standard;
 

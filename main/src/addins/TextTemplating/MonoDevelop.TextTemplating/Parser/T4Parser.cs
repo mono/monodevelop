@@ -36,16 +36,6 @@ namespace MonoDevelop.TextTemplating.Parser
 	
 	public class T4Parser : AbstractParser
 	{
-		
-		public T4Parser () : base (null, "application/t4-template")
-		{
-		}
-		
-		public override bool CanParse (string fileName)
-		{
-			return fileName.EndsWith (".tt");
-		}
-		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			ParsedTemplate template = new ParsedTemplate (fileName);

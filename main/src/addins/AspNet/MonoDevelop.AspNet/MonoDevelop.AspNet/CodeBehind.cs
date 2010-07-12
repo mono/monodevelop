@@ -118,7 +118,7 @@ namespace MonoDevelop.AspNet
 					ProjectFile resolvedMaster = project.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
 					AspNetParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)
-						masterParsedDocument = ProjectDomService.Parse (project, resolvedMaster.FilePath, null)	as AspNetParsedDocument;
+						masterParsedDocument = ProjectDomService.Parse (project, resolvedMaster.FilePath) as AspNetParsedDocument;
 					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.Info.InheritedClass)) {
 						masterTypeName = masterParsedDocument.Info.InheritedClass;
 					} else {

@@ -38,15 +38,6 @@ namespace MonoDevelop.VBNetBinding
 {
 	public class DomParser : AbstractParser
 	{
-		public DomParser () : base ("VB.NET", "text/x-vb")
-		{
-		}
-		
-		public override bool CanParse (string fileName)
-		{
-			return Path.GetExtension (fileName) == ".vb";
-		}
-		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.VBNet, new StringReader(content))) {

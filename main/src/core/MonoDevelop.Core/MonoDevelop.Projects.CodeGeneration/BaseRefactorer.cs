@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			sw.Close ();
 			
 			
-			ICompilationUnit pi = ProjectDomService.Parse (ctx.ParserContext.Project, file, null).CompilationUnit;
+			ICompilationUnit pi = ProjectDomService.Parse (ctx.ParserContext.Project, file).CompilationUnit;
 			IList<IType> clss = pi.Types;
 			if (clss.Count > 0)
 				return clss [0];
@@ -698,7 +698,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
-			ProjectDomService.Parse (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
+			ProjectDomService.Parse (ctx.ParserContext.Project, file.Name, delegate () { return file.Text; });
 			
 			return true;
 		}
@@ -750,7 +750,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			file.DeleteText (pos, txt.Length);
 			file.InsertText (pos, newName);
 			
-			ProjectDomService.Parse (ctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
+			ProjectDomService.Parse (ctx.ParserContext.Project, file.Name, delegate () { return file.Text; });
 			
 			return true;
 		}
@@ -845,7 +845,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			// Don't get the class from the parse results because in that class the types are not resolved.
 			// Get the class from the database instead.
-			ParsedDocument doc = ProjectDomService.Parse (ctx.ParserContext.Project, buffer.Name, null, delegate () { return buffer.Text; });
+			ParsedDocument doc = ProjectDomService.Parse (ctx.ParserContext.Project, buffer.Name, delegate () { return buffer.Text; });
 			IType result = ctx.ParserContext.GetType (cls.FullName, cls.TypeParameters.Count, true, true);
 			if (result is CompoundType) {
 				IType hintType = doc.CompilationUnit.GetType (cls.FullName, cls.TypeParameters.Count);
@@ -979,7 +979,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		protected int EnsurePositionIsNotInRegionsAndIndented (Project p, IEditableTextFile buffer, string indent, int position)
 		{
-			ParsedDocument doc = ProjectDomService.Parse (p, buffer.Name, null, delegate () { return buffer.Text; });
+			ParsedDocument doc = ProjectDomService.Parse (p, buffer.Name, delegate () { return buffer.Text; });
 			int line, column;
 			buffer.GetLineColumnFromPosition (position, out line, out column);
 			

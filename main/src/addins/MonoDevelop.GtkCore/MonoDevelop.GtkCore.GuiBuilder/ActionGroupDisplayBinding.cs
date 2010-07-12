@@ -171,7 +171,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.ProjectOperations.Save (project);
 			
 			// Make sure the database is up-to-date
-			ProjectDomService.Parse (project, cls.CompilationUnit.FileName, null);
+			ProjectDomService.Parse (project, cls.CompilationUnit.FileName);
 			return cls;
 		}
 		

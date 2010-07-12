@@ -132,13 +132,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 		{
 			string fileName = (string) ob;
 			
-			ProjectDomService.Parse (Project, 
-			                         fileName,
-			                         null,
-			                         delegate () { 
-			                            return File.ReadAllText (fileName); 
-			                         });
-
+			ProjectDomService.Parse (Project, fileName, delegate () { return File.ReadAllText (fileName); });
 			
 			/*
 			ParseFile (fileName, monitor);

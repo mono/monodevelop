@@ -128,7 +128,7 @@
 	</Extension>-->
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Class class = "MonoDevelop.XmlEditor.XmlDocumentParser" id = "XmlParser" />
+		<Parser class = "MonoDevelop.XmlEditor.XmlDocumentParser" id = "XmlParser" fileExtensions="" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">

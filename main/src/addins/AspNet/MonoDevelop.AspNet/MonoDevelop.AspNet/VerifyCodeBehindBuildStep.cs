@@ -117,7 +117,7 @@ namespace MonoDevelop.AspNet
 				}
 				
 				//parse the ASP.NET file
-				var parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath, null) as AspNetParsedDocument;
+				var parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath) as AspNetParsedDocument;
 				if (parsedDocument == null)
 					continue;
 				

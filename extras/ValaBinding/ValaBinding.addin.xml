@@ -150,6 +150,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Class class = "MonoDevelop.ValaBinding.Parser.ValaDocumentParser" id = "ValaDocumentParser" />
+		<Parser fileExtensions=".vala, .vapi" class = "MonoDevelop.ValaBinding.Parser.ValaDocumentParser"
+			id = "ValaDocumentParser" />
 	</Extension>
 </Addin>

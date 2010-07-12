@@ -41,18 +41,6 @@ namespace CBinding.Parser
 	/// </summary>
 	public class CDocumentParser: AbstractParser
 	{
-		public CDocumentParser (): base ("Native", "text/x-csrc", "text/x-chdr", "text/x-c++src", "text/x-c++hdr")
-		{
-		}
-		
-		public override bool CanParse (string fileName)
-		{
-			string extension = Path.GetExtension (fileName);
-			return (Array.Exists (CProject.SourceExtensions, delegate (string ext){ 
-				return ext.Equals (extension, StringComparison.OrdinalIgnoreCase);
-			}) || CProject.IsHeaderFile (fileName));
-		}// CanParse
-		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			ParsedDocument doc = new ParsedDocument (fileName);

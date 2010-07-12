@@ -1,3 +1,8 @@
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Parser/DomParser.cs:
+	* VBNetBinding.addin.xml: Track ProjectDomService/Parser API.
+
 2010-06-14  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* VBBindingCompilerServices.cs: Track api changes.

@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (offset < 0)
 				return null;
 			string fileName = data.Document.FileName;
-			IParser parser = ProjectDomService.GetParser (fileName, data.Document.MimeType);
+			IParser parser = ProjectDomService.GetParser (fileName);
 			if (parser == null)
 				return null;
 			
@@ -189,7 +189,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (doc == null)
 				return null;
 			
-			IParser parser = ProjectDomService.GetParser (fileName, data.Document.MimeType);
+			IParser parser = ProjectDomService.GetParser (fileName);
 			if (parser == null)
 				return null;
 			

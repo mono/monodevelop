@@ -466,7 +466,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IType GetUpdatedClass (RefactorerContext gctx, IType klass)
 		{
 			IEditableTextFile file = gctx.GetFile (klass.CompilationUnit.FileName);
-			ParsedDocument doc = ProjectDomService.Parse (gctx.ParserContext.Project, file.Name, null, delegate () { return file.Text; });
+			ParsedDocument doc = ProjectDomService.Parse (gctx.ParserContext.Project, file.Name, delegate () { return file.Text; });
 			IType result = gctx.ParserContext.GetType (klass.FullName, klass.TypeParameters.Count, true);
 			if (result is CompoundType) {
 				IType hintType = doc.CompilationUnit.GetType (klass.FullName, klass.TypeParameters.Count);

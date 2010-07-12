@@ -413,7 +413,7 @@ namespace MonoDevelop.Ide.Gui
 			if (currentParseFile != null) {
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
-					ProjectDomService.Parse (curentParseProject, currentParseFile, DesktopService.GetMimeTypeForUri (currentParseFile));
+					ProjectDomService.Parse (curentParseProject, currentParseFile);
 				});
 			}
 			if (fileDom != null) {
@@ -556,10 +556,9 @@ namespace MonoDevelop.Ide.Gui
 			parsing = true;
 			try {
 				string currentParseFile = FileName;
-				string mime = DesktopService.GetMimeTypeForUri (currentParseFile);
 				string currentParseText = TextEditor.Text;
 					Project curentParseProject = Project;
-				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, mime, currentParseText);
+				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 					this.lastErrorFreeParsedDocument = parsedDocument;
 			} finally {
@@ -580,7 +579,6 @@ namespace MonoDevelop.Ide.Gui
 
 			parsing = true;
 			string currentParseFile = FileName;
-			string mime = DesktopService.GetMimeTypeForUri (currentParseFile);
 			
 			GLib.Timeout.Add (ParseDelay, delegate {
 				if (closed)
@@ -590,7 +588,7 @@ namespace MonoDevelop.Ide.Gui
 				Project curentParseProject = Project;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
-					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, mime, currentParseText);
+					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 					if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 						this.lastErrorFreeParsedDocument = parsedDocument;
 					DispatchService.GuiSyncDispatch (delegate {

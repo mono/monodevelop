@@ -1,3 +1,23 @@
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Core.addin.xml:
+	* MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs:
+	* MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	  Track ProjectDomService/Parser API.
+
+	* MonoDevelop.Projects.Dom.Parser/IParser.cs:
+	* MonoDevelop.Projects.Extensions/ParserNode.cs:
+	* MonoDevelop.Projects.Dom.Parser/AbstractParser.cs:
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs: Parser
+	  now uses a custom extension node which does the file type
+	  check, so we avoid loading all the parser assemblies at
+	  startup.
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj: Added file to project.
+
 2010-06-29  Lars Magnusson <lavima@gmail.com>
 	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
 	  Added functionality for excluding imports when loading 

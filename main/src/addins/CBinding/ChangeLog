@@ -1,3 +1,9 @@
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CBinding.addin.xml:
+	* Parser/CDocumentParser.cs: Track ProjectDomService/Parser
+	  API.
+
 2010-06-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Project/CProject.cs: Allow setting the External Console flag

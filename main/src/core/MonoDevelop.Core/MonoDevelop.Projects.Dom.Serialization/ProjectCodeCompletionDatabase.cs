@@ -237,10 +237,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (monitor != null) monitor.BeginTask (string.Format (GettextCatalog.GetString ("Parsing file: {0}"), Path.GetFileName (fileName)), 1);
 			
 			try {
-				ProjectDomService.Parse (this.project,
-				                         fileName,
-				                         null,
-				                         delegate () { return File.ReadAllText (fileName); });
+				ProjectDomService.Parse (project, fileName, delegate () { return File.ReadAllText (fileName); });
 				// The call to ProjectDomService.Parse will call UpdateFromParseInfo when done
 			} finally {
 				if (monitor != null) monitor.EndTask ();

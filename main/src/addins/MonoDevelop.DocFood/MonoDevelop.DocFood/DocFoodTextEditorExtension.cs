@@ -90,7 +90,7 @@ namespace MonoDevelop.DocFood
 		
 		IMember GetMemberToDocument ()
 		{
-			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.TextEditorData.Document.MimeType, Document.TextEditorData.Document.Text);
+			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.TextEditorData.Document.Text);
 			IType type = parsedDocument.CompilationUnit.GetTypeAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (type == null)
 				return null;

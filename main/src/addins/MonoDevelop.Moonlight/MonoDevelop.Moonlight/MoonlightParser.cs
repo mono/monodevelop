@@ -38,20 +38,8 @@ using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Moonlight
 {
-	
-	
 	public class MoonlightParser : AbstractParser
 	{
-		
-		public MoonlightParser () : base (null, "application/xaml+xml")
-		{
-		}
-		
-		public override bool CanParse (string fileName)
-		{
-			return fileName.EndsWith (".xaml");
-		}
-		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);

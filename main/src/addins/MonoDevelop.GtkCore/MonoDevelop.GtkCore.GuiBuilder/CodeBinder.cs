@@ -89,7 +89,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (targetObject == null)
 				return;
 			
-			ParsedDocument doc = ProjectDomService.Parse (project, fileName, null);
+			ParsedDocument doc = ProjectDomService.Parse (project, fileName);
 			classFile = fileName;
 			
 			if (doc != null && doc.CompilationUnit != null) {
@@ -266,7 +266,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ArrayList matches = new ArrayList ();
 			ICompilationUnit unit = null;
 			ProjectDom ctx = gproject.GetParserContext ();
-			ParsedDocument doc = ProjectDomService.Parse (project, classFile, null);
+			ParsedDocument doc = ProjectDomService.Parse (project, classFile);
 			if (doc != null && doc.CompilationUnit != null) {
 				unit = doc.CompilationUnit;
 				foreach (IType fcls in unit.Types) {

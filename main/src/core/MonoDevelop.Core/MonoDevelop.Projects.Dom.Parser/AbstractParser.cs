@@ -33,14 +33,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public abstract class AbstractParser : IParser
 	{
-		string projectType;
-		string[] mimeTypes;
-		string[] lexerTags;
-		
-		protected AbstractParser (string projectType, params string[] mimeTypes)
+		protected AbstractParser ()
 		{
-			this.projectType = projectType;
-			this.mimeTypes   = mimeTypes;
 		}
 		
 		public ParsedDocument Parse (ProjectDom dom, string fileName)
@@ -65,34 +59,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return Parse (dom, fileName, content.ReadToEnd ());
 		}
 		
-		public virtual bool CanParseMimeType (string mimeType)
-		{
-			if (mimeTypes == null)
-				return false;
-			foreach (string canParseType in mimeTypes) {
-				if (canParseType == mimeType)
-					return true;
-			}
-			return false;
-		}
-		
-		public virtual bool CanParseProjectType (string projectType)
-		{
-			return this.projectType == projectType;
-		}
-		
 		public virtual bool CanParse (string fileName)
 		{
-			return false;
-		}
-
-		public string[] LexerTags {
-			get {
-				return lexerTags;
-			}
-			set {
-				lexerTags = value;
-			}
+			return true;
 		}
 	}
 }

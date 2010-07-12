@@ -183,12 +183,9 @@ namespace AspNetEdit.Integration
 			//hook up proxy for event binding
 			string codeBehind = null;
 			if (viewContent.Project != null) {
-				string mimeType =
-					DesktopService.GetMimeTypeForUri (viewContent.ContentName);
+				string mimeType = DesktopService.GetMimeTypeForUri (viewContent.ContentName);
 				
-				MonoDevelop.AspNet.Parser.AspNetParsedDocument cu = 
-					MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (
-						null, viewContent.ContentName, mimeType)
+				var cu = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (viewContent.Project, viewContent.ContentName)
 					as MonoDevelop.AspNet.Parser.AspNetParsedDocument;
 					
 				if (cu != null && cu.PageInfo != null && !string.IsNullOrEmpty (cu.PageInfo.InheritedClass))

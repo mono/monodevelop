@@ -1,3 +1,9 @@
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Parser/T4Parser.cs:
+	* MonoDevelop.TextTemplating.addin.xml: Track
+	  ProjectDomService/Parser API.
+
 2010-06-01  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* TextTemplatingTool.cs: Make ThreadAsyncOperation public.

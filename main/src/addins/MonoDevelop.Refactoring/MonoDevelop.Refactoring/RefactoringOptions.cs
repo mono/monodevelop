@@ -89,7 +89,7 @@ namespace MonoDevelop.Refactoring
 		
 		public MonoDevelop.Projects.Dom.Parser.IParser GetParser ()
 		{
-			return ProjectDomService.GetParser (Document.FileName, MimeType);
+			return ProjectDomService.GetParser (Document.FileName);
 		}
 		
 		public ICSharpCode.NRefactory.Ast.INode ParseMember (IMember member)
@@ -119,6 +119,7 @@ namespace MonoDevelop.Refactoring
 			}
 			return result.ToString ();
 		}
+		
 		public static string GetIndent (Document document, IMember member)
 		{
 			return GetWhitespaces (document, document.TextEditor.GetPositionFromLineColumn (member.Location.Line, 1));
@@ -140,7 +141,7 @@ namespace MonoDevelop.Refactoring
 		
 		public ParsedDocument ParseDocument ()
 		{
-			return ProjectDomService.Parse (Dom.Project, Document.FileName, DesktopService.GetMimeTypeForUri (Document.FileName), Document.TextEditor.Text);
+			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.TextEditor.Text);
 		}
 	}
 }

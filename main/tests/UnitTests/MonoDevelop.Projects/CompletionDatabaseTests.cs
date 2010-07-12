@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects
 			string tfile = mainProject.Project.GetAbsoluteChildPath (targetRelativePath);
 			string sfile = mainProject.Project.GetAbsoluteChildPath (sourceRelativePath);
 			File.Copy (sfile, tfile, true);
-			ProjectDomService.Parse (tfile, null, null);
+			ProjectDomService.Parse (tfile, null);
 		}
 
 		[Test]

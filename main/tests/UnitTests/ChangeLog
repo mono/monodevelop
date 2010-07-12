@@ -1,5 +1,14 @@
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.AspNet/AspNetTesting.cs:
+	* MonoDevelop.Refactoring/ExtractMethodTests.cs:
+	* MonoDevelop.Projects/CompletionDatabaseTests.cs:
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs:
+	* MonoDevelop.CSharpBinding/ParameterCompletionTests.cs: Track
+	  ProjectDomService/Parser API.
+
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Xml.StateEngine/ParsingTests.cs: Track changes
 	  in warnings emitted by XML parser.
 

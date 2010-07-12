@@ -35,22 +35,10 @@ using MonoDevelop.AspNet.Parser.Dom;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 
-
 namespace MonoDevelop.AspNet.Parser
 {
-	
-	
 	public class AspNetParser : AbstractParser
 	{
-		public AspNetParser () : base (null, "application/x-aspx", "application/x-ascx", "application/x-master-page")
-		{
-		}
-		
-		public override bool CanParse (string fileName)
-		{
-			return fileName.EndsWith (".aspx") || fileName.EndsWith (".ascx") || fileName.EndsWith (".master");
-		}
-		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
 		{
 			using (var tr = new StringReader (fileContent)) {

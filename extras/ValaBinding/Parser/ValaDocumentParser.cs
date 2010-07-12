@@ -43,21 +43,6 @@ namespace MonoDevelop.ValaBinding.Parser
 	{
 		private ParsedDocument lastGood;
 		
-		public ValaDocumentParser(): base("Vala", "text/x-vala")
-		{
-		}
-	
-		public override bool CanParse (string fileName)
-		{
-			string extension = Path.GetExtension (fileName);
-			if(!string.IsNullOrEmpty (extension)) {
-				extension = extension.ToUpper ();                
-				return (extension == ".VALA" || extension == ".VAPI");
-			}
-			
-			return false;
-		}// CanParse
-	
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			ParsedDocument doc = new ParsedDocument (fileName);

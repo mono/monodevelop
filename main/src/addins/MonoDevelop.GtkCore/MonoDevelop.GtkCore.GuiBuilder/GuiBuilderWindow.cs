@@ -203,7 +203,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.ProjectOperations.Save (Project.Project);
 			
 			// Make sure the database is up-to-date
-			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName, null);
+			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName);
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)

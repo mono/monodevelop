@@ -1,3 +1,10 @@
+2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* CSharpBinding.addin.xml:
+	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs:
+	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
+	  Track ProjectDomService/Parser API.
+
 2010-07-12  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Dom/CSharpAmbience.cs:
