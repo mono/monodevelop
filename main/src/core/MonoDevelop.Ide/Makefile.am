@@ -660,7 +660,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	icons/AboutImage.png \
 	icons/AboutImageSep.png \
 	icons/add-namespace-16.png \
