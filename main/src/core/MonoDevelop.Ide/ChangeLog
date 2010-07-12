@@ -1,5 +1,12 @@
 2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide.addin.xml:
+	* MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:
+	  Naming policies panel should be shown for all items that
+	  contain DotNetProject, not just DotNetProject. 
+
+2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* gtk-gui/gui.stetic: Flsuh.
 
 	* Makefile.am:
