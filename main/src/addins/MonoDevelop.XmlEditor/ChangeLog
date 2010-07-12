@@ -1,3 +1,14 @@
+2010-07-11  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Xml.StateEngine/Parser.cs:
+	* MonoDevelop.Xml.StateEngine/XmlNameState.cs:
+	* MonoDevelop.Xml.StateEngine/XmlAttributeState.cs:
+	* MonoDevelop.Xml.StateEngine/XmlClosingTagState.cs: Better
+	  errors.
+
+	* MonoDevelop.Xml.StateEngine/XmlAttributeValueState.cs:
+	  Newlines are valid in attributes,
+
 2010-05-21  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor/XmlEditorService.cs: Clean up dialog
