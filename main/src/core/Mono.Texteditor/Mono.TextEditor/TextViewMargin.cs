@@ -197,6 +197,7 @@ namespace Mono.TextEditor
 			public int LastLine { get; set; }
 			public List<ISegment> OldRegions { get; set; }
 		}
+		
 		public void RefreshSearchMarker ()
 		{
 			if (textEditor.HighlightSearchPattern) {
@@ -219,36 +220,13 @@ namespace Mono.TextEditor
 				searchPatternWorker = new System.ComponentModel.BackgroundWorker ();
 				searchPatternWorker.WorkerSupportsCancellation = true;
 				searchPatternWorker.DoWork += SearchPatternWorkerDoWork;
-				searchPatternWorker.RunWorkerAsync (args );
+				searchPatternWorker.RunWorkerAsync (args);
 			}
 		}
 		
-		void UpdateRegions (List<ISegment> regions, SearchWorkerArguments args)
-		{
-			int oldLineNumber = -1;
-			foreach (ISegment region in regions) {
-				int lineNumber = Document.OffsetToLineNumber (region.Offset);
-				if (oldLineNumber == lineNumber && lineNumber >= args.FirstLine)
-					continue;
-				if (lineNumber > args.LastLine)
-					break;
-				oldLineNumber = lineNumber;
-				RemoveCachedLine (Document.GetLine (lineNumber));
-				textEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
-			}
-			if (oldLineNumber > 0)
-				textEditor.Document.CommitDocumentUpdate ();
-		}
-		
-		void HandleSearchChanged (object sender, EventArgs args)
-		{
-			RefreshSearchMarker ();
-		}
-
 		void SearchPatternWorkerDoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
 		{
 			SearchWorkerArguments args = (SearchWorkerArguments)e.Argument;
-			
 			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
 			List<ISegment> newRegions = new List<ISegment> ();
 			int offset = 0;
@@ -284,22 +262,45 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			
 			Application.Invoke (delegate {
 				this.selectedRegions = newRegions;
 				if (updateLines != null) {
 					foreach (int lineNumber in updateLines) {
-						RemoveCachedLine (Document.GetLine (lineNumber));
+//						RemoveCachedLine (Document.GetLine (lineNumber));
 						textEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
 					}
 					textEditor.Document.CommitDocumentUpdate ();
 				} else {
-					UpdateRegions (args.OldRegions, args);
-					UpdateRegions (newRegions, args);
+					UpdateRegions (args.OldRegions.Concat (newRegions), args);
 				}
 				OnSearchRegionsUpdated (EventArgs.Empty);
 			});
 		}
+		
+		void UpdateRegions (IEnumerable<ISegment> regions, SearchWorkerArguments args)
+		{
+			HashSet<int> updateLines = new HashSet<int> ();
+			
+			foreach (ISegment region in regions) {
+				int lineNumber = Document.OffsetToLineNumber (region.Offset);
+				if (lineNumber > args.LastLine || lineNumber < args.FirstLine)
+					continue;
+				updateLines.Add (lineNumber);
+			}
+			foreach (int lineNumber in updateLines) {
+//				RemoveCachedLine (Document.GetLine (lineNumber));
+				textEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
+			}
+			if (updateLines.Count > 0)
+				textEditor.Document.CommitDocumentUpdate ();
+		}
+		
+		void HandleSearchChanged (object sender, EventArgs args)
+		{
+			RefreshSearchMarker ();
+		}
+
+		
 		
 		protected virtual void OnSearchRegionsUpdated (EventArgs e)
 		{
@@ -1319,11 +1320,28 @@ namespace Mono.TextEditor
 		{
 			if (startOffset < endOffset && this.selectedRegions.Count > 0) {
 				ISegment region = new Segment (startOffset, endOffset - startOffset);
-				foreach (ISegment segment in this.selectedRegions) {
+				int min = 0;
+				int max = selectedRegions.Count - 1;
+				do {
+					int mid = (min + max) / 2;
+					ISegment segment = selectedRegions[mid];
 					if (segment.Contains (startOffset) || segment.Contains (endOffset) || region.Contains (segment)) {
-						return segment;
+						if (mid == 0)
+							return segment;
+						ISegment prevSegment = selectedRegions[mid - 1];
+						if (!(prevSegment.Contains (startOffset) || prevSegment.Contains (endOffset) || region.Contains (prevSegment)))
+							return segment;
+						max = mid - 1;
+						continue;
 					}
-				}
+					
+					if (segment.Offset < endOffset) {
+						min = mid + 1;
+					} else {
+						max = mid - 1;
+					}
+					
+				} while (min <= max);
 			}
 			return null;
 		}

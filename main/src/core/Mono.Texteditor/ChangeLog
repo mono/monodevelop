@@ -1,5 +1,10 @@
 2010-07-12  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 621483 - MD
+	  hangs for a few seconds when searching'.
+
+2010-07-12  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/Document.cs:
 	* Mono.TextEditor/FoldSegment.cs: Optimized fold segment
 	  updating/fixed 'Bug 621484 - Editor repaints multiple times
