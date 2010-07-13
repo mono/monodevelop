@@ -1,3 +1,8 @@
+2010-07-13  Levi Bard  <levi@unity3d.com>
+
+	* MonoDevelop.Debugger/ExceptionCaughtDialog.cs:
+	  Unescape exception message.
+
 2010-07-07  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Debugger/LocalsPad.cs:

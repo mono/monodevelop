@@ -73,7 +73,9 @@ namespace MonoDevelop.Debugger
 			valueView.ClearValues ();
 
 			labelType.Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type);
-			labelMessage.Text = exception.Message;
+			labelMessage.Text = string.IsNullOrEmpty (exception.Message)?
+			                    string.Empty: 
+			                    Mono.Debugging.Evaluation.ExpressionEvaluator.UnEscapeString (exception.Message);
 			
 			ShowStackTrace (exception, false);
 			
