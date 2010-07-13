@@ -1,3 +1,10 @@
+2010-07-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* Gui/AddViewDialog.cs:
+	* MonoDevelop.AspNet.Mvc.csproj: Track API changes.
+
 2010-05-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Gui/FolderNodeBuilderExtension.cs: Use the recyclable text

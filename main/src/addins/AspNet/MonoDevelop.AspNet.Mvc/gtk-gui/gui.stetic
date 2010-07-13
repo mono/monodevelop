@@ -8,7 +8,6 @@
     <widget-library name="../../../../../build/AddIns/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.AspNet.Mvc/MonoDevelop.AspNet.Mvc.dll" internal="true" />
   </import>

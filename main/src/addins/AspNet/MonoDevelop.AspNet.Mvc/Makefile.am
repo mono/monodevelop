@@ -4,7 +4,6 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.AspNet.Mvc.dll
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
-	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \

@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -48,7 +49,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		string oldMaster;
 		Gtk.ListStore primaryPlaceholderStore = new Gtk.ListStore (typeof (String));
 		System.CodeDom.Compiler.CodeDomProvider provider;
-		MonoDevelop.SourceEditor.DropDownBox dataClassCombo;
+		DropDownBox dataClassCombo;
 		TypeDataProvider classDataProvider;
 		
 		public AddViewDialog (AspMvcProject project)
@@ -56,7 +57,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.project = project;
 			this.Build ();
 			
-			dataClassCombo = new MonoDevelop.SourceEditor.DropDownBox ();
+			dataClassCombo = new DropDownBox ();
 			
 			int w, h;
 			Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h);
@@ -269,7 +270,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		#endregion
 		
-		class TypeDataProvider : MonoDevelop.SourceEditor.DropDownBoxListWindow.IListDataProvider
+		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
 			MonoDevelop.Projects.Dom.Output.Ambience ambience;
 			
@@ -302,6 +303,11 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			public object GetTag (int n)
 			{
 				return List[n];
+			}
+			
+			public void ActivateItem (int n)
+			{
+				// nothing
 			}
 		}
 	}
