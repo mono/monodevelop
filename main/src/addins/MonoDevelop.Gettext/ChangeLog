@@ -1,3 +1,9 @@
+2010-07-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Gettext.Editor/POEditorWidget.cs: Replaced
+	  custom workerthread with
+	  system.compontentmodel.backgroundworker.
+
 2010-06-10  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Gettext.addin.xml: Fix icon size names.

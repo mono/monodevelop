@@ -41,6 +41,8 @@ using MonoDevelop.Gettext.Editor;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using System.ComponentModel;
+using System.Threading;
 
 namespace MonoDevelop.Gettext
 {
@@ -100,6 +102,14 @@ namespace MonoDevelop.Gettext
 			this.Build ();
 			this.headersEditor = new CatalogHeadersWidget ();
 			this.notebookPages.AppendPage (headersEditor, new Gtk.Label ());
+			
+			updateThread = new BackgroundWorker ();
+			updateThread.WorkerSupportsCancellation = true;
+			updateThread.DoWork += FilterWorker;
+			
+			updateTaskThread = new BackgroundWorker ();
+			updateTaskThread.WorkerSupportsCancellation = true;
+			updateTaskThread.DoWork += TaskUpdateWorker;
 			
 			AddButton (GettextCatalog.GetString ("Translation")).Active = true;
 			AddButton (GettextCatalog.GetString ("Headers")).Active = false;
@@ -266,6 +276,11 @@ namespace MonoDevelop.Gettext
 			this.texteditorPlural.Options = options;
 			this.texteditorOriginal.Document.ReadOnly = true;
 			this.texteditorPlural.Document.ReadOnly = true;
+		}
+
+		void HandleUpdateTaskThreadDoWork (object sender, DoWorkEventArgs e)
+		{
+			
 		}
 		
 		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
@@ -855,7 +870,7 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
-		FilterWorkerThread updateThread = null;
+		BackgroundWorker updateThread = null;
 		string filter = "";
 		Regex  regex = new Regex ("");
 		
@@ -878,18 +893,63 @@ namespace MonoDevelop.Gettext
 			}
 			this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
 			StopFilterWorkerThread ();
-			updateThread = new FilterWorkerThread (this);
-			updateThread.Start ();
+			updateThread.RunWorkerAsync ();
 		}
+		
+		void FilterWorker (object sender, DoWorkEventArgs e)
+		{
+			BackgroundWorker worker = sender as BackgroundWorker;
+			
+			int number = 1, found = 0;
+			double count = catalog.Count;
+			ListStore newStore = new ListStore (typeof(string), typeof(bool), typeof(string), typeof(string), typeof(CatalogEntry), typeof(Gdk.Color), typeof(int), typeof(Gdk.Color));
+			StatusBarContext statusBar = null;
+			DispatchService.GuiSyncDispatch (delegate {
+				statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
+				statusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
+			});
+			
+			try {
+				foreach (CatalogEntry entry in catalog) {
+					if (worker != null && worker.CancellationPending)
+						return;
+					number++;
+					if (number % 50 == 0) {
+						DispatchService.GuiSyncDispatch (delegate {
+							statusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
+						});
+					}
+					if (!ShouldFilter (entry, filter)) {
+						newStore.AppendValues (GetStockForEntry (entry), 
+							entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), 
+							StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
+							entry,
+							GetRowColorForEntry (entry),
+							GetTypeSortIndicator (entry),
+							GetForeColorForEntry (entry)
+						);
+						found++;
+					}
+				}
+			} catch (Exception) {
+			
+			}
+			DispatchService.GuiSyncDispatch (delegate {
+				store.Dispose ();
+				treeviewEntries.Model = store = newStore;
+				statusBar.EndProgress ();
+				IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
+			});
+		}
+
 		
 		void StopFilterWorkerThread ()
 		{
-			if (updateThread != null)  {
-				updateThread.Stop ();
-				//updateThread.WaitForFinish ();
-				updateThread = null;
-			}
+			updateThread.CancelAsync ();
+			while (updateThread.IsBusy)
+				Thread.Sleep (20);
 		}
+		
 		bool IsVisible (TreePath path)
 		{
 			TreePath start, end, cur;
@@ -904,9 +964,10 @@ namespace MonoDevelop.Gettext
 			} while (!cur.Equals (end) && store.IterNext (ref iter));
 			return false;
 		}
+		
 		public void SelectEntry (CatalogEntry entry)
 		{
-			if (updateThread != null && !updateThread.IsStopped)
+			if (updateThread.IsBusy)
 				return;
 			
 			TreeIter iter;
@@ -934,67 +995,6 @@ namespace MonoDevelop.Gettext
 			SelectEntry (entry);
 		}
 		
-		class FilterWorkerThread : WorkerThread
-		{
-			POEditorWidget widget;
-			
-			public FilterWorkerThread (POEditorWidget widget)
-			{
-				this.widget = widget;
-			}
-			
-			protected override void InnerRun ()
-			{
-				int number = 1, found = 0;
-				double count = widget.catalog.Count;
-				ListStore newStore = new ListStore (typeof(string), typeof(bool), typeof(string), typeof(string), typeof(CatalogEntry), typeof(Gdk.Color), typeof(int), typeof(Gdk.Color));
-				StatusBarContext statusBar = null;
-				DispatchService.GuiSyncDispatch (delegate {
-					statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
-					statusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
-				});
-				
-				try {
-					foreach (CatalogEntry entry in widget.catalog) {
-						if (IsStopping)
-							return;
-						number++;
-						if (number % 50 == 0) {
-							DispatchService.GuiSyncDispatch (delegate {
-								statusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
-							});
-						}
-						if (!widget.ShouldFilter (entry, widget.filter)) {
-							newStore.AppendValues (GetStockForEntry (entry), 
-								entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), 
-								StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
-								entry,
-								widget.GetRowColorForEntry (entry),
-								GetTypeSortIndicator (entry),
-								widget.GetForeColorForEntry (entry)
-							);
-							found++;
-						}
-					}
-				} catch (Exception) {
-				
-				}
-				if (!IsStopping) {
-					DispatchService.GuiSyncDispatch (delegate {
-						widget.store.Dispose ();
-						widget.treeviewEntries.Model = widget.store = newStore;
-						statusBar.EndProgress ();
-						IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
-					});
-				} /*else {
-					MonoDevelop.Core.Gui.DispatchService.GuiSyncDispatch (delegate {
-						MonoDevelop.Ide.Gui.IdeApp.Workbench.StatusBar.EndProgress ();
-					});
-				}*/
-				Stop ();
-			}
-
-		}
 		
 #endregion
 		
@@ -1214,67 +1214,56 @@ namespace MonoDevelop.Gettext
 		
 		
 		List<Task> currentTasks = new List<Task> ();
-		class UpdateTaskWorkerThread : WorkerThread
+		
+		BackgroundWorker updateTaskThread = null;
+		
+		void TaskUpdateWorker (object sender, DoWorkEventArgs e)
 		{
-			POEditorWidget widget;
-			
-			public UpdateTaskWorkerThread (POEditorWidget widget)
-			{
-				this.widget = widget;
+			BackgroundWorker worker = sender as BackgroundWorker;
+			if (catalog == null) {
+				ClearTasks ();
+				return;
 			}
 			
 			List<Task> tasks = new List<Task> ();
-			protected override void InnerRun ()
-			{
-				if (widget.catalog == null) {
-					widget.ClearTasks ();
-					Stop ();
-					return;
-				}
-				try {
-					foreach (CatalogEntryRule rule in widget.rules) {
-						foreach (CatalogEntry entry in widget.catalog) {
-							if (IsStopping)
-								return;
-							if (String.IsNullOrEmpty (entry.String) || String.IsNullOrEmpty (entry.GetTranslation (0)))
-								continue;
-								if (rule.EntryFails (entry)) {
-									tasks.Add (new TranslationTask (widget,
-									                                entry,
-									                                rule.FailReason (entry)));
-								}
-						}
+			try {
+				foreach (CatalogEntryRule rule in rules) {
+					foreach (CatalogEntry entry in catalog) {
+						if (worker != null && worker.CancellationPending)
+							return;
+						if (String.IsNullOrEmpty (entry.String) || String.IsNullOrEmpty (entry.GetTranslation (0)))
+							continue;
+							if (rule.EntryFails (entry)) {
+								tasks.Add (new TranslationTask (this,
+								                                entry,
+								                                rule.FailReason (entry)));
+							}
 					}
-				} catch (Exception e) {
-					System.Console.WriteLine (e);
-					Stop ();
-					return;
 				}
-				if (!CompareTasks (tasks, widget.currentTasks)) {
-					widget.ClearTasks ();
-					widget.currentTasks = tasks;
-					TaskService.Errors.AddRange (tasks);
-				}
-				Stop ();
+			} catch (Exception ex) {
+				System.Console.WriteLine (ex);
+				return;
+			}
+			
+			if (!CompareTasks (tasks, currentTasks)) {
+				ClearTasks ();
+				currentTasks = tasks;
+				TaskService.Errors.AddRange (tasks);
 			}
 		}
 		
-		UpdateTaskWorkerThread updateTaskThread = null;
-		
 		void StopTaskWorkerThread ()
 		{
-			if (updateTaskThread != null)  {
-				updateTaskThread.Stop ();
-				updateTaskThread.WaitForFinish ();
-				updateTaskThread = null;
+			updateTaskThread.CancelAsync ();
+			while (updateTaskThread.IsBusy)  {
+				Thread.Sleep (20);
 			}
 		}
 		
 		void UpdateTasks ()
 		{
 			StopTaskWorkerThread ();
-			updateTaskThread = new UpdateTaskWorkerThread (this);
-			updateTaskThread.Start ();
+			updateTaskThread.RunWorkerAsync ();
 		}
 #endregion
 
