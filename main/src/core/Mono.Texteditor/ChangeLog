@@ -1,3 +1,12 @@
+2010-07-13  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Mono.TextEditor/Document.cs:
+	* Mono.TextEditor.Highlighting/WorkerThread.cs: Replaced
+	  custom workerthread with
+	  system.compontentmodel.backgroundworker.
+
 2010-07-12  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Fixed 'Bug 621483 - MD

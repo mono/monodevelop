@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.Text;
 using Mono.TextEditor.Highlighting;
 using System.Linq;
+using System.ComponentModel;
 
 namespace Mono.TextEditor
 {
@@ -95,6 +96,14 @@ namespace Mono.TextEditor
 			};*/
 			TextReplacing += UpdateFoldSegmentsOnReplace;
 		}
+		
+		~Document ()
+		{
+			if (foldSegmentWorker != null) {
+				foldSegmentWorker.Dispose ();
+				foldSegmentWorker = null;
+			}
+		}
 
 		void SplitterLineSegmentTreeLineChanged (object sender, LineEventArgs e)
 		{
@@ -146,20 +155,14 @@ namespace Mono.TextEditor
 		}
 		
 		void IBuffer.Insert (int offset, string text)
-
 		{
 			((IBuffer)this).Replace (offset, 0, text);
 		}
 		
-
 		void IBuffer.Remove (int offset, int count)
-
 		{
-
 			((IBuffer)this).Replace (offset, count, null);
-
 		}
-		
 
 		void IBuffer.Replace (int offset, int count, string value)
 		{
@@ -958,91 +961,18 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		class FoldSegmentWorkerThread : WorkerThread
-		{
-			Document doc;
-			List<FoldSegment> newSegments;
-			
-			public FoldSegmentWorkerThread (Document doc, List<FoldSegment> newSegments)
-			{
-				this.doc = doc;
-				this.newSegments = newSegments;
-			}
-			
-			protected override void InnerRun ()
-			{
-				Run (true);
-			}
-			
-			public void Run (bool runInThread)
-			{
-				newSegments.Sort ();
-				foreach (FoldSegment foldSegment in newSegments) {
-					if (runInThread && IsStopping)
-						return;
-					LineSegment startLine = doc.splitter.GetLineByOffset (foldSegment.Offset);
-					LineSegment endLine = doc.splitter.GetLineByOffset (foldSegment.EndOffset);
-					foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset;
-					foldSegment.Column = foldSegment.Offset - startLine.Offset;
-//					foldSegment.StartLine = startLine;
-//					foldSegment.EndLine = endLine;
+		readonly object syncObject = new object();
+		BackgroundWorker foldSegmentWorker = null;
+		BackgroundWorker FoldSegmentWorker {
+			get {
+				if (foldSegmentWorker == null) {
+					foldSegmentWorker = new BackgroundWorker ();
+					foldSegmentWorker.WorkerSupportsCancellation = true;
+					foldSegmentWorker.DoWork += FoldSegmentWork;
 				}
-				FoldSegmentTreeNode newFoldSegmentTree = new FoldSegmentTreeNode ();
-				foreach (FoldSegment foldSegment in newSegments) {
-					newFoldSegmentTree.AddSegment (foldSegment);
-				}
-				List<FoldSegment> oldSegments = new List<FoldSegment> (doc.foldSegmentTree.FoldSegments);
-				bool needsUpdate = newSegments.Count > oldSegments.Count;
-				LineSegment updateFrom = null;
-				int i = 0, j = 0;
-				while (i < oldSegments.Count && j < newSegments.Count) {
-					if (runInThread && IsStopping)
-						return;
-					int cmp = oldSegments[i].CompareTo (newSegments[j]);
-					if (cmp == 0) {
-						if (newSegments[j].Length == oldSegments[i].Length) {
-							newSegments[j].IsFolded = oldSegments[i].IsFolded;
-						} else {
-							needsUpdate = true;
-						}
-						i++;
-						j++;
-					} else if (cmp > 0) {
-						if (updateFrom == null)
-							updateFrom = newSegments[j].StartLine;
-						j++;
-						needsUpdate = true;
-					} else {
-						if (updateFrom == null)
-							updateFrom = oldSegments[i].StartLine;
-						i++;
-						needsUpdate = true;
-					}
-				}
-				
-				while (i < oldSegments.Count) {
-					newFoldSegmentTree.AddSegment (oldSegments[i]);
-					i++;
-				}
-				doc.foldSegmentTree = newFoldSegmentTree;
-				if (runInThread) {
-					if (needsUpdate) {
-						Gtk.Application.Invoke (delegate {
-							if (updateFrom == null) {
-								doc.CommitUpdateAll ();
-							} else {
-								int lineNr = doc.OffsetToLineNumber (updateFrom.Offset) - 1;
-								doc.CommitLineToEndUpdate (lineNr);
-							}
-						});
-					}
-					base.Stop ();
-				}
+				return foldSegmentWorker;
 			}
 		}
-		
-		readonly object syncObject = new object();
-		FoldSegmentWorkerThread foldSegmentWorkerThread = null;
 		
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
@@ -1056,25 +986,87 @@ namespace Mono.TextEditor
 			}
 			
 			if (!runInThread) {
-				new FoldSegmentWorkerThread (this, newSegments).Run (false);
+				FoldSegmentWork (null, new DoWorkEventArgs (newSegments));
 				return;
 			}
 			
-			lock (syncObject) {
-				if (foldSegmentWorkerThread != null)
-					foldSegmentWorkerThread.Stop ();
-				
-				foldSegmentWorkerThread = new FoldSegmentWorkerThread (this, newSegments);
-				foldSegmentWorkerThread.Start ();
+			InterruptFoldWorker ();
+			FoldSegmentWorker.RunWorkerAsync (newSegments);
+		}
+
+		void FoldSegmentWork (object sender, DoWorkEventArgs e)
+		{
+			BackgroundWorker worker = sender as BackgroundWorker;
+			List<FoldSegment> newSegments = (List<FoldSegment>)e.Argument;
+			newSegments.Sort ();
+			foreach (FoldSegment foldSegment in newSegments) {
+				if (worker != null && worker.CancellationPending)
+					return;
+				LineSegment startLine = splitter.GetLineByOffset (foldSegment.Offset);
+				LineSegment endLine = splitter.GetLineByOffset (foldSegment.EndOffset);
+				foldSegment.EndColumn = foldSegment.EndOffset - endLine.Offset;
+				foldSegment.Column = foldSegment.Offset - startLine.Offset;
+//					foldSegment.StartLine = startLine;
+//					foldSegment.EndLine = endLine;
+			}
+			FoldSegmentTreeNode newFoldSegmentTree = new FoldSegmentTreeNode ();
+			foreach (FoldSegment foldSegment in newSegments) {
+				if (worker != null && worker.CancellationPending)
+					return;
+				newFoldSegmentTree.AddSegment (foldSegment);
+			}
+			List<FoldSegment> oldSegments = new List<FoldSegment> (foldSegmentTree.FoldSegments);
+			bool needsUpdate = newSegments.Count > oldSegments.Count;
+			LineSegment updateFrom = null;
+			int i = 0, j = 0;
+			while (i < oldSegments.Count && j < newSegments.Count) {
+				if (worker != null && worker.CancellationPending)
+					return;
+				int cmp = oldSegments[i].CompareTo (newSegments[j]);
+				if (cmp == 0) {
+					if (newSegments[j].Length == oldSegments[i].Length) {
+						newSegments[j].IsFolded = oldSegments[i].IsFolded;
+					} else {
+						needsUpdate = true;
+					}
+					i++;
+					j++;
+				} else if (cmp > 0) {
+					if (updateFrom == null)
+						updateFrom = newSegments[j].StartLine;
+					j++;
+					needsUpdate = true;
+				} else {
+					if (updateFrom == null)
+						updateFrom = oldSegments[i].StartLine;
+					i++;
+					needsUpdate = true;
+				}
+			}
+			
+			while (i < oldSegments.Count) {
+				if (worker != null && worker.CancellationPending)
+					return;
+				newFoldSegmentTree.AddSegment (oldSegments[i]);
+				i++;
+			}
+			foldSegmentTree = newFoldSegmentTree;
+			if (worker != null && needsUpdate) {
+				Gtk.Application.Invoke (delegate {
+					if (updateFrom == null) {
+						CommitUpdateAll ();
+					} else {
+						int lineNr = OffsetToLineNumber (updateFrom.Offset) - 1;
+						CommitLineToEndUpdate (lineNr);
+					}
+				});
 			}
 		}
 		
 		public void WaitForFoldUpdateFinished ()
 		{
-			if (foldSegmentWorkerThread != null) {
-				foldSegmentWorkerThread.WaitForFinish ();
-				foldSegmentWorkerThread = null;
-			}
+			while (FoldSegmentWorker.IsBusy)
+				System.Threading.Thread.Sleep (10);
 		}
 		
 		void UpdateFoldSegmentsOnReplace (object sender, ReplaceEventArgs e)
@@ -1084,24 +1076,16 @@ namespace Mono.TextEditor
 		
 		void InterruptFoldWorker ()
 		{
-			lock (syncObject) {
-				if (foldSegmentWorkerThread != null) {
-					if (!foldSegmentWorkerThread.IsStopping) {
-						foldSegmentWorkerThread.Stop ();
-					}
-					foldSegmentWorkerThread.WaitForFinish ();
-					foldSegmentWorkerThread = null;
-				}
-			}
+			if (!FoldSegmentWorker.IsBusy)
+				return;
+			FoldSegmentWorker.CancelAsync ();
+			WaitForFoldUpdateFinished ();
 		}
 		
 		public void ClearFoldSegments ()
 		{
-			lock (syncObject) {
-				if (foldSegmentWorkerThread != null) 
-					foldSegmentWorkerThread.Stop ();
-				foldSegmentTree = new FoldSegmentTreeNode ();
-			}
+			InterruptFoldWorker ();
+			foldSegmentTree = new FoldSegmentTreeNode ();
 		}
 		
 		public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)

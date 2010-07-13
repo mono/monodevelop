@@ -103,7 +103,6 @@
     <Compile Include="Mono.TextEditor.Highlighting\SemanticRule.cs" />
     <Compile Include="Mono.TextEditor\SearchResult.cs" />
     <Compile Include="Mono.TextEditor\Caret.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\WorkerThread.cs" />
     <Compile Include="Mono.TextEditor\CodeSegmentPreviewWindow.cs" />
     <Compile Include="Mono.TextEditor\ISearchEngine.cs" />
     <Compile Include="Mono.TextEditor\ITooltipProvider.cs" />
