@@ -54,7 +54,6 @@ namespace MonoDevelop.SourceEditor
 		bool TabIsReindent {get; }
 		bool AutoInsertMatchingBracket {get; }
 		bool EnableCodeCompletion {get; }
-		bool EnableQuickFinder {get; }
 		bool UnderlineErrors {get; }
 		IndentStyle IndentStyle {get; }
 		EditorFontType EditorFontType {get; }

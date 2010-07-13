@@ -307,10 +307,6 @@ namespace MonoDevelop.SourceEditor
 			get { return DefaultSourceEditorOptions.Instance.EnableCodeCompletion; }
 		}
 
-		public bool EnableQuickFinder {
-			get { return DefaultSourceEditorOptions.Instance.EnableQuickFinder; }
-		}
-
 		public bool EnableSemanticHighlighting {
 			get { return DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting; }
 		}

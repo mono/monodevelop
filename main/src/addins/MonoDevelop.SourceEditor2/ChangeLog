@@ -1,5 +1,24 @@
 2010-07-13  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/objects.xml:
+	* MonoDevelop.SourceEditor.csproj:
+	* MonoDevelop.SourceEditor/NavigationBar.cs:
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs:
+	* MonoDevelop.SourceEditor/SourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/ISourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:
+	* MonoDevelop.SourceEditor/DropDownBoxListWindow.cs:
+	* MonoDevelop.SourceEditor/NavigationBarCommands.cs:
+	* MonoDevelop.SourceEditor/StyledSourceEditorOptions.cs:
+	* MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:
+	* gtk-gui/MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs:
+	  Removed old unused quick finder code/moved dropdownbox to
+	  components.
+
+2010-07-13  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: Replaced
 	  custom workerthread with
 	  system.compontentmodel.backgroundworker.

@@ -128,9 +128,6 @@ namespace MonoDevelop.SourceEditor
 			case "EnableParameterInsight":
 				this.EnableParameterInsight = (bool) args.NewValue;
 				break;
-			case "EnableQuickFinder":
-				this.EnableQuickFinder = (bool) args.NewValue;
-				break;
 			case "UnderlineErrors":
 				this.UnderlineErrors = (bool) args.NewValue;
 				break;
@@ -221,7 +218,6 @@ namespace MonoDevelop.SourceEditor
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
 			this.enableCodeCompletion = PropertyService.Get ("EnableCodeCompletion", true);
 			this.enableParameterInsight = PropertyService.Get ("EnableParameterInsight", true);
-			this.enableQuickFinder = PropertyService.Get ("EnableQuickFinder", true);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
 			this.editorFontType = PropertyService.Get ("EditorFontType", MonoDevelop.SourceEditor.EditorFontType.DefaultMonospace);
@@ -395,20 +391,6 @@ namespace MonoDevelop.SourceEditor
 				if (value != this.enableParameterInsight) {
 					this.enableParameterInsight = value;
 					PropertyService.Set ("EnableParameterInsight", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		bool enableQuickFinder;
-		public bool EnableQuickFinder {
-			get {
-				return enableQuickFinder;
-			}
-			set {
-				if (value != this.enableQuickFinder) {
-					this.enableQuickFinder = value;
-					PropertyService.Set ("EnableQuickFinder", value);
 					OnChanged (EventArgs.Empty);
 				}
 			}

@@ -62,7 +62,6 @@ namespace MonoDevelop.SourceEditor
 		
 		bool shouldShowclassBrowser;
 		bool canShowClassBrowser;
-		NavigationBar classBrowser;
 		ISourceEditorOptions options;
 		
 		bool isDisposed = false;
@@ -136,14 +135,6 @@ namespace MonoDevelop.SourceEditor
 					classBrowser = null;
 				}
 			}*/
-		}
-		
-		public void PopulateClassCombo (bool runInThread)
-		{
-			if (classBrowser == null || !CanShowClassBrowser)
-				return;
-			
-			classBrowser.UpdateCompilationUnit (this.parsedDocument, runInThread);
 		}
 		
 		public Ambience Ambience {
@@ -370,9 +361,6 @@ namespace MonoDevelop.SourceEditor
 			if (this.gotoLineNumberWidget != null) {
 				focusChain.Add (this.gotoLineNumberWidget);
 			}
-			if (this.classBrowser != null) {
-				focusChain.Add (this.classBrowser);
-			}
 			vbox.FocusChain = focusChain.ToArray ();
 		}
 		
@@ -479,7 +467,6 @@ namespace MonoDevelop.SourceEditor
 				doc.UpdateFoldSegments (foldSegments, worker != null);
 				firstUpdate = false;
 				UpdateAutocorTimer ();
-				PopulateClassCombo (worker != null);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
@@ -520,7 +507,7 @@ namespace MonoDevelop.SourceEditor
 			this.parsedDocument = newDocument;
 			CanShowClassBrowser = newDocument != null && newDocument.CompilationUnit != null;
 			StopParseInfoThread ();
-			if (parsedDocument == null)
+			if (parsedDocument == null || parseInformationUpdaterWorkerThread == null)
 				return;
 			if (runInThread) {
 				parseInformationUpdaterWorkerThread.RunWorkerAsync (parsedDocument);
@@ -531,11 +518,15 @@ namespace MonoDevelop.SourceEditor
 		
 		void StopParseInfoThread ()
 		{
+			if (parseInformationUpdaterWorkerThread == null)
+				return;
 			parseInformationUpdaterWorkerThread.CancelAsync ();
 			WaitForParseInformationUpdaterWorkerThread ();
 		}
 		public void WaitForParseInformationUpdaterWorkerThread ()
 		{
+			if (parseInformationUpdaterWorkerThread == null)
+				return;
 			while (parseInformationUpdaterWorkerThread.IsBusy)
 				Thread.Sleep (20);
 		}
@@ -781,7 +772,7 @@ namespace MonoDevelop.SourceEditor
 			
 			view.WarnOverwrite = true;
 			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
-			vbox.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
+			vbox.ReorderChild (messageBar, 0);
 			messageBar.ShowAll ();
 
 			messageBar.QueueDraw ();
@@ -838,7 +829,7 @@ namespace MonoDevelop.SourceEditor
 			
 			view.WarnOverwrite = true;
 			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
-			vbox.ReorderChild (messageBar, classBrowser != null ? 1 : 0);
+			vbox.ReorderChild (messageBar, 0);
 			messageBar.ShowAll ();
 
 			messageBar.QueueDraw ();
@@ -884,10 +875,6 @@ namespace MonoDevelop.SourceEditor
 		void CaretPositionChanged (object o, DocumentLocationEventArgs args)
 		{
 			UpdateLineCol ();
-			
-			if (classBrowser != null) 
-				classBrowser.UpdatePosition (TextEditor.Caret.Line + 1, TextEditor.Caret.Column + 1);
-			
 			LineSegment curLine = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			MonoDevelop.SourceEditor.MessageBubbleTextMarker marker = null;
 			if (curLine != null && curLine.Markers.Any (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker)) {
@@ -918,16 +905,11 @@ namespace MonoDevelop.SourceEditor
 			int offset = TextEditor.Caret.Offset;
 			if (offset < 0 || offset > TextEditor.Document.Length)
 				return;
-			if (classBrowser == null || NavigationBar.HideStatusBox) {
-				DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
-				IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line + 1,
-				                                           location.Column + 1,
-				                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
-				                                           TextEditor.Caret.IsInInsertMode);
-			} else {
-				IdeApp.Workbench.StatusBar.ClearCaretState ();
-				classBrowser.StatusBox.ShowCaretState ();
-			}
+			DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
+			IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line + 1,
+			                                           location.Column + 1,
+			                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
+			                                           TextEditor.Caret.IsInInsertMode);
 		}
 		
 		#endregion

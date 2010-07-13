@@ -54,7 +54,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual Gtk.Widget CreatePanelWidget ()
 		{
 			this.codeCompletioncheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableCodeCompletion;
-			this.quickFinderCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableQuickFinder;
 			this.foldingCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowFoldMargin;
 			this.foldregionsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 			this.foldCommentsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
@@ -74,7 +73,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual void ApplyChanges ()
 		{
 			DefaultSourceEditorOptions.Instance.EnableCodeCompletion = this.codeCompletioncheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableQuickFinder = this.quickFinderCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.EditorFontType = this.radiobutton1.Active ? EditorFontType.DefaultMonospace : EditorFontType.UserSpecified;
 			DefaultSourceEditorOptions.Instance.FontName = this.fontselection.FontName;
