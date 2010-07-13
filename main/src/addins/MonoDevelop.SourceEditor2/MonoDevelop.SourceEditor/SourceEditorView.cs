@@ -189,6 +189,8 @@ namespace MonoDevelop.SourceEditor
 			fileSystemWatcher = new FileSystemWatcher ();
 			fileSystemWatcher.Created += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			fileSystemWatcher.Changed += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
+			FileService.FileCreated += (sender,args) => DispatchService.GuiDispatch (() => GotFileChanged (sender, args));
+			FileService.FileChanged += (sender,args) => DispatchService.GuiDispatch (() => GotFileChanged (sender, args));
 			this.WorkbenchWindowChanged += delegate {
 				if (WorkbenchWindow != null) {
 					WorkbenchWindow.ActiveViewContentChanged += delegate {
@@ -567,15 +569,25 @@ namespace MonoDevelop.SourceEditor
 			return AmbienceService.GetAmbienceForFile (file);
 		}
 		
+		void GotFileChanged (object sender, FileEventArgs args)
+		{
+			ShowFileChangedWarning (args.FileName);
+		}
+		
 		void OnFileChanged (object sender, FileSystemEventArgs args)
 		{
-			if (!isInWrite && args.FullPath != ContentName)
+			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
+				ShowFileChangedWarning (args.FullPath);
+		}
+		
+		void ShowFileChangedWarning (string fileName)
+		{
+			if (!isInWrite && fileName != ContentName)
 				return;
 			if (lastSaveTime == File.GetLastWriteTime (ContentName))
 				return;
 			
-			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
-				widget.ShowFileChangedWarning ();
+			widget.ShowFileChangedWarning ();
 		}
 		
 		bool CheckReadOnly (int line)
