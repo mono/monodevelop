@@ -34,7 +34,7 @@ namespace MonoDevelop.Components
 	{
 		HBox hBox;
 		VScrollbar vScrollbar;
-		ListWidget list;
+		internal ListWidget list;
 		
 		public IListDataProvider DataProvider {
 			get;
