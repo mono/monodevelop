@@ -1,3 +1,8 @@
+2010-07-13  Levi Bard  <levi@unity3d.com>
+
+	* Mono.Debugging.Evaluation/ExpressionEvaluator.cs: 
+	  Add method for unescaping strings.
+
 2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Debugging.Client/DebuggerSession.cs: Dispose
