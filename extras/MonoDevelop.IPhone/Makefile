@@ -2,7 +2,7 @@ include config.make
 installdir = "$(prefix)/lib/monodevelop/AddIns/MonoDevelop.IPhone"
 conf=Debug
 SLN=MonoDevelop.IPhone.sln
-VERBOSITY=quiet
+VERBOSITY=normal
 XBUILD_ARGS=/verbosity:$(VERBOSITY) /nologo
 
 ISLOCAL := $(wildcard "../local-config/monodevelop.pc")
@@ -17,6 +17,7 @@ all:
 	$(XBUILD) $(SLN) /property:Configuration=$(conf)
 
 clean:
+	$(XBUILD) $(SLN) /property:Configuration=$(conf) /t:Clean
 	rm -rf build/*
 
 install: all
