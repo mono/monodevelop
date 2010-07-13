@@ -1,3 +1,9 @@
+2010-07-13  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CodeMetrics/CodeMetricsWidget.cs: Replaced
+	  custom workerthread with
+	  system.compontentmodel.backgroundworker.
+
 2010-04-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CodeMetrics/CodeMetricsView.cs: IViewContent

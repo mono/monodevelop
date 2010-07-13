@@ -42,6 +42,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
+using System.ComponentModel;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -165,7 +166,7 @@ namespace MonoDevelop.CodeMetrics
 			base.OnDestroyed ();
 		}
 		
-		class MetricsWorkerThread : WorkerThread
+		class MetricsWorkerThread : BackgroundWorker
 		{
 			//Earlier wasnt using the static thing, maybe not required as well
 			CodeMetricsWidget widget=CodeMetricsWidget.widget;
@@ -175,9 +176,10 @@ namespace MonoDevelop.CodeMetrics
 			public MetricsWorkerThread (CodeMetricsWidget widget)
 			{
 				this.widget = widget;
+				base.WorkerSupportsCancellation = true;
 			}
 			
-			protected override void InnerRun ()
+			protected override void OnDoWork (DoWorkEventArgs e)
 			{
 				int counter=0;
 				int totalProjects = widget.projects.Count;
@@ -193,7 +195,7 @@ namespace MonoDevelop.CodeMetrics
 						Gtk.Application.Invoke ( delegate {
 							FillTree(projectprop);
 						});
-						if(base.IsStopping)
+						if(base.CancellationPending)
 							return;
 						lock(lockCounter)
 						{
@@ -203,9 +205,8 @@ namespace MonoDevelop.CodeMetrics
 							});
 						}
 					}
-				} catch (Exception e) {
-					Console.WriteLine("Error : " + e.ToString());
-					base.Stop ();
+				} catch (Exception ex) {
+					Console.WriteLine("Error : " + ex.ToString());
 				}
 				
 				
@@ -216,7 +217,6 @@ namespace MonoDevelop.CodeMetrics
 					widget.textviewReport.Buffer.Text += CodeMetricsService.GenerateAssemblyMetricText();
 				});
 				
-				base.Stop ();
 			}
 			
 			protected void FillTree (ProjectProperties projprop)
@@ -360,7 +360,7 @@ namespace MonoDevelop.CodeMetrics
 			MetricsWorkerThread thread = new MetricsWorkerThread (this);
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Calculating Metrics..."));
 			textviewReport.Buffer.Text = GettextCatalog.GetString ("Calculating Metrics...");
-			thread.Start ();
+			thread.RunWorkerAsync ();
 		}
 		
 		#region AddMethods
