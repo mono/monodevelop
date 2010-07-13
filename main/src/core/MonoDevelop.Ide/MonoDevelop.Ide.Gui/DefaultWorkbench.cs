@@ -541,7 +541,8 @@ namespace MonoDevelop.Ide.Gui
 				int x, y, width, height;
 				GetPosition (out x, out y);
 				GetSize (out width, out height);
-				if (GdkWindow.State == 0) {
+				// HACK: GdkWindow.State is always Maximized on OSX
+				if (GdkWindow.State == 0 || PropertyService.IsMac) {
 					memento.Bounds = new Rectangle (x, y, width, height);
 				} else {
 					memento.Bounds = normalBounds;
@@ -558,7 +559,8 @@ namespace MonoDevelop.Ide.Gui
 					normalBounds = memento.Bounds;
 					Move (normalBounds.X, normalBounds.Y);
 					Resize (normalBounds.Width, normalBounds.Height);
-					if (memento.WindowState == Gdk.WindowState.Maximized) {
+					// HACK: GdkWindow.State is always Maximized on OSX
+					if (memento.WindowState == Gdk.WindowState.Maximized && !PropertyService.IsMac) {
 						Maximize ();
 					} else if (memento.WindowState == Gdk.WindowState.Iconified) {
 						Iconify ();
