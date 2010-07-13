@@ -42,6 +42,7 @@ using System.Threading;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
+using System.ComponentModel;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -255,6 +256,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
+				
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
 				base.OnDestroyed ();
 			}
@@ -341,8 +343,15 @@ namespace MonoDevelop.SourceEditor
 				
 				ProjectDomService.ParsedDocumentUpdated -= OnParseInformationChanged;
 				IdeApp.Workbench.StatusBar.ClearCaretState ();
+				if (parseInformationUpdaterWorkerThread != null) {
+					parseInformationUpdaterWorkerThread.Dispose ();
+					parseInformationUpdaterWorkerThread = null;
+				}
 			};
 			vbox.ShowAll ();
+			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
+			parseInformationUpdaterWorkerThread.WorkerSupportsCancellation = true;
+			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
 		}
 
 		void UpdateLineColOnEventHandler (object sender, EventArgs e)
@@ -393,107 +402,91 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		HashSet<string> symbols = new HashSet<string> ();
-		class ParseInformationUpdaterWorkerThread : WorkerThread
+		
+		
+		void HandleParseInformationUpdaterWorkerThreadDoWork (object sender, DoWorkEventArgs e)
 		{
-			SourceEditorWidget widget;
-			//ParseInformationEventArgs args;
-			
-			public ParseInformationUpdaterWorkerThread (SourceEditorWidget widget)
-			{
-				this.widget = widget;
-			}
-			protected override void InnerRun ()
-			{
-				Run (true);
-			}
-			
-			public void Run (bool runInThread)
-			{
-				try {
-					var doc = widget.Document;
-					if (doc == null)
-						return;
-					ParsedDocument parsedDocument = widget.parsedDocument;
-					if (this.widget.options.ShowFoldMargin && parsedDocument != null) {
-						List<FoldSegment> foldSegments = new List<FoldSegment> ();
-						bool updateSymbols = parsedDocument.Defines.Count != widget.symbols.Count;
-						if (!updateSymbols) {
-							foreach (PreProcessorDefine define in parsedDocument.Defines) {
-								if (!widget.symbols.Contains (define.Define)) {
-									updateSymbols = true;
-									break;
-								}
-							}
+			BackgroundWorker worker = sender as BackgroundWorker;
+			ParsedDocument parsedDocument = (ParsedDocument)e.Argument;
+			var doc = Document;
+			if (doc == null || parsedDocument == null || !options.ShowFoldMargin)
+				return;
+			try {
+				List<FoldSegment> foldSegments = new List<FoldSegment> ();
+				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
+				if (!updateSymbols) {
+					foreach (PreProcessorDefine define in parsedDocument.Defines) {
+						if (!symbols.Contains (define.Define)) {
+							updateSymbols = true;
+							break;
 						}
-						if (updateSymbols) {
-							widget.symbols.Clear ();
-							foreach (PreProcessorDefine define in parsedDocument.Defines) {
-								widget.symbols.Add (define.Define);
-							}
-							doc.UpdateHighlighting ();
-						}
-						foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
-							if (runInThread && IsStopping)
-								return;
-							FoldingType type = FoldingType.None;
-							bool setFolded = false;
-							bool folded = false;
-							
-							//decide whether the regions should be folded by default
-							switch (region.Type) {
-							case FoldType.Member:
-								type = FoldingType.TypeMember;
-								break;
-							case FoldType.Type:
-								type = FoldingType.TypeDefinition;
-								break;
-							case FoldType.UserRegion:
-								type = FoldingType.Region;
-								setFolded = this.widget.options.DefaultRegionsFolding;
-								folded = true;
-								break;
-							case FoldType.Comment:
-								setFolded = this.widget.options.DefaultCommentFolding;
-								folded = true;
-								break;
-							case FoldType.CommentInsideMember:
-								setFolded = this.widget.options.DefaultCommentFolding;
-								folded = false;
-								break;
-							case FoldType.Undefined:
-								setFolded = true;
-								folded = region.IsFoldedByDefault;
-								break;
-							}
-							
-							//add the region
-							FoldSegment marker = widget.AddMarker (foldSegments, region.Name, 
-							                                       region.Region, type);
-							
-							//and, if necessary, set its fold state
-							if (marker != null && setFolded && widget.firstUpdate) {
-								// only fold on document open, later added folds are NOT folded by default.
-								marker.IsFolded = folded;
-							}
-							if (marker != null && region.Region.Contains (widget.textEditorData.Caret.Line, widget.textEditorData.Caret.Column))
-								marker.IsFolded = false;
-							
-						}
-						doc.UpdateFoldSegments (foldSegments, runInThread);
-						widget.firstUpdate = false;
 					}
-					widget.UpdateAutocorTimer ();
-					widget.PopulateClassCombo (runInThread);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 				}
-				base.Stop ();
+				if (updateSymbols) {
+					symbols.Clear ();
+					foreach (PreProcessorDefine define in parsedDocument.Defines) {
+						symbols.Add (define.Define);
+					}
+					doc.UpdateHighlighting ();
+				}
+				foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
+					if (worker != null && worker.CancellationPending)
+						return;
+					FoldingType type = FoldingType.None;
+					bool setFolded = false;
+					bool folded = false;
+					
+					//decide whether the regions should be folded by default
+					switch (region.Type) {
+					case FoldType.Member:
+						type = FoldingType.TypeMember;
+						break;
+					case FoldType.Type:
+						type = FoldingType.TypeDefinition;
+						break;
+					case FoldType.UserRegion:
+						type = FoldingType.Region;
+						setFolded = options.DefaultRegionsFolding;
+						folded = true;
+						break;
+					case FoldType.Comment:
+						setFolded = options.DefaultCommentFolding;
+						folded = true;
+						break;
+					case FoldType.CommentInsideMember:
+						setFolded = options.DefaultCommentFolding;
+						folded = false;
+						break;
+					case FoldType.Undefined:
+						setFolded = true;
+						folded = region.IsFoldedByDefault;
+						break;
+					}
+					
+					//add the region
+					FoldSegment marker = AddMarker (foldSegments, region.Name, 
+					                                       region.Region, type);
+					
+					//and, if necessary, set its fold state
+					if (marker != null && setFolded && firstUpdate) {
+						// only fold on document open, later added folds are NOT folded by default.
+						marker.IsFolded = folded;
+					}
+					if (marker != null && region.Region.Contains (textEditorData.Caret.Line, textEditorData.Caret.Column))
+						marker.IsFolded = false;
+					
+				}
+				doc.UpdateFoldSegments (foldSegments, worker != null);
+				firstUpdate = false;
+				UpdateAutocorTimer ();
+				PopulateClassCombo (worker != null);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
 		}
 		
-		readonly object syncObject = new object();
 		bool firstUpdate = true;
-		ParseInformationUpdaterWorkerThread parseInformationUpdaterWorkerThread = null;
+		BackgroundWorker parseInformationUpdaterWorkerThread;
 		
 		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
 		{
@@ -526,31 +519,25 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.parsedDocument = newDocument;
 			CanShowClassBrowser = newDocument != null && newDocument.CompilationUnit != null;
+			StopParseInfoThread ();
+			if (parsedDocument == null)
+				return;
 			if (runInThread) {
-				lock (syncObject) {
-					StopParseInfoThread ();
-					if (parsedDocument != null) {
-						parseInformationUpdaterWorkerThread = new ParseInformationUpdaterWorkerThread (this);
-						parseInformationUpdaterWorkerThread.Start ();
-					}
-				}
+				parseInformationUpdaterWorkerThread.RunWorkerAsync (parsedDocument);
 			} else {
-				new ParseInformationUpdaterWorkerThread (this).Run (false);
+				HandleParseInformationUpdaterWorkerThreadDoWork (null, new DoWorkEventArgs (parsedDocument));
 			}
 		}
 		
 		void StopParseInfoThread ()
 		{
-			if (parseInformationUpdaterWorkerThread != null) {
-				parseInformationUpdaterWorkerThread.Stop ();
-				parseInformationUpdaterWorkerThread = null;
-			}
+			parseInformationUpdaterWorkerThread.CancelAsync ();
+			WaitForParseInformationUpdaterWorkerThread ();
 		}
 		public void WaitForParseInformationUpdaterWorkerThread ()
 		{
-			while (parseInformationUpdaterWorkerThread != null && !parseInformationUpdaterWorkerThread.IsStopped) {
-				Thread.Sleep (50);
-			}
+			while (parseInformationUpdaterWorkerThread.IsBusy)
+				Thread.Sleep (20);
 		}
 		
 		void UpdateAutocorTimer ()
