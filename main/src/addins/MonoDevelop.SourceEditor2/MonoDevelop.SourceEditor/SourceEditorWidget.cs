@@ -96,47 +96,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		
-		public bool ShowClassBrowser {
-			get { return false; }
-			set {
-/*				if (shouldShowclassBrowser == value)
-					return;
-				UpdateClassBrowserVisibility (false);
-				shouldShowclassBrowser = value;*/
-			}
-		}
-		
-		bool CanShowClassBrowser {
-			get { return false; }
-			set {
-/*				if (canShowClassBrowser == value)
-					return;
-				canShowClassBrowser = value;
-				UpdateClassBrowserVisibility (false);*/
-			}
-		}
-		
-		void UpdateClassBrowserVisibility (bool threaded)
-		{
-		/*	if (shouldShowclassBrowser && canShowClassBrowser) {
-				if (classBrowser == null) {
-					classBrowser = new NavigationBar (this);
-					classBrowser.StatusBox.UpdateWidth ();
-					this.UpdateLineCol ();
-					vbox.PackStart (classBrowser, false, false, CHILD_PADDING);
-					vbox.ReorderChild (classBrowser, 0);
-					PopulateClassCombo (threaded);
-				}
-			} else {
-				if (classBrowser != null) {
-					vbox.Remove (classBrowser);
-					classBrowser.Destroy ();
-					classBrowser = null;
-				}
-			}*/
-		}
-		
 		public Ambience Ambience {
 			get {
 				string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
@@ -483,14 +442,12 @@ namespace MonoDevelop.SourceEditor
 			if (fileName != args.FileName)
 				return;
 			
-			Gtk.Application.Invoke (delegate {
-				if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) 
-					TextEditor.TextViewMargin.PurgeLayoutCache ();
-				ParsedDocument = args.ParsedDocument;
-				bool canShowBrowser = ParsedDocument != null && ParsedDocument.CompilationUnit != null;
-				if (canShowBrowser)
-					this.CanShowClassBrowser = canShowBrowser; 
-			});
+			if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
+				var editor = TextEditor;
+				if (editor != null)
+					Gtk.Application.Invoke (delegate { editor.TextViewMargin.PurgeLayoutCache (); });
+			}
+			ParsedDocument = args.ParsedDocument;
 		}
 		
 		public ParsedDocument ParsedDocument {
@@ -505,7 +462,6 @@ namespace MonoDevelop.SourceEditor
 		internal void SetParsedDocument (ParsedDocument newDocument, bool runInThread)
 		{
 			this.parsedDocument = newDocument;
-			CanShowClassBrowser = newDocument != null && newDocument.CompilationUnit != null;
 			StopParseInfoThread ();
 			if (parsedDocument == null || parseInformationUpdaterWorkerThread == null)
 				return;

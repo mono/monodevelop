@@ -1,3 +1,8 @@
+2010-07-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorWidget.cs: fixed 'Bug
+	  622214 - NullReferenceException when closing file tab'.
+
 2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs: Unsubscribe
