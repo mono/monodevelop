@@ -1,5 +1,10 @@
 2010-07-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Fixed
+	  the overview renderer click position.
+
+2010-07-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Views/BlameWidget.cs:
 	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Caret
 	  state is now shown.

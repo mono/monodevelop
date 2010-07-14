@@ -870,9 +870,8 @@ namespace MonoDevelop.VersionControl.Views
 			public void MouseMove (double y)
 			{
 				var adj = widget.Vadjustment;
-				double position = ((double)y / Allocation.Height - (double)widget.vScrollBar.Allocation.Height/adj.Upper/2) * adj.Upper;
-				if (position < 0) position = 0;
-				if (position + widget.vScrollBar.Allocation.Height > adj.Upper) position = adj.Upper - widget.vScrollBar.Allocation.Height;
+				double position = (y / Allocation.Height) * adj.Upper - (double)adj.PageSize / 2;
+				position = Math.Max (0, Math.Min (position, adj.Upper - adj.PageSize));
 				widget.vScrollBar.Adjustment.Value = position;
 			}
 
