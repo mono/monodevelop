@@ -79,6 +79,14 @@ namespace ${Namespace}
 ]]></File>
 				<File name="MainMenu.xib.designer.cs" DependsOn="MainMenu.xib"
 				      ShowAutogenerationNotice="True" AddStandardHeader="False" SuppressAutoOpen="True" ><![CDATA[
+namespace ${Namespace}
+{
+	// Should subclass MonoMac.AppKit.NSResponder
+	[MonoMac.Foundation.Register("AppDelegate")]
+	public partial class AppDelegate
+	{
+	}
+}
 ]]></File>
 				<File name="MainMenu.xib">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
