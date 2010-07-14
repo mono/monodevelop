@@ -1,3 +1,8 @@
+2010-07-14  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Components/SearchEntry.cs: Fixed potential issue
+	  in search entry when reparenting.
+
 2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Better comments
