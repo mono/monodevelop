@@ -315,16 +315,14 @@ namespace MonoDevelop.Ide
 			if (fileMatch.Groups["column"].Success)
 				int.TryParse (fileMatch.Groups["column"].Value, out column);
 				
-			if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file)) {
-				try {
-					IdeApp.Workspace.OpenWorkspaceItem (file);
-				} catch {
+			try {
+				if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file) || 
+					MonoDevelop.Projects.Services.ProjectService.IsSolutionItemFile (file)) {
+						IdeApp.Workspace.OpenWorkspaceItem (file);
+				} else {
+						IdeApp.Workbench.OpenDocument (file, line, column, true);
 				}
-			} else {
-				try {
-					IdeApp.Workbench.OpenDocument (file, line, column, true);
-				} catch {
-				}
+			} catch {
 			}
 			IdeApp.Workbench.Present ();
 			return false;
