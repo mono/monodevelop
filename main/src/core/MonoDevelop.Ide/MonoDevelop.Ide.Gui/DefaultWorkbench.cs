@@ -541,7 +541,8 @@ namespace MonoDevelop.Ide.Gui
 				int x, y, width, height;
 				GetPosition (out x, out y);
 				GetSize (out width, out height);
-				// HACK: GdkWindow.State is always Maximized on OSX
+				// HACK: always capture bounds on OS X because we don't restore Gdk.WindowState.Maximized due to
+				// the bug mentioned below. So we simular Maximized by capturing the Maximized size.
 				if (GdkWindow.State == 0 || PropertyService.IsMac) {
 					memento.Bounds = new Rectangle (x, y, width, height);
 				} else {
@@ -559,7 +560,11 @@ namespace MonoDevelop.Ide.Gui
 					normalBounds = memento.Bounds;
 					Move (normalBounds.X, normalBounds.Y);
 					Resize (normalBounds.Width, normalBounds.Height);
-					// HACK: GdkWindow.State is always Maximized on OSX
+					
+					// HACK: don't restore Gdk.WindowState.Maximized on OS X, because there's a bug in 
+					// GdkWindow.State that means it doesn't reflect the real state, it only reflects values set
+					// internally by GTK e.g. by Maximize calls. Because MD restores state, if it ever becomes 
+					// Maximized it becomes "stuck" and it's difficult for the user to make it "normal".
 					if (memento.WindowState == Gdk.WindowState.Maximized && !PropertyService.IsMac) {
 						Maximize ();
 					} else if (memento.WindowState == Gdk.WindowState.Iconified) {

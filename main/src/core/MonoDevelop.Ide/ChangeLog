@@ -1,3 +1,8 @@
+2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.Gui/DefaultWorkbench.cs: Better comments
+	  about OS X hacks.
+
 2010-07-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:
