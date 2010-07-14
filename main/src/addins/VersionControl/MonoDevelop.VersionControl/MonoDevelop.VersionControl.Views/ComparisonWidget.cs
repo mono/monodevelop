@@ -39,10 +39,10 @@ namespace MonoDevelop.VersionControl.Views
 {
 	public class ComparisonWidget : Bin
 	{
-		Adjustment vAdjustment;
+		Adjustment vAdjustment, leftVAdjustment, rightVAdjustment;
 		Gtk.VScrollbar vScrollBar;
 		
-		Adjustment hAdjustment;
+		Adjustment hAdjustment, leftHAdjustment, rightHAdjustment;
 		Gtk.HScrollbar leftHScrollBar, rightHScrollBar;
 		Gtk.Button next, prev;
 		
@@ -94,12 +94,46 @@ namespace MonoDevelop.VersionControl.Views
 		{
 		}
 		
+		void Connect (Adjustment fromAdj, Adjustment toAdj)
+		{
+			fromAdj.Changed += AdjustmentChanged;
+			fromAdj.ValueChanged += delegate {
+				if (toAdj.Value != fromAdj.Value)
+					toAdj.Value = fromAdj.Value;
+			};
+			
+			toAdj.ValueChanged += delegate {
+				if (toAdj.Value != fromAdj.Value)
+					fromAdj.Value = toAdj.Value;
+			};
+		}
+		
+		void AdjustmentChanged (object sender, EventArgs e)
+		{
+			vAdjustment.SetBounds (Math.Min (leftVAdjustment.Lower, rightVAdjustment.Lower), 
+				Math.Max (leftVAdjustment.Upper, rightVAdjustment.Upper),
+				leftVAdjustment.StepIncrement,
+				leftVAdjustment.PageIncrement,
+				leftVAdjustment.PageSize);
+			hAdjustment.SetBounds (Math.Min (leftHAdjustment.Lower, rightHAdjustment.Lower), 
+				Math.Max (leftHAdjustment.Upper, rightHAdjustment.Upper),
+				leftHAdjustment.StepIncrement,
+				leftHAdjustment.PageIncrement,
+				leftHAdjustment.PageSize);
+		}
+
+
 		VersionControlDocumentInfo info;
 		public ComparisonWidget (VersionControlDocumentInfo info)
 		{
 			this.info = info;
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
+			leftVAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+			Connect (leftVAdjustment, vAdjustment);
+			
+			rightVAdjustment =  new Adjustment (0, 0, 0, 0, 0, 0);
+			Connect (rightVAdjustment, vAdjustment);
 			
 			vScrollBar = new VScrollbar (vAdjustment);
 			AddChild (vScrollBar);
@@ -107,6 +141,11 @@ namespace MonoDevelop.VersionControl.Views
 			
 			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			hAdjustment.Changed += HandleAdjustmentChanged;
+			leftHAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+			Connect (leftHAdjustment, hAdjustment);
+			
+			rightHAdjustment =  new Adjustment (0, 0, 0, 0, 0, 0);
+			Connect (rightHAdjustment, hAdjustment);
 			
 			leftHScrollBar = new HScrollbar (hAdjustment);
 			AddChild (leftHScrollBar);
@@ -114,12 +153,11 @@ namespace MonoDevelop.VersionControl.Views
 			rightHScrollBar = new HScrollbar (hAdjustment);
 			AddChild (rightHScrollBar);
 			
-			
 			originalEditor = new TextEditor ();
 			originalEditor.Caret.PositionChanged += CaretPositionChanged;
 			originalEditor.FocusInEvent += EditorFocusIn;
 			AddChild (originalEditor);
-			originalEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
+			originalEditor.SetScrollAdjustments (leftHAdjustment, leftVAdjustment);
 			
 			originalComboBox = new DropDownBox ();
 			originalComboBox.WindowRequestFunc = CreateComboBoxSelector;
@@ -133,7 +171,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			AddChild (diffEditor);
 			diffEditor.Document.ReadOnly = true;
-			diffEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
+			diffEditor.SetScrollAdjustments (leftHAdjustment, leftVAdjustment);
 			this.vAdjustment.ValueChanged += delegate {
 				middleArea.QueueDraw ();
 			};
@@ -205,6 +243,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffEditor.ExposeEvent += HandleRightEditorExposeEvent;
 			info.Document.TextEditorData.Document.TextReplaced += HandleInfoDocumentTextEditorDataDocumentTextReplaced;
 		}
+
 
 		internal static void EditorFocusIn (object sender, FocusInEventArgs args)
 		{

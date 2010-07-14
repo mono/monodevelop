@@ -1,5 +1,11 @@
 2010-07-14  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Worked
+	  on adjustments. (text editors no longer share a common
+	  adjustment - instead they communicate)
+
+2010-07-14  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Fixed
 	  the overview renderer click position.
 
