@@ -15,8 +15,10 @@ DEPS =  \
 
 REFS = $(MONO_ADDINS_LIBS)
 
+ICON = $(top_builddir)/theme-icons/Windows/monodevelop.ico
+
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -out:$@ $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -win32icon:$(ICON) -out:$@ $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 	cp $(srcdir)/app.config $(ASSEMBLY).config
