@@ -495,6 +495,12 @@ namespace Mono.TextEditor.Highlighting
 			SetStyleFromWeb ("bubble.inactive.error.dark.color2", "#ebe8e6");
 			SetStyleFromWeb ("bubble.inactive.error.line.top", "#f2f2f2");
 			SetStyleFromWeb ("bubble.inactive.error.line.bottom", "#eceaea");
+			
+			//regions in ASP.NET, T4, etc.
+			SetStyle ("template",           "text");
+			SetStyle ("template.tag",       "constant.language");
+			SetStyle ("template.directive", "constant.language");
+			
 		}
 		
 		protected void PopulateDefaults ()
@@ -547,6 +553,10 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("keyword.declaration", 165,  42,  42, BOLD);
 			SetStyle ("keyword.parameter",   165,  42,  42, BOLD);
 			SetStyle ("keyword.misc",        165,  42,  42, BOLD);
+			
+			SetStyle ("template.directive", 0x6A, 0x5A, 0xCD, 0xF0, 0xF0, 0xD0);
+			SetStyle ("template",           0x6A, 0x5A, 0xCD, 0xF0, 0xF0, 0xD0);
+			SetStyle ("template.tag",       0x00, 0x00, 0x00, 0xF0, 0xF0, 0xD0);
 		}
 		
 		const ChunkProperties BOLD   = ChunkProperties.Bold;

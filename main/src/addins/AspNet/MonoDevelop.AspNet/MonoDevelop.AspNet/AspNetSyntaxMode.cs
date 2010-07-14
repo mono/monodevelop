@@ -71,8 +71,8 @@ namespace MonoDevelop.AspNet
 					Rule = "mode:" + language;
 					Begin = new Regex ("<%");
 					End = new Regex ("<%");
-					Color = "text";
-					TagColor = "text.markup.tag";
+					Color = "template";
+					TagColor = "template.tag";
 				}
 			}
 			
@@ -141,7 +141,7 @@ namespace MonoDevelop.AspNet
 					var span = new CodeExpressionSpan (GetDefaultMime ());
 					spanStack.Push (span);
 					ruleStack.Push (GetRule (span));
-					OnFoundSpanBegin (span, i, doc.GetCharAt (i + 2) == '=' ? 3 : 2);
+					OnFoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0? 3 : 2);
 					return;
 				}
 				

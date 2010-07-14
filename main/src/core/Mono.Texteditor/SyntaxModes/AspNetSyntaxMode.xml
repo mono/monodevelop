@@ -25,7 +25,7 @@
  
 <SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ashx;application/x-ascx;application/x-master-page">
 	<!-- directives -->
-	<Span color = "constant.language" rule = "InTag">
+	<Span color = "template.tag" tagColor="template.tag" rule = "InTag">
 		<Begin>&lt;%@</Begin>
 		<End>%&gt;</End>
 	</Span>
@@ -42,7 +42,7 @@
 	</Span>
 	
 	<!-- expressions -->
-	<Span color = "constant.language">
+	<Span color = "template" tagColor="template.tag">
 		<Begin>&lt;%</Begin>
 		<End>%&gt;</End>
 	</Span>
@@ -98,7 +98,7 @@
 		</Span>
 	
 		<!-- expressions -->
-		<Span color = "constant.language">
+		<Span color = "template" tagColor="template.tag">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>
@@ -113,7 +113,7 @@
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "constant.language">
+		<Span color = "template" tagColor="template.tag">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>

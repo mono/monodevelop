@@ -29,30 +29,30 @@
 </Begin>
 		<End>qkl6ynrv7y234crtnq238rtxck3</End>
 	</Span>
-	<Span color = "text.markup" rule = "directive">
+	<Span color = "template.directive" tagColor="template.directive" rule = "directive">
 		<Begin>&lt;#@</Begin>
 		<End>#&gt;</End>
 	</Span>
 
 	<Rule name="t4">
 		<!-- directives -->
-		<Span color = "text.markup" rule = "directive">
+		<Span color = "template.region" tagColor="template.tag" rule = "directive">
 			<Begin>&lt;#@</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
 		<!-- expressions -->
-		<Span tagColor = "keyword.declaration" color="text" rule = "csharp">
+		<Span tagColor = "keyword.declaration" color = "template" tagColor="template.tag" rule = "csharp">
 			<Begin>&lt;#=</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span tagColor = "keyword.declaration" color="text" rule = "csharp">
+		<Span tagColor = "keyword.declaration" color = "template" tagColor="template.tag" rule = "csharp">
 			<Begin>&lt;#+</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span tagColor = "keyword.declaration" color="text" rule = "csharp">
+		<Span tagColor = "keyword.declaration" color = "template" tagColor="template.tag" rule = "csharp">
 			<Begin>&lt;#</Begin>
 			<End>#&gt;</End>
 		</Span>

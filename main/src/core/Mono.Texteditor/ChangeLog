@@ -1,3 +1,9 @@
+2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* SyntaxModes/AspNetSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/Style.cs: Added styles for
+	  templated regions in files, e.g. ASP.NET and T4.
+
 2010-07-13  Mike Krüger  <mkrueger@novell.com>
 
 	* Makefile.am:

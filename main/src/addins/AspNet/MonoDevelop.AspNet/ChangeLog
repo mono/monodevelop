@@ -1,3 +1,8 @@
+2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.AspNet/AspNetSyntaxMode.cs: Added styles for
+	  templated regions in files, e.g. ASP.NET and T4.
+
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Html/HtmlParser.cs:
