@@ -116,6 +116,8 @@ namespace MonoDevelop.VersionControl.Views
 			
 			
 			originalEditor = new TextEditor ();
+			originalEditor.Caret.PositionChanged += CaretPositionChanged;
+			originalEditor.FocusInEvent += EditorFocusIn;
 			AddChild (originalEditor);
 			originalEditor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			
@@ -126,6 +128,8 @@ namespace MonoDevelop.VersionControl.Views
 			AddChild (originalComboBox);
 			
 			diffEditor = new TextEditor ();
+			diffEditor.Caret.PositionChanged += CaretPositionChanged;
+			diffEditor.FocusInEvent += EditorFocusIn;
 			
 			AddChild (diffEditor);
 			diffEditor.Document.ReadOnly = true;
@@ -201,7 +205,31 @@ namespace MonoDevelop.VersionControl.Views
 			diffEditor.ExposeEvent += HandleRightEditorExposeEvent;
 			info.Document.TextEditorData.Document.TextReplaced += HandleInfoDocumentTextEditorDataDocumentTextReplaced;
 		}
+
+		internal static void EditorFocusIn (object sender, FocusInEventArgs args)
+		{
+			TextEditor editor = (TextEditor)sender;
+			UpdateCaretPosition (editor.Caret);
+		}
+
+		internal static void CaretPositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			Caret caret = (Caret)sender;
+			UpdateCaretPosition (caret);
+		}
 		
+		static void UpdateCaretPosition (Caret caret)
+		{
+			int offset = caret.Offset;
+			if (offset < 0 || offset > caret.TextEditorData.Document.Length)
+				return;
+			DocumentLocation location = caret.TextEditorData.LogicalToVisualLocation (caret.Location);
+			IdeApp.Workbench.StatusBar.ShowCaretState (caret.Line + 1,
+			                                           location.Column + 1,
+			                                           caret.TextEditorData.IsSomethingSelected ? caret.TextEditorData.SelectionRange.Length : 0,
+			                                           caret.IsInInsertMode);
+		}
+
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
 		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)

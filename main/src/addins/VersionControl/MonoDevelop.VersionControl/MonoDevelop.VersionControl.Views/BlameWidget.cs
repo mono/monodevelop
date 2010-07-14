@@ -120,6 +120,8 @@ namespace MonoDevelop.VersionControl.Views
 			editor.EditorOptionsChanged += delegate {
 				overview.OptionsChanged ();
 			};
+			editor.Caret.PositionChanged += ComparisonWidget.CaretPositionChanged;
+			editor.FocusInEvent += ComparisonWidget.EditorFocusIn;
 		}
 
 		void HandleAdjustmentChanged (object sender, EventArgs e)
