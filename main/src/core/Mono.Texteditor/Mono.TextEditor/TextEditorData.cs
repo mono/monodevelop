@@ -88,6 +88,9 @@ namespace Mono.TextEditor
 		
 		public TextEditorData (Document doc)
 		{
+			caret = new Caret (this);
+			caret.PositionChanged += CaretPositionChanged;
+			
 			options = TextEditorOptions.DefaultOptions;
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
@@ -106,8 +109,6 @@ namespace Mono.TextEditor
 			}
 			set {
 				this.document = value;
-				caret = new Caret (this, document);
-				caret.PositionChanged += CaretPositionChanged;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
 				
@@ -239,7 +240,10 @@ namespace Mono.TextEditor
 				// DOCUMENT MUST NOT BE DISPOSED !!! (Split View shares document)
 				document = null;
 			}
-			caret = caret.Kill (x => x.PositionChanged -= CaretPositionChanged);
+			if (caret != null) {
+				caret.PositionChanged -= CaretPositionChanged;
+				caret = null;
+			}
 			SelectionChanging -= HandleSelectionChanging;
 		}
 		
