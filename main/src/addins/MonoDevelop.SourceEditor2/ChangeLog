@@ -1,3 +1,10 @@
+2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.SourceEditor/SourceEditorView.cs: Unsubscribe
+	  the recently added file change events, check if the widget's
+	  disposed to avoid NRE, and avoid an unnecessary closure
+	  creation.
+
 2010-07-13  Levi Bard <levi@unity3d.com>
 
 	* MonoDevelop.SourceEditor/SourceEditorView.cs:

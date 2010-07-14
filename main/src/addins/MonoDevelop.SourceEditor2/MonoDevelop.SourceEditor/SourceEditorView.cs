@@ -73,6 +73,7 @@ namespace MonoDevelop.SourceEditor
 		EventHandler<BreakpointEventArgs> breakpointAdded;
 		EventHandler<BreakpointEventArgs> breakpointRemoved;
 		EventHandler<BreakpointEventArgs> breakpointStatusChanged;
+		EventHandler<FileEventArgs> fileChanged;
 		
 		List<LineSegment> breakpointSegments = new List<LineSegment> ();
 		LineSegment debugStackSegment;
@@ -189,8 +190,11 @@ namespace MonoDevelop.SourceEditor
 			fileSystemWatcher = new FileSystemWatcher ();
 			fileSystemWatcher.Created += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
 			fileSystemWatcher.Changed += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			FileService.FileCreated += (sender,args) => DispatchService.GuiDispatch (() => GotFileChanged (sender, args));
-			FileService.FileChanged += (sender,args) => DispatchService.GuiDispatch (() => GotFileChanged (sender, args));
+			
+			fileChanged = DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (GotFileChanged));
+			FileService.FileCreated += fileChanged;
+			FileService.FileChanged += fileChanged;
+			
 			this.WorkbenchWindowChanged += delegate {
 				if (WorkbenchWindow != null) {
 					WorkbenchWindow.ActiveViewContentChanged += delegate {
@@ -540,6 +544,9 @@ namespace MonoDevelop.SourceEditor
 			TaskService.Errors.TasksChanged -= UpdateTasks;
 			TaskService.JumpedToTask -= HandleTaskServiceJumpedToTask;
 			
+			FileService.FileCreated -= fileChanged;
+			FileService.FileChanged -= fileChanged;
+			
 			// This is not necessary but helps when tracking down memory leaks
 			
 			debugStackLineMarker = null;
@@ -571,7 +578,8 @@ namespace MonoDevelop.SourceEditor
 		
 		void GotFileChanged (object sender, FileEventArgs args)
 		{
-			ShowFileChangedWarning (args.FileName);
+			if (!isDisposed)
+				ShowFileChangedWarning (args.FileName);
 		}
 		
 		void OnFileChanged (object sender, FileSystemEventArgs args)
