@@ -191,7 +191,8 @@ namespace MonoDevelop.XmlEditor.Gui
 		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 			int pos = completionContext.TriggerOffset;
-			if (pos > 0 && CompletionWidget.GetChar (pos - 1) == completionChar) {
+			char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
+			if (pos > 0 && ch == completionChar) {
 				tracker.UpdateEngine ();
 				return HandleCodeCompletion ((CodeCompletionContext) completionContext, 
 				                             false, ref triggerWordLength);
