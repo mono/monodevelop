@@ -39,7 +39,6 @@ namespace MonoDevelop.Ide.Gui
 		IBookmarkBuffer bookmarkBuffer;
 		IEditableTextBuffer textBuffer;
 		IEncodedTextContent encodedTextContent;
-		ICompletionWidget completionWidget;
 		IClipboardHandler clipboardHandler;
 		string newLine = null;
 		// All line and column numbers are 1-based
@@ -54,7 +53,6 @@ namespace MonoDevelop.Ide.Gui
 			ed.textBuffer = tb;
 			ed.bookmarkBuffer = content.GetContent<IBookmarkBuffer> ();
 			ed.encodedTextContent = content.GetContent<IEncodedTextContent> ();
-			ed.completionWidget = content.GetContent<ICompletionWidget> ();
 			ed.clipboardHandler = content.GetContent<IClipboardHandler> ();
 			return ed;
 		}
@@ -325,15 +323,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			throw new System.ArgumentException (ch.ToString (), "ch");
 		}
-	
-		public CodeCompletionContext CurrentCodeCompletionContext {
-			get {
-				if (completionWidget == null)
-					return null;
-				return completionWidget.CreateCodeCompletionContext (this.CursorPosition);
-			}
-		}
-		
+
 		public int SearchChar (int startPos, char searchChar)
 		{
 			bool isInString = false, isInChar = false, isVerbatimString = false;

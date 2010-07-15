@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static List<MethodData> methods = new List<MethodData> ();
 		static ParameterInformationWindow window;
 		
-		public static CodeCompletionContext CurrentCodeCompletionContext { get; set; }
+		public static ICompletionWidget CompletionWidget { get; set; }
 		
 		public static bool IsWindowVisible {
 			get { return methods.Count > 0; }
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				// information window for that method.
 				
 				MethodData md = methods [n];
-				int pos = md.MethodProvider.GetCurrentParameterIndex (md.CompletionContext);
+				int pos = md.MethodProvider.GetCurrentParameterIndex (CompletionWidget, md.CompletionContext);
 				if (pos == -1) {
 					methods.RemoveAt (n);
 					n--;
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateWindow ();
 		}
 		
-		public static void ShowWindow (CodeCompletionContext ctx, IParameterDataProvider provider)
+		public static void ShowWindow (ICompletionWidget widget, CodeCompletionContext ctx, IParameterDataProvider provider)
 		{
 			if (provider.OverloadCount == 0)
 				return;
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			md.MethodProvider = provider;
 			md.CurrentOverload = 0;
 			md.CompletionContext = ctx;
-			CurrentCodeCompletionContext = ctx;
+			CompletionWidget = widget;
 			methods.Add (md);
 			UpdateWindow ();
 		}
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// look for another overload with more parameters.
 			
 			MethodData md = methods [methods.Count - 1];
-			int cparam = md.MethodProvider.GetCurrentParameterIndex (md.CompletionContext);
+			int cparam = md.MethodProvider.GetCurrentParameterIndex (CompletionWidget, md.CompletionContext);
 			
 			if (cparam > md.MethodProvider.GetParameterCount (md.CurrentOverload)) {
 				// Look for an overload which has more parameters
@@ -190,17 +190,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return;
 			}
-			
+			var ctx = CompletionWidget.CurrentCodeCompletionContext;
 			MethodData md = methods[methods.Count - 1];
-			int cparam = md.MethodProvider.GetCurrentParameterIndex (md.CompletionContext);
+			int cparam = md.MethodProvider.GetCurrentParameterIndex (CompletionWidget, md.CompletionContext);
 			Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1);
 			X = md.CompletionContext.TriggerXCoord;
 			if (CompletionWindowManager.IsVisible) {
 				// place above
-				Y = CurrentCodeCompletionContext.TriggerYCoord - md.CompletionContext.TriggerTextHeight - reqSize.Height - 10;
+				Y = ctx.TriggerYCoord - ctx.TriggerTextHeight - reqSize.Height - 10;
 			} else {
 				// place below
-				Y = CurrentCodeCompletionContext.TriggerYCoord;
+				Y = ctx.TriggerYCoord;
 			}
 			
 			Gdk.Rectangle geometry = window.Screen.GetMonitorGeometry (window.Screen.GetMonitorAtPoint (X, Y));
@@ -209,10 +209,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				X = geometry.Right - reqSize.Width;
 			
 			if (Y < geometry.Top)
-				Y = CurrentCodeCompletionContext.TriggerYCoord;
+				Y = ctx.TriggerYCoord;
 			
 			if (wasAbove || Y + reqSize.Height > geometry.Bottom) {
-				Y = Y - CurrentCodeCompletionContext.TriggerTextHeight - reqSize.Height - 4;
+				Y = Y - ctx.TriggerTextHeight - reqSize.Height - 4;
 				wasAbove = true;
 			}
 			

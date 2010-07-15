@@ -1,3 +1,16 @@
+2010-07-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs:
+	* MonoDevelop.Ide.CodeCompletion/ICompletionWidget.cs:
+	* MonoDevelop.Ide.CodeCompletion/IParameterDataProvider.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	* MonoDevelop.Ide.CodeCompletion/ParameterInformationWindowManager.cs:
+	  Worked on 'Bug 621658 - Parameter hints disappear
+	  afterkeystroke'.
+
 2010-07-14  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Ide/Ide.cs:

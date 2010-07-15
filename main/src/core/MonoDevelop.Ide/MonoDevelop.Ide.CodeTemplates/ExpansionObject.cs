@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
 				if (list == null)
-					list = ext.CodeCompletionCommand (CurrentContext.Document.TextEditor.CurrentCodeCompletionContext);
+					list = ext.CodeCompletionCommand (CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
 				
 				foreach (object o in list) {
 					MonoDevelop.Ide.CodeCompletion.MemberCompletionData data = o as MonoDevelop.Ide.CodeCompletion.MemberCompletionData;

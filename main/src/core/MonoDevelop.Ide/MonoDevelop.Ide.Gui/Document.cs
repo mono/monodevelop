@@ -136,16 +136,22 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window.ViewContent.Project; }
 		}
 		
-		ProjectDom fileDom;
+		ProjectDom dom;
+		bool isFileDom;
 		public ProjectDom Dom {
 			get {
-				ProjectDom result = ProjectDomService.GetProjectDom (Project);
-				if (result != null)
-					return result;
-				
-				if (fileDom == null) 
-					fileDom = ProjectDomService.GetFileDom (FileName);
-				return fileDom ?? ProjectDom.Empty;
+				if (dom == null) {
+					isFileDom = false;
+					dom = ProjectDomService.GetProjectDom (Project);
+					if (dom == null) {
+						dom = ProjectDomService.GetFileDom (FileName);
+						isFileDom = true;
+					}
+				}
+				return dom ?? ProjectDom.Empty;
+			}
+			set {
+				dom = value;
 			}
 		}
 		
@@ -416,9 +422,9 @@ namespace MonoDevelop.Ide.Gui
 					ProjectDomService.Parse (curentParseProject, currentParseFile);
 				});
 			}
-			if (fileDom != null) {
+			if (isFileDom) {
 				ProjectDomService.RemoveFileDom (FileName);
-				fileDom = null;
+				dom = null;
 			}
 			
 			Counters.OpenDocuments--;

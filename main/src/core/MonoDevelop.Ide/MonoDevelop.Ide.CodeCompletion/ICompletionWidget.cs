@@ -33,6 +33,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 {
 	public interface ICompletionWidget
 	{
+		CodeCompletionContext CurrentCodeCompletionContext {
+			get;
+		}
+		
 		int TextLength { get; }
 		int SelectedLength { get; }
 		string GetText (int startOffset, int endOffset);

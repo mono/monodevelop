@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Content
 {
 	public class TextEditorExtension : ITextEditorExtension, ICommandRouter
 	{
-		internal Document document;
+		internal protected Document document;
 		
 		internal protected void Initialize (Document document)
 		{
