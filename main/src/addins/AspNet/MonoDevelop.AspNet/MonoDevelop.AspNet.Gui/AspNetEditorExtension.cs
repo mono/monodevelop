@@ -88,7 +88,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (HasDoc)
 				refman.Doc = aspDoc;
 			
-			documentBuilder = HasDoc? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
+			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			if (documentBuilder != null) {
 				var usings = refman.GetUsings ();
@@ -126,6 +126,7 @@ namespace MonoDevelop.AspNet.Gui
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
 			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
+			
 			
 			//directive names
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
@@ -166,11 +167,6 @@ namespace MonoDevelop.AspNet.Gui
 				DocType.Uri = matches.Groups["uri"].Value;
 			}
 			
-			//completion for ASP.NET expressions
-			if (localDocumentInfo != null) {
-				return documentBuilder.HandleCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, currentChar, ref triggerWordLength);
-			}
-			
 			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
 				var el = Tracker.Engine.Nodes.Peek () as S.XElement;
 				if (el != null) {
@@ -205,13 +201,15 @@ namespace MonoDevelop.AspNet.Gui
 				.FirstOrDefault ();
 		}
 		
-		public void InitializeCodeCompletion ()
+		public void InitializeCodeCompletion (char ch)
 		{
 			int caretOffset = Document.TextEditorData.Caret.Offset;
 			int start = caretOffset - Tracker.Engine.CurrentStateLength;
 			if (Document.TextEditor.GetCharAt (start) == '=') 
 				start++;
 			string sourceText = Document.TextEditor.GetText (start, caretOffset);
+			if (ch != '\0')
+				sourceText += ch;
 			string textAfterCaret = Document.TextEditor.GetText (caretOffset, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start));
 			
 			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
@@ -242,7 +240,7 @@ namespace MonoDevelop.AspNet.Gui
 			//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
-				InitializeCodeCompletion ();
+				InitializeCodeCompletion ('\0');
 				return documentBuilder.HandlePopupCompletion (defaultDocument, documentInfo, localDocumentInfo);
 			}
 			return base.CodeCompletionCommand (completionContext);
@@ -256,27 +254,37 @@ namespace MonoDevelop.AspNet.Gui
 			base.Initialize ();
 			defaultCompletionWidget = CompletionWidget;
 			defaultDocument = document;
-			defaultDocument.TextEditorData.Caret.PositionChanged += delegate {
+/*			defaultDocument.TextEditorData.Caret.PositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
-			};
+			};*/
 		}
 		
+		
+		public override ICompletionDataList HandleCodeCompletion (
+		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		{
+			if (localDocumentInfo == null)
+				return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
+			
+			return documentBuilder.HandleCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
+		}
+
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			bool isAspExprState =  Tracker.Engine.CurrentState is AspNetExpressionState;
-			if (documentBuilder != null && isAspExprState)
-				InitializeCodeCompletion ();
-			if (localDocumentInfo == null)
+			Tracker.UpdateEngine ();
+			bool isAspExprState = Tracker.Engine.CurrentState is AspNetExpressionState;
+			if (documentBuilder == null || !isAspExprState)
 				return base.KeyPress (key, keyChar, modifier);
-			
+			InitializeCodeCompletion ('\0');
 			document = localDocumentInfo.HiddenDocument;
 			CompletionWidget = documentBuilder.CreateCompletionWidget (defaultDocument, localDocumentInfo);
 			bool result;
 			try {
 				result = base.KeyPress (key, keyChar, modifier);
-				
-				if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ()) 
+				if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ()) {
+					Console.WriteLine ("run parameter completion !!!");
 					RunParameterCompletionCommand ();
+				}
 			} finally {
 				document = defaultDocument;
 				CompletionWidget = defaultCompletionWidget;
