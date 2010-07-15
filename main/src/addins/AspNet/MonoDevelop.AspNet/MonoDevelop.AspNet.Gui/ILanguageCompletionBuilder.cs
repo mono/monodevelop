@@ -54,6 +54,40 @@ namespace MonoDevelop.AspNet.Gui
 		public string LocalDocument { get; set; }
 		public ParsedDocument ParsedLocalDocument { get; set; }
 		public int CaretPosition { get; set; }
+		public int OriginalCaretPosition { get; set; }
+		public MonoDevelop.Ide.Gui.Document HiddenDocument { get; set; }
+		
+		public List<OffsetInfo> OffsetInfos = new List<OffsetInfo> ();
+		
+		public class OffsetInfo 
+		{
+			public int FromOffset {
+				get;
+				private set;
+			}
+
+			public int ToOffset {
+				get;
+				private set;
+			}
+
+			public int Length {
+				get;
+				private set;
+			}
+			
+			public OffsetInfo (int fromOffset, int toOffset, int length)
+			{
+				this.FromOffset = fromOffset;
+				this.ToOffset = toOffset;
+				this.Length = length;
+			}
+		}
+		
+		public void AddTextPosition (int fromOffset, int toOffset, int length)
+		{
+			OffsetInfos.Add (new OffsetInfo (fromOffset, toOffset, length));
+		}
 	}
 	
 	/// <summary>
@@ -141,15 +175,14 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ParsedDocument BuildDocument (DocumentInfo info, TextEditorData textEditorData);
 		
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, string textAfterCaret, 
-			bool isExpression);
+		ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo);
 		
-		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info, 
-			LocalDocumentInfo localInfo, ProjectDom dom);
-		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info, 
-			LocalDocumentInfo localInfo, ProjectDom dom, char currentChar, ref int triggerWordLength);
-		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document document, DocumentInfo info,
-			LocalDocumentInfo localInfo, ProjectDom dom, char completionChar);
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, string textAfterCaret, bool isExpression);
+		
+		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo);
+		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
+		IParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
+		bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
 	}
 	
 	public static class LanguageCompletionBuilderService

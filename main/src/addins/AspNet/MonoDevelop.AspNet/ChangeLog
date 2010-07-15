@@ -1,3 +1,9 @@
+2010-07-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:
+	* MonoDevelop.AspNet.Gui/ILanguageCompletionBuilder.cs: Worked
+	  on 'Bug 621658 - Parameter hints disappear afterkeystroke'.
+
 2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.AspNet/AspNetSyntaxMode.cs: Added styles for

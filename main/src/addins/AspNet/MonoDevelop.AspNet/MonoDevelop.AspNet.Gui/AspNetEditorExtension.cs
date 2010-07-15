@@ -95,6 +95,9 @@ namespace MonoDevelop.AspNet.Gui
 				documentInfo = new DocumentInfo (aspDoc, usings, refman.GetDoms ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, TextEditorData);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
+				domWrapper = new AspProjectDomWrapper (documentInfo);
+				if (localDocumentInfo != null)
+					localDocumentInfo.HiddenDocument.Dom = domWrapper;
 			}
 		}
 		
@@ -112,7 +115,6 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		ILanguageCompletionBuilder documentBuilder;
-		MonoDevelop.Ide.Gui.Document hiddenDocument;
 		LocalDocumentInfo localDocumentInfo;
 		DocumentInfo documentInfo;
 		
@@ -165,10 +167,8 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			
 			//completion for ASP.NET expressions
-			if (documentBuilder != null && isAspExprState) {
-				InitializeCodeCompletion ();
-				return documentBuilder.HandleCompletion (hiddenDocument, documentInfo, localDocumentInfo, 
-					 new AspProjectDomWrapper (documentInfo), currentChar, ref triggerWordLength);
+			if (localDocumentInfo != null) {
+				return documentBuilder.HandleCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, currentChar, ref triggerWordLength);
 			}
 			
 			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
@@ -211,9 +211,8 @@ namespace MonoDevelop.AspNet.Gui
 			int start = caretOffset - Tracker.Engine.CurrentStateLength;
 			if (Document.TextEditor.GetCharAt (start) == '=') 
 				start++;
-			
 			string sourceText = Document.TextEditor.GetText (start, caretOffset);
-			string textAfterCaret = Document.TextEditor.GetText (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start);
+			string textAfterCaret = Document.TextEditor.GetText (caretOffset, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start));
 			
 			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
 			var docLoc = Document.TextEditorData.Document.OffsetToLocation (start);
@@ -231,9 +230,10 @@ namespace MonoDevelop.AspNet.Gui
 
 			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
-			hiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow);
-			
-			hiddenDocument.ParsedDocument = localDocumentInfo.ParsedLocalDocument;
+			localDocumentInfo.HiddenDocument = new MonoDevelop.Ide.Gui.Document (workbenchWindow) {
+				ParsedDocument = localDocumentInfo.ParsedLocalDocument,
+				Dom = domWrapper
+			};
 		}
 		
 		
@@ -243,20 +243,83 @@ namespace MonoDevelop.AspNet.Gui
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
 				InitializeCodeCompletion ();
-				return documentBuilder.HandlePopupCompletion (hiddenDocument, documentInfo, localDocumentInfo, new AspProjectDomWrapper (documentInfo));
+				return documentBuilder.HandlePopupCompletion (defaultDocument, documentInfo, localDocumentInfo);
 			}
 			return base.CodeCompletionCommand (completionContext);
 		}
 		
+		ICompletionWidget defaultCompletionWidget;
+		MonoDevelop.Ide.Gui.Document defaultDocument;
+		AspProjectDomWrapper domWrapper;
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			defaultCompletionWidget = CompletionWidget;
+			defaultDocument = document;
+			defaultDocument.TextEditorData.Caret.PositionChanged += delegate {
+				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
+			};
+		}
+		
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		{
+			bool isAspExprState =  Tracker.Engine.CurrentState is AspNetExpressionState;
+			if (documentBuilder != null && isAspExprState)
+				InitializeCodeCompletion ();
+			if (localDocumentInfo == null)
+				return base.KeyPress (key, keyChar, modifier);
+			
+			document = localDocumentInfo.HiddenDocument;
+			CompletionWidget = documentBuilder.CreateCompletionWidget (defaultDocument, localDocumentInfo);
+			bool result;
+			try {
+				result = base.KeyPress (key, keyChar, modifier);
+				
+				if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ()) 
+					RunParameterCompletionCommand ();
+			} finally {
+				document = defaultDocument;
+				CompletionWidget = defaultCompletionWidget;
+			}
+			return result;
+		}
+		
+		public override bool GetParameterCompletionCommandOffset (out int cpos)
+		{
+			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
+				var result = documentBuilder.GetParameterCompletionCommandOffset (defaultDocument, documentInfo, localDocumentInfo, out cpos);
+				return result;
+			}
+			return base.GetParameterCompletionCommandOffset (out cpos);
+		}
+		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null && hiddenDocument != null)
-				return documentBuilder.HandleParameterCompletion (hiddenDocument, documentInfo, localDocumentInfo,
-					new AspProjectDomWrapper (documentInfo), completionChar);
+			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
+				return documentBuilder.HandleParameterCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar);
+			}
 			
 			return base.HandleParameterCompletion (completionContext, completionChar);
 		}
-		
+
+		/*public override void RunParameterCompletionCommand ()
+		{
+			if (localDocumentInfo == null) {
+				base.RunParameterCompletionCommand ();
+				return;
+			}
+			var doc = document;
+			document = localDocumentInfo.HiddenDocument;
+			var cw = CompletionWidget;
+			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo);
+			try {
+				base.RunParameterCompletionCommand ();
+			} finally {
+				document = doc;
+				CompletionWidget = cw;
+			}
+		}*/
+
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			S.XName parentName = GetParentElementName (0);
