@@ -1,3 +1,8 @@
+2010-07-15  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.XmlEditor.Gui/BaseXmlEditorExtension.cs: Fixed
+	  'Bug 621658 - Parameter hints disappear afterkeystroke'.
+
 2010-07-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.XmlEditor.addin.xml: Fix XML parser
