@@ -1177,6 +1177,12 @@ namespace MonoDevelop.Debugger
 		
 		#region ICompletionWidget implementation 
 		
+		CodeCompletionContext ICompletionWidget.CurrentCodeCompletionContext {
+			get {
+				return ((ICompletionWidget)this).CreateCodeCompletionContext (editEntry.Position);
+			}
+		}
+		
 		EventHandler completionContextChanged;
 		
 		event EventHandler ICompletionWidget.CompletionContextChanged {
