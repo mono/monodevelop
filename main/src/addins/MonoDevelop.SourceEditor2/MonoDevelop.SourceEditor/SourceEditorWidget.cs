@@ -442,10 +442,10 @@ namespace MonoDevelop.SourceEditor
 			if (fileName != args.FileName)
 				return;
 			
-			if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) {
-				var editor = TextEditor;
-				if (editor != null)
-					Gtk.Application.Invoke (delegate { editor.TextViewMargin.PurgeLayoutCache (); });
+			if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false) && TextEditor != null) {
+				var margin = TextEditor.TextViewMargin;
+				if (margin != null)
+					Gtk.Application.Invoke (delegate { margin.PurgeLayoutCache (); });
 			}
 			ParsedDocument = args.ParsedDocument;
 		}
