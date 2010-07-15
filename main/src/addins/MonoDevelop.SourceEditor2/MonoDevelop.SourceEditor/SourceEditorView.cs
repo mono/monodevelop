@@ -1272,6 +1272,13 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		
 		#region ICompletionWidget
+		
+		public CodeCompletionContext CurrentCodeCompletionContext {
+			get {
+				return CreateCodeCompletionContext (TextEditor.Caret.Offset);
+			}
+		}
+		
 		public int TextLength {
 			get {
 				return Document.Length;
