@@ -65,7 +65,11 @@ namespace MonoDevelop.Projects.Gui
 			{
 				return null;
 			}
-			
+			public CodeCompletionContext CurrentCodeCompletionContext {
+				get {
+					return null;
+				}
+			}
 			public string GetCompletionText (CodeCompletionContext ctx)
 			{
 				return "";
