@@ -186,7 +186,8 @@ namespace MonoDevelop.CSharp.Completion
 			#region ICompletionWidget implementation
 			public CodeCompletionContext CurrentCodeCompletionContext {
 				get {
-					return CreateCodeCompletionContext (localInfo.CaretPosition);
+					int delta = realDocument.TextEditorData.Caret.Offset - localInfo.OriginalCaretPosition;
+					return CreateCodeCompletionContext (localInfo.CaretPosition + delta);
 				}
 			}
 
@@ -194,12 +195,17 @@ namespace MonoDevelop.CSharp.Completion
 
 			public string GetText (int startOffset, int endOffset)
 			{
-				return localInfo.HiddenDocument.TextEditorData.Document.GetTextBetween (startOffset, endOffset);
+				endOffset = Math.Min (endOffset, localInfo.LocalDocument.Length); 
+				if (endOffset <= startOffset)
+					return "";
+				return localInfo.LocalDocument.Substring (startOffset, endOffset - startOffset);
 			}
 
 			public char GetChar (int offset)
 			{
-				return localInfo.HiddenDocument.TextEditorData.Document.GetCharAt (offset);
+				if (offset < 0 || offset >= localInfo.LocalDocument.Length)
+					return '\0';
+				return localInfo.LocalDocument[offset];
 			}
 
 			public void Replace (int offset, int count, string text)
@@ -234,11 +240,6 @@ namespace MonoDevelop.CSharp.Completion
 			public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 			{
 				CodeCompletionContext translatedCtx = new CodeCompletionContext ();
-				/*int offset = ctx.TriggerOffset;
-				var info = localInfo.OffsetInfos.FirstOrDefault (x => x.FromOffset <= offset && offset < x.FromOffset + x.Length);
-				if (info != null)
-					offset = offset - info.FromOffset + info.ToOffset;
-				*/
 				int offset = localInfo.OriginalCaretPosition + ctx.TriggerOffset - localInfo.CaretPosition;
 				translatedCtx.TriggerOffset = offset;
 				DocumentLocation loc = localInfo.HiddenDocument.TextEditorData.Document.OffsetToLocation (offset);
