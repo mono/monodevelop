@@ -10,7 +10,10 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/NRefactory.dll
 
-REFS = -r:System
+REFS =  \
+	$(GTK_SHARP_LIBS) \
+	-r:System \
+	-r:System.Core
 
 FILES = AspLanguageBuilder.cs
 

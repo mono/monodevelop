@@ -609,7 +609,7 @@ namespace MonoDevelop.CSharp.Completion
 								CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 								NRefactoryParameterDataProvider provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
 								if (provider != null) {
-									int i = provider.GetCurrentParameterIndex (ctx) - 1;
+									int i = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
 									if (i < provider.Methods[0].Parameters.Count) {
 										IType returnType = dom.GetType (provider.Methods[0].Parameters[i].ReturnType);
 										autoSelect = returnType == null || returnType.ClassType != ClassType.Delegate;
@@ -753,7 +753,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (c == '>')
 					chevronDepth++;
 				if (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
-					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (Editor, cpos + 1, startPos);
+					int p = NRefactoryParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, cpos + 1, startPos);
 					if (p != -1) {
 						cpos++;
 						return true;
@@ -790,13 +790,14 @@ namespace MonoDevelop.CSharp.Completion
 			ExpressionResult result = FindExpression (dom, completionContext, -1);
 			if (result == null)
 				return null;
+			
 
 			//DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2);
 			NRefactoryResolver resolver = CreateResolver ();
 
 			if (result.ExpressionContext is ExpressionContext.TypeExpressionContext)
 				result.ExpressionContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (Editor, Document.CompilationUnit, Document.FileName, resolver.CallingType) ?? result.ExpressionContext;
-
+			
 			switch (completionChar) {
 			case '<':
 				if (string.IsNullOrEmpty (result.Expression))
@@ -816,7 +817,6 @@ namespace MonoDevelop.CSharp.Completion
 				if (resolveResult != null) {
 					if (result.ExpressionContext == ExpressionContext.Attribute) {
 						IReturnType returnType = resolveResult.ResolvedType;
-						
 						
 						IType type = resolver.SearchType (result.Expression.Trim () + "Attribute");
 						if (type == null) 
@@ -1206,7 +1206,7 @@ namespace MonoDevelop.CSharp.Completion
 			Dictionary<string, List<MemberCompletionData>> data = new Dictionary<string, List<MemberCompletionData>> ();
 			HashSet<string> namespacesInScope = new HashSet<string> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
-			DomLocation location;
+//			DomLocation location;
 			ICompilationUnit unit;
 			IType declaringType;
 			List<IType> inheritanceTree;
@@ -1292,7 +1292,7 @@ namespace MonoDevelop.CSharp.Completion
 				this.unit = unit;
 				this.dom = dom;
 				this.FullyQualify = false;
-				this.location = location;
+//				this.location = location;
 				this.declaringType = declaringType;
 				completionList.AddKeyHandler (new NegateKeyHandler ());
 				// Get a list of all namespaces in scope

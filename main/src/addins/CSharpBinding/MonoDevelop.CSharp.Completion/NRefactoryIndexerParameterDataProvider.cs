@@ -60,9 +60,9 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		#region IParameterDataProvider implementation
-		public int GetCurrentParameterIndex (CodeCompletionContext ctx)
+		public int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
 		{
-			return NRefactoryParameterDataProvider.GetCurrentParameterIndex (editor, ctx.TriggerOffset, 0);
+			return NRefactoryParameterDataProvider.GetCurrentParameterIndex (widget, ctx.TriggerOffset, 0);
 		}
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
