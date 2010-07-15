@@ -840,6 +840,8 @@ namespace Mono.TextEditor
 
 		internal void DisposeLayoutDict ()
 		{
+			if (layoutDict == null)
+				return;
 			foreach (LayoutDescriptor descr in layoutDict.Values) {
 				descr.Dispose ();
 			}
@@ -849,7 +851,8 @@ namespace Mono.TextEditor
 		public void PurgeLayoutCache ()
 		{
 			DisposeLayoutDict ();
-			chunkDict.Clear ();
+			if (chunkDict != null)
+				chunkDict.Clear ();
 		}
 		
 		class ChunkDescriptor : LineDescriptor

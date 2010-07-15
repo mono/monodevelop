@@ -1,3 +1,7 @@
+2010-07-15  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/TextViewMargin.cs: Added null check.
+
 2010-07-14  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* Mono.TextEditor.Highlighting/Style.cs: Fix colours.
