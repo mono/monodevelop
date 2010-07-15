@@ -765,7 +765,6 @@ namespace MonoDevelop.Ide
 				StringComparer.OrdinalIgnoreCase.Equals (args.FileName, sol.FileName.FullPath)
 			);
 			if (solution != null) {
-				solution.NeedsReload = true;
 				OnCheckWorkspaceItem (solution);
 				return;
 			}
@@ -774,7 +773,6 @@ namespace MonoDevelop.Ide
 				StringComparer.OrdinalIgnoreCase.Equals (args.FileName, proj.FileName.FullPath)
 			);
 			if (project != null) {
-				project.NeedsReload = true;
 				OnCheckProject (project);
 			}
 		}
