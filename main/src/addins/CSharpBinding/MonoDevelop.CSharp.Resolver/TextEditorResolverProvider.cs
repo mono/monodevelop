@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			
 			string txt = data.Document.Text;
-			int wordEnd = offset;
+			int wordEnd = Math.Min (offset, txt.Length - 1);
 			if (txt[wordEnd] == '@')
 				wordEnd++;
 			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))

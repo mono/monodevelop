@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			AddSemanticRule (new HighlightCSharpSemanticRule ());
 		}
 		
-		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
+		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
 		{
 			return new CSharpSpanParser (doc, mode, line, spanStack);
 		}
@@ -269,7 +269,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					LineSegment line = doc.GetLineByOffset (i);
 					
 					bool previousResult = false;
-					foreach (Span span in spanStack.ToArray ().Reverse ()) {
+					foreach (Span span in spanStack) {
 						if (span is IfBlockSpan) {
 							previousResult = ((IfBlockSpan)span).IsValid;
 						}
@@ -340,7 +340,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					IfBlockSpan containingIf = null;
 					if (result) {
 						bool previousResult = false;
-						foreach (Span span in spanStack.ToArray ().Reverse ()) {
+						foreach (Span span in spanStack) {
 							if (span is IfBlockSpan) {
 								containingIf = (IfBlockSpan)span;
 								previousResult = ((IfBlockSpan)span).IsValid;
@@ -423,7 +423,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	//		Span preprocessorSpan;
 	//		Rule preprocessorRule;
 			
-			public CSharpSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
+			public CSharpSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack) : base (doc, mode, line, spanStack)
 			{
 		/*		foreach (Span span in mode.Spans) {
 					if (span.Rule == "text.preprocessor") {

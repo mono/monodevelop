@@ -1,3 +1,9 @@
+2010-07-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs:
+	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
+	  Track API changes.
+
 2010-07-15  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
