@@ -37,7 +37,7 @@ namespace MonoDevelop.AspNet
 {
 	public class AspNetSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
-		SyntaxMode charpMode;
+	//	SyntaxMode charpMode;
 		
 		public AspNetSyntaxMode ()
 		{
@@ -54,14 +54,14 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
+		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
 		{
 			return new ASPNetSpanParser (doc, mode, line, spanStack);
 		}
 
 		protected class ASPNetSpanParser : SpanParser
 		{
-			public ASPNetSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack) : base (doc, mode, line, spanStack)
+			public ASPNetSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack) : base (doc, mode, line, spanStack)
 			{}
 			
 			class CodeExpressionSpan : Span
