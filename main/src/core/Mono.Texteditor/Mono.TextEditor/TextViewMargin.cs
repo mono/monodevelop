@@ -721,7 +721,7 @@ namespace Mono.TextEditor
 				get;
 				private set;
 			}
-			public Mono.TextEditor.Highlighting.Span[] Spans {
+			public Mono.TextEditor.Highlighting.CloneableStack<Mono.TextEditor.Highlighting.Span> Spans {
 				get;
 				private set;
 			}
@@ -736,7 +736,7 @@ namespace Mono.TextEditor
 
 			public bool Equals (LineSegment line, int offset, int length, out bool isInvalid)
 			{
-				isInvalid = MarkerLength != line.MarkerCount || line.StartSpan != Spans;
+				isInvalid = MarkerLength != line.MarkerCount || line.StartSpan.Equals (Spans);
 				return offset == Offset && Length == length && !isInvalid;
 			}
 		}
@@ -980,6 +980,11 @@ namespace Mono.TextEditor
 				set;
 			}
 			
+			public CloneableStack<Mono.TextEditor.Highlighting.Span> EolSpanStack {
+				get;
+				set;
+			}
+			
 			int selectionStartIndex;
 			public int SelectionStartIndex {
 				get { 
@@ -1014,6 +1019,34 @@ namespace Mono.TextEditor
 					Layout = null;
 				}
 			}
+
+			public class BackgroundColor
+			{
+				public readonly Gdk.Color Color;
+				public readonly int FromIdx;
+				public readonly int ToIdx;
+
+				public BackgroundColor (Gdk.Color color, int fromIdx, int toIdx)
+				{
+					this.Color = color;
+					this.FromIdx = fromIdx;
+					this.ToIdx = toIdx;
+				}
+			}
+			
+			List<BackgroundColor> backgroundColors = null;
+			public List<BackgroundColor> BackgroundColors {
+				get {
+					return backgroundColors ?? new List<BackgroundColor> ();
+				}
+			}
+
+			public void AddBackground (Gdk.Color color, int fromIdx, int toIdx)
+			{
+				if (backgroundColors == null)
+					backgroundColors = new List<BackgroundColor> ();
+				BackgroundColors.Add (new BackgroundColor (color, fromIdx, toIdx));
+			}
 		}
 		
 		ChunkStyle SelectionColor {
@@ -1038,6 +1071,7 @@ namespace Mono.TextEditor
 						Console.WriteLine (chunk);
 					}
 				}
+				var spanStack = line.StartSpan;
 				string lineText = textBuilder.ToString ();
 				bool containsPreedit = offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
 				uint preeditLength = 0;
@@ -1054,7 +1088,7 @@ namespace Mono.TextEditor
 				uint oldEndIndex = 0;
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
-
+					spanStack = chunk.SpanStack;
 					foreach (TextMarker marker in line.Markers)
 						chunkStyle = marker.GetStyle (chunkStyle);
 
@@ -1079,7 +1113,15 @@ namespace Mono.TextEditor
 							atts.AddForegroundAttribute (chunkStyle.Color, si, ei);
 							
 							if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
-								atts.AddBackgroundAttribute (chunkStyle.BackgroundColor, si, ei);
+								wrapper.AddBackground (chunkStyle.BackgroundColor, (int)si, (int)ei);
+							} else {
+								foreach (var span in chunk.SpanStack) {
+									var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
+									if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (spanStyle.BackgroundColor)) {
+										wrapper.AddBackground (spanStyle.BackgroundColor, (int)si, (int)ei);
+										break;
+									}
+								}
 							}
 						}, delegate(int start, int end) {
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
@@ -1110,6 +1152,7 @@ namespace Mono.TextEditor
 				}
 				wrapper.LineChars = lineChars;
 				wrapper.Layout.SetText (lineText);
+				wrapper.EolSpanStack = spanStack;
 				atts.AssignTo (wrapper.Layout);
 				atts.Dispose ();
 				int w, h;
@@ -1182,8 +1225,19 @@ namespace Mono.TextEditor
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
 			int width = (int)(layout.PangoWidth / Pango.Scale.PangoScale);
-			
 			int xPos = (int)(pangoPosition / Pango.Scale.PangoScale);
+			
+			if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Document.GetLine(Caret.Line) != line) {
+				foreach (var bg in layout.BackgroundColors) {
+					int x1, x2;
+					x1 = layout.Layout.IndexToPos (bg.FromIdx).X;
+					x2 = layout.Layout.IndexToPos (bg.ToIdx).X;
+					DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, 
+						new Rectangle ((x1 + pangoPosition) / (int)Pango.Scale.PangoScale, y, (x2 - x1) / (int)Pango.Scale.PangoScale + 1, LineHeight),
+						bg.Color, true);
+				}
+			}
+			
 			bool drawBg = true;
 			bool drawText = true;
 			foreach (TextMarker marker in line.Markers) {
@@ -2165,8 +2219,22 @@ namespace Mono.TextEditor
 					lineArea.Width = textEditor.Allocation.Width - lineArea.X;
 				}
 			}
-			if (!isSelectionDrawn)
-				DrawRectangleWithRuler (win, x, lineArea, isEolSelected ? this.SelectionColor.BackgroundColor : defaultBgColor, false);
+
+			if (!isSelectionDrawn) {
+				if (isEolSelected) {
+					DrawRectangleWithRuler (win, x, lineArea, this.SelectionColor.BackgroundColor, false);
+				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
+					foreach (var span in GetLayout (line).EolSpanStack) {
+						var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
+						if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (spanStyle.BackgroundColor)) {
+							DrawRectangleWithRuler (win, x, lineArea, spanStyle.BackgroundColor, false);
+							break;
+						}
+					}
+						
+				}
+			}
+
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);

@@ -262,9 +262,9 @@ namespace Mono.TextEditor
 						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
 						monoDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
 						LineSegment line = data.Document.GetLineByOffset (segment.Offset);
-						Stack<Span> spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+						var spanStack = line.StartSpan.Clone ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
-						this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
+						this.copiedDocument.GetLine (0).StartSpan = spanStack;
 						break;
 					case SelectionMode.Block:
 						isBlockMode = true;
@@ -288,9 +288,9 @@ namespace Mono.TextEditor
 							}
 						}
 						line    = data.Document.GetLine (selection.MinLine);
-						spanStack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+						spanStack = line.StartSpan.Clone ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, line.Offset + startCol);
-						this.copiedDocument.GetLine (0).StartSpan = spanStack.ToArray ();
+						this.copiedDocument.GetLine (0).StartSpan = spanStack;
 						break;
 					}
 				} else {

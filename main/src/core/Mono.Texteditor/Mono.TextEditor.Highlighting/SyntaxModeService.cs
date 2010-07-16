@@ -179,24 +179,10 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, Stack<Span> spanStack, int start, int end)
+		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
 		{
 			SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
 			parser.ParseSpans (start, end - start);
-		}
-		
-		static bool IsEqual (Span[] spans1, Span[] spans2)
-		{
-			if (spans1 == null || spans1.Length == 0) 
-				return spans2 == null || spans2.Length == 0;
-			if (spans2 == null || spans1.Length != spans2.Length)
-				return false;
-			for (int i = 0; i < spans1.Length; i++) {
-				if (spans1[i] != spans2[i]) {
-					return false;
-				}
-			}
-			return true;
 		}
 		
 		static Queue<UpdateWorker> updateQueue = new Queue<UpdateWorker> ();
@@ -231,7 +217,7 @@ namespace Mono.TextEditor.Highlighting
 				ManualResetEvent = new ManualResetEvent (false);
 			}
 			
-			protected void ScanSpansThreaded (Document doc, Rule rule, Stack<Span> spanStack, int start, int end)
+			protected void ScanSpansThreaded (Document doc, Rule rule, CloneableStack<Span> spanStack, int start, int end)
 			{
 				SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
 				parser.ParseSpans (start, end - start);
@@ -252,7 +238,7 @@ namespace Mono.TextEditor.Highlighting
 				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = lineSegment.Iter;
 				if (iter == null || iter.Current == null)
 					return;
-				Stack<Span> spanStack = iter.Current.StartSpan != null ? new Stack<Span> (iter.Current.StartSpan) : new Stack<Span> ();
+				var spanStack = iter.Current.StartSpan.Clone ();
 				try {
 					LineSegment oldLine = iter.Current.Offset > 0 ? doc.GetLineByOffset (iter.Current.Offset - 1) : null;
 					do {
@@ -260,22 +246,19 @@ namespace Mono.TextEditor.Highlighting
 						if (line == null || line.Offset < 0)
 							break;
 						
-						List<Span> spanList = new List<Span> (spanStack.ToArray ());
-						spanList.Reverse ();
-						for (int i = 0; i < spanList.Count; i++) {
-							if (!EndsWithContinuation (spanList[i], oldLine)) {
-								spanList.RemoveAt (i);
-								i--;
-							}
+						CloneableStack<Span> spanList = spanStack.Clone ();
+						while (spanList.Count > 0 && !EndsWithContinuation (spanList.Peek (), oldLine)) {
+							spanList.Pop ();
 						}
-						Span[] newSpans = spanList.ToArray ();
+
 						if (line.Offset > endOffset) {
-							bool equal = IsEqual (line.StartSpan, newSpans);
+							bool equal = line.StartSpan.Equals (spanList);
 							doUpdate |= !equal;
 							if (equal)
 								break;
 						}
-						line.StartSpan = newSpans.Length > 0 ? newSpans : null;
+
+						line.StartSpan = spanList;
 						oldLine = line;
 						Rule rule = mode;
 						if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))

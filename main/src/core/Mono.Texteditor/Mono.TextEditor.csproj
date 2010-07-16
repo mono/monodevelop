@@ -170,6 +170,7 @@
     <Compile Include="Mono.TextEditor.Vi\ViKeyNotation.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViEditorContext.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ModeHelpWindow.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\CloneableStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

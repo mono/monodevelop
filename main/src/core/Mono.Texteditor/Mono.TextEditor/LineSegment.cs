@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {	
@@ -81,13 +82,15 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		Mono.TextEditor.Highlighting.Span[] startSpan = null;
-		public Highlighting.Span[] StartSpan {
+		CloneableStack<Span> startSpan = null;
+		static CloneableStack<Span> emptySpan = new CloneableStack<Span> ();
+
+		public CloneableStack<Span> StartSpan {
 			get {
-				return startSpan;
+				return startSpan ?? emptySpan;
 			}
 			set {
-				startSpan = value != null && value.Length == 0 ? null : value;
+				startSpan = value != null && value.Count == 0 ? null : value;
 			}
 		}
 
@@ -244,7 +247,7 @@ namespace Mono.TextEditor
 		
 		public override string ToString ()
 		{
-			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", this.Offset, this.Length, this.DelimiterLength, StartSpan == null ? "null" : StartSpan.Length.ToString());
+			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", this.Offset, this.Length, this.DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
 		}
 	}
 }

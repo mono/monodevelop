@@ -219,7 +219,7 @@ namespace Mono.TextEditor.Highlighting
 			return indentLength == int.MaxValue ? 0 : indentLength;
 		}
 		
-		public virtual SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
+		public virtual SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
 		{
 			return new SpanParser (doc, mode, line, spanStack);
 		}
@@ -232,7 +232,7 @@ namespace Mono.TextEditor.Highlighting
 		public class SpanParser
 		{
 			protected SyntaxMode mode;
-			protected Stack<Span> spanStack;
+			protected CloneableStack<Span> spanStack;
 			protected Stack<Rule> ruleStack;
 
 			protected Document doc;
@@ -256,7 +256,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 
-			public Stack<Span> SpanStack {
+			public CloneableStack<Span> SpanStack {
 				get {
 					return spanStack;
 				}
@@ -268,14 +268,14 @@ namespace Mono.TextEditor.Highlighting
 				}
 			}
 			
-			public SpanParser (Document doc, SyntaxMode mode, LineSegment line, Stack<Span> spanStack)
+			public SpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
 			{
 				if (doc == null)
 					throw new ArgumentNullException ("doc");
 				this.doc  = doc;
 				this.mode = mode;
 				this.line = line;
-				this.spanStack = spanStack ?? new Stack<Span> (line != null && line.StartSpan != null ? line.StartSpan : new Span[0]);
+				this.spanStack = spanStack ?? (line != null ? line.StartSpan.Clone () : new CloneableStack<Span> ());
 				//this.ruleStack = ruleStack ?? new Stack<Span> (line.StartRule != null ? line.StartRule : new Rule[0]);
 				
 				ruleStack = new Stack<Rule> ();
@@ -447,13 +447,17 @@ namespace Mono.TextEditor.Highlighting
 			{
 				if (startChunk == null) {
 					startChunk = endChunk = chunk;
+					chunk.SpanStack = spanParser.SpanStack.Clone ();
 					return;
 				}
+
 				if (endChunk.Style.Equals (chunk.Style)) {
 					endChunk.Length += chunk.Length;
 					return;
 				}
+
 				endChunk = endChunk.Next = chunk;
+				chunk.SpanStack = spanParser.SpanStack.Clone ();
 				/*
 				const int MaxChunkLength = 80;
 				int divisor = chunk.Length / MaxChunkLength;

@@ -20,6 +20,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting.Regex/RegexMatch.cs \
 	Mono.TextEditor.Highlighting/Chunk.cs \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
+	Mono.TextEditor.Highlighting/CloneableStack.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
 	Mono.TextEditor.Highlighting/IXmlProvider.cs \
 	Mono.TextEditor.Highlighting/JaySyntaxMode.cs \

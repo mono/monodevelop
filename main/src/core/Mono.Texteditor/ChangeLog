@@ -1,3 +1,19 @@
+2010-07-16  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* Mono.TextEditor.csproj:
+	* Styles/TangoLightStyle.xml:
+	* Mono.TextEditor/LineSegment.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor/ClipboardActions.cs:
+	* Mono.TextEditor.Highlighting/Chunk.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/JaySyntaxMode.cs:
+	* Mono.TextEditor.Highlighting/CloneableStack.cs:
+	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on
+	  highlighting - it's now more speed & memory efficient and
+	  fixed 'Bug 622108 - Background color issues'.
+
 2010-07-15  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Added null check.

@@ -72,6 +72,10 @@
 		</Style>
 	</Style>
 	
+	<Style name="template" color ="black" bgColor="#fdfaed">
+		<Style name="tag" color ="black" bgColor="#fdf0bd"/>
+	</Style>
+	
 	<Style name="diff">
 		<Style name="line-added" color="skyblue2"/>
 		<Style name="line-removed" color="scarletred1"/>
