@@ -331,7 +331,7 @@ namespace MonoDevelop.SourceEditor
 			bool inComment = false;
 			bool inString = false;
 //			string escape = "\"";
-			Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+			var stack = line.StartSpan.Clone();
 			Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, Document.SyntaxMode, Document.SyntaxMode, stack, line.Offset, Caret.Offset);
 			foreach (Span span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
