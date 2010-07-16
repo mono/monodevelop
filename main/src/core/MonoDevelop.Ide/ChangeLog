@@ -1,3 +1,9 @@
+2010-07-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide/ImageService.cs: Scale images when they
+	  don't fit when composing icons (Bug 609979 - Icon size
+	  errors).
+
 2010-07-15  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Ide/RootWorkspace.cs:
