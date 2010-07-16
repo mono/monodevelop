@@ -1,5 +1,9 @@
 2010-07-16  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextViewMargin.cs: Check span stack.
+
+2010-07-16  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* Mono.TextEditor.csproj:
 	* Styles/TangoLightStyle.xml:

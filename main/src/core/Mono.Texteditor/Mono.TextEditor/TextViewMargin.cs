@@ -1088,7 +1088,7 @@ namespace Mono.TextEditor
 				uint oldEndIndex = 0;
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
-					spanStack = chunk.SpanStack;
+					spanStack = chunk.SpanStack ?? spanStack;
 					foreach (TextMarker marker in line.Markers)
 						chunkStyle = marker.GetStyle (chunkStyle);
 
@@ -1114,7 +1114,7 @@ namespace Mono.TextEditor
 							
 							if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
 								wrapper.AddBackground (chunkStyle.BackgroundColor, (int)si, (int)ei);
-							} else {
+							} else if (chunk.SpanStack != null) {
 								foreach (var span in chunk.SpanStack) {
 									var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
 									if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (spanStyle.BackgroundColor)) {
@@ -2224,14 +2224,16 @@ namespace Mono.TextEditor
 				if (isEolSelected) {
 					DrawRectangleWithRuler (win, x, lineArea, this.SelectionColor.BackgroundColor, false);
 				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
-					foreach (var span in GetLayout (line).EolSpanStack) {
-						var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
-						if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (spanStyle.BackgroundColor)) {
-							DrawRectangleWithRuler (win, x, lineArea, spanStyle.BackgroundColor, false);
-							break;
+					LayoutWrapper wrapper = GetLayout (line);
+					if (wrapper.EolSpanStack != null) {
+						foreach (var span in wrapper.EolSpanStack) {
+							var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
+							if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (spanStyle.BackgroundColor)) {
+								DrawRectangleWithRuler (win, x, lineArea, spanStyle.BackgroundColor, false);
+								break;
+							}
 						}
 					}
-						
 				}
 			}
 
