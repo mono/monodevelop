@@ -56,7 +56,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			TextEditorData data = options.GetTextEditorData ();
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			if (!data.IsSomethingSelected && line != null) {
-				Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+				var stack = line.StartSpan.Clone ();
 				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
 				foreach (Span span in stack) {
 					if (span.Color == "string.single" || span.Color == "string.double")
@@ -147,7 +147,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			if (resolveResult == null) {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				if (line != null) {
-					Stack<Span> stack = line.StartSpan != null ? new Stack<Span> (line.StartSpan) : new Stack<Span> ();
+					var stack = line.StartSpan.Clone ();
 					Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
 					foreach (Span span in stack) {
 						if (span.Color == "string.single" || span.Color == "string.double") {

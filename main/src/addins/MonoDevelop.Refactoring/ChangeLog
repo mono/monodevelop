@@ -1,3 +1,9 @@
+2010-07-16  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring.IntroduceConstant/IntroduceConstantRefactoring.cs:
+	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:
+	  Track API changes.
+
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Refactoring/RefactoringOptions.cs:
