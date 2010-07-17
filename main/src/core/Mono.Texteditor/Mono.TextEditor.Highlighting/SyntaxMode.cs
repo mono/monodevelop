@@ -451,7 +451,7 @@ namespace Mono.TextEditor.Highlighting
 					return;
 				}
 
-				if (endChunk.Style.Equals (chunk.Style)) {
+				if (endChunk.Style.Equals (chunk.Style) && endChunk.SpanStack.Equals (spanParser.SpanStack)) {
 					endChunk.Length += chunk.Length;
 					return;
 				}

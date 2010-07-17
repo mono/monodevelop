@@ -1,3 +1,9 @@
+2010-07-17  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor.Highlighting/Chunk.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Changed
+	  highlighting.
+
 2010-07-16  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor/TextViewMargin.cs: Check span stack.
