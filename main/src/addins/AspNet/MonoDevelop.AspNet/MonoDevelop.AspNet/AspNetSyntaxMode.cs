@@ -139,9 +139,7 @@ namespace MonoDevelop.AspNet
 			{
 				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) &&  i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
 					var span = new CodeExpressionSpan (GetDefaultMime ());
-					OnFoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0? 3 : 2);
-					spanStack.Push (span);
-					ruleStack.Push (GetRule (span));
+					FoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0? 3 : 2);
 					return;
 				}
 				
@@ -176,9 +174,7 @@ namespace MonoDevelop.AspNet
 						
 						if (mime != null) {
 							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
-							OnFoundSpanBegin (span, i, 0);
-							spanStack.Push (span);
-							ruleStack.Push (GetRule (span));
+							FoundSpanBegin (span, i, 0);
 							return;
 						}
 					}
@@ -191,32 +187,20 @@ namespace MonoDevelop.AspNet
 			{
 				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 <= doc.Length && doc.GetTextAt (i, 9) == "</script>") {
 					while (!(spanStack.Peek () is CodeDeclarationSpan)) {
-						OnFoundSpanEnd (spanStack.Peek (), i, 0);
-						spanStack.Pop ();
-						if (ruleStack.Count > 1)
-							ruleStack.Pop ();
+						FoundSpanEnd (spanStack.Peek (), i, 0);
 					}
 					cur = spanStack.Peek ();
 					i += "</script>".Length;
-					spanStack.Pop ();
-					if (ruleStack.Count > 1)
-						ruleStack.Pop ();
-					OnFoundSpanEnd (cur, i, "</script>".Length);
+					FoundSpanEnd (cur, i, "</script>".Length);
 					return true;
 				}
 				
 				if (spanStack.Any (s => s is CodeExpressionSpan) && i + 2 < doc.Length && doc.GetTextAt (i, 2) == "%>") {
 					while (!(spanStack.Peek () is CodeExpressionSpan)) {
-						spanStack.Pop ();
-						if (ruleStack.Count > 1)
-							ruleStack.Pop ();
-						OnFoundSpanEnd (spanStack.Peek (), i, 0);
+						FoundSpanEnd (spanStack.Peek (), i, 0);
 					}
 					cur = spanStack.Peek ();
-					spanStack.Pop ();
-					if (ruleStack.Count > 1)
-						ruleStack.Pop ();
-					OnFoundSpanEnd (cur, i, 2);
+					FoundSpanEnd (cur, i, 2);
 					return true;
 				}
 				return base.ScanSpanEnd (cur, ref i);
