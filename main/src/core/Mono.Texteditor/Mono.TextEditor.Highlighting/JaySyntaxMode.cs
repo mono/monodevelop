@@ -112,29 +112,20 @@ namespace Mono.TextEditor.Highlighting
 					char next = doc.GetCharAt (i + 1);
 					if (next == '{') {
 						ForcedJayBlockSpan forcedBlockSpan = new ForcedJayBlockSpan ();
-						OnFoundSpanBegin (forcedBlockSpan, i, 2);
-						spanStack.Push (forcedBlockSpan);
-						ruleStack.Push (GetRule (forcedBlockSpan));
+						FoundSpanBegin (forcedBlockSpan, i, 2);
 						i++;
 						return;
 					}
 					
 					if (!hasJayDefinitonSpan && next == '%') {
 						JayDefinitionSpan jayDefinitionSpan = new JayDefinitionSpan ();
-						OnFoundSpanBegin (jayDefinitionSpan, i, 2);
-						spanStack.Push (jayDefinitionSpan);
-						ruleStack.Push (GetRule (jayDefinitionSpan));
+						FoundSpanBegin (jayDefinitionSpan, i, 2);
 						return;
 					}
 					
 					if (next == '}' && spanStack.Any (s => s is ForcedJayBlockSpan)) {
 						foreach (Span span in spanStack.ToArray ().Reverse ()) {
-							OnFoundSpanEnd (span, i, span.End.Pattern.Length);
-							if (spanStack.Count > 0) {
-								spanStack.Pop ();
-							}
-							if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-								ruleStack.Pop ();
+							FoundSpanEnd (span, i, span.End.Pattern.Length);
 							if (span is ForcedJayBlockSpan)
 								break;
 						}
@@ -145,9 +136,7 @@ namespace Mono.TextEditor.Highlighting
 				
 				if (CurSpan is JayDefinitionSpan && doc.GetCharAt (i) == '{' && hasJayDefinitonSpan && !spanStack.Any (s => s is JayBlockSpan)) {
 					JayBlockSpan jayBlockSpan = new JayBlockSpan (i);
-					OnFoundSpanBegin (jayBlockSpan, i, 1);
-					spanStack.Push (jayBlockSpan);
-					ruleStack.Push (GetRule (jayBlockSpan));
+					FoundSpanBegin (jayBlockSpan, i, 1);
 					return;
 				}
 				
@@ -221,11 +210,7 @@ namespace Mono.TextEditor.Highlighting
 							}
 						}
 						if (brackets == 0) {
-							OnFoundSpanEnd (cur, i, 1);
-							if (spanStack.Count > 0)
-								spanStack.Pop ();
-							if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-								ruleStack.Pop ();
+							FoundSpanEnd (cur, i, 1);
 							return true;
 						}
 						return false;
@@ -234,22 +219,14 @@ namespace Mono.TextEditor.Highlighting
 				
 				if (cur is ForcedJayBlockSpan) {
 					if (i + 1 < doc.Length && doc.GetCharAt (i) == '%' && doc.GetCharAt (i + 1) == '}') {
-						OnFoundSpanEnd (cur, i, 2);
-						if (spanStack.Count > 0)
-							spanStack.Pop ();
-						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-							ruleStack.Pop ();
+						FoundSpanEnd (cur, i, 2);
 						return true;
 					}
 				}
 				
 				if (cur is JayDefinitionSpan) {
 					if (i + 1 < doc.Length && doc.GetCharAt (i) == '%' && doc.GetCharAt (i + 1) == '%') {
-						OnFoundSpanEnd (cur, i, 2);
-						if (spanStack.Count > 0)
-							spanStack.Pop ();
-						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-							ruleStack.Pop ();
+						FoundSpanEnd (cur, i, 2);
 						return true;
 					}
 				}

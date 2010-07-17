@@ -276,8 +276,6 @@ namespace Mono.TextEditor.Highlighting
 				this.mode = mode;
 				this.line = line;
 				this.spanStack = spanStack ?? (line != null ? line.StartSpan.Clone () : new CloneableStack<Span> ());
-				//this.ruleStack = ruleStack ?? new Stack<Span> (line.StartRule != null ? line.StartRule : new Rule[0]);
-				
 				ruleStack = new Stack<Rule> ();
 				if (mode != null) 
 					ruleStack.Push (mode);
@@ -289,8 +287,35 @@ namespace Mono.TextEditor.Highlighting
 				for (int i = rules.Count - 1; i >= 0 ; i--) {
 					ruleStack.Push (rules[i]);
 				}
+				FoundSpanBegin = DefaultFoundSpanBegin;
+				FoundSpanEnd = DefaultFoundSpanEnd;
+				FoundSpanExit = DefaultFoundSpanEnd;
 			}
-			
+
+			void DefaultFoundSpanBegin (Span span, int offset, int length)
+			{
+				PushSpan (span, GetRule (span));
+			}
+
+			void DefaultFoundSpanEnd (Span span, int offset, int length)
+			{
+				PopSpan ();
+			}
+
+			public void PushSpan (Span span, Rule rule)
+			{
+				spanStack.Push (span);
+				ruleStack.Push (rule);
+			}
+
+			public void PopSpan ()
+			{
+				if (spanStack.Count > 0)
+					spanStack.Pop ();
+				if (ruleStack.Count > 1)
+					ruleStack.Pop ();
+			}
+
 			public Rule GetRule (Span span)
 			{
 				if (string.IsNullOrEmpty (span.Rule))
@@ -301,26 +326,9 @@ namespace Mono.TextEditor.Highlighting
 			public delegate void SpanDelegate (Span span, int offset, int length);
 			public delegate void CharParser (ref int i, char ch);
 			
-			public event SpanDelegate FoundSpanBegin;
-			public virtual void OnFoundSpanBegin (Span span, int offset, int length)
-			{
-				if (FoundSpanBegin != null)
-					FoundSpanBegin (span, offset, length);
-			}
-			
-			public event SpanDelegate FoundSpanExit;
-			public virtual void OnFoundSpanExit (Span span, int offset, int length)
-			{
-				if (FoundSpanExit != null)
-					FoundSpanExit (span, offset, length);
-			}
-			
-			public event SpanDelegate FoundSpanEnd;
-			public virtual void OnFoundSpanEnd (Span span, int offset, int length)
-			{
-				if (FoundSpanEnd != null)
-					FoundSpanEnd (span, offset, length);
-			}
+			public SpanDelegate FoundSpanBegin;
+			public SpanDelegate FoundSpanExit;
+			public SpanDelegate FoundSpanEnd;
 			
 			public event CharParser ParseChar;
 			public void OnParseChar (ref int i, char ch)
@@ -350,10 +358,8 @@ namespace Mono.TextEditor.Highlighting
 						}
 						if (mismatch)
 							continue;
-						OnFoundSpanBegin (span, i, match.Length);
+						FoundSpanBegin (span, i, match.Length);
 						i += match.Length - 1;
-						spanStack.Push (span);
-						ruleStack.Push (GetRule (span));
 						return;
 					}
 				}
@@ -364,10 +370,7 @@ namespace Mono.TextEditor.Highlighting
 				if (cur.End != null) {
 					RegexMatch match = cur.End.TryMatch (doc, i);
 					if (match.Success) {
-						OnFoundSpanEnd (cur, i, match.Length);
-						spanStack.Pop ();
-						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-							ruleStack.Pop ();
+						FoundSpanEnd (cur, i, match.Length);
 						return true;
 					}
 				}
@@ -375,10 +378,7 @@ namespace Mono.TextEditor.Highlighting
 				if (cur.Exit != null) {
 					RegexMatch match = cur.Exit.TryMatch (doc, i);
 					if (match.Success) {
-						spanStack.Pop ();
-						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-							ruleStack.Pop ();
-						OnFoundSpanExit (cur, i, match.Length);
+						FoundSpanExit (cur, i, match.Length);
 						return true;
 					}
 				}
@@ -432,9 +432,9 @@ namespace Mono.TextEditor.Highlighting
 				this.doc = doc;
 				this.line = line;
 				this.spanParser = spanParser;
-				spanParser.FoundSpanBegin += FoundSpanBegin;
-				spanParser.FoundSpanEnd += FoundSpanEnd;
-				spanParser.FoundSpanExit += FoundSpanExit;
+				spanParser.FoundSpanBegin = FoundSpanBegin;
+				spanParser.FoundSpanEnd = FoundSpanEnd;
+				spanParser.FoundSpanExit = FoundSpanExit;
 				spanParser.ParseChar += ParseChar;
 				if (line == null)
 					throw new ArgumentNullException ("line");
@@ -451,31 +451,13 @@ namespace Mono.TextEditor.Highlighting
 					return;
 				}
 
-				if (endChunk.Style.Equals (chunk.Style) && endChunk.SpanStack.Equals (spanParser.SpanStack)) {
+				if (endChunk.Style.Equals (chunk.Style) && chunk.SpanStack.Equals (endChunk.SpanStack)) {
 					endChunk.Length += chunk.Length;
 					return;
 				}
 
 				endChunk = endChunk.Next = chunk;
 				chunk.SpanStack = spanParser.SpanStack.Clone ();
-				/*
-				const int MaxChunkLength = 80;
-				int divisor = chunk.Length / MaxChunkLength;
-				int reminder = chunk.Length % MaxChunkLength;
-				for (int i = 0; i < divisor; i++) {
-					Chunk newChunk = new Chunk (chunk.Offset + i * MaxChunkLength, MaxChunkLength, chunk.Style);
-					if (startChunk == null)
-						startChunk = endChunk = newChunk;
-					else 
-						endChunk = endChunk.Next = newChunk;
-				}
-				if (reminder > 0) {
-					Chunk newChunk = new Chunk (chunk.Offset + divisor * MaxChunkLength, reminder, chunk.Style);
-					if (startChunk == null)
-						startChunk = endChunk = newChunk;
-					else 
-						endChunk = endChunk.Next = newChunk;
-				}*/
 			}
 			
 			void AddChunk (ref Chunk curChunk, int length, string style)
@@ -543,24 +525,29 @@ namespace Mono.TextEditor.Highlighting
 				}
 				AddChunk (ref curChunk, 0, curChunk.Style);
 				
-				curChunk.Offset = offset;
-				curChunk.Length = length;
-				curChunk.Style  = span.TagColor ?? GetChunkStyle (span);
-				AddChunk (ref curChunk, 0, curChunk.Style);
 				Rule spanRule = spanParser.GetRule (span);
 				if (spanRule == null)
 					throw new Exception ("Rule " + span.Rule + " not found in " + span);
+				spanParser.PushSpan (span, spanRule);
+				
+				curChunk.Offset = offset;
+				curChunk.Length = length;
+				curChunk.Style  = span.TagColor ?? GetChunkStyle (span);
+				curChunk.SpanStack.Push (span);
+				AddChunk (ref curChunk, 0, curChunk.Style);
 				foreach (SemanticRule semanticRule in spanRule.SemanticRules) {
 					semanticRule.Analyze (this.doc, line, curChunk, offset, line.EndOffset);
 				}
 			}
-			
+
 			public void FoundSpanExit (Span span, int offset, int length)
 			{
 				curChunk.Length = offset - curChunk.Offset;
 				AddChunk (ref curChunk, 0, GetChunkStyle (span));
+				
+				spanParser.PopSpan ();
 			}
-			
+
 			public void FoundSpanEnd (Span span, int offset, int length)
 			{
 				curChunk.Length = offset - curChunk.Offset;
@@ -571,6 +558,8 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Length = length;
 				curChunk.Style  = span.TagColor ?? GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, defaultStyle);
+				
+				spanParser.PopSpan ();
 			}
 			
 			bool inWord = false;
