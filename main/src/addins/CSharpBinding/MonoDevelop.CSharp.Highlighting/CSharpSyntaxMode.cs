@@ -287,15 +287,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					ElseBlockSpan elseBlockSpan = new ElseBlockSpan (!previousResult);
 					if (ifBlock != null) 
 						elseBlockSpan.Disabled = ifBlock.Disabled;
-					OnFoundSpanBegin (elseBlockSpan, i, 0);
-					
-					spanStack.Push (elseBlockSpan);
-					ruleStack.Push (GetRule (elseBlockSpan));
+					FoundSpanBegin (elseBlockSpan, i, 0);
 					
 					// put pre processor eol span on stack, so that '#else' gets the correct highlight
-					OnFoundSpanBegin (elseBlockSpan, i, 5);
-					spanStack.Push (elseBlockSpan);
-					ruleStack.Push (GetRule (elseBlockSpan));
+					FoundSpanBegin (elseBlockSpan, i, 5);
 					i += length - 1;
 					return;
 				}
@@ -321,10 +316,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						}
 					}
 					
-					OnFoundSpanBegin (ifBlockSpan, i, length);
+					FoundSpanBegin (ifBlockSpan, i, length);
 					i += length - 1;
-					spanStack.Push (ifBlockSpan);
-					ruleStack.Push (GetRule (ifBlockSpan));
 					return;
 				}
 				if (i + 5 < doc.Length && doc.GetTextAt (i, 5) == "#elif" && spanStack.Any (span => span is IfBlockSpan)) {
@@ -358,24 +351,17 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (containingIf != null)
 						elseIfBlockSpan.Disabled = containingIf.Disabled;
 					
-					OnFoundSpanBegin (elseIfBlockSpan, i, 0);
-					
-					spanStack.Push (elseIfBlockSpan);
-					ruleStack.Push (GetRule (elseIfBlockSpan));
+					FoundSpanBegin (elseIfBlockSpan, i, 0);
 					
 					// put pre processor eol span on stack, so that '#elif' gets the correct highlight
 					Span preprocessorSpan = CreatePreprocessorSpan ();
-					OnFoundSpanBegin (preprocessorSpan, i, 0);
-					spanStack.Push (preprocessorSpan);
-					ruleStack.Push (GetRule (preprocessorSpan));
+					FoundSpanBegin (preprocessorSpan, i, 0);
 					//i += length - 1;
 					return;
 				}
 				if (CurRule.Name == "<root>" &&  doc.GetCharAt (i) == '#') {
 					Span preprocessorSpan = CreatePreprocessorSpan ();
-					OnFoundSpanBegin (preprocessorSpan, i, 1);
-					spanStack.Push (preprocessorSpan);
-					ruleStack.Push (GetRule (preprocessorSpan));
+					FoundSpanBegin (preprocessorSpan, i, 1);
 				}
 				base.ScanSpan (ref i);
 			}
@@ -395,25 +381,12 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (cur is IfBlockSpan || cur is ElseIfBlockSpan || cur is ElseBlockSpan) {
 					bool end = i + 6 <= doc.Length && doc.GetTextAt (i, 6) == "#endif";
 					if (end) {
-						OnFoundSpanEnd (cur, i, 6); // put empty end tag in
+						FoundSpanEnd (cur, i, 6); // put empty end tag in
 						while (spanStack.Count > 0 && !(spanStack.Peek () is IfBlockSpan)) {
 							spanStack.Pop ();
 							if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 								ruleStack.Pop ();
 						}
-						if (spanStack.Count > 0)
-							spanStack.Pop ();
-						if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-							ruleStack.Pop ();
-					/*	// put pre processor eol span on stack, so that '#endif' gets the correct highlight
-						foreach (Span span in mode.Spans) {
-							if (span.Rule == "text.preprocessor") {
-								OnFoundSpanBegin (span, i, 6);
-								spanStack.Push (span);
-								ruleStack.Push (GetRule (span));
-								break;
-							}
-						}*/
 					}
 					return end;
 				}
