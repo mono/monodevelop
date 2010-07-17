@@ -544,8 +544,8 @@ namespace Mono.TextEditor.Highlighting
 			{
 				curChunk.Length = offset - curChunk.Offset;
 				AddChunk (ref curChunk, 0, GetChunkStyle (span));
-				
 				spanParser.PopSpan ();
+				
 			}
 
 			public void FoundSpanEnd (Span span, int offset, int length)
@@ -554,12 +554,12 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Style  = GetStyle (curChunk) ?? GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, defaultStyle);
 				
+				spanParser.PopSpan ();
 				curChunk.Offset = offset;
 				curChunk.Length = length;
 				curChunk.Style  = span.TagColor ?? GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, defaultStyle);
 				
-				spanParser.PopSpan ();
 			}
 			
 			bool inWord = false;

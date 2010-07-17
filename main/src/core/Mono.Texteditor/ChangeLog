@@ -1,5 +1,10 @@
 2010-07-17  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: pop span before
+	  end tag.
+
+2010-07-17  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
 	* Mono.TextEditor.Highlighting/JaySyntaxMode.cs:
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Worked on
