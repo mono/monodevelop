@@ -113,7 +113,7 @@ namespace MonoDevelop.DesignerSupport
 					col = ((IMember)o).BodyRegion.Start.Column;
 				}
 				if (line > -1) {
-					Editor.Parent.SetCaretTo (line - 1, Math.Max (1, col) - 1);
+					Editor.SetCaretTo (line - 1, Math.Max (1, col) - 1);
 				}
 			};
 
