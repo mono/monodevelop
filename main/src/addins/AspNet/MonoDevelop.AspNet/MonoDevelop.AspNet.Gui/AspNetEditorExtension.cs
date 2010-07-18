@@ -203,17 +203,17 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public void InitializeCodeCompletion (char ch)
 		{
-			int caretOffset = Document.TextEditorData.Caret.Offset;
+			int caretOffset = Document.Editor.Caret.Offset;
 			int start = caretOffset - Tracker.Engine.CurrentStateLength;
-			if (Document.TextEditorData.GetCharAt (start) == '=') 
+			if (Document.Editor.GetCharAt (start) == '=') 
 				start++;
-			string sourceText = Document.TextEditorData.GetTextBetween (start, caretOffset);
+			string sourceText = Document.Editor.GetTextBetween (start, caretOffset);
 			if (ch != '\0')
 				sourceText += ch;
-			string textAfterCaret = Document.TextEditorData.GetTextBetween (caretOffset, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start));
+			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start));
 			
 			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
-			var docLoc = Document.TextEditorData.Document.OffsetToLocation (start);
+			var docLoc = Document.Editor.Document.OffsetToLocation (start);
 			loc.EndLine = loc.BeginLine = docLoc.Line;
 			loc.EndColumn = loc.BeginColumn = docLoc.Column;
 			
