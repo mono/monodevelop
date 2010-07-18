@@ -1,5 +1,13 @@
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/TextEditorData.cs: Added some delegation
+	  methods to the texteditordata to make its usage easier -
+	  moved the advanced setcaret (with highlight & pulse) to the
+	  texteditor.
+
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs:
 	  comment-in span remove code.
 

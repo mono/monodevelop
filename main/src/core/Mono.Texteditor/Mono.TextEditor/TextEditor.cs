@@ -1,3 +1,4 @@
+
 //
 // TextEditor.cs
 //
@@ -2607,8 +2608,60 @@ namespace Mono.TextEditor
 				textEditorData.Document.CommitLineToEndUpdate (textEditorData.Document.OffsetToLineNumber (e.Line.Offset));
 			lineHeights[e.Line.Offset] = currentHeight;
 		}
+
+		class SetCaret 
+		{
+			TextEditor view;
+			int line, column;
+			bool highlightCaretLine;
+			
+			public SetCaret (TextEditor view, int line, int column, bool highlightCaretLine)
+			{
+				this.view = view;
+				this.line = line;
+				this.column = column;
+				this.highlightCaretLine = highlightCaretLine;
+ 			}
+			
+			public void Run (object sender, EventArgs e)
+			{
+				if (view.isDisposed)
+					return;
+				line = System.Math.Min (line, view.Document.LineCount - 1);
+				view.Caret.AutoScrollToCaret = false;
+				try {
+					view.Caret.Location = new DocumentLocation (line, column);
+					view.GrabFocus ();
+					view.CenterToCaret ();
+					if (view.TextViewMargin.XOffset == 0)
+						view.HAdjustment.Value = 0;
+					view.SizeAllocated -= Run;
+				} finally {
+					view.Caret.AutoScrollToCaret = true;
+					if (highlightCaretLine) {
+						view.TextViewMargin.HighlightCaretLine = true;
+						view.StartCaretPulseAnimation ();
+					}
+				}
+			}
+		}
+
+		public void SetCaretTo (int line, int column)
+		{
+			SetCaretTo (line, column, true);
+		}
+
+		public void SetCaretTo (int line, int column, bool highlight)
+		{
+			if (!IsRealized) {
+				SetCaret setCaret = new SetCaret (this, line, column, highlight);
+				SizeAllocated += setCaret.Run;
+			} else {
+				new SetCaret (this, line, column, highlight).Run (null, null);
+			}
+		}
 	}
-	
+
 	public interface ITextEditorDataProvider
 	{
 		TextEditorData GetTextEditorData ();

@@ -908,5 +908,47 @@ namespace Mono.TextEditor
 				handler (this, EventArgs.Empty);
 		}
 		public event EventHandler RecenterEditor;
+
+		#region Document delegation
+		public int Length {
+			get {
+				return document.Length;
+			}
+		}
+
+		public string Text {
+			get {
+				return document.Text;
+			}
+			set {
+				document.Text = value;
+			}
+		}
+
+		public string GetTextBetween (int startOffset, int endOffset)
+		{
+			return document.GetTextBetween (startOffset, endOffset);
+		}
+
+		public string GetTextAt (int offset, int count)
+		{
+			return document.GetTextAt (offset, count);
+		}
+
+		public string GetTextAt (ISegment segment)
+		{
+			return document.GetTextAt (segment);
+		}
+		
+		public char GetCharAt (int offset)
+		{
+			return document.GetCharAt (offset);
+		}
+		
+		public string GetLineText (int line)
+		{
+			return Document.GetTextAt (Document.GetLine (line));
+		}
+		#endregion
 	}
 }
