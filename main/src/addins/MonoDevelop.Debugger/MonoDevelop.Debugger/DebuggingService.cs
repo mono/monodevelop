@@ -841,7 +841,7 @@ namespace MonoDevelop.Debugger
 			if (doc != null) {
 				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
 				if (textEditorResolver != null) {
-					ResolveResult rr = textEditorResolver.GetLanguageItem (doc.TextEditor.GetPositionFromLineColumn (location.Line, 1), identifier);
+					ResolveResult rr = textEditorResolver.GetLanguageItem (doc.Editor.Document.LocationToOffset (location.Line - 1, 0), identifier);
 					NamespaceResolveResult ns = rr as NamespaceResolveResult;
 					if (ns != null)
 						return ns.Namespace;
