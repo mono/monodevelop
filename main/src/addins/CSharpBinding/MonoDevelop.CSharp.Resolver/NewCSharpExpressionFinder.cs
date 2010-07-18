@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.Parser.CSharp;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -44,9 +45,9 @@ namespace MonoDevelop.CSharp.Resolver
 			this.projectContent = projectContent;
 		}
 
-		public static string FindAttributeName (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName)
+		public static string FindAttributeName (TextEditorData editor, ICompilationUnit unit, string fileName)
 		{
-			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
 			int pos = -1;
 			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
 				if (documentToCursor[i] == '[') {
@@ -93,9 +94,9 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 		}
 
-		public ExpressionContext FindExactContextForObjectInitializer (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		public ExpressionContext FindExactContextForObjectInitializer (TextEditorData editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
-			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
 			
 //			int pos = -1;
 			
@@ -212,15 +213,15 @@ namespace MonoDevelop.CSharp.Resolver
 			return null;
 		}
 
-		public ExpressionContext FindExactContextForNewCompletion (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		public ExpressionContext FindExactContextForNewCompletion (TextEditorData editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
-			return FindExactContextForNewCompletion (editor, unit, fileName, callingType, editor.CursorPosition);
+			return FindExactContextForNewCompletion (editor, unit, fileName, callingType, editor.Caret.Offset);
 		}
 
-		public ExpressionContext FindExactContextForNewCompletion (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType, int cursorPos)
+		public ExpressionContext FindExactContextForNewCompletion (TextEditorData editor, ICompilationUnit unit, string fileName, IType callingType, int cursorPos)
 		{
 			// find expression on left hand side of the assignment
-			string documentToCursor = editor.GetText (0, cursorPos);
+			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
 			int pos = -1;
 			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
 				if (documentToCursor[i] == '=') {
@@ -261,7 +262,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
-				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
+				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line + 1, editor.Caret.Column + 1));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				
 				if (rr != null && rr.ResolvedType != null) {
@@ -299,10 +300,10 @@ namespace MonoDevelop.CSharp.Resolver
 			return null;
 		}
 
-		public ExpressionContext FindExactContextForAsCompletion (MonoDevelop.Ide.Gui.TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
+		public ExpressionContext FindExactContextForAsCompletion (TextEditorData editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			// find expression on left hand side of the assignment
-			string documentToCursor = editor.GetText (0, editor.CursorPosition);
+			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
 			int pos = -1;
 			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
 				char ch = documentToCursor[i];
@@ -339,7 +340,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
-				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.CursorLine, editor.CursorColumn));
+				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line + 1, editor.Caret.Column + 1));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				
 				if (rr != null && rr.ResolvedType != null) {

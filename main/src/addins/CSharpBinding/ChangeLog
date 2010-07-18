@@ -1,3 +1,16 @@
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs:
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	* MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs:
+	* MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs:
+	  Track API changes.
+
 2010-07-17  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: Track

@@ -40,6 +40,7 @@ using MonoDevelop.CSharp.Parser;
 
 using System.Text.RegularExpressions;
 using MonoDevelop.CSharp.Dom;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -47,11 +48,11 @@ namespace MonoDevelop.CSharp.Completion
 	{
 //		IType type;
 		string resolvedExpression;
-		MonoDevelop.Ide.Gui.TextEditor editor;
+		TextEditorData editor;
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		List<IProperty> indexers;
 		
-		public NRefactoryIndexerParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, IType type, string resolvedExpression)
+		public NRefactoryIndexerParameterDataProvider (TextEditorData editor, IType type, string resolvedExpression)
 		{
 			this.editor = editor;
 //			this.type = type;

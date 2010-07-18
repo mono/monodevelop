@@ -51,6 +51,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Completion;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -58,7 +59,7 @@ namespace MonoDevelop.CSharp.Resolver
 	{
 		ProjectDom dom;
 		SupportedLanguage lang;
-		MonoDevelop.Ide.Gui.TextEditor editor;
+		TextEditorData editor;
 		IType   callingType;
 		IMember callingMember;
 		ICompilationUnit unit;
@@ -113,11 +114,11 @@ namespace MonoDevelop.CSharp.Resolver
 			return null;
 		}
 		
-		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, MonoDevelop.Ide.Gui.TextEditor editor, string fileName) : this (dom, unit, SupportedLanguage.CSharp, editor, fileName)
+		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, TextEditorData editor, string fileName) : this (dom, unit, SupportedLanguage.CSharp, editor, fileName)
 		{
 		}
 			
-		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, SupportedLanguage lang, MonoDevelop.Ide.Gui.TextEditor editor, string fileName)
+		public NRefactoryResolver (ProjectDom dom, ICompilationUnit unit, SupportedLanguage lang, TextEditorData editor, string fileName)
 		{
 			if (dom == null)
 				throw new ArgumentNullException ("dom");
@@ -293,7 +294,7 @@ namespace MonoDevelop.CSharp.Resolver
 				
 				if (CallingMember is IProperty) {
 					IProperty property = (IProperty)callingMember;
-					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.CursorColumn))
+					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.Caret.Column + 1))
 						col.Add ("value");
 				}
 				
@@ -770,13 +771,13 @@ namespace MonoDevelop.CSharp.Resolver
 				// special handling of property or field return types, they can have the same name as the return type
 				// ex.: MyType MyType { get; set; }  Type1 Type1;
 				if ((callingMember is IProperty || callingMember is IField) && identifier == callingMember.Name) {
-					int pos = editor.GetPositionFromLineColumn (resolvePosition.Line, resolvePosition.Column);
-					while (pos < editor.TextLength && !Char.IsWhiteSpace (editor.GetCharAt (pos)))
+					int pos = editor.Document.LocationToOffset (resolvePosition.Line - 1, resolvePosition.Column - 1);
+					while (pos < editor.Length && !Char.IsWhiteSpace (editor.GetCharAt (pos)))
 						pos++;
-					while (pos < editor.TextLength && Char.IsWhiteSpace (editor.GetCharAt (pos)))
+					while (pos < editor.Length && Char.IsWhiteSpace (editor.GetCharAt (pos)))
 						pos++;
 					StringBuilder memberName = new StringBuilder ();
-					while (pos < editor.TextLength && (Char.IsLetterOrDigit (editor.GetCharAt (pos)) || editor.GetCharAt (pos) == '_') ) {
+					while (pos < editor.Length && (Char.IsLetterOrDigit (editor.GetCharAt (pos)) || editor.GetCharAt (pos) == '_') ) {
 						memberName.Append (editor.GetCharAt (pos));
 						pos++;
 					}
@@ -892,40 +893,37 @@ namespace MonoDevelop.CSharp.Resolver
 			return result;
 		}
 		
-		internal static string CreateWrapperClassForMember (IMember member, string fileName, TextEditor editor)
+		internal static string CreateWrapperClassForMember (IMember member, string fileName, TextEditorData editor)
 		{
 			if (member == null)
 				return "";
 			StringBuilder result = new StringBuilder ();
-			int startLine = member.Location.Line;
-			int endLine   = member.Location.Line;
-			if (!member.BodyRegion.IsEmpty) 
-				endLine = member.BodyRegion.End.Line + 1;
+			int startLine = member.Location.Line - 1;
+			int endLine   = member.BodyRegion.IsEmpty ? startLine : member.BodyRegion.End.Line;
 			
 			string text;
-			result.Append ("class " + member.DeclaringType.Name + " {");
+			result.Append ("class ");
+			result.Append (member.DeclaringType.Name);
+			result.Append (" {");
+			result.Append (editor.EolMarker);
 			if (editor != null) {
-				int col, maxLine;
-				editor.GetLineColumnFromPosition (editor.TextLength - 1, out col, out maxLine);
-				endLine = System.Math.Max (endLine, maxLine);
-				
-				int endPos = editor.GetPositionFromLineColumn (endLine, editor.GetLineLength (endLine));
+				endLine = Math.Min (endLine, editor.Document.LineCount - 1);
+				int endPos = editor.Document.GetLine (endLine).EndOffset;
 				if (endPos < 0)
-					endPos = editor.TextLength;
-				int startPos = Math.Max (0, editor.GetPositionFromLineColumn (startLine, 0));
-				text = editor.GetText (startPos, endPos);
+					endPos = editor.Length;
+				int startPos = Math.Max (0, editor.Document.LocationToOffset (startLine, 0));
+				text = editor.GetTextBetween (startPos, endPos);
 			} else {
 				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 				doc.Text = File.ReadAllText (fileName) ?? "";
-				startLine = Math.Min (doc.LineCount, Math.Max (1, startLine));
-				endLine   = Math.Min (doc.LineCount, Math.Max (1, endLine));
-				int startOffset = doc.LocationToOffset (startLine - 1, 0);
-				text = doc.GetTextAt (startOffset, doc.LocationToOffset (endLine  - 1, doc.GetLine (endLine - 1).EditableLength) - startOffset);
+				startLine = Math.Min (doc.LineCount, Math.Max (0, startLine));
+				endLine   = Math.Min (doc.LineCount, Math.Max (0, endLine));
+				int startOffset = doc.LocationToOffset (startLine, 0);
+				text = doc.GetTextAt (startOffset, doc.LocationToOffset (endLine, doc.GetLine (endLine).EditableLength) - startOffset);
 			}
 			if (!string.IsNullOrEmpty (text))
 				result.Append (text);
 			result.Append ("}");
-			
 			return result.ToString ();
 		}
 	}

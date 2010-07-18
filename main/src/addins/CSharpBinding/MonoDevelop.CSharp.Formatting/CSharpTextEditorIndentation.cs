@@ -180,7 +180,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public bool DoInsertTemplate ()
 		{
-			string word = CodeTemplate.GetWordBeforeCaret (Editor);
+			string word = CodeTemplate.GetWordBeforeCaret (textEditorData);
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (CSharpFormatter.MimeType)) {
 				if (template.Shortcut == word) 
 					return true;
@@ -190,10 +190,10 @@ namespace MonoDevelop.CSharp.Formatting
 		int lastInsertedSemicolon = -1;
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			cursorPositionBeforeKeyPress = Editor.CursorPosition;
-			bool isSomethingSelected = Editor.SelectionEndPosition - Editor.SelectionStartPosition > 0;
-			if (key == Gdk.Key.BackSpace && TextEditorData.Caret.Offset == lastInsertedSemicolon) {
-				TextEditorData.Document.Undo ();
+			cursorPositionBeforeKeyPress = textEditorData.Caret.Offset;
+			bool isSomethingSelected = textEditorData.IsSomethingSelected;
+			if (key == Gdk.Key.BackSpace && textEditorData.Caret.Offset == lastInsertedSemicolon) {
+				textEditorData.Document.Undo ();
 				lastInsertedSemicolon = -1;
 				return false;
 			}
@@ -201,40 +201,40 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			if (key == Gdk.Key.semicolon && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get ("AutoInsertMatchingBracket", false) && PropertyService.Get ("SmartSemicolonPlacement", false)) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
-				LineSegment curLine = TextEditorData.Document.GetLine (TextEditorData.Caret.Line);
-				string text = TextEditorData.Document.GetTextAt (curLine);
+				LineSegment curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
+				string text = textEditorData.Document.GetTextAt (curLine);
 				if (text.EndsWith (";") || text.Trim ().StartsWith ("for"))
 					return retval;
 				
-				int guessedOffset = GuessSemicolonInsertionOffset (TextEditorData, curLine);
+				int guessedOffset = GuessSemicolonInsertionOffset (textEditorData, curLine);
 				
-				if (guessedOffset != TextEditorData.Caret.Offset) {
-					TextEditorData.Document.EndAtomicUndo ();
-					TextEditorData.Document.BeginAtomicUndo ();
-					TextEditorData.Remove (TextEditorData.Caret.Offset - 1, 1);
-					TextEditorData.Caret.Offset = guessedOffset;
-					lastInsertedSemicolon = TextEditorData.Caret.Offset + 1;
+				if (guessedOffset != textEditorData.Caret.Offset) {
+					textEditorData.Document.EndAtomicUndo ();
+					textEditorData.Document.BeginAtomicUndo ();
+					textEditorData.Remove (textEditorData.Caret.Offset - 1, 1);
+					textEditorData.Caret.Offset = guessedOffset;
+					lastInsertedSemicolon = textEditorData.Caret.Offset + 1;
 					retval = base.KeyPress (key, keyChar, modifier);
 				}
 				return retval;
 			}
 			
 			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
-				int cursor = Editor.CursorPosition;
+				int cursor = textEditorData.Caret.Offset;
 				
 				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
 					// insert normal tab inside @" ... "
-					if (Editor.SelectionEndPosition > 0) {
-						Editor.SelectedText = "\t";
+					if (textEditorData.IsSomethingSelected) {
+						textEditorData.SelectedText = "\t";
 					} else {
-						Editor.InsertText (cursor, "\t");
+						textEditorData.Insert (cursor, "\t");
 					}
 				} else if (TextEditorProperties.TabIsReindent && cursor >= 1) {
-					if (Editor.CursorColumn > 2) {
+					if (textEditorData.Caret.Column > 1) {
 						int delta = cursor - this.cursorPositionBeforeKeyPress;
 						if (delta < 2 && delta > 0) {
-							Editor.DeleteText (cursor - delta, delta);
-							Editor.CursorPosition = cursor - delta;
+							textEditorData.Remove (cursor - delta, delta);
+							textEditorData.Caret.Offset = cursor - delta;
 						}
 					}
 					stateTracker.UpdateEngine ();
@@ -246,9 +246,9 @@ namespace MonoDevelop.CSharp.Formatting
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				//capture some of the current state
-				int oldBufLen = Editor.TextLength;
-				int oldLine = Editor.CursorLine;
-				bool hadSelection = Editor.SelectionEndPosition != Editor.SelectionStartPosition;
+				int oldBufLen = textEditorData.Length;
+				int oldLine = textEditorData.Caret.Line + 1;
+				bool hadSelection = textEditorData.IsSomethingSelected;
 
 				//pass through to the base class, which actually inserts the character
 				//and calls HandleCodeCompletion etc to handles completion
@@ -256,10 +256,10 @@ namespace MonoDevelop.CSharp.Formatting
 				bool retval = base.KeyPress (key, keyChar, modifier);
 
 				//handle inserted characters
-				if (Editor.CursorPosition <= 0 || Editor.SelectionStartPosition < Editor.SelectionEndPosition)
+				if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
 					return retval;
 				
-				char lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, Editor.GetCharAt (Editor.CursorPosition - 1));
+				char lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 				if (lastCharInserted == '\0')
 					return retval;
 				stateTracker.UpdateEngine ();
@@ -268,7 +268,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
 					FixLineStart (textEditorData.Caret.Line + 1);
 				} else {
-					if (!(oldLine == Editor.CursorLine && lastCharInserted == '\n') && (oldBufLen != Editor.TextLength || lastCharInserted != '\0'))
+					if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
 						DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
 				}
 				//reindent the line after the insertion, if needed
@@ -388,14 +388,14 @@ namespace MonoDevelop.CSharp.Formatting
 		// removes "\s*\+\s*" patterns (used for special behaviour inside strings)
 		void HandleStringConcatinationDeletion (int start, int end)
 		{
-			if (start < 0 || end >= Editor.TextLength)
+			if (start < 0 || end >= textEditorData.Length)
 				return;
-			char ch = Editor.GetCharAt (start);
+			char ch = textEditorData.GetCharAt (start);
 			if (ch == '"') {
 				int sgn = Math.Sign (end - start);
 				bool foundPlus = false;
-				for (int max = start + sgn; max != end && max >= 0 && max < Editor.TextLength; max += sgn) {
-					ch = Editor.GetCharAt (max);
+				for (int max = start + sgn; max != end && max >= 0 && max < textEditorData.Length; max += sgn) {
+					ch = textEditorData.GetCharAt (max);
 					if (Char.IsWhiteSpace (ch))
 						continue;
 					if (ch == '+') {
@@ -406,11 +406,11 @@ namespace MonoDevelop.CSharp.Formatting
 						if (!foundPlus)
 							break;
 						if (sgn < 0) {
-							Editor.DeleteText (max, start - max);
-							Editor.CursorPosition = max + 1;
+							textEditorData.Remove (max, start - max);
+							textEditorData.Caret.Offset = max + 1;
 						} else {
-							Editor.DeleteText (start + sgn, max - start);
-							Editor.CursorPosition = start;
+							textEditorData.Remove (start + sgn, max - start);
+							textEditorData.Caret.Offset = start;
 						}
 						break;
 					} else {
@@ -424,11 +424,11 @@ namespace MonoDevelop.CSharp.Formatting
 			switch (key) {
 			case Gdk.Key.BackSpace:
 				stateTracker.UpdateEngine ();
-				HandleStringConcatinationDeletion (Editor.CursorPosition - 1, 0);
+				HandleStringConcatinationDeletion (textEditorData.Caret.Offset - 1, 0);
 				break;
 			case Gdk.Key.Delete:
 				stateTracker.UpdateEngine ();
-				HandleStringConcatinationDeletion (Editor.CursorPosition, Editor.TextLength);
+				HandleStringConcatinationDeletion (textEditorData.Caret.Offset, textEditorData.Length);
 				break;
 			}
 		}

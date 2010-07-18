@@ -34,16 +34,17 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.CSharp.Dom;
 using MonoDevelop.CSharp.Resolver;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class NRefactoryTemplateParameterDataProvider : IParameterDataProvider
 	{
-		MonoDevelop.Ide.Gui.TextEditor editor;
+		TextEditorData editor;
 		List<ITypeParameterMember> types = new List<ITypeParameterMember> ();
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
-		public NRefactoryTemplateParameterDataProvider (MonoDevelop.Ide.Gui.TextEditor editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, DomLocation loc)
+		public NRefactoryTemplateParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, DomLocation loc)
 		{
 			this.editor = editor;
 			ResolveResult plainResolveResult = resolver.Resolve (expressionResult, loc);
