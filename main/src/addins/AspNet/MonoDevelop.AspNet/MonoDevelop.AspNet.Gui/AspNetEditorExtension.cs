@@ -93,7 +93,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (documentBuilder != null) {
 				var usings = refman.GetUsings ();
 				documentInfo = new DocumentInfo (aspDoc, usings, refman.GetDoms ());
-				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, TextEditorData);
+				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
 				domWrapper = new AspProjectDomWrapper (documentInfo);
 				if (localDocumentInfo != null)
@@ -217,7 +217,7 @@ namespace MonoDevelop.AspNet.Gui
 			loc.EndLine = loc.BeginLine = docLoc.Line;
 			loc.EndColumn = loc.BeginColumn = docLoc.Column;
 			
-			localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, TextEditorData, sourceText, textAfterCaret, true);
+			localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, Editor, sourceText, textAfterCaret, true);
 			
 			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
 			viewContent.Project = Document.Project;

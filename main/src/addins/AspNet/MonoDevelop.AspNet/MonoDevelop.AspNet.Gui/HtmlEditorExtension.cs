@@ -92,10 +92,10 @@ namespace MonoDevelop.AspNet.Gui
 				region.End = el.ClosingTag.Region.End;
 			}
 			
-			int s = Editor.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
-			int e = Editor.GetPositionFromLineColumn (region.End.Line, region.End.Column);
+			int s = Editor.Document.LocationToOffset (region.Start.Line - 1, region.Start.Column - 1);
+			int e = Editor.Document.LocationToOffset (region.End.Line - 1, region.End.Column - 1);
 			if (e > s && s > -1)
-				Editor.Select (s, e);
+				Editor.SetSelection (s, e);
 		}
 		
 		#endregion
