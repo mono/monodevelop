@@ -241,7 +241,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.DoubleBuffered = true;
 			originalEditor.ExposeEvent += HandleLeftEditorExposeEvent;
 			diffEditor.ExposeEvent += HandleRightEditorExposeEvent;
-			info.Document.TextEditorData.Document.TextReplaced += HandleInfoDocumentTextEditorDataDocumentTextReplaced;
+			info.Document.Editor.Document.TextReplaced += HandleInfoDocumentTextEditorDataDocumentTextReplaced;
 		}
 
 
@@ -294,7 +294,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void SetLocal (TextEditorData data)
 		{
 			dict[data.Document] = data;
-			data.Document.Text = info.Document.TextEditorData.Document.Text;
+			data.Document.Text = info.Document.Editor.Document.Text;
 			data.Document.ReadOnly = false;
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 			localUpdate.Add (data);
@@ -305,7 +305,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var data = dict[(Document)sender];
 			localUpdate.Remove (data);
-			info.Document.TextEditorData.Replace (e.Offset, e.Count, e.Value);
+			info.Document.Editor.Replace (e.Offset, e.Count, e.Value);
 			localUpdate.Add (data);
 			CreateDiff ();
 		}
@@ -477,7 +477,7 @@ namespace MonoDevelop.VersionControl.Views
 			base.OnDestroyed ();
 			children.ForEach (child => child.Child.Destroy ());
 			children.Clear ();
-			info.Document.TextEditorData.Document.TextReplaced -= HandleInfoDocumentTextEditorDataDocumentTextReplaced;
+			info.Document.Editor.Document.TextReplaced -= HandleInfoDocumentTextEditorDataDocumentTextReplaced;
 		}
 		 
 		protected override void OnSizeAllocated (Rectangle allocation)

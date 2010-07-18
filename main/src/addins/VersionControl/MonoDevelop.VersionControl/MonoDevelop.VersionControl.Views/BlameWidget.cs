@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl.Views
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 			
-			editor = new TextEditor (info.Document.TextEditorData.Document, info.Document.TextEditorData.Options);
+			editor = new TextEditor (info.Document.Editor.Document, info.Document.Editor.Options);
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			

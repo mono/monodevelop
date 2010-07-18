@@ -51,13 +51,13 @@ namespace MonoDevelop.VersionControl.Views
 			this.Build ();
 			diffEditor = new Mono.TextEditor.TextEditor ();
 			diffEditor.Document.MimeType = "text/x-diff";
-			diffEditor.Options.FontName = info.Document.TextEditorData.Options.FontName;
-			diffEditor.Options.ColorScheme = info.Document.TextEditorData.Options.ColorScheme;
+			diffEditor.Options.FontName = info.Document.Editor.Options.FontName;
+			diffEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
 			diffEditor.Options.ShowFoldMargin = false;
 			diffEditor.Options.ShowIconMargin = false;
 			diffEditor.Options.ShowTabs = true;
 			diffEditor.Options.ShowSpaces = true;
-			diffEditor.Options.ShowInvalidLines = info.Document.TextEditorData.Options.ShowInvalidLines;
+			diffEditor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
 			diffEditor.Document.ReadOnly = true;
 			scrolledwindow1.Child = diffEditor;
 			diffEditor.ShowAll ();

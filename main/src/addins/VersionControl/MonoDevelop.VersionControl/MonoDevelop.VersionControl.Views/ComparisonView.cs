@@ -149,9 +149,9 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 			widget = new ComparisonWidget (info);
 			
-			widget.OriginalEditor.Document.MimeType = widget.DiffEditor.Document.MimeType = info.Document.TextEditorData.Document.MimeType;
-			widget.OriginalEditor.Options.FontName = widget.DiffEditor.Options.FontName = info.Document.TextEditorData.Options.FontName;
-			widget.OriginalEditor.Options.ColorScheme = widget.DiffEditor.Options.ColorScheme = info.Document.TextEditorData.Options.ColorScheme;
+			widget.OriginalEditor.Document.MimeType = widget.DiffEditor.Document.MimeType = info.Document.Editor.Document.MimeType;
+			widget.OriginalEditor.Options.FontName = widget.DiffEditor.Options.FontName = info.Document.Editor.Options.FontName;
+			widget.OriginalEditor.Options.ColorScheme = widget.DiffEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
 			widget.OriginalEditor.Options.ShowFoldMargin = widget.DiffEditor.Options.ShowFoldMargin = false;
 			widget.OriginalEditor.Options.ShowIconMargin = widget.DiffEditor.Options.ShowIconMargin = false;
 			widget.DiffEditor.Document.Text = System.IO.File.ReadAllText (info.Item.Repository.GetPathToBaseText (info.Item.Path));
@@ -169,15 +169,15 @@ namespace MonoDevelop.VersionControl.Views
 		public void Selected ()
 		{
 			widget.OriginalEditor.Document.IgnoreFoldings = true;
-			widget.OriginalEditor.Caret.Location = info.Document.TextEditorData.Caret.Location;
+			widget.OriginalEditor.Caret.Location = info.Document.Editor.Caret.Location;
 			widget.OriginalEditor.CenterToCaret ();
 			widget.OriginalEditor.GrabFocus ();
 		}
 		
 		public void Deselected ()
 		{
-			info.Document.TextEditorData.Caret.Location = widget.OriginalEditor.Caret.Location;
-			info.Document.TextEditorData.Parent.CenterToCaret ();
+			info.Document.Editor.Caret.Location = widget.OriginalEditor.Caret.Location;
+			info.Document.Editor.Parent.CenterToCaret ();
 			widget.OriginalEditor.Document.IgnoreFoldings = false;
 		}
 

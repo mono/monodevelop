@@ -1,3 +1,12 @@
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/BlameView.cs:
+	* MonoDevelop.VersionControl.Views/BlameWidget.cs:
+	* MonoDevelop.VersionControl.Views/PatchWidget.cs:
+	* MonoDevelop.VersionControl.Views/ComparisonView.cs:
+	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Track
+	  API changes.
+
 2010-07-14  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs: Worked
