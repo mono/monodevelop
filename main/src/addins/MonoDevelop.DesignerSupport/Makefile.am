@@ -3,6 +3,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.DesignerSupport.dll
 
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.Cecil.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
