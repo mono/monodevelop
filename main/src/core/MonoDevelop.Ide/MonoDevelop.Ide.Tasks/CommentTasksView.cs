@@ -482,7 +482,7 @@ namespace MonoDevelop.Ide.Tasks
 						string line = doc.Editor.GetLineText (task.Line - 1);
 						int index = line.IndexOf (commentTags[0]);
 						if (index != -1) {
-							doc.Editor.Parent.SetCaretTo (task.Line - 1, task.Column - 1);
+							doc.Editor.SetCaretTo (task.Line - 1, task.Column - 1);
 							line = line.Substring (0, index);
 							var ls = doc.Editor.Document.GetLine (task.Line  - 1);
 							doc.Editor.Replace (ls.Offset, ls.EditableLength, line);

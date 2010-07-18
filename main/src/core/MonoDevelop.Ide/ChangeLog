@@ -1,5 +1,10 @@
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs: Track API
+	  changes.
+
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Ide.csproj:
 	* MonoDevelop.Ide.Gui/Document.cs:
