@@ -43,6 +43,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using System.IO;
 using System.Linq;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -355,7 +356,7 @@ namespace MonoDevelop.AspNet.Parser
 			return p != null? p.Value as string : null;
 		}
 		
-		public void AddRegisterDirective (RegisterDirective directive, TextEditor editor, bool preserveCaretPosition)
+		public void AddRegisterDirective (RegisterDirective directive, TextEditorData editor, bool preserveCaretPosition)
 		{
 			var node = GetRegisterInsertionPointNode ();
 			if (node == null)
@@ -364,18 +365,18 @@ namespace MonoDevelop.AspNet.Parser
 			Doc.Info.RegisteredTags.Add (directive);
 			
 			var line = Math.Max (node.Location.EndLine, node.Location.BeginLine);
-			var pos = editor.GetPositionFromLineColumn (line, editor.GetLineLength (line) + 1);
+			var pos = editor.Document.LocationToOffset (line - 1, editor.Document.GetLine (line - 2).EditableLength);
 			if (pos < 0)
 				return;
 			
-			editor.BeginAtomicUndo ();
-			var oldCaret = editor.CursorPosition;
+			editor.Document.BeginAtomicUndo ();
+			var oldCaret = editor.Caret.Offset;
 			
-			var inserted = editor.InsertText (pos, editor.NewLine + directive.ToString ());
+			var inserted = editor.Insert (pos, editor.EolMarker + directive.ToString ());
 			if (preserveCaretPosition) {
-				editor.CursorPosition = (pos < oldCaret)? oldCaret + inserted : oldCaret;
+				editor.Caret.Offset = (pos < oldCaret)? oldCaret + inserted : oldCaret;
 			}
-			editor.EndAtomicUndo ();
+			editor.Document.EndAtomicUndo ();
 		}
 		
 		DirectiveNode GetRegisterInsertionPointNode ()

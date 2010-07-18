@@ -205,12 +205,12 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			int caretOffset = Document.TextEditorData.Caret.Offset;
 			int start = caretOffset - Tracker.Engine.CurrentStateLength;
-			if (Document.TextEditor.GetCharAt (start) == '=') 
+			if (Document.TextEditorData.GetCharAt (start) == '=') 
 				start++;
-			string sourceText = Document.TextEditor.GetText (start, caretOffset);
+			string sourceText = Document.TextEditorData.GetTextBetween (start, caretOffset);
 			if (ch != '\0')
 				sourceText += ch;
-			string textAfterCaret = Document.TextEditor.GetText (caretOffset, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start));
+			string textAfterCaret = Document.TextEditorData.GetTextBetween (caretOffset, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start));
 			
 			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
 			var docLoc = Document.TextEditorData.Document.OffsetToLocation (start);
