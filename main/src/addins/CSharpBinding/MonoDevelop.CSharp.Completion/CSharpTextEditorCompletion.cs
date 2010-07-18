@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			base.Initialize ();
 			dom = Document.Dom;
-			textEditorData = Document.TextEditorData;
+			textEditorData = Document.Editor;
 			
 			InitTracker ();
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
@@ -523,7 +523,7 @@ namespace MonoDevelop.CSharp.Completion
 									sb.Append (", ");
 								IType parameterType = dom.GetType (delegateMethod.Parameters[k].ReturnType);
 								IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters[k].ReturnType;
-								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, Document.TextEditor.CursorLine, Document.TextEditor.CursorColumn), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
+								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line + 1, textEditorData.Caret.Column + 1), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
 								sb.Append (" ");
 								sb.Append (delegateMethod.Parameters[k].Name);
 							}

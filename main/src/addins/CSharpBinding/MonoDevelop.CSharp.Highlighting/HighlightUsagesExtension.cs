@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			dom = Document.Dom;
 			
 			textEditorResolver = base.Document.GetContent<ITextEditorResolver> ();
-			textEditorData = base.Document.TextEditorData;
+			textEditorData = base.Document.Editor;
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
 			
@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			if (member != null) {
 				try {
-					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Document.TextEditorData, Document.FileName);
+					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Document.Editor, Document.FileName);
 					FindMemberAstVisitor visitor = new FindMemberAstVisitor (textEditorData.Document, resolver, member);
 					visitor.IncludeXmlDocumentation = true;
 					ICSharpCode.NRefactory.Ast.CompilationUnit unit = Document.CompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;

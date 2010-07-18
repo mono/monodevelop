@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += (EventHandler<DocumentEventArgs>)DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
 			IdeApp.Workspace.ActiveConfigurationChanged += delegate {
 				foreach (var doc in IdeApp.Workbench.Documents) {
-					TextEditorData data = doc.TextEditorData;
+					TextEditorData data = doc.Editor;
 					if (data == null)
 						continue;
 					Mono.TextEditor.Document document = data.Document;
@@ -66,11 +66,11 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static void OnDisableConditionalCompilation (object s, MonoDevelop.Ide.Gui.DocumentEventArgs e)
 		{
-			CSharpSyntaxMode mode = e.Document.TextEditorData.Document.SyntaxMode as CSharpSyntaxMode;
+			CSharpSyntaxMode mode = e.Document.Editor.Document.SyntaxMode as CSharpSyntaxMode;
 			if (mode == null)
 				return;
 			mode.DisableConditionalHighlighting = true;
-			e.Document.TextEditorData.Document.CommitUpdateAll ();
+			e.Document.Editor.Document.CommitUpdateAll ();
 		}
 		
 		public CSharpSyntaxMode ()

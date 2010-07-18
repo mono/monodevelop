@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected override void Update (CommandInfo info)
 		{
 			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.TextEditorData == null) {
+			if (doc == null || doc.Editor == null) {
 				info.Visible = info.Enabled = false;
 				return;
 			}
@@ -72,11 +72,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			
 			
-			if (ext.Markers.ContainsKey (doc.TextEditorData.Caret.Line)) {
-				var marker = ext.Markers[doc.TextEditorData.Caret.Line];
+			if (ext.Markers.ContainsKey (doc.Editor.Caret.Line)) {
+				var marker = ext.Markers[doc.Editor.Caret.Line];
 				ISegment segment = null;
 				for (int i = 0; i < marker.Usages.Count; i++) {
-					if (marker.Usages[i].EndOffset < doc.TextEditorData.Caret.Offset)
+					if (marker.Usages[i].EndOffset < doc.Editor.Caret.Offset)
 						segment = marker.Usages[i];
 				}
 				if (segment != null) {
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			int max = int.MinValue;
 			foreach (var pair in ext.Markers) {
-				if (pair.Key > max && pair.Key < doc.TextEditorData.Caret.Line)
+				if (pair.Key > max && pair.Key < doc.Editor.Caret.Line)
 					max = pair.Key;
 			}
 			if (max >= 0) {
@@ -103,7 +103,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected override void Update (CommandInfo info)
 		{
 			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.TextEditorData == null) {
+			if (doc == null || doc.Editor == null) {
 				info.Visible = info.Enabled = false;
 				return;
 			}
@@ -122,11 +122,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (ext == null || ext.Markers.Count == 0)
 				return;
 			
-			if (ext.Markers.ContainsKey (doc.TextEditorData.Caret.Line)) {
-				var marker = ext.Markers[doc.TextEditorData.Caret.Line];
+			if (ext.Markers.ContainsKey (doc.Editor.Caret.Line)) {
+				var marker = ext.Markers[doc.Editor.Caret.Line];
 				ISegment segment = null;
 				for (int i = 0; i < marker.Usages.Count; i++) {
-					if (marker.Usages[i].Offset > doc.TextEditorData.Caret.Offset) {
+					if (marker.Usages[i].Offset > doc.Editor.Caret.Offset) {
 						segment = marker.Usages[i];
 						break;
 					}
@@ -139,7 +139,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			int max = int.MinValue;
 			foreach (var pair in ext.Markers) {
-				if (pair.Key > doc.TextEditorData.Caret.Line) {
+				if (pair.Key > doc.Editor.Caret.Line) {
 					max = pair.Key;
 					break;
 				}
@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, ISegment segment)
 		{
-			TextEditorData data = doc.TextEditorData;
+			TextEditorData data = doc.Editor;
 			data.Caret.Offset = segment.Offset;
 			data.Parent.ScrollTo (segment.EndOffset);
 			

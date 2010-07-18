@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (base.Document.Project != null && base.Document.Project.Policies != null)
 				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
 			
-			textEditorData = Document.TextEditorData;
+			textEditorData = Document.Editor;
 			if (textEditorData != null) {
 				textEditorData.VirtualSpaceManager = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData));
 				textEditorData.Caret.AllowCaretBehindLineEnd = true;

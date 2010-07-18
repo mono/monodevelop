@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Parser
 		public override IResolver CreateResolver (ProjectDom dom, object editor, string fileName)
 		{
 			MonoDevelop.Ide.Gui.Document doc = (MonoDevelop.Ide.Gui.Document)editor;
-			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, doc.TextEditorData, fileName);
+			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, doc.Editor, fileName);
 		}
 
 		class SpecialTracker : ICSharpCode.NRefactory.ISpecialVisitor
