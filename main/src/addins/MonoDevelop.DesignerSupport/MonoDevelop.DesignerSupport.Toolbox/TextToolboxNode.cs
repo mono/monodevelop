@@ -90,7 +90,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public void InsertAtCaret (Document document)
 		{
-			document.TextEditor.InsertText (document.TextEditor.CursorPosition, text);
+			document.Editor.InsertAtCaret (text);
 		}
 	}
 }
