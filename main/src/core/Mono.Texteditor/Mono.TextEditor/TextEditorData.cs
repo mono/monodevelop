@@ -949,6 +949,20 @@ namespace Mono.TextEditor
 		{
 			return Document.GetTextAt (Document.GetLine (line));
 		}
+		
+		public void SetCaretTo (int line, int column)
+		{
+			SetCaretTo (line, column, true);
+		}
+
+		public void SetCaretTo (int line, int column, bool highlight)
+		{
+			if (Parent != null) {
+				Parent.SetCaretTo (line, column, highlight);
+			} else {
+				Caret.Location = new DocumentLocation (line, column);
+			}
+		}
 		#endregion
 	}
 }

@@ -1,5 +1,10 @@
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs: Added SetCaretTo
+	  delegation.
+
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: SelectionRange is now
 	  always != null.
 
