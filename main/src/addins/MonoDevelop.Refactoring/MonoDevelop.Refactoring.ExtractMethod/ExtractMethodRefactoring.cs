@@ -61,7 +61,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		{
 //			if (options.SelectedItem != null)
 //				return false;
-			var buffer = options.Document.TextEditorData;
+			var buffer = options.Document.Editor;
 			if (buffer.IsSomethingSelected) {
 				ParsedDocument doc = options.ParseDocument ();
 				if (doc != null && doc.CompilationUnit != null) {
@@ -92,7 +92,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public ExtractMethodParameters CreateParameters (RefactoringOptions options)
 		{
-			var buffer = options.Document.TextEditorData;
+			var buffer = options.Document.Editor;
 			
 			if (!buffer.IsSomethingSelected)
 				return null;
@@ -253,7 +253,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (resolver == null || provider == null)
 				return null;
 
-			string text = options.Document.TextEditorData.GetTextAt (options.Document.TextEditorData.SelectionRange);
+			string text = options.Document.Editor.GetTextAt (options.Document.Editor.SelectionRange);
 			
 			TextEditorData data = options.GetTextEditorData ();
 			var cu = provider.ParseFile (data.Document.GetTextAt (0, data.SelectionRange.Offset) + "MethodCall ();" + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
@@ -409,19 +409,19 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			TextReplaceChange replacement = new TextReplaceChange ();
 			replacement.Description = string.Format (GettextCatalog.GetString ("Substitute selected statement(s) with call to {0}"), param.Name);
 			replacement.FileName = options.Document.FileName;
-			replacement.Offset = options.Document.TextEditorData.SelectionRange.Offset;
-			replacement.RemovedChars = options.Document.TextEditorData.SelectionRange.Length;
+			replacement.Offset = options.Document.Editor.SelectionRange.Offset;
+			replacement.RemovedChars = options.Document.Editor.SelectionRange.Length;
 			replacement.MoveCaretToReplace = true;
 			
-			LineSegment line1 = data.Document.GetLineByOffset (options.Document.TextEditorData.SelectionRange.EndOffset);
-			if (options.Document.TextEditorData.SelectionRange.EndOffset == line1.Offset) {
+			LineSegment line1 = data.Document.GetLineByOffset (options.Document.Editor.SelectionRange.EndOffset);
+			if (options.Document.Editor.SelectionRange.EndOffset == line1.Offset) {
 				if (line1.Offset > 0) {
 					LineSegment line2 = data.Document.GetLineByOffset (line1.Offset - 1);
 					replacement.RemovedChars -= line2.DelimiterLength;
 				}
 			}
 			
-			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditorData.SelectionRange.Offset) + provider.OutputNode (options.Dom, outputNode).Trim ();
+			replacement.InsertedText = options.GetWhitespaces (options.Document.Editor.SelectionRange.Offset) + provider.OutputNode (options.Dom, outputNode).Trim ();
 			
 			result.Add (replacement);
 
@@ -434,7 +434,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
 			if (!param.OneChangedVariable && node is Expression) {
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.TextEditorData.Caret.Line + 1, options.Document.TextEditorData.Caret.Column + 1));
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.Editor.Caret.Line + 1, options.Document.Editor.Caret.Column + 1));
 				if (resolveResult.ResolvedType != null)
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 			}

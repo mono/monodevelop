@@ -106,7 +106,7 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
-				CodeGenerator generator = CodeGenerator.CreateGenerator (Options.Document.TextEditorData.Document.MimeType);
+				CodeGenerator generator = CodeGenerator.CreateGenerator (Options.Document.Editor.Document.MimeType);
 				foreach (IField field in includedMembers)
 					yield return generator.CreateFieldEncapsulation (Options.EnclosingType, field, CreatePropertyName (field), MonoDevelop.Projects.Dom.Modifiers.Public, ReadOnly);
 			}

@@ -72,7 +72,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		public ICSharpCode.NRefactory.Ast.TypeReference ShortenTypeName (ICSharpCode.NRefactory.Ast.TypeReference typeReference)
 		{
-			return Document.CompilationUnit.ShortenTypeName (typeReference.ConvertToReturnType (), Document.TextEditorData.Caret.Line + 1, Document.TextEditorData.Caret.Column + 1).ConvertToTypeReference ();
+			return Document.CompilationUnit.ShortenTypeName (typeReference.ConvertToReturnType (), Document.Editor.Caret.Line + 1, Document.Editor.Caret.Column + 1).ConvertToTypeReference ();
 		}
 		
 		public IResolver GetResolver ()
@@ -90,8 +90,8 @@ namespace MonoDevelop.CodeGeneration
 				Document = document,
 			};
 			if (document.ParsedDocument != null && document.ParsedDocument.CompilationUnit != null) {
-				options.EnclosingType = document.ParsedDocument.CompilationUnit.GetTypeAt (document.TextEditorData.Caret.Line + 1, document.TextEditorData.Caret.Column + 1);
-				options.EnclosingMember = document.ParsedDocument.CompilationUnit.GetMemberAt (document.TextEditorData.Caret.Line + 1, document.TextEditorData.Caret.Column + 1);
+				options.EnclosingType = document.ParsedDocument.CompilationUnit.GetTypeAt (document.Editor.Caret.Line + 1, document.Editor.Caret.Column + 1);
+				options.EnclosingMember = document.ParsedDocument.CompilationUnit.GetMemberAt (document.Editor.Caret.Line + 1, document.Editor.Caret.Column + 1);
 			}
 			return options;
 		}

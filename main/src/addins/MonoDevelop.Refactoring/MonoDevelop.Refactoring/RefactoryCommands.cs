@@ -518,8 +518,8 @@ namespace MonoDevelop.Refactoring
 			public void ResolveName ()
 			{
 				// TODO: Move this to a expression refactorer !!!!
-				int pos = doc.TextEditorData.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
-				doc.TextEditorData.Insert (pos, ns +"." );
+				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
+				doc.Editor.Insert (pos, ns +"." );
 			}
 		}
 
@@ -1025,16 +1025,16 @@ namespace MonoDevelop.Refactoring
 		{
 			EncapsulateFieldDialog dialog;
 			if (item is IField) {
-				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IField) item);
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.Editor.Parent, ctx, (IField) item);
 			} else {
-				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, ctx, (IType) item);
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.Editor.Parent, ctx, (IType) item);
 			}
 			MessageService.ShowCustomDialog (dialog);
 		}
 		
 		public void OverrideOrImplementMembers ()
 		{
-			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument.TextEditorData.Parent, (IType)item));
+			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument.Editor.Parent, (IType)item));
 		}
 		
 		public void Rename ()

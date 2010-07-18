@@ -120,7 +120,7 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<string> GenerateCode (INRefactoryASTProvider astProvider, string indent, List<IBaseMember> includedMembers)
 			{
-				CodeGenerator generator = CodeGenerator.CreateGenerator (Options.Document.TextEditorData.Document.MimeType);
+				CodeGenerator generator = CodeGenerator.CreateGenerator (Options.Document.Editor.Document.MimeType);
 				
 				foreach (IMember member in includedMembers) 
 					yield return generator.CreateMemberImplementation (Options.EnclosingType, member, false).Code;

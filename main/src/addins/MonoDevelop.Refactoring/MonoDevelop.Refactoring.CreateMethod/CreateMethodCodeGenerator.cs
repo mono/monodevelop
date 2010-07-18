@@ -60,7 +60,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				return false;
 			returnType = DomReturnType.Void;
 			modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
-			resolvePosition = new DomLocation (options.Document.TextEditorData.Caret.Line + 1, options.Document.TextEditorData.Caret.Column + 1);
+			resolvePosition = new DomLocation (options.Document.Editor.Caret.Line + 1, options.Document.Editor.Caret.Column + 1);
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (provider.OutputNode (options.Dom, invoke)), resolvePosition);
 			
 			if (resolveResult is MethodResolveResult) {
@@ -157,7 +157,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 //					insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
 				} else {
 					var openDocument = IdeApp.Workbench.OpenDocument (fileName);
-					data = openDocument.TextEditorData;
+					data = openDocument.Editor;
 					if (data == null)
 						return;
 					modifiers |= ICSharpCode.NRefactory.Ast.Modifiers.Public;
@@ -206,7 +206,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 					if (string.IsNullOrEmpty (fileName))
 						return;
 					MonoDevelop.Ide.Gui.Document document = IdeApp.Workbench.OpenDocument (fileName);
-					TextEditorData docData = document.TextEditorData;
+					TextEditorData docData = document.Editor;
 					if (docData != null) {
 						docData.ClearSelection ();
 						docData.Caret.Offset = selectionEnd;

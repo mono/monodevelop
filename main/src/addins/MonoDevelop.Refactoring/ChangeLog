@@ -1,5 +1,29 @@
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Refactoring/Change.cs:
+	* MonoDevelop.Refactoring/RefactoryCommands.cs:
+	* MonoDevelop.Refactoring/RefactoringOptions.cs:
+	* MonoDevelop.Refactoring/ImportSymbolHandler.cs:
+	* MonoDevelop.CodeGeneration/PropertyGenerator.cs:
+	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationOptions.cs:
+	* MonoDevelop.CodeGeneration/AbstractGenerateAction.cs:
+	* MonoDevelop.CodeGeneration/CodeGenerationCommands.cs:
+	* MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs:
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	* MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs:
+	* MonoDevelop.Refactoring.ExtractMethod/ExtractMethodRefactoring.cs:
+	* MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs:
+	* MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs:
+	* MonoDevelop.Refactoring.MoveTypeToFile/MoveTypeToFileRefactoring.cs:
+	* MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs:
+	* MonoDevelop.Refactoring.RefactorImports/RemoveUnusedImportsRefactoring.cs:
+	* MonoDevelop.Refactoring.IntroduceFormatItem/IntroduceFormatItemRefactoring.cs:
+	* MonoDevelop.Refactoring.IntegrateTemporaryVariable/IntegrateTemporaryVariableRefactoring.cs:
+	  Track API changes.
+
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Refactoring/RefactoryCommands.cs:
 	* MonoDevelop.Refactoring/RefactoringOptions.cs:
 	* MonoDevelop.CodeGeneration/WriteLineGenerator.cs:

@@ -111,7 +111,7 @@ namespace MonoDevelop.Refactoring
 			this.doc = doc;
 			this.cache = cache;
 			this.dom = dom;
-			this.data = doc.TextEditorData;
+			this.data = doc.Editor;
 			this.ambience = doc.Project != null ? doc.Project.Ambience : AmbienceService.GetAmbienceForFile (doc.FileName);
 			this.type = type;
 			this.unit = doc.CompilationUnit;

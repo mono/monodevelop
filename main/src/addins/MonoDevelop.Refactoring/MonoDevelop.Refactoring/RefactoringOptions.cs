@@ -71,7 +71,7 @@ namespace MonoDevelop.Refactoring
 		
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()
 		{
-			return Document.TextEditorData;
+			return Document.Editor;
 		}
 		
 		public INRefactoryASTProvider GetASTProvider ()
@@ -100,17 +100,17 @@ namespace MonoDevelop.Refactoring
 			if (provider == null) 
 				return null;
 			
-			int start = Document.TextEditorData.Document.LocationToOffset (member.BodyRegion.Start.Line - 1, member.BodyRegion.Start.Column - 1);
-			int end = Document.TextEditorData.Document.LocationToOffset (member.BodyRegion.End.Line - 1, member.BodyRegion.End.Column - 1);
-			string memberBody = Document.TextEditorData.GetTextBetween (start, end);
+			int start = Document.Editor.Document.LocationToOffset (member.BodyRegion.Start.Line - 1, member.BodyRegion.Start.Column - 1);
+			int end = Document.Editor.Document.LocationToOffset (member.BodyRegion.End.Line - 1, member.BodyRegion.End.Column - 1);
+			string memberBody = Document.Editor.GetTextBetween (start, end);
 			return provider.ParseText (memberBody);
 		}
 		
 		public static string GetWhitespaces (Document document, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < document.TextEditorData.Length; i++) {
-				char ch = document.TextEditorData.GetCharAt (i);
+			for (int i = insertionOffset; i < document.Editor.Length; i++) {
+				char ch = document.Editor.GetCharAt (i);
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);
 				} else {
@@ -122,7 +122,7 @@ namespace MonoDevelop.Refactoring
 		
 		public static string GetIndent (Document document, IMember member)
 		{
-			return GetWhitespaces (document, document.TextEditorData.Document.LocationToOffset (member.Location.Line - 1, 0));
+			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Location.Line - 1, 0));
 		}
 		public string GetWhitespaces (int insertionOffset)
 		{
@@ -136,12 +136,12 @@ namespace MonoDevelop.Refactoring
 		
 		public IReturnType ShortenTypeName (IReturnType fullyQualifiedTypeName)
 		{
-			return Document.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, Document.TextEditorData.Caret.Line + 1, Document.TextEditorData.Caret.Column + 1);
+			return Document.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, Document.Editor.Caret.Line + 1, Document.Editor.Caret.Column + 1);
 		}
 		
 		public ParsedDocument ParseDocument ()
 		{
-			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.TextEditorData.Text);
+			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.Editor.Text);
 		}
 	}
 }

@@ -128,7 +128,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 			
 			if (output.Length > 0) {
-				var data = options.Document.TextEditorData;
+				var data = options.Document.Editor;
 				int offset = data.Caret.Offset - indent.Length;
 				data.Replace (offset, indent.Length, output.ToString ());
 				data.Caret.Offset = offset + output.Length;
