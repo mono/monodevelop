@@ -123,25 +123,25 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return string.Format("[CodeTemplate: Group={0}, Shortcut={1}, CodeTemplateType={2}, MimeType={3}, Description={4}, Code={5}]", Group, Shortcut, CodeTemplateType, MimeType, Description, Code);
 		}
 		
-		static int FindPrevWordStart (MonoDevelop.Ide.Gui.TextEditor editor, int offset)
+		static int FindPrevWordStart (TextEditorData editor, int offset)
 		{
 			while (--offset >= 0 && !Char.IsWhiteSpace (editor.GetCharAt (offset))) 
 				;
 			return ++offset;
 		}
 		
-		public static string GetWordBeforeCaret (MonoDevelop.Ide.Gui.TextEditor editor)
+		public static string GetWordBeforeCaret (TextEditorData editor)
 		{
-			int offset = editor.CursorPosition;
+			int offset = editor.Caret.Offset;
 			int start  = FindPrevWordStart (editor, offset);
-			return editor.GetText (start, offset);
+			return editor.GetTextBetween (start, offset);
 		}
 		
-		static int DeleteWordBeforeCaret (MonoDevelop.Ide.Gui.TextEditor editor)
+		static int DeleteWordBeforeCaret (TextEditorData editor)
 		{
-			int offset = editor.CursorPosition;
+			int offset = editor.Caret.Offset;
 			int start  = FindPrevWordStart (editor, offset);
-			editor.DeleteText (start, offset - start);
+			editor.Remove (start, offset - start);
 			return start;
 		}
 		
@@ -295,23 +295,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return result.ToString ();
 		}
 		
-		// todo: better code formatting !!!
-		string GetIndent (MonoDevelop.Ide.Gui.TextEditor d, int lineNumber, int terminateIndex)
-		{
-			string lineText = d.GetLineText (lineNumber);
-			if(terminateIndex > 0)
-				lineText = lineText.Substring(0, terminateIndex);
-			
-			StringBuilder whitespaces = new StringBuilder ();
-			
-			foreach (char ch in lineText) {
-				if (!char.IsWhiteSpace (ch))
-					break;
-				whitespaces.Append (ch);
-			}
-			
-			return whitespaces.ToString ();
-		}
 		
 		string GetIndent (StringBuilder sb)
 		{
@@ -371,13 +354,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			ProjectDom dom = document.Dom;
 			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);
-			MonoDevelop.Ide.Gui.TextEditor editor = document.TextEditor;
-
 			Mono.TextEditor.TextEditorData data = document.TextEditorData;
 
-			int offset = editor.CursorPosition;
-			int line, col;
-			editor.GetLineColumnFromPosition (offset, out line, out col);
+			int offset = data.Caret.Offset;
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
 			
 			TemplateContext context = new TemplateContext {
@@ -385,9 +364,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 				Document = document,
 				ProjectDom = dom,
 				ParsedDocument = doc,
-				InsertPosition = new DomLocation (line, col),
-				LineIndent = GetIndent (editor, line, 0),
-				TemplateCode = IndentCode (Code, document.TextEditorData.EolMarker, GetIndent (editor, line, 0))
+				InsertPosition = new DomLocation (data.Caret.Line + 1, data.Caret.Column + 1),
+				LineIndent = data.Document.GetLineIndent (data.Caret.Line),
+				TemplateCode = IndentCode (Code, document.TextEditorData.EolMarker, data.Document.GetLineIndent (data.Caret.Line))
 			};
 
 			if (data.IsSomethingSelected) {
@@ -399,14 +378,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 				while (Char.IsWhiteSpace (data.Document.GetCharAt (end - 1))) {
 					end--;
 				}
-				context.LineIndent = GetIndent (editor, data.Document.OffsetToLineNumber (start) + 1, 0);
+				context.LineIndent = data.Document.GetLineIndent (data.Document.OffsetToLineNumber (start) + 1);
 				context.SelectedText = RemoveIndent (data.Document.GetTextBetween (start, end), context.LineIndent);
 				data.Remove (start, end - start);
 				offset = start;
 			} else {
-				string word = GetWordBeforeCaret (editor).Trim ();
+				string word = GetWordBeforeCaret (data).Trim ();
 				if (word.Length > 0)
-					offset = DeleteWordBeforeCaret (editor);
+					offset = DeleteWordBeforeCaret (data);
 			}
 			
 			TemplateResult template = FillVariables (context);

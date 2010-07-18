@@ -57,15 +57,11 @@ namespace MonoDevelop.Ide.Gui.Content
 		protected Document Document {
 			get { return document; }
 		}
-		
-		protected TextEditor Editor {
-			get { return document.TextEditor; }
-		}
-		
-		protected TextEditorData TextEditorData {
+
+		protected TextEditorData Editor {
 			get { return document.TextEditorData; }
 		}
-		
+
 		protected FilePath FileName {
 			get {
 				IViewContent view = document.Window.ViewContent;

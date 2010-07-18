@@ -1,3 +1,11 @@
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Text editor extensions are now based on the mono.texteditor
+	  infrastructure.
+
 2010-07-16  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide/ImageService.cs: Scale images when they

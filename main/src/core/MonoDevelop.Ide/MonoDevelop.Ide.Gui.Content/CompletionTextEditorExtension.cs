@@ -124,17 +124,17 @@ namespace MonoDevelop.Ide.Gui.Content
 			// Handle code completion
 
 			if (keyChar != '\0' && CompletionWidget != null && currentCompletionContext == null) {
-				currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
+				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
 				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
 				                                                           ref triggerWordLength);
 				
-				if (triggerWordLength > 0 && (triggerWordLength < Editor.CursorPosition
-				                              || (triggerWordLength == 1 && Editor.CursorPosition == 1)))
+				if (triggerWordLength > 0 && (triggerWordLength < Editor.Caret.Offset
+				                              || (triggerWordLength == 1 && Editor.Caret.Offset == 1)))
 				{
 					currentCompletionContext
-						= CompletionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);
+						= CompletionWidget.CreateCodeCompletionContext (Editor.Caret.Offset - triggerWordLength);
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			
 			if (enableParameterInsight && CompletionWidget != null) {
-				CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
+				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
 				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, keyChar);
 				if (paramProvider != null)
 					ParameterInformationWindowManager.ShowWindow (CompletionWidget, ctx, paramProvider);
@@ -162,10 +162,10 @@ namespace MonoDevelop.Ide.Gui.Content
 		protected void ShowCompletion (ICompletionDataList completionList, int triggerWordLength, char keyChar)
 		{
 			if (CompletionWidget != null && currentCompletionContext == null) {
-				currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CursorPosition);
-				if (triggerWordLength > 0 && triggerWordLength < Editor.CursorPosition) {
+				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
+				if (triggerWordLength > 0 && triggerWordLength < Editor.Caret.Offset) {
 					currentCompletionContext =
-						CompletionWidget.CreateCodeCompletionContext (Editor.CursorPosition - triggerWordLength);	
+						CompletionWidget.CreateCodeCompletionContext (Editor.Caret.Offset - triggerWordLength);	
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (completionList != null)
@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Editor.CursorPosition;
+				cpos = Editor.Caret.Offset;
 				wlen = 0;
 			}
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Editor.CursorPosition;
+				cpos = Editor.Caret.Offset;
 				wlen = 0;
 			}
 			
@@ -261,7 +261,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			IParameterDataProvider cp = null;
 			int cpos;
 			if (!GetParameterCompletionCommandOffset (out cpos))
-				cpos = Editor.CursorPosition;
+				cpos = Editor.Caret.Offset;
 			CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 			cp = ParameterCompletionCommand (ctx);
 			if (cp != null) {
@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual bool GetCompletionCommandOffset (out int cpos, out int wlen)
 		{
 			cpos = wlen = 0;
-			int pos = Editor.CursorPosition - 1;
+			int pos = Editor.Caret.Offset - 1;
 			while (pos >= 0) {
 				char c = Editor.GetCharAt (pos);
 				if (!char.IsLetterOrDigit (c) && c != '_')
@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			pos++;
 			cpos = pos;
-			int len = Editor.TextLength;
+			int len = Editor.Length;
 			
 			while (pos < len) {
 				char c = Editor.GetCharAt (pos);
@@ -368,7 +368,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			// the char at the cursor position. If it returns a provider, just return it.
 			
 			int pos = completionContext.TriggerOffset;
-			string txt = Editor.GetText (pos - 1, pos);
+			string txt = Editor.GetTextBetween (pos - 1, pos);
 			if (txt.Length > 0) {
 				ICompletionDataList completionList = HandleCodeCompletion (completionContext, txt[0]);
 				if (completionList != null)
@@ -396,7 +396,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			IParameterDataProvider cp = HandleParameterCompletion (completionContext, TextEditorData.Document.GetCharAt (pos - 1));
+			IParameterDataProvider cp = HandleParameterCompletion (completionContext, Editor.Document.GetCharAt (pos - 1));
 			if (cp != null)
 				return cp;
 			return null;
