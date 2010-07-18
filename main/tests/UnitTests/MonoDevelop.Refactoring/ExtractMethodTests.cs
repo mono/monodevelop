@@ -100,9 +100,9 @@ namespace MonoDevelop.Refactoring.Tests
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);
 			if (cursorPosition >= 0)
-				doc.TextEditor.CursorPosition = cursorPosition;
+				doc.Editor.Caret.Offset = cursorPosition;
 			if (selectionStart >= 0) 
-				doc.TextEditor.Select (selectionStart, selectionEnd);
+				doc.Editor.SetSelection (selectionStart, selectionEnd);
 			
 			NRefactoryResolver resolver = new NRefactoryResolver (dom, 
 			                                                      doc.ParsedDocument.CompilationUnit, 
@@ -116,7 +116,7 @@ namespace MonoDevelop.Refactoring.Tests
 			} else {
 				expressionResult = new NewCSharpExpressionFinder (dom).FindFullExpression (editorText, cursorPosition + 1);
 			}
-			ResolveResult resolveResult = endPos >= 0 ? resolver.Resolve (expressionResult, new DomLocation (doc.TextEditor.CursorLine, doc .TextEditor.CursorColumn)) : null;
+			ResolveResult resolveResult = endPos >= 0 ? resolver.Resolve (expressionResult, new DomLocation (doc.Editor.Caret.Line + 1, doc.Editor.Caret.Column + 1)) : null;
 			
 			RefactoringOptions result = new RefactoringOptions {
 				Document = doc,
@@ -152,7 +152,7 @@ namespace MonoDevelop.Refactoring.Tests
 		internal static string GetOutput (RefactoringOptions options, List<Change> changes)
 		{
 			RefactoringService.AcceptChanges (null, options.Dom, changes, new FileProvider (options));
-			return options.Document.TextEditor.Text;
+			return options.Document.Editor.Text;
 		}
 			
 		
