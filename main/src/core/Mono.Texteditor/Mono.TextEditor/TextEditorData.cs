@@ -491,7 +491,7 @@ namespace Mono.TextEditor
 		}
 		public ISegment SelectionRange {
 			get {
-				return MainSelection != null ? MainSelection.GetSelectionRange (this) : null;
+				return MainSelection != null ? MainSelection.GetSelectionRange (this) : new Segment (Caret.Offset, 0);
 			}
 			set {
 				if (!Segment.Equals (this.SelectionRange, value)) {
