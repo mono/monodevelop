@@ -113,12 +113,10 @@ namespace MonoDevelop.TextTemplating.Gui
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
-			string txt = Editor.GetText (pos - 1, pos);
+			if (pos <= 0)
+				return null;
 			int triggerWordLength = 0;
-			if (txt.Length > 0) {
-				return HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
-			}
-			return null;
+			return HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (
@@ -276,10 +274,10 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		void SelectSegment (Mono.TextTemplating.ISegment seg)
 		{
-			int s = Editor.GetPositionFromLineColumn (seg.TagStartLocation.Line, seg.TagStartLocation.Column);
+			int s = Editor.Document.LocationToOffset (seg.TagStartLocation.Line - 1, seg.TagStartLocation.Column - 1);
 			if (s > -1) {
-				Editor.CursorPosition = s;
-				Editor.ShowPosition (s);
+				Editor.Caret.Offset = s;
+				Editor.Parent.CenterTo (s);
 			}
 		}
 		

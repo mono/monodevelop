@@ -1,3 +1,7 @@
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/T4EditorExtension.cs: Track API changes.
+
 2010-07-13  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* T4SyntaxMode.xml: Added styles for templated regions in
