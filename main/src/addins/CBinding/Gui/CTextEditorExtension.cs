@@ -40,6 +40,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 
 using CBinding.Parser;
+using Mono.TextEditor;
 
 namespace CBinding
 {
@@ -86,19 +87,19 @@ namespace CBinding
 			return IsOpenBrace  (c) || IsCloseBrace (c);
 		}
 		
-		static int SearchMatchingBracket (TextEditor editor, int offset, char openBracket, char closingBracket, int direction)
+		static int SearchMatchingBracket (TextEditorData editor, int offset, char openBracket, char closingBracket, int direction)
 		{
 			bool isInString       = false;
 			bool isInChar         = false;	
 			bool isInBlockComment = false;
 			int depth = -1;
-			while (offset >= 0 && offset < editor.TextLength) {
+			while (offset >= 0 && offset < editor.Length) {
 				char ch = editor.GetCharAt (offset);
 				switch (ch) {
 					case '/':
 						if (isInBlockComment) 
 							isInBlockComment = editor.GetCharAt (offset + direction) != '*';
-						if (!isInString && !isInChar && offset - direction < editor.TextLength) 
+						if (!isInString && !isInChar && offset - direction < editor.Length) 
 							isInBlockComment = offset > 0 && editor.GetCharAt (offset - direction) == '*';
 						break;
 					case '"':
@@ -127,27 +128,24 @@ namespace CBinding
 			return -1;
 		}
 		
-		static int GetClosingBraceForLine (TextEditor editor, int line, out int openingLine)
+		static int GetClosingBraceForLine (TextEditorData editor, LineSegment line, out int openingLine)
 		{
-			int offset = editor.GetPositionFromLineColumn (line, 1);
-			offset = SearchMatchingBracket (editor, offset, '{', '}', -1);
+			int offset = SearchMatchingBracket (editor, line.Offset, '{', '}', -1);
 			if (offset == -1) {
 				openingLine = -1;
 				return -1;
 			}
 				
-			int col;
-			editor.GetLineColumnFromPosition (offset, out openingLine, out col);
+			openingLine = editor.Document.OffsetToLineNumber (offset);
 			return offset;
 		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			int line, column;
-			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			int lineBegins = Editor.GetPositionFromLineColumn(line, 0);
-			int lineCursorIndex = (Editor.CursorPosition - lineBegins) - 1;
-			string lineText = Editor.GetLineText (line);
+			var line = Editor.Document.GetLine (Editor.Caret.Line);
+			int lineBegins = line.Offset;
+			int lineCursorIndex = (Editor.Caret.Offset - lineBegins) - 1;
+			string lineText = Editor.GetLineText (Editor.Caret.Line);
 			
 			// Smart Indentation
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart)
@@ -160,17 +158,16 @@ namespace CBinding
 						char nextChar = '\0';
 						string indent = String.Empty;
 						if (!String.IsNullOrEmpty (Editor.SelectedText)) {
-							if (Editor.SelectionStartPosition < Editor.SelectionEndPosition)
-								lineBegins = Editor.SelectionStartPosition - 1;
-							int cursorPos = Editor.SelectionStartPosition;
+							if (Editor.MainSelection.Anchor < Editor.MainSelection.Lead)
+								lineBegins = Editor.SelectionRange.Offset - 1;
+							int cursorPos = Editor.SelectionRange.Offset;
 						
-							Editor.DeleteText (Editor.SelectionStartPosition, Editor.SelectionEndPosition - Editor.SelectionStartPosition);
-							Editor.CursorPosition = cursorPos;
+							Editor.DeleteSelectedText ();
+							Editor.Caret.Offset = cursorPos;
 							
-							Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);	
-							lineText = Editor.GetLineText (line);
-							lineCursorIndex = (Editor.CursorPosition - lineBegins) - 1;
-							System.Console.WriteLine(Editor.CursorPosition);
+							lineText = Editor.GetLineText (Editor.Caret.Line);
+							lineCursorIndex = (Editor.Caret.Offset - lineBegins) - 1;
+//							System.Console.WriteLine(TextEditorData.Caret.Offset);
 						}
 						if(lineText.Length > 0)
 						{
@@ -190,13 +187,13 @@ namespace CBinding
 							int openingLine;
 							if(GetClosingBraceForLine (Editor, line, out openingLine) >= 0)
 							{
-								Editor.InsertText(Editor.CursorPosition, Editor.NewLine + GetIndent(Editor, openingLine, 0));
+								Editor.Insert (Editor.Caret.Offset, Editor.EolMarker + GetIndent(Editor, openingLine, 0));
 								return false;
 							}
 						}
 
 						// Default indentation method
-						Editor.InsertText(Editor.CursorPosition, Editor.NewLine + indent + GetIndent(Editor, line, lineCursorIndex));
+						Editor.Insert (Editor.Caret.Offset, Editor.EolMarker + indent + GetIndent(Editor, Editor.Document.OffsetToLineNumber (line.Offset), lineCursorIndex));
 						
 						return false;
 
@@ -208,7 +205,7 @@ namespace CBinding
 						int braceOpeningLine;
 						if(GetClosingBraceForLine(Editor, line, out braceOpeningLine) >= 0)
 						{
-							Editor.ReplaceLine(line, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
+							Editor.Replace (line.Offset, line.Length, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
 							return false;
 						}
 
@@ -222,7 +219,7 @@ namespace CBinding
 		public override ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, char completionChar)
 		{
-			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
+			string lineText = Editor.GetLineText (completionContext.TriggerLine - 1).TrimEnd();
 			
 			// If the line ends with a matched extension, invoke its handler
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
@@ -246,9 +243,7 @@ namespace CBinding
 		    CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
-			int line, column;
-			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			string lineText = Editor.GetLineText (line).Trim();
+			string lineText = Editor.GetLineText (Editor.Caret.Line).Trim();
 			
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
 				if(lineText.EndsWith(pair.Key)) {
@@ -537,11 +532,7 @@ namespace CBinding
 				return null;
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			
-			int line, column;
-			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			int position = Editor.GetPositionFromLineColumn (line, 1);
-			string lineText = Editor.GetText (position, Editor.CursorPosition - 1).TrimEnd ();
+			string lineText = Editor.GetLineText (Editor.Caret.Line).TrimEnd ();
 			
 			int nameStart = lineText.LastIndexOfAny (allowedChars);
 
@@ -566,7 +557,7 @@ namespace CBinding
 		}
 		
 		// Snatched from DefaultFormattingStrategy
-		private string GetIndent (TextEditor d, int lineNumber, int terminateIndex)
+		private string GetIndent (TextEditorData d, int lineNumber, int terminateIndex)
 		{
 			string lineText = d.GetLineText (lineNumber);
 			if(terminateIndex > 0)
