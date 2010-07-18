@@ -106,7 +106,7 @@ namespace MonoDevelop.Refactoring.Tests
 			
 			NRefactoryResolver resolver = new NRefactoryResolver (dom, 
 			                                                      doc.ParsedDocument.CompilationUnit, 
-			                                                      MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (sev), 
+			                                                      sev.Data, 
 			                                                      file);
 			
 			ExpressionResult expressionResult;

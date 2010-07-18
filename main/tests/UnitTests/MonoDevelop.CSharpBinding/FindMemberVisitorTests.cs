@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		//	RefactorerContext ctx = new RefactorerContext (dom, new DumbTextFileProvider(testViewContent), null);
 			NRefactoryResolver resolver = new NRefactoryResolver (dom, 
 			                                                      parsedDocument.CompilationUnit, 
-			                                                      MonoDevelop.Ide.Gui.TextEditor.GetTextEditor (testViewContent), 
+			                                                      testViewContent.Data, 
 			                                                      "a.cs");
 			SearchMemberVisitor smv = new SearchMemberVisitor (memberLocation.Line);
 			if (localVariable != null) {

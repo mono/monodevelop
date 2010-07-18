@@ -43,7 +43,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 				return null;
 			}
 		}
-		
+		public TextEditorData Data {
+			get {
+				return this.data;
+			}
+		}
 		public TestViewContent ()
 		{
 			document = new Mono.TextEditor.Document ();
