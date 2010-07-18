@@ -67,7 +67,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			base.Initialize ();
 			Parser parser = new Parser (CreateRootState (), false);
-			tracker = new DocumentStateTracker<Parser> (parser, TextEditorData);
+			tracker = new DocumentStateTracker<Parser> (parser, Editor);
 			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 			
 			if (Document.ParsedDocument != null) {
@@ -177,14 +177,12 @@ namespace MonoDevelop.XmlEditor.Gui
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
-			string txt = Editor.GetText (pos - 1, pos);
+			if (pos <= 0)
+				return null;
 			int triggerWordLength = 0;
 			
-			if (txt.Length > 0) {
-				tracker.UpdateEngine ();
-				return HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
-			}
-			return null;
+			tracker.UpdateEngine ();
+			return HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (
@@ -505,7 +503,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			XElement el = node as XElement;
 			
 			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
-			int textLen = Editor.TextLength;
+			int textLen = Editor.Length;
 			
 			//run the parser until the tag's closed, or we move to its sibling or parent
 			if (node != null) {
@@ -548,11 +546,11 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected void EditorSelect (DomRegion region)
 		{
-			int s = Editor.GetPositionFromLineColumn (region.Start.Line, region.Start.Column);
-			int e = Editor.GetPositionFromLineColumn (region.End.Line, region.End.Column);
+			int s = Editor.Document.LocationToOffset (region.Start.Line - 1, region.Start.Column - 1);
+			int e = Editor.Document.LocationToOffset (region.End.Line - 1, region.End.Column - 1);
 			if (s > -1 && e > s) {
-				Editor.Select (s, e);
-				Editor.ShowPosition (s);
+				Editor.SetSelection (s, e);
+				Editor.Parent.ScrollTo (s);
 			}
 		}
 		
@@ -589,7 +587,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			int start = end - this.tracker.Engine.CurrentStateLength;
 			int mid = -1;
 			
-			int limit = Math.Min (Editor.TextLength, end + 35);
+			int limit = Math.Min (Editor.Length, end + 35);
 			
 			//try to find the end of the name, but don't go too far
 			for (; end < limit; end++) {
@@ -605,9 +603,9 @@ namespace MonoDevelop.XmlEditor.Gui
 			}
 			
 			if (mid > 0 && end > mid + 1) {
-				return new XName (Editor.GetText (start, mid), Editor.GetText (mid + 1, end));
+				return new XName (Editor.GetTextBetween (start, mid), Editor.GetTextBetween (mid + 1, end));
 			} else {
-				return new XName (Editor.GetText (start, end));
+				return new XName (Editor.GetTextBetween (start, end));
 			}
 		}
 		/*

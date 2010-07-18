@@ -486,7 +486,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
 				result = base.KeyPress (key, keyChar, modifier);
-				SmartIndentLine (Editor.CursorLine);
+				SmartIndentLine (Editor.Caret.Line);
 				return result;
 			}
 			return base.KeyPress (key, keyChar, modifier);
@@ -523,7 +523,7 @@ namespace MonoDevelop.XmlEditor
 			while (i > 0) {
 				char c = Editor.GetCharAt (i);
 				if (c == '\n' || c == '\r')
-					return Editor.GetText (i + 1, indentEnd);
+					return Editor.GetTextBetween (i + 1, indentEnd);
 				if (!char.IsWhiteSpace (c))
 					indentEnd--;
 				i--;
@@ -553,7 +553,7 @@ namespace MonoDevelop.XmlEditor
 			TaskService.Errors.Clear ();
 			
 			using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
-				bool selection = (Editor.SelectionEndPosition - Editor.SelectionStartPosition) > 0;
+				bool selection = Editor.IsSomethingSelected;
 				string xml = selection? Editor.SelectedText : Editor.Text;
 				XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName);
 				if (doc == null)
@@ -562,35 +562,34 @@ namespace MonoDevelop.XmlEditor
 				//if there's a line indent at the current location, prepend that to all new lines
 				string extraIndent = null;
 				if (selection)
-					extraIndent = GetPositionIndent (Editor.SelectionStartPosition);
+					extraIndent = GetPositionIndent (selection? Editor.SelectionRange.Offset : Editor.Caret.Offset);
 				
 				string formattedXml = XmlEditorService.IndentedFormat (xml);
 				
 				//convert newlines and prepend extra indents to each line if needed
-				bool nonNativeNewline = (Editor.NewLine != Environment.NewLine);
+				bool nonNativeNewline = (Editor.EolMarker != Environment.NewLine);
 				bool hasExtraIndent = !string.IsNullOrEmpty (extraIndent);
 				if (hasExtraIndent || nonNativeNewline) {
 					System.Text.StringBuilder builder = new System.Text.StringBuilder (formattedXml);
 					
 					if (nonNativeNewline)
-						builder.Replace (Environment.NewLine, Editor.NewLine);
+						builder.Replace (Environment.NewLine, Editor.EolMarker);
 					
 					if (hasExtraIndent) {
-						builder.Replace (Editor.NewLine, Editor.NewLine + extraIndent);
+						builder.Replace (Editor.EolMarker, Editor.EolMarker + extraIndent);
 						if (formattedXml.EndsWith (Environment.NewLine))
 							builder.Remove (builder.Length - 1 - extraIndent.Length, extraIndent.Length);
 					}
 					formattedXml = builder.ToString ();
 				}
 				
-				Editor.BeginAtomicUndo ();
+				Editor.Document.BeginAtomicUndo ();
 				if (selection) {
 					Editor.SelectedText = formattedXml;
 				} else {
-					Editor.DeleteText (0, Editor.TextLength);
-					Editor.InsertText (0, formattedXml);
+					Editor.Text = formattedXml;
 				}
-				Editor.EndAtomicUndo ();
+				Editor.Document.EndAtomicUndo ();
 			}
 		}
 		
