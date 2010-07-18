@@ -142,7 +142,7 @@ namespace MonoDevelop.CodeMetrics
 				if (treeviewMetrics.Selection.GetSelected (out selectedIter)) {
 					rowSelectTypeName = (IProperties)metricStore.GetValue (selectedIter, 6);
 						MonoDevelop.Ide.IdeApp.Workbench.OpenDocument (rowSelectTypeName.FilePath);
-						MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.TextEditor.JumpTo(rowSelectTypeName.StartLine, 0);	
+						MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo (rowSelectTypeName.StartLine, 0);	
 				}
 			};
 			
