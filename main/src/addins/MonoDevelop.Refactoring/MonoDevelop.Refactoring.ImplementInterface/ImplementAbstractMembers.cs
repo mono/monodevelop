@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
 			IType interfaceType = options.Dom.GetType (options.ResolveResult.ResolvedType);
 			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line + 1, location.Column + 1);
-			options.Document.TextEditor.BeginAtomicUndo ();
+			options.Document.TextEditorData.Document.BeginAtomicUndo ();
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			
 			List<KeyValuePair<IMember,IReturnType>> members = new List<KeyValuePair<IMember, IReturnType>> ();
@@ -69,7 +69,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			}
 			refactorer.ImplementMembers (declaringType, members, "implemented abstract members of " + interfaceType.FullName);
 			
-			options.Document.TextEditor.EndAtomicUndo ();
+			options.Document.TextEditorData.Document.EndAtomicUndo ();
 		}
 	}
 }

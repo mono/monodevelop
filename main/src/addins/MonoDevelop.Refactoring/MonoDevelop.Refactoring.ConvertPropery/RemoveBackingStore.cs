@@ -165,7 +165,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 
 		string RetrieveBackingStore (MonoDevelop.Refactoring.RefactoringOptions options, MonoDevelop.Refactoring.INRefactoryASTProvider astProvider, MonoDevelop.Projects.Dom.IProperty property)
 		{
-			ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit = astProvider.ParseFile (options.Document.TextEditor.Text);
+			ICSharpCode.NRefactory.Ast.CompilationUnit compilationUnit = astProvider.ParseFile (options.Document.TextEditorData.Text);
 			PropertyVisitor visitor = new PropertyVisitor (property);
 			compilationUnit.AcceptVisitor (visitor, null);
 			return visitor.BackingStoreName;

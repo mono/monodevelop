@@ -85,9 +85,9 @@ namespace MonoDevelop.CodeGeneration
 				
 				// add local variables
 				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.NRefactory.SupportedLanguage.CSharp);
-				Location location = new Location (Options.Document.TextEditor.CursorColumn, Options.Document.TextEditor.CursorLine);
+				Location location = new Location (Options.Document.TextEditorData.Caret.Line + 1, Options.Document.TextEditorData.Caret.Column + 1);
 				INRefactoryASTProvider provider = Options.GetASTProvider ();
-				var result = provider.ParseFile (Options.Document.TextEditor.Text);
+				var result = provider.ParseFile (Options.Document.TextEditorData.Text);
 				result.AcceptVisitor (visitor, null);
 				foreach (var list in visitor.Variables.Values) {
 					foreach (LocalLookupVariable varDescr in list) {

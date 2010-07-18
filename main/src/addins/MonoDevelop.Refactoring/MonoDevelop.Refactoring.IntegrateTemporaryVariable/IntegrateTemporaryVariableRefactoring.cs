@@ -60,9 +60,9 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			IMember member = ((LocalVariable) options.SelectedItem).DeclaringMember;
 			if (member == null)
 				return null;
-			int start = options.Document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-			int end = options.Document.TextEditor.GetPositionFromLineColumn (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
-			string memberBody = options.Document.TextEditor.GetText (start, end);
+			int start = options.Document.TextEditorData.Document.LocationToOffset (member.BodyRegion.Start.Line - 1, member.BodyRegion.Start.Column - 1);
+			int end = options.Document.TextEditorData.Document.LocationToOffset (member.BodyRegion.End.Line - 1, member.BodyRegion.End.Column - 1);
+			string memberBody = options.Document.TextEditorData.GetTextBetween (start, end);
 			INRefactoryASTProvider provider = options.GetASTProvider ();
 			if (provider == null) {
 //				Console.WriteLine("!!!Provider not found!");
@@ -147,7 +147,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 				change.Description = string.Format (GettextCatalog.GetString ("Substitute variable {0} with the Initializeexpression"), options.GetName ());
 				change.FileName = options.Options.Document.FileName;
 
-				change.Offset = options.Options.Document.TextEditor.GetPositionFromLineColumn (toReplace.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, toReplace.StartLocation.Column);
+				change.Offset = options.Options.Document.TextEditorData.Document.LocationToOffset (toReplace.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line - 1, toReplace.StartLocation.Column - 1);
 				change.RemovedChars = options.GetName ().Length;
 
 				INRefactoryASTProvider provider = options.Options.GetASTProvider ();
@@ -170,8 +170,8 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
 							change.FileName = options.Options.Document.FileName;
 
-							change.Offset = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.StartLocation.Column);
-							int end = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.EndLocation.Column);
+							change.Offset = options.Options.Document.TextEditorData.Document.LocationToOffset (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line - 1, localVariableDeclaration.StartLocation.Column - 1);
+							int end = options.Options.Document.TextEditorData.Document.LocationToOffset (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line - 1, localVariableDeclaration.EndLocation.Column - 1);
 
 							change.RemovedChars = end - change.Offset;
 							change.InsertedText = "";
@@ -181,8 +181,8 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
 							change.FileName = options.Options.Document.FileName;
 
-							change.Offset = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.StartLocation.Column);
-							int end = options.Options.Document.TextEditor.GetPositionFromLineColumn (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.EndLocation.Column);
+							change.Offset = options.Options.Document.TextEditorData.Document.LocationToOffset (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line - 1, localVariableDeclaration.StartLocation.Column - 1);
+							int end = options.Options.Document.TextEditorData.Document.LocationToOffset (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line - 1, localVariableDeclaration.EndLocation.Column - 1);
 
 							change.RemovedChars = end - change.Offset;
 							localVariableDeclaration.Variables.Remove (localVariableDeclaration.GetVariableDeclaration (options.GetName ()));

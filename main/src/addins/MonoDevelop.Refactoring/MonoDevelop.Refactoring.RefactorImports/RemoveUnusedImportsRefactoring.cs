@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			List<Change> result = new List<Change> ();
-			ICSharpCode.NRefactory.Ast.CompilationUnit unit = options.GetASTProvider ().ParseFile (options.Document.TextEditor.Text);
+			ICSharpCode.NRefactory.Ast.CompilationUnit unit = options.GetASTProvider ().ParseFile (options.Document.TextEditorData.Text);
 			FindTypeReferencesVisitor visitor = new FindTypeReferencesVisitor (options.GetTextEditorData (), options.GetResolver ());
 			visitor.VisitCompilationUnit (unit, null);
 

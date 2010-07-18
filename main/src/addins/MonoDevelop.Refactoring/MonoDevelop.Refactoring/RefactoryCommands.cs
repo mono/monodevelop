@@ -518,8 +518,8 @@ namespace MonoDevelop.Refactoring
 			public void ResolveName ()
 			{
 				// TODO: Move this to a expression refactorer !!!!
-				int pos = doc.TextEditor.GetPositionFromLineColumn (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
-				doc.TextEditor.InsertText (pos, ns +"." );
+				int pos = doc.TextEditorData.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
+				doc.TextEditorData.Insert (pos, ns +"." );
 			}
 		}
 

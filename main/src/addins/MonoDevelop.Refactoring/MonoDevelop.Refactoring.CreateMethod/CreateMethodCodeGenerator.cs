@@ -60,7 +60,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				return false;
 			returnType = DomReturnType.Void;
 			modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
-			resolvePosition = new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn);
+			resolvePosition = new DomLocation (options.Document.TextEditorData.Caret.Line + 1, options.Document.TextEditorData.Caret.Column + 1);
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (provider.OutputNode (options.Dom, invoke)), resolvePosition);
 			
 			if (resolveResult is MethodResolveResult) {

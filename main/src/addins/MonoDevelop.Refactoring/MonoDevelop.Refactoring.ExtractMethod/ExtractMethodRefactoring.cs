@@ -61,13 +61,11 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		{
 //			if (options.SelectedItem != null)
 //				return false;
-			var buffer = options.Document.TextEditor;
-			if (buffer.SelectionStartPosition - buffer.SelectionEndPosition != 0) {
+			var buffer = options.Document.TextEditorData;
+			if (buffer.IsSomethingSelected) {
 				ParsedDocument doc = options.ParseDocument ();
 				if (doc != null && doc.CompilationUnit != null) {
-					int line, column;
-					buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
-					if (doc.CompilationUnit.GetMemberAt (line, column) == null)
+					if (doc.CompilationUnit.GetMemberAt (buffer.Caret.Line + 1, buffer.Caret.Column + 1) == null)
 						return false;
 					return true;
 				}
@@ -94,24 +92,22 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public ExtractMethodParameters CreateParameters (RefactoringOptions options)
 		{
-			var buffer = options.Document.TextEditor;
+			var buffer = options.Document.TextEditorData;
 			
-			if (buffer.SelectionStartPosition - buffer.SelectionEndPosition == 0)
+			if (!buffer.IsSomethingSelected)
 				return null;
 
 			ParsedDocument doc = options.ParseDocument ();
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
 
-			int line, column;
-			buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
-			IMember member = doc.CompilationUnit.GetMemberAt (line, column);
+			IMember member = doc.CompilationUnit.GetMemberAt (buffer.Caret.Line + 1, buffer.Caret.Column + 1);
 			if (member == null)
 				return null;
 			
 			ExtractMethodParameters param = new ExtractMethodParameters () {
 				DeclaringMember = member,
-				Location = new DomLocation (line, column)
+				Location = new DomLocation (buffer.Caret.Line + 1, buffer.Caret.Column + 1)
 			};
 			Analyze (options, param, true);
 			return param;
@@ -257,7 +253,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (resolver == null || provider == null)
 				return null;
 
-			string text = options.Document.TextEditor.GetText (options.Document.TextEditor.SelectionStartPosition, options.Document.TextEditor.SelectionEndPosition);
+			string text = options.Document.TextEditorData.GetTextAt (options.Document.TextEditorData.SelectionRange);
 			
 			TextEditorData data = options.GetTextEditorData ();
 			var cu = provider.ParseFile (data.Document.GetTextAt (0, data.SelectionRange.Offset) + "MethodCall ();" + data.Document.GetTextAt (data.SelectionRange.EndOffset, data.Document.Length - data.SelectionRange.EndOffset));
@@ -413,19 +409,19 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			TextReplaceChange replacement = new TextReplaceChange ();
 			replacement.Description = string.Format (GettextCatalog.GetString ("Substitute selected statement(s) with call to {0}"), param.Name);
 			replacement.FileName = options.Document.FileName;
-			replacement.Offset = options.Document.TextEditor.SelectionStartPosition;
-			replacement.RemovedChars = options.Document.TextEditor.SelectionEndPosition - options.Document.TextEditor.SelectionStartPosition;
+			replacement.Offset = options.Document.TextEditorData.SelectionRange.Offset;
+			replacement.RemovedChars = options.Document.TextEditorData.SelectionRange.Length;
 			replacement.MoveCaretToReplace = true;
 			
-			LineSegment line1 = data.Document.GetLineByOffset (options.Document.TextEditor.SelectionEndPosition);
-			if (options.Document.TextEditor.SelectionEndPosition == line1.Offset) {
+			LineSegment line1 = data.Document.GetLineByOffset (options.Document.TextEditorData.SelectionRange.EndOffset);
+			if (options.Document.TextEditorData.SelectionRange.EndOffset == line1.Offset) {
 				if (line1.Offset > 0) {
 					LineSegment line2 = data.Document.GetLineByOffset (line1.Offset - 1);
 					replacement.RemovedChars -= line2.DelimiterLength;
 				}
 			}
 			
-			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditor.SelectionStartPosition) + provider.OutputNode (options.Dom, outputNode).Trim ();
+			replacement.InsertedText = options.GetWhitespaces (options.Document.TextEditorData.SelectionRange.Offset) + provider.OutputNode (options.Dom, outputNode).Trim ();
 			
 			result.Add (replacement);
 
@@ -438,7 +434,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
 			if (!param.OneChangedVariable && node is Expression) {
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.TextEditorData.Caret.Line + 1, options.Document.TextEditorData.Caret.Column + 1));
 				if (resolveResult.ResolvedType != null)
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 			}

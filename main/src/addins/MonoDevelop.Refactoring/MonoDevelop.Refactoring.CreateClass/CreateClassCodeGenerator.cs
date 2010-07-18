@@ -161,7 +161,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 				constructor.Parameters.Add (pde);
 			}
 			ICSharpCode.NRefactory.Ast.INode node = newType;
-			IType curType = options.Document.CompilationUnit.GetTypeAt (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn);
+			IType curType = options.Document.CompilationUnit.GetTypeAt (options.Document.TextEditorData.Caret.Line - 1, options.Document.TextEditorData.Caret.Column - 1);
 			if (curType != null && !string.IsNullOrEmpty (curType.Namespace)) {
 				NamespaceDeclaration namespaceDeclaration = new NamespaceDeclaration (curType.Namespace);
 				namespaceDeclaration.Children.Add (newType);

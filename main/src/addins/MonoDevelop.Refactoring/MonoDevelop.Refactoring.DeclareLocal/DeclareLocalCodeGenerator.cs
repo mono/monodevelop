@@ -85,7 +85,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (expression == null || (block != null && block.Children[0] is LocalVariableDeclaration))
 				return false;
 			
-			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditorData.Caret.Line - 1, options.Document.TextEditorData.Caret.Column - 1));
 			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName) && resolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
 		}
 		
@@ -93,8 +93,8 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 		{
 			base.Run (options);
 			if (selectionEnd >= 0) {
-				options.Document.TextEditor.CursorPosition = selectionEnd;
-				options.Document.TextEditor.Select (selectionStart, selectionEnd);
+				options.Document.TextEditorData.Caret.Offset = selectionEnd;
+				options.Document.TextEditorData.SetSelection (selectionStart, selectionEnd);
 			} else {
 				TextEditorData data = options.GetTextEditorData ();
 				Mono.TextEditor.TextEditor editor = data.Parent;
@@ -268,7 +268,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (expression == null)
 				return result;
 
-			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditor.CursorLine, options.Document.TextEditor.CursorColumn));
+			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.TextEditorData.Caret.Line - 1, options.Document.TextEditorData.Caret.Column - 1));
 
 			if (resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
 				TextReplaceChange insert = new TextReplaceChange ();
