@@ -1,3 +1,9 @@
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.DocFood/Commands.cs:
+	* MonoDevelop.DocFood/DocFoodTextEditorExtension.cs: Track API
+	  changes.
+
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.DocFood/DocFoodTextEditorExtension.cs: Track

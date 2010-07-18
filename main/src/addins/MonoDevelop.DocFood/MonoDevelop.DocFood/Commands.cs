@@ -43,8 +43,8 @@ namespace MonoDevelop.DocFood
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
-				IdeApp.Workbench.ActiveDocument.TextEditorData != null &&
-				IdeApp.Workbench.ActiveDocument.TextEditorData.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor != null &&
+				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
@@ -59,8 +59,8 @@ namespace MonoDevelop.DocFood
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
-				IdeApp.Workbench.ActiveDocument.TextEditorData != null &&
-				IdeApp.Workbench.ActiveDocument.TextEditorData.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor != null &&
+				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
@@ -69,7 +69,7 @@ namespace MonoDevelop.DocFood
 			var unit = IdeApp.Workbench.ActiveDocument.CompilationUnit;
 			if (unit == null)
 				return;
-			TextEditorData data = IdeApp.Workbench.ActiveDocument.TextEditorData;
+			TextEditorData data = IdeApp.Workbench.ActiveDocument.Editor;
 			Stack<IType> types = new Stack<IType> (unit.Types);
 			List<KeyValuePair<int, string>> docs = new List<KeyValuePair<int, string>> ();
 			while (types.Count > 0) {

@@ -40,7 +40,7 @@ namespace MonoDevelop.DocFood
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			textEditorData = Document.TextEditorData;
+			textEditorData = Document.Editor;
 		}
 		
 		string GenerateDocumentation (IMember member, string indent)
@@ -90,7 +90,7 @@ namespace MonoDevelop.DocFood
 		
 		IMember GetMemberToDocument ()
 		{
-			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.TextEditorData.Document.Text);
+			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.Editor.Document.Text);
 			IType type = parsedDocument.CompilationUnit.GetTypeAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (type == null)
 				return null;
