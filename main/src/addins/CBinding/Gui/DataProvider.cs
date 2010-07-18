@@ -44,12 +44,12 @@ namespace CBinding
 {
 	public class ParameterDataProvider : IParameterDataProvider
 	{
-		private TextEditor editor;
+		private Mono.TextEditor.TextEditorData editor;
 		private List<Function> functions = new List<Function> ();
 		
 		public ParameterDataProvider (Document document, ProjectInformation info, string functionName)
 		{
-			this.editor = document.TextEditor;
+			this.editor = document.Editor;
 			
 			foreach (Function f in info.Functions) {
 				if (f.Name == functionName) {
@@ -83,7 +83,7 @@ namespace CBinding
 		{
 			int cursor = widget.CurrentCodeCompletionContext.TriggerOffset;
 			int i = ctx.TriggerOffset;
-			if (i < 0 || i >= editor.TextLength || editor.GetCharAt (i) == ')')
+			if (i < 0 || i >= editor.Length || editor.GetCharAt (i) == ')')
 				return -1;
 			
 			if (i > cursor)

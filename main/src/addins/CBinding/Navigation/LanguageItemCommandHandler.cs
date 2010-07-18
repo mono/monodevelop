@@ -44,7 +44,7 @@ namespace CBinding.Navigation
 			Document doc = IdeApp.Workbench.OpenDocument (item.File);
 			//bool isMacro = item is Macro;
 			
-			doc.TextEditor.JumpTo((int)item.Line, 0); // TODO: get column?
+			doc.Editor.SetCaretTo ((int)item.Line, 0); // TODO: get column?
 		}
 	}
 }
