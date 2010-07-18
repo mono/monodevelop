@@ -247,10 +247,10 @@ namespace Mono.TextEditor.Highlighting
 							break;
 						
 						CloneableStack<Span> spanList = spanStack.Clone ();
-			/*			while (spanList.Count > 0 && !EndsWithContinuation (spanList.Peek (), oldLine)) {
+						while (spanList.Count > 0 && !EndsWithContinuation (spanList.Peek (), oldLine)) {
 							spanList.Pop ();
 						}
-						 */
+						
 						if (line.Offset > endOffset) {
 							bool equal = line.StartSpan.Equals (spanList);
 							doUpdate |= !equal;
@@ -265,8 +265,8 @@ namespace Mono.TextEditor.Highlighting
 							rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
 						
 						ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
-				//		while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
-				//			spanStack.Pop ();
+						while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
+							spanStack.Pop ();
 					
 					} while (iter.MoveNext ());
 				} catch (Exception e) {
