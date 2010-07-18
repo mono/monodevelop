@@ -551,7 +551,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/SyncContext.cs \
 	MonoDevelop.Ide.Gui/SyncContextAttribute.cs \
 	MonoDevelop.Ide.Gui/SyncObject.cs \
-	MonoDevelop.Ide.Gui/TextEditor.cs \
 	MonoDevelop.Ide.Gui/ToolbarComboBox.cs \
 	MonoDevelop.Ide.Gui/ViewCommandHandlers.cs \
 	MonoDevelop.Ide.Gui/Workbench.cs \

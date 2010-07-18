@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.TextEditor.GetPositionFromLineColumn (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
+				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition.Line -1, CurrentContext.InsertPosition.Column - 1), var);
 				if (result != null && (result.ResolvedType.ArrayDimensions > 0 || result.ResolvedType.FullName == DomReturnType.String.FullName))
 					return "Length";
 			}
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			string var = callback (varName);
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				ResolveResult result =  textEditorResolver.GetLanguageItem (CurrentContext.Document.TextEditor.CursorPosition, var);
+				ResolveResult result =  textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Caret.Offset, var);
 				if (result != null) {
 					IReturnType componentType =  DomType.GetComponentType (CurrentContext.ProjectDom, result.ResolvedType);
 					if (componentType != null) {

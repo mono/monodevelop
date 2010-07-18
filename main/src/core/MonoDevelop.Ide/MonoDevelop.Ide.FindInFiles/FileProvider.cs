@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				return new StringReader (buffer.ToString ());
 			Document doc = SearchDocument ();
 			if (doc != null) 
-				return new StringReader (doc.TextEditor.Text);
+				return new StringReader (doc.Editor.Text);
 			return new StreamReader (FileName);
 		}
 		
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.document = SearchDocument ();
 			if (this.document != null) {
 				Gtk.Application.Invoke (delegate {
-					document.TextEditor.BeginAtomicUndo ();
+					document.Editor.Document.BeginAtomicUndo ();
 				});
 				return;
 			}
@@ -119,8 +119,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buffer.Insert (offset, replacement);
 			if (this.document != null) {
 				Gtk.Application.Invoke (delegate {
-					document.TextEditor.DeleteText (offset, length);
-					document.TextEditor.InsertText (offset, replacement);
+					document.Editor.Replace (offset, length, replacement);
 				});
 				return;
 			}
@@ -129,7 +128,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndReplace ()
 		{
 			if (this.document != null) {
-				Gtk.Application.Invoke (delegate { document.TextEditor.EndAtomicUndo (); });
+				Gtk.Application.Invoke (delegate { document.Editor.Document.EndAtomicUndo (); });
 				return;
 			}
 			if (buffer != null && somethingReplaced) {

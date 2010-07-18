@@ -354,7 +354,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			ProjectDom dom = document.Dom;
 			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);
-			Mono.TextEditor.TextEditorData data = document.TextEditorData;
+			Mono.TextEditor.TextEditorData data = document.Editor;
 
 			int offset = data.Caret.Offset;
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
@@ -366,7 +366,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				ParsedDocument = doc,
 				InsertPosition = new DomLocation (data.Caret.Line + 1, data.Caret.Column + 1),
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),
-				TemplateCode = IndentCode (Code, document.TextEditorData.EolMarker, data.Document.GetLineIndent (data.Caret.Line))
+				TemplateCode = IndentCode (Code, document.Editor.EolMarker, data.Document.GetLineIndent (data.Caret.Line))
 			};
 
 			if (data.IsSomethingSelected) {
@@ -390,12 +390,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			TemplateResult template = FillVariables (context);
 			template.InsertPosition = offset;
-			document.TextEditorData.Insert (offset, template.Code);
+			document.Editor.Insert (offset, template.Code);
 			
 			if (template.CaretEndOffset >= 0) {
-				document.TextEditorData.Caret.Offset = offset + template.CaretEndOffset; 
+				document.Editor.Caret.Offset = offset + template.CaretEndOffset; 
 			} else {
-				document.TextEditorData.Caret.Offset= offset + template.Code.Length; 
+				document.Editor.Caret.Offset= offset + template.Code.Length; 
 			}
 			return template;
 		}

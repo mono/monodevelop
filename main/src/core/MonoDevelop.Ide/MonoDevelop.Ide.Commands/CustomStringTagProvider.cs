@@ -78,28 +78,28 @@ namespace MonoDevelop.Ide.Commands
 					return null;
 					
 				case "CURLINE":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
-						return wb.ActiveDocument.TextEditor.CursorLine;
+					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
+						return wb.ActiveDocument.Editor.Caret.Line + 1;
 					return null;
 					
 				case "CURCOLUMN":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
-						return wb.ActiveDocument.TextEditor.CursorColumn;
+					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
+						return wb.ActiveDocument.Editor.Caret.Column + 1;
 					return null;
 					
 				case "CUROFFSET":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
-						return wb.ActiveDocument.TextEditor.CursorPosition;
+					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
+						return wb.ActiveDocument.Editor.Caret.Offset;
 					return null;
 					
 				case "CURTEXT":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
-						return wb.ActiveDocument.TextEditor.SelectedText;
+					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
+						return wb.ActiveDocument.Editor.SelectedText;
 					return null;
 					
 				case "EDITORTEXT":
-					if (wb.ActiveDocument != null && wb.ActiveDocument.TextEditor != null)
-						return wb.ActiveDocument.TextEditor.Text;
+					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
+						return wb.ActiveDocument.Editor.Text;
 					return null;
 					
 				case "STARTUPPATH":

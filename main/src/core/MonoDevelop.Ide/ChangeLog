@@ -1,5 +1,29 @@
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide.Gui/TextEditor.cs:
+	* MonoDevelop.Ide.FindInFiles/Scope.cs:
+	* MonoDevelop.Ide.Commands/EditCommands.cs:
+	* MonoDevelop.Ide.Commands/ViewCommands.cs:
+	* MonoDevelop.Ide.Tasks/CommentTasksView.cs:
+	* MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:
+	* MonoDevelop.Ide.FindInFiles/FileProvider.cs:
+	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
+	* MonoDevelop.Ide.CodeTemplates/ExpansionObject.cs:
+	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs:
+	* MonoDevelop.Ide.Commands/CustomStringTagProvider.cs:
+	* MonoDevelop.Ide.Navigation/NavigationHistoryService.cs:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:
+	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:
+	  Replaced old text editor reminders with mono.texteditor &
+	  renamed the texteditordata property to editor.
+
+2010-07-18  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs:
 	* MonoDevelop.Ide.Gui.Content/TextEditorExtension.cs:
 	* MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:

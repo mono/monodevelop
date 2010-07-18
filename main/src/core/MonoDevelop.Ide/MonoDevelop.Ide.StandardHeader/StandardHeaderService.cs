@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.StandardHeader
 		public static string GetHeader (AuthorInformation authorInfo, StandardHeaderPolicy policy, TextStylePolicy textPolicy,
 		                                string fileName, bool newFile)
 		{
-			string[] comment = TextEditor.GetCommentTags (fileName);
+			string[] comment = Document.GetCommentTags (fileName);
 			if (comment == null)
 				return "";
 			

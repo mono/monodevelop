@@ -785,9 +785,9 @@ namespace MonoDevelop.Ide.Gui
 				if (!String.IsNullOrEmpty (document.FileName)) {
 					DocumentUserPrefs dp = new DocumentUserPrefs ();
 					dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
-					if (document.TextEditor != null) {
-						dp.Line = document.TextEditor.CursorLine;
-						dp.Column = document.TextEditor.CursorColumn;
+					if (document.Editor != null) {
+						dp.Line = document.Editor.Caret.Line;
+						dp.Column = document.Editor.Caret.Column;
 					}
 					prefs.Files.Add (dp);
 				}

@@ -54,10 +54,10 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.TextEditorData.Caret.Offset);
+			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Document.TextEditorData.Caret.Offset;
+				cpos = Document.Editor.Caret.Offset;
 				wlen = 0;
 			}
 			currentCompletionContext.TriggerOffset = cpos;
@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
-			completionList = Document.TextEditor.SelectionStartPosition != Document.TextEditor.SelectionEndPosition ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
+			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
 			
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow ((char)0, completionList, CompletionWidget, currentCompletionContext, OnCompletionWindowClosed);
@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		internal void OnUpdateShowCodeTemplatesWindow (CommandInfo info)
 		{
 			info.Bypass = !CanRunCompletionCommand ();
-			info.Text = Document.TextEditor.SelectionStartPosition != Document.TextEditor.SelectionEndPosition ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
+			info.Text = Document.Editor.IsSomethingSelected ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
 		}
 	
 		

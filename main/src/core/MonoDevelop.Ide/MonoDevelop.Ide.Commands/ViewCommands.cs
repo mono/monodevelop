@@ -274,12 +274,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.TextEditor != null;
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Editor != null;
 		}
 
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.TextEditor.JumpTo (IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine, IdeApp.Workbench.ActiveDocument.TextEditor.CursorColumn);
+			IdeApp.Workbench.ActiveDocument.Editor.Parent.SetCaretTo (IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column + 1);
 		}
 	}
 }

@@ -55,8 +55,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow window;
 		TextEditorExtension editorExtension;
-		bool editorChecked;
-		TextEditor textEditor;
 		bool closed;
 		
 		bool parsing;
@@ -178,19 +176,9 @@ namespace MonoDevelop.Ide.Gui
 				return view.IsUntitled ? view.UntitledName : view.ContentName;
 			}
 		}
-		
-		public TextEditor TextEditor {
-			get {
-				if (!editorChecked) {
-					editorChecked = true;
-					textEditor = TextEditor.GetTextEditor (Window.ViewContent);
-				}
-				return textEditor;
-			}
-		}
-		
+
 		Mono.TextEditor.TextEditorData data = null;
-		public Mono.TextEditor.TextEditorData TextEditorData {
+		public Mono.TextEditor.TextEditorData Editor {
 			get {
 				if (data == null) {
 					Mono.TextEditor.ITextEditorDataProvider view = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
@@ -202,8 +190,7 @@ namespace MonoDevelop.Ide.Gui
 				return data;
 			}
 		}
-		
-		
+
 		public bool IsViewOnly {
 			get { return Window.ViewContent.IsViewOnly; }
 		}
@@ -562,7 +549,7 @@ namespace MonoDevelop.Ide.Gui
 			parsing = true;
 			try {
 				string currentParseFile = FileName;
-				string currentParseText = TextEditor.Text;
+				string currentParseText = Editor.Text;
 					Project curentParseProject = Project;
 				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
@@ -590,7 +577,7 @@ namespace MonoDevelop.Ide.Gui
 				if (closed)
 					return false;
 				parsing = false;
-				string currentParseText = TextEditor.Text;
+				string currentParseText = Editor.Text;
 				Project curentParseProject = Project;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					// Don't access Document properties from the thread
@@ -633,6 +620,42 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler ViewChanged;
 		
 		public event EventHandler DocumentParsed;
+		
+		public string[] CommentTags {
+			get {
+				return GetCommentTags (FileName);
+			}
+		}
+		
+		public static string[] GetCommentTags (string fileName)
+		{
+			//Document doc = IdeApp.Workbench.ActiveDocument;
+			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
+			
+			Mono.TextEditor.Highlighting.SyntaxMode mode = null;
+			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
+				mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt);
+				if (mode != null)
+					break;
+			}
+			
+			if (mode == null)
+				return null;
+			
+			List<string> ctags;
+			if (mode.Properties.TryGetValue ("LineComment", out ctags) && ctags.Count > 0) {
+				return new string [] { ctags [0] };
+			}
+			List<string> tags = new List<string> ();
+			if (mode.Properties.TryGetValue ("BlockCommentStart", out ctags))
+				tags.Add (ctags [0]);
+			if (mode.Properties.TryGetValue ("BlockCommentEnd", out ctags))
+				tags.Add (ctags [0]);
+			if (tags.Count == 2)
+				return tags.ToArray ();
+			else
+				return null;
+		}
 	}
 	
 	

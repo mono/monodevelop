@@ -250,9 +250,9 @@ namespace MonoDevelop.Ide.Navigation
 			
 			currentDoc.Closed += HandleCurrentDocClosed;
 			
-			if (currentDoc.TextEditor != null) {
-				currentDoc.TextEditor.TextChanged += BufferTextChanged;
-				currentDoc.TextEditor.CursorPositionChanged += BufferCaretPositionChanged;
+			if (currentDoc.Editor != null) {
+				currentDoc.Editor.Document.TextReplaced += BufferTextChanged;
+				currentDoc.Editor.Caret.PositionChanged += BufferCaretPositionChanged;
 			}
 		}
 
@@ -267,9 +267,9 @@ namespace MonoDevelop.Ide.Navigation
 				return;
 			
 			currentDoc.Closed -= HandleCurrentDocClosed;
-			if (currentDoc.TextEditor != null) {
-				currentDoc.TextEditor.TextChanged -= BufferTextChanged;
-				currentDoc.TextEditor.CursorPositionChanged -= BufferCaretPositionChanged;
+			if (currentDoc.Editor != null) {
+				currentDoc.Editor.Document.TextReplaced -= BufferTextChanged;
+				currentDoc.Editor.Caret.PositionChanged -= BufferCaretPositionChanged;
 			}
 			currentDoc = null;
 		}
@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Navigation
 			LogActiveDocument (true);
 		}
 		
-		static void BufferTextChanged (object sender, TextChangedEventArgs args)
+		static void BufferTextChanged (object sender, EventArgs args)
 		{
 			LogActiveDocument ();
 		}

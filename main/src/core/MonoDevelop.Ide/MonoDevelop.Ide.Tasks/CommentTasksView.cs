@@ -477,14 +477,15 @@ namespace MonoDevelop.Ide.Tasks
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
 				Document doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column), true);
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
-					string[] commentTags = TextEditor.GetCommentTags (doc.FileName);
+					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
-						string line = doc.TextEditor.GetLineText (task.Line);
+						string line = doc.Editor.GetLineText (task.Line - 1);
 						int index = line.IndexOf (commentTags[0]);
 						if (index != -1) {
-							doc.TextEditor.JumpTo (task.Line, task.Column);
+							doc.Editor.Parent.SetCaretTo (task.Line - 1, task.Column - 1);
 							line = line.Substring (0, index);
-							doc.TextEditor.ReplaceLine (task.Line, line);
+							var ls = doc.Editor.Document.GetLine (task.Line  - 1);
+							doc.Editor.Replace (ls.Offset, ls.EditableLength, line);
 							comments.Remove (task);
 						}
 					}

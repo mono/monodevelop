@@ -241,14 +241,14 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Project, doc.Name, false);
-			doc.TextEditor.InsertText (0, header + "\n");
+			doc.Editor.Insert (0, header + "\n");
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.Name != null && doc.TextEditor != null && doc.TextEditor.HasInputFocus) {
-				info.Enabled = TextEditor.GetCommentTags (doc.Name) != null;
+			if (doc != null && doc.Editor != null && doc.Editor.Parent.HasFocus) {
+				info.Enabled = doc.CommentTags != null;
 			} else
 				info.Enabled = false;
 		}

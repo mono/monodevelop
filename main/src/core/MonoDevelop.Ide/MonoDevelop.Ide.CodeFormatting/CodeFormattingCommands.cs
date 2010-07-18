@@ -59,14 +59,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 			Formatter formatter = TextFileService.GetFormatter (mt);
 			if (formatter == null)
 				return;
-			doc.TextEditor.BeginAtomicUndo ();
-			int line = doc.TextEditor.CursorLine;
-			int column = doc.TextEditor.CursorColumn;
-			doc.TextEditor.Select (0, doc.TextEditor.TextLength);
-			doc.TextEditor.SelectedText = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.TextEditor.Text);
-			doc.TextEditor.CursorLine = line ;
-			doc.TextEditor.CursorColumn = column;
-			doc.TextEditor.EndAtomicUndo ();
+			doc.Editor.Document.BeginAtomicUndo ();
+			var loc = doc.Editor.Caret.Location;
+			doc.Editor.Text = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text);
+			doc.Editor.Caret.Location = loc;
+			doc.Editor.Document.EndAtomicUndo ();
 		}
 	}
 }

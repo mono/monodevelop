@@ -263,56 +263,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 		}
-
-		[CommandHandler (EditCommands.JoinWithNextLine)]
-		public void OnJoinWithNextLine ()
-		{
-			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
-			if (buffer != null)
-			{
-				int cursor_pos = buffer.CursorPosition;
-				int line, column;
-				buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
-				if (line >= doc.TextEditor.LineCount)
-					return;
-				int start_pos = buffer.GetPositionFromLineColumn (line, 0) + 1;
-				
-				int line_len = doc.TextEditor.GetLineLength (line);
-				int next_line_len = doc.TextEditor.GetLineLength (line + 1);
-				
-				if (next_line_len < 0) 
-					return;
-				
-				int end_pos = start_pos + line_len + next_line_len + 1;
-				
-				string curr_line = doc.TextEditor.GetLineText (line);
-				string next_line = doc.TextEditor.GetLineText (line + 1);
-
-				string new_text = curr_line;
-				string next_line_trimmed = next_line.TrimStart ('\n', '\r', '\t', ' ');
-				if (!string.IsNullOrEmpty (next_line_trimmed)) 
-					new_text += " " + next_line_trimmed;
-				
-				buffer.BeginAtomicUndo ();
-				buffer.DeleteText (start_pos, end_pos - start_pos);
-				buffer.InsertText (start_pos, new_text);
-				buffer.EndAtomicUndo ();
-
-				buffer.CursorPosition = cursor_pos;
-			}
-		}
-		/*
-		[CommandUpdateHandler (SearchCommands.GotoLineNumber)]
-		void OnUpdateGotoLineNumber (CommandInfo info)
-		{
-			info.Enabled = GetContent <IEditableTextBuffer> () != null && MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.CanShow;
-		}
-		
-		[CommandHandler (SearchCommands.GotoLineNumber)]
-		void OnGotoLineNumber ()
-		{
-			MonoDevelop.Ide.Gui.Dialogs.GotoLineDialog.ShowDialog (GetContent <IEditableTextBuffer> ());
-		}*/
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
 		public void OnLowercaseSelection ()
@@ -364,92 +314,75 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// If the current document is not an editor, just ignore the text
 			// editor commands.
-			info.Bypass = doc.TextEditor == null;
+			info.Bypass = doc.Editor == null;
 		}
 		
 		[CommandHandler (TextEditorCommands.LineEnd)]
 		protected void OnLineEnd ()
 		{
-			doc.TextEditor.CursorColumn = int.MaxValue;
+			Mono.TextEditor.CaretMoveActions.LineEnd (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.LineStart)]
 		protected void OnLineStart ()
 		{
-			doc.TextEditor.CursorColumn = 1;
+			Mono.TextEditor.CaretMoveActions.LineStart (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteLeftChar)]
 		protected void OnDeleteLeftChar ()
 		{
-			int pos = doc.TextEditor.CursorPosition;
-			if (pos > 0) {
-				doc.TextEditor.DeleteText (pos-1, 1);
-			}
+			Mono.TextEditor.CaretMoveActions.Left (doc.Editor);
+			Mono.TextEditor.DeleteActions.Delete (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteRightChar)]
 		protected void OnDeleteRightChar ()
 		{
-			int pos = doc.TextEditor.CursorPosition;
-			if (pos < doc.TextEditor.TextLength) {
-				doc.TextEditor.DeleteText (pos, 1);
-			}
+			Mono.TextEditor.DeleteActions.Delete (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.CharLeft)]
 		protected void OnCharLeft ()
 		{
-			int pos = doc.TextEditor.CursorPosition;
-			if (pos > 0) {
-				doc.TextEditor.CursorPosition = pos - 1;
-			}
+			Mono.TextEditor.CaretMoveActions.Left (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.CharRight)]
 		protected void OnCharRight ()
 		{
-			int pos = doc.TextEditor.CursorPosition;
-			if (pos < doc.TextEditor.TextLength) {
-				doc.TextEditor.CursorPosition = pos + 1;
-			}
+			Mono.TextEditor.CaretMoveActions.Right (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.LineUp)]
 		protected void OnLineUp ()
 		{
-			int lin = doc.TextEditor.CursorLine;
-			if (lin > 1) {
-				doc.TextEditor.CursorLine = lin - 1;
-			}
+			Mono.TextEditor.CaretMoveActions.Up (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.LineDown)]
 		protected void OnLineDown ()
 		{
-			doc.TextEditor.CursorLine++;
+			Mono.TextEditor.CaretMoveActions.Down (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.DocumentStart)]
 		protected void OnDocumentStart ()
 		{
-			doc.TextEditor.CursorPosition = 0;
+			Mono.TextEditor.CaretMoveActions.ToDocumentStart (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.DocumentEnd)]
 		protected void OnDocumentEnd ()
 		{
-			doc.TextEditor.CursorPosition = doc.TextEditor.TextLength;
+			Mono.TextEditor.CaretMoveActions.ToDocumentEnd (doc.Editor);
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteLine)]
 		protected void OnDeleteLine ()
 		{
-			doc.TextEditor.BeginAtomicUndo ();
-			int col = doc.TextEditor.CursorColumn;
-			doc.TextEditor.DeleteLine (doc.TextEditor.CursorLine);
-			doc.TextEditor.CursorColumn = col;
-			doc.TextEditor.EndAtomicUndo ();
+			var line = doc.Editor.Document.GetLine (doc.Editor.Caret.Line);
+			doc.Editor.Remove (line.Offset, line.Length);
 		}
 		
 		struct RemoveInfo
@@ -499,7 +432,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.RemoveTrailingWhiteSpaces)]
 		public void OnRemoveTrailingWhiteSpaces ()
 		{
-			Mono.TextEditor.TextEditorData data = doc.TextEditorData;
+			Mono.TextEditor.TextEditorData data = doc.Editor;
 			if (data == null)
 				return;
 			
