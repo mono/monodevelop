@@ -344,8 +344,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			TableNode node = CurrentNode.DataItem as TableNode;
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
-				                                                       schemaProvider.GetSelectQuery (node.Table));
+				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetSelectQuery (node.Table));
 			else
 				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
 		}
@@ -377,8 +376,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			TableNode node = CurrentNode.DataItem as TableNode;
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
-				                                                       schemaProvider.GetUpdateQuery (node.Table));
+				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetUpdateQuery (node.Table));
 			else
 				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
 		}
@@ -410,8 +408,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			TableNode node = CurrentNode.DataItem as TableNode;
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
-				                                                       schemaProvider.GetInsertQuery (node.Table));
+				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetInsertQuery (node.Table));
 			else
 				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
 		}
@@ -443,8 +440,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			TableNode node = CurrentNode.DataItem as TableNode;
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
-				                                                       schemaProvider.GetDeleteQuery (node.Table));
+				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetDeleteQuery (node.Table));
 			else
 				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
 		}
@@ -476,8 +472,7 @@ namespace MonoDevelop.Database.ConnectionManager
 			TableNode node = CurrentNode.DataItem as TableNode;
 			IEditSchemaProvider schemaProvider = (IEditSchemaProvider)node.ConnectionContext.SchemaProvider;
 			if (IdeApp.Workbench.ActiveDocument.IsFile && !IdeApp.Workbench.ActiveDocument.IsViewOnly)
-				IdeApp.Workbench.ActiveDocument.TextEditor.InsertText (IdeApp.Workbench.ActiveDocument.TextEditor.CursorPosition, 
-				                                                       schemaProvider.GetTableCreateStatement (node.Table));
+				IdeApp.Workbench.ActiveDocument.Editor.InsertAtCaret (schemaProvider.GetTableCreateStatement (node.Table));
 			else
 				MessageService.ShowError (AddinCatalog.GetString ("Cannot insert text into the current window."));
 		}
