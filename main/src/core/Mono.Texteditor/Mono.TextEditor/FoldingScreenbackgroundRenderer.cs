@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 {
 	
 	
-	class FoldingScreenbackgroundRenderer : IBackgroundRenderer
+	public class FoldingScreenbackgroundRenderer : IBackgroundRenderer
 	{
 		TextEditor editor;
 		List<FoldSegment> foldSegments;
