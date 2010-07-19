@@ -768,11 +768,12 @@ namespace MonoDevelop.VersionControl.Views
 							if (z1 == z2)
 								z2 = z1 + 1;
 							
-							int x = (Allocation.Width) / 2;
-							int y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2;
-							if (Math.Sqrt (System.Math.Abs (x - evnt.X) * System.Math.Abs (x - evnt.X) +
-							               System.Math.Abs (y - evnt.Y) * System.Math.Abs (y - evnt.Y)) < 10) {
+							int x, y, r;
+							GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out r);
+							
+							if (evnt.X >= x && evnt.X - x < r && evnt.Y >= y && evnt.Y - y < r) {
 								selectedHunk = hunk;
+								TooltipText = GettextCatalog.GetString ("Revert this change");
 								break;
 							}
 						}
@@ -780,7 +781,8 @@ namespace MonoDevelop.VersionControl.Views
 				} else {
 					selectedHunk = null;
 				}
-					
+				if (selectedHunk == null)
+					TooltipText = null;
 				if (this.selectedHunk != selectedHunk) {
 					this.selectedHunk = selectedHunk;
 					QueueDraw ();
@@ -810,6 +812,29 @@ namespace MonoDevelop.VersionControl.Views
 				return base.OnButtonPressEvent (evnt);
 			}
 			
+			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
+			{
+				selectedHunk = null;
+				TooltipText = null;
+				QueueDraw ();
+				return base.OnLeaveNotifyEvent (evnt);
+			}
+			
+			public void GetButtonPosition (Diff.Hunk hunk, int z1, int z2, int y1, int y2, out int x, out int y, out int r)
+			{
+				r = Allocation.Width / 2;
+				if (hunk.Left.Count == 0) {
+					x = Allocation.Width - r;
+					y = Math.Min (z1, z2);
+				} else if (hunk.Right.Count == 0) {
+					x = 0;
+					y = Math.Min (y1, y2);
+				} else {
+					x = (Allocation.Width - r) / 2;
+					y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2 - r / 2;
+				}
+			}
+
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				bool hideButton = widget.OriginalEditor.Document.ReadOnly || !widget.DiffEditor.Document.ReadOnly;
@@ -829,47 +854,65 @@ namespace MonoDevelop.VersionControl.Views
 								if (z1 == z2)
 									z2 = z1 + 1;
 								cr.MoveTo (Allocation.Width, y1);
-								cr.LineTo (0, z1);
+								
+								cr.CurveTo (Allocation.Width / 2, y1,
+									Allocation.Width / 2,  z1,
+									0, z1);
+								
 								cr.LineTo (0, z2);
-								cr.LineTo (Allocation.Width, y2);
+								cr.CurveTo (Allocation.Width / 2, z2, 
+									Allocation.Width / 2, y2,
+									Allocation.Width, y2);
 								cr.ClosePath ();
 								cr.Color = GetColor (hunk, fillAlpha);
 								cr.Fill ();
 								
 								cr.Color = GetColor (hunk, lineAlpha);
 								cr.MoveTo (Allocation.Width, y1);
-								cr.LineTo (0, z1);
+								cr.CurveTo (Allocation.Width / 2, y1,
+									Allocation.Width / 2,  z1,
+									0, z1);
 								cr.Stroke ();
 								
-								cr.MoveTo (Allocation.Width, y2);
-								cr.LineTo (0, z2);
+								cr.MoveTo (0, z2);
+								cr.CurveTo (Allocation.Width / 2, z2, 
+									Allocation.Width / 2, y2,
+									Allocation.Width, y2);
 								cr.Stroke ();
 								
 								if (!hideButton) {
-									int x = Allocation.Width / 2;
-									int y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2;
+									bool isButtonSelected = selectedHunk != null && hunk.Left.Start == selectedHunk.Left.Start && hunk.Right.Start == selectedHunk.Right.Start;
+									
 									cr.Save ();
-									cr.Translate (x, y);
-									cr.Scale (10, 10);
-									cr.Arc (0, 0, 1, 0, 2 * Math.PI);
+									int x, y, r;
+									GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out r);
 									
-									cr.Color = GetColor (hunk, 1);
-									cr.FillPreserve ();
-									
-									Cairo.RadialGradient shadowGradient = new Cairo.RadialGradient (0.0, 0.0, .6,  0.0, 0.0, 1.0);
-									shadowGradient.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
-									shadowGradient.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.5));
-									cr.Source = shadowGradient;
-									cr.FillPreserve ();
-									
-									if (selectedHunk != null && hunk.Left.Start == selectedHunk.Left.Start && hunk.Right.Start == selectedHunk.Right.Start ) {
-										cr.Scale (12, 12);
-										shadowGradient = new Cairo.RadialGradient (0.0, 0.0, .6,  0.0, 0.0, 1.0);
-										shadowGradient.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.5));
-										shadowGradient.AddColorStop (1, new Cairo.Color (1, 1, 1, 0.2));
-										cr.Source = shadowGradient;
-										cr.Fill ();
+									FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x, y, r / 2, r, r);
+									cr.Color = new Cairo.Color (1, 0, 0);
+									cr.Fill ();
+									FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x + 1, y + 1, (r - 2) / 2, r - 2, r - 2);
+	
+									var shadowGradient = new Cairo.LinearGradient (x, y, x + r, y + r);
+									if (isButtonSelected) {
+										shadowGradient.AddColorStop (0, new Cairo.Color (1, 1, 1, 0));
+										shadowGradient.AddColorStop (1, new Cairo.Color (1, 1, 1, 0.8));
+									} else {
+										shadowGradient.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.8));
+										shadowGradient.AddColorStop (1, new Cairo.Color (1, 1, 1, 0));
 									}
+									cr.Source = shadowGradient;
+									cr.Fill ();
+									
+									cr.LineWidth = 2;
+									cr.LineCap = Cairo.LineCap.Round;
+									cr.Color = isButtonSelected ? new Cairo.Color (0.9, 0.9, 0.9) : new Cairo.Color (1, 1, 1);
+									
+									int a = 4;
+									cr.MoveTo (x + a, y + a);
+									cr.LineTo (x + r - a, y + r - a);
+									cr.MoveTo (x + r - a, y + a);
+									cr.LineTo (x + a, y + r - a);
+									cr.Stroke ();
 									cr.Restore ();
 								}
 							}

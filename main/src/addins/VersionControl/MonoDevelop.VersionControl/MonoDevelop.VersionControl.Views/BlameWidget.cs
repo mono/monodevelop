@@ -295,7 +295,7 @@ namespace MonoDevelop.VersionControl.Views
 				widget.info.Updated += delegate { QueueDraw (); };
 				annotations = new List<Annotation> ();
 				UpdateAnnotations (null, null);
-				widget.Document.Saved += UpdateAnnotations;
+	//			widget.Document.Saved += UpdateAnnotations;
 				widget.Editor.Document.TextReplacing += EditorDocumentTextReplacing;
 				widget.Editor.Document.LineChanged += EditorDocumentLineChanged;
 				widget.vScrollBar.ValueChanged += delegate {
@@ -318,7 +318,7 @@ namespace MonoDevelop.VersionControl.Views
 			protected override void OnDestroyed ()
 			{
 				base.OnDestroyed ();
-				widget.Document.Saved -= UpdateAnnotations;
+//				widget.Document.Saved -= UpdateAnnotations;
 				widget.Editor.Document.TextReplacing -= EditorDocumentTextReplacing;
 				widget.Editor.Document.LineChanged -= EditorDocumentLineChanged;
 				if (layout != null) {
