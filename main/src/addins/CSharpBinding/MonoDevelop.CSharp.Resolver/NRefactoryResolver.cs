@@ -899,12 +899,11 @@ namespace MonoDevelop.CSharp.Resolver
 				return "";
 			StringBuilder result = new StringBuilder ();
 			int startLine = member.Location.Line - 1;
-			int endLine   = member.BodyRegion.IsEmpty ? startLine : member.BodyRegion.End.Line;
-			
+			int endLine   = member.BodyRegion.End.Line < startLine ? startLine : member.BodyRegion.End.Line;
 			string text;
 			result.Append ("class ");
 			result.Append (member.DeclaringType.Name);
-			result.Append (" {");
+			result.Append ("{");
 			result.Append (editor.EolMarker);
 			if (editor != null) {
 				endLine = Math.Min (endLine, editor.Document.LineCount - 1);

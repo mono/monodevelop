@@ -1,3 +1,9 @@
+2010-07-19  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs: Fixed
+	  'Bug 623308 - ArgumentOutOfRangeException after typing ( for
+	  method params'.
+
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs:
