@@ -1,3 +1,7 @@
+2010-07-19  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/CTextEditorExtension.cs: Fixed the C return command.
+
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/DataProvider.cs:

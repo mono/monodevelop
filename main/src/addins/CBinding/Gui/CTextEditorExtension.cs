@@ -143,8 +143,7 @@ namespace CBinding
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			var line = Editor.Document.GetLine (Editor.Caret.Line);
-			int lineBegins = line.Offset;
-			int lineCursorIndex = (Editor.Caret.Offset - lineBegins) - 1;
+			int lineCursorIndex = Editor.Caret.Column;
 			string lineText = Editor.GetLineText (Editor.Caret.Line);
 			
 			// Smart Indentation
@@ -158,15 +157,13 @@ namespace CBinding
 						char nextChar = '\0';
 						string indent = String.Empty;
 						if (!String.IsNullOrEmpty (Editor.SelectedText)) {
-							if (Editor.MainSelection.Anchor < Editor.MainSelection.Lead)
-								lineBegins = Editor.SelectionRange.Offset - 1;
 							int cursorPos = Editor.SelectionRange.Offset;
 						
 							Editor.DeleteSelectedText ();
 							Editor.Caret.Offset = cursorPos;
 							
 							lineText = Editor.GetLineText (Editor.Caret.Line);
-							lineCursorIndex = (Editor.Caret.Offset - lineBegins) - 1;
+							lineCursorIndex = Editor.Caret.Column;
 //							System.Console.WriteLine(TextEditorData.Caret.Offset);
 						}
 						if(lineText.Length > 0)
@@ -187,13 +184,13 @@ namespace CBinding
 							int openingLine;
 							if(GetClosingBraceForLine (Editor, line, out openingLine) >= 0)
 							{
-								Editor.Insert (Editor.Caret.Offset, Editor.EolMarker + GetIndent(Editor, openingLine, 0));
+								Editor.InsertAtCaret (Editor.EolMarker + GetIndent(Editor, openingLine, 0));
 								return false;
 							}
 						}
 
 						// Default indentation method
-						Editor.Insert (Editor.Caret.Offset, Editor.EolMarker + indent + GetIndent(Editor, Editor.Document.OffsetToLineNumber (line.Offset), lineCursorIndex));
+						Editor.InsertAtCaret (Editor.EolMarker + indent + GetIndent(Editor, Editor.Document.OffsetToLineNumber (line.Offset), lineCursorIndex));
 						
 						return false;
 
