@@ -1,3 +1,9 @@
+2010-07-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* CSharpBinding.AspNet.csproj: Added reference for window
+	  builds.
+
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
 	* AspLanguageBuilder.cs: Track API changes.
