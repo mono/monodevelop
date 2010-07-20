@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			foreach (FileEntry e in oldFiles)
 				RemoveFile (e.FileName);
 			
-			if (files [assemblyFile] == null) {
+			if (!files.ContainsKey (assemblyFile)) {
 				AddFile (assemblyFile);
 				headers ["CheckFile"] = assemblyFile;
 			}
@@ -116,9 +116,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						AddReference (uri);
 				}
 				
-				ArrayList keys = new ArrayList ();
-				keys.AddRange (references);
-				foreach (ReferenceEntry re in keys)
+				foreach (ReferenceEntry re in References)
 				{
 					if (!rs.Contains (re.Uri))
 						RemoveReference (re.Uri);

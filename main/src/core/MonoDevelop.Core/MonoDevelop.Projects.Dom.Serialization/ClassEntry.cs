@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		// Position of the complete class information in the pidb file
 		long position;
 		
-		NamespaceEntry namespaceRef;
+		string nspace;
 		string name;
 		
 		[NonSerialized]
@@ -56,10 +56,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		Modifiers modifiers;
 		TypeModifier typeModifier;
 		
-		public ClassEntry (IType cls, NamespaceEntry namespaceRef)
+		public ClassEntry (IType cls)
 		{
 			this.cls = cls;
-			this.namespaceRef = namespaceRef;
 			position = -1;
 			UpdateContent (cls);
 		}
@@ -108,6 +107,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		void UpdateContent (IType cls)
 		{
 			Name = cls.Name; 
+			Namespace = cls.Namespace;
 			ctype = cls.ClassType;
 			modifiers = cls.Modifiers;
 			typeModifier = cls.TypeModifier;
@@ -161,9 +161,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
-		public NamespaceEntry NamespaceRef
+		public string Namespace
 		{
-			get { return namespaceRef; }
+			get { return nspace; }
+			set { nspace = value; }
 		}
 		
 		public int LastGetTime
@@ -207,7 +208,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override string ToString()
 		{
-			return string.Format("[ClassEntry: Position={0}, ClassType={1}, Modifiers={2}, ContentFlags={3}, Name={4}, NamespaceRef={5}, LastGetTime={6}, Subclasses={7}, TypeParameterCount={8}]", Position, ClassType, Modifiers, ContentFlags, Name, NamespaceRef, LastGetTime, Subclasses, TypeParameterCount);
+			return string.Format("[ClassEntry: Position={0}, ClassType={1}, Modifiers={2}, ContentFlags={3}, Name={4}, Namespace={5}, LastGetTime={6}, Subclasses={7}, TypeParameterCount={8}]", Position, ClassType, Modifiers, ContentFlags, Name, Namespace, LastGetTime, Subclasses, TypeParameterCount);
 		}
 	}
 

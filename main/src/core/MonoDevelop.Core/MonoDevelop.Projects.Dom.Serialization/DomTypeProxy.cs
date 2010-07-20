@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			Debug.Assert (entry != null);
 			base.Name      = entry.Name;
-			base.Namespace = entry.NamespaceRef.FullName;
+			base.Namespace = entry.Namespace;
 		}
 		
 		public override string ToString ()
@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override string Namespace {
 			get {
-				return entry.NamespaceRef.FullName;
+				return entry.Namespace;
 			}
 		}
 		public override TypeModifier TypeModifier {

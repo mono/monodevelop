@@ -106,7 +106,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			set { parseErrorRetries = value; }
 		}
 		
-		public void SetClasses (ArrayList list)
+		public void SetClasses (IEnumerable<ClassEntry> list)
 		{
 			classes = null;
 			foreach (ClassEntry ce in list)

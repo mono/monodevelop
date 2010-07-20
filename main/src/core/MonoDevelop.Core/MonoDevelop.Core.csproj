@@ -384,7 +384,6 @@
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\ProjectCodeCompletionDatabase.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\SimpleCodeCompletionDatabase.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\FileEntry.cs" />
-    <Compile Include="MonoDevelop.Projects.Dom.Serialization\NamespaceEntry.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\DomTypeProxy.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\DatabaseProjectDom.cs" />
     <Compile Include="MonoDevelop.Projects.Dom.Serialization\ParserDatabase.cs" />

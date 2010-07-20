@@ -1,3 +1,17 @@
+2010-07-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Projects.Dom.Serialization/FileEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/DomTypeProxy.cs:
+	* MonoDevelop.Projects.Dom.Serialization/NamespaceEntry.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs:
+	  Optimized the code completion database (especially the
+	  string operations in the type lookup were expensive).
+
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Core.addin.xml:

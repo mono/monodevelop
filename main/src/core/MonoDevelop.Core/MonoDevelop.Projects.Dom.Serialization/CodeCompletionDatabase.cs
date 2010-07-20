@@ -29,6 +29,7 @@
 //#define CHECK_STRINGS
 
 using System;
+using System.Linq;
 using System.Text;
 using System.IO;
 using System.Collections;
@@ -50,11 +51,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 77;
+		static protected readonly int FORMAT_VERSION   = 79;
 		
-		NamespaceEntry rootNamespace;
-		protected ArrayList references;
-		protected Hashtable files;
+		Dictionary<string, ClassEntry> typeEntries = new Dictionary<string, ClassEntry> ();
+		Dictionary<string, ClassEntry> typeEntriesIgnoreCase = new Dictionary<string, ClassEntry> (StringComparer.InvariantCultureIgnoreCase);
+		
+		Dictionary<string, List<ClassEntry>> classEntries = new Dictionary<string, List<ClassEntry>> ();
+		Dictionary<string, List<ClassEntry>> classEntriesIgnoreCase = new Dictionary<string, List<ClassEntry>> (StringComparer.InvariantCultureIgnoreCase);
+
+		Dictionary<string, HashSet<string>> namespaceEntries = new Dictionary<string, HashSet<string>> ();
+		Dictionary<string, HashSet<string>> namespaceEntriesIgnoreCase = new Dictionary<string, HashSet<string>> (StringComparer.InvariantCultureIgnoreCase);
+		// TODO: Table for inner types. Problem A.Inner could be B.Inner if B inherits from A.
+		
+		List<ReferenceEntry> references;
+		protected Dictionary<string, FileEntry> files;
 		protected Hashtable headers;
 		ParserDatabase pdb;
 		
@@ -78,17 +88,45 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		// which can contain ClassEntry objects, or other full type names (this second case
 		// is only used for inner classes).
 		Hashtable unresolvedSubclassTable = new Hashtable ();
-		
 		protected Object rwlock = new Object ();
-		
+
+		void UpdateClassEntries ()
+		{
+			// it's not really worth micro-updating the tables speed-wise.
+			typeEntriesIgnoreCase.Clear ();
+			foreach (var pair in typeEntries) {
+				typeEntriesIgnoreCase.Add (pair.Key, pair.Value);
+			}
+
+			classEntries.Clear ();
+			classEntriesIgnoreCase.Clear ();
+			HashSet<string> namespaceAlreadyAdded = new HashSet<string> ();
+			namespaceEntries.Clear ();
+			namespaceEntriesIgnoreCase.Clear ();
+			foreach (ClassEntry ce in typeEntries.Values) {
+				if (!classEntries.ContainsKey (ce.Namespace))
+					classEntriesIgnoreCase[ce.Namespace] = classEntries[ce.Namespace] = new List<ClassEntry> ();
+				classEntries[ce.Namespace].Add (ce);
+				if (namespaceAlreadyAdded.Contains (ce.Namespace))
+					continue;
+				namespaceAlreadyAdded.Add (ce.Namespace);
+				string[] path = ce.Namespace.Split ('.');
+				for (int i = 0; i < path.Length; i++) {
+					string ns = i > 0 ? string.Join (".", path, 0, i - 1) : "";
+					if (!namespaceEntries.ContainsKey (ns)) 
+						namespaceEntriesIgnoreCase[ns] = namespaceEntries[ns] = new HashSet<string> ();
+					namespaceEntries[ns].Add (path [i]);
+				}
+			}
+		}
+
 		public SerializationCodeCompletionDatabase (ParserDatabase pdb, bool handlesCommentTags)
 		{
 			Counters.LiveDatabases++;
 			this.handlesCommentTags = handlesCommentTags;
 			
-			rootNamespace = new NamespaceEntry (null, null);
-			files = new Hashtable ();
-			references = new ArrayList ();
+			files = new Dictionary<string, FileEntry> ();
+			references = new List<ReferenceEntry> ();
 			headers = new Hashtable ();
 			this.pdb = pdb;
 			
@@ -182,7 +220,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		void Read (bool verify)
 		{
 			if (!File.Exists (dataFile)) return;
-			
 			ITimeTracker timer = Counters.DatabasesRead.BeginTiming ("Reading Parser Database " + dataFile);
 				
 			lock (rwlock)
@@ -227,11 +264,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					object oo = bf.Deserialize (dataFileStream);
 					object[] data = (object[]) oo;
 					Queue dataQueue = new Queue (data);
-					references = (ArrayList) dataQueue.Dequeue ();
-					rootNamespace = (NamespaceEntry)  dataQueue.Dequeue ();
-					files = (Hashtable)  dataQueue.Dequeue ();
+					references = (List<ReferenceEntry>) dataQueue.Dequeue ();
+					typeEntries = (Dictionary<string, ClassEntry>) dataQueue.Dequeue ();
+					files = (Dictionary<string, FileEntry>) dataQueue.Dequeue ();
 					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue ();
 					DeserializeData (dataQueue);
+					UpdateClassEntries ();
 				}
 				catch (Exception ex)
 				{
@@ -248,21 +286,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				// Notify read comments
 				foreach (FileEntry fe in files.Values) {
-					if (! fe.IsAssembly && fe.CommentTasks != null) {
+					if (!fe.IsAssembly && fe.CommentTasks != null) {
 						ProjectDomService.UpdatedCommentTasks (fe.FileName, fe.CommentTasks, Project);
 					}
 				}
 				
-				int totalEntries = 0;
-				IEnumerator<ClassEntry> ecls = rootNamespace.GetAllClasses ().GetEnumerator ();
-				while (ecls.MoveNext ())
-					totalEntries++;
+				int totalEntries = classEntries.Count;
 				Counters.TypeIndexEntries.Inc (totalEntries);
 				
 				if (verify) {
 					// Read all information from the database to ensure everything is in place
 					HashSet<ClassEntry> classes = new HashSet<ClassEntry> ();
-					foreach (ClassEntry ce in rootNamespace.GetAllClasses ()) {
+					foreach (ClassEntry ce in GetAllClasses ()) {
 						classes.Add (ce);
 						try {
 							LoadClass (ce);
@@ -440,7 +475,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					Queue dataQueue = new Queue ();
 					dataQueue.Enqueue (references);
-					dataQueue.Enqueue (rootNamespace);
+					dataQueue.Enqueue (typeEntries);
 					dataQueue.Enqueue (files);
 					dataQueue.Enqueue (unresolvedSubclassTable);
 					SerializeData (dataQueue);
@@ -484,18 +519,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		internal protected FileEntry GetFile (string name)
 		{
-			return files [name] as FileEntry;
+			FileEntry result;
+			files.TryGetValue (name, out result);
+			return result;
 		}
 		
 		protected IEnumerable<FileEntry> GetAllFiles ()
 		{
-			foreach (FileEntry fe in files.Values)
-				yield return fe;
+			return files.Values;
 		}
 
 		internal IEnumerable<ClassEntry> GetAllClasses ()
 		{
-			return rootNamespace.GetAllClasses ();
+			return this.typeEntries.Values;
 		}
 		
 		public void Flush ()
@@ -529,6 +565,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock) {
 				if (ce.Class != null)
 					return ce.Class;
+				if (ce.Position < 0) // position not initialized/db error
+					return null;
 				dataFileStream.Position = ce.Position;
 				datareader.ReadInt32 ();// Length of data
 				DomType cls = DomPersistence.ReadType (datareader, pdb.CreateNameDecoder ());
@@ -566,10 +604,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			Counters.TypeIndexEntries.Dec (tce);
 			Counters.LiveTypeObjects.Dec (tcl);
-			
-			rootNamespace = new NamespaceEntry (null, null);
-			files = new Hashtable ();
-			references = new ArrayList ();
+			classEntries = new Dictionary<string, List<ClassEntry>> ();
+			classEntriesIgnoreCase = new Dictionary<string, List<ClassEntry>> (StringComparer.InvariantCultureIgnoreCase);
+			files = new Dictionary<string, FileEntry> ();
+			references.Clear ();
 			headers = new Hashtable ();
 			unresolvedSubclassTable = new Hashtable ();
 		}
@@ -579,34 +617,23 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			int genericArgumentCount = ProjectDom.ExtractGenericArgCount (ref typeName);
 			if (genericArguments != null)
 				genericArgumentCount = genericArguments.Count;
+			string fullName = ParserDatabase.GetDecoratedName (typeName, genericArgumentCount);
 			lock (rwlock)
 			{
-				string[] path = typeName.Split ('.');
-				int len = path.Length - 1;
-				
-				NamespaceEntry nst;
-				int nextPos;
-
-				IType result = null;
-				
-				if (GetBestNamespaceEntry (path, len, false, caseSensitive, out nst, out nextPos)) 
-				{
-					ClassEntry ce = nst.GetClass (path[len], genericArgumentCount, caseSensitive);
-					if (ce == null) return null;
-					result = GetClass (ce);
+				ClassEntry ce;
+				if (!(caseSensitive ? typeEntries : typeEntriesIgnoreCase).TryGetValue (fullName, out ce)) {
+					int idx = typeName.LastIndexOf ('.');
+					if (idx < 0)
+						return null;
+					IType type = GetClass (typeName.Substring (0, idx), null, caseSensitive);
+					if (type != null) {
+						IType inner = SourceProjectDom.SearchInnerType (type, typeName.Substring (idx + 1), genericArgumentCount, caseSensitive);
+						if (inner != null)
+							return genericArguments == null || genericArguments.Count == 0 ? inner : sourceProjectDom.CreateInstantiatedGenericType (inner, genericArguments);
+					}
+					return null;
 				}
-				else
-				{
-					// It may be an inner class
-					string nextName = path[nextPos++];
-					int partArgsCount = ProjectDom.ExtractGenericArgCount (ref nextName);
-					ClassEntry ce = nst.GetClass (nextName, partArgsCount, caseSensitive);
-					if (ce == null) return null;
-					result = SourceProjectDom.SearchInnerType (GetClass (ce), path, nextPos, genericArgumentCount, caseSensitive);
-				}
-				if (result != null && genericArguments != null && genericArguments.Count > 0)
-					return sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
-				return result;
+				return genericArguments == null || genericArguments.Count == 0 ? GetClass (ce) : sourceProjectDom.CreateInstantiatedGenericType (GetClass (ce), genericArguments);
 			}
 		}
 		
@@ -653,7 +680,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					continue;
 				foreach (object ob in subs) {
 					if (ob is ClassEntry) {
-						string ns = ((ClassEntry) ob).NamespaceRef.FullName;
+						string ns = ((ClassEntry) ob).Namespace;
 						if (namespaces == null || namespaces.Contains (ns)) {
 							IType t = GetClass ((ClassEntry)ob);
 							if (t != null && t != btype)
@@ -745,8 +772,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			lock (rwlock)
 			{
-				FileEntry fe = files[fileName] as FileEntry;
-				return fe != null ? fe.CommentTasks : null;
+				FileEntry fe;
+				if (!files.TryGetValue (fileName, out fe))
+					return null;
+				return fe.CommentTasks;
 			}
 		}
 		
@@ -754,8 +783,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			lock (rwlock)
 			{
-				FileEntry fe = files[fileName] as FileEntry;
-				if (fe != null)
+				FileEntry fe;
+				if (files.TryGetValue (fileName, out fe))
 					fe.CommentTasks = tags;
 			}
 		}
@@ -866,9 +895,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock)
 			{
 				// Create a new list because the reference list is accessible through a public property
-				ReferenceEntry re = new ReferenceEntry (uri);
-				ArrayList list = (ArrayList) references.Clone ();
-				list.Add (re);
+				var list = new List<ReferenceEntry>(references);
+				list.Add (new ReferenceEntry (uri));
 				references = list;
 				Modified = true;
 			}
@@ -880,8 +908,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			{
 				for (int n=0; n<references.Count; n++)
 				{
-					if (((ReferenceEntry)references[n]).Uri == uri) {
-						ArrayList list = (ArrayList) references.Clone ();
+					if (references[n].Uri == uri) {
+						var list = new List<ReferenceEntry>(references);
 						list.RemoveAt (n);
 						references = list;
 						Modified = true;
@@ -893,12 +921,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected bool HasReference (string uri)
 		{
-			for (int n=0; n<references.Count; n++) {
-				ReferenceEntry re = (ReferenceEntry) references[n];
-				if (re.Uri == uri)
-					return true;
-			}
-			return false;
+			return references.Any (r => r.Uri == uri);
 		}
 		
 		public FileEntry AddFile (string fileName)
@@ -906,7 +929,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock)
 			{
 				FileEntry fe = new FileEntry (fileName);
-				files [fileName] = fe;
+				files[fileName] = fe;
 				Modified = true;
 				return fe;
 			}
@@ -918,8 +941,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			{
 				TypeUpdateInformation classInfo = new TypeUpdateInformation ();
 				
-				FileEntry fe = files [fileName] as FileEntry;
-				if (fe == null) return;
+				FileEntry fe;
+				if (!files.TryGetValue (fileName, out fe)) return;
 				
 				int te=0, tc=0;
 				
@@ -931,7 +954,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						classInfo.Removed.Add (ce.Class);
 						RemoveSubclassReferences (ce);
 						UnresolveSubclasses (ce);
-						ce.NamespaceRef.Remove (ce);
+						typeEntries.Remove (ce.Class.DecoratedFullName);
+						typeEntriesIgnoreCase.Remove (ce.Class.DecoratedFullName);
 						te++;
 					} else
 						ce.Class = c;
@@ -956,24 +980,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			lock (rwlock)
 			{
 				TypeUpdateInformation res = new TypeUpdateInformation ();
-				
-				FileEntry fe = files [fileName] as FileEntry;
-				if (fe == null) {
+				FileEntry fe;
+				if (!files.TryGetValue (fileName, out fe))
 					return null;
-				}
 				
-				// Get the namespace entry for each class
-
 				bool[] added = new bool [newClasses.Count];
-				NamespaceEntry[] newNss = new NamespaceEntry [newClasses.Count];
 				for (int n = 0; n < newClasses.Count; n++) {
-					string[] path = newClasses[n].Namespace.Split ('.');
 					((DomType)newClasses[n]).SourceProjectDom = sourceProjectDom;
-					newNss[n] = GetNamespaceEntry (path, path.Length, true, true);
 				}
-				
-				ArrayList newFileClasses = new ArrayList ();
-				
+				List<ClassEntry> newFileClasses = new List<ClassEntry> ();
 				if (fe != null)
 				{
 					foreach (ClassEntry ce in fe.ClassEntries)
@@ -981,11 +996,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						IType newClass = null;
 						for (int n=0; n<newClasses.Count && newClass == null; n++) {
 							IType uc = newClasses [n];
-							if (uc.Name == ce.Name  && uc.TypeParameters.Count == ce.TypeParameterCount && newNss[n] == ce.NamespaceRef) {
-								if (newClass == null)
-									newClass = uc;
-								else
-									newClass = CompoundType.Merge (newClass, uc);
+							if (uc.Name == ce.Name  && uc.TypeParameters.Count == ce.TypeParameterCount && uc.Namespace == ce.Namespace) {
+								newClass = newClass == null ? uc : CompoundType.Merge (newClass, uc);
 								added[n] = true;
 							}
 						}
@@ -994,14 +1006,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							// Class already in the database, update it
 							LoadClass (ce);
 							RemoveSubclassReferences (ce);
-							
 							IType tp = CompoundType.RemoveFile (ce.Class, fileName);
-							if (tp != null)
-								ce.Class = CompoundType.Merge (tp, CopyClass (newClass));
-							else
-								ce.Class = CopyClass (newClass);
+//							newClass = CopyClass (newClass); //required ? - the classes given to the db don't get changed by md
+							ce.Class = tp != null ? CompoundType.Merge (tp, newClass) : newClass;
 							AddSubclassReferences (ce);
-							
+							string name = ce.Class.DecoratedFullName;
+							typeEntriesIgnoreCase[name] = typeEntries[name] = ce;
 							ce.LastGetTime = currentGetTime++;
 							newFileClasses.Add (ce);
 							res.Modified.Add (ce.Class);
@@ -1009,22 +1019,28 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						} else {
 							// Database class not found in the new class list, it has to be deleted
 							IType c = LoadClass (ce);
-							IType removed = CompoundType.RemoveFile (c, fileName);
-							if (removed != null) {
-								// It's still a compound class
-								ce.Class = removed;
-								AddSubclassReferences (ce);
-								res.Modified.Add (removed);
+							if (c != null) {
+								IType removed = CompoundType.RemoveFile (c, fileName);
+								if (removed != null) {
+									// It's still a compound class
+									ce.Class = removed;
+									AddSubclassReferences (ce);
+									res.Modified.Add (removed);
+								} else {
+									// It's not a compoudnd class. Remove it.
+									Counters.LiveTypeObjects--;
+									Counters.TypeIndexEntries--;
+									RemoveSubclassReferences (ce);
+									UnresolveSubclasses (ce);
+									res.Removed.Add (c);
+									string name = c.DecoratedFullName;
+									typeEntries.Remove (name);
+									typeEntriesIgnoreCase.Remove (name);
+								}
+								SourceProjectDom.ResetInstantiatedTypes (c);
 							} else {
-								// It's not a compoudnd class. Remove it.
-								Counters.LiveTypeObjects--;
-								Counters.TypeIndexEntries--;
-								RemoveSubclassReferences (ce);
-								UnresolveSubclasses (ce);
-								res.Removed.Add (c);
-								ce.NamespaceRef.Remove (ce);
+								// c == null -> error in db - ignore this entry it'll get removed.
 							}
-							SourceProjectDom.ResetInstantiatedTypes (c);
 						}
 					}
 				}
@@ -1036,21 +1052,21 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				
 				for (int n=0; n<newClasses.Count; n++) {
 					if (!added[n]) {
-						IType c = CopyClass (newClasses[n]);
-						
 						// A ClassEntry may already exist if part of the class is defined in another file
-						ClassEntry ce = newNss[n].GetClass (c.Name, c.TypeParameters.Count , true);
+						ClassEntry ce;
+						string name = newClasses[n].DecoratedFullName;
+						typeEntries.TryGetValue (name, out ce);
 						if (ce != null) {
 							// The entry exists, just update it
 							LoadClass (ce);
 							RemoveSubclassReferences (ce);
-							ce.Class = CompoundType.Merge (ce.Class, c);
+							ce.Class = CompoundType.Merge (ce.Class, newClasses[n]);
 							res.Modified.Add (ce.Class);
 						} else {
 							// It's a new class
-							ce = new ClassEntry (c, newNss[n]);
-							newNss[n].Add (ce);
-							res.Added.Add (c);
+							ce = new ClassEntry (newClasses[n]);
+							typeEntriesIgnoreCase[name] = typeEntries[name] = ce;
+							res.Added.Add (newClasses[n]);
 							ResolveSubclasses (ce);
 							Counters.LiveTypeObjects++;
 							Counters.TypeIndexEntries++;
@@ -1062,7 +1078,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				}
 				
 				fe.SetClasses (newFileClasses);
-				rootNamespace.Clean ();
+//				rootNamespace.Clean ();
 				try {
 					FileInfo fi = new FileInfo (fe.FileName);
 					fe.LastParseTime = fi.LastWriteTime;
@@ -1071,11 +1087,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				}
 				
 				Modified = true;
-				
+				this.UpdateClassEntries ();
 				return res;
 			}
 		}
-		
+
 		void ResolveSubclasses (ClassEntry ce)
 		{
 			// If this type is registered in the unresolved subclass table, now those subclasses
@@ -1211,52 +1227,33 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		ClassEntry FindClassEntry (string fullName, int genericArgumentCount)
 		{
-			string[] path = fullName.Split ('.');
-			int len = path.Length - 1;
-			NamespaceEntry nst;
-			int nextPos;
-			
-			if (GetBestNamespaceEntry (path, len, false, true, out nst, out nextPos)) 
-			{
-				ClassEntry ce = nst.GetClass (path[len], genericArgumentCount, true);
-				if (ce == null) return null;
-				return ce;
-			}
-			return null;
+			ClassEntry ce;
+			this.typeEntries.TryGetValue (ParserDatabase.GetDecoratedName (fullName, genericArgumentCount), out ce);
+			return ce;
 		}
 		
 		public void GetNamespaceContents (List<IMember> list, string subNameSpace, bool caseSensitive)
 		{
 			lock (rwlock) {
-				string[] path = subNameSpace.Split ('.');
-				NamespaceEntry tns = GetNamespaceEntry (path, path.Length, false, caseSensitive);
-				if (tns == null) return;
-				
-				foreach (DictionaryEntry en in tns.Contents) {
-					if (en.Value is NamespaceEntry) {
-						list.Add (new Namespace ((string)en.Key));
-					} else {
-						IType type = GetClass ((ClassEntry)en.Value);
-						
-						if (type.Name.IndexOfAny (new char[] { '<', '>' }) >= 0)
-							continue;
-						list.Add (type);
-					}
-				}
+				List<ClassEntry> classList;
+				if ((caseSensitive ? classEntries : classEntriesIgnoreCase).TryGetValue (subNameSpace, out classList))
+					list.AddRange (from c in classList where c.Name.IndexOfAny (new char[] { '<', '>' }) < 0 select (IMember)GetClass (c));
+				HashSet<string> namespaceList;
+				if ((caseSensitive ? namespaceEntries : namespaceEntriesIgnoreCase).TryGetValue (subNameSpace, out namespaceList))
+					list.AddRange (from n in namespaceList select (IMember)new Namespace (n));
 			}
 		}
-		
+
 		public void GetClassList (ArrayList list, string subNameSpace, bool caseSensitive)
 		{
 			lock (rwlock)
 			{
-				string[] path = subNameSpace.Split ('.');
-				NamespaceEntry tns = GetNamespaceEntry (path, path.Length, false, caseSensitive);
-				if (tns == null) return;
-				
-				foreach (DictionaryEntry en in tns.Contents) {
-					if (en.Value is ClassEntry && !list.Contains (en.Key))
-						list.Add (en.Key);
+				List<ClassEntry> entries;
+				if (!(caseSensitive ? classEntries : classEntriesIgnoreCase).TryGetValue (subNameSpace, out entries))
+					return;
+				foreach (ClassEntry ce in entries) {
+					if (!list.Contains (ce.Name))
+						list.Add (ce.Name);
 				}
 			}
 		}
@@ -1297,7 +1294,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				GetAllInnerClassesRec (list, ic);
 			}
 		}
-		
+
+		/*
 		public void GetNamespaceList (ArrayList list, string subNameSpace, bool caseSensitive)
 		{
 			lock (rwlock)
@@ -1311,15 +1309,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						list.Add (en.Key);
 				}
 			}
-		}
-		
+		}*/
+
 		public bool NamespaceExists (string name, bool caseSensitive)
 		{
-			lock (rwlock)
-			{
-				string[] path = name.Split ('.');
-				NamespaceEntry tns = GetNamespaceEntry (path, path.Length, false, caseSensitive);
-				return tns != null;
+			lock (rwlock) {
+				return (caseSensitive ? classEntries : classEntriesIgnoreCase).ContainsKey (name);
 			}
 		}
 		
@@ -1345,10 +1340,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			CopyDomVisitor<object> copier = new CopyDomVisitor<object> ();
 			return (IType) copier.Visit (cls, null);
 		}
-		
+		/*
 		bool GetBestNamespaceEntry (string[] path, int length, bool createPath, bool caseSensitive, out NamespaceEntry lastEntry, out int numMatched)
 		{
-			lastEntry = rootNamespace;
+			lastEntry = rootNamespace;-
 
 			if (length == 0 || (length == 1 && path[0] == "")) {
 				numMatched = length;
@@ -1383,7 +1378,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return nst;
 			else
 				return null;
-		}
+		}*/
 
         public void RunWithLock<T> (Action<T> act, T data) 
         { 
