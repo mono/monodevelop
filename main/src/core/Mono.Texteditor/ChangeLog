@@ -1,5 +1,9 @@
 2010-07-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/LineSegment.cs: fix build.
+
+2010-07-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditor.cs:
 	* Mono.TextEditor/LineSegment.cs:
 	* Mono.TextEditor/TextViewMargin.cs:

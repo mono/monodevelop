@@ -197,7 +197,7 @@ namespace Mono.TextEditor
 		{
 			StringBuilder result = new StringBuilder ();
 			int offset = Offset;
-			int max = System.Math.Min(offset + Length, editor.Document.Length);
+			int max = System.Math.Min (offset + Length, doc.Length);
 			for (int i = offset; i < max; i++) {
 				char ch = doc.GetCharAt (i);
 				if (ch != ' ' && ch != '\t')
