@@ -1,3 +1,9 @@
+2010-07-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs:
+	  Better fix for Bug 617276 - MonoDevelop crashes when
+	  clicking on a script error in Unity3d.
+
 2010-07-14  Levi Bard  <levi@unity3d.com>
 
 	* MonoDevelop.Ide/Ide.cs:
