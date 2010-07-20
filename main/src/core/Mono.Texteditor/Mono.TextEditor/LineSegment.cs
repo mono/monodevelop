@@ -33,17 +33,17 @@ using System.Collections.ObjectModel;
 using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
-{	
+{
 	public class LineSegment : ISegment
 	{
 		RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode treeNode;
-		
+
 		public RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator Iter {
 			get {
 				return new RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator (treeNode);
 			}
 		}
-		
+
 		static IEnumerable<TextMarker> nullMarkers = new TextMarker[0];
 		List<TextMarker> markers = null;
 		public IEnumerable<TextMarker> Markers {
@@ -56,18 +56,18 @@ namespace Mono.TextEditor
 				return markers != null ? markers.Count : 0;
 			}
 		}
-				
+
 		public int EditableLength {
 			get {
 				return Length - DelimiterLength;
 			}
 		}
-		
+
 		public int DelimiterLength {
 			get;
 			set;
 		}
-		
+
 		public int Offset {
 			get {
 				return treeNode != null ? LineSegmentTree.GetOffsetFromNode (treeNode) : -1;
@@ -76,12 +76,12 @@ namespace Mono.TextEditor
 				throw new NotSupportedException ();
 			}
 		}
-		
+
 		public bool WasChanged {
 			get;
 			set;
 		}
-		
+
 		CloneableStack<Span> startSpan = null;
 		static CloneableStack<Span> emptySpan = new CloneableStack<Span> ();
 
@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-		
+
 		public int EndOffset {
 			get {
 				return Offset + Length;
@@ -130,13 +130,13 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
 		public LineSegment (int length, int delimiterLength)
 		{
 			this.Length          = length;
 			this.DelimiterLength = delimiterLength;
 		}
-		
+
 		internal void AddMarker (TextMarker marker)
 		{
 			if (markers == null)
@@ -144,7 +144,7 @@ namespace Mono.TextEditor
 			marker.LineSegment = this;
 			markers.Add (marker);
 		}
-		
+
 		public void ClearMarker ()
 		{
 			if (markers != null) {
@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 				markers = null;
 			}
 		}
-		
+
 		internal void RemoveMarker (TextMarker marker)
 		{
 			marker.LineSegment = null;
@@ -162,14 +162,14 @@ namespace Mono.TextEditor
 			if (markers.Count == 0)
 				markers = null;
 		}
-		
+
 		internal TextMarker GetMarker (Type type)
 		{
 			if (markers == null)
 				return null;
 			return markers.Find (m => m.GetType () == type);
 		}
-		
+
 		internal void RemoveMarker (Type type)
 		{
 			if (markers == null)
@@ -183,7 +183,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// This method gets the line indentation.
 		/// </summary>
@@ -196,8 +196,9 @@ namespace Mono.TextEditor
 		public string GetIndentation (Document doc)
 		{
 			StringBuilder result = new StringBuilder ();
-			int endOffset = this.Offset + this.EditableLength;
-			for (int i = Offset; i < endOffset; i++) {
+			int offset = Offset;
+			int max = System.Math.Min(offset + Length, editor.Document.Length);
+			for (int i = offset; i < max; i++) {
 				char ch = doc.GetCharAt (i);
 				if (ch != ' ' && ch != '\t')
 					break;
@@ -205,28 +206,30 @@ namespace Mono.TextEditor
 			}
 			return result.ToString ();
 		}
-		
+
 		public int GetLogicalColumn (TextEditorData editor, int visualColumn)
 		{
 			int curVisualColumn = 0;
-			for (int i = 0; i < EditableLength; i++) {
-				int curOffset = Offset + i;
-				if (curOffset < editor.Document.Length && editor.Document.GetCharAt (curOffset) == '\t') {
+			int offset = Offset;
+			int max = System.Math.Min(offset + Length, editor.Document.Length);
+			for (int i = offset; i < max; i++) {
+				if (editor.Document.GetCharAt (i) == '\t') {
 					curVisualColumn = TextViewMargin.GetNextTabstop (editor, curVisualColumn);
 				} else {
 					curVisualColumn++;
 				}
 				if (curVisualColumn > visualColumn)
-					return i;
+					return i - offset;
 			}
 			return EditableLength + (visualColumn - curVisualColumn);
 		}
-		
+
 		public int GetVisualColumn (TextEditorData editor, int logicalColumn)
 		{
 			int result = 0;
+			int offset = Offset;
 			for (int i = 0; i < logicalColumn; i++) {
-				if (i < EditableLength && editor.Document.GetCharAt (Offset + i) == '\t') {
+				if (i < EditableLength && editor.Document.GetCharAt (offset + i) == '\t') {
 					result = TextViewMargin.GetNextTabstop (editor, result);
 				} else {
 					result++;
@@ -234,17 +237,18 @@ namespace Mono.TextEditor
 			}
 			return result;
 		}
-		
+
 		public bool Contains (int offset)
 		{
-			return Offset <= offset && offset < EndOffset;
+			int o = Offset;
+			return o <= offset && offset < o + Length;
 		}
-		
+
 		public bool Contains (ISegment segment)
 		{
 			return segment != null && Offset <= segment.Offset && segment.EndOffset <= EndOffset;
 		}
-		
+
 		public override string ToString ()
 		{
 			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", this.Offset, this.Length, this.DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());

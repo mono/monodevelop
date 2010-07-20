@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -57,43 +57,43 @@ namespace Mono.TextEditor
 		public override int Width {
 			get { return -1; }
 		}
-		
+
 		int xOffset;
 		public override int XOffset {
-			get { 
-				return xOffset; 
+			get {
+				return xOffset;
 			}
-			internal set { 
+			internal set {
 				if (xOffset != value) {
-					xOffset = value; 
-					SetClip (); 
+					xOffset = value;
+					SetClip ();
 				}
 			}
 		}
-		
+
 		public bool AlphaBlendSearchResults {
 			get;
 			set;
 		}
-		
+
 		/// <summary>
 		/// Set to true to highlight the caret line temporarly. It's
 		/// the same as the option, but is unset when the caret moves.
 		/// </summary>
 		bool highlightCaretLine;
 		public bool HighlightCaretLine {
-			get { 
-				return highlightCaretLine; 
+			get {
+				return highlightCaretLine;
 			}
 			set {
 				if (highlightCaretLine != value) {
-					highlightCaretLine = value; 
-					RemoveCachedLine (Document.GetLine (Caret.Line)); 
+					highlightCaretLine = value;
+					RemoveCachedLine (Document.GetLine (Caret.Line));
 					Document.CommitLineUpdate (Caret.Line);
 				}
 			}
 		}
-		
+
 		public bool HideSelection {
 			get;
 			set;
@@ -119,13 +119,13 @@ namespace Mono.TextEditor
 		const char tabMarkerChar = '»';
 		const char eolMarkerChar = '¶';
 		const char invalidLineMarkerChar = '~';
-		
+
 		public TextViewMargin (TextEditor textEditor)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");
 			this.textEditor = textEditor;
-			
+
 			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
 				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
 					int delta = -e.Count;
@@ -136,8 +136,8 @@ namespace Mono.TextEditor
 				}
 			};
 			base.cursor = xtermCursor;
-			textEditor.HighlightSearchPatternChanged += delegate { 
-				selectedRegions.Clear (); 
+			textEditor.HighlightSearchPatternChanged += delegate {
+				selectedRegions.Clear ();
 				RefreshSearchMarker ();
 			};
 			//			textEditor.SelectionChanged += delegate { DisposeLayoutDict (); };
@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
-			
+
 			textEditor.Document.EndUndo += UpdateBracketHighlighting;
 			textEditor.SelectionChanged += UpdateBracketHighlighting;
 			textEditor.Document.Undone += delegate {
@@ -164,12 +164,12 @@ namespace Mono.TextEditor
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
 		}
-		
+
 		void TextEditorDocumentLineChanged (object sender, LineEventArgs e)
 		{
 			RemoveCachedLine (e.Line);
 		}
-		
+
 		List<LineSegment> linesToRemove = new List<LineSegment> ();
 		void HandleVAdjustmentValueChanged (object sender, EventArgs e)
 		{
@@ -186,29 +186,29 @@ namespace Mono.TextEditor
 
 			textEditor.RequestResetCaretBlink ();
 		}
-		
+
 		public void ClearSearchMaker ()
 		{
 			selectedRegions.Clear ();
 		}
-		
+
 		public class SearchWorkerArguments {
 			public int FirstLine { get; set; }
 			public int LastLine { get; set; }
 			public List<ISegment> OldRegions { get; set; }
 		}
-		
+
 		public void RefreshSearchMarker ()
 		{
 			if (textEditor.HighlightSearchPattern) {
 				DisposeSearchPatternWorker ();
-				
+
 				SearchWorkerArguments args = new SearchWorkerArguments () {
 					FirstLine = this.textEditor.CalculateLineNumber ((int)textEditor.VAdjustment.Value),
 					LastLine = this.textEditor.CalculateLineNumber (textEditor.Allocation.Height + (int)textEditor.VAdjustment.Value),
 					OldRegions = selectedRegions
 				};
-				
+
 				if (string.IsNullOrEmpty (this.textEditor.SearchPattern)) {
 					if (selectedRegions.Count > 0) {
 						UpdateRegions (selectedRegions, args);
@@ -216,14 +216,14 @@ namespace Mono.TextEditor
 					}
 					return;
 				}
-				
+
 				searchPatternWorker = new System.ComponentModel.BackgroundWorker ();
 				searchPatternWorker.WorkerSupportsCancellation = true;
 				searchPatternWorker.DoWork += SearchPatternWorkerDoWork;
 				searchPatternWorker.RunWorkerAsync (args);
 			}
 		}
-		
+
 		void SearchPatternWorkerDoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
 		{
 			SearchWorkerArguments args = (SearchWorkerArguments)e.Argument;
@@ -276,11 +276,11 @@ namespace Mono.TextEditor
 				OnSearchRegionsUpdated (EventArgs.Empty);
 			});
 		}
-		
+
 		void UpdateRegions (IEnumerable<ISegment> regions, SearchWorkerArguments args)
 		{
 			HashSet<int> updateLines = new HashSet<int> ();
-			
+
 			foreach (ISegment region in regions) {
 				int lineNumber = Document.OffsetToLineNumber (region.Offset);
 				if (lineNumber > args.LastLine || lineNumber < args.FirstLine)
@@ -294,24 +294,24 @@ namespace Mono.TextEditor
 			if (updateLines.Count > 0)
 				textEditor.Document.CommitDocumentUpdate ();
 		}
-		
+
 		void HandleSearchChanged (object sender, EventArgs args)
 		{
 			RefreshSearchMarker ();
 		}
 
-		
-		
+
+
 		protected virtual void OnSearchRegionsUpdated (EventArgs e)
 		{
 			EventHandler handler = this.SearchRegionsUpdated;
 			if (handler != null)
 				handler (this, e);
 		}
-		
+
 		public event EventHandler SearchRegionsUpdated;
-		
-		
+
+
 		void DisposeSearchPatternWorker ()
 		{
 			if (searchPatternWorker == null)
@@ -328,7 +328,7 @@ namespace Mono.TextEditor
 		System.ComponentModel.BackgroundWorker highlightBracketWorker;
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
-		
+
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
 			HighlightCaretLine = false;
@@ -339,7 +339,7 @@ namespace Mono.TextEditor
 				}
 				return;
 			}
-			
+
 			int offset = Caret.Offset - 1;
 			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset))))
 				offset++;
@@ -353,9 +353,9 @@ namespace Mono.TextEditor
 			}
 			if (offset < 0)
 				offset = 0;
-			
+
 			DisposeHighightBackgroundWorker ();
-			
+
 			highlightBracketWorker = new System.ComponentModel.BackgroundWorker ();
 			highlightBracketWorker.WorkerSupportsCancellation = true;
 			highlightBracketWorker.DoWork += HighlightBracketWorkerDoWork;
@@ -400,25 +400,25 @@ namespace Mono.TextEditor
 			highlightBracketWorker.Dispose ();
 			highlightBracketWorker = null;
 		}
-		
+
 		protected internal override void OptionsChanged ()
 		{
 			DisposeGCs ();
-			
+
 			markerLayout.FontDescription = textEditor.Options.Font;
 			markerLayout.FontDescription.Weight = Pango.Weight.Bold;
 			markerLayout.SetText (" ");
 			markerLayout.GetPixelSize (out this.charWidth, out this.lineHeight);
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
-			
+
 			Pango.Font font = textEditor.PangoContext.LoadFont (markerLayout.FontDescription);
 			if (font != null) {
 				Pango.FontMetrics metrics = font.GetMetrics (null);
 				this.charWidth = (int)(metrics.ApproximateCharWidth / Pango.Scale.PangoScale);
-				
+
 				font.Dispose ();
 			}
-			
+
 			CaretMoveActions.LineHeight = lineHeight = System.Math.Max (1, lineHeight);
 
 			DecorateLineFg -= DecorateTabs;
@@ -432,14 +432,14 @@ namespace Mono.TextEditor
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
 				DecorateLineBg += DecorateMatchingBracket;
-			
+
 			if (tabArray != null) {
 				tabArray.Dispose ();
 				tabArray = null;
 			}
-			
+
 			EnsureCaretGc ();
-			
+
 			var tabWidthLayout = PangoUtil.CreateLayout (textEditor, (new string (' ', textEditor.Options.TabSize)));
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
 			tabWidthLayout.FontDescription = textEditor.Options.Font;
@@ -448,20 +448,20 @@ namespace Mono.TextEditor
 			tabWidthLayout.Dispose ();
 			tabArray = new Pango.TabArray (1, false);
 			tabArray.SetTab (0, Pango.TabAlign.Left, tabWidth);
-			
+
 			DisposeLayoutDict ();
 			chunkDict.Clear ();
 		}
 
 		void EnsureCaretGc ()
 		{
-			if (caretGc != null || textEditor.GdkWindow == null) 
+			if (caretGc != null || textEditor.GdkWindow == null)
 				return;
 			caretGc = new Gdk.GC (textEditor.GdkWindow);
 			caretGc.RgbFgColor = new Color (255, 255, 255);
 			caretGc.Function = Gdk.Function.Xor;
 		}
-		
+
 		void DisposeGCs ()
 		{
 			ShowTooltip (null, Gdk.Rectangle.Zero);
@@ -508,33 +508,33 @@ namespace Mono.TextEditor
 					caretTimer = null;
 				}
 			}
-			
+
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 
 			textEditor.GetTextEditorData ().SearchChanged -= HandleSearchChanged;
-			
+
 			arrowCursor.Dispose ();
 			xtermCursor.Dispose ();
 			arrowCursor = xtermCursor = null;
-			
+
 			DisposeGCs ();
 			if (caretGc != null) {
 				caretGc.Dispose ();
 				caretGc = null;
 			}
-			
+
 			if (markerLayout != null) {
 				markerLayout.Dispose ();
 				markerLayout = null;
 			}
-			
+
 			DisposeLayoutDict ();
 			if (tabArray != null) {
 				tabArray.Dispose ();
 				tabArray = null;
 			}
-			
+
 			layoutDict = null;
 			base.Dispose ();
 		}
@@ -543,18 +543,18 @@ namespace Mono.TextEditor
 		Timer caretTimer = null;
 		bool caretBlink = true;
 		object lockObject = new object ();
-		
+
 		public void ResetCaretBlink ()
 		{
 			lock (lockObject) {
 				if (caretTimer != null)
 					StopCaretThread ();
-				
+
 				if (caretTimer == null) {
 					caretTimer = new Timer (Gtk.Settings.Default.CursorBlinkTime / 2);
 					caretTimer.Elapsed += UpdateCaret;
 				}
-				caretBlink = true; 
+				caretBlink = true;
 				caretTimer.Start ();
 			}
 		}
@@ -562,13 +562,13 @@ namespace Mono.TextEditor
 		internal void StopCaretThread ()
 		{
 			lock (lockObject) {
-				
+
 				if (caretTimer != null)
 					caretTimer.Stop ();
-				caretBlink = false; 
+				caretBlink = false;
 			}
 		}
-		
+
 		void UpdateCaret (object sender, EventArgs args)
 		{
 			lock (lockObject) {
@@ -582,7 +582,7 @@ namespace Mono.TextEditor
 						try {
 							textEditor.RedrawMarginLine (this, Caret.Line);
 						} catch (Exception) {
-							
+
 						}
 					});
 				}
@@ -594,14 +594,14 @@ namespace Mono.TextEditor
 		internal int caretX;
 		internal int caretY;
 		Gdk.GC caretGc;
-		
+
 		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
 		{
 //			caretChar = ch;
 			caretX = x;
 			caretY = y;
 		}
-		
+
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
 		public void DrawCaret (Gdk.Drawable win)
 		{
@@ -613,7 +613,7 @@ namespace Mono.TextEditor
 			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) {
 				return;
 			}
-			
+
 			switch (Caret.Mode) {
 			case CaretMode.Insert:
 				win.DrawLine (caretGc, caretX, caretY, caretX, caretY + LineHeight - 1);
@@ -632,7 +632,7 @@ namespace Mono.TextEditor
 				win.DrawLine (caretGc, caretX, bottom, caretX + this.charWidth, bottom);
 				break;
 			}
-			
+
 		}
 
 		public Gdk.Rectangle GetCaretRectangle (Mono.TextEditor.CaretMode mode)
@@ -667,7 +667,7 @@ namespace Mono.TextEditor
 				DrawStyledText (win, line, false, chunk, ref visibleColumn, ref xPos, y, startOffset, endOffset);
 			}
 		}
-		
+
 		void DrawPreeditString (Gdk.Drawable win, string style, ref int xPos, int y)
 		{
 			var preEditLayout = PangoUtil.CreateLayout (textEditor, textEditor.preeditString);
@@ -677,7 +677,7 @@ namespace Mono.TextEditor
 			preEditLayout.GetPixelSize (out cWidth, out cHeight);
 			DrawRectangleWithRuler (win, xPos, new Gdk.Rectangle (xPos, y, cWidth, cHeight), GetBackgroundColor (textEditor.preeditOffset, false, chunkStyle), false);
 			win.DrawLayout (GetGC (chunkStyle.Color), xPos, y, preEditLayout);
-			
+
 			xPos += cWidth;
 			preEditLayout.Dispose ();
 		}
@@ -695,7 +695,7 @@ namespace Mono.TextEditor
 				if (textEditor.SelectionMode == SelectionMode.Block) {
 					DocumentLocation start = textEditor.MainSelection.Anchor;
 					DocumentLocation end = textEditor.MainSelection.Lead;
-					
+
 					DocumentLocation visStart = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), start);
 					DocumentLocation visEnd = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
 					int lineNumber = Document.OffsetToLineNumber (line.Offset);
@@ -762,7 +762,7 @@ namespace Mono.TextEditor
 				this.SelectionStart = selectionStart;
 				this.SelectionEnd = selectionEnd;
 			}
-			
+
 			public void Dispose ()
 			{
 				if (Layout != null) {
@@ -770,12 +770,12 @@ namespace Mono.TextEditor
 					Layout = null;
 				}
 			}
-			
+
 			public bool Equals (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, out bool isInvalid)
 			{
 				return base.Equals (line, offset, length, out isInvalid) && selectionStart == this.SelectionStart && selectionEnd == this.SelectionEnd;
 			}
-			
+
 			public override bool Equals (object obj)
 			{
 				if (obj == null)
@@ -794,7 +794,7 @@ namespace Mono.TextEditor
 					return SelectionStart.GetHashCode () ^ SelectionEnd.GetHashCode ();
 				}
 			}
-			
+
 		}
 
 		Dictionary<LineSegment, LayoutDescriptor> layoutDict = new Dictionary<LineSegment, LayoutDescriptor> ();
@@ -810,7 +810,7 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
-			
+
 			var wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 			wrapper.IsUncached = containsPreedit;
 			createNew (wrapper);
@@ -847,14 +847,14 @@ namespace Mono.TextEditor
 			}
 			layoutDict.Clear ();
 		}
-		
+
 		public void PurgeLayoutCache ()
 		{
 			DisposeLayoutDict ();
 			if (chunkDict != null)
 				chunkDict.Clear ();
 		}
-		
+
 		class ChunkDescriptor : LineDescriptor
 		{
 			public Chunk Chunk {
@@ -924,12 +924,11 @@ namespace Mono.TextEditor
 					handleNotSelected (startOffset, endOffset);
 			}
 		}
-		
-		void HandleSelection (LineSegment line, int selectionStart, int selectionEnd, int startOffset, int endOffset, HandleSelectionDelegate handleNotSelected, HandleSelectionDelegate handleSelected)
+
+		void HandleSelection (LineSegment line, int logicalRulerColumn, int selectionStart, int selectionEnd, int startOffset, int endOffset, HandleSelectionDelegate handleNotSelected, HandleSelectionDelegate handleSelected)
 		{
 			int selectionStartColumn = selectionStart - line.Offset;
 			int selectionEndColumn = selectionEnd - line.Offset;
-			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 			int rulerOffset = line.Offset + logicalRulerColumn;
 			if (textEditor.Options.ShowRuler && selectionStartColumn < logicalRulerColumn && logicalRulerColumn < selectionEndColumn && startOffset < rulerOffset && rulerOffset < endOffset) {
 				InternalHandleSelection (selectionStart, selectionEnd, startOffset, rulerOffset, handleNotSelected, handleSelected);
@@ -945,7 +944,7 @@ namespace Mono.TextEditor
 				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
 			} else {
 				int count = System.Math.Min ((int)(textIndex - curIndex), charArray.Length - (int)curIndex);
-				
+
 				if (count > 0)
 					byteIndex += (uint)Encoding.UTF8.GetByteCount (charArray, (int)curIndex, count);
 			}
@@ -958,14 +957,14 @@ namespace Mono.TextEditor
 			byte[] bytes = Encoding.UTF8.GetBytes (text);
 			return Encoding.UTF8.GetString (bytes, 0, index).Length;
 		}
-	
+
 		public class LayoutWrapper : IDisposable
 		{
 			public Pango.Layout Layout {
 				get;
 				private set;
 			}
-			
+
 			public bool IsUncached {
 				get;
 				set;
@@ -974,44 +973,44 @@ namespace Mono.TextEditor
 				get;
 				set;
 			}
-			
+
 			public char[] LineChars {
 				get;
 				set;
 			}
-			
+
 			public CloneableStack<Mono.TextEditor.Highlighting.Span> EolSpanStack {
 				get;
 				set;
 			}
-			
+
 			int selectionStartIndex;
 			public int SelectionStartIndex {
-				get { 
-					return selectionStartIndex; 
+				get {
+					return selectionStartIndex;
 				}
-				set { 
-					selectionStartIndex = value; 
-					StartSet = true; 
+				set {
+					selectionStartIndex = value;
+					StartSet = true;
 				}
 			}
-			
+
 			public int SelectionEndIndex {
 				get;
 				set;
 			}
-			
+
 			public int PangoWidth {
 				get;
 				set;
 			}
-			
+
 			public LayoutWrapper (Pango.Layout layout)
 			{
 				this.Layout = layout;
 				this.IsUncached = false;
 			}
-			
+
 			public void Dispose ()
 			{
 				if (Layout != null) {
@@ -1033,7 +1032,7 @@ namespace Mono.TextEditor
 					this.ToIdx = toIdx;
 				}
 			}
-			
+
 			List<BackgroundColor> backgroundColors = null;
 			public List<BackgroundColor> BackgroundColors {
 				get {
@@ -1048,16 +1047,23 @@ namespace Mono.TextEditor
 				BackgroundColors.Add (new BackgroundColor (color, fromIdx, toIdx));
 			}
 		}
-		
+
 		ChunkStyle SelectionColor {
 			get {
 				return textEditor.HasFocus ? ColorStyle.Selection : ColorStyle.InactiveSelection;
 			}
 		}
-		
+
 		public LayoutWrapper CreateLinePartLayout (SyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
 		{
-			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate (LayoutWrapper wrapper) {
+			return CreateLinePartLayout (mode, line, -1, offset, length, selectionStart, selectionEnd);
+		}
+
+		public LayoutWrapper CreateLinePartLayout (SyntaxMode mode, LineSegment line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
+		{
+			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate(LayoutWrapper wrapper) {
+				if (logicalRulerColumn < 0)
+					logicalRulerColumn = line.GetLogicalColumn(textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
 				var atts = new FastPangoAttrList ();
 				wrapper.Layout.Alignment = Pango.Alignment.Left;
 				wrapper.Layout.FontDescription = textEditor.Options.Font;
@@ -1084,7 +1090,7 @@ namespace Mono.TextEditor
 				int startOffset = offset, endOffset = offset + length;
 				uint curIndex = 0, byteIndex = 0;
 				uint curChunkIndex = 0, byteChunkIndex = 0;
-				
+
 				uint oldEndIndex = 0;
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
@@ -1106,12 +1112,13 @@ namespace Mono.TextEditor
 							if (textEditor.preeditOffset < endOffset)
 								endIndex += preeditLength;
 						}
-						
-						HandleSelection (line, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
+
+                        HandleSelection(line, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end)
+                        {
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							atts.AddForegroundAttribute (chunkStyle.Color, si, ei);
-							
+
 							if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
 								wrapper.AddBackground (chunkStyle.BackgroundColor, (int)si, (int)ei);
 							} else if (chunk.SpanStack != null) {
@@ -1127,11 +1134,11 @@ namespace Mono.TextEditor
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							atts.AddForegroundAttribute (SelectionColor.Color, si, ei);
-							if (!wrapper.StartSet) 
+							if (!wrapper.StartSet)
 								wrapper.SelectionStartIndex = (int)si;
 							wrapper.SelectionEndIndex   = (int)ei;
 						});
-						
+
 						var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
 						var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
@@ -1140,7 +1147,7 @@ namespace Mono.TextEditor
 
 						if (chunkStyle.Italic)
 							atts.AddStyleAttribute (Pango.Style.Italic, translatedStartIndex, translatedEndIndex);
-						
+
 						if (chunkStyle.Underline)
 							atts.AddUnderlineAttribute (Pango.Underline.Single, translatedStartIndex, translatedEndIndex);
 					}
@@ -1189,29 +1196,29 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
 		void DecorateMatchingBracket (Gdk.Drawable win, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
 			if (offset <= highlightBracketOffset && highlightBracketOffset <= offset + length) {
 				int index = highlightBracketOffset - offset;
 				Pango.Rectangle rect = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex));
-				
+
 				Gdk.Rectangle bracketMatch = new Gdk.Rectangle (xPos + (int)(rect.X / Pango.Scale.PangoScale), y, (int)(rect.Width / Pango.Scale.PangoScale) - 1, (int)(rect.Height / Pango.Scale.PangoScale) - 1);
 				if (BackgroundRenderer == null)
 					win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.BackgroundColor), true, bracketMatch);
-				
+
 				win.DrawRectangle (GetGC (this.ColorStyle.BracketHighlightRectangle.Color), false, bracketMatch);
 			}
 		}
-		
+
 		public LayoutWrapper GetLayout (LineSegment line)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			return CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
 		}
-		
-		void DrawLinePart (Gdk.Drawable win, LineSegment line, int offset, int length, ref int pangoPosition, ref bool isSelectionDrawn, int y, int maxX)
+
+		void DrawLinePart (Gdk.Drawable win, LineSegment line, int logicalRulerColumn, int offset, int length, ref int pangoPosition, ref bool isSelectionDrawn, int y, int maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
@@ -1221,23 +1228,24 @@ namespace Mono.TextEditor
 			} else {
 				GetSelectionOffsets (line, out selectionStart, out selectionEnd);
 			}
-			
+
 			// ---- new renderer
-			LayoutWrapper layout = CreateLinePartLayout (mode, line, offset, length, selectionStart, selectionEnd);
+			LayoutWrapper layout = CreateLinePartLayout (mode, line, logicalRulerColumn, offset, length, selectionStart, selectionEnd);
+
 			int width = (int)(layout.PangoWidth / Pango.Scale.PangoScale);
 			int xPos = (int)(pangoPosition / Pango.Scale.PangoScale);
-			
+
 			if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Document.GetLine(Caret.Line) != line) {
 				foreach (var bg in layout.BackgroundColors) {
 					int x1, x2;
 					x1 = layout.Layout.IndexToPos (bg.FromIdx).X;
 					x2 = layout.Layout.IndexToPos (bg.ToIdx).X;
-					DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, 
+					DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition,
 						new Rectangle ((x1 + pangoPosition) / (int)Pango.Scale.PangoScale, y, (x2 - x1) / (int)Pango.Scale.PangoScale + 1, LineHeight),
 						bg.Color, true);
 				}
 			}
-			
+
 			bool drawBg = true;
 			bool drawText = true;
 			foreach (TextMarker marker in line.Markers) {
@@ -1247,14 +1255,14 @@ namespace Mono.TextEditor
 				isSelectionDrawn |= (marker.Flags & TextMarkerFlags.DrawsSelection) == TextMarkerFlags.DrawsSelection;
 				drawText &= bgMarker.DrawBackground (textEditor, win, layout, selectionStart, selectionEnd, offset, offset + length, y, xPos, xPos + width, ref drawBg);
 			}
-			
+
 			if (DecorateLineBg != null)
 				DecorateLineBg (win, layout, offset, length, xPos, y, selectionStart, selectionEnd);
-		
+
 			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length)) {
 				int startX;
 				int endX;
-				
+
 				if (selectionStart != offset + length) {
 					var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
 					startX = (int)(start.X / Pango.Scale.PangoScale);
@@ -1264,22 +1272,22 @@ namespace Mono.TextEditor
 					startX = width;
 					endX = startX;
 				}
-				
+
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
 				DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Rectangle (xPos + startX, y, endX - startX, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
 			}
-			
-				
+
+
 			// highlight search results
 			ISegment firstSearch;
 			int o = offset;
 			uint curIndex = 0, byteIndex = 0;
-			
+
 			while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
 				int x = pangoPosition;
-				HandleSelection (line, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
+				HandleSelection (line, logicalRulerColumn, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 					uint startIndex = (uint)(start - offset);
 					uint endIndex = (uint)(end - offset);
 					if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {
@@ -1288,29 +1296,29 @@ namespace Mono.TextEditor
 						using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
 							cr.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height);
 							cr.Clip ();
-							
+
 							int l, x1, x2;
 							layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
 							layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
-							x1 += x; 
+							x1 += x;
 							x2 += x;
 							x1 /= (int)Pango.Scale.PangoScale;
 							x2 /= (int)Pango.Scale.PangoScale;
-							
+
 							cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (MainSearchResult == null || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg, AlphaBlendSearchResults ? 0.6 : 1.0);
 							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, (int)(System.Math.Min (10, width) * textEditor.Options.Zoom), x2 - x1, textEditor.LineHeight);
 							cr.Fill ();
 						}
-						
+
 					}
 				}, null);
-			
+
 				o = System.Math.Max (firstSearch.EndOffset, o + 1);
 			}
-			
-			
+
+
 			win.DrawLayout (GetGC (ColorStyle.Default.Color), xPos, y, layout.Layout);
-			
+
 			if (DecorateLineFg != null)
 				DecorateLineFg (win, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
@@ -1322,7 +1330,7 @@ namespace Mono.TextEditor
 					if (offset <= textEditor.preeditOffset && textEditor.preeditOffset < offset + length) {
 						index += textEditor.preeditString.Length;
 					}
-					
+
 					if (Caret.Column > line.EditableLength) {
 						string virtualSpace = this.textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
 						LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
@@ -1333,7 +1341,7 @@ namespace Mono.TextEditor
 						wrapper.Layout.GetSize (out vx, out vy);
 						SetVisibleCaretPosition (win, ' ', (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 						xPos = (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale);
-						
+
 						if (!isSelectionDrawn && (selectionEnd == line.Offset + line.EditableLength)) {
 							int startX;
 							int endX;
@@ -1341,7 +1349,7 @@ namespace Mono.TextEditor
 							endX = (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale);
 							DrawRectangleWithRuler (win, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Rectangle (startX, y, endX - startX, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
 						}
-						
+
 						if (DecorateLineBg != null)
 							DecorateLineBg (win, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
 						if (DecorateLineFg != null)
@@ -1366,13 +1374,13 @@ namespace Mono.TextEditor
 			foreach (TextMarker marker in line.Markers) {
 				marker.Draw (textEditor, win, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
-			
+
 			pangoPosition += layout.PangoWidth;
 			if (layout.IsUncached)
 				layout.Dispose ();
 		}
 
-		
+
 		ISegment GetFirstSearchResult (int startOffset, int endOffset)
 		{
 			if (startOffset < endOffset && this.selectedRegions.Count > 0) {
@@ -1391,13 +1399,13 @@ namespace Mono.TextEditor
 						max = mid - 1;
 						continue;
 					}
-					
+
 					if (segment.Offset < endOffset) {
 						min = mid + 1;
 					} else {
 						max = mid - 1;
 					}
-					
+
 				} while (min <= max);
 			}
 			return null;
@@ -1431,7 +1439,7 @@ namespace Mono.TextEditor
 		{
 			return (((ulong)color.Red) << 32) | (((ulong)color.Green) << 16) | ((ulong)color.Blue);
 		}
-		
+
 		public bool inSelectionDrag = false;
 		public bool inDrag = false;
 		public DocumentLocation clickLocation;
@@ -1479,7 +1487,7 @@ namespace Mono.TextEditor
 					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
 					clickLocation.Column = nextColumn;
 				}
-				
+
 				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {
 					textEditor.RunAction (CaretMoveActions.ToDocumentEnd);
@@ -1536,9 +1544,9 @@ namespace Mono.TextEditor
 			if (args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
 				ISegment selectionRange = null;
 				int offset = Document.LocationToOffset (docLocation);
-				if (selection != null) 
+				if (selection != null)
 					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
-				
+
 				bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 				textEditor.Caret.AutoScrollToCaret = false;
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
@@ -1547,12 +1555,12 @@ namespace Mono.TextEditor
 					if (offset < selectionRange.EndOffset) {
 						oldOffset += length;
 						anchor += length;
-						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length), 
+						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length),
 						                           Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
 					}
 					textEditor.MainSelection = selection;
 				}
-				
+
 				if (autoScroll)
 					textEditor.Caret.ActivateAutoScrollWithoutMove ();
 				Document.CommitLineToEndUpdate (docLocation.Line);
@@ -1576,7 +1584,7 @@ namespace Mono.TextEditor
 				return previewWindow != null;
 			}
 		}
-		
+
 		public void HideCodeSegmentPreviewWindow ()
 		{
 			if (previewWindow != null) {
@@ -1584,12 +1592,12 @@ namespace Mono.TextEditor
 				previewWindow = null;
 			}
 		}
-		
+
 		internal void OpenCodeSegmentEditor ()
 		{
 			if (!IsCodeSegmentPreviewWindowShown)
 				throw new InvalidOperationException ("CodeSegment preview window isn't shown.");
-			
+
 			int x = 0, y = 0;
 			this.previewWindow.GdkWindow.GetOrigin (out x, out y);
 			int w = previewWindow.Allocation.Width;
@@ -1600,9 +1608,9 @@ namespace Mono.TextEditor
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);
 			codeSegmentEditorWindow.SyntaxMode = Document.SyntaxMode;
-			
+
 			int indentLength = SyntaxMode.GetIndentLength (Document, previewSegment.Offset, previewSegment.Length, false);
-			
+
 			StringBuilder textBuilder = new StringBuilder ();
 			int curOffset = previewSegment.Offset;
 			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
@@ -1612,16 +1620,16 @@ namespace Mono.TextEditor
 				textBuilder.AppendLine ();
 				curOffset = line.EndOffset + indentLength;
 			}
-			
+
 			codeSegmentEditorWindow.Text = textBuilder.ToString ();
-			
+
 			HideCodeSegmentPreviewWindow ();
 			codeSegmentEditorWindow.ShowAll ();
-			
+
 			codeSegmentEditorWindow.GrabFocus ();
-			
+
 		}
-		
+
 		uint codeSegmentTooltipTimeoutId = 0;
 		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
 		{
@@ -1630,21 +1638,21 @@ namespace Mono.TextEditor
 			CancelCodeSegmentTooltip ();
 			HideCodeSegmentPreviewWindow ();
 			previewSegment = segment;
-			if (segment == null) 
+			if (segment == null)
 				return;
 			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
 				previewWindow = new CodeSegmentPreviewWindow (this.textEditor, false, segment);
 				int ox = 0, oy = 0;
 				this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
-				
+
 				int x = hintRectangle.Right;
 				int y = hintRectangle.Bottom;
 				previewWindow.CalculateSize ();
 				int w = previewWindow.SizeRequest ().Width;
 				int h = previewWindow.SizeRequest ().Height;
-				
+
 				Gdk.Rectangle geometry = this.textEditor.Screen.GetMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
-				
+
 				if (x + ox + w > geometry.Right)
 					x = hintRectangle.Left - w;
 				if (y + oy + h > geometry.Bottom)
@@ -1664,7 +1672,7 @@ namespace Mono.TextEditor
 				codeSegmentTooltipTimeoutId = 0;
 			}
 		}
-		
+
 		string GetLink (MarginMouseEventArgs args)
 		{
 			LineSegment line = args.LineSegment;
@@ -1683,7 +1691,7 @@ namespace Mono.TextEditor
 				for (; chunk != null; chunk = chunk.Next) {
 					if (column <= loc.Column && loc.Column < column + chunk.Length) {
 						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
-						
+
 						return chunkStyle != null ? chunkStyle.Link : null;
 					}
 					column += chunk.Length;
@@ -1691,7 +1699,7 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-		
+
 		public LineSegment HoveredLine {
 			get;
 			set;
@@ -1703,7 +1711,7 @@ namespace Mono.TextEditor
 			if (handler != null)
 				handler (this, e);
 		}
-		
+
 		List<IActionTextMarker> oldMarkers = new List<IActionTextMarker> ();
 		List<IActionTextMarker> newMarkers = new List<IActionTextMarker> ();
 		protected internal override void MouseHover (MarginMouseEventArgs args)
@@ -1712,17 +1720,17 @@ namespace Mono.TextEditor
 			if (textEditor.IsSomethingSelected && textEditor.MainSelection.SelectionMode == SelectionMode.Block) {
 				Caret.AllowCaretBehindLineEnd = true;
 			}
-			
+
 			DocumentLocation loc = VisualToDocumentLocation (args.X, args.Y);
-			
+
 			LineSegment line = Document.GetLine (loc.Line);
 			LineSegment oldHoveredLine = HoveredLine;
 			HoveredLine = line;
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
-		
+
 			TextMarkerHoverResult hoverResult = new TextMarkerHoverResult ();
 			oldMarkers.ForEach (m => m.MouseHover (this.textEditor, args, hoverResult));
-			
+
 			if (line != null) {
 				newMarkers.Clear ();
 				newMarkers.AddRange (line.Markers.Where (m => m is IActionTextMarker).Cast <IActionTextMarker> ());
@@ -1745,9 +1753,9 @@ namespace Mono.TextEditor
 				textEditor.TriggerTooltipQuery ();
 			}
 			textEditor.TooltipMarkup = hoverResult.TooltipMarkup;
-			
+
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
-				// folding marker 
+				// folding marker
 				int lineNr = args.LineNumber;
 				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
 					if (shownFolding.Key.Contains (args.X + this.XOffset, args.Y)) {
@@ -1755,10 +1763,10 @@ namespace Mono.TextEditor
 						return;
 					}
 				}
-				
+
 				ShowTooltip (null, Gdk.Rectangle.Zero);
 				string link = GetLink (args);
-				
+
 				if (!String.IsNullOrEmpty (link)) {
 					base.cursor = arrowCursor;
 				} else {
@@ -1766,12 +1774,12 @@ namespace Mono.TextEditor
 				}
 				return;
 			}
-			
-			
+
+
 			if (inDrag)
 				return;
 			Caret.PreserveSelection = true;
-			
+
 			switch (this.mouseSelectionMode) {
 			case MouseSelectionMode.SingleChar:
 				if (!inSelectionDrag) {
@@ -1814,16 +1822,16 @@ namespace Mono.TextEditor
 				break;
 			}
 			Caret.PreserveSelection = false;
-			
+
 			//HACK: use cmd as Mac block select modifier because GTK currently makes it impossible to access alt/mod1
 			//NOTE: Mac cmd seems to be mapped as ControlMask from mouse events on older GTK, mod1 on newer
 			var blockSelModifier = !Platform.IsMac? ModifierType.Mod1Mask
 				: (ModifierType.ControlMask | ModifierType.Mod1Mask);
-			
+
 			//NOTE: also allow super for block select on X11 because most window managers use the alt modifier already
 			if (Platform.IsX11)
 				blockSelModifier |= (ModifierType.SuperMask | ModifierType.Mod4Mask);
-			
+
 			if ((args.ModifierState & blockSelModifier) != 0) {
 				textEditor.SelectionMode = SelectionMode.Block;
 			} else {
@@ -1848,12 +1856,12 @@ namespace Mono.TextEditor
 		{
 			if (line == null || line.EditableLength == 0 || column < 0)
 				return 0;
-			
+			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
 			StringBuilder textBuilder = new StringBuilder ();
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, line.Offset, line.EditableLength);
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
-				try { 
+				try {
 					textBuilder.Append (chunk.GetText (Document));
 				} catch (Exception e) {
 					Console.WriteLine (e);
@@ -1870,8 +1878,8 @@ namespace Mono.TextEditor
 				preeditLength = (uint)textEditor.preeditString.Length;
 			}
 			if (column < lineText.Length)
-				lineText = lineText.Substring (0, column);	
-			
+				lineText = lineText.Substring (0, column);
+
 			var layout = PangoUtil.CreateLayout (textEditor, lineText);
 			layout.Alignment = Pango.Alignment.Left;
 			layout.FontDescription = textEditor.Options.Font;
@@ -1903,20 +1911,16 @@ namespace Mono.TextEditor
 							endIndex += preeditLength;
 					}
 
-					HandleSelection (line, -1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
-
+					HandleSelection (line, logicalRulerColumn, - 1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 						Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
 						foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-
 						attributes.Add (foreGround);
-
 					}, delegate(int start, int end) {
 						Pango.AttrForeground selectedForeground = new Pango.AttrForeground (SelectionColor.Color.Red, SelectionColor.Color.Green, SelectionColor.Color.Blue);
 						selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 						attributes.Add (selectedForeground);
-
 					});
 
 					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
@@ -1954,7 +1958,7 @@ namespace Mono.TextEditor
 			layout.Dispose ();
 			return (int)((logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale);
 		}
-		
+
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)
 		{
 			int tabSize = textEditor != null && textEditor.Options != null ? textEditor.Options.TabSize : 4;
@@ -1963,11 +1967,11 @@ namespace Mono.TextEditor
 		}
 
 		internal int rulerX = 0;
-		
+
 		public int RulerX {
 			get { return this.rulerX; }
 		}
-		
+
 		public int GetWidth (string text)
 		{
 			text = text.Replace ("\t", new string (' ', textEditor.Options.TabSize));
@@ -1983,13 +1987,13 @@ namespace Mono.TextEditor
 			double g = color.Red / 255.0;
 			double b = color.Red / 255.0;
 			const double dimFactor = 0.95;
-			Color result = new Color ((byte)(r * dimFactor), 
-			                          (byte)(g * dimFactor), 
+			Color result = new Color ((byte)(r * dimFactor),
+			                          (byte)(g * dimFactor),
 			                          (byte)(b * dimFactor));
 			//Console.WriteLine ("color={0}, result={1}", color, result);
 			return result;
 		}
-		
+
 		public void DrawRectangleWithRuler (Gdk.Drawable win, int x, Gdk.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
 		{
 			if (BackgroundRenderer != null)
@@ -2023,11 +2027,11 @@ namespace Mono.TextEditor
 			//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
 			int xPos = (int)(XOffset - textEditor.HAdjustment.Value);
-			
+
 			if (line == null) {
 				return result;
 			}
-			
+
 			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 			restart:
@@ -2036,13 +2040,13 @@ namespace Mono.TextEditor
 				int foldOffset = folding.StartLine.Offset + folding.Column;
 				if (foldOffset < offset)
 					continue;
-				
+
 				if (folding.IsFolded) {
 					markerLayout.SetText (Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.Length - offset))).Replace ("\t", new string (' ', textEditor.Options.TabSize)));
 					markerLayout.GetPixelSize (out width, out height);
 					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
-					
+
 					markerLayout.SetText (folding.Description);
 					markerLayout.GetPixelSize (out width, out height);
 					Rectangle foldingRectangle = new Rectangle (xPos, y, width - 1, this.LineHeight - 1);
@@ -2057,7 +2061,7 @@ namespace Mono.TextEditor
 			}
 			return result;
 		}
-		
+
 		List<ISegment> selectedRegions = new List<ISegment> ();
 		public int SearchResultMatchCount {
 			get {
@@ -2069,20 +2073,20 @@ namespace Mono.TextEditor
 				return selectedRegions;
 			}
 		}
-		
+
 		public ISegment MainSearchResult {
 			get;
 			set;
 		}
-		
+
 		Gdk.Color defaultBgColor;
 		Gdk.Rectangle clipRectangle;
-		
+
 		internal void SetClip ()
 		{
 			SetClip (new Gdk.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height));
 		}
-		
+
 		public int TextStartPosition {
 			get {
 				return 4;
@@ -2096,58 +2100,59 @@ namespace Mono.TextEditor
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			int xStart = System.Math.Max (area.X, XOffset);
 			xStart = System.Math.Max (0, xStart);
-			
+
 			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
 			int width, height;
 			int pangoPosition = (int)((x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale);
-			
+
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
-			
+
 			bool isSelectionDrawn = false;
 
 			if (BackgroundRenderer != null)
 				BackgroundRenderer.Draw (win, area, line, x, y, _lineHeight);
-			
+
 			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNr)
 				defaultBgColor = ColorStyle.LineMarker;
 			else
 				defaultBgColor = ColorStyle.Default.BackgroundColor;
 			DrawRectangleWithRuler (win, x, lineArea, defaultBgColor, true);
-			
+
 			// Check if line is beyond the document length
-			
+
 			if (line == null) {
 				if (textEditor.Options.ShowInvalidLines) {
 					DrawInvalidLineMarker (win, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 				}
 				var marker = Document.GetExtendingTextMarker (lineNr);
-				if (marker != null) 
+				if (marker != null)
 					marker.Draw (textEditor, win, lineNr, lineArea);
 				return;
 			}
 			//selectedRegions.Clear ();
-			
+
 			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 			int caretOffset = Caret.Offset;
 			restart:
+			int logicalRulerColumn = line.GetLogicalColumn(textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
 			foreach (FoldSegment folding in foldings) {
 				int foldOffset = folding.StartLine.Offset + folding.Column;
 				if (foldOffset < offset)
 					continue;
-				
+
 				if (folding.IsFolded) {
 					//					layout.SetText (Document.GetTextAt (offset, foldOffset - offset));
 					//					gc.RgbFgColor = ColorStyle.FoldLine;
 					//					win.DrawLayout (gc, xPos, y, layout);
 					//					layout.GetPixelSize (out width, out height);
-					
-					DrawLinePart (win, line, offset, foldOffset - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
+
+					DrawLinePart (win, line, logicalRulerColumn, offset, foldOffset - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
 					//					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;
 					markerLayout.SetText (folding.Description);
-					
+
 					markerLayout.GetSize (out width, out height);
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
 					int pixelX = (int)(pangoPosition / Pango.Scale.PangoScale);
@@ -2156,25 +2161,25 @@ namespace Mono.TextEditor
 					if (BackgroundRenderer == null)
 						win.DrawRectangle (GetGC (isFoldingSelected ? SelectionColor.BackgroundColor : defaultBgColor), true, foldingRectangle);
 					/*
-					using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+						using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
 						cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (isFoldingSelected ? SelectionColor.Color : ColorStyle.FoldLine.Color);
 						cr.LineWidth = textEditor.Options.Zoom;
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-						                                                    foldingRectangle.X, 
-						                                                    foldingRectangle.Y, 
-						                                                    textEditor.LineHeight / 2, 
-						                                                    foldingRectangle.Width, 
+						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true,
+						                                                    foldingRectangle.X,
+						                                                    foldingRectangle.Y,
+						                                                    textEditor.LineHeight / 2,
+						                                                    foldingRectangle.Width,
 						                                                    foldingRectangle.Height);
 						cr.Stroke ();
 					}*/
 					win.DrawRectangle (GetGC (isFoldingSelected ? SelectionColor.Color : ColorStyle.FoldLine.Color), false, foldingRectangle);
 					win.DrawLayout (GetGC (isFoldingSelected ? SelectionColor.Color : ColorStyle.FoldLine.Color), (int)(pangoPosition / Pango.Scale.PangoScale), y, markerLayout);
-					
+
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
 						SetVisibleCaretPosition (win, folding.Description[0], (int)(pangoPosition / Pango.Scale.PangoScale), y);
-					
+
 					pangoPosition += width;
-					
+
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
 						foldings = Document.GetStartFoldings (line);
@@ -2182,23 +2187,23 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			
-			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon 
+
+			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
 			// and the caret position is calculated in DrawLinePart.
 			if (line.EndOffset - offset >= 0)
-				DrawLinePart (win, line, offset, line.Offset + line.EditableLength - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
-			
+				DrawLinePart (win, line, logicalRulerColumn, offset, line.Offset + line.EditableLength - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
+
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
-			
+
 			lineArea.X = (int)(pangoPosition / Pango.Scale.PangoScale);
 			lineArea.Width = textEditor.Allocation.Width - (int)(pangoPosition / Pango.Scale.PangoScale);
-			
+
 			if (textEditor.SelectionMode == SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength)) {
 				DocumentLocation start = textEditor.MainSelection.Anchor;
 				DocumentLocation end = textEditor.MainSelection.Lead;
 				DocumentLocation visStart = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), start);
 				DocumentLocation visEnd = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
-				
+
 				int x1 = this.ColumnToVisualX (line, visStart.Column);
 				int x2 = this.ColumnToVisualX (line, visEnd.Column);
 				if (x1 > x2) {
@@ -2208,7 +2213,7 @@ namespace Mono.TextEditor
 				}
 				x1 += (int)(XOffset - textEditor.HAdjustment.Value);
 				x2 += (int)(XOffset - textEditor.HAdjustment.Value);
-				
+
 				if (x2 > lineArea.X) {
 					if (x1 - lineArea.X > 0) {
 						DrawRectangleWithRuler (win, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
@@ -2240,21 +2245,21 @@ namespace Mono.TextEditor
 			if (textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (win, isEolSelected, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
-			if (extendingMarker != null) 
+			if (extendingMarker != null)
 				extendingMarker.Draw (textEditor, win, lineNr, lineArea);
 //			int lineEndX = (int)(pangoPosition / Pango.Scale.PangoScale);
 //			win.DrawLine (GetGC (new Color (255, 0, 0)), lineEndX, y, lineEndX, y + LineHeight);
 			lastLineRenderWidth = (int)(pangoPosition / Pango.Scale.PangoScale);
 		}
-		
+
 		internal IBackgroundRenderer BackgroundRenderer {
 			get;
 			set;
-		} 
-		
+		}
+
 		internal int lastLineRenderWidth = 0;
-		
-		
+
+
 		void SetClip (Gdk.Rectangle rect)
 		{
 			clipRectangle = rect;
@@ -2277,7 +2282,7 @@ namespace Mono.TextEditor
 			int lineNumber;
 			LineSegment line;
 			int xPos = 0;
-			
+
 			public bool WasInLine {
 				get;
 				set;
@@ -2286,26 +2291,26 @@ namespace Mono.TextEditor
 			public VisualLocationTranslator (TextViewMargin margin, int xp, int yp)
 			{
 				this.margin = margin;
-				
+
 				lineNumber = System.Math.Min (margin.textEditor.CalculateLineNumber (yp + (int)margin.textEditor.VAdjustment.Value), margin.Document.LineCount - 1);
 				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
-				
+
 			}
-			
+
 			TextViewMargin.LayoutWrapper layoutWrapper;
 			int index;
 			bool ConsumeLayout (int xp, int yp)
 			{
 				int trailing;
 				bool isInside = layoutWrapper.Layout.XyToIndex (xp, yp, out index, out trailing);
-				
+
 				if (isInside) {
 					int lineNr;
 					int xp1, xp2;
 					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
 					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
 					index = TranslateIndexToUTF8 (layoutWrapper.Layout.Text, index);
-					
+
 					if (!IsNearX1 (xp, xp1, xp2))
 						index++;
 					return true;
@@ -2313,7 +2318,7 @@ namespace Mono.TextEditor
 				index = line.EditableLength;
 				return false;
 			}
-			
+
 			public DocumentLocation VisualToDocumentLocation (int xp, int yp)
 			{
 				if (line == null)
@@ -2332,13 +2337,14 @@ namespace Mono.TextEditor
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
 				bool done = false;
 				Pango.Layout measueLayout = null;
-				
 				restart:
-				foreach (FoldSegment folding in foldings.Where (f => f.IsFolded)) {
+				int logicalRulerColumn = line.GetLogicalColumn(margin.textEditor.GetTextEditorData(), margin.textEditor.Options.RulerColumn);
+				foreach (FoldSegment folding in foldings.Where(f => f.IsFolded))
+				{
 					int foldOffset = folding.StartLine.Offset + folding.Column;
 					if (foldOffset < offset)
 						continue;
-					layoutWrapper = margin.CreateLinePartLayout (mode, line, line.Offset, foldOffset - offset, -1, -1);
+					layoutWrapper = margin.CreateLinePartLayout(mode, line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
 					done |= ConsumeLayout (xp - xPos, yp);
 					if (done)
 						break;
@@ -2361,7 +2367,7 @@ namespace Mono.TextEditor
 					}
 
 					offset = folding.EndLine.Offset + folding.EndColumn;
-					DocumentLocation foldingEndLocation = margin.Document.OffsetToLocation (offset);
+					DocumentLocation foldingEndLocation = margin.Document.OffsetToLocation(offset);
 					lineNumber = foldingEndLocation.Line;
 					column = foldingEndLocation.Column;
 					if (xPos >= xp) {
@@ -2369,7 +2375,7 @@ namespace Mono.TextEditor
 						done = true;
 						break;
 					}
-					
+
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
 						foldings = margin.Document.GetStartFoldings (line);
@@ -2377,7 +2383,7 @@ namespace Mono.TextEditor
 					}
 				}
 				if (!done) {
-					layoutWrapper = margin.CreateLinePartLayout (mode, line, offset, line.Offset + line.EditableLength - offset, -1, -1);
+					layoutWrapper = margin.CreateLinePartLayout(mode, line, logicalRulerColumn, offset, line.Offset + line.EditableLength - offset, -1, -1);
 					ConsumeLayout (xp - xPos, yp);
 				}
 				if (measueLayout != null)

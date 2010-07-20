@@ -1,5 +1,14 @@
 2010-07-20  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditor.cs:
+	* Mono.TextEditor/LineSegment.cs:
+	* Mono.TextEditor/TextViewMargin.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor/FoldingScreenbackgroundRenderer.cs: Tweaked
+	  text editor performance.
+
+2010-07-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Optimized
 	  highlighting thread.

@@ -1760,8 +1760,8 @@ namespace Mono.TextEditor
 				LineSegment line = editor.Document.GetLineByOffset (result.Offset);
 				int lineNr = editor.Document.OffsetToLineNumber (result.Offset);
 				SyntaxMode mode = editor.Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? editor.Document.SyntaxMode : SyntaxMode.Default;
-				
-				TextViewMargin.LayoutWrapper lineLayout = editor.textViewMargin.CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
+				int logicalRulerColumn = line.GetLogicalColumn(editor.GetTextEditorData(), editor.Options.RulerColumn);
+				TextViewMargin.LayoutWrapper lineLayout = editor.textViewMargin.CreateLinePartLayout(mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
 				if (lineLayout == null)
 					return;
 				int l, x1, x2;
@@ -1781,7 +1781,6 @@ namespace Mono.TextEditor
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
 					cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
 					cr.Clip ();
-			
 					
 					int width = (int)(x2 - x1);
 					int border = 2;

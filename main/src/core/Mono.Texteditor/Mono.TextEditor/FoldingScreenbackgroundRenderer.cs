@@ -84,7 +84,7 @@ namespace Mono.TextEditor
 			
 			int colorCount = foldSegments.Count + 2;
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
- 				for (int segment = -1; segment <= foundSegment; segment++) {
+				for (int segment = -1; segment <= foundSegment; segment++) {
 					HslColor hslColor = new HslColor (editor.ColorStyle.Default.BackgroundColor);
 					int colorPosition = segment + 1;
 					if (segment == foldSegments.Count - 1)

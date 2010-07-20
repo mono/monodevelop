@@ -75,7 +75,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			SpanParser spanParser = CreateSpanParser (doc, this, line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, doc, style, this, line);
-			Chunk result = chunkParser.GetChunks (line.Offset, line.EditableLength);
+			Chunk result = chunkParser.GetChunks (chunkParser.lineOffset, line.EditableLength);
 			if (SemanticRules != null) {
 				foreach (SemanticRule sematicRule in SemanticRules) {
 					sematicRule.Analyze (doc, line, result, offset, offset + length);
@@ -92,7 +92,8 @@ namespace Mono.TextEditor.Highlighting
 						result.Length = endOffset - offset;
 					}
 				}
-				if (result != null && offset + length != line.Offset + line.EditableLength) {
+
+				if (result != null && offset + length != chunkParser.lineOffset + line.EditableLength) {
 					// crop to end
 					Chunk cur = result;
 					while (cur != null && cur.EndOffset < offset + length) {
@@ -435,6 +436,7 @@ namespace Mono.TextEditor.Highlighting
 			SpanParser spanParser;
 			Document doc;
 			LineSegment line;
+			internal int lineOffset;
 			SyntaxMode mode;
 			
 			public ChunkParser (SpanParser spanParser, Document doc, Style style, SyntaxMode mode, LineSegment line)
@@ -442,6 +444,7 @@ namespace Mono.TextEditor.Highlighting
 				this.mode = mode;
 				this.doc = doc;
 				this.line = line;
+				this.lineOffset = line.Offset;
 				this.spanParser = spanParser;
 				spanParser.FoundSpanBegin = FoundSpanBegin;
 				spanParser.FoundSpanEnd = FoundSpanEnd;
@@ -576,7 +579,7 @@ namespace Mono.TextEditor.Highlighting
 			bool inWord = false;
 			public void ParseChar (ref int i, char ch)
 			{
-				int textOffset = i - line.Offset;
+				int textOffset = i - lineOffset;
 				if (textOffset >= str.Length)
 					return;
 				
@@ -632,7 +635,7 @@ namespace Mono.TextEditor.Highlighting
 			string str;
 			public virtual Chunk GetChunks (int offset, int length)
 			{
-				SyntaxModeService.ScanSpans (doc, mode, spanParser.CurRule, spanParser.SpanStack, line.Offset, offset);
+				SyntaxModeService.ScanSpans (doc, mode, spanParser.CurRule, spanParser.SpanStack, lineOffset, offset);
 				length = System.Math.Min (doc.Length - offset, length);
 				str = length > 0 ? doc.GetTextAt (offset, length) : null;
 				curChunk = new Chunk (offset, 0, GetSpanStyle ());
