@@ -259,7 +259,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		internal IType SearchType (string name, IType callingClass, IMember callingMember, ICompilationUnit unit, IList<IReturnType> genericParameters)
 		{
 			// TODO dom check generic parameter count
-			if (name == null || name == String.Empty)
+			if (string.IsNullOrEmpty (name))
 				return null;
 			
 			IType result = null;
@@ -282,12 +282,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			result = GetType (name, genericParameters, false, true);
 			if (result != null)
 				return result;
-			// Maybe an inner type?
+
+			// Maybe an inner type that isn't fully qualified?
 			if (callingClass != null) {
 				IType t = ResolveType (callingClass);
 				result = SearchInnerType (t, name.Split ('.'), 0, genericParameters != null ? genericParameters.Count : 0, true);
 				if (result != null) {
-					if (genericParameters != null && genericParameters.Count > 0)
+					if (genericParameters != null && genericParameters.Count > 0) 
 						return CreateInstantiatedGenericType (result, genericParameters);
 					return result;
 				}
@@ -306,12 +307,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			// The enclosing namespace has preference over the using directives.
 			// Check it now.
-
 			if (callingClass != null) {
-				string[] namespaces = callingClass.FullName.Split ('.');
-				for (int n = namespaces.Length - 1; n >= 0; n--) {
-					string curnamespace = string.Join (".", namespaces, 0, n);
-					result = GetType (curnamespace + "." + name, genericParameters, false, true);
+				List<int> indices = new List<int> ();
+				string str = callingClass.FullName;
+				for (int i = 0; i < str.Length; i++) {
+					if (str[i] == '.')
+						indices.Add (i);
+				}
+				for (int n = indices.Count - 1; n >= 0; n--) {
+					if (n < 1)
+						continue;
+					string curnamespace = str.Substring (0, indices[n] + 1);
+					result = GetType (curnamespace + name, genericParameters, false, true);
 					if (result != null)
 						return result;
 				}

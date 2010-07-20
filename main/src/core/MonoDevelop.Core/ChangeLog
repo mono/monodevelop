@@ -1,5 +1,10 @@
 2010-07-20  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDom.cs: Some
+	  performance optimization of SearchType.
+
+2010-07-20  Mike Krüger  <mkrueger@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.Core.csproj:
 	* MonoDevelop.Projects.Dom.Serialization/FileEntry.cs:
