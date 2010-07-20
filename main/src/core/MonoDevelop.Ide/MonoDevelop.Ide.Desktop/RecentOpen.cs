@@ -33,108 +33,131 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Desktop
 {
-	public class RecentOpen
+	public class FdoRecentFiles : RecentFiles, IDisposable
 	{
-		static RecentFileStorage recentFiles = new RecentFileStorage ();
+		RecentFileStorage recentFiles = new RecentFileStorage ();
+		
+		const string projGroup = "MonoDevelop Projects";
+		const string fileGroup = "MonoDevelop Files";
 		
 		const int ItemLimit = 10;
 		
-		#region Recent files
-		const string fileGroup = "MonoDevelop Files";
-		
-		public IEnumerable<RecentItem> RecentFiles {
-			get {
-				return recentFiles.GetItemsInGroup (fileGroup);
-			}
-		}
-		public int RecentFilesCount {
-			get {
-				return recentFiles.GetItemsInGroup (fileGroup).Length;
-			}
-		}
-		public event EventHandler RecentFileChanged;
-		protected virtual void OnRecentFileChange ()
+		public FdoRecentFiles ()
 		{
-			if (RecentFileChanged != null) 
-				RecentFileChanged (this, null);
+			recentFiles.RemoveMissingFiles (projGroup, fileGroup);
 		}
 		
-		public void ClearRecentFiles()
+		public override event EventHandler Changed {
+			add { recentFiles.RecentFilesChanged += value; }
+			remove { recentFiles.RecentFilesChanged -= value; }
+		}
+		
+		public override IList<RecentFile> GetProjects ()
+		{
+			return Get (projGroup);
+		}
+		
+		public override IList<RecentFile> GetFiles ()
+		{
+			return Get (fileGroup);
+		}
+		
+		IList<RecentFile> Get (string grp)
+		{
+			var gp = recentFiles.GetItemsInGroup (grp);
+			return gp.Select (i => new RecentFile (i.LocalPath, i.Private, i.Timestamp)).ToList ();
+		}
+		
+		public override void ClearProjects ()
+		{
+			recentFiles.ClearGroup (projGroup);
+		}
+		
+		public override void ClearFiles ()
 		{
 			recentFiles.ClearGroup (fileGroup);
-			OnRecentFileChange();
 		}
 		
-		public void AddLastFile (string name, string project)
+		public override void AddFile (string fileName, string displayName)
 		{
-			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), DesktopService.GetMimeTypeForUri (name), fileGroup);
-			recentItem.Private = project != null ? string.Format ("{0} [{1}]", Path.GetFileName (name), project) : Path.GetFileName (name);
-			recentFiles.AddWithLimit (recentItem, fileGroup, ItemLimit);
-			OnRecentFileChange();
+			Add (fileGroup, fileName, displayName);
 		}
-		#endregion
 		
-		#region Recent projects
-		const string projectGroup = "MonoDevelop Projects";
+		public override void AddProject (string fileName, string displayName)
+		{
+			Add (projGroup, fileName, displayName);
+		}
 		
-		public IEnumerable<RecentItem> RecentProjects {
+		void Add (string grp, string fileName, string displayName)
+		{
+			var mime = DesktopService.GetMimeTypeForUri (fileName);
+			var uri = RecentFileStorage.ToUri (fileName);
+			var recentItem = new RecentItem (uri, mime, grp) { Private = displayName };
+			recentFiles.AddWithLimit (recentItem, grp, ItemLimit);
+		}
+		
+		public override void NotifyFileRemoved (string fileName)
+		{
+			recentFiles.RemoveItem (RecentFileStorage.ToUri (fileName));
+		}
+		
+		public override void NotifyFileRenamed (string oldName, string newName)
+		{
+			recentFiles.RenameItem (RecentFileStorage.ToUri (oldName), RecentFileStorage.ToUri (newName));
+		}
+		
+		public void Dispose ()
+		{
+			recentFiles.Dispose ();
+			recentFiles = null;
+		}
+	}
+		
+	public abstract class RecentFiles
+	{
+		public abstract IList<RecentFile> GetFiles ();
+		public abstract IList<RecentFile> GetProjects ();
+		public abstract event EventHandler Changed;
+		public abstract void ClearProjects ();
+		public abstract void ClearFiles ();
+		public abstract void AddFile (string fileName, string displayName);
+		public abstract void AddProject (string fileName, string displayName);
+		public abstract void NotifyFileRemoved (string filename);
+		public abstract void NotifyFileRenamed (string oldName, string newName);
+		
+		public void AddFile (string fileName, MonoDevelop.Projects.Project project)
+		{
+			var projectName = project != null? project.Name : null;
+			var displayName = projectName != null?
+				string.Format ("{0} [{1}]", Path.GetFileName (fileName), projectName) 
+				: Path.GetFileName (fileName);
+			AddFile (fileName, displayName);
+		}
+	}
+	
+	public class RecentFile
+	{
+		string displayName, fileName;
+		DateTime timestamp;
+		
+		public RecentFile (string fileName, string displayName, DateTime timestamp)
+		{
+			this.fileName = fileName;
+			this.displayName = displayName;
+			this.timestamp = timestamp;
+		}
+
+		public string FileName { get { return fileName; } }
+		public string DisplayName {
 			get {
-				return recentFiles.GetItemsInGroup (projectGroup);
+				return string.IsNullOrEmpty (displayName)? Path.GetFileName (fileName) : displayName;
 			}
 		}
-		public int RecentProjectsCount {
-			get {
-				return recentFiles.GetItemsInGroup (projectGroup).Length;
-			}
-		}
-		public event EventHandler RecentProjectChanged;
-		protected virtual void OnRecentProjectChange ()
-		{
-			if (RecentProjectChanged != null) {
-				RecentProjectChanged(this, null);
-			}
-		}
-		public void ClearRecentProjects()
-		{
-			recentFiles.ClearGroup (projectGroup);
-			OnRecentProjectChange();
-		}
-		public void AddLastProject (string name, string projectName)
-		{
-			RecentItem recentItem = new RecentItem (RecentFileStorage.ToUri (name), DesktopService.GetMimeTypeForUri (name), projectGroup);
-			recentItem.Private = projectName;
-			recentFiles.AddWithLimit (recentItem, projectGroup, ItemLimit);
-			OnRecentProjectChange();
-		}
-		#endregion
-		
-		public RecentOpen ()
-		{
-			recentFiles.RemoveMissingFiles (projectGroup);
-			OnRecentProjectChange ();
-			
-			recentFiles.RemoveMissingFiles (fileGroup);
-			OnRecentFileChange ();
-		}
-		
-		public void InformFileRemoved (object sender, FileEventArgs e)
-		{
-			if (!e.IsDirectory) {
-				recentFiles.RemoveItem (RecentFileStorage.ToUri (e.FileName));
-				OnRecentFileChange();
-			}
-		}
-		
-		public void InformFileRenamed (object sender, FileCopyEventArgs e)
-		{
-			if (!e.IsDirectory) {
-				recentFiles.RenameItem (RecentFileStorage.ToUri (e.SourceFile), RecentFileStorage.ToUri (e.TargetFile));
-				OnRecentFileChange();
-			}
-		}
+		public DateTime TimeStamp { get { return timestamp; } }
 	}
 }
 

@@ -584,7 +584,7 @@ namespace MonoDevelop.Ide
 				}
 
 				timer.Trace ("Registering to recent list");
-				IdeApp.Workbench.RecentOpen.AddLastProject (item.FileName, item.Name);
+				DesktopService.RecentFiles.AddProject (item.FileName, item.Name);
 				
 				timer.Trace ("Adding to items list");
 				Items.Add (item);

@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Desktop
 	/// Implementation of RecentItem according to "Recent File Storage Specification v0.2" from 
 	/// the freedesktop.org.
 	/// </summary>
-    public class RecentItem : IComparable
+    class RecentItem : IComparable
 	{
         string       uri;
         string       mimeType;

@@ -37,6 +37,7 @@ using System.IO;
 using Gtk;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Desktop;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -239,72 +240,75 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 	
-	
-	
 	// MonoDevelop.Ide.Commands.FileCommands.RecentFileList
 	public class RecentFileListHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			if (recentOpen.RecentFilesCount > 0) {
-				int i = 0;
-				foreach (RecentItem ri in recentOpen.RecentFiles) {
-					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
-					string label = ((ri.Private == null || ri.Private.Length < 1) ? Path.GetFileName (ri.ToString ()) : ri.Private);
-					CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
-					cmd.Description = GettextCatalog.GetString ("Open {0}", ri.ToString ());
-					Gdk.Pixbuf icon = DesktopService.GetPixbufForFile (ri.ToString(), IconSize.Menu);
-					if (icon != null)
-						cmd.Icon = ImageService.GetStockId (icon, IconSize.Menu);
-					info.Add (cmd, ri);
-					i++;
-				}
+			var files = DesktopService.RecentFiles.GetFiles ();
+			if (files.Count == 0)
+				return;
+			
+			int i = 0;
+			foreach (var ri in files) {
+				string acceleratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
+				var cmd = new CommandInfo (acceleratorKeyPrefix + ri.DisplayName.Replace ("_", "__")) {
+					Description = GettextCatalog.GetString ("Open {0}", ri.FileName)
+				};
+				Gdk.Pixbuf icon = DesktopService.GetPixbufForFile (ri.FileName, IconSize.Menu);
+				if (icon != null)
+					cmd.Icon = ImageService.GetStockId (icon, IconSize.Menu);
+				info.Add (cmd, ri.FileName);
+				i++;
 			}
 		}
+		
 		protected override void Run (object dataItem)
 		{
-			IdeApp.Workbench.OpenDocument (dataItem.ToString());
+			IdeApp.Workbench.OpenDocument ((string)dataItem);
 		}
 	}
+	
 	// MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles
 	public class ClearRecentFilesHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentFilesCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent files"), GettextCatalog.GetString ("Are you sure you want to clear recent files list?"), AlertButton.Clear)) {
-					IdeApp.Workbench.RecentOpen.ClearRecentFiles();
+				string title = GettextCatalog.GetString ("Clear recent files");
+				string question = GettextCatalog.GetString ("Are you sure you want to clear recent files list?");
+				if (MessageService.Confirm (title, question, AlertButton.Clear)) {
+					DesktopService.RecentFiles.ClearFiles ();
 				}
-			} catch {}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error clearing recent files list", ex);
+			}
 		}
+		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.RecentOpen.RecentFilesCount > 0;
+			info.Enabled = DesktopService.RecentFiles.GetFiles ().Count > 0;
 		}
 	}
+	
 	// MonoDevelop.Ide.Commands.FileCommands.RecentProjectList
 	public class RecentProjectListHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			
-			if (recentOpen.RecentProjectsCount <= 0)
+			var projects = DesktopService.RecentFiles.GetProjects ();
+			if (projects.Count == 0)
 				return;
 				
 			int i = 0;
-			foreach (RecentItem ri in recentOpen.RecentProjects) {
+			foreach (var ri in projects) {
 				//getting the icon requires probing the file, so handle IO errors
 				IconId icon;
 				try {
-					if (!File.Exists (ri.LocalPath))
+					if (!File.Exists (ri.FileName))
 						continue;
-					
 					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
-						(ri.LocalPath, typeof(Solution)).Length > 0
-							? "md-solution"
-							: "md-workspace";
+						(ri.FileName, typeof(Solution)).Length > 0? "md-solution": "md-workspace";
 				}
 				catch (UnauthorizedAccessException exAccess) {
 					LoggingService.LogWarning ("Error building recent solutions list (Permissions)", exAccess);
@@ -315,48 +319,51 @@ namespace MonoDevelop.Ide.Commands
 					continue;
 				}
 				
-				string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
-				string label = ((ri.Private == null || ri.Private.Length < 1)
-				                ? Path.GetFileNameWithoutExtension (ri.ToString ())
-				                : ri.Private);
-				CommandInfo cmd = new CommandInfo (accelaratorKeyPrefix + label.Replace ("_", "__"));
-				cmd.Icon = icon;
-				
+				string acceleratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10).ToString() + " " : "";
 				string str = GettextCatalog.GetString ("Load solution {0}", ri.ToString ());
 				if (IdeApp.Workspace.IsOpen)
 					str += " - " + GettextCatalog.GetString ("Hold Control to open in current workspace.");
-				cmd.Description = str;
-				info.Add (cmd, ri);
+				
+				var cmd = new CommandInfo (acceleratorKeyPrefix + ri.DisplayName.Replace ("_", "__")) {
+					Icon = icon,
+					Description = str,
+				};
+				
+				info.Add (cmd, ri.FileName);
 				i++;
 			}
 		}
 		protected override void Run (object dataItem)
 		{
-			string filename = dataItem.ToString();
+			string filename = (string)dataItem;
 			Gdk.ModifierType mtype;
 			bool inWorkspace = Gtk.Global.GetCurrentEventState (out mtype) && (mtype & Gdk.ModifierType.ControlMask) != 0;
 			IdeApp.Workspace.OpenWorkspaceItem (filename, !inWorkspace);
 		}
 	}
+	
 	// MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects
 	internal class ClearRecentProjectsHandler : CommandHandler
 	{
 		protected override void Run()
 		{			
 			try {
-				if (IdeApp.Workbench.RecentOpen.RecentProjectsCount > 0 && MessageService.Confirm (GettextCatalog.GetString ("Clear recent projects"), GettextCatalog.GetString ("Are you sure you want to clear recent projects list?"), AlertButton.Clear))
-				{
-					IdeApp.Workbench.RecentOpen.ClearRecentProjects();
+				string title = GettextCatalog.GetString ("Clear recent projects");
+				string question = GettextCatalog.GetString ("Are you sure you want to clear recent projects list?");
+				if (MessageService.Confirm (title, question, AlertButton.Clear)) {
+					DesktopService.RecentFiles.ClearProjects ();
 				}
-			} catch {}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error clearing recent projects list", ex);
+			}
 		}
 	
 		protected override void Update (CommandInfo info)
 		{
-			RecentOpen recentOpen = IdeApp.Workbench.RecentOpen;
-			info.Enabled = recentOpen.RecentProjectsCount > 0;
+			info.Enabled = DesktopService.RecentFiles.GetProjects ().Count > 0;
 		}
 	}
+	
 	// MonoDevelop.Ide.Commands.FileCommands.Exit
 	public class ExitHandler : CommandHandler
 	{

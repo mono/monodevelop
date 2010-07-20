@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Core;
+using System.IO;
 
 namespace MonoDevelop.Ide
 {
@@ -48,6 +49,11 @@ namespace MonoDevelop.Ide
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
 			Runtime.ProcessService.SetExternalConsoleHandler (platformService.StartConsoleProcess);
+			
+			FileService.FileRemoved += DispatchService.GuiDispatch (
+				new EventHandler<FileEventArgs> (NotifyFileRemoved));
+			FileService.FileRenamed += DispatchService.GuiDispatch (
+				new EventHandler<FileCopyEventArgs> (NotifyFileRenamed));
 		}
 		
 		public static DesktopApplication GetDefaultApplication (string mimetype)
@@ -144,6 +150,26 @@ namespace MonoDevelop.Ide
 		public static void OpenInTerminal (FilePath directory)
 		{
 			platformService.OpenInTerminal (directory);
+		}
+		
+		public static RecentFiles RecentFiles {
+			get {
+				return platformService.RecentFiles;
+			}
+		}
+		
+		static void NotifyFileRemoved (object sender, FileEventArgs e)
+		{
+			if (!e.IsDirectory) {
+				platformService.RecentFiles.NotifyFileRemoved (e.FileName);
+			}
+		}
+		
+		static void NotifyFileRenamed (object sender, FileCopyEventArgs e)
+		{
+			if (!e.IsDirectory) {
+				platformService.RecentFiles.NotifyFileRenamed (e.SourceFile, e.TargetFile);
+			}
 		}
 	}
 }
