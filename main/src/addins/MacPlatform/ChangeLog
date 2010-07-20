@@ -1,3 +1,8 @@
+2010-07-19  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* MacPlatform.cs: Better fix for Bug 617276 - MonoDevelop
+	  crashes when clicking on a script error in Unity3d.
+
 2010-06-28  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MacPlatform.cs: Quote paths when opening files.
