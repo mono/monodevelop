@@ -265,6 +265,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//which makes completion triggering noticeably more responsive
 			if (!completionDataList.IsSorted)
 				completionDataList.Sort (new DataItemComparer ());
+			List.FilterWords ();
 			
 			Reposition (true);
 			
@@ -633,18 +634,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void OnCompletionDataChanged (object s, EventArgs args)
 		{
 			ResetSizes ();
+			HideFooter ();
+			
 			//try to capture full selection state so as not to interrupt user
 			string last = null;
-			if (Visible)
-				last = List.AutoSelect ? CurrentCompletionText : PartialWord;
 
-			HideFooter ();
 			if (Visible) {
+				last = List.AutoSelect ? CurrentCompletionText : PartialWord;
 				//don't reset the user-entered word when refilling the list
 				var tmp = this.List.AutoSelect;
+				// Fill the list before resetting so that we get the correct size
+				FillList ();
 				Reset (false);
 				this.List.AutoSelect = tmp;
-				FillList ();
 				if (last != null )
 					SelectEntry (last);
 			}

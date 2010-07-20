@@ -1,3 +1,9 @@
+2010-07-20  Levi Bard  <levi@unity3d.com>
+
+	* MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:
+	  Ensure that results are displayed once they come in for
+	  mutable completion lists.
+
 2010-07-19  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs:
