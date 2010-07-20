@@ -7,6 +7,21 @@
 
 2010-07-19  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* MonoDevelop.Ide/Ide.cs:
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide.Gui/Workbench.cs:
+	* MonoDevelop.Ide/RootWorkspace.cs:
+	* MonoDevelop.Ide/DesktopService.cs:
+	* MonoDevelop.Ide.Desktop/RecentItem.cs:
+	* MonoDevelop.Ide.Desktop/RecentOpen.cs:
+	* MonoDevelop.Ide.Commands/FileCommands.cs:
+	* MonoDevelop.Ide.Desktop/PlatformService.cs:
+	* MonoDevelop.Ide.Desktop/RecentFileStorage.cs: Moved recent
+	  files/projects lists to the desktopservice/platformservice
+	  so it can be made platform-dependent.
+
+2010-07-19  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs:
 	  Better fix for Bug 617276 - MonoDevelop crashes when
 	  clicking on a script error in Unity3d.

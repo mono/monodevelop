@@ -59,7 +59,6 @@ namespace MonoDevelop.Ide.Gui
 		List<Pad> pads;
 		ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		DefaultWorkbench workbench;
-		RecentOpen recentOpen = null;
 		
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
@@ -84,8 +83,6 @@ namespace MonoDevelop.Ide.Gui
 				
 				((Gtk.Window)workbench).Visible = false;
 				workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
-				FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (IdeApp.Workbench.RecentOpen.InformFileRemoved));
-				FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (IdeApp.Workbench.RecentOpen.InformFileRenamed));
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
 				
@@ -129,14 +126,6 @@ namespace MonoDevelop.Ide.Gui
 		internal bool Close ()
 		{
 			return workbench.Close();
-		}
-		
-		public RecentOpen RecentOpen {
-			get {
-				if (recentOpen == null)
-					recentOpen = new RecentOpen ();
-				return recentOpen;
-			}
 		}
 		
 		public ReadOnlyCollection<Document> Documents {
@@ -758,7 +747,7 @@ namespace MonoDevelop.Ide.Gui
 					fw.Invoke (fileName);
 					
 					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
-					RecentOpen.AddLastFile (fileName, project != null ? project.Name : null);
+					DesktopService.RecentFiles.AddFile (fileName, project);
 				} else {
 					try {
 						Counters.OpenDocumentTimer.Trace ("Showing in browser");

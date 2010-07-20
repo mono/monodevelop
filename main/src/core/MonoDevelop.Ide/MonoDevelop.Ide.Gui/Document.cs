@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide.Gui
 				Window.ViewContent.Save (filename);
 
 			FileService.NotifyFileChanged (filename);
-			IdeApp.Workbench.RecentOpen.AddLastFile (filename, null);
+			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
 			OnSaved (EventArgs.Empty);
 		}

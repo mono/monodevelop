@@ -270,15 +270,16 @@ namespace MonoDevelop.WelcomePage
 					recentFilesTable.Remove (w);
 			}
 			
-			if (parentView.RecentProjectsCount <= 0)
+			var recent = parentView.GetRecentProjects ();
+			if (recent.Count == 0)
 				return;
 			
 			uint i = 2;
-			foreach (RecentItem ri in parentView.RecentProjects) {
+			foreach (var ri in recent) {
 				//getting the icon requires probing the file, so handle IO errors
 				string icon;
 				try {
-					if (!System.IO.File.Exists (ri.LocalPath))
+					if (!System.IO.File.Exists (ri.FileName))
 						continue;
 /* delay project service creation. 
 					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
@@ -286,7 +287,7 @@ namespace MonoDevelop.WelcomePage
 								? "md-solution"
 								: "md-workspace";*/
 					
-					icon = System.IO.Path.GetExtension (ri.LocalPath) != ".mdw"
+					icon = System.IO.Path.GetExtension (ri.FileName) != ".mdw"
 								? "md-solution"
 								: "md-workspace";
 				}
@@ -306,14 +307,12 @@ namespace MonoDevelop.WelcomePage
 				label.Xalign = 1;
 				button.Xalign = 0;
 				
-				string name = (ri.Private != null && ri.Private.Length > 0) ?
-					ri.Private :
-					System.IO.Path.GetFileNameWithoutExtension (ri.LocalPath);
+				string name = ri.DisplayName;
 				button.Label = string.Format (textFormat, name);
-				button.HoverMessage = ri.LocalPath;
-				button.LinkUrl = "project://" + ri.LocalPath;
+				button.HoverMessage = ri.FileName;
+				button.LinkUrl = "project://" + ri.FileName;
 				button.Icon = icon;
-				label.Markup = string.Format (textFormat, WelcomePageView.TimeSinceEdited (ri.Timestamp));
+				label.Markup = string.Format (textFormat, WelcomePageView.TimeSinceEdited (ri.TimeStamp));
 				
 				i++;
 				

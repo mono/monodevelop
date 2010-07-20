@@ -260,10 +260,9 @@ namespace MonoDevelop.Ide
 			
 			// load previous combine
 			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
-				RecentOpen recentOpen = Workbench.RecentOpen;
-
-				if (recentOpen.RecentProjectsCount > 0) { 
-					IdeApp.Workspace.OpenWorkspaceItem(recentOpen.RecentProjects.First ().ToString()).WaitForCompleted ();
+				var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+				if (proj != null) { 
+					IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
 				}
 			}
 			
