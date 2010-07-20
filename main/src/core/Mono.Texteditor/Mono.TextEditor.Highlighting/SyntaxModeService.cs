@@ -217,11 +217,6 @@ namespace Mono.TextEditor.Highlighting
 				ManualResetEvent = new ManualResetEvent (false);
 			}
 			
-			protected void ScanSpansThreaded (Document doc, Rule rule, CloneableStack<Span> spanStack, int start, int end)
-			{
-				SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
-				parser.ParseSpans (start, end - start);
-			}
 			
 			bool EndsWithContinuation (Span span, LineSegment line)
 			{
@@ -239,18 +234,14 @@ namespace Mono.TextEditor.Highlighting
 				if (iter == null || iter.Current == null)
 					return;
 				var spanStack = iter.Current.StartSpan.Clone ();
+				SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
 				try {
-					LineSegment oldLine = iter.Current.Offset > 0 ? doc.GetLineByOffset (iter.Current.Offset - 1) : null;
 					do {
 						LineSegment line = iter.Current;
 						if (line == null || line.Offset < 0)
 							break;
 						
 						CloneableStack<Span> spanList = spanStack.Clone ();
-						while (spanList.Count > 0 && !EndsWithContinuation (spanList.Peek (), oldLine)) {
-							spanList.Pop ();
-						}
-						
 						if (line.Offset > endOffset) {
 							bool equal = line.StartSpan.Equals (spanList);
 							doUpdate |= !equal;
@@ -259,15 +250,9 @@ namespace Mono.TextEditor.Highlighting
 						}
 
 						line.StartSpan = spanList;
-						oldLine = line;
-						Rule rule = mode;
-						if (spanStack.Count > 0 && !String.IsNullOrEmpty (spanStack.Peek ().Rule))
-							rule = mode.GetRule (spanStack.Peek ().Rule) ?? mode;
-						
-						ScanSpansThreaded (doc, rule, spanStack, line.Offset, line.EndOffset);
+						parser.ParseSpans (line.Offset, line.Length);
 						while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
 							spanStack.Pop ();
-					
 					} while (iter.MoveNext ());
 				} catch (Exception e) {
 					Console.WriteLine ("Syntax highlighting exception:" + e);

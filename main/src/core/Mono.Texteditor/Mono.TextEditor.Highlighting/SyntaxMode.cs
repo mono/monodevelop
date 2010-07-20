@@ -260,12 +260,33 @@ namespace Mono.TextEditor.Highlighting
 				get {
 					return spanStack;
 				}
+				set {
+					this.spanStack = value;
+				}
 			}
 
 			public Stack<Rule> RuleStack {
 				get {
 					return ruleStack;
 				}
+				set {
+					this.ruleStack = value;
+				}
+			}
+			
+			Stack<Rule> CreateRuleStack ()
+			{
+				var result = new Stack<Rule> ();
+				if (mode == null)
+					return result;
+				Rule curRule = mode;
+				result.Push (mode);
+				foreach (Span span in this.spanStack) {
+					Rule rule = curRule.GetRule (span.Rule) ?? curRule;
+					result.Push (rule);
+					curRule = rule;
+				}
+				return result;
 			}
 			
 			public SpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
@@ -275,18 +296,8 @@ namespace Mono.TextEditor.Highlighting
 				this.doc  = doc;
 				this.mode = mode;
 				this.line = line;
-				this.spanStack = spanStack ?? (line != null ? line.StartSpan.Clone () : new CloneableStack<Span> ());
-				ruleStack = new Stack<Rule> ();
-				if (mode != null) 
-					ruleStack.Push (mode);
-				List<Rule> rules = new List<Rule> ();
-				foreach (Span span in this.spanStack) {
-					Rule rule = CurRule.GetRule (span.Rule);
-					rules.Add (rule ?? CurRule);
-				}
-				for (int i = rules.Count - 1; i >= 0 ; i--) {
-					ruleStack.Push (rules[i]);
-				}
+				this.SpanStack = spanStack ?? (line != null ? line.StartSpan.Clone () : new CloneableStack<Span> ());
+				this.ruleStack = CreateRuleStack ();
 				FoundSpanBegin = DefaultFoundSpanBegin;
 				FoundSpanEnd = DefaultFoundSpanEnd;
 				FoundSpanExit = DefaultFoundSpanEnd;
