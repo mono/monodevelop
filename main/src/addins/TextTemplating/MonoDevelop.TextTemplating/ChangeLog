@@ -1,3 +1,9 @@
+2010-07-20  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.TextTemplating.csproj: Added reference to
+	  mono.texteditor to allows windows builds.
+
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
 	* Gui/T4EditorExtension.cs: Track API changes.
