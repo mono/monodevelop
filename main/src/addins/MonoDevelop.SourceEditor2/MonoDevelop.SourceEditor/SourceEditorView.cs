@@ -167,7 +167,7 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Document.EndUndo += delegate {
 				if (wasEdited)
-					autoSave.InformAutoSaveThread (Document);
+					AutoSave.InformAutoSaveThread (Document);
 			};
 			
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
@@ -330,14 +330,6 @@ namespace MonoDevelop.SourceEditor
 			currentErrorMarkers.Clear ();
 		}
 		
-		AutoSave autoSave = new AutoSave ();
-		
-		internal AutoSave AutoSave {
-			get {
-				return autoSave;
-			}
-		}
-		
 		public override void Save (string fileName)
 		{
 			Save (fileName, this.encoding);
@@ -345,8 +337,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Save (string fileName, string encoding)
 		{
-			autoSave.FileName = fileName;
-			autoSave.RemoveAutoSaveFile ();
+			if (!string.IsNullOrEmpty (ContentName))
+				AutoSave.RemoveAutoSaveFile (ContentName);
 
 			if (ContentName != fileName) {
 				if (!FileService.RequestFileEdit (fileName))
@@ -406,10 +398,9 @@ namespace MonoDevelop.SourceEditor
 		public void Load (string fileName, string encoding)
 		{
 			// Handle the "reload" case.
-			if (autoSave.FileName == fileName) {
-				autoSave.RemoveAutoSaveFile ();
-			}
-			autoSave.FileName = fileName;
+			if (ContentName == fileName)
+				AutoSave.RemoveAutoSaveFile (fileName);
+
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveMessageBar ();
@@ -446,7 +437,6 @@ namespace MonoDevelop.SourceEditor
 		bool hadBom = false;
 		public void Load (string fileName, string content, string encoding)
 		{
-			autoSave.FileName = fileName;
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveMessageBar ();
@@ -503,12 +493,6 @@ namespace MonoDevelop.SourceEditor
 			errorListPad.TaskToggled -= HandleErrorListPadTaskToggled;
 			
 			DisposeErrorMarkers ();
-			
-			if (autoSave != null) {
-				autoSave.RemoveAutoSaveFile ();
-				autoSave.Dispose ();
-				autoSave = null;
-			}
 			
 			ClipbardRingUpdated -= UpdateClipboardRing;
 			if (fileSystemWatcher != null) {

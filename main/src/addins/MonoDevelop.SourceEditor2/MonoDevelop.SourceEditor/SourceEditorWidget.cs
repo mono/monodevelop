@@ -753,8 +753,7 @@ namespace MonoDevelop.SourceEditor
 				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
 				b1.Clicked += delegate {
 					try {
-						view.AutoSave.FileName = fileName;
-						view.AutoSave.RemoveAutoSaveFile ();
+						AutoSave.RemoveAutoSaveFile (fileName);
 						view.Load (fileName);
 					} catch (Exception ex) {
 						MessageService.ShowException (ex, "Could not remove the autosave file.");
@@ -768,9 +767,8 @@ namespace MonoDevelop.SourceEditor
 				b2.Image = ImageService.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
 				b2.Clicked += delegate {
 					try {
-						view.AutoSave.FileName = fileName;
-						string content = view.AutoSave.LoadAutoSave ();
-						view.AutoSave.RemoveAutoSaveFile ();
+						string content = AutoSave.LoadAutoSave (fileName);
+						AutoSave.RemoveAutoSaveFile (fileName);
 						view.Load (fileName, content, null);
 						view.IsDirty = true;
 					} catch (Exception ex) {

@@ -1,21 +1,21 @@
-// 
+//
 // AutoSave.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
-// 
+//
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,22 +25,24 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class AutoSave : IDisposable
+	static class AutoSave
 	{
 		static string autoSavePath = Path.Combine (PropertyService.Get<string> ("MonoDevelop.CodeCompletion.DataDirectory", String.Empty), "AutoSave");
-		
+
 		static AutoSave ()
 		{
 			if (!Directory.Exists (autoSavePath))
 				Directory.CreateDirectory (autoSavePath);
+			StartAutoSaveThread ();
 		}
-		
+
 		static string GetAutoSaveFileName (string fileName)
 		{
 			if (fileName == null)
@@ -49,12 +51,12 @@ namespace MonoDevelop.SourceEditor
 			newFileName = Path.Combine (autoSavePath, newFileName.Replace(',','_').Replace(" ","").Replace (":","").Replace (Path.DirectorySeparatorChar, '_').Replace (Path.AltDirectorySeparatorChar, '_'));
 			return newFileName;
 		}
-		
+
 		public static bool AutoSaveExists (string fileName)
 		{
 			return File.Exists (GetAutoSaveFileName (fileName));
 		}
-		
+
 		static void CreateAutoSave (string fileName, string content)
 		{
 			try {
@@ -64,9 +66,9 @@ namespace MonoDevelop.SourceEditor
 			} catch (Exception) {
 			}
 		}
-		
-#region AutoSave 
-		class FileContent 
+
+#region AutoSave
+		class FileContent
 		{
 			public string FileName;
 			public Mono.TextEditor.Document Content;
@@ -77,35 +79,20 @@ namespace MonoDevelop.SourceEditor
 				this.Content = content;
 			}
 		}
-		
-		public bool Running {
+
+		public static bool Running {
 			get {
 				return autoSaveThreadRunning;
 			}
 		}
-		
-		public bool IsDirty {
-			get;
-			set;
-		}
-		
-		public string FileName {
-			get;
-			set;
-		}
-		
-		public AutoSave ()
-		{
-			IsDirty = false;
-		}
-		AutoResetEvent resetEvent = new AutoResetEvent (false);
-		bool autoSaveThreadRunning = false;
-		Thread autoSaveThread;
-		bool fileChanged   = false;
-		FileContent content = null;
-		object contentLock = new object ();
-		
-		public void StartAutoSaveThread ()
+
+		static AutoResetEvent resetEvent = new AutoResetEvent (false);
+		static bool autoSaveThreadRunning = false;
+		static Thread autoSaveThread;
+		static Queue<FileContent> queue = new Queue<FileContent> ();
+		static object contentLock = new object ();
+
+		static void StartAutoSaveThread ()
 		{
 			autoSaveThreadRunning = true;
 			if (autoSaveThread == null) {
@@ -115,31 +102,30 @@ namespace MonoDevelop.SourceEditor
 				autoSaveThread.Start ();
 			}
 		}
-		
-		void AutoSaveThread ()
+
+		static void AutoSaveThread ()
 		{
 			while (autoSaveThreadRunning) {
 				resetEvent.WaitOne ();
-				lock (contentLock) {
-					if (fileChanged) {
+				while (queue.Count > 0) {
+					var content = queue.Dequeue ();
+					lock (contentLock) {
 						CreateAutoSave (content.FileName, content.Content.Text);
-						fileChanged = false;
 					}
 				}
 			}
 		}
-		
-		public string LoadAutoSave ()
+
+		public static string LoadAutoSave (string fileName)
 		{
-			string autoSaveFileName = GetAutoSaveFileName (FileName);
+			string autoSaveFileName = GetAutoSaveFileName (fileName);
 			return File.ReadAllText (autoSaveFileName);
 		}
-		
-		public void RemoveAutoSaveFile ()
+
+		public static void RemoveAutoSaveFile (string fileName)
 		{
-			IsDirty = false;
-			if (AutoSaveExists (FileName)) {
-				string autoSaveFileName = GetAutoSaveFileName (FileName);
+			if (AutoSaveExists (fileName)) {
+				string autoSaveFileName = GetAutoSaveFileName (fileName);
 				try {
 					lock (contentLock) {
 						File.Delete (autoSaveFileName);
@@ -149,24 +135,16 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
-		
-		public void InformAutoSaveThread (Mono.TextEditor.Document content)
+
+		public static void InformAutoSaveThread (Mono.TextEditor.Document content)
 		{
-			if (FileName == null || content == null)
+			if (content == null)
 				return;
-			if (!autoSaveThreadRunning)
-				StartAutoSaveThread ();
-			
-			IsDirty = true;
-			lock (contentLock) {
-				fileChanged = true;
-				this.content = new FileContent (FileName, content);
-				
-				resetEvent.Set ();
-			}
+			queue.Enqueue (new FileContent (content.FileName, content));
+			resetEvent.Set ();
 		}
-		
-		public void Dispose ()
+
+/*		public static void Dispose ()
 		{
 			autoSaveThreadRunning = false;
 			if (autoSaveThread != null) {
@@ -174,8 +152,7 @@ namespace MonoDevelop.SourceEditor
 				autoSaveThread.Join ();
 				autoSaveThread = null;
 			}
-		}
+		}*/
 #endregion
-	
 	}
 }
