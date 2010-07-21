@@ -1496,7 +1496,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				var result = new InvocationExpression ();
 				var location = LocationsBag.GetLocations (invocationExpression);
-				result.AddChild ((INode)invocationExpression.Expr.Accept (this), InvocationExpression.Roles.TargetExpression);
+				result.AddChild ((INode)invocationExpression.Expression.Accept (this), InvocationExpression.Roles.TargetExpression);
 				result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), InvocationExpression.Roles.LPar);
 				AddArguments (result, location, invocationExpression.Arguments);
 				
@@ -1645,19 +1645,10 @@ namespace MonoDevelop.CSharp.Parser
 				return result;
 			}
 			
-			public override object Visit (BaseAccess baseAccessExpression)
+			public override object Visit (BaseThis baseAccessExpression)
 			{
-				var result = new MemberReferenceExpression ();
-				
-				var location = LocationsBag.GetLocations (baseAccessExpression);
-				
-				BaseReferenceExpression baseReferenceExpression = new BaseReferenceExpression ();
-				baseReferenceExpression.Location = Convert (location[0]);
-				result.AddChild (baseReferenceExpression, MemberReferenceExpression.Roles.TargetExpression);
-				
-				result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MemberReferenceExpression.Roles.Dot);
-				result.AddChild (new Identifier (baseAccessExpression.Identifier, Convert (baseAccessExpression.Location)), MemberReferenceExpression.Roles.Identifier);
-				
+				var result = new BaseReferenceExpression ();
+				result.Location = Convert (baseAccessExpression.Location);
 				return result;
 			}
 			
@@ -1960,4 +1951,4 @@ namespace MonoDevelop.CSharp.Parser
 			return conversionVisitor.Unit;
 		}
 	}
-}*/
+}
