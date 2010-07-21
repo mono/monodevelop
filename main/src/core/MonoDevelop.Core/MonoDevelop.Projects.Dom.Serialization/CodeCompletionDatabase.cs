@@ -112,7 +112,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				namespaceAlreadyAdded.Add (ce.Namespace);
 				string[] path = ce.Namespace.Split ('.');
 				for (int i = 0; i < path.Length; i++) {
-					string ns = i > 0 ? string.Join (".", path, 0, i - 1) : "";
+					string ns = i > 0 ? string.Join (".", path, 0, i) : "";
 					if (!namespaceEntries.ContainsKey (ns)) 
 						namespaceEntriesIgnoreCase[ns] = namespaceEntries[ns] = new HashSet<string> ();
 					namespaceEntries[ns].Add (path [i]);

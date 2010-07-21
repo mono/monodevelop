@@ -451,8 +451,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			HashSet<string> uniqueNamespaces = new HashSet<string> (subNamespaces);
 			GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
 			if (includeReferences) {
-				foreach (ProjectDom reference in References)
+				foreach (ProjectDom reference in References) {
 					reference.GetNamespaceContentsInternal (result, uniqueNamespaces, caseSensitive);
+				}
 			}
 			return result;
 		}
