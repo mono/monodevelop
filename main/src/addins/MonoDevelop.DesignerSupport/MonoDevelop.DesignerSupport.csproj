@@ -113,7 +113,6 @@
     <Compile Include="gtk-gui\MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxConfiguration.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\Commands.cs" />
-    <Compile Include="MonoDevelop.DesignerSupport\OpenDocumentFileProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ErrorInFileException.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\TypeNotFoundException.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\ToolboxWidget.cs" />

@@ -162,7 +162,7 @@ namespace MonoDevelop.DesignerSupport
 		public static CodeRefactorer GetCodeGenerator (Project project)
 		{			
 			CodeRefactorer cr = new CodeRefactorer (project.ParentSolution);
-			cr.TextFileProvider = OpenDocumentFileProvider.Instance;
+			cr.TextFileProvider = MonoDevelop.Ide.TextFileProvider.Instance;
 			return cr;
 		}
 		

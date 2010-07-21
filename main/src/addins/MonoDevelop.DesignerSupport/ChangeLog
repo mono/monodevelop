@@ -1,3 +1,11 @@
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.DesignerSupport.csproj:
+	* MonoDevelop.DesignerSupport/BindingService.cs:
+	* MonoDevelop.DesignerSupport/OpenDocumentFileProvider.cs: Use
+	  the file provider from monodevelop.ide.
+
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs:
