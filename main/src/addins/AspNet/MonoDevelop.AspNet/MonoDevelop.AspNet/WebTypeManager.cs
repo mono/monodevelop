@@ -402,7 +402,7 @@ namespace MonoDevelop.AspNet
 		static XmlTextReader GetConfigReader (string configFile)
 		{
 			IEditableTextFile textFile = 
-				MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance.GetEditableTextFile (configFile);
+				MonoDevelop.Ide.TextFileProvider.Instance.GetEditableTextFile (configFile);
 			if (textFile != null)
 				return new XmlTextReader (textFile.Text, XmlNodeType.Document, null);
 			else
