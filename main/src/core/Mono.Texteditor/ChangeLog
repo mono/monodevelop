@@ -1,5 +1,10 @@
 2010-07-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs: Cached stack top
+	  elements.
+
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/GapBuffer.cs:
 	* SyntaxModes/DiffSyntaxMode.xml:
 	* SyntaxModes/MakefileSyntaxMode.xml:

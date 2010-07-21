@@ -236,23 +236,16 @@ namespace Mono.TextEditor.Highlighting
 			protected CloneableStack<Span> spanStack;
 			protected Stack<Rule> ruleStack;
 			protected Document doc;
-
-			int maxEnd, lineOffset;
+			int maxEnd;
 
 			public Rule CurRule {
-				get {
-					if (ruleStack.Count == 0)
-						return mode;
-					return ruleStack.Peek ();
-				}
+				get;
+				private set;
 			}
 
 			public Span CurSpan {
-				get {
-					if (spanStack.Count == 0)
-						return null;
-					return spanStack.Peek ();
-				}
+				get;
+				private set;
 			}
 
 			public CloneableStack<Span> SpanStack {
@@ -270,6 +263,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				set {
 					this.ruleStack = value;
+					this.CurRule = ruleStack.Peek ();
 				}
 			}
 
@@ -278,12 +272,12 @@ namespace Mono.TextEditor.Highlighting
 				var result = new Stack<Rule> ();
 				if (mode == null)
 					return result;
-				Rule curRule = mode;
+				Rule rule = mode;
 				result.Push (mode);
 				foreach (Span span in this.spanStack) {
-					Rule rule = curRule.GetRule (span.Rule) ?? curRule;
-					result.Push (rule);
-					curRule = rule;
+					Rule tmp = rule.GetRule (span.Rule) ?? this.CurRule;
+					result.Push (tmp);
+					rule = tmp;
 				}
 				return result;
 			}
@@ -295,7 +289,10 @@ namespace Mono.TextEditor.Highlighting
 				this.doc  = doc;
 				this.mode = mode;
 				this.SpanStack = spanStack;
+				this.CurRule = mode;
 				this.ruleStack = CreateRuleStack ();
+				this.CurRule = ruleStack.Peek ();
+				this.CurSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 				FoundSpanBegin = DefaultFoundSpanBegin;
 				FoundSpanEnd = DefaultFoundSpanEnd;
 				FoundSpanExit = DefaultFoundSpanEnd;
@@ -316,6 +313,8 @@ namespace Mono.TextEditor.Highlighting
 			{
 				spanStack.Push (span);
 				ruleStack.Push (rule);
+				this.CurRule = rule;
+				this.CurSpan = span;
 			}
 
 			public void PopSpan ()
@@ -324,6 +323,8 @@ namespace Mono.TextEditor.Highlighting
 					spanStack.Pop ();
 				if (ruleStack.Count > 1)
 					ruleStack.Pop ();
+				this.CurRule = ruleStack.Peek ();
+				this.CurSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
 			}
 
 			public Rule GetRule (Span span)
