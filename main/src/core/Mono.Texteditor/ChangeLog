@@ -1,3 +1,9 @@
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Mono.TextEditor/LineSegment.cs: fixed 'regression Bug 615624
+	  - Pressing DOWN after RETURN moves cursor to beginning of
+	  blank lines instead of to the indent'.
+
 2010-07-20  Mike Krüger  <mkrueger@novell.com>
 
 	* Mono.TextEditor.Highlighting/SyntaxModeService.cs: Fixed

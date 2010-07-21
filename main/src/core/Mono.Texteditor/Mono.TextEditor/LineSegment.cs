@@ -211,9 +211,9 @@ namespace Mono.TextEditor
 		{
 			int curVisualColumn = 0;
 			int offset = Offset;
-			int max = System.Math.Min(offset + Length, editor.Document.Length);
+			int max = offset + EditableLength;
 			for (int i = offset; i < max; i++) {
-				if (editor.Document.GetCharAt (i) == '\t') {
+				if (i < editor.Document.Length && editor.Document.GetCharAt (i) == '\t') {
 					curVisualColumn = TextViewMargin.GetNextTabstop (editor, curVisualColumn);
 				} else {
 					curVisualColumn++;
