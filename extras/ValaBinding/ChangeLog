@@ -1,3 +1,8 @@
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* Gui/DataProvider.cs:
+	* Gui/ValaTextEditorExtension.cs: Track API changes.
+
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* ValaBinding.addin.xml:

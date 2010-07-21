@@ -67,23 +67,21 @@ namespace MonoDevelop.ValaBinding
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			int line, column;
-			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			string lineText = Editor.GetLineText (line);
+			string lineText = Editor.GetLineText (Editor.Caret.Line);
 			
 			// smart formatting strategy
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				if (key == Gdk.Key.Return) {
 					if (lineText.TrimEnd ().EndsWith ("{")) {
-						Editor.InsertText (Editor.CursorPosition, 
-						    "\n" + TextEditorProperties.IndentString + GetIndent (Editor, line));
+						Editor.InsertAtCaret ("\n" + TextEditorProperties.IndentString + Editor.Document.GetLineIndent (Editor.Caret.Line));
 						return false;
 					}
 				} else if (key == Gdk.Key.braceright && AllWhiteSpace (lineText) 
 				    && lineText.StartsWith (TextEditorProperties.IndentString)) {
 					if (lineText.Length > 0)
 						lineText = lineText.Substring (TextEditorProperties.IndentString.Length);
-					Editor.ReplaceLine (line, lineText + "}");
+					var lineSegment = Editor.Document.GetLine (Editor.Caret.Line);
+					Editor.Replace (lineSegment.Offset, lineSegment.EditableLength, lineText + "}");
 					return false;
 				}
 			}
@@ -99,12 +97,10 @@ namespace MonoDevelop.ValaBinding
 		public override ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, char completionChar)
 		{
-			int line, column;
 			string lineText = null;
 			ProjectInformation parser = Parser;
-
-			Editor.GetLineColumnFromPosition (completionContext.TriggerOffset, out line, out column);
-			
+			var loc = Editor.Document.OffsetToLocation (completionContext.TriggerOffset);
+			int line = loc.Line + 1, column = loc.Column + 1;
 			switch (completionChar) {
 			case '.': // foo.[complete]
 				lineText = Editor.GetLineText (line);
@@ -196,7 +192,7 @@ namespace MonoDevelop.ValaBinding
 			
 			int pos = completionContext.TriggerOffset;
 			
-			ICompletionDataList list = HandleCodeCompletion(completionContext, Editor.GetText (pos - 1, pos)[0]);
+			ICompletionDataList list = HandleCodeCompletion(completionContext, Editor.GetTextBetween (pos - 1, pos)[0]);
 			if (null == list) {
 				list = GlobalComplete (completionContext);
 			}
@@ -227,10 +223,9 @@ namespace MonoDevelop.ValaBinding
 			if (null == info){ return null; }
 			
 			ValaCompletionDataList list = new ValaCompletionDataList ();
-			int line, column;
-			Editor.GetLineColumnFromPosition (context.TriggerOffset, out line, out column);
+			var loc = Editor.Document.OffsetToLocation (context.TriggerOffset);
 			ThreadPool.QueueUserWorkItem (delegate {
-				info.GetSymbolsVisibleFrom (Document.FileName, line, column, list);
+				info.GetSymbolsVisibleFrom (Document.FileName, loc.Line + 1, loc.Column + 1, list);
 			});
 			return list;
 		}
@@ -244,10 +239,9 @@ namespace MonoDevelop.ValaBinding
 			ProjectInformation info = Parser;
 			if (null == info){ return null; }
 			
-			int line, column;
-			Editor.GetLineColumnFromPosition (Editor.CursorPosition, out line, out column);
-			int position = Editor.GetPositionFromLineColumn (line, 1);
-			string lineText = Editor.GetText (position, Editor.CursorPosition - 1).TrimEnd ();
+			int line = Editor.Caret.Line + 1, column = Editor.Caret.Column + 1;
+			int position = Editor.Document.GetLine (Editor.Caret.Line).Offset;
+			string lineText = Editor.GetTextBetween (position, Editor.Caret.Offset - 1).TrimEnd ();
 			string functionName = string.Empty;
 			
 			Match match = initializationRegex.Match (lineText);
@@ -302,21 +296,6 @@ namespace MonoDevelop.ValaBinding
 					return false;
 			
 			return true;
-		}
-		
-		// Snatched from DefaultFormattingStrategy
-		private string GetIndent (TextEditor d, int lineNumber)
-		{
-			string lineText = d.GetLineText (lineNumber);
-			StringBuilder whitespaces = new StringBuilder ();
-			
-			foreach (char ch in lineText) {
-				if (!char.IsWhiteSpace (ch))
-					break;
-				whitespaces.Append (ch);
-			}
-			
-			return whitespaces.ToString ();
 		}
 	}
 }

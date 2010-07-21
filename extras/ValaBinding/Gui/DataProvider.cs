@@ -48,7 +48,7 @@ namespace MonoDevelop.ValaBinding
 {
 	public class ParameterDataProvider : IParameterDataProvider
 	{
-		private TextEditor editor;
+		Document document;
 		private IList<Symbol> functions;
 		private string functionName;
 		private string returnType;
@@ -57,12 +57,12 @@ namespace MonoDevelop.ValaBinding
 		private static Regex identifierRegex = new Regex(@"^[^\w\d]*(?<identifier>\w[\w\d\.<>]*)", RegexOptions.Compiled);
 		public ParameterDataProvider (Document document, ProjectInformation info, string functionName)
 		{
-			this.editor = document.TextEditor;
+			this.document = document;
 			this.functionName = functionName;
 			this.info = info;
 
 			functions = new List<Symbol> ();
-			Symbol function = info.GetFunction (functionName, document.FileName, editor.CursorLine, editor.CursorColumn);
+			Symbol function = info.GetFunction (functionName, document.FileName, document.Editor.Caret.Line + 1, document.Editor.Caret.Column + 1);
 			if (null != function){ functions.Add (function); }
 		}// member function constructor
 		
@@ -75,10 +75,10 @@ namespace MonoDevelop.ValaBinding
 		public ParameterDataProvider (Document document, ProjectInformation info, string typename, string constructorOverload)
 		{
 			this.functionName = constructorOverload;
-			this.editor = document.TextEditor;
+			this.document = document;
 			this.info = info;
 			
-			List<Symbol> myfunctions = info.GetConstructorsForType (typename, document.FileName, editor.CursorLine, editor.CursorColumn, null); // bottleneck
+			List<Symbol> myfunctions = info.GetConstructorsForType (typename, document.FileName, document.Editor.Caret.Line + 1, document.Editor.Caret.Column + 1, null); // bottleneck
 			if (1 < myfunctions.Count) {
 				foreach (Symbol function in myfunctions) {
 					if (functionName.Equals (function.Name, StringComparison.Ordinal)) {
@@ -109,9 +109,9 @@ namespace MonoDevelop.ValaBinding
 		/// 0 for no parameter entered, 
 		/// -1 for outside the list
 		/// </returns>
-		public int GetCurrentParameterIndex (CodeCompletionContext ctx)
+		public int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
 		{
-			int cursor = editor.CursorPosition;
+			int cursor = document.Editor.Caret.Offset;
 			int i = ctx.TriggerOffset;
 			
 			if (i > cursor)
@@ -122,7 +122,7 @@ namespace MonoDevelop.ValaBinding
 			int parameterIndex = 1;
 			
 			while (i++ < cursor) {
-				char ch = editor.GetCharAt (i-1);
+				char ch = document.Editor.GetCharAt (i-1);
 				if (ch == ',')
 					parameterIndex++;
 				else if (ch == ')')
