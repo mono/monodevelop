@@ -1,5 +1,11 @@
 2010-07-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs: Don't parse
+	  method bodies for the MonoDevelop dom (skipping these is
+	  much faster & more memory efficient).
+
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: Track
 	  API changes.
 

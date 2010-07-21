@@ -202,10 +202,10 @@ namespace MonoDevelop.CSharp.Parser
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (content))) {
-
 				ParsedDocument result = new ParsedDocument (fileName);
 				result.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				
+				parser.ParseMethodBodies = false;
 				parser.Errors.Error += delegate(int line, int col, string message) { result.Add (new Error (ErrorType.Error, line, col, message)); };
 				parser.Lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
 				parser.Lexer.EvaluateConditionalCompilation = true;
