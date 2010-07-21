@@ -56,12 +56,12 @@ namespace MonoDevelop.AspNet
 		
 		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new ASPNetSpanParser (doc, mode, line, spanStack);
+			return new ASPNetSpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
 		}
 
 		protected class ASPNetSpanParser : SpanParser
 		{
-			public ASPNetSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack) : base (doc, mode, line, spanStack)
+			public ASPNetSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, CloneableStack<Span> spanStack) : base (doc, mode, spanStack)
 			{}
 			
 			class CodeExpressionSpan : Span
