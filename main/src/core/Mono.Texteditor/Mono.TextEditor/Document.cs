@@ -985,12 +985,11 @@ namespace Mono.TextEditor
 				return;
 			}
 			
+			InterruptFoldWorker ();
 			if (!runInThread) {
 				FoldSegmentWork (null, new DoWorkEventArgs (newSegments));
 				return;
 			}
-			
-			InterruptFoldWorker ();
 			FoldSegmentWorker.RunWorkerAsync (newSegments);
 		}
 
@@ -1050,17 +1049,20 @@ namespace Mono.TextEditor
 				newFoldSegmentTree.AddSegment (oldSegments[i]);
 				i++;
 			}
-			
-			if (worker != null && needsUpdate) {
-				Gtk.Application.Invoke (delegate {
-					foldSegmentTree = newFoldSegmentTree;
-					if (updateFrom == null) {
-						CommitUpdateAll ();
-					} else {
-						int lineNr = OffsetToLineNumber (updateFrom.Offset) - 1;
-						CommitLineToEndUpdate (lineNr);
-					}
-				});
+			if (needsUpdate) {
+				if (worker != null) {
+					Gtk.Application.Invoke (delegate {
+						foldSegmentTree = newFoldSegmentTree;
+						if (updateFrom == null) {
+							CommitUpdateAll ();
+						} else {
+							int lineNr = OffsetToLineNumber (updateFrom.Offset) - 1;
+							CommitLineToEndUpdate (lineNr);
+						}
+					});
+				} else {
+					foldSegmentTree = newFoldSegmentTree; // assume that document hasn't shown
+				}
 			}
 		}
 		
