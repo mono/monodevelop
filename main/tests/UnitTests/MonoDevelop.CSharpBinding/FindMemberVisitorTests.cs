@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 				                               ((IType)smv.FoundMember).TypeParameters.Count,
 				                               true);
 			}
-			FindMemberAstVisitor astVisitor = new FindMemberAstVisitor (resolver, testViewContent, smv.FoundMember);
+			FindMemberAstVisitor astVisitor = new FindMemberAstVisitor (testViewContent.GetTextEditorData ().Document, resolver, smv.FoundMember);
 			astVisitor.RunVisitor ();
 			
 			int i = 0, j = 0;

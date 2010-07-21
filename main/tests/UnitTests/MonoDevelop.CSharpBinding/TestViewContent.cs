@@ -59,9 +59,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 		}
 		
+		FilePath name;
 		public FilePath Name { 
-			get;
-			set;
+			get { return name; }
+			set { name =  document.FileName = value; }
 		}
 		
 		public int LineCount {
