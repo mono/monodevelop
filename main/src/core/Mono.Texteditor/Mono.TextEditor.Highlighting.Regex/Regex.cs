@@ -17,7 +17,7 @@ namespace Mono.TextEditor.Highlighting
 			this.patterns = pattern.Split ('|');
 		}
 		
-		public RegexMatch TryMatch (Document doc, int offset)
+		public RegexMatch TryMatch (string doc, int offset)
 		{
 			foreach (string pattern in patterns) {
 				int curOffset = offset;
@@ -28,7 +28,7 @@ namespace Mono.TextEditor.Highlighting
 						break;
 					}
 					
-					if (doc.GetCharAt (curOffset) != pattern[i]) {
+					if (doc[curOffset] != pattern[i]) {
 						match = false;
 						break;
 					}

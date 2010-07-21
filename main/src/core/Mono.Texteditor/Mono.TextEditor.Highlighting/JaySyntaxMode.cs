@@ -52,7 +52,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new JaySpanParser (doc, mode, line, spanStack);
+			return new JaySpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
 		}
 		
 		class JayBlockSpan : Span
@@ -100,7 +100,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected class JaySpanParser : SpanParser
 		{
-			public JaySpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack) : base (doc, mode, line, spanStack)
+			public JaySpanParser (Document doc, SyntaxMode mode, CloneableStack<Span> spanStack) : base (doc, mode, spanStack)
 			{
 			}
 			

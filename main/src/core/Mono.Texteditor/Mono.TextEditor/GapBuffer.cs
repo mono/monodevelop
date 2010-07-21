@@ -26,14 +26,12 @@
 //
 
 using System;
-using System.Diagnostics;
 using System.Text;
 
 namespace Mono.TextEditor
 {
 	public class GapBuffer : AbstractBuffer
 	{
-		object lockObj = new object ();
 		char[] buffer = new char[0];
 		
 		int gapBegin  = 0;
@@ -51,85 +49,48 @@ namespace Mono.TextEditor
 		
 		public override string Text {
 			get {
-				lock (lockObj) {
-					return GetTextAt (0, Length);
-				}
+				return GetTextAt (0, Length);
 			}
 			set {
-				lock (lockObj) {
-					buffer = value != null ? value.ToCharArray () : new char[0];
-					gapBegin = gapEnd = gapLength = 0;
-				}
+				buffer = value != null ? value.ToCharArray () : new char[0];
+				gapBegin = gapEnd = gapLength = 0;
 			}
 		}
 		
 		public override char GetCharAt (int offset)
 		{
-#if DEBUG
-			if (offset < 0) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
-			if (offset >= Length) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be < Length = " + Length + "." + Environment.NewLine + Environment.StackTrace);
-#endif
-			lock (lockObj) {
-				return buffer[offset < gapBegin ? offset : offset + gapLength];
-			}
+			return buffer[offset < gapBegin ? offset : offset + gapLength];
 		}
 		
 		public override string GetTextAt (int offset, int count)
 		{
-#if DEBUG
-			if (offset < 0) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
-			if (offset > Length) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be <= Length = " + Length + "." + Environment.NewLine + Environment.StackTrace);
-			if (count < 0) 
-				Debug.Assert (false, "count was '" + count +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
-			if (offset + count > Length) 
-				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count + Environment.NewLine + Environment.StackTrace);
-#endif
-			
-			lock (lockObj) {
-				int end = offset + count;
-				if (end < gapBegin) 
-					return new string (buffer, offset, count);
-				if (offset > gapBegin) 
-					return new string (buffer, offset + gapLength, count);
-			
-				int leftBlockSize = gapBegin - offset;
-				int rightBlockSize = end - gapBegin;
-				char[] result = new char [leftBlockSize + rightBlockSize];
-				Array.Copy (buffer, offset, result, 0, leftBlockSize);
-				Array.Copy (buffer, gapEnd, result, leftBlockSize, rightBlockSize);
-				return new string (result);
-			}
+			int end = offset + count;
+			if (end < gapBegin) 
+				return new string (buffer, offset, count);
+			if (offset > gapBegin) 
+				return new string (buffer, offset + gapLength, count);
+		
+			int leftBlockSize = gapBegin - offset;
+			int rightBlockSize = end - gapBegin;
+			char[] result = new char [leftBlockSize + rightBlockSize];
+			Array.Copy (buffer, offset, result, 0, leftBlockSize);
+			Array.Copy (buffer, gapEnd, result, leftBlockSize, rightBlockSize);
+			return new string (result);
 		}
 		
 		public override void Replace (int offset, int count, string text)
 		{
-#if DEBUG
-			if (offset < 0) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
-			if (offset > Length) 
-				Debug.Assert (false, "offset was '" + offset +"' value must be <= Length = " + Length + "." + Environment.NewLine + Environment.StackTrace);
-			if (count < 0) 
-				Debug.Assert (false, "count was '" + count +"' value must be >= 0." + Environment.NewLine + Environment.StackTrace);
-			if (offset + count > Length) 
-				Debug.Assert (false, "count was '" + count +"' value must be offset + count <= Length = " + Length + " offset was " + offset + " and count was " + count + Environment.NewLine + Environment.StackTrace);
-#endif
-			lock (lockObj) {
-				if (!string.IsNullOrEmpty (text)) { 
-					PlaceGap (offset, text.Length - count);
-					text.CopyTo (0, buffer, offset, text.Length);
-					gapBegin += text.Length;
-				} else {
-					PlaceGap (offset, 0);
-				}
-				gapEnd   += count; 
-				gapLength = gapEnd - gapBegin;
-				if (gapLength > maxGapLength) 
-					CreateBuffer (gapBegin, minGapLength);
+			if (!string.IsNullOrEmpty (text)) { 
+				PlaceGap (offset, text.Length - count);
+				text.CopyTo (0, buffer, offset, text.Length);
+				gapBegin += text.Length;
+			} else {
+				PlaceGap (offset, 0);
 			}
+			gapEnd   += count; 
+			gapLength = gapEnd - gapBegin;
+			if (gapLength > maxGapLength) 
+				CreateBuffer (gapBegin, minGapLength);
 		}
 		
 		void PlaceGap (int newOffset, int minLength)

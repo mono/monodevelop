@@ -32,32 +32,46 @@ using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
+	[Flags]
+	public enum SpanBeginFlags
+	{
+		None = 0,
+		StartsLine = 1,
+		FirstNonWs = 2
+	}
+
+	[Flags]
+	public enum SpanEndFlags
+	{
+		None = 0
+	}
+
 	public class Span
 	{
 		public Span ()
 		{
 		}
-		
+
 		public virtual bool GetIsValid (Style style)
 		{
-			return (string.IsNullOrEmpty (Color) || style.GetChunkStyle (Color) != null) && 
-			        (string.IsNullOrEmpty (TagColor) || style.GetChunkStyle (TagColor) != null) && 
+			return (string.IsNullOrEmpty (Color) || style.GetChunkStyle (Color) != null) &&
+			        (string.IsNullOrEmpty (TagColor) || style.GetChunkStyle (TagColor) != null) &&
 			        (string.IsNullOrEmpty (NextColor) || style.GetChunkStyle (NextColor) != null);
 		}
-		
+
 		public const string Node    = "Span";
 		public const string AltNode = "EolSpan";
-		
+
 		public Regex Begin {
 			get;
 			set;
 		}
-		
+
 		public Regex Exit {
 			get;
 			set;
 		}
-		
+
 		public Regex End {
 			get;
 			set;
@@ -67,7 +81,7 @@ namespace Mono.TextEditor.Highlighting
 			get;
 			set;
 		}
-		
+
 		public string TagColor {
 			get;
 			set;
@@ -92,38 +106,32 @@ namespace Mono.TextEditor.Highlighting
 			get;
 			set;
 		}
-		
+
 		public string Continuation {
 			get;
 			set;
 		}
-		
-		HashSet<string> endFlags = new HashSet<string> ();
-		public HashSet<string> EndFlags {
-			get {
-				return endFlags;
-			}
+
+		public SpanEndFlags EndFlags {
+			get;
+			set;
 		}
-		
-		HashSet<string> beginFlags = new HashSet<string> ();
-		public HashSet<string> BeginFlags {
-			get {
-				return beginFlags;
-			}
+
+		public SpanBeginFlags BeginFlags {
+			get;
+			set;
 		}
-		
-		HashSet<string> exitFlags = new HashSet<string> ();
-		public HashSet<string> ExitFlags {
-			get {
-				return exitFlags;
-			}
+
+		public SpanEndFlags ExitFlags {
+			get;
+			set;
 		}
-		
+
 		public override string ToString ()
 		{
 			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", Color, Rule, Begin, End, String.IsNullOrEmpty (Escape) ? "not set" : "'" + Escape +"'", StopAtEol);
 		}
-		
+
 		static void AddFlags (HashSet<string> hashSet, string flags)
 		{
 			if (String.IsNullOrEmpty (flags))
@@ -132,25 +140,27 @@ namespace Mono.TextEditor.Highlighting
 				hashSet.Add (flag.Trim ());
 			}
 		}
-		
+
 		public static Span Read (XmlReader reader)
 		{
 			Span result = new Span ();
-			
+
 			result.Rule       = reader.GetAttribute ("rule");
 			result.Color      = reader.GetAttribute ("color");
 			result.TagColor   = reader.GetAttribute ("tagColor");
 			result.NextColor  = reader.GetAttribute ("nextColor");
-			
+
 			result.Escape = reader.GetAttribute ("escape");
-			
+
 			string stopateol = reader.GetAttribute ("stopateol");
 			if (!String.IsNullOrEmpty (stopateol)) {
 				result.StopAtEol = Boolean.Parse (stopateol);
 			}
-			
+
 			if (reader.LocalName == AltNode) {
-				AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
+				string beginFlags = reader.GetAttribute ("flags");
+				if (!string.IsNullOrEmpty (beginFlags))
+					result.BeginFlags = (SpanBeginFlags)Enum.Parse (typeof(SpanBeginFlags), beginFlags);
 				result.Continuation = reader.GetAttribute ("continuation");
 				result.Begin        = new Regex (reader.ReadElementString ());
 				result.StopAtEol = true;
@@ -158,15 +168,21 @@ namespace Mono.TextEditor.Highlighting
 				XmlReadHelper.ReadList (reader, Node, delegate () {
 					switch (reader.LocalName) {
 					case "Begin":
-						AddFlags (result.BeginFlags, reader.GetAttribute ("flags"));
+						string beginFlags = reader.GetAttribute ("flags");
+						if (!string.IsNullOrEmpty (beginFlags))
+							result.BeginFlags = (SpanBeginFlags)Enum.Parse (typeof(SpanBeginFlags), beginFlags);
 						result.Begin = new Regex (reader.ReadElementString ());
 						return true;
 					case "End":
-						AddFlags (result.EndFlags, reader.GetAttribute ("flags"));
+						string endFlags = reader.GetAttribute ("flags");
+						if (!string.IsNullOrEmpty (endFlags))
+							result.EndFlags = (SpanEndFlags)Enum.Parse (typeof(SpanEndFlags), endFlags);
 						result.End = new Regex (reader.ReadElementString ());
 						return true;
 					case "Exit":
-						AddFlags (result.ExitFlags, reader.GetAttribute ("flags"));
+						string exitFlags = reader.GetAttribute ("flags");
+						if (!string.IsNullOrEmpty (exitFlags))
+							result.ExitFlags = (SpanEndFlags)Enum.Parse (typeof(SpanEndFlags), exitFlags);
 						result.Exit = new Regex (reader.ReadElementString ());
 						return true;
 					}

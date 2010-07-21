@@ -1,5 +1,17 @@
 2010-07-21  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/GapBuffer.cs:
+	* SyntaxModes/DiffSyntaxMode.xml:
+	* SyntaxModes/MakefileSyntaxMode.xml:
+	* SyntaxModes/ChangeLogSyntaxMode.xml:
+	* Mono.TextEditor.Highlighting/Span.cs:
+	* Mono.TextEditor.Highlighting/SyntaxMode.cs:
+	* Mono.TextEditor.Highlighting.Regex/Regex.cs:
+	* Mono.TextEditor.Highlighting/JaySyntaxMode.cs: Tried to
+	  speed up highlighting.
+
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/LineSegment.cs: fixed 'regression Bug 615624
 	  - Pressing DOWN after RETURN moves cursor to beginning of
 	  blank lines instead of to the indent'.

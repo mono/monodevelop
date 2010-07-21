@@ -25,7 +25,7 @@
 
 <SyntaxMode name = "Makefile" mimeTypes="text/x-makefile">
 	
-	<EolSpan color = "comment" rule ="InLocation" flags="startsLine">#</EolSpan>
+	<EolSpan color = "comment" rule ="InLocation" flags="StartsLine">#</EolSpan>
 	
 	<Span color = "keyword.misc" rule="InLocation" stopateol = "true">
 		<Begin>$(</Begin>
