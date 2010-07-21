@@ -188,10 +188,13 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			if (member != null) {
 				try {
-					NRefactoryResolver resolver = new NRefactoryResolver (dom, Document.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Document.Editor, Document.FileName);
+					ICompilationUnit compUnit = Document.CompilationUnit;
+					if (compUnit == null)
+						return null;
+					NRefactoryResolver resolver = new NRefactoryResolver (dom, compUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Document.Editor, Document.FileName);
 					FindMemberAstVisitor visitor = new FindMemberAstVisitor (textEditorData.Document, resolver, member);
 					visitor.IncludeXmlDocumentation = true;
-					ICSharpCode.NRefactory.Ast.CompilationUnit unit = Document.CompilationUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
+					ICSharpCode.NRefactory.Ast.CompilationUnit unit = compUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 					if (unit == null)
 						return null;
 					visitor.RunVisitor (unit);

@@ -72,27 +72,19 @@ namespace MonoDevelop.CSharp.Refactoring
 		public string SearchedMemberName {
 			get { return this.searchedMemberName; }
 		}
-		
+
 		public bool IncludeXmlDocumentation {
 			get;
 			set;
 		}
-		
+
 		public FindMemberAstVisitor (Mono.TextEditor.Document document, NRefactoryResolver resolver, MonoDevelop.Projects.Dom.INode searchedMember)
 		{
 			fileName = document.FileName;
 			this.text = document;
 			Init (resolver, searchedMember);
 		}
-		
-		public FindMemberAstVisitor (NRefactoryResolver resolver, IEditableTextFile file, MonoDevelop.Projects.Dom.INode searchedMember)
-		{
-			fileName = file.Name;
-			text = new Mono.TextEditor.Document ();
-			text.Text = file.Text;
-			Init (resolver, searchedMember);
-		}
-		
+
 		void Init (NRefactoryResolver resolver, MonoDevelop.Projects.Dom.INode searchedMember)
 		{
 			this.resolver = resolver;

@@ -1,5 +1,14 @@
 2010-07-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
+	* MonoDevelop.CSharp.Refactoring/CSharpRefactorer.cs:
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs:
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  Worked on text edior performance issues / needed to
+	  restructure the resolver/member reference collector a bit.
+
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Parser/NRefactoryParser.cs: Don't parse
 	  method bodies for the MonoDevelop dom (skipping these is
 	  much faster & more memory efficient).

@@ -122,6 +122,8 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			if (dom == null)
 				throw new ArgumentNullException ("dom");
+			if (editor == null)
+				throw new ArgumentNullException ("editor");
 			this.unit = unit;
 			
 			this.dom = dom;
@@ -167,6 +169,8 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			this.resolvePosition = resolvePosition;
 			this.resultTable.Clear ();
+			if (unit == null)
+				unit = ProjectDomService.GetParsedDocument (dom, fileName).CompilationUnit;
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
 			
 			if (callingType != null) {
@@ -178,7 +182,6 @@ namespace MonoDevelop.CSharp.Resolver
 					callingMember = GetMemberAt (callingType, fileName, posAbove);
 				}
 			}
-			
 			if (memberCompilationUnit != null)
 				return;
 			if (callingMember != null && !setupLookupTableVisitor ) {
@@ -190,13 +193,19 @@ namespace MonoDevelop.CSharp.Resolver
 					lookupVariableLine = CallingMember.Location.Line - 2;
 					setupLookupTableVisitor = true;
 				}
-			} else if (editor != null) {
-				string wrapper = editor.Text;
-				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (wrapper))) {
+			} else {
+				StringBuilder sb = new StringBuilder ();
+				sb.Append ("class ");
+				sb.Append (callingType != null ? callingType.Name : "MyType");
+				sb.Append ("{");
+				sb.Append (editor.EolMarker);
+				sb.Append (editor.GetLineText (editor.Caret.Line));
+				sb.Append ("}");
+				using (ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (lang, new StringReader (sb.ToString ()))) {
 					parser.Parse ();
-					memberCompilationUnit = parser.CompilationUnit;
 					lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
-					lookupVariableLine = 0;
+					memberCompilationUnit = parser.CompilationUnit;
+					lookupVariableLine = editor.Caret.Line - 1;
 					setupLookupTableVisitor = true;
 				}
 			}
@@ -905,21 +914,12 @@ namespace MonoDevelop.CSharp.Resolver
 			result.Append (member.DeclaringType.Name);
 			result.Append ("{");
 			result.Append (editor.EolMarker);
-			if (editor != null) {
-				endLine = Math.Min (endLine, editor.Document.LineCount - 1);
-				int endPos = editor.Document.GetLine (endLine).EndOffset;
-				if (endPos < 0)
-					endPos = editor.Length;
-				int startPos = Math.Max (0, editor.Document.LocationToOffset (startLine, 0));
-				text = editor.GetTextBetween (startPos, endPos);
-			} else {
-				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-				doc.Text = File.ReadAllText (fileName) ?? "";
-				startLine = Math.Min (doc.LineCount, Math.Max (0, startLine));
-				endLine   = Math.Min (doc.LineCount, Math.Max (0, endLine));
-				int startOffset = doc.LocationToOffset (startLine, 0);
-				text = doc.GetTextAt (startOffset, doc.LocationToOffset (endLine, doc.GetLine (endLine).EditableLength) - startOffset);
-			}
+			endLine = Math.Min (endLine, editor.Document.LineCount - 1);
+			int endPos = editor.Document.GetLine (endLine).EndOffset;
+			if (endPos < 0)
+				endPos = editor.Length;
+			int startPos = Math.Max (0, editor.Document.LocationToOffset (startLine, 0));
+			text = editor.GetTextBetween (startPos, endPos);
 			if (!string.IsNullOrEmpty (text))
 				result.Append (text);
 			result.Append ("}");
