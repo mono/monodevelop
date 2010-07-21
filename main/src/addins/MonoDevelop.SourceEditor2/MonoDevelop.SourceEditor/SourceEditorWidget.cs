@@ -274,7 +274,6 @@ namespace MonoDevelop.SourceEditor
 			ResetFocusChain ();
 			
 			UpdateLineCol ();
-			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 			//			this.IsClassBrowserVisible = this.widget.TextEditor.Options.EnableQuickFinder;
 			vbox.BorderWidth = 0;
 			vbox.Spacing = 0;
@@ -302,6 +301,11 @@ namespace MonoDevelop.SourceEditor
 			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
 			parseInformationUpdaterWorkerThread.WorkerSupportsCancellation = true;
 			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
+		}
+		
+		internal void ListenToParseServiceUpdates ()
+		{
+			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 		}
 
 		void UpdateLineColOnEventHandler (object sender, EventArgs e)
@@ -415,23 +419,22 @@ namespace MonoDevelop.SourceEditor
 					                                       region.Region, type);
 					
 					//and, if necessary, set its fold state
-					if (marker != null && setFolded && firstUpdate) {
+					if (marker != null && setFolded && worker == null) {
 						// only fold on document open, later added folds are NOT folded by default.
 						marker.IsFolded = folded;
+						continue;
 					}
 					if (marker != null && region.Region.Contains (textEditorData.Caret.Line, textEditorData.Caret.Column))
 						marker.IsFolded = false;
 					
 				}
-				doc.UpdateFoldSegments (foldSegments, worker != null);
-				firstUpdate = false;
+				doc.UpdateFoldSegments (foldSegments, false);
 				UpdateAutocorTimer ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
 		}
 		
-		bool firstUpdate = true;
 		BackgroundWorker parseInformationUpdaterWorkerThread;
 		
 		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
@@ -462,9 +465,9 @@ namespace MonoDevelop.SourceEditor
 		internal void SetParsedDocument (ParsedDocument newDocument, bool runInThread)
 		{
 			this.parsedDocument = newDocument;
-			StopParseInfoThread ();
 			if (parsedDocument == null || parseInformationUpdaterWorkerThread == null)
 				return;
+			StopParseInfoThread ();
 			if (runInThread) {
 				parseInformationUpdaterWorkerThread.RunWorkerAsync (parsedDocument);
 			} else {
@@ -474,15 +477,13 @@ namespace MonoDevelop.SourceEditor
 		
 		void StopParseInfoThread ()
 		{
-			if (parseInformationUpdaterWorkerThread == null)
+			if (!parseInformationUpdaterWorkerThread.IsBusy)
 				return;
 			parseInformationUpdaterWorkerThread.CancelAsync ();
 			WaitForParseInformationUpdaterWorkerThread ();
 		}
 		public void WaitForParseInformationUpdaterWorkerThread ()
 		{
-			if (parseInformationUpdaterWorkerThread == null)
-				return;
 			while (parseInformationUpdaterWorkerThread.IsBusy)
 				Thread.Sleep (20);
 		}

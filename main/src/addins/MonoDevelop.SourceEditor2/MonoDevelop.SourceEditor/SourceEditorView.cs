@@ -423,6 +423,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			ContentName = fileName;
 			widget.SetParsedDocument (ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (Project), fileName), false);
+			widget.ListenToParseServiceUpdates ();
+			
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
