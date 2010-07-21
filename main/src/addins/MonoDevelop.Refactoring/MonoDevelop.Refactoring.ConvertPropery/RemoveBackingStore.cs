@@ -155,7 +155,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 					DocumentLocation location = member.Location.ToDocumentLocation (data.Document);
 					LineSegment line = data.Document.GetLine (location.Line);
 					backinStoreStart = line.Offset;
-					backinStoreEnd = line.Offset + line.EditableLength;
+					backinStoreEnd = line.EndOffset;
 					backingStore = member;
 					break;
 				}

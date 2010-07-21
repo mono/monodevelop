@@ -110,7 +110,7 @@ namespace MonoDevelop.Refactoring
 		
 		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes)
 		{
-			AcceptChanges (monitor, dom, changes, MonoDevelop.DesignerSupport.OpenDocumentFileProvider.Instance);
+			AcceptChanges (monitor, dom, changes, MonoDevelop.Ide.TextFileProvider.Instance);
 		}
 		
 		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)

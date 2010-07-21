@@ -1,3 +1,11 @@
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.Refactoring/RefactoringService.cs: Track API
+	  changes.
+
+	* MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs:
+	  Remove empty line of the backing store.
+
 2010-07-18  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/Change.cs:
