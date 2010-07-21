@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide
 {
@@ -262,7 +263,7 @@ namespace MonoDevelop.Ide
 				IType declaringType = SearchContainingPart (member);
 				fileName = declaringType.CompilationUnit.FileName;
 			}
-			Document doc = IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
+			var doc = IdeApp.Workbench.OpenDocument (fileName, member.Location.Line, member.Location.Column, true);
 			if (doc != null) {
 				MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
 				if (handler != null)
@@ -1029,7 +1030,7 @@ namespace MonoDevelop.Ide
 				case BeforeCompileAction.Nothing:
 					break;
 				case BeforeCompileAction.PromptForSave:
-					foreach (Document doc in IdeApp.Workbench.Documents) {
+					foreach (var doc in IdeApp.Workbench.Documents) {
 						if (doc.IsDirty && doc.Project != null) {
 							if (MessageService.AskQuestion (
 						            GettextCatalog.GetString ("Save changed documents before building?"),
@@ -1044,7 +1045,7 @@ namespace MonoDevelop.Ide
 					}
 					break;
 				case BeforeCompileAction.SaveAllFiles:
-					foreach (Document doc in new List<Document> (IdeApp.Workbench.Documents))
+					foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents))
 						if (doc.IsDirty && doc.Project != null)
 							doc.Save ();
 					break;
@@ -1572,17 +1573,98 @@ namespace MonoDevelop.Ide
 		}
 	}
 	
-	class OpenDocumentFileProvider: ITextFileProvider
+	public class TextFileProvider : ITextFileProvider
 	{
+		static TextFileProvider instance = new TextFileProvider ();
+		public static TextFileProvider Instance {
+			get {
+				return instance;
+			}
+		}
+		
+		TextFileProvider ()
+		{
+		}
+		
+		class ProviderProxy : ITextEditorDataProvider, IEditableTextFile
+		{
+			TextEditorData data;
+			public ProviderProxy (TextEditorData data)
+			{
+				this.data = data;
+			}
+
+			public TextEditorData GetTextEditorData ()
+			{
+				return data;
+			}
+			
+			#region IEditableTextFile implementation
+			public FilePath Name { get { return data.Document.FileName; } }
+
+			public int Length { get { return data.Length; } }
+		
+			public string GetText (int startPosition, int endPosition)
+			{
+				return data.GetTextBetween (startPosition, endPosition);
+			}
+			public char GetCharAt (int position)
+			{
+				return data.GetCharAt (position);
+			}
+			
+			public int GetPositionFromLineColumn (int line, int column)
+			{
+				return data.Document.LocationToOffset (line - 1, column - 1);
+			}
+			
+			public void GetLineColumnFromPosition (int position, out int line, out int column)
+			{
+				var loc = data.Document.OffsetToLocation (position);
+				line = loc.Line + 1;
+				column = loc.Column + 1;
+			}
+			
+			public int InsertText (int position, string text)
+			{
+				int result = data.Insert (position, text);
+				File.WriteAllText (Name, Text);
+				return result;
+			}
+			
+			
+			public void DeleteText (int position, int length)
+			{
+				data.Remove (position, length);
+				File.WriteAllText (Name, Text);
+			}
+			
+			public string Text {
+				get {
+					return data.Text;
+				}
+				set {
+					data.Text = value;
+				}
+			}
+			
+			#endregion
+		}
+		
 		public IEditableTextFile GetEditableTextFile (FilePath filePath)
 		{
-			foreach (Document doc in IdeApp.Workbench.Documents) {
+			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
 					IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
 					if (ef != null) return ef;
 				}
 			}
-			return null;
+			
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = filePath;
+			data.Text = File.ReadAllText (filePath);
+			return new ProviderProxy (data);
 		}
+		
 	}
 }

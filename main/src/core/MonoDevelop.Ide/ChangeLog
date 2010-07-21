@@ -1,5 +1,13 @@
 2010-07-21  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Ide.Gui/Document.cs:
+	* MonoDevelop.Ide/RootWorkspace.cs:
+	* MonoDevelop.Ide/ProjectOperations.cs: Changed document
+	  parsing/text file provider now returns texteditordata
+	  provider.
+
+2010-07-21  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Ide.Gui/Document.cs: Be more carefully when
 	  updating parsed documents.
 

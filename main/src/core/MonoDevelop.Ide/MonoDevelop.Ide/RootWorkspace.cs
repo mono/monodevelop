@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide
 		public CodeRefactorer GetCodeRefactorer (Solution solution) 
 		{
 			CodeRefactorer refactorer = new CodeRefactorer (solution);
-			refactorer.TextFileProvider = new OpenDocumentFileProvider ();
+			refactorer.TextFileProvider = TextFileProvider.Instance;
 			return refactorer;
 		}
 

@@ -489,12 +489,12 @@ namespace MonoDevelop.Ide.Gui
 			if (editor == null)
 				return;
 			Editor.Document.TextReplaced += OnDocumentChanged;
-			//this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, DesktopService.GetMimeTypeForUri (FileName), TextEditor.Text);
-
+			this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (this.dom, FileName);
+			OnDocumentParsed (EventArgs.Empty);
+			
 			// If the new document is a text editor, attach the extensions
 			
 			ExtensionNodeList extensions = AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			
 			editorExtension = null;
 			TextEditorExtension last = null;
 			
