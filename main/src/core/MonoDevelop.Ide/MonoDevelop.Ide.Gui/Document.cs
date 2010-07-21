@@ -373,6 +373,10 @@ namespace MonoDevelop.Ide.Gui
 		void OnClosed (object s, EventArgs a)
 		{
 			closed = true;
+			if (parseTimeout != 0) {
+				GLib.Source.Remove (parseTimeout);
+				parseTimeout = 0;
+			}
 			ClearTasks ();
 			
 			string currentParseFile = FileName;
@@ -484,9 +488,8 @@ namespace MonoDevelop.Ide.Gui
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor == null)
 				return;
-			editor.TextChanged += OnDocumentChanged;
+			Editor.Document.TextReplaced += OnDocumentChanged;
 			//this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.Parse (Project, FileName, DesktopService.GetMimeTypeForUri (FileName), TextEditor.Text);
-			OnDocumentChanged (this, null);
 
 			// If the new document is a text editor, attach the extensions
 			
@@ -515,12 +518,13 @@ namespace MonoDevelop.Ide.Gui
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
+
 		
 		internal void SetProject (Project project)
 		{
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor != null)
-				editor.TextChanged -= OnDocumentChanged;
+				Editor.Document.TextReplaced -= OnDocumentChanged;
 			while (editorExtension != null) {
 				try {
 					editorExtension.Dispose ();
@@ -561,22 +565,16 @@ namespace MonoDevelop.Ide.Gui
 			return this.parsedDocument;
 		}
 		
-		void OnDocumentChanged (object o, EventArgs a)
+		uint parseTimeout = 0;
+		void OnDocumentChanged (object sender, Mono.TextEditor.ReplaceEventArgs e)
 		{
 			// Don't directly parse the document because doing it at every key press is
 			// very inefficient. Do it after a small delay instead, so several changes can
 			// be parsed at the same time.
-			
-			if (parsing)
-				return;
-
-			parsing = true;
 			string currentParseFile = FileName;
-			
-			GLib.Timeout.Add (ParseDelay, delegate {
-				if (closed)
-					return false;
-				parsing = false;
+			if (parseTimeout != 0)
+				GLib.Source.Remove (parseTimeout);
+			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				string currentParseText = Editor.Text;
 				Project curentParseProject = Project;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
@@ -588,6 +586,7 @@ namespace MonoDevelop.Ide.Gui
 						OnDocumentParsed (EventArgs.Empty);
 					});
 				});
+				parseTimeout = 0;
 				return false;
 			});
 		}
