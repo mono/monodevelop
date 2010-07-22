@@ -1,5 +1,10 @@
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Src/Lexer/CSharp/Lexer.cs: SkipString should be called
+	  instead of ReadString in the skipblock code.
+
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Src/Lexer/CSharp/Lexer.cs: In body skip mode skip strings as
 	  well - brings up to 10-15% speed when the file contains many
 	  strings.

@@ -1036,7 +1036,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						isAtLineBegin = false;
 						break;
 					case '"':
-						ReadString();
+						SkipString();
 						isAtLineBegin = false;
 						break;
 					case '\'':
