@@ -550,7 +550,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			int e = Editor.Document.LocationToOffset (region.End.Line - 1, region.End.Column - 1);
 			if (s > -1 && e > s) {
 				Editor.SetSelection (s, e);
-				Editor.Parent.ScrollTo (s);
+				Editor.ScrollTo (s);
 			}
 		}
 		
