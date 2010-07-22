@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.Gui
 
 				if (!File.Exists (Window.ViewContent.ContentName) || (File.GetAttributes(window.ViewContent.ContentName) & attr) != 0) {
 					SaveAs ();
-				} else {						
+				} else {
 					string fileName = Window.ViewContent.ContentName;
 					// save backup first						
 					if((bool) PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
@@ -408,10 +408,9 @@ namespace MonoDevelop.Ide.Gui
 			// is closed without saving the changes, the saved compilation unit
 			// information will be restored
 			if (currentParseFile != null) {
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					// Don't access Document properties from the thread
+				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
 					ProjectDomService.Parse (curentParseProject, currentParseFile);
-				});
+				}, FileName);
 			}
 			if (isFileDom) {
 				ProjectDomService.RemoveFileDom (FileName);
@@ -577,15 +576,14 @@ namespace MonoDevelop.Ide.Gui
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				string currentParseText = Editor.Text;
 				Project curentParseProject = Project;
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					// Don't access Document properties from the thread
+				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
 					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 					if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 						this.lastErrorFreeParsedDocument = parsedDocument;
 					DispatchService.GuiSyncDispatch (delegate {
 						OnDocumentParsed (EventArgs.Empty);
 					});
-				});
+				}, FileName);
 				parseTimeout = 0;
 				return false;
 			});
