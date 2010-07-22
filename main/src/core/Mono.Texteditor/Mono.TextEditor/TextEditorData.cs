@@ -956,6 +956,30 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public void ScrollToCaret ()
+		{
+			if (Parent != null)
+				Parent.ScrollToCaret ();
+		}
+		
+		public void ScrollTo (int offset)
+		{
+			if (Parent != null)
+				Parent.ScrollTo (offset);
+		}
+		
+		public void ScrollTo (int line, int column)
+		{
+			if (Parent != null)
+				Parent.ScrollTo (line, column);
+		}
+
+		public void ScrollTo (DocumentLocation loc)
+		{
+			if (Parent != null)
+				Parent.ScrollTo (loc);
+		}
+		
 		public void CenterToCaret ()
 		{
 			if (Parent != null)
@@ -966,6 +990,12 @@ namespace Mono.TextEditor
 		{
 			if (Parent != null)
 				Parent.CenterTo (p);
+		}
+		
+		public void CenterTo (int offset)
+		{
+			if (Parent != null)
+				Parent.CenterTo (offset);
 		}
 		
 		public void SetCaretTo (int line, int column)
