@@ -1,5 +1,9 @@
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs: fix build.
+
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextEditorData.cs: Added some delegation
 	  methods.
 

@@ -950,10 +950,16 @@ namespace Mono.TextEditor
 			return Document.GetTextAt (Document.GetLine (line));
 		}
 		
+		public bool HasFocus {
+			get {
+				return Parent != null ? Parent.HasFocus : false;
+			}
+		}
+		
 		public void CenterToCaret ()
 		{
 			if (Parent != null)
-				Parent.CenterToCart ();
+				Parent.CenterToCaret ();
 		}
 		
 		public void CenterTo (DocumentLocation p)
