@@ -1,3 +1,9 @@
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.VersionControl.Views/BlameView.cs:
+	* MonoDevelop.VersionControl.Views/ComparisonView.cs: Use
+	  delegation methods.
+
 2010-07-19  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Views/LogView.cs:

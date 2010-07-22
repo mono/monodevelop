@@ -74,7 +74,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Deselected ()
 		{
 			info.Document.Editor.Caret.Location = widget.Editor.Caret.Location;
-			info.Document.Editor.Parent.CenterToCaret ();
+			info.Document.Editor.CenterToCaret ();
 			widget.Editor.Document.IgnoreFoldings = false;
 		}
 
