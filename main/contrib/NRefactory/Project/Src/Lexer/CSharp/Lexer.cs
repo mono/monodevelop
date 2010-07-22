@@ -393,6 +393,34 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 		}
 		
+		void SkipString()
+		{
+			int x = Col - 1;
+			int y = Line;
+			
+			bool doneNormally = false;
+			int nextChar;
+			while ((nextChar = ReaderRead()) != -1) {
+				char ch = (char)nextChar;
+				
+				if (ch == '"') {
+					doneNormally = true;
+					break;
+				}
+				
+				if (ch == '\\') {
+					SkipEscapeSequence();
+				} else if (HandleLineEnd(ch)) {
+					// call HandleLineEnd to ensure line numbers are still correct after the error
+					errors.Error(y, x, String.Format("No new line is allowed inside a string literal"));
+					break;
+				}
+			}
+			if (!doneNormally)
+				errors.Error(y, x, String.Format("End of file reached inside string literal"));
+		}
+
+		
 		Token ReadString()
 		{
 			int x = Col - 1;
@@ -581,6 +609,56 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 			}
 			return new String(escapeSequenceBuffer, 0, curPos);
+		}
+		
+		void SkipEscapeSequence()
+		{
+			int nextChar = ReaderRead();
+			if (nextChar == -1) {
+				errors.Error(Line, Col, String.Format("End of file reached inside escape sequence"));
+				return;
+			}
+			switch (nextChar)  {
+				case '\'':
+				case '\"':
+				case '\\':
+				case '0':
+				case 'a':
+				case 'b':
+				case 'f':
+				case 'n':
+				case 'r':
+				case 't':
+				case 'v':
+				case 'u':
+					break;
+				case 'x':
+					// 16 bit unicode character
+					char c = (char)ReaderRead();
+					if (GetHexNumber(c) < 0)
+						errors.Error(Line, Col - 1, String.Format("Invalid char in literal : {0}", c));
+					for (int i = 0; i < 3; ++i) {
+						if (IsHex((char)ReaderPeek())) {
+							ReaderRead();
+						} else {
+							break;
+						}
+					}
+					break;
+				case 'U':
+					for (int i = 0; i < 8; ++i) {
+						if (IsHex((char)ReaderPeek())) {
+							ReaderRead();
+						} else {
+							errors.Error(Line, Col - 1, String.Format("Invalid char in literal : {0}", (char)ReaderPeek()));
+							break;
+						}
+					}
+					break;
+				default:
+					errors.Error(Line, Col, String.Format("Unexpected escape sequence : {0}", nextChar));
+					break;
+			}
 		}
 		
 		Token ReadChar()
