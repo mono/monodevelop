@@ -55,7 +55,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			textEditorData = base.Document.Editor;
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
-			
 		}
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
@@ -185,19 +184,20 @@ namespace MonoDevelop.CSharp.Highlighting
 				member = ((ParameterResolveResult)resolveResult).Parameter;
 			if (resolveResult is LocalVariableResolveResult)
 				member = ((LocalVariableResolveResult)resolveResult).LocalVariable;
-			
 			if (member != null) {
 				try {
 					ICompilationUnit compUnit = Document.CompilationUnit;
 					if (compUnit == null)
 						return null;
 					NRefactoryResolver resolver = new NRefactoryResolver (dom, compUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, Document.Editor, Document.FileName);
+					if (member is LocalVariable)
+						resolver.CallingMember = ((LocalVariable)member).DeclaringMember;
 					FindMemberAstVisitor visitor = new FindMemberAstVisitor (textEditorData.Document, resolver, member);
 					visitor.IncludeXmlDocumentation = true;
-					ICSharpCode.NRefactory.Ast.CompilationUnit unit = compUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
+/*					ICSharpCode.NRefactory.Ast.CompilationUnit unit = compUnit.Tag as ICSharpCode.NRefactory.Ast.CompilationUnit;
 					if (unit == null)
-						return null;
-					visitor.RunVisitor (unit);
+						return null;*/
+					visitor.RunVisitor ();
 					return visitor.FoundReferences;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in highlight usages extension.", e);

@@ -1,5 +1,10 @@
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs:
+	  fixed highlight usages extension.
+
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
 	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
 	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
