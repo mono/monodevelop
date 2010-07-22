@@ -37,6 +37,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	internal class SimpleCodeCompletionDatabase : SerializationCodeCompletionDatabase
 	{
 		string file = "_currentFile";
+		object rwlock = new object ();
 		
 		public SimpleCodeCompletionDatabase (string file, ParserDatabase pdb): base (pdb, false)
 		{
@@ -54,11 +55,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return new TypeUpdateInformation ();
 			// TODO dom Get tag comments
 //			UpdateTagComments (cu.TagComments, file);
-			List<IType> resolved;
-			ProjectDomService.ResolveTypes (SourceProjectDom, cu, cu.Types, out resolved);
-			TypeUpdateInformation res = UpdateTypeInformation (resolved, file);
-			Flush ();
-			return res;
+			lock (rwlock) {
+				List<IType> resolved;
+				ProjectDomService.ResolveTypes (SourceProjectDom, cu, cu.Types, out resolved);
+				TypeUpdateInformation res = UpdateTypeInformation (resolved, file);
+				Flush ();
+				return res;
+			}
 		}
 		
 		public override void Read () {}
