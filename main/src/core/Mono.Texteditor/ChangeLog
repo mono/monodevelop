@@ -1,5 +1,10 @@
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* Mono.TextEditor/TextEditorData.cs: Added some delegation
+	  methods.
+
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* Mono.TextEditor/TextViewMargin.cs: Cache line offsets in
 	  performance critical sections.
 

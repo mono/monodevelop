@@ -950,6 +950,18 @@ namespace Mono.TextEditor
 			return Document.GetTextAt (Document.GetLine (line));
 		}
 		
+		public void CenterToCaret ()
+		{
+			if (Parent != null)
+				Parent.CenterToCart ();
+		}
+		
+		public void CenterTo (DocumentLocation p)
+		{
+			if (Parent != null)
+				Parent.CenterTo (p);
+		}
+		
 		public void SetCaretTo (int line, int column)
 		{
 			SetCaretTo (line, column, true);
