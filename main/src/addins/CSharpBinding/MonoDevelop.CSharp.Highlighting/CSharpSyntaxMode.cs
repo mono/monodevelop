@@ -278,6 +278,10 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				int textOffset = i - StartOffset;
 				if (CurText.IsAt (textOffset, "#else")) {
+					if (!spanStack.Any (s => s is IfBlockSpan || s is ElseIfBlockSpan)) {
+						base.ScanSpan (ref i);
+						return;
+					}
 					bool previousResult = false;
 					foreach (Span span in spanStack) {
 						if (span is IfBlockSpan) {
@@ -289,13 +293,17 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					LineSegment line = doc.GetLineByOffset (i);
 					int length = line.Offset + line.EditableLength - i;
-					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan)) {
+					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan || CurSpan is ElseIfBlockSpan)) {
 						spanStack.Pop ();
 					}
-					IfBlockSpan ifBlock = (IfBlockSpan)CurSpan;
+					IfBlockSpan ifBlock = CurSpan as IfBlockSpan;
+					ElseIfBlockSpan elseIfBlock = CurSpan as ElseIfBlockSpan;
 					ElseBlockSpan elseBlockSpan = new ElseBlockSpan (!previousResult);
-					if (ifBlock != null) 
+					if (ifBlock != null) {
 						elseBlockSpan.Disabled = ifBlock.Disabled;
+					} else if (elseIfBlock != null) {
+						elseBlockSpan.Disabled = elseIfBlock.Disabled;
+					}
 					FoundSpanBegin (elseBlockSpan, i, 0);
 					
 					// put pre processor eol span on stack, so that '#else' gets the correct highlight
