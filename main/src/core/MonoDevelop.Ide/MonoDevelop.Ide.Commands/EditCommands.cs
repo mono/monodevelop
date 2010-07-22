@@ -247,7 +247,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.Editor != null && doc.Editor.Parent.HasFocus) {
+			if (doc != null && doc.Editor != null && doc.Editor.HasFocus) {
 				info.Enabled = doc.CommentTags != null;
 			} else
 				info.Enabled = false;

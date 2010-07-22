@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.Editor.Parent.SetCaretTo (IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column + 1);
+			IdeApp.Workbench.ActiveDocument.Parent.SetCaretTo (IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column + 1);
 		}
 	}
 }
