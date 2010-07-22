@@ -698,10 +698,11 @@ namespace Mono.TextEditor
 
 					DocumentLocation visStart = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), start);
 					DocumentLocation visEnd = Document.LogicalToVisualLocation (this.textEditor.GetTextEditorData (), end);
-					int lineNumber = Document.OffsetToLineNumber (line.Offset);
+					int lineOffset = line.Offset;
+					int lineNumber = Document.OffsetToLineNumber (lineOffset);
 					if (textEditor.MainSelection.MinLine <= lineNumber && lineNumber <= textEditor.MainSelection.MaxLine) {
-						selectionStart = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Min (visStart.Column, visEnd.Column));
-						selectionEnd = line.Offset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Max (visStart.Column, visEnd.Column));
+						selectionStart = lineOffset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Min (visStart.Column, visEnd.Column));
+						selectionEnd = lineOffset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Max (visStart.Column, visEnd.Column));
 					}
 				}
 			}
@@ -925,11 +926,11 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void HandleSelection (LineSegment line, int logicalRulerColumn, int selectionStart, int selectionEnd, int startOffset, int endOffset, HandleSelectionDelegate handleNotSelected, HandleSelectionDelegate handleSelected)
+		void HandleSelection (int lineOffset, int logicalRulerColumn, int selectionStart, int selectionEnd, int startOffset, int endOffset, HandleSelectionDelegate handleNotSelected, HandleSelectionDelegate handleSelected)
 		{
-			int selectionStartColumn = selectionStart - line.Offset;
-			int selectionEndColumn = selectionEnd - line.Offset;
-			int rulerOffset = line.Offset + logicalRulerColumn;
+			int selectionStartColumn = selectionStart - lineOffset;
+			int selectionEndColumn = selectionEnd - lineOffset;
+			int rulerOffset = lineOffset + logicalRulerColumn;
 			if (textEditor.Options.ShowRuler && selectionStartColumn < logicalRulerColumn && logicalRulerColumn < selectionEndColumn && startOffset < rulerOffset && rulerOffset < endOffset) {
 				InternalHandleSelection (selectionStart, selectionEnd, startOffset, rulerOffset, handleNotSelected, handleSelected);
 				InternalHandleSelection (selectionStart, selectionEnd, rulerOffset, endOffset, handleNotSelected, handleSelected);
@@ -1078,6 +1079,7 @@ namespace Mono.TextEditor
 					}
 				}
 				var spanStack = line.StartSpan;
+				int lineOffset = line.Offset;
 				string lineText = textBuilder.ToString ();
 				bool containsPreedit = offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
 				uint preeditLength = 0;
@@ -1090,7 +1092,7 @@ namespace Mono.TextEditor
 				int startOffset = offset, endOffset = offset + length;
 				uint curIndex = 0, byteIndex = 0;
 				uint curChunkIndex = 0, byteChunkIndex = 0;
-
+				
 				uint oldEndIndex = 0;
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
@@ -1113,7 +1115,7 @@ namespace Mono.TextEditor
 								endIndex += preeditLength;
 						}
 
-                        HandleSelection(line, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end)
+                        HandleSelection(lineOffset, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end)
                         {
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
@@ -1231,7 +1233,7 @@ namespace Mono.TextEditor
 
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, logicalRulerColumn, offset, length, selectionStart, selectionEnd);
-
+			int lineOffset = line.Offset;
 			int width = (int)(layout.PangoWidth / Pango.Scale.PangoScale);
 			int xPos = (int)(pangoPosition / Pango.Scale.PangoScale);
 
@@ -1287,7 +1289,7 @@ namespace Mono.TextEditor
 
 			while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
 				int x = pangoPosition;
-				HandleSelection (line, logicalRulerColumn, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
+				HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 					uint startIndex = (uint)(start - offset);
 					uint endIndex = (uint)(end - offset);
 					if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {
@@ -1342,7 +1344,7 @@ namespace Mono.TextEditor
 						SetVisibleCaretPosition (win, ' ', (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 						xPos = (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale);
 
-						if (!isSelectionDrawn && (selectionEnd == line.Offset + line.EditableLength)) {
+						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.EditableLength)) {
 							int startX;
 							int endX;
 							startX = xPos;
@@ -1857,9 +1859,10 @@ namespace Mono.TextEditor
 			if (line == null || line.EditableLength == 0 || column < 0)
 				return 0;
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
+			int lineOffset = line.Offset;
 			StringBuilder textBuilder = new StringBuilder ();
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
-			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, line.Offset, line.EditableLength);
+			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, lineOffset, line.EditableLength);
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				try {
 					textBuilder.Append (chunk.GetText (Document));
@@ -1870,11 +1873,11 @@ namespace Mono.TextEditor
 			}
 			string lineText = textBuilder.ToString ();
 			char[] lineChars = lineText.ToCharArray ();
-			bool containsPreedit = line.Offset <= textEditor.preeditOffset && textEditor.preeditOffset <= line.Offset + line.EditableLength;
+			bool containsPreedit = lineOffset <= textEditor.preeditOffset && textEditor.preeditOffset <= lineOffset + line.EditableLength;
 			uint preeditLength = 0;
 
 			if (containsPreedit) {
-				lineText = lineText.Insert (textEditor.preeditOffset - line.Offset, textEditor.preeditString);
+				lineText = lineText.Insert (textEditor.preeditOffset - lineOffset, textEditor.preeditString);
 				preeditLength = (uint)textEditor.preeditString.Length;
 			}
 			if (column < lineText.Length)
@@ -1885,7 +1888,7 @@ namespace Mono.TextEditor
 			layout.FontDescription = textEditor.Options.Font;
 			layout.Tabs = tabArray;
 
-			int startOffset = line.Offset, endOffset = line.Offset + line.EditableLength;
+			int startOffset = lineOffset, endOffset = lineOffset + line.EditableLength;
 			uint curIndex = 0, byteIndex = 0;
 			uint curChunkIndex = 0, byteChunkIndex = 0;
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
@@ -1911,7 +1914,7 @@ namespace Mono.TextEditor
 							endIndex += preeditLength;
 					}
 
-					HandleSelection (line, logicalRulerColumn, - 1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
+					HandleSelection (lineOffset, logicalRulerColumn, - 1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 						Pango.AttrForeground foreGround = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
 						foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
