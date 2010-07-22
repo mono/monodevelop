@@ -54,29 +54,28 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			
 			IResolver         resolver = parser.CreateResolver (dom, doc, fileName);
-			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
-			if (resolver == null || expressionFinder == null) 
+			if (resolver == null) 
 				return null;
+			var expressionFinder = new NewCSharpExpressionFinder (dom);
 			
-			string txt = data.Document.Text;
-			int wordEnd = Math.Min (offset, txt.Length - 1);
-			if (txt[wordEnd] == '@')
+			int wordEnd = Math.Min (offset, data.Length - 1);
+			if (data.GetCharAt (wordEnd) == '@')
 				wordEnd++;
-			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
-				wordEnd++;
-			
-			while (wordEnd < txt.Length - 1 && Char.IsWhiteSpace (txt[wordEnd]))
+			while (wordEnd < data.Length && (Char.IsLetterOrDigit (data.GetCharAt (wordEnd)) || data.GetCharAt (wordEnd) == '_'))
 				wordEnd++;
 			
-			if (wordEnd < txt.Length && txt[wordEnd] == '<') {
+			while (wordEnd < data.Length - 1 && Char.IsWhiteSpace (data.GetCharAt (wordEnd)))
+				wordEnd++;
+			
+			if (wordEnd < data.Length && data.GetCharAt (wordEnd) == '<') {
 				bool wasMethodCall = false;
 				int saveEnd = wordEnd;
 				int matchingBracket = data.Document.GetMatchingBracketOffset (wordEnd);
 				if (matchingBracket > 0)
 					wordEnd = matchingBracket;
-				while (wordEnd < txt.Length - 1 && Char.IsWhiteSpace (txt[wordEnd]))
+				while (wordEnd < data.Length - 1 && Char.IsWhiteSpace (data.GetCharAt (wordEnd)))
 					wordEnd++;
-				if (txt[wordEnd] == '(') {
+				if (data.GetCharAt (wordEnd) == '(') {
 					matchingBracket = data.Document.GetMatchingBracketOffset (wordEnd);
 					if (matchingBracket > 0) {
 						wordEnd = matchingBracket;
@@ -87,7 +86,7 @@ namespace MonoDevelop.CSharp.Resolver
 					wordEnd = saveEnd;
 			}
 
-			ExpressionResult expressionResult = expressionFinder.FindExpression (txt, wordEnd);
+			ExpressionResult expressionResult = expressionFinder.FindExpression (data, wordEnd);
 			if (expressionResult == null)
 				return null;
 			ResolveResult resolveResult;
@@ -166,15 +165,15 @@ namespace MonoDevelop.CSharp.Resolver
 			    resolveResult is MethodResolveResult && ((MethodResolveResult)resolveResult).Methods.Count > 1) {
 				// put the search offset at the end of the invocation to be able to find the full expression
 				// the resolver finds it itself if spaces are between the method name and the argument opening parentheses.
-				while (wordEnd < txt.Length - 1 && Char.IsWhiteSpace (txt[wordEnd]))
+				while (wordEnd < data.Length - 1 && Char.IsWhiteSpace (data.GetCharAt (wordEnd)))
 					wordEnd++;
-				if (txt[wordEnd] == '(') {
+				if (data.GetCharAt (wordEnd) == '(') {
 					int matchingBracket = data.Document.GetMatchingBracketOffset (wordEnd);
 					if (matchingBracket > 0)
 						wordEnd = matchingBracket;
 				}
 				//Console.WriteLine (expressionFinder.FindFullExpression (txt, wordEnd));
-				ResolveResult possibleResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? resolveResult;
+				ResolveResult possibleResult = resolver.Resolve (expressionFinder.FindFullExpression (data, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? resolveResult;
 				//Console.WriteLine ("possi:" + resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)));
 				if (possibleResult is MethodResolveResult)
 					resolveResult = possibleResult;

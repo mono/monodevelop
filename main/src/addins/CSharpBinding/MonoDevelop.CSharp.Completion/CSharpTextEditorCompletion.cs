@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			try {
-				return expressionFinder.FindExpression (textEditorData.Text, Math.Max (ctx.TriggerOffset + offset, 0));
+				return expressionFinder.FindExpression (textEditorData, Math.Max (ctx.TriggerOffset + offset, 0));
 			} catch (Exception ex) {
 				LoggingService.LogWarning (ex.Message, ex);
 				return null;
@@ -132,7 +132,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			NewCSharpExpressionFinder expressionFinder = new NewCSharpExpressionFinder (dom);
 			try {
-				return expressionFinder.FindExpression (textEditorData.Text, ctx.TriggerOffset);
+				return expressionFinder.FindExpression (textEditorData, ctx.TriggerOffset);
 			} catch (Exception ex) {
 				LoggingService.LogWarning (ex.Message, ex);
 				return null;

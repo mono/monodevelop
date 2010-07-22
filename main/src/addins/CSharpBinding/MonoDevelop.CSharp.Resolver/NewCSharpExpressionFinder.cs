@@ -47,10 +47,10 @@ namespace MonoDevelop.CSharp.Resolver
 
 		public static string FindAttributeName (TextEditorData editor, ICompilationUnit unit, string fileName)
 		{
-			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
+			int caretOffset = editor.Caret.Offset;
 			int pos = -1;
-			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
-				if (documentToCursor[i] == '[') {
+			for (int i = caretOffset - 1; i >= 0; i--) {
+				if (editor.GetCharAt (i) == '[') {
 					pos = i;
 					break;
 				}
@@ -59,8 +59,8 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			pos++;
 			StringBuilder result = new StringBuilder ();
-			while (pos < documentToCursor.Length) {
-				char ch = documentToCursor[pos];
+			while (pos < caretOffset) {
+				char ch = editor.GetCharAt (pos);
 				if (!(Char.IsLetterOrDigit (ch) || ch == '_'))
 					break;
 				result.Append (ch);
@@ -96,27 +96,25 @@ namespace MonoDevelop.CSharp.Resolver
 
 		public ExpressionContext FindExactContextForObjectInitializer (TextEditorData editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
-			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
-			
-//			int pos = -1;
+			int caretOffset = editor.Caret.Offset;
 			
 			// create a table with all opening brackets
 			Dictionary<int, int> brackets = new Dictionary<int, int> ();
 			Stack<int> bracketStack = new Stack<int> ();
-			for (int i = 0; i < documentToCursor.Length; i++) {
-				char ch = documentToCursor[i];
+			for (int i = 0; i < caretOffset; i++) {
+				char ch = editor.GetCharAt (i);
 				switch (ch) {
 				case '/':
-					if (i + 1 < documentToCursor.Length) {
-						if (documentToCursor[i + 1] == '/') {
-							while (i < documentToCursor.Length) {
-								if (documentToCursor[i] == '\n')
+					if (i + 1 < caretOffset) {
+						if (editor.GetCharAt (i + 1) == '/') {
+							while (i < caretOffset) {
+								if (editor.GetCharAt (i) == '\n')
 									break;
 								i++;
 							}
-						} else if (documentToCursor[i + 1] == '*') {
-							while (i + 1 < documentToCursor.Length) {
-								if (documentToCursor[i] == '*' && documentToCursor[i + 1] == '/')
+						} else if (editor.GetCharAt (i + 1) == '*') {
+							while (i + 1 < caretOffset) {
+								if (editor.GetCharAt (i) == '*' && editor.GetCharAt (i + 1) == '/')
 									break;
 								i++;
 							}
@@ -137,11 +135,11 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 			bool foundCurlyBrace = false;
-			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
-				if (documentToCursor[i] == '{') {
+			for (int i = caretOffset - 1; i >= 0; i--) {
+				char ch = editor.GetCharAt (i);
+				if (ch == '{') {
 					foundCurlyBrace = true;
-				}
-				if (documentToCursor[i] == ')' || documentToCursor[i] == '}' || documentToCursor[i] == ']') {
+				} else if (ch == ')' || ch == '}' || ch == ']') {
 					int newPos;
 					if (brackets.TryGetValue (i, out newPos)) {
 						i = newPos;
@@ -149,7 +147,7 @@ namespace MonoDevelop.CSharp.Resolver
 						// otherwise the "new Name" would be falsly taken as object initializer
 						if (!foundCurlyBrace) {
 							while (i >= 0) {
-								if (documentToCursor[i] == '=' || documentToCursor[i] == ';')
+								if (editor.GetCharAt (i) == '=' || editor.GetCharAt (i) == ';')
 									break;
 								i--;
 							}
@@ -157,12 +155,12 @@ namespace MonoDevelop.CSharp.Resolver
 						continue;
 					}
 				}
-				if (i + 4 < documentToCursor.Length && documentToCursor.Substring (i, 4) == "new ") {
+				if (i + 4 < caretOffset && editor.GetTextAt (i, 4) == "new ") {
 					bool skip = false;
-					for (int j2 = i; j2 < documentToCursor.Length; j2++) {
-						if (documentToCursor[j2] == '{')
+					for (int j2 = i; j2 < caretOffset; j2++) {
+						if (editor.GetCharAt (j2) == '{')
 							break;
-						if (documentToCursor[j2] == ',') {
+						if (editor.GetCharAt (j2) == ',') {
 							skip = true;
 							break;
 						}
@@ -172,18 +170,18 @@ namespace MonoDevelop.CSharp.Resolver
 						continue;
 					
 					int j = i + 4;
-					while (j < documentToCursor.Length && Char.IsWhiteSpace (documentToCursor[j]))
+					while (j < caretOffset && Char.IsWhiteSpace (editor.GetCharAt (j)))
 						j++;
 //					int start = j;
-					while (j < documentToCursor.Length && (Char.IsLetterOrDigit (documentToCursor[j]) || documentToCursor[j] == '_' || documentToCursor[j] == '.'))
+					while (j < caretOffset && (Char.IsLetterOrDigit (editor.GetCharAt (j)) || editor.GetCharAt (j) == '_' || editor.GetCharAt (j) == '.'))
 						j++;
 					
-					ExpressionResult firstExprs = FindExpression (documentToCursor, j);
+					ExpressionResult firstExprs = FindExpression (editor, j);
 					if (firstExprs.Expression != null) {
-						if (documentToCursor[j] == '[') {
+						if (editor.GetCharAt (j) == '[') {
 							StringBuilder expr = new StringBuilder (firstExprs.Expression);
-							while (j < documentToCursor.Length) {
-								char ch = documentToCursor[j];
+							while (j < caretOffset) {
+								ch = editor.GetCharAt (j);
 								switch (ch) {
 								case '[':
 								case ',':
@@ -194,7 +192,7 @@ namespace MonoDevelop.CSharp.Resolver
 								case '\t':
 									break;
 								default:
-									j = documentToCursor.Length;
+									j = caretOffset;
 									break;
 								}
 								j++;
@@ -221,11 +219,11 @@ namespace MonoDevelop.CSharp.Resolver
 		public ExpressionContext FindExactContextForNewCompletion (TextEditorData editor, ICompilationUnit unit, string fileName, IType callingType, int cursorPos)
 		{
 			// find expression on left hand side of the assignment
-			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
+			int caretOffset = editor.Caret.Offset;
 			int pos = -1;
-			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
-				if (documentToCursor[i] == '=') {
-					if (i > 0 && (documentToCursor[i - 1] == '+' || documentToCursor[i - 1] == '-'))
+			for (int i = caretOffset - 1; i >= 0; i--) {
+				if (editor.GetCharAt (i) == '=') {
+					if (i > 0 && (editor.GetCharAt (i - 1) == '+' || editor.GetCharAt (i - 1) == '-'))
 						i--;
 					pos = i;
 					break;
@@ -236,18 +234,18 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			// check if new +=/-=/= is right before "new"
 			for (int i = pos; i < cursorPos; i++) {
-				char ch = documentToCursor[i];
+				char ch = editor.GetCharAt (i);
 				if (Char.IsWhiteSpace (ch))
 					continue;
 				if (ch != '=' && ch != '+' && ch != '-' && ch != 'n' && ch != 'e' && ch != 'w')
 					return null;
 			}
 			int lastWs = pos - 1;
-			while (lastWs > 0 && Char.IsWhiteSpace (documentToCursor[lastWs]))
+			while (lastWs > 0 && Char.IsWhiteSpace (editor.GetCharAt (lastWs)))
 				lastWs--;
-			while (lastWs > 0 && !Char.IsWhiteSpace (documentToCursor[lastWs]))
+			while (lastWs > 0 && !Char.IsWhiteSpace (editor.GetCharAt (lastWs)))
 				lastWs--;
-			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs);
+			ExpressionResult firstExprs = FindExpression (editor, lastWs);
 			
 			if (firstExprs.Expression != null) {
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
@@ -258,7 +256,7 @@ namespace MonoDevelop.CSharp.Resolver
 				
 			}
 			
-			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
+			ExpressionResult lhsExpr = FindExpression (editor, pos);
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
@@ -303,10 +301,10 @@ namespace MonoDevelop.CSharp.Resolver
 		public ExpressionContext FindExactContextForAsCompletion (TextEditorData editor, ICompilationUnit unit, string fileName, IType callingType)
 		{
 			// find expression on left hand side of the assignment
-			string documentToCursor = editor.GetTextBetween (0, editor.Caret.Offset);
+			int caretOffset = editor.Caret.Offset;
 			int pos = -1;
-			for (int i = documentToCursor.Length - 1; i >= 0; i--) {
-				char ch = documentToCursor[i];
+			for (int i = caretOffset - 1; i >= 0; i--) {
+				char ch = editor.GetCharAt (i);
 				if (Char.IsWhiteSpace (ch))
 					continue;
 				if (ch == '=') {
@@ -322,11 +320,11 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			
 			int lastWs = pos - 1;
-			while (lastWs > 0 && Char.IsWhiteSpace (documentToCursor[lastWs]))
+			while (lastWs > 0 && Char.IsWhiteSpace (editor.GetCharAt (lastWs)))
 				lastWs--;
-			while (lastWs > 0 && !Char.IsWhiteSpace (documentToCursor[lastWs]))
+			while (lastWs > 0 && !Char.IsWhiteSpace (editor.GetCharAt (lastWs)))
 				lastWs--;
-			ExpressionResult firstExprs = FindExpression (documentToCursor, lastWs);
+			ExpressionResult firstExprs = FindExpression (editor, lastWs);
 			if (firstExprs.Expression != null) {
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 				if (unresolvedReturnType != null) {
@@ -336,7 +334,7 @@ namespace MonoDevelop.CSharp.Resolver
 				
 			}
 			
-			ExpressionResult lhsExpr = FindExpression (documentToCursor, pos);
+			ExpressionResult lhsExpr = FindExpression (editor, pos);
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
@@ -380,24 +378,7 @@ namespace MonoDevelop.CSharp.Resolver
 
 		ILexer lexer;
 		Location targetPosition;
-		List<int> lineOffsets;
-
-		int LocationToOffset (Location location)
-		{
-			if (location.Line <= 0 || location.Line - 1 >= lineOffsets.Count)
-				return -1;
-			return lineOffsets[location.Line - 1] + location.Column - 1;
-		}
-
-		Location OffsetToLocation (int offset)
-		{
-			int lineNumber = lineOffsets.BinarySearch (offset);
-			if (lineNumber < 0) {
-				lineNumber = (~lineNumber) - 1;
-			}
-			return new Location (offset - lineOffsets[lineNumber] + 1, lineNumber + 1);
-		}
-
+		
 		enum FrameType
 		{
 			Global,
@@ -680,27 +661,17 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 		}
 
-		void Init (string text, int offset)
+		void Init (TextEditorData editor, int offset)
 		{
-			if (offset < 0 || offset > text.Length) {
-				System.Console.WriteLine (("offset:" + offset + " - offset must be between 0 and " + text.Length));
+			if (offset < 0 || offset > editor.Length) {
+				System.Console.WriteLine (("offset:" + offset + " - offset must be between 0 and " + editor.Length));
 				offset = 0;
 			}
-			lexer = ParserFactory.CreateLexer (SupportedLanguage.CSharp, new StringReader (text));
+			
+			lexer = ParserFactory.CreateLexer (SupportedLanguage.CSharp, editor.Document.OpenTextReader ());
 			lexer.SkipAllComments = true;
-			lineOffsets = new List<int> ();
-			lineOffsets.Add (0);
-			for (int i = 0; i < text.Length; i++) {
-				if (i == offset) {
-					targetPosition = new Location (offset - lineOffsets[lineOffsets.Count - 1] + 1, lineOffsets.Count);
-				}
-				if (text[i] == '\n') {
-					lineOffsets.Add (i + 1);
-				}
-			}
-			if (offset == text.Length) {
-				targetPosition = new Location (offset - lineOffsets[lineOffsets.Count - 1] + 1, lineOffsets.Count);
-			}
+			var loc = editor.Document.OffsetToLocation (offset);
+			targetPosition = new Location (loc.Column + 1, loc.Line + 1);
 			
 			frame = new Frame ();
 			lastToken = Tokens.EOF;
@@ -717,9 +688,9 @@ namespace MonoDevelop.CSharp.Resolver
 			return InternalFindExpression (text, wordEnd);
 		}*/
 		
-		public ExpressionResult FindExpression (string text, int offset)
+		public ExpressionResult FindExpression (TextEditorData editor, int offset)
 		{
-			Init (text, offset);
+			Init (editor, offset);
 			try {
 				Token token;
 				Location lastError = Location.Empty;
@@ -747,17 +718,17 @@ namespace MonoDevelop.CSharp.Resolver
 				
 				int tokenOffset;
 				if (token == null || token.Kind == Tokens.EOF)
-					tokenOffset = text.Length;
+					tokenOffset = editor.Length;
 				else
-					tokenOffset = LocationToOffset (token.Location);
-				int lastExpressionStartOffset = LocationToOffset (frame.lastExpressionStart);
+					tokenOffset = editor.Document.LocationToOffset (token.Location.Line - 1, token.Location.Column - 1);
+				int lastExpressionStartOffset = editor.Document.LocationToOffset (frame.lastExpressionStart.Line - 1, frame.lastExpressionStart.Column - 1);
 				if (lastExpressionStartOffset >= 0) {
 					if (offset < tokenOffset) {
 						// offset is in front of this token
-						return MakeResult (text, lastExpressionStartOffset, tokenOffset, frame.contexts);
+						return MakeResult (editor, lastExpressionStartOffset, tokenOffset, frame.contexts);
 					} else {
 						// offset is IN this token
-						return MakeResult (text, lastExpressionStartOffset, offset, frame.contexts);
+						return MakeResult (editor, lastExpressionStartOffset, offset, frame.contexts);
 					}
 				} else {
 					return new ExpressionResult (null, frame.contexts);
@@ -1079,39 +1050,14 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 		}
 
-		public ExpressionResult FindFullExpression (string text, int offset)
+		public ExpressionResult FindFullExpression (TextEditorData editor, int offset)
 		{
-			return FindFullExpression (text, offset, null);
+			return FindFullExpression (editor, offset, null);
 		}
-
-		/// <summary>
-		/// Like FindFullExpression, but text is a code snippet inside a type declaration.
-		/// </summary>
-		public ExpressionResult FindFullExpressionInTypeDeclaration (string text, int offset)
+		
+ 		ExpressionResult FindFullExpression (TextEditorData editor, int offset, Frame initialFrame)
 		{
-			Frame root = new Frame ();
-			root.curlyChildType = FrameType.TypeDecl;
-			Frame typeDecl = new Frame (root, '{');
-			return FindFullExpression (text, offset, typeDecl);
-		}
-
-
-		/// <summary>
-		/// Like FindFullExpression, but text is a code snippet inside a method body.
-		/// </summary>
-		public ExpressionResult FindFullExpressionInMethod (string text, int offset)
-		{
-			Frame root = new Frame ();
-			root.curlyChildType = FrameType.TypeDecl;
-			Frame typeDecl = new Frame (root, '{');
-			typeDecl.curlyChildType = FrameType.Statements;
-			Frame methodBody = new Frame (typeDecl, '{');
-			return FindFullExpression (text, offset, methodBody);
-		}
-
- 		ExpressionResult FindFullExpression (string text, int offset, Frame initialFrame)
-		{
-			Init (text, offset);
+			Init (editor, offset);
 			
 			if (initialFrame != null) {
 				frame = initialFrame;
@@ -1136,11 +1082,11 @@ namespace MonoDevelop.CSharp.Resolver
 					if (targetPosition < token.Location) {
 						resultFrame = frame;
 						resultContext = frame.context;
-						resultStartOffset = LocationToOffset (frame.lastExpressionStart);
-						alternateResultStartOffset = LocationToOffset (frame.lastNewTokenStart);
+						resultStartOffset = editor.Document.LocationToOffset (frame.lastExpressionStart.Line - 1, frame.lastExpressionStart.Column - 1);
+						alternateResultStartOffset = editor.Document.LocationToOffset (frame.lastNewTokenStart.Line - 1, frame.lastNewTokenStart.Column - 1);
 						if (resultStartOffset < 0)
 							break;
-						resultEndOffset = LocationToOffset (token.Location);
+						resultEndOffset = editor.Document.LocationToOffset (token.Location.Line - 1, token.Location.Column - 1);
 						state = SEARCHING_END;
 					}
 				}
@@ -1150,15 +1096,15 @@ namespace MonoDevelop.CSharp.Resolver
 					if (targetPosition < token.EndLocation) {
 						resultFrame = frame;
 						resultContext = prevContext;
-						resultStartOffset = LocationToOffset (frame.lastExpressionStart);
-						alternateResultStartOffset = LocationToOffset (frame.lastNewTokenStart);
-						resultEndOffset = LocationToOffset (token.EndLocation);
+						resultStartOffset = editor.Document.LocationToOffset (frame.lastExpressionStart.Line  - 1, frame.lastExpressionStart.Column - 1);
+						alternateResultStartOffset = editor.Document.LocationToOffset (frame.lastNewTokenStart.Line - 1, frame.lastNewTokenStart.Column - 1);
+						resultEndOffset = editor.Document.LocationToOffset (token.EndLocation.Line - 1, token.EndLocation.Column - 1);
 						if (resultStartOffset < 0)
 							break;
 						state = SEARCHING_END;
 					}
 				} else if (state == SEARCHING_END) {
-					int lastExpressionStartOffset = LocationToOffset (resultFrame.lastExpressionStart);
+					int lastExpressionStartOffset = editor.Document.LocationToOffset (resultFrame.lastExpressionStart.Line - 1, resultFrame.lastExpressionStart.Column - 1);
 					if (lastExpressionStartOffset == alternateResultStartOffset && alternateResultStartOffset >= 0)
 						resultStartOffset = lastExpressionStartOffset;
 					if (resultFrame.type == FrameType.Popped || lastExpressionStartOffset != resultStartOffset || token.Kind == Tokens.Dot || token.Kind == Tokens.DoubleColon) {
@@ -1170,14 +1116,14 @@ namespace MonoDevelop.CSharp.Resolver
 						} else if (resultFrame.bracketType == '<' && token.Kind == Tokens.GreaterThan) {
 							// expression was a type argument
 							resultContext = ExpressionContext.TypeName;
-							return MakeResult (text, resultStartOffset, resultEndOffset, new ExpressionContext[] { resultContext });
+							return MakeResult (editor, resultStartOffset, resultEndOffset, new ExpressionContext[] { resultContext });
 						}
 						if (frame == resultFrame || resultFrame.type == FrameType.Popped) {
-							return MakeResult (text, resultStartOffset, resultEndOffset, new ExpressionContext[] { resultContext });
+							return MakeResult (editor, resultStartOffset, resultEndOffset, new ExpressionContext[] { resultContext });
 						}
 					} else {
 						if (frame.bracketType != '<') {
-							resultEndOffset = LocationToOffset (token.EndLocation);
+							resultEndOffset = editor.Document.LocationToOffset (token.EndLocation.Line - 1, token.EndLocation.Column - 1);
 						}
 					}
 				}
@@ -1187,17 +1133,18 @@ namespace MonoDevelop.CSharp.Resolver
 			return new ExpressionResult (null, frame.context);
 		}
 
-		ExpressionResult MakeResult (string text, int startOffset, int endOffset, IEnumerable<ExpressionContext> contexts)
+		ExpressionResult MakeResult (TextEditorData editor, int startOffset, int endOffset, IEnumerable<ExpressionContext> contexts)
 		{
 			if (endOffset < startOffset) {
 				int tmp = startOffset;
 				startOffset = endOffset;
 				endOffset = tmp;
 			}
-			Location start = OffsetToLocation (startOffset), end = OffsetToLocation (endOffset);
-			return new ExpressionResult (text.Substring (startOffset, endOffset - startOffset), new DomRegion (start.Line, start.Column, end.Line, end.Column), contexts);
+			var start = editor.Document.OffsetToLocation (startOffset);
+			var end = editor.Document.OffsetToLocation (endOffset);
+			return new ExpressionResult (editor.GetTextBetween (startOffset, endOffset), new DomRegion (start.Line + 1, start.Column + 1, end.Line + 1, end.Column + 1), contexts);
 		}
-
+/*
 		public string RemoveLastPart (string expression)
 		{
 			Init (expression, expression.Length - 1);
@@ -1217,7 +1164,7 @@ namespace MonoDevelop.CSharp.Resolver
 				lastToken = token.Kind;
 			}
 			return expression.Substring (0, lastValidPos);
-		}
+		}*/
 
 		#region Comment Filter and 'inside string watcher'
 
@@ -1387,24 +1334,18 @@ namespace MonoDevelop.CSharp.Resolver
 			return false;
 		}
 		#endregion
+		
+		#region IExpressionFinder implementation
+		ExpressionResult IExpressionFinder.FindExpression (object textEditorData, int offset)
+		{
+			return FindExpression ((TextEditorData)textEditorData, offset);
+		}
+
+		ExpressionResult IExpressionFinder.FindFullExpression (object textEditorData, int offset)
+		{
+			return FindFullExpression ((TextEditorData)textEditorData, offset);
+		}
+		#endregion
+
 	}
 }
-
-/*		public ExpressionContext FindExactContextForNewCompletion(TextEditor editor, ICompilationUnit unit, string fileName, IType callingType)
-		{
-			// find expression on left hand side of the assignment
-			string documentToCursor = editor.GetText (0, editor.CursorPosition);
-			
-			if (pos <= 0)
-				return null;
-			
-			// check if new +=/-=/= is right before "new"
-			for (int i = pos; i < editor.CursorPosition; i++) {
-				char ch = documentToCursor[i];
-				if (Char.IsWhiteSpace (ch))
-					continue;
-				
-				if (ch != '=' && ch != '+' && ch != '-' && ch != 'n' && ch != 'e' && ch != 'w')
-					return null;
-			}
-*/

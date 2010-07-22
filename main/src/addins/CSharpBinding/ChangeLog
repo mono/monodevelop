@@ -1,5 +1,14 @@
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs:
+	* MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:
+	* MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs:
+	  No longer transform the editor contents to text when using
+	  the expression finder - the expression finder now uses the
+	  text editor directly.
+
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs: Added
 	  check for #else span.
 
