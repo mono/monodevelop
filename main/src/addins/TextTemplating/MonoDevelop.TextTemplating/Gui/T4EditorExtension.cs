@@ -277,7 +277,7 @@ namespace MonoDevelop.TextTemplating.Gui
 			int s = Editor.Document.LocationToOffset (seg.TagStartLocation.Line - 1, seg.TagStartLocation.Column - 1);
 			if (s > -1) {
 				Editor.Caret.Offset = s;
-				Editor.Parent.CenterTo (s);
+				Editor.CenterTo (s);
 			}
 		}
 		
