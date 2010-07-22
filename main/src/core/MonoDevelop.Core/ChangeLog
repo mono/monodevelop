@@ -1,5 +1,12 @@
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
+	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
+	* MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs:
+	* MonoDevelop.Projects.Dom.MemoryDatabase/ProjectMemoryProjectDom.cs:
+	  Made queue parse job public.
+
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
 	* MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs:
 	  Lock database updates.
 

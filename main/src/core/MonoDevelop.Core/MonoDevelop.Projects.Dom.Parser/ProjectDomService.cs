@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		class ParsingJob
 		{
 			public string File;
-			public JobCallback ParseCallback;
+			public Action<string, IProgressMonitor> ParseCallback;
 			public ProjectDom Database;
 		}
 
@@ -210,7 +210,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return path;
 		}
 
-		public static ParsedDocument Parse (string fileName, ContentDelegate getContent)
+		public static ParsedDocument Parse (string fileName, Func<string> getContent)
 		{
 			List<Project> projects = new List<Project> ();
 			
@@ -249,7 +249,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return Parse (project, fileName, delegate () { return content; });
 		}
 		
-		public static ParsedDocument Parse (Project project, string fileName, ContentDelegate getContent)
+		public static ParsedDocument Parse (Project project, string fileName, Func<string> getContent)
 		{
 			Project[] projects = project != null ? new Project[] { project } : null;
 			return UpdateFile (projects, fileName, getContent);
@@ -262,7 +262,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		
 		// Parses a file. It does not update the parser database
-		public static ParsedDocument ParseFile (ProjectDom dom, string fileName, ContentDelegate getContent)
+		public static ParsedDocument ParseFile (ProjectDom dom, string fileName, Func<string> getContent)
 		{
 			string fileContent = getContent != null ? getContent () : null;
 			return DoParseFile (dom, fileName, fileContent);
@@ -658,7 +658,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		internal static void QueueParseJob (ProjectDom db, JobCallback callback, string file)
+		public static void QueueParseJob (ProjectDom db, Action<string, IProgressMonitor> callback, string file)
 		{
 			ParsingJob job = new ParsingJob ();
 			job.ParseCallback = callback;
@@ -856,7 +856,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
-		static ParsedDocument UpdateFile (Project[] projects, string fileName, ContentDelegate getContent)
+		static ParsedDocument UpdateFile (Project[] projects, string fileName, Func<string> getContent)
 		{
 			try {
 				if (GetParser (fileName) == null)
@@ -1103,9 +1103,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			ProjectDomService.EndParseOperation ();
 		}
 	}
-		
-	public delegate string ContentDelegate ();
-	public delegate void JobCallback (string file, IProgressMonitor monitor);
 	
 	public interface IProgressMonitorFactory
 	{

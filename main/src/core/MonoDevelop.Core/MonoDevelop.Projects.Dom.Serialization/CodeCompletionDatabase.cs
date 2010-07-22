@@ -843,7 +843,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (file.InParseQueue)
 				return;
 			file.InParseQueue = true;
-			ProjectDomService.QueueParseJob (SourceProjectDom, new JobCallback (ParseCallback), file.FileName);
+			ProjectDomService.QueueParseJob (SourceProjectDom, ParseCallback, file.FileName);
 		}
 		
 		protected void QueueAllFilesForParse ()
