@@ -92,7 +92,7 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 				expressionStart--;
 			}
 			// Add parameter to existing string.format call
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression (options.Document.Editor.Text, expressionStart);
+			ExpressionResult expressionResult = expressionFinder.FindFullExpression (options.Document.Editor, expressionStart);
 			InvocationExpression formatCall = null;
 			if (expressionResult != null) {
 				InvocationExpression possibleFormatCall = provider.ParseExpression (expressionResult.Expression) as InvocationExpression;
