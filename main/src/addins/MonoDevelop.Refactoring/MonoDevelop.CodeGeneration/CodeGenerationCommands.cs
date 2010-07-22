@@ -54,7 +54,7 @@ namespace MonoDevelop.CodeGeneration
 		{
 			Document document = IdeApp.Workbench.ActiveDocument;
 			info.Enabled = document != null && document.Editor != null
-				&& document.Editor.Parent.HasFocus && document.GetContent<ICompletionWidget> () != null;
+				&& document.Editor.HasFocus && document.GetContent<ICompletionWidget> () != null;
 		}
 	}
 }
