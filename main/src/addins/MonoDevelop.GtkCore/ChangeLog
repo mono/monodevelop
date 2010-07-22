@@ -1,3 +1,9 @@
+2010-07-22  Mike Krüger  <mkrueger@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.GtkCore.csproj: Added System.Core reference for
+	  windows.
+
 2010-07-12  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:
