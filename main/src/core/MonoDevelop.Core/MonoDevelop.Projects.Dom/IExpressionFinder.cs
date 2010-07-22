@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects.Dom
 	public interface IExpressionFinder
 	{
 		bool IsExpression (string text);
-		ExpressionResult FindExpression (string text, int offset);
-		ExpressionResult FindFullExpression(string text, int offset);
+		ExpressionResult FindExpression (object textEditorData, int offset);
+		ExpressionResult FindFullExpression (object textEditorData,  int offset);
 	}
 }
