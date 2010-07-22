@@ -114,7 +114,7 @@ namespace MonoDevelop.Refactoring.Tests
 				expressionResult = new ExpressionResult (editorText.Substring (selectionStart, selectionEnd - selectionStart).Trim ());
 				endPos = selectionEnd;
 			} else {
-				expressionResult = new NewCSharpExpressionFinder (dom).FindFullExpression (editorText, cursorPosition + 1);
+				expressionResult = new NewCSharpExpressionFinder (dom).FindFullExpression (doc.Editor, cursorPosition + 1);
 			}
 			ResolveResult resolveResult = endPos >= 0 ? resolver.Resolve (expressionResult, new DomLocation (doc.Editor.Caret.Line + 1, doc.Editor.Caret.Column + 1)) : null;
 			
