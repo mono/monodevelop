@@ -119,7 +119,7 @@
 		         _label = "Switch between related files "
 		         _description = "Switch between related files, such as CodeBehind, headers, etc."
 		         defaultHandler="MonoDevelop.DesignerSupport.SwitchBetweenRelatedFilesCommand"
-		         shortcut="Control|Alt|Up|"
+		         shortcut="Control|Alt|Up"
 		         macShortcut="Meta|Alt|Up" />
 	</Extension>
 	
