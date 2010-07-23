@@ -79,6 +79,12 @@ namespace MonoDevelop.Projects.Gui
 			{
 				this.CompletedWord = complete_word;
 			}
+			
+			public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int offset)
+			{
+				this.CompletedWord = complete_word;
+			}
+			
 			public void Replace (int offset, int count, string text)
 			{
 			}

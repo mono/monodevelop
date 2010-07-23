@@ -1335,11 +1335,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return (IType[]) classes.ToArray (typeof(IType));
 		}
 		
-		IType CopyClass (IType cls)
-		{
-			CopyDomVisitor<object> copier = new CopyDomVisitor<object> ();
-			return (IType) copier.Visit (cls, null);
-		}
+//		IType CopyClass (IType cls)
+//		{
+//			CopyDomVisitor<object> copier = new CopyDomVisitor<object> ();
+//			return (IType) copier.Visit (cls, null);
+//		}
 		/*
 		bool GetBestNamespaceEntry (string[] path, int length, bool createPath, bool caseSensitive, out NamespaceEntry lastEntry, out int numMatched)
 		{

@@ -421,9 +421,8 @@ namespace MonoDevelop.SourceEditor
 				this.encoding = file.SourceEncoding;
 				this.hadBom = file.HadBOM;
 			}
-			ContentName = fileName;
-			widget.SetParsedDocument (ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (Project), fileName), false);
 			widget.ListenToParseServiceUpdates ();
+			ContentName = fileName;
 			
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
@@ -1293,6 +1292,11 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
+			SetCompletionText (ctx, partial_word, complete_word, complete_word.Length);
+		}
+		
+		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int wordOffset)
+		{
 			TextEditorData data = this.GetTextEditorData ();
 			if (data == null || data.Document == null)
 				return;
@@ -1317,7 +1321,7 @@ namespace MonoDevelop.SourceEditor
 			if (idx >= 0) {
 				complete_word = complete_word.Remove (idx, 1);
 			} else {
-				idx = complete_word.Length;
+				idx = wordOffset;
 			}
 			
 			triggerOffset += data.EnsureCaretIsNotVirtual ();

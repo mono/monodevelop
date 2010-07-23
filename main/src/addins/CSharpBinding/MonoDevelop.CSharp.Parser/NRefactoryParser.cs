@@ -225,7 +225,7 @@ namespace MonoDevelop.CSharp.Parser
 				foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in parser.Lexer.TagComments) {
 					result.Add (new Tag (tagComment.Tag, tagComment.CommentText, new DomRegion (tagComment.StartPosition.Y, tagComment.StartPosition.X, tagComment.EndPosition.Y, tagComment.EndPosition.X)));
 				}
-				ConversionVisitior visitor = new ConversionVisitior (result, parser.Lexer.SpecialTracker.CurrentSpecials);
+				ConversionVisitior visitor = new ConversionVisitior (dom, result, parser.Lexer.SpecialTracker.CurrentSpecials);
 				visitor.VisitCompilationUnit (parser.CompilationUnit, null);
 				result.CompilationUnit.Tag = parser.CompilationUnit;
 				LastUnit = parser.CompilationUnit;
@@ -235,12 +235,14 @@ namespace MonoDevelop.CSharp.Parser
 
 		class ConversionVisitior : ICSharpCode.NRefactory.Visitors.AbstractAstVisitor
 		{
+			ProjectDom dom;
 			MonoDevelop.Projects.Dom.ParsedDocument result;
 			int lastSpecial = 0;
 			List<ISpecial> specials;
 			
-			public ConversionVisitior (MonoDevelop.Projects.Dom.ParsedDocument result, List<ISpecial> specials)
+			public ConversionVisitior (ProjectDom dom, MonoDevelop.Projects.Dom.ParsedDocument result, List<ISpecial> specials)
 			{
+				this.dom = dom;
 				this.specials = specials;
 				this.result = result;
 				namespaceEndLocationStack.Push (new Location (Int32.MaxValue, Int32.MaxValue));
@@ -368,6 +370,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override object VisitTypeDeclaration (ICSharpCode.NRefactory.Ast.TypeDeclaration typeDeclaration, object data)
 			{
 				DomType newType = new DomType ();
+				newType.SourceProjectDom = dom;
 				newType.Name = typeDeclaration.Name;
 				newType.Documentation = RetrieveDocumentation (typeDeclaration.StartLocation.Line);
 				newType.Location = ConvertLocation (typeDeclaration.StartLocation);
@@ -476,6 +479,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				List<IParameter> parameter = ConvertParameterList (null, delegateDeclaration.Parameters);
 				DomType delegateType = DomType.CreateDelegate (result.CompilationUnit, delegateDeclaration.Name, ConvertLocation (delegateDeclaration.StartLocation), ConvertReturnType (delegateDeclaration.ReturnType), parameter);
+				delegateType.SourceProjectDom = dom;
 				delegateType.Documentation = RetrieveDocumentation (delegateDeclaration.StartLocation.Line);
 				delegateType.Location = ConvertLocation (delegateDeclaration.StartLocation);
 				delegateType.Modifiers = ConvertModifiers (delegateDeclaration.Modifier);

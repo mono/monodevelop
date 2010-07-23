@@ -236,8 +236,13 @@ namespace MonoDevelop.CSharp.Completion
 				int max = Math.Max (ctx.TriggerOffset, localInfo.HiddenDocument.Editor.Caret.Offset);
 				return localInfo.HiddenDocument.Editor.Document.GetTextBetween (min, max);
 			}
-
+			
 			public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
+			{
+				 SetCompletionText (ctx, partial_word, complete_word, complete_word.Length);
+			}
+
+			public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int wordOffset)
 			{
 				CodeCompletionContext translatedCtx = new CodeCompletionContext ();
 				int offset = localInfo.OriginalCaretPosition + ctx.TriggerOffset - localInfo.CaretPosition;
@@ -246,7 +251,7 @@ namespace MonoDevelop.CSharp.Completion
 				translatedCtx.TriggerLine   = loc.Line + 1;
 				translatedCtx.TriggerLineOffset = loc.Column + 1;
 				translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
-				realDocument.GetContent <ICompletionWidget> ().SetCompletionText (translatedCtx, partial_word, complete_word);
+				realDocument.GetContent <ICompletionWidget> ().SetCompletionText (translatedCtx, partial_word, complete_word, wordOffset);
 			}
 
 			public int TextLength {

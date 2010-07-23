@@ -450,7 +450,7 @@ namespace MonoDevelop.SourceEditor
 				if (margin != null)
 					Gtk.Application.Invoke (delegate { margin.PurgeLayoutCache (); });
 			}
-			ParsedDocument = args.ParsedDocument;
+			SetParsedDocument (args.ParsedDocument, parsedDocument != null);
 		}
 		
 		public ParsedDocument ParsedDocument {

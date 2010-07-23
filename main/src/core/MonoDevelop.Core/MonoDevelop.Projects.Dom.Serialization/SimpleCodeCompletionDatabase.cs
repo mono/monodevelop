@@ -37,7 +37,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	internal class SimpleCodeCompletionDatabase : SerializationCodeCompletionDatabase
 	{
 		string file = "_currentFile";
-		object rwlock = new object ();
 		
 		public SimpleCodeCompletionDatabase (string file, ParserDatabase pdb): base (pdb, false)
 		{
