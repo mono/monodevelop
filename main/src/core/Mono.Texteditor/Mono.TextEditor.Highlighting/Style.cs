@@ -441,7 +441,7 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (SearchTextBgString, 255, 226, 185);
 			SetStyle (SearchTextMainBgString, 243, 221, 72);
 			
-			SetStyle (BracketHighlightRectangleString, 128, 128, 128, 196, 196, 196);
+			SetStyle (BracketHighlightRectangleString, 0xd3, 0xd7, 0xcf, 0xee, 0xee, 0xec);
 			
 			SetStyle (BookmarkColor1String, 255, 255, 255);
 			SetStyle (BookmarkColor2String, 105, 156, 235);
