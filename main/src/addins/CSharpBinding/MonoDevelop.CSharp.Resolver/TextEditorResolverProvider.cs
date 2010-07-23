@@ -196,9 +196,8 @@ namespace MonoDevelop.CSharp.Resolver
 			IExpressionFinder expressionFinder = parser.CreateExpressionFinder (dom);
 			if (resolver == null || expressionFinder == null) 
 				return null;
-			string txt = data.Document.Text;
 			int wordEnd = offset;
-			while (wordEnd < txt.Length && (Char.IsLetterOrDigit (txt[wordEnd]) || txt[wordEnd] == '_'))
+			while (wordEnd < data.Length && (Char.IsLetterOrDigit (data.GetCharAt (wordEnd)) || data.GetCharAt (wordEnd) == '_'))
 				wordEnd++;
 			ExpressionResult expressionResult = new ExpressionResult (expression);
 			expressionResult.ExpressionContext = ExpressionContext.MethodBody;
@@ -245,7 +244,7 @@ namespace MonoDevelop.CSharp.Resolver
 			// To resolve method overloads the full expression must be parsed.
 			// ex.: Overload (1)/ Overload("one") - parsing "Overload" gives just a MethodResolveResult
 			if (resolveResult is MethodResolveResult) 
-				resolveResult = resolver.Resolve (expressionFinder.FindFullExpression (txt, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? resolveResult;
+				resolveResult = resolver.Resolve (expressionFinder.FindFullExpression (data, wordEnd), new DomLocation (loc.Line + 1, loc.Column + 1)) ?? resolveResult;
 			return resolveResult;
 		}
 		
