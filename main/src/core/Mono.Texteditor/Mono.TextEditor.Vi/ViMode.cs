@@ -957,6 +957,7 @@ namespace Mono.TextEditor.Vi
 		private void PasteAfter (bool linemode)
 		{
 			TextEditorData data = Data;
+			this.Document.BeginAtomicUndo();
 			
 			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
 				(delegate (Gtk.Clipboard cb, string contents) {
@@ -994,6 +995,7 @@ namespace Mono.TextEditor.Vi
 				}
 				Reset (string.Empty);
 			});
+			this.Document.EndAtomicUndo();
 		}
 
 		/// <summary>
@@ -1004,6 +1006,7 @@ namespace Mono.TextEditor.Vi
 		{
 			TextEditorData data = Data;
 			
+			this.Document.BeginAtomicUndo();
 			Gtk.Clipboard.Get (ClipboardActions.CopyOperation.CLIPBOARD_ATOM).RequestText 
 				(delegate (Gtk.Clipboard cb, string contents) {
 				if (contents == null)
@@ -1039,6 +1042,7 @@ namespace Mono.TextEditor.Vi
 				}
 				Reset (string.Empty);
 			});
+			this.Document.EndAtomicUndo();
 		}
 
 		enum State {
