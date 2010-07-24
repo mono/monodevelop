@@ -36,10 +36,10 @@ namespace MonoDevelop.Projects.Extensions
 	public class DotNetProjectNode: ItemTypeNode
 	{
 		[NodeAttribute (Required=true)]
-		string language;
+		string language = null;
 		
 		[NodeAttribute]
-		string resourceHandler;
+		string resourceHandler = null;
 		
 		public override bool CanHandleItem (SolutionEntityItem item)
 		{

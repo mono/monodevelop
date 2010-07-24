@@ -39,19 +39,19 @@ namespace MonoDevelop.Core.AddIns
 	internal class PackageExtensionNode: TypeExtensionNode
 	{
 		[NodeAttribute ("name", Required=true)]
-		string name;
+		string name = null;
 		
 		[NodeAttribute ("version", Required=true)]
-		string version;
+		string version = null;
 		
 		[NodeAttribute ("targetFramework")]
-		string fxVersion;
+		string fxVersion = null;
 		
 		[NodeAttribute("clrVersion")]
 		ClrVersion clrVersion = ClrVersion.Default;
 		
 		[NodeAttribute ("gacRoot")]
-		bool hasGacRoot;
+		bool hasGacRoot = false;
 		
 		string[] assemblies;
 		

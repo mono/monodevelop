@@ -34,19 +34,19 @@ namespace MonoDevelop.Projects.Extensions
 	public class DotNetProjectSubtypeNode: ExtensionNode
 	{
 		[NodeAttribute]
-		string guid;
+		string guid = null;
 		
 		[NodeAttribute]
-		string type;
+		string type = null;
 		
 		[NodeAttribute]
-		string import;
+		string import = null;
 		
 		[NodeAttribute]
-		string extension;
+		string extension = null;
 
 		[NodeAttribute]
-		string exclude;
+		string exclude = null;
 
 		Type itemType;
 

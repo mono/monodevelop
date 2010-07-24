@@ -37,16 +37,16 @@ namespace MonoDevelop.Projects.Extensions
 	public abstract class ItemTypeNode: ExtensionNode
 	{
 		[NodeAttribute (Required=true)]
-		string guid;
+		string guid = null;
 		
 		[NodeAttribute]
-		string extension;
+		string extension = null;
 		
 		[NodeAttribute]
-		string import;
+		string import = null;
 		
 		[NodeAttribute]
-		string handlerType;
+		string handlerType = null;
 		
 		public ItemTypeNode ()
 		{

@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.Extensions
 	{
 		
 		[NodeAttribute]
-		protected string resource;
+		protected string resource = null;
 		
 		public StreamReader GetStream ()
 		{

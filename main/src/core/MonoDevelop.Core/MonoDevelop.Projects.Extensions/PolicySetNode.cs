@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Extensions
 		PolicySet polSet;
 		
 		[NodeAttribute ("_name", Required=true)]
-		string name;
+		string name = null;
 		
 		[NodeAttribute ("visible")]
 		bool visible = true;

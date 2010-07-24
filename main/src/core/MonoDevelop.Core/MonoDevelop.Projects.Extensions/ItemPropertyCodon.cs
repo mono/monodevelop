@@ -36,19 +36,19 @@ namespace MonoDevelop.Projects.Extensions
 	internal class ItemPropertyCodon: ExtensionNode
 	{
 		[NodeAttribute ("class", true)]
-		string typeName;
+		string typeName = null;
 		
 		[NodeAttribute("name", true, Description="Name of the property")]
-		string propName;
+		string propName = null;
 		
 		[NodeAttribute("type", true, Description="Full name of the property type")]
-		string propType;
+		string propType = null;
 		
 		[NodeAttribute("external", false, Description="Set to true if the property is an extension")]
 		bool external = true;
 		
 		[NodeAttribute("skipEmpty", false, Description="Set to true if empty elements don't have to be serialized")]
-		bool skipEmpty;
+		bool skipEmpty = false;
 		
 		Type type;
 

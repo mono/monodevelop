@@ -74,11 +74,17 @@ namespace MonoDevelop.Core.Assemblies
 			} else
 				yield return Path.Combine (sdkPath, "v6.0A\\bin");
 
-			foreach (string s in base.GetToolsPaths ())
+			foreach (string s in BaseGetToolsPaths ())
 				yield return s;
 			yield return PropertyService.EntryAssemblyPath;
 		}
-		
+
+		//base isn't verifiably accessible from the enumerator so use this private helper
+		IEnumerable<string> BaseGetToolsPaths ()
+		{
+			return base.GetToolsPaths ();
+		}
+
 		string GetFrameworkToolsPath ()
 		{
 			if (framework.Id == "1.1" || framework.Id == "2.0" || framework.Id == "4.0")

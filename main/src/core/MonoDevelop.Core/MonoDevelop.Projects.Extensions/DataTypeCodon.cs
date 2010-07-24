@@ -39,10 +39,10 @@ namespace MonoDevelop.Projects.Extensions
 	internal class DataTypeCodon: ExtensionNode
 	{
 		[NodeAttribute ("class", true)]
-		string typeName;
+		string typeName = null;
 		
 		[NodeAttribute ("name")]
-		string itemName;
+		string itemName = null;
 		
 		public Type Class {
 			get { return Addin.GetType (typeName, true); }

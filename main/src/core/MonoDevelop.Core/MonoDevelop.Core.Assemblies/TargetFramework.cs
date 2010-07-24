@@ -170,16 +170,16 @@ namespace MonoDevelop.Core.Assemblies
 	class AssemblyInfo
 	{
 		[ItemProperty ("name")]
-		public string Name;
+		public string Name = null;
 		
 		[ItemProperty ("version")]
-		public string Version;
+		public string Version = null;
 		
 		[ItemProperty ("publicKeyToken", DefaultValue="null")]
-		public string PublicKeyToken;
+		public string PublicKeyToken = null;
 		
 		[ItemProperty ("package")]
-		public string Package;
+		public string Package = null;
 		
 		public AssemblyInfo ()
 		{

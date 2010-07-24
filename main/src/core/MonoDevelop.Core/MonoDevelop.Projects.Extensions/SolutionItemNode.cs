@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.Extensions
 	public class SolutionItemNode: ItemTypeNode
 	{
 		[NodeAttribute (Required=true)]
-		string type;
+		string type = null;
 		
 		public Type ItemType {
 			get { return Addin.GetType (type, true); }

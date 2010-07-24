@@ -333,7 +333,8 @@ namespace MonoDevelop.Core.Execution
 	
 	class ProcessHostConsole: IConsole
 	{
-		public event EventHandler CancelRequested;
+		//nothing fires this event so make a dummy implementation to keep csc happy
+		event EventHandler IConsole.CancelRequested { add { } remove {} }
 		
 		public TextReader In {
 			get { return Console.In; }

@@ -36,7 +36,7 @@ namespace MonoDevelop.Core.AddIns
 	class AssemblyExtensionNode: TypeExtensionNode
 	{
 		[NodeAttribute ("file", Required=true)]
-		string file;
+		string file = null;
 		
 		public string FileName {
 			get { return file; }

@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.AddIns
 	public class ExecutionModeNode: TypeExtensionNode, IExecutionMode
 	{
 		[NodeAttribute ("_name", Localizable=true)]
-		string name;
+		string name = null;
 		
 		public string Name {
 			get { return name; }
